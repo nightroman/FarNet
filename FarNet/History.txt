@@ -1,6 +1,13 @@
 The NuGet package: https://www.nuget.org/packages/FarNet
 HOW TO GET AND INSTALL: http://forum.farmanager.com/viewtopic.php?f=11&t=2256
 
+= 5.0.46 =
+
+Fix: FarNet was not shown in the plugin help list.
+
+New method IFar.Message(MessageArgs). It is recommended instead of other
+Message() overloads with multiple parameters. + An extra option Position.
+
 = 5.0.45 =
 
 IUserInterface:

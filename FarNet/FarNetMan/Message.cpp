@@ -77,66 +77,68 @@ CStr* Message::CreateBlock(int& outNbItems)
 	return r;
 }
 
-int Message::Show(String^ body, String^ header, MessageOptions options, array<String^>^ buttons, String^ helpTopic)
+int Message::Show(MessageArgs^ args)
 {
-	// Draw mode?
+	if (!args) throw gcnew ArgumentNullException("args");
+	
+	// to change
+	MessageOptions options = args->Options;
+	
+	// Draw?
 	if (int(options & MessageOptions::Draw))
 	{
 		if (int(options & (MessageOptions::Gui | MessageOptions::GuiOnMacro)))
 			throw gcnew ArgumentException("Draw and GUI options cannot be used together.");
-		if ((int(options) & ALL_BUTTONS) || (buttons && buttons->Length))
+		if ((int(options) & ALL_BUTTONS) || (args->Buttons && args->Buttons->Length))
 			throw gcnew ArgumentException("Buttons cannot be used in drawn messages.");
 	}
 
 	// GUI on macro?
-	if (int(options & MessageOptions::GuiOnMacro) != 0)
+	if (int(options & MessageOptions::GuiOnMacro))
 	{
-		// check macro
 		if (Far::Api->MacroState != MacroState::None)
 			options = options | MessageOptions::Gui;
 	}
 
-	// case: GUI message
-	if (int(options & MessageOptions::Gui) != 0)
+	// case: GUI
+	if (int(options & MessageOptions::Gui))
 	{
-		if (buttons)
-			throw gcnew ArgumentException("Custom buttons are not supported in GUI message boxes.");
+		if (args->Buttons)
+			throw gcnew ArgumentException("Custom buttons cannot be used in GUI messages.");
 
 		if (!Configuration::GetBool(Configuration::DisableGui))
-			return ShowGui(body, header, options);
+			return ShowGui(args->Text, args->Caption, options);
 	}
 
 	// standard message box
 	Message m;
-	m._helpTopic = helpTopic;
 	m._flags = (int)options;
+	m._helpTopic = args->HelpTopic;
+	m._position = args->Position;
 
 	// text width
-	int width = Far::Api->UI->WindowSize.X - 16;
+	int maxTextWidth = Far::Api->UI->WindowSize.X - 16;
 
 	// header
-	if (!String::IsNullOrEmpty(header))
+	if (!String::IsNullOrEmpty(args->Caption))
 	{
-		m._header = Regex::Replace(header, "[\t\r\n]+", " ");
-		if (m._header->Length > width)
-			m._header = m._header->Substring(0, width);
+		m._header = Regex::Replace(args->Caption, "[\t\r\n]+", " ");
+		if (m._header->Length > maxTextWidth)
+			m._header = m._header->Substring(0, maxTextWidth);
 	}
 
 	// body
 	int height = Far::Api->UI->WindowSize.Y - 9;
-	FarNet::Works::Kit::FormatMessage(%m._body, body, width, height, FarNet::Works::FormatMessageMode::Word);
+	FarNet::Works::Kit::FormatMessage(%m._body, args->Text, maxTextWidth, height, FarNet::Works::FormatMessageMode::Word);
 
 	// buttons? dialog?
-	if (buttons)
+	if (args->Buttons)
 	{
-		m._buttons = buttons;
-		int len = 0;
-		for each(String^ s in buttons)
-		{
-			len += s->Length + 2;
-			if (len > width)
-				return m.ShowDialog(width);
-		}
+		m._buttons = args->Buttons;
+		bool needButtonList = NeedButtonList(args->Buttons, maxTextWidth);
+		
+		if (m._position.HasValue || needButtonList)
+			return m.ShowDialog(maxTextWidth, needButtonList);
 	}
 
 	// go
@@ -144,8 +146,21 @@ int Message::Show(String^ body, String^ header, MessageOptions options, array<St
 	return m._selected;
 }
 
-int Message::ShowDialog(int width)
+bool Message::NeedButtonList(array<String^>^ buttons, int width)
 {
+	int len = 0;
+	for each(String^ s in buttons)
+	{
+		len += s->Length + 2;
+		if (len > width)
+			return true;
+	}
+	return false;
+}
+
+int Message::ShowDialog(int maxTextWidth, bool needButtonList)
+{
+	// dialog width
 	int w = _header->Length;
 	for each(String^ s in _body)
 		if (s->Length > w)
@@ -155,38 +170,83 @@ int Message::ShowDialog(int width)
 		if (s->Length > w)
 		{
 			w = s->Length;
-			if (w > width)
+			if (w > maxTextWidth)
 			{
-				w = width;
+				w = maxTextWidth;
 				break;
 			}
 		}
 	}
 	w += 10;
+
+	// dialog height
 	Point size = Far::Api->UI->WindowSize;
 	int nBody = Math::Min(_body.Count, size.Y / 3);
-	int h = 5 + nBody + _buttons->Length;
-	if (h > size.Y - 4)
-		h = size.Y - 4;
+	int h;
+	if (needButtonList)
+	{
+		h = 5 + nBody + _buttons->Length;
+		if (h > size.Y - 4)
+			h = size.Y - 4;
+	}
+	else
+	{
+		h = 6 + nBody;
+	}
 
-	IDialog^ dialog = Far::Api->CreateDialog(-1, -1, w, h);
+	// dialog place
+	Point position = _position.HasValue ? _position.Value : Point(-1, -1);
+	int x1 = position.X;
+	if (x1 >= size.X)
+		x1 = size.X - w - 1;
+	int y1 = position.Y;
+	if (y1 >= size.Y)
+		y1 = size.Y - h - 1;
+	int x2 = x1 < 0 ? w : x1 + w - 1;
+	int y2 = y1 < 0 ? h : y1 + h - 1;
+
+	// dialog
+	IDialog^ dialog = Far::Api->CreateDialog(x1, y1, x2, y2);
 	dialog->HelpTopic = _helpTopic;
 	dialog->IsWarning = (_flags & FMSG_WARNING);
 	dialog->AddBox(3, 1, w - 4, h - 2, _header);
+	
+	// text
 	for(int i = 0; i < nBody; ++i)
 		dialog->AddText(5, -1, 0, _body[i]);
+
+	// separator
 	dialog->AddText(5, -1, 0, nullptr)->Separator = 1;
 
-	IListBox^ list = dialog->AddListBox(4, -1, w - 5, h - 6 - nBody, nullptr);
-	list->NoAmpersands = true;
-	list->NoBox = true;
+	// case: button list
+	if (needButtonList)
+	{
+		IListBox^ list = dialog->AddListBox(4, -1, w - 5, h - 6 - nBody, nullptr);
+		list->NoAmpersands = true;
+		list->NoBox = true;
+		for each(String^ s in _buttons)
+			list->Add(s);
+
+		if (!dialog->Show())
+			return -1;
+
+		return list->Selected;
+	}
+
+	// else: normal buttons
+
+	List<IControl^> buttons(_buttons->Length);
 	for each(String^ s in _buttons)
-		list->Add(s);
+	{
+		IButton^ button = dialog->AddButton(0, (buttons.Count ? 0 : -1), s);
+		button->CenterGroup = true;
+		buttons.Add(button);
+	}
 
 	if (!dialog->Show())
 		return -1;
 
-	return list->Selected;
+	return buttons.IndexOf(dialog->Selected);
 }
 
 int Message::ShowGui(String^ body, String^ header, MessageOptions options)

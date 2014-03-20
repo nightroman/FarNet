@@ -47,7 +47,7 @@ public:
 	virtual bool IsMaskValid(String^ mask) override;
 	virtual CultureInfo^ GetCurrentUICulture(bool update) override;
 	virtual IModuleAction^ GetModuleAction(Guid id) override;
-	virtual int Message(String^ body, String^ header, MessageOptions options, array<String^>^ buttons, String^ helpTopic) override;
+	virtual int Message(MessageArgs^ args) override;
 	virtual KeyInfo^ NameToKeyInfo(String^ key) override;
 	virtual Object^ GetSetting(FarSetting settingSet, String^ settingName) override;
 	[MethodImpl(MethodImplOptions::NoInlining)]

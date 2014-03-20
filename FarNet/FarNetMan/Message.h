@@ -12,12 +12,13 @@ namespace FarNet
 ref class Message
 {
 internal:
-	static int Show(String^ body, String^ header, MessageOptions options, array<String^>^ buttons, String^ helpTopic);
+	static int Show(MessageArgs^ args);
 	static int ShowGui(String^ body, String^ header, MessageOptions options);
 private:
 	bool Show();
-	int ShowDialog(int width);
+	int ShowDialog(int maxTextWidth, bool needButtonList);
 	CStr* CreateBlock(int& outNbItems);
+	static bool NeedButtonList(array<String^>^ buttons, int width);
 private:
 	int _flags;
 	int _selected;
@@ -25,5 +26,6 @@ private:
 	String^ _helpTopic;
 	List<String^> _body;
 	array<String^>^ _buttons;
+	Nullable<Point> _position;
 };
 }

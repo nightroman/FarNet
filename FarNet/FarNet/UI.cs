@@ -21,8 +21,11 @@ namespace FarNet
 	{
 		/// <summary>
 		/// INTERNAL
+		/// Gets the text of the specified console buffer line.
 		/// </summary>
-		public abstract string GetBufferLineText(int lineIndex); // Gets the trimmed text. Negative indexes are for the end access.
+		/// <param name="lineIndex">The line index. A negative index Y is treated as H + Y, where H is the buffer height.</param>
+		/// <returns>The specified line text. End spaces are trimmed.</returns>
+		public abstract string GetBufferLineText(int lineIndex);
 		/// <summary>
 		/// INTERNAL
 		/// </summary>

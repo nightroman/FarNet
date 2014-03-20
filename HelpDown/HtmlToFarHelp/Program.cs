@@ -23,7 +23,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Xml;
 
-[assembly: AssemblyVersion("1.0.1")]
+[assembly: AssemblyVersion("1.0.2")]
 [assembly: AssemblyProduct("HtmlToFarHelp")]
 [assembly: AssemblyTitle("HtmlToFarHelp")]
 [assembly: AssemblyDescription("HtmlToFarHelp - converts HTML to Far Manager help")]

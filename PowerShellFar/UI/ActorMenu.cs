@@ -56,7 +56,6 @@ namespace PowerShellFar.UI
 			AddTool(Res.MenuEditorConsole, delegate { A.Psf.ShowConsole(OpenMode.None); }, ModuleToolOptions.F11Menus);
 			AddTool(Res.MenuPowerPanel, delegate { A.Psf.ShowPanel(); }, ModuleToolOptions.F11Menus);
 			AddTool(Res.MenuTabExpansion, delegate { A.Psf.ExpandCode(null); }, ModuleToolOptions.Editor | ModuleToolOptions.Panels | ModuleToolOptions.Dialog);
-			AddTool(Res.MenuSnapin, delegate { A.Psf.ShowModules(); }, ModuleToolOptions.F11Menus);
 			AddTool(Res.MenuDebugger, delegate { A.Psf.ShowDebugger(); }, ModuleToolOptions.F11Menus);
 			AddTool(Res.MenuError, delegate { A.Psf.ShowErrors(); }, ModuleToolOptions.F11Menus);
 			AddTool(Res.MenuHelp, delegate { A.Psf.ShowHelp(); }, ModuleToolOptions.F11Menus);

@@ -383,11 +383,15 @@ namespace PowerShellFar
 						title += " Unit " + (_UnitIndex + 1) + "/" + _units.Count;
 					}
 
-					switch (Far.Api.Message(
-						text,
-						title,
-						MessageOptions.LeftAligned,
-						new string[] { "Step", "Continue", "Cancel" }))
+					var args = new MessageArgs()
+					{
+						Text = text,
+						Caption = title,
+						Options = MessageOptions.LeftAligned,
+						Buttons = new string[] { "Step", "Continue", "Cancel" },
+						Position = new Point(int.MaxValue, 1)
+					};
+					switch (Far.Api.Message(args))
 					{
 						case 0:
 							break;

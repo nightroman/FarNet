@@ -713,16 +713,6 @@ Continue with this current directory?
 			History.ShowHistory();
 		}
 		/// <summary>
-		/// Shows a menu with available modules and registered snap-ins.
-		/// Called on "Module+".
-		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-		public void ShowModules()
-		{
-			UI.ModulesMenu ui = new PowerShellFar.UI.ModulesMenu();
-			ui.Show();
-		}
-		/// <summary>
 		/// Shows PowerShell debugger tools menu.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]

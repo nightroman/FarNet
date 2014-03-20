@@ -56,47 +56,59 @@ namespace FarNet
 		/// <summary>
 		/// Shows a message box.
 		/// </summary>
-		/// <param name="body">Message text.</param>
-		/// <seealso cref="Message(string, string, MessageOptions, string[], string)"/>
-		public void Message(string body) { Message(body, null, MessageOptions.Ok, null, null); }
+		/// <param name="text">Message text.</param>
+		/// <seealso cref="Message(MessageArgs)"/>
+		public void Message(string text)
+		{ Message(new MessageArgs() { Text = text, Options = MessageOptions.Ok }); }
 		/// <summary>
 		/// Shows a message box.
 		/// </summary>
-		/// <param name="body">Message text.</param>
-		/// <param name="header">Message header.</param>
-		/// <seealso cref="Message(string, string, MessageOptions, string[], string)"/>
-		public void Message(string body, string header) { Message(body, header, MessageOptions.Ok, null, null); }
+		/// <param name="text">Message text.</param>
+		/// <param name="caption">Message caption.</param>
+		/// <seealso cref="Message(MessageArgs)"/>
+		public void Message(string text, string caption)
+		{ Message(new MessageArgs() { Text = text, Caption = caption, Options = MessageOptions.Ok }); }
 		/// <summary>
 		/// Shows a message box with options.
 		/// </summary>
-		/// <param name="body">Message text.</param>
-		/// <param name="header">Message header.</param>
+		/// <param name="text">Message text.</param>
+		/// <param name="caption">Message caption.</param>
 		/// <param name="options">Message options.</param>
-		/// <returns>Button index or -1 if canceled.</returns>
-		/// <seealso cref="Message(string, string, MessageOptions, string[], string)"/>
-		public int Message(string body, string header, MessageOptions options) { return Message(body, header, options, null, null); }
+		/// <returns>The selected button index, or -1 on cancel, or 0 on drawn message.</returns>
+		/// <seealso cref="Message(MessageArgs)"/>
+		public int Message(string text, string caption, MessageOptions options)
+		{ return Message(new MessageArgs() { Text = text, Caption = caption, Options = options }); }
 		/// <summary>
 		/// Shows a message box with options and buttons.
 		/// </summary>
-		/// <param name="body">Message text.</param>
-		/// <param name="header">Message header.</param>
+		/// <param name="text">Message text.</param>
+		/// <param name="caption">Message caption.</param>
 		/// <param name="options">Message options.</param>
 		/// <param name="buttons">Message buttons. Not supported with <c>Gui*</c> options.</param>
-		/// <returns>Button index or -1 if canceled.</returns>
-		/// <seealso cref="Message(string, string, MessageOptions, string[], string)"/>
-		public int Message(string body, string header, MessageOptions options, string[] buttons) { return Message(body, header, options, buttons, null); }
+		/// <returns>The selected button index, or -1 on cancel, or 0 on drawn message.</returns>
+		/// <seealso cref="Message(MessageArgs)"/>
+		public int Message(string text, string caption, MessageOptions options, string[] buttons)
+		{ return Message(new MessageArgs() { Text = text, Caption = caption, Options = options, Buttons = buttons }); }
 		/// <summary>
-		/// Shows a message box with options, buttons and help.
+		/// Shows a message box with options, buttons, and help.
 		/// </summary>
-		/// <param name="body">Message text.</param>
-		/// <param name="header">Message header.</param>
+		/// <param name="text">Message text.</param>
+		/// <param name="caption">Message caption.</param>
 		/// <param name="options">Message options.</param>
 		/// <param name="buttons">Message buttons. Not supported with <c>Gui*</c> options.</param>
 		/// <param name="helpTopic">
 		/// <include file='doc.xml' path='doc/HelpTopic/*'/>
 		/// It is ignored in GUI and drawn messages.
 		/// </param>
-		/// <returns>Button index or -1 if canceled, or 0 in the drawn message.</returns>
+		/// <returns>The selected button index, or -1 on cancel, or 0 on drawn message.</returns>
+		/// <seealso cref="Message(MessageArgs)"/>
+		public int Message(string text, string caption, MessageOptions options, string[] buttons, string helpTopic)
+		{ return Message(new MessageArgs() { Text = text, Caption = caption, Options = options, Buttons = buttons, HelpTopic = helpTopic }); }
+		/// <summary>
+		/// Shows a message box with the specified parameters.
+		/// </summary>
+		/// <param name="args">The parameters.</param>
+		/// <returns>The selected button index, or -1 on cancel, or 0 on drawn message.</returns>
 		/// <remarks>
 		/// <para>
 		/// If the <see cref="MessageOptions.Draw"/> option is set then GUI or buttons are not allowed.
@@ -105,14 +117,14 @@ namespace FarNet
 		/// </para>
 		/// <para>
 		/// If the <see cref="MessageOptions.Draw"/> option is not set then the message is modal and
-		/// it shows at least the OK button if there are no buttons provided by the parameters.
+		/// it shows at least the button OK if there are no buttons provided by the parameters.
 		/// </para>
 		/// <para>
-		/// In extreme cases when a message contains too many or too long buttons
-		/// a listbox dialog is used where the listbox items work as buttons.
+		/// In extreme cases with too many or too long buttons
+		/// a list box is used in order to represent buttons.
 		/// </para>
 		/// </remarks>
-		public abstract int Message(string body, string header, MessageOptions options, string[] buttons, string helpTopic);
+		public abstract int Message(MessageArgs args);
 		/// <summary>
 		/// Gets Far version.
 		/// </summary>

@@ -20,7 +20,7 @@ namespace PowerShellFar.UI
 
 			_menu.HelpTopic = Far.Api.GetHelpTopic("MenuCommandHistory");
 			_menu.SelectLast = true;
-			_menu.Title = "PowerShellFar History";
+			_menu.Title = "PowerShell history";
 
 			_menu.Incremental = prefix;
 			_menu.IncrementalOptions = PatternOptions.Substring;
