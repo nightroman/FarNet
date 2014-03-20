@@ -43,6 +43,7 @@ namespace HtmlToFarHelp
 		readonly char[] TrimNewLine = new char[] { '\r', '\n' };
 		readonly HashSet<string> _topics = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		readonly HashSet<string> _links = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		bool _started;
 		bool _needNewLine;
 		int _emphasis;
 		int _countParaInItem;
@@ -82,21 +83,22 @@ namespace HtmlToFarHelp
 					switch (it.Key.ToString())
 					{
 						case "centerheading": options.CenterHeading = bool.Parse(value); break;
-						case "plaincode": options.PlainCode = bool.Parse(value); break;
-						case "plainheading": options.PlainHeading = bool.Parse(value); break;
-						case "margin": options.Margin = int.Parse(value); break;
 						case "indentcode": options.IndentCode = int.Parse(value); break;
 						case "indentlist": options.IndentList = int.Parse(value); break;
 						case "indentpara": options.IndentPara = int.Parse(value); break;
 						case "indentquote": options.IndentQuote = int.Parse(value); break;
 						case "language": options.Language = value; break;
+						case "margin": options.Margin = int.Parse(value); break;
+						case "plaincode": options.PlainCode = bool.Parse(value); break;
+						case "plainheading": options.PlainHeading = bool.Parse(value); break;
+						case "plugincontents": options.PluginContents = value; break;
 						default: throw new ArgumentException("Unknown option: " + it.Key);
 					}
 				}
 			}
 			catch (Exception e)
 			{
-				throw new InvalidDataException("Error on parsing HLF options: " + e.Message, e);
+				throw new FormatException("Error on parsing HLF options: " + e.Message, e);
 			}
 
 			return options;
@@ -123,25 +125,9 @@ namespace HtmlToFarHelp
 			_options = _globalOptions;
 			ProcessOptions();
 
-			// header
-			Writer.WriteLine(".Language=" + _options.Language);
-			Writer.WriteLine(".Options CtrlStartPosChar=" + ArgWrap);
-
 			// parse
 			while (Reader.Read())
-			{
-				switch (Reader.NodeType)
-				{
-					case XmlNodeType.Comment: Comment(); break;
-					case XmlNodeType.Element: Element(); break;
-					case XmlNodeType.EndElement: EndElement(); break;
-					case XmlNodeType.Text: Text(); break;
-					case XmlNodeType.Whitespace: Whitespace(); break;
-					default:
-						Throw(string.Format(ErrUnexpectedNode, Reader.NodeType, Reader.Name));
-						break;
-				}
-			}
+				Node();
 
 			// validate links
 			foreach (var link in _links)
@@ -149,6 +135,34 @@ namespace HtmlToFarHelp
 				if (!_topics.Contains(link))
 					throw new InvalidDataException(string.Format(ErrMissingTarget, link));
 			}
+		}
+		void Node()
+		{
+			switch (Reader.NodeType)
+			{
+				case XmlNodeType.Comment: Comment(); break;
+				case XmlNodeType.Element: Element(); break;
+				case XmlNodeType.EndElement: EndElement(); break;
+				case XmlNodeType.Text: Text(); break;
+				case XmlNodeType.Whitespace: Whitespace(); break;
+				default:
+					Throw(string.Format(ErrUnexpectedNode, Reader.NodeType, Reader.Name));
+					break;
+			}
+		}
+		void Start()
+		{
+			if (_started)
+				return;
+
+			_started = true;
+			
+			Writer.WriteLine(".Language=" + _options.Language);
+
+			if (_options.PluginContents != null)
+				Writer.WriteLine(".PluginContents=" + _options.PluginContents);
+			
+			Writer.WriteLine(".Options CtrlStartPosChar=" + ArgWrap);
 		}
 		void Comment()
 		{
@@ -284,6 +298,8 @@ namespace HtmlToFarHelp
 		}
 		void Heading1()
 		{
+			Start();
+
 			++_heading;
 			Writer.WriteLine();
 			Writer.WriteLine();

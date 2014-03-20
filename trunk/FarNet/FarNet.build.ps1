@@ -4,8 +4,7 @@
 	Build script (https://github.com/nightroman/Invoke-Build)
 #>
 
-param
-(
+param(
 	$Platform = (property Platform Win32),
 	$Configuration = (property Configuration Release)
 )
@@ -41,14 +40,15 @@ task Install {
 	if ($Configuration -eq 'Release') {
 		Copy-Item FarNet.Settings\bin\Release\FarNet.Settings.xml, FarNet.Tools\bin\Release\FarNet.Tools.xml $FarHome\FarNet
 	}
-}
+},
+Help
 
 task Uninstall {
 	foreach($_ in $Builds) { Invoke-Build Uninstall $_ }
 	Remove-Item $FarHome\Far.exe.config -ErrorAction 0
 }
 
-task Help {
+task Help -If ($Configuration -eq 'Release') {
 	exec { MarkdownToHtml "From=About-FarNet.text" "To=About-FarNet.htm" }
 	exec { HtmlToFarHelp "From=About-FarNet.htm" "To=$FarHome\Plugins\FarNet\FarNetMan.hlf" }
 }

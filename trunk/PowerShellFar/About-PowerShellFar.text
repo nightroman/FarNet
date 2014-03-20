@@ -343,13 +343,6 @@ box in a dialog. The built-in PowerShell TabExpansion is replaced with advanced
 [TabExpansion2.ps1](#TabExpansion).
 
 ---
-### Modules+
-
-Shows available PowerShell modules and registered PowerShell snap-ins in a menu
-which imports or removes selected modules for the current session.
-See [Modules menu](#MenuModules).
-
----
 ### Errors
 
 Shows the recent PowerShell errors stored in the global variable `$Error`.
@@ -587,52 +580,6 @@ This menu opens a panel for any .NET objects or a provider panel at the
 selected drive.
 
 `[Enter]` Opens the selected panel.
-
-
-*********************************************************************
-# Modules menu {#MenuModules}
-
-[Contents](#Contents)
-
-This menu shows available modules and registered snap-ins and imports or
-removes them for the current session. Already imported modules and added
-snap-ins have their items checked on the left.
-
-### Keys and actions
-
-`[Enter]` Switches the module or snap-in state: the imported module or added
-snap-in is removed, otherwise it is imported/added.
-
-
-### Related PowerShell commands
-
-Show help:
-
-    ps: help about_modules
-    ps: help about_pssnapins
-
-Get available/registered:
-
-    ps: Get-Module -ListAvailable
-    ps: Get-PSSnapin -Registered
-
-Get imported/added:
-
-    ps: Get-Module
-    ps: Get-PSSnapin
-
-Import/add to the session:
-
-    ps: Import-Module -Name <name>
-    ps: Add-PSSnapin -Name <name>
-
-Remove from the session:
-
-    ps: Remove-Module -Name <name>
-    ps: Remove-PSSnapin -Name <name>
-
-You may use Import-Module and Add-PSSnapin in your profile to import/add
-favourite modules and snap-ins always when PowerShellFar starts.
 
 
 *********************************************************************
@@ -1210,7 +1157,7 @@ or
 
     ps: Import-Panel-.ps1 (Get-FarPath) #
 
-(`#` in the end tells not to add a command to PowerShellFar history)
+(`#` in the end tells do not add a command to the history)
 
 Note that only primitive data (basic value types and `byte[]`) keep their types on
 importing from clixml (enough for many tasks). You can also export/import data
@@ -1244,9 +1191,7 @@ Provider *Certificate* (*Cert:*) - x509 certificates for digital signatures.
 
 Provider *WSMan* (*WSMan:*) - WS-Management configuration information.
 
-Other available providers in a session depend on imported PowerShell modules
-and added snap-ins. For example providers from
-[PowerShell Community Extensions](http://www.codeplex.com/PowerShellCX).
+Other available providers depend on imported PowerShell modules.
 
 ---
 
@@ -1280,8 +1225,7 @@ may use scripts *Go-To-.ps1* (not for *FileSystem*) and *Panel-Property-.ps1*
 Provider folder tree panel is a tree panel where nodes represent provider
 container items. It works for so called "navigation" providers. For example
 standard PowerShell navigation providers are: *FileSystem*, *Registry*,
-*Certificate*, and *WSMan*. Other providers depend on imported/added PowerShell
-modules/snap-ins.
+*Certificate*, and *WSMan*. Other providers depend on imported modules.
 
 ### Keys and actions
 
@@ -1615,36 +1559,48 @@ See example [Profile.ps1](#Profile).
 
 [Contents](#Contents)
 
-### Command lines with prefixes `ps:`
+### Console output
 
-Output of these commands is written to the user screen (console under panels).
+Output of commands invoked in the command console or Far Manager command line
+with prefixes `ps:` is written to the console, under panels if they are shown.
+
 The output uses different colors depending on message types (errors, warnings,
 etc.). Console output may be transcribed to a file, use `Start-Transcript` and
 `Stop-Transcript` for starting and stopping and `Show-FarTranscript` for
 viewing the output.
 
 Note that console output may have unwanted screen effects on commands with UI
-and on PowerShell debugging. Such commands should be invoked from the command
-box or with `vps:` prefixes. Mind that even if a command does not produce any
-output but may fail then its error information is still an output to be shown.
+or may be difficult to see in the current context. Invoke such commands from
+the command box or with `vps:` prefixes. On choosing a prefix for a command
+with no output remember that errors also produce output to be shown.
 
-Useful hotkeys:
+Useful hotkeys in panels:
 
-* `[CtrlAltShift]` - (press and hold) show the user screen
+* `[CtrlUp]`, `[CtrlDown]` - change panels height
+* `[CtrlAltShift]` - (press and hold) show the console
 * `[CtrlO]`, `[CtrlF1]`, `[CtrlF2]` - hide and show panels
-* `[CtrlUp]`, `[CtrlDown]` - change visible user screen area
 
-### Command lines with prefixes `vps:` and command box commands
+---
+### Viewer output
 
-Output of these commands is normally collected and then, when a command has
-completed it is shown in the internal viewer. In some cases (e.g. debugging)
-output is redirected to a file and an external viewer is started to view it.
+Output of commands invoked in the command box or Far Manager command line with
+prefixes `vps:` is written to a temporary file and then shown in the internal
+viewer. The viewer is modal in the modal context and modeless otherwise.
 
-### Other code output
+---
+### Editor output
 
-Output of other code is discarded (e.g. commands from your menu tools or event
-handlers have no shown output). Failure messages are shown in error message
-boxes, minor errors and warnings are ignored.
+Output of commands invoked in editor consoles is written to the current editor.
+Note that local and remote consoles invoke commands asynchronously and output
+does not block the UI. It is possible to switch to another window and return
+later, the output produced in the background will be there.
+
+---
+### Discarded output
+
+Output of other code is discarded. For example, commands from the menu or event
+handlers have no shown output. Failure messages are shown in error message
+boxes. Non terminating errors and warnings are ignored.
 
 
 *********************************************************************

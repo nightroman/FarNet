@@ -1,6 +1,10 @@
 
-HtmlToFarHelp Release Notes
-===========================
+# HtmlToFarHelp Release Notes
+
+## v1.0.2
+
+Added missing HLF option `PluginContents`. Without it help files are not shown
+in the plugin help list (`[F1] [ShiftF2]`).
 
 ## v1.0.1
 

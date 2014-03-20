@@ -1,6 +1,17 @@
 The NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 HOW TO GET AND INSTALL: http://forum.farmanager.com/viewtopic.php?f=11&t=2258
 
+= 5.0.69 =
+
+Use FarNet 5.0.46
+
+Stepper: "Ask" mode shows step prompts at the top right corner of the window.
+
+Removed menu "F11 \ PowerShellFar \ Modules+" as not useful anymore. In PS
+v3.0+ modules does not have to be explicitly loaded for using commands. For
+analysis of modules this command is more useful than the old menu:
+ps: Get-Module -ListAvailable | Out-FarPanel
+
 = 5.0.68 =
 
 Use FarNet 5.0.45

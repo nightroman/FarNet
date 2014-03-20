@@ -1,4 +1,8 @@
 
+<!--HLF:
+    PluginContents = FarNet;
+-->
+
 # FarNet, the Far Manager plugin {#Contents}
 
 ### General
@@ -60,7 +64,7 @@ modules. You may have to download and install one of the packages:
 
 Use the script <https://farnet.googlecode.com/svn/trunk/PowerShellFar/Bench/Update-FarPackage.ps1>
 
-Close all Far instances and invoke this command in PowerShell:
+Close Far Manager and invoke this command in PowerShell console:
 
     Update-FarPackage.ps1 FarNet -FarHome <path> -Platform <x64|x86>
 
@@ -71,13 +75,13 @@ The package directory *tools* contains files to be installed. Files from
 preserving their directory structure.
 
 *FarHome*
- : The FarNet framework files and the common plugin files.
+ : FarNet framework and common plugin files.
 
 *FarHome.x64*
- : Additional x64 plugin files for x64 installation.
+ : Additional x64 plugin files.
 
 *FarHome.x86*
- : Additional x86 plugin files for x86 installation.
+ : Additional x86 plugin files.
 
 Other files and samples:
 

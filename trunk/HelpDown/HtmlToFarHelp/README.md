@@ -29,22 +29,21 @@ Examples
 ---
 ### Description
 
-HtmlToFarHelp.exe is normally supposed to be used together with
-[MarkdownToHtml][1].
+*HtmlToFarHelp.exe* is supposed to be used together with [MarkdownToHtml][1].
 
-It is possible to compose in HTML and then convert to HLF. But this is not
-recommended due to the limited subset of supported HTML and not documented
-conversion rules.
+The recommended scenario is to compose manuals in markdown files, convert them
+to HTML by *MarkdownToHtml* and then convert to HLF. Markdown is simpler than
+HLF and HTML, easier to write, read, and maintain.
 
-The covered scenario is to compose manuals in markdown files, convert them to
-HTML, and then to HLF. Markdown is simpler than HLF and HTML, easier to write,
-read, and maintain.
+It is fine to compose in HTML and convert to HLF. But this is not recommended
+due to the limited subset of supported HTML and not documented or stable rules.
 
 Conversion options are specified in a source as HTML comments in the original
 markdown or HTML. Here is the example with available keys and default values:
 
     <!--HLF:
         Language = English,English;
+        PluginContents = <none>;
         Margin = 1;
         IndentCode = 4;
         IndentList = 2;
@@ -55,8 +54,9 @@ markdown or HTML. Here is the example with available keys and default values:
         PlainHeading = false;
     -->
 
-Global options are set before the first topic. Then they can be changed
-anywhere. Use an empty set in order to reset the current options to global:
+Global options are set before the first topic, `Language` and `PluginContents`
+should be defined there. Then options can be changed anywhere. Use an empty set
+in order to reset the current options to global:
 
     <!--HLF:-->
 

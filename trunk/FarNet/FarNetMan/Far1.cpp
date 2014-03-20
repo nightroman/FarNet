@@ -51,9 +51,9 @@ IModuleAction^ Far1::GetModuleAction(Guid id)
 	return action;
 }
 
-int Far1::Message(String^ body, String^ header, MessageOptions options, array<String^>^ buttons, String^ helpTopic)
+int Far1::Message(MessageArgs^ args)
 {
-	return Message::Show(body, header, options, buttons, helpTopic);
+	return Message::Show(args);
 }
 
 System::Version^ Far1::FarVersion::get()

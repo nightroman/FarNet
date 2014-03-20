@@ -56,7 +56,11 @@ static Regex^ CreateRegex(String^ pattern, PatternOptions options, bool* ok)
 			if (ok)
 			{
 				*ok = false;
-				Message::Show(e->Message, "Filter expression", MessageOptions::Ok, nullptr, nullptr);
+				MessageArgs args;
+				args.Text = e->Message;
+				args.Caption = "Filter expression";
+				args.Options = MessageOptions::Ok;
+				Message::Show(%args);
 			}
 			return nullptr;
 		}

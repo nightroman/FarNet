@@ -6,6 +6,7 @@ anywhere. Use an empty set in order to reset the current options to global.
 
 <!--HLF:
     Language = English,English;
+    PluginContents = Demo help;
     Margin = 1;
     IndentCode = 4;
     IndentList = 2;

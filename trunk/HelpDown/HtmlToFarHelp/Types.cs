@@ -46,5 +46,6 @@ namespace HtmlToFarHelp
 		public int IndentPara;
 		public int IndentQuote;
 		public string Language;
+		public string PluginContents;
 	}
 }
