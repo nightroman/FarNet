@@ -41,7 +41,7 @@
 
 [Contents](#Contents)
 
-### PowerShellFar 5.0.68
+### PowerShellFar 5.0.69
 
 PowerShellFar is the FarNet module for Far Manager, the file manager.
 It is the Windows PowerShell host in the genuine console environment.
@@ -65,8 +65,8 @@ To install and update PowerShellFar and FarNet use *Update-FarPackage.ps1*.
 
 ### Requirements
 
-- Far Manager 3.0.3835
-- Plugin FarNet 5.0.45
+- Far Manager 3.0.3837
+- Plugin FarNet 5.0.46
 - Windows PowerShell 2.0, 3.0
 
 ---

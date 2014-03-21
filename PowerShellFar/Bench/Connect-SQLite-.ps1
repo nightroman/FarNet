@@ -6,7 +6,7 @@
 
 .Description
 	SQLite prerequisites:
-	1. Get the NuGet package System.Data.SQLite
+	1. Get the NuGet package System.Data.SQLite.Core
 	2. Copy its three net20 or net40 DLLs as
 	-- <path>\System.Data.SQLite.dll
 	-- <path>\x64\SQLite.Interop.dll
