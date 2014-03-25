@@ -14,9 +14,6 @@
 	used on automatic updates and removals. Remove them if this is not needed
 	but do not modify or rename.
 
-	Use the switch Verbose in order to get verbose messages. Note that verbose
-	messages are enabled internally on automatic updates and removals.
-
 	If an update or removal fails due to temporary problems like locked files
 	then repeat the same operation after resolving issues as soon as possible.
 
@@ -47,9 +44,9 @@
 		The destination of unpacked directories. Default: the current location.
 		The unpacked directory names are "<Id>.<Version>".
 .Parameter FarHome
-		The Far Manager directory to be updated. On automatic updates/removals
-		the current location is used by default. On other updates the script
-		only downloads and unpacks if FarHome is omitted.
+		The Far Manager directory to be updated. The current location is used
+		by default on automatic updates/removals or if Far.exe is there. If it
+		is omitted in other cases the script only downloads and unpacks.
 .Parameter Platform
 		Platform: x64 or x86|Win32. The default is extracted from Far.exe. It
 		is needed only for packages with FarHome.x64|x86 folders if Far.exe is
@@ -72,11 +69,11 @@
 	This command just requests and returns the latest FarNet version string.
 
 .Example
-	> Update-FarPackage FarNet -Verbose
+	> Update-FarPackage FarNet
 
 	This command downloads the latest FarNet and unpacks it to the current
-	directory as FarNet.<Version>. It does not install any files because
-	FarHome is omitted. Verbose messages are enabled.
+	directory as FarNet.<Version>. If it is the Far Manager directory then
+	installation is also performed.
 
 .Example
 	> Update-FarPackage FarNet -FarHome <path> [-Platform <x64|x86>]
@@ -140,7 +137,7 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
 ### resolve FarHome
-$isFarHome = $FarHome
+$isFarHome = $FarHome -or (Test-Path Far.exe)
 $FarHome = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($FarHome)
 
 # removes empty directories
@@ -148,7 +145,7 @@ function RemoveDirectory($item) {
 	if (($dir = [System.IO.Path]::GetDirectoryName($item)) -eq $FarHome -or [System.IO.Directory]::GetFileSystemEntries($dir)) {
 		return
 	}
-	Write-Verbose "Removing empty directory '$dir'..."
+	Write-Host "Removing empty directory '$dir'..."
 	try {
 		[System.IO.Directory]::Delete($dir)
 		RemoveDirectory $dir
@@ -183,7 +180,7 @@ if ($PSCmdlet.ParameterSetName -eq 'Path') {
 else {
 	### update all installed
 	if (!$Id) {
-		Write-Verbose -Verbose "Automatic update of installed packages."
+		Write-Host "Automatic update of installed packages."
 		foreach($info in Get-Item "$FarHome\Update.*.info") {
 			if ($info.Name -notmatch '^Update\.(.+)\.info$') {continue}
 			$Id = $Matches[1]
@@ -192,7 +189,7 @@ else {
 				Write-Warning "Cannot update '$Id' automatically."
 				continue
 			}
-			& $MyInvocation.ScriptName -Id:$Id -Version:"?$Version" -Source:$Source -Verbose `
+			& $MyInvocation.ScriptName -Id:$Id -Version:"?$Version" -Source:$Source `
 			-FarHome:$FarHome -Platform:$Platform -CacheDirectory:$CacheDirectory -OutputDirectory:$OutputDirectory
 		}
 		return
@@ -204,7 +201,7 @@ else {
 
 	### get latest version
 	if (!$Version -or $Version[0] -eq '?') {
-		Write-Verbose "Getting the latest version of '$Id'..."
+		Write-Host "Getting the latest version of '$Id'..."
 		$xml = [xml]$web.DownloadString("$Source/Packages()?`$filter=Id eq '$Id' and IsLatestVersion eq true")
 		$latest = try {
 			foreach($_ in $xml.feed.entry) {
@@ -215,7 +212,7 @@ else {
 		} catch {}
 
 		if (!$latest) { throw "Cannot get the latest version of '$Id'. Check the package ID." }
-		Write-Verbose "The latest version is '$latest'."
+		Write-Host "The latest version is '$latest'."
 
 		### return or skip latest
 		if ($Version -match '^\?(.*)') {
@@ -223,7 +220,7 @@ else {
 				return $latest
 			}
 			if ($Matches[1] -eq $latest) {
-				Write-Verbose "The latest version is installed."
+				Write-Host "The latest version is installed."
 				return
 			}
 		}
@@ -237,11 +234,11 @@ else {
 	$Path = "$CacheDirectory\$Id.$Version.nupkg"
 	if ([System.IO.File]::Exists($Path)) {
 		# use nupkg
-		Write-Verbose "Found package '$Path'."
+		Write-Host "Found package '$Path'."
 	}
 	else {
 		### download nupkg
-		Write-Verbose "Downloading package '$Path'..."
+		Write-Host "Downloading package '$Path'..." -ForegroundColor Cyan
 		$null = [System.IO.Directory]::CreateDirectory($CacheDirectory)
 		$web.DownloadFile("$Source/package/$Id/$Version", $Path)
 	}
@@ -259,7 +256,7 @@ try {
 	# output directory
 	$output = Join-Path $PSCmdlet.GetUnresolvedProviderPathFromPSPath($OutputDirectory) "$Id.$Version"
 	Remove-Item -LiteralPath $output -Force -Recurse -ErrorAction 0
-	Write-Verbose "Unpacking to '$output'..."
+	Write-Host "Unpacking to '$output'..." -ForegroundColor Cyan
 
 	$CLR3 = $PSVersionTable.CLRVersion.Major -le 3
 	foreach($part in $package.GetParts()) {
@@ -293,7 +290,7 @@ if (!$isFarHome) {return}
 ### re-Source, remove installed
 $info = "$FarHome\Update.$Id.info"
 if ([System.IO.File]::Exists($info)) {
-	Write-Verbose "Removing installed '$Id'..."
+	Write-Host "Removing installed '$Id'..."
 	$Source, $null = [System.IO.File]::ReadAllLines($info)
 	& $MyInvocation.ScriptName -Remove -Id:$Id -FarHome:$FarHome
 }
@@ -318,7 +315,7 @@ function GetPlatform {
 }
 
 ### update from output
-Write-Verbose "Updating '$Id' in '$FarHome'..."
+Write-Host "Updating '$Id' in '$FarHome'..." -ForegroundColor Cyan
 [System.IO.File]::WriteAllText($info, "$Source`r`n$Version`r`n")
 try {
 	# FarHome.x64
