@@ -3,6 +3,10 @@ HOW TO GET AND INSTALL: http://forum.farmanager.com/viewtopic.php?f=11&t=2258
 
 = 5.0.70 =
 
+Update-FarPackage.ps1:
+- Omitted FarHome is is resolved to the current location if Far.exe is there.
+- Verbose messages are replaced with Write-Host and always written.
+
 Invoke-Editor-.ps1:
 - amended current task recognition in *.{build|test}.ps1
 - removed *-.ps1, redundant because there is [F5]
