@@ -189,7 +189,7 @@ else {
 				Write-Warning "Cannot update '$Id' automatically."
 				continue
 			}
-			& $MyInvocation.ScriptName -Id:$Id -Version:"?$Version" -Source:$Source `
+			Update-FarPackage -Id:$Id -Version:"?$Version" -Source:$Source `
 			-FarHome:$FarHome -Platform:$Platform -CacheDirectory:$CacheDirectory -OutputDirectory:$OutputDirectory
 		}
 		return
@@ -292,7 +292,7 @@ $info = "$FarHome\Update.$Id.info"
 if ([System.IO.File]::Exists($info)) {
 	Write-Host "Removing installed '$Id'..."
 	$Source, $null = [System.IO.File]::ReadAllLines($info)
-	& $MyInvocation.ScriptName -Remove -Id:$Id -FarHome:$FarHome
+	Update-FarPackage -Remove -Id:$Id -FarHome:$FarHome
 }
 
 # updates FarHome
