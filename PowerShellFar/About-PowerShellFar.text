@@ -65,8 +65,8 @@ To install and update PowerShellFar and FarNet use *Update-FarPackage.ps1*.
 
 ### Requirements
 
-- Far Manager 3.0.3837
-- Plugin FarNet 5.0.46
+- Far Manager 3.0.3842
+- Plugin FarNet 5.0.47
 - Windows PowerShell 2.0, 3.0
 
 ---

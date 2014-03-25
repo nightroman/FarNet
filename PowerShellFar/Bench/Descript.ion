@@ -6,13 +6,13 @@ Connect-SQLite-.ps1 Connects SQLite database and optionally shows tables in a pa
 Edit-FarDescription-.ps1 Edits multiline Far descriptions in the editor.
 Generate-Dialog-.ps1 Generates template code for the current dialog.
 Get-TextLink-.ps1 Gets a text link with the current editor line or selection.
-Go-Head-.ps1 Goes to the head of panel files or directories.
+Go-Head-.ps1 Goes to the first panel file.
 Go-Selection-.ps1 Goes to the current selection start/end position
 Go-To-.ps1 Goes to the specified file system item or a provider container
 Import-Panel-.ps1 Imports objects from files and shows them in a panel.
 Indent-Selection-.ps1 Indents selected lines in the editor.
 Invoke-Editor-.ps1 Invokes a file from the current editor.
-Invoke-Shortcut-.ps1 Opens a shortcut file (.lnk) in a few ways.
+Invoke-Shortcut-.ps1 Opens a shortcut file (.lnk).
 Job-RemoveItem-.ps1 Job: remove the specified provider item(s).
 Menu-Favorites-.ps1 Shows Windows Favorites as a menu and invokes items.
 Menu-More-.ps1 Demo menu script, e.g. called on "More...", see Profile-.ps1.
@@ -30,7 +30,7 @@ Profile-.ps1 Main startup code (example).
 Profile-Editor-.ps1 Editor startup code (example).
 Profile-Editor.ps1 Editor profile (example).
 Profile.ps1 Main profile (example).
-Reformat-Selection-.ps1 Reformats selected lines or the current line in the editor
+Reformat-Selection-.ps1 Reformats selected lines or the current line in the editor.
 Reindent-Selection-.ps1 Reindents selected lines or the current line.
 Remove-EmptyString-.ps1 Removes empty strings from a list.
 Remove-EndSpace-.ps1 Removes end spaces in object Text property
@@ -49,5 +49,5 @@ Start-MSBuild-.ps1 Starts MSBuild with a helper input dialog for the project fil
 TabExpansionProfile.ps1 TabExpansion2 profile.
 Update-FarManager.ps1 Updates Far Manager and standard plugins.
 Update-FarNet.ps1 Updates FarNet products selectively from the project site.
-Update-FarPackage.ps1 Updates Far Manager NuGet packages.
+Update-FarPackage.ps1 Gets, unpacks, updates, or removes Far Manager NuGet packages.
 Watch-Output-.ps1 Watches commands output repeatedly in the editor.

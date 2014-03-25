@@ -1,6 +1,14 @@
 The NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 HOW TO GET AND INSTALL: http://forum.farmanager.com/viewtopic.php?f=11&t=2258
 
+= 5.0.70 =
+
+Invoke-Editor-.ps1:
+- amended current task recognition in *.{build|test}.ps1
+- removed *-.ps1, redundant because there is [F5]
+
+Invoke-Shortcut-.ps1: minor tweaks.
+
 = 5.0.69 =
 
 Use FarNet 5.0.46

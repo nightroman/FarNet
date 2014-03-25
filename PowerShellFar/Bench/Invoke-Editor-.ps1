@@ -33,40 +33,37 @@
 $editor = $Psf.Editor()
 $path = $editor.FileName
 
-### Invoke by PowerShellFar in the current session
-if ($path -like '*-.ps1') {
-	$ErrorActionPreference = 'Inquire'
-	$Psf.InvokeScriptFromEditor()
-	return
-}
-
 # Commit
 $editor.Save()
 
 # Extension
 $ext = [IO.Path]::GetExtension($path)
 
-### PowerShell in external window and return
+### PowerShell.exe
 if ($ext -eq '.ps1') {
 	if ($path -match '\.(?:build|test)\.ps1$') {
 		$task = '.'
 		for($e = $editor.Caret.Y; $e -ge 0; --$e) {
-			if ($editor[$e].Text -match '^\s*task\s+(\S+)') {
-				$task = $matches[1]
+			if (($text = $editor[$e].Text) -match '^\s*task\s+') {
+				$null, $t2, $null = [System.Management.Automation.PSParser]::Tokenize($text, [ref]$null)
+				Assert-Far ($t2 -and ($t2.Type -eq 'CommandArgument' -or $t2.Type -eq 'String' -or $t2.Type -eq 'Number')) `
+				"Cannot get task name at line '$text'." Invoke-Editor-.ps1
+				$task = $t2.Content
 				break
 			}
 		}
-		[Diagnostics.Process]::Start('powershell.exe', "-NoExit Invoke-Build $task '$($path.Replace("'", "''"))'")
+		$arg = "-NoExit Invoke-Build '$($task.Replace("'", "''").Replace('"', '\"'))' '$($path.Replace("'", "''"))'"
 	}
 	else {
-		[Diagnostics.Process]::Start('powershell.exe', "-NoExit . '$($path.Replace("'", "''"))'")
+		$arg = "-NoExit . '$($path.Replace("'", "''"))'"
 	}
+	Start-Process PowerShell.exe $arg
 	return
 }
 
 ### MSBuild
 if ($ext -like '.*proj') {
-	Start-MSBuild- $path
+	Start-MSBuild-.ps1 $path
 	return
 }
 

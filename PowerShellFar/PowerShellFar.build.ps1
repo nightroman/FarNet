@@ -87,9 +87,11 @@ It is the Windows PowerShell host in the genuine console environment.
 
 ---
 
-To install/update Far Manager packages use this PowerShell script:
+To install and update Far Manager packages, use this PowerShell script:
 
 https://farnet.googlecode.com/svn/trunk/PowerShellFar/Bench/Update-FarPackage.ps1
+
+---
 '@
 	# nuspec
 	Set-Content z\Package.nuspec @"

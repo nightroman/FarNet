@@ -95,9 +95,11 @@ FarNet provides the .NET API for Far Manager and the runtime infrastructure for
 
 ---
 
-To install/update Far Manager packages use this PowerShell script:
+To install and update Far Manager packages, use this PowerShell script:
 
 https://farnet.googlecode.com/svn/trunk/PowerShellFar/Bench/Update-FarPackage.ps1
+
+---
 '@
 	# nuspec
 	Set-Content z\Package.nuspec @"

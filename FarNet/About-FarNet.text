@@ -27,7 +27,7 @@
 
 [Contents](#Contents)
 
-### FarNet 5.0.46
+### FarNet 5.0.47
 
 FarNet provides the .NET API for Far Manager and the runtime infrastructure for
 .NET modules. The API is exposed in comfortable object oriented way and most of
@@ -46,7 +46,7 @@ tiny pieces of boilerplate framework code.
 
 ### Requirements
 
-- Far Manager 3.0.3837
+- Far Manager 3.0.3842
 - .NET Framework 3.5 or 4.0
 - Microsoft Visual C++ 2008 SP1 Redistributable Package
 
