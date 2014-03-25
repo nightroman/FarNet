@@ -682,7 +682,9 @@ void FarBaseList::InitFarListItem(FarListItem& i2, FarItem^ i1)
 
 void FarBaseList::InitFarListItemShort(FarListItem& i2, FarItem^ i1)
 {
-	i2.Flags = i2.Reserved[0] = i2.Reserved[1] = i2.Reserved[2] = 0;
+	//_140324_121545 used to zero manually, Reserved, too
+	memset(&i2, 0, sizeof(FarListItem));
+
 	if (i1->Checked)
 		i2.Flags |= LIF_CHECKED;
 	if (i1->Disabled)

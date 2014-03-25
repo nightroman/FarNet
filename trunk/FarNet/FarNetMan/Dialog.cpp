@@ -540,6 +540,16 @@ INT_PTR FarDialog::DialogProc(intptr_t msg, intptr_t param1, void* param2)
 				}
 				return 1;
 			}
+		case DN_DRAWDLGITEMDONE:
+			{
+				FarControl^ fc = _items[(int)param1];
+				if (fc->_Drawn)
+				{
+					DrawnEventArgs ea(fc);
+					fc->_Drawn(this, %ea);
+				}
+				return 1;
+			}
 		case DN_CTLCOLORDLGITEM:
 			{
 				FarControl^ fc = _items[(int)param1];
@@ -735,6 +745,27 @@ INT_PTR FarDialog::DialogProc(intptr_t msg, intptr_t param1, void* param2)
 					return true;
 				}
 				break;
+			}
+		case DN_DROPDOWNOPENED:
+			{
+				FarControl^ fc = _items[(int)param1];
+				if (param2)
+				{
+					if (fc->_DropDownOpening)
+					{
+						DropDownOpeningEventArgs ea(fc);
+						fc->_DropDownOpening(this, %ea);
+					}
+				}
+				else
+				{
+					if (fc->_DropDownClosed)
+					{
+						DropDownClosedEventArgs ea(fc);
+						fc->_DropDownClosed(this, %ea);
+					}
+				}
+				return true;
 			}
 		}
 	}

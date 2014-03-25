@@ -74,6 +74,17 @@ namespace FarNet.Forms
 	}
 
 	/// <summary>
+	/// <see cref="IControl.Drawn"/> event arguments.
+	/// </summary>
+	public sealed class DrawnEventArgs : AnyEventArgs
+	{
+		/// <param name="control">Control that is drawn.</param>
+		public DrawnEventArgs(IControl control)
+			: base(control)
+		{ }
+	}
+
+	/// <summary>
 	/// <see cref="IControl.Coloring"/> event arguments.
 	/// </summary>
 	/// <remarks>
@@ -272,6 +283,28 @@ namespace FarNet.Forms
 		/// The size.
 		/// </summary>
 		public Point Size { get; set; }
+	}
+
+	/// <summary>
+	/// <see cref="IDropDown.DropDownOpening"/> event arguments.
+	/// </summary>
+	public sealed class DropDownOpeningEventArgs : AnyEventArgs
+	{
+		/// <param name="control">Control which drop down is opening.</param>
+		public DropDownOpeningEventArgs(IControl control)
+			: base(control)
+		{ }
+	}
+
+	/// <summary>
+	/// <see cref="IDropDown.DropDownClosed"/> event arguments.
+	/// </summary>
+	public sealed class DropDownClosedEventArgs : AnyEventArgs
+	{
+		/// <param name="control">Control which drop down is closed.</param>
+		public DropDownClosedEventArgs(IControl control)
+			: base(control)
+		{ }
 	}
 
 }

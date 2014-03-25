@@ -23,6 +23,10 @@ namespace FarNet.Forms
 		/// </remarks>
 		event EventHandler<DrawingEventArgs> Drawing;
 		/// <summary>
+		/// Called after drawing the control.
+		/// </summary>
+		event EventHandler<DrawnEventArgs> Drawn;
+		/// <summary>
 		/// Called to color the control.
 		/// </summary>
 		/// <remarks>
@@ -79,6 +83,21 @@ namespace FarNet.Forms
 		/// It is settable in FarNet dialogs.
 		/// </summary>
 		string Name { get; set; }
+	}
+
+	/// <summary>
+	/// Common members of controls with a drop down box, i.e. edit boxes and combo boxes.
+	/// </summary>
+	public interface IDropDown
+	{
+		/// <summary>
+		/// Called when a drop down list is opening.
+		/// </summary>
+		event EventHandler<DropDownOpeningEventArgs> DropDownOpening;
+		/// <summary>
+		/// Called when a drop down list is closed.
+		/// </summary>
+		event EventHandler<DropDownClosedEventArgs> DropDownClosed;
 	}
 
 	/// <summary>
@@ -196,7 +215,7 @@ namespace FarNet.Forms
 	/// It is created and added to a dialog by:
 	/// <see cref="IDialog.AddEdit"/>, <see cref="IDialog.AddEditFixed"/>, <see cref="IDialog.AddEditPassword"/>.
 	/// </summary>
-	public interface IEdit : IControl, IEditable
+	public interface IEdit : IControl, IEditable, IDropDown
 	{
 		/// <summary>
 		/// Gets true if it is the fixed size edit control.
@@ -397,10 +416,10 @@ namespace FarNet.Forms
 	/// Combo box control.
 	/// It is created and added to a dialog by <see cref="IDialog.AddComboBox"/>.
 	/// </summary>
-	public interface IComboBox : IBaseList, IEditable
+	public interface IComboBox : IBaseList, IEditable, IDropDown
 	{
 		/// <summary>
-		/// Tells to show non-editable drop-down list instead of a common combo box.
+		/// Tells to be a non editable drop down list.
 		/// </summary>
 		bool DropDownList { get; set; }
 	}

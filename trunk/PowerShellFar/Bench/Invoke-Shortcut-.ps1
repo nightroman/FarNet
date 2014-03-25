@@ -1,7 +1,7 @@
 
 <#
 .Synopsis
-	Opens a shortcut file (.lnk) in a few ways.
+	Opens a shortcut file (.lnk).
 	Author: Roman Kuzmin
 
 .Description
@@ -14,44 +14,49 @@
 	If you change data it asks you to save changes on exit or you can use
 	[CtrlS] to save data at any moment.
 
-	How to open .lnk files, e.g. by [Enter], [CtrlPgDn], [F3], [F4]:
-	Open menu Commands \ File Associations, add an association and set:
-	-- Mask: *.lnk
-	-- Command for [Enter]: ps: Invoke-Shortcut- #
-	-- Command for [CtrlPgDn]: ps: Invoke-Shortcut- -Panel #
-	-- Command for [F3]: ps: Invoke-Shortcut- -View #
-	-- Command for [F4]: ps: Invoke-Shortcut- -Edit #
+	HOW TO OPEN .LNK FILES FROM PANELS
 
-	[Shift-Enter] still opens shortcut files from Far in standard Windows way.
+	[F9] \ Commands \ File associations
+
+		Mask: *.lnk
+		[Enter]
+			ps: Invoke-Shortcut-.ps1 #
+		[CtrlPgDn]
+			ps: Invoke-Shortcut-.ps1 -Panel #
+		[F3]
+			ps: Invoke-Shortcut-.ps1 -View #
+		[F4]
+			ps: Invoke-Shortcut-.ps1 -Edit #
+
+	[Shift-Enter] still opens shortcuts as Windows.
+
+.Parameter Path
+		Path of the .lnk file to be opened. Default: the current panel item.
+.Parameter Panel
+		Tells to show shortcut properties in a panel.
+.Parameter Edit
+		Tells to edit the target file in the editor.
+.Parameter View
+		Tells to view the target file in the viewer.
 #>
 
-[CmdletBinding()]
-param
-(
-	# Path of the .lnk file to be opened. Default: the current panel item.
-	$Path = (Get-FarPath)
-	,
-	[switch]
-	# To show shortcut properties in a panel.
-	$Panel
-	,
-	[switch]
-	# To edit the target file in the Far editor.
-	$Edit
-	,
-	[switch]
-	# To view the target file in the Far viewer.
-	$View
+param(
+	[Parameter(Mandatory=1)]
+	[string]$Path = (Get-FarPath),
+	[switch]$Panel,
+	[switch]$Edit,
+	[switch]$View
 )
 
-Assert-Far ([IO.File]::Exists($Path)) "File does not exist: '$Path'" "Invoke-Shortcut-.ps1"
+$Path = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($Path)
+Assert-Far ([System.IO.File]::Exists($Path)) "Missing file '$Path'." Invoke-Shortcut-.ps1
 
 # WMI does not work well with names with spaces, use WScript.Shell.
 # Besides, WScript.Shell also works with .url, just in case
-$WshShell = New-Object -ComObject WScript.Shell
-$link = $WshShell.CreateShortcut([IO.Path]::GetFullPath($Path))
+$shell = New-Object -ComObject WScript.Shell
+$link = $shell.CreateShortcut([IO.Path]::GetFullPath($Path))
 $target = $link.TargetPath
-Assert-Far ([bool]$target) "Cannot get a target path from '$Path'.`nIs it a shortcut file?" "Invoke-Shortcut-.ps1"
+Assert-Far ([bool]$target) "Cannot get a target path from '$Path'.`nIs it a shortcut file?" Invoke-Shortcut-.ps1
 
 ### Panel properties
 if ($Panel) {
@@ -67,14 +72,14 @@ if ($Panel) {
 }
 
 ### Go to directory
-if ([IO.Directory]::Exists($target)) {
+if ([System.IO.Directory]::Exists($target)) {
 	$Far.Panel.CurrentDirectory = $target
 	$Far.Panel.Redraw()
 }
 
 ### Test a file
-elseif (![IO.File]::Exists($target)) {
-	Show-FarMessage "Target file does not exist: '$target'"
+elseif (![System.IO.File]::Exists($target)) {
+	Show-FarMessage "Missing target '$target'."
 }
 
 ### Edit a file
@@ -87,7 +92,7 @@ elseif ($View) {
 	Open-FarViewer $target
 }
 
-### Goto a file
+### Go to
 else {
 	$Far.Panel.GoToPath($target)
 }

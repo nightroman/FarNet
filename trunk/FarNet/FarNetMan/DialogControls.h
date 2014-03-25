@@ -23,6 +23,9 @@ public:
 	virtual property Object^ Data { Object^ get(); void set(Object^ value); }
 public: DEF_EVENT_ARGS(Coloring, _Coloring, ColoringEventArgs);
 public: DEF_EVENT_ARGS(Drawing, _Drawing, DrawingEventArgs);
+public: DEF_EVENT_ARGS(Drawn, _Drawn, DrawnEventArgs);
+public: DEF_EVENT_ARGS(DropDownClosed, _DropDownClosed, DropDownClosedEventArgs);
+public: DEF_EVENT_ARGS(DropDownOpening, _DropDownOpening, DropDownOpeningEventArgs);
 public: DEF_EVENT_ARGS(GotFocus, _GotFocus, AnyEventArgs);
 public: DEF_EVENT_ARGS(KeyPressed, _KeyPressed, KeyPressedEventArgs);
 public: DEF_EVENT_ARGS(LosingFocus, _LosingFocus, LosingFocusEventArgs);
