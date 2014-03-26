@@ -13,23 +13,32 @@ Features
  * Reduced noise (e.g. excluded temporary files)
  * For other features see history lists help (F1)
 
-If the log file is missing then it is generated from the existing Far history.
-This history is not yet effective for training. The smart history list will be
-the same as the plain list for some time even after training.
+If the log file is missing then it is generated from the existing Far
+history. This history is not yet effective for training. The smart
+history list will be the same as the plain list for some time even after
+training.
 
-The smart history list shows files in heuristically improved order. Recently
-used files are sorted by last times, as usual. Files not used for a while are
-sorted by ranks. Rank is based on last time, frequency, activity, and factors
-calculated by training.
+The smart history list shows files in heuristically improved order.
+Recently used files are sorted by last times, as usual. Files not used
+for a while are sorted by ranks. Rank is based on last time, frequency,
+activity, and factors calculated by training.
 
-How training works. For every file record it builds the plain history list and
-several ranked lists with different factors. The list with the file nearest to
-the top wins. Finally the factors that maximize the total difference between
-the plain and ranked lists for all records are taken.
+How training works. For every file record it builds the plain history
+list and several ranked lists with different factors. The list with the
+file nearest to the top wins. Finally the factors that maximize the
+total difference between the plain and ranked lists for all records are
+taken.
 
-Automatic fast training starts after updating the history file from the menu
-and after opening not recent files from the smart history. It works in the
-background and it is very fast (~50 times faster than full training).
+Automatic fast training starts after updating the history file from the
+menu and after opening not recent files from the smart history. It works
+in the background and it is very fast (~50 times faster than full
+training).
+
+----
+
+Distributed as the NuGet package [https://www.nuget.org/packages/FarNet.Vessel FarNet.Vessel]
+ * [https://farnet.googlecode.com/svn/trunk/Install-FarNet.en.txt HOW TO DOWNLOAD AND INSTALL]
+ * [https://farnet.googlecode.com/svn/trunk/Install-FarNet.ru.txt КАК ЗАГРУЗИТЬ И УСТАНОВИТЬ]
 
 ----
 [http://forum.farmanager.com/viewtopic.php?f=5&t=5975 Обсуждение на форуме]
