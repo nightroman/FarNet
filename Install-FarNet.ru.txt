@@ -28,7 +28,7 @@ Microsoft Visual C++ 2008 SP1 Redistributable Package
 Это рекомендуемый и самый простой способ загрузить и установить FarNet.
 Он избавит от выполнения нескольких шагов вручную и возможных ошибок.
 
-Закройте Far Manager и запустите консоль PowerShell
+Закройте Far Manager и запустите консоль PowerShell (as Administrator)
 
 	PowerShell.exe
 
@@ -58,7 +58,7 @@ Microsoft Visual C++ 2008 SP1 Redistributable Package
 FarNet модули, распространяемые через NuGet, устанавливаются похожим образом.
 Например, для модуля "FarNet.PowerShellFar" нужно выполнить:
 
-Закройте Far Manager и запустите консоль PowerShell
+Закройте Far Manager и запустите консоль PowerShell (as Administrator)
 
 	PowerShell.exe
 
@@ -70,7 +70,11 @@ FarNet модули, распространяемые через NuGet, уста
 
 	iex (New-Object Net.WebClient).DownloadString('https://farnet.googlecode.com/svn/trunk/web.ps1')
 
-И затем команду установки
+Если FarNet еще не установлен, то выполните
+
+	Update-FarPackage FarNet
+
+И затем выполните команду установки модуля
 
 	Update-FarPackage FarNet.PowerShellFar
 
@@ -84,7 +88,7 @@ Update-FarPackage заметить "FarNet.PowerShellFar" на имя нужно
 Замечание: FarNet и модули, установленные вручную, не подлежат обновлению таким
 способом. Обновляется то, что и установлено было с помощью Update-FarPackage.
 
-Закройте Far Manager и запустите консоль PowerShell
+Закройте Far Manager и запустите консоль PowerShell (as Administrator)
 
 	PowerShell.exe
 
