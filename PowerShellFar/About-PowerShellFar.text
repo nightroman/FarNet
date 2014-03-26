@@ -41,7 +41,7 @@
 
 [Contents](#Contents)
 
-### PowerShellFar 5.0.69
+### PowerShellFar 5.0.70
 
 PowerShellFar is the FarNet module for Far Manager, the file manager.
 It is the Windows PowerShell host in the genuine console environment.
@@ -63,11 +63,19 @@ To install and update PowerShellFar and FarNet use *Update-FarPackage.ps1*.
 
 [Contents](#Contents)
 
-### Requirements
+**Requirements**
 
 - Far Manager 3.0.3842
-- Plugin FarNet 5.0.47
+- Plugin FarNet 5.0.48
 - Windows PowerShell 2.0, 3.0
+
+**Instructions**
+
+In order to install FarNet and its modules, follow these steps:
+
+In English: <https://farnet.googlecode.com/svn/trunk/Install-FarNet.en.txt>
+
+In Russian: <https://farnet.googlecode.com/svn/trunk/Install-FarNet.ru.txt>
 
 ---
 ### Set PowerShell execution policy
@@ -85,23 +93,9 @@ Windows start menu in order to open x86 and x64 consoles and set the policy.
 If you are not administrator use the parameter `-Scope CurrentUser`.
 
 ---
-### Install the module
+### Documentation
 
-**Scripted**
-
-Use the script <https://farnet.googlecode.com/svn/trunk/PowerShellFar/Bench/Update-FarPackage.ps1>
-
-Close Far Manager and invoke this command in PowerShell console:
-
-    Update-FarPackage.ps1 FarNet.PowerShellFar -FarHome <path>
-
-**Manually**
-
-The package directory *tools* contains files to be installed. Files from the
-*FarHome* directory should be copied to the Far Manager directory preserving
-their directory structure.
-
-Other files:
+These files are not installed but included to the package:
 
 - *About-PowerShellFar.htm* - this documentation
 - *History.txt* - the change log

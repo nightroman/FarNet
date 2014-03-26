@@ -1,6 +1,10 @@
 The NuGet package: https://www.nuget.org/packages/FarNet
 HOW TO GET AND INSTALL: http://forum.farmanager.com/viewtopic.php?f=11&t=2256
 
+= 5.0.48 =
+
+Improved documentation and installation steps.
+
 = 5.0.47 =
 
 Use Far 3.0.3842

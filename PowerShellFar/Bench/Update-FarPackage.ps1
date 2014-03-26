@@ -131,6 +131,7 @@ param(
 	[switch]
 	$Remove
 )
+Set-Alias self $(if (($_ = $MyInvocation.MyCommand).CommandType -eq 'ExternalScript') {$_.Path} else {$_.Name})
 try {&{ # new scope and errors
 
 $ErrorActionPreference = 'Stop'
@@ -180,7 +181,7 @@ if ($PSCmdlet.ParameterSetName -eq 'Path') {
 else {
 	### update all installed
 	if (!$Id) {
-		Write-Host "Automatic update of installed packages."
+		Write-Host "Automatic update of installed packages in '$FarHome'."
 		foreach($info in Get-Item "$FarHome\Update.*.info") {
 			if ($info.Name -notmatch '^Update\.(.+)\.info$') {continue}
 			$Id = $Matches[1]
@@ -189,7 +190,7 @@ else {
 				Write-Warning "Cannot update '$Id' automatically."
 				continue
 			}
-			Update-FarPackage -Id:$Id -Version:"?$Version" -Source:$Source `
+			self -Id:$Id -Version:"?$Version" -Source:$Source `
 			-FarHome:$FarHome -Platform:$Platform -CacheDirectory:$CacheDirectory -OutputDirectory:$OutputDirectory
 		}
 		return
@@ -290,9 +291,9 @@ if (!$isFarHome) {return}
 ### re-Source, remove installed
 $info = "$FarHome\Update.$Id.info"
 if ([System.IO.File]::Exists($info)) {
-	Write-Host "Removing installed '$Id'..."
+	Write-Host "Removing installed '$Id'..." -ForegroundColor Cyan
 	$Source, $null = [System.IO.File]::ReadAllLines($info)
-	Update-FarPackage -Remove -Id:$Id -FarHome:$FarHome
+	self -Remove -Id:$Id -FarHome:$FarHome
 }
 
 # updates FarHome

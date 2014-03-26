@@ -1,12 +1,15 @@
 ﻿
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-= ТРЕБОВАНИЯ =
+= ТРЕБОВАНИЯ К УСТАНОВКЕ FarNet И МОДУЛЕЙ =
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Far Manager
-	http://www.farmanager.com/download.php?l=ru
 	Обычно рекомендуется последняя стабильная сборка.
 	В некоторых случаях нужна более новая ночная сборка.
+	x86
+		http://www.farmanager.com/download.php?l=ru
+	x64
+		http://www.farmanager.com/download.php?p=64&l=ru
 
 .NET Framework 3.5 или новее
 	Начиная с Windows 7 это выполнено.
@@ -29,7 +32,7 @@ Microsoft Visual C++ 2008 SP1 Redistributable Package
 
 	PowerShell.exe
 
-Сделайте папку Far Manager текущей
+Сделайте папку Far Manager текущей, например
 
 	cd "C:\Program Files\Far Manager"
 
@@ -59,7 +62,7 @@ FarNet модули, распространяемые через NuGet, уста
 
 	PowerShell.exe
 
-Сделайте папку Far Manager текущей
+Сделайте папку Far Manager текущей, например
 
 	cd "C:\Program Files\Far Manager"
 
@@ -85,7 +88,7 @@ Update-FarPackage заметить "FarNet.PowerShellFar" на имя нужно
 
 	PowerShell.exe
 
-Сделайте папку Far Manager текущей
+Сделайте папку Far Manager текущей, например
 
 	cd "C:\Program Files\Far Manager"
 
