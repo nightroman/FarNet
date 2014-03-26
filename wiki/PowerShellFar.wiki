@@ -10,7 +10,9 @@ commands and viewing the results. The package includes cmdlets, modules,
 and scripts designed for Far Manager. Syntax highlighting in the editor
 is provided by Colorer.
 
-See [https://farnet.googlecode.com/svn/trunk/PowerShellFar/About-PowerShellFar.text About-PowerShellFar.text] for the details.
+Distributed as the NuGet package [https://www.nuget.org/packages/FarNet.PowerShellFar FarNet.PowerShellFar]
+ * [https://farnet.googlecode.com/svn/trunk/Install-FarNet.en.txt HOW TO DOWNLOAD AND INSTALL]
+ * [https://farnet.googlecode.com/svn/trunk/Install-FarNet.ru.txt КАК ЗАГРУЗИТЬ И УСТАНОВИТЬ]
 
 ----
 == Windows PowerShell ==
