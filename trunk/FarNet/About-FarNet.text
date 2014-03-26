@@ -27,7 +27,7 @@
 
 [Contents](#Contents)
 
-### FarNet 5.0.47
+### FarNet 5.0.48
 
 FarNet provides the .NET API for Far Manager and the runtime infrastructure for
 .NET modules. The API is exposed in comfortable object oriented way and most of
@@ -44,55 +44,23 @@ tiny pieces of boilerplate framework code.
 
 [Contents](#Contents)
 
-### Requirements
+**Requirements**
 
 - Far Manager 3.0.3842
-- .NET Framework 3.5 or 4.0
+- .NET Framework 3.5 or above
 - Microsoft Visual C++ 2008 SP1 Redistributable Package
 
-Part of FarNet is built by Visual Studio 2008 SP1 and depends on its runtime
-modules. You may have to download and install one of the packages:
+**Instructions**
 
-- Microsoft Visual C++ 2008 SP1 Redistributable Package (x86)
-- Microsoft Visual C++ 2008 SP1 Redistributable Package (x64)
+In order to install FarNet and its modules, follow these steps:
 
----
+In English: <https://farnet.googlecode.com/svn/trunk/Install-FarNet.en.txt>
 
-### Installation
-
-**Scripted**
-
-Use the script <https://farnet.googlecode.com/svn/trunk/PowerShellFar/Bench/Update-FarPackage.ps1>
-
-Close Far Manager and invoke this command in PowerShell console:
-
-    Update-FarPackage.ps1 FarNet -FarHome <path> -Platform <x64|x86>
-
-**Manual**
-
-The package directory *tools* contains files to be installed. Files from
-*FarHome* and *FarHome.x??* should be copied to the Far Manager directory
-preserving their directory structure.
-
-*FarHome*
- : FarNet framework and common plugin files.
-
-*FarHome.x64*
- : Additional x64 plugin files.
-
-*FarHome.x86*
- : Additional x86 plugin files.
-
-Other files and samples:
-
-- *About-FarNet.htm* - this documentation
-- *FarNetAPI.chm* - the API manual
-- *History.txt* - the change log
-- *Samples* - sample modules
+In Russian: <https://farnet.googlecode.com/svn/trunk/Install-FarNet.ru.txt>
 
 ---
 
-### Installed file structure
+### Installed files
 
 *%FARHOME%*
 
@@ -103,6 +71,7 @@ Other files and samples:
 
 - *FarNetMan.dll* - Far Manager plugin and module manager
 - *FarNetMan.hlf* - FarNet UI help
+- *LICENSE.txt* - the license
 
 *%FARHOME%\FarNet*
 
@@ -113,7 +82,7 @@ Other files and samples:
 
 *%FARHOME%\FarNet\Modules*
 
-- Module root directory. Each child directory is normally a module directory.
+- Module root directory. Each child directory is a module directory.
 
 
 *********************************************************************

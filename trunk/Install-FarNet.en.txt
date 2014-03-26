@@ -1,12 +1,15 @@
 ﻿
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-= REQUIREMENTS =
+= REQUIREMENTS FOR FarNet AND MODULES =
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Far Manager
-	http://www.farmanager.com/download.php?l=en
 	Normally the last stable build is recommended.
 	In some cases a newer nightly build may be needed.
+	x86
+		http://www.farmanager.com/download.php?l=en
+	x64
+		http://www.farmanager.com/download.php?p=64&l=en
 
 .NET Framework 3.5 or newer
 	This is the case since Windows 7.
@@ -29,7 +32,7 @@ Close Far Manager and start PowerShell console
 
 	PowerShell.exe
 
-Set the Far Manager directory current
+Set the Far Manager directory current, e.g.
 
 	cd "C:\Program Files\Far Manager"
 
@@ -59,7 +62,7 @@ Close Far Manager and start PowerShell console
 
 	PowerShell.exe
 
-Set the Far Manager directory current
+Set the Far Manager directory current, e.g.
 
 	cd "C:\Program Files\Far Manager"
 
@@ -85,7 +88,7 @@ Close Far Manager and start PowerShell console
 
 	PowerShell.exe
 
-Set the Far Manager directory current
+Set the Far Manager directory current, e.g.
 
 	cd "C:\Program Files\Far Manager"
 
