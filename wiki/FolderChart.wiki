@@ -4,11 +4,7 @@
 
 For the current panel directory this tool calculates file and directory sizes and shows the results as a chart in a modal window with some interaction. It helps to find unwanted disk space consumers.
 
-== Prerequisites ==
-
- * Far Manager 2.0.1807
- * Plugin FarNet (use the latest version)
- * .NET Framework 4.0 (charting and parallel processing)
+Requires .NET Framework 4.0 (charting and parallel processing)
 
 == Features ==
 
@@ -17,6 +13,14 @@ For the current panel directory this tool calculates file and directory sizes an
  * Left click in other areas switches the chart modes;
  * Right click hides an item in the chart;
  * Chart tooltips show approximate sizes.
+
+----
+
+Distributed as the NuGet package
+[https://www.nuget.org/packages/FarNet.FolderChart FarNet.FolderChart]
+
+ * [https://farnet.googlecode.com/svn/trunk/Install-FarNet.en.txt HOW TO DOWNLOAD AND INSTALL]
+ * [https://farnet.googlecode.com/svn/trunk/Install-FarNet.ru.txt КАК ЗАГРУЗИТЬ И УСТАНОВИТЬ]
 
 ----
 [http://forum.farmanager.com/viewtopic.php?f=5&t=5623 Обсуждение на форуме]
