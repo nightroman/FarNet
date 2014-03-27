@@ -28,7 +28,8 @@ Microsoft Visual C++ 2008 SP1 Redistributable Package
 This is the recommended and the simplest way of installing FarNet.
 It helps to avoid several manual steps and possible mistakes.
 
-Close Far Manager and start PowerShell console (as Administrator)
+Close Far Manager and start the PowerShell console
+(as Administrator: depends on Far Manager location)
 
 	PowerShell.exe
 
@@ -55,10 +56,11 @@ and samples if FarNet is going to be used not just for modules.
 = INSTALL NuGet MODULES WITH PowerShell =
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-FarNet modules distributed via NuGet are installed in the same way. For
-example, for the module "FarNet.PowerShellFar" do:
+FarNet modules distributed as NuGet packages are installed in the same way.
+For example, for the module package "FarNet.PowerShellFar" do:
 
-Close Far Manager and start PowerShell console (as Administrator)
+Close Far Manager and start the PowerShell console
+(as Administrator: depends on Far Manager location)
 
 	PowerShell.exe
 
@@ -74,12 +76,12 @@ If FarNet is not yet installed then invoke
 
 	Update-FarPackage FarNet
 
-And then invoke installation of the module
+And then invoke installation of the package
 
 	Update-FarPackage FarNet.PowerShellFar
 
 Ditto for other FarNet modules from NuGet. In the last command replace
-"FarNet.PowerShellFar" with a required module name.
+"FarNet.PowerShellFar" with a required NuGet package name.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 = UPDATE FarNet AND MODULES WITH PowerShell =
@@ -88,7 +90,8 @@ Ditto for other FarNet modules from NuGet. In the last command replace
 Note: FarNet and modules installed manually are not updated in this way. Only
 modules installed by Update-FarPackage are updated.
 
-Close Far Manager and start PowerShell console (as Administrator)
+Close Far Manager and start the PowerShell console
+(as Administrator: depends on Far Manager location)
 
 	PowerShell.exe
 

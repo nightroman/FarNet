@@ -28,7 +28,8 @@ Microsoft Visual C++ 2008 SP1 Redistributable Package
 Это рекомендуемый и самый простой способ загрузить и установить FarNet.
 Он избавит от выполнения нескольких шагов вручную и возможных ошибок.
 
-Закройте Far Manager и запустите консоль PowerShell (as Administrator)
+Закройте Far Manager и запустите консоль PowerShell
+(as Administrator: зависит от папки Far Manager)
 
 	PowerShell.exe
 
@@ -55,10 +56,11 @@ Microsoft Visual C++ 2008 SP1 Redistributable Package
 = УСТАНОВКА NuGet МОДУЛЕЙ С ПОМОЩЬЮ PowerShell =
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-FarNet модули, распространяемые через NuGet, устанавливаются похожим образом.
-Например, для модуля "FarNet.PowerShellFar" нужно выполнить:
+FarNet модули, распространяемые как NuGet пакеты, устанавливаются похожим
+образом. Например, для пакета "FarNet.PowerShellFar" нужно выполнить:
 
-Закройте Far Manager и запустите консоль PowerShell (as Administrator)
+Закройте Far Manager и запустите консоль PowerShell
+(as Administrator: зависит от папки Far Manager)
 
 	PowerShell.exe
 
@@ -74,12 +76,12 @@ FarNet модули, распространяемые через NuGet, уста
 
 	Update-FarPackage FarNet
 
-И затем выполните команду установки модуля
+И затем выполните команду установки пакета
 
 	Update-FarPackage FarNet.PowerShellFar
 
 Другие FarNet модули из NuGet устанавливаются аналогично, нужно лишь в команде
-Update-FarPackage заметить "FarNet.PowerShellFar" на имя нужного модуля.
+Update-FarPackage заменить "FarNet.PowerShellFar" на имя нужного NuGet пакета.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 = ОБНОВЛЕНИЕ FarNet И МОДУЛЕЙ С ПОМОЩЬЮ PowerShell =
@@ -88,7 +90,8 @@ Update-FarPackage заметить "FarNet.PowerShellFar" на имя нужно
 Замечание: FarNet и модули, установленные вручную, не подлежат обновлению таким
 способом. Обновляется то, что и установлено было с помощью Update-FarPackage.
 
-Закройте Far Manager и запустите консоль PowerShell (as Administrator)
+Закройте Far Manager и запустите консоль PowerShell
+(as Administrator: зависит от папки Far Manager)
 
 	PowerShell.exe
 
