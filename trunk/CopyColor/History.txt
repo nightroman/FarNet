@@ -1,0 +1,18 @@
+
+NuGet package: https://www.nuget.org/packages/FarNet.CopyColor
+
+= 2.1.0 =
+
+The package moved to NuGet as "FarNet.CopyColor"
+
+= 2.0.2 =
+
+Adapted for FarNet 5.0.31
+
+= 2.0.1 =
+
+Use FarNet 5.0.1. Some fixes + only Colorer's colors are used.
+
+= 2.0.0 =
+
+Adapted for Far3 + FarNet5.

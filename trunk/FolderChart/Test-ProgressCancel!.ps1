@@ -23,7 +23,7 @@
 
 $test = {
 	{
-		'F11 3'
+		$Far.PostMacro('Keys"F11 3"')
 	}
 
 	{
@@ -33,5 +33,5 @@ $test = {
 
 for($1 = 0; $1 -lt 25; ++$1) {
 	. $test
-	if ($1 % 2) { 'Esc' } else { 'Enter' }
+	if ($1 % 2) { 'Keys"Esc"' } else { 'Keys"Enter"' }
 }
