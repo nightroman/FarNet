@@ -1,7 +1,7 @@
 
 # FarNet module *FolderChart*
 
-*********************************************************************
+----
 ## Synopsis
 
 For the current panel directory this tool calculates file and directory sizes
@@ -12,13 +12,24 @@ and shows the results as a chart in a modal window with some interaction.
  * Source: <http://code.google.com/p/farnet/>
  * Author: Roman Kuzmin
 
-**Prerequisites**
+----
+## Installation
 
- * Far Manager 3.0.3061
- * Plugin FarNet 5.0.31
+**Requirements**
+
+ * Far Manager 3.0.3842
+ * Plugin FarNet 5.0.48
  * .NET Framework 4.0
 
-*********************************************************************
+**Instructions**
+
+How to get, install, and update from the NuGet package *FarNet.FolderChart*
+
+In English: <https://farnet.googlecode.com/svn/trunk/Install-FarNet.en.txt>
+
+In Russian: <https://farnet.googlecode.com/svn/trunk/Install-FarNet.ru.txt>
+
+----
 ## Description
 
 Features:
@@ -29,41 +40,4 @@ Features:
 * Right click hides an item in the chart;
 * Chart tool-tips show approximate sizes.
 
-*********************************************************************
-## History
-
-1.0.1
-
-    Limited number of shown items.
-
-    Changed collection of hidden items.
-
-1.0.2
-
-    Right click hides an item in the chart.
-
-1.0.3
-
-    Updated for FarNet 4.3.38
-
-1.0.4
-
-    Updated for FarNet 4.4.0
-
-1.0.5
-
-    Updated for FarNet 4.4.6
-
-1.0.6
-
-    Total size is shown in the chart dialog title.
-
-2.0.0
-
-    Adapted for Far3 + FarNet5.
-
-2.0.1
-
-    Adapted for FarNet 5.0.31
-
-<http://code.google.com/p/farnet/downloads/list>
+----

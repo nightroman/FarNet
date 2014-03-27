@@ -1,0 +1,44 @@
+
+NuGet package: https://www.nuget.org/packages/FarNet.Explore
+
+= 2.1.0 =
+
+The package moved to NuGet as "FarNet.Explore"
+
+= 2.0.2 =
+
+Adapted for FarNet 5.0.31
+
+= 2.0.1 =
+
+Adapted for FarNet 5.0.16. File masks are checked for validity.
+
+= 2.0.0 =
+
+Adapted for Far3 + FarNet5.
+
+= 1.0.3 =
+
+Use FarNet 4.4.10 (XPath support)
+
+Support of partial parameter names.
+
+Masks with spaces are allowed (enclosed by '"').
+
+New parameters -XFile and -XPath extend filters with XPath expressions.
+
+= 1.0.2 =
+
+Use FarNet 4.4.4
+
+Added -Asynchronous switch: Tells to performs the search in the background
+and to open the result panel immediately.
+
+Added -Depth parameter.
+
+New result panel (actually super-panel) features: [Enter] on a found file,
+[F5]/[F6], [F7], and [Esc] choices.
+
+= 1.0.1 =
+
+Use FarNet 4.4.3

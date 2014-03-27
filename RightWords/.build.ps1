@@ -53,9 +53,19 @@ task Package Help, {
 
 task NuGet Package, Version, {
 	$text = @'
-RightWords is the FarNet module for FarManager. It provides the spell-checker
-and thesaurus based on NHunspell. The core Hunspell is used in OpenOffice and
-it works with dictionaries published on OpenOffice.org.
+RightWords is the FarNet module for FarManager.
+
+It provides the spell-checker and thesaurus based on NHunspell. The core
+Hunspell is used in OpenOffice and it works with dictionaries published
+on OpenOffice.org.
+
+---
+
+To install and update FarNet packages, follow these steps:
+
+https://farnet.googlecode.com/svn/trunk/Install-FarNet.en.txt
+
+---
 '@
 	# nuspec
 	Set-Content z\Package.nuspec @"
@@ -67,7 +77,7 @@ it works with dictionaries published on OpenOffice.org.
 		<authors>Roman Kuzmin</authors>
 		<owners>Roman Kuzmin</owners>
 		<projectUrl>https://code.google.com/p/farnet</projectUrl>
-		<licenseUrl>https://code.google.com/p/farnet/source/browse/trunk/RightWords/LICENSE.txt</licenseUrl>
+		<licenseUrl>https://farnet.googlecode.com/svn/trunk/RightWords/LICENSE.txt</licenseUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$text</summary>
 		<description>$text</description>

@@ -1,13 +1,8 @@
 
-# FarNet module *RightControl* {#Contents}
-
-* [Synopsis](#Synopsis)
-* [Commands](#Commands)
-* [Settings](#Settings)
-* [History](#History)
+# FarNet module *RightControl*
 
 *********************************************************************
-## Synopsis {#Synopsis}
+## Synopsis
 
 This tool alters some operations in editors, edit controls, and the command
 line. They are: *Step*, *Select*, *Delete* by words, *Go*, *Select* to *smart
@@ -17,21 +12,31 @@ WordPad, etc.
 
 **Project**
 
- * Source: [http://code.google.com/p/farnet/](http://code.google.com/p/farnet/)
+ * Source: <http://code.google.com/p/farnet>
  * Author: Roman Kuzmin
 
-**Prerequisites**
+*********************************************************************
+## Installation
 
- * Far Manager 3.0.3061
- * Plugin FarNet 5.0.31
+**Requirements**
+
+ * Far Manager 3.0.3842
+ * Plugin FarNet 5.0.48
+
+**Instructions**
+
+How to get, install, and update from the NuGet package *FarNet.RightControl*
+
+In English: <https://farnet.googlecode.com/svn/trunk/Install-FarNet.en.txt>
+
+In Russian: <https://farnet.googlecode.com/svn/trunk/Install-FarNet.ru.txt>
 
 *********************************************************************
-## Commands {#Commands}
+## Commands
 
 The module mostly works via commands called from macros by the macro function
 `Plugin.Call()`.
 
----
 ### Word commands
 
 - `step-left`
@@ -43,7 +48,6 @@ The module mostly works via commands called from macros by the macro function
 - `vertical-left`
 - `vertical-right`
 
----
 ### Smart home commands
 
 - `go-to-smart-home`
@@ -55,7 +59,6 @@ Example macro for the Editor area:
 
 *RightControl.macro.lua* provides predefined typical macros.
 
----
 ### Known issue and workaround
 
 Until the issue Mantis 1465 is resolved `[ShiftLeft]` and `[ShiftRight]` work
@@ -66,12 +69,9 @@ and bind them to the commands `vertical-left` and `vertical-right`.
 *RightControl.macro.lua* includes these macros.
 
 *********************************************************************
-## Settings {#Settings}
+## Settings
 
-Open the module settings panel from the main .NET menu: *F11 | FarNet |
-Settings | RightControl*.
-
----
+Module settings panel: `[F11] \ FarNet \ Settings \ RightControl`
 
 `Regex`
 : A regular expression pattern that defines text break points.
@@ -104,75 +104,3 @@ regular expression pattern that can be stored in settings just like that:
 ~~~
 
 *********************************************************************
-## History {#History}
-
-1.0.1
-
-    Flip selection on Ctrl-Shift-{Left then Right | Right then Left}
-
-1.0.2
-
-    Drop existing selection on Ctrl-Left/Right
-
-1.0.3
-
-    Ctrl-Backspace/Delete (delete by words) use the same rules as step/select
-
-    Registry option Regex defines custom text breaks (see Readme.txt)
-
-1.0.4
-
-    Ctrl-Alt-Left/Right support (select vertical blocks by words)
-
-1.0.5
-
-    Added support for dialog edit boxes and the command line via menus/macros
-
-    Actions in the editor are also provided only via the menu and macros
-
-    Included PowerShellFar script Install-RightControlMacro-.ps1
-
-1.0.6
-
-    Workaround: CtrlLeft/Right in dialogs should drop 'unchanged' state (FarNet 4.3.28)
-
-    Workaround: ShiftLeft/Right in dialog and cmdline (until Mantis 1465 is resolved)
-
-    Install-RightControlMacro-.ps1 installs that ShiftLeft/Right macros, too.
-
-1.0.7
-
-    Fixed CtrlBS for an empty line and "Cursor beyond end of line" mode.
-
-1.0.8
-
-    "Smart home" commands a la Visual Studio Home, ShiftHome.
-
-1.0.9
-
-    Use FarNet 4.3.37. The module works only via the macro function CallPlugin().
-    All the menus are removed. Performance is perfect now. See Readme.txt for the
-    list of commands.
-
-    Install-RightControlMacro-.ps1 installs macros that use CallPlugin().
-
-1.0.10
-
-    Removed not needed public API.
-
-    The module uses new standard FarNet settings and settings panel.
-
-2.0.0
-
-    Adapted for Far3 + FarNet5.
-
-2.0.1
-
-    Use Far 3.0.2574 and FarNet 5.0.19.
-    Avoided post-selection issues in the Far editor.
-
-2.0.2
-
-    Adapted for FarNet 5.0.31
-
-<http://code.google.com/p/farnet/downloads/list>

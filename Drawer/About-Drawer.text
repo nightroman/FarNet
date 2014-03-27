@@ -8,13 +8,24 @@ The module provides a few editor color tools (drawers).
 
 **Project**
 
- * Source: <http://code.google.com/p/farnet/>
+ * Source: <http://code.google.com/p/farnet>
  * Author: Roman Kuzmin
 
-**Prerequisites**
+*********************************************************************
+## Installation
 
- * Far Manager 3.0.3061
- * Plugin FarNet 5.0.31
+**Requirements**
+
+ * Far Manager 3.0.3842
+ * Plugin FarNet 5.0.48
+
+**Instructions**
+
+How to get, install, and update from the NuGet package *FarNet.Drawer*
+
+In English: <https://farnet.googlecode.com/svn/trunk/Install-FarNet.en.txt>
+
+In Russian: <https://farnet.googlecode.com/svn/trunk/Install-FarNet.ru.txt>
 
 *********************************************************************
 ## Description
@@ -35,7 +46,7 @@ In order to turn a drawer on and off use the menu: `[F11] | FarNet | Drawers | (
 
 ### Settings
 
-Open the module settings panel: `[F11] | FarNet | Settings | Drawer`
+Module settings panel: `[F11] | FarNet | Settings | Drawer`
 
 CurrentWordPattern
 : Defines the regular expression pattern for words of the "Current word"
@@ -50,10 +61,3 @@ FixedColumnNumber
   DarkYellow, Gray, DarkGray, Blue, Green, Cyan, Red, Magenta, Yellow, White.
 
 *********************************************************************
-## History
-
-1.0.1
-
-    Adapted for FarNet 5.0.31
-
-<http://code.google.com/p/farnet/downloads/list>

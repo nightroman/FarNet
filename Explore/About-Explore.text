@@ -2,26 +2,37 @@
 # FarNet module *Explore* {#Contents}
 
 * [Synopsis](#Synopsis)
+* [Installation](#Installation)
 * [Command syntax](#Syntax)
 * [Result panel](#Panel)
 * [Examples](#Examples)
-* [History](#History)
 
 *********************************************************************
 ## Synopsis {#Synopsis}
 
-The tool searches in FarNet explorer panels and opens the result panel.
+The tool searches in FarNet module panels and opens the result panel.
 It is invoked from the command line with the prefix *Explore:*.
 
 **Project**
 
- * Source: <http://code.google.com/p/farnet/>
+ * Source: <http://code.google.com/p/farnet>
  * Author: Roman Kuzmin
 
-**Prerequisites**
+*********************************************************************
+## Installation {#Installation}
 
- * Far Manager 3.0.3061
- * Plugin FarNet 5.0.31
+**Requirements**
+
+ * Far Manager 3.0.3842
+ * Plugin FarNet 5.0.48
+
+**Instructions**
+
+How to get, install, and update from the NuGet package *FarNet.Explore*
+
+In English: <https://farnet.googlecode.com/svn/trunk/Install-FarNet.en.txt>
+
+In Russian: <https://farnet.googlecode.com/svn/trunk/Install-FarNet.ru.txt>
 
 *********************************************************************
 ## Command syntax {#Syntax}
@@ -163,46 +174,4 @@ where *sln-with-csproj.xq*:
 
 Note: `is-match()` is a helper function added by FarNet.
 
-
 *********************************************************************
-## History {#History}
-
-1.0.1
-
-    Use FarNet 4.4.3
-
-1.0.2
-
-    Use FarNet 4.4.4
-
-    Added -Asynchronous switch: Tells to performs the search in the background
-    and to open the result panel immediately.
-
-    Added -Depth parameter.
-
-    New result panel (actually super-panel) features: [Enter] on a found file,
-    [F5]/[F6], [F7], and [Esc] choices.
-
-1.0.3
-
-    Use FarNet 4.4.10 (XPath support)
-
-    Support of partial parameter names.
-
-    Masks with spaces are allowed (enclosed by '"').
-
-    New parameters -XFile and -XPath extend filters with XPath expressions.
-
-2.0.0
-
-    Adapted for Far3 + FarNet5.
-
-2.0.1
-
-    Adapted for FarNet 5.0.16. File masks are checked for validity.
-
-2.0.2
-
-    Adapted for FarNet 5.0.31
-
-<http://code.google.com/p/farnet/downloads/list>

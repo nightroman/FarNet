@@ -1,0 +1,40 @@
+
+NuGet package: https://www.nuget.org/packages/FarNet.FolderChart
+
+= 2.1.0 =
+
+The package moved to NuGet as "FarNet.FolderChart"
+
+= 2.0.1 =
+
+Adapted for FarNet 5.0.31
+
+= 2.0.0 =
+
+Adapted for Far3 + FarNet5.
+
+= 1.0.6 =
+
+Total size is shown in the chart dialog title.
+
+= 1.0.5 =
+
+Updated for FarNet 4.4.6
+
+= 1.0.4 =
+
+Updated for FarNet 4.4.0
+
+= 1.0.3 =
+
+Updated for FarNet 4.3.38
+
+= 1.0.2 =
+
+Right click hides an item in the chart.
+
+= 1.0.1 =
+
+Limited number of shown items.
+
+Changed collection of hidden items.
