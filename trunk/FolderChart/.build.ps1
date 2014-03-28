@@ -50,9 +50,10 @@ task Package Help, {
 
 task NuGet Package, Version, {
 	$text = @'
-FolderChart is the FarNet module for Far Manager. For the current panel
-directory it calculates file and directory sizes and shows the results
-as a chart in a modal window with some interaction.
+FolderChart is the FarNet module for Far Manager.
+
+For the current directory it calculates file and directory sizes and
+shows the results as a chart in a modal window with some interaction.
 
 Requires .NET Framework 4.0
 

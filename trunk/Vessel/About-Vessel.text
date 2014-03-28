@@ -27,29 +27,23 @@ operations and provides related tools.
  * Source: <http://code.google.com/p/farnet>
  * Author: Roman Kuzmin
 
-**Prerequisites**
-
- * Far Manager 3.0.3825
- * Plugin FarNet 5.0.62
-
 *********************************************************************
 ## Installation {#Installation}
 
 [Contents](#Contents)
 
-The module is distributed as the NuGet package *Vessel*:
+**Requirements**
 
- : <https://www.nuget.org/packages/FarNet.Vessel>
+ * Far Manager 3.0.3842
+ * Plugin FarNet 5.0.48
 
-Use the script *Update-FarPackage.ps1* for getting, unpacking, installing, and updating:
+**Instructions**
 
- : <https://farnet.googlecode.com/svn/trunk/PowerShellFar/Bench/Update-FarPackage.ps1>
+How to get, install, and update from the NuGet package *FarNet.Vessel*
 
-If you download the script (i.e. not copy/paste) then do RMB \ Properties \ Unblock.
+In English: <https://farnet.googlecode.com/svn/trunk/Install-FarNet.en.txt>
 
-Close Far Manager and invoke this command in PowerShell:
-
-    Update-FarPackage FarNet.Vessel -FarHome <path>
+In Russian: <https://farnet.googlecode.com/svn/trunk/Install-FarNet.ru.txt>
 
 *********************************************************************
 ## Description {#Description}

@@ -11,7 +11,7 @@ param(
 $FarHome = "C:\Bin\Far\$Platform"
 $ModuleHome = "$FarHome\FarNet\Modules\Vessel"
 
-# Easy build. Remember, Far Manager must be closed.
+#! Close Far Manager.
 task . Build, Help, Clean
 
 # Build and install the assembly.
@@ -27,7 +27,7 @@ task Help {
 }
 
 task Clean {
-	Remove-Item -Force -Recurse -ErrorAction 0 -Path `
+	Remove-Item -Force -Recurse -ErrorAction 0 `
 	z, bin, obj, About-Vessel.htm, FarNet.Vessel.*.nupkg
 }
 

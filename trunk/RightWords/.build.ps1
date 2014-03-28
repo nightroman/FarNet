@@ -8,13 +8,16 @@ $FarHome = 'C:\Bin\Far\Win32'
 $fromModule = "$FarHome\FarNet\Modules\RightWords"
 $fromNHunspell = "$FarHome\FarNet\NHunspell"
 
+task . Build, Clean
+
 task Build {
 	use 4.0 MSBuild
 	exec { MSBuild RightWords.csproj /p:Configuration=Release }
 }
 
 task Clean {
-	Remove-Item -Force -Recurse -ErrorAction 0 -Path bin, obj, z, About-RightWords.htm
+	Remove-Item -Force -Recurse -ErrorAction 0 `
+	z, bin, obj, About-RightWords.htm, FarNet.RightWords.*.nupkg
 }
 
 task Help {
