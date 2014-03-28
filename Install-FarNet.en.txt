@@ -4,18 +4,22 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Far Manager
+
 	Normally the last stable build is recommended.
 	In some cases a newer nightly build may be needed.
+
 	x86
 		http://www.farmanager.com/download.php?l=en
 	x64
 		http://www.farmanager.com/download.php?p=64&l=en
 
 .NET Framework 3.5 or newer
+
 	This is the case since Windows 7.
 	Otherwise check, download, and install.
 
 Microsoft Visual C++ 2008 SP1 Redistributable Package
+
 	x86
 		http://www.microsoft.com/en-US/download/details.aspx?id=5582
 	x64
@@ -25,8 +29,8 @@ Microsoft Visual C++ 2008 SP1 Redistributable Package
 = DOWNLOAD AND INSTALL WITH PowerShell =
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This is the recommended and the simplest way of installing FarNet.
-It helps to avoid several manual steps and possible mistakes.
+This is the recommended and the simplest way of installing FarNet and modules
+from NuGet. It helps to avoid several manual steps and possible mistakes.
 
 Close Far Manager and start the PowerShell console
 (as Administrator: depends on Far Manager location)
@@ -41,54 +45,29 @@ Invoke the preliminary command
 
 	iex (New-Object Net.WebClient).DownloadString('https://farnet.googlecode.com/svn/trunk/web.ps1')
 
-And then invoke installation
+Install or update FarNet
 
 	Update-FarPackage FarNet
 
-If everything works fine then FarNet is installed. You can start Far Manager or
-continue to install FarNet modules.
-
-Take a look at the unpacked folder "FarNet.<version>" in Far Manager. It is not
-needed for FarNet and can be deleted. But you may want to keep documentation
-and samples if FarNet is going to be used not just for modules.
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-= INSTALL NuGet MODULES WITH PowerShell =
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-FarNet modules distributed as NuGet packages are installed in the same way.
-For example, for the module package "FarNet.PowerShellFar" do:
-
-Close Far Manager and start the PowerShell console
-(as Administrator: depends on Far Manager location)
-
-	PowerShell.exe
-
-Set the Far Manager directory current, e.g.
-
-	cd "C:\Program Files\Far Manager"
-
-Invoke the preliminary command
-
-	iex (New-Object Net.WebClient).DownloadString('https://farnet.googlecode.com/svn/trunk/web.ps1')
-
-If FarNet is not yet installed then invoke
-
-	Update-FarPackage FarNet
-
-And then invoke installation of the package
+Install modules, for example
 
 	Update-FarPackage FarNet.PowerShellFar
 
-Ditto for other FarNet modules from NuGet. In the last command replace
-"FarNet.PowerShellFar" with a required NuGet package name.
+You may start Far Manager after this. Take a look at the unpacked folders
+"FarNet.<version>", "FarNet.PowerShellFar.<version>" in Far Manager. These
+folders are not needed and may be deleted. But there may be documentation,
+samples, etc. Keep this if you need.
+
+Some modules need further installation steps. Find the manuals either in the
+unpacked "<module>.<version>" or installed "FarNet\Modules\<module>". For
+example, "RightWords" tells how to get and install spelling dictionaries.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 = UPDATE FarNet AND MODULES WITH PowerShell =
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Note: FarNet and modules installed manually are not updated in this way. Only
-modules installed by Update-FarPackage are updated.
+Note: FarNet and modules installed manually are not updated in this way.
+Only modules installed by Update-FarPackage are updated.
 
 Close Far Manager and start the PowerShell console
 (as Administrator: depends on Far Manager location)

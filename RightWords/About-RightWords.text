@@ -20,40 +20,45 @@ it works with dictionaries published on OpenOffice.org.
  * Source: <http://code.google.com/p/farnet>
  * Author: Roman Kuzmin
 
-**Prerequisites**
-
- * Far Manager 3.0.3525
- * Plugin FarNet 5.0.39
- * [Dictionaries](http://wiki.services.openoffice.org/wiki/Dictionaries)
-
-The *NHunspell* library is included to the package.
-
 *********************************************************************
 ## Installation {#Installation}
 
-Get and install RightWords. The module is distributed as the NuGet package
-[FarNet.RightWords](https://www.nuget.org/packages/FarNet.RightWords).
-Use this script for getting, unpacking, and installing: [Update-FarPackage.ps1](https://farnet.googlecode.com/svn/trunk/PowerShellFar/Bench/Update-FarPackage.ps1).
-If you download the script (i.e. not copy/paste) then do RMB > Properties > Unblock.
-Close all Far instances and invoke this command in PowerShell:
+**Requirements**
 
-    Update-FarPackage FarNet.RightWords -FarHome <path>
+ * Far Manager 3.0.3842
+ * Plugin FarNet 5.0.48
+ * Dictionaries
 
-Get and install dictionaries. Download OpenOffice
-[dictionaries](http://wiki.services.openoffice.org/wiki/Dictionaries)
-and copy them to new subdirectories of the directory *NHunspell*, e.g.
-to directories *English*, *Russian*.
+**Instructions**
+
+How to get, install, and update from the NuGet package *FarNet.RightWords*
+
+In English: <https://farnet.googlecode.com/svn/trunk/Install-FarNet.en.txt>
+
+In Russian: <https://farnet.googlecode.com/svn/trunk/Install-FarNet.ru.txt>
+
+**Dictionaries**
+
+The *NHunspell* library is included to the package but dictionaries are not.
+
+OpenOffice dictionaries:
+<http://wiki.services.openoffice.org/wiki/Dictionaries>
+
+Copy dictionaries to new subdirectories of the directory *NHunspell*,
+e.g. to directories *English* and *Russian*.
+
+---
 
 The installed file structure (dictionaries may be different):
 
     %FARHOME%\FarNet\Modules\RightWords
 
-        About-RightWords.htm - this file
+        About-RightWords.htm - documentation
+        RightWords.macro.lua - sample macros
         History.txt - the change log
         LICENSE.txt - the license
-        RightWords.macro.lua - sample macros
 
-        RightWords.dll - the module
+        RightWords.dll - module assembly
         RightWords.resources - English UI strings
         RightWords.ru.resources - Russian UI strings
 
