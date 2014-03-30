@@ -1,5 +1,8 @@
-The NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
-HOW TO GET AND INSTALL: http://forum.farmanager.com/viewtopic.php?f=11&t=2258
+NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
+
+= 5.0.71 =
+
+Errors menu: replaced \r\n\t symbols in messages with spaces.
 
 = 5.0.70 =
 

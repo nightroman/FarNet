@@ -559,7 +559,7 @@ Continue with this current directory?
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public string InputCode()
 		{
-			UI.InputDialog ui = new UI.InputDialog(Res.Me, Res.History, Res.InvokeCommands);
+			var ui = new UI.InputDialog(Res.Me, Res.History, Res.InvokeCommands);
 			ui.UIEdit.IsPath = true;
 			ui.UIEdit.UseLastHistory = true;
 			return ui.UIDialog.Show() ? ui.UIEdit.Text : null;
@@ -718,7 +718,7 @@ Continue with this current directory?
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void ShowDebugger()
 		{
-			UI.DebuggerMenu ui = new UI.DebuggerMenu();
+			var ui = new UI.DebuggerMenu();
 			ui.Show();
 		}
 		/// <summary>
@@ -727,7 +727,7 @@ Continue with this current directory?
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void ShowErrors()
 		{
-			UI.ErrorsMenu ui = new UI.ErrorsMenu();
+			var ui = new UI.ErrorsMenu();
 			ui.Show();
 		}
 		/// <summary>
@@ -968,7 +968,7 @@ Continue with this current directory?
 		// Show debug dialog
 		void OnDebuggerStop(object sender, DebuggerStopEventArgs e)
 		{
-			UI.DebuggerDialog ui = new UI.DebuggerDialog(e);
+			var ui = new UI.DebuggerDialog(e);
 
 			// viewer writer?
 			var writer = FarUI.Writer as TranscriptOutputWriter;

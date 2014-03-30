@@ -4,7 +4,11 @@
 	Build script (https://github.com/nightroman/Invoke-Build)
 #>
 
-$FarHome = 'C:\Bin\Far\Win32'
+param(
+	$Platform = (property Platform Win32)
+)
+
+$FarHome = "C:\Bin\Far\$Platform"
 $fromModule = "$FarHome\FarNet\Modules\RightWords"
 $fromNHunspell = "$FarHome\FarNet\NHunspell"
 
@@ -12,7 +16,7 @@ task . Build, Clean
 
 task Build {
 	use 4.0 MSBuild
-	exec { MSBuild RightWords.csproj /p:Configuration=Release }
+	exec { MSBuild RightWords.csproj /p:Configuration=Release /p:FarHome=$FarHome }
 }
 
 task Clean {
@@ -21,7 +25,7 @@ task Clean {
 }
 
 task Help {
-	exec { MarkdownToHtml "From=About-RightWords.text" "To=About-RightWords.htm" }
+	exec { MarkdownToHtml From=About-RightWords.text To=About-RightWords.htm }
 }
 
 task Version {
@@ -80,6 +84,7 @@ https://farnet.googlecode.com/svn/trunk/Install-FarNet.en.txt
 		<authors>Roman Kuzmin</authors>
 		<owners>Roman Kuzmin</owners>
 		<projectUrl>https://code.google.com/p/farnet</projectUrl>
+		<iconUrl>https://farnet.googlecode.com/svn/trunk/FarNetLogo.png</iconUrl>
 		<licenseUrl>https://farnet.googlecode.com/svn/trunk/RightWords/LICENSE.txt</licenseUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$text</summary>

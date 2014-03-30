@@ -74,6 +74,7 @@ https://farnet.googlecode.com/svn/trunk/Install-FarNet.en.txt
 		<owners>Roman Kuzmin</owners>
 		<authors>Roman Kuzmin</authors>
 		<projectUrl>https://code.google.com/p/farnet</projectUrl>
+		<iconUrl>https://farnet.googlecode.com/svn/trunk/FarNetLogo.png</iconUrl>
 		<licenseUrl>https://farnet.googlecode.com/svn/trunk/CopyColor/LICENSE.txt</licenseUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$text</summary>
