@@ -15,7 +15,8 @@ namespace PowerShellFar.UI
 {
 	class ErrorsMenu
 	{
-		readonly Regex _regex = new Regex(@"ErrorActionPreference.*Stop:\s*(.*)");
+		readonly Regex _regexErrorActionPreference = new Regex(@"ErrorActionPreference.*Stop:\s*(.*)");
+		readonly Regex _regexNewLines = new Regex(@"[\r\n\t]+");
 		readonly IMenu _menu;
 		public ErrorsMenu()
 		{
@@ -27,8 +28,9 @@ namespace PowerShellFar.UI
 		}
 		string GetErrorMessage(string message)
 		{
-			Match m = _regex.Match(message);
-			return m.Success ? m.Groups[1].Value : message;
+			Match m = _regexErrorActionPreference.Match(message);
+			var r = m.Success ? m.Groups[1].Value : message;
+			return _regexNewLines.Replace(r, " ");
 		}
 		public void Show()
 		{

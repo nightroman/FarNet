@@ -1,5 +1,4 @@
-The NuGet package: https://www.nuget.org/packages/FarNet
-HOW TO GET AND INSTALL: http://forum.farmanager.com/viewtopic.php?f=11&t=2256
+NuGet package: https://www.nuget.org/packages/FarNet
 
 = 5.0.48 =
 
