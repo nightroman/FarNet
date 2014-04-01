@@ -2,7 +2,9 @@ NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 
 = 5.0.71 =
 
-Errors menu: replaced \r\n\t symbols in messages with spaces.
+Command line and box: enabled path completion in both.
+
+Menu "Errors": replaced \r\n\t in messages with spaces.
 
 = 5.0.70 =
 

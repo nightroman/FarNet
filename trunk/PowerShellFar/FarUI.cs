@@ -353,8 +353,8 @@ namespace PowerShellFar
 			}
 			else
 			{
-				var ui = new UI.InputDialog(string.Empty, Res.HistoryPrompt);
-				text = ui.UIDialog.Show() ? ui.UIEdit.Text : string.Empty;
+				var ui = new UI.InputDialog() { History = Res.HistoryPrompt };
+				text = ui.Show() ? ui.Text : string.Empty;
 			}
 			return text;
 		}
