@@ -38,6 +38,7 @@ namespace PowerShellFar.UI
 			_Dialog.KeepWindowTitle = true;
 
 			_Edit = _Dialog.AddEdit(pos, 0, size.X - 2, string.Empty);
+			_Edit.IsPath = true;
 			_Edit.History = history;
 			_Edit.Coloring += Coloring.ColorEditAsConsole;
 

@@ -131,19 +131,17 @@ namespace PowerShellFar
 			}
 
 			// show "Invoke commands"
-			var ui = new UI.InputDialog(Res.Me, Res.History, Res.InvokeCommands);
-			ui.UIEdit.Text = code;
-			if (!ui.UIDialog.Show())
+			var ui = new UI.InputDialog() { Caption = Res.Me, History = Res.History, Prompt = new string[] { Res.InvokeCommands }, Text = code };
+			if (!ui.Show())
 				return;
 
 			// invoke input
-			code = ui.UIEdit.Text;
-			A.Psf.Act(code, null, true);
+			A.Psf.Act(ui.Text, null, true);
 		}
 		public static string GetNextCommand(bool up, string current)
 		{
 			string lastUsed = null;
-			
+
 			if (History.Cache == null)
 			{
 				lastUsed = current;
@@ -154,7 +152,7 @@ namespace PowerShellFar
 			{
 				lastUsed = History.Cache[History.CacheIndex];
 			}
-			
+
 			if (up)
 			{
 				for (; ; )

@@ -559,10 +559,8 @@ Continue with this current directory?
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public string InputCode()
 		{
-			var ui = new UI.InputDialog(Res.Me, Res.History, Res.InvokeCommands);
-			ui.UIEdit.IsPath = true;
-			ui.UIEdit.UseLastHistory = true;
-			return ui.UIDialog.Show() ? ui.UIEdit.Text : null;
+			var ui = new UI.InputDialog() { Caption = Res.Me, History = Res.History, UseLastHistory = true, Prompt = new string[] { Res.InvokeCommands } };
+			return ui.Show() ? ui.Text : null;
 		}
 		/// <summary>
 		/// Prompts to input code and invokes it.
