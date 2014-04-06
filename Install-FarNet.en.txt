@@ -47,20 +47,17 @@ Invoke the preliminary command
 
 Install or update FarNet
 
-	Update-FarPackage FarNet
+	Install-FarPackage FarNet
 
 Install modules, for example
 
-	Update-FarPackage FarNet.PowerShellFar
+	Install-FarPackage FarNet.PowerShellFar
 
-You may start Far Manager after this. Take a look at the unpacked folders
-"FarNet.<version>", "FarNet.PowerShellFar.<version>" in Far Manager. These
-folders are not needed and may be deleted. But there may be documentation,
-samples, etc. Keep this if you need.
+You may start Far Manager after this.
 
-Some modules need further installation steps. Find the manuals either in the
-unpacked "<module>.<version>" or installed "FarNet\Modules\<module>". For
-example, "RightWords" tells how to get and install spelling dictionaries.
+It is recommended to take a look at the installed files, there may be manuals,
+samples, and etc. The folder FarNet contains About-FarNet.htm и FarNetApi.chm.
+Modules normally have their files in folders like "FarNet\Modules\<module>".
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 = UPDATE FarNet AND MODULES WITH PowerShell =
@@ -82,7 +79,7 @@ Invoke the preliminary command
 
 	iex (New-Object Net.WebClient).DownloadString('https://farnet.googlecode.com/svn/trunk/web.ps1')
 
-And invoke update of FarNet and its modules
+And update installed packages
 
 	Update-FarPackage
 
@@ -108,10 +105,6 @@ its directory structure.
 
 Depending on Far Manager, x64 or x86, copy content of "FarHome.x64" or
 "FarHome.x86" to Far Manager preserving its directory structure as well.
-
-The rest in "tools" is documentation and samples which is not installed. You
-may want to keep documentation and samples if FarNet is going to be used not
-just for modules.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 = DOWNLOAD AND INSTALL MODULES MANUALLY =

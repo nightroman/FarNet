@@ -47,21 +47,17 @@ Microsoft Visual C++ 2008 SP1 Redistributable Package
 
 Установите или обновите FarNet
 
-	Update-FarPackage FarNet
+	Install-FarPackage FarNet
 
 Установите модули, например
 
-	Update-FarPackage FarNet.PowerShellFar
+	Install-FarPackage FarNet.PowerShellFar
 
-После этого можно запустить Far Manager. Загляните в распакованные папки
-"FarNet.<version>", "FarNet.PowerShellFar.<version>" в Far Manager. Они не
-нужны для работы и могут быть удалены. Однако, если там имеется документация,
-примеры, и т.п., используйте их по своему усмотрению.
+После этого можно запустить Far Manager.
 
-Некоторые модули могут иметь дополнительные инструкции по установке. Поищите
-информацию в распакованной папке "<module>.<version>" или установленной папке
-"FarNet\Modules\<module>". Например, "RightWords" объясняет, где взять словари
-и куда их установить.
+Рекомендуется взглянуть на установленные папки, там может быть документация,
+примеры, и т.п. У FarNet это папка FarNet с About-FarNet.htm и FarNetApi.chm.
+У модулей файлы обычно находятся в папках вида "FarNet\Modules\<module>".
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 = ОБНОВЛЕНИЕ FarNet И МОДУЛЕЙ С ПОМОЩЬЮ PowerShell =
@@ -83,7 +79,7 @@ Microsoft Visual C++ 2008 SP1 Redistributable Package
 
 	iex (New-Object Net.WebClient).DownloadString('https://farnet.googlecode.com/svn/trunk/web.ps1')
 
-И затем команду обновления FarNet и всех установленных NuGet модулей
+И затем команду обновления установленных пакетов
 
 	Update-FarPackage
 
@@ -110,10 +106,6 @@ Microsoft Visual C++ 2008 SP1 Redistributable Package
 
 В зависимости от платформы Far Manager (x64 или x86) скопировать содержимое
 "FarHome.x64" или "FarHome.x86" в Far Manager также с сохранением структуры.
-
-Остальное в папке "tools" - это документация и примеры, установке не подлежит,
-используется на свое усмотрение. Документацию и примеры лучше изучить, если
-FarNet ставится для разработки.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 = ЗАГРУЗКА И УСТАНОВКА МОДУЛЕЙ ВРУЧНУЮ =

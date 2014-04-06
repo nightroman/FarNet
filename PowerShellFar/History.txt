@@ -1,5 +1,34 @@
 NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 5.0.72 =
+
+As far as Mantis#2635 is not going to be fixed, implemented a kludge.
+
+NEW UPDATE TOOLS
+
+Update-FarPackage.ps1 is replaced with the module FarPackage:
+FarNet\Modules\PowerShellFar\Modules\FarPackage
+See about_FarPackage.help.txt there.
+
+Instead of one script with many not trivial parameters and rules these four
+commands with simple parameters are used:
+
+* Install-FarPackage   - installs/updates one package from web
+* Restore-FarPackage   - installs one package from a file
+* Update-FarPackage    - updates all installed packages
+* Uninstall-FarPackage - removes one installed package
+
+Intermediate unpacked directories "<PackageID>.<version>" are not used, you do
+not have to clean after updates. Files are extracted from packages directly to
+destinations.
+
+Some packages slightly changed their structure, e.g. FarNet and PowerShellFar
+moved its information files to other directories.
+
+If somebody wants some files to be excluded on unpacking we can support, say, a
+file "Update.Exclude.txt" with relative paths and file masks to be excluded.
+Think, suggest.
+
 = 5.0.71 =
 
 Command line and box: enabled path completion in both.
