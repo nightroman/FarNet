@@ -37,6 +37,7 @@ task InstallRes {
 	exec { robocopy . $PsfHome TabExpansion.ps1 TabExpansion2.ps1 TabExpansion.txt /np } (0..2)
 	exec { robocopy Modules\FarDescription $PsfHome\Modules\FarDescription about_FarDescription.help.txt FarDescription.psd1 FarDescription.psm1 FarDescription.Types.ps1xml /np } (0..2)
 	exec { robocopy Modules\FarInventory $PsfHome\Modules\FarInventory about_FarInventory.help.txt FarInventory.psm1 /np } (0..2)
+	exec { robocopy Modules\FarPackage $PsfHome\Modules\FarPackage /np } (0..2)
 }
 
 task BuildPowerShellFarHelp -Inputs {Get-Item Commands\*} -Outputs "$PsfHome\PowerShellFar.dll-Help.xml" {
@@ -60,14 +61,12 @@ Convert-Helps "$BuildRoot\Commands\PowerShellFar.dll-Help.ps1" "$Outputs"
 
 # Make package files
 task Package Help, {
-	$dirRoot = 'z\tools'
 	$dirMain = 'z\tools\FarHome\FarNet\Modules\PowerShellFar'
 
 	Remove-Item [z] -Force -Recurse
 	$null = mkdir $dirMain
 
-	Copy-Item -Destination $dirRoot About-PowerShellFar.htm, History.txt
-	Copy-Item -Destination $dirMain LICENSE.txt, PowerShellFar.macro.lua
+	Copy-Item -Destination $dirMain About-PowerShellFar.htm, History.txt, LICENSE.txt, PowerShellFar.macro.lua
 	Copy-Item -Destination $dirMain $FarHome\FarNet\Modules\PowerShellFar\* -Recurse
 	Copy-Item -Destination $dirMain Bench -Recurse -Force
 }

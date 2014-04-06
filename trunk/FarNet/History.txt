@@ -1,5 +1,9 @@
 NuGet package: https://www.nuget.org/packages/FarNet
 
+= 5.0.49 =
+
+Package: moved manuals and other information files to FarNet.
+
 = 5.0.48 =
 
 Improved documentation and installation steps.

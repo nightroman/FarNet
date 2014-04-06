@@ -1,0 +1,79 @@
+
+TOPIC
+    about_FarPackage
+
+SHORT DESCRIPTION
+    Installs, updates, and uninstalls NuGet packages for Far Manager.
+
+LONG DESCRIPTION
+    This module contains tools for NuGet packages with special structure for
+    Far Manager. Packages are FarNet and FarNet modules, in the first place.
+    But the tools work with any such package, e.g. it can be a plugin, too.
+
+    The key feature is ability to automatically update files, i.e. to check for
+    a newer version, remove installed files, get and unpack the new files. This
+    is done with Update.<PackageID>.info files in the Far Manager directory.
+
+    The module exports these functions:
+
+        Install-FarPackage
+        Restore-FarPackage
+        Update-FarPackage
+        Uninstall-FarPackage
+
+     Use Get-Help in order to get all the details.
+
+     Some typical tasks are described below with recommended steps. Other ways
+     are possible, too, but they may require commands with more parameters.
+
+HOW TO INSTALL A PACKAGE
+
+    In Far Manager panels navigate to its home directory, e.g. invoke
+
+        cd %FARHOME%
+
+    Start a new PowerShell console from there:
+
+        start PowerShell
+
+    WARNING: Close Far Manager if a package was installed before.
+
+    In PowerShell v3.0+ skip this, in PowerShell v2.0 invoke:
+
+        PS> Import-Module FarPackage
+
+    Then use Install-FarPackage, for example:
+
+        PS> Install-FarPackage FarNet
+        PS> Install-FarPackage FarNet.PowerShellFar
+
+HOW TO UPDATE PACKAGES
+
+    The steps are the same as above with two differences:
+    - Always close Far Manager after staring PowerShell.
+    - Use the command Update-FarPackage:
+
+        PS> Update-FarPackage
+
+    Note that this command checks all installed packages for newer versions and
+    updates them when needed. If a particular package should be updated alone
+    then use the command Install-FarPackage, it supports updates as well.
+
+OTHER FUNCTIONS
+
+    Function Restore-FarPackage is similar to Install-FarPackage. It installs
+    directly from a package file. It can be used where internet is missing.
+
+    Example:
+
+        PS> Restore-FarPackage FarNet.Vessel.2.0.5.nupkg
+
+    Function Uninstall-FarPackage removes the specified package files and empty
+    remaining folders. Extra files added by a user are not removed.
+
+    Example:
+
+        PS> Uninstall-FarPackage FarNet.Vessel
+
+SEE ALSO
+    Web way: https://farnet.googlecode.com/svn/trunk/Install-FarNet.en.txt

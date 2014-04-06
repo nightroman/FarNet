@@ -432,7 +432,8 @@ namespace PowerShellFar
 
 					case KeyCode.S:
 
-						if (key.IsCtrl())
+						//! Mantis#2635 Ignore if auto-completion menu is opened
+						if (key.IsCtrl() && Far.Api.Window.Kind != WindowKind.Menu)
 						{
 							SaveData();
 							return true;

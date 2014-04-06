@@ -49,5 +49,4 @@ Start-MSBuild-.ps1 Starts MSBuild with a helper input dialog for the project fil
 TabExpansionProfile.ps1 TabExpansion2 profile.
 Update-FarManager.ps1 Updates Far Manager and standard plugins.
 Update-FarNet.ps1 Updates FarNet products selectively from the project site.
-Update-FarPackage.ps1 Gets, unpacks, updates, or removes Far Manager NuGet packages.
 Watch-Output-.ps1 Watches commands output repeatedly in the editor.
