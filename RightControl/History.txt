@@ -1,6 +1,12 @@
 
 NuGet package: https://www.nuget.org/packages/FarNet.RightControl
 
+= 2.1.1 =
+
+Far Manager 3.0.3854: Mantis#1464 is resolved.
+Removed the workaround from the module.
+(Mantis#1465 is not yet resolved.)
+
 = 2.1.0 =
 
 The package moved to NuGet as "FarNet.RightControl"

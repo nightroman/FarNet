@@ -23,7 +23,7 @@ not have to clean after updates. Files are extracted from packages directly to
 destinations.
 
 Some packages slightly changed their structure, e.g. FarNet and PowerShellFar
-moved its information files to other directories.
+moved information files to other directories.
 
 If somebody wants some files to be excluded on unpacking we can support, say, a
 file "Update.Exclude.txt" with relative paths and file masks to be excluded.

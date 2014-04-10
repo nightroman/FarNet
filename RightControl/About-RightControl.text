@@ -4,11 +4,10 @@
 *********************************************************************
 ## Synopsis
 
-This tool alters some operations in editors, edit controls, and the command
-line. They are: *Step*, *Select*, *Delete* by words, *Go*, *Select* to *smart
-home*. New actions are similar to what many popular editors do on stepping,
-selecting, deleting by words, and etc. Example: Visual Studio editor, Word,
-WordPad, etc.
+This tool alters some operations in editors, edit boxes, and the command line.
+They are: *Step*, *Select*, *Delete* by words, *Go*, *Select* to *smart home*.
+New actions are similar to what many popular editors do on stepping, selecting,
+deleting by words, and etc. Example: Visual Studio, Word, WordPad, etc.
 
 **Project**
 
@@ -20,8 +19,8 @@ WordPad, etc.
 
 **Requirements**
 
- * Far Manager 3.0.3842
- * Plugin FarNet 5.0.48
+ * Far Manager 3.0.3854
+ * Plugin FarNet 5.0.49
 
 **Instructions**
 
@@ -34,8 +33,9 @@ In Russian: <https://farnet.googlecode.com/svn/trunk/Install-FarNet.ru.txt>
 *********************************************************************
 ## Commands
 
-The module mostly works via commands called from macros by the macro function
-`Plugin.Call()`.
+The module works via commands called from macros by `Plugin.Call()`.
+The file *RightControl.macro.lua* provides typical macros.
+In order to use, copy it to *FARPROFILE\Macros\scripts*
 
 ### Word commands
 
@@ -56,8 +56,6 @@ The module mostly works via commands called from macros by the macro function
 Example macro for the Editor area:
 
     Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl: go-to-smart-home")
-
-*RightControl.macro.lua* provides predefined typical macros.
 
 ### Known issue and workaround
 

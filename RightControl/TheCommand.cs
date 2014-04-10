@@ -149,17 +149,7 @@ namespace FarNet.RightControl
 					}
 					else
 					{
-						//_100819_142053 Workaround
-						if (line.WindowKind == WindowKind.Dialog)
-						{
-							IDialog dialog = Far.Api.Dialog;
-							if (dialog != null)
-							{
-								var control = dialog.Focused as IEditable;
-								if (control != null)
-									control.IsTouched = true;
-							}
-						}
+						//_100819_142053 Mantis#1464 Here was a kludge
 
 						line.UnselectText();
 						line.Caret = newX;
