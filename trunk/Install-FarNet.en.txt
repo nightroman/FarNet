@@ -26,7 +26,7 @@ Microsoft Visual C++ 2008 SP1 Redistributable Package
 		http://www.microsoft.com/en-US/download/details.aspx?id=2092
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-= DOWNLOAD AND INSTALL WITH PowerShell =
+= DOWNLOAD AND INSTALL WITH PowerShell v2.0+ =
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This is the recommended and the simplest way of installing FarNet and modules
@@ -60,7 +60,7 @@ samples, and etc. The folder FarNet contains About-FarNet.htm и FarNetApi.chm.
 Modules normally have their files in folders like "FarNet\Modules\<module>".
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-= UPDATE FarNet AND MODULES WITH PowerShell =
+= UPDATE FarNet AND MODULES WITH PowerShell v2.0+ =
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Note: FarNet and modules installed manually are not updated in this way.
@@ -87,9 +87,8 @@ And update installed packages
 = DOWNLOAD AND INSTALL FarNet MANUALLY =
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This may be needed if PowerShell is not installed or there is no internet
-connection. Note: since Windows Vista PowerShell should be installed. But
-internet may be not available anyway.
+This may be needed if PowerShell v2.0 or newer is not installed or there is no
+internet connection and packages are brought from another computer.
 
 Download the FarNet package by its direct link
 
