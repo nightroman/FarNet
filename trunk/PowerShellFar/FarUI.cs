@@ -124,27 +124,41 @@ namespace PowerShellFar
 						WriteLine(prompt);
 
 						//TODO HelpMessage - [F1] - really?
-						var ui = new UI.ReadLine() { Prompt = TextPrompt, HelpMessage = current.HelpMessage, History = Res.HistoryPrompt, Password = safe };
-						if (!ui.Show())
-							break;
+						for (; ; )
+						{
+							var ui = new UI.ReadLine() { Prompt = TextPrompt, HelpMessage = current.HelpMessage, History = Res.HistoryPrompt, Password = safe };
+							if (!ui.Show())
+							{
+								A.AskStopPipeline();
+								continue;
+							}
 
-						text = ui.Text;
-						WriteLine(TextPrompt + (safe ? "*" : text));
+							text = ui.Text;
+							WriteLine(TextPrompt + (safe ? "*" : text));
+							break;
+						}
 					}
 					else
 					{
 						//TODO HelpMessage - not done
-						var ui = new UI.InputBoxEx()
+						for (; ; )
 						{
-							Title = caption,
-							Prompt = string.IsNullOrEmpty(message) ? prompt : message + "\r" + prompt,
-							History = Res.HistoryPrompt,
-							Password = safe
-						};
-						if (!ui.Show())
-							break;
+							var ui = new UI.InputBoxEx()
+							{
+								Title = caption,
+								Prompt = string.IsNullOrEmpty(message) ? prompt : message + "\r" + prompt,
+								History = Res.HistoryPrompt,
+								Password = safe
+							};
+							if (!ui.Show())
+							{
+								A.AskStopPipeline();
+								continue;
+							}
 
-						text = ui.Text;
+							text = ui.Text;
+							break;
+						}
 					}
 					r.Add(prompt, ValueToResult(text, safe));
 				}
@@ -185,10 +199,13 @@ namespace PowerShellFar
 
 				var ui = new UI.ReadLine() { Prompt = TextPrompt };
 				if (!ui.Show())
-					throw new PipelineStoppedException(); //TODO
+				{
+					A.AskStopPipeline();
+					continue;
+				}
 
 				var text = ui.Text;
-				
+
 				// echo
 				WriteLine(TextPrompt + ui.Text);
 
@@ -255,7 +272,7 @@ namespace PowerShellFar
 		{
 			int lineLenMax = RawUI.BufferSize.Width - 1;
 			string format = "[{0}] {1}  ";
-			
+
 			for (int i = 0; i < hotkeysAndPlainLabels.GetLength(1); i++)
 			{
 				ConsoleColor fg = PromptColor;
@@ -298,7 +315,7 @@ namespace PowerShellFar
 					text2 = string.Format(null, TextDefaultChoicesForMultipleChoices, o);
 				}
 			}
-			
+
 			WriteChoiceHelper(text2, ForegroundColor, BackgroundColor, lineLenMax);
 			WriteLine(); //! or it is under the dialog
 		}
@@ -347,14 +364,30 @@ namespace PowerShellFar
 			string text;
 			if (Far.Api.UI.IsCommandMode)
 			{
-				var ui = new UI.ReadLine() { History = Res.HistoryPrompt };
-				text = ui.Show() ? ui.Text : string.Empty;
+				for (; ; )
+				{
+					var ui = new UI.ReadLine() { History = Res.HistoryPrompt };
+					if (ui.Show())
+					{
+						text = ui.Text;
+						break;
+					}
+					A.AskStopPipeline();
+				}
 				WriteLine(text);
 			}
 			else
 			{
-				var ui = new UI.InputDialog() { History = Res.HistoryPrompt };
-				text = ui.Show() ? ui.Text : string.Empty;
+				for (; ; )
+				{
+					var ui = new UI.InputDialog() { History = Res.HistoryPrompt };
+					if (ui.Show())
+					{
+						text = ui.Text;
+						break;
+					}
+					A.AskStopPipeline();
+				}
 			}
 			return text;
 		}
