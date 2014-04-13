@@ -40,6 +40,14 @@ namespace PowerShellFar
 			Far.Api.Message(message, Res.Me, MessageOptions.LeftAligned);
 		}
 		/// <summary>
+		/// Shows a stop pipeline message.
+		/// </summary>
+		public static void AskStopPipeline()
+		{
+			if (0 == Far.Api.Message("Stop all commands?", Res.Me, MessageOptions.OkCancel | MessageOptions.Warning))
+				throw new PipelineStoppedException();
+		}
+		/// <summary>
 		/// Creates standard Far viewer ready for opening (F3)
 		/// </summary>
 		/// <param name="filePath">Existing file to view.</param>
@@ -109,9 +117,9 @@ namespace PowerShellFar
 					.AddParameter("Value", text)
 					.AddParameter(Prm.Force)
 					.AddParameter(Prm.ErrorAction, ActionPreference.Continue);
-					
+
 				ps.Invoke();
-				
+
 				if (ShowError(ps))
 					return false;
 			}
@@ -552,7 +560,7 @@ Out-String -Width $args[1]
 		{
 			InvokeCode("Disable-PSBreakpoint -Breakpoint $args[0]", breakpoint);
 		}
-		internal static object SafePropertyValue(PSPropertyInfo pi) 
+		internal static object SafePropertyValue(PSPropertyInfo pi)
 		{
 			//! exceptions, e.g. exit code of running process
 			try

@@ -1,5 +1,13 @@
 NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 5.0.73 =
+
+STOPPING COMMANDS ON USER INPUT
+
+In MS PS console [CtrlC] stops all commands on user input, i.e. on read host,
+prompt for choice, etc. The same ability is added to PSF. But in PSF [Esc] is
+used instead in various prompts. Unlike in PS, it also asks a user to confirm.
+
 = 5.0.72 =
 
 As far as Mantis#2635 is not going to be fixed, implemented a kludge.

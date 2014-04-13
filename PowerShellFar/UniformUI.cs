@@ -88,23 +88,29 @@ namespace PowerShellFar
 		{
 			if (Far.Api.UI.IsCommandMode)
 			{
-				var ui = new UI.ReadLine() { Password = true };
-				if (!ui.Show())
-					return null;
-				
-				WriteLine("*");
-				return (SecureString)ValueToResult(ui.Text, true).BaseObject;
+				for (; ; )
+				{
+					var ui = new UI.ReadLine() { Password = true };
+					if (!ui.Show())
+					{
+						A.AskStopPipeline();
+						continue;
+					}
+
+					WriteLine("*");
+					return (SecureString)ValueToResult(ui.Text, true).BaseObject;
+				}
 			}
-			
+
 			const string name = " ";
 			var field = new FieldDescription(name);
 			field.SetParameterType(typeof(SecureString));
-			var fields = new Collection<FieldDescription>() {field};
-			
+			var fields = new Collection<FieldDescription>() { field };
+
 			var r = Prompt("", "", fields);
 			if (r == null)
 				return null;
-			
+
 			return (SecureString)r[name].BaseObject;
 		}
 		public override void WriteProgress(long sourceId, ProgressRecord record)

@@ -52,9 +52,7 @@ namespace PowerShellFar.UI
 				// [Esc]:
 				if (answer < 0)
 				{
-					answer = Far.Api.Message(message, caption, MessageOptions.LeftAligned, new string[] { "&Halt command", "Cancel" });
-					if (answer == 0)
-						throw new PipelineStoppedException();
+					A.AskStopPipeline();
 					continue;
 				}
 

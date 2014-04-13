@@ -86,7 +86,10 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 	# this command starts a modal dialog, but the step sequence
 	# is not stopped because the command is RETURNED (by {{..}})
 	# and the stepper knows how to process this case correctly
-	Read-Host
+	$text = Read-Host
+
+	# NOTE This check is done after some other steps below!
+	Assert-Far ($text -eq 'Another text')
 }}
 
 # type some text
@@ -110,8 +113,7 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 	Assert-Far ($Far.Dialog[1].Text -eq 'Another text')
 }
 
-# exit the dialog
-'Keys"Esc"'
+'Keys"Enter" -- enter the text'
 
 # HOW TO: open a modal editor
 {{

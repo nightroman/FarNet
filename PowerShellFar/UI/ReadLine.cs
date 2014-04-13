@@ -13,6 +13,8 @@ namespace PowerShellFar.UI
 {
 	class ReadLine
 	{
+		static readonly Guid TypeId = new Guid("ce59fc98-546d-43d8-98f3-1e1b122cf9a5");
+
 		public string HelpMessage { get; set; }
 		public string History { get; set; }
 		public string Prompt { get; set; }
@@ -30,6 +32,7 @@ namespace PowerShellFar.UI
 			var size = Far.Api.UI.WindowSize;
 
 			_Dialog = Far.Api.CreateDialog(0, size.Y - 2, size.X - 1, size.Y - 1);
+			_Dialog.TypeId = TypeId;
 			_Dialog.NoShadow = true;
 			_Dialog.KeepWindowTitle = true;
 
@@ -50,7 +53,7 @@ namespace PowerShellFar.UI
 				var uiText = _Dialog.AddText(0, 0, prompt.Length - 1, prompt);
 				uiText.Coloring += Coloring.ColorTextAsConsole;
 			}
-			
+
 			var uiArea = _Dialog.AddText(0, 1, size.X - 1, string.Empty);
 			uiArea.Coloring += Coloring.ColorTextAsConsole;
 
@@ -63,7 +66,7 @@ namespace PowerShellFar.UI
 				if (e.Control == null)
 					e.Ignore = true;
 			};
-			
+
 			return _Dialog.Show();
 		}
 		void OnKey(object sender, KeyPressedEventArgs e)
