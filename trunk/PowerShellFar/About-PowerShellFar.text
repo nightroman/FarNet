@@ -41,7 +41,7 @@
 
 [Contents](#Contents)
 
-### PowerShellFar 5.0.73
+### PowerShellFar 5.0.74
 
 PowerShellFar is the FarNet module for Far Manager, the file manager.
 It is the Windows PowerShell host in the genuine console environment.
@@ -50,8 +50,6 @@ PowerShellFar exposes the FarNet API and provides many ways for invoking
 commands and viewing the results. The package includes cmdlets, modules,
 and scripts designed for Far Manager. Syntax highlighting in the editor
 is provided by Colorer.
-
-To install and update PowerShellFar and FarNet use *Update-FarPackage.ps1*.
 
 ### Project
 
@@ -65,7 +63,7 @@ To install and update PowerShellFar and FarNet use *Update-FarPackage.ps1*.
 
 **Requirements**
 
-- Far Manager 3.0.3864
+- Far Manager 3.0.3865
 - Plugin FarNet 5.0.49
 - Windows PowerShell 2.0, 3.0
 
@@ -80,12 +78,12 @@ In Russian: <https://farnet.googlecode.com/svn/trunk/Install-FarNet.ru.txt>
 ---
 ### Set PowerShell execution policy
 
-The module works with any policy. This step is recommended for comfortable work
-with *PowerShell.exe*, e.g. in order to use the script *Update-FarPackage.ps1*.
+The module does not require this, it invokes scripts with any policy.
+This step is recommended for invoking scripts by *PowerShell.exe*.
 
 Start `PowerShell.exe` as administrator, and type `Get-ExecutionPolicy`. If it
 is not *Bypass*, *Unrestricted*, or *RemoteSigned* invoke `Set-ExecutionPolicy`
-with the required value. *Bypass* is the least secure but may work faster.
+with the required value. *Bypass* is the least secure but it may work faster.
 
 On x64 machines `Set-ExecutionPolicy` should be set for x86 and x64. Use the
 Windows start menu in order to open x86 and x64 consoles and set the policy.

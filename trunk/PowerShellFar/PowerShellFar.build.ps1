@@ -86,7 +86,7 @@ It is the Windows PowerShell host in the genuine console environment.
 
 ---
 
-To install and update FarNet packages, follow these steps:
+To install FarNet packages, follow these steps:
 
 https://farnet.googlecode.com/svn/trunk/Install-FarNet.en.txt
 

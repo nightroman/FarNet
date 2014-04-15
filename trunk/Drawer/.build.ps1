@@ -56,7 +56,7 @@ It provides a few editor color tools (drawers).
 
 ---
 
-To install and update FarNet packages, follow these steps:
+To install FarNet packages, follow these steps:
 
 https://farnet.googlecode.com/svn/trunk/Install-FarNet.en.txt
 

@@ -1,4 +1,9 @@
+
 NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
+
+= 5.0.74 =
+
+Continued. [Esc] is for stopping in prompts for Type[] arguments as well.
 
 = 5.0.73 =
 
