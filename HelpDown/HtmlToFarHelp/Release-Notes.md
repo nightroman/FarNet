@@ -1,6 +1,10 @@
 
 # HtmlToFarHelp Release Notes
 
+## v1.0.3
+
+Fixed mixed line ends.
+
 ## v1.0.2
 
 Added missing HLF option `PluginContents`. Without it help files are not shown
