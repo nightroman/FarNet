@@ -92,24 +92,43 @@ namespace PowerShellFar
 							WriteLine(prompt2);
 
 							//TODO HelpMessage - is fine by [F1]?
-							var ui = new UI.ReadLine() { Prompt = TextPrompt, HelpMessage = current.HelpMessage, History = Res.HistoryPrompt };
-							if (!ui.Show() || (text = ui.Text).Length == 0)
+							for (; ; )
+							{
+								var ui = new UI.ReadLine() { Prompt = TextPrompt, HelpMessage = current.HelpMessage, History = Res.HistoryPrompt };
+								if (!ui.Show())
+								{
+									A.AskStopPipeline();
+									continue;
+								}
+								text = ui.Text;
 								break;
-
+							}
 							WriteLine(TextPrompt + text);
 						}
 						else
 						{
 							//TODO HelpMessage - not done
-							var ui = new UI.InputBoxEx()
+							for (; ; )
 							{
-								Title = caption,
-								Prompt = string.IsNullOrEmpty(message) ? prompt2 : message + "\r" + prompt2,
-								History = Res.HistoryPrompt
-							};
-							if (!ui.Show() || (text = ui.Text).Length == 0)
+								var ui = new UI.InputBoxEx()
+								{
+									Title = caption,
+									Prompt = string.IsNullOrEmpty(message) ? prompt2 : message + "\r" + prompt2,
+									History = Res.HistoryPrompt
+								};
+								if (!ui.Show())
+								{
+									A.AskStopPipeline();
+									continue;
+								}
+								text = ui.Text;
 								break;
+							}
 						}
+
+						if (text.Length == 0)
+							break;
+
 						arrayList.Add(text);
 					}
 					r.Add(prompt, new PSObject(arrayList));
