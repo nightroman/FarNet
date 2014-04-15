@@ -38,8 +38,9 @@ namespace HtmlToFarHelp
 		const string ErrUnexpectedNode = "Unexpected node {0} {1}.";
 		readonly Regex _reNewLine = new Regex(@"\r?\n");
 		readonly Regex _reSpaces = new Regex(" +");
-		readonly Regex _reUnindent = new Regex(@"\n[\ \t]+");
+		readonly Regex _reUnindent = new Regex(@"\r?\n[\ \t]+");
 		readonly Regex _reOptions = new Regex(@"^\s*HLF:\s*(.*)", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+		readonly Regex _reWinNewLine = new Regex(@"(?<!\r)\n"); //|\r(?!\n)
 		readonly char[] TrimNewLine = new char[] { '\r', '\n' };
 		readonly HashSet<string> _topics = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		readonly HashSet<string> _links = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -293,7 +294,7 @@ namespace HtmlToFarHelp
 			if (Reader.NodeType != XmlNodeType.Text)
 				Throw(ErrExpectedA);
 
-			var text = Reader.Value;
+			var text = _reWinNewLine.Replace(Reader.Value, "\r\n");
 			Writer.Write("~{0}~@{1}@", Escape(text), href.Replace("@", "@@"));
 		}
 		void Heading1()
@@ -488,7 +489,7 @@ namespace HtmlToFarHelp
 		void Text()
 		{
 			++_countTextInPara;
-			var text = Reader.Value;
+			var text = _reWinNewLine.Replace(Reader.Value, "\r\n");
 
 			NewLine();
 
@@ -507,7 +508,7 @@ namespace HtmlToFarHelp
 
 			// unindent second+ lines, otherwise HLF treats them as new para
 			if (_para > 0 || _list > 0)
-				text = _reUnindent.Replace(text, string.Empty);
+				text = _reUnindent.Replace(text, "\r\n");
 
 			// escape
 			text = Escape(text);

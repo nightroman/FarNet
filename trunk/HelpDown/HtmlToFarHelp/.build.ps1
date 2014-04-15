@@ -61,6 +61,7 @@ The tool requires .NET Framework 3.5 or above.
 		<owners>Roman Kuzmin</owners>
 		<authors>Roman Kuzmin</authors>
 		<projectUrl>https://code.google.com/p/farnet</projectUrl>
+		<iconUrl>https://farnet.googlecode.com/svn/trunk/HelpDown/HtmlToFarHelp/HtmlToFarHelp.png</iconUrl>
 		<licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$text</summary>

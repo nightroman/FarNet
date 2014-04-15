@@ -23,7 +23,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using MarkdownDeep;
 
-[assembly: AssemblyVersion("1.0.1")]
+[assembly: AssemblyVersion("1.0.2")]
 [assembly: AssemblyProduct("MarkdownToHtml")]
 [assembly: AssemblyTitle("MarkdownToHtml")]
 [assembly: AssemblyDescription("MarkdownToHtml - converts markdown to HTML")]
@@ -80,7 +80,7 @@ Keys:
 
 			try
 			{
-				var text = File.ReadAllText(from);
+				var text = File.ReadAllText(from).Replace("\r\n", "\n");
 
 				var markdown = new Markdown();
 				markdown.ExtraMode = true;
@@ -89,9 +89,9 @@ Keys:
 
 				using (var writer = new StreamWriter(to, false, Encoding.UTF8))
 				{
-					writer.WriteLine("<html><title>{0}</title><body>", title);
+					writer.Write("<html><title>{0}</title><body>\n", title);
 					writer.Write(html);
-					writer.WriteLine("</body></html>");
+					writer.Write("</body></html>\n");
 				}
 
 				return 0;
