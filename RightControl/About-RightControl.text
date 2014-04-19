@@ -17,54 +17,35 @@ deleting by words, and etc. Example: Visual Studio, Word, WordPad, etc.
 *********************************************************************
 ## Installation
 
-**Requirements**
-
- * Far Manager 3.0.3854
- * Plugin FarNet 5.0.49
-
-**Instructions**
-
 How to get, install, and update from the NuGet package *FarNet.RightControl*
 
 In English: <https://farnet.googlecode.com/svn/trunk/Install-FarNet.en.txt>
 
 In Russian: <https://farnet.googlecode.com/svn/trunk/Install-FarNet.ru.txt>
 
+After installing the module copy the macro file
+*RightControl.macro.lua* to *%FARPROFILE%\Macros\scripts*.
+
 *********************************************************************
 ## Commands
 
-The module works via commands called from macros by `Plugin.Call()`.
-The file *RightControl.macro.lua* provides typical macros.
-In order to use, copy it to *FARPROFILE\Macros\scripts*
+The module works by commands called from macros associated with keys:
 
-### Word commands
+**Word commands**
 
-- `step-left`
-- `step-right`
-- `select-left`
-- `select-right`
-- `delete-left`
-- `delete-right`
-- `vertical-left`
-- `vertical-right`
+- `step-left ~ [CtrlLeft]`
+- `step-right ~ [CtrlRight]`
+- `select-left ~ [CtrlShiftLeft]`
+- `select-right ~ [CtrlShiftRight]`
+- `delete-left ~ [CtrlBS]`
+- `delete-right ~ [CtrlDel]`
+- `vertical-left ~ [CtrlAltLeft]`
+- `vertical-right ~ [CtrlAltRight]`
 
-### Smart home commands
+**Smart home commands**
 
-- `go-to-smart-home`
-- `select-to-smart-home`
-
-Example macro for the Editor area:
-
-    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl: go-to-smart-home")
-
-### Known issue and workaround
-
-Until the issue Mantis 1465 is resolved `[ShiftLeft]` and `[ShiftRight]` work
-funny in dialogs and the command line when selection is set by the module.
-
-Workaround: use macros `[ShiftLeft]` and `[ShiftRight]` (not in the editor!)
-and bind them to the commands `vertical-left` and `vertical-right`.
-*RightControl.macro.lua* includes these macros.
+- `go-to-smart-home ~ [Home]`
+- `select-to-smart-home ~ [ShiftHome]`
 
 *********************************************************************
 ## Settings
