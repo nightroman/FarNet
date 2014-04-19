@@ -2,15 +2,13 @@
 --[[
 	RightControl macros
 
-	6 macros for editor, edit box, command line: CtrlLeft/Right,
-	CtrlShiftLeft/Right, CtrlBS/Del.
+	6 macros for editor, dialog, command line:
+	CtrlLeft/Right, CtrlShiftLeft/Right, CtrlBS/Del.
 
-	4 editor macros: CtrlAltLeft/Right, Home/ShiftHome.
+	4 editor macros:
+	CtrlAltLeft/Right, Home/ShiftHome.
 
-	2 workaround macros ShiftLeft/Right for edit box and command line. They
-	should be removed when Mantis 1465 is resolved.
-
-	Note: Home/ShiftHome can be used for edit box and command line, too, but
+	Note: Home/ShiftHome can be used for dialog and command line, too, but
 	smart home is not useful where text normally does not start with spaces.
 ]]
 
@@ -57,20 +55,6 @@ Macro {
 key="CtrlShiftRight"; description="RightControl: select right"; area=areaAnyEditor; condition=isEditor; action=function()
 if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys("Esc") end
 Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:select-right")
-end;
-}
-
-Macro {
-key="ShiftLeft"; description="RightControl: workaround left"; area=areaLineEditor; condition=isEditor; action=function()
-if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys("Esc") end
-Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:vertical-left")
-end;
-}
-
-Macro {
-key="ShiftRight"; description="RightControl: workaround right"; area=areaLineEditor; condition=isEditor; action=function()
-if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys("Esc") end
-Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:vertical-right")
 end;
 }
 

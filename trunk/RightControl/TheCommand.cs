@@ -43,8 +43,8 @@ namespace FarNet.RightControl
 				case "select-right": Run(editor, line, Operation.Select, true, false); break;
 				case "delete-left": Run(editor, line, Operation.Delete, false, false); break;
 				case "delete-right": Run(editor, line, Operation.Delete, true, false); break;
-				case "vertical-left": if (editor == null) SelectWorkaround(line, false); else Run(editor, line, Operation.Select, false, true); break;
-				case "vertical-right": if (editor == null) SelectWorkaround(line, true); else Run(editor, line, Operation.Select, true, true); break;
+				case "vertical-left": Run(editor, line, Operation.Select, false, true); break;
+				case "vertical-right": Run(editor, line, Operation.Select, true, true); break;
 				case "go-to-smart-home": Home(editor, line, false); break;
 				case "select-to-smart-home": Home(editor, line, true); break;
 				default: throw new ModuleException("Unknown command: " + e.Command);
@@ -391,26 +391,6 @@ namespace FarNet.RightControl
 			editor.GoTo(caretNew, line);
 			editor.SelectText(x1, y1, x2, y2, PlaceKind.Column);
 			editor.Redraw();
-		}
-		// This should be removed when Mantis 1465 is resolved.
-		void SelectWorkaround(ILine line, bool right)
-		{
-			int oldX = line.Caret;
-			int newX;
-			if (right)
-			{
-				newX = oldX + 1;
-				if (newX > line.Length)
-					return;
-			}
-			else
-			{
-				newX = oldX - 1;
-				if (newX < 0)
-					return;
-			}
-
-			SelectStream(null, line, right, new Point(oldX, 0), new Point(newX, 0));
 		}
 		/// <summary>
 		/// Moves the caret or selects the text to the smart line home.

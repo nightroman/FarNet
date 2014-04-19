@@ -13,8 +13,35 @@ $ModuleHome = "$FarHome\FarNet\Modules\RightControl"
 
 task . Build, Clean
 
+# Get version from history.
+function Get-Version {
+	assert ([System.IO.File]::ReadAllText('History.txt') -match '=\s*(\d+\.\d+\.\d+)\s*=')
+	$Matches[1]
+}
+
+# Generate or update meta files.
+task Meta -Inputs History.txt -Outputs AssemblyInfo.cs {
+	$Version = Get-Version
+
+	Set-Content AssemblyInfo.cs @"
+using System;
+using System.Reflection;
+using System.Runtime.InteropServices;
+
+[assembly: AssemblyProduct("FarNet.RightControl")]
+[assembly: AssemblyVersion("$Version")]
+[assembly: AssemblyTitle("FarNet module RightControl for Far Manager")]
+[assembly: AssemblyDescription("Some editor actions work like in other editors")]
+[assembly: AssemblyCompany("http://code.google.com/p/farnet/")]
+[assembly: AssemblyCopyright("Copyright (c) 2010-2014 Roman Kuzmin")]
+
+[assembly: ComVisible(false)]
+[assembly: CLSCompliant(true)]
+"@
+}
+
 # Build and install
-task Build {
+task Build Meta, {
 	use 4.0 MSBuild
 	exec { MSBuild RightControl.csproj /p:Configuration=Release /p:FarHome=$FarHome }
 }
@@ -24,17 +51,20 @@ task Help {
 	exec { MarkdownToHtml "From = About-RightControl.text; To = About-RightControl.htm" }
 }
 
+# Remove temp files
 task Clean {
-	Remove-Item -Force -Recurse -ErrorAction 0 -Path `
-	z, bin, obj, About-RightControl.htm, FarNet.RightControl.*.nupkg
+	Remove-Item -Force -Recurse -ErrorAction 0 `
+	z, bin, obj, AssemblyInfo.cs,
+	About-RightControl.htm, FarNet.RightControl.*.nupkg
 }
 
+# Set $script:Version
 task Version {
-	$dll = Get-Item -LiteralPath $ModuleHome\RightControl.dll
-	assert ($dll.VersionInfo.FileVersion -match '^(\d+\.\d+\.\d+)\.0$')
-	($script:Version = $matches[1])
+	($script:Version = Get-Version)
+	assert ((Get-Item $ModuleHome\RightControl.dll).VersionInfo.FileVersion -eq ([Version]"$script:Version.0"))
 }
 
+# Copy package files to z\tools
 task Package Help, {
 	$toModule = 'z\tools\FarHome\FarNet\Modules\RightControl'
 
@@ -49,6 +79,7 @@ task Package Help, {
 	$ModuleHome\RightControl.dll
 }
 
+# New NuGet package
 task NuGet Package, Version, {
 	$text = @'
 RightControl is the FarNet module for Far Manager.
