@@ -53,8 +53,20 @@ task Help -If ($Configuration -eq 'Release') {
 	exec { HtmlToFarHelp "From=About-FarNet.htm" "To=$FarHome\Plugins\FarNet\FarNetMan.hlf" }
 }
 
+# Tests before packaging
+task BeginPackage {
+	# Far.exe.config
+	$xml = [xml](Get-Content $FarHome\Far.exe.config)
+	$nodes = @($xml.SelectNodes('configuration/appSettings/add'))
+	assert ($nodes.Count -eq 0)
+	$nodes = @($xml.SelectNodes('configuration/system.diagnostics/switches/add'))
+	assert ($nodes.Count -eq 1)
+	assert ($nodes[0].name -ceq 'FarNet.Trace')
+	assert ($nodes[0].value -ceq 'Warning')
+}
+
 # Make package files
-task Package Help, {
+task Package BeginPackage, Help, {
 	assert ($Platform -eq 'Win32')
 
 	# build x64
@@ -82,8 +94,7 @@ task Package Help, {
 # Set version
 task Version {
 	. ..\Get-Version.ps1
-	$script:Version = $FarNetVersion
-	$Version
+	($script:Version = $FarNetVersion)
 }
 
 # Make NuGet package

@@ -63,8 +63,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\AnyAssemblyInfo.cs">
-      <Link>AnyAssemblyInfo.cs</Link>
+    <Compile Include="..\AssemblyMeta.cs">
+      <Link>AssemblyMeta.cs</Link>
     </Compile>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="SuperFile.cs" />

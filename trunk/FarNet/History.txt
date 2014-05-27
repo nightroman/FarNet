@@ -1,4 +1,6 @@
+
 NuGet package: https://www.nuget.org/packages/FarNet
+Far Manager 3.0.3872
 
 = 5.0.49 =
 

@@ -184,5 +184,9 @@ namespace FarNet.Works
 				return name;
 			}
 		}
+		/// <summary>
+		/// Gets or sets the default macro output mode.
+		/// </summary>
+		public static bool MacroOutput { get; set; }
 	}
 }

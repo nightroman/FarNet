@@ -70,7 +70,7 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnyAssemblyInfo.cs" />
+    <Compile Include="AssemblyMeta.cs" />
     <Compile Include="BreakpointDrawer.cs" />
     <Compile Include="Commands\AssertFarCommand.cs" />
     <Compile Include="Commands\Find-FarFile.cs" />

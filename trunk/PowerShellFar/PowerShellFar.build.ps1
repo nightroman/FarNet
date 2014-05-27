@@ -74,8 +74,7 @@ task Package Help, {
 # Set version
 task Version {
 	. ..\Get-Version.ps1
-	$script:Version = $PowerShellFarVersion
-	$Version
+	($script:Version = $PowerShellFarVersion)
 }
 
 # Make NuGet package
