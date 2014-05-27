@@ -394,8 +394,8 @@ void Far1::PostMacro(String^ macro, bool enableOutput, bool disablePlugins)
 	arg.StructSize = sizeof(arg);
 	arg.SequenceText = pin;
 	
-	if (!enableOutput)
-		arg.Flags |= KMFLAGS_DISABLEOUTPUT;
+	if (enableOutput)
+		arg.Flags |= KMFLAGS_ENABLEOUTPUT;
 	if (disablePlugins)
 		arg.Flags |= KMFLAGS_NOSENDKEYSTOPLUGINS;
 	

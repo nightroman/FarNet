@@ -585,7 +585,7 @@ void Far0::DisposeSteps()
 // Plugin.Menu is not a replacement for F11, it is less predictable on posted keys and async jobs.
 void Far0::PostSelf()
 {
-	Far::Api->PostMacro("Keys('F11') Menu.Select('FarNet', 2) Keys('Enter')");
+	Far::Api->PostMacro("Keys('F11') Menu.Select('FarNet', 2) Keys('Enter')", Works::Kit::MacroOutput, false);
 	
 	// ++level. With no steps it is normally expected to be 0.
 	// Just in case something was wrong set it to expected 1.

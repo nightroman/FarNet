@@ -43,8 +43,7 @@
 #>
 
 [CmdletBinding()]
-param
-(
+param(
 	[string]
 	$FARHOME = $env:FARHOME,
 	[string][ValidateSet('x64', 'x86', 'Win32')]
@@ -57,7 +56,10 @@ param
 	$Stable
 )
 
-Set-StrictMode -Version 2
+# Files to be removed after updates if they are originally missing.
+$NotUsedFiles = '*.hlf', '*.lng', '*.cmd', 'File_id.diz', 'changelog_eng'
+
+Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 if ($Host.Name -ne 'ConsoleHost') {Write-Error "Please, invoke by the console host."}
 
@@ -107,7 +109,7 @@ Wait-Process Far -ErrorAction 0
 ### extract all
 Write-Host -ForegroundColor Cyan "Extracting from '$Archive'..."
 $plugins1 = [System.IO.Directory]::GetDirectories("$FARHOME\Plugins")
-$files1 = foreach($_ in '*.hlf', '*.lng') { [System.IO.Directory]::GetFiles($FARHOME, $_) }
+$files1 = foreach($_ in $NotUsedFiles) { [System.IO.Directory]::GetFiles($FARHOME, $_) }
 & '7z' 'x' $Archive "-o$FARHOME" '-aoa'
 if ($LastExitCode) {Write-Error "Error on extracting files."}
 
@@ -123,7 +125,7 @@ foreach($plugin in $plugins2) {
 
 ### remove not used files
 Write-Host -ForegroundColor Cyan "Removing not used files..."
-$files2 = foreach($_ in '*.hlf', '*.lng') { [System.IO.Directory]::GetFiles($FARHOME, $_) }
+$files2 = foreach($_ in $NotUsedFiles) { [System.IO.Directory]::GetFiles($FARHOME, $_) }
 foreach($file in $files2) {
 	if ($files1 -notcontains $file) {
 		Write-Host "Removing $file"

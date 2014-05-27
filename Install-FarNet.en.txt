@@ -64,7 +64,7 @@ Modules normally have their files in folders like "FarNet\Modules\<module>".
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Note: FarNet and modules installed manually are not updated in this way.
-Only modules installed by Update-FarPackage are updated.
+Only modules installed by Install-FarPackage are updated.
 
 Close Far Manager and start the PowerShell console
 (as Administrator: depends on Far Manager location)

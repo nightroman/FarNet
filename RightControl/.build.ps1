@@ -15,8 +15,7 @@ task . Build, Clean
 
 # Get version from history.
 function Get-Version {
-	assert ([System.IO.File]::ReadAllText('History.txt') -match '=\s*(\d+\.\d+\.\d+)\s*=')
-	$Matches[1]
+	switch -Regex -File History.txt {'=\s*(\d+\.\d+\.\d+)\s*=' {return $Matches[1]} }
 }
 
 # Generate or update meta files.

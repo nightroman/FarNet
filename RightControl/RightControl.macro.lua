@@ -13,7 +13,6 @@
 ]]
 
 local areaAnyEditor="Editor Dialog DialogAutoCompletion Shell ShellAutoCompletion Info QView Tree"
-local areaLineEditor="Dialog DialogAutoCompletion Shell ShellAutoCompletion Info QView Tree"
 local isEditor=function() return not (Area.Shell or Area.ShellAutoCompletion or Area.Info or Area.QView or Area.Tree) or not CmdLine.Empty end
 
 Macro {

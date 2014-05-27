@@ -1,5 +1,5 @@
 
-# PowerShellFar, the FarNet module for Far Manager {#Contents}
+# FarNet module PowerShellFar for Far Manager {#Contents}
 
 ### General
 
@@ -41,8 +41,6 @@
 
 [Contents](#Contents)
 
-### PowerShellFar 5.0.74
-
 PowerShellFar is the FarNet module for Far Manager, the file manager.
 It is the Windows PowerShell host in the genuine console environment.
 
@@ -51,9 +49,10 @@ commands and viewing the results. The package includes cmdlets, modules,
 and scripts designed for Far Manager. Syntax highlighting in the editor
 is provided by Colorer.
 
-### Project
+### Project FarNet
 
-* Source: [http://code.google.com/p/farnet/](http://code.google.com/p/farnet/)
+* Wiki: <https://github.com/nightroman/FarNet-Wiki/wiki>
+* Site: <http://code.google.com/p/farnet>
 * Author: Roman Kuzmin
 
 *********************************************************************
@@ -63,9 +62,9 @@ is provided by Colorer.
 
 **Requirements**
 
-- Far Manager 3.0.3865
-- Plugin FarNet 5.0.49
-- Windows PowerShell 2.0, 3.0
+- Windows PowerShell 2.0+
+- Far Manager, see the required version in *History.txt*
+- Plugin FarNet, see the required version in *History.txt*
 
 **Instructions**
 

@@ -387,6 +387,7 @@ FarDialog^ FarDialog::GetDialog()
 		Call_ACTL_GETWINDOWINFO(wi, i);
 
 		//_130105_190834 Mantis 2241. Hangs on DialogAutoCompletion. For now disable in all menus.
+		//+ Hangs in gialog.cpp :: Dialog::GetTypeAndName() at `SCOPED_ACTION(CriticalSectionLock)(CS)`
 		if (wi.Type == WTYPE_VMENU)
 			return nullptr;
 
@@ -683,7 +684,7 @@ INT_PTR FarDialog::DialogProc(intptr_t msg, intptr_t param1, void* param2)
 			{
 				FarControl^ fc = param1 >= 0 ? _items[(int)param1] : nullptr;
 				INPUT_RECORD* ir = (INPUT_RECORD*)param2;
-				
+
 				if (MOUSE_EVENT == ir->EventType)
 				{
 					if (fc && fc->_MouseClicked || _MouseClicked)

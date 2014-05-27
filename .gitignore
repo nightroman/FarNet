@@ -8,4 +8,5 @@
 [D|d]ebug
 [O|o]bj
 [R|r]elease
-AssemblyInfo.cs
+AssemblyMeta.*
+Active.h
