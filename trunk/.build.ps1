@@ -42,12 +42,18 @@ using System.Reflection;
 [assembly: AssemblyCompany("http://code.google.com/p/farnet")]
 "@
 
-	$v = [Version]$FarVersion
+	$v1 = [Version]$FarVersion
+	$v2 = [Version]$FarNetVersion
 	Set-Content FarNet\FarNetMan\Active.h @"
 #pragma once
-#define MinFarVersionMajor $($v.Major)
-#define MinFarVersionMinor $($v.Minor)
-#define MinFarVersionBuild $($v.Build)
+
+#define MinFarVersionMajor $($v1.Major)
+#define MinFarVersionMinor $($v1.Minor)
+#define MinFarVersionBuild $($v1.Build)
+
+#define FarNetVersionMajor $($v2.Major)
+#define FarNetVersionMinor $($v2.Minor)
+#define FarNetVersionBuild $($v2.Build)
 "@
 
 	Set-Content FarNet\FarNetMan\AssemblyMeta.h @"
