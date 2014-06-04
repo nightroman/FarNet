@@ -30,7 +30,7 @@ else {
 
 # find indent at the first solid line
 $found = $false
-for($n = $n1;;) {
+for($n = $n1) {
 	$text = $Editor[$n].Text
 	if ($text -match '^(\s*)\S') {
 		$found = $true
@@ -40,12 +40,15 @@ for($n = $n1;;) {
 	if (--$n -lt 0) { break }
 }
 
+# tabs
+$ExpandTabs = $Editor.ExpandTabs -ne 'None'
+$TabSize = $Editor.TabSize
+$add = if ($ExpandTabs) { ' ' * $TabSize } else { "`t" }
+
 # begin
 $Editor.BeginUndo()
 
 # selected lines
-$ExpandTabs = $Editor.ExpandTabs -ne 'None'
-$TabSize = $Editor.TabSize
 $mode = 0
 :lines
 for($n = $n1; $n -le $n2; ++$n)
@@ -102,7 +105,7 @@ for($n = $n1; $n -le $n2; ++$n)
 				for($i = 0; $i -lt $TabSize; ++$i) {
 					if ($indent[$i] -ne ' ') { break }
 				}
-				if ($i -lt $index.Length) {
+				if ($i -le $indent.Length) {
 					$indent = $indent.Substring($i)
 				}
 			}
@@ -111,12 +114,7 @@ for($n = $n1; $n -le $n2; ++$n)
 	}
 
 	if ('{' -eq $tail -or '(' -eq $tail) {
-		if ($ExpandTabs) {
-			$indent += ' ' * $TabSize
-		}
-		else {
-			$indent += "`t"
-		}
+		$indent += $add
 	}
 }
 

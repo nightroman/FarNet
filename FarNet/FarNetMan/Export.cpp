@@ -26,7 +26,7 @@ DEFINE_GUID(MainGuid, 0x10435532, 0x9bb3, 0x487b, 0xa0, 0x45, 0xb0, 0xe6, 0xec, 
 void WINAPI GetGlobalInfoW(struct GlobalInfo* info)
 {
 	info->MinFarVersion = MAKEFARVERSION(MinFarVersionMajor, MinFarVersionMinor, 0, MinFarVersionBuild, VS_RELEASE);
-	info->Version = MAKEFARVERSION(5, 0, 0, 0, VS_RELEASE);
+	info->Version = MAKEFARVERSION(FarNetVersionMajor, FarNetVersionMinor, FarNetVersionBuild, 0, VS_RELEASE);
 	info->Guid = MainGuid;
 	info->Title = L"FarNet";
 	info->Author = L"Roman Kuzmin";
