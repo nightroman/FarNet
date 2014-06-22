@@ -117,6 +117,7 @@ namespace PowerShellFar
 						break;
 					editor.GoToEnd(true);
 					editor.InsertText(code);
+					editor.Redraw();
 					return;
 				case WindowKind.Dialog:
 					var dialog = Far.Api.Dialog;
