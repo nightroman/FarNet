@@ -3,6 +3,10 @@ NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 Far Manager 3.0.3872
 FarNet 5.0.50
 
+= 5.0.76 =
+
+Editor console & history: redraw on inserting commands from history.
+
 = 5.0.75 =
 
 Reindent-Selection-.ps1 - fixed for ExpandTabs mode
