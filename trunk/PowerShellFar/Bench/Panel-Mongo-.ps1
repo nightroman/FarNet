@@ -192,7 +192,7 @@ function global:New-MdbcCollectionExplorer($Database, $CollectionName, $File) {
 		}
 		AsGetData = {
 			param($1, $2)
-			if ($2.NewFiles) {
+			if ($2.NewFiles -or !$1.Cache) {
 				Get-MdbcData -Collection $1.Data.Collection -As PS -First $2.Limit -Skip $2.Offset
 			}
 			else {
@@ -216,6 +216,53 @@ function global:New-MdbcCollectionExplorer($Database, $CollectionName, $File) {
 			}
 			Save-MdbcFile -Collection $1.Data.Collection
 			$1.Data.Panel.NeedsNewFiles = $1.Data.Collection -is [MongoDB.Driver.MongoCollection]
+		}
+		AsGetContent = {
+			param($1, $2)
+
+			$id = $2.File.Data._id
+			if ($null -eq $id) {
+				$2.UseText = $2.File.Data | Format-List | Out-String
+				return
+			}
+
+			$Collection = $1.Data.Collection
+			$doc = Get-MdbcData $id
+
+			$writer = New-Object System.IO.StringWriter
+			$settings = New-Object MongoDB.Bson.IO.JsonWriterSettings -Property @{Indent = $true}
+			[MongoDB.Bson.Serialization.BsonSerializer]::Serialize(
+				(New-Object MongoDB.Bson.IO.JsonWriter $writer, $settings),
+				$doc.ToBsonDocument()
+			)
+
+			$2.UseText = $writer.ToString()
+			$2.UseFileExtension = '.js'
+			$2.CanSet = $true
+		}
+		AsSetText = {
+			param($1, $2)
+
+			$id = $2.File.Data._id
+			if ($null -eq $id) {
+				return
+			}
+
+			$Collection = $1.Data.Collection
+
+			$reader = [MongoDB.Bson.IO.BsonReader]::Create($2.Text)
+			$new = [MongoDB.Bson.Serialization.BsonSerializer]::Deserialize($reader, [Mdbc.Dictionary])
+
+			if ($id -cne $new._id) {
+				Show-FarMessage "Cannot change _id."
+				return
+			}
+
+			$new | Add-MdbcData -Update
+			Save-MdbcFile
+
+			$1.Cache.Clear()
+			$Far.Panel.Update($true)
 		}
 	}
 }
