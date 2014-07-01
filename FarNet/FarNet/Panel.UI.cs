@@ -477,6 +477,7 @@ namespace FarNet
 			viewerTemp.DisableHistory = true;
 			viewerTemp.FileName = temp;
 			viewerTemp.Title = file.Name;
+			viewerTemp.Switching = Switching.Enabled;
 			if (asExportFileEventArgs.CodePage != 0)
 				viewerTemp.CodePage = asExportFileEventArgs.CodePage;
 

@@ -1,7 +1,15 @@
 
 NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 Far Manager 3.0.3872
-FarNet 5.0.50
+FarNet 5.0.51
+
+= 5.0.77 =
+
+PowerExplorer.Functions: SetText and SetFile are set automatically if AsSetText
+and AsSetFile are assigned.
+
+Panel-Mongo-.ps1: Can view [F3] and edit [F4] and save documents as JSON.
+[F5] copies JSON to disk (not from).
 
 = 5.0.76 =
 

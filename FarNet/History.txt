@@ -2,6 +2,10 @@
 NuGet package: https://www.nuget.org/packages/FarNet
 Far Manager 3.0.3872
 
+= 5.0.51 =
+
+Module panel: viewer [F3] allows switching to editor [F6].
+
 = 5.0.50 =
 
 Passed the actual FarNet version in Far, so that Far shows it correctly.
