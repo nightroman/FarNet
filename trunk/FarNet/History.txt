@@ -2,6 +2,12 @@
 NuGet package: https://www.nuget.org/packages/FarNet
 Far Manager 3.0.3872
 
+= 5.0.52 =
+
+Adapted the editor code for the new Far window manager. Most of editor methods
+work with the specified editor, i.e. not just the current. Editor color and
+bookmark methods still work with the current editor.
+
 = 5.0.51 =
 
 Module panel: viewer [F3] allows switching to editor [F6].

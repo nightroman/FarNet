@@ -38,10 +38,10 @@ bool State::GetPanelInfo;
 
 #undef ECTL_GETINFO
 
-AutoEditorInfo::AutoEditorInfo(bool safe)
+AutoEditorInfo::AutoEditorInfo(intptr_t editorId, bool safe)
 {
 	StructSize = sizeof(EditorInfo);
-	if (!Info.EditorControl(-1, ECTL_GETINFO, 0, this))
+	if (!Info.EditorControl(editorId, ECTL_GETINFO, 0, this))
 	{
 		if (safe)
 			EditorID = -1;
@@ -52,7 +52,7 @@ AutoEditorInfo::AutoEditorInfo(bool safe)
 
 void AutoEditorInfo::Update()
 {
-	if (!Info.EditorControl(-1, ECTL_GETINFO, 0, this))
+	if (!Info.EditorControl(EditorID, ECTL_GETINFO, 0, this))
 		throw gcnew InvalidOperationException(__FUNCTION__ " failed. Ensure current editor.");
 }
 

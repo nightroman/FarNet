@@ -401,7 +401,7 @@ int Panel0::AsProcessPanelEvent(const ProcessPanelEventInfo* info)
 				IList<FarFile^>^ files = pp->ShownList;
 				for(int n = files->Count, i = pp->HasDots ? 1 : 0; i < n; ++i)
 				{
-					if (data == files[i]->Data)
+					if (data->Equals(files[i]->Data))
 					{
 						_reenterOnRedrawing = true;
 						pp->Redraw(i, -1);
