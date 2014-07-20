@@ -39,7 +39,7 @@ private:
 class AutoEditorInfo : public EditorInfo
 {
 public:
-	AutoEditorInfo(bool safe = false);
+	AutoEditorInfo(intptr_t editorId, bool safe = false);
 	void Update();
 private:
 	void operator=(const AutoEditorInfo&) {}

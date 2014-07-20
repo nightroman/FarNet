@@ -24,10 +24,11 @@ public:
 	virtual void SelectText(int start, int end) override;
 	virtual void UnselectText() override;
 internal:
-	EditorLine(int index);
+	EditorLine(intptr_t editorId, int index);
 private:
 	EditorSetString GetEss();
 private:
+	const intptr_t _EditorId;
 	const int _Index;
 };
 }

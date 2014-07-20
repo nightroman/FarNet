@@ -754,7 +754,7 @@ void Far0::InvokeModuleEditors(IEditor^ editor, const wchar_t* fileName)
 	if (_registeredDrawer.Count == 0 && _registeredEditor.Count == 0)
 		return;
 
-	AutoEditorInfo ei;
+	AutoEditorInfo ei(-1);
 
 	for each(IModuleDrawer^ it in _registeredDrawer)
 	{

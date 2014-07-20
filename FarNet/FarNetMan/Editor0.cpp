@@ -22,7 +22,7 @@ array<IEditor^>^ Editor0::Editors()
 Editor^ Editor0::GetCurrentEditor()
 {
 	// get info
-	AutoEditorInfo ei(true);
+	AutoEditorInfo ei(-1, true);
 	if (ei.EditorID == -1)
 		return nullptr;
 
@@ -98,7 +98,7 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 			}
 
 			// get info
-			AutoEditorInfo ei;
+			AutoEditorInfo ei(info->EditorID);
 
 			// connect
 			ConnectEditor(editor, ei, isEditorWaiting);

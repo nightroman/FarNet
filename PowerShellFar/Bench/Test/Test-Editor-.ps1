@@ -13,7 +13,6 @@
 	It uses and removes in the current folder:
 	- Test1.tmp
 	- Test2.tmp
-	- Test.log
 #>
 
 param

@@ -138,16 +138,17 @@ namespace FarNet
 	/// </summary>
 	/// <remarks>
 	/// Normally this object should be created or requested, used instantly and never kept for future use.
-	/// When you need the current editor operator next time call <see cref="IFar.Editor"/> again to get it.
+	/// When you need an editor operator call <see cref="IFar.Editor"/> or <see cref="IFar.Editors()"/>
+	/// to get it.
 	/// <para>
-	/// In fact all dynamic members operate on the current editor, not on the editor associated with the instance.
-	/// Thus, if you use an operator of not current editor then results may be unexpected.
+	/// Most of methods operate on the specified editor, not necessarily current.
+	/// Color and bookmark methods operate on the current editor only.
 	/// </para>
 	/// <para>
 	/// The editor has members making it semantically similar to a list of <see cref="ILine"/> lines and strings.
 	/// These members are: <see cref="Count"/> (line count), <see cref="this[int]"/> (gets a line by its index),
 	/// <see cref="RemoveAt"/> (removes a line by its index), <see cref="Clear"/> (removes all lines),
-	/// <see cref="Add"/>\<see cref="Insert"/> (adds\inserts text line(s)).
+	/// <see cref="Add"/>\<see cref="Insert"/> (adds/inserts text line(s)).
 	/// </para>
 	/// <para>
 	/// Still, the editor is not a standard list of strings or lines.
@@ -203,11 +204,11 @@ namespace FarNet
 		public abstract void RemoveAt(int index);
 		#endregion
 		/// <summary>
-		/// Gets the current editor line.
+		/// Gets the caret line.
 		/// </summary>
 		/// <remarks>
-		/// The returned object is not a copy of the current line but rather a pointer to the current line.
-		/// If the caret moves to another line then the object operates on a new current line.
+		/// The returned object is rather a dynamic reference to the caret line, not a copy.
+		/// If the caret moves to another line then the object operates on a new caret line.
 		/// </remarks>
 		/// <seealso cref="IFar.Line"/>
 		public abstract ILine Line { get; }
@@ -216,11 +217,11 @@ namespace FarNet
 		/// </summary>
 		public abstract IntPtr Id { get; }
 		/// <summary>
-		/// Gets or sets tab size in spaces in the current editor.
+		/// Gets or sets tab size in spaces in the editor.
 		/// </summary>
 		public abstract int TabSize { get; set; }
 		/// <summary>
-		/// Gets or sets expand tabs mode in the current editor.
+		/// Gets or sets expand tabs mode in the editor.
 		/// </summary>
 		public abstract ExpandTabsMode ExpandTabs { get; set; }
 		/// <summary>
@@ -307,7 +308,7 @@ namespace FarNet
 		/// </summary>
 		public abstract Place Window { get; set; }
 		/// <summary>
-		/// Gets the current window size.
+		/// Gets the editor window size.
 		/// </summary>
 		public abstract Point WindowSize { get; }
 		/// <summary>
@@ -349,7 +350,7 @@ namespace FarNet
 		/// </remarks>
 		public abstract void DeleteText();
 		/// <summary>
-		/// Closes the current editor.
+		/// Closes the editor.
 		/// </summary>
 		/// <remarks>
 		/// Changes, if any, are lost. Call <see cref="Save()"/> to save them.
@@ -363,12 +364,12 @@ namespace FarNet
 		/// </remarks>
 		public abstract void Save();
 		/// <summary>
-		/// Saves the file in the current editor even with no changes. Exception on failure.
+		/// Saves the file in the editor even with no changes. Exception on failure.
 		/// </summary>
 		/// <param name="force">Tells to write the file even if there are no changes.</param>
 		public abstract void Save(bool force);
 		/// <summary>
-		/// Saves the file in the current editor as the specified file. Exception on failure.
+		/// Saves the file in the editor as the specified file. Exception on failure.
 		/// </summary>
 		/// <param name="fileName">File name to save to.</param>
 		public abstract void Save(string fileName);
@@ -398,8 +399,8 @@ namespace FarNet
 		/// <remarks>
 		/// For the current editor setting the title to null or empty restores the original title.
 		/// <para>
-		/// NOTE: Far API only allows setting the title.
-		/// Thus, the title just gets the last value set by a module, if any, not the actual title.
+		/// NOTE: Far API only allows setting the title. Thus, the title just
+		/// gets the last value set by a module, if any, not the actual title.
 		/// </para>
 		/// </remarks>
 		public abstract string Title { get; set; }
@@ -408,7 +409,7 @@ namespace FarNet
 		/// </summary>
 		public abstract bool Overtype { get; set; }
 		/// <summary>
-		/// Gets true if the text is modified in the current editor (see remarks).
+		/// Gets true if the text is modified in the editor (see remarks).
 		/// </summary>
 		/// <remarks>
 		/// It gets true if the text is modified at least once and these changes are not undone.
@@ -418,7 +419,7 @@ namespace FarNet
 		/// <seealso cref="TimeOfSave"/>
 		public abstract bool IsModified { get; }
 		/// <summary>
-		/// Gets true if there are no changes to save in the current editor (see remarks).
+		/// Gets true if there are no changes to save in the editor (see remarks).
 		/// </summary>
 		/// <remarks>
 		/// It is true when the editor is just opened or saved.
@@ -455,7 +456,7 @@ namespace FarNet
 		/// <param name="point">The point in screen coordinates.</param>
 		public abstract Point ConvertPointScreenToEditor(Point point);
 		/// <summary>
-		/// Gets or sets the current text frame.
+		/// Gets or sets the editor text frame.
 		/// </summary>
 		/// <seealso cref="Caret"/>
 		public abstract TextFrame Frame { get; set; }
@@ -475,14 +476,14 @@ namespace FarNet
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
 		public abstract void GoTo(int column, int line);
 		/// <summary>
-		/// Sets the current line or posts it for opening.
+		/// Sets the caret line or posts it for opening.
 		/// </summary>
 		/// <param name="line">Line index.</param>
 		/// <seealso cref="Caret"/>
 		/// <seealso cref="Frame"/>
 		public abstract void GoToLine(int line);
 		/// <summary>
-		/// Goes to a character in the current line.
+		/// Goes to a character in the caret line.
 		/// </summary>
 		/// <param name="column">Column index.</param>
 		/// <seealso cref="Caret"/>
@@ -579,7 +580,7 @@ namespace FarNet
 		/// </summary>
 		public abstract void Redo();
 		/// <summary>
-		/// Opens and returns a writer for output text at the caret position of the current editor.
+		/// Opens and returns a writer for output text at the caret position of the editor.
 		/// </summary>
 		/// <remarks>
 		/// It is not recommended to change the caret position during writing,
@@ -889,7 +890,7 @@ namespace FarNet
 		/// Gets the line index in the source editor.
 		/// </summary>
 		/// <remarks>
-		/// It returns -1 for the editor current line, the command line, and dialog edit lines.
+		/// It returns -1 for the editor caret line, the command line, and dialog edit lines.
 		/// </remarks>
 		public virtual int Index { get { return -1; } }
 		/// <summary>

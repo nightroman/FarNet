@@ -203,26 +203,26 @@ struct SEditorSetPosition : EditorSetPosition
 };
 
 // Far API wrappers
-void EditorControl_ECTL_DELETEBLOCK();
-void EditorControl_ECTL_DELETECHAR();
-void EditorControl_ECTL_DELETESTRING();
-void EditorControl_ECTL_GETSTRING(EditorGetString& egs, int index);
-void EditorControl_ECTL_INSERTSTRING(bool indent);
-void EditorControl_ECTL_INSERTTEXT(Char text, int overtype);
-void EditorControl_ECTL_INSERTTEXT(String^ text, int overtype);
-void EditorControl_ECTL_SELECT(EditorSelect& es);
-int EditorControl_ECTL_SETPARAM(const EditorSetParameter& esp);
-void EditorControl_ECTL_SETPOSITION(const EditorSetPosition& esp);
-void EditorControl_ECTL_SETSTRING(EditorSetString& ess);
+void EditorControl_ECTL_DELETEBLOCK(intptr_t editorId);
+void EditorControl_ECTL_DELETECHAR(intptr_t editorId);
+void EditorControl_ECTL_DELETESTRING(intptr_t editorId);
+void EditorControl_ECTL_GETSTRING(EditorGetString& egs, intptr_t editorId, int index);
+void EditorControl_ECTL_INSERTSTRING(intptr_t editorId, bool indent);
+void EditorControl_ECTL_INSERTTEXT(intptr_t editorId, Char text, int overtype);
+void EditorControl_ECTL_INSERTTEXT(intptr_t editorId, String^ text, int overtype);
+void EditorControl_ECTL_SELECT(intptr_t editorId, EditorSelect& es);
+int EditorControl_ECTL_SETPARAM(intptr_t editorId, const EditorSetParameter& esp);
+void EditorControl_ECTL_SETPOSITION(intptr_t editorId, const EditorSetPosition& esp);
+void EditorControl_ECTL_SETSTRING(intptr_t editorId, EditorSetString& ess);
 void ViewerControl_VCTL_GETINFO(ViewerInfo& vi, bool safe = false);
 
 // Advanced wrappers
-Place Edit_SelectionPlace();
-void Edit_Clear();
-void Edit_GoTo(int pos, int line);
-void Edit_RemoveAt(int index);
+Place Edit_SelectionPlace(intptr_t editorId);
+void Edit_Clear(intptr_t editorId);
+void Edit_GoTo(intptr_t editorId, int pos, int line);
+void Edit_RemoveAt(intptr_t editorId, int index);
 void Edit_RestoreEditorInfo(const EditorInfo& ei);
-void Edit_SetOvertype(bool value);
+void Edit_SetOvertype(intptr_t editorId, bool value);
 
 // DateTime tools
 DateTime FileTimeToDateTime(FILETIME time);

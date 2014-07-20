@@ -420,12 +420,12 @@ namespace FarNet
 			if (x == null || y == null)
 				return x == null && y == null;
 			else
-				return object.ReferenceEquals(x.Data, y.Data);
+				return object.Equals(x.Data, y.Data);
 		}
 		/// <inheritdoc/>
 		public override int GetHashCode(FarFile obj)
 		{
-			return obj == null || obj.Data == null ? 0 : obj.Data.GetHashCode();
+			return (obj == null || obj.Data == null) ? 0 : obj.Data.GetHashCode();
 		}
 	}
 
