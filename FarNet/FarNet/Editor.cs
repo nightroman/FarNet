@@ -394,14 +394,10 @@ namespace FarNet
 		/// </summary>
 		public abstract bool IsOpened { get; }
 		/// <summary>
-		/// Gets or sets the window title. Set it before or after opening.
+		/// Gets or sets the window title before or after opening.
 		/// </summary>
 		/// <remarks>
 		/// For the current editor setting the title to null or empty restores the original title.
-		/// <para>
-		/// NOTE: Far API only allows setting the title. Thus, the title just
-		/// gets the last value set by a module, if any, not the actual title.
-		/// </para>
 		/// </remarks>
 		public abstract string Title { get; set; }
 		/// <summary>

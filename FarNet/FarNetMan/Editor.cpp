@@ -324,7 +324,13 @@ Point Editor::WindowSize::get()
 
 String^ Editor::Title::get()
 {
-	return _Title;
+	if (!IsOpened)
+		return _Title;
+
+	intptr_t size = Info.EditorControl(_id, ECTL_GETTITLE, 0, 0);
+	CBox box(size);
+	Info.EditorControl(_id, ECTL_GETTITLE, size, box);
+	return gcnew String(box);
 }
 
 void Editor::Title::set(String^ value)
@@ -334,7 +340,10 @@ void Editor::Title::set(String^ value)
 		PIN_NE(pin, value);
 		Info.EditorControl(_id, ECTL_SETTITLE, 0, (wchar_t*)pin);
 	}
-	_Title = value;
+	else
+	{
+		_Title = value;
+	}
 }
 
 Place Editor::Window::get()
