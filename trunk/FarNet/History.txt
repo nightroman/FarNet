@@ -2,6 +2,10 @@
 NuGet package: https://www.nuget.org/packages/FarNet
 Far Manager 3.0.3872
 
+= 5.0.54 =
+
+Adapted for Far 3.0.4027 (EE_REDRAW is called before EE_READ).
+
 = 5.0.53 =
 
 IEditor.Title getter uses ECTL_GETTITLE (Far 3.0.4013).

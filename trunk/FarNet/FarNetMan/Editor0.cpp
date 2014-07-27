@@ -80,7 +80,7 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 	{
 	case EE_READ:
 		{
-			Log::Source->TraceInformation("EE_READ"); //?????? use EditorID?
+			Log::Source->TraceInformation("EE_READ");
 
 			// pop the waiting or create new
 			Editor^ editor;
@@ -113,7 +113,7 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 			Editor^ editor = _editors[index];
 			_editors.RemoveAt(index);
 			editor->Stop();
-			
+
 			// end async
 			editor->EndAsync();
 
@@ -174,7 +174,12 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 	case EE_REDRAW:
 		{
 			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "EE_REDRAW");
-			Editor^ editor = _editors[FindEditor(info->EditorID)];
+
+			// Far 3.0.4027 EE_REDRAW is called before EE_READ
+			int index = FindEditor(info->EditorID);
+			if (index < 0)
+				break;
+			Editor^ editor = _editors[index];
 
 			if (_anyEditor._Redrawing || editor->_Redrawing || editor->_drawers)
 			{
@@ -194,7 +199,7 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 
 			int index = FindEditor(info->EditorID);
 			Editor^ editor = index < 0 ? nullptr : _editors[index];
-			
+
 			// make the editor first in the list
 			if (index > 0)
 			{
@@ -247,7 +252,7 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 					break;
 				}
 			}
-			
+
 			if (_anyEditor._LosingFocus)
 			{
 				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "LosingFocus");
@@ -261,7 +266,7 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 		}
 		break;
 	}
-	
+
 	return 0;
 }
 
