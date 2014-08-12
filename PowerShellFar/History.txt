@@ -1,7 +1,11 @@
 
 NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
-Far Manager 3.0.3872
-FarNet 5.0.51
+Far Manager 3.0.4045
+FarNet 5.0.55
+
+= 5.0.78 =
+
+Adapted for Far 3.0.4042 (new "Desktop" window).
 
 = 5.0.77 =
 

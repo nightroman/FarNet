@@ -1,6 +1,12 @@
 
 NuGet package: https://www.nuget.org/packages/FarNet
-Far Manager 3.0.3872
+Far Manager 3.0.4045
+
+= 5.0.55 =
+
+Adapted for Far 3.0.4042 (new "Desktop" window). Added the new window kind
+"Desktop", position 0. Note that "Panels" is now at the position 1.
+NB: For now this is experimental and depends on Far.
 
 = 5.0.54 =
 

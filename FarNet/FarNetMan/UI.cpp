@@ -488,7 +488,7 @@ void FarUI::DrawColor(int left, int top, ConsoleColor foregroundColor, ConsoleCo
 	arg.BackgroundColor = (COLORREF)backgroundColor;
 
 	PIN_NE(pin, text);
-	
+
 	Info.Text(left, top, &arg, pin);
 }
 
@@ -542,7 +542,7 @@ int FarUI::ReadKeys(array<KeyData^>^ keys)
 		KeyInfo^ info = ReadKey(ReadKeyOptions::AllowCtrlC | ReadKeyOptions::IncludeKeyDown | ReadKeyOptions::IncludeKeyUp | ReadKeyOptions::NoEcho);
 		if (!keys || keys->Length == 0)
 			break;
-		
+
 		KeyData key(info->VirtualKeyCode, info->CtrlAltShift());
 		for(int i = 0; i < keys->Length; ++i)
 		{
@@ -577,10 +577,10 @@ String^ FarUI::GetBufferLineText(int lineIndex)
 	if (lineIndex < 0 || lineIndex >= BufferSize.Y)
 		throw gcnew IndexOutOfRangeException("Buffer line index is out of range.");
 
-	// get 
+	// get
 	Place rect(0, lineIndex, BufferSize.X - 1, lineIndex);
 	array<Works::BufferCell, 2>^ cells = GetBufferContents(rect);
-	
+
 	// find last
 	int last = cells->GetLength(1);
 	while(--last >= 0 && cells[0, last].Character == ' ') {}

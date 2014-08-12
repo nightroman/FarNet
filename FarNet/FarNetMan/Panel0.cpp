@@ -616,7 +616,7 @@ void Panel0::OpenPanel(Panel2^ plugin)
 	// panels window should be current
 	try
 	{
-		Far::Api->Window->SetCurrentAt(0);
+		Far::Api->Window->SetCurrentAt(1);
 	}
 	catch(InvalidOperationException^ e)
 	{

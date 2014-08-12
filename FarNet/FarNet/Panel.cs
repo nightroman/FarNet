@@ -176,7 +176,7 @@ namespace FarNet
 			{
 				try
 				{
-					Far.Api.Window.SetCurrentAt(0);
+					Far.Api.Window.SetCurrentAt(1);
 				}
 				catch (InvalidOperationException ex)
 				{

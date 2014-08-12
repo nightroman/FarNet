@@ -30,7 +30,7 @@
 # - It is also fine to return with no steps returned at all.
 
 # check prerequisites and throw on errors
-Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before this test." "Assert"
+Assert-Far ($Far.Window.Count -eq 2) "Close Far Manager internal windows before this test." "Assert"
 
 ### Part 2. Returned steps: returned keys and script blocks.
 
@@ -161,7 +161,7 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 
 {
 	# go to panels
-	$Far.Window.SetCurrentAt(0)
+	$Far.Window.SetCurrentAt(1)
 }
 
 {
@@ -202,7 +202,7 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 
 {
 	# go to editor
-	$Far.Window.SetCurrentAt(1)
+	$Far.Window.SetCurrentAt(2)
 }
 
 {
