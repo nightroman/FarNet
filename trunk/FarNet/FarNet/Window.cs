@@ -64,8 +64,14 @@ namespace FarNet
 	/// </summary>
 	public enum WindowKind
 	{
-		///
-		None,
+		/// <summary>
+		/// Unknown window.
+		/// </summary>
+		None = -1,
+		/// <summary>
+		/// Desktop window.
+		/// </summary>
+		Desktop = 0,
 		/// <summary>
 		/// File panels.
 		/// </summary>
