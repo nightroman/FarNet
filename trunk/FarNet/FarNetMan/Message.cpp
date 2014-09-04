@@ -80,10 +80,10 @@ CStr* Message::CreateBlock(int& outNbItems)
 int Message::Show(MessageArgs^ args)
 {
 	if (!args) throw gcnew ArgumentNullException("args");
-	
+
 	// to change
 	MessageOptions options = args->Options;
-	
+
 	// Draw?
 	if (int(options & MessageOptions::Draw))
 	{
@@ -135,8 +135,9 @@ int Message::Show(MessageArgs^ args)
 	if (args->Buttons)
 	{
 		m._buttons = args->Buttons;
-		bool needButtonList = NeedButtonList(args->Buttons, maxTextWidth);
-		
+		m._buttonLineLength = GetButtonLineLength(args->Buttons);
+		bool needButtonList = m._buttonLineLength > maxTextWidth;
+
 		if (m._position.HasValue || needButtonList)
 			return m.ShowDialog(maxTextWidth, needButtonList);
 	}
@@ -146,37 +147,45 @@ int Message::Show(MessageArgs^ args)
 	return m._selected;
 }
 
-bool Message::NeedButtonList(array<String^>^ buttons, int width)
+// Button list ~ button line: "B1", "B2", ... ~ "[ B1 ] [ B2 ] ..."
+int Message::GetButtonLineLength(array<String^>^ buttons)
 {
 	int len = 0;
 	for each(String^ s in buttons)
-	{
-		len += s->Length + 2;
-		if (len > width)
-			return true;
-	}
-	return false;
+		len += s->Length + 4;
+	return len + buttons->Length - 1;
 }
 
 int Message::ShowDialog(int maxTextWidth, bool needButtonList)
 {
 	// dialog width
 	int w = _header->Length;
+	// text lines
 	for each(String^ s in _body)
 		if (s->Length > w)
 			w = s->Length;
-	for each(String^ s in _buttons)
+	// each button line
+	if (needButtonList)
 	{
-		if (s->Length > w)
+		for each(String^ s in _buttons)
 		{
-			w = s->Length;
-			if (w > maxTextWidth)
+			if (s->Length > w)
 			{
-				w = maxTextWidth;
-				break;
+				w = s->Length;
+				if (w > maxTextWidth)
+				{
+					w = maxTextWidth;
+					break;
+				}
 			}
 		}
 	}
+	// joined button line
+	else if (w < _buttonLineLength)
+	{
+		w = _buttonLineLength;
+	}
+	// 10 = 2 * (3 dialog<->box + 1 box + 1 box<->button)
 	w += 10;
 
 	// dialog height
@@ -210,7 +219,7 @@ int Message::ShowDialog(int maxTextWidth, bool needButtonList)
 	dialog->HelpTopic = _helpTopic;
 	dialog->IsWarning = (_flags & FMSG_WARNING);
 	dialog->AddBox(3, 1, w - 4, h - 2, _header);
-	
+
 	// text
 	for(int i = 0; i < nBody; ++i)
 		dialog->AddText(5, -1, 0, _body[i]);

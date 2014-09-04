@@ -2,6 +2,11 @@
 NuGet package: https://www.nuget.org/packages/FarNet
 Far Manager 3.0.4045
 
+= 5.0.56 =
+
+Fixed too short message boxes, i.e. a long button line was shown out of the
+dialog box in some cases.
+
 = 5.0.55 =
 
 Adapted for Far 3.0.4042 (new "Desktop" window). Added the new window kind
