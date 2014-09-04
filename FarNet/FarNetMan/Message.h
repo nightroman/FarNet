@@ -18,7 +18,7 @@ private:
 	bool Show();
 	int ShowDialog(int maxTextWidth, bool needButtonList);
 	CStr* CreateBlock(int& outNbItems);
-	static bool NeedButtonList(array<String^>^ buttons, int width);
+	static int GetButtonLineLength(array<String^>^ buttons);
 private:
 	int _flags;
 	int _selected;
@@ -26,6 +26,7 @@ private:
 	String^ _helpTopic;
 	List<String^> _body;
 	array<String^>^ _buttons;
+	int _buttonLineLength;
 	Nullable<Point> _position;
 };
 }
