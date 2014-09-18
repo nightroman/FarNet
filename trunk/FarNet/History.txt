@@ -2,6 +2,10 @@
 NuGet package: https://www.nuget.org/packages/FarNet
 Far Manager 3.0.4045
 
+= 5.0.57 =
+
+Work around Far 3.0.4098 (Redraw in editor triggers GotFocus).
+
 = 5.0.56 =
 
 Fixed too short message boxes, i.e. a long button line was shown out of the

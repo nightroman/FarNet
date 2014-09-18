@@ -432,7 +432,10 @@ void Editor::InsertLine()
 
 void Editor::Redraw()
 {
+	bool flag = _Redraw_3_0_4098;
+	_Redraw_3_0_4098 = true;
 	Info.EditorControl(_id, ECTL_REDRAW, 0, 0);
+	_Redraw_3_0_4098 = flag;
 }
 
 void Editor::DeleteChar()
