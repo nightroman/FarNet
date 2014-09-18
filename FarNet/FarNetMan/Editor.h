@@ -172,5 +172,7 @@ internal:
 	HANDLE _hMutex;
 	StringBuilder^ _output;
 	Dictionary<Guid, DrawerInfo^>^ _drawers;
+	//TODO Log Verbose, see "EE_GOTFOCUS Far 3.0.4098"
+	static bool _Redraw_3_0_4098;
 };
 }
