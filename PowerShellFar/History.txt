@@ -1,7 +1,11 @@
 
 NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
-Far Manager 3.0.4045
-FarNet 5.0.55
+Far Manager 3.0.4138
+FarNet 5.0.58
+
+= 5.0.79 =
+
+Adapted for Far 3.0.4138
 
 = 5.0.78 =
 
