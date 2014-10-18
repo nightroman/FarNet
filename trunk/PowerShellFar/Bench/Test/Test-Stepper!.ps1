@@ -202,7 +202,7 @@ Assert-Far ($Far.Window.Count -eq 2) "Close Far Manager internal windows before 
 
 {
 	# go to editor
-	$Far.Window.SetCurrentAt(2)
+	$Far.Window.SetCurrentAt(1)
 }
 
 {

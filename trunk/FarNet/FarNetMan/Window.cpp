@@ -51,6 +51,26 @@ WindowKind Window::Kind::get()
 
 void Window::SetCurrentAt(int index)
 {
+	//_141017_151021 Far 3.0.4138 Not documented: -1 is for Panels.
+	if (index == -1)
+	{
+		// find index of Panels
+		int nWindow = Count;
+		for(int iWindow = 0; iWindow < nWindow; ++iWindow)
+		{
+			WindowKind kind = GetKindAt(iWindow);
+			if (kind == WindowKind::Panels)
+			{
+				index = iWindow;
+				break;
+			}
+		}
+
+		// not found
+		if (index == -1)
+			throw gcnew InvalidOperationException(__FUNCTION__ " failed, missing Panels");
+	}
+
 	if (!Info.AdvControl(&MainGuid, ACTL_SETCURRENTWINDOW, index, 0))
 		throw gcnew InvalidOperationException(__FUNCTION__ " failed, index = " + index);
 
