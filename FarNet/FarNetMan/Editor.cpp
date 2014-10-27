@@ -1238,7 +1238,7 @@ void Editor::AddColors(Guid owner, int priority, IEnumerable<EditorColor^>^ colo
 	::EditorColor ec; ec.StructSize = sizeof(ec);
 	ec.ColorItem = 0;
 	ec.Priority = priority;
-	ec.Flags = 0;
+	ec.Flags = ECF_AUTODELETE;
 	ec.Color.Flags = FCF_4BITMASK;
 	ec.Owner = ToGUID(owner);
 
@@ -1251,19 +1251,6 @@ void Editor::AddColors(Guid owner, int priority, IEnumerable<EditorColor^>^ colo
 		ec.Color.ForegroundColor = (COLORREF)color->Foreground;
 		
 		Info.EditorControl(-1, ECTL_ADDCOLOR, 0, &ec);
-	}
-}
-
-void Editor::RemoveColors(Guid owner, int startLine, int endLine)
-{
-	EditorDeleteColor edc; edc.StructSize = sizeof(edc);
-	edc.Owner = ToGUID(owner);
-	edc.StartPos = -1;
-
-	for(int line = startLine; line < endLine; ++line)
-	{
-		edc.StringNumber = line;
-		Info.EditorControl(-1, ECTL_DELCOLOR, 0, &edc);
 	}
 }
 
@@ -1282,8 +1269,8 @@ void Editor::AddDrawer(IModuleDrawer^ drawer)
 
 void Editor::RemoveDrawer(Guid id)
 {
-	if (_drawers && _drawers->Remove(id))
-		RemoveColors(id, 0, Count);
+	if (_drawers)
+		_drawers->Remove(id);
 }
 
 void Editor::InvokeDrawers()
@@ -1301,8 +1288,6 @@ void Editor::InvokeDrawers()
 
 	for each(DrawerInfo^ it in _drawers->Values)
 	{
-		RemoveColors(it->Id, startLine, endLine);
-
 		colors.Clear();
 		it->Handler(this, %args);
 
