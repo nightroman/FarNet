@@ -144,7 +144,6 @@ internal:
 	void Stop();
 private:
 	static void AddColors(Guid owner, int priority, IEnumerable<EditorColor^>^ colors);
-	static void RemoveColors(Guid owner, int startLine, int endLine);
 	void AssertClosed();
 	bool GetBoolOption(int option, Nullable<bool> value);
 	void SetBoolOption(EDITOR_SETPARAMETER_TYPES option, bool value);

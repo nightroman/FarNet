@@ -4,7 +4,9 @@ Far Manager 3.0.4159
 
 = 5.0.59 =
 
-Removed work around Far 3.0.4098 (FarNet 5.0.57).
+Editor color drawers use the new flag ECF_AUTODELETE (Far 3.0.4134).
+
+Removed work around Far 3.0.4098 (redrawing triggers getting focus).
 
 = 5.0.58 =
 
