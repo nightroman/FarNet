@@ -1,6 +1,10 @@
 
 NuGet package: https://www.nuget.org/packages/FarNet
-Far Manager 3.0.4138
+Far Manager 3.0.4159
+
+= 5.0.59 =
+
+Removed work around Far 3.0.4098 (FarNet 5.0.57).
 
 = 5.0.58 =
 

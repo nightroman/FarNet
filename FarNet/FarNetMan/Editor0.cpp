@@ -197,12 +197,6 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 		{
 			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "EE_GOTFOCUS");
 
-			if (Editor::_Redraw_3_0_4098)
-			{
-				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "EE_GOTFOCUS Far 3.0.4098");
-				break;
-			}
-
 			int index = FindEditor(info->EditorID);
 			Editor^ editor = index < 0 ? nullptr : _editors[index];
 
