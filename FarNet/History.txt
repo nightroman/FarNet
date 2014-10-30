@@ -2,6 +2,10 @@
 NuGet package: https://www.nuget.org/packages/FarNet
 Far Manager 3.0.4159
 
+= 5.0.60 =
+
+Fixed double Invoke() in module editors (from EE_GOTFOCUS and then from EE_READ).
+
 = 5.0.59 =
 
 Editor color drawers use the new flag ECF_AUTODELETE (Far 3.0.4134).
