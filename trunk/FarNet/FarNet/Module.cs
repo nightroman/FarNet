@@ -515,7 +515,7 @@ namespace FarNet
 		/// Normally it adds editor event handlers, then they do the jobs.
 		/// </remarks>
 		/// <example>
-		/// See the <c>TrimSaving</c> module.
+		/// See the demo module <c>EditorKit</c> and its module editor classes.
 		/// It is not just an example, it can be used for real.
 		/// </example>
 		public abstract void Invoke(object sender, ModuleEditorEventArgs e);

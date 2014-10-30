@@ -53,6 +53,10 @@ int Editor0::FindEditor(intptr_t id)
 
 void Editor0::ConnectEditor(Editor^ editor, const EditorInfo& ei, bool isEditorWaiting)
 {
+	//_110624_153138 ignore already connected
+	if (FindEditor(ei.EditorID) >= 0)
+		return;
+
 	// register
 	_editors.Insert(0, editor);
 
@@ -210,6 +214,10 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 			//_110624_153138 rare case
 			if (!editor)
 			{
+				// EE_READ will be called anyway
+				if (_editorWaiting)
+					break;
+
 				editor = GetCurrentEditor();
 				if ((intptr_t)editor->Id != info->EditorID)
 				{
