@@ -164,17 +164,17 @@ String^ Panel1::CurrentDirectory::get()
 	return gcnew String(arg->Name);
 }
 
-// _090929_061740
-// Directory::Exists gets false for paths >= 260. But we have to check at least short, because FCTL_SETPANELDIR
-// shows unwanted dialog on failure. So, let it works with no breaks at least for normal paths.
-// See also Mantis #1087: before Far 2.0.1187 it used to get true always.
+/* _090929_061740
+Directory::Exists gets false for paths >= 260. But we have to check at least short, because FCTL_SETPANELDIR
+shows the unwanted message on failures. So, let it works with no breaks at least for normal paths.
+See also Mantis #1087: before Far 2.0.1187 it used to get true always.
+
+Far 3.0.4284 does not show the unwanted message.
+*/
 void Panel1::CurrentDirectory::set(String^ value)
 {
 	if (value == nullptr)
 		throw gcnew ArgumentNullException("value");
-
-	if (value->Length < 260 && !Directory::Exists(value))
-		throw gcnew ArgumentException("Directory '" + value + "' does not exist.");
 
 	::SetPanelDirectory(_handle, value);
 }
@@ -619,7 +619,7 @@ void Panel1::SortMode::set(PanelSortMode value)
 PanelPlan^ Panel1::ViewPlan::get()
 {
 	CBox box;
-	
+
 	String^ sColumnTypes;
 	{
 		while(box(Info.PanelControl(Handle, FCTL_GETCOLUMNTYPES, box.Size(), box))) {}
@@ -643,7 +643,7 @@ PanelPlan^ Panel1::ViewPlan::get()
 		SetColumn^ column = gcnew SetColumn();
 		plan->Columns[iType] = column;
 		column->Kind = types[iType];
-			
+
 		if (widths[iType]->EndsWith("%"))
 			column->Width = - ParseInt(widths[iType]->Substring(0, widths[iType]->Length - 1), 0);
 		else

@@ -5,65 +5,51 @@
 	Author: Roman Kuzmin
 
 .Description
-	It collects and shows command, folder, or editor history in a list menu.
-	Selected command is posted to Far (assuming the command line); selected
-	folder is opened in the active panel; selected file is opened in the
-	editor.
+	The script shows the command, folder, or editor history in a menu.
+
+	A selected command is inserted to the current editor line.
+	A selected folder is set current in the active panel.
+	A selected file is opened in the editor.
 
 	For incremental filtering of the list just type a substring.
 
 .Parameter Folder
-		Show folder history.
+		Tells to show folder history.
 
 .Parameter Editor
-		Show editor history.
+		Tells to show editor history.
 
 .Link
 	PowerShellFar.macro.lua
 #>
 
-param
-(
+param(
 	[switch]$Folder,
 	[switch]$Editor
 )
 
-function Menu($Title)
-{
+function Select-History($Title) {
 	$input | .{process{ $_.Name }} | Out-FarList -SelectLast -Title $Title
 }
 
+### folder history
 if ($Folder) {
-	### folder history
-	$Far.History.Folder() |
-	Menu 'Folder history' | .{process{
-		if ($_) {
-			# _090929_061740
-			if (($_.Length -lt 260) -and !([System.IO.Directory]::Exists($_))) {
-				Show-FarMessage "Directory '$_' does not exist."
-			}
-			else {
-				$Far.Panel.CurrentDirectory = $_
-				if ($Far.Window.Kind -eq 'Dialog') {
-					$Far.UI.Redraw()
-				}
-			}
-		}
-	}}
+	if (!($r = $Far.History.Folder() | Select-History 'Folder history')) {return}
+	try {
+		$Far.Panel.CurrentDirectory = $r
+	}
+	catch {
+		Show-FarMessage "Cannot set directory '$r'." 'Folder history'
+	}
 }
+### editor history
 elseif ($Editor) {
-	### editor history
-	$Far.History.Editor() |
-	Menu 'Editor history' |
-	Open-FarEditor
+	$Far.History.Editor() | Select-History 'Editor history' | Open-FarEditor
 }
+### command history
 else {
-	### command history
-	$Far.History.Command() |
-	Menu 'Command history' | .{process{
-		$line = $Far.Line
-		if ($line) {
-			$line.InsertText($_)
-		}
-	}}
+	if (!($r = $Far.History.Command() | Select-History 'Command history')) {return}
+	if ($line = $Far.Line) {
+		$line.InsertText($r)
+	}
 }
