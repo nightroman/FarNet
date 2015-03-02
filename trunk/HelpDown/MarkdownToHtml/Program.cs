@@ -1,5 +1,5 @@
 ﻿
-/* Copyright 2012-2014 Roman Kuzmin
+/* Copyright 2012-2015 Roman Kuzmin
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ using MarkdownDeep;
 [assembly: AssemblyTitle("MarkdownToHtml")]
 [assembly: AssemblyDescription("MarkdownToHtml - converts markdown to HTML")]
 [assembly: AssemblyCompany("http://code.google.com/p/farnet/")]
-[assembly: AssemblyCopyright("Copyright (c) 2012-2014 Roman Kuzmin")]
+[assembly: AssemblyCopyright("Copyright (c) 2012-2015 Roman Kuzmin")]
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
 

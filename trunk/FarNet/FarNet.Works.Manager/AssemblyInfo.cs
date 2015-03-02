@@ -6,7 +6,7 @@ using System.Security.Permissions;
 
 [assembly: AssemblyTitle("FarNet module manager")]
 [assembly: AssemblyDescription("FarNet module manager")]
-[assembly: AssemblyCopyright("Copyright (c) 2006-2014 Roman Kuzmin")]
+[assembly: AssemblyCopyright("Copyright (c) 2006-2015 Roman Kuzmin")]
 
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
