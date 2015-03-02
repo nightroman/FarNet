@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet module RightWords
-Copyright (c) 2011-2014 Roman Kuzmin
+Copyright (c) 2011-2015 Roman Kuzmin
 */
 
 using System;
