@@ -1,6 +1,10 @@
 
 NuGet package: https://www.nuget.org/packages/FarNet
-Far Manager 3.0.4159
+Far Manager 3.0.4284
+
+= 5.0.61 =
+
+Removed work around unwanted Far messages on setting missing directories.
 
 = 5.0.60 =
 

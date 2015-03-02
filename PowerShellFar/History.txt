@@ -1,7 +1,12 @@
 
 NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
-Far Manager 3.0.4138
-FarNet 5.0.58
+Far Manager 3.0.4284
+FarNet 5.0.61
+
+= 5.0.80 =
+
+Show-History-.ps1
+Removed work around unwanted Far messages on setting missing directories.
 
 = 5.0.79 =
 
