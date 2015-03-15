@@ -105,7 +105,7 @@ https://farnet.googlecode.com/svn/trunk/Install-FarNet.en.txt
 		<owners>Roman Kuzmin</owners>
 		<authors>Roman Kuzmin</authors>
 		<projectUrl>https://code.google.com/p/farnet</projectUrl>
-		<iconUrl>https://farnet.googlecode.com/svn/trunk/FarNetLogo.png</iconUrl>
+		<iconUrl>https://raw.githubusercontent.com/wiki/nightroman/FarNet/images/FarNetLogo.png</iconUrl>
 		<licenseUrl>https://farnet.googlecode.com/svn/trunk/RightControl/LICENSE.txt</licenseUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$text</summary>
