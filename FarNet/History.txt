@@ -119,8 +119,7 @@ command console mode in PowerShellFar.
 = 5.0.40 =
 
 Slightly simplified the NuGet package. It is recommended to update it by the
-upgraded script Update-FarPackage.ps1:
-https://farnet.googlecode.com/svn/trunk/PowerShellFar/Bench/Update-FarPackage.ps1
+upgraded script Update-FarPackage.ps1
 
 = 5.0.39 =
 
@@ -801,8 +800,6 @@ always exist, their values are 0 (false) and 1 (true).
 - XPath files (.xq) can contain comments and variable declarations with defined
 values or external. In the latter case an input box is shown in order to input
 values. All this stuff has to be placed before the XPath expression.
-Demo XPath file:
-http://farnet.googlecode.com/files/_110428_160407_Demo-XFile.xq.htm
 
 *) SearchFileCommand
 - New property XVariables allow to perform XPath queries with variables.
@@ -1319,7 +1316,6 @@ changed from "Prototype" to "VS2005" because "Prototype" is declared obsolete.
 = 4.3.23 =
 
 *) Update-FarNet.ps1 (new script for selective update of FarNet packages)
-http://farnet.googlecode.com/svn/trunk/PowerShellFar/Bench/Update-FarNet.ps1
 
 Its goal is selective update of various FarNet packages. In particular it
 updates FarNet. You may skip any packages.

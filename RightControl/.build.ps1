@@ -91,7 +91,7 @@ selecting, deleting by words, and etc.
 
 To install FarNet packages, follow these steps:
 
-https://farnet.googlecode.com/svn/trunk/Install-FarNet.en.txt
+https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
 
 ---
 '@
@@ -106,11 +106,11 @@ https://farnet.googlecode.com/svn/trunk/Install-FarNet.en.txt
 		<authors>Roman Kuzmin</authors>
 		<projectUrl>https://code.google.com/p/farnet</projectUrl>
 		<iconUrl>https://raw.githubusercontent.com/wiki/nightroman/FarNet/images/FarNetLogo.png</iconUrl>
-		<licenseUrl>https://farnet.googlecode.com/svn/trunk/RightControl/LICENSE.txt</licenseUrl>
+		<licenseUrl>https://raw.githubusercontent.com/nightroman/FarNet/master/RightControl/LICENSE.txt</licenseUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$text</summary>
 		<description>$text</description>
-		<releaseNotes>https://farnet.googlecode.com/svn/trunk/RightControl/History.txt</releaseNotes>
+		<releaseNotes>https://raw.githubusercontent.com/nightroman/FarNet/master/RightControl/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module</tags>
 	</metadata>
 </package>

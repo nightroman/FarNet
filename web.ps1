@@ -2,7 +2,7 @@
 $web = New-Object -TypeName System.Net.WebClient
 $web.UseDefaultCredentials = $true
 
-$uri = 'https://farnet.googlecode.com/svn/trunk/PowerShellFar/Modules/FarPackage/FarPackage.psm1'
+$uri = 'https://raw.githubusercontent.com/nightroman/FarNet/master/PowerShellFar/Modules/FarPackage/FarPackage.psm1'
 Write-Host "Importing $uri"
 Invoke-Expression $web.DownloadString($uri)
 Write-Host @'

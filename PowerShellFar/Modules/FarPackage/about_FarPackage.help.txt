@@ -76,4 +76,4 @@ OTHER FUNCTIONS
         PS> Uninstall-FarPackage FarNet.Vessel
 
 SEE ALSO
-    Web way: https://farnet.googlecode.com/svn/trunk/Install-FarNet.en.txt
+    Web way: https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt

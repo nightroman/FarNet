@@ -75,4 +75,4 @@ The directory *Demo* contains three files:
 
 ---
 [1]: https://www.nuget.org/packages/MarkdownToHtml
-[2]: http://farnet.googlecode.com/svn/trunk/PowerShellFar/About-PowerShellFar.text
+[2]: https://github.com/nightroman/FarNet/blob/master/PowerShellFar/About-PowerShellFar.text

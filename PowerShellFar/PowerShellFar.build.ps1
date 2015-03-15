@@ -87,7 +87,7 @@ It is the Windows PowerShell host in the genuine console environment.
 
 To install FarNet packages, follow these steps:
 
-https://farnet.googlecode.com/svn/trunk/Install-FarNet.en.txt
+https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
 
 ---
 '@
@@ -106,7 +106,7 @@ https://farnet.googlecode.com/svn/trunk/Install-FarNet.en.txt
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$text</summary>
 		<description>$text</description>
-		<releaseNotes>https://farnet.googlecode.com/svn/trunk/PowerShellFar/History.txt</releaseNotes>
+		<releaseNotes>https://raw.githubusercontent.com/nightroman/FarNet/master/PowerShellFar/History.txt</releaseNotes>
 		<tags>FarManager FarNet PowerShell Module Plugin</tags>
 	</metadata>
 </package>

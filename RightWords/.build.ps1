@@ -70,7 +70,7 @@ on OpenOffice.org.
 
 To install FarNet packages, follow these steps:
 
-https://farnet.googlecode.com/svn/trunk/Install-FarNet.en.txt
+https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
 
 ---
 '@
@@ -85,11 +85,11 @@ https://farnet.googlecode.com/svn/trunk/Install-FarNet.en.txt
 		<owners>Roman Kuzmin</owners>
 		<projectUrl>https://code.google.com/p/farnet</projectUrl>
 		<iconUrl>https://raw.githubusercontent.com/wiki/nightroman/FarNet/images/FarNetLogo.png</iconUrl>
-		<licenseUrl>https://farnet.googlecode.com/svn/trunk/RightWords/LICENSE.txt</licenseUrl>
+		<licenseUrl>https://raw.githubusercontent.com/nightroman/FarNet/master/RightWords/LICENSE.txt</licenseUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$text</summary>
 		<description>$text</description>
-		<releaseNotes>https://farnet.googlecode.com/svn/trunk/RightWords/History.txt</releaseNotes>
+		<releaseNotes>https://raw.githubusercontent.com/nightroman/FarNet/master/RightWords/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module NHunspell</tags>
 	</metadata>
 </package>

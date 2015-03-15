@@ -240,8 +240,7 @@ Internal. Replaced delegate GetValues with a Func<>.
 = 5.0.58 =
 
 Slightly simplified the NuGet package. It is recommended to update it by the
-upgraded script Update-FarPackage.ps1:
-https://farnet.googlecode.com/svn/trunk/PowerShellFar/Bench/Update-FarPackage.ps1
+upgraded script Update-FarPackage.ps1
 
 Upgraded Update-FarPackage.ps1. See the help comments for details and examples.
 Summary:

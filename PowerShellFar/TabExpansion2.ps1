@@ -41,13 +41,13 @@
 			$false tells to replace paths with absolute paths.
 
 	Example profile with completers for any host and some for FarHost
-		https://farnet.googlecode.com/svn/trunk/PowerShellFar/Bench/TabExpansionProfile.ps1
+		https://github.com/nightroman/FarNet/blob/master/PowerShellFar/Bench/TabExpansionProfile.ps1
 
 	Completers for Invoke-Build
-		https://raw.github.com/nightroman/Invoke-Build/master/TabExpansionProfile.Invoke-Build.ps1
+		https://github.com/nightroman/Invoke-Build/blob/master/TabExpansionProfile.Invoke-Build.ps1
 
 	Completers for Mdbc
-		https://raw.github.com/nightroman/Mdbc/master/Scripts/TabExpansionProfile.Mdbc.ps1
+		https://github.com/nightroman/Mdbc/blob/master/Scripts/TabExpansionProfile.Mdbc.ps1
 #>
 
 # The global option table

@@ -19,9 +19,9 @@ deleting by words, and etc. Example: Visual Studio, Word, WordPad, etc.
 
 How to get, install, and update from the NuGet package *FarNet.RightControl*
 
-In English: <https://farnet.googlecode.com/svn/trunk/Install-FarNet.en.txt>
+In English: <https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt>
 
-In Russian: <https://farnet.googlecode.com/svn/trunk/Install-FarNet.ru.txt>
+In Russian: <https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.ru.txt>
 
 After installing the module copy the macro file
 *RightControl.macro.lua* to *%FARPROFILE%\Macros\scripts*.

@@ -59,7 +59,7 @@ It is invoked from the command line with the prefix "Explore:".
 
 To install FarNet packages, follow these steps:
 
-https://farnet.googlecode.com/svn/trunk/Install-FarNet.en.txt
+https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
 
 ---
 '@
@@ -74,11 +74,11 @@ https://farnet.googlecode.com/svn/trunk/Install-FarNet.en.txt
 		<authors>Roman Kuzmin</authors>
 		<projectUrl>https://code.google.com/p/farnet</projectUrl>
 		<iconUrl>https://raw.githubusercontent.com/wiki/nightroman/FarNet/images/FarNetLogo.png</iconUrl>
-		<licenseUrl>https://farnet.googlecode.com/svn/trunk/Explore/LICENSE.txt</licenseUrl>
+		<licenseUrl>https://raw.githubusercontent.com/nightroman/FarNet/master/Explore/LICENSE.txt</licenseUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$text</summary>
 		<description>$text</description>
-		<releaseNotes>https://farnet.googlecode.com/svn/trunk/Explore/History.txt</releaseNotes>
+		<releaseNotes>https://raw.githubusercontent.com/nightroman/FarNet/master/Explore/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module</tags>
 	</metadata>
 </package>
