@@ -136,7 +136,7 @@ namespace PowerShellFar
 
 			Editor.Title = "Local session: " + Path.GetFileName(Editor.FileName);
 
-			InvokeProfile("Profile-Local.ps1");
+			InvokeProfile("Profile-Local.ps1", false);
 		}
 		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		void OpenRemoteSession()
@@ -163,9 +163,9 @@ namespace PowerShellFar
 
 			Editor.Title = computerName + " session: " + Path.GetFileName(Editor.FileName);
 
-			InvokeProfile("Profile-Remote.ps1");
+			InvokeProfile("Profile-Remote.ps1", true);
 		}
-		void InvokeProfile(string fileName)
+		void InvokeProfile(string fileName, bool remote)
 		{
 			var profile = Path.Combine(A.Psf.Manager.GetFolderPath(SpecialFolder.RoamingData, true), fileName);
 			if (!File.Exists(profile))
@@ -176,7 +176,11 @@ namespace PowerShellFar
 				using (var ps = PowerShell.Create())
 				{
 					ps.Runspace = Runspace;
-					ps.AddCommand(profile, false).Invoke();
+					if (remote)
+						ps.AddScript(File.ReadAllText(profile), false);
+					else
+						ps.AddCommand(profile, false);
+					ps.Invoke();
 				}
 			}
 			catch (RuntimeException ex)

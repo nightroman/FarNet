@@ -3,6 +3,20 @@ NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 Far Manager 3.0.4284
 FarNet 5.0.61
 
+= 5.0.81 =
+
+Update-FarManager.ps1
+7za (standalone) is used instead of 7z (installed with 7-zip). If you do not
+have 7za then define an alias to existing 7z.exe before calling the script:
+> Set-Alias 7za <path>\7z.exe
+> Update-FarManager.ps1 ...
+
+Profile-Remote.ps1
+The profile was expected on a remote machine (incorrect). Now it is read on the
+current machine (correct) and then this code is invoked in a remote workspace.
+
+Minor changes due to migration to GitHub, mostly in the documentation.
+
 = 5.0.80 =
 
 Show-History-.ps1

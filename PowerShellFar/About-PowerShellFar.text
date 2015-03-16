@@ -1520,7 +1520,8 @@ editor event handlers to `$Far.AnyEditor`. The example profile is
 ### Profile-Local.ps1 and Profile-Remote.ps1
 
 They are session profiles invoked on opening local and remote editor consoles,
-once per each new session.
+once per each new session. Note that the remote profile code is taken from the
+local script but it is invoked in a remote workspace.
 
 Not terminating profile errors are not shown. A terminating error is shown in a
 standard message box with a bare error message. Examine the variable `$Error`

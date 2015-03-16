@@ -5,7 +5,11 @@
 	Author: Roman Kuzmin
 
 .Description
-	Command 7z has to be available, e.g. 7z.exe in the system path.
+	The script updates Far Manager and standard plugins.
+
+	Requirements
+	The command 7za should be available, e.g. 7za.exe in the system path or an
+	alias 7za to 7za.exe (standalone) or 7z.exe (installed with 7-zip).
 
 	If Far Manager is running the script prompts you to exit running instances
 	and waits until this is done. That is why you should not run the script in
@@ -110,7 +114,7 @@ Wait-Process Far -ErrorAction 0
 Write-Host -ForegroundColor Cyan "Extracting from '$Archive'..."
 $plugins1 = [System.IO.Directory]::GetDirectories("$FARHOME\Plugins")
 $files1 = foreach($_ in $NotUsedFiles) { [System.IO.Directory]::GetFiles($FARHOME, $_) }
-& '7z' 'x' $Archive "-o$FARHOME" '-aoa'
+& '7za' 'x' $Archive "-o$FARHOME" '-aoa'
 if ($LastExitCode) {Write-Error "Error on extracting files."}
 
 ### remove not used plugins
@@ -137,7 +141,7 @@ foreach($file in $files2) {
 Write-Host -ForegroundColor Cyan "Checking extra items..."
 $nExtra = 0
 $inArchive = @{}
-.{ & '7z' 'l' $Archive '-slt' | .{process{ if ($_ -match '^Path = (.+)') { $inArchive.Add($matches[1], $null) } }} }
+.{ & '7za' 'l' $Archive '-slt' | .{process{ if ($_ -match '^Path = (.+)') { $inArchive.Add($matches[1], $null) } }} }
 .{
 	Get-ChildItem $FarHome -Force -Name -ErrorAction 0
 	Get-ChildItem "$FarHome\Plugins" -Force -Name -ErrorAction 0 | .{process{ "Plugins\$_" }}
