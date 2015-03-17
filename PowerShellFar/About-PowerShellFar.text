@@ -253,7 +253,7 @@ Commands with viewer output, prefix `vps:`
 
 Commands starting UI or background jobs, normally prefix `ps:`
 
-    ps: $Far.Message("Hello world!")
+    ps: $Far.Message("Hello world")
     ps: Get-Process | Out-FarList -Text Name | Open-FarPanel
     ps: Start-FarJob { Remove-Item C:\TEMP\LargeFolder -Recurse -Force }
 
@@ -1642,17 +1642,16 @@ proceed on jobs. The macro `[F10]` can get control of exit in panels: see
 
 [Contents](#Contents)
 
-Some scripts in Bench and Test folders have suffixes "-" and "!". Why?
+Some scripts in Bench and Test folders ends with "-.ps1" and "..ps1". Why?
 
-The suffixes designate that these scripts are not standard PowerShell scripts
-for, say, PowerShell console or ISE. Namely:
+The suffixes designate that these scripts are not standard PowerShell scripts.
 
-* Suffix "-"
+* Suffix "-.ps1"
 
     PowerShellFar scripts that should be invoked by FarHost. Normally they will
     fail if you invoke them by console host or by ISE host.
 
-* Suffix "!"
+* Suffix "..ps1"
 
     PowerShellFar step unit scripts. Normally they should be invoked by
     PowerShellFar.Stepper for step sequence processing.
@@ -1672,17 +1671,17 @@ PowerShellFar scripts:
 
 PowerShellFar steppers:
 
-    mask     :  *!.ps1
+    mask     :  *..ps1
     commands :
         ps: Invoke-FarStepper -Path (Get-FarPath) #
         ps: Invoke-FarStepper -Path (Get-FarPath) -Ask #
 
 Standard PowerShell scripts:
 
-    mask     :  *.ps1|*[-!].ps1
+    mask     :  *.ps1|*[-.].ps1
     commands :
         PowerShell.exe -File "!\!.!"
-        start PowerShell.exe -NoExit -File "!\!.!"
+        start PowerShell.exe -NoExit -NoLogo -File "!\!.!"
 
 With the associations above when you press `[Enter]` (or another assigned key)
 for scripts in the panel then standard scripts are invoked by PowerShell.exe,

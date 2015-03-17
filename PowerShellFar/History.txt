@@ -3,6 +3,13 @@ NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 Far Manager 3.0.4284
 FarNet 5.0.61
 
+= 5.0.82 =
+
+Migration to GitHub. Some git commands are not friendly to "!" characters.
+So the recommended stepper script suffix now is "..ps1". Renamed tests:
+- Test-Dialog!.ps1 -> Test-Dialog..ps1
+- Test-Stepper!.ps1 -> Test-Stepper..ps1
+
 = 5.0.81 =
 
 Update-FarManager.ps1

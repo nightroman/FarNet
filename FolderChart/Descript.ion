@@ -1,0 +1,2 @@
+﻿.build.ps1 Build script (https://github.com/nightroman/Invoke-Build)
+Test-ProgressCancel..ps1 Test FolderChart cancellations.

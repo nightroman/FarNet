@@ -586,7 +586,7 @@ void Far0::DisposeSteps()
 void Far0::PostSelf()
 {
 	Far::Api->PostMacro("Keys('F11') Menu.Select('FarNet', 2) Keys('Enter')", Works::Kit::MacroOutput, false);
-	
+
 	// ++level. With no steps it is normally expected to be 0.
 	// Just in case something was wrong set it to expected 1.
 	if (!_steps || !_steps->Count)
@@ -617,8 +617,8 @@ Why skip step. MoveNext or Current can start modal UI. [F11] should work for
 a user as usual there even if we are self posted. Thus, we set the flag
 before calling these members and drop it after.
 
-_140316_042825!.ps1
-_140316_044206!.ps1
+_140316_042825..ps1
+_140316_044206..ps1
 */
 void Far0::OpenMenu(ModuleToolOptions from)
 {
@@ -643,7 +643,7 @@ void Far0::OpenMenu(ModuleToolOptions from)
 	try
 	{
 		_skipStep = true;
-		
+
 		// end of steps
 		if (!enumerator->MoveNext())
 		{
