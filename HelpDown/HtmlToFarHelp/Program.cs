@@ -27,7 +27,7 @@ using System.Xml;
 [assembly: AssemblyProduct("HtmlToFarHelp")]
 [assembly: AssemblyTitle("HtmlToFarHelp")]
 [assembly: AssemblyDescription("HtmlToFarHelp - converts HTML to Far Manager help")]
-[assembly: AssemblyCompany("http://code.google.com/p/farnet/")]
+[assembly: AssemblyCompany("https://github.com/nightroman/FarNet")]
 [assembly: AssemblyCopyright("Copyright (c) 2012-2015 Roman Kuzmin")]
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]

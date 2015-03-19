@@ -3213,8 +3213,7 @@ references, inherited .NET comments and other redundant information.
 
 = 3.3.7 =
 
-- Created CHM help: from now on the latest version can be downloaded from:
-http://code.google.com/p/farnet/downloads/list
+- Created CHM help.
 - IFar: two new methods Write() appending plain or colored text to the user
 screen (under panels).
 - FAR.NET does not show now error message boxes during the procedure of loading

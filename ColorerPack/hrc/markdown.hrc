@@ -7,7 +7,7 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="markdown">
 <annotation><documentation><![CDATA[
 
-markdown.hrc by Roman Kuzmin http://code.google.com/p/farnet 2013-01-07
+markdown.hrc by Roman Kuzmin, aka NightRoman, 2013-01-07
 
 * Inline HTML should be valid XML.
 * Opened spans are always colored.

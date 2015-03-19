@@ -31,7 +31,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("$Version")]
 [assembly: AssemblyTitle("FarNet module RightControl for Far Manager")]
 [assembly: AssemblyDescription("Some editor actions work like in other editors")]
-[assembly: AssemblyCompany("http://code.google.com/p/farnet/")]
+[assembly: AssemblyCompany("https://github.com/nightroman/FarNet")]
 [assembly: AssemblyCopyright("Copyright (c) 2010-2015 Roman Kuzmin")]
 
 [assembly: ComVisible(false)]
@@ -104,7 +104,7 @@ https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
 		<version>$Version</version>
 		<owners>Roman Kuzmin</owners>
 		<authors>Roman Kuzmin</authors>
-		<projectUrl>https://code.google.com/p/farnet</projectUrl>
+		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
 		<iconUrl>https://raw.githubusercontent.com/wiki/nightroman/FarNet/images/FarNetLogo.png</iconUrl>
 		<licenseUrl>https://raw.githubusercontent.com/nightroman/FarNet/master/RightControl/LICENSE.txt</licenseUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>

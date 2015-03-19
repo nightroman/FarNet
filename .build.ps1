@@ -39,7 +39,7 @@ task Meta -Inputs Get-Version.ps1 -Outputs (
 using System.Reflection;
 [assembly: AssemblyProduct("FarNet")]
 [assembly: AssemblyVersion("$FarNetVersion")]
-[assembly: AssemblyCompany("http://code.google.com/p/farnet")]
+[assembly: AssemblyCompany("https://github.com/nightroman/FarNet")]
 "@
 
 	$v1 = [Version]$FarVersion
@@ -59,7 +59,7 @@ using System.Reflection;
 	Set-Content FarNet\FarNetMan\AssemblyMeta.h @"
 [assembly: AssemblyProduct("FarNet")];
 [assembly: AssemblyVersion("$FarNetVersion")];
-[assembly: AssemblyCompany("http://code.google.com/p/farnet")];
+[assembly: AssemblyCompany("https://github.com/nightroman/FarNet")];
 [assembly: AssemblyTitle("FarNet plugin manager")];
 [assembly: AssemblyDescription("FarNet plugin manager")];
 [assembly: AssemblyCopyright("Copyright (c) 2006-2015 Roman Kuzmin")];
@@ -69,7 +69,7 @@ using System.Reflection;
 using System.Reflection;
 [assembly: AssemblyProduct("PowerShellFar")]
 [assembly: AssemblyVersion("$PowerShellFarVersion")]
-[assembly: AssemblyCompany("http://code.google.com/p/farnet")]
+[assembly: AssemblyCompany("https://github.com/nightroman/FarNet")]
 "@
 }
 

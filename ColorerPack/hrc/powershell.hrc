@@ -7,7 +7,7 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="powershell">
 <annotation><documentation><![CDATA[
 
-powershell.hrc by Roman Kuzmin http://code.google.com/p/farnet 2013-12-15
+powershell.hrc by Roman Kuzmin, aka NightRoman, 2013-12-15
 Designed for PowerShell 3.0, Colorer 1.2.1, and optional visual.hrd
 
 Regex syntax in strings after regex operators, [regex], and <#regex#>

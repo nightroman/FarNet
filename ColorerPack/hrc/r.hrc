@@ -7,8 +7,7 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="r">
 <annotation><documentation><![CDATA[
 
-r.hrc by Roman Kuzmin 2012-04-01
-Distributed with ColorerPack: http://code.google.com/p/farnet
+r.hrc by Roman Kuzmin, aka NightRoman, 2012-04-01
 
 Add to proto.hrc:
 

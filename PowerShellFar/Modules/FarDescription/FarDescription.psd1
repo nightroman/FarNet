@@ -1,7 +1,7 @@
 @{
 	Author = 'Roman Kuzmin'
 	ModuleVersion = '1.0.0'
-	CompanyName = 'http://code.google.com/p/farnet/'
+	CompanyName = 'https://github.com/nightroman/FarNet'
 	Description = 'Far Manager file description tools.'
 	Copyright = '(C) 2010 Roman Kuzmin. All rights reserved.'
 

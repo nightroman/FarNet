@@ -55,7 +55,7 @@ The tool requires .NET Framework 3.5 or above.
 		<version>$Version</version>
 		<owners>Roman Kuzmin</owners>
 		<authors>Roman Kuzmin</authors>
-		<projectUrl>https://code.google.com/p/farnet</projectUrl>
+		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
 		<iconUrl>https://raw.githubusercontent.com/nightroman/FarNet/master/HelpDown/MarkdownToHtml/MarkdownToHtml.png</iconUrl>
 		<licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>

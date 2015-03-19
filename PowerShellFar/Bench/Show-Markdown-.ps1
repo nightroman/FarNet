@@ -5,8 +5,8 @@
 	Author: Roman Kuzmin
 
 .Description
-	Requires [HelpDown](http://code.google.com/p/farnet/downloads/list).
-	Copy these files to the same directory which included in %PATH%:
+	Requires NuGet packages MarkdownToHtml and HtmlToFarHelp.
+	Copy files to the same directory which included in %PATH%:
 	- MarkdownToHtml.exe
 	- HtmlToFarHelp.exe
 	- MarkdownDeep.dll

@@ -27,7 +27,7 @@ using MarkdownDeep;
 [assembly: AssemblyProduct("MarkdownToHtml")]
 [assembly: AssemblyTitle("MarkdownToHtml")]
 [assembly: AssemblyDescription("MarkdownToHtml - converts markdown to HTML")]
-[assembly: AssemblyCompany("http://code.google.com/p/farnet/")]
+[assembly: AssemblyCompany("https://github.com/nightroman/FarNet")]
 [assembly: AssemblyCopyright("Copyright (c) 2012-2015 Roman Kuzmin")]
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]

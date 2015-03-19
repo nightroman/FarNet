@@ -783,7 +783,7 @@ Search-FarFile checks masks for validity.
 the same source as "PowerShellFar.hlf".
 
 * Markdown & markdown help tools
-- Requires [HelpDown](http://code.google.com/p/farnet/downloads/list)
+- Requires HelpDown
 - New script Show-Markdown-.ps1 opens markdown as HTML or Far help.
 - Invoke-Editor-.ps1 opens markdown files from editors as HTML, at the topic.
 - Profile-Editor-.ps1 opens markdown files from editors as HLF, at the topic.
@@ -1163,7 +1163,7 @@ Search-Regex-.ps1 panels and etc. Use via macros or by pressing [Space].
 Fixed shown count of found matches.
 
 *) PowerShell.hrc
-Fix  http://code.google.com/p/farnet/issues/detail?id=5
+Fix "highlight braces for filter/function"
 
 *) SQLite database support
 - Uses SQLite ADO.NET provider: http://sourceforge.net/projects/sqlite-dotnet2
@@ -2031,8 +2031,7 @@ $Psf.ShowHelp().
 
 *) Script Get-Usage.ps1 is replaced with internal function Get-FarHelp and
 removed. Keep or remove it yourself. Old version will be in here:
-http://code.google.com/p/farnet/source/browse/tags/4.2.26/
-PowerShellFar/Bench/Get-Usage.ps1
+(tags/4.2.26) PowerShellFar/Bench/Get-Usage.ps1
 
 TWEAKS AND FIXES
 
@@ -2063,8 +2062,7 @@ ps: Remove-Variable Host -Confirm
 1) In PS V2 there is a built-in cmdlet Get-PSCallStack.
 2) $Psf.ShowCallStack() is not found very useful but may have issues.
 3) It is a wrapper of a script, you can use the original script instead:
-http://code.google.com/p/farnet/source/browse/tags/4.2.26/
-PowerShellFar/Resources/Show-CallStack.ps1
+(tags/4.2.26) PowerShellFar/Resources/Show-CallStack.ps1
 
 *) Test-CallStack-.ps1: it tells how to use the built-in cmdlet Get-PSCallStack
 instead of the removed $Psf.ShowCallStack().
