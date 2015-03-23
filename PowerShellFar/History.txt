@@ -3,6 +3,14 @@ NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 Far Manager 3.0.4284
 FarNet 5.0.61
 
+= 5.0.83 =
+
+Assert-Far: Refactoring and slightly changed logic. Special processing of
+Conditions defined as a script block. See:
+ps: help Assert-Far -full
+
+Migration to GitHub: updated links.
+
 = 5.0.82 =
 
 Migration to GitHub. Some git commands are not friendly to "!" characters.

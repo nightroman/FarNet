@@ -169,7 +169,7 @@ $Editor.Close()
 ### Check logged events
 #! don't check Closed event
 $logged = $script:log -join "`r`n"
-Assert-Far ($log -eq @'
+Assert-Far ($logged -eq @'
 Editor:Opened
 Editor:Saving
 '@)

@@ -4,29 +4,46 @@
 	Help script (https://github.com/nightroman/Helps)
 #>
 
-Set-StrictMode -Version 2
+Set-StrictMode -Version Latest
 
 ### Assert-Far
 @{
 	command = 'Assert-Far'
 	synopsis = @'
-Checks for the condition(s) and stops the pipeline with a message if any condition is not evaluated to true.
+Checks for the conditions and stops invocation if any of them is evaluated to false.
 '@
 	description = @'
 If the assertion fails then an error dialog is shown with several options.
 A running macro, if any, is stopped before showing the dialog.
 '@,
 	@'
-If the message Title is provided then just a simple message is shown on failures, all the assertion details are omitted.
-This mode is suitable for production scripts.
+If the parameter Title is provided then just a simple message is shown on
+failures, all the assertion details are omitted. This mode is suitable for
+production scripts.
 '@
 	parameters = @{
-		Conditions = 'A value or an array of values to be checked.'
-		Message = 'The message to display on failure or a script block to invoke and get the message.'
-		Title = 'The title of a simple message designed for production scripts.'
-		FileDescription = 'Asserts the current panel file description.'
-		FileName = 'Asserts the current panel file name.'
-		FileOwner = 'Asserts the current file owner.'
+		Conditions = @'
+One or more condition values to be checked. If any value is evaluated to false
+(null, 0, empty string or collection) then an assertion dialog is shown.
+
+If Conditions is a single script block then it is invoked in order to get at
+least one condition value. Consider to use script blocks if they should be
+invoked and checked after conditions defined by other parameters.
+
+If Conditions is a collection then its every item is checked as a condition.
+'@
+		Message = @'
+Specifies a user friendly message to be shown on failures or a script block to
+be invoked on failures in order to get a message.
+'@
+		Title = @'
+Specifies a message box title and tells to show a simplified message box with
+less options and diagnostics. Normally such a dialog box is used in order to
+tell a user some requirements, not report internal issues.
+'@
+		FileDescription = 'Specifies the expected current panel file description.'
+		FileName = 'Specifies the expected current panel file name.'
+		FileOwner = 'Specifies the expected current file owner.'
 		Dialog = 'Checks the current window is dialog.'
 		Editor = 'Checks the current window is editor.'
 		Panels = 'Checks the current window is panels.'
@@ -36,9 +53,6 @@ This mode is suitable for production scripts.
 		Native = 'Checks the active panel is native (not plugin).'
 		Native2 = 'Checks the passive panel is native (not plugin).'
 	}
-
-	inputs = @()
-	outputs = @()
 
 	examples = @(
 		@{code={
@@ -82,8 +96,6 @@ This mode is suitable for production scripts.
 		Up = 'Tells to search up, not down.'
 		Where = 'Boolean script block operating on $_ ~ FarFile.'
 	}
-	inputs = @()
-	outputs = @()
 }
 
 ### New-FarFile
@@ -134,7 +146,6 @@ This mode is suitable for production scripts.
 		Hidden = 'Sets FarItem.Hidden'
 		IsSeparator = 'Sets FarItem.IsSeparator'
 	}
-	inputs = @()
 	outputs = @{
 		type = 'FarNet.FarItem'
 		description = 'A new item for menus and lists.'
@@ -155,8 +166,6 @@ This mode is suitable for production scripts.
 		Recurse = 'Tells to search through all directories and sub-directories.'
 		Asynchronous = 'Tells to performs the search in the background and to open the result panel immediately.'
 	}
-	inputs = @()
-	outputs = @()
 }
 
 ### Show-FarMessage
@@ -179,7 +188,6 @@ otherwise nothing is returned, it is used simply to display a message.
 		IsError = 'If error type returned by GetLastError is known, the error description will be shown before the message body text.'
 		IsWarning = 'Warning message colors are used (white text on red background by default).'
 	}
-	inputs = @()
 	outputs = @{
 		type = '[int] or none'
 		description = @'
@@ -212,7 +220,6 @@ commands with no output or output suitable for viewing as formatted text.
 		'Jobs with errors are not removed automatically, you should remove them from the list.',
 		'Stopwatch is started when the first job notification is shown in the console title.'
 	}
-	inputs = @()
 	outputs = @{
 		type = 'PowerShellFar.Job'
 		description = 'A new not yet started job if the Return switch is used, otherwise nothing is returned.'
@@ -226,7 +233,6 @@ $BaseFile = @{
 		Passive = 'Tells to get items from the passive panel.'
 		Selected = 'Tells to get selected panel items or the current one if none is selected.'
 	}
-	inputs = @()
 }
 
 ### Get-FarFile
@@ -269,8 +275,6 @@ $BaseText = @{
 		Switching = 'Switching between editor and viewer.'
 		Title = 'Window title. The default is the file path.'
 	}
-	inputs = @()
-	outputs = @()
 }
 
 # editor
@@ -352,7 +356,6 @@ Merge-Helps $BasePanel @{
 		type = 'FarNet.Panel'
 		description = 'The panel being opened.'
 	}
-	outputs = @()
 }
 
 ### Out-FarPanel
@@ -437,7 +440,6 @@ directly, instead input objects come from the pipeline.
 		type = '[object]'
 		description = 'Any objects to be shown as panel files.'
 	}
-	outputs = @()
 
 	examples = @(
 		@{code={
@@ -476,7 +478,6 @@ $BaseMenu = @{
 		X = 'Sets IAnyMenu.X coordinate.'
 		Y = 'Sets IAnyMenu.Y coordinate.'
 	}
-	inputs = @()
 }
 
 ### New-FarMenu
@@ -568,7 +569,6 @@ This mode is used for troubleshooting, demonstrations, and etc.
 			description = 'File items, for example output of Get-*Item cmdlets.'
 		}
 	)
-	outputs = @()
 
 	examples = @(
 		@{code={

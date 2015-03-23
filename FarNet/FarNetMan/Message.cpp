@@ -131,18 +131,20 @@ int Message::Show(MessageArgs^ args)
 	int height = Far::Api->UI->WindowSize.Y - 9;
 	FarNet::Works::Kit::FormatMessage(%m._body, args->Text, maxTextWidth, height, FarNet::Works::FormatMessageMode::Word);
 
-	// buttons? dialog?
+	// buttons?
+	bool needButtonList = false;
 	if (args->Buttons)
 	{
 		m._buttons = args->Buttons;
 		m._buttonLineLength = GetButtonLineLength(args->Buttons);
-		bool needButtonList = m._buttonLineLength > maxTextWidth;
-
-		if (m._position.HasValue || needButtonList)
-			return m.ShowDialog(maxTextWidth, needButtonList);
+		needButtonList = m._buttonLineLength > maxTextWidth;
 	}
 
-	// go
+	// dialog box?
+	if (m._position.HasValue || needButtonList)
+		return m.ShowDialog(maxTextWidth, needButtonList);
+
+	// message box
 	m.Show();
 	return m._selected;
 }
@@ -158,6 +160,9 @@ int Message::GetButtonLineLength(array<String^>^ buttons)
 
 int Message::ShowDialog(int maxTextWidth, bool needButtonList)
 {
+	if (!_header)
+		_header = String::Empty;
+	
 	// dialog width
 	int w = _header->Length;
 	// text lines
@@ -200,7 +205,7 @@ int Message::ShowDialog(int maxTextWidth, bool needButtonList)
 	}
 	else
 	{
-		h = 6 + nBody;
+		h = nBody + (_buttons ? 6 : 4);
 	}
 
 	// dialog place
@@ -222,7 +227,14 @@ int Message::ShowDialog(int maxTextWidth, bool needButtonList)
 
 	// text
 	for(int i = 0; i < nBody; ++i)
-		dialog->AddText(5, -1, 0, _body[i]);
+		dialog->AddText(5, -1, 0, _body[i])->ShowAmpersand = true;
+
+	// case: no buttons
+	if (!_buttons)
+	{
+		dialog->Show();
+		return -1;
+	}
 
 	// separator
 	dialog->AddText(5, -1, 0, nullptr)->Separator = 1;

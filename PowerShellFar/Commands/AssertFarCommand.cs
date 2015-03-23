@@ -4,6 +4,7 @@ PowerShellFar module for Far Manager
 Copyright (c) 2006-2015 Roman Kuzmin
 */
 
+using System.Collections;
 using System.Management.Automation;
 using FarNet;
 
@@ -12,40 +13,60 @@ namespace PowerShellFar.Commands
 	sealed class AssertFarCommand : BaseCmdlet
 	{
 		internal const string MyName = "Assert-Far";
+
 		[Parameter(Position = 0)]
-		public object Conditions { get; set; }
+		public object Conditions
+		{
+			get { return _Conditions; }
+			set { _Conditions = value; _isConditions = true; }
+		}
+		object _Conditions;
+		bool _isConditions;
+
 		[Parameter(Position = 1)]
 		public object Message { get; set; }
+
 		[Parameter(Position = 2)]
 		public string Title { get; set; }
+
 		[Parameter]
 		public string FileDescription { get; set; }
+
 		[Parameter]
 		public string FileName { get; set; }
+
 		[Parameter]
 		public string FileOwner { get; set; }
+
 		[Parameter]
 		public SwitchParameter Dialog { get; set; }
+
 		[Parameter]
 		public SwitchParameter Editor { get; set; }
+
 		[Parameter]
 		public SwitchParameter Panels { get; set; }
+
 		[Parameter]
 		public SwitchParameter Viewer { get; set; }
+
 		[Parameter]
 		public SwitchParameter Plugin { get; set; }
+
 		[Parameter]
 		public SwitchParameter Plugin2 { get; set; }
+
 		[Parameter]
 		public SwitchParameter Native { get; set; }
+
 		[Parameter]
 		public SwitchParameter Native2 { get; set; }
+
 		bool IsError
 		{
 			get { return Title == null; }
 		}
-		int ConditionCount;
-		int ConditionIndex;
+
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		protected override void BeginProcessing()
 		{
@@ -105,38 +126,37 @@ namespace PowerShellFar.Commands
 			}
 
 			// at least one check is done and there are no conditions
-			if (fail == false && Conditions == null)
+			if (!fail && !_isConditions)
 				return;
 
-			// check conditions
-			object[] array = Conditions as object[];
-			if (array == null)
+			// invoke script to get conditions
+			var script = Cast<ScriptBlock>.From(Conditions);
+			if (script != null)
 			{
-				Assert(Conditions);
-			}
-			else
-			{
-				ConditionCount = array.Length;
-				for (ConditionIndex = 0; ConditionIndex < ConditionCount; ++ConditionIndex)
-					Assert(array[ConditionIndex]);
-			}
-		}
-		void Assert(object condition)
-		{
-			if (condition == null)
-			{
-				Title = null;
-			}
-			else
-			{
-				// used to require Boolean; let's keep it simple
-				if (LanguagePrimitives.IsTrue(condition))
-					return;
+				AssertEnumerable(script.Invoke());
+				return;
 			}
 
-			Fail(null);
+			// check conditions
+			var set = LanguagePrimitives.GetEnumerable(Conditions);
+			if (set != null)
+				AssertEnumerable(set);
+			else if (!LanguagePrimitives.IsTrue(Conditions))
+				Fail();
 		}
-		void Fail(object message)
+		void AssertEnumerable(IEnumerable set)
+		{
+			int i = -1;
+			foreach (var it in set)
+			{
+				++i;
+				if (!LanguagePrimitives.IsTrue(it))
+					Fail(null, i);
+			}
+			if (i < 0)
+				Fail("Assertion set is empty.");
+		}
+		void Fail(object message = null, int conditionIndex = 0)
 		{
 			// break a macro
 			MacroState macroState = Far.Api.MacroState;
@@ -170,10 +190,11 @@ namespace PowerShellFar.Commands
 			string body = Message == null ? "Assertion failed" : Message.ToString();
 			if (IsError)
 			{
-				if (ConditionCount > 0)
-					body = string.Concat(body, (body.Length > 0 ? "\n" : string.Empty), "Condition ", ConditionIndex + 1, " out of ", ConditionCount);
+				if (conditionIndex > 0)
+					body = string.Concat(body, (body.Length > 0 ? "\n" : string.Empty), "Condition #", conditionIndex + 1);
 
-				body = string.Concat(body, (body.Length > 0 ? "\n" : string.Empty), MyInvocation.PositionMessage);
+				//! Trim() for PowerShell 2.0
+				body = string.Concat(body, (body.Length > 0 ? "\n" : string.Empty), MyInvocation.PositionMessage.Trim());
 			}
 
 			// buttons
