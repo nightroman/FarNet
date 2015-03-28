@@ -6,11 +6,12 @@
 
 param(
 	$Platform = (property Platform Win32),
-	$Configuration = (property Configuration Release)
+	$Configuration = (property Configuration Release),
+	$MSBuildVersion = (property MSBuildVersion '4.0')
 )
 $FarHome = "C:\Bin\Far\$Platform"
 
-use 4.0 MSBuild
+use $MSBuildVersion MSBuild
 
 $script:Builds = @(
 	'FarNet\.build.ps1'
@@ -70,7 +71,7 @@ task Package BeginPackage, Help, {
 	assert ($Platform -eq 'Win32')
 
 	# build x64
-	exec { MSBuild FarNet.sln /t:Build /p:Configuration=Release /p:Platform=x64 }
+	exec { MSBuild ..\FarNetAccord.sln /t:FarNetMan /p:Configuration=Release /p:Platform=x64 }
 
 	# folders
 	Remove-Item [z] -Recurse -Force
@@ -81,6 +82,7 @@ task Package BeginPackage, Help, {
 	z\tools\FarHome.x86\Plugins\FarNet
 
 	# copy
+	[System.IO.File]::Delete("$FarHome\FarNet\FarNetAPI.chw")
 	Copy-Item -Destination z\tools\FarHome $FarHome\Far.exe.config
 	Copy-Item -Destination z\tools\FarHome\FarNet $FarHome\FarNet\FarNet*, About-FarNet.htm, History.txt, LICENSE.txt
 	Copy-Item -Destination z\tools\FarHome\Plugins\FarNet $FarHome\Plugins\FarNet\FarNetMan.hlf

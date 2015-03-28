@@ -267,7 +267,7 @@ End time: {0:yyyyMMddHHmmss}
 				_writer = null;
 			}
 		}
-		string NewFileName()
+		static string NewFileName()
 		{
 			// Tried to use the Personal folder (like PS does). For some reasons
 			// some files are not deleted due to UnauthorizedAccessException.

@@ -65,6 +65,8 @@ namespace PowerShellFar
 		/// </summary>
 		public override Dictionary<string, PSObject> Prompt(string caption, string message, Collection<FieldDescription> descriptions)
 		{
+			if (descriptions == null) throw new ArgumentNullException("descriptions");
+
 			var r = new Dictionary<string, PSObject>();
 
 			if (Far.Api.UI.IsCommandMode)
@@ -190,9 +192,9 @@ namespace PowerShellFar
 		public override int PromptForChoice(string caption, string message, Collection<ChoiceDescription> choices, int defaultChoice)
 		{
 			if (choices == null || choices.Count == 0)
-				throw new ArgumentException("choices");
+				throw new ArgumentOutOfRangeException("choices");
 			if (defaultChoice < -1 || defaultChoice >= choices.Count)
-				throw new ArgumentException("defaultChoice");
+				throw new ArgumentOutOfRangeException("defaultChoice");
 
 			//! DON'T Check(): crash on pressed CTRL-C and an error in 'Inquire' mode
 			//! 090211 The above is obsolete, perhaps.
@@ -248,6 +250,7 @@ namespace PowerShellFar
 				}
 			}
 		}
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional")]
 		static int DetermineChoicePicked(string response, Collection<ChoiceDescription> choices, string[,] hotkeysAndPlainLabels)
 		{
 			int num = -1;
@@ -274,6 +277,7 @@ namespace PowerShellFar
 			return num;
 		}
 		//! c&p
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional")]
 		void ShowChoiceHelp(Collection<ChoiceDescription> choices, string[,] hotkeysAndPlainLabels)
 		{
 			for (int i = 0; i < choices.Count; i++)
@@ -287,6 +291,7 @@ namespace PowerShellFar
 			}
 		}
 		//! c&p
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional")]
 		void WriteChoicePrompt(string[,] hotkeysAndPlainLabels, Dictionary<int, bool> defaultChoiceKeys, bool shouldEmulateForMultipleChoiceSelection)
 		{
 			int lineLenMax = RawUI.BufferSize.Width - 1;
@@ -350,6 +355,7 @@ namespace PowerShellFar
 			Write(fg, bg, text);
 		}
 		//! c&p
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional")]
 		static void BuildHotkeysAndPlainLabels(Collection<ChoiceDescription> choices, out string[,] hotkeysAndPlainLabels)
 		{
 			hotkeysAndPlainLabels = new string[2, choices.Count];

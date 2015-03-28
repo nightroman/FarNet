@@ -229,7 +229,7 @@ namespace PowerShellFar
 				using (var ps = NewPowerShell())
 				{
 					// internal profile (NB: there is trap in there)
-					ps.AddScript(Resource.PowerShellFar, false).Invoke();
+					ps.AddCommand(Path.Combine(A.Psf.AppHome, "PowerShellFar.ps1"), false).Invoke();
 
 					// user profile, separately for better diagnostics
 					var profile = Path.Combine(A.Psf.Manager.GetFolderPath(SpecialFolder.RoamingData, true), "Profile.ps1");
@@ -555,7 +555,6 @@ Continue with this current directory?
 		/// The code is simply returned, if you want to execute it then call <see cref="InvokeInputCode"/>.
 		/// </para>
 		/// </remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "PowerShellFar")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public string InputCode()
 		{
@@ -583,6 +582,7 @@ Continue with this current directory?
 		/// Starts console mode (async).
 		/// Called on "Command console".
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void StartConsole()
 		{
 			UI.InputConsole.Start();

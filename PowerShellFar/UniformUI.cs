@@ -42,6 +42,7 @@ namespace PowerShellFar
 
 		protected virtual void Writing() { }
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		static protected PSObject ValueToResult(string value, bool safe)
 		{
 			object r;

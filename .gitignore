@@ -3,10 +3,11 @@
 *.opensdf
 *.sdf
 *.suo
-*.vcxproj.user
 [B|b]in
 [D|d]ebug
 [O|o]bj
 [R|r]elease
-AssemblyMeta.*
 Active.h
+AssemblyMeta.*
+Build.vcxproj.user
+ipch

@@ -186,7 +186,7 @@ namespace PowerShellFar
 			catch (RuntimeException ex)
 			{
 				Far.Api.Message(
-					string.Format(null, "Error in {0}, see $Error for defails. Message: {1}", fileName, ex.Message),
+					string.Format(null, "Error in {0}, see $Error for details. Message: {1}", fileName, ex.Message),
 					Res.Me, MessageOptions.Warning | MessageOptions.LeftAligned);
 			}
 		}

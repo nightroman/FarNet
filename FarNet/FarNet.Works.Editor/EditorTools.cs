@@ -4,6 +4,7 @@ FarNet plugin for Far Manager
 Copyright (c) 2006-2015 Roman Kuzmin
 */
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -24,6 +25,8 @@ namespace FarNet.Works
 		}
 		public static string EditText(EditTextArgs args)
 		{
+			if (args == null) throw new ArgumentNullException("args");
+
 			var file = Far.Api.TempName();
 			if (args.Extension != null)
 				file += "." + args.Extension; 

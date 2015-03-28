@@ -38,7 +38,7 @@ static ICollection<TextFrame>^ GetBookmarks(EDITOR_CONTROL_COMMANDS command)
 	for(size_t i = 0; i < ebm.Count; ++i)
 		r->Add(NewTextFrame(ebm, (int)i));
 	
-	delete buffer;
+	delete[] buffer;
 	return r;
 }
 

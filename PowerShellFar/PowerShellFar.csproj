@@ -159,25 +159,10 @@
     <Compile Include="FarUI.cs" />
     <Compile Include="JobUI.cs" />
     <Compile Include="Panels\DataPanel.cs" />
-    <Compile Include="Resource.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resource.resx</DependentUpon>
-    </Compile>
     <Compile Include="Panels\TablePanel.cs" />
     <Compile Include="Panels\TreePanel.cs" />
     <Compile Include="UniformUI.cs" />
     <Compile Include="Utility.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\PowerShellFar.ps1" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resource.resx">
-      <SubType>Designer</SubType>
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="..\FarNet\CustomDictionary.xml">

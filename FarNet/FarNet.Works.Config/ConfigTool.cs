@@ -15,6 +15,8 @@ namespace FarNet.Works
 	{
 		public static string ValidateMask(string mask)
 		{
+			if (mask == null) throw new ArgumentNullException("mask");
+
 			mask = mask.Trim();
 			if (mask.Length == 0 || Far.Api.IsMaskValid(mask))
 				return mask;

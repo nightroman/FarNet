@@ -74,7 +74,7 @@ namespace FarNet.Works
 
 			// Priority
 			Dialog.AddText(5, -1, 0, "&Priority");
-			Priority = Dialog.AddEdit(x, 0, 71, drawer.Priority.ToString());
+			Priority = Dialog.AddEdit(x, 0, 71, string.Format(null, "{0}", drawer.Priority));
 
 			Dialog.AddText(5, -1, 0, string.Empty).Separator = 1;
 

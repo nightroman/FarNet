@@ -401,7 +401,6 @@ namespace PowerShellFar
 					return (int)value;
 			}
 		}
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "PowerShellFar")]
 		public static void InvokePipelineForEach(IEnumerable<PSObject> input)
 		{
 			List<PSObject> items = new List<PSObject>(input);
@@ -572,6 +571,7 @@ Out-String -Width $args[1]
 				return string.Format(null, "<ERROR: {0}>", e.Message);
 			}
 		}
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		internal static string SafeToString(object value)
 		{
 			if (value == null)

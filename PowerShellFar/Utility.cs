@@ -53,7 +53,7 @@ namespace PowerShellFar
 				catch (Win32Exception)
 				{
 					Far.Api.Message(
-						"Cannot start the external viewer, default viewer will be used.\nYour settings:\nExternalViewerFileName: " + externalViewerFileName + "\nExternalViewerArguments: " + Settings.Default.ExternalViewerArguments,
+						"Cannot start the specified external viewer, the default viewer will be used.",
 						Res.Me, MessageOptions.LeftAligned | MessageOptions.Warning);
 				}
 			}
@@ -140,7 +140,7 @@ namespace PowerShellFar
 
 			A.Psf.Transcript = new TranscriptOutputWriter(path, append);
 
-			return string.Format(TextTranscriptStarted, path);
+			return string.Format(null, TextTranscriptStarted, path);
 		}
 		#endregion
 	}

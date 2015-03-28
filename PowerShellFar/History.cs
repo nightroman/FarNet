@@ -97,7 +97,6 @@ namespace PowerShellFar
 		/// <summary>
 		/// For Actor.
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "PowerShellFar")]
 		public static void ShowHistory()
 		{
 			var m = new UI.CommandHistoryMenu(string.Empty);

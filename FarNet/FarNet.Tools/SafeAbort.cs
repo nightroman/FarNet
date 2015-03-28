@@ -80,7 +80,9 @@ namespace Pfz.Threading
 
 			try
 			{
+#pragma warning disable
 				var stack = new System.Diagnostics.StackTrace(thread, false);
+#pragma warning restore
 				var frames = stack.GetFrames();
 
 				// If we try to Abort the thread when it is starting (really soon), it will not have any frames. Calling an abort here caused some dead-locks for me,

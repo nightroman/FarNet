@@ -124,6 +124,8 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 		/// <param name="editLine">Editor line, command line or dialog edit box line; if null then <see cref="IFar.Line"/> is used.</param>
 		/// <param name="runspace">Runspace or null for the main.</param>
 		/// <seealso cref="Actor.ExpandCode"/>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		public static void ExpandCode(ILine editLine, Runspace runspace)
 		{
 			InitTabExpansion();

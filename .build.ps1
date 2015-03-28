@@ -11,7 +11,19 @@ param(
 
 $FarHome = "C:\Bin\Far\$Platform"
 
-use 4.0 MSBuild
+function Get-GitBranch {
+	foreach($_ in git branch --list --quiet) {
+		if ($_ -match '\*\s+(\S+)') {return $matches[1]}
+	}
+	Write-Error -ErrorAction 1 'Cannot get the current branch.'
+}
+
+function Get-MSBuildVersion {
+	if ((Get-GitBranch) -match 'v12') {'12.0'} else {'4.0'}
+}
+
+$MSBuildVersion = Get-MSBuildVersion
+use $MSBuildVersion MSBuild
 
 $Builds = @(
 	'FarNet\FarNet.build.ps1'
@@ -23,7 +35,7 @@ task Clean {
 	foreach($_ in $Builds) { Invoke-Build Clean $_ }
 
 	Remove-Item -Force -Recurse -ErrorAction 0 `
-	obj, FarNetAccord.sdf
+	ipch, obj, FarNetAccord.sdf
 }
 
 # Synopsis: Generate or update meta files.
@@ -75,12 +87,13 @@ using System.Reflection;
 
 # Synopsis: Build projects (Configuration, Platform) and PSF help.
 task Build Meta, {
-	exec { MSBuild FarNetAccord.sln /t:Build /p:Configuration=$Configuration /p:Platform=$Platform }
+	exec { MSBuild FarNetAccord.sln /t:FarNetMan /p:Configuration=$Configuration /p:Platform=$Platform }
 	Invoke-Build Help .\PowerShellFar\PowerShellFar.build.ps1
 }
 
 # Synopsis: Copy files to FarHome.
 task Install {
+	assert (!(Get-Process [F]ar)) 'Please exit Far.'
 	foreach($_ in $Builds) { Invoke-Build Install $_ }
 }
 
