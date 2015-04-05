@@ -7,8 +7,8 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="powershell">
 <annotation><documentation><![CDATA[
 
-powershell.hrc by Roman Kuzmin, aka NightRoman, 2013-12-15
-Designed for PowerShell 3.0, Colorer 1.2.1, and optional visual.hrd
+powershell.hrc by Roman Kuzmin, aka NightRoman, 2015-04-05
+Designed for PowerShell 3.0 and optional visual.hrd
 
 Regex syntax in strings after regex operators, [regex], and <#regex#>
 
@@ -32,6 +32,7 @@ SQL syntax in here-strings after <#sql#>
 <region name="Command"       parent="def:Identifier"    description="Command names."/>
 <region name="Comment"       parent="def:Comment"       description="Code comments."/>
 <region name="Constant"      parent="def:Constant"      description="$null, $true, $false."/>
+<region name="Directive"     parent="def:Directive"     description="#requires, ..."/>
 <region name="Error"         parent="def:Error"         description="Error and warning areas."/>
 <region name="HashKey"       parent="def:Parameter"     description="Hashtable keys."/>
 <region name="HelpDirective" parent="def:CommentDoc"    description="Help comment directives."/>
@@ -95,6 +96,7 @@ SQL syntax in here-strings after <#sql#>
 	<inherit scheme="def:empty"/>
 </scheme>
 <scheme name="comment">
+	<regexp match="/(?{Directive}%s-rem;#requires)(?{Comment}.*)/i"/>
 	<regexp match="/(?{Comment}%s-rem;(?{def:Outlined}#{3}#?!.*))/"/>
 	<block scheme="_comment" region="Comment" start="/%s-rem;#+/" end="/$/"/>
 	<block scheme="_comment" region="Comment" start="/(?{start}%s-rem;&lt;#)/" end="/(?{end}#&gt;)\s*/"/>
