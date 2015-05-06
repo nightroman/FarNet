@@ -28,11 +28,12 @@ namespace PowerShellFar.Commands
 			IEditor editor = Far.Api.CreateEditor();
 			editor.DeleteSource = DeleteSource;
 			editor.DisableHistory = DisableHistory;
-			editor.FileName = Path;
 			editor.Host = Host;
 			editor.Switching = Switching;
 			editor.Title = Title;
 			editor.GoTo(CharNumber - 1, LineNumber - 1);
+			if (!string.IsNullOrEmpty(Path))
+				editor.FileName = GetUnresolvedProviderPathFromPSPath(Path);
 			if (CodePage >= 0)
 				editor.CodePage = CodePage;
 			if (_IsLocked.HasValue)

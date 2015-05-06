@@ -3,6 +3,11 @@ NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 Far Manager 3.0.4284
 FarNet 5.0.61
 
+= 5.0.84 =
+
+Open-FarEditor, New-FarEditor, Open-FarViewer, and New-FarViewer resolve
+relative input paths using the current PowerShell location.
+
 = 5.0.83 =
 
 Assert-Far: Refactoring and slightly changed logic. Special processing of

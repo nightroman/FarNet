@@ -19,7 +19,7 @@ namespace PowerShellFar.Commands
 			IViewer viewer = Far.Api.CreateViewer();
 			viewer.DeleteSource = DeleteSource;
 			viewer.DisableHistory = DisableHistory;
-			viewer.FileName = Path;
+			viewer.FileName = GetUnresolvedProviderPathFromPSPath(Path);
 			viewer.Switching = Switching;
 			viewer.Title = Title;
 			if (CodePage >= 0)
