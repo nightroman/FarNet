@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>FarNet.Explore</RootNamespace>
     <AssemblyName>Explore</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>

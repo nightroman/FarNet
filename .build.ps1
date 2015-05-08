@@ -7,7 +7,7 @@
 param(
 	$Platform = (property Platform Win32),
 	$Configuration = (property Configuration Release),
-	$TargetFrameworkVersion = (property TargetFrameworkVersion v4.0)
+	$TargetFrameworkVersion = (property TargetFrameworkVersion v3.5)
 )
 
 $FarHome = "C:\Bin\Far\$Platform"
