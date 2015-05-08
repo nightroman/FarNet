@@ -6,24 +6,13 @@
 
 param(
 	$Platform = (property Platform Win32),
-	$Configuration = (property Configuration Release)
+	$Configuration = (property Configuration Release),
+	$TargetFrameworkVersion = (property TargetFrameworkVersion v4.0)
 )
 
 $FarHome = "C:\Bin\Far\$Platform"
 
-function Get-GitBranch {
-	foreach($_ in git branch --list --quiet) {
-		if ($_ -match '\*\s+(\S+)') {return $matches[1]}
-	}
-	Write-Error -ErrorAction 1 'Cannot get the current branch.'
-}
-
-function Get-MSBuildVersion {
-	if ((Get-GitBranch) -match 'v12') {'12.0'} else {'4.0'}
-}
-
-$MSBuildVersion = Get-MSBuildVersion
-use $MSBuildVersion MSBuild
+use 12.0 MSBuild
 
 $Builds = @(
 	'FarNet\FarNet.build.ps1'
@@ -87,7 +76,10 @@ using System.Reflection;
 
 # Synopsis: Build projects (Configuration, Platform) and PSF help.
 task Build Meta, {
-	exec { MSBuild FarNetAccord.sln /t:FarNetMan /p:Configuration=$Configuration /p:Platform=$Platform }
+	$PlatformToolset = if ($TargetFrameworkVersion -lt 'v4') {'v90'} else {'v120'}
+	exec {
+		MSBuild FarNetAccord.sln /t:FarNetMan /p:Platform=$Platform /p:Configuration=$Configuration /p:TargetFrameworkVersion=$TargetFrameworkVersion /p:PlatformToolset=$PlatformToolset
+	}
 	Invoke-Build Help .\PowerShellFar\PowerShellFar.build.ps1
 }
 
