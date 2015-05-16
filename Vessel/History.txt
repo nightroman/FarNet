@@ -1,5 +1,16 @@
 NuGet package: https://www.nuget.org/packages/FarNet.Vessel
 
+= 2.0.6 =
+
+History log is UTF8 instead of Unicode (git friendly, smaller, etc.).
+
+Save your old history file with the new name and code page:
+
+- goto: "%FARLOCALPROFILE%\FarNet\Vessel\VesselHistory.log"
+- Edit (F4), save as "VesselHistory.txt", code page 65001 (ShiftF2)
+- Click "Yes" to override the existing created from the Far history
+- If all is fine then remove old "VesselHistory.log"
+
 = 2.0.5 =
 
 Amended package information.

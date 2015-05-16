@@ -42,7 +42,7 @@ namespace FarNet.Vessel
 			if (!Directory.Exists(dir))
 				Directory.CreateDirectory(dir);
 
-			using (StreamWriter writer = new StreamWriter(store, false, Encoding.Unicode))
+			using (StreamWriter writer = new StreamWriter(store, false, Encoding.UTF8))
 			{
 				writer.WriteLine(LINE_HEADER);
 
@@ -61,7 +61,7 @@ namespace FarNet.Vessel
 			if (string.IsNullOrEmpty(store))
 				store = VesselHost.LogPath;
 
-			using (StreamReader reader = new StreamReader(store, Encoding.Unicode))
+			using (StreamReader reader = new StreamReader(store, Encoding.UTF8))
 			{
 				string line;
 				int index = -1;
@@ -86,7 +86,7 @@ namespace FarNet.Vessel
 		{
 			// write the temp
 			string temp = store + ".tmp";
-			using (StreamWriter writer = new StreamWriter(temp, false, Encoding.Unicode))
+			using (StreamWriter writer = new StreamWriter(temp, false, Encoding.UTF8))
 			{
 				writer.WriteLine(LINE_HEADER);
 				foreach (var log in records)
@@ -98,7 +98,7 @@ namespace FarNet.Vessel
 		}
 		public static void Append(string store, DateTime time, int keys, string what, string path)
 		{
-			using (StreamWriter writer = new StreamWriter(store, true, Encoding.Unicode))
+			using (StreamWriter writer = new StreamWriter(store, true, Encoding.UTF8))
 				writer.WriteLine(LINE_FORMAT, time, keys, what, path);
 		}
 		public static void Remove(string store, string path)

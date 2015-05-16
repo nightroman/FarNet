@@ -13,7 +13,7 @@ namespace FarNet.Vessel
 	[ModuleHost(Load = true)]
 	public class VesselHost : ModuleHost
 	{
-		const string NameLogFile = "VesselHistory.log";
+		const string NameLogFile = "VesselHistory.txt";
 		internal const string NameFactor = "Factor";
 		internal const string NameLimits = "Limits";
 		internal const string NameMaximumDayCount = "MaximumDayCount";

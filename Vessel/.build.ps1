@@ -5,19 +5,46 @@
 #>
 
 param(
-	$Platform = (property Platform Win32)
+	$Platform = (property Platform Win32),
+	$TargetFrameworkVersion = (property TargetFrameworkVersion v3.5)
 )
 
 $FarHome = "C:\Bin\Far\$Platform"
 $ModuleHome = "$FarHome\FarNet\Modules\Vessel"
 
-#! Close Far Manager.
+# Synopsis: Build all. Exit Far Manager!
 task . Build, Help, Clean
 
+# Get version from release notes.
+function Get-Version {
+	switch -Regex -File History.txt {'=\s+(\d+\.\d+\.\d+)\s+=' {return $Matches[1]} }
+}
+
+# Synopsis: Generate or update meta files.
+task Meta -Inputs History.txt -Outputs AssemblyInfo.cs {
+	$Version = Get-Version
+
+	Set-Content AssemblyInfo.cs @"
+using System;
+using System.Reflection;
+using System.Runtime.InteropServices;
+
+[assembly: AssemblyVersion("$Version")]
+[assembly: AssemblyProduct("FarNet.Vessel")]
+[assembly: AssemblyTitle("FarNet module Vessel for Far Manager")]
+[assembly: AssemblyDescription("FarNet.Vessel: (View/Edit/Save/SELect) file history tools")]
+[assembly: AssemblyCompany("https://github.com/nightroman/FarNet")]
+[assembly: AssemblyCopyright("Copyright (c) 2011-2015 Roman Kuzmin")]
+
+[assembly: ComVisible(false)]
+[assembly: CLSCompliant(true)]
+"@
+}
+
 # Build and install the assembly.
-task Build {
-	use 4.0 MSBuild
-	exec { MSBuild Vessel.csproj /p:Configuration=Release /p:FarHome=$FarHome }
+task Build Meta, {
+	use 12.0 MSBuild
+	exec { MSBuild Vessel.csproj /p:Configuration=Release /p:FarHome=$FarHome /p:TargetFrameworkVersion=$TargetFrameworkVersion }
 }
 
 # In addition to Build: new About-Vessel.htm, $ModuleHome\Vessel.hlf
@@ -32,9 +59,7 @@ task Clean {
 }
 
 task Version {
-	$dll = Get-Item -LiteralPath $ModuleHome\Vessel.dll
-	assert ($dll.VersionInfo.FileVersion -match '^(\d+\.\d+\.\d+)\.0$')
-	($script:Version = $matches[1])
+	($script:Version = Get-Version)
 }
 
 task Package Help, {
