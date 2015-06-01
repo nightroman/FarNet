@@ -3,6 +3,14 @@ NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 Far Manager 3.0.4284
 FarNet 5.0.61
 
+= 5.0.85 =
+
+TabExpansion takes the prefix "ps:" into account not only in the command line
+but also in dialogs (needed for user menu, apply command, file associations).
+
+Search-Regex-.ps1: The parameter Options accepts some shortcuts:
+sm: SimpleMatch, ww: WholeWord, etc.
+
 = 5.0.84 =
 
 Open-FarEditor, New-FarEditor, Open-FarViewer, and New-FarViewer resolve

@@ -44,17 +44,17 @@ using System;
 public enum SearchRegexOptions
 {
 	None = 0,
-	IgnoreCase = 1,
-	Multiline = 2,
+	IgnoreCase = 1, ic = 1,
+	Multiline = 2, m = 2,
 	ExplicitCapture = 4,
 	Compiled = 8,
-	Singleline = 16,
-	IgnorePatternWhitespace = 32,
+	Singleline = 16, s = 16,
+	IgnorePatternWhitespace = 32, ipw = 32,
 	RightToLeft = 64,
 	ECMAScript = 256,
 	CultureInvariant = 512,
-	SimpleMatch = 1024,
-	WholeWord = 2048
+	SimpleMatch = 1024, sm = 1024,
+	WholeWord = 2048, ww = 2048
 }
 '@
 

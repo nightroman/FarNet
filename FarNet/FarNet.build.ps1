@@ -7,11 +7,11 @@
 param(
 	$Platform = (property Platform Win32),
 	$Configuration = (property Configuration Release),
-	$MSBuildVersion = (property MSBuildVersion '4.0')
+	$TargetFrameworkVersion = (property TargetFrameworkVersion v3.5)
 )
 $FarHome = "C:\Bin\Far\$Platform"
 
-use $MSBuildVersion MSBuild
+use 12.0 MSBuild
 
 $script:Builds = @(
 	'FarNet\.build.ps1'
@@ -71,7 +71,10 @@ task Package BeginPackage, Help, {
 	assert ($Platform -eq 'Win32')
 
 	# build x64
-	exec { MSBuild ..\FarNetAccord.sln /t:FarNetMan /p:Configuration=Release /p:Platform=x64 }
+	$PlatformToolset = if ($TargetFrameworkVersion -lt 'v4') {'v90'} else {'v120'}
+	exec {
+		MSBuild ..\FarNetAccord.sln /t:FarNetMan /p:Platform=x64 /p:Configuration=Release /p:TargetFrameworkVersion=$TargetFrameworkVersion /p:PlatformToolset=$PlatformToolset
+	}
 
 	# folders
 	Remove-Item [z] -Recurse -Force

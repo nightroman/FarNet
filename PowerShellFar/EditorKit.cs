@@ -203,9 +203,8 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 				inputScript = editLine.Text;
 				cursorColumn = editLine.Caret;
 
-				// process prefix
-				if (editLine.WindowKind == WindowKind.Panels)
-					Entry.SplitCommandWithPrefix(ref inputScript, out prefix);
+				// process prefix, used to be just for panels but it is needed in dialogs, too
+				Entry.SplitCommandWithPrefix(ref inputScript, out prefix);
 
 				// correct caret
 				cursorColumn -= prefix.Length;
