@@ -22,7 +22,7 @@ int Panel0::AsGetFindData(GetFindDataInfo* info)
 void Panel0::AsFreeFindData(const FreeFindDataInfo* info)
 {
 	Panel2^ pp = HandleToPanel(info->hPanel); //???? need? can it be static managed by Address -> Data map including Panel2^
-	Log::Source->TraceInformation("FreeFindDataW Address='{0:x}' Location='{1}'", (long)info->PanelItem, pp->CurrentLocation);
+	Log::Source->TraceInformation("FreeFindDataW Address='{0:x}' Location='{1}'", (long)(__int64)info->PanelItem, pp->CurrentLocation);
 
 	for(int i = (int)info->ItemsNumber; --i >= 0;)
 	{

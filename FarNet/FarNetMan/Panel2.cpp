@@ -34,14 +34,14 @@ internal:
 	{
 		--_lastFileKey;
 		_files.Add(_lastFileKey, gcnew ExplorerFilePair(explorer, file));
-		panelItem.UserData.Data = (void*)_lastFileKey;
+		panelItem.UserData.Data = (void*)(__int64)_lastFileKey;
 		panelItem.UserData.FreeData = FarPanelItemFreeCallback;
 	}
 };
 
 static void WINAPI FarPanelItemFreeCallback(void* userData, const struct FarPanelItemFreeInfo* /*info*/)
 {
-	if (!FileStore::_files.Remove((int)userData))
+	if (!FileStore::_files.Remove((int)(__int64)userData))
 		Log::Source->TraceEvent(TraceEventType::Warning, 0, __FUNCTION__);
 }
 
@@ -922,7 +922,7 @@ int Panel2::AsGetFindData(GetFindDataInfo* info)
 		// alloc all
 		info->PanelItem = new PluginPanelItem[nItem];
 		memset(info->PanelItem, 0, nItem * sizeof(PluginPanelItem));
-		Log::Source->TraceInformation("GetFindDataW Address='{0:x}'", (long)info->PanelItem);
+		Log::Source->TraceInformation("GetFindDataW Address='{0:x}'", (long)(__int64)info->PanelItem);
 
 		// add dots
 		int itemIndex = -1, fileIndex = -1;
@@ -970,7 +970,7 @@ int Panel2::AsGetFindData(GetFindDataInfo* info)
 			if (isSpecialFind) //???????
 				FileStore::AddFile(p, explorer, file);
 			else
-				p.UserData.Data = (void*)(canExploreLocation ? -1 : fileIndex + 1);
+				p.UserData.Data = (void*)(__int64)(canExploreLocation ? -1 : fileIndex + 1);
 			p.FileAttributes = (DWORD)file->Attributes;
 			p.FileSize = file->Length;
 			p.CreationTime = DateTimeToFileTime(file->CreationTime);
@@ -1091,7 +1091,7 @@ int Panel2::AsSetDirectory(const SetDirectoryInfo* info)
 
 FarFile^ Panel2::GetItemFile(const PluginPanelItem& panelItem)
 {
-	int key = (int)panelItem.UserData.Data;
+	int key = (int)(__int64)panelItem.UserData.Data;
 	if (key > 0)
 		return _Files_[key - 1];
 	if (key < -1)
@@ -1101,7 +1101,7 @@ FarFile^ Panel2::GetItemFile(const PluginPanelItem& panelItem)
 
 FarFile^ Panel2::GetFileByUserData(void* data)
 {
-	int key = (int)data;
+	int key = (int)(__int64)data;
 	if (key > 0)
 		return _Files_[key - 1];
 	if (key < -1)

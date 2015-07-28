@@ -1084,9 +1084,9 @@ void Editor::Insert(int line, String^ text)
 	AutoEditorInfo ei(_id);
 
 	// setup
-	const int Count = (int)ei.TotalLines;
+	const int nLines = (int)ei.TotalLines;
 	if (line < 0)
-		line = Count;
+		line = nLines;
 
 	// prepare text
 	text = text->Replace(CV::CRLF, CV::CR)->Replace('\n', '\r');
@@ -1094,7 +1094,7 @@ void Editor::Insert(int line, String^ text)
 	// add?
 	int len = 0;
 	bool newline = true;
-	if (line == Count)
+	if (line == nLines)
 	{
 		--line;
 		ILine^ last = this[line];

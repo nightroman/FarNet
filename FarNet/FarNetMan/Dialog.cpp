@@ -365,18 +365,12 @@ void FarDialog::Close()
 
 void FarDialog::DisableRedraw()
 {
-#pragma push_macro("DM_ENABLEREDRAW")
-#undef DM_ENABLEREDRAW
 	Info.SendDlgMessage(_hDlg, DM_ENABLEREDRAW, FALSE, 0);
-#pragma pop_macro("DM_ENABLEREDRAW")
 }
 
 void FarDialog::EnableRedraw()
 {
-#pragma push_macro("DM_ENABLEREDRAW")
-#undef DM_ENABLEREDRAW
 	Info.SendDlgMessage(_hDlg, DM_ENABLEREDRAW, TRUE, 0);
-#pragma pop_macro("DM_ENABLEREDRAW")
 }
 
 FarDialog^ FarDialog::GetDialog()
@@ -624,7 +618,7 @@ INT_PTR FarDialog::DialogProc(intptr_t msg, intptr_t param1, void* param2)
 				{
 					if (cb->_ButtonClicked)
 					{
-						ButtonClickedEventArgs ea(cb, (int)param2);
+						ButtonClickedEventArgs ea(cb, (int)(__int64)param2);
 						cb->_ButtonClicked(this, %ea);
 						return !ea.Ignore;
 					}
@@ -635,7 +629,7 @@ INT_PTR FarDialog::DialogProc(intptr_t msg, intptr_t param1, void* param2)
 				{
 					if (rb->_ButtonClicked)
 					{
-						ButtonClickedEventArgs ea(rb, (int)param2);
+						ButtonClickedEventArgs ea(rb, (int)(__int64)param2);
 						rb->_ButtonClicked(this, %ea);
 						return !ea.Ignore;
 					}

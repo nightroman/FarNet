@@ -40,8 +40,8 @@ internal:
 	static void ShelvePanel(Panel1^ panel, bool modes);
 private:
 	Panel0() {}
-	static Panel2^ HandleToPanel(HANDLE hPanel) { return _panels[(int)hPanel]; }
-	static void RemovePanel(HANDLE hPanel) { _panels[(int)hPanel] = nullptr; }
+	static Panel2^ HandleToPanel(HANDLE hPanel) { return _panels[(int)(__int64)hPanel]; }
+	static void RemovePanel(HANDLE hPanel) { _panels[(int)(__int64)hPanel] = nullptr; }
 private:
 	// Posted [0] and opened [1..3] panels; i.e. size is 4, see AddPluginPanel().
 	static array<Panel2^>^ _panels = gcnew array<Panel2^>(cPanels);
