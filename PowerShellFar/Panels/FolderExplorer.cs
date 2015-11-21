@@ -76,6 +76,9 @@ namespace PowerShellFar
 
 			// get root item
 			Collection<PSObject> items = A.Psf.Engine.SessionState.InvokeProvider.Item.Get(new string[] { "." }, true, true);
+			//! trap Get-Item at Cert:
+			if (items.Count == 0)
+				throw new RuntimeException(string.Format(null, "Provider '{0}' cannot get '{1}'.", location.Provider, location.Path));
 			PSObject data = items[0];
 
 			// reset roots
@@ -98,14 +101,14 @@ namespace PowerShellFar
 			string newLocation = My.PathEx.GetDirectoryName(Location); //???? GetDirectoryName to add '\' for the root like IO.Path does
 			if (newLocation.Length == 0)
 				return null;
-			
+
 			if (newLocation.EndsWith(":", StringComparison.Ordinal))
 				newLocation += "\\";
 			if (newLocation.Equals(Location, StringComparison.OrdinalIgnoreCase))
 				return null;
 
 			args.PostName = My.PathEx.GetFileName(Location);
-			
+
 			return new FolderExplorer(newLocation);
 		}
 	}

@@ -66,15 +66,16 @@ $TabExpansionOptions.NativeArgumentCompleters += @{
 		if ($wordToComplete -notmatch '^\w?[\w\-]*$') {return}
 		if ($code -notmatch "^git\s*$wordToComplete$") {return}
 
-		if (!($git = Get-Command git.exe -ErrorAction 0)) {return}
-		$git = Split-Path $git.Definition
-
-		$pat = "$wordToComplete*"
-		foreach($name in Get-ChildItem -LiteralPath $git\..\libexec\git-core -Filter git-*.exe -Name) {
-			if ($name -match '^git-(.*)\.exe$' -and $matches[1] -like $pat) {
-				$matches[1]
+		$wild = "$wordToComplete*"
+		$(foreach($line in git help -a) {
+			if ($line -match '^  \S') {
+				foreach($token in $line -split '\s+') {
+					if ($token -and $token -like $wild) {
+						$token
+					}
+				}
 			}
-		}
+		}) | Sort-Object
 	}
 }
 

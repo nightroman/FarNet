@@ -3,6 +3,16 @@ NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 Far Manager 3.0.4284
 FarNet 5.0.61
 
+= 5.0.86 =
+
+Tree panel:
+- Default panel view without description column
+- Folder tree: better error message at Cert:\
+
+TabExpansionProfile.ps1: fixed completer for git 2.5+
+
+Test-Job-.ps1: adapted for PS v5
+
 = 5.0.85 =
 
 TabExpansion takes the prefix "ps:" into account not only in the command line
