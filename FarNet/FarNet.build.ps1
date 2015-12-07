@@ -11,7 +11,7 @@ param(
 )
 $FarHome = "C:\Bin\Far\$Platform"
 
-use 12.0 MSBuild
+use 14.0 MSBuild
 
 $script:Builds = @(
 	'FarNet\.build.ps1'

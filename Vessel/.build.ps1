@@ -43,7 +43,7 @@ using System.Runtime.InteropServices;
 
 # Build and install the assembly.
 task Build Meta, {
-	use 12.0 MSBuild
+	use 14.0 MSBuild
 	exec { MSBuild Vessel.csproj /p:Configuration=Release /p:FarHome=$FarHome /p:TargetFrameworkVersion=$TargetFrameworkVersion }
 }
 
