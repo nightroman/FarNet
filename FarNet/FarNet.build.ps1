@@ -71,7 +71,7 @@ task Package BeginPackage, Help, {
 	assert ($Platform -eq 'Win32')
 
 	# build x64
-	$PlatformToolset = if ($TargetFrameworkVersion -lt 'v4') {'v90'} else {'v120'}
+	$PlatformToolset = if ($TargetFrameworkVersion -lt 'v4') {'v90'} else {'v140'}
 	exec {
 		MSBuild ..\FarNetAccord.sln /t:FarNetMan /p:Platform=x64 /p:Configuration=Release /p:TargetFrameworkVersion=$TargetFrameworkVersion /p:PlatformToolset=$PlatformToolset
 	}

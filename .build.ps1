@@ -76,7 +76,7 @@ using System.Reflection;
 
 # Synopsis: Build projects (Configuration, Platform) and PSF help.
 task Build Meta, {
-	$PlatformToolset = if ($TargetFrameworkVersion -lt 'v4') {'v90'} else {'v120'}
+	$PlatformToolset = if ($TargetFrameworkVersion -lt 'v4') {'v90'} else {'v140'}
 	exec {
 		MSBuild FarNetAccord.sln /t:FarNetMan /p:Platform=$Platform /p:Configuration=$Configuration /p:TargetFrameworkVersion=$TargetFrameworkVersion /p:PlatformToolset=$PlatformToolset
 	}
