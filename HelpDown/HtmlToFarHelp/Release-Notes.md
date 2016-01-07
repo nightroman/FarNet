@@ -1,6 +1,10 @@
 
 # HtmlToFarHelp Release Notes
 
+## v1.0.4
+
+Adapted for pandoc HTML.
+
 ## v1.0.3
 
 Fixed mixed line ends.

@@ -34,9 +34,8 @@ task Package ConvertMarkdown, {
 
 # Get version
 task Version {
-	assert ([IO.File]::ReadAllText('Release-Notes.md') -match '##\s+v(\d+\.\d+\.\d+)')
-	($script:Version = $Matches[1])
-	assert ((Get-Command MarkdownToHtml.exe).FileVersionInfo.FileVersion -ceq "$Version.0")
+	($script:Version = .{ switch -Regex -File Release-Notes.md {'##\s+v(\d+\.\d+\.\d+)' {return $Matches[1]} }})
+	equals (Get-Command MarkdownToHtml.exe).FileVersionInfo.FileVersion "$Version.0"
 }
 
 # Make NuGet package

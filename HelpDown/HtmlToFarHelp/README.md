@@ -1,6 +1,5 @@
 
-HtmlToFarHelp
-=============
+# HtmlToFarHelp
 
 ### Synopsis
 
@@ -29,11 +28,12 @@ Examples
 ---
 ### Description
 
-*HtmlToFarHelp.exe* is supposed to be used together with [MarkdownToHtml][1].
+*HtmlToFarHelp.exe* is supposed to be used together with markdown converters
+like [pandoc] or [MarkdownToHtml] (obsolete).
 
 The recommended scenario is to compose manuals in markdown files, convert them
-to HTML by *MarkdownToHtml* and then convert to HLF. Markdown is simpler than
-HLF and HTML, easier to write, read, and maintain.
+to HTML by a converter and then convert to HLF. Markdown is simpler than HLF
+and HTML, easier to write, read, and maintain.
 
 It is fine to compose in HTML and convert to HLF. But this is not recommended
 due to the limited subset of supported HTML and not documented or stable rules.
@@ -60,9 +60,9 @@ in order to reset the current options to global:
 
     <!--HLF:-->
 
-[About-PowerShellFar.text][2] is the example of a large markdown file used for
-making HTML and HLF versions of the same documentation. Note that the HTML in
-this case is not just an intermediate file, it is also used as the manual.
+[About-PowerShellFar.text] is the example of a large markdown file used for
+making HTML and HLF versions of documentation. HTML in this case is not an
+intermediate file, it is also used as the manual.
 
 ---
 ### Demo
@@ -74,5 +74,15 @@ The directory *Demo* contains three files:
 - *Demo.hlf*: Finally, the HLF file created from *Demo.htm* by *HtmlToFarHelp*.
 
 ---
-[1]: https://www.nuget.org/packages/MarkdownToHtml
-[2]: https://github.com/nightroman/FarNet/blob/master/PowerShellFar/About-PowerShellFar.text
+### Download
+
+HtmlToFarHelp is distributed as the NuGet package [HtmlToFarHelp](https://www.nuget.org/packages/HtmlToFarHelp).
+Download and unpack it in the current location by this PowerShell command:
+
+    Invoke-Expression "& {$((New-Object Net.WebClient).DownloadString('https://github.com/nightroman/PowerShelf/raw/master/Save-NuGetTool.ps1'))} HtmlToFarHelp"
+
+---
+
+[pandoc]: https://github.com/jgm/pandoc
+[MarkdownToHtml]: https://www.nuget.org/packages/MarkdownToHtml
+[About-PowerShellFar.text]: https://github.com/nightroman/FarNet/blob/master/PowerShellFar/About-PowerShellFar.text

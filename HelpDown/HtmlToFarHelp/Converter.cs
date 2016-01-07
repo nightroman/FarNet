@@ -1,18 +1,6 @@
 ﻿
-/* Copyright 2012-2015 Roman Kuzmin
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright 2012-2016 Roman Kuzmin
+// http://www.apache.org/licenses/LICENSE-2.0
 
 using System;
 using System.Collections;
@@ -146,6 +134,7 @@ namespace HtmlToFarHelp
 				case XmlNodeType.EndElement: EndElement(); break;
 				case XmlNodeType.Text: Text(); break;
 				case XmlNodeType.Whitespace: Whitespace(); break;
+				case XmlNodeType.DocumentType: break;
 				default:
 					Throw(string.Format(ErrUnexpectedNode, Reader.NodeType, Reader.Name));
 					break;
@@ -157,12 +146,12 @@ namespace HtmlToFarHelp
 				return;
 
 			_started = true;
-			
+
 			Writer.WriteLine(".Language=" + _options.Language);
 
 			if (_options.PluginContents != null)
 				Writer.WriteLine(".PluginContents=" + _options.PluginContents);
-			
+
 			Writer.WriteLine(".Options CtrlStartPosChar=" + ArgWrap);
 		}
 		void Comment()
@@ -226,9 +215,7 @@ namespace HtmlToFarHelp
 			switch (Reader.Name)
 			{
 				case "a": A1(); break;
-				case "body": break;
 				case "blockquote": Quote1(); break;
-				case "br": break;
 				case "code": Emphasis1(); break;
 				case "dd": Item1(); break;
 				case "dl": List1(ListKind.Definition); break;
@@ -240,16 +227,24 @@ namespace HtmlToFarHelp
 				case "h4":
 				case "h5":
 				case "h6": Heading1(); break;
-				case "head": Reader.Skip(); break;
 				case "hr": Rule(); break;
-				case "html": break;
 				case "li": Item1(); break;
 				case "ol": List1(ListKind.Ordered); break;
 				case "p": P1(); break;
 				case "pre": Pre(); break;
 				case "strong": Emphasis1(); break;
-				case "title": Reader.Skip(); break;
 				case "ul": List1(ListKind.Unordered); break;
+				// break
+				case "body":
+				case "br":
+				case "html":
+					break;
+				// skip
+				case "head":
+				case "script": // pandoc email
+				case "title":
+					Reader.Skip();
+					break;
 				default:
 					Throw(string.Format(ErrUnexpectedElement, Reader.Name));
 					break;
@@ -412,6 +407,7 @@ namespace HtmlToFarHelp
 		void List2()
 		{
 			--_list;
+			_needNewLine = false;
 			_countParaInItem = 0;
 			_listKind = ListKind.None;
 		}
@@ -463,7 +459,7 @@ namespace HtmlToFarHelp
 				Throw(ErrPreCode);
 
 			var code = Reader.ReadElementContentAsString().Trim();
-			var lines = code.Split('\n');
+			var lines = code.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None); //TODO make a static array
 
 			Writer.WriteLine();
 			Writer.WriteLine();

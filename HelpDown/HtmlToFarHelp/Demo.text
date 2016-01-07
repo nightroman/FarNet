@@ -208,6 +208,11 @@ following characters may have to be escaped by `\`:
 * \\\`\*\_\{\}\[\]\(\)\>\#\+\-\.\!\:\|\=\<
 * ``\`*_{}[]()>#+-.!:|=<``
 
+Standard Markdown rule
+
+* \\\`\*\_\{\}\[\]\(\)\>\#\+\-\.\!
+* ``\`*_{}[]()>#+-.!``
+
 Examples:
 
 - Not \*\*bold**

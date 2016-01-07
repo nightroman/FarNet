@@ -1,10 +1,9 @@
 
-MarkdownToHtml
-==============
+# MarkdownToHtml
 
 ### Synopsis
 
-MarkdownToHtml.exe converts markdown files to HTML files.
+**OBSOLETE**: MarkdownToHtml.exe converts markdown files to HTML files.
 
 The tool requires .NET Framework 3.5 or above.
 
@@ -30,10 +29,14 @@ Examples
 
 MarkdownToHtml.exe is used in order to convert markdown files to HTML files.
 
-* Markdown dialect is [PHP Markdown Extra][1].
-* Conversion is done by [MarkdownDeep][2].
+* Markdown dialect is [PHP Markdown Extra].
+* Conversion is done by [MarkdownDeep].
+
+**WARNING**: The core `MarkdownDeep` has some known issues and it is not
+developed for a while. Consider to use other tools, for example [pandoc].
 
 ---
 
-[1]: http://michelf.com/projects/php-markdown/extra/
-[2]: http://www.toptensoftware.com/markdowndeep/
+[PHP Markdown Extra]: http://michelf.com/projects/php-markdown/extra/
+[MarkdownDeep]: http://www.toptensoftware.com/markdowndeep/
+[pandoc]: https://github.com/jgm/pandoc
