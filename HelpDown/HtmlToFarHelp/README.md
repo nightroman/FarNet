@@ -29,7 +29,7 @@ Examples
 ### Description
 
 *HtmlToFarHelp.exe* is supposed to be used together with markdown converters
-like [pandoc] or [MarkdownToHtml] (obsolete).
+like [pandoc] or [MarkdownToHtml], MarkdownToHtml is obsolete.
 
 The recommended scenario is to compose manuals in markdown files, convert them
 to HTML by a converter and then convert to HLF. Markdown is simpler than HLF
