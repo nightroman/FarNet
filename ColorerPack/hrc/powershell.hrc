@@ -7,8 +7,8 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="powershell">
 <annotation><documentation><![CDATA[
 
-powershell.hrc by Roman Kuzmin, aka NightRoman, 2015-04-05
-Designed for PowerShell 3.0 and optional visual.hrd
+powershell.hrc by Roman Kuzmin, aka NightRoman, 2016-02-05
+visual.hrd is recommended as optimized for powershell.hrc
 
 Regex syntax in strings after regex operators, [regex], and <#regex#>
 
@@ -33,6 +33,7 @@ SQL syntax in here-strings after <#sql#>
 <region name="Comment"       parent="def:Comment"       description="Code comments."/>
 <region name="Constant"      parent="def:Constant"      description="$null, $true, $false."/>
 <region name="Directive"     parent="def:Directive"     description="#requires, ..."/>
+<region name="EnumKey"       parent="def:Parameter"     description="Enum keys."/>
 <region name="Error"         parent="def:Error"         description="Error and warning areas."/>
 <region name="HashKey"       parent="def:Parameter"     description="Hashtable keys."/>
 <region name="HelpDirective" parent="def:CommentDoc"    description="Help comment directives."/>
@@ -721,6 +722,21 @@ SQL syntax in here-strings after <#sql#>
 	<inherit scheme="base"/>
 </scheme>
 
+<scheme name="class">
+	<inherit scheme="script-block-expression"/>
+	<inherit scheme="base"/>
+</scheme>
+
+<scheme name="enum-body">
+	<block scheme="statement" start="/(?{Operator}=)/" end="/$|(?{Operator};)|\}?=/"/>
+	<regexp match="/(?{EnumKey}%sname;)\s*/"/>
+	<inherit scheme="unary-expression"/>
+</scheme>
+<scheme name="enum">
+	<block scheme="enum-body" start="/(?{start}(?{Bracket}\{))/" end="/(?{end}(?{Bracket}\}))/"/>
+	<inherit scheme="base"/>
+</scheme>
+
 <scheme name="for-paren">
 	<keywords region="Operator">
 		<symb name=";"/>
@@ -1002,7 +1018,15 @@ SQL syntax in here-strings after <#sql#>
 
 <scheme name="statement-list">
 	<block scheme="function"
-	start="/(?{start}(?{Keyword}function|filter|workflow))\s+(?{def:Outlined}(?{Identifier}[^\s$()\{}][^\s()\{}]*|\$\B))%e-function;/i"
+	start="/(?{start}(?{Keyword}function|filter|workflow|configuration))\s+(?{def:Outlined}(?{Identifier}[^\s$()\{}][^\s()\{}]*|\$\B))%e-function;/i"
+	end="/(?{end}\})?#1/"/>
+
+	<block scheme="class"
+	start="/(?{start}(?{Keyword}class))\s+(?{def:Outlined}(?{Identifier}%sname;))/i"
+	end="/(?{end}\})?#1/"/>
+
+	<block scheme="enum"
+	start="/(?{start}(?{Keyword}enum))\s+(?{def:Outlined}(?{Identifier}%sname;))/i"
 	end="/(?{end}\})?#1/"/>
 
 	<block scheme="break-continue"
