@@ -7,7 +7,7 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="powershell">
 <annotation><documentation><![CDATA[
 
-powershell.hrc by Roman Kuzmin, aka NightRoman, 2016-02-05
+powershell.hrc by Roman Kuzmin, aka NightRoman, 2016-02-06
 visual.hrd is recommended as optimized for powershell.hrc
 
 Regex syntax in strings after regex operators, [regex], and <#regex#>
@@ -125,7 +125,7 @@ SQL syntax in here-strings after <#sql#>
 	<inherit scheme="base"/>
 </scheme>
 <scheme name="type-spec">
-	<regexp match="/(?:~|^)\s*%sname;(?:[.+]%sname;)*/"/>
+	<regexp match="/%sname;(?:[.+]%sname;)*/"/>
 	<block scheme="type-spec" start="/(?{start}\[)/" end="/(?{end}\])/"/>
 	<block scheme="attribute-argument" start="/(?{start}\()/" end="/(?{end}\))/"/>
 </scheme>
@@ -316,34 +316,82 @@ SQL syntax in here-strings after <#sql#>
 
 <scheme name="cmdlet">
 <keywords ignorecase="yes" region="Cmdlet" worddiv="[^\w-]">
-<!--PowerShellFar.dll-->
-<word name="Assert-Far"/>
-<word name="Find-FarFile"/>
-<word name="Get-FarFile"/>
-<word name="Get-FarItem"/>
-<word name="Get-FarPath"/>
-<word name="Invoke-FarStepper"/>
-<word name="New-FarEditor"/>
-<word name="New-FarFile"/>
-<word name="New-FarItem"/>
-<word name="New-FarList"/>
-<word name="New-FarMenu"/>
-<word name="New-FarViewer"/>
-<word name="Open-FarEditor"/>
-<word name="Open-FarPanel"/>
-<word name="Open-FarViewer"/>
-<word name="Out-FarList"/>
-<word name="Out-FarPanel"/>
-<word name="Search-FarFile"/>
-<word name="Show-FarMessage"/>
-<word name="Start-FarJob"/>
-<!--Microsoft.PowerShell.Commands.Diagnostics.dll-->
+<!--Microsoft.PowerShell.Core-->
+<word name="Add-History"/>
+<word name="Add-PSSnapin"/>
+<word name="Clear-History"/>
+<word name="Connect-PSSession"/>
+<word name="Debug-Job"/>
+<word name="Disable-PSRemoting"/>
+<word name="Disable-PSSessionConfiguration"/>
+<word name="Disconnect-PSSession"/>
+<word name="Enable-PSRemoting"/>
+<word name="Enable-PSSessionConfiguration"/>
+<word name="Enter-PSHostProcess"/>
+<word name="Enter-PSSession"/>
+<word name="Exit-PSHostProcess"/>
+<word name="Exit-PSSession"/>
+<word name="Export-Console"/>
+<word name="Export-ModuleMember"/>
+<word name="ForEach-Object"/>
+<word name="Get-Command"/>
+<word name="Get-Help"/>
+<word name="Get-History"/>
+<word name="Get-Job"/>
+<word name="Get-Module"/>
+<word name="Get-PSHostProcessInfo"/>
+<word name="Get-PSSession"/>
+<word name="Get-PSSessionCapability"/>
+<word name="Get-PSSessionConfiguration"/>
+<word name="Get-PSSnapin"/>
+<word name="Import-Module"/>
+<word name="Invoke-Command"/>
+<word name="Invoke-History"/>
+<word name="New-Module"/>
+<word name="New-ModuleManifest"/>
+<word name="New-PSRoleCapabilityFile"/>
+<word name="New-PSSession"/>
+<word name="New-PSSessionConfigurationFile"/>
+<word name="New-PSSessionOption"/>
+<word name="New-PSTransportOption"/>
+<word name="Out-Default"/>
+<word name="Out-Host"/>
+<word name="Out-Null"/>
+<word name="Receive-Job"/>
+<word name="Receive-PSSession"/>
+<word name="Register-ArgumentCompleter"/>
+<word name="Register-PSSessionConfiguration"/>
+<word name="Remove-Job"/>
+<word name="Remove-Module"/>
+<word name="Remove-PSSession"/>
+<word name="Remove-PSSnapin"/>
+<word name="Resume-Job"/>
+<word name="Save-Help"/>
+<word name="Set-PSDebug"/>
+<word name="Set-PSSessionConfiguration"/>
+<word name="Set-StrictMode"/>
+<word name="Start-Job"/>
+<word name="Stop-Job"/>
+<word name="Suspend-Job"/>
+<word name="Test-ModuleManifest"/>
+<word name="Test-PSSessionConfigurationFile"/>
+<word name="Unregister-PSSessionConfiguration"/>
+<word name="Update-Help"/>
+<word name="Wait-Job"/>
+<word name="Where-Object"/>
+<!--Microsoft.PowerShell.Archive-->
+<word name="Compress-Archive"/>
+<word name="Expand-Archive"/>
+<!--Microsoft.PowerShell.Diagnostics-->
 <word name="Export-Counter"/>
 <word name="Get-Counter"/>
 <word name="Get-WinEvent"/>
 <word name="Import-Counter"/>
 <word name="New-WinEvent"/>
-<!--Microsoft.PowerShell.Commands.Management.dll-->
+<!--Microsoft.PowerShell.Host-->
+<word name="Start-Transcript"/>
+<word name="Stop-Transcript"/>
+<!--Microsoft.PowerShell.Management-->
 <word name="Add-Computer"/>
 <word name="Add-Content"/>
 <word name="Checkpoint-Computer"/>
@@ -351,6 +399,7 @@ SQL syntax in here-strings after <#sql#>
 <word name="Clear-EventLog"/>
 <word name="Clear-Item"/>
 <word name="Clear-ItemProperty"/>
+<word name="Clear-RecycleBin"/>
 <word name="Complete-Transaction"/>
 <word name="Convert-Path"/>
 <word name="Copy-Item"/>
@@ -359,6 +408,7 @@ SQL syntax in here-strings after <#sql#>
 <word name="Disable-ComputerRestore"/>
 <word name="Enable-ComputerRestore"/>
 <word name="Get-ChildItem"/>
+<word name="Get-Clipboard"/>
 <word name="Get-ComputerRestorePoint"/>
 <word name="Get-Content"/>
 <word name="Get-ControlPanelItem"/>
@@ -366,6 +416,7 @@ SQL syntax in here-strings after <#sql#>
 <word name="Get-HotFix"/>
 <word name="Get-Item"/>
 <word name="Get-ItemProperty"/>
+<word name="Get-ItemPropertyValue"/>
 <word name="Get-Location"/>
 <word name="Get-Process"/>
 <word name="Get-PSDrive"/>
@@ -403,6 +454,7 @@ SQL syntax in here-strings after <#sql#>
 <word name="Restart-Service"/>
 <word name="Restore-Computer"/>
 <word name="Resume-Service"/>
+<word name="Set-Clipboard"/>
 <word name="Set-Content"/>
 <word name="Set-Item"/>
 <word name="Set-ItemProperty"/>
@@ -426,20 +478,47 @@ SQL syntax in here-strings after <#sql#>
 <word name="Use-Transaction"/>
 <word name="Wait-Process"/>
 <word name="Write-EventLog"/>
-<!--Microsoft.PowerShell.Commands.Utility.dll-->
+<!--Microsoft.PowerShell.ODataUtils-->
+<word name="Export-ODataEndpointProxy"/>
+<!--Microsoft.PowerShell.Security-->
+<word name="ConvertFrom-SecureString"/>
+<word name="ConvertTo-SecureString"/>
+<word name="Get-Acl"/>
+<word name="Get-AuthenticodeSignature"/>
+<word name="Get-CmsMessage"/>
+<word name="Get-Credential"/>
+<word name="Get-ExecutionPolicy"/>
+<word name="Get-PfxCertificate"/>
+<word name="Protect-CmsMessage"/>
+<word name="Set-Acl"/>
+<word name="Set-AuthenticodeSignature"/>
+<word name="Set-ExecutionPolicy"/>
+<word name="Unprotect-CmsMessage"/>
+<!--Microsoft.PowerShell.Utility-->
+<word name="ConvertFrom-SddlString"/>
+<word name="Format-Hex"/>
+<word name="Get-FileHash"/>
+<word name="Import-PowerShellDataFile"/>
+<word name="New-Guid"/>
+<word name="New-TemporaryFile"/>
 <word name="Add-Member"/>
 <word name="Add-Type"/>
 <word name="Clear-Variable"/>
 <word name="Compare-Object"/>
 <word name="ConvertFrom-Csv"/>
 <word name="ConvertFrom-Json"/>
+<word name="ConvertFrom-String"/>
 <word name="ConvertFrom-StringData"/>
+<word name="Convert-String"/>
 <word name="ConvertTo-Csv"/>
 <word name="ConvertTo-Html"/>
 <word name="ConvertTo-Json"/>
 <word name="ConvertTo-Xml"/>
+<word name="Debug-Runspace"/>
 <word name="Disable-PSBreakpoint"/>
+<word name="Disable-RunspaceDebug"/>
 <word name="Enable-PSBreakpoint"/>
+<word name="Enable-RunspaceDebug"/>
 <word name="Export-Alias"/>
 <word name="Export-Clixml"/>
 <word name="Export-Csv"/>
@@ -460,6 +539,8 @@ SQL syntax in here-strings after <#sql#>
 <word name="Get-PSBreakpoint"/>
 <word name="Get-PSCallStack"/>
 <word name="Get-Random"/>
+<word name="Get-Runspace"/>
+<word name="Get-RunspaceDebug"/>
 <word name="Get-TraceSource"/>
 <word name="Get-TypeData"/>
 <word name="Get-UICulture"/>
@@ -511,87 +592,16 @@ SQL syntax in here-strings after <#sql#>
 <word name="Update-FormatData"/>
 <word name="Update-List"/>
 <word name="Update-TypeData"/>
+<word name="Wait-Debugger"/>
 <word name="Wait-Event"/>
 <word name="Write-Debug"/>
 <word name="Write-Error"/>
 <word name="Write-Host"/>
+<word name="Write-Information"/>
 <word name="Write-Output"/>
 <word name="Write-Progress"/>
 <word name="Write-Verbose"/>
 <word name="Write-Warning"/>
-<!--Microsoft.PowerShell.Security.dll-->
-<word name="ConvertFrom-SecureString"/>
-<word name="ConvertTo-SecureString"/>
-<word name="Get-Acl"/>
-<word name="Get-AuthenticodeSignature"/>
-<word name="Get-Credential"/>
-<word name="Get-ExecutionPolicy"/>
-<word name="Get-PfxCertificate"/>
-<word name="Set-Acl"/>
-<word name="Set-AuthenticodeSignature"/>
-<word name="Set-ExecutionPolicy"/>
-<!--System.Management.Automation.dll-->
-<word name="Add-History"/>
-<word name="Add-PSSnapin"/>
-<word name="Clear-History"/>
-<word name="Connect-PSSession"/>
-<word name="Disable-PSRemoting"/>
-<word name="Disable-PSSessionConfiguration"/>
-<word name="Disconnect-PSSession"/>
-<word name="Enable-PSRemoting"/>
-<word name="Enable-PSSessionConfiguration"/>
-<word name="Enter-PSSession"/>
-<word name="Exit-PSSession"/>
-<word name="Export-Console"/>
-<word name="Export-ModuleMember"/>
-<word name="ForEach-Object"/>
-<word name="Get-Command"/>
-<word name="Get-Help"/>
-<word name="Get-History"/>
-<word name="Get-Job"/>
-<word name="Get-Module"/>
-<word name="Get-PSSession"/>
-<word name="Get-PSSessionConfiguration"/>
-<word name="Get-PSSnapin"/>
-<word name="Import-Module"/>
-<word name="Invoke-Command"/>
-<word name="Invoke-History"/>
-<word name="New-Module"/>
-<word name="New-ModuleManifest"/>
-<word name="New-PSSession"/>
-<word name="New-PSSessionConfigurationFile"/>
-<word name="New-PSSessionOption"/>
-<word name="New-PSTransportOption"/>
-<word name="Out-Default"/>
-<word name="Out-Host"/>
-<word name="Out-Null"/>
-<word name="Receive-Job"/>
-<word name="Receive-PSSession"/>
-<word name="Register-PSSessionConfiguration"/>
-<word name="Remove-Job"/>
-<word name="Remove-Module"/>
-<word name="Remove-PSSession"/>
-<word name="Remove-PSSnapin"/>
-<word name="Resume-Job"/>
-<word name="Save-Help"/>
-<word name="Set-PSDebug"/>
-<word name="Set-PSSessionConfiguration"/>
-<word name="Set-StrictMode"/>
-<word name="Start-Job"/>
-<word name="Stop-Job"/>
-<word name="Suspend-Job"/>
-<word name="Test-ModuleManifest"/>
-<word name="Test-PSSessionConfigurationFile"/>
-<word name="Unregister-PSSessionConfiguration"/>
-<word name="Update-Help"/>
-<word name="Wait-Job"/>
-<word name="Where-Object"/>
-<!--Workflow-->
-<word name="Checkpoint-Workflow"/>
-<word name="InlineScript"/>
-<word name="Parallel"/>
-<word name="Sequence"/>
-<word name="Suspend-Workflow"/>
 </keywords>
 </scheme>
 
@@ -722,8 +732,33 @@ SQL syntax in here-strings after <#sql#>
 	<inherit scheme="base"/>
 </scheme>
 
-<scheme name="class">
+<scheme name="class-method-base">
+	<keywords ignorecase="yes" region="Keyword">
+		<word name="base"/>
+	</keywords>
+	<inherit scheme="parenthesized-expression"/>
+	<inherit scheme="base"/>
+</scheme>
+<scheme name="class-method">
+	<block start="/(?{start}(?{Bracket}\())/" end="/(?{end}(?{Bracket}\)))/" scheme="parameter-list"/>
+	<block scheme="class-method-base" start="/(?{start})(?{Operator}:)/" end="/(?{end}\))?#1/"/>
 	<inherit scheme="script-block-expression"/>
+	<inherit scheme="base"/>
+</scheme>
+<scheme name="class-body">
+	<keywords ignorecase="yes" region="Keyword">
+		<word name="static"/>
+		<word name="hidden"/>
+	</keywords>
+	<inherit scheme="type-literal"/>
+	<block scheme="class-method" start="/(?{start})(?{def:Outlined}(?{Identifier}%sname;))/i" end="/(?{end}\})?#1/"/>
+	<inherit scheme="statement"/>
+</scheme>
+<scheme name="class">
+	<block start="/(?{start}(?{Bracket}\{))/" end="/(?{end}(?{Bracket}\}))/" scheme="class-body"/>
+	<regexp match="/%sname;(?:[.+]%sname;)*/" region="Type"/>
+	<block scheme="type-spec" start="/(?{start}\[)/" end="/(?{end}\])/" region="Type"/>
+	<regexp match="/(?{Operator}[:,])/"/>
 	<inherit scheme="base"/>
 </scheme>
 
@@ -1022,11 +1057,11 @@ SQL syntax in here-strings after <#sql#>
 	end="/(?{end}\})?#1/"/>
 
 	<block scheme="class"
-	start="/(?{start}(?{Keyword}class))\s+(?{def:Outlined}(?{Identifier}%sname;))/i"
+	start="/(?{start}(?{Keyword}class))\s+(?{def:Outlined}(?{Type}%sname;))/i"
 	end="/(?{end}\})?#1/"/>
 
 	<block scheme="enum"
-	start="/(?{start}(?{Keyword}enum))\s+(?{def:Outlined}(?{Identifier}%sname;))/i"
+	start="/(?{start}(?{Keyword}enum))\s+(?{def:Outlined}(?{Type}%sname;))/i"
 	end="/(?{end}\})?#1/"/>
 
 	<block scheme="break-continue"
