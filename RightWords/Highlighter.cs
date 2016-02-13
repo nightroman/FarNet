@@ -20,6 +20,7 @@ namespace FarNet.RightWords
 		readonly HashSet<string> CommonWords = Actor.GetCommonWords();
 		readonly ConsoleColor HighlightingBackgroundColor = Settings.Default.HighlightingBackgroundColor;
 		readonly ConsoleColor HighlightingForegroundColor = Settings.Default.HighlightingForegroundColor;
+		readonly int MaximumLineLength = Settings.Default.MaximumLineLength;
 		public override void Invoke(object sender, ModuleDrawerEventArgs e)
 		{
 			foreach (var line in e.Lines)
@@ -27,6 +28,17 @@ namespace FarNet.RightWords
 				var text = line.Text;
 				if (text.Length == 0)
 					continue;
+
+				if (MaximumLineLength > 0 && text.Length > MaximumLineLength)
+				{
+					e.Colors.Add(new EditorColor(
+						line.Index,
+						0,
+						text.Length,
+						HighlightingForegroundColor,
+						HighlightingBackgroundColor));
+					continue;
+				}
 
 				MatchCollection skip = null;
 				for (var match = RegexWord.Match(text); match.Success; match = match.NextMatch())

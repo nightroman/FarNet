@@ -1,5 +1,9 @@
 NuGet package: https://www.nuget.org/packages/FarNet.RightWords
 
+= 2.1.6 =
+
+New setting MaximumLineLength.
+
 = 2.1.5 =
 
 Amended package information.

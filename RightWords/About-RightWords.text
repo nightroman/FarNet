@@ -197,4 +197,9 @@ Yellow, White.
 The custom directory of user dictionaries. Environment variables are expanded.
 The default is the module roaming directory.
 
+**MaximumLineLength**
+
+If it is set to a positive value then it tells to not check too long lines and
+highlight them all. Otherwise too long lines may cause lags on highlighting.
+
 ***

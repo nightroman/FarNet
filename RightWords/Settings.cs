@@ -55,6 +55,14 @@ namespace FarNet.RightWords
 			get { return (string)this["UserDictionaryDirectory"]; }
 			set { this["UserDictionaryDirectory"] = value; }
 		}
+		[UserScopedSetting]
+		[DefaultSettingValue("0")]
+		[SettingsManageability(SettingsManageability.Roaming)]
+		public int MaximumLineLength
+		{
+			get { return (int)this["MaximumLineLength"]; }
+			set { this["MaximumLineLength"] = value; }
+		}
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults")]
 		public override void Save()
 		{
