@@ -14,18 +14,10 @@ namespace PowerShellFar.UI
 {
 	static class ActorMenu
 	{
-		static List<KeyValuePair<FarItem, ModuleToolOptions>> _pendingItems;
-
 		static IMenu _menuDialog;
 		static IMenu _menuEditor;
 		static IMenu _menuPanels;
 		static IMenu _menuViewer;
-
-		static bool _toSeparate;
-		static bool _menuDialogSeparated;
-		static bool _menuEditorSeparated;
-		static bool _menuPanelsSeparated;
-		static bool _menuViewerSeparated;
 
 		static void Create()
 		{
@@ -58,27 +50,10 @@ namespace PowerShellFar.UI
 			AddTool(Res.MenuDebugger, delegate { A.Psf.ShowDebugger(); }, ModuleToolOptions.F11Menus);
 			AddTool(Res.MenuError, delegate { A.Psf.ShowErrors(); }, ModuleToolOptions.F11Menus);
 			AddTool(Res.MenuHelp, delegate { A.Psf.ShowHelp(); }, ModuleToolOptions.F11Menus);
-
-			_toSeparate = true;
-			if (_pendingItems != null)
-			{
-				foreach (KeyValuePair<FarItem, ModuleToolOptions> kv in _pendingItems)
-					AddItem(kv.Key, kv.Value);
-
-				_pendingItems = null;
-			}
 		}
 
 		internal static void Destroy()
 		{
-			_pendingItems = null;
-
-			_toSeparate = false;
-			_menuDialogSeparated = false;
-			_menuEditorSeparated = false;
-			_menuPanelsSeparated = false;
-			_menuViewerSeparated = false;
-
 			if (_menuDialog == null)
 				return;
 
@@ -152,66 +127,16 @@ namespace PowerShellFar.UI
 				from = ModuleToolOptions.F11Menus;
 
 			if (0 < (from & ModuleToolOptions.Dialog))
-			{
-				if (_toSeparate && !_menuDialogSeparated)
-				{
-					_menuDialogSeparated = true;
-					_menuDialog.Items.Add(NewItem("Actions", null));
-				}
 				_menuDialog.Items.Add(item);
-			}
 
 			if (0 < (from & ModuleToolOptions.Editor))
-			{
-				if (_toSeparate && !_menuEditorSeparated)
-				{
-					_menuEditorSeparated = true;
-					_menuEditor.Items.Add(NewItem("Actions", null));
-				}
 				_menuEditor.Items.Add(item);
-			}
 
 			if (0 < (from & ModuleToolOptions.Panels))
-			{
-				if (_toSeparate && !_menuPanelsSeparated)
-				{
-					_menuPanelsSeparated = true;
-					_menuPanels.Items.Add(NewItem("Actions", null));
-				}
 				_menuPanels.Items.Add(item);
-			}
 
 			if (0 < (from & ModuleToolOptions.Viewer))
-			{
-				if (_toSeparate && !_menuViewerSeparated)
-				{
-					_menuViewerSeparated = true;
-					_menuViewer.Items.Add(NewItem("Actions", null));
-				}
 				_menuViewer.Items.Add(item);
-			}
-		}
-
-		public static void AddUserTool(string text, EventHandler<MenuEventArgs> click, ModuleToolOptions from)
-		{
-			// case: just collect, e.g. called from profile
-			if (_menuDialog == null)
-			{
-				if (_pendingItems == null)
-					_pendingItems = new List<KeyValuePair<FarItem, ModuleToolOptions>>();
-
-				_pendingItems.Add(new KeyValuePair<FarItem, ModuleToolOptions>(NewItem(text, click), from));
-				return;
-			}
-
-			// unlock
-			_menuDialog.Unlock();
-			_menuEditor.Unlock();
-			_menuPanels.Unlock();
-			_menuViewer.Unlock();
-
-			// add
-			AddTool(text, click, from);
 		}
 
 	}

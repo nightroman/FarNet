@@ -11,7 +11,7 @@
 	See help: Profile.ps1, Global objects
 #>
 
-### Error action: 'Stop' is recommended to stop on errors immediately
+### Recommended error action
 $ErrorActionPreference = 'Stop'
 
 ### Aliases
@@ -26,31 +26,16 @@ Set-Alias pp Panel-Property-.ps1 -Description 'Panel provider item properties'
 Set-Alias scff Select-FarFile-.ps1 -Description 'Select files in the panel'
 Set-Alias srff Search-FarFile -Description 'Search files in the panel'
 
-### Actions
-$Psf.Action('&c. Complete word', { Complete-Word-.ps1 }, 'Dialog, Editor, Panels')
-$Psf.Action('&t. Edit description', { Edit-FarDescription-.ps1 }, 'Editor, Viewer, Panels')
-$Psf.Action('&h. Go to the first file', { Go-Head-.ps1 }, 'Panels')
-$Psf.Action('&g. Go to selection start', { Go-Selection- }, 'Dialog, Editor, Panels')
-$Psf.Action('&d. Go to selection end', { Go-Selection- -End }, 'Dialog, Editor, Panels')
-$Psf.Action('&l. To lower case', { Set-Selection-.ps1 -ToLower }, 'Dialog, Editor, Panels')
-$Psf.Action('&u. To upper case', { Set-Selection-.ps1 -ToUpper }, 'Dialog, Editor, Panels')
-$Psf.Action('&x. Search regex', { Search-Regex-.ps1 }, 'Panels')
-$Psf.Action('&=. More...', { Menu-More-.ps1 })
-$Psf.Action('Editor', $null, 'Editor')
-$Psf.Action('&b. Bookmarks', { Select-Bookmark-.ps1 }, 'Editor')
-$Psf.Action('&i. Indent selection', { Indent-Selection- }, 'Editor')
-$Psf.Action('&o. Outdent selection', { Indent-Selection- -Back }, 'Editor')
-$Psf.Action('&r. Reindent selection', { Reindent-Selection-.ps1 }, 'Editor')
-$Psf.Action('&f. Reformat selection', { Reformat-Selection-.ps1 }, 'Editor')
-$Psf.Action('&[. Copy text link', { $Far.CopyToClipboard((Get-TextLink-.ps1)) }, 'Editor')
-$Psf.Action('&]. Open text link', { Open-TextLink-.ps1 }, 'Dialog, Editor, Panels')
+### Preferences
+$Psf.Settings.PopupAutoSelect = $false
+$Psf.Settings.PopupMaxHeight = 0
+$Psf.Settings.PopupNoShadow = $false
 
 ### The script invoked after editor console commands.
 #$Psf.Settings.EditorConsoleEndOutputScript = 'Get-Date'
 
 ### Provider settings (ItemPanel)
 $Psf.Providers = @{
-
 	Registry = @{
 		Columns = @(
 			@{ Kind = 'Z'; Name = 'SKC'; Width = 8; Expression = 'SubKeyCount'; FormatString = '{0,8:n0}' }
@@ -58,15 +43,12 @@ $Psf.Providers = @{
 			@{ Kind = 'N'; Name = 'Name'; Expression = '' } # note: data source is ignored
 		)
 	}
-
 	Alias = @{
 		Columns = 'Name', 'Definition', 'Description', 'Options'
 	}
-
 	Environment = @{
 		Columns = 'Name', 'Value'
 	}
-
 	Function = @{
 		Columns = @(
 			'Name'
@@ -75,7 +57,6 @@ $Psf.Providers = @{
 			'Definition'
 		)
 	}
-
 	Variable = @{
 		Columns = @(
 			'Name'
@@ -85,8 +66,3 @@ $Psf.Providers = @{
 		)
 	}
 }
-
-### Preferences
-$Psf.Settings.PopupAutoSelect = $false
-$Psf.Settings.PopupMaxHeight = 0
-$Psf.Settings.PopupNoShadow = $false

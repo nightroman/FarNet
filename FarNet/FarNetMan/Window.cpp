@@ -73,8 +73,6 @@ void Window::SetCurrentAt(int index)
 
 	if (!Info.AdvControl(&MainGuid, ACTL_SETCURRENTWINDOW, index, 0))
 		throw gcnew InvalidOperationException(__FUNCTION__ " failed, index = " + index);
-
-	Info.AdvControl(&MainGuid, ACTL_COMMIT, 0, 0);
 }
 
 }

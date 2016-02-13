@@ -3,6 +3,11 @@ NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 Far Manager 3.0.4284
 FarNet 5.0.61
 
+= 5.0.87 =
+
+Removed user items from the module menu, i.e removed $Psf.Action().
+See forum: http://forum.farmanager.com/viewtopic.php?p=135651#p135651
+
 = 5.0.86 =
 
 Tree panel:

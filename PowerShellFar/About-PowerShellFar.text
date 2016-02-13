@@ -216,8 +216,8 @@ something broken or you know that it is easy to recover.
 `[Del]` in the background job list stops running background jobs.
 
 It is not normally possible to stop commands started from event handlers like
-editor and panel events or `$Psf.Action` handlers. Design such code carefully
-and test it well before adding to handlers.
+editor and panel events. Design such code carefully and test it well before
+adding to handlers.
 
 
 *********************************************************************
@@ -346,12 +346,6 @@ For the current token in an editor, an edit box, or the command line it shows
 available help information in the viewer. In code editors (*.ps1*, *.psm1*,
 *.psd1*, *.psfconsole*, input code boxes) this action is associated with
 `[ShiftF1]`. It is exposed for scripting as `$Psf.ShowHelp()`.
-
----
-### Others
-
-Other tools exist in the menu only if you have added them yourself, for example
-using the profile [Profile.ps1](#Profile).
 
 
 *********************************************************************
@@ -1540,8 +1534,7 @@ The command to view or change settings temporarily is
 These settings are described in *FarNetAPI.chm*.
 
 Not everything is configured via `$Psf.Settings`. There are other exposed
-objects designed for configuration in the profile, for example `$Psf.Action`,
-`$Psf.Providers`.
+objects designed for configuration in the profile, e.g. `$Psf.Providers`.
 
 See example [Profile.ps1](#Profile).
 
@@ -1716,15 +1709,6 @@ recommends to use *Stop* for normal work, it is safer and more intuitive.
     ...
 
 The profile is a good place to define aliases. Some sample aliases are predefined.
-
----
-
-    # Actions
-    $Psf.Action('&c. Complete word', { Complete-Word-.ps1 }, 'Dialog, Editor, Panels')
-    ...
-
-Adds actions that you may invoke from the PowerShellFar menu directly or by
-macros connected to scripts via action script blocks.
 
 ---
 

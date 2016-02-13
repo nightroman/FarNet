@@ -15,7 +15,7 @@ Invoke-Editor-.ps1 Invokes a file from the current editor.
 Invoke-Shortcut-.ps1 Opens a shortcut file (.lnk).
 Job-RemoveItem-.ps1 Job: remove the specified provider item(s).
 Menu-Favorites-.ps1 Shows Windows Favorites as a menu and invokes items.
-Menu-More-.ps1 Demo menu script, e.g. called on "More...", see Profile-.ps1.
+Menu-More-.ps1 Example command menu created by a script.
 Open-TextLink-.ps1 Opens a text link contained in the text.
 Open-TODO-.ps1 TODO notes in XML files.
 Panel-BitsTransfer-.ps1 Starts or manages file transfer jobs in a panel.

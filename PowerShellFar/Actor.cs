@@ -485,39 +485,6 @@ Continue with this current directory?
 			set { EditorKit.ActiveText = value; }
 		}
 		/// <summary>
-		/// Adds an action to all menus (Dialog, Editor, Panels, Viewer).
-		/// </summary>
-		/// <param name="text">Menu item text. Use ampersand to set a hotkey.</param>
-		/// <param name="click">Action script block. Keep it simple, normally it should just call other commands.</param>
-		/// <remarks>
-		/// Actions can be added any time, but the best practice is to add them from the startup code.
-		/// <para>
-		/// Use $null action to add a separator to menus.
-		/// </para>
-		/// </remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-		public void Action(string text, EventHandler<MenuEventArgs> click)
-		{
-			UI.ActorMenu.AddUserTool(text, click, ModuleToolOptions.None);
-		}
-		/// <summary>
-		/// Adds an action to the specified menus (combination of Dialog, Editor, Panels, Viewer).
-		/// </summary>
-		/// <param name="text">Menu item text. Use ampersand to set a hotkey.</param>
-		/// <param name="click">Action script block. Keep it simple, normally it should just call other commands.</param>
-		/// <param name="area">Where this action should be available in a menu: combination of Dialog, Editor, Panels, Viewer.</param>
-		/// <remarks>
-		/// Actions can be added any time, but the best practice is to add them from the startup code.
-		/// <para>
-		/// Use $null action to add a separator to menus.
-		/// </para>
-		/// </remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-		public void Action(string text, EventHandler<MenuEventArgs> click, ModuleToolOptions area)
-		{
-			UI.ActorMenu.AddUserTool(text, click, area);
-		}
-		/// <summary>
 		/// Gets the active editor or throws an error.
 		/// </summary>
 		/// <remarks>

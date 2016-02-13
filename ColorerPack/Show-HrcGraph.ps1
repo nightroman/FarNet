@@ -38,10 +38,11 @@ $dot = if ($env:Graphviz) {"$env:Graphviz\dot.exe"} else {'dot.exe'}
 $dot = Get-Command $dot -CommandType Application -ErrorAction 0
 if (!$dot) {throw 'Cannot find dot.exe'}
 
-# output type
+# output
 $type = [System.IO.Path]::GetExtension($Output)
 if (!$type) {throw "Output file name should have an extension."}
 $type = $type.Substring(1).ToLower()
+$Output = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($Output)
 
 # get schemes
 $xml = Select-Xml //x:scheme -Path $File -Namespace @{x="http://colorer.sf.net/2003/hrc"}

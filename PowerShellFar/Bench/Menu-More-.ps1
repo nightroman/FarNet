@@ -1,15 +1,11 @@
 
 <#
 .Synopsis
-	Demo menu script, e.g. called on "More...", see Profile-.ps1.
+	Example command menu created by a script.
 	Author: Roman Kuzmin
 
 .Description
-	This script shows a menu with a few commands. Commands depend on the area
-	where the script is called from. Profile-.ps1 adds the action "More..." to
-	call this script, but the script can be called directly from the command
-	line or the Far user menu [F2]:
-	ps: Menu-More-.ps1
+	This script shows a menu with commands depending on the area and state.
 #>
 
 ### Create and show the menu
@@ -53,7 +49,7 @@ New-FarMenu 'More' -Show -AutoAssignHotkeys -ChangeConsoleTitle $(
 			New-FarItem '&b. BITS: Show jobs panel' { Panel-BitsTransfer- }
 		}
 
-		# Panel available performance counter set (use it to findout counter names and paths for Get-Counter)
+		# Panel available performance counter set (use it to find out counter names and paths for Get-Counter)
 		New-FarItem '&p. Performance counter set' { Get-Counter -ListSet * | Out-FarPanel 'CounterSetName' -Title 'Performance counter set' }
 	}
 
@@ -64,7 +60,7 @@ New-FarMenu 'More' -Show -AutoAssignHotkeys -ChangeConsoleTitle $(
 	New-FarItem '&c. Clear session' { Show-FarMessage (Clear-Session | Format-List | Out-String) -LeftAligned }
 
 	# View/edit settings on a panel (note that $Psf.Settings.Save() is not called automatically)
-	New-FarItem 'Settings' { Open-FarPanel $Psf.Settings -Title 'PowerShelFar Settings' }
+	New-FarItem 'Settings' { Open-FarPanel $Psf.Settings -Title 'PowerShellFar Settings' }
 
 	# Show global variables
 	New-FarItem 'Show global variables' { Get-Variable -Scope global | Sort-Object Name | Format-Table -Auto | Out-Host }
