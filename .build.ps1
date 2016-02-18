@@ -63,7 +63,7 @@ using System.Reflection;
 [assembly: AssemblyCompany("https://github.com/nightroman/FarNet")];
 [assembly: AssemblyTitle("FarNet plugin manager")];
 [assembly: AssemblyDescription("FarNet plugin manager")];
-[assembly: AssemblyCopyright("Copyright (c) 2006-2015 Roman Kuzmin")];
+[assembly: AssemblyCopyright("Copyright (c) 2006-2016 Roman Kuzmin")];
 "@
 
 	Set-Content PowerShellFar\AssemblyMeta.cs @"

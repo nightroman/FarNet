@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyCompany("https://github.com/nightroman/FarNet")]
-[assembly: AssemblyCopyright("Copyright (c) 2012-2015 Roman Kuzmin")]
+[assembly: AssemblyCopyright("Copyright (c) 2012-2016 Roman Kuzmin")]
 [assembly: AssemblyDescription("Editor drawers")]
 [assembly: AssemblyProduct("FarNet.Drawer")]
 [assembly: AssemblyTitle("FarNet module Drawer for Far Manager")]

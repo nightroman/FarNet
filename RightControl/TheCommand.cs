@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet module RightControl
-Copyright (c) 2010-2015 Roman Kuzmin
+Copyright (c) 2010-2016 Roman Kuzmin
 */
 
 using System;

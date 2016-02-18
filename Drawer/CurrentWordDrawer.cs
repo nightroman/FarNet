@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet module Drawer
-Copyright (c) 2012-2015 Roman Kuzmin
+Copyright (c) 2012-2016 Roman Kuzmin
 */
 
 using System;
