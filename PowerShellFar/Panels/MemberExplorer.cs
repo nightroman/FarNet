@@ -135,7 +135,7 @@ namespace PowerShellFar
 						if (!file.IsHidden && datarow != null)
 						{
 							var column = datarow.Table.Columns[file.Name];
-							if (column.AutoIncrement || column.ColumnMapping == MappingType.Hidden || column.Expression.Length > 0)
+							if (column.AutoIncrement)
 								file.IsHidden = true;
 						}
 

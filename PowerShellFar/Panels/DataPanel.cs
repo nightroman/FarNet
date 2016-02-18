@@ -211,7 +211,7 @@ namespace PowerShellFar
 
 					// read data
 					ds.ReadXml(_XmlFile, XmlReadMode);
-					_XmlFileTime = _XmlFileTime = File.GetLastWriteTime(_XmlFile);
+					_XmlFileTime = File.GetLastWriteTime(_XmlFile);
 
 					// accept data
 					ds.AcceptChanges();
@@ -341,14 +341,20 @@ namespace PowerShellFar
 
 			base.Open();
 		}
+		//! Avoid Table.GetChanges(). It clones the table internally.
+		// Also when called without DataSet it may fail constraints.
+		static bool TableHasChanges(DataTable table)
+		{
+			foreach (DataRow row in table.Rows)
+				if (row.RowState != DataRowState.Unchanged)
+					return true;
+			return false;
+		}
 		///??
 		protected override bool CanClose()
 		{
-			using (DataTable dt = Table.GetChanges())
-			{
-				if (dt == null)
+			if (!TableHasChanges(Table))
 					return true;
-			}
 
 			switch (Far.Api.Message(Res.AskSaveModified, "Save", MessageOptions.YesNoCancel))
 			{
