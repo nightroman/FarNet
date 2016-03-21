@@ -29,12 +29,10 @@
 	starts a program associated with a file type.
 #>
 
-# Save the file and get the path
+# Save the file and get the normalized path
 $editor = $Psf.Editor()
-$path = $editor.FileName
-
-# Commit
 $editor.Save()
+$path = [System.IO.Path]::GetFullPath($editor.FileName)
 
 # Extension
 $ext = [IO.Path]::GetExtension($path)
@@ -43,14 +41,11 @@ $ext = [IO.Path]::GetExtension($path)
 if ($ext -eq '.ps1') {
 	if ($path -match '\.(?:build|test)\.ps1$') {
 		$task = '.'
-		for($e = $editor.Caret.Y; $e -ge 0; --$e) {
-			if (($text = $editor[$e].Text) -match '^\s*task\s+') {
-				$null, $t2, $null = [System.Management.Automation.PSParser]::Tokenize($text, [ref]$null)
-				Assert-Far ($t2 -and ($t2.Type -eq 'CommandArgument' -or $t2.Type -eq 'String' -or $t2.Type -eq 'Number')) `
-				"Cannot get task name at line '$text'." Invoke-Editor-.ps1
-				$task = $t2.Content
-				break
-			}
+		$line = $editor.Caret.Y + 1
+		foreach($t in (Invoke-Build ?? $path).Values) {
+			if ($t.InvocationInfo.ScriptName -ne $path) {continue}
+			if ($t.InvocationInfo.ScriptLineNumber -gt $line) {break}
+			$task = $t.Name
 		}
 		$arg = "-NoExit Invoke-Build '$($task.Replace("'", "''").Replace('"', '\"'))' '$($path.Replace("'", "''"))'"
 	}

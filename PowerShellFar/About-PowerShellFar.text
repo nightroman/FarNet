@@ -183,11 +183,13 @@ any moment in almost any current context.
 **User menu and file associations**
 
  : The user menu (`[F2]`) and file associations (`[F9] \ Commands \ File associations`)
-   may include PowerShell commands with prefixes. See Far Manager help for
-   details.
+   may include PowerShell commands with prefixes. See Far Manager help for details.
+   Note that the user menu can be opened in any area, not just panels, but Far
+   Manager does not provide a standard key, so choose a key and assign a macro
+   `mf.usermenu(0, "")`.
 
-**Menu actions and event handlers**
- : Menu actions and various event handlers can be added using the profiles.
+**Event handlers**
+ : Various event handlers can be added using the profiles.
    See [Profile.ps1](#Profile) and [Profile-Editor.ps1](#ProfileEditor).
 
 ---
