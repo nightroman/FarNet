@@ -44,3 +44,4 @@ Commands:
 
 	#process# - show some information about the current process
 	#assembly# - show loaded .NET assemblies
+	#resources# - open the current #.resources# file in a panel
