@@ -1,6 +1,15 @@
 
 NuGet package: https://www.nuget.org/packages/FarNet
-Far Manager 3.0.4284
+Far Manager 3.0.4587
+
+= 5.0.64 =
+
+Editor:
+- New properties IsKeyBar, IsTitleBar.
+- Fixed ConvertPointEditorToScreen(), ConvertPointScreenToEditor() on hidden title bar.
+
+ProgressForm:
+- New event Canceling.
 
 = 5.0.63 =
 

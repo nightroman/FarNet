@@ -196,6 +196,26 @@ bool Editor::IsModified::get()
 	return (ei.CurState & ECSTATE_MODIFIED) != 0;
 }
 
+bool Editor::IsKeyBar::get()
+{
+	if (!IsOpened)
+		return false;
+
+	AutoEditorInfo ei(_id);
+
+	return (ei.Options & EOPT_SHOWKEYBAR) != 0;
+}
+
+bool Editor::IsTitleBar::get()
+{
+	if (!IsOpened)
+		return false;
+
+	AutoEditorInfo ei(_id);
+
+	return (ei.Options & EOPT_SHOWTITLEBAR) != 0;
+}
+
 bool Editor::IsOpened::get()
 {
 	return _id >= 0;
@@ -547,14 +567,18 @@ Point Editor::ConvertPointEditorToScreen(Point point)
 {
 	TextFrame frame = Frame;
 	point.X = ConvertColumnEditorToScreen(point.Y, point.X) - frame.VisibleChar;
-	point.Y -= frame.VisibleLine - 1;
+	point.Y -= frame.VisibleLine;
+	if (IsTitleBar)
+		++point.Y;
 	return point;
 }
 
 Point Editor::ConvertPointScreenToEditor(Point point)
 {
 	TextFrame frame = Frame;
-	point.Y += frame.VisibleLine - 1;
+	point.Y += frame.VisibleLine;
+	if (IsTitleBar)
+		--point.Y;
 	point.X = ConvertColumnScreenToEditor(point.Y, point.X) + frame.VisibleChar;
 	return point;
 }

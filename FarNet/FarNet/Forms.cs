@@ -476,14 +476,17 @@ namespace FarNet.Forms
 		/// Called when the dialog is about to be closed (normally a user closes it).
 		/// </summary>
 		/// <remarks>
-		/// This event can be used for example for input data validation before the dialog is closed.
+		/// <para>
 		/// If event argument <see cref="AnyEventArgs.Control"/> is null then the dialog is about to
-		/// be closed by [Esc] or [F10]; in this case normally you should not stop closing.
-		/// Otherwise you may check validity of input data.
+		/// be closed by [Esc] or [F10]. In this case normally you should not stop closing.
+		/// </para>
+		/// <para>
+		/// This event can be used for input data validation before closing the dialog.
 		/// If a user mistake is found you may show a message box (<see cref="IFar.Message(string)"/>),
 		/// set focus to the control with a mistake (<see cref="Focused"/>) and finally set
 		/// event argument <see cref="ClosingEventArgs.Ignore"/> to keep the dialog running,
 		/// so that a user may correct the input or cancel the dialog.
+		/// </para>
 		/// <para>
 		/// It is not recommended to change control states during this event.
 		/// Doing so may trigger actions that may be unexpected on closing.

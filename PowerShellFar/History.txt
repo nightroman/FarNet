@@ -1,7 +1,16 @@
 
 NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
-Far Manager 3.0.4284
-FarNet 5.0.61
+Far Manager 3.0.4587
+FarNet 5.0.64
+
+= 5.0.88 =
+
+DataTable:
+- Do not auto hide some columns.
+- Improved check for data changes.
+
+Invoke-Editor-.ps1:
+- Invoke-Build scripts: get tasks by ??, avoid some limitations.
 
 = 5.0.87 =
 

@@ -54,14 +54,14 @@ CStr::CStr(int len)
 CStr::~CStr()
 {
 	if (m_str != s_empty)
-		delete m_str;
+		delete[] m_str;
 }
 
 ///<summary>Converts a string and holds the result.</summary>
 void CStr::Set(String^ str)
 {
 	if (m_str != s_empty)
-		delete m_str;
+		delete[] m_str;
 
 	if (String::IsNullOrEmpty(str))
 		m_str = s_empty;

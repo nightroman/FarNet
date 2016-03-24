@@ -43,6 +43,7 @@ namespace FarNet.Tools
 		object _lock = new object();
 		int _LineCount = 1;
 		bool _isCompleted;
+		bool _isCanceled;
 		bool _isClosed;
 
 		readonly Progress _progress = new Progress();
@@ -98,6 +99,11 @@ namespace FarNet.Tools
 		public bool CanCancel { get; set; }
 
 		/// <summary>
+		/// Called when the form is about to be canceled. It can abort canceling by <see cref="ClosingEventArgs.Ignore"/>.
+		/// </summary>
+		public event EventHandler<ClosingEventArgs> Canceling;
+
+		/// <summary>
 		/// Called when the form is canceled by a user or closed by the <see cref="Close"/>.
 		/// </summary>
 		public event EventHandler Canceled;
@@ -111,7 +117,7 @@ namespace FarNet.Tools
 		/// </remarks>
 		public bool IsClosed
 		{
-			get { return _isClosed; }
+			get { return _isClosed || _isCanceled; }
 		}
 
 		/// <summary>
@@ -129,10 +135,13 @@ namespace FarNet.Tools
 		/// Closes the form and triggers the <see cref="Canceled"/> event.
 		/// </summary>
 		/// <remarks>
-		/// This method is thread safe and can be called from jobs.
+		/// This method is thread safe and can be called from jobs in order to cancel.
 		/// But normally jobs should call <see cref="Complete"/> when they are done.
 		/// <para>
-		/// The <see cref="Show"/> returns false if the form is closed by this method.
+		/// The method <see cref="Show"/> returns false if the form is closed by this method.
+		/// </para>
+		/// <para>
+		/// Note that closing by this method does not trigger canceling events.
 		/// </para>
 		/// </remarks>
 		public override void Close()
@@ -198,14 +207,14 @@ namespace FarNet.Tools
 		public override bool Show()
 		{
 			if (_isClosed)
-				return _isCompleted;
+				return _isCompleted && !_isCanceled;
 
 			Init();
 
 			try
 			{
 				base.Show();
-				return _isCompleted;
+				return _isCompleted && !_isCanceled;
 			}
 			finally
 			{
@@ -221,34 +230,42 @@ namespace FarNet.Tools
 				e.Ignore = true;
 		}
 
-		void OnClose(object sender, EventArgs e)
+		bool AbortCanceling()
 		{
-			if (Canceled != null)
-				Canceled(this, null);
+			if (Canceling == null)
+				return false;
 
-			Close();
+			var args = new ClosingEventArgs(null);
+			Canceling(this, args);
+			return args.Ignore;
 		}
 
 		void OnClosing(object sender, ClosingEventArgs e)
 		{
-			// allow the dialog to close if the form is closed
-			if (_isClosed)
-				return;
-
-			// do not close if the form cannot cancel
-			if (!CanCancel)
+			lock (_lock)
 			{
-				e.Ignore = true;
-				return;
+				// allow the dialog to close if the form is closed
+				if (_isClosed)
+					return;
+
+				// do not close if cannot or aborted
+				if (!CanCancel || AbortCanceling())
+				{
+					e.Ignore = true;
+					return;
+				}
+
+				// flag
+				_isCanceled = true;
+
+				// abort
+				if (_jobThread != null)
+					Pfz.Threading.SafeAbort.Abort(_jobThread, 4000, 2000, 1000, true);
+
+				// notify
+				if (Canceled != null)
+					Canceled(this, null);
 			}
-
-			// abort
-			if (_jobThread != null)
-				Pfz.Threading.SafeAbort.Abort(_jobThread, 4000, 2000, 1000, true);
-
-			// notify
-			if (Canceled != null)
-				Canceled(this, null);
 		}
 
 		void OnIdled(object sender, EventArgs e)
@@ -286,8 +303,6 @@ namespace FarNet.Tools
 				IButton button = Dialog.AddButton(0, -1, _jobThread == null ? "Cancel" : "Abort");
 				button.CenterGroup = true;
 				Dialog.Default = button;
-
-				button.ButtonClicked += OnClose;
 			}
 
 			Dialog.Initialized += OnInitialized;

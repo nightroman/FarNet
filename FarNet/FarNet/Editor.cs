@@ -423,6 +423,14 @@ namespace FarNet
 		/// </remarks>
 		public abstract bool IsSaved { get; }
 		/// <summary>
+		/// Gets true if the key bar is shown.
+		/// </summary>
+		public abstract bool IsKeyBar { get; }
+		/// <summary>
+		/// Gets true if the title bar is shown.
+		/// </summary>
+		public abstract bool IsTitleBar { get; }
+		/// <summary>
 		/// Gets or sets the lock mode ([CtrlL]).
 		/// </summary>
 		/// <remarks>
