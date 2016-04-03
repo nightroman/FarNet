@@ -9,6 +9,7 @@ Release
 *.opensdf
 *.sdf
 *.suo
+*.VC.db
 
 *.htm
 *.nupkg

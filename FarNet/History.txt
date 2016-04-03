@@ -2,6 +2,10 @@
 NuGet package: https://www.nuget.org/packages/FarNet
 Far Manager 3.0.4587
 
+= 5.0.65 =
+
+ProgressForm: New event Idled.
+
 = 5.0.64 =
 
 Editor:

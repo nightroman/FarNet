@@ -109,6 +109,16 @@ namespace FarNet.Tools
 		public event EventHandler Canceled;
 
 		/// <summary>
+		/// Called periodically from the main thread.
+		/// </summary>
+		/// <remarks>
+		/// This event may be used in advanced scenarios with job interruption and resuming
+		/// and user interaction with dialogs. A handler is called from the main thread and
+		/// may use the API as usual.
+		/// </remarks>
+		public event EventHandler Idled;
+
+		/// <summary>
 		/// Gets true if a closing method has been called or a user has canceled the form.
 		/// </summary>
 		/// <remarks>
@@ -276,6 +286,10 @@ namespace FarNet.Tools
 				Dialog.Close();
 				return;
 			}
+
+			// event
+			if (Idled != null)
+				Idled(this, null);
 
 			// show
 			string progress;
