@@ -318,16 +318,8 @@ int Editor0::AsProcessEditorInput(const ProcessEditorInputInfo* info)
 	case KEY_EVENT:
 		{
 			const KEY_EVENT_RECORD& key = rec->Event.KeyEvent;
-			// idled
-			if (key.wVirtualKeyCode == 0)
-			{
-				if (_anyEditor._Idled)
-					_anyEditor._Idled(editor, nullptr);
-				if (editor->_Idled)
-					editor->_Idled(editor, nullptr);
-			}
 			// key down
-			else if (key.bKeyDown) //! it was (bKeyDown & 0xff) != 0
+			if (key.bKeyDown) //! it was (bKeyDown & 0xff) != 0
 			{
 				if (_anyEditor._KeyDown || editor->_KeyDown)
 				{

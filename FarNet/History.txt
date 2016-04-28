@@ -2,6 +2,11 @@
 NuGet package: https://www.nuget.org/packages/FarNet
 Far Manager 3.0.4587
 
+= 5.0.66 =
+
+Far does not support idle editor events.
+Removed Idled editor events from FarNet.
+
 = 5.0.65 =
 
 ProgressForm: New event Idled.

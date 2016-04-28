@@ -64,11 +64,6 @@ namespace FarNet
 		/// </summary>
 		public abstract event EventHandler LosingFocus;
 		/// <summary>
-		/// Called periodically when a user is idle.
-		/// </summary>
-		/// <seealso cref="IdledHandler"/>
-		public abstract event EventHandler Idled;
-		/// <summary>
 		/// Called on [CtrlC] in asynchronous mode, see <see cref="IEditor.BeginAsync"/>.
 		/// </summary>
 		public abstract event EventHandler CtrlCPressed;

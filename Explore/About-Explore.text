@@ -61,7 +61,7 @@ Syntax:
 
 `-Asynchronous`
 
-  : Tells to performs the search in the background and to open the result panel
+  : Tells to perform the search in the background and open the result panel
     immediately. Results are added dynamically when the panel is idle.
 
 `-XFile <File>`

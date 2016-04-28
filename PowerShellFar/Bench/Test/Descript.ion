@@ -23,5 +23,4 @@ Test-RegisterTool-.ps1 Shows how to register tools dynamically.
 Test-Stepper-.ps1 Test the stepper engine.
 Test-Stepper..ps1 Test unit for the Stepper.
 Test-SubsetForm-.ps1 Tests FarNet.Tools.SubsetForm.
-Test-Watch-Output-.ps1 Test the script Watch-Output-.ps1.
 Test-Write.ps1 Test Write-* cmdlets output.

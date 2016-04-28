@@ -3,6 +3,11 @@ NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 Far Manager 3.0.4587
 FarNet 5.0.64
 
+= 5.0.89 =
+
+Far does not support idle editor events.
+Removed Watch-Output-.ps1 and Test-Watch-Output-.ps1.
+
 = 5.0.88 =
 
 DataTable:
