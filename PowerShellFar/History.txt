@@ -3,6 +3,11 @@ NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 Far Manager 3.0.4587
 FarNet 5.0.64
 
+= 5.0.90 =
+
+Recommended Far 3.0.4660+
+Fixed command console exit.
+
 = 5.0.89 =
 
 Far does not support idle editor events.

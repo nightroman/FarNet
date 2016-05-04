@@ -91,9 +91,6 @@ task Package BeginPackage, Help, {
 	Copy-Item -Destination z\tools\FarHome\Plugins\FarNet $FarHome\Plugins\FarNet\FarNetMan.hlf
 	Copy-Item -Destination z\tools\FarHome.x64\Plugins\FarNet FarNetMan\Release\x64\FarNetMan.dll
 	Copy-Item -Destination z\tools\FarHome.x86\Plugins\FarNet $FarHome\Plugins\FarNet\FarNetMan.dll
-
-	# samples
-	exec { robocopy ..\Modules z\tools\FarHome\FarNet\Samples /s /np /xf *.suo, Modules.build.ps1 } 1
 }
 
 # Set version

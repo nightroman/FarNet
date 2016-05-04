@@ -189,6 +189,7 @@ namespace PowerShellFar.UI
 				Far.Api.UI.IsCommandMode = false;
 
 				//! "Keys'CtrlO'" works but there are issues on testing
+				Far.Api.UI.SaveUserScreen();
 				Far.Api.Panel.IsVisible = _visiblePanel1; //! 1st
 				Far.Api.Panel2.IsVisible = _visiblePanel2; //! 2nd
 				if (_visibleKeyBar)
