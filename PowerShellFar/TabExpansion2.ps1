@@ -1,15 +1,24 @@
 
+<#PSScriptInfo
+.VERSION 1.0.0
+.AUTHOR Roman Kuzmin
+.COPYRIGHT (c) Roman Kuzmin
+.GUID 550bc198-dd44-4bbc-8ad7-ccf4b8bd2aff
+.TAGS TabExpansion2, Register-ArgumentCompleter
+.LICENSEURI http://www.apache.org/licenses/LICENSE-2.0
+.PROJECTURI https://github.com/nightroman/FarNet/blob/master/PowerShellFar/TabExpansion2.ps1
+#>
+
 <#
 .Synopsis
 	TabExpansion2 with completers added by profiles.
-	Author: Roman Kuzmin, 2013-12-08
 
 .Description
-	This script replaces the built-in function TabExpansion2, creates the table
+	The script replaces the built-in function TabExpansion2, creates the table
 	TabExpansionOptions, and does nothing else. Initialization is performed on
-	the first call of TabExpansion2.
+	the first code completion via profiles *ArgumentCompleters.ps1.
 
-	The option table consists of empty entries:
+	$TabExpansionOptions consists of empty entries:
 
 		CustomArgumentCompleters = @{}
 		NativeArgumentCompleters = @{}
@@ -17,15 +26,14 @@
 		InputProcessors = @()
 
 	Initialization via profiles. When TabExpansion2 is called the first time it
-	invokes all *TabExpansionProfile*.ps1 found in the system path. They add
+	invokes scripts like *ArgumentCompleters.ps1 found in the path. They add
 	their completers to the options.
 
-	TabExpansion2.ps1 should be called in the very beginning of an interactive
-	session. Modules and other tools on loading may check for existence of the
-	table and add their completers directly. If the table is missing then the
-	session is presumably non interactive and completers are not needed.
+	TabExpansion2.ps1 (with extension if it is in the path) should be invoked
+	in the beginning of an interactive session. Modules and other tools on
+	loading may check for existence of the table and add their completers.
 
-	Diagnosed profile and completer issues are written as silent errors.
+	Any found profile and completer issues are written as silent errors.
 	Examine the variable $Error on troubleshooting.
 
 	Extra table options:
@@ -40,14 +48,9 @@
 			$true tells to replace paths with relative paths.
 			$false tells to replace paths with absolute paths.
 
-	Example profile with completers for any host and some for FarHost
-		https://github.com/nightroman/FarNet/blob/master/PowerShellFar/Bench/TabExpansionProfile.ps1
-
-	Completers for Invoke-Build
-		https://github.com/nightroman/Invoke-Build/blob/master/TabExpansionProfile.Invoke-Build.ps1
-
-	Completers for Mdbc
-		https://github.com/nightroman/Mdbc/blob/master/Scripts/TabExpansionProfile.Mdbc.ps1
+	Consider to use Register-ArgumentCompleter instead of adding completers to
+	options directly. In this case *ArgumentCompleters.ps1 are compatible with
+	v5 native and TabExpansionPlusPlus registrations.
 #>
 
 # The global option table
@@ -63,9 +66,40 @@ $global:TabExpansionProfile = $true
 
 <#
 .Synopsis
-	Creates a new System.Management.Automation.CompletionResult.
+	Registers argument completers.
 .Description
-	This helper is used to create completion results in completers.
+	This command registers a script block as a completer for specified commands
+	or parameter. It is compatible with v5 native and TabExpansionPlusPlus.
+#>
+function global:Register-ArgumentCompleter {
+	[CmdletBinding(DefaultParameterSetName = 'PowerShellSet')]
+	param(
+		[Parameter(ParameterSetName = 'NativeSet', Mandatory = $true)]
+		[Parameter(ParameterSetName = 'PowerShellSet')]
+		[string[]]$CommandName = '',
+		[Parameter(ParameterSetName = 'PowerShellSet', Mandatory = $true)]
+		[string]$ParameterName = '',
+		[Parameter(Mandatory = $true)]
+		[scriptblock]$ScriptBlock,
+		[Parameter(ParameterSetName = 'NativeSet')]
+		[switch]$Native
+	)
+
+	$key = if ($Native) {'NativeArgumentCompleters'} else {'CustomArgumentCompleters'}
+	foreach ($command in $CommandName) {
+		if ($command -and $ParameterName) {
+			$command += ":"
+		}
+		$TabExpansionOptions[$key]["${command}${ParameterName}"] = $ScriptBlock
+	}
+}
+
+<#
+.Synopsis
+	Obsolete, will be removed.
+.Description
+	Use New-Object System.Management.Automation.CompletionResult. Otherwise
+	completers cannot be used with v5 native and TabExpansionPlusPlus.
 #>
 function global:New-CompletionResult(
 	[Parameter(Mandatory)][string]$CompletionText,
@@ -77,11 +111,10 @@ function global:New-CompletionResult(
 	New-Object System.Management.Automation.CompletionResult $CompletionText, $ListItemText, $ResultType, $ToolTip
 }
 
-function global:TabExpansion2
-{
+function global:TabExpansion2 {
 	[CmdletBinding(DefaultParameterSetName = 'ScriptInputSet')]
 	param(
-		[Parameter(ParameterSetName = 'ScriptInputSet', Mandatory = $true, Position = 0)]
+		[Parameter(ParameterSetName = 'ScriptInputSet', Mandatory= $true, Position = 0)]
 		[string]$inputScript,
 		[Parameter(ParameterSetName = 'ScriptInputSet', Mandatory = $true, Position = 1)]
 		[int]$cursorColumn,
@@ -101,7 +134,7 @@ function global:TabExpansion2
 		$options = $PSCmdlet.GetVariableValue('TabExpansionOptions')
 		if ($PSCmdlet.GetVariableValue('TabExpansionProfile')) {
 			Remove-Variable -Name TabExpansionProfile -Scope Global
-			foreach($_ in Get-Command -Name *TabExpansionProfile*.ps1 -CommandType ExternalScript -All) {
+			foreach($_ in Get-Command -Name *ArgumentCompleters.ps1, *TabExpansionProfile*.ps1 -CommandType ExternalScript -All) {
 				if (& $_.Definition) {
 					Write-Error -ErrorAction 0 "TabExpansion2: Unexpected output. Profile: $($_.Definition)"
 				}

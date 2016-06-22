@@ -156,6 +156,7 @@ namespace PowerShellFar
 			// Why ShowUserScreen/SaveUserScreen:
 			// ps: git log -- [q] => without ShowUserScreen/SaveUserScreen results in not shown panels
 			// Why WriteLine:
+			// 2016-07-04: cannot repro both:
 			// cc: MarkdownToHtml.exe from=z => error output overrides prompt echo
 			// ps: 42; MarkdownToHtml.exe => error output overrides 42
 			++_BeginApplication;

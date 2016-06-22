@@ -1796,14 +1796,14 @@ loaded on the first call. It replaces the built-in expansion function and adds
 helpers.
 
 In PowerShell v3 *TabExpansion2.ps1* reuses a lot of built-in completions and
-supports extensions added by one or more `*TabExpansionProfile*.ps1` scripts.
+supports extensions added by one or more `*ArgumentCompleters.ps1` profiles.
 
-The script *Bench\TabExpansionProfile.ps1* is such a profile. Use it as the
-base for your own profile. See the script code and comments.
+The script *Bench\ArgumentCompleters.ps1* is a sample profile. Use it as the
+base for your own completers. See the script code and comments.
 
 NOTE: *TabExpansion2.ps1* and *TabExpansion.ps1* can work in other PowerShell
-hosts like the console and ISE. All you need is to call this script once, for
-example from your PowerShell profile script.
+hosts (console, ISE). All you need is to call the script once, normally in a
+PowerShell profile.
 
 
 *********************************************************************

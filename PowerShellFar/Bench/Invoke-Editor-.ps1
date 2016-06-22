@@ -47,10 +47,13 @@ if ($ext -eq '.ps1') {
 			if ($t.InvocationInfo.ScriptLineNumber -gt $line) {break}
 			$task = $t.Name
 		}
-		$arg = "-NoExit Invoke-Build '$($task.Replace("'", "''").Replace('"', '\"'))' '$($path.Replace("'", "''"))'"
+		$arg = "-NoExit -NoProfile -ExecutionPolicy Bypass Invoke-Build.ps1 '{0}' '{1}'" -f @(
+			$task.Replace("'", "''").Replace('"', '\"')
+			$path.Replace("'", "''")
+		)
 	}
 	else {
-		$arg = "-NoExit . '$($path.Replace("'", "''"))'"
+		$arg = "-NoExit -ExecutionPolicy Bypass . '$($path.Replace("'", "''"))'"
 	}
 	Start-Process PowerShell.exe $arg
 	return

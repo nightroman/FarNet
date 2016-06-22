@@ -1,82 +1,79 @@
 
 <#
 .Synopsis
-	TabExpansion2 profile.
+	TabExpansion2 argument completers.
 	Author: Roman Kuzmin
 
 .Description
-	This script should be in the path. It is invoked on the first call of the
-	custom TabExpansion2. It adds code completers to the global option table.
-	https://github.com/nightroman/FarNet/blob/master/PowerShellFar/TabExpansion2.ps1
+	The script should be in the path. It is invoked on the first call of
+	TabExpansion2 in order to register various completers. The script
+	TabExpansion2.ps1 is built in PowerShellFar but it is universal.
 
-	The script reflects preferences of the author. Use it as the base for your
-	own profile(s). Multiple profiles *TabExpansionProfile*.ps1 are supported.
+	This profile reflects preferences of the author. Use it as the sample for
+	your completers. Multiple profiles *ArgumentCompleters.ps1 are supported.
 #>
 
 ### FarHost completers
 if ($Host.Name -ceq 'FarHost') {
-	$TabExpansionOptions.CustomArgumentCompleters += @{
-		### Find-FarFile - names from the active panel
-		'Find-FarFile:Name' = {
-			param($commandName, $parameterName, $wordToComplete, $commandAst, $boundParameters)
-			@(foreach($_ in $Far.Panel.ShownFiles) {$_.Name}) -like "$wordToComplete*"
-		}
-		### Out-FarPanel - properties + column info template
-		'Out-FarPanel:Columns' = {
-			param($commandName, $parameterName, $wordToComplete, $commandAst, $boundParameters)
+	### Find-FarFile - names from the active panel
+	Register-ArgumentCompleter -CommandName Find-FarFile -ParameterName Name -ScriptBlock {
+		param($commandName, $parameterName, $wordToComplete, $commandAst, $boundParameters)
+		@(foreach($_ in $Far.Panel.ShownFiles) {$_.Name}) -like "$wordToComplete*"
+	}
+	### Out-FarPanel - properties + column info template
+	Register-ArgumentCompleter -CommandName Out-FarPanel -ParameterName Columns -ScriptBlock {
+		param($commandName, $parameterName, $wordToComplete, $commandAst, $boundParameters)
 
-			# properties
-			if (($ast = $commandAst.Parent) -is [System.Management.Automation.Language.PipelineAst] -and $ast.PipelineElements.Count -eq 2) {
-				try {
-					(Invoke-Expression $ast.PipelineElements[0] | Get-Member $wordToComplete* -MemberType Properties).Name | Sort-Object -Unique
-				}
-				catch {}
+		# properties
+		if (($ast = $commandAst.Parent) -is [System.Management.Automation.Language.PipelineAst] -and $ast.PipelineElements.Count -eq 2) {
+			try {
+				(Invoke-Expression $ast.PipelineElements[0] | Get-Member $wordToComplete* -MemberType Properties).Name | Sort-Object -Unique
 			}
+			catch {}
+		}
 
-			# column info template
-			New-CompletionResult "@{e=''; n=''; k=''; w=0; a=''}" '@{...}'
+		# column info template
+		$$ = "@{e=''; n=''; k=''; w=0; a=''}"
+		New-Object System.Management.Automation.CompletionResult $$, '@{...}', 'ParameterValue', $$
+	}
+}
+
+### Parameter ComputerName for all cmdlets
+Register-ArgumentCompleter -ParameterName ComputerName -ScriptBlock {
+	# add this machine first
+	$name = $env:COMPUTERNAME
+	New-Object System.Management.Automation.CompletionResult $name, $name, 'ParameterValue', $name
+
+	# add others from the list
+	foreach($_ in $env:pc_master, $env:pc_slave) {
+		if ($_ -and $_ -ne $name) {
+			New-Object System.Management.Automation.CompletionResult $_, $_, 'ParameterValue', $_
 		}
 	}
 }
 
-### Add common argument completers
-$TabExpansionOptions.CustomArgumentCompleters += @{
-	### Parameter ComputerName for all cmdlets
-	'ComputerName' = {
-		# add this machine first
-		$name = $env:COMPUTERNAME
-		New-CompletionResult $name
+### Complete x in "git x"
+Register-ArgumentCompleter -CommandName git -Native -ScriptBlock {
+	param($wordToComplete, $commandAst)
 
-		# add others from the list
-		foreach($_ in $env:pc_master, $env:pc_slave) { if ($_ -and $_ -ne $name) { New-CompletionResult $_ } }
-	}
-}
+	# if (!word)
+	# git x [Tab] ~ ast -ne "git" -- skip it
+	# git [Tab] ~ ast -eq "git" -- get all commands
+	$code = "$commandAst"
+	if (!$wordToComplete -and $code -ne 'git') {return}
+	if ($wordToComplete -notmatch '^\w?[\w\-]*$') {return}
+	if ($code -notmatch "^git\s*$wordToComplete$") {return}
 
-### Add native application completers
-$TabExpansionOptions.NativeArgumentCompleters += @{
-	### complete x in "git x"
-	'git' = {
-		param($wordToComplete, $commandAst)
-
-		# if (!word)
-		# git x [Tab] ~ ast -ne "git" -- skip it
-		# git [Tab] ~ ast -eq "git" -- get all commands
-		$code = "$commandAst"
-		if (!$wordToComplete -and $code -ne 'git') {return}
-		if ($wordToComplete -notmatch '^\w?[\w\-]*$') {return}
-		if ($code -notmatch "^git\s*$wordToComplete$") {return}
-
-		$wild = "$wordToComplete*"
-		$(foreach($line in git help -a) {
-			if ($line -match '^  \S') {
-				foreach($token in $line -split '\s+') {
-					if ($token -and $token -like $wild) {
-						$token
-					}
+	$wild = "$wordToComplete*"
+	$(foreach($line in git help -a) {
+		if ($line -match '^  \S') {
+			foreach($token in $line -split '\s+') {
+				if ($token -and $token -like $wild) {
+					$token
 				}
 			}
-		}) | Sort-Object
-	}
+		}
+	}) | Sort-Object
 }
 
 ### Add result processors
@@ -97,7 +94,7 @@ $TabExpansionOptions.ResultProcessors += {
 	$lines = @(Get-Content -LiteralPath $path\TabExpansion.txt)
 	$lines -match $body | Sort-Object {$_ -notmatch $head}, {$_} | .{process{
 		if ($Host.Name -cne 'FarHost') {$_ = $_.Replace('#', '')}
-		$result.CompletionMatches.Add((New-CompletionResult $_ -ResultType Text))
+		$result.CompletionMatches.Add($_)
 	}}
 },{
 	### WORD#[Tab] completions from history
@@ -112,7 +109,11 @@ $TabExpansionOptions.ResultProcessors += {
 
 	$_ = [System.Collections.ArrayList](@(Get-History -Count 9999) -match $body)
 	$_.Reverse()
-	$_ | .{process{ $result.CompletionMatches.Add((New-CompletionResult $_ -ResultType History)) }}
+	$_ | .{process{
+		$result.CompletionMatches.Add((
+			New-Object System.Management.Automation.CompletionResult $_, $_, 'History', $_
+		))
+	}}
 },{
 	### Complete an alias as definition and remove itself
 	param($result, $ast, $tokens, $positionOfCursor, $options)
@@ -134,7 +135,10 @@ $TabExpansionOptions.ResultProcessors += {
 	}
 
 	# insert first
-	$result.CompletionMatches.Insert(0, (New-CompletionResult $aliases[0].Definition -ResultType Command))
+	$result.CompletionMatches.Insert(0, $(
+		$$ = $aliases[0].Definition
+		New-Object System.Management.Automation.CompletionResult $$, $$, 'Command', $$
+	))
 },{
 	### Complete variable $*var
 	param($result, $ast, $tokens, $positionOfCursor, $options)
@@ -143,7 +147,10 @@ $TabExpansionOptions.ResultProcessors += {
 	if (!$token -or $token -notmatch '^\$(\*.*)') {return}
 
 	foreach($_ in Get-Variable "$($matches[1])*") {
-		$result.CompletionMatches.Add((New-CompletionResult "`$$($_.Name)" -ResultType Variable))
+		$result.CompletionMatches.Add($(
+			$$ = "`$$($_.Name)"
+			New-Object System.Management.Automation.CompletionResult $$, $$, 'Variable', $$
+		))
 	}
 }
 
@@ -170,7 +177,7 @@ $TabExpansionOptions.InputProcessors += {
 		$text = $result.CompletionMatches[$i].CompletionText
 		if ($text -match '\b(\w+([.,\[\]])+)$') {
 			$type = if ($matches[2] -ceq '.') {'Namespace'} else {'Type'}
-			$result.CompletionMatches[$i] = New-CompletionResult $text "[$($matches[1])" $type
+			$result.CompletionMatches[$i] = New-Object System.Management.Automation.CompletionResult $text, "[$($matches[1])", $type, $text
 		}
 	}
 

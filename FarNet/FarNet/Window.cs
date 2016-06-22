@@ -95,6 +95,10 @@ namespace FarNet
 		/// <summary>
 		/// Help window.
 		/// </summary>
-		Help = 6
+		Help = 6,
+		/// <summary>
+		/// Combo box.
+		/// </summary>
+		ComboBox = 7
 	}
 }
