@@ -30,10 +30,11 @@ namespace PowerShellFar
 		Command - avoid two Get-History -> Get-History, Microsoft.PowerShell.Core\Get-History
 		ProviderItem - avoid two Test-Far.ps1 -> .\Test-Far.ps1, Test-Far.ps1
 		ProviderContainer - for consistency with ProviderItem
+
+		//! `@args` instead `param($inputScript, $cursorColumn)` to avoid visible variables.
 		*/
 		const string CallTabExpansionV3 = @"
-param($inputScript, $cursorColumn)
-$r = TabExpansion2 $inputScript $cursorColumn
+$r = TabExpansion2 @args
 @{
 	ReplacementIndex = $r.ReplacementIndex
 	ReplacementLength = $r.ReplacementLength
@@ -48,6 +49,7 @@ $r = TabExpansion2 $inputScript $cursorColumn
 }
 ";
 		// V2 completion
+		//! Ideally, we should use private variable. But who cares of v2?
 		const string CallTabExpansionV2 = @"
 param($inputScript, $cursorColumn)
 $line = $inputScript.Substring(0, $cursorColumn)

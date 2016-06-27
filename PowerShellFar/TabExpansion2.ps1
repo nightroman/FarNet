@@ -1,6 +1,6 @@
 
 <#PSScriptInfo
-.VERSION 1.0.0
+.VERSION 1.0.1
 .AUTHOR Roman Kuzmin
 .COPYRIGHT (c) Roman Kuzmin
 .GUID 550bc198-dd44-4bbc-8ad7-ccf4b8bd2aff
@@ -51,6 +51,12 @@
 	Consider to use Register-ArgumentCompleter instead of adding completers to
 	options directly. In this case *ArgumentCompleters.ps1 are compatible with
 	v5 native and TabExpansionPlusPlus registrations.
+
+	Consider to use Register-InputCompleter and Register-ResultCompleter
+	instead of adding completers to options directly.
+
+.Link
+	wiki https://github.com/nightroman/FarNet/wiki/TabExpansion2
 #>
 
 # The global option table
@@ -96,19 +102,45 @@ function global:Register-ArgumentCompleter {
 
 <#
 .Synopsis
-	Obsolete, will be removed.
+	Registers input completers.
 .Description
-	Use New-Object System.Management.Automation.CompletionResult. Otherwise
-	completers cannot be used with v5 native and TabExpansionPlusPlus.
+	Input completers work before native. Each completer is invoked with the
+	arguments $ast, $tokens, $positionOfCursor, $options. It returns either
+	nothing in order to continue or a CommandCompletion instance which is
+	used as the result.
+
+	Register-InputCompleter is only used with this TabExpansion2.ps1,
+	unlike Register-ArgumentCompleter which may be used in other cases.
+.Outputs
+	[System.Management.Automation.CommandCompletion]
 #>
-function global:New-CompletionResult(
-	[Parameter(Mandatory)][string]$CompletionText,
-	[string]$ListItemText = $CompletionText,
-	[System.Management.Automation.CompletionResultType]$ResultType = 'ParameterValue',
-	[string]$ToolTip = $CompletionText
-)
-{
-	New-Object System.Management.Automation.CompletionResult $CompletionText, $ListItemText, $ResultType, $ToolTip
+function global:Register-InputCompleter {
+	[CmdletBinding()]
+	param(
+		[Parameter(Mandatory = $true)]
+		[scriptblock]$ScriptBlock
+	)
+	$TabExpansionOptions.InputProcessors += $ScriptBlock
+}
+
+<#
+.Synopsis
+	Registers result completers.
+.Description
+	Result completers work after native. They are invoked with the arguments
+	$result $ast $tokens $positionOfCursor $options. They should not return
+	anything, they should either do nothing or alter the $result.
+
+	Register-InputCompleter is only used with this TabExpansion2.ps1,
+	unlike Register-ArgumentCompleter which may be used in other cases.
+#>
+function global:Register-ResultCompleter {
+	[CmdletBinding()]
+	param(
+		[Parameter(Mandatory = $true)]
+		[scriptblock]$ScriptBlock
+	)
+	$TabExpansionOptions.ResultProcessors += $ScriptBlock
 }
 
 function global:TabExpansion2 {
@@ -128,13 +160,20 @@ function global:TabExpansion2 {
 		[Parameter(ParameterSetName = 'AstInputSet', Position = 3)]
 		[Hashtable]$options
 	)
+	$private:_inputScript = $inputScript
+	$private:_cursorColumn = $cursorColumn
+	$private:_ast = $ast
+	$private:_tokens = $tokens
+	$private:_positionOfCursor = $positionOfCursor
+	$private:_options = $options
+	Remove-Variable inputScript, cursorColumn, ast, tokens, positionOfCursor, options
 
 	# take/init global options
-	if (!$options) {
-		$options = $PSCmdlet.GetVariableValue('TabExpansionOptions')
+	if (!$_options) {
+		$_options = $PSCmdlet.GetVariableValue('TabExpansionOptions')
 		if ($PSCmdlet.GetVariableValue('TabExpansionProfile')) {
 			Remove-Variable -Name TabExpansionProfile -Scope Global
-			foreach($_ in Get-Command -Name *ArgumentCompleters.ps1, *TabExpansionProfile*.ps1 -CommandType ExternalScript -All) {
+			foreach($_ in Get-Command -Name *ArgumentCompleters.ps1 -CommandType ExternalScript -All) {
 				if (& $_.Definition) {
 					Write-Error -ErrorAction 0 "TabExpansion2: Unexpected output. Profile: $($_.Definition)"
 				}
@@ -144,13 +183,15 @@ function global:TabExpansion2 {
 
 	# parse input
 	if ($psCmdlet.ParameterSetName -eq 'ScriptInputSet') {
-		$_ = [System.Management.Automation.CommandCompletion]::MapStringInputToParsedInput($inputScript, $cursorColumn)
-		$ast = $_.Item1; $tokens = $_.Item2; $positionOfCursor = $_.Item3
+		$_ = [System.Management.Automation.CommandCompletion]::MapStringInputToParsedInput($_inputScript, $_cursorColumn)
+		$_ast = $_.Item1
+		$_tokens = $_.Item2
+		$_positionOfCursor = $_.Item3
 	}
 
 	# input processors
-	foreach($_ in $options['InputProcessors']) {
-		if ($private:result = & $_ $ast $tokens $positionOfCursor $options) {
+	foreach($_ in $_options['InputProcessors']) {
+		if ($private:result = & $_ $_ast $_tokens $_positionOfCursor $_options) {
 			if ($result -is [System.Management.Automation.CommandCompletion]) {
 				return $result
 			}
@@ -158,27 +199,26 @@ function global:TabExpansion2 {
 		}
 	}
 
-	# built-in
-	$private:result = [System.Management.Automation.CommandCompletion]::CompleteInput($ast, $tokens, $positionOfCursor, $options)
+	# native
+	$private:result = [System.Management.Automation.CommandCompletion]::CompleteInput($_ast, $_tokens, $_positionOfCursor, $_options)
 
 	# result processors?
-	if (!($private:processors = $options['ResultProcessors'])) {
+	if (!($private:processors = $_options['ResultProcessors'])) {
 		return $result
 	}
 
 	# work around read only
 	if ($result.CompletionMatches.IsReadOnly) {
-		if ($result.CompletionMatches) {
-			return $result
+		$private:collection = New-Object System.Collections.ObjectModel.Collection[System.Management.Automation.CompletionResult]
+		foreach($_ in $result.CompletionMatches) {
+			$collection.Add($_)
 		}
-		function TabExpansion {'*'}
-		$result = [System.Management.Automation.CommandCompletion]::CompleteInput("$ast", $positionOfCursor.Offset, $null)
-		$result.CompletionMatches.Clear()
+		$result.GetType().GetProperty('CompletionMatches').SetValue($result, $collection)
 	}
 
 	# result processors
 	foreach($_ in $processors) {
-		if (& $_ $result $ast $tokens $positionOfCursor $options) {
+		if (& $_ $result $_ast $_tokens $_positionOfCursor $_options) {
 			Write-Error -ErrorAction 0 "TabExpansion2: Unexpected output. Result processor: $_"
 		}
 	}

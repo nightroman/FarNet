@@ -15,19 +15,22 @@
 
 ### FarHost completers
 if ($Host.Name -ceq 'FarHost') {
-	### Find-FarFile - names from the active panel
+
+	### Find-FarFile:Name - names from the active panel
 	Register-ArgumentCompleter -CommandName Find-FarFile -ParameterName Name -ScriptBlock {
 		param($commandName, $parameterName, $wordToComplete, $commandAst, $boundParameters)
 		@(foreach($_ in $Far.Panel.ShownFiles) {$_.Name}) -like "$wordToComplete*"
 	}
-	### Out-FarPanel - properties + column info template
+
+	### Out-FarPanel:Columns - evaluated properties and column info template
 	Register-ArgumentCompleter -CommandName Out-FarPanel -ParameterName Columns -ScriptBlock {
-		param($commandName, $parameterName, $wordToComplete, $commandAst, $boundParameters)
+		$private:commandName, $private:parameterName, $private:wordToComplete, $private:commandAst, $private:boundParameters = $args
 
 		# properties
-		if (($ast = $commandAst.Parent) -is [System.Management.Automation.Language.PipelineAst] -and $ast.PipelineElements.Count -eq 2) {
+		if (($private:ast = $commandAst.Parent) -is [System.Management.Automation.Language.PipelineAst] -and $ast.PipelineElements.Count -eq 2) {
 			try {
-				(Invoke-Expression $ast.PipelineElements[0] | Get-Member $wordToComplete* -MemberType Properties).Name | Sort-Object -Unique
+				(& ([scriptblock]::Create($ast.PipelineElements[0])) | Get-Member $wordToComplete* -MemberType Properties).Name |
+				Sort-Object -Unique
 			}
 			catch {}
 		}
@@ -76,35 +79,48 @@ Register-ArgumentCompleter -CommandName git -Native -ScriptBlock {
 	}) | Sort-Object
 }
 
-### Add result processors
-$TabExpansionOptions.ResultProcessors += {
-	### WORD=[Tab] completions from TabExpansion.txt
+### Result processors
+
+Register-ResultCompleter {
+	### WORD=[Tab] completions from TabExpansion.txt in TabExpansion2.ps1 folder
 	param($result, $ast, $tokens, $positionOfCursor, $options)
 
 	# default
-	if ($result.CompletionMatches) {return}
+	if ($result.CompletionMatches) {
+		return
+	}
 
 	# WORD=?
-	if ("$ast".Substring($result.ReplacementIndex, $result.ReplacementLength) -notmatch '(^.*)=$') {return}
+	if ("$ast".Substring($result.ReplacementIndex, $result.ReplacementLength) -notmatch '(^.*)=$') {
+		return
+	}
+
 	$body = [regex]::Escape($matches[1])
 	$head = "^$body"
 
-	# completions from TabExpansion.txt in the TabExpansion2 script directory
+	# completions from TabExpansion.txt
 	$path = [System.IO.Path]::GetDirectoryName((Get-Item Function:TabExpansion2).ScriptBlock.File)
 	$lines = @(Get-Content -LiteralPath $path\TabExpansion.txt)
 	$lines -match $body | Sort-Object {$_ -notmatch $head}, {$_} | .{process{
 		if ($Host.Name -cne 'FarHost') {$_ = $_.Replace('#', '')}
 		$result.CompletionMatches.Add($_)
 	}}
-},{
+}
+
+Register-ResultCompleter {
 	### WORD#[Tab] completions from history
 	param($result, $ast, $tokens, $positionOfCursor, $options)
 
 	# default
-	if ($result.CompletionMatches) {return}
+	if ($result.CompletionMatches) {
+		return
+	}
 
 	# WORD#?
-	if ("$ast".Substring($result.ReplacementIndex, $result.ReplacementLength) -notmatch '(^.*)#$') {return}
+	if ("$ast".Substring($result.ReplacementIndex, $result.ReplacementLength) -notmatch '(^.*)#$') {
+		return
+	}
+
 	$body = [regex]::Escape($matches[1])
 
 	$_ = [System.Collections.ArrayList](@(Get-History -Count 9999) -match $body)
@@ -114,17 +130,28 @@ $TabExpansionOptions.ResultProcessors += {
 			New-Object System.Management.Automation.CompletionResult $_, $_, 'History', $_
 		))
 	}}
-},{
+}
+
+Register-ResultCompleter {
 	### Complete an alias as definition and remove itself
 	param($result, $ast, $tokens, $positionOfCursor, $options)
 
-	$token = foreach($_ in $tokens) {if ($_.Extent.EndOffset -eq $positionOfCursor.Offset) {$_; break}}
-	if (!$token -or $token.TokenFlags -ne 'CommandName') {return}
+	$token = foreach($_ in $tokens) {
+		if ($_.Extent.EndOffset -eq $positionOfCursor.Offset) {
+			$_
+			break
+		}
+	}
+	if (!$token -or $token.TokenFlags -ne 'CommandName') {
+		return
+	}
 
 	# aliases
 	$name = "$token"
 	$aliases = @(Get-Alias $name -ErrorAction Ignore)
-	if ($aliases.Count -ne 1) {return}
+	if ($aliases.Count -ne 1) {
+		return
+	}
 
 	# remove itself
 	for($i = $result.CompletionMatches.Count; --$i -ge 0) {
@@ -139,23 +166,35 @@ $TabExpansionOptions.ResultProcessors += {
 		$$ = $aliases[0].Definition
 		New-Object System.Management.Automation.CompletionResult $$, $$, 'Command', $$
 	))
-},{
-	### Complete variable $*var
-	param($result, $ast, $tokens, $positionOfCursor, $options)
+}
 
-	$token = foreach($_ in $tokens) {if ($_.Extent.EndOffset -eq $positionOfCursor.Offset) {$_; break}}
-	if (!$token -or $token -notmatch '^\$(\*.*)') {return}
+Register-ResultCompleter {
+	### Complete variable $*var
+	${private:*result}, $null, ${private:*tokens}, ${private:*positionOfCursor}, $null = $args
+
+	${private:*token} = foreach($_ in ${*tokens}) {
+		if ($_.Extent.EndOffset -eq ${*positionOfCursor}.Offset) {
+			$_
+			break
+		}
+	}
+	if (!${*token} -or ${*token} -notmatch '^\$(\*.*)') {
+		return
+	}
 
 	foreach($_ in Get-Variable "$($matches[1])*") {
-		$result.CompletionMatches.Add($(
-			$$ = "`$$($_.Name)"
-			New-Object System.Management.Automation.CompletionResult $$, $$, 'Variable', $$
-		))
+		if ($_.Name[0] -ne '*') {
+			${*result}.CompletionMatches.Add($(
+				$$ = "`$$($_.Name)"
+				New-Object System.Management.Automation.CompletionResult $$, $$, 'Variable', $$
+			))
+		}
 	}
 }
 
-### Add input processors
-$TabExpansionOptions.InputProcessors += {
+### Input processors
+
+Register-InputCompleter {
 	### Complete [Type/Namespace[Tab]
 	# Expands one piece at a time, e.g. [System. | [System.Data. | [System.Data.CommandType]
 	# If pattern in "[pattern" contains wildcard characters all types are searched for the match.
@@ -182,7 +221,9 @@ $TabExpansionOptions.InputProcessors += {
 	}
 
 	$result
-},{
+}
+
+Register-InputCompleter {
 	### Complete in comments: help tags or one line code
 	param($ast, $tokens, $positionOfCursor, $options)
 

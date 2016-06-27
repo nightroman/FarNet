@@ -3,6 +3,12 @@ NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 Far Manager 3.0.4587
 FarNet 5.0.64
 
+= 5.0.92 =
+
+Completed revision of TabExpansion, see notes: https://github.com/nightroman/FarNet/issues/3
+
+Fixed variable names leaked to results from completers and internal code.
+
 = 5.0.91 =
 
 Revision of TabExpansion2.ps1, prepare for future breaking changes.
