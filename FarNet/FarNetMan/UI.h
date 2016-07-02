@@ -56,6 +56,7 @@ public:
 internal:
 	static FarUI Instance;
 private:
+	static void WriteRaw(String^ text);
 	static bool _IsCommandMode;
 };
 }

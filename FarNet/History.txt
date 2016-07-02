@@ -2,6 +2,10 @@
 NuGet package: https://www.nuget.org/packages/FarNet
 Far Manager 3.0.4587
 
+= 5.0.68 =
+
+Corrected default colors on console writing (Far 3.0.4662 changes)
+
 = 5.0.67 =
 
 Removed Samples from the package.

@@ -402,6 +402,13 @@ void FarUI::Break()
 
 //! Console Write() writes some Unicode chars as '?'.
 //! Used to call SaveUserScreen() in the end. It was very slow. Now it is done in many places, see _100514_000000.
+void FarUI::WriteRaw(String^ text)
+{
+	PIN_NE(pin, text);
+	DWORD cch = text->Length;
+	WriteConsole(GetStdHandle(STD_OUTPUT_HANDLE), pin, cch, &cch, nullptr);
+}
+
 void FarUI::Write(String^ text)
 {
 	if (ES(text))
@@ -413,26 +420,44 @@ void FarUI::Write(String^ text)
 		ShowUserScreen();
 	}
 
-	PIN_NE(pin, text);
-	DWORD cch = text->Length;
-	WriteConsole(GetStdHandle(STD_OUTPUT_HANDLE), pin, cch, &cch, nullptr);
+	WriteRaw(text);
 }
 
+//! set colors after user screen
 void FarUI::Write(String^ text, ConsoleColor foregroundColor)
 {
+	if (ES(text))
+		return;
+
+	if (!ValueUserScreen::Get()) //_100514_000000
+	{
+		ValueUserScreen::Set(true);
+		ShowUserScreen();
+	}
+
 	ConsoleColor fc = Console::ForegroundColor;
 	Console::ForegroundColor = foregroundColor;
-	Write(text);
+	WriteRaw(text);
 	Console::ForegroundColor = fc;
 }
 
+//! set colors after user screen
 void FarUI::Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgroundColor)
 {
+	if (ES(text))
+		return;
+
+	if (!ValueUserScreen::Get()) //_100514_000000
+	{
+		ValueUserScreen::Set(true);
+		ShowUserScreen();
+	}
+
 	ConsoleColor fc = Console::ForegroundColor;
 	ConsoleColor bc = Console::BackgroundColor;
 	Console::ForegroundColor = foregroundColor;
 	Console::BackgroundColor = backgroundColor;
-	Write(text);
+	WriteRaw(text);
 	Console::ForegroundColor = fc;
 	Console::BackgroundColor = bc;
 }
