@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyProduct("FarNet.CopyColor")]
-[assembly: AssemblyVersion("2.1.0")]
+[assembly: AssemblyVersion("2.1.1")]
 [assembly: AssemblyTitle("FarNet module CopyColor for Far Manager")]
 [assembly: AssemblyDescription("Copy coloured text to clipboard")]
 [assembly: AssemblyCompany("https://github.com/nightroman/FarNet")]

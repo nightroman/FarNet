@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyProduct("FarNet.Explore")]
-[assembly: AssemblyVersion("2.1.0")]
+[assembly: AssemblyVersion("2.1.1")]
 [assembly: AssemblyTitle("FarNet module Explore for Far Manager")]
 [assembly: AssemblyDescription("Search in FarNet panels.")]
 [assembly: AssemblyCompany("https://github.com/nightroman/FarNet")]

@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyProduct("FarNet.FolderChart")]
-[assembly: AssemblyVersion("2.1.0")]
+[assembly: AssemblyVersion("2.1.1")]
 [assembly: AssemblyTitle("FarNet module FolderChart for Far Manager")]
 [assembly: AssemblyDescription("Shows folder item sizes in a chart.")]
 [assembly: AssemblyCompany("https://github.com/nightroman/FarNet")]
