@@ -1,6 +1,6 @@
 
 <#PSScriptInfo
-.VERSION 1.0.1
+.VERSION 1.0.2
 .AUTHOR Roman Kuzmin
 .COPYRIGHT (c) Roman Kuzmin
 .GUID 550bc198-dd44-4bbc-8ad7-ccf4b8bd2aff
@@ -209,11 +209,12 @@ function global:TabExpansion2 {
 
 	# work around read only
 	if ($result.CompletionMatches.IsReadOnly) {
-		$private:collection = New-Object System.Collections.ObjectModel.Collection[System.Management.Automation.CompletionResult]
-		foreach($_ in $result.CompletionMatches) {
-			$collection.Add($_)
+		if ($result.CompletionMatches) {
+			return $result
 		}
-		$result.GetType().GetProperty('CompletionMatches').SetValue($result, $collection)
+		function TabExpansion {'*'}
+		$result = [System.Management.Automation.CommandCompletion]::CompleteInput("$_ast", $_positionOfCursor.Offset, $null)
+		$result.CompletionMatches.Clear()
 	}
 
 	# result processors

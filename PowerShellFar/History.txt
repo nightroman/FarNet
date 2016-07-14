@@ -1,7 +1,11 @@
 
 NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 Far Manager 3.0.4587
-FarNet 5.0.64
+FarNet 5.0.68
+
+= 5.0.93 =
+
+Fixed #4 TabExpansion2 v1.0.1 regression on read only results.
 
 = 5.0.92 =
 
