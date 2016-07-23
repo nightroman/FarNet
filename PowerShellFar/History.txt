@@ -1,7 +1,11 @@
 
 NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
-Far Manager 3.0.4587
+Far Manager 3.0.4744
 FarNet 5.0.68
+
+= 5.0.94 =
+
+Fixed color of errors printed to console (requires Far 3.0.4744).
 
 = 5.0.93 =
 

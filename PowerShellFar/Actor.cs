@@ -824,6 +824,7 @@ Continue with this current directory?
 					if (writer is ConsoleOutputWriter)
 					{
 						color1 = Far.Api.UI.ForegroundColor;
+						Far.Api.UI.ShowUserScreen();
 						Far.Api.UI.ForegroundColor = Settings.ErrorForegroundColor;
 					}
 
@@ -836,6 +837,7 @@ Continue with this current directory?
 					// pop console color
 					if (color1 != ConsoleColor.Black)
 					{
+						Far.Api.UI.SaveUserScreen();
 						Far.Api.UI.ForegroundColor = color1;
 					}
 				}
