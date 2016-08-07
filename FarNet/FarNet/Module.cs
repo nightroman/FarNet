@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.Serialization;
-using System.Security.Permissions;
 
 namespace FarNet
 {
@@ -266,7 +265,6 @@ namespace FarNet
 		/// removed, for example, handlers added to <see cref="IFar.AnyEditor"/>.
 		/// </para>
 		/// </remarks>
-		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		public virtual void Disconnect()
 		{ }
 		/// <summary>
