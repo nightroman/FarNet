@@ -18,11 +18,10 @@ namespace PowerShellFar
 	public class BreakpointDrawer : ModuleDrawer
 	{
 		/// <inheritdoc/>
-		public override void Invoke(object sender, ModuleDrawerEventArgs e)
+		public override void Invoke(IEditor editor, ModuleDrawerEventArgs e)
 		{
 			if (e == null) return;
 
-			var editor = (IEditor)sender;
 			var script = editor.FileName;
 			var breakpoints = A.Psf.Breakpoints.Where(x => script.Equals(x.Script, StringComparison.OrdinalIgnoreCase));
 

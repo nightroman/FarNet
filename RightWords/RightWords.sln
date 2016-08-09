@@ -1,13 +1,9 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RightWords", "RightWords.csproj", "{CA7ECDC0-F446-4BFF-A99D-06C90FE0A3A9}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5C047EE2-5E79-4AF3-947D-A94EE21D6F01}"
-	ProjectSection(SolutionItems) = preProject
-		RightWords.restext = RightWords.restext
-		RightWords.ru.restext = RightWords.ru.restext
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

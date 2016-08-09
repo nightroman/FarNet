@@ -2,6 +2,12 @@
 NuGet package: https://www.nuget.org/packages/FarNet
 Far Manager 3.0.4587
 
+= 5.1.0 =
+
+Changed interfaces of ModuleEditor and ModuleDrawer. Invoke(object sender, ...)
+is replaced with more useful Invoke(IEditor editor, ...). Modules using these
+classes should be upgraded, e.g. use the latest PowerShellFar, Drawer, RightWords.
+
 = 5.0.68 =
 
 Corrected default colors on console writing (Far 3.0.4662 changes)

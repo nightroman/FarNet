@@ -21,7 +21,7 @@ namespace FarNet.RightWords
 		readonly ConsoleColor HighlightingBackgroundColor = Settings.Default.HighlightingBackgroundColor;
 		readonly ConsoleColor HighlightingForegroundColor = Settings.Default.HighlightingForegroundColor;
 		readonly int MaximumLineLength = Settings.Default.MaximumLineLength;
-		public override void Invoke(object sender, ModuleDrawerEventArgs e)
+		public override void Invoke(IEditor editor, ModuleDrawerEventArgs e)
 		{
 			foreach (var line in e.Lines)
 			{

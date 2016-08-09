@@ -135,7 +135,7 @@ namespace FarNet.Works
 			Host.Instance.RegisterProxyCommand(it);
 			return it;
 		}
-		public override IModuleDrawer RegisterModuleDrawer(Guid id, ModuleDrawerAttribute attribute, EventHandler<ModuleDrawerEventArgs> handler)
+		public override IModuleDrawer RegisterModuleDrawer(Guid id, ModuleDrawerAttribute attribute, Action<IEditor, ModuleDrawerEventArgs> handler)
 		{
 			if (handler == null)
 				throw new ArgumentNullException("handler");

@@ -16,10 +16,8 @@ namespace FarNet.Drawer
 		readonly Regex _regex = new Regex(Settings.Default.CurrentWordPattern);
 		readonly ConsoleColor _foreground = Settings.Default.CurrentWordColorForeground;
 		readonly ConsoleColor _background = Settings.Default.CurrentWordColorBackground;
-		public override void Invoke(object sender, ModuleDrawerEventArgs e)
+		public override void Invoke(IEditor editor, ModuleDrawerEventArgs e)
 		{
-			var editor = (IEditor)sender;
-
 			// get current word
 			var match = editor.Line.MatchCaret(_regex);
 			if (match == null)

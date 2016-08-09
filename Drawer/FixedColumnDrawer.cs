@@ -15,10 +15,8 @@ namespace FarNet.Drawer
 		int _columnNumber = Settings.Default.FixedColumnNumber;
 		readonly ConsoleColor _foreground = Settings.Default.FixedColumnColorForeground;
 		readonly ConsoleColor _background = Settings.Default.FixedColumnColorBackground;
-		public override void Invoke(object sender, ModuleDrawerEventArgs e)
+		public override void Invoke(IEditor editor, ModuleDrawerEventArgs e)
 		{
-			var editor = (IEditor)sender;
-
 			foreach (var line in e.Lines)
 			{
 

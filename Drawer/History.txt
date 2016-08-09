@@ -1,5 +1,10 @@
 ﻿
 NuGet package: https://www.nuget.org/packages/FarNet.Drawer
+FarNet 5.1.0
+
+= 1.1.2 =
+
+Adapted for FarNet 5.1.0
 
 = 1.1.1 =
 

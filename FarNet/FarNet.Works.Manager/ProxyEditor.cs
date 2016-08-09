@@ -24,13 +24,13 @@ namespace FarNet.Works
 		{
 			Init();
 		}
-		public void Invoke(object sender, ModuleEditorEventArgs e)
+		public void Invoke(IEditor editor, ModuleEditorEventArgs e)
 		{
-			Log.Source.TraceInformation("Invoking {0} FileName='{1}'", ClassName, ((IEditor)sender).FileName);
+			Log.Source.TraceInformation("Invoking {0} FileName='{1}'", ClassName, editor.FileName);
 			Invoking();
 
 			ModuleEditor instance = (ModuleEditor)GetInstance();
-			instance.Invoke(sender, e);
+			instance.Invoke(editor, e);
 		}
 		public sealed override string ToString()
 		{

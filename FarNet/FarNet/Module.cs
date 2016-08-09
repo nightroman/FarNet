@@ -175,7 +175,7 @@ namespace FarNet
 		/// Dynamic registration is not recommended for standard scenarios.
 		/// <include file='doc.xml' path='doc/RegisterModule/*'/>
 		/// </remarks>
-		public abstract IModuleDrawer RegisterModuleDrawer(Guid id, ModuleDrawerAttribute attribute, EventHandler<ModuleDrawerEventArgs> handler);
+		public abstract IModuleDrawer RegisterModuleDrawer(Guid id, ModuleDrawerAttribute attribute, Action<IEditor, ModuleDrawerEventArgs> handler);
 		/// <summary>
 		/// Registers the tool handler invoked from one of Far menus.
 		/// </summary>
@@ -506,7 +506,7 @@ namespace FarNet
 		/// <summary>
 		/// Editor <see cref="IEditorBase.Opened"/> handler.
 		/// </summary>
-		/// <param name="sender">The sender.</param>
+		/// <param name="editor">The editor.</param>
 		/// <param name="e">The arguments.</param>
 		/// <remarks>
 		/// This method is called once on opening an editor.
@@ -516,7 +516,7 @@ namespace FarNet
 		/// See the demo module <c>EditorKit</c> and its module editor classes.
 		/// It is not just an example, it can be used for real.
 		/// </example>
-		public abstract void Invoke(object sender, ModuleEditorEventArgs e);
+		public abstract void Invoke(IEditor editor, ModuleEditorEventArgs e);
 	}
 
 	/// <summary>
@@ -541,9 +541,9 @@ namespace FarNet
 		/// <summary>
 		/// Gets colors for the specified editor lines.
 		/// </summary>
-		/// <param name="sender">.</param>
-		/// <param name="e">.</param>
-		public abstract void Invoke(object sender, ModuleDrawerEventArgs e);
+		/// <param name="editor">The editor.</param>
+		/// <param name="e">The arguments.</param>
+		public abstract void Invoke(IEditor editor, ModuleDrawerEventArgs e);
 	}
 
 	/// <summary>
@@ -744,9 +744,9 @@ namespace FarNet
 		/// <summary>
 		/// Processes the editor event.
 		/// </summary>
-		/// <param name="sender">The sender.</param>
+		/// <param name="editor">The editor.</param>
 		/// <param name="e">The arguments.</param>
-		void Invoke(object sender, ModuleEditorEventArgs e);
+		void Invoke(IEditor editor, ModuleEditorEventArgs e);
 		/// <summary>
 		/// Gets the file mask. Setting is for internal use.
 		/// </summary>
@@ -764,7 +764,7 @@ namespace FarNet
 		/// <summary>
 		/// Returns the drawer handler.
 		/// </summary>
-		EventHandler<ModuleDrawerEventArgs> CreateHandler();
+		Action<IEditor, ModuleDrawerEventArgs> CreateHandler();
 		/// <summary>
 		/// Gets the file mask. Setting is for internal use.
 		/// </summary>

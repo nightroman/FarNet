@@ -33,7 +33,7 @@ ref class DrawerInfo sealed
 public:
 	Guid Id;
 	int Priority;
-	EventHandler<ModuleDrawerEventArgs^>^ Handler;
+	Action<IEditor^, ModuleDrawerEventArgs^>^ Handler;
 };
 
 ref class Editor sealed : IEditor

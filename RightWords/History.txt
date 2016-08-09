@@ -1,4 +1,10 @@
+
 NuGet package: https://www.nuget.org/packages/FarNet.RightWords
+FarNet 5.1.0
+
+= 2.1.7 =
+
+Adapted for FarNet 5.1.0
 
 = 2.1.6 =
 
