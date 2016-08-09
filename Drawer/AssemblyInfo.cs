@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("Editor drawers")]
 [assembly: AssemblyProduct("FarNet.Drawer")]
 [assembly: AssemblyTitle("FarNet module Drawer for Far Manager")]
-[assembly: AssemblyVersion("1.1.1")]
+[assembly: AssemblyVersion("1.1.2")]
 
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]

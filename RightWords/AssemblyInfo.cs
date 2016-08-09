@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("Spell-checker and thesaurus")]
 [assembly: AssemblyProduct("FarNet.RightWords")]
 [assembly: AssemblyTitle("FarNet module RightWords for Far Manager")]
-[assembly: AssemblyVersion("2.1.6")]
+[assembly: AssemblyVersion("2.1.7")]
 
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
