@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<hrc version="take5"
+xmlns="http://colorer.sf.net/2003/hrc"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hrc.xsd">
+
+<type name="fsharp">
+<annotation><documentation><![CDATA[
+
+fsharp.hrc by Roman Kuzmin, aka NightRoman, 2016-08-14
+
+]]></documentation></annotation>
+
+<import type="def"/>
+
+<!-- Identifier -->
+<entity name="ident" value="[_a-zA-Z][\w&apos;]*"/>
+
+<!-- Escaped -->
+<scheme name="FSSimpleString">
+<regexp match="/\\[bnrt\\&quot;&apos;]|\\$|\\u[\da-fA-F]{4}|\\U[\da-fA-F]{8}/" region="def:StringContent"/>
+</scheme>
+<scheme name="FSVerbatimString">
+<regexp match="/&quot;&quot;/" region="def:StringContent"/>
+</scheme>
+<scheme name="FSVerbatimString2">
+</scheme>
+
+<!-- Number -->
+<entity name="numexp" value="(?:[eE][\-+]?\d+)"/>
+<entity name="numsuf" value="[fFmM]?"/>
+<entity name="intsuf" value="(y|uy|s|us|L|UL)?"/>
+<scheme name="FSNumber">
+<regexp match="/\B\.?~1\.\d+%numexp;?%numsuf;\b/i" region="def:NumberFloat"/>
+<regexp match="/\b\d+\.\.?!\d*(?:%numexp;?%numsuf;\b|\B)/i" region="def:NumberFloat"/>
+<regexp match="/\b\d+%numexp;%numsuf;\b/i" region="def:NumberFloat"/>
+<regexp match="/\b0[xX][\da-fA-F]+%intsuf;(?:Fun)?\b/i" region="def:NumberHex"/>
+<regexp match="/\b\d+%intsuf;\b/i" region="def:NumberDec"/>
+</scheme>
+
+<!-- Content (**) -->
+<scheme name="FSCommentContent">
+<block start="/&quot;/" end="/&quot;B?/" scheme="def:Comment" region="def:Comment" region00="def:PairStart" region10="def:PairEnd"/>
+</scheme>
+
+<!-- Main scheme -->
+<scheme name="fsharp">
+
+<!-- Special (*) -->
+<regexp match="/\(\*\)/" region="def:Operator"/>
+
+<!-- Unusual identifier -->
+<regexp match="/(``)(.+?)(``)/" region="def:Identifier" region1="def:PairStart" region3="def:PairEnd"/>
+
+<!-- Block comment -->
+<block start="/\(\*/" end="/\*\)/" scheme="FSCommentContent" region00="def:PairStart" region10="def:PairEnd" region="def:Comment"/>
+
+<!-- Line comment -->
+<regexp match="/(?:^|\s)(////(?:\s+.*|$))/" region="def:Comment" region1="def:Outlined"/>
+<regexp match="/(?:^|\s)(///)(\s+.*|$)/" region1="def:CommentDoc" region2="def:Comment"/>
+<regexp match="/\/\/.*/" region="def:Comment"/>
+
+<!-- String -->
+<block start="/&quot;&quot;&quot;/" end="/&quot;&quot;&quot;B?/" scheme="FSVerbatimString2" region="def:String" region00="def:PairStart" region10="def:PairEnd"/>
+<block start="/@&quot;/" end="/&quot;B?/" scheme="FSVerbatimString" region="def:String" region00="def:PairStart" region10="def:PairEnd"/>
+<block start="/&quot;/" end="/&quot;B?/" scheme="FSSimpleString" region="def:String" region00="def:PairStart" region10="def:PairEnd"/>
+
+<!-- Character -->
+<regexp match="/&apos;(\\&apos;|\\[bnrt\\&apos;&quot;]|\\u[\da-fA-F]{4}|\\U[\da-fA-F]{8}|.)&apos;B?/" region="def:String"/>
+
+<!-- Array -->
+<block start="/\[\|/" end="/\|\]/" scheme="fsharp" region00="def:PairStart" region10="def:PairEnd"/>
+
+<!-- Attribute -->
+<block start="/\[&lt;/" end="/&gt;\]/" scheme="fsharp" region00="def:PairStart" region10="def:PairEnd"/>
+
+<!-- Code Quotations -->
+<block start="/&lt;@@/" end="/@@&gt;/" scheme="fsharp" region00="def:PairStart" region10="def:PairEnd"/>
+<block start="/&lt;@/" end="/@&gt;/" scheme="fsharp" region00="def:PairStart" region10="def:PairEnd"/>
+
+<!-- Brackets -->
+<inherit scheme="def:PairedBrackets">
+<virtual scheme="def:PairedBrackets" subst-scheme="fsharp"/>
+</inherit>
+
+<!-- Directives -->
+<regexp match="/^\s*#(if|else|endif|light|nowarn|r|reference|I|Include|load)\b/" region="def:Directive"/>
+
+<!-- Outlined -->
+<regexp match="/^(let(?:\s+(?:rec|mutable|inline))?(?:\s+(?:public|private|internal))?)\s+(%ident;)/" region1="def:Keyword" region2="def:Identifier" region="def:Outlined"/>
+<regexp match="/^(type(?:\s+(?:public|private|internal))?)\s+(%ident;)/" region1="def:Keyword" region2="def:Identifier" region="def:Outlined"/>
+<regexp match="/^\s+(static|member|override)\s+/" region1="def:Keyword" region="def:Outlined"/>
+
+<keywords region="def:Constant">
+<word name="__SOURCE_DIRECTORY__"/>
+<word name="__SOURCE_FILE__"/>
+<word name="__LINE__"/>
+</keywords>
+
+<!-- Keywords -->
+<keywords region="def:Keyword">
+<word name="abstract"/>
+<word name="and"/>
+<word name="as"/>
+<word name="assert"/>
+<word name="base"/>
+<word name="begin"/>
+<word name="class"/>
+<word name="default"/>
+<word name="delegate"/>
+<word name="do"/>
+<word name="done"/>
+<word name="downcast"/>
+<word name="downto"/>
+<word name="elif"/>
+<word name="else"/>
+<word name="end"/>
+<word name="exception"/>
+<word name="extern"/>
+<word name="false"/>
+<word name="finally"/>
+<word name="for"/>
+<word name="fun"/>
+<word name="function"/>
+<word name="global"/>
+<word name="if"/>
+<word name="in"/>
+<word name="inherit"/>
+<word name="inline"/>
+<word name="interface"/>
+<word name="internal"/>
+<word name="lazy"/>
+<word name="let"/>
+<word name="match"/>
+<word name="member"/>
+<word name="module"/>
+<word name="mutable"/>
+<word name="namespace"/>
+<word name="new"/>
+<word name="not"/>
+<word name="null"/>
+<word name="of"/>
+<word name="open"/>
+<word name="or"/>
+<word name="override"/>
+<word name="private"/>
+<word name="public"/>
+<word name="rec"/>
+<word name="return"/>
+<word name="static"/>
+<word name="struct"/>
+<word name="then"/>
+<word name="to"/>
+<word name="true"/>
+<word name="try"/>
+<word name="type"/>
+<word name="upcast"/>
+<word name="use"/>
+<word name="val"/>
+<word name="void"/>
+<word name="when"/>
+<word name="while"/>
+<word name="with"/>
+<word name="yield"/>
+<!-- OCaml -->
+<word name="asr"/>
+<word name="land"/>
+<word name="lor"/>
+<word name="lsl"/>
+<word name="lsr"/>
+<word name="lxor"/>
+<word name="mod"/>
+<word name="sig"/>
+<!-- Reserved -->
+<word name="atomic"/>
+<word name="break"/>
+<word name="checked"/>
+<word name="component"/>
+<word name="const"/>
+<word name="constraint"/>
+<word name="constructor"/>
+<word name="continue"/>
+<word name="eager"/>
+<word name="event"/>
+<word name="external"/>
+<word name="fixed"/>
+<word name="functor"/>
+<word name="include"/>
+<word name="method"/>
+<word name="mixin"/>
+<word name="object"/>
+<word name="parallel"/>
+<word name="process"/>
+<word name="protected"/>
+<word name="pure"/>
+<word name="sealed"/>
+<word name="tailcall"/>
+<word name="trait"/>
+<word name="virtual"/>
+<word name="volatile"/>
+</keywords>
+
+<!-- Operators -->
+<keywords region="def:Operator">
+<symb name="!"/>
+<symb name="%"/>
+<symb name="&amp;"/>
+<symb name="&amp;&amp;"/>
+<symb name="&amp;&amp;&amp;"/>
+<symb name="*"/>
+<symb name="**"/>
+<symb name="+"/>
+<symb name=","/>
+<symb name="-"/>
+<symb name="-&gt;"/>
+<symb name="."/>
+<symb name=".."/>
+<symb name="/"/>
+<symb name=":"/>
+<symb name="::"/>
+<symb name=":="/>
+<symb name=":&gt;"/>
+<symb name=":?"/>
+<symb name=":?&gt;"/>
+<symb name=";"/>
+<symb name="&lt;"/>
+<symb name="&lt;&lt;"/>
+<symb name="&lt;&lt;&lt;"/>
+<symb name="&lt;-"/>
+<symb name="&lt;&gt;"/>
+<symb name="&lt;="/>
+<symb name="&lt;|"/>
+<symb name="="/>
+<symb name="&gt;"/>
+<symb name="&gt;&gt;"/>
+<symb name="&gt;&gt;&gt;"/>
+<symb name="&gt;="/>
+<symb name="?"/>
+<symb name="@"/>
+<symb name="^^^"/>
+<symb name="|"/>
+<symb name="||"/>
+<symb name="|||"/>
+<symb name="|&gt;"/>
+<symb name="~~"/>
+<symb name="~~~"/>
+<symb name="~-"/>
+<symb name="~+"/>
+</keywords>
+
+<!-- Identifiers -->
+<regexp match="/%ident;/" region="def:Identifier"/>
+
+<!-- Pipeline -->
+<keywords region="def:KeywordStrong">
+<symb name="|&gt;"/>
+</keywords>
+
+<!-- Numbers (after redirections) -->
+<inherit scheme="FSNumber"/>
+
+</scheme>
+
+</type>
+</hrc>
+<!--
+LICENSE
+- Version: MPL 1.1/GPL 2.0/LGPL 2.1
+-
+- The contents of this file are subject to the Mozilla Public License Version
+- 1.1 (the "License"); you may not use this file except in compliance with
+- the License. You may obtain a copy of the License at
+- http://www.mozilla.org/MPL/
+-
+- Software distributed under the License is distributed on an "AS IS" basis,
+- WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+- for the specific language governing rights and limitations under the
+- License.
+-
+- The Original Code is the Colorer Library.
+-
+- The Initial Developer of the Original Code is
+- Cail Lomecb <cail@nm.ru>.
+- Portions created by the Initial Developer are Copyright (C) 1999-2005
+- the Initial Developer. All Rights Reserved.
+-
+- Contributor(s):
+- Roman Kuzmin
+-
+- Alternatively, the contents of this file may be used under the terms of
+- either the GNU General Public License Version 2 or later (the "GPL"), or
+- the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+- in which case the provisions of the GPL or the LGPL are applicable instead
+- of those above. If you wish to allow use of your version of this file only
+- under the terms of either the GPL or the LGPL, and not to allow others to
+- use your version of this file under the terms of the MPL, indicate your
+- decision by deleting the provisions above and replace them with the notice
+- and other provisions required by the LGPL or the GPL. If you do not delete
+- the provisions above, a recipient may use your version of this file under
+- the terms of any one of the MPL, the GPL or the LGPL.
+-->

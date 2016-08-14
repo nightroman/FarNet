@@ -1,6 +1,7 @@
 
 # ColorerPack - syntax and color schemes for Colorer
 
+- fsharp.hrc
 - markdown.hrc
 - [powershell.hrc](#powershell)
 - [r.hrc](#r)
