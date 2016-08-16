@@ -8,23 +8,34 @@ param(
 	$FarHome = (property FarHome)
 )
 
+$IsFSharp = (
+	(Test-Path "${env:ProgramFiles(x86)}\Microsoft SDKs\F#\4.0\Framework\v4.0\Fsc.exe") -or
+	(Test-Path "${env:ProgramFiles}\Microsoft SDKs\F#\4.0\Framework\v4.0\Fsc.exe")
+)
+
 $Builds = @(
-	'Backslash\Backslash.build.ps1'
-	'EditorKit\EditorKit.build.ps1'
-	'FarNet.Demo\FarNet.Demo.build.ps1'
+	'Backslash\.build.ps1'
+	'EditorKit\.build.ps1'
+	'FarNet.Demo\.build.ps1'
+	'TryPanelCSharp\.build.ps1'
+	if ($IsFSharp) {
+		'TryPanelFSharp\.build.ps1'
+	}
 )
 
 task TestBuild {
-	# property
+	# build
 	$FarNetModules = 'C:\TEMP\z'
-
-	# build, install
-	foreach($_ in $Builds) { Invoke-Build Build, Install $_ }
+	foreach($_ in $Builds) { Invoke-Build Build $_ }
 
 	# test
 	assert (Test-Path $FarNetModules\Backslash\Backslash.dll)
 	assert (Test-Path $FarNetModules\EditorKit\EditorKit.dll)
 	assert ((Get-Item $FarNetModules\FarNet.Demo\*).Count -eq 5)
+	assert (Test-Path $FarNetModules\TryPanelCSharp\TryPanelCSharp.dll)
+	if ($IsFSharp) {
+		assert (Test-Path $FarNetModules\TryPanelFSharp\TryPanelFSharp.dll)
+	}
 
 	# clean
 	Remove-Item $FarNetModules -Recurse -Force
