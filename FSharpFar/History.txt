@@ -1,0 +1,7 @@
+
+NuGet package: https://www.nuget.org/packages/FarNet.FSharpFar
+FarNet 5.1.1
+
+= 0.0.1 =
+
+Public preview.

@@ -42,13 +42,14 @@
 		"..\Read Me.txt"
 		.\ReadMe.txt
 
+.Parameter Text
+		Text with text links. Default: editor active text.
+
 .Link
 	Get-TextLink-.ps1
 #>
 
-param
-(
-	# Text with embedded text links. Default: editor active text.
+param(
 	$Text = $Psf.ActiveText
 )
 
@@ -56,12 +57,15 @@ $Editor = if ($Far.Window.Kind -eq 'Editor') {$Far.Editor}
 
 ### Link with a position
 
-#! Order: Visual Studio, Select-String, PowerShell
+#! Order:
+#1 Visual Studio
+#2 Select-String
+#3 PowerShell (file:2 char:3), F# (file:line 2)
 $type = 0
 switch -regex ($Text) {
 	'\b(?<File>\w:[\\/].+?)\((?<Line>\d+),?(?<Char>\d+)?\)(?::\s*(?<Text>.*))?' {$type = 1; break}
 	'^>?\s*(?<File>.+?):(?<Line>\d+):(?<Text>.*)' {$type = 2; break}
-	'\b(?<File>\w:[\\/][^:]+):(?<Line>\d+)(?:\s+\w+:(?<Char>\d+))?' {$type = 3; break}
+	'\b(?<File>\w:[\\/][^:]+):(?:line )?(?<Line>\d+)(?:\s+\w+:(?<Char>\d+))?' {$type = 3; break}
 }
 
 if ($type) {

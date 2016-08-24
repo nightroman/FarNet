@@ -754,6 +754,10 @@ namespace FarNet
 		/// <param name="line">Index of the line.</param>
 		public abstract IList<EditorColorInfo> GetColors(int line);
 		/// <summary>
+		/// INTERNAL
+		/// </summary>
+		public abstract void WorksSetColors(Guid owner, int priority, IEnumerable<EditorColor> colors);
+		/// <summary>
 		/// Adds the drawer to this editor.
 		/// </summary>
 		/// <param name="drawer">The drawer.</param>

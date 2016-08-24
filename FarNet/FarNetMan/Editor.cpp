@@ -1257,7 +1257,7 @@ IList<EditorColorInfo^>^ Editor::GetColors(int line)
 	return spans;
 }
 
-void Editor::AddColors(Guid owner, int priority, IEnumerable<EditorColor^>^ colors)
+void Editor::WorksSetColors(Guid owner, int priority, IEnumerable<EditorColor^>^ colors)
 {
 	::EditorColor ec; ec.StructSize = sizeof(ec);
 	ec.ColorItem = 0;
@@ -1315,7 +1315,7 @@ void Editor::InvokeDrawers()
 		colors.Clear();
 		it->Handler(this, %args);
 
-		AddColors(it->Id, it->Priority, %colors);
+		WorksSetColors(it->Id, it->Priority, %colors);
 	}
 }
 

@@ -1,0 +1,9 @@
+*.nupkg
+*.sln
+.vs
+AssemblyInfo.fs
+bin
+obj
+packages
+paket.lock
+z*

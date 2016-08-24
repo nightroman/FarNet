@@ -132,6 +132,7 @@ public:
 	virtual void Save(String^ fileName) override;
 	virtual void SelectAllText() override;
 	virtual void SelectText(int column1, int line1, int column2, int line2, PlaceKind kind) override;
+	virtual void WorksSetColors(Guid owner, int priority, IEnumerable<EditorColor^>^ colors) override;
 	virtual void SetSelectedText(String^ text) override;
 	virtual void SetText(String^ text) override;
 	virtual void Undo() override;
@@ -143,7 +144,6 @@ internal:
 	void Start(const EditorInfo& ei, bool waiting);
 	void Stop();
 private:
-	static void AddColors(Guid owner, int priority, IEnumerable<EditorColor^>^ colors);
 	void AssertClosed();
 	bool GetBoolOption(int option, Nullable<bool> value);
 	void SetBoolOption(EDITOR_SETPARAMETER_TYPES option, bool value);

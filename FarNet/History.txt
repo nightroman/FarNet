@@ -2,6 +2,11 @@
 NuGet package: https://www.nuget.org/packages/FarNet
 Far Manager 3.0.4587
 
+= 5.1.1 =
+
+EditorTextWriter
+- Fix \r\n written as two chars.
+
 = 5.1.0 =
 
 Changed interfaces of ModuleEditor and ModuleDrawer. Invoke(object sender, ...)
