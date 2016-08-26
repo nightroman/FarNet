@@ -47,7 +47,7 @@ task Clean {
 }
 
 task Help {
-	exec { pandoc.exe --standalone --from=markdown_strict --output=README.htm README.md }
+	exec { pandoc.exe --standalone --from=markdown_strict+backtick_code_blocks --output=README.htm README.md }
 }
 
 task Version {
@@ -104,7 +104,7 @@ https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
 		<version>$Version</version>
 		<authors>Roman Kuzmin</authors>
 		<owners>Roman Kuzmin</owners>
-		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
+		<projectUrl>https://github.com/nightroman/FarNet/tree/master/FSharpFar</projectUrl>
 		<iconUrl>https://raw.githubusercontent.com/wiki/nightroman/FarNet/images/FarNetLogo.png</iconUrl>
 		<licenseUrl>https://raw.githubusercontent.com/nightroman/FarNet/master/FSharpFar/LICENSE.txt</licenseUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>

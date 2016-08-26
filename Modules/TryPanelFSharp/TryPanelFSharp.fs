@@ -23,7 +23,7 @@ type MyExplorer() =
             _files.RemoveAll(fun x -> x.Name = file.Name) |> ignore
 
 /// Demo panel with some user interaction.
-type MyPanel(explorer:Explorer) =
+type MyPanel(explorer) =
     inherit Panel(explorer)
     do
         base.SortMode <- PanelSortMode.FullName

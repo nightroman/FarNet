@@ -9,3 +9,4 @@ open FarNet
 open System
 
 let getFsfLocalData() = Far.Api.GetModuleManager("FSharpFar").GetFolderPath(SpecialFolder.LocalData, true)
+let getFsfRoaminData() = Far.Api.GetModuleManager("FSharpFar").GetFolderPath(SpecialFolder.RoamingData, true)
