@@ -2,6 +2,10 @@
 NuGet package: https://www.nuget.org/packages/FarNet.FSharpFar
 FarNet 5.1.2
 
+= 0.1.0 =
+
+Code completion by [Tab] in F# interactive editors.
+
 = 0.0.2 =
 
 MSBuild 14 (VS 2015) is required instead of MSBuild 12 (VS 2013).

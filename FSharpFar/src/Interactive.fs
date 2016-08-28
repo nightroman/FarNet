@@ -70,17 +70,33 @@ type Interactive(session : Session) =
                 Active = active
             }
 
+    let areaCode area =
+        let sb = StringBuilder()
+        for y in area.FirstLineIndex .. area.LastLineIndex do
+            if sb.Length > 0 then
+                sb.AppendLine() |> ignore
+            sb.Append _editor.[y].Text |> ignore
+        sb.ToString()
+    
+    let complete() =
+        let line = _editor.Line
+        let caret = line.Caret
+        if caret = 0 || caret > line.Length then false else
+            
+        let text = line.Text
+        let completer = Completer.Completer(_session.GetCompletions)
+        let ok, start, completions = completer.GetCompletions(text, caret)
+        if ok then
+            completeLine line start (caret - start) completions
+            _editor.Redraw()
+        ok
+
     let invoke() =
         let area = getCommandArea()
         match area with
         | None -> false
         | Some area ->
-            let sb = StringBuilder()
-            for y in area.FirstLineIndex .. area.LastLineIndex do
-                if sb.Length > 0 then
-                    sb.AppendLine() |> ignore
-                sb.Append _editor.[y].Text |> ignore
-            let code = sb.ToString()
+            let code = areaCode area
             if code.Length = 0 then
                 true
             elif not area.Active then
@@ -161,6 +177,9 @@ type Interactive(session : Session) =
                 | KeyCode.Enter ->
                     if e.Key.IsShift() then
                         e.Ignore <- invoke()
+                | KeyCode.Tab ->
+                    if e.Key.Is() then
+                        e.Ignore <- complete()
                 | _ -> ()
             )
 

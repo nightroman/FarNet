@@ -65,6 +65,12 @@ let far=Far.Api
         _evalWriter.Writer <- _voidWriter
         r
 
+//    member x.ParseAndCheckInteraction code =
+//        fsiSession.ParseAndCheckInteraction code
+
+    member x.GetCompletions longIdent =
+        fsiSession.GetCompletions longIdent
+
 let private _mainSession = lazy (new Session())
 
 /// Global session for fs: commands and interactive 1.

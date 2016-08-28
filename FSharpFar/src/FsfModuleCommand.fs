@@ -9,13 +9,8 @@ open Session
 open System
 
 /// Shows an exception.
-#if _
-let showError exn =
-    Far.Api.ShowError("Error", exn)
-#else
-let showError exn =
+let showException exn =
     Far.Api.UI.WriteLine(sprintf "%A" exn, ConsoleColor.Red)
-#endif
 
 [<System.Runtime.InteropServices.Guid("2b52615b-ea79-46e4-ac9d-78f33599db62")>]
 [<ModuleCommand(Name = "FSharpFar", Prefix = "fs")>]
@@ -32,7 +27,7 @@ type FsfModuleCommand() =
             for w in r.Warnings do
                 Far.Api.UI.WriteLine(formatFSharpErrorInfo w, ConsoleColor.Yellow)
             if r.Exception <> null then
-                showError r.Exception
+                showException r.Exception
         finally
             Far.Api.UI.SaveUserScreen()
             Environment.CurrentDirectory <- cd

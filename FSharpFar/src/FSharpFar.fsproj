@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="Completer.fs" />
     <Compile Include="Kit.fs" />
     <Compile Include="FarKit.fs" />
     <Compile Include="ProxyWriter.fs" />

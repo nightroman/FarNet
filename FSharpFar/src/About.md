@@ -1,4 +1,24 @@
 
+# 2016-08-26 How `#r` works
+
+[from](https://sergeytihon.wordpress.com/2014/07/23/avoid-using-relative-paths-in-r-directives/)
+
+> `#r` means to reference by dll-path; focusing on name. This means that FSI will
+use the file name first, looking in the system-wide search path and only then
+try to use the string after #r as a directory-relative hint
+
+> So that means, `#r` is not reliable way to reference assemblies. You can get
+into the situation when your script depends on the environment: assemblies in
+GAC, installed software (like version of ASP.NET) and so on. To avoid this it
+is better to explicitly specify an assembly search path (`#I`) and then
+reference the assembly:
+
+````
+    #I "../packages/nuget.core.2.8.2/lib/net40-Client"
+    #r "Nuget.Core.dll"
+    #r "System.Xml.Linq.dll"
+````
+
 # 2016-08-25 FSharp.Compiler.Service requires MSBuild 12
 
 FSharp.Compiler.Service depends on MSBuild 12 (VS 2013).

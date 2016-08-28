@@ -63,8 +63,9 @@ as the editor is closed.
 
 #### F# interactive in the editor
 
-Type F# code and invoke it by `[ShiftEnter]`. The output is appended to the end
-with text markers `(*(` and `)*)`. The structure of F# interactive text:
+Type one or more lines of F# code and invoke by `[ShiftEnter]`. Use `[Tab]` for
+code completion.  The output of evaluated code is appended to the end with text
+markers `(*(` and `)*)`. The structure of interactive text:
 
 ````
     < old F# code, [ShiftEnter] to add to new >
@@ -79,7 +80,7 @@ with text markers `(*(` and `)*)`. The structure of F# interactive text:
 
     < new F# code, use [ShiftEnter] to invoke >
 
-    < end of file, place for next (*(...)*) >
+    < end of file, next (*( output )*) >
 ````
 
 ***
