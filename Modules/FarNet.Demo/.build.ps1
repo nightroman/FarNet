@@ -9,12 +9,13 @@ param(
 	$FarNetModules = (property FarNetModules "$FarHome\FarNet\Modules")
 )
 
-use 4.0 MSBuild
-
 task Build {
-	exec { MSBuild /t:Build "/p:Configuration=Release;Install=$FarNetModules;FarHome=$FarHome" FarNet.Demo.csproj }
+	use * MSBuild.exe
+	exec { MSBuild.exe FarNet.Demo.csproj /p:FarHome=$FarHome /p:FarNetModules=$FarNetModules /p:Configuration=Release }
 }
 
 task Clean {
 	Remove-Item bin, obj -Recurse -Force -ErrorAction 0
 }
+
+task . Build, Clean

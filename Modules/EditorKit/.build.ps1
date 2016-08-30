@@ -4,23 +4,24 @@
 	Build script (https://github.com/nightroman/Invoke-Build)
 #>
 
+[CmdletBinding()]
 param(
-	$FarHome = (property FarHome),
-	$FarNetModules = (property FarNetModules "$FarHome\FarNet\Modules")
+	$FarHome = (property FarHome C:\Bin\Far\Win32),
+	$Configuration = (property Configuration Release),
+	$FarNetModules = (property FarNetModules $FarHome\FarNet\Modules)
 )
 
-$dir = "$FarNetModules\EditorKit"
-$src = 'EditorKit.cs'
-$dll = 'EditorKit.dll'
+$ModuleName = 'EditorKit'
+$ProjectRoot = '.'
+$ProjectName = "$ModuleName.csproj"
 
-use Framework\v3.5 csc
-
-task Build -Inputs $src -Outputs $dll {
-	exec { csc /target:library /optimize "/reference:$FarHome\FarNet\FarNet.dll" *.cs }
-	$null = mkdir $dir -Force
-	Copy-Item $dll $dir
+task Build {
+	use * MSBuild.exe
+	exec {MSBuild.exe $ProjectRoot\$ProjectName /p:FarHome=$FarHome /p:Configuration=$Configuration /p:FarNetModules=$FarNetModules}
 }
 
 task Clean {
-	Remove-Item $dll -ErrorAction 0
+	Remove-Item $ProjectRoot\bin, $ProjectRoot\obj -Force -Recurse -ErrorAction 0
 }
+
+task . Build, Clean

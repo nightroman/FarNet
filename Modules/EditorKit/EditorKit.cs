@@ -45,3 +45,15 @@ public class ExpandTabsAll : ModuleEditor
 		editor.ExpandTabs = ExpandTabsMode.All;
 	}
 }
+
+// Sets tabs expansion mode to 'All' and tab size to 2 for some files.
+[System.Runtime.InteropServices.Guid("0050825a-d915-4ffc-8fb4-e723a456c5a2")]
+[ModuleEditor(Name = "ExpandTabsAll2", Mask = "*.xml;*.*proj")]
+public class ExpandTabsAll2 : ModuleEditor
+{
+	public override void Invoke(IEditor editor, ModuleEditorEventArgs e)
+	{
+		editor.ExpandTabs = ExpandTabsMode.All;
+		editor.TabSize = 2;
+	}
+}

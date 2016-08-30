@@ -35,6 +35,13 @@
     <DocumentationFile>bin\Release\FarNet.Demo.XML</DocumentationFile>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <FarHome Condition="'$(FarHome)' == ''">C:\Bin\Far\Win32</FarHome>
+    <FarNetModules Condition="'$(FarNetModules)' == ''">$(FarHome)\FarNet\Modules</FarNetModules>
+    <StartAction>Program</StartAction>
+    <StartProgram>$(FarHome)\Far.exe</StartProgram>
+    <ReferencePath>$(FarHome)\FarNet</ReferencePath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="FarNet">
       <Private>False</Private>
@@ -61,13 +68,15 @@
     <Content Include="Help.ru.hlf" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <Install Condition="'$(Install)' == ''">$(FARHOME)\FarNet\Modules</Install>
-  </PropertyGroup>
   <Target Name="Resources">
-    <GenerateResource Sources="FarNet.Demo.restext;FarNet.Demo.ru.restext" OutputResources="Bin\$(Configuration)\FarNet.Demo.resources;Bin\$(Configuration)\FarNet.Demo.ru.resources" />
+    <GenerateResource
+      Sources="FarNet.Demo.restext;FarNet.Demo.ru.restext"
+      OutputResources="$(OutDir)\FarNet.Demo.resources;$(OutDir)\FarNet.Demo.ru.resources" />
   </Target>
   <Target Name="AfterBuild" DependsOnTargets="Resources">
-    <Copy SourceFiles="@(Content);Bin\$(Configuration)\$(AssemblyName).dll;Bin\$(Configuration)\FarNet.Demo.resources;Bin\$(Configuration)\FarNet.Demo.ru.resources" DestinationFolder="$(Install)\$(AssemblyName)" SkipUnchangedFiles="true" />
+    <Copy
+      SourceFiles="@(Content);$(OutDir)\$(AssemblyName).dll;$(OutDir)\FarNet.Demo.resources;$(OutDir)\FarNet.Demo.ru.resources"
+      DestinationFolder="$(FarNetModules)\$(AssemblyName)"
+      SkipUnchangedFiles="true" />
   </Target>
 </Project>

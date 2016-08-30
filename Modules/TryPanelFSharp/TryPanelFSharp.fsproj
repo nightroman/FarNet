@@ -44,10 +44,10 @@
     <FarNetModules Condition="'$(FarNetModules)' == ''">$(FarHome)\FarNet\Modules</FarNetModules>
     <StartAction>Program</StartAction>
     <StartProgram>$(FarHome)\Far.exe</StartProgram>
+    <ReferencePath>$(FarHome)\FarNet</ReferencePath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FarNet">
-      <HintPath>$(FarHome)\FarNet\FarNet.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
@@ -63,8 +63,7 @@
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
   </PropertyGroup>
   <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
-  <PropertyGroup>
-    <PostBuildEvent>ib PostBuild $(ProjectDir)\.build.ps1 -FarHome $(FarHome) -Configuration $(Configuration) -FarNetModules $(FarNetModules)</PostBuildEvent>
-    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-  </PropertyGroup>
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="$(OutDir)\$(AssemblyName).dll" DestinationFolder="$(FarNetModules)\$(AssemblyName)" />
+  </Target>
 </Project>
