@@ -149,7 +149,7 @@ namespace FarNet
 		/// it can't calculate this area correctly. In that case you have to
 		/// call it with <c>screen</c> = 0 and then with an actual screen handle.
 		/// </remarks>
-		public abstract void RestoreScreen(int screen);
+		public abstract void RestoreScreen(IntPtr screen);
 		/// <summary>
 		/// Saves screen area.
 		/// You always have to call <see cref="RestoreScreen"/>.
@@ -161,7 +161,7 @@ namespace FarNet
 		/// they are replaced with screen right and bottom coordinates.
 		/// So <c>SaveScreen(0,0,-1,-1)</c> will save the entire screen.
 		/// </remarks>
-		public abstract int SaveScreen(int left, int top, int right, int bottom);
+		public abstract IntPtr SaveScreen(int left, int top, int right, int bottom);
 		/// <summary>
 		/// Copies the current screen contents to the user screen buffer
 		/// (which is displayed when the panels are switched off).

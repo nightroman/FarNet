@@ -490,14 +490,14 @@ void FarUI::SetProgressValue(int currentValue, int maximumValue)
 	Info.AdvControl(&MainGuid, ACTL_SETPROGRESSVALUE, 0, &arg);
 }
 
-int FarUI::SaveScreen(int x1, int y1, int x2, int y2)
+IntPtr FarUI::SaveScreen(int x1, int y1, int x2, int y2)
 {
-	return (int)(INT_PTR)Info.SaveScreen(x1, y1, x2, y2);
+	return (IntPtr)Info.SaveScreen(x1, y1, x2, y2);
 }
 
-void FarUI::RestoreScreen(int screen)
+void FarUI::RestoreScreen(IntPtr screen)
 {
-	Info.RestoreScreen((HANDLE)(INT_PTR)screen);
+	Info.RestoreScreen((HANDLE)screen);
 }
 
 void FarUI::Draw()

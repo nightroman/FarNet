@@ -24,7 +24,7 @@ namespace FarNet.Tools
 	/// </remarks>
 	public sealed class ProgressBox : IProgress, IDisposable
 	{
-		int _savedScreen;
+		IntPtr _savedScreen;
 		readonly Progress _progress = new Progress();
 		readonly string _title = Far.Api.UI.WindowTitle;
 		/// <summary>
@@ -61,10 +61,10 @@ namespace FarNet.Tools
 		}
 		void Hide()
 		{
-			if (_savedScreen != 0)
+			if (_savedScreen != IntPtr.Zero)
 			{
 				Far.Api.UI.RestoreScreen(_savedScreen);
-				_savedScreen = 0;
+				_savedScreen = IntPtr.Zero;
 			}
 		}
 		#region IProgress

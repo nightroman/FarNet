@@ -2,6 +2,10 @@
 NuGet package: https://www.nuget.org/packages/FarNet
 Far Manager 3.0.4587
 
+= 5.1.3 =
+
+Fixed crash in SaveScreen and RestoreScreen.
+
 = 5.1.2 =
 
 Far.exe.config changes for modules.
