@@ -7,24 +7,52 @@ module FSharpFar.FarKit
 
 open FarNet
 open System
-open System.Collections.Generic
+open System.IO
 
-let getFsfLocalData() = Far.Api.GetModuleManager("FSharpFar").GetFolderPath(SpecialFolder.LocalData, true)
-let getFsfRoaminData() = Far.Api.GetModuleManager("FSharpFar").GetFolderPath(SpecialFolder.RoamingData, true)
+let far = Far.Api
 
-let completeLine (editLine : ILine) replacementIndex replacementLength (words : IList<string>) =
-    let isEmpty = words.Count = 0
+type UsePanelDirectory() =
+    let cd =
+        if far.Panel.Kind = PanelKind.File then
+            let cd = Environment.CurrentDirectory
+            try
+                Environment.CurrentDirectory <- far.Panel.CurrentDirectory
+                cd
+            with _ ->
+                null
+        else null
+    interface IDisposable with
+        member x.Dispose() =
+            if cd <> null then
+                try
+                    Environment.CurrentDirectory <- cd
+                with _ ->
+                    ()
+
+type UseUserScreen() =
+    do far.UI.ShowUserScreen()
+    interface IDisposable with member x.Dispose() = far.UI.SaveUserScreen()
+
+let fsfLocalData() = far.GetModuleManager("FSharpFar").GetFolderPath(SpecialFolder.LocalData, true)
+let fsfRoaminData() = far.GetModuleManager("FSharpFar").GetFolderPath(SpecialFolder.RoamingData, true)
+
+let writeException exn =
+    use us = new UseUserScreen()
+    far.UI.WriteLine(sprintf "%A" exn, ConsoleColor.Red)
+
+let completeLine (editLine : ILine) replacementIndex replacementLength (words : seq<string>) =
+    let count = Seq.length words
     let text = editLine.Text
-    
+
     let word =
-        if words.Count = 1 then
-             words.[0]
+        if count = 1 then
+             Seq.head words
         else
-            let menu = Far.Api.CreateListMenu()
-            let cursor = Far.Api.UI.WindowCursor
+            let menu = far.CreateListMenu()
+            let cursor = far.UI.WindowCursor
             menu.X <- cursor.X
             menu.Y <- cursor.Y
-            if isEmpty then
+            if count = 0 then
                 menu.Add("Empty").Disabled <- true
                 menu.NoInfo <- true
                 menu.Show() |> ignore
@@ -38,9 +66,23 @@ let completeLine (editLine : ILine) replacementIndex replacementLength (words : 
                     menu.Items.[menu.Selected].Text
                 else
                     null
-    
+
     if word <> null then
         let head = text.Substring(0, replacementIndex)
         let caret = head.Length + word.Length
         editLine.Text <- head + word + text.Substring(replacementIndex + replacementLength)
         editLine.Caret <- caret
+
+let showText title text =
+    let file = far.TempName() + ".txt"
+    File.WriteAllText(file, text)
+
+    let editor = far.CreateEditor()
+    editor.Title <- title
+    editor.FileName <- file
+    editor.CodePage <- 65001
+    editor.IsLocked <- true
+    editor.DisableHistory <- true
+    editor.DeleteSource <- DeleteSource.UnusedFile
+
+    editor.Open()

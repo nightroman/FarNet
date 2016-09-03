@@ -13,7 +13,6 @@ param(
 $ModuleName = 'FSharpFar'
 $ProjectRoot = 'src'
 $ProjectName = "$ModuleName.fsproj"
-$BinFiles = "$ModuleName.dll", 'FSharp.Compiler.Service.dll'
 
 task . Build, Clean
 

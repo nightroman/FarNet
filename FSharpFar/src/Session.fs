@@ -10,7 +10,6 @@ open System.IO
 open System.Text
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.Interactive.Shell
-open Microsoft.FSharp.Compiler.SourceCodeServices
 
 let formatFSharpErrorInfo(w : FSharpErrorInfo) =
     let kind = if w.Severity = FSharpErrorSeverity.Warning then "warning" else "error"
@@ -22,56 +21,111 @@ type EvalResult =
         Exception : exn
     }
 
-type Session() =
+type Session private (from) =
+    static let mutable sessions : Session list = []
+    let from = Path.GetFullPath from
+
     // contains some extra "noise" output
     let _voidWriter = new StringWriter()
     // assigned to the session
     let _evalWriter = new ProxyWriter(_voidWriter)
-    let args = [|
-        getFsiPath()
-        "--nologo"
-        "--noninteractive"
-        sprintf "--lib:%s\\FarNet" (Environment.GetEnvironmentVariable("FARHOME"))
-        |]
-    let fsiConfig = FsiEvaluationSession.GetDefaultConfiguration()
-    let fsiSession = FsiEvaluationSession.Create(fsiConfig, args, new StringReader(""), _evalWriter, _evalWriter)
-    
-    // Need to invoke something, to trigger and bypass the initial noise output (prompt).
-    // In our case, eval FarNet helpers.
-    do
-        fsiSession.EvalInteraction """
-#r "FarNet.dll"
-open FarNet
-let far=Far.Api
-"""
 
-    interface IDisposable with
-        member x.Dispose() =
-            _evalWriter.Dispose()
-            _voidWriter.Dispose()
-            (fsiSession :> IDisposable).Dispose()
+    let fsiSession, issues =
+        let configArgs, loadScripts, useScripts =
+            if File.Exists from then Config.getConfigurationFromFile from else [||], [||], [||]
+        let defaultArgs = [|
+            getFsiPath()
+            "--nologo"
+            "--noninteractive"
+            sprintf @"--lib:%s\FarNet" (Environment.GetEnvironmentVariable("FARHOME"))
+            |]
+        let args = Array.append defaultArgs configArgs
+        let fsiConfig = FsiEvaluationSession.GetDefaultConfiguration()
+        let fsiSession = FsiEvaluationSession.Create(fsiConfig, args, new StringReader(""), _evalWriter, _evalWriter)
 
-    member x.Invoke writer command =
+        //TODO review, reuse
+        use writer = new StringWriter()
+        try
+            for file in loadScripts do
+                let result, warnings = fsiSession.EvalInteractionNonThrowing (sprintf "#load @\"%s\"" file)
+                for w in warnings do writer.WriteLine(formatFSharpErrorInfo w)
+                match result with | Choice2Of2 exn -> raise exn | _ -> ()
+
+            for file in useScripts do
+                let code = File.ReadAllText file
+                let result, warnings = fsiSession.EvalInteractionNonThrowing code
+                for w in warnings do writer.WriteLine(formatFSharpErrorInfo w)
+                match result with | Choice2Of2 exn -> raise exn | _ -> ()
+        with exn ->
+            writer.WriteLine(sprintf "%A" exn)
+
+        fsiSession, writer.ToString()
+
+    let eval writer eval x =
         _evalWriter.Writer <- writer
-        let result, warnings = fsiSession.EvalInteractionNonThrowing command
-        let r = {
+        let result, warnings = eval x
+        //! do not leave the temp writer attached, fsi still writes, e.g. when PSF loads assemblies
+        _evalWriter.Writer <- _voidWriter
+        {
             Warnings = warnings
             Exception =
                 match result with
                 | Choice2Of2 exn -> exn
                 | _ -> null
         }
-        //! do not leave the temp writer attached, fsi still writes, e.g. when PSF loads assemblies
-        _evalWriter.Writer <- _voidWriter
-        r
 
-//    member x.ParseAndCheckInteraction code =
-//        fsiSession.ParseAndCheckInteraction code
+    static member TryFind(from) =
+        sessions |> List.tryFind(fun x -> x.IsFrom(from))
 
-    member x.GetCompletions longIdent =
-        fsiSession.GetCompletions longIdent
+    static member Get(from) =
+        match Session.TryFind(from) with
+        | Some s -> s
+        | _ ->
+            sessions <- Session(from) :: sessions
+            sessions.Head
 
-let private _mainSession = lazy (new Session())
+    static member Sessions with get() = sessions
 
-/// Global session for fs: commands and interactive 1.
-let getMainSession() = _mainSession.Value
+    member m.Close() =
+        m.OnClose()
+
+        sessions <- sessions |> List.except [m]
+
+        _evalWriter.Dispose()
+        _voidWriter.Dispose()
+        (fsiSession :> IDisposable).Dispose()
+
+    member val ConfigFile = from
+
+    member x.EditorFile with get() = Path.ChangeExtension(from, ".fsx")
+
+    member x.DisplayName with get() = sprintf "%s - %s" (Path.GetFileName(from)) (Path.GetDirectoryName(from))
+
+    member val Issues = issues
+
+    member val internal OnClose = fun()->() with get, set
+
+    member x.IsFrom(path) =
+        String.Equals(from, Path.GetFullPath(path), StringComparison.OrdinalIgnoreCase)
+
+    member x.EvalInteraction(writer, code) =
+        eval writer fsiSession.EvalInteractionNonThrowing code
+
+    member x.EvalScript(writer, filePath) =
+        eval writer fsiSession.EvalScriptNonThrowing filePath
+
+    member x.GetCompletions(longIdent) =
+        //! SplitPipeline.SplitPipelineCommand. -> exn
+        try
+            fsiSession.GetCompletions longIdent
+        with _ ->
+            Seq.empty
+
+let private mainSessionFrom() =
+    Path.Combine(fsfRoaminData(), "main.fsi.ini")
+
+/// Gets or creates the main session.
+let getMainSession() = Session.Get(mainSessionFrom())
+
+/// Gets the main session or none.
+let tryFindMainSession() = Session.TryFind(mainSessionFrom())

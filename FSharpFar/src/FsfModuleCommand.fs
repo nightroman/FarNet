@@ -2,32 +2,60 @@
 // FarNet module FSharpFar
 // Copyright (c) 2016 Roman Kuzmin
 
-module FSharpFar.FsfModuleCommand
+namespace FSharpFar
 
 open FarNet
+open Command
 open Session
 open System
-
-/// Shows an exception.
-let showException exn =
-    Far.Api.UI.WriteLine(sprintf "%A" exn, ConsoleColor.Red)
+open System.IO
 
 [<System.Runtime.InteropServices.Guid("2b52615b-ea79-46e4-ac9d-78f33599db62")>]
 [<ModuleCommand(Name = "FSharpFar", Prefix = "fs")>]
 type FsfModuleCommand() =
     inherit ModuleCommand()
     override x.Invoke(sender, e) =
-        let session = getMainSession()
-        let cd = Environment.CurrentDirectory
-        try
-            Far.Api.UI.ShowUserScreen()
-            Far.Api.UI.WriteLine((sprintf "fs:%s" e.Command), ConsoleColor.DarkGray)
-            Environment.CurrentDirectory <- Far.Api.Panel.CurrentDirectory
-            let r = session.Invoke Console.Out e.Command
+        use cd = new UsePanelDirectory()
+
+        let useEcho() =
+            let screen = new UseUserScreen()
+            far.UI.WriteLine((sprintf "fs:%s" e.Command), ConsoleColor.DarkGray)
+            screen
+
+        match parseCommand e.Command with
+        | Quit ->
+            use us = useEcho()
+
+            match tryFindMainSession() with
+            | Some s -> s.Close()
+            | _ -> far.UI.WriteLine "Not opened."
+
+        | Open args ->
+            use us = useEcho()
+
+            let ses = match args.With with | Some path -> Session.Get(path) | _ -> getMainSession()
+            let interactive = Interactive.Interactive(ses)
+            interactive.Open()
+
+        | Code code ->
+            use us = useEcho()
+
+            let ses = getMainSession()
+            let r = ses.EvalInteraction(Console.Out, code)
             for w in r.Warnings do
-                Far.Api.UI.WriteLine(formatFSharpErrorInfo w, ConsoleColor.Yellow)
+                far.UI.WriteLine(formatFSharpErrorInfo w, ConsoleColor.Yellow)
             if r.Exception <> null then
-                showException r.Exception
-        finally
-            Far.Api.UI.SaveUserScreen()
-            Environment.CurrentDirectory <- cd
+                writeException r.Exception
+
+        | Exec args ->
+            let ses = match args.With with | Some path -> Session.Get(path) | _ -> getMainSession()
+            use writer = new StringWriter()
+            let r = ses.EvalScript(writer, args.File)
+
+            if r.Warnings.Length > 0 || r.Exception <> null then
+                use us = useEcho()
+                far.UI.Write(writer.ToString())
+                for w in r.Warnings do
+                    far.UI.WriteLine(formatFSharpErrorInfo w, ConsoleColor.Yellow)
+                if r.Exception <> null then
+                    writeException r.Exception

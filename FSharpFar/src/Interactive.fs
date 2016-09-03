@@ -5,6 +5,7 @@
 module FSharpFar.Interactive
 
 open FarNet
+open Command
 open Session
 open System
 open System.IO
@@ -23,7 +24,7 @@ let OutputMark2 = ")*)";
 
 type Interactive(session : Session) =
     let _session = session
-    let _editor = Far.Api.CreateEditor()
+    let _editor = far.CreateEditor()
 
     let getCommandArea() =
         let caret = _editor.Caret
@@ -77,12 +78,12 @@ type Interactive(session : Session) =
                 sb.AppendLine() |> ignore
             sb.Append _editor.[y].Text |> ignore
         sb.ToString()
-    
+
     let complete() =
         let line = _editor.Line
         let caret = line.Caret
         if caret = 0 || caret > line.Length then false else
-            
+
         let text = line.Text
         let completer = Completer.Completer(_session.GetCompletions)
         let ok, start, completions = completer.GetCompletions(text, caret)
@@ -94,19 +95,23 @@ type Interactive(session : Session) =
     let invoke() =
         let area = getCommandArea()
         match area with
-        | None -> false
+        | None -> ()
         | Some area ->
             let code = areaCode area
             if code.Length = 0 then
-                true
+                ()
             elif not area.Active then
                 _editor.GoToEnd true
                 _editor.BeginUndo()
                 _editor.InsertText code
                 _editor.EndUndo()
                 _editor.Redraw()
-                true
             else
+                match parseCommand code with
+                | Quit ->
+                    _session.Close()
+                | _ ->
+
                 _editor.BeginUndo()
                 _editor.GoToEnd false
                 if not (String.IsNullOrWhiteSpace(_editor.Line.Text)) then
@@ -120,23 +125,21 @@ type Interactive(session : Session) =
                     try
                         Console.SetOut writer
                         Console.SetError writer
-                        _session.Invoke writer code
+                        _session.EvalInteraction(writer, code)
                     finally
                         Console.SetOut oldOut
                         Console.SetError oldOut
 
-                let sb = StringBuilder()
                 for w in r.Warnings do
-                    sb.AppendLine(formatFSharpErrorInfo w) |> ignore
+                    writer.WriteLine(formatFSharpErrorInfo w)
                 if r.Exception <> null then
-                    sb.AppendLine(sprintf "%A" r.Exception) |> ignore
+                    writer.WriteLine(sprintf "%A" r.Exception)
 
-                let out = sprintf "%s%s\r\r" (sb.ToString()) OutputMark2
-                _editor.InsertText out
+                writer.WriteLine OutputMark2
+                writer.WriteLine()
 
                 _editor.EndUndo()
                 _editor.Redraw()
-                true
 
     static let GuidColor = Guid("8fb3dd25-b0a9-4940-a5fe-67621c47250d")
     let draw() =
@@ -160,23 +163,19 @@ type Interactive(session : Session) =
         _editor.WorksSetColors(GuidColor, 2, colors)
 
     member __.Open() =
-        let path = Path.Combine(getFsfLocalData(), "Interactive.fsx")
+        let path = _session.EditorFile
 
         _editor.FileName <- path
         _editor.CodePage <- 65001
-        _editor.Title <- "F# Interactive.fsx"
-
-        _editor.Closed.Add(fun e ->
-            if _session <> getMainSession() then
-                (_session :> IDisposable).Dispose()
-            )
+        _editor.Title <- sprintf "F# %s - %s" (Path.GetFileName path) (Path.GetDirectoryName path)
 
         _editor.KeyDown.Add(fun e ->
             if not _editor.SelectionExists then
                 match e.Key.VirtualKeyCode with
                 | KeyCode.Enter ->
                     if e.Key.IsShift() then
-                        e.Ignore <- invoke()
+                        e.Ignore <- true
+                        invoke()
                 | KeyCode.Tab ->
                     if e.Key.Is() then
                         e.Ignore <- complete()
@@ -185,5 +184,10 @@ type Interactive(session : Session) =
 
         _editor.Open()
 
-let openInteractive1() = Interactive(getMainSession()).Open()
-let openInteractive2() = Interactive(new Session()).Open()
+        // attach to session
+        _session.OnClose <- fun() ->
+            if _editor.IsOpened then
+                _editor.Close()
+
+        if _session.Issues.Length > 0 then
+            showText "F# Issues" _session.Issues
