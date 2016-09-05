@@ -5,16 +5,17 @@
 namespace FSharpFar
 
 open FarNet
+open System
+open System.IO
 open Interactive
 open Session
-open System
 
 [<System.Runtime.InteropServices.Guid("65bd5625-769a-4253-8fde-ffcc3f72489d")>]
 [<ModuleTool(Name = "FSharpFar", Options = ModuleToolOptions.AllMenus)>]
 type FsfModuleTool() =
     inherit ModuleTool()
 
-    let showSessions() =
+    let showSessions _ =
         let menu = far.CreateMenu()
         menu.Title <- "F# sessions"
         menu.Bottom <- "Enter, Del, F4"
@@ -46,15 +47,31 @@ type FsfModuleTool() =
                 Interactive(ses).Open()
         loop()
 
-    override x.Invoke(_, _) =
+    let execute() =
+        let editor = far.Editor
+        editor.Save()
+
+        let ses = getMainSession()
+        let temp = far.TempName("F#")
+        let writer = new StreamWriter(temp)
+
+        doEval writer (fun () -> ses.EvalScript(writer, editor.FileName))
+
+        writer.Close()
+        showTempFile temp "F# Output"
+
+    override x.Invoke(_, e) =
         let menu = far.CreateMenu()
         menu.Title <- "F#"
         menu.Add("&1. Interactive") |> ignore
         menu.Add("&0. Sessions...") |> ignore
+        if e.From = ModuleToolOptions.Editor && isScriptFileName far.Editor.FileName then
+            menu.Add("&L. Load") |> ignore
 
-        if menu.Show() then
-            match menu.Selected with
-            | 0 ->
-                Interactive(getMainSession()).Open()
-            | _ ->
-                showSessions()
+        let _ = menu.Show()
+
+        match menu.Selected with
+        | 0 -> Interactive(getMainSession()).Open()
+        | 1 -> showSessions()
+        | 2 -> execute()
+        | _ -> ()

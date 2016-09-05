@@ -2,6 +2,19 @@
 NuGet package: https://www.nuget.org/packages/FarNet.FSharpFar
 FarNet 5.1.2
 
+= 0.3.0 =
+
+Use Far 3.0.4775, its FarColorer supports F# syntax highlighting.
+
+The new menu command "Load" in editor saves and loads the current script in the
+main session. Its output, warnings, and errors are are shown in another editor.
+
+Code completion in editors works for all F# files. Completions is currently
+based on the main session, you may configure it using "main.fsi.ini".
+
+Amended //exec for scripts with console output functions (printf, etc.)
+So //exec is fine for all scripts, except dealing with console directly.
+
 = 0.2.0 =
 
 Revised the module and F# sessions.

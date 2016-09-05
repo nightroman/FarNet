@@ -11,7 +11,7 @@ open System
 open System.IO
 open System.Text
 
-type Area =
+type private Area =
     {
         FirstLineIndex : int
         LastLineIndex : int
@@ -19,8 +19,8 @@ type Area =
         Active : bool
     }
 
-let OutputMark1 = "(*("
-let OutputMark2 = ")*)";
+let private OutputMark1 = "(*("
+let private OutputMark2 = ")*)";
 
 type Interactive(session : Session) =
     let _session = session
@@ -79,19 +79,6 @@ type Interactive(session : Session) =
             sb.Append _editor.[y].Text |> ignore
         sb.ToString()
 
-    let complete() =
-        let line = _editor.Line
-        let caret = line.Caret
-        if caret = 0 || caret > line.Length then false else
-
-        let text = line.Text
-        let completer = Completer.Completer(_session.GetCompletions)
-        let ok, start, completions = completer.GetCompletions(text, caret)
-        if ok then
-            completeLine line start (caret - start) completions
-            _editor.Redraw()
-        ok
-
     let invoke() =
         let area = getCommandArea()
         match area with
@@ -119,21 +106,8 @@ type Interactive(session : Session) =
                 _editor.InsertText (sprintf "\r%s\r" OutputMark1)
 
                 let writer = _editor.OpenWriter()
-                let oldOut = Console.Out
-                let oldErr = Console.Error
-                let r =
-                    try
-                        Console.SetOut writer
-                        Console.SetError writer
-                        _session.EvalInteraction(writer, code)
-                    finally
-                        Console.SetOut oldOut
-                        Console.SetError oldOut
 
-                for w in r.Warnings do
-                    writer.WriteLine(formatFSharpErrorInfo w)
-                if r.Exception <> null then
-                    writer.WriteLine(sprintf "%A" r.Exception)
+                doEval writer (fun () -> _session.EvalInteraction(writer, code))
 
                 writer.WriteLine OutputMark2
                 writer.WriteLine()
@@ -169,7 +143,7 @@ type Interactive(session : Session) =
         _editor.CodePage <- 65001
         _editor.Title <- sprintf "F# %s - %s" (Path.GetFileName path) (Path.GetDirectoryName path)
 
-        _editor.KeyDown.Add(fun e ->
+        _editor.KeyDown.Add <| fun e ->
             if not _editor.SelectionExists then
                 match e.Key.VirtualKeyCode with
                 | KeyCode.Enter ->
@@ -178,9 +152,8 @@ type Interactive(session : Session) =
                         invoke()
                 | KeyCode.Tab ->
                     if e.Key.Is() then
-                        e.Ignore <- complete()
+                        e.Ignore <- completeCode _editor _session.GetCompletions
                 | _ -> ()
-            )
 
         _editor.Open()
 
@@ -190,4 +163,4 @@ type Interactive(session : Session) =
                 _editor.Close()
 
         if _session.Issues.Length > 0 then
-            showText "F# Issues" _session.Issues
+            showTempText _session.Issues "F# Issues"

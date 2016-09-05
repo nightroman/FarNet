@@ -1,5 +1,14 @@
 
-# 2016-08-26 How `#r` works
+### 2016-09-04 `//exec` and console output
+
+Intercept `Console.Out` / `Error` and use `ShowUserScreen` / `SaveUserScreen` automatically.
+
+So `//exec` is fine for any script, except operating on console buffer.
+
+**IDEA**
+Intercept `Out` and `Error` separately. Different colors?
+
+### 2016-08-26 How `#r` works
 
 [from](https://sergeytihon.wordpress.com/2014/07/23/avoid-using-relative-paths-in-r-directives/)
 
@@ -19,7 +28,7 @@ reference the assembly:
     #r "System.Xml.Linq.dll"
 ````
 
-# 2016-08-25 FSharp.Compiler.Service requires MSBuild 12
+### 2016-08-25 FSharp.Compiler.Service requires MSBuild 12
 
 FSharp.Compiler.Service depends on MSBuild 12 (VS 2013).
 

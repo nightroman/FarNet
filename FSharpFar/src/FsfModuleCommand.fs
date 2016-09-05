@@ -6,6 +6,7 @@ namespace FSharpFar
 
 open FarNet
 open Command
+open FarStdWriter
 open Session
 open System
 open System.IO
@@ -48,6 +49,7 @@ type FsfModuleCommand() =
                 writeException r.Exception
 
         | Exec args ->
+            use std = new FarStdWriter()
             let ses = match args.With with | Some path -> Session.Get(path) | _ -> getMainSession()
             use writer = new StringWriter()
             let r = ses.EvalScript(writer, args.File)

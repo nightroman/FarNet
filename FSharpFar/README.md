@@ -8,6 +8,7 @@
 - [Commands](#commands)
 - [Interactive](#interactive)
 - [Configuration](#configuration)
+- [Editor services](#editor)
 - [F# script applications](#scripts)
 
 ***
@@ -57,6 +58,8 @@ Use `[F11] \ FSharpFar` to open the module menu:
             - Closes the session and its editor.
         - `[F4]`
             - Edits the session configuration file.
+- **Load**
+    - Evaluates the script opened in editor (`#load`).
 
 ***
 ## <a id="commands"/> Commands
@@ -100,7 +103,7 @@ Sample file association:
     A file mask or several file masks:
     *.fsi.ini
     Description of the association:
-    F# Far session
+    F# session
     ─────────────────────────────────────
     [x] Execute command (used for Enter):
         fs: //open with = !\!.!
@@ -114,12 +117,12 @@ Sample file association:
 
 ````
     A file mask or several file masks:
-    *.far.fsx
+    *.fsx
     Description of the association:
-    F# Far script
+    F# script
     ─────────────────────────────────────
     [x] Execute command (used for Enter):
-        fs: //exec file = "!\!.!"
+        fs: //exec file = !\!.!
     [x] Execute command (used for Ctrl+PgDn):
         fs: #load @"!\!.!"
 ````
@@ -187,11 +190,15 @@ Sample configuration:
     lib=__SOURCE_DIRECTORY__\packages
     load=__SOURCE_DIRECTORY__\file1.fs
     load=__SOURCE_DIRECTORY__\file2.fs
-    use=__SOURCE_DIRECTORY__\test.fsx
+    use=__SOURCE_DIRECTORY__\profile.fsx
 
 Output of invoked `load` and `use` scripts is discarded, only errors and warnings are shown.
+
 The key `use` tells to invoke a startup script as if it is typed interactively.
-Sample startup script:
+Its role is to prepare the session for interactive work and reduce typing, i.e.
+open modules and namespaces, set some supportive functions and values, etc.
+
+Sample startup script for dealing with Far Manager via FarNet:
 
 ````
     #r "FarNet.dll"
@@ -203,7 +210,26 @@ Sample startup script:
 ````
 
 ***
+## <a id="editor"/> Editor services
+
+Editor services are automatically available for F# source files opened in editors.
+They are limited at this point but they are still handy.
+
+Use `[F11]` \ `FSharpFar` \ `Load` in order to evaluate a script being edited in the main session.
+The script is automatically saved before loading.
+Its output is shown in a new editor, together with loading information and issues.
+
+Use `[Tab]` in order to complete code.
+Completion is currently based on the main session context, not on the content of the file.
+The main session is configured using *main.fsi.ini*, see [Configuration](#configuration).
+
+***
 ## <a id="scripts"/> F# script applications
+
+#### Evaluation from editors
+
+Use `[F11]` \ `FSharpFar` \ `Load` in order to evaluate a script being edited.
+Evaluation is performed in the main session.
 
 #### F# scripts in file associations
 
@@ -214,7 +240,7 @@ Sample startup script:
     F# Far script
     ─────────────────────────────────────
     [x] Execute command (used for Enter):
-        fs: //exec file = "!\!.!"
+        fs: //exec file = !\!.!
     [x] Execute command (used for Ctrl+PgDn):
         fs: #load @"!\!.!"
 ````

@@ -64,11 +64,13 @@
     <Compile Include="Config.fs" />
     <Compile Include="Kit.fs" />
     <Compile Include="FarKit.fs" />
+    <Compile Include="FarStdWriter.fs" />
     <Compile Include="ProxyWriter.fs" />
     <Compile Include="Session.fs" />
     <Compile Include="Interactive.fs" />
-    <Compile Include="FsfModuleTool.fs" />
     <Compile Include="FsfModuleCommand.fs" />
+    <Compile Include="FsfModuleEditor.fs" />
+    <Compile Include="FsfModuleTool.fs" />
   </ItemGroup>
   <PropertyGroup>
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>

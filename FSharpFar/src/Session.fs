@@ -11,15 +11,31 @@ open System.Text
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.Interactive.Shell
 
-let formatFSharpErrorInfo(w : FSharpErrorInfo) =
-    let kind = if w.Severity = FSharpErrorSeverity.Warning then "warning" else "error"
-    sprintf "%s(%d,%d): %s FS%04d: %s" w.FileName w.StartLineAlternate (w.StartColumn + 1) kind w.ErrorNumber w.Message
-
 type EvalResult =
     {
         Warnings : FSharpErrorInfo[]
         Exception : exn
     }
+
+let formatFSharpErrorInfo(w : FSharpErrorInfo) =
+    let kind = if w.Severity = FSharpErrorSeverity.Warning then "warning" else "error"
+    sprintf "%s(%d,%d): %s FS%04d: %s" w.FileName w.StartLineAlternate (w.StartColumn + 1) kind w.ErrorNumber w.Message
+
+let doEval writer (fn : unit -> EvalResult) =
+    let oldOut = Console.Out
+    let oldErr = Console.Error
+    let r =
+        try
+            Console.SetOut writer
+            Console.SetError writer
+            fn()
+        finally
+            Console.SetOut oldOut
+            Console.SetError oldOut
+    for w in r.Warnings do
+        writer.WriteLine(formatFSharpErrorInfo w)
+    if r.Exception <> null then
+        writer.WriteLine(sprintf "%A" r.Exception)
 
 type Session private (from) =
     static let mutable sessions : Session list = []
@@ -41,6 +57,8 @@ type Session private (from) =
             |]
         let args = Array.append defaultArgs configArgs
         let fsiConfig = FsiEvaluationSession.GetDefaultConfiguration()
+
+        // collectible=true has issues, see e-note
         let fsiSession = FsiEvaluationSession.Create(fsiConfig, args, new StringReader(""), _evalWriter, _evalWriter)
 
         //TODO review, reuse

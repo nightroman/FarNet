@@ -73,10 +73,7 @@ let completeLine (editLine : ILine) replacementIndex replacementLength (words : 
         editLine.Text <- head + word + text.Substring(replacementIndex + replacementLength)
         editLine.Caret <- caret
 
-let showText title text =
-    let file = far.TempName() + ".txt"
-    File.WriteAllText(file, text)
-
+let showTempFile file title =
     let editor = far.CreateEditor()
     editor.Title <- title
     editor.FileName <- file
@@ -84,5 +81,25 @@ let showText title text =
     editor.IsLocked <- true
     editor.DisableHistory <- true
     editor.DeleteSource <- DeleteSource.UnusedFile
-
     editor.Open()
+
+let showTempText text title =
+    let file = far.TempName("F#") + ".txt"
+    File.WriteAllText(file, text)
+    showTempFile file title
+
+let isScriptFileName (fileName:string) =
+    fileName.EndsWith(".fsx", StringComparison.OrdinalIgnoreCase) || fileName.EndsWith(".fsscript", StringComparison.OrdinalIgnoreCase)
+
+let completeCode (editor:IEditor) getCompletions =
+    let line = editor.Line
+    let caret = line.Caret
+    if caret = 0 || caret > line.Length then false else
+
+    let text = line.Text
+    let completer = Completer.Completer(getCompletions)
+    let ok, start, completions = completer.GetCompletions(text, caret)
+    if ok then
+        completeLine line start (caret - start) completions
+        editor.Redraw()
+    ok
