@@ -17,5 +17,6 @@ type FsfModuleEditor() =
             match e.Key.VirtualKeyCode with
             | KeyCode.Tab when not editor.SelectionExists ->
                 if e.Key.Is() then
-                    e.Ignore <- completeCode editor (getMainSession().GetCompletions)
+                    //! use fun to avoid not needed getMainSession()
+                    e.Ignore <- completeCode editor (fun x -> getMainSession().GetCompletions(x))
             | _ -> ()

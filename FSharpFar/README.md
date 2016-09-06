@@ -32,13 +32,11 @@ Get F# 4.0 compiler and tools.
 Consider to install them with Visual Studio 2015.
 Alternatively, see [Option 3: Install the free F# compiler and tools alone](http://fsharp.org/use/windows).
 
-F# interactive, *fsi.exe*, must be in the path.
-
 FSharp.Compiler.Service requires MSBuild 14.0.
 It is present if Visual Studio 2015 is installed.
 Otherwise, install [Microsoft Build Tools 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48159).
 
-See how to get, install, and update the NuGet package *FarNet.FSharpFar*
+See how to get, install, and update *FarNet.FSharpFar*
 
 - [In English](https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt)
 - [In Russian](https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.ru.txt)

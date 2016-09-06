@@ -11,6 +11,14 @@ open System.IO
 
 let far = Far.Api
 
+type UseProgress(title) =
+    do
+        far.UI.SetProgressState(TaskbarProgressBarState.Indeterminate)
+        far.UI.WindowTitle <- title
+    interface IDisposable with
+        member x.Dispose() =
+            far.UI.SetProgressState(TaskbarProgressBarState.NoProgress)
+
 type UsePanelDirectory() =
     let cd =
         if far.Panel.Kind = PanelKind.File then
@@ -30,8 +38,11 @@ type UsePanelDirectory() =
                     ()
 
 type UseUserScreen() =
-    do far.UI.ShowUserScreen()
-    interface IDisposable with member x.Dispose() = far.UI.SaveUserScreen()
+    do
+        far.UI.ShowUserScreen()
+    interface IDisposable with
+        member x.Dispose() =
+            far.UI.SaveUserScreen()
 
 let fsfLocalData() = far.GetModuleManager("FSharpFar").GetFolderPath(SpecialFolder.LocalData, true)
 let fsfRoaminData() = far.GetModuleManager("FSharpFar").GetFolderPath(SpecialFolder.RoamingData, true)
@@ -97,6 +108,8 @@ let completeCode (editor:IEditor) getCompletions =
     if caret = 0 || caret > line.Length then false else
 
     let text = line.Text
+    if Char.IsWhiteSpace(text.[caret - 1]) then false else
+    
     let completer = Completer.Completer(getCompletions)
     let ok, start, completions = completer.GetCompletions(text, caret)
     if ok then

@@ -47,10 +47,12 @@ type Session private (from) =
     let _evalWriter = new ProxyWriter(_voidWriter)
 
     let fsiSession, issues =
+        use progress = new UseProgress("Loading session...")
+        
         let configArgs, loadScripts, useScripts =
             if File.Exists from then Config.getConfigurationFromFile from else [||], [||], [||]
         let defaultArgs = [|
-            getFsiPath()
+            "fsi.exe" //? dummy
             "--nologo"
             "--noninteractive"
             sprintf @"--lib:%s\FarNet" (Environment.GetEnvironmentVariable("FARHOME"))
@@ -58,7 +60,7 @@ type Session private (from) =
         let args = Array.append defaultArgs configArgs
         let fsiConfig = FsiEvaluationSession.GetDefaultConfiguration()
 
-        // collectible=true has issues, see e-note
+        //! collectible=true has issues
         let fsiSession = FsiEvaluationSession.Create(fsiConfig, args, new StringReader(""), _evalWriter, _evalWriter)
 
         //TODO review, reuse
