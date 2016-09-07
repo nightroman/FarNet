@@ -5,11 +5,7 @@
 	Author: Roman Kuzmin
 
 .Description
-	Requires NuGet packages MarkdownToHtml and HtmlToFarHelp.
-	Copy files to the same directory which included in %PATH%:
-	- MarkdownToHtml.exe
-	- HtmlToFarHelp.exe
-	- MarkdownDeep.dll
+	Requires pandoc.exe and HtmlToFarHelp.exe (NuGet) in the path.
 
 	The script opens the current topic from the Far editor as HLF in the Far
 	help viewer (example: Profile-Editor-.ps1) or as HTML in the default
@@ -25,25 +21,46 @@
 		Tells to open as Far help.
 #>
 
-param
-(
-	[Parameter()][string]$FileName,
+[CmdletBinding()]
+param(
+	[string]$FileName,
 	[string]$Topic,
 	[switch]$Help
 )
 
 function Show {
-	$htm = "$env:TEMP\MarkdownToHtml.htm"
-	MarkdownToHtml "From=$FileName" "To=$htm"
-	if ($LastExitCode) {throw "MarkdownToHtml failed."}
+	$htm = "$env:TEMP\markdown.htm"
+
+	if ($Help) {
+		MarkdownToHtml.exe "From=$FileName" "To=$htm"
+	}
+	else {
+		$title = [System.IO.Path]::GetFileName($FileName) + ' - ' + [System.IO.Path]::GetDirectoryName($FileName)
+		$format = if ($env:markdown) {
+			$env:markdown
+		}
+		elseif ($ext -eq '.text') {
+			'markdown_phpextra'
+		}
+		elseif ($Path -match '\bwiki\b') {
+			'markdown_github'
+		}
+		else {
+			'markdown_strict+backtick_code_blocks'
+		}
+		pandoc.exe --standalone --title-prefix=$title --from=$format -o $htm $FileName
+	}
+
+	if ($LastExitCode) {throw 'pandoc.exe failed.'}
+
 	if ($Help) {
 		$hlf = "$env:TEMP\HtmlToFarHelp.hlf"
 		HtmlToFarHelp "From=$htm" "To=$hlf"
-		if ($LastExitCode) {throw "HtmlToFarHelp failed."}
+		if ($LastExitCode) {throw 'HtmlToFarHelp failed.'}
 		$Far.ShowHelp($hlf, $Topic, 'File')
 	}
 	elseif ($Topic) {
-		$url = "$env:TEMP\MarkdownToHtml.url"
+		$url = "$env:TEMP\markdown.url"
 		Set-Content $url -Encoding Unicode "[InternetShortcut]`r`nURL=file://$htm#$Topic"
 		Invoke-Item $url
 	}
