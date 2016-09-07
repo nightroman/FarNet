@@ -25,8 +25,6 @@ void Viewer::Open(OpenMode mode)
 {
 	AssertClosed();
 
-	Far::Api->UI->SaveUserScreen();
-
 	// flags
 	int flags = 0;
 
@@ -69,7 +67,7 @@ void Viewer::Open(OpenMode mode)
 
 	// from dialog? set modal
 	WindowKind wt = Far::Api->Window->Kind;
-	if (wt == WindowKind::Dialog || Far::Api->UI->IsCommandMode)
+	if (wt == WindowKind::Dialog || wt == WindowKind::Desktop || Far::Api->UI->IsCommandMode)
 		flags &= ~VF_NONMODAL;
 
 	// open: see editor
@@ -84,6 +82,13 @@ void Viewer::Open(OpenMode mode)
 		_Window.Bottom,
 		flags,
 		_CodePage); //?? test window values
+
+	//? not needed for dialogs
+	if (Far::Api->UI->IsUserScreen)
+	{
+		Far::Api->UI->ShowUserScreen();
+		Far::Api->UI->SaveUserScreen();
+	}
 
 	// redraw Far
 	if (wt == WindowKind::Dialog)

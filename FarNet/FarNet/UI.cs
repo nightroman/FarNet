@@ -163,7 +163,7 @@ namespace FarNet
 		/// </remarks>
 		public abstract IntPtr SaveScreen(int left, int top, int right, int bottom);
 		/// <summary>
-		/// TODO Internal
+		/// INTERNAL
 		/// </summary>
 		public abstract bool IsUserScreen { get; }
 		/// <summary>

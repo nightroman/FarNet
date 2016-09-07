@@ -401,7 +401,6 @@ void FarUI::Break()
 }
 
 //! Console Write() writes some Unicode chars as '?'.
-//! Used to call SaveUserScreen() in the end. It was very slow. Now it is done in many places, see _100514_000000.
 void FarUI::WriteRaw(String^ text)
 {
 	PIN_NE(pin, text);
@@ -417,6 +416,8 @@ void FarUI::Write(String^ text)
 	ShowUserScreen();
 
 	WriteRaw(text);
+
+	SaveUserScreen();
 }
 
 //! set colors after user screen
@@ -431,6 +432,8 @@ void FarUI::Write(String^ text, ConsoleColor foregroundColor)
 	Console::ForegroundColor = foregroundColor;
 	WriteRaw(text);
 	Console::ForegroundColor = fc;
+
+	SaveUserScreen();
 }
 
 //! set colors after user screen
@@ -448,6 +451,8 @@ void FarUI::Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backg
 	WriteRaw(text);
 	Console::ForegroundColor = fc;
 	Console::BackgroundColor = bc;
+
+	SaveUserScreen();
 }
 
 void FarUI::SetProgressFlash()
@@ -624,25 +629,21 @@ bool isConsoleModal()
 	return (wi.Flags & WIF_MODAL) != 0;
 }
 
+bool FarUI::IsUserScreen::get()
+{
+	WindowInfo wi;
+	Call_ACTL_GETWINDOWINFO(wi, -1);
+	return wi.Type == WTYPE_DESKTOP && 0 != (wi.Flags & WIF_MODAL);
+}
+
 void FarUI::ShowUserScreen()
 {
-	if (!IsUserScreen)
-		Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETUSERSCREEN, 0, 0);
+	Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETUSERSCREEN, 0, 0);
 }
 
 void FarUI::SaveUserScreen()
 {
-	if (IsUserScreen)
-		Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, 0, 0);
-}
-
-bool FarUI::IsUserScreen::get()
-{
-	WindowKind wk = Far::Api->Window->Kind;
-	if (wk == WindowKind::Desktop)
-		return true;
-	else
-		return false;
+	Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, 0, 0);
 }
 
 }

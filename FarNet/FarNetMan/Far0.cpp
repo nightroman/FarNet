@@ -570,7 +570,6 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 	finally
 	{
 		Panel0::EndOpenMode();
-		Far::Api->UI->SaveUserScreen();
 	}
 }
 

@@ -35,8 +35,6 @@ void Editor::Open(OpenMode mode)
 {
 	AssertClosed();
 
-	Far::Api->UI->SaveUserScreen();
-
 	// strings
 	PIN_ES(pinFileName, _FileName);
 	PIN_ES(pinTitle, _Title);
@@ -47,7 +45,7 @@ void Editor::Open(OpenMode mode)
 
 	// from dialog? set modal
 	WindowKind wt = Far::Api->Window->Kind;
-	if (wt == WindowKind::Dialog || Far::Api->UI->IsCommandMode)
+	if (wt == WindowKind::Dialog || wt == WindowKind::Desktop || Far::Api->UI->IsCommandMode)
 		mode = OpenMode::Modal;
 
 	// flags
@@ -115,6 +113,13 @@ void Editor::Open(OpenMode mode)
 		nLine,
 		nPos,
 		_CodePage); //?? test window values, make window settable
+
+	//? not needed for dialogs
+	if (Far::Api->UI->IsUserScreen)
+	{
+		Far::Api->UI->ShowUserScreen();
+		Far::Api->UI->SaveUserScreen();
+	}
 
 	// redraw Far
 	if (wt == WindowKind::Dialog)

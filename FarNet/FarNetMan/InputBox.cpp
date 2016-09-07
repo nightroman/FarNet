@@ -41,8 +41,6 @@ void InputBox::HelpTopic::set(String^ value)
 
 bool InputBox::Show()
 {
-	Far::Api->UI->SaveUserScreen();
-
 	PIN_ES(pinTitle, Title);
 	PIN_ES(pinPrompt, Prompt);
 	PIN_ES(pinText, Text);

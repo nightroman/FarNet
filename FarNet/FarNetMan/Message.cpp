@@ -13,8 +13,6 @@ const int ALL_BUTTONS = FMSG_MB_OK|FMSG_MB_OKCANCEL|FMSG_MB_ABORTRETRYIGNORE|FMS
 
 bool Message::Show()
 {
-	Far::Api->UI->SaveUserScreen();
-
 	// process the draw flag
 	int flags = _flags;
 	if ((flags & (int)MessageOptions::Draw) == 0)

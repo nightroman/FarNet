@@ -1,6 +1,11 @@
 
 NuGet package: https://www.nuget.org/packages/FarNet
-Far Manager 3.0.4587
+Far Manager 3.0.4782
+
+= 5.2.0 =
+
+Adapt for Far 3.0.4782.
+Review console output.
 
 = 5.1.3 =
 
