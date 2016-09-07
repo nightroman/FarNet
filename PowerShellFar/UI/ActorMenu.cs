@@ -39,7 +39,6 @@ namespace PowerShellFar.UI
 			_menuPanels.HelpTopic = helpTopic;
 			_menuViewer.HelpTopic = helpTopic;
 
-			AddTool(Res.MenuCommandConsole, delegate { A.Psf.StartConsole(); }, ModuleToolOptions.Panels);
 			AddTool(Res.MenuInvokeCommands, delegate { A.Psf.InvokeInputCode(); }, ModuleToolOptions.F11Menus);
 			AddTool(Res.MenuInvokeSelected, delegate { A.Psf.InvokeSelectedCode(); }, ModuleToolOptions.Editor | ModuleToolOptions.Panels | ModuleToolOptions.Dialog);
 			AddTool(Res.MenuBackgroundJobs, delegate { A.Psf.ShowJobs(); }, ModuleToolOptions.F11Menus);

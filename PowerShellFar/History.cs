@@ -121,7 +121,7 @@ namespace PowerShellFar
 				case WindowKind.Dialog:
 					var dialog = Far.Api.Dialog;
 					var typeId = dialog.TypeId;
-					if (typeId != UI.InputConsole.TypeId && typeId != UI.InputDialog.TypeId)
+					if (typeId != UI.InputDialog.TypeId)
 						break;
 					var line = Far.Api.Line;
 					if (line == null || line.IsReadOnly)

@@ -546,15 +546,6 @@ Continue with this current directory?
 				Act(code, null, Far.Api.MacroState == MacroState.None);
 		}
 		/// <summary>
-		/// Starts console mode (async).
-		/// Called on "Command console".
-		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-		public void StartConsole()
-		{
-			UI.InputConsole.Start();
-		}
-		/// <summary>
 		/// Invokes the selected text or the current line text in the editor or the command line.
 		/// Called on "Invoke selected".
 		/// </summary>

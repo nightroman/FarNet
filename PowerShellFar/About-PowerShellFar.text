@@ -138,17 +138,7 @@ any moment in almost any current context.
 **Command line**
 
  : Use the Far Manager command line to type and invoke commands with prefixes
-   `ps:` and `vps:`, see [Command line](#CommandLine). This way is useful for
-   invoking a single command. For a series of commands the command console is
-   often more convenient.
-
-**Command console**
-
- : The command console is started from panels: `[F11] \ PowerShellFar \ Command console`.
-   This mode is similar to standard PowerShell console. But it provides many
-   extra features: permanent history, history completion, TabExpansion choice
-   menu, command context help, and etc.
-   See [Command console dialog](#CommandConsoleDialog).
+   `ps:` and `vps:`, see [Command line](#CommandLine).
 
 **Invoke commands**
 
@@ -203,7 +193,6 @@ something broken or you know that it is easy to recover.
 `[CtrlBreak]` stops synchronous commands invoked from:
 
 - Command line
-- Command console
 - Command input box
 - Main editor console
 - File associations
@@ -276,15 +265,6 @@ manually and normally should not pollute the history.
 
 [Contents](#Contents)
 
-### Command console
-
-The genuine console with the prompt implemented as one line input box shown at
-the bottom. The prompt is shown repeatedly after each command. Command output
-is written to the console. Consider starting Far Manager with the switch `/w`
-in order to use the console mode and be able to view lengthy command output.
-See [Command console dialog](#CommandConsoleDialog) for more details.
-
----
 ### Invoke commands
 
 You are prompted to enter PowerShell commands to be invoked. Output is shown in
@@ -348,105 +328,6 @@ For the current token in an editor, an edit box, or the command line it shows
 available help information in the viewer. In code editors (*.ps1*, *.psm1*,
 *.psd1*, *.psfconsole*, input code boxes) this action is associated with
 `[ShiftF1]`. It is exposed for scripting as `$Psf.ShowHelp()`.
-
-
-*********************************************************************
-# Command console dialog {#CommandConsoleDialog}
-
-[Contents](#Contents)
-[Menu commands](#MenuCommands)
-
-The command console is started from panels:
-`[F11] \ PowerShellFar \ Command console`.
-
-It is the genuine console with the prompt implemented as a dialog shown at the
-bottom. The dialog looks like a usual command line. This command line is shown
-repeatedly after each input. Commands output is written to the console.
-
-As far as this command line is a dialog, most of keys are typical for text edit
-controls. But some extra keys are associated with specific actions and tools.
-
-**Keys and actions:**
-
-<!--_140305_113849-->
-`[Enter]`
-
- : Invokes the typed commands.
-
-`[Tab]`
-
- : Invokes PowerShell code completion (TabExpansion).
-
-`[F1]`
-
- : If the input line is empty shows this topic. Otherwise shows PowerShell help
-   for the current command or its parameter.
-<!--_140305_113849-->
-
-`[F4]`
-
- : Opens the modal editor for input of multiline code. This is mostly used for
-   pasting and invoking external code snippets. This code is not added to the
-   command history.
-
-`[F7]`
-
- : Shows the PowerShell command history. Press `[F1]` there for help.
-
-`[F10]`
-
- : Exits the command console.
-
-`[Esc]`
-
- : Clears the input line or exits the command console.
-
-`[Up]`
-
- : Gets the previous command from history.
-
-`[Down]`
-
- : Gets the next command from history.
-
-`[CtrlAltUp]`, `[CtrlAltDown]`
-
- : Scrolls the console window up and down by lines.
-
-`[CtrlAltPgUp]`, `[CtrlAltPgDn]`
-
- : Scrolls the console window up and down by screens.
-
----
-**Prompt**
-
-Like in the Microsoft PowerShell console, the command prompt is defined by the
-global function `prompt`, built-in or custom. A custom prompt may be defined in
-the profile or any time later in a session.
-
-Unlike in the Microsoft console, `prompt` normally should just return text. It
-can use `Write-Host`, e.g. for colored text, but this output will be written to
-the console above the command line.
-
----
-**Output**
-
-In order to be able to scroll and view lengthy command output consider starting
-Far Manager in window mode, for example using the switch `/w`:
-
-    Far.exe /w
-
-Another option is to set and save this mode permanently (`System.WindowMode =
-true`) in the full list of settings. The list is called from the command line:
-
-    far:config
-
-Also make sure that the current or saved console buffer height is large enough
-for output, e.g. set to the maximum value 9999 in the console property dialog.
-
-Console output may be transcribed to a file, use `Start-Transcript` and
-`Stop-Transcript` for starting and stopping and `Show-FarTranscript` for
-viewing the output.
 
 
 *********************************************************************
@@ -524,15 +405,14 @@ Other information: output data size and a job name or its command text (shortene
 
 [Contents](#Contents)
 
-The command history is shown by `[F11] \ PowerShellFar \ Invoke commands` from
-almost any context and by `[F7]` from the command console.
+The command history is shown by `[F11] \ PowerShellFar \ Command history`.
 
 ### Keys and actions
 
 `[Enter]`
 
- : Inserts the command to a command input line (panels, command console, editor
-   console, command box) or shows a dialog *Invoke commands* with this command.
+ : Inserts a command to the command input line (panels, editor console, command
+   box) or shows a new dialog *Invoke commands* with this command inserted.
 
 `[CtrlC]`
 
@@ -687,8 +567,8 @@ without changing the original source code - all depends on your fantasy.
 [Contents](#Contents)
 
 This dialog is shown when one or more breakpoints are hit or you step through
-the code in the debugger. You may step through the code, open command console
-in editor, take a look at the source code, or stop the pipeline and debugging.
+the code in the debugger. You may step through the code, open editor console,
+take a look at the source code, or stop the pipeline and debugging.
 
 ### Keys, buttons, and actions
 
@@ -710,9 +590,8 @@ in editor, take a look at the source code, or stop the pipeline and debugging.
   next statement.
 
 `{Console}`
-: Opens a command or editor console, depending on where debugging was started.
-  There you can examine or change variables, invoke commands, and etc. On exit
-  the debugger dialog is repeated.
+: Opens the editor console. There you can examine or change variables, invoke
+  commands, and etc. On exit the debugger dialog is repeated.
 
 `{Edit}`
 : Opens the source in the editor at the debugger line. The editor is locked
@@ -739,7 +618,7 @@ It is possible that the debugger or your actions there may affect execution
 flow in unusual way, especially if the code deals with Far UI that may clash
 against the debugger UI. Think when you are about to debug such scenarios.
 
-On debugging commands with output to console it is useful to `Start-Transcript`
+On debugging commands with console output it is useful to `Start-Transcript`
 before debugging. In this case the output can be shown by the button `{View}`
 or by the command `Show-FarTranscript`.
 
@@ -1548,8 +1427,8 @@ See example [Profile.ps1](#Profile).
 
 ### Console output
 
-Output of commands invoked in the command console or Far Manager command line
-with prefixes `ps:` is written to the console, under panels if they are shown.
+Output of commands invoked from the command line with prefixes `ps:` is written
+to the console, under panels if they are shown.
 
 The output uses different colors depending on message types (errors, warnings,
 etc.). Console output may be transcribed to a file, use `Start-Transcript` and
@@ -2028,16 +1907,6 @@ or you can just invoke standard help commands, for example:
 **Q: How to make PowerShell code invocation from the command line easier?**
 
 A: There are several options
-
-* Command console
-
-    Start *Command console* from the menu, type commands, and work with their
-    output almost like in the genuine console. Some features are slightly
-    different because this console uses Far Manager UI.
-
-    How to start Far Manager in command console mode:
-
-        `Far.exe /w ps:$Psf.StartConsole()`
 
 * Easy prefix macro
 

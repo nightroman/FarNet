@@ -148,7 +148,6 @@
     <Compile Include="UI\ExportDialog.cs" />
     <Compile Include="UI\InputBoxEx.cs" />
     <Compile Include="UI\InputDialog.cs" />
-    <Compile Include="UI\InputConsole.cs" />
     <Compile Include="UI\NewValueDialog.cs" />
     <Compile Include="UI\ReadLine.cs" />
     <Compile Include="UI\SelectMenu.cs" />

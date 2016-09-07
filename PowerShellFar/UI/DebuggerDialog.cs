@@ -187,15 +187,8 @@ namespace PowerShellFar.UI
 
 				if (_Dialog.Selected == _Console)
 				{
-					if (Far.Api.UI.IsCommandMode)
-					{
-						InputConsole.Loop(false);
-					}
-					else
-					{
-						var console = EditorConsole.CreateConsole(false);
-						console.Editor.Open(OpenMode.Modal);
-					}
+					var console = EditorConsole.CreateConsole(false);
+					console.Editor.Open(OpenMode.Modal);
 					continue;
 				}
 

@@ -1,7 +1,12 @@
 
 NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
-Far Manager 3.0.4744
-FarNet 5.1.0
+Far Manager 3.0.4782
+FarNet 5.2.0
+
+= 5.2.0 =
+
+Adapt for Far 3.0.4782.
+Retire command console.
 
 = 5.1.0 =
 
