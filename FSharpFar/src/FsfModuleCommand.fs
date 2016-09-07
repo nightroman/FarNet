@@ -25,22 +25,16 @@ type FsfModuleCommand() =
 
         match parseCommand e.Command with
         | Quit ->
-            use us = useEcho()
-
             match tryFindMainSession() with
             | Some s -> s.Close()
             | _ -> far.UI.WriteLine "Not opened."
 
         | Open args ->
-            use us = useEcho()
-
             let ses = match args.With with | Some path -> Session.Get(path) | _ -> getMainSession()
             let interactive = Interactive.Interactive(ses)
             interactive.Open()
 
         | Code code ->
-            use us = useEcho()
-
             let ses = getMainSession()
             let r = ses.EvalInteraction(Console.Out, code)
             for w in r.Warnings do
@@ -55,7 +49,7 @@ type FsfModuleCommand() =
             let r = ses.EvalScript(writer, args.File)
 
             if r.Warnings.Length > 0 || r.Exception <> null then
-                use us = useEcho()
+                use echo = useEcho()
                 far.UI.Write(writer.ToString())
                 for w in r.Warnings do
                     far.UI.WriteLine(formatFSharpErrorInfo w, ConsoleColor.Yellow)

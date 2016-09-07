@@ -155,12 +155,14 @@ type Interactive(session : Session) =
                         e.Ignore <- completeCode _editor _session.GetCompletions
                 | _ -> ()
 
-        _editor.Open()
+        far.PostJob(fun() ->
+            _editor.Open()
 
-        // attach to session
-        _session.OnClose <- fun() ->
-            if _editor.IsOpened then
-                _editor.Close()
+            // attach to session
+            _session.OnClose <- fun() ->
+                if _editor.IsOpened then
+                    _editor.Close()
 
-        if _session.Issues.Length > 0 then
-            showTempText _session.Issues "F# Issues"
+            if _session.Issues.Length > 0 then
+                showTempText _session.Issues "F# Issues"
+        )

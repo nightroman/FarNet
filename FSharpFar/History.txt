@@ -2,6 +2,11 @@
 NuGet package: https://www.nuget.org/packages/FarNet.FSharpFar
 FarNet 5.1.2
 
+= 0.3.2 =
+
+Avoid command echo, it makes issues in Far 3.0.4782.
+Fixed unwanted modal interactive sessions on //open.
+
 = 0.3.1 =
 
 Avoid loading session on some [Tab] in editor.
