@@ -228,22 +228,6 @@ void Edit_SetOvertype(intptr_t editorId, bool value);
 DateTime FileTimeToDateTime(FILETIME time);
 FILETIME DateTimeToFileTime(DateTime time);
 
-// Value host and switch
-#define VALUE_HOST(Type, Name)\
-class Name\
-{\
-public:\
-	Name(Type value = 0) { _value = value; }\
-	~Name() { _value = 0; }\
-	static Type Get() { return _value; }\
-	static void Set(Type value) { _value = value; }\
-private:\
-	static Type _value;\
-}
-
-// Hosted values
-VALUE_HOST(bool, ValueUserScreen);
-
 namespace FarNet
 {;
 // Constant values

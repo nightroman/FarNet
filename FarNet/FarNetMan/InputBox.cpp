@@ -41,11 +41,7 @@ void InputBox::HelpTopic::set(String^ value)
 
 bool InputBox::Show()
 {
-	if (ValueUserScreen::Get()) //_100514_000000
-	{
-		ValueUserScreen::Set(false);
-		Far::Api->UI->SaveUserScreen();
-	}
+	Far::Api->UI->SaveUserScreen();
 
 	PIN_ES(pinTitle, Title);
 	PIN_ES(pinPrompt, Prompt);

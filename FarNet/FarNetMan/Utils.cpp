@@ -7,9 +7,6 @@ Copyright (c) 2006-2016 Roman Kuzmin
 #include "StdAfx.h"
 #include "Wrappers.h"
 
-// hosted values
-bool ValueUserScreen::_value;
-
 namespace FarNet
 {;
 bool Configuration::GetBool(String^ key)

@@ -814,7 +814,7 @@ Continue with this current directory?
 					ps.Invoke();
 				}
 			}
-			catch (RuntimeException reason)
+			catch (Exception reason)
 			{
 				ok = false;
 				ConsoleColor color1 = ConsoleColor.Black;

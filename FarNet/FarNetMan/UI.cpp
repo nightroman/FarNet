@@ -414,11 +414,7 @@ void FarUI::Write(String^ text)
 	if (ES(text))
 		return;
 
-	if (!ValueUserScreen::Get()) //_100514_000000
-	{
-		ValueUserScreen::Set(true);
-		ShowUserScreen();
-	}
+	ShowUserScreen();
 
 	WriteRaw(text);
 }
@@ -429,11 +425,7 @@ void FarUI::Write(String^ text, ConsoleColor foregroundColor)
 	if (ES(text))
 		return;
 
-	if (!ValueUserScreen::Get()) //_100514_000000
-	{
-		ValueUserScreen::Set(true);
-		ShowUserScreen();
-	}
+	ShowUserScreen();
 
 	ConsoleColor fc = Console::ForegroundColor;
 	Console::ForegroundColor = foregroundColor;
@@ -447,11 +439,7 @@ void FarUI::Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backg
 	if (ES(text))
 		return;
 
-	if (!ValueUserScreen::Get()) //_100514_000000
-	{
-		ValueUserScreen::Set(true);
-		ShowUserScreen();
-	}
+	ShowUserScreen();
 
 	ConsoleColor fc = Console::ForegroundColor;
 	ConsoleColor bc = Console::BackgroundColor;
@@ -460,16 +448,6 @@ void FarUI::Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backg
 	WriteRaw(text);
 	Console::ForegroundColor = fc;
 	Console::BackgroundColor = bc;
-}
-
-void FarUI::ShowUserScreen()
-{
-	Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETUSERSCREEN, 0, 0);
-}
-
-void FarUI::SaveUserScreen()
-{
-	Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, 0, 0);
 }
 
 void FarUI::SetProgressFlash()
@@ -619,6 +597,52 @@ String^ FarUI::GetBufferLineText(int lineIndex)
 		sb.Append(cells[0, i].Character, 1);
 
 	return sb.ToString();
+}
+
+bool isConsoleModal()
+{
+	WindowInfo wi;
+	int index = -1;
+
+	// find index of Desktop
+	int nWindow = Far::Api->Window->Count;
+	int iWindow = 0;
+	do
+	{
+		Call_ACTL_GETWINDOWINFO(wi, iWindow);
+		if (wi.Type == WTYPE_DESKTOP)
+		{
+			index = iWindow;
+			break;
+		}
+	} while (++iWindow < nWindow);
+
+	// not found
+	if (index == -1)
+		throw gcnew InvalidOperationException(__FUNCTION__ " failed, missing Desktop");
+
+	return (wi.Flags & WIF_MODAL) != 0;
+}
+
+void FarUI::ShowUserScreen()
+{
+	if (!IsUserScreen)
+		Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETUSERSCREEN, 0, 0);
+}
+
+void FarUI::SaveUserScreen()
+{
+	if (IsUserScreen)
+		Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, 0, 0);
+}
+
+bool FarUI::IsUserScreen::get()
+{
+	WindowKind wk = Far::Api->Window->Kind;
+	if (wk == WindowKind::Desktop)
+		return true;
+	else
+		return false;
 }
 
 }

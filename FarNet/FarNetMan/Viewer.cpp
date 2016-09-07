@@ -25,11 +25,7 @@ void Viewer::Open(OpenMode mode)
 {
 	AssertClosed();
 
-	if (ValueUserScreen::Get()) //????
-	{
-		ValueUserScreen::Set(false);
-		Far::Api->UI->SaveUserScreen();
-	}
+	Far::Api->UI->SaveUserScreen();
 
 	// flags
 	int flags = 0;

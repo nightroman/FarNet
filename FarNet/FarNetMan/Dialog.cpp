@@ -266,11 +266,7 @@ IUserControl^ FarDialog::AddUserControl(int left, int top, int right, int bottom
 
 bool FarDialog::Show()
 {
-	if (ValueUserScreen::Get()) //_100514_000000
-	{
-		ValueUserScreen::Set(false);
-		Far::Api->UI->SaveUserScreen();
-	}
+	Far::Api->UI->SaveUserScreen();
 
 	FarDialogItem* items = new FarDialogItem[_items->Count];
 	try

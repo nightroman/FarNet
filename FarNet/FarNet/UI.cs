@@ -163,6 +163,10 @@ namespace FarNet
 		/// </remarks>
 		public abstract IntPtr SaveScreen(int left, int top, int right, int bottom);
 		/// <summary>
+		/// TODO Internal
+		/// </summary>
+		public abstract bool IsUserScreen { get; }
+		/// <summary>
 		/// Copies the current screen contents to the user screen buffer
 		/// (which is displayed when the panels are switched off).
 		/// </summary>

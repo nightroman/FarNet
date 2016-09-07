@@ -450,7 +450,6 @@ bool Far0::AsConfigure(const ConfigureInfo* info) //config//
 HANDLE Far0::AsOpen(const OpenInfo* info)
 {
 	Panel0::BeginOpenMode();
-	ValueUserScreen userscreen; //_100514_000000
 
 	try
 	{
@@ -571,8 +570,7 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 	finally
 	{
 		Panel0::EndOpenMode();
-		if (userscreen.Get()) //_100514_000000
-			Far::Api->UI->SaveUserScreen();
+		Far::Api->UI->SaveUserScreen();
 	}
 }
 

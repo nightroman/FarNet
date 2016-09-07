@@ -13,11 +13,7 @@ const int ALL_BUTTONS = FMSG_MB_OK|FMSG_MB_OKCANCEL|FMSG_MB_ABORTRETRYIGNORE|FMS
 
 bool Message::Show()
 {
-	if (ValueUserScreen::Get()) //_100514_000000
-	{
-		ValueUserScreen::Set(false);
-		Far::Api->UI->SaveUserScreen();
-	}
+	Far::Api->UI->SaveUserScreen();
 
 	// process the draw flag
 	int flags = _flags;
