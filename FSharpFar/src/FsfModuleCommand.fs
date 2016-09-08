@@ -18,10 +18,14 @@ type FsfModuleCommand() =
     override x.Invoke(sender, e) =
         use cd = new UsePanelDirectory()
 
-        let useEcho() =
-            let screen = new UseUserScreen()
+        let echo() =
             far.UI.WriteLine((sprintf "fs:%s" e.Command), ConsoleColor.DarkGray)
-            screen
+
+        let writeResult r =
+            for w in r.Warnings do
+                far.UI.WriteLine(formatFSharpErrorInfo w, ConsoleColor.Yellow)
+            if r.Exception <> null then
+                writeException r.Exception
 
         match parseCommand e.Command with
         | Quit ->
@@ -35,12 +39,14 @@ type FsfModuleCommand() =
             interactive.Open()
 
         | Code code ->
+            echo()
+            use std = new FarStdWriter()
             let ses = getMainSession()
-            let r = ses.EvalInteraction(Console.Out, code)
-            for w in r.Warnings do
-                far.UI.WriteLine(formatFSharpErrorInfo w, ConsoleColor.Yellow)
-            if r.Exception <> null then
-                writeException r.Exception
+            use writer = new StringWriter()
+            let r = ses.EvalInteraction(writer, code)
+
+            far.UI.Write(writer.ToString())
+            writeResult r
 
         | Exec args ->
             use std = new FarStdWriter()
@@ -49,9 +55,6 @@ type FsfModuleCommand() =
             let r = ses.EvalScript(writer, args.File)
 
             if r.Warnings.Length > 0 || r.Exception <> null then
-                use echo = useEcho()
+                echo()
                 far.UI.Write(writer.ToString())
-                for w in r.Warnings do
-                    far.UI.WriteLine(formatFSharpErrorInfo w, ConsoleColor.Yellow)
-                if r.Exception <> null then
-                    writeException r.Exception
+                writeResult r

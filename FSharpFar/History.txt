@@ -1,6 +1,11 @@
 
 NuGet package: https://www.nuget.org/packages/FarNet.FSharpFar
-FarNet 5.1.2
+FarNet 5.2.0
+
+= 0.3.3 =
+
+Adapt for Far 3.0.4782.
+Show echo on `fs: code`.
 
 = 0.3.2 =
 

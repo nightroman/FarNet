@@ -48,7 +48,6 @@ let fsfLocalData() = far.GetModuleManager("FSharpFar").GetFolderPath(SpecialFold
 let fsfRoaminData() = far.GetModuleManager("FSharpFar").GetFolderPath(SpecialFolder.RoamingData, true)
 
 let writeException exn =
-    use us = new UseUserScreen()
     far.UI.WriteLine(sprintf "%A" exn, ConsoleColor.Red)
 
 let completeLine (editLine : ILine) replacementIndex replacementLength (words : seq<string>) =
@@ -109,7 +108,7 @@ let completeCode (editor:IEditor) getCompletions =
 
     let text = line.Text
     if Char.IsWhiteSpace(text.[caret - 1]) then false else
-    
+
     let completer = Completer.Completer(getCompletions)
     let ok, start, completions = completer.GetCompletions(text, caret)
     if ok then
