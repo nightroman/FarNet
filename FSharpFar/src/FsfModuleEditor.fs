@@ -13,10 +13,10 @@ open Session
 type FsfModuleEditor() =
     inherit ModuleEditor()
     override x.Invoke(editor, e) =
-        editor.KeyDown.Add <| fun e ->
-            match e.Key.VirtualKeyCode with
-            | KeyCode.Tab when not editor.SelectionExists ->
-                if e.Key.Is() then
-                    //! use fun to avoid not needed getMainSession()
-                    e.Ignore <- completeCode editor (fun x -> getMainSession().GetCompletions(x))
-            | _ -> ()
+        if editor.Data.["F#"] = null then
+            editor.KeyDown.Add <| fun e ->
+                match e.Key.VirtualKeyCode with
+                | KeyCode.Tab when not editor.SelectionExists ->
+                    if e.Key.Is() then
+                        e.Ignore <- completeCode editor (fun x -> getMainSession().GetCompletions(x)) //! fun for lazy getMainSession()
+                | _ -> ()

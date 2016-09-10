@@ -2,6 +2,10 @@
 NuGet package: https://www.nuget.org/packages/FarNet.FSharpFar
 FarNet 5.2.0
 
+= 0.3.4 =
+
+Fix double code completion in interactive.
+
 = 0.3.3 =
 
 Adapt for Far 3.0.4782.
