@@ -642,10 +642,6 @@ nested prompt, for example when PowerShell execution is suspended.
 An editor console works similar to a traditional command console but it is
 still an editor window with some rules and special hotkeys.
 
-### Rule of existing selection
-
-If any selection exists then editor always acts as a standard editor.
-
 ### Command and output areas
 
 Output areas are lines between markers `<=` and `=>`. Empty outputs are shown
@@ -659,22 +655,13 @@ lines may confuse the editor console tools, syntax highlighting, and etc.
 
 Without selection some editor events are special:
 
-* `[Enter]`
+* `[ShiftEnter]`
 
     If the caret is in the active command then the command is invoked and its
     output is appended to the end marked by `<=` and `=>` or `<>` .
 
     If it is in the passive command then its code is appended to the active
     command and the caret is moved there as well.
-
-    It is possible to paste multiline code to the active command area and then
-    invoke it by `[Enter]`.
-
-* `[ShiftEnter]`
-
-    It just inserts a new line even if it is the last command area. It is used
-    to compose multiline commands before invoking them. Remember that `[Enter]`
-    invokes the active command being edited.
 
 * `[End]`
 

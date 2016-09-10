@@ -227,17 +227,10 @@ namespace PowerShellFar
 			{
 				case KeyCode.Enter:
 					{
-						if (e.Key.Is())
+						if (e.Key.IsShift())
 						{
 							// invoke, copy, or pass
 							e.Ignore = Invoke();
-						}
-						else if (e.Key.IsShift())
-						{
-							// similar to ISE
-							e.Ignore = true;
-							Editor.InsertLine();
-							Editor.Redraw();
 						}
 						return;
 					}
@@ -255,7 +248,7 @@ namespace PowerShellFar
 						}
 						return;
 					}
-				case KeyCode.Escape:
+				case KeyCode.Escape: //??
 					{
 						if (e.Key.Is())
 						{
@@ -286,24 +279,6 @@ namespace PowerShellFar
 
 							e.Ignore = true;
 							currentLine.Text = code;
-							currentLine.Caret = -1;
-							Editor.Redraw();
-						}
-						return;
-					}
-				case KeyCode.UpArrow:
-					goto case KeyCode.DownArrow;
-				case KeyCode.DownArrow:
-					{
-						if (e.Key.Is())
-						{
-							if (!IsLastLineCurrent)
-								return;
-
-							var command = History.GetNextCommand(e.Key.VirtualKeyCode == KeyCode.UpArrow, currentLine.Text);
-							
-							e.Ignore = true;
-							currentLine.Text = command;
 							currentLine.Caret = -1;
 							Editor.Redraw();
 						}
