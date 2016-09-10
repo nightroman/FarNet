@@ -14,7 +14,7 @@ $FarHome = "C:\Bin\Far\$Platform"
 $CopyFile = "$Configuration\$Platform\FarNetMan.dll"
 
 task Clean {
-	Remove-Item Debug, Release -Force -Recurse -ErrorAction 0
+	Remove-Item Debug, Release, FarNetMan.vcxproj.user -Force -Recurse -ErrorAction 0
 }
 
 task Install {
