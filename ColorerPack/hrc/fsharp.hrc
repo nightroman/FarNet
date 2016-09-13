@@ -32,7 +32,7 @@ fsharp.hrc by Roman Kuzmin, aka NightRoman, 2016-09-06
 <region parent="def:StringContent" name="StringContent"/>
 
 <!-- Identifier -->
-<entity name="ident" value="[_a-zA-Z][.\w&apos;]*"/>
+<entity name="ident" value="(?:[_a-zA-Z][.\w&apos;]*|``.+?``)"/>
 
 <!-- Escaped -->
 <scheme name="FSSimpleString">
@@ -66,9 +66,6 @@ fsharp.hrc by Roman Kuzmin, aka NightRoman, 2016-09-06
 
 <!-- Special (*) -->
 <regexp match="/\(\*\)/" region="Operator"/>
-
-<!-- Unusual identifier -->
-<regexp match="/(``)(.+?)(``)/" region="Identifier" region1="PairStart" region3="PairEnd"/>
 
 <!-- Block comment -->
 <block start="/\(\*/" end="/\*\)/" scheme="FSCommentContent" region00="PairStart" region10="PairEnd" region="Comment"/>
