@@ -23,7 +23,7 @@ type FsfModuleCommand() =
 
         let writeResult r =
             for w in r.Warnings do
-                far.UI.WriteLine(formatFSharpErrorInfo w, ConsoleColor.Yellow)
+                far.UI.WriteLine(strErrorText w, ConsoleColor.Yellow)
             if r.Exception <> null then
                 writeException r.Exception
 

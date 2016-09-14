@@ -7,7 +7,7 @@ module FSharpFar.Config
 open System
 open System.IO
 
-type private ConfigSection = NoSection | FsiSection
+type private ConfigSection = NoSection | FscSection | FsiSection
 
 type private KeyValue = {Key : string; Value : string}
 
@@ -38,13 +38,23 @@ let private parse (line:string) =
                 Value = text.Substring(i + 1).Trim()
             }
 
+type Config = {
+    FscArgs : string[]
+    FsiArgs : string[]
+    LoadFiles : string[]
+    UseFiles : string[]
+}
+
+let empty = {FscArgs = [||]; FsiArgs = [||]; LoadFiles = [||]; UseFiles = [||]}
+
 let getConfigurationFromFile path =
     let lines = File.ReadAllLines path
     let root = Path.GetDirectoryName path
 
+    let fscArgs = ResizeArray()
+    let fsiArgs = ResizeArray()
     let loadScripts = ResizeArray()
     let useScripts = ResizeArray()
-    let args = ResizeArray()
 
     let mutable currentSection = NoSection
     let mutable lineNo = 0
@@ -55,12 +65,22 @@ let getConfigurationFromFile path =
             match parse line with
             | Empty | Comment -> ()
             | Section section ->
-                currentSection <- if section = "fsi" then FsiSection else NoSection
+                currentSection <-
+                    match section with
+                    | "fsc" -> FscSection
+                    | "fsi" -> FsiSection
+                    | _ -> NoSection
             | Switch it ->
-                if currentSection = FsiSection then
-                    args.Add("--" + it)
+                match currentSection with
+                | FscSection -> fscArgs.Add("--" + it)
+                | FsiSection -> fsiArgs.Add("--" + it)
+                | NoSection -> ()
             | KeyValue it ->
-                if currentSection = FsiSection then
+                match currentSection with
+                | FscSection ->
+                    let text = Environment.ExpandEnvironmentVariables(it.Value).Replace("__SOURCE_DIRECTORY__", root)
+                    fscArgs.Add("--" + it.Key + ":" + text)
+                | FsiSection ->
                     let text = Environment.ExpandEnvironmentVariables(it.Value).Replace("__SOURCE_DIRECTORY__", root)
                     match it.Key with
                     | "load" ->
@@ -68,8 +88,14 @@ let getConfigurationFromFile path =
                     | "use" ->
                         useScripts.Add text
                     | _ ->
-                        args.Add("--" + it.Key + ":" + text)
+                        fsiArgs.Add("--" + it.Key + ":" + text)
+                | NoSection -> ()
      with e ->
         invalidOp (sprintf "%s(%d): %s" path lineNo e.Message)
 
-    args.ToArray(), loadScripts.ToArray(), useScripts.ToArray()
+    {
+        FscArgs = fscArgs.ToArray()
+        FsiArgs = fsiArgs.ToArray()
+        LoadFiles = loadScripts.ToArray()
+        UseFiles = useScripts.ToArray()
+    }

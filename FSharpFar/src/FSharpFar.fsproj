@@ -68,6 +68,7 @@
     <Compile Include="ProxyWriter.fs" />
     <Compile Include="Session.fs" />
     <Compile Include="Interactive.fs" />
+    <Compile Include="Checker.fs" />
     <Compile Include="FsfModuleCommand.fs" />
     <Compile Include="FsfModuleEditor.fs" />
     <Compile Include="FsfModuleTool.fs" />

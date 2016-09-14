@@ -11,13 +11,60 @@ open System.IO
 
 let far = Far.Api
 
-type UseProgress(title) =
+type IMenu with
+    /// Shows the menu of named actions.
+    /// items: pairs of text and actions.
+    member x.doAction (items : (string * (unit -> unit))[]) =
+        x.Items.Clear()
+        for item in items do
+            x.Add(fst item) |> ignore
+        if x.Show() then
+            (snd items.[x.Selected])()
+
+    /// Shows the menu of items.
+    /// text: gets an item text.
+    /// show: processes the selected item.
+    member x.showItem (text : 'a -> string) (show : 'a -> 'r) (items : 'a[]) =
+        x.Items.Clear()
+        for item in items do
+            x.Add(text item) |> ignore
+        if x.Show() then
+            show items.[x.Selected]
+        else
+            Unchecked.defaultof<'r>
+
+    /// Shows the menu of items with keys.
+    /// text: gets an item text.
+    /// show: processes the selected item and key.
+    member x.showItemKey (text : 'a -> string) (show : 'a -> KeyData -> 'r) (items : 'a[]) =
+        x.Items.Clear()
+        for item in items do
+            x.Add(text item) |> ignore
+        if x.Show() && x.Selected >= 0 then
+            show items.[x.Selected] x.Key
+        else
+            Unchecked.defaultof<'r>
+
+type UseProgress(title) as __ =
+    static let mutable head = Option<UseProgress>.None
+
+    let title' = far.UI.WindowTitle
+    let tail = head
     do
         far.UI.SetProgressState(TaskbarProgressBarState.Indeterminate)
         far.UI.WindowTitle <- title
+        head <- Some __
+    
     interface IDisposable with
-        member x.Dispose() =
-            far.UI.SetProgressState(TaskbarProgressBarState.NoProgress)
+        member __.Dispose() =
+            head <- tail
+            far.UI.WindowTitle <- title'
+            if tail.IsNone then
+                far.UI.SetProgressState(TaskbarProgressBarState.NoProgress)
+    
+    member __.Done() =
+        far.UI.SetProgressState(TaskbarProgressBarState.NoProgress)
+        far.UI.SetProgressFlash()
 
 type UsePanelDirectory() =
     let cd =
@@ -100,6 +147,9 @@ let showTempText text title =
 
 let isScriptFileName (fileName:string) =
     fileName.EndsWith(".fsx", StringComparison.OrdinalIgnoreCase) || fileName.EndsWith(".fsscript", StringComparison.OrdinalIgnoreCase)
+
+let isFSharpFileName (fileName:string) =
+    isScriptFileName fileName || fileName.EndsWith(".fs", StringComparison.OrdinalIgnoreCase)
 
 let completeCode (editor:IEditor) getCompletions =
     let line = editor.Line

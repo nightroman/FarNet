@@ -1,3 +1,4 @@
+*.ini
 *.nupkg
 *.sln
 .vs

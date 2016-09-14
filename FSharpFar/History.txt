@@ -2,6 +2,16 @@
 NuGet package: https://www.nuget.org/packages/FarNet.FSharpFar
 FarNet 5.2.0
 
+= 0.4.0 =
+
+Configuration
+- Rename files *.fsi.* -> *.fs.*
+- Two sections [fsc] and [fsi]
+
+New menus in F# editors
+- "Check"
+- "Errors"
+
 = 0.3.4 =
 
 Fix double code completion in interactive.

@@ -13,7 +13,7 @@ open Session
 type FsfModuleEditor() =
     inherit ModuleEditor()
     override x.Invoke(editor, e) =
-        if editor.Data.["F#"] = null then
+        if editor.Data.[DataKey.session] = null then
             editor.KeyDown.Add <| fun e ->
                 match e.Key.VirtualKeyCode with
                 | KeyCode.Tab when not editor.SelectionExists ->

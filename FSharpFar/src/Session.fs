@@ -11,15 +11,21 @@ open System.Text
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.Interactive.Shell
 
-type EvalResult =
-    {
-        Warnings : FSharpErrorInfo[]
-        Exception : exn
-    }
+type EvalResult = {
+    Warnings : FSharpErrorInfo[]
+    Exception : exn
+}
 
-let formatFSharpErrorInfo(w : FSharpErrorInfo) =
-    let kind = if w.Severity = FSharpErrorSeverity.Warning then "warning" else "error"
-    sprintf "%s(%d,%d): %s FS%04d: %s" w.FileName w.StartLineAlternate (w.StartColumn + 1) kind w.ErrorNumber w.Message
+let strErrorSeverity(x) =
+    match x with
+    | FSharpErrorSeverity.Error -> "error"
+    | FSharpErrorSeverity.Warning -> "warning"
+
+let strErrorText(x : FSharpErrorInfo) =
+    sprintf "%s(%d,%d): %s FS%04d: %s" x.FileName x.StartLineAlternate (x.StartColumn + 1) (strErrorSeverity x.Severity) x.ErrorNumber x.Message
+
+let strErrorLine(x : FSharpErrorInfo) =
+    sprintf "%s(%d,%d): %s FS%04d: %s" (Path.GetFileName x.FileName) x.StartLineAlternate (x.StartColumn + 1) (strErrorSeverity x.Severity) x.ErrorNumber (strLine x.Message)
 
 let doEval writer (fn : unit -> EvalResult) =
     let oldOut = Console.Out
@@ -33,9 +39,17 @@ let doEval writer (fn : unit -> EvalResult) =
             Console.SetOut oldOut
             Console.SetError oldOut
     for w in r.Warnings do
-        writer.WriteLine(formatFSharpErrorInfo w)
+        writer.WriteLine(strErrorText w)
     if r.Exception <> null then
         writer.WriteLine(sprintf "%A" r.Exception)
+
+let getCompilerOptions() =
+    let dir = Path.Combine(Environment.GetEnvironmentVariable("FARHOME"), "FarNet")
+    [|
+        "--lib:" + dir
+        "-r:" + dir + "\\FarNet.dll"
+        "-r:" + dir + "\\FarNet.Tools.dll"
+    |]
 
 type Session private (from) =
     static let mutable sessions : Session list = []
@@ -46,18 +60,17 @@ type Session private (from) =
     // assigned to the session
     let _evalWriter = new ProxyWriter(_voidWriter)
 
-    let fsiSession, issues =
+    let fsiSession, issues, config =
         use progress = new UseProgress("Loading session...")
-        
-        let configArgs, loadScripts, useScripts =
-            if File.Exists from then Config.getConfigurationFromFile from else [||], [||], [||]
-        let defaultArgs = [|
-            "fsi.exe" //? dummy
-            "--nologo"
-            "--noninteractive"
-            sprintf @"--lib:%s\FarNet" (Environment.GetEnvironmentVariable("FARHOME"))
-            |]
-        let args = Array.append defaultArgs configArgs
+
+        let config = if File.Exists from then Config.getConfigurationFromFile from else Config.empty
+        let args = [|
+            yield "--nologo"
+            yield "--noninteractive"
+            yield! getCompilerOptions()
+            yield! config.FscArgs
+            yield! config.FsiArgs
+        |]
         let fsiConfig = FsiEvaluationSession.GetDefaultConfiguration()
 
         //! collectible=true has issues
@@ -66,20 +79,20 @@ type Session private (from) =
         //TODO review, reuse
         use writer = new StringWriter()
         try
-            for file in loadScripts do
+            for file in config.LoadFiles do
                 let result, warnings = fsiSession.EvalInteractionNonThrowing (sprintf "#load @\"%s\"" file)
-                for w in warnings do writer.WriteLine(formatFSharpErrorInfo w)
+                for w in warnings do writer.WriteLine(strErrorText w)
                 match result with | Choice2Of2 exn -> raise exn | _ -> ()
 
-            for file in useScripts do
+            for file in config.UseFiles do
                 let code = File.ReadAllText file
                 let result, warnings = fsiSession.EvalInteractionNonThrowing code
-                for w in warnings do writer.WriteLine(formatFSharpErrorInfo w)
+                for w in warnings do writer.WriteLine(strErrorText w)
                 match result with | Choice2Of2 exn -> raise exn | _ -> ()
         with exn ->
             writer.WriteLine(sprintf "%A" exn)
 
-        fsiSession, writer.ToString()
+        fsiSession, writer.ToString(), config
 
     let eval writer eval x =
         _evalWriter.Writer <- writer
@@ -117,6 +130,8 @@ type Session private (from) =
 
     member val ConfigFile = from
 
+    member x.Config with get() = config
+
     member x.EditorFile with get() = Path.ChangeExtension(from, ".fsx")
 
     member x.DisplayName with get() = sprintf "%s - %s" (Path.GetFileName(from)) (Path.GetDirectoryName(from))
@@ -142,7 +157,7 @@ type Session private (from) =
             Seq.empty
 
 let private mainSessionFrom() =
-    Path.Combine(fsfRoaminData(), "main.fsi.ini")
+    Path.Combine(fsfRoaminData(), "main.fs.ini")
 
 /// Gets or creates the main session.
 let getMainSession() = Session.Get(mainSessionFrom())

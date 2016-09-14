@@ -142,7 +142,7 @@ type Interactive(session : Session) =
         editor.FileName <- path
         editor.CodePage <- 65001
         editor.Title <- sprintf "F# %s - %s" (Path.GetFileName path) (Path.GetDirectoryName path)
-        editor.Data.["F#"] <- session;
+        editor.Data.[DataKey.session] <- session;
 
         editor.KeyDown.Add <| fun e ->
             if not editor.SelectionExists then

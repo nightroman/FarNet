@@ -58,6 +58,10 @@ Use `[F11] \ FSharpFar` to open the module menu:
             - Edits the session configuration file.
 - **Load**
     - Evaluates the script opened in editor (`#load`).
+- **Check**
+    - Checks the current F# file for errors.
+- **Errors**
+    - Shows the errors of the last check.
 
 ***
 ## <a id="commands"/> Commands
@@ -99,7 +103,7 @@ Sample file association:
 
 ````
     A file mask or several file masks:
-    *.fsi.ini
+    *.fs.ini
     Description of the association:
     F# session
     ─────────────────────────────────────
@@ -158,26 +162,41 @@ Each session is associated with its configuration file path.
 If the file exists then it is used for session configuration on opening.
 Otherwise, this path is just used as a session ID.
 
-The main session configuration file is *%FARPROFILE%\FarNet\FSharpFar\main.fsi.ini*.
+Editor services use the configuration file in a source file directory.
+If it is missing or there are more than one then the main configuration is used.
+
+The main configuration file is *%FARPROFILE%\FarNet\FSharpFar\main.fs.ini*.
 
 The configuration format is similar to INI-file format.
 Empty lines and lines staring with `;` are ignored.
 Keys and values are separated by `=`.
 Switches are just keys without `=`.
 
-The section `[fsi]` defines F# session options.
-They are standard [F# Interactive Options](https://docs.microsoft.com/en-us/dotnet/articles/fsharp/tutorials/fsharp-interactive/fsharp-interactive-options).
+There are two sections:
 
+- `[fsc]` defines [F# Compiler Options](https://docs.microsoft.com/en-us/dotnet/articles/fsharp/language-reference/compiler-options).
+  `lib` and `reference` are the most important for sessions and editor services.
+- `[fsi]` defines [F# Interactive Options](https://docs.microsoft.com/en-us/dotnet/articles/fsharp/tutorials/fsharp-interactive/fsharp-interactive-options).
+  Normally this section contains `load` and `use`.
+  `load` is used for sessions and services.
+  `use` is used for sessions.
+
+Conventions:
+
+- Use suffix *.fs.ini* for configuration names.
 - Use full option names without `--`.
 - Use switches without values and `=`.
+- FarNet directory is predefined as `lib`.
+- *FarNet.dll* is predefined as `reference`.
 - Keys `lib`, `reference`, `load`, `use` may be used several times.
-- Values are preprocessed
+- Values are preprocessed:
     - Environment variables defined as `%VARIABLE%` are expanded to their values.
     - `__SOURCE_DIRECTORY__` is replaced with the configuration file directory.
 
 Sample configuration:
 
-    [fsi]
+````
+    [fsc]
     optimize-
     fullpaths
     flaterrors
@@ -186,9 +205,12 @@ Sample configuration:
     define=DEBUG
     lib=%SOME_DIR%
     lib=__SOURCE_DIRECTORY__\packages
+
+    [fsi]
     load=__SOURCE_DIRECTORY__\file1.fs
     load=__SOURCE_DIRECTORY__\file2.fs
-    use=__SOURCE_DIRECTORY__\profile.fsx
+    use=__SOURCE_DIRECTORY__\main.fsx
+````
 
 Output of invoked `load` and `use` scripts is discarded, only errors and warnings are shown.
 
@@ -207,6 +229,9 @@ Sample startup script for dealing with Far Manager via FarNet:
     let far = Far.Api
 ````
 
+Note that `#r "FarNet.dll"` is just an example of some referenced assembly.
+It is referenced automatically and may be omitted in F# scripts for Far Manager.
+
 ***
 ## <a id="editor"/> Editor services
 
@@ -219,7 +244,7 @@ Its output is shown in a new editor, together with loading information and issue
 
 Use `[Tab]` in order to complete code.
 Completion is currently based on the main session context, not on the content of the file.
-The main session is configured using *main.fsi.ini*, see [Configuration](#configuration).
+The main session is configured using *main.fs.ini*, see [Configuration](#configuration).
 
 ***
 ## <a id="scripts"/> F# script applications
