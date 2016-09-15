@@ -16,8 +16,7 @@ type EvalResult = {
     Exception : exn
 }
 
-let strErrorSeverity(x) =
-    match x with
+let strErrorSeverity = function
     | FSharpErrorSeverity.Error -> "error"
     | FSharpErrorSeverity.Warning -> "warning"
 

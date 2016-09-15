@@ -141,7 +141,7 @@ type Interactive(session : Session) =
 
         editor.FileName <- path
         editor.CodePage <- 65001
-        editor.Title <- sprintf "F# %s - %s" (Path.GetFileName path) (Path.GetDirectoryName path)
+        editor.Title <- sprintf "F# Interactive %s - %s" (Path.GetFileName path) (Path.GetDirectoryName path)
         editor.Data.[DataKey.session] <- session;
 
         editor.KeyDown.Add <| fun e ->

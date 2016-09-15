@@ -189,27 +189,28 @@ Conventions:
 - FarNet directory is predefined as `lib`.
 - *FarNet.dll* is predefined as `reference`.
 - Keys `lib`, `reference`, `load`, `use` may be used several times.
+  Relative paths should start with a dot.
 - Values are preprocessed:
     - Environment variables defined as `%VARIABLE%` are expanded to their values.
     - `__SOURCE_DIRECTORY__` is replaced with the configuration file directory.
 
 Sample configuration:
 
-````
+````ini
     [fsc]
     optimize-
     fullpaths
     flaterrors
-    warn=4
-    debug=full
-    define=DEBUG
-    lib=%SOME_DIR%
-    lib=__SOURCE_DIRECTORY__\packages
+    warn = 4
+    debug = full
+    define = DEBUG
+    lib = %SOME_DIR%
+    lib = ..\packages
 
     [fsi]
-    load=__SOURCE_DIRECTORY__\file1.fs
-    load=__SOURCE_DIRECTORY__\file2.fs
-    use=__SOURCE_DIRECTORY__\main.fsx
+    load = .\file1.fs
+    load = .\file2.fs
+    use = .\main.fsx
 ````
 
 Output of invoked `load` and `use` scripts is discarded, only errors and warnings are shown.
@@ -218,9 +219,9 @@ The key `use` tells to invoke a startup script as if it is typed interactively.
 Its role is to prepare the session for interactive work and reduce typing, i.e.
 open modules and namespaces, set some supportive functions and values, etc.
 
-Sample startup script for dealing with Far Manager via FarNet:
+Sample startup script *main.fsx* for dealing with Far Manager:
 
-````
+````FSharp
     #r "FarNet.dll"
 
     open FarNet
@@ -230,7 +231,7 @@ Sample startup script for dealing with Far Manager via FarNet:
 ````
 
 Note that `#r "FarNet.dll"` is just an example of some referenced assembly.
-It is referenced automatically and may be omitted in F# scripts for Far Manager.
+This DLL is referenced by default and may be omitted in F# scripts for Far Manager.
 
 ***
 ## <a id="editor"/> Editor services
@@ -245,6 +246,16 @@ Its output is shown in a new editor, together with loading information and issue
 Use `[Tab]` in order to complete code.
 Completion is currently based on the main session context, not on the content of the file.
 The main session is configured using *main.fs.ini*, see [Configuration](#configuration).
+
+Use `[F11]` \ `FSharpFar` \ `Check` in order to check the current file for syntax and type errors.
+If the file is not trivial then its directory should contain the configuration *some.fs.ini*.
+Required references and files should be specified by `reference` and `load`.
+
+**TODO**
+
+- Code completion based on the configuration.
+- Background error checking and automatic highlighting.
+- Finding definitions and references of the term at the caret.
 
 ***
 ## <a id="scripts"/> F# script applications
@@ -275,7 +286,7 @@ Evaluation is performed in the main session.
 The user menu is only available in panels by default (`[F2]`).
 To open the user menu from other areas use the macro (`[CtrlShiftF9]`):
 
-````
+````lua
     Macro {
         area="Editor Viewer Dialog"; key="CtrlShiftF9"; description="User menu"; action=function()
         mf.usermenu(0, "")
@@ -288,13 +299,11 @@ To open the user menu from other areas use the macro (`[CtrlShiftF9]`):
 F# scripts may be associated to keys using macros.
 Example:
 
-````
+````lua
+    local FarNet = function(cmd) return Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", cmd) end
     Macro {
         area="Common"; key="CtrlShiftF9"; description="F# MyScript"; action=function()
-        Plugin.Call(
-            "10435532-9BB3-487B-A045-B0E6ECAAB6BC",
-            [[fs: //exec file = C:\Scripts\Far\MyScript.far.fsx]]
-        )
+        FarNet [[fs: //exec file = C:\Scripts\Far\MyScript.far.fsx]]
         end;
     }
 ````

@@ -59,6 +59,12 @@ let getConfigurationFromFile path =
     let mutable currentSection = NoSection
     let mutable lineNo = 0
 
+    let resolve kv =
+        let value = Environment.ExpandEnvironmentVariables(kv.Value).Replace("__SOURCE_DIRECTORY__", root)
+        match kv.Key with
+        | "reference" | "load" | "lib" | "use" when value.StartsWith(".") -> Path.GetFullPath(Path.Combine(root, value))
+        | _ -> value
+
     try
         for line in lines do
             lineNo <- lineNo + 1
@@ -78,10 +84,10 @@ let getConfigurationFromFile path =
             | KeyValue it ->
                 match currentSection with
                 | FscSection ->
-                    let text = Environment.ExpandEnvironmentVariables(it.Value).Replace("__SOURCE_DIRECTORY__", root)
+                    let text = resolve it
                     fscArgs.Add("--" + it.Key + ":" + text)
                 | FsiSection ->
-                    let text = Environment.ExpandEnvironmentVariables(it.Value).Replace("__SOURCE_DIRECTORY__", root)
+                    let text = resolve it
                     match it.Key with
                     | "load" ->
                         loadScripts.Add text

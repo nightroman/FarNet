@@ -2,6 +2,11 @@
 NuGet package: https://www.nuget.org/packages/FarNet.FSharpFar
 FarNet 5.2.0
 
+= 0.4.1 =
+
+- Work around console output problems (Mantis 3297)
+- Support relative "reference" | "load" | "lib" | "use"
+
 = 0.4.0 =
 
 Configuration
