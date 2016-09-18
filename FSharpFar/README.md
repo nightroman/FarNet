@@ -58,6 +58,8 @@ Use `[F11] \ FSharpFar` to open the module menu:
             - Edits the session configuration file.
 - **Load**
     - Evaluates the script opened in editor (`#load`).
+- **Tips**
+    - Shows type tips for the term at the caret.
 - **Check**
     - Checks the current F# file for errors.
 - **Errors**
@@ -95,9 +97,7 @@ Module commands start with two slashes after the prefix.
 
 #### `fs: //open with = <config>`
 
-Opens a session with the specified configuration file.
-
-The interactive file is `config-path\base-name.fsx`.
+Opens an interactive session with the specified configuration.
 
 Sample file association:
 
@@ -237,23 +237,25 @@ This DLL is referenced by default and may be omitted in F# scripts for Far Manag
 ## <a id="editor"/> Editor services
 
 Editor services are automatically available for F# source files opened in editors.
-They are limited at this point but they are still handy.
-
-Use `[F11]` \ `FSharpFar` \ `Load` in order to evaluate a script being edited in the main session.
-The script is automatically saved before loading.
-Its output is shown in a new editor, together with loading information and issues.
+If files are not trivial then some service require the configuration *some.fs.ini*.
+The configuration file is expected to be in the same directory as a source file.
+Required references and files should be specified by `reference` and `load`.
 
 Use `[Tab]` in order to complete code.
-Completion is currently based on the main session context, not on the content of the file.
+Completion is currently based on the main session, not on the content of the file.
 The main session is configured using *main.fs.ini*, see [Configuration](#configuration).
 
-Use `[F11]` \ `FSharpFar` \ `Check` in order to check the current file for syntax and type errors.
-If the file is not trivial then its directory should contain the configuration *some.fs.ini*.
-Required references and files should be specified by `reference` and `load`.
+Use `[F11]` \ `FSharpFar` \ `Load` in order to evaluate the file in the main session.
+The file is automatically saved before loading.
+The output is shown in a new editor, together with loading info and issues.
+
+Use `[F11]` \ `FSharpFar` \ `Tips` in order to get type tips for the term at the caret.
+
+Use `[F11]` \ `FSharpFar` \ `Check` in order to check the file for syntax and type errors.
 
 **TODO**
 
-- Code completion based on the configuration.
+- Code completion based on content and configuration.
 - Background error checking and automatic highlighting.
 - Finding definitions and references of the term at the caret.
 
@@ -279,32 +281,50 @@ Evaluation is performed in the main session.
         fs: #load @"!\!.!"
 ````
 
-#### F# scripts in user menu
+#### F# scripts from user menu
 
-`fs:` commands may be called from the user menu.
+`fs:` commands may be easily composed and called from the user menu.
 
-The user menu is only available in panels by default (`[F2]`).
-To open the user menu from other areas use the macro (`[CtrlShiftF9]`):
+By design, the user menu is available in panels and opened by `[F2]`.
+But it may be used is other areas as well with the Far Manager macro:
 
 ````lua
     Macro {
-        area="Editor Viewer Dialog"; key="CtrlShiftF9"; description="User menu"; action=function()
-        mf.usermenu(0, "")
-        end;
+      area="Editor Viewer Dialog"; key="CtrlShiftF9"; description="User menu"; action=function()
+      mf.usermenu(0, "")
+      end;
     }
 ````
 
-#### F# scripts in user macros
+#### F# scripts from input box
 
-F# scripts may be associated to keys using macros.
+`fs:` commands and other FarNet module commands may be invoked from an input box.
+
+The following Far Manager macro prompts for a command and invokes it:
+
+````lua
+    local FarNet = function(cmd) return Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", cmd) end
+    Macro {
+      area="Common"; key="CtrlShiftF9"; description="FarNet command"; action=function()
+        local cmd = far.InputBox(nil, "FarNet command", "prefix: command", "FarNet command")
+        if cmd then
+          FarNet(cmd)
+        end
+      end;
+    }
+````
+
+#### F# scripts assigned to keys
+
+F# scripts may be assigned to keys using Far Manager macros.
 Example:
 
 ````lua
     local FarNet = function(cmd) return Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", cmd) end
     Macro {
-        area="Common"; key="CtrlShiftF9"; description="F# MyScript"; action=function()
-        FarNet [[fs: //exec file = C:\Scripts\Far\MyScript.far.fsx]]
-        end;
+      area="Common"; key="CtrlShiftF9"; description="F# MyScript"; action=function()
+      FarNet [[fs: //exec file = C:\Scripts\Far\MyScript.far.fsx]]
+      end;
     }
 ````
 

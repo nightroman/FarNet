@@ -10,12 +10,13 @@ open System.IO
 open System.Text
 open System.Text.RegularExpressions
 
-/// Table keys, e.g. editor.Data
-module DataKey =
-    let errors = "F# errors"
-    let session = "F# session"
-
 let private reNonSpaceWhiteSpace = Regex(@"[\r\n\t]+")
 
 /// Makes a string for one line show.
 let strLine(x) = reNonSpaceWhiteSpace.Replace(x, " ")
+
+/// A function that always returns the same value.
+let inline always value = fun _ -> value
+
+/// Gets true if a char is an identifier char.
+let isIdentChar char = Char.IsLetterOrDigit char || char = '_'

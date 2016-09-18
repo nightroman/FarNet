@@ -50,9 +50,10 @@ let getCompilerOptions() =
         "-r:" + dir + "\\FarNet.Tools.dll"
     |]
 
-type Session private (from) =
+type Session private (configFile) =
     static let mutable sessions : Session list = []
-    let from = Path.GetFullPath from
+    let configFile = Path.GetFullPath configFile
+    let onClose = new Event<unit>()
 
     // contains some extra "noise" output
     let _voidWriter = new StringWriter()
@@ -62,8 +63,9 @@ type Session private (from) =
     let fsiSession, issues, config =
         use progress = new UseProgress("Loading session...")
 
-        let config = if File.Exists from then Config.getConfigurationFromFile from else Config.empty
+        let config = if File.Exists configFile then Config.getConfigurationFromFile configFile else Config.empty
         let args = [|
+            yield "fsi.exe" //! dummy, else --nologo is consumed
             yield "--nologo"
             yield "--noninteractive"
             yield! getCompilerOptions()
@@ -75,7 +77,7 @@ type Session private (from) =
         //! collectible=true has issues
         let fsiSession = FsiEvaluationSession.Create(fsiConfig, args, new StringReader(""), _evalWriter, _evalWriter)
 
-        //TODO review, reuse
+        // load and use files
         use writer = new StringWriter()
         try
             for file in config.LoadFiles do
@@ -106,41 +108,42 @@ type Session private (from) =
                 | _ -> null
         }
 
-    static member TryFind(from) =
-        sessions |> List.tryFind(fun x -> x.IsFrom(from))
+    static member TryFind(path) =
+        sessions |> List.tryFind(fun x -> x.IsSameConfigFile(path))
 
-    static member Get(from) =
-        match Session.TryFind(from) with
+    static member FindOrCreate(path) =
+        match Session.TryFind(path) with
         | Some s -> s
         | _ ->
-            sessions <- Session(from) :: sessions
+            sessions <- Session(path) :: sessions
             sessions.Head
 
-    static member Sessions with get() = sessions
+    static member Sessions = sessions
 
-    member m.Close() =
-        m.OnClose()
+    member x.Close() =
+        onClose.Trigger()
 
-        sessions <- sessions |> List.except [m]
+        sessions <- sessions |> List.except [x]
 
         _evalWriter.Dispose()
         _voidWriter.Dispose()
         (fsiSession :> IDisposable).Dispose()
 
-    member val ConfigFile = from
+    member x.ConfigFile = configFile
 
-    member x.Config with get() = config
+    member x.Config = config
 
-    member x.EditorFile with get() = Path.ChangeExtension(from, ".fsx")
+    member x.EditorFile = Path.Combine(fsfLocalData(), Path.GetFileNameWithoutExtension(configFile) + ".fsx")
 
-    member x.DisplayName with get() = sprintf "%s - %s" (Path.GetFileName(from)) (Path.GetDirectoryName(from))
+    member x.DisplayName = sprintf "%s - %s" (Path.GetFileName configFile) (Path.GetDirectoryName configFile)
 
-    member val Issues = issues
+    member x.Issues = issues
 
-    member val internal OnClose = fun()->() with get, set
+    [<CLIEvent>]
+    member x.OnClose = onClose.Publish
 
-    member x.IsFrom(path) =
-        String.Equals(from, Path.GetFullPath(path), StringComparison.OrdinalIgnoreCase)
+    member x.IsSameConfigFile(path) =
+        String.Equals(configFile, Path.GetFullPath(path), StringComparison.OrdinalIgnoreCase)
 
     member x.EvalInteraction(writer, code) =
         eval writer fsiSession.EvalInteractionNonThrowing code
@@ -159,7 +162,7 @@ let private mainSessionFrom() =
     Path.Combine(fsfRoaminData(), "main.fs.ini")
 
 /// Gets or creates the main session.
-let getMainSession() = Session.Get(mainSessionFrom())
+let getMainSession() = Session.FindOrCreate(mainSessionFrom())
 
 /// Gets the main session or none.
 let tryFindMainSession() = Session.TryFind(mainSessionFrom())

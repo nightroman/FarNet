@@ -67,6 +67,7 @@
     <Compile Include="FarStdWriter.fs" />
     <Compile Include="ProxyWriter.fs" />
     <Compile Include="Session.fs" />
+    <Compile Include="EditorExt.fs" />
     <Compile Include="Interactive.fs" />
     <Compile Include="Checker.fs" />
     <Compile Include="FsfModuleCommand.fs" />

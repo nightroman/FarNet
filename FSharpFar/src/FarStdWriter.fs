@@ -32,7 +32,7 @@ type FarStdWriter() as this =
             Console.SetOut(_writer)
             Console.SetError(_writer2)
 
-    override x.Encoding with get() = _writer.Encoding
+    override x.Encoding = _writer.Encoding
 
     override x.Flush() =
         if sb.Length > 0 then

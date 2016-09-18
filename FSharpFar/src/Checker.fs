@@ -47,3 +47,37 @@ let check file text config =
         | _ -> failwith "unexpected aborted"
 
     parseResults, checkResults
+
+let strTip tip =
+    use w = new StringWriter()
+        
+    // see FCS buildFormatComment
+    let writeXmlDoc cmt =
+        match cmt with
+        | FSharpXmlDoc.Text s -> w.WriteLine s
+        | FSharpXmlDoc.XmlDocFileSignature (file, signature) -> ()
+        | FSharpXmlDoc.None -> ()
+            
+    match tip with
+    | FSharpToolTipText list ->
+        for item in list do
+            match item with
+            // String.Length
+            | FSharpToolTipElement.Single (s, x) ->
+                w.WriteLine s
+                writeXmlDoc x
+            // no examples yet, FCS ignores 3rd
+            | FSharpToolTipElement.SingleParameter (s, x, _) ->
+                w.WriteLine s
+                writeXmlDoc x
+            // String.Substring
+            | FSharpToolTipElement.Group list ->
+                for (s, x) in list do
+                    w.WriteLine s
+                    writeXmlDoc x
+            | FSharpToolTipElement.CompositionError err ->
+                w.WriteLine err
+            | FSharpToolTipElement.None ->
+                ()
+        
+    w.ToString()

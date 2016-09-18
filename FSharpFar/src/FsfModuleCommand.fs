@@ -34,7 +34,7 @@ type FsfModuleCommand() =
             | _ -> far.UI.WriteLine "Not opened."
 
         | Open args ->
-            let ses = match args.With with | Some path -> Session.Get(path) | _ -> getMainSession()
+            let ses = match args.With with | Some path -> Session.FindOrCreate(path) | _ -> getMainSession()
             let interactive = Interactive.Interactive(ses)
             interactive.Open()
 
@@ -50,7 +50,7 @@ type FsfModuleCommand() =
 
         | Exec args ->
             use std = new FarStdWriter()
-            let ses = match args.With with | Some path -> Session.Get(path) | _ -> getMainSession()
+            let ses = match args.With with | Some path -> Session.FindOrCreate(path) | _ -> getMainSession()
             use writer = new StringWriter()
             let r = ses.EvalScript(writer, args.File)
 

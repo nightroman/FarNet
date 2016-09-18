@@ -11,13 +11,12 @@ open System
 open System.IO
 open System.Text
 
-type private Area =
-    {
-        FirstLineIndex : int
-        LastLineIndex : int
-        Caret : Point
-        Active : bool
-    }
+type private Area = {
+    FirstLineIndex : int
+    LastLineIndex : int
+    Caret : Point
+    Active : bool
+}
 
 let private OutputMark1 = "(*("
 let private OutputMark2 = ")*)";
@@ -136,34 +135,46 @@ type Interactive(session : Session) =
 
         editor.WorksSetColors(GuidColor, 2, colors)
 
-    member __.Open() =
+    member x.Open() =
         let path = session.EditorFile
 
         editor.FileName <- path
         editor.CodePage <- 65001
-        editor.Title <- sprintf "F# Interactive %s - %s" (Path.GetFileName path) (Path.GetDirectoryName path)
-        editor.Data.[DataKey.session] <- session;
+        editor.Title <- sprintf "F# Interactive %s" session.DisplayName
+        
+        // attach to session
+        editor.fsSession <- Some session
+        let onSessionClose = Handler<unit>(fun _ _ ->
+            if editor.IsOpened then
+                editor.Close()
+        )
+        session.OnClose.AddHandler onSessionClose
+        editor.Closed.Add(fun _ ->
+            session.OnClose.RemoveHandler onSessionClose
+        )
 
         editor.KeyDown.Add <| fun e ->
             if not editor.SelectionExists then
                 match e.Key.VirtualKeyCode with
-                | KeyCode.Enter ->
-                    if e.Key.IsShift() then
-                        e.Ignore <- true
-                        invoke()
-                | KeyCode.Tab when not editor.SelectionExists ->
-                    if e.Key.Is() then
-                        e.Ignore <- completeCode editor session.GetCompletions
-                | _ -> ()
+                | KeyCode.Enter when e.Key.IsShift() ->
+                    e.Ignore <- true
+                    invoke()
+                | KeyCode.Tab when e.Key.Is() && not editor.SelectionExists ->
+                    e.Ignore <- completeCode editor session.GetCompletions
+                | _ ->
+                    ()
 
+        // Open. Post, to avoid modal. Use case:
+        // - open session by `fs: //open`
+        // - it writes echo -> user screen
+        // - opening from user screen is modal
         far.PostJob(fun() ->
             editor.Open()
+        )
 
-            // attach to session
-            session.OnClose <- fun() ->
-                if editor.IsOpened then
-                    editor.Close()
-
+        // Show issues. Post, for legit modal cases like opening from a dialog.
+        // We want some job to be done after opening in any case.
+        far.PostJob(fun() ->
             if session.Issues.Length > 0 then
                 showTempText session.Issues "F# Issues"
         )
