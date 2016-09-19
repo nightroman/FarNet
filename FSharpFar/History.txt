@@ -2,6 +2,10 @@
 NuGet package: https://www.nuget.org/packages/FarNet.FSharpFar
 FarNet 5.2.0
 
+= 0.6.0 =
+
+Proper F# code completion based on configuration info.
+
 = 0.5.0 =
 
 New menu in F# editors

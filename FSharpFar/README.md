@@ -158,17 +158,16 @@ The structure of interactive text in the editor:
 
 ## <a id="configuration"/> Configuration
 
-Each session is associated with its configuration file path.
-If the file exists then it is used for session configuration on opening.
-Otherwise, this path is just used as a session ID.
+Each session is associated with its configuration file path, existing or not.
+In the latter case, the path is just used as a session ID.
 
 Editor services use the configuration file in a source file directory.
-If it is missing or there are more than one then the main configuration is used.
+If it is missing or not alone then the main configuration is used.
 
 The main configuration file is *%FARPROFILE%\FarNet\FSharpFar\main.fs.ini*.
 
-The configuration format is similar to INI-file format.
-Empty lines and lines staring with `;` are ignored.
+The configuration file format is similar to INI.
+Lines staring with `;` or empty are ignored.
 Keys and values are separated by `=`.
 Switches are just keys without `=`.
 
@@ -237,25 +236,32 @@ This DLL is referenced by default and may be omitted in F# scripts for Far Manag
 ## <a id="editor"/> Editor services
 
 Editor services are automatically available for F# source files opened in editors.
-If files are not trivial then some service require the configuration *some.fs.ini*.
+If files are not trivial then services may require the configuration *some.fs.ini*.
 The configuration file is expected to be in the same directory as a source file.
 Required references and files should be specified by `reference` and `load`.
 
+**Code completion**
+
 Use `[Tab]` in order to complete code.
-Completion is currently based on the main session, not on the content of the file.
-The main session is configured using *main.fs.ini*, see [Configuration](#configuration).
+Source completion is based on the current file content and the configuration.
+Interactive completion is based on the current session and its configuration.
+
+**Code evaluation**
 
 Use `[F11]` \ `FSharpFar` \ `Load` in order to evaluate the file in the main session.
 The file is automatically saved before loading.
-The output is shown in a new editor, together with loading info and issues.
+The output is shown in a new editor.
+
+**Type info tips**
 
 Use `[F11]` \ `FSharpFar` \ `Tips` in order to get type tips for the term at the caret.
+
+**Code issues**
 
 Use `[F11]` \ `FSharpFar` \ `Check` in order to check the file for syntax and type errors.
 
 **TODO**
 
-- Code completion based on content and configuration.
 - Background error checking and automatic highlighting.
 - Finding definitions and references of the term at the caret.
 

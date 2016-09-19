@@ -7,7 +7,6 @@ namespace FSharpFar
 open FarNet
 open System
 open System.IO
-open Config
 open Interactive
 open Session
 open Microsoft.FSharp.Compiler
@@ -67,23 +66,10 @@ type FsfModuleTool() =
             editor.Redraw()
         )
 
-    let config() =
-        match editor.fsSession with
-        | Some ses ->
-            ses.Config
-        | _ ->
-            let dir = Path.GetDirectoryName(editor.FileName)
-            let ini = Directory.GetFiles(dir, "*.fs.ini")
-            match ini with
-            | [|configFile|] ->
-                getConfigurationFromFile configFile
-            | _ ->
-                getMainSession().Config
-
     let check() =
         use progress = new UseProgress("Checking...")
-        
-        let config = config()
+
+        let config = editor.fsConfig()
         let file = editor.FileName
         let text = editor.GetText()
 
@@ -98,10 +84,10 @@ type FsfModuleTool() =
         else
             editor.fsErrors <- Some errors
             showErrors()
-    
+
     let tips() =
         use progress = new UseProgress("Getting tips...")
-        
+
         let caret = editor.Caret
         let lineText = editor.[caret.Y].Text
 
@@ -110,10 +96,10 @@ type FsfModuleTool() =
         if nameEnd >= lineText.Length then
             nameEnd <- lineText.Length - 1
         if nameEnd < 0 then () else
-        
+
         while nameEnd < lineText.Length && isIdentChar lineText.[nameEnd] do
             nameEnd <- nameEnd + 1
-        
+
         // find start of name
         let mutable nameStart = nameEnd
         while nameStart > 1 && isIdentChar lineText.[nameStart - 1] do
@@ -121,7 +107,7 @@ type FsfModuleTool() =
         let name = lineText.Substring(nameStart, nameEnd - nameStart)
         if name.Length = 0 then () else
 
-        let config = config()
+        let config = editor.fsConfig()
         let file = editor.FileName
         let text = editor.GetText()
 

@@ -97,6 +97,7 @@ let fsfRoaminData() = far.GetModuleManager("FSharpFar").GetFolderPath(SpecialFol
 let writeException exn =
     far.UI.WriteLine(sprintf "%A" exn, ConsoleColor.Red)
 
+/// Completes an edit line. In an editor callers should Redraw().
 let completeLine (editLine : ILine) replacementIndex replacementLength (words : seq<string>) =
     let count = Seq.length words
     let text = editLine.Text
