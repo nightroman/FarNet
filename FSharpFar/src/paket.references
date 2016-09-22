@@ -1,1 +1,2 @@
 FSharp.Compiler.Service copy_local: false
+FSharp.Compiler.Service.ProjectCracker copy_local: false

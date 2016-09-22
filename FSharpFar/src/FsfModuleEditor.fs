@@ -8,6 +8,8 @@ namespace FSharpFar
 
 open FarNet
 open System
+open Checker
+open FsAutoComplete
 
 [<System.Runtime.InteropServices.Guid("B7916B53-2C17-4086-8F13-5FFCF0D82900")>]
 [<ModuleEditor(Name = "FSharpFar", Mask = "*.fs;*.fsx;*.fsscript")>]
@@ -17,46 +19,37 @@ type FsfModuleEditor() =
     let mutable editor:IEditor = null
 
     // https://fsharp.github.io/FSharp.Compiler.Service/editor.html#Getting-auto-complete-lists
-    // EditorTests.fs(265) they use [], "" instead of names, so do we
+    // old EditorTests.fs(265) they use [], "" instead of names, so do we.
+    // new Use FsAutoComplete way.
     let complete() =
         use progress = new UseProgress("Checking...")
 
         let caret = editor.Caret
-        let lineText = editor.[caret.Y].Text
+        let line = editor.[caret.Y]
+        if caret.X = 0 || caret.X > line.Length then false
+        else
 
-        // end of name
-        let nameEnd = caret.X
-        if nameEnd = 0 || nameEnd > lineText.Length || Char.IsWhiteSpace(lineText.[nameEnd - 1]) then false else
+        let lineStr = line.Text
+        if Char.IsWhiteSpace lineStr.[caret.X - 1] then false
+        else
 
-        // start of name
-        let mutable nameStart = nameEnd
-        while nameStart > 0 && isIdentChar lineText.[nameStart - 1] do
-            nameStart <- nameStart - 1
-        let nameToReplace = lineText.Substring(nameStart, nameEnd - nameStart)
-
-        let colAtEndOfPartialName =
-            if nameStart > 0 && lineText.[nameStart - 1] = '.' then
-                nameStart // = index of dot + 1
-            else
-                nameEnd // = end + 1
-
-        let config = editor.fsConfig()
+        let options = getOptionsForFile editor.FileName editor.fsSession
         let file = editor.FileName
         let text = editor.GetText()
 
-        let parseResults, checkResults = Checker.check file text config
-        let errors = checkResults.Errors
+        let parseResults, checkResults = Checker.check file text options
 
-        let decs = checkResults.GetDeclarationListInfo(Some parseResults, caret.Y + 1, colAtEndOfPartialName, lineText, [], "", always false) |> Async.RunSynchronously
+        let longName, residue = Parsing.findLongIdentsAndResidue(caret.X, lineStr)
+        let decs = checkResults.GetDeclarationListInfo(Some parseResults, caret.Y + 1, caret.X + 1, lineStr, longName, residue, always false) |> Async.RunSynchronously
 
         let completions =
             decs.Items
             |> Seq.map (fun item -> item.Name)
-            |> Seq.filter (fun name -> name.StartsWith nameToReplace)
+            |> Seq.filter (fun name -> name.StartsWith residue)
 
         progress.Done()
 
-        completeLine editor.Line nameStart nameToReplace.Length completions
+        completeLine editor.Line (caret.X - residue.Length) residue.Length completions
         editor.Redraw()
         true
 

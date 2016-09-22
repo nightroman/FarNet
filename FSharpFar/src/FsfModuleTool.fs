@@ -7,6 +7,7 @@ namespace FSharpFar
 open FarNet
 open System
 open System.IO
+open Checker
 open Interactive
 open Session
 open Microsoft.FSharp.Compiler
@@ -69,11 +70,11 @@ type FsfModuleTool() =
     let check() =
         use progress = new UseProgress("Checking...")
 
-        let config = editor.fsConfig()
+        let options = getOptionsForFile editor.FileName editor.fsSession
         let file = editor.FileName
         let text = editor.GetText()
 
-        let parseResults, checkResults = Checker.check file text config
+        let parseResults, checkResults = Checker.check file text options
         let errors = checkResults.Errors
 
         progress.Done()
@@ -107,11 +108,11 @@ type FsfModuleTool() =
         let name = lineText.Substring(nameStart, nameEnd - nameStart)
         if name.Length = 0 then () else
 
-        let config = editor.fsConfig()
+        let options = getOptionsForFile editor.FileName editor.fsSession
         let file = editor.FileName
         let text = editor.GetText()
 
-        let parseResults, checkResults = Checker.check file text config
+        let parseResults, checkResults = Checker.check file text options
         let tip = checkResults.GetToolTipTextAlternate(caret.Y + 1, nameEnd, lineText, [name], FSharpTokenTag.Identifier) |> Async.RunSynchronously
 
         progress.Done()

@@ -24,6 +24,7 @@ FSharpFar provides F# interactive, scripting, and editor services for Far Manage
 **Credits**
 
 - FSharpFar is built and packaged with [F# Compiler Services](https://fsharp.github.io/FSharp.Compiler.Service/index.html).
+- Some solutions are learned and borrowed from [FsAutoComplete](https://github.com/fsharp/FsAutoComplete).
 
 ***
 ## Installation
@@ -47,13 +48,13 @@ See how to get, install, and update *FarNet.FSharpFar*
 Use `[F11] \ FSharpFar` to open the module menu:
 
 - **Interactive**
-    - Opens the main interactive session in the editor.
+    - Opens the main session interactive.
 - **Sessions...**
     - Shows the list of opened sessions. Keys:
         - `[Enter]`
-            - Opens the session in the editor.
+            - Opens the session interactive.
         - `[Del]`
-            - Closes the session and its editor.
+            - Closes the session and interactive.
         - `[F4]`
             - Edits the session configuration file.
 - **Load**
@@ -162,11 +163,12 @@ Each session is associated with its configuration file path, existing or not.
 In the latter case, the path is just used as a session ID.
 
 Editor services use the configuration file in a source file directory.
-If it is missing or not alone then the main configuration is used.
+It is either a single `*.fs.ini` or a standard project file `*.fsproj`.
+If such a file is not found then the main configuration is used.
 
 The main configuration file is *%FARPROFILE%\FarNet\FSharpFar\main.fs.ini*.
 
-The configuration file format is similar to INI.
+The `.fs.ini` configuration file format is similar to INI.
 Lines staring with `;` or empty are ignored.
 Keys and values are separated by `=`.
 Switches are just keys without `=`.
@@ -239,6 +241,7 @@ Editor services are automatically available for F# source files opened in editor
 If files are not trivial then services may require the configuration *some.fs.ini*.
 The configuration file is expected to be in the same directory as a source file.
 Required references and files should be specified by `reference` and `load`.
+If such a file is not found then a project file `*.fsproj` is used, if any.
 
 **Code completion**
 

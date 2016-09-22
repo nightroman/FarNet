@@ -2,6 +2,14 @@
 NuGet package: https://www.nuget.org/packages/FarNet.FSharpFar
 FarNet 5.2.0
 
+= 0.7.0 =
+
+Configuration
+- Make configuration from .fsproj when .fs.ini is missing.
+
+Misc
+- Improve code completion.
+
 = 0.6.0 =
 
 Proper F# code completion based on configuration info.

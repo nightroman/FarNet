@@ -1,7 +1,7 @@
 
 # ![FarNet](https://raw.githubusercontent.com/wiki/nightroman/FarNet/images/FarNetLogo.png) FarNet
 
-FarNet is the framework for .NET modules and Windows PowerShell in Far Manager.
+FarNet is the Far Manager platform for .NET modules, Windows PowerShell, and F#.
 
 Far Manager is a file manager for Microsoft Windows. In addition to file system
 tools it provides the console command line, file viewer, and text editor with
@@ -14,14 +14,13 @@ languages.
 FarNet is such a wrapper. It exposes the .NET API in object oriented way and
 provides the runtime infrastructure for its modules.
 
-One of the modules is PowerShellFar. It implements the Windows PowerShell host
-and turns Far Manager into the console based integrated scripting environment.
+PowerShellFar implements the Windows PowerShell host and turns Far Manager into
+the console based integrated scripting environment. FSharpFar provides F#
+interactive and editor services. Other modules are various tools.
 
 ----
 
-The project FarNet is the framework itself and the family of modules and tools.
-
 Visit [FarNet/wiki](https://github.com/nightroman/FarNet/wiki) in order to get
-information about all distributed packages.
+information about available packages.
 
 ----

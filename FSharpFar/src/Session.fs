@@ -4,10 +4,11 @@
 
 module FSharpFar.Session
 
-open ProxyWriter
 open System
 open System.IO
 open System.Text
+open Config
+open ProxyWriter
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.Interactive.Shell
 

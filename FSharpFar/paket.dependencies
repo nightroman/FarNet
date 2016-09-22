@@ -2,3 +2,4 @@ framework: net45
 references: strict
 source https://www.nuget.org/api/v2
 nuget FSharp.Compiler.Service
+nuget FSharp.Compiler.Service.ProjectCracker
