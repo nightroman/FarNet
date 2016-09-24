@@ -47,7 +47,7 @@ type Config = {
 
 let empty = {FscArgs = [||]; FsiArgs = [||]; LoadFiles = [||]; UseFiles = [||]}
 
-let getConfigurationFromFile path =
+let getConfigFromIniFile path =
     let lines = File.ReadAllLines path
     let root = Path.GetDirectoryName path
 
@@ -69,7 +69,8 @@ let getConfigurationFromFile path =
         for line in lines do
             lineNo <- lineNo + 1
             match parse line with
-            | Empty | Comment -> ()
+            | Empty | Comment ->
+                ()
             | Section section ->
                 currentSection <-
                     match section with
@@ -95,7 +96,8 @@ let getConfigurationFromFile path =
                         useScripts.Add text
                     | _ ->
                         fsiArgs.Add("--" + it.Key + ":" + text)
-                | NoSection -> ()
+                | NoSection ->
+                    invalidOp "Expected section, found data."
      with e ->
         invalidOp (sprintf "%s(%d): %s" path lineNo e.Message)
 

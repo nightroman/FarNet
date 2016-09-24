@@ -8,14 +8,14 @@ open FarNet
 open System
 open System.IO
 open Checker
-open Interactive
 open Session
+open FarInteractive
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
 [<System.Runtime.InteropServices.Guid("65bd5625-769a-4253-8fde-ffcc3f72489d")>]
 [<ModuleTool(Name = "FSharpFar", Options = ModuleToolOptions.AllMenus)>]
-type FsfModuleTool() =
+type FarTool() =
     inherit ModuleTool()
 
     let mutable editor:IEditor = null
@@ -40,7 +40,7 @@ type FsfModuleTool() =
                     editor.Open()
                     false
                 | _ ->
-                    Interactive(ses).Open()
+                    FarInteractive(ses).Open()
                     false
             )
 
@@ -70,7 +70,7 @@ type FsfModuleTool() =
     let check() =
         use progress = new UseProgress("Checking...")
 
-        let options = getOptionsForFile editor.FileName editor.fsSession
+        let options = editor.getOptions()
         let file = editor.FileName
         let text = editor.GetText()
 
@@ -108,7 +108,7 @@ type FsfModuleTool() =
         let name = lineText.Substring(nameStart, nameEnd - nameStart)
         if name.Length = 0 then () else
 
-        let options = getOptionsForFile editor.FileName editor.fsSession
+        let options = editor.getOptions()
         let file = editor.FileName
         let text = editor.GetText()
 
@@ -127,7 +127,7 @@ type FsfModuleTool() =
 
         menu.doAction [|
             // all menus
-            yield "&1. Interactive", (fun() -> Interactive(getMainSession()).Open())
+            yield "&1. Interactive", (fun() -> FarInteractive(getMainSession()).Open())
             yield "&0. Sessions...", showSessions
             // editor with F#
             if e.From = ModuleToolOptions.Editor && isFSharpFileName editor.FileName then

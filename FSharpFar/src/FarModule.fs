@@ -3,11 +3,12 @@
 // Copyright (c) 2016 Roman Kuzmin
 
 [<AutoOpen>]
-module FSharpFar.EditorExt
+module FSharpFar.FarModule
 
 open FarNet
-open System.IO
-open Config
+open System
+open Checker
+open Options
 open Session
 open Microsoft.FSharp.Compiler
 
@@ -32,3 +33,9 @@ type IEditor with
     member x.fsErrors
         with get() = x.getOpt<FSharpErrorInfo[]> Key.errors
         and set (value : FSharpErrorInfo[] option) = x.setOpt(Key.errors, value)
+
+    member x.getOptions() =
+        match x.fsSession with
+        | Some x -> ConfigOptions x.Config
+        | _ -> getOptionsForFile x.FileName
+    

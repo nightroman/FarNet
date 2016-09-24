@@ -2,7 +2,7 @@
 // FarNet module FSharpFar
 // Copyright (c) 2016 Roman Kuzmin
 
-module FSharpFar.Interactive
+module FSharpFar.FarInteractive
 
 open FarNet
 open Command
@@ -12,7 +12,7 @@ open System.IO
 open System.Text
 
 type private Area = {
-    FirstLineIndex : int
+    HeadLineIndex : int
     LastLineIndex : int
     Caret : Point
     Active : bool
@@ -21,7 +21,7 @@ type private Area = {
 let private OutputMark1 = "(*("
 let private OutputMark2 = ")*)";
 
-type Interactive(session : Session) =
+type FarInteractive(session : Session) =
     let session = session
     let editor = far.CreateEditor()
 
@@ -64,7 +64,7 @@ type Interactive(session : Session) =
             findLine2 line2
             if line2 < 0 then None
             else Some {
-                FirstLineIndex = line1
+                HeadLineIndex = line1
                 LastLineIndex = line2
                 Caret = caret
                 Active = active
@@ -72,47 +72,49 @@ type Interactive(session : Session) =
 
     let areaCode area =
         let sb = StringBuilder()
-        for y in area.FirstLineIndex .. area.LastLineIndex do
+        for y in area.HeadLineIndex .. area.LastLineIndex do
             if sb.Length > 0 then
                 sb.AppendLine() |> ignore
             sb.Append editor.[y].Text |> ignore
         sb.ToString()
 
     let invoke() =
-        let area = getCommandArea()
-        match area with
+        match getCommandArea() with
         | None -> ()
         | Some area ->
-            let code = areaCode area
-            if code.Length = 0 then
-                ()
-            elif not area.Active then
-                editor.GoToEnd true
-                editor.BeginUndo()
-                editor.InsertText code
-                editor.EndUndo()
-                editor.Redraw()
-            else
-                match parseCommand code with
-                | Quit ->
-                    session.Close()
-                | _ ->
+        
+        let code = areaCode area
+        if code.Length = 0 then
+            ()
+        
+        elif not area.Active then
+            editor.GoToEnd true
+            editor.BeginUndo()
+            editor.InsertText code
+            editor.EndUndo()
+            editor.Redraw()
+ 
+        // one line with a command, now just #quit, ignore others       
+        elif area.HeadLineIndex = area.LastLineIndex && (match parseCommand code with Quit -> true | _ -> false) then
+            session.Close()
+        
+        else
+                
+        editor.BeginUndo()
+        editor.GoToEnd false
+        if not (String.IsNullOrWhiteSpace(editor.Line.Text)) then
+            editor.InsertLine()
+        editor.InsertText (sprintf "\r%s\r" OutputMark1)
 
-                editor.BeginUndo()
-                editor.GoToEnd false
-                if not (String.IsNullOrWhiteSpace(editor.Line.Text)) then
-                    editor.InsertLine()
-                editor.InsertText (sprintf "\r%s\r" OutputMark1)
+        let writer = editor.OpenWriter()
 
-                let writer = editor.OpenWriter()
+        doEval writer (fun () -> session.EvalInteraction(writer, code))
 
-                doEval writer (fun () -> session.EvalInteraction(writer, code))
+        writer.WriteLine OutputMark2
+        writer.WriteLine()
 
-                writer.WriteLine OutputMark2
-                writer.WriteLine()
-
-                editor.EndUndo()
-                editor.Redraw()
+        editor.EndUndo()
+        editor.Redraw()
 
     static let GuidColor = Guid("8fb3dd25-b0a9-4940-a5fe-67621c47250d")
     let draw() =

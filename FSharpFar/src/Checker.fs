@@ -7,43 +7,10 @@ module FSharpFar.Checker
 open System
 open System.IO
 open Config
+open Options
 open Session
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
-
-type FarProjOptions =
-    | ProjectOptions of FSharpProjectOptions
-    | ConfigOptions of Config
-
-let private cacheProjectOptions = System.Collections.Generic.Dictionary<string, DateTime * FSharpProjectOptions>(StringComparer.OrdinalIgnoreCase)
-
-let getOptionsForFile fileName (session: Session option) =
-    assert isFSharpFileName fileName
-
-    if session.IsSome then ConfigOptions session.Value.Config
-    else
-
-    let dir = Path.GetDirectoryName(fileName)
-
-    let ini = Directory.GetFiles(dir, "*.fs.ini")
-    //TODO cache ini, too
-    if ini.Length = 1 then ConfigOptions (getConfigurationFromFile ini.[0])
-    else
-
-    let proj = Directory.GetFiles(dir, "*.fsproj")
-    if proj.Length = 1 then
-        let projPath = proj.[0]
-        let newStamp = File.GetLastWriteTime projPath
-        let ok, it = cacheProjectOptions.TryGetValue projPath
-        if ok && newStamp = fst it then
-            ProjectOptions (snd it)
-        else
-            let projOptions = ProjectCracker.GetProjectOptionsFromProjectFile projPath
-            cacheProjectOptions.Add(projPath, (newStamp, projOptions))
-            ProjectOptions projOptions
-    else
-
-    ConfigOptions (getMainSession().Config) //TODO we do not have a new session, config is enough...
 
 let check file text options =
     let checker = FSharpChecker.Create()

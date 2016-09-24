@@ -2,6 +2,14 @@
 NuGet package: https://www.nuget.org/packages/FarNet.FSharpFar
 FarNet 5.2.0
 
+= 0.7.1 =
+
+- Improve code completion.
+- Avoid opening a session on checks.
+- Cache INI configurations on checking.
+- Fix conflict between F# and FSF commands.
+- Add a sanity check on reading INI config.
+
 = 0.7.0 =
 
 Configuration

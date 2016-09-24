@@ -5,15 +5,16 @@
 namespace FSharpFar
 
 open FarNet
-open Command
-open FarStdWriter
 open Session
 open System
 open System.IO
+open Command
+open FarStdWriter
+open FarInteractive
 
 [<System.Runtime.InteropServices.Guid("2b52615b-ea79-46e4-ac9d-78f33599db62")>]
 [<ModuleCommand(Name = "FSharpFar", Prefix = "fs")>]
-type FsfModuleCommand() =
+type FarCommand() =
     inherit ModuleCommand()
     override x.Invoke(sender, e) =
         use cd = new UsePanelDirectory()
@@ -35,7 +36,7 @@ type FsfModuleCommand() =
 
         | Open args ->
             let ses = match args.With with | Some path -> Session.FindOrCreate(path) | _ -> getMainSession()
-            let interactive = Interactive.Interactive(ses)
+            let interactive = FarInteractive(ses)
             interactive.Open()
 
         | Code code ->

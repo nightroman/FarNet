@@ -13,7 +13,7 @@ open FsAutoComplete
 
 [<System.Runtime.InteropServices.Guid("B7916B53-2C17-4086-8F13-5FFCF0D82900")>]
 [<ModuleEditor(Name = "FSharpFar", Mask = "*.fs;*.fsx;*.fsscript")>]
-type FsfModuleEditor() =
+type FarEditor() =
     inherit ModuleEditor()
 
     let mutable editor:IEditor = null
@@ -24,23 +24,43 @@ type FsfModuleEditor() =
     let complete() =
         use progress = new UseProgress("Checking...")
 
+        // skip out of text
         let caret = editor.Caret
         let line = editor.[caret.Y]
         if caret.X = 0 || caret.X > line.Length then false
         else
 
+        // skip no solid base
+        //TODO completion of parameters? :: x (y, [Tab]
         let lineStr = line.Text
         if Char.IsWhiteSpace lineStr.[caret.X - 1] then false
         else
 
-        let options = getOptionsForFile editor.FileName editor.fsSession
+        // parse
+        let names, residue = Parsing.findLongIdentsAndResidue(caret.X, lineStr)
+
+(*
+    _160922_160602
+    Complete `x.ToString().C` incorrectly gives all globals.
+    But complete `x.ToString().` gives string members.
+    Let's reduce to the working fine case.
+*)
+        let mutable residue2 = residue
+        let mutable colAtEndOfPartialName = caret.X + 1
+        let isDot () =
+            let i = caret.X - 1 - residue.Length
+            i > 0 && lineStr.[i] = '.'
+        if residue.Length > 0 && names.IsEmpty && isDot () then
+            residue2 <- ""
+            colAtEndOfPartialName <- colAtEndOfPartialName - residue.Length
+
+        let options = editor.getOptions()
         let file = editor.FileName
         let text = editor.GetText()
 
         let parseResults, checkResults = Checker.check file text options
 
-        let longName, residue = Parsing.findLongIdentsAndResidue(caret.X, lineStr)
-        let decs = checkResults.GetDeclarationListInfo(Some parseResults, caret.Y + 1, caret.X + 1, lineStr, longName, residue, always false) |> Async.RunSynchronously
+        let decs = checkResults.GetDeclarationListInfo(Some parseResults, caret.Y + 1, colAtEndOfPartialName, lineStr, names, residue2, always false) |> Async.RunSynchronously
 
         let completions =
             decs.Items

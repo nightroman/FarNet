@@ -64,7 +64,7 @@ type Session private (configFile) =
     let fsiSession, issues, config =
         use progress = new UseProgress("Loading session...")
 
-        let config = if File.Exists configFile then Config.getConfigurationFromFile configFile else Config.empty
+        let config = if File.Exists configFile then Config.getConfigFromIniFile configFile else Config.empty
         let args = [|
             yield "fsi.exe" //! dummy, else --nologo is consumed
             yield "--nologo"
@@ -159,11 +159,8 @@ type Session private (configFile) =
         with _ ->
             Seq.empty
 
-let private mainSessionFrom() =
-    Path.Combine(fsfRoaminData(), "main.fs.ini")
-
 /// Gets or creates the main session.
-let getMainSession() = Session.FindOrCreate(mainSessionFrom())
+let getMainSession() = Session.FindOrCreate(mainSessionConfigPath())
 
 /// Gets the main session or none.
-let tryFindMainSession() = Session.TryFind(mainSessionFrom())
+let tryFindMainSession() = Session.TryFind(mainSessionConfigPath())

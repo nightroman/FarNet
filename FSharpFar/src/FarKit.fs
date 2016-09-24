@@ -11,6 +11,15 @@ open System.IO
 
 let far = Far.Api
 
+/// Obtains the local module folder path.
+let fsfLocalData() = far.GetModuleManager("FSharpFar").GetFolderPath(SpecialFolder.LocalData, true)
+
+/// Obtains the roming module folder path.
+let fsfRoaminData() = far.GetModuleManager("FSharpFar").GetFolderPath(SpecialFolder.RoamingData, true)
+
+/// Gets the main session config file path.
+let mainSessionConfigPath() = Path.Combine(fsfRoaminData(), "main.fs.ini")
+
 type IMenu with
     /// Shows the menu of named actions.
     /// items: pairs of text and actions.
@@ -90,9 +99,6 @@ type UseUserScreen() =
     interface IDisposable with
         member x.Dispose() =
             far.UI.SaveUserScreen()
-
-let fsfLocalData() = far.GetModuleManager("FSharpFar").GetFolderPath(SpecialFolder.LocalData, true)
-let fsfRoaminData() = far.GetModuleManager("FSharpFar").GetFolderPath(SpecialFolder.RoamingData, true)
 
 let writeException exn =
     far.UI.WriteLine(sprintf "%A" exn, ConsoleColor.Red)

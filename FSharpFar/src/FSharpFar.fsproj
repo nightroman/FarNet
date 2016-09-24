@@ -60,20 +60,21 @@
   <ItemGroup>
     <Compile Include="FsAutoComplete\Parser.fs" />
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="ProxyWriter.fs" />
     <Compile Include="Command.fs" />
     <Compile Include="Completer.fs" />
     <Compile Include="Config.fs" />
     <Compile Include="Kit.fs" />
     <Compile Include="FarKit.fs" />
-    <Compile Include="FarStdWriter.fs" />
-    <Compile Include="ProxyWriter.fs" />
+    <Compile Include="Options.fs" />
     <Compile Include="Session.fs" />
-    <Compile Include="EditorExt.fs" />
-    <Compile Include="Interactive.fs" />
     <Compile Include="Checker.fs" />
-    <Compile Include="FsfModuleCommand.fs" />
-    <Compile Include="FsfModuleEditor.fs" />
-    <Compile Include="FsfModuleTool.fs" />
+    <Compile Include="FarModule.fs" />
+    <Compile Include="FarInteractive.fs" />
+    <Compile Include="FarStdWriter.fs" />
+    <Compile Include="FarCommand.fs" />
+    <Compile Include="FarEditor.fs" />
+    <Compile Include="FarTool.fs" />
   </ItemGroup>
   <PropertyGroup>
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
