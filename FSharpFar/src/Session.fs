@@ -8,6 +8,7 @@ open System
 open System.IO
 open System.Text
 open Config
+open Options
 open ProxyWriter
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.Interactive.Shell
@@ -61,32 +62,75 @@ type Session private (configFile) =
     // assigned to the session
     let _evalWriter = new ProxyWriter(_voidWriter)
 
-    let fsiSession, issues, config =
+    let fsiSession, issues, options =
         use progress = new UseProgress("Loading session...")
 
-        let config = if File.Exists configFile then Config.getConfigFromIniFile configFile else Config.empty
+        let options = if File.Exists configFile then getOptionsFrom configFile else ConfigOptions Config.empty
+        let loadFiles = ResizeArray()
+        let useFiles = ResizeArray()
         let args = [|
             yield "fsi.exe" //! dummy, else --nologo is consumed
             yield "--nologo"
             yield "--noninteractive"
-            yield! getCompilerOptions()
-            yield! config.FscArgs
-            yield! config.FsiArgs
+            match options with
+            | ConfigOptions config ->
+                yield! getCompilerOptions()
+                yield! config.FscArgs
+                yield! config.FsiArgs
+                loadFiles.AddRange config.LoadFiles
+                useFiles.AddRange config.UseFiles
+            | ProjectOptions options ->
+                //TODO what about getCompilerOptions()?
+                let known = [
+                    "--checked"
+                    "--codepage:"
+                    "--debug"
+                    "--define:"
+                    "--fullpaths"
+                    "--lib:"
+                    "-l:"
+                    "--mlcompatibility"
+                    "--noframework"
+                    "--nologo"
+                    "--nowarn:"
+                    "--optimize"
+                    "--reference:"
+                    "-r:"
+                    "--utf8output"
+                    "--warn:"
+                    "--warnaserror"
+                ]
+                yield! options.OtherOptions |> Array.filter (fun x ->
+                    if not (x.StartsWith "-") then
+                        //TODO or not?
+                        loadFiles.Add x
+                        false
+                    else
+                        known |> List.exists (fun k -> x.StartsWith k)
+                )
         |]
         let fsiConfig = FsiEvaluationSession.GetDefaultConfiguration()
 
         //! collectible=true has issues
         let fsiSession = FsiEvaluationSession.Create(fsiConfig, args, new StringReader(""), _evalWriter, _evalWriter)
 
+        // profiles
+        let load2 = Path.ChangeExtension (configFile, ".load.fsx")
+        if File.Exists load2 then
+            loadFiles.Add load2
+        let use2 = Path.ChangeExtension (configFile, ".use.fsx")
+        if File.Exists use2 then
+            useFiles.Add use2
+
         // load and use files
         use writer = new StringWriter()
         try
-            for file in config.LoadFiles do
+            for file in loadFiles do
                 let result, warnings = fsiSession.EvalInteractionNonThrowing (sprintf "#load @\"%s\"" file)
                 for w in warnings do writer.WriteLine(strErrorText w)
                 match result with | Choice2Of2 exn -> raise exn | _ -> ()
 
-            for file in config.UseFiles do
+            for file in useFiles do
                 let code = File.ReadAllText file
                 let result, warnings = fsiSession.EvalInteractionNonThrowing code
                 for w in warnings do writer.WriteLine(strErrorText w)
@@ -94,7 +138,7 @@ type Session private (configFile) =
         with exn ->
             writer.WriteLine(sprintf "%A" exn)
 
-        fsiSession, writer.ToString(), config
+        fsiSession, writer.ToString(), options
 
     let eval writer eval x =
         _evalWriter.Writer <- writer
@@ -132,7 +176,7 @@ type Session private (configFile) =
 
     member x.ConfigFile = configFile
 
-    member x.Config = config
+    member x.Options = options
 
     member x.EditorFile = Path.Combine(fsfLocalData(), Path.GetFileNameWithoutExtension(configFile) + ".fsx")
 

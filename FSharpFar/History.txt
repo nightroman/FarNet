@@ -2,6 +2,26 @@
 NuGet package: https://www.nuget.org/packages/FarNet.FSharpFar
 FarNet 5.2.0
 
+= 0.8.0 =
+
+fs: //open
+
+	Support ".fsproj" as interactive configuration in addition to ".fs.ini".
+	Currently all compiled ".fs" files are automatically loaded.
+	This is very handy on developing small projects.
+	This is slow and rather useless for large.
+
+Auto #load and #use
+
+	On opening interactive with "config.ext", existing files "config.load.fsx"
+	and "config.use.fsx" are automatically loaded and used as input. This is
+	designed for "config.fsproj" but works for "config.ini" as well.
+
+fs: //exec ... [;; <F# code>]
+
+	Support an optional F# code invoked after loading a file.
+	This is the official way to call something with parameters.
+
 = 0.7.1 =
 
 - Improve code completion.

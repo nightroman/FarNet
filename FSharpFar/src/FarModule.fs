@@ -36,6 +36,6 @@ type IEditor with
 
     member x.getOptions() =
         match x.fsSession with
-        | Some x -> ConfigOptions x.Config
+        | Some x -> x.Options
         | _ -> getOptionsForFile x.FileName
     

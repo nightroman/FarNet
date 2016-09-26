@@ -53,9 +53,22 @@ type FarCommand() =
             use std = new FarStdWriter()
             let ses = match args.With with | Some path -> Session.FindOrCreate(path) | _ -> getMainSession()
             use writer = new StringWriter()
-            let r = ses.EvalScript(writer, args.File)
 
-            if r.Warnings.Length > 0 || r.Exception <> null then
-                echo()
-                far.UI.Write(writer.ToString())
-                writeResult r
+            let issues r = 
+                if r.Warnings.Length > 0 || r.Exception <> null then
+                    echo()
+                    far.UI.Write(writer.ToString())
+                    writeResult r
+                    true
+                else
+                    false
+
+            let r = ses.EvalScript (writer, args.File)
+            if issues r then () else
+
+            match args.Code with
+            | Some code ->
+                let r = ses.EvalInteraction (writer, code)
+                issues r |> ignore
+            | _ ->
+                ()

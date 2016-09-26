@@ -112,7 +112,7 @@ Sample file association:
         fs: //open with = !\!.!
 ````
 
-#### `fs: //exec file = <script> [; with = <config>]`
+#### `fs: //exec file = <script> [; with = <config>] [;; F# code]`
 
 Invokes the script in the main or specified session.
 
@@ -128,6 +128,13 @@ Sample file association:
         fs: //exec file = !\!.!
     [x] Execute command (used for Ctrl+PgDn):
         fs: #load @"!\!.!"
+````
+
+There are no script parameters as such.
+But an extra piece of F# code in the end after `;;` may call a function with parameters:
+
+````
+    fs: //exec file = Module1.fs ;; Module1.test "answer" 42
 ````
 
 ***
@@ -214,13 +221,16 @@ Sample configuration:
     use = .\main.fsx
 ````
 
+**Session load and use files**
+
+`load` and `use` files are used in order prepare the session for interactive work.
 Output of invoked `load` and `use` scripts is discarded, only errors and warnings are shown.
 
-The key `use` tells to invoke a startup script as if it is typed interactively.
-Its role is to prepare the session for interactive work and reduce typing, i.e.
+The `use` file is invoked in the session as if it is typed interactively. Its
+role is to prepare the session for interactive work and reduce typing, i.e.
 open modules and namespaces, set some supportive functions and values, etc.
 
-Sample startup script *main.fsx* for dealing with Far Manager:
+Sample `use` file for dealing with Far Manager:
 
 ````FSharp
     #r "FarNet.dll"
@@ -231,8 +241,11 @@ Sample startup script *main.fsx* for dealing with Far Manager:
     let far = Far.Api
 ````
 
-Note that `#r "FarNet.dll"` is just an example of some referenced assembly.
-This DLL is referenced by default and may be omitted in F# scripts for Far Manager.
+**Auto load and use files**
+
+On opening an interactive session with the file `config.ext` (either `.ini` or `.fsproj`),
+existing files `config.load.fsx` and `config.use.fsx` are loaded and used as input.
+This is mostly designed for `.fsproj` but works for `.ini` as well.
 
 ***
 ## <a id="editor"/> Editor services
@@ -262,11 +275,6 @@ Use `[F11]` \ `FSharpFar` \ `Tips` in order to get type tips for the term at the
 **Code issues**
 
 Use `[F11]` \ `FSharpFar` \ `Check` in order to check the file for syntax and type errors.
-
-**TODO**
-
-- Background error checking and automatic highlighting.
-- Finding definitions and references of the term at the caret.
 
 ***
 ## <a id="scripts"/> F# script applications
