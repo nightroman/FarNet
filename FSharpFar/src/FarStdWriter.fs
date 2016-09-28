@@ -10,14 +10,15 @@
 
 module FSharpFar.FarStdWriter
 
-open FarNet
 open System
 open System.IO
 open System.Text
 
-type FarStdWriter() as this =
+/// Replaces standard Out and Error with a specified writer function.
+type StdWriter(write) as this =
     inherit TextWriter()
 
+    let write = write
     let sb = StringBuilder()
     let _writer = Console.Out
     let _writer2 = Console.Error
@@ -36,7 +37,7 @@ type FarStdWriter() as this =
 
     override x.Flush() =
         if sb.Length > 0 then
-            far.UI.Write(sb.ToString())
+            write (sb.ToString())
             sb.Length <- 0
 
     override x.Write(value : char) =
@@ -47,3 +48,7 @@ type FarStdWriter() as this =
         if value <> null then
             sb.Append(value) |> ignore
             if value.EndsWith("\n") then x.Flush()
+
+/// Binds StdWriter to far.UI.Write.
+type FarStdWriter() =
+    inherit StdWriter(far.UI.Write)

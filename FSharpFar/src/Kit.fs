@@ -10,10 +10,15 @@ open System.IO
 open System.Text
 open System.Text.RegularExpressions
 
-let private reNonSpaceWhiteSpace = Regex(@"[\r\n\t]+")
-
 /// Makes a string for one line show.
-let strLine(x) = reNonSpaceWhiteSpace.Replace(x, " ")
+let strAsLine =
+    let re = Regex(@"[\r\n\t]+")
+    fun x -> re.Replace (x, " ")
+
+/// Zips 2+ spaces into one.
+let strZipSpace =
+    let re = Regex(@"[ \t]{2,}")
+    fun x -> re.Replace (x, " ")
 
 /// A function that always returns the same value.
 let inline always value = fun _ -> value

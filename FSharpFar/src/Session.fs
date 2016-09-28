@@ -26,7 +26,7 @@ let strErrorText(x : FSharpErrorInfo) =
     sprintf "%s(%d,%d): %s FS%04d: %s" x.FileName x.StartLineAlternate (x.StartColumn + 1) (strErrorSeverity x.Severity) x.ErrorNumber x.Message
 
 let strErrorLine(x : FSharpErrorInfo) =
-    sprintf "%s(%d,%d): %s FS%04d: %s" (Path.GetFileName x.FileName) x.StartLineAlternate (x.StartColumn + 1) (strErrorSeverity x.Severity) x.ErrorNumber (strLine x.Message)
+    sprintf "%s(%d,%d): %s FS%04d: %s" (Path.GetFileName x.FileName) x.StartLineAlternate (x.StartColumn + 1) (strErrorSeverity x.Severity) x.ErrorNumber (strAsLine x.Message)
 
 let doEval writer (fn : unit -> EvalResult) =
     let oldOut = Console.Out
@@ -106,7 +106,7 @@ type Session private (configFile) =
                         loadFiles.Add x
                         false
                     else
-                        known |> List.exists (fun k -> x.StartsWith k)
+                        known |> List.exists x.StartsWith
                 )
         |]
         let fsiConfig = FsiEvaluationSession.GetDefaultConfiguration()

@@ -53,7 +53,7 @@ task Version {
 	($script:Version = switch -regex -file History.txt {'^= (\d+\.\d+\.\d+) =$' {$matches[1]; break}})
 }
 
-task Meta Version, {
+task Meta -Inputs .build.ps1, History.txt -Outputs src/AssemblyInfo.fs -Jobs Version, {
 	Set-Content src/AssemblyInfo.fs @"
 namespace System.Reflection
 [<assembly: AssemblyCompany("https://github.com/nightroman/FarNet")>]
@@ -64,7 +64,7 @@ namespace System.Reflection
 [<assembly: AssemblyVersion("$Version")>]
 ()
 "@
-} -Inputs .build.ps1, History.txt -Outputs src/AssemblyInfo.fs
+}
 
 task Package Help, {
 	$toModule = "z\tools\FarHome\FarNet\Modules\$ModuleName"
@@ -86,6 +86,11 @@ task Package Help, {
 }
 
 task NuGet Package, Version, {
+	# test versions
+	$dllPath = "$FarHome\FarNet\Modules\$ModuleName\$ModuleName.dll"
+	($dllVersion = (Get-Item $dllPath).VersionInfo.FileVersion.ToString())
+	assert $dllVersion.StartsWith($Version) 'Versions mismatch.'
+
 	$text = @'
 FSharpFar provides F# interactive, scripting, and editor services for Far Manager.
 

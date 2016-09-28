@@ -56,9 +56,12 @@
     <Reference Include="mscorlib" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FsAutoComplete\Parser.fs" />
+    <Compile Include="FsAutoComplete\Utils.fs" />
+    <Compile Include="FsAutoComplete\TipFormatter.fs" />
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="ProxyWriter.fs" />
     <Compile Include="Command.fs" />

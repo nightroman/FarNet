@@ -9,7 +9,7 @@ open System.IO
 open Config
 open Options
 open Session
-open Microsoft.FSharp.Compiler
+open FsAutoComplete
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
 let check file text options =
@@ -56,33 +56,13 @@ let check file text options =
 let strTip tip =
     use w = new StringWriter()
 
-    // see FCS buildFormatComment
-    let writeXmlDoc cmt =
-        match cmt with
-        | FSharpXmlDoc.Text s -> w.WriteLine s
-        | FSharpXmlDoc.XmlDocFileSignature (file, signature) -> () //TODO see FSAC
-        | FSharpXmlDoc.None -> ()
-
-    match tip with
-    | FSharpToolTipText list ->
-        for item in list do
-            match item with
-            // String.Length
-            | FSharpToolTipElement.Single (s, x) ->
-                w.WriteLine s
-                writeXmlDoc x
-            // no examples yet, FCS ignores 3rd
-            | FSharpToolTipElement.SingleParameter (s, x, _) ->
-                w.WriteLine s
-                writeXmlDoc x
-            // String.Substring
-            | FSharpToolTipElement.Group list ->
-                for (s, x) in list do
-                    w.WriteLine s
-                    writeXmlDoc x
-            | FSharpToolTipElement.CompositionError err ->
-                w.WriteLine err
-            | FSharpToolTipElement.None ->
-                ()
+    let data = TipFormatter.formatTip tip
+    for list in data do
+        for (signature, comment) in list do
+            w.WriteLine signature
+            if not (String.IsNullOrEmpty comment) then
+                if not (comment.StartsWith Environment.NewLine) then
+                    w.WriteLine ()
+                w.WriteLine (strZipSpace comment)
 
     w.ToString()

@@ -7,10 +7,9 @@ namespace FSharpFar
 open FarNet
 open System
 open System.IO
-open Checker
 open Session
 open FarInteractive
-open Microsoft.FSharp.Compiler
+open FsAutoComplete
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
 [<System.Runtime.InteropServices.Guid("65bd5625-769a-4253-8fde-ffcc3f72489d")>]
@@ -90,30 +89,18 @@ type FarTool() =
         use progress = new UseProgress("Getting tips...")
 
         let caret = editor.Caret
-        let lineText = editor.[caret.Y].Text
+        let lineStr = editor.[caret.Y].Text
 
-        // find end of name
-        let mutable nameEnd = caret.X
-        if nameEnd >= lineText.Length then
-            nameEnd <- lineText.Length - 1
-        if nameEnd < 0 then () else
-
-        while nameEnd < lineText.Length && isIdentChar lineText.[nameEnd] do
-            nameEnd <- nameEnd + 1
-
-        // find start of name
-        let mutable nameStart = nameEnd
-        while nameStart > 1 && isIdentChar lineText.[nameStart - 1] do
-            nameStart <- nameStart - 1
-        let name = lineText.Substring(nameStart, nameEnd - nameStart)
-        if name.Length = 0 then () else
+        match Parsing.findLongIdents(caret.X, lineStr) with
+        | None -> ()
+        | Some (col, identIsland) ->
 
         let options = editor.getOptions()
         let file = editor.FileName
         let text = editor.GetText()
 
         let parseResults, checkResults = Checker.check file text options
-        let tip = checkResults.GetToolTipTextAlternate(caret.Y + 1, nameEnd, lineText, [name], FSharpTokenTag.Identifier) |> Async.RunSynchronously
+        let tip = checkResults.GetToolTipTextAlternate(caret.Y + 1, col + 1, lineStr, identIsland, FSharpTokenTag.Identifier) |> Async.RunSynchronously
 
         progress.Done()
 

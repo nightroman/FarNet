@@ -6,47 +6,49 @@ module FSharpFar.Options
 
 open System
 open System.IO
+open System.Collections.Generic
 open Config
-open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
 type FarProjOptions =
-    | ProjectOptions of FSharpProjectOptions
     | ConfigOptions of Config
-
-let private cacheFarProjOptions = System.Collections.Generic.Dictionary<string, DateTime * FarProjOptions>(StringComparer.OrdinalIgnoreCase)
+    | ProjectOptions of FSharpProjectOptions
 
 /// Gets cached options from a file.
-let private getOptionsFromFile getOptions path =
-    let newStamp = File.GetLastWriteTime path
-    let ok, it = cacheFarProjOptions.TryGetValue path
-    if ok && newStamp = fst it then
-        snd it
-    else
-        let r = getOptions path
-        cacheFarProjOptions.Add(path, (newStamp, r))
-        r
+let private getOptionsFromFile =
+    let cache = Dictionary<string, DateTime * FarProjOptions>(StringComparer.OrdinalIgnoreCase)
+    fun getOptions path ->
+        let newStamp = File.GetLastWriteTime path
+        let ok, it = cache.TryGetValue path
+        if ok && newStamp = fst it then
+            snd it
+        else
+            let r = getOptions path
+            cache.Add (path, (newStamp, r))
+            r
+
+let private getOptionsFromIni = getOptionsFromFile (getConfigFromIniFile >> ConfigOptions)
+let private getOptionsFromProj = getOptionsFromFile (ProjectCracker.GetProjectOptionsFromProjectFile >> ProjectOptions)
 
 /// Gets options from .fsproj or INI.
-let getOptionsFrom path =
-    if String.Equals (Path.GetExtension path, ".fsproj", StringComparison.OrdinalIgnoreCase) then
-        getOptionsFromFile (ProjectCracker.GetProjectOptionsFromProjectFile >> ProjectOptions) path
+let getOptionsFrom (path: string) =
+    if path.EndsWith (".fsproj", StringComparison.OrdinalIgnoreCase) then
+        getOptionsFromProj path
     else
-        getOptionsFromFile (getConfigFromIniFile >> ConfigOptions) path
+        getOptionsFromIni path
 
 /// Gets options for a file to be processed.
 let getOptionsForFile path =
-    assert isFSharpFileName path
-    let dir = Path.GetDirectoryName (path)
+    let dir = Path.GetDirectoryName path
 
-    match Directory.GetFiles(dir, "*.fs.ini") with
+    match Directory.GetFiles (dir, "*.fs.ini") with
     | [|file|] ->
-        getOptionsFromFile (getConfigFromIniFile >> ConfigOptions) file
+        getOptionsFromIni file
     | _ ->
 
-    match Directory.GetFiles(dir, "*.fsproj") with
+    match Directory.GetFiles (dir, "*.fsproj") with
     | [|file|] ->
-        getOptionsFromFile (ProjectCracker.GetProjectOptionsFromProjectFile >> ProjectOptions) file
+        getOptionsFromProj file
     | _ ->
 
-    getOptionsFromFile (getConfigFromIniFile >> ConfigOptions) (mainSessionConfigPath())
+    getOptionsFromIni (mainSessionConfigPath())
