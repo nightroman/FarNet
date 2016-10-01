@@ -103,7 +103,7 @@ namespace FarNet.Works
 			foreach (var it in Far.Api.Editors())
 			{
 				++index;
-				var name = string.Format(null, MenuItemFormat, (index < MenuHotkeys.Length ? MenuHotkeys.Substring(index, 1) : " "), it.FileName);
+				var name = string.Format(null, MenuItemFormat, (index < MenuHotkeys.Length ? MenuHotkeys.Substring(index, 1) : " "), it.Title);
 				menu.Add(name).Data = it;
 			}
 
