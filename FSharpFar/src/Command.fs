@@ -8,11 +8,11 @@ open System
 open System.Data.Common
 open System.Text.RegularExpressions
 
-let reCommand = Regex(@"^\s*//(\w+)\s*(.*)")
-let reQuit = Regex(@"^\s*#quit\b")
+let reCommand = Regex @"^\s*//(\w+)\s*(.*)"
+let reQuit = Regex @"^\s*#quit\b"
 
-type OpenArgs = {With: string option}
-type ExecArgs = {File: string; With: string option; Code: string option}
+type OpenArgs = {With : string option}
+type ExecArgs = {File : string; With : string option; Code : string option}
 
 type Command =
     | Quit
@@ -62,15 +62,15 @@ let parseCommand text =
 
     let commandName = maCommand.Groups.[1].Value
     let rest = maCommand.Groups.[2].Value
-    
+
     let split = ";;"
     let index = rest.IndexOf split
     let part1, part2 = if index < 0 then rest, "" else rest.Substring (0, index), rest.Substring (index + split.Length)
 
-    let sb = DbConnectionStringBuilder()
+    let sb = DbConnectionStringBuilder ()
     sb.ConnectionString <- part1
 
     let r = command commandName part2 sb
-    
-    if sb.Count > 0 then invalidOp <| sprintf "Unknown '%s' keys: %s" (r.GetType().Name.ToLower()) (sb.ToString())
+
+    if sb.Count > 0 then invalidOp <| sprintf "Unknown '%s' keys: %s" (r.GetType().Name.ToLower ()) (sb.ToString ())
     r

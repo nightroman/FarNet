@@ -60,11 +60,15 @@ Use `[F11] \ FSharpFar` to open the module menu:
 - **Load**
     - Evaluates the script opened in editor (`#load`).
 - **Tips**
-    - Shows type tips for the term at the caret.
+    - Shows type tips for the symbol at the caret.
 - **Check**
     - Checks the current F# file for errors.
 - **Errors**
     - Shows the errors of the last check.
+- **Uses in file**
+    - Shows uses of the symbol in the file as a go to menu.
+- **Uses in project**
+    - Shows uses of the symbol in the project in a separate editor.
 
 ***
 ## <a id="commands"/> Commands
@@ -104,13 +108,16 @@ Sample file association:
 
 ````
     A file mask or several file masks:
-    *.fs.ini
+    *.fs.ini;*.fsproj
     Description of the association:
     F# session
     ─────────────────────────────────────
     [x] Execute command (used for Enter):
         fs: //open with = !\!.!
 ````
+
+Note that if `*.fsproj` is included then `[Enter]` opens an interactive with the project configuration.
+In this case use `[ShiftEnter]` in order to open it using the standard Windows association (Visual Studio).
 
 #### `fs: //exec file = <script> [; with = <config>] [;; F# code]`
 
@@ -270,11 +277,19 @@ The output is shown in a new editor.
 
 **Type info tips**
 
-Use `[F11]` \ `FSharpFar` \ `Tips` in order to get type tips for the term at the caret.
+Use `[F11]` \ `FSharpFar` \ `Tips` in order to get type tips for the symbol at the caret.
 
 **Code issues**
 
 Use `[F11]` \ `FSharpFar` \ `Check` in order to check the file for syntax and type errors.
+
+**Symbol uses**
+
+Use `[F11]` \ `FSharpFar` \ `Uses in file` and `Uses in project`
+in order to get definitions and references of the symbol at the caret.
+Same file uses are shown as a go to menu.
+Project uses are shown in a separate editor.
+The file is saved before the project uses search.
 
 ***
 ## <a id="scripts"/> F# script applications

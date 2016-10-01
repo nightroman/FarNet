@@ -16,7 +16,7 @@ type FarProjOptions =
 
 /// Gets cached options from a file.
 let private getOptionsFromFile =
-    let cache = Dictionary<string, DateTime * FarProjOptions>(StringComparer.OrdinalIgnoreCase)
+    let cache = Dictionary<string, DateTime * FarProjOptions> StringComparer.OrdinalIgnoreCase
     fun getOptions path ->
         let newStamp = File.GetLastWriteTime path
         let ok, it = cache.TryGetValue path
@@ -51,4 +51,4 @@ let getOptionsForFile path =
         getOptionsFromProj file
     | _ ->
 
-    getOptionsFromIni (mainSessionConfigPath())
+    getOptionsFromIni (mainSessionConfigPath ())

@@ -15,40 +15,40 @@ open System.IO
 open System.Text
 
 /// Replaces standard Out and Error with a specified writer function.
-type StdWriter(write) as this =
-    inherit TextWriter()
+type StdWriter (write) as this =
+    inherit TextWriter ()
 
     let write = write
-    let sb = StringBuilder()
-    let _writer = Console.Out
-    let _writer2 = Console.Error
+    let sb = StringBuilder ()
+    let writer = Console.Out
+    let writer2 = Console.Error
 
     do
-        Console.SetOut(this)
-        Console.SetError(this)
+        Console.SetOut this
+        Console.SetError this
 
     interface IDisposable with
-        member x.Dispose() =
-            x.Flush()
-            Console.SetOut(_writer)
-            Console.SetError(_writer2)
+        member x.Dispose () =
+            x.Flush ()
+            Console.SetOut writer
+            Console.SetError writer2
 
-    override x.Encoding = _writer.Encoding
+    override x.Encoding = writer.Encoding
 
-    override x.Flush() =
+    override x.Flush () =
         if sb.Length > 0 then
-            write (sb.ToString())
+            write (sb.ToString ())
             sb.Length <- 0
 
-    override x.Write(value : char) =
-        sb.Append(value) |> ignore
-        if value = '\n' then x.Flush()
+    override x.Write (value: char) =
+        sb.Append value |> ignore
+        if value = '\n' then x.Flush ()
 
-    override x.Write(value : string) =
+    override x.Write (value: string) =
         if value <> null then
-            sb.Append(value) |> ignore
-            if value.EndsWith("\n") then x.Flush()
+            sb.Append value |> ignore
+            if value.EndsWith "\n" then x.Flush ()
 
 /// Binds StdWriter to far.UI.Write.
-type FarStdWriter() =
-    inherit StdWriter(far.UI.Write)
+type FarStdWriter () =
+    inherit StdWriter (far.UI.Write)

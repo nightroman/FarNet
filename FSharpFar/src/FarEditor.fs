@@ -11,18 +11,18 @@ open System
 open Checker
 open FsAutoComplete
 
-[<System.Runtime.InteropServices.Guid("B7916B53-2C17-4086-8F13-5FFCF0D82900")>]
-[<ModuleEditor(Name = "FSharpFar", Mask = "*.fs;*.fsx;*.fsscript")>]
-type FarEditor() =
-    inherit ModuleEditor()
+[<System.Runtime.InteropServices.Guid "B7916B53-2C17-4086-8F13-5FFCF0D82900">]
+[<ModuleEditor (Name = "FSharpFar", Mask = "*.fs;*.fsx;*.fsscript")>]
+type FarEditor () =
+    inherit ModuleEditor ()
 
     let mutable editor:IEditor = null
 
     // https://fsharp.github.io/FSharp.Compiler.Service/editor.html#Getting-auto-complete-lists
     // old EditorTests.fs(265) they use [], "" instead of names, so do we.
     // new Use FsAutoComplete way.
-    let complete() =
-        use progress = new UseProgress("Checking...")
+    let complete () =
+        use progress = new Progress "Checking..."
 
         // skip out of text
         let caret = editor.Caret
@@ -37,7 +37,7 @@ type FarEditor() =
         else
 
         // parse
-        let names, residue = Parsing.findLongIdentsAndResidue(caret.X, lineStr)
+        let names, residue = Parsing.findLongIdentsAndResidue (caret.X, lineStr)
 
 (*
     _160922_160602
@@ -54,30 +54,30 @@ type FarEditor() =
             residue2 <- ""
             colAtEndOfPartialName <- colAtEndOfPartialName - residue.Length
 
-        let options = editor.getOptions()
+        let options = editor.getOptions ()
         let file = editor.FileName
-        let text = editor.GetText()
+        let text = editor.GetText ()
 
-        let parseResults, checkResults = Checker.check file text options
+        let res = Checker.check file text options
 
-        let decs = checkResults.GetDeclarationListInfo(Some parseResults, caret.Y + 1, colAtEndOfPartialName, lineStr, names, residue2, always false) |> Async.RunSynchronously
+        let decs = res.CheckResults.GetDeclarationListInfo (Some res.ParseResults, caret.Y + 1, colAtEndOfPartialName, lineStr, names, residue2, always false) |> Async.RunSynchronously
 
         let completions =
             decs.Items
             |> Seq.map (fun item -> item.Name)
             |> Seq.filter (fun name -> name.StartsWith residue)
 
-        progress.Done()
+        progress.Done ()
 
         completeLine editor.Line (caret.X - residue.Length) residue.Length completions
-        editor.Redraw()
+        editor.Redraw ()
         true
 
-    override x.Invoke(sender, e) =
+    override x.Invoke (sender, e) =
         editor <- sender
         if editor.fsSession.IsNone then
             editor.KeyDown.Add <| fun e ->
                 match e.Key.VirtualKeyCode with
-                | KeyCode.Tab when e.Key.Is() && not editor.SelectionExists ->
-                     e.Ignore <- complete()
+                | KeyCode.Tab when e.Key.Is () && not editor.SelectionExists ->
+                     e.Ignore <- complete ()
                 | _ -> ()

@@ -2,6 +2,12 @@
 NuGet package: https://www.nuget.org/packages/FarNet.FSharpFar
 FarNet 5.2.0
 
+= 0.9.0 =
+
+Symbol definitions and references
+- Menu "Uses in file" shows uses in the file
+- Menu "Uses in project" show uses in the project
+
 = 0.8.1 =
 
 Tips
