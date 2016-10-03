@@ -623,6 +623,10 @@ namespace FarNet
 		/// </remarks>
 		public abstract void EndAsync();
 		/// <summary>
+		/// TODO
+		/// </summary>
+		public abstract void Sync();
+		/// <summary>
 		/// Tells to enable or disable the caret position beyond end of lines.
 		/// Set it before or after opening.
 		/// </summary>

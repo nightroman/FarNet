@@ -15,6 +15,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using FarNet;
 using FarNet.Forms;
+using FarNet.Tools;
 
 namespace PowerShellFar
 {
@@ -150,7 +151,7 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 
 			IEditor editor = null;
 			EditorConsole console;
-			EditorConsole.Area area;
+			InteractiveArea area;
 
 			// script?
 			if (A.Psf.PSVersion.Major > 2 && editLine.WindowKind == WindowKind.Editor && My.PathEx.IsPSFile((editor = Far.Api.Editor).FileName))
@@ -183,7 +184,7 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 
 				// previous text
 				var sb = new StringBuilder();
-				for (int i = area.FirstLineIndex; i < lineIndex; ++i)
+				for (int i = area.HeadLineIndex; i < lineIndex; ++i)
 					sb.AppendLine(editor[i].Text);
 
 				// current line

@@ -137,10 +137,10 @@ public:
 	virtual void SetText(String^ text) override;
 	virtual void Undo() override;
 	virtual void UnselectText() override;
+	virtual void Sync() override;
 internal:
 	Editor();
 	void InvokeDrawers();
-	void Sync();
 	void Start(const EditorInfo& ei, bool waiting);
 	void Stop();
 private:

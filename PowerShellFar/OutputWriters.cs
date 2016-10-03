@@ -322,38 +322,20 @@ End time: {0:yyyyMMddHHmmss}
 		/// The editor.
 		/// </summary>
 		protected IEditor Editor { get; private set; }
-		/// <summary>
-		/// Write call count.
-		/// </summary>
-		internal int WriteCount { get; private set; }
 		public EditorOutputWriter1(IEditor editor)
 		{
 			Editor = editor;
 		}
 		protected override void Append(string value)
 		{
-			// start
-			if (++WriteCount == 1)
-				Editor.InsertText("\r<=\r");
-
-			// insert
 			Editor.InsertText(value);
 		}
 		protected override void AppendLine()
 		{
-			// start
-			if (++WriteCount == 1)
-				Editor.InsertText("\r<=\r");
-			else
-				Editor.InsertLine();
+			Editor.InsertLine();
 		}
 		protected override void AppendLine(string value)
 		{
-			// start
-			if (++WriteCount == 1)
-				Editor.InsertText("\r<=\r");
-
-			// insert trimmed
 			Editor.InsertText(value.TrimEnd() + "\r");
 		}
 	}

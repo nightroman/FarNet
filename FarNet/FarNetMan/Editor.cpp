@@ -760,7 +760,6 @@ void Editor::BeginAsync()
 
 	_hMutex = CreateMutex(nullptr, FALSE, nullptr);
 
-	BeginUndo();
 	_output = gcnew StringBuilder();
 }
 
@@ -781,7 +780,7 @@ void Editor::Sync()
 
 	try
 	{
-		if (_output->Length)
+		if (_output && _output->Length)
 		{
 			GoToEnd(false);
 
@@ -792,12 +791,12 @@ void Editor::Sync()
 
 		if (_hMutex)
 		{
-			_output->Length = 0;
+			if (_output)
+				_output->Length = 0;
 		}
 		else
 		{
 			_output = nullptr;
-			EndUndo();
 		}
 	}
 	finally

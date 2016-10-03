@@ -28,17 +28,17 @@ let strErrorText (x : FSharpErrorInfo) =
 let strErrorLine (x : FSharpErrorInfo) =
     sprintf "%s(%d,%d): %s FS%04d: %s" (Path.GetFileName x.FileName) x.StartLineAlternate (x.StartColumn + 1) (strErrorSeverity x.Severity) x.ErrorNumber (strAsLine x.Message)
 
-let doEval writer (fn : unit -> EvalResult) =
+let doEval writer (eval : unit -> EvalResult) =
     let oldOut = Console.Out
-    let oldErr = Console.Error
+    let oldError = Console.Error
     let r =
         try
             Console.SetOut writer
             Console.SetError writer
-            fn ()
+            eval ()
         finally
             Console.SetOut oldOut
-            Console.SetError oldOut
+            Console.SetError oldError
     for w in r.Warnings do
         writer.WriteLine (strErrorText w)
     if r.Exception <> null then
