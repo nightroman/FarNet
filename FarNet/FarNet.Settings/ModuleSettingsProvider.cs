@@ -10,7 +10,6 @@ using System.Collections.Specialized;
 using System.Configuration;
 using System.IO;
 using System.Resources;
-using System.Security.Permissions;
 
 namespace FarNet.Settings
 {
@@ -108,7 +107,6 @@ namespace FarNet.Settings
 			return data;
 		}
 		/// <inheritdoc/>
-		[SecurityPermissionAttribute(SecurityAction.Demand, SerializationFormatter = true)]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods")]
 		public override SettingsPropertyValueCollection GetPropertyValues(SettingsContext context, SettingsPropertyCollection collection)
 		{
@@ -135,7 +133,6 @@ namespace FarNet.Settings
 			return result;
 		}
 		/// <inheritdoc/>
-		[SecurityPermissionAttribute(SecurityAction.Demand, SerializationFormatter = true)]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods")]
 		public override void SetPropertyValues(SettingsContext context, SettingsPropertyValueCollection collection)
 		{

@@ -39,10 +39,10 @@ let private parse (line: string) =
             }
 
 type Config = {
-    FscArgs : string []
-    FsiArgs : string []
-    LoadFiles : string []
-    UseFiles : string []
+    FscArgs: string []
+    FsiArgs: string []
+    LoadFiles: string []
+    UseFiles: string []
 }
 
 let empty = {FscArgs = [||]; FsiArgs = [||]; LoadFiles = [||]; UseFiles = [||]}

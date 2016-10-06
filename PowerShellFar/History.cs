@@ -8,22 +8,23 @@ Copyright (c) 2006-2016 Roman Kuzmin
 // Text line history files are rather logs, not text files for an editor.
 // IO.File methods by default work in this way.
 
+using FarNet;
 using System.Collections.Generic;
 using System.IO;
-using FarNet;
 
 namespace PowerShellFar
 {
 	static class History
 	{
-		/// <summary>
-		/// History list used for getting commands by Up/Down.
-		/// </summary>
-		public static string[] Cache { get; set; }
+		static string[] Cache;
+		internal static void DropCache()
+		{
+			Cache = null;
+		}
 		/// <summary>
 		/// History list current index.
 		/// </summary>
-		public static int CacheIndex { get; set; }
+		static int CacheIndex;
 		static string GetFileName(bool create)
 		{
 			return A.Psf.Manager.GetFolderPath(SpecialFolder.LocalData, create) + @"\PowerShellFarHistory.log";
@@ -65,7 +66,7 @@ namespace PowerShellFar
 
 			// remove dupes
 			var hash = new HashSet<string>();
-			for (int i = lines.Length; --i >= 0; )
+			for (int i = lines.Length; --i >= 0;)
 			{
 				var line = lines[i];
 				if (!hash.Add(line))
@@ -142,29 +143,29 @@ namespace PowerShellFar
 		{
 			string lastUsed = null;
 
-			if (History.Cache == null)
+			if (Cache == null)
 			{
 				lastUsed = current;
-				History.Cache = History.ReadLines();
-				History.CacheIndex = History.Cache.Length;
+				Cache = ReadLines();
+				CacheIndex = Cache.Length;
 			}
-			else if (History.CacheIndex >= 0 && History.CacheIndex < History.Cache.Length)
+			else if (CacheIndex >= 0 && CacheIndex < Cache.Length)
 			{
-				lastUsed = History.Cache[History.CacheIndex];
+				lastUsed = Cache[CacheIndex];
 			}
 
 			if (up)
 			{
-				for (; ; )
+				for (;;)
 				{
-					if (--History.CacheIndex < 0)
+					if (--CacheIndex < 0)
 					{
-						History.CacheIndex = -1;
+						CacheIndex = -1;
 						return string.Empty;
 					}
 					else
 					{
-						var command = History.Cache[History.CacheIndex];
+						var command = Cache[CacheIndex];
 						if (command != lastUsed)
 							return command;
 					}
@@ -172,16 +173,16 @@ namespace PowerShellFar
 			}
 			else
 			{
-				for (; ; )
+				for (;;)
 				{
-					if (++History.CacheIndex >= History.Cache.Length)
+					if (++CacheIndex >= Cache.Length)
 					{
-						History.CacheIndex = History.Cache.Length;
+						CacheIndex = Cache.Length;
 						return string.Empty;
 					}
 					else
 					{
-						var command = History.Cache[History.CacheIndex];
+						var command = Cache[CacheIndex];
 						if (command != lastUsed)
 							return command;
 					}

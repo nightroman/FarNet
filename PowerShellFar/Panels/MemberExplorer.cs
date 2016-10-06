@@ -8,6 +8,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Management.Automation;
 using System.Text.RegularExpressions;
 using FarNet;
@@ -232,9 +233,7 @@ namespace PowerShellFar
 
 			try
 			{
-				int count1 = 0;
-				foreach (var it in Value.Properties)
-					++count1;
+				int count1 = Value.Properties.Count();
 
 				foreach (FarFile file in args.Files)
 				{
@@ -245,10 +244,7 @@ namespace PowerShellFar
 					Value.Properties.Remove(pi.Name);
 				}
 
-				int count2 = 0;
-				foreach (var it in Value.Properties)
-					++count2;
-
+				int count2 = Value.Properties.Count();
 				if (count1 - args.Files.Count != count2)
 					args.Result = JobResult.Incomplete;
 			}

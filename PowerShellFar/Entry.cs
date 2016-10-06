@@ -4,9 +4,8 @@ PowerShellFar module for Far Manager
 Copyright (c) 2006-2016 Roman Kuzmin
 */
 
-using System;
-using System.Security.Permissions;
 using FarNet;
+using System;
 
 namespace PowerShellFar
 {
@@ -59,7 +58,6 @@ namespace PowerShellFar
 			A.Psf.Connect();
 		}
 		///
-		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		public override void Disconnect()
 		{
 			// disconnect instances

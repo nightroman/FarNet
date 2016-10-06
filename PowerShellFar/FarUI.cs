@@ -4,17 +4,15 @@ PowerShellFar module for Far Manager
 Copyright (c) 2006-2016 Roman Kuzmin
 */
 
+using FarNet;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Globalization;
 using System.Management.Automation;
 using System.Management.Automation.Host;
 using System.Security;
-using System.Text;
-using FarNet;
 
 namespace PowerShellFar
 {
@@ -148,137 +146,6 @@ namespace PowerShellFar
 			//! DON'T Check(): crash on pressed CTRL-C and an error in 'Inquire' mode
 			//! 090211 The above is obsolete, perhaps.
 			return UI.ChoiceMsg.Show(caption, message, choices);
-		}
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional")]
-		static int DetermineChoicePicked(string response, Collection<ChoiceDescription> choices, string[,] hotkeysAndPlainLabels)
-		{
-			int num = -1;
-			CultureInfo currentCulture = CultureInfo.CurrentCulture;
-			for (int i = 0; i < choices.Count; i++)
-			{
-				if (string.Compare(response, hotkeysAndPlainLabels[1, i], true, currentCulture) == 0)
-				{
-					num = i;
-					break;
-				}
-			}
-			if (num == -1)
-			{
-				for (int j = 0; j < choices.Count; j++)
-				{
-					if (hotkeysAndPlainLabels[0, j].Length > 0 && string.Compare(response, hotkeysAndPlainLabels[0, j], true, currentCulture) == 0)
-					{
-						num = j;
-						break;
-					}
-				}
-			}
-			return num;
-		}
-		//! c&p
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional")]
-		void ShowChoiceHelp(Collection<ChoiceDescription> choices, string[,] hotkeysAndPlainLabels)
-		{
-			for (int i = 0; i < choices.Count; i++)
-			{
-				string text;
-				if (hotkeysAndPlainLabels[0, i].Length > 0)
-					text = hotkeysAndPlainLabels[0, i];
-				else
-					text = hotkeysAndPlainLabels[1, i];
-				WriteLine(string.Format(null, "{0} - {1}", text, choices[i].HelpMessage));
-			}
-		}
-		//! c&p
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional")]
-		void WriteChoicePrompt(string[,] hotkeysAndPlainLabels, Dictionary<int, bool> defaultChoiceKeys, bool shouldEmulateForMultipleChoiceSelection)
-		{
-			int lineLenMax = RawUI.BufferSize.Width - 1;
-			string format = "[{0}] {1}  ";
-
-			for (int i = 0; i < hotkeysAndPlainLabels.GetLength(1); i++)
-			{
-				ConsoleColor fg = PromptColor;
-				if (defaultChoiceKeys.ContainsKey(i))
-					fg = DefaultPromptColor;
-
-				string text = string.Format(null, format, hotkeysAndPlainLabels[0, i], hotkeysAndPlainLabels[1, i]);
-				WriteChoiceHelper(text, fg, BackgroundColor, lineLenMax);
-				if (shouldEmulateForMultipleChoiceSelection)
-					WriteLine();
-			}
-
-			WriteChoiceHelper(TextPromptForChoiceHelp, ForegroundColor, BackgroundColor, lineLenMax);
-			if (shouldEmulateForMultipleChoiceSelection)
-				WriteLine();
-
-			string text2 = "";
-			if (defaultChoiceKeys.Count > 0)
-			{
-				string text3 = "";
-				StringBuilder stringBuilder = new StringBuilder();
-				foreach (int current in defaultChoiceKeys.Keys)
-				{
-					string text4 = hotkeysAndPlainLabels[0, current];
-					if (string.IsNullOrEmpty(text4))
-						text4 = hotkeysAndPlainLabels[1, current];
-
-					stringBuilder.Append(string.Format(null, "{0}{1}", text3, text4));
-					text3 = ",";
-				}
-				string o = stringBuilder.ToString();
-				if (defaultChoiceKeys.Count == 1)
-				{
-					text2 = shouldEmulateForMultipleChoiceSelection ?
-						string.Format(null, TextDefaultChoiceForMultipleChoices, o) :
-						string.Format(null, TextDefaultChoicePrompt, o);
-				}
-				else
-				{
-					text2 = string.Format(null, TextDefaultChoicesForMultipleChoices, o);
-				}
-			}
-
-			WriteChoiceHelper(text2, ForegroundColor, BackgroundColor, lineLenMax);
-			WriteLine(); //! or it is under the dialog
-		}
-		//! revised
-		// MS issues: wrapped line text misses end spaces due to TrimEnd(); 1st very long line is written with new line before it.
-		// Do: if (text can be written without wrapping) {write as it is} else (write it from a new line).
-		// We use the cursor just because we have it. It is simple and has no issues.
-		void WriteChoiceHelper(string text, ConsoleColor fg, ConsoleColor bg, int lineLenMax)
-		{
-			int x = Far.Api.UI.BufferCursor.X;
-			if (x > 0 && x + text.Length >= lineLenMax)
-				WriteLine();
-			Write(fg, bg, text);
-		}
-		//! c&p
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional")]
-		static void BuildHotkeysAndPlainLabels(Collection<ChoiceDescription> choices, out string[,] hotkeysAndPlainLabels)
-		{
-			hotkeysAndPlainLabels = new string[2, choices.Count];
-			for (int i = 0; i < choices.Count; i++)
-			{
-				hotkeysAndPlainLabels[0, i] = string.Empty;
-				int num = choices[i].Label.IndexOf('&');
-				if (num >= 0)
-				{
-					StringBuilder stringBuilder = new StringBuilder(choices[i].Label.Substring(0, num), choices[i].Label.Length);
-					if (num + 1 < choices[i].Label.Length)
-					{
-						stringBuilder.Append(choices[i].Label.Substring(num + 1));
-						hotkeysAndPlainLabels[0, i] = choices[i].Label.Substring(num + 1, 1).Trim().ToUpper(CultureInfo.CurrentCulture);
-					}
-					hotkeysAndPlainLabels[1, i] = stringBuilder.ToString().Trim();
-				}
-				else
-				{
-					hotkeysAndPlainLabels[1, i] = choices[i].Label;
-				}
-				if (hotkeysAndPlainLabels[0, i] == "?")
-					throw new InvalidOperationException("Invalid hotkey '?'.");
-			}
 		}
 		/// <summary>
 		/// Reads a string.

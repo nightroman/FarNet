@@ -4,12 +4,12 @@ PowerShellFar module for Far Manager
 Copyright (c) 2006-2016 Roman Kuzmin
 */
 
+using FarNet;
+using FarNet.Tools;
 using System;
 using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
-using FarNet;
-using FarNet.Tools;
 
 namespace PowerShellFar
 {
@@ -195,6 +195,8 @@ namespace PowerShellFar
 		/// </summary>
 		protected override bool KeyPressed(KeyInfo key)
 		{
+			if (key == null) return false;
+			
 			// drop pipeline now, if any
 			PowerShell = null;
 

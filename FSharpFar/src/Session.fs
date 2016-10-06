@@ -14,8 +14,8 @@ open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.Interactive.Shell
 
 type EvalResult = {
-    Warnings : FSharpErrorInfo []
-    Exception : exn
+    Warnings: FSharpErrorInfo []
+    Exception: exn
 }
 
 let strErrorSeverity = function

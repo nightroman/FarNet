@@ -4,6 +4,7 @@ PowerShellFar module for Far Manager
 Copyright (c) 2006-2016 Roman Kuzmin
 */
 
+using FarNet;
 using System;
 using System.ComponentModel;
 using System.Data;
@@ -14,10 +15,7 @@ using System.Management.Automation;
 using System.Management.Automation.Provider;
 using System.Management.Automation.Runspaces;
 using System.Runtime.Serialization;
-using System.Security.Permissions;
 using System.Text.RegularExpressions;
-using FarNet;
-using FarNet.Forms;
 
 namespace PowerShellFar
 {
@@ -36,7 +34,6 @@ namespace PowerShellFar
 		{
 			return Format.SetupColumns(columns);
 		}
-		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		internal static Process StartExternalViewer(string fileName)
 		{
 			string externalViewerFileName = Settings.Default.ExternalViewerFileName;
@@ -72,7 +69,6 @@ namespace PowerShellFar
 		const string TextTranscriptStarted = "Transcript started, output file is {0}";
 		const string TextTranscriptStopped = "Transcript stopped, output file is {0}";
 		///
-		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		public static void ShowTranscript(bool internalViewer)
 		{
 			if (TranscriptOutputWriter.LastFileName == null)
@@ -209,31 +205,6 @@ namespace PowerShellFar
 		public static string PositionMessage(string message)
 		{
 			return message.Trim().Replace("\n", "\r\n");
-		}
-	}
-
-	static class Coloring
-	{
-		public static void ColorEditAsConsole(object sender, ColoringEventArgs e)
-		{
-			// normal text
-			e.Background1 = ConsoleColor.Black;
-			e.Foreground1 = ConsoleColor.Gray;
-			// selected text
-			e.Background2 = ConsoleColor.White;
-			e.Foreground2 = ConsoleColor.DarkGray;
-			// unchanged text
-			e.Background3 = ConsoleColor.Black;
-			e.Foreground3 = ConsoleColor.Gray;
-			// combo
-			e.Background4 = ConsoleColor.Black;
-			e.Foreground4 = ConsoleColor.Gray;
-		}
-		public static void ColorTextAsConsole(object sender, ColoringEventArgs e)
-		{
-			// normal text
-			e.Background1 = ConsoleColor.Black;
-			e.Foreground1 = ConsoleColor.Gray;
 		}
 	}
 
@@ -476,7 +447,6 @@ namespace My
 		/// <summary>
 		/// Just a wrapper and helper to watch calls.
 		/// </summary>
-		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		public static Process Start(string fileName, string arguments)
 		{
 			return Process.Start(new ProcessStartInfo() { FileName = fileName, Arguments = arguments });

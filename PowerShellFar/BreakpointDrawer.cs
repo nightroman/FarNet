@@ -20,7 +20,7 @@ namespace PowerShellFar
 		/// <inheritdoc/>
 		public override void Invoke(IEditor editor, ModuleDrawerEventArgs e)
 		{
-			if (e == null) return;
+			if (editor == null || e == null) return;
 
 			var script = editor.FileName;
 			var breakpoints = A.Psf.Breakpoints.Where(x => script.Equals(x.Script, StringComparison.OrdinalIgnoreCase));

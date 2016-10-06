@@ -4,13 +4,12 @@ PowerShellFar module for Far Manager
 Copyright (c) 2006-2016 Roman Kuzmin
 */
 
+using FarNet;
 using System;
 using System.Management.Automation;
 using System.Runtime.InteropServices;
 using System.Security;
-using System.Security.Permissions;
 using System.Text;
-using FarNet;
 
 namespace PowerShellFar
 {
@@ -71,7 +70,6 @@ namespace PowerShellFar
 
 		// From System.Management.Automation.HostUtilities, adapted
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		public static PSCredential PromptForCredential(string caption, string message, string userName, string targetName, PSCredentialTypes allowedCredentialTypes, PSCredentialUIOptions options)
 		{
 			if (string.IsNullOrEmpty(caption))

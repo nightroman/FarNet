@@ -191,12 +191,12 @@ namespace PowerShellFar
 						// popular
 						case "System.String": return s;
 						case "System.Boolean": return ParseBoolean(s);
-						case "System.DateTime": return System.DateTime.Parse(s, CultureInfo.CurrentCulture);
-						case "System.Double": return System.Double.Parse(s, CultureInfo.InvariantCulture);
-						case "System.Int32": return System.Int32.Parse(s, CultureInfo.InvariantCulture);
-						case "System.Int64": return System.Int64.Parse(s, CultureInfo.InvariantCulture);
-						case "System.Guid": return new System.Guid(s);
-						case "System.TimeSpan": return System.TimeSpan.Parse(s);
+						case "System.DateTime": return DateTime.Parse(s, CultureInfo.CurrentCulture);
+						case "System.Double": return double.Parse(s, CultureInfo.InvariantCulture);
+						case "System.Int32": return int.Parse(s, CultureInfo.InvariantCulture);
+						case "System.Int64": return long.Parse(s, CultureInfo.InvariantCulture);
+						case "System.Guid": return new Guid(s);
+						case "System.TimeSpan": return TimeSpan.Parse(s); // CA but missing in v3.5
 
 						//! object via string
 						case "":
@@ -205,15 +205,15 @@ namespace PowerShellFar
 							return s;
 
 						// others
-						case "System.Byte": return System.Byte.Parse(s, CultureInfo.InvariantCulture);
-						case "System.Char": return System.Char.Parse(s);
-						case "System.Decimal": return System.Decimal.Parse(s, CultureInfo.InvariantCulture);
-						case "System.Int16": return System.Int16.Parse(s, CultureInfo.InvariantCulture);
-						case "System.SByte": return System.SByte.Parse(s, CultureInfo.InvariantCulture);
-						case "System.Single": return System.Single.Parse(s, CultureInfo.InvariantCulture);
-						case "System.UInt16": return System.UInt16.Parse(s, CultureInfo.InvariantCulture);
-						case "System.UInt32": return System.UInt32.Parse(s, CultureInfo.InvariantCulture);
-						case "System.UInt64": return System.UInt64.Parse(s, CultureInfo.InvariantCulture);
+						case "System.Byte": return byte.Parse(s, CultureInfo.InvariantCulture);
+						case "System.Char": return char.Parse(s);
+						case "System.Decimal": return decimal.Parse(s, CultureInfo.InvariantCulture);
+						case "System.Int16": return short.Parse(s, CultureInfo.InvariantCulture);
+						case "System.SByte": return sbyte.Parse(s, CultureInfo.InvariantCulture);
+						case "System.Single": return float.Parse(s, CultureInfo.InvariantCulture);
+						case "System.UInt16": return ushort.Parse(s, CultureInfo.InvariantCulture);
+						case "System.UInt32": return uint.Parse(s, CultureInfo.InvariantCulture);
+						case "System.UInt64": return ulong.Parse(s, CultureInfo.InvariantCulture);
 					}
 
 					// enum
@@ -228,11 +228,11 @@ namespace PowerShellFar
 					switch (info.TypeNameOfValue)
 					{
 						case "System.Byte[]":
-							System.Byte[] aByte = new Byte[list.Count];
-							foreach (object o in list) aByte[i++] = Byte.Parse(o.ToString(), CultureInfo.InvariantCulture);
+							var aByte = new byte[list.Count];
+							foreach (object o in list) aByte[i++] = byte.Parse(o.ToString(), CultureInfo.InvariantCulture);
 							return aByte;
 						case "System.String[]":
-							System.String[] aString = new String[list.Count];
+							var aString = new string[list.Count];
 							foreach (object o in list) aString[i++] = o.ToString();
 							return aString;
 					}
@@ -265,7 +265,7 @@ namespace PowerShellFar
 		public static void SetProperties(object target, System.Collections.IDictionary dictionary, bool strict)
 		{
 			PSObject value = PSObject.AsPSObject(target);
-			foreach (System.Collections.DictionaryEntry kv in dictionary)
+			foreach (DictionaryEntry kv in dictionary)
 			{
 				PSPropertyInfo pi = value.Properties[kv.Key.ToString()];
 				if (pi != null)
@@ -328,7 +328,7 @@ namespace PowerShellFar
 			}
 			else if ((asEnumerable = value as IEnumerable) != null)
 			{
-				return Converter.FormatEnumerable(asEnumerable, limit);
+				return FormatEnumerable(asEnumerable, limit);
 			}
 			else
 			{

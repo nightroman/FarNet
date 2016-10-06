@@ -4,6 +4,7 @@ PowerShellFar module for Far Manager
 Copyright (c) 2006-2016 Roman Kuzmin
 */
 
+using FarNet;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,9 +12,7 @@ using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Reflection;
-using System.Security.Permissions;
 using System.Threading;
-using FarNet;
 
 namespace PowerShellFar
 {
@@ -93,7 +92,6 @@ namespace PowerShellFar
 		/// Called on disconnection internally.
 		/// If there are background jobs it shows a dialog about them.
 		/// </summary>
-		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		internal void Disconnect()
 		{
 			//! do not unsubscribe _110301_164313
@@ -760,13 +758,14 @@ Continue with this current directory?
 		/// <param name="code">PowerShell code.</param>
 		/// <param name="writer">Output writer or null.</param>
 		/// <param name="addHistory">Add command to history.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		internal bool Act(string code, OutputWriter writer, bool addHistory)
 		{
 			// result
 			bool ok = true;
 
 			// drop history cache
-			History.Cache = null;
+			History.DropCache();
 
 			// push writer
 			if (writer != null)

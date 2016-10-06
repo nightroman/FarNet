@@ -4,6 +4,7 @@ PowerShellFar module for Far Manager
 Copyright (c) 2006-2016 Roman Kuzmin
 */
 
+using FarNet;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,10 +12,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
-using System.Security.Permissions;
 using System.Text.RegularExpressions;
 using System.Threading;
-using FarNet;
 
 /*
  * Test _090831_162451:
@@ -656,7 +655,6 @@ namespace PowerShellFar
 			}
 		}
 
-		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		internal static void StopJobsOnExit()
 		{
 			bool force = false;

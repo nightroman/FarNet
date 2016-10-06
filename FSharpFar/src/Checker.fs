@@ -13,10 +13,10 @@ open FsAutoComplete
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
 type CheckFileResult = {
-    Checker : FSharpChecker
-    Options : FSharpProjectOptions
-    ParseResults : FSharpParseFileResults
-    CheckResults : FSharpCheckFileResults
+    Checker: FSharpChecker
+    Options: FSharpProjectOptions
+    ParseResults: FSharpParseFileResults
+    CheckResults: FSharpCheckFileResults
 }
 
 let check file text options =
