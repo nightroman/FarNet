@@ -231,11 +231,11 @@ namespace PowerShellFar
 			set { _WarningForegroundColor = value; }
 		}
 		/// <summary>
-		/// The script invoked after editor console commands.
+		/// The script invoked after commands in interactives.
 		/// </summary>
 		/// <remarks>
-		/// The script is invoked after each editor console command, its output
-		/// is converted to strings and written to the editor console.
+		/// The script is invoked after each command in interactives, its output
+		/// is converted to strings and written to the interactive editor.
 		/// </remarks>
 		/// <example><code>
 		/// # In the StartupCode

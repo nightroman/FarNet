@@ -27,10 +27,6 @@ namespace FarNet
 		/// <returns>The specified line text. End spaces are trimmed.</returns>
 		public abstract string GetBufferLineText(int lineIndex);
 		/// <summary>
-		/// INTERNAL
-		/// </summary>
-		public abstract bool IsCommandMode { get; set; } // Gets or sets the command mode flag.
-		/// <summary>
 		/// Gets the Far main window handle.
 		/// </summary>
 		public abstract IntPtr MainWindowHandle { get; }

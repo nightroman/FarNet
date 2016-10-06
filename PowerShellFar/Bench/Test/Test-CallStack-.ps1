@@ -7,12 +7,12 @@
 .Description
 	Stack information can be viewed on errors if $ErrorActionPreference is set
 	to Inquire. In this mode an error opens a PowerShell choice dialog. Click
-	[Suspend] and in the editor console type one of the commands:
+	[Suspend] and in the interactive type one of the commands:
 
 	Get-PSCallStack
 	Get-PSCallStack | Format-List
 
-	Alternatively, an editor console can be opened from the plugin menu [F11].
+	Alternatively, an interactive can be opened from the plugin menu [F11].
 #>
 
 # enable inquire dialog on errors

@@ -69,14 +69,6 @@ namespace PowerShellFar
 
 			var r = new Dictionary<string, PSObject>();
 
-			if (Far.Api.UI.IsCommandMode)
-			{
-				if (!string.IsNullOrEmpty(caption))
-					WriteLine(PromptColor, BackgroundColor, caption);
-				if (!string.IsNullOrEmpty(message))
-					WriteLine(message);
-			}
-
 			foreach (var current in descriptions)
 			{
 				var prompt = current.Name;
@@ -85,32 +77,13 @@ namespace PowerShellFar
 				if (type.GetInterface(typeof(IList).FullName) != null)
 				{
 					var arrayList = new ArrayList();
-					for (; ; )
+					for (;;)
 					{
 						var prompt2 = string.Format(null, "{0}[{1}]", prompt, arrayList.Count);
 						string text;
-						if (Far.Api.UI.IsCommandMode)
-						{
-							WriteLine(prompt2);
-
-							//TODO HelpMessage - is fine by [F1]?
-							for (; ; )
-							{
-								var ui = new UI.ReadLine() { Prompt = TextPrompt, HelpMessage = current.HelpMessage, History = Res.HistoryPrompt };
-								if (!ui.Show())
-								{
-									A.AskStopPipeline();
-									continue;
-								}
-								text = ui.Text;
-								break;
-							}
-							WriteLine(TextPrompt + text);
-						}
-						else
 						{
 							//TODO HelpMessage - not done
-							for (; ; )
+							for (;;)
 							{
 								var ui = new UI.InputBoxEx()
 								{
@@ -127,7 +100,6 @@ namespace PowerShellFar
 								break;
 							}
 						}
-
 						if (text.Length == 0)
 							break;
 
@@ -138,31 +110,10 @@ namespace PowerShellFar
 				else
 				{
 					var safe = type == typeof(SecureString);
-
 					string text;
-					if (Far.Api.UI.IsCommandMode)
-					{
-						WriteLine(prompt);
-
-						//TODO HelpMessage - [F1] - really?
-						for (; ; )
-						{
-							var ui = new UI.ReadLine() { Prompt = TextPrompt, HelpMessage = current.HelpMessage, History = Res.HistoryPrompt, Password = safe };
-							if (!ui.Show())
-							{
-								A.AskStopPipeline();
-								continue;
-							}
-
-							text = ui.Text;
-							WriteLine(TextPrompt + (safe ? "*" : text));
-							break;
-						}
-					}
-					else
 					{
 						//TODO HelpMessage - not done
-						for (; ; )
+						for (;;)
 						{
 							var ui = new UI.InputBoxEx()
 							{
@@ -191,64 +142,12 @@ namespace PowerShellFar
 		/// </summary>
 		public override int PromptForChoice(string caption, string message, Collection<ChoiceDescription> choices, int defaultChoice)
 		{
-			if (choices == null || choices.Count == 0)
-				throw new ArgumentOutOfRangeException("choices");
-			if (defaultChoice < -1 || defaultChoice >= choices.Count)
-				throw new ArgumentOutOfRangeException("defaultChoice");
+			if (choices == null || choices.Count == 0) throw new ArgumentOutOfRangeException("choices");
+			if (defaultChoice < -1 || defaultChoice >= choices.Count) throw new ArgumentOutOfRangeException("defaultChoice");
 
 			//! DON'T Check(): crash on pressed CTRL-C and an error in 'Inquire' mode
 			//! 090211 The above is obsolete, perhaps.
-			if (!Far.Api.UI.IsCommandMode)
-				return UI.ChoiceMsg.Show(caption, message, choices);
-
-			WriteLine();
-			if (!string.IsNullOrEmpty(caption))
-				WriteLine(PromptColor, BackgroundColor, caption);
-			if (!string.IsNullOrEmpty(message))
-				WriteLine(message);
-
-			string[,] hotkeysAndPlainLabels = null;
-			BuildHotkeysAndPlainLabels(choices, out hotkeysAndPlainLabels);
-
-			Dictionary<int, bool> dictionary = new Dictionary<int, bool>();
-			if (defaultChoice >= 0)
-				dictionary.Add(defaultChoice, true);
-
-			for (; ; )
-			{
-				WriteChoicePrompt(hotkeysAndPlainLabels, dictionary, false);
-
-				var ui = new UI.ReadLine() { Prompt = TextPrompt };
-				if (!ui.Show())
-				{
-					A.AskStopPipeline();
-					continue;
-				}
-
-				var text = ui.Text;
-
-				// echo
-				WriteLine(TextPrompt + ui.Text);
-
-				if (text.Length == 0)
-				{
-					if (defaultChoice >= 0)
-						return defaultChoice;
-				}
-				else
-				{
-					if (text.Trim() == "?")
-					{
-						ShowChoiceHelp(choices, hotkeysAndPlainLabels);
-					}
-					else
-					{
-						var num = DetermineChoicePicked(text.Trim(), choices, hotkeysAndPlainLabels);
-						if (num >= 0)
-							return num;
-					}
-				}
-			}
+			return UI.ChoiceMsg.Show(caption, message, choices);
 		}
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional")]
 		static int DetermineChoicePicked(string response, Collection<ChoiceDescription> choices, string[,] hotkeysAndPlainLabels)
@@ -387,23 +286,8 @@ namespace PowerShellFar
 		public override string ReadLine()
 		{
 			string text;
-			if (Far.Api.UI.IsCommandMode)
 			{
-				for (; ; )
-				{
-					var ui = new UI.ReadLine() { History = Res.HistoryPrompt };
-					if (ui.Show())
-					{
-						text = ui.Text;
-						break;
-					}
-					A.AskStopPipeline();
-				}
-				WriteLine(text);
-			}
-			else
-			{
-				for (; ; )
+				for (;;)
 				{
 					var ui = new UI.InputDialog() { History = Res.HistoryPrompt };
 					if (ui.Show())

@@ -110,7 +110,7 @@ namespace PowerShellFar.UI
 			_Out = _Dialog.AddButton(0, 0, BtnOut);
 			_Out.CenterGroup = true;
 
-			_Console = _Dialog.AddButton(0, 0, BtnConsole);
+			_Console = _Dialog.AddButton(0, 0, BtnInteractive);
 			_Console.CenterGroup = true;
 			_Console.NoBrackets = true;
 
@@ -215,9 +215,9 @@ namespace PowerShellFar.UI
 			BtnStep = "&Step",
 			BtnOver = "O&ver",
 			BtnOut = "&Out",
-			BtnConsole = "&Console",
+			BtnInteractive = "&Interactive",
 			BtnEdit = "&Edit",
-			BtnView = "V&iew",
+			BtnView = "Vie&w",
 			BtnLine = "&Line",
 			BtnQuit = "&Quit";
 	}

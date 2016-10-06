@@ -87,22 +87,6 @@ namespace PowerShellFar
 		}
 		public override SecureString ReadLineAsSecureString()
 		{
-			if (Far.Api.UI.IsCommandMode)
-			{
-				for (; ; )
-				{
-					var ui = new UI.ReadLine() { Password = true };
-					if (!ui.Show())
-					{
-						A.AskStopPipeline();
-						continue;
-					}
-
-					WriteLine("*");
-					return (SecureString)ValueToResult(ui.Text, true).BaseObject;
-				}
-			}
-
 			const string name = " ";
 			var field = new FieldDescription(name);
 			field.SetParameterType(typeof(SecureString));

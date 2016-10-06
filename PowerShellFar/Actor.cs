@@ -596,26 +596,25 @@ Continue with this current directory?
 			return list;
 		}
 		/// <summary>
-		/// Shows a new modal editor console.
+		/// Shows a new modal interactive.
 		/// </summary>
 		/// <remarks>
 		/// This method opens a modal editor console, it can be called in the middle of something to perform actions manually
 		/// and then to continue interrupted execution on exit. Basically it is so called PowerShell nested prompt.
 		/// </remarks>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-		public void ShowConsole()
+		public void ShowInteractive()
 		{
 			EditorConsole console = EditorConsole.CreateConsole(true);
 			if (console != null)
 				console.Editor.Open(OpenMode.Modal);
 		}
 		/// <summary>
-		/// Shows a new editor console in specified mode.
-		/// Called on "Editor console".
+		/// Shows a new interactive in the specified mode.
 		/// </summary>
 		/// <param name="mode">The editor open mode.</param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-		public void ShowConsole(OpenMode mode)
+		public void ShowInteractive(OpenMode mode)
 		{
 			EditorConsole console = EditorConsole.CreateConsole(true);
 			if (console != null)
@@ -691,8 +690,8 @@ Continue with this current directory?
 		/// </summary>
 		/// <remarks>
 		/// For the current token in an editor line (editor, editbox, cmdline) it gets help
-		/// information and shows it in the viewer. In code editors (*.ps1, *.psm1, *.psd1,
-		/// *.psfconsole, input code boxes) this action is associated with [ShiftF1].
+		/// information and shows it in the viewer. In code editors and input code boxes
+		/// this action is associated with [ShiftF1].
 		/// </remarks>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void ShowHelp()

@@ -37,10 +37,7 @@ FSharp.Compiler.Service requires MSBuild 14.0.
 It is present if Visual Studio 2015 is installed.
 Otherwise, install [Microsoft Build Tools 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48159).
 
-See how to get, install, and update *FarNet.FSharpFar*
-
-- [In English](https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt)
-- [In Russian](https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.ru.txt)
+[Get, install, update FarNet and FarNet.FSharpFar.](https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt)
 
 ***
 ## <a id="menus"/> Menus

@@ -2,6 +2,10 @@
 NuGet package: https://www.nuget.org/packages/FarNet
 Far Manager 3.0.4782
 
+= 5.3.0 =
+
+Remove experimental IsCommandMode.
+
 = 5.2.0 =
 
 Adapt for Far 3.0.4782.

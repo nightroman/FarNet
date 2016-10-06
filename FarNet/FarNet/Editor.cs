@@ -610,7 +610,7 @@ namespace FarNet
 		/// <ul>
 		/// <li>Nested calls of are not allowed.</li>
 		/// <li>Use this mode only when it is absolutely needed.</li>
-		/// <li>Module <b>PowerShellFar</b> uses this mode for asynchronous editor consoles.</li>
+		/// <li>Module <b>PowerShellFar</b> uses this mode for asynchronous interactives.</li>
 		/// </ul>
 		/// </remarks>
 		public abstract void BeginAsync();

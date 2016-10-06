@@ -440,11 +440,13 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 		}
 		public static void OnEditorOpened2(object sender, EventArgs e)
 		{
-			IEditor editor = (IEditor)sender;
-			string fileName = editor.FileName;
-			if (editor.Host == null && fileName.EndsWith(Word.ConsoleExtension, StringComparison.OrdinalIgnoreCase))
+			var editor = (IEditor)sender;
+			var fileName = editor.FileName;
+			bool isInteractive = fileName.EndsWith(Word.InteractiveSuffix, StringComparison.OrdinalIgnoreCase);
+			if (isInteractive)
 			{
-				editor.Host = new EditorConsole(editor);
+				if (editor.Host == null)
+					editor.Host = new EditorConsole(editor);
 			}
 			else if (My.PathEx.IsPSFile(fileName))
 			{

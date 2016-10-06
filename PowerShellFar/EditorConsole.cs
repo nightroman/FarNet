@@ -14,7 +14,7 @@ using FarNet.Tools;
 namespace PowerShellFar
 {
 	/// <summary>
-	/// Editor console.
+	/// PowerShell interactive.
 	/// </summary>
 	class EditorConsole : InteractiveEditor
 	{
@@ -30,27 +30,21 @@ namespace PowerShellFar
 		}
 		static string GetFilePath()
 		{
-			return Path.Combine(GetFolderPath(), Kit.ToString(DateTime.Now, "_yyMMdd_HHmmss") + Word.ConsoleExtension);
+			return Path.Combine(GetFolderPath(), Kit.ToString(DateTime.Now, "_yyMMdd_HHmmss") + Word.InteractiveSuffix);
 		}
 		/// <summary>
-		/// Creates an editor console.
+		/// Creates an interactive.
 		/// </summary>
 		/// <remarks>
 		/// With prompt may return null if a user cancels.
 		/// </remarks>
 		public static EditorConsole CreateConsole(bool prompt)
 		{
-			if (Far.Api.UI.IsCommandMode)
-			{
-				A.Message("Cannot start editor console from command console.");
-				return null;
-			}
-
 			int mode = 0;
 			if (prompt)
 			{
 				IMenu menu = Far.Api.CreateMenu();
-				menu.Title = "Open Editor Console";
+				menu.Title = "Open interactive";
 				menu.Add("&1. Main session");
 				menu.Add("&2. New local session");
 				menu.Add("&3. New remote session");
@@ -130,7 +124,7 @@ namespace PowerShellFar
 		}
 		void OpenRemoteSession()
 		{
-			UI.ConnectionDialog dialog = new UI.ConnectionDialog("New Remote Editor Console");
+			UI.ConnectionDialog dialog = new UI.ConnectionDialog("New remote interactive");
 			if (!dialog.Show())
 				return;
 

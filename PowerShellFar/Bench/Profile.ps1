@@ -31,7 +31,7 @@ $Psf.Settings.PopupAutoSelect = $false
 $Psf.Settings.PopupMaxHeight = 0
 $Psf.Settings.PopupNoShadow = $false
 
-### The script invoked after editor console commands.
+### The script invoked after commands in interactives.
 #$Psf.Settings.EditorConsoleEndOutputScript = 'Get-Date'
 
 ### Provider settings (ItemPanel)
