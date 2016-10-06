@@ -18,7 +18,7 @@ namespace PowerShellFar
 			MenuInvokeSelected = "&2. Invoke selected",
 			MenuBackgroundJobs = "&3. Background jobs",
 			MenuCommandHistory = "&4. Command history",
-			MenuEditorConsole  = "&5. Interactive",
+			MenuInteractive    = "&5. Interactive",
 			MenuPowerPanel     = "&6. Power panel",
 			MenuTabExpansion   = "&7. Complete",
 			MenuDebugger       = "&9. Debugger",
@@ -28,7 +28,6 @@ namespace PowerShellFar
 			AskSaveModified = "Would you like to save modified data?",
 			// errors
 			CanNotClose = "Cannot close the session at this time.",
-			EditorConsoleCannotComplete = "Interactive can't complete the command\nbecause its window is not current at this moment.",
 			InvalidColumnKind = "Invalid column kind: ",
 			LogError = "Cannot write to the log; ensure the path is valid and the file is not busy.",
 			MaximumPanelColumnCount = "Valid maximum column count should be from 3 to 13.", // _100202_113617

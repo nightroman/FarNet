@@ -599,15 +599,15 @@ Continue with this current directory?
 		/// Shows a new modal interactive.
 		/// </summary>
 		/// <remarks>
-		/// This method opens a modal editor console, it can be called in the middle of something to perform actions manually
-		/// and then to continue interrupted execution on exit. Basically it is so called PowerShell nested prompt.
+		/// This method opens a modal interactive. It can be called in the middle of something to perform actions manually
+		/// and then to continue interrupted execution on exit. It is similar to PowerShell nested prompt.
 		/// </remarks>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void ShowInteractive()
 		{
-			EditorConsole console = EditorConsole.CreateConsole(true);
-			if (console != null)
-				console.Editor.Open(OpenMode.Modal);
+			var inter = Interactive.Create(true);
+			if (inter != null)
+				inter.Editor.Open(OpenMode.Modal);
 		}
 		/// <summary>
 		/// Shows a new interactive in the specified mode.
@@ -616,9 +616,9 @@ Continue with this current directory?
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void ShowInteractive(OpenMode mode)
 		{
-			EditorConsole console = EditorConsole.CreateConsole(true);
-			if (console != null)
-				console.Editor.Open(mode);
+			var inter = Interactive.Create(true);
+			if (inter != null)
+				inter.Editor.Open(mode);
 		}
 		/// <summary>
 		/// Shows a menu of available PowerShellFar panels to open.

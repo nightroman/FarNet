@@ -43,7 +43,7 @@ namespace PowerShellFar.UI
 			AddTool(Res.MenuInvokeSelected, delegate { A.Psf.InvokeSelectedCode(); }, ModuleToolOptions.Editor | ModuleToolOptions.Panels | ModuleToolOptions.Dialog);
 			AddTool(Res.MenuBackgroundJobs, delegate { A.Psf.ShowJobs(); }, ModuleToolOptions.F11Menus);
 			AddTool(Res.MenuCommandHistory, delegate { A.Psf.ShowHistory(); }, ModuleToolOptions.F11Menus);
-			AddTool(Res.MenuEditorConsole, delegate { A.Psf.ShowInteractive(OpenMode.None); }, ModuleToolOptions.F11Menus);
+			AddTool(Res.MenuInteractive, delegate { A.Psf.ShowInteractive(OpenMode.None); }, ModuleToolOptions.F11Menus);
 			AddTool(Res.MenuPowerPanel, delegate { A.Psf.ShowPanel(); }, ModuleToolOptions.F11Menus);
 			AddTool(Res.MenuTabExpansion, delegate { A.Psf.ExpandCode(null); }, ModuleToolOptions.Editor | ModuleToolOptions.Panels | ModuleToolOptions.Dialog);
 			AddTool(Res.MenuDebugger, delegate { A.Psf.ShowDebugger(); }, ModuleToolOptions.F11Menus);

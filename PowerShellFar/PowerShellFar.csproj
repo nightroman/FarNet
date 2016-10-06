@@ -81,7 +81,7 @@
     <Compile Include="Commands\InvokeFarStepperCommand.cs" />
     <Compile Include="Commands\StartFarJobCommand.cs" />
     <Compile Include="Commands\SearchFarFileCommand.cs" />
-    <Compile Include="EditorConsole.cs" />
+    <Compile Include="Interactive.cs" />
     <Compile Include="EditorKit.cs" />
     <Compile Include="Format.cs" />
     <Compile Include="Help.cs" />

@@ -231,16 +231,16 @@ namespace PowerShellFar
 			set { _WarningForegroundColor = value; }
 		}
 		/// <summary>
-		/// The script invoked after commands in interactives.
+		/// The script invoked after interactive commands.
 		/// </summary>
 		/// <remarks>
-		/// The script is invoked after each command in interactives, its output
+		/// The script is invoked after each interactive command, its output
 		/// is converted to strings and written to the interactive editor.
 		/// </remarks>
 		/// <example><code>
 		/// # In the StartupCode
-		/// $Psf.Settings.EditorConsoleEndOutputScript = 'Get-Date'
+		/// $Psf.Settings.InteractiveEndOutputScript = 'Get-Date'
 		/// </code></example>
-		public String EditorConsoleEndOutputScript { get; set; }
+		public String InteractiveEndOutputScript { get; set; }
 	}
 }

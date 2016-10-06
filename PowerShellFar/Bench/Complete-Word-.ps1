@@ -58,7 +58,7 @@ switch($Line.WindowKind) {
 	'Editor' {
 		$Editor = $Far.Editor
 		$Editor.Lines | CollectWords
-		if ($Editor.FileName -like '*.psfconsole') {
+		if ($Editor.FileName -like '*.interactive.ps1') {
 			$Psf.GetHistory(0) | CollectWords
 		}
 	}

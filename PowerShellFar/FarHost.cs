@@ -94,7 +94,7 @@ namespace PowerShellFar
 				//! Far used to crash: Test-CallStack-.ps1 \ suspend \ type exit + enter
 				//! This exception from Open() was removed, so don't try\catch all in here.
 				//! SVN tag 4.2.26
-				EditorConsole console = EditorConsole.CreateConsole(false);
+				Interactive console = Interactive.Create(false);
 				_nested = console.Editor;
 
 				// Enter the modal editor. There are two ways to exit.

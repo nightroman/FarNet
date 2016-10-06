@@ -187,7 +187,7 @@ namespace PowerShellFar.UI
 
 				if (_Dialog.Selected == _Console)
 				{
-					var console = EditorConsole.CreateConsole(false);
+					var console = Interactive.Create(false);
 					console.Editor.Open(OpenMode.Modal);
 					continue;
 				}

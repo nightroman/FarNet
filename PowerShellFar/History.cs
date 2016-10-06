@@ -112,7 +112,7 @@ namespace PowerShellFar
 					return;
 				case WindowKind.Editor:
 					var editor = Far.Api.Editor;
-					if (!(editor.Host is EditorConsole))
+					if (!(editor.Host is Interactive))
 						break;
 					editor.GoToEnd(true);
 					editor.InsertText(code);

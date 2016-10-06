@@ -8,7 +8,7 @@
 * [Run commands](#RunCommands)
 * [Command line](#CommandLine)
 * [Menu commands](#MenuCommands)
-* [Editor console](#EditorConsole)
+* [Interactive](#Interactive)
 * [Power panel](#PowerPanel)
 * [Folder tree](#FolderTree)
 * [Data panel](#DataPanel)
@@ -110,7 +110,7 @@ features including additional menu items invoking the scripts.
 
 The syntax scheme *powershell.hrc* and the optional color scheme *visual.hrd*
 come with the Colorer package. They provide syntax highlighting in PowerShell
-files and editor consoles.
+files.
 
 ### Console window
 
@@ -148,13 +148,13 @@ any moment in almost any current context.
  : Selected text in any editor including the command line and dialog edit boxes
    can be invoked as PowerShell code: `[F11] \ PowerShellFar \ Invoke selected`.
 
-**Editor consoles**
+**Interactive**
 
- : Main, local, and remote editor consoles: `[F11] \ PowerShellFar \ Editor console`.
+ : Main, local, and remote editor interactive: `[F11] \ PowerShellFar \ Interactive`.
    The editor is modal if it is started from a modal context. Local and remote
-   consoles use new PowerShell sessions and invoke commands asynchronously, UI
+   editors use new PowerShell sessions and invoke commands asynchronously, UI
    is not blocked when commands are running, even with output in progress.
-   See [Editor console](#EditorConsole).
+   See [Interactive](#Interactive).
 
 **Script editor**
 
@@ -192,15 +192,15 @@ something broken or you know that it is easy to recover.
 
 - Command line
 - Command input box
-- Main editor console
+- Main interactive
 - File associations
 - User menu (`[F2]`)
 - Script editor (`[F5]`)
 
 `[CtrlC]` stops asynchronous commands commands invoked from:
 
-- Local editor console
-- Remote editor console
+- Local interactive
+- Remote interactive
 
 `[Del]` in the background job list stops running background jobs.
 
@@ -293,12 +293,12 @@ Shows the command history list.
 See [Command history list](#MenuCommandHistory).
 
 ---
-### Editor console
+### Interactive
 
-Opens a new *.psfconsole* file associated with a main, local, or remote session.
+Opens a new interactive file associated with its main, local, or remote session.
 Files are stored in *%FARLOCALPROFILE%\FarNet\PowerShellFar*.
-Several editor consoles are allowed.
-See [Editor console](#EditorConsole).
+Several interactive editors are allowed.
+See [Interactive](#Interactive).
 
 ---
 ### Power panel
@@ -324,8 +324,8 @@ See [Errors menu](#MenuErrors).
 
 For the current token in an editor, an edit box, or the command line it shows
 available help information in the viewer. In code editors (*.ps1*, *.psm1*,
-*.psd1*, *.psfconsole*, input code boxes) this action is associated with
-`[ShiftF1]`. It is exposed for scripting as `$Psf.ShowHelp()`.
+*.psd1*, input code boxes) this action is associated with `[ShiftF1]`. It is
+exposed for scripting as `$Psf.ShowHelp()`.
 
 
 *********************************************************************
@@ -409,7 +409,7 @@ The command history is shown by `[F11] \ PowerShellFar \ Command history`.
 
 `[Enter]`
 
- : Inserts a command to the command input line (panels, editor console, command
+ : Inserts a command to the command input line (panels, interactive, command
    box) or shows a new dialog *Invoke commands* with this command inserted.
 
 `[CtrlC]`
@@ -565,7 +565,7 @@ without changing the original source code - all depends on your fantasy.
 [Contents](#Contents)
 
 This dialog is shown when one or more breakpoints are hit or you step through
-the code in the debugger. You may step through the code, open editor console,
+the code in the debugger. You may step through the code, open interactive,
 take a look at the source code, or stop the pipeline and debugging.
 
 ### Keys, buttons, and actions
@@ -587,8 +587,8 @@ take a look at the source code, or stop the pipeline and debugging.
   while stepping through a function, it exits the function and steps to the
   next statement.
 
-`{Console}`
-: Opens the editor console. There you can examine or change variables, invoke
+`{Interactive}`
+: Opens the interactive. There you can examine or change variables, invoke
   commands, and etc. On exit the debugger dialog is repeated.
 
 `{Edit}`
@@ -600,7 +600,7 @@ take a look at the source code, or stop the pipeline and debugging.
 `{View}`
 : Opens an external viewer to view commands output. This action is available
   for: 1) commands with viewer output; 2) commands with console output if
-  `Start-Transcript` was called. It is not available for editor consoles.
+  `Start-Transcript` was called. It is not available for interactive.
 
 `{Line}`
 : Sets the current list line to the current debugger line.
@@ -622,32 +622,32 @@ or by the command `Show-FarTranscript`.
 
 
 *********************************************************************
-# Editor console {#EditorConsole}
+# Interactive {#Interactive}
 
 [Contents](#Contents)
 [Invoking console applications](#ConsoleApplications)
 
-Editor console is a *.psfconsole* file opened in the editor. Such a file is
+Interactive is a *.interactive.ps1* file opened in the editor. Such a file is
 opened in the special console-like mode designed for typing and invoking
 PowerShell commands with their output appended to the end of editor text.
 
-A new editor console is normally opened from the *Editor console* menu with
-three choices: *Main session*, *New local session*, and *New remote session*.
+A new interactive is normally opened from the *Interactive* menu with three
+choices: *Main session*, *New local session*, and *New remote session*.
 
-An editor console is also opened from the debugger dialog and on entering a
+An interactive is also opened from the debugger dialog and on entering a
 nested prompt, for example when PowerShell execution is suspended.
 
-An editor console works similar to a traditional command console but it is
+An interactive works similar to a traditional command console but it is
 still an editor window with some rules and special hotkeys.
 
 ### Command and output areas
 
-Output areas are lines between markers `<=` and `=>`. Empty outputs are shown
-as marker lines `<>`. Areas between or outside output are command areas. The
+Output areas are lines between markers `<#<` and `>#>`. Empty output may be
+represented as `<##>`. Areas between or outside output are command areas. The
 last command area is the active command.
 
 Output can be edited as usual text. Note that caress modification of marker
-lines may confuse the editor console tools, syntax highlighting, and etc.
+lines may confuse the interactive tools, syntax highlighting, and etc.
 
 ### Keys and actions
 
@@ -697,35 +697,27 @@ Without selection some editor events are special:
 
 ---
 
-Editor consoles are often more convenient than traditional consoles. But they
-have many limitations. They cannot replace traditional Far or Cmd consoles in
-some cases. Some features and limitations are described below.
+Interactive editors are often more convenient than traditional consoles. But
+they have limitations. They cannot replace traditional consoles in some cases.
+Some features and limitations are described below.
 
-### All editor consoles
+### Any interactive
 
 Native console applications with user interaction should not be called.
 
 ---
 
-### Main sessions (synchronous consoles)
+### Main sessions (synchronous)
 
 Do not invoke commands with `$Far.Editor` (i.e. this editor) because during the
-operation this object is already used for the command output. Also, do not run
-commands opening other editors because the main editor console writes output to
-the current editor and results will be unexpected. This is not a problem for
-async consoles, they do not require an editor to be current.
-
-You still can call external PowerShell commands working on text in this editor
-console as usual. "External" means that a command is executed not from this
-editor console. In other words, you can use menu actions "Invoke commands",
-"Invoke selected", your own editor tools, and etc.
+operation this object is already used for the command output.
 
 ---
 
-### Local and remote sessions (asynchronous consoles)
+### Local and remote sessions (asynchronous)
 
-Each console opens a separate runspace with its private session state: provider
-locations, variables, functions, aliases, and etc.
+Each interactive opens a separate runspace with its private session state:
+provider locations, variables, functions, aliases, and etc.
 
 Commands are invoked asynchronously in background threads, so that console
 editors and Far itself are not blocked: you can switch to panels or another
@@ -752,13 +744,13 @@ commands often can be effectively completed in a new command being composed.
 
 
 *********************************************************************
-# Editor console menu {#EditorConsoleMenuOpen}
+# Interactive menu {#InteractiveMenuOpen}
 
 [Contents](#Contents)
-[Editor console](#EditorConsole)
+[Interactive](#Interactive)
 
-The menu opens a new editor console for the main, new local, or new remote
-sessions.
+The menu opens a new interactive for the current main, or a new local or remote
+session.
 
 * Main session
 
@@ -1379,7 +1371,7 @@ editor event handlers to `$Far.AnyEditor`. The example profile is
 ---
 ### Profile-Local.ps1 and Profile-Remote.ps1
 
-They are session profiles invoked on opening local and remote editor consoles,
+They are session profiles invoked on opening a local and remote interactive,
 once per each new session. Note that the remote profile code is taken from the
 local script but it is invoked in a remote workspace.
 
@@ -1441,7 +1433,7 @@ viewer. The viewer is modal in the modal context and modeless otherwise.
 ---
 ### Editor output
 
-Output of commands invoked in editor consoles is written to the current editor.
+Output of commands invoked in interactive is written to the current editor.
 Note that local and remote consoles invoke commands asynchronously and output
 does not block the UI. It is possible to switch to another window and return
 later, the output produced in the background will be there.
@@ -1578,11 +1570,11 @@ The profile is a good place to define aliases. Some sample aliases are predefine
 
 ---
 
-    # The script invoked after editor console commands.
-    $Psf.Settings.EditorConsoleEndOutputScript = 'Get-Date'
+    # The script invoked after interactive commands.
+    $Psf.Settings.InteractiveEndOutputScript = 'Get-Date'
 
-The script is invoked after each editor console command, its output is
-converted to strings and written to the editor console.
+The script is invoked after each interactive command, its output is
+converted to strings and written to the interactive editor.
 
 ---
 
@@ -1916,11 +1908,11 @@ A: There are several options
 Since 2.2.10 output of invoked in PSF console applications is not written to
 the console but merged with other commands output. Thus, in most cases it is
 fine to call external applications with output from the command line, scripts,
-editor consoles, and even background jobs.
+interactive, and even background jobs.
 
 Still, console applications with user interaction and applications operating on
 console directly should not be used. Run them in Far or Cmd. This is especially
-important for asynchronous editor consoles and background jobs.
+important for asynchronous interactive editors and background jobs.
 
 
 *********************************************************************

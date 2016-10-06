@@ -150,7 +150,7 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 			var prefix = string.Empty;
 
 			IEditor editor = null;
-			EditorConsole console;
+			Interactive console;
 			InteractiveArea area;
 
 			// script?
@@ -177,7 +177,7 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 				inputScript = sb.ToString();
 			}
 			// area?
-			else if (editor != null && (console = editor.Host as EditorConsole) != null && (area = console.GetCommandArea()) != null)
+			else if (editor != null && (console = editor.Host as Interactive) != null && (area = console.GetCommandArea()) != null)
 			{
 				int lineIndex = area.Caret.Y;
 				int lastIndex = area.LastLineIndex;
@@ -446,7 +446,7 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 			if (isInteractive)
 			{
 				if (editor.Host == null)
-					editor.Host = new EditorConsole(editor);
+					editor.Host = new Interactive(editor);
 			}
 			else if (My.PathEx.IsPSFile(fileName))
 			{
