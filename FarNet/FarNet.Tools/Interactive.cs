@@ -5,6 +5,7 @@ Copyright (c) 2006-2016 Roman Kuzmin
 */
 
 using System;
+using System.IO;
 using System.Text;
 
 namespace FarNet.Tools
@@ -54,6 +55,7 @@ namespace FarNet.Tools
 		public InteractiveEditor(IEditor editor, string outputMark1, string outputMark2, string outputMark3)
 		{
 			Editor = editor;
+
 			Editor.KeyDown += OnKeyDown;
 
 			OutputMark1 = outputMark1;
@@ -127,13 +129,16 @@ namespace FarNet.Tools
 			if (area == null)
 				return false;
 
-			// script, skip empty
+			// code
 			var sb = new StringBuilder();
-			for (int y = area.HeadLineIndex; y < area.LastLineIndex; ++y)
-				sb.AppendLine(Editor[y].Text);
-			var lastText = Editor[area.LastLineIndex].Text;
-			sb.Append(lastText);
+			for (int y = area.HeadLineIndex; y <= area.LastLineIndex; ++y)
+			{
+				if (sb.Length > 0)
+					sb.AppendLine();
+				sb.Append(Editor[y].Text);
+			}
 
+			// skip empty
 			string code = sb.ToString();
 			if (code.Length == 0)
 				return true;
@@ -151,6 +156,12 @@ namespace FarNet.Tools
 				return true;
 			}
 
+			//TODO history
+			var HistoryPath = Path.GetDirectoryName(Editor.FileName) + @"\InteractiveHistory.log";
+			using (var writer = File.AppendText(HistoryPath))
+				writer.WriteLine(code.Replace(Environment.NewLine, OutputMark3));
+
+			// begin
 			Editor.BeginUndo();
 			Editor.GoToEnd(false);
 			if (Editor.Line.Length > 0)

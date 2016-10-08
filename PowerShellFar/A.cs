@@ -305,6 +305,7 @@ namespace PowerShellFar
 		/// <remarks>
 		/// Type name redirection should be consistent with <see cref="GetCommonBaseType"/>.
 		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		public static TableControl FindTableControl(string typeName, string tableName)
 		{
 			// process\redirect special types

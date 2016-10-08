@@ -69,6 +69,7 @@
       <Link>AssemblyMeta.cs</Link>
     </Compile>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="HistoryLog.cs" />
     <Compile Include="Interactive.cs" />
     <Compile Include="SuperFile.cs" />
     <Compile Include="Form.cs" />

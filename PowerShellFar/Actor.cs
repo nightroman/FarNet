@@ -750,8 +750,6 @@ Continue with this current directory?
 		}
 		// Current command being invoked (e.g. used as Out-FarPanel title)
 		internal string _myCommand;
-		// Last invoked command (e.g. to reduce dupes in the history)
-		internal string _myLastCommand;
 		/// <summary>
 		/// Invokes PowerShell command with pipeline.
 		/// </summary>
@@ -763,9 +761,6 @@ Continue with this current directory?
 		{
 			// result
 			bool ok = true;
-
-			// drop history cache
-			History.DropCache();
 
 			// push writer
 			if (writer != null)
@@ -789,7 +784,7 @@ Continue with this current directory?
 				if (addHistory)
 				{
 					code = code.Trim();
-					if (code.Length > 0 && code[code.Length - 1] != '#' && code != _myLastCommand)
+					if (code.Length > 0 && code[code.Length - 1] != '#')
 						History.AddLine(code);
 				}
 
@@ -836,7 +831,6 @@ Continue with this current directory?
 				// win7 NoProgress
 				Far.Api.UI.SetProgressState(TaskbarProgressBarState.NoProgress);
 
-				_myLastCommand = _myCommand;
 				_myCommand = null;
 
 				// pop writer

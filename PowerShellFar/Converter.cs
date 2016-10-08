@@ -76,6 +76,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// Converts property info to a string. Null is represented by default value string.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		public static string InfoToLine(PSPropertyInfo info)
 		{
 			// convert existing value
@@ -177,6 +178,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// Converts a value to a another value using property info.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.TimeSpan.Parse(System.String)")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		internal static object Parse(PSPropertyInfo info, object value)
 		{
