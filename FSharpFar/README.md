@@ -51,7 +51,7 @@ Use `[F11] \ FSharpFar` to open the module menu:
         - `[Enter]`
             - Opens the session interactive.
         - `[Del]`
-            - Closes the session and interactive.
+            - Closes the session and interactives.
         - `[F4]`
             - Edits the session configuration file.
 - **Load**
@@ -268,7 +268,7 @@ Interactive completion is based on the current session and its configuration.
 
 **Code evaluation**
 
-Use `[F11]` \ `FSharpFar` \ `Load` in order to evaluate the file in the main session.
+Use `[F11]` \ `FSharpFar` \ `Load` in order to evaluate the file.
 The file is automatically saved before loading.
 The output is shown in a new editor.
 
@@ -294,7 +294,6 @@ The file is saved before the project uses search.
 #### Evaluation from editors
 
 Use `[F11]` \ `FSharpFar` \ `Load` in order to evaluate a script being edited.
-Evaluation is performed in the main session.
 
 #### F# scripts in file associations
 

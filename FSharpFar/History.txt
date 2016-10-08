@@ -2,6 +2,11 @@
 NuGet package: https://www.nuget.org/packages/FarNet.FSharpFar
 FarNet 5.2.0
 
+= 0.9.1 =
+
+- "Load" uses local .fs.ini and .fsproj, if any.
+- Generated names for interactives.
+
 = 0.9.0 =
 
 Symbol definitions and references

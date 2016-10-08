@@ -24,7 +24,7 @@ let private getOptionsFromFile =
             snd it
         else
             let r = getOptions path
-            cache.Add (path, (newStamp, r))
+            cache.[path] <- (newStamp, r)
             r
 
 let private getOptionsFromIni = getOptionsFromFile (getConfigFromIniFile >> ConfigOptions)
@@ -36,6 +36,22 @@ let getOptionsFrom (path: string) =
         getOptionsFromProj path
     else
         getOptionsFromIni path
+
+/// Gets the config path for file.
+let getConfigPathForFile path =
+    let dir = Path.GetDirectoryName path
+
+    match Directory.GetFiles (dir, "*.fs.ini") with
+    | [|file|] ->
+        file
+    | _ ->
+
+    match Directory.GetFiles (dir, "*.fsproj") with
+    | [|file|] ->
+        file
+    | _ ->
+
+    mainSessionConfigPath ()
 
 /// Gets options for a file to be processed.
 let getOptionsForFile path =

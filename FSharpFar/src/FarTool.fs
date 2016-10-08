@@ -5,11 +5,11 @@
 namespace FSharpFar
 
 open FarNet
-open System
-open System.IO
+open Options
 open Session
 open FarInteractive
 open FsAutoComplete
+open System.IO
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
 [<System.Runtime.InteropServices.Guid "65bd5625-769a-4253-8fde-ffcc3f72489d">]
@@ -46,13 +46,14 @@ type FarTool () =
     let load () =
         editor.Save ()
 
-        let ses = getMainSession ()
+        let file = editor.FileName
+        let ses = Session.FindOrCreate (getConfigPathForFile file)
         let temp = far.TempName "F#"
-        let writer = new StreamWriter (temp)
+        
+        do
+            use writer = new StreamWriter (temp)
+            doEval writer (fun () -> ses.EvalScript (writer, file))
 
-        doEval writer (fun () -> ses.EvalScript (writer, editor.FileName))
-
-        writer.Close ()
         showTempFile temp "F# Output"
 
     let showErrors () =
