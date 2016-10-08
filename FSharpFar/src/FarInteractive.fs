@@ -8,6 +8,8 @@ open FarNet
 open FarNet.Tools
 open Command
 open Session
+open System
+open System.IO
 
 type FarInteractive(session: Session) =
     inherit InteractiveEditor (far.CreateEditor (), "(*(", ")*)", "(**)")
@@ -31,12 +33,13 @@ type FarInteractive(session: Session) =
             base.KeyPressed key
 
     member x.Open () =
-        let path = session.EditorFile
+        let path = Path.Combine (fsfLocalData (), (DateTime.Now.ToString "_yyMMdd_HHmmss") + ".interactive.fsx")
         let editor = x.Editor
         
         editor.FileName <- path
         editor.CodePage <- 65001
-        editor.Title <- "F# Interactive " + session.DisplayName
+        editor.DisableHistory <- true
+        editor.Title <- sprintf "F# %s %s" (Path.GetFileName session.ConfigFile) (Path.GetFileName path)
 
         // attach to session
         editor.fsSession <- Some session

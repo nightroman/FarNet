@@ -178,8 +178,6 @@ type Session private (configFile) =
 
     member x.Options = options
 
-    member x.EditorFile = Path.Combine (fsfLocalData (), Path.GetFileNameWithoutExtension configFile + ".fsx")
-
     member x.DisplayName = sprintf "%s - %s" (Path.GetFileName configFile) (Path.GetDirectoryName configFile)
 
     member x.Errors = errors
