@@ -1,7 +1,17 @@
 
 NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 Far Manager 3.0.4782
-FarNet 5.2.0
+FarNet 5.2.1
+
+= 5.2.1 =
+
+Editor console -> interactive
+
+	The term "editor console" is replaced with "interactive".
+	PowerShellFar and FSharpFar interactive are made similar.
+
+	Changed some keys used in interactive, see docs.
+	E.g. use [ShiftEnter] instead of [Enter].
 
 = 5.2.0 =
 

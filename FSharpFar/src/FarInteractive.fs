@@ -11,8 +11,10 @@ open Session
 open System
 open System.IO
 
+let history = HistoryLog (fsfLocalData() + @"\InteractiveHistory.log", 1000);
+
 type FarInteractive(session: Session) =
-    inherit InteractiveEditor (far.CreateEditor (), "(*(", ")*)", "(**)")
+    inherit InteractiveEditor (far.CreateEditor (), history, "(*(", ")*)", "(**)")
     let session = session
 
     override x.Invoke (code, area) =

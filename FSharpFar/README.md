@@ -166,6 +166,13 @@ The structure of interactive text in the editor:
     < end of file, next (*( output )*) >
 ````
 
+Use `[F6]` in order to show the history of interactive input.
+The history keys:
+
+- `[Enter]` - append text to the end.
+- `[Del]`, `[CtrlR]` - clean the history.
+- Other keys are for incremental filtering.
+
 ***
 
 ## <a id="configuration"/> Configuration

@@ -453,23 +453,20 @@ Enter a new culture name. Empty name tells to use the current Far UI culture.
 
 [Contents](#Contents)
 
-This is basic description of all list menus. Actual keys and operations depend
-on properties set by a module.
+This is the basic description of all list menus.
+Actual keys and actions depend on a context.
 
 `[Enter]`
 
- : Selects the current item and closes the menu. The selected item is processed
-   by a caller. Example: command history: the selected command is invoked.
+ : Selects the current item and closes the menu.
 
 `[CtrlEnter]`
 
- : Recommended key for an alternative action, i.e. it selects the current item,
-   closes the menu and the item is processed by a caller in alternative way.
+ : The recommended key for an alternative action, if any.
 
 `[Del]`
 
- : Recommended key for removing item(s) from the menu. Example: command
-   history: removes duplicated commands or removes the current command and etc.
+ : The recommended key for removing items from the menu.
 
 ### Incremental filter
 

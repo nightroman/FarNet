@@ -642,9 +642,10 @@ still an editor window with some rules and special hotkeys.
 
 ### Command and output areas
 
-Output areas are lines between markers `<#<` and `>#>`. Empty output may be
-represented as `<##>`. Areas between or outside output are command areas. The
-last command area is the active command.
+Output areas are lines between markers `<#<` and `>#>`.
+Empty output may be represented as `<##>`.
+Areas between output areas are commands.
+The last area is the active command.
 
 Output can be edited as usual text. Note that caress modification of marker
 lines may confuse the interactive tools, syntax highlighting, and etc.
@@ -656,31 +657,24 @@ Without selection some editor events are special:
 * `[ShiftEnter]`
 
     If the caret is in the active command then the command is invoked and its
-    output is appended to the end marked by `<=` and `=>` or `<>` .
+    output is appended to the end marked by `<#<` and `>#>` or `<##>` .
 
     If it is in the passive command then its code is appended to the active
     command and the caret is moved there as well.
 
-* `[End]`
+* `[F6]`
 
-    If it is the last line and the cursor is at the end then it shows a menu of
-    history commands beginning with the characters that are in the line. If the
-    line is empty then it actually shows all history commands. If the line
-    starts with * then the rest of it is used as a substring filter.
-
-* `[Up]`, `[Down]`
-
-    If it is the last line and it is initially empty these keys insert previous
-    and next commands from the history.
+    Opens the interactive history list menu.
+    The selected text is appended to the end.
 
 * `[Esc]`
 
     If it is the last line and it is not empty clears its text.
 
-* `[Del]`
+* `[ShiftDel]`
 
     If it is the last line and it is empty it replaces the last found not empty
-    output area `<=...=>` with `<>`. It is used to discard recent outputs.
+    output area `<#<...>#>` with `<##>`. It is used to discard recent outputs.
 
 * `[Tab]`
 

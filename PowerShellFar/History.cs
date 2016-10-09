@@ -12,19 +12,13 @@ namespace PowerShellFar
 	static class History
 	{
 		static readonly HistoryLog _log = new HistoryLog(A.Psf.Manager.GetFolderPath(SpecialFolder.LocalData, true) + @"\PowerShellFarHistory.log", Settings.Default.MaximumHistoryCount);
+		internal static HistoryLog Log { get { return _log; } }
 		/// <summary>
 		/// Gets history lines.
 		/// </summary>
 		public static string[] ReadLines()
 		{
 			return _log.ReadLines();
-		}
-		/// <summary>
-		/// Removes dupes and extra lines.
-		/// </summary>
-		public static string[] Update(string[] lines)
-		{
-			return _log.Update(lines);
 		}
 		/// <summary>
 		/// Add a new history line.

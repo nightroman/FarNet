@@ -1,11 +1,22 @@
 
 NuGet package: https://www.nuget.org/packages/FarNet.FSharpFar
-FarNet 5.2.0
+FarNet 5.2.1
 
-= 0.9.1 =
+= 0.10.0 =
 
-- "Load" uses local .fs.ini and .fsproj, if any.
-- Generated names for interactives.
+Interactive
+
+	Generated file names with time stamps are used for interactives. You may
+	save interactive files for later analysis but they are not supposed to be
+	reused as interactives.
+
+	Interactive input is stored in a common history file.
+	Use [F6] in order to get the interactive history.
+
+Misc
+
+	"Load" uses local .fs.ini and .fsproj, if any.
+	Fix an error on loading an updated config file.
 
 = 0.9.0 =
 

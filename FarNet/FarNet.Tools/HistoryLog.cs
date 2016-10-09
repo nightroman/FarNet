@@ -1,6 +1,6 @@
 ﻿
 /*
-FarNet plugin for Far Manager
+FarNet.Tools for Far Manager
 Copyright (c) 2006-2016 Roman Kuzmin
 */
 

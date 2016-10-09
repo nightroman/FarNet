@@ -24,6 +24,7 @@ namespace PowerShellFar
 		PowerShell PowerShell;
 		bool _doneTabExpansion;
 
+		static readonly HistoryLog _history = new HistoryLog(GetFolderPath() + @"\InteractiveHistory.log", Settings.Default.MaximumHistoryCount);
 		static string GetFolderPath()
 		{
 			return A.Psf.Manager.GetFolderPath(SpecialFolder.LocalData, true);
@@ -68,7 +69,7 @@ namespace PowerShellFar
 			return r;
 		}
 		public Interactive(IEditor editor) : this(editor, 0) { }
-		public Interactive(IEditor editor, int mode) : base(editor, "<#<", ">#>", "<##>")
+		public Interactive(IEditor editor, int mode) : base(editor, _history, "<#<", ">#>", "<##>")
 		{
 			switch (mode)
 			{
@@ -109,7 +110,7 @@ namespace PowerShellFar
 		}
 		void OpenMainSession()
 		{
-			Editor.Title = "Main session: " + Path.GetFileName(Editor.FileName);
+			Editor.Title = "PS main session " + Path.GetFileName(Editor.FileName);
 		}
 		void OpenLocalSession()
 		{
@@ -118,7 +119,7 @@ namespace PowerShellFar
 			Runspace = RunspaceFactory.CreateRunspace(FarHost, Runspace.DefaultRunspace.InitialSessionState);
 			RunspaceOpen();
 
-			Editor.Title = "Local session: " + Path.GetFileName(Editor.FileName);
+			Editor.Title = "PS local session " + Path.GetFileName(Editor.FileName);
 
 			InvokeProfile("Profile-Local.ps1", false);
 		}
@@ -144,7 +145,7 @@ namespace PowerShellFar
 			Runspace = RunspaceFactory.CreateRunspace(FarHost, connectionInfo);
 			RunspaceOpen();
 
-			Editor.Title = computerName + " session: " + Path.GetFileName(Editor.FileName);
+			Editor.Title = "PS " + computerName + " session " + Path.GetFileName(Editor.FileName);
 
 			InvokeProfile("Profile-Remote.ps1", true);
 		}
@@ -196,7 +197,7 @@ namespace PowerShellFar
 		protected override bool KeyPressed(KeyInfo key)
 		{
 			if (key == null) return false;
-			
+
 			// drop pipeline now, if any
 			PowerShell = null;
 
@@ -230,28 +231,6 @@ namespace PowerShellFar
 								Editor.Redraw();
 								return true;
 							}
-						}
-						break;
-					}
-				case KeyCode.End:
-					{
-						if (key.Is())
-						{
-							if (!IsLastLineCurrent)
-								break;
-
-							if (currentLine.Caret != currentLine.Length)
-								break;
-
-							UI.CommandHistoryMenu m = new UI.CommandHistoryMenu(currentLine.Text);
-							string code = m.Show();
-							if (code == null)
-								break;
-
-							currentLine.Text = code;
-							currentLine.Caret = -1;
-							Editor.Redraw();
-							return true;
 						}
 						break;
 					}

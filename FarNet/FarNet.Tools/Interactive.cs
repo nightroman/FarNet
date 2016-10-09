@@ -41,6 +41,7 @@ namespace FarNet.Tools
 		/// TODO
 		/// </summary>
 		public IEditor Editor { get; private set; }
+		readonly HistoryLog History;
 		readonly string OutputMark1;
 		readonly string OutputMark2;
 		readonly string OutputMark3;
@@ -48,13 +49,10 @@ namespace FarNet.Tools
 		/// <summary>
 		/// TODO
 		/// </summary>
-		/// <param name="editor"></param>
-		/// <param name="outputMark1"></param>
-		/// <param name="outputMark2"></param>
-		/// <param name="outputMark3"></param>
-		public InteractiveEditor(IEditor editor, string outputMark1, string outputMark2, string outputMark3)
+		public InteractiveEditor(IEditor editor, HistoryLog history, string outputMark1, string outputMark2, string outputMark3)
 		{
 			Editor = editor;
+			History = history;
 
 			Editor.KeyDown += OnKeyDown;
 
@@ -123,6 +121,22 @@ namespace FarNet.Tools
 		/// </summary>
 		protected virtual bool IsAsync { get { return false; } }
 
+		void DoHistory()
+		{
+			var ui = new HistoryMenu(History);
+			var code = ui.Show();
+			if (code == null)
+				return;
+
+			code = code.Replace(OutputMark3, Environment.NewLine);
+
+			Editor.BeginUndo();
+			Editor.GoToEnd(true);
+			Editor.InsertText(code);
+			Editor.EndUndo();
+			Editor.Redraw();
+		}
+
 		bool DoInvoke()
 		{
 			var area = GetCommandArea();
@@ -156,10 +170,8 @@ namespace FarNet.Tools
 				return true;
 			}
 
-			//TODO history
-			var HistoryPath = Path.GetDirectoryName(Editor.FileName) + @"\InteractiveHistory.log";
-			using (var writer = File.AppendText(HistoryPath))
-				writer.WriteLine(code.Replace(Environment.NewLine, OutputMark3));
+			// history
+			History.AddLine(code.Replace(Environment.NewLine, OutputMark3));
 
 			// begin
 			Editor.BeginUndo();
@@ -279,6 +291,15 @@ namespace FarNet.Tools
 						if (key.IsShift())
 						{
 							DoDelete();
+							return true;
+						}
+						break;
+					}
+				case KeyCode.F6:
+					{
+						if (key.Is())
+						{
+							DoHistory();
 							return true;
 						}
 						break;
