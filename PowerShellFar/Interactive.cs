@@ -220,20 +220,6 @@ namespace PowerShellFar
 						}
 						break;
 					}
-				case KeyCode.Escape:
-					{
-						if (key.Is())
-						{
-							if (IsLastLineCurrent && currentLine.Length > 0)
-							{
-								currentLine.Text = string.Empty;
-								currentLine.Caret = 0;
-								Editor.Redraw();
-								return true;
-							}
-						}
-						break;
-					}
 				case KeyCode.F1:
 					{
 						if (key.IsShift())

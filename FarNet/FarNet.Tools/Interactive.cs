@@ -45,7 +45,6 @@ namespace FarNet.Tools
 		readonly string OutputMark1;
 		readonly string OutputMark2;
 		readonly string OutputMark3;
-
 		/// <summary>
 		/// TODO
 		/// </summary>
@@ -60,7 +59,10 @@ namespace FarNet.Tools
 			OutputMark2 = outputMark2;
 			OutputMark3 = outputMark3;
 		}
-
+		/// <summary>
+		/// TODO
+		/// </summary>
+		protected virtual bool IsAsync { get { return false; } }
 		/// <summary>
 		/// TODO
 		/// </summary>
@@ -110,17 +112,10 @@ namespace FarNet.Tools
 
 			return r;
 		}
-
 		/// <summary>
 		/// TODO
 		/// </summary>
 		protected abstract void Invoke(string code, InteractiveArea area);
-
-		/// <summary>
-		/// TODO
-		/// </summary>
-		protected virtual bool IsAsync { get { return false; } }
-
 		void DoHistory()
 		{
 			var ui = new HistoryMenu(History);
@@ -136,7 +131,6 @@ namespace FarNet.Tools
 			Editor.EndUndo();
 			Editor.Redraw();
 		}
-
 		bool DoInvoke()
 		{
 			var area = GetCommandArea();
@@ -204,14 +198,12 @@ namespace FarNet.Tools
 			}
 			return true;
 		}
-
 		void EndOutput()
 		{
 			if (Editor.Line.Length > 0)
 				Editor.InsertLine();
 			Editor.InsertText(OutputMark2 + "\r\r");
 		}
-
 		/// <summary>
 		/// TODO
 		/// </summary>
@@ -228,54 +220,48 @@ namespace FarNet.Tools
 			}
 			);
 		}
-
-		/// <summary>
-		/// TODO
-		/// </summary>
-		protected bool IsLastLineCurrent
-		{
-			get
-			{
-				return Editor.Caret.Y == Editor.Count - 1;
-			}
-		}
-
 		void DoDelete()
 		{
-			if (!IsLastLineCurrent)
-				return;
+			var caret = Editor.Caret;
 
-			if (Editor.Line.Length > 0)
-				return;
-
-			Point pt = Editor.Caret;
-			for (int i = pt.Y - 1; i >= 0; --i)
+			int line1 = -1;
+			for (int i = caret.Y; i >= 0; --i)
 			{
-				string text = Editor[i].Text;
-				if (text == OutputMark1)
+				if (Editor[i].Text == OutputMark1)
 				{
-					Editor.SelectText(0, i, -1, pt.Y, PlaceKind.Stream);
-					Editor.DeleteText();
-					Editor.GoTo(0, i);
-					Editor.InsertText(OutputMark3 + "\r");
-					Editor.GoToEnd(false);
+					line1 = i;
 					break;
 				}
-				if (text == OutputMark2 || text == OutputMark3)
+			}
+			if (line1 < 0)
+				return;
+
+			int line2 = -1;
+			int n = Editor.Count;
+			for (int i = line1; i < n; ++i)
+			{
+				if (Editor[i].Text == OutputMark2)
 				{
-					pt = new Point(-1, i + 1);
-					continue;
+					line2 = i;
+					break;
 				}
 			}
+			if (line2 < 0)
+				return;
+
+			Editor.BeginUndo();
+			Editor.SelectText(0, line1, OutputMark2.Length, line2, PlaceKind.Stream);
+			Editor.DeleteText();
+			Editor.GoTo(0, line1);
+			Editor.InsertText(OutputMark3 + "\r");
+			Editor.GoTo(0, line1);
+			Editor.EndUndo();
 
 			Editor.Redraw();
 		}
-
 		/// <summary>
 		/// TODO
 		/// </summary>
-		/// <param name="key"></param>
-		/// <returns></returns>
 		protected virtual bool KeyPressed(KeyInfo key)
 		{
 			switch (key.VirtualKeyCode)
@@ -307,7 +293,6 @@ namespace FarNet.Tools
 			}
 			return false;
 		}
-
 		void OnKeyDown(object sender, KeyEventArgs e)
 		{
 			// skip selected

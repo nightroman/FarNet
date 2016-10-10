@@ -662,24 +662,19 @@ Without selection some editor events are special:
     If it is in the passive command then its code is appended to the active
     command and the caret is moved there as well.
 
+* `[Tab]`
+
+    Invokes PowerShell TabExpansion.
+    See [TabExpansion2.ps1](#TabExpansion)
+
 * `[F6]`
 
     Opens the interactive history list menu.
     The selected text is appended to the end.
 
-* `[Esc]`
-
-    If it is the last line and it is not empty clears its text.
-
 * `[ShiftDel]`
 
-    If it is the last line and it is empty it replaces the last found not empty
-    output area `<#<...>#>` with `<##>`. It is used to discard recent outputs.
-
-* `[Tab]`
-
-    Invokes PowerShell TabExpansion.
-    See [TabExpansion2.ps1](#TabExpansion)
+    Replaces the nearest upper output `<#<...>#>` with `<##>`.
 
 * `[CtrlBreak]`
 
