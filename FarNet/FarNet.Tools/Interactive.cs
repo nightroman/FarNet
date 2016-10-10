@@ -13,28 +13,6 @@ namespace FarNet.Tools
 	/// <summary>
 	/// TODO
 	/// </summary>
-	public class InteractiveArea
-	{
-		/// <summary>
-		/// TODO
-		/// </summary>
-		public int HeadLineIndex { get; set; }
-		/// <summary>
-		/// TODO
-		/// </summary>
-		public int LastLineIndex { get; set; }
-		/// <summary>
-		/// TODO
-		/// </summary>
-		public Point Caret { get; set; }
-		/// <summary>
-		/// TODO
-		/// </summary>
-		public bool Active { get; set; }
-	}
-	/// <summary>
-	/// TODO
-	/// </summary>
 	public abstract class InteractiveEditor
 	{
 		/// <summary>
@@ -48,7 +26,7 @@ namespace FarNet.Tools
 		/// <summary>
 		/// TODO
 		/// </summary>
-		public InteractiveEditor(IEditor editor, HistoryLog history, string outputMark1, string outputMark2, string outputMark3)
+		protected InteractiveEditor(IEditor editor, HistoryLog history, string outputMark1, string outputMark2, string outputMark3)
 		{
 			Editor = editor;
 			History = history;
@@ -67,7 +45,7 @@ namespace FarNet.Tools
 		/// TODO
 		/// </summary>
 		/// <returns></returns>
-		public InteractiveArea GetCommandArea()
+		public InteractiveArea CommandArea()
 		{
 			var r = new InteractiveArea();
 			r.Caret = Editor.Caret;
@@ -78,7 +56,7 @@ namespace FarNet.Tools
 				var text = Editor[y].Text;
 				if (text == OutputMark2 || text == OutputMark3)
 				{
-					r.HeadLineIndex = y + 1;
+					r.FirstLineIndex = y + 1;
 					break;
 				}
 
@@ -105,9 +83,9 @@ namespace FarNet.Tools
 			}
 
 			// trim
-			while (r.HeadLineIndex < r.LastLineIndex && Editor[r.HeadLineIndex].Length == 0)
-				++r.HeadLineIndex;
-			while (r.HeadLineIndex < r.LastLineIndex && Editor[r.LastLineIndex].Length == 0)
+			while (r.FirstLineIndex < r.LastLineIndex && Editor[r.FirstLineIndex].Length == 0)
+				++r.FirstLineIndex;
+			while (r.FirstLineIndex < r.LastLineIndex && Editor[r.LastLineIndex].Length == 0)
 				--r.LastLineIndex;
 
 			return r;
@@ -131,15 +109,16 @@ namespace FarNet.Tools
 			Editor.EndUndo();
 			Editor.Redraw();
 		}
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		bool DoInvoke()
 		{
-			var area = GetCommandArea();
+			var area = CommandArea();
 			if (area == null)
 				return false;
 
 			// code
 			var sb = new StringBuilder();
-			for (int y = area.HeadLineIndex; y <= area.LastLineIndex; ++y)
+			for (int y = area.FirstLineIndex; y <= area.LastLineIndex; ++y)
 			{
 				if (sb.Length > 0)
 					sb.AppendLine();
@@ -264,6 +243,7 @@ namespace FarNet.Tools
 		/// </summary>
 		protected virtual bool KeyPressed(KeyInfo key)
 		{
+			if (key == null) return false;
 			switch (key.VirtualKeyCode)
 			{
 				case KeyCode.Enter:
@@ -301,5 +281,27 @@ namespace FarNet.Tools
 
 			e.Ignore = KeyPressed(e.Key);
 		}
+	}
+	/// <summary>
+	/// Current interactive area info.
+	/// </summary>
+	public class InteractiveArea
+	{
+		/// <summary>
+		/// The first not empty line.
+		/// </summary>
+		public int FirstLineIndex { get; set; }
+		/// <summary>
+		/// The last not empty line.
+		/// </summary>
+		public int LastLineIndex { get; set; }
+		/// <summary>
+		/// The caret point.
+		/// </summary>
+		public Point Caret { get; set; }
+		/// <summary>
+		/// Tells if the area is active.
+		/// </summary>
+		public bool Active { get; set; }
 	}
 }

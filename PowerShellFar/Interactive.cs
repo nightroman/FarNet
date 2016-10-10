@@ -210,7 +210,7 @@ namespace PowerShellFar
 					{
 						if (key.Is())
 						{
-							if (GetCommandArea() != null && EditorKit.NeedsTabExpansion(Editor))
+							if (CommandArea() != null && EditorKit.NeedsTabExpansion(Editor))
 							{
 								InitTabExpansion();
 								EditorKit.ExpandCode(currentLine, Runspace);

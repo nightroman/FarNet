@@ -177,14 +177,14 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 				inputScript = sb.ToString();
 			}
 			// area?
-			else if (editor != null && (console = editor.Host as Interactive) != null && (area = console.GetCommandArea()) != null)
+			else if (editor != null && (console = editor.Host as Interactive) != null && (area = console.CommandArea()) != null)
 			{
 				int lineIndex = area.Caret.Y;
 				int lastIndex = area.LastLineIndex;
 
 				// previous text
 				var sb = new StringBuilder();
-				for (int i = area.HeadLineIndex; i < lineIndex; ++i)
+				for (int i = area.FirstLineIndex; i < lineIndex; ++i)
 					sb.AppendLine(editor[i].Text);
 
 				// current line

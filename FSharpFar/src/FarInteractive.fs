@@ -19,7 +19,7 @@ type FarInteractive(session: Session) =
 
     override x.Invoke (code, area) =
         // one line with a command; for now do #quit and ignore others
-        if area.HeadLineIndex = area.LastLineIndex && (match parseCommand code with Quit -> true | _ -> false) then
+        if area.FirstLineIndex = area.LastLineIndex && (match parseCommand code with Quit -> true | _ -> false) then
             session.Close ()
 
         // eval code
