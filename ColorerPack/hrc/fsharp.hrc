@@ -7,7 +7,7 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="fsharp">
 <annotation><documentation><![CDATA[
 
-fsharp.hrc by Roman Kuzmin, aka NightRoman, 2016-09-06
+fsharp.hrc by Roman Kuzmin, aka nightroman, 2016-10-05
 
 ]]></documentation></annotation>
 
@@ -15,12 +15,11 @@ fsharp.hrc by Roman Kuzmin, aka NightRoman, 2016-09-06
 <region parent="def:CommentDoc" name="CommentDoc"/>
 <region parent="def:Constant" name="Constant"/>
 <region parent="def:Directive" name="Directive"/>
-<region parent="def:Identifier" name="Function"/>
 <region parent="def:Identifier" name="Identifier"/>
 <region parent="def:Identifier" name="Member"/>
 <region parent="def:Identifier" name="Module"/>
 <region parent="def:Identifier" name="Type"/>
-<region parent="def:Identifier" name="Variable"/>
+<region parent="def:Identifier" name="Value"/>
 <region parent="def:Keyword" name="Keyword"/>
 <region parent="def:NumberDec" name="NumberDec"/>
 <region parent="def:NumberFloat" name="NumberFloat"/>
@@ -101,16 +100,10 @@ fsharp.hrc by Roman Kuzmin, aka NightRoman, 2016-09-06
 <!-- Directive -->
 <regexp match="/^\s*#(if|else|endif|light|nowarn|r|reference|I|Include|load)\b/" region="Directive"/>
 
-<!-- Variable -->
-<regexp
-match="/^\s*(static)?\b\s*(let)\b\s*(mutable)?\b\s*(public|private|internal)?\s+(%ident;)\s*[=:,]?=/"
-region1="Keyword" region2="Keyword" region3="Keyword" region4="Keyword" region5="Variable"
-/>
-
-<!-- Function -->
+<!-- Value -->
 <regexp region="def:Outlined"
-match="/^\s*(static)?\b\s*(let)\b\s*(rec|inline)?\b\s*(public|private|internal)?\s+(%ident;)/"
-region1="Keyword" region2="Keyword" region3="Keyword" region4="Keyword" region5="Function"
+match="/^\s*(static)?\b\s*(let)\b\s*(rec|inline|mutable)?\b\s*(public|private|internal)?\s+(%ident;)/"
+region1="Keyword" region2="Keyword" region3="Keyword" region4="Keyword" region5="Value"
 />
 
 <!-- Module -->
@@ -298,39 +291,3 @@ region1="Keyword" region2="Keyword" region3="Keyword" region4="Keyword" region5=
 
 </type>
 </hrc>
-<!--
-LICENSE
-- Version: MPL 1.1/GPL 2.0/LGPL 2.1
--
-- The contents of this file are subject to the Mozilla Public License Version
-- 1.1 (the "License"); you may not use this file except in compliance with
-- the License. You may obtain a copy of the License at
-- http://www.mozilla.org/MPL/
--
-- Software distributed under the License is distributed on an "AS IS" basis,
-- WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
-- for the specific language governing rights and limitations under the
-- License.
--
-- The Original Code is the Colorer Library.
--
-- The Initial Developer of the Original Code is
-- Cail Lomecb <cail@nm.ru>.
-- Portions created by the Initial Developer are Copyright (C) 1999-2005
-- the Initial Developer. All Rights Reserved.
--
-- Contributor(s):
-- Roman Kuzmin
--
-- Alternatively, the contents of this file may be used under the terms of
-- either the GNU General Public License Version 2 or later (the "GPL"), or
-- the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
-- in which case the provisions of the GPL or the LGPL are applicable instead
-- of those above. If you wish to allow use of your version of this file only
-- under the terms of either the GPL or the LGPL, and not to allow others to
-- use your version of this file under the terms of the MPL, indicate your
-- decision by deleting the provisions above and replace them with the notice
-- and other provisions required by the LGPL or the GPL. If you do not delete
-- the provisions above, a recipient may use your version of this file under
-- the terms of any one of the MPL, the GPL or the LGPL.
--->

@@ -7,22 +7,22 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="powershell">
 <annotation><documentation><![CDATA[
 
-powershell.hrc by Roman Kuzmin, aka NightRoman, 2016-02-06
+powershell.hrc by Roman Kuzmin, aka nightroman, 2016-10-05
 visual.hrd is recommended as optimized for powershell.hrc
 
 Regex syntax in strings after regex operators, [regex], and <#regex#>
 
-	... -match 'RE'
-	... [regex] 'RE'
-	... <#regex#>'RE'
+    ... -match 'RE'
+    ... [regex] 'RE'
+    ... <#regex#>'RE'
 
 SQL syntax in here-strings after <#sql#>
 
-	... <#sql#>@'
-	SELECT *
-	FROM t1
-	...
-	'@
+    ... <#sql#>@'
+    SELECT *
+    FROM t1
+    ...
+    '@
 
 ]]></documentation></annotation>
 
@@ -60,15 +60,6 @@ SQL syntax in here-strings after <#sql#>
 <region name="Escape"        parent="def:StringContent" description="Escaping and escaped symbols."/>
 <region name="EscapeSpecial" parent="def:KeywordStrong" description="`0, `a, `b, `f, `n, `r, `t, `v."/>
 
-<region name="LogEmpty"      parent="def:Tag"           description="Log empty mark."/>
-<region name="LogStart"      parent="def:OpenTag"       description="Log start."/>
-<region name="LogText"       parent="def:Text"          description="Log text."/>
-<region name="LogEnd"        parent="def:CloseTag"      description="Log end."/>
-<region name="LogError"      parent="def:Error"         description="Log error text."/>
-<region name="LogDebug"      parent="def:Debug"         description="Log debug text."/>
-<region name="LogVerbose"    parent="def:Comment"       description="Log verbose text."/>
-<region name="LogWarning"    parent="def:StringContent" description="Log warning text."/>
-
 <region name="start" parent="def:PairStart"/>
 <region name="end" parent="def:PairEnd"/>
 
@@ -83,29 +74,29 @@ SQL syntax in here-strings after <#sql#>
 <entity name="vbody" value="(?:(?{VarPrefix}\w+::?!))?(?:%vname;(?:::?!)?)+"/>
 
 <scheme name="base">
-	<regexp match="/(?{def:default}^\s+)/"/>
-	<inherit scheme="comment"/>
-	<regexp match="/(?{Escape}`.?)/"/>
+    <regexp match="/(?{def:default}^\s+)/"/>
+    <inherit scheme="comment"/>
+    <regexp match="/(?{Escape}`.?)/"/>
 </scheme>
 
 <scheme name="help">
-	<regexp match="/(?:^|~)\s*(?{HelpDirective}\.(?:SYNOPSIS|DESCRIPTION|INPUTS|OUTPUTS|NOTES|EXAMPLE|LINK|COMPONENT|ROLE|FUNCTIONALITY))\s*$/i"/>
-	<regexp match="/(?:^|~)\s*(?{HelpDirective}\.(?:PARAMETER|FORWARDHELPTARGETNAME|FORWARDHELPCATEGORY|REMOTEHELPRUNSPACE|EXTERNALHELP))\s+(?{UserVar}.+)$/i"/>
+    <regexp match="/(?:^|~)\s*(?{HelpDirective}\.(?:SYNOPSIS|DESCRIPTION|INPUTS|OUTPUTS|NOTES|EXAMPLE|LINK|COMPONENT|ROLE|FUNCTIONALITY))\s*$/i"/>
+    <regexp match="/(?:^|~)\s*(?{HelpDirective}\.(?:PARAMETER|FORWARDHELPTARGETNAME|FORWARDHELPCATEGORY|REMOTEHELPRUNSPACE|EXTERNALHELP))\s+(?{UserVar}.+)$/i"/>
 </scheme>
 <scheme name="_comment">
-	<inherit scheme="def:Comment"/>
-	<inherit scheme="def:empty"/>
+    <inherit scheme="def:Comment"/>
+    <inherit scheme="def:empty"/>
 </scheme>
 <scheme name="comment">
-	<regexp match="/(?{Directive}%s-rem;#requires)(?{Comment}.*)/i"/>
-	<regexp match="/(?{Comment}%s-rem;(?{def:Outlined}#{3}#?!.*))/"/>
-	<block scheme="_comment" region="Comment" start="/%s-rem;#+/" end="/$/"/>
-	<block scheme="_comment" region="Comment" start="/(?{start}%s-rem;&lt;#)/" end="/(?{end}#&gt;)\s*/"/>
+    <regexp match="/(?{Directive}%s-rem;#requires)(?{Comment}.*)/i"/>
+    <regexp match="/(?{Comment}%s-rem;(?{def:Outlined}#{3}#?!.*))/"/>
+    <block scheme="_comment" region="Comment" start="/%s-rem;#+/" end="/$/"/>
+    <block scheme="_comment" region="Comment" start="/(?{start}%s-rem;&lt;#)/" end="/(?{end}#&gt;)\s*/"/>
 </scheme>
 
 <scheme name="escape">
-	<regexp match="/(?{EscapeSpecial}`[0abfnrtv])/"/>
-	<regexp match="/(?{Escape}`.?)/"/>
+    <regexp match="/(?{EscapeSpecial}`[0abfnrtv])/"/>
+    <regexp match="/(?{Escape}`.?)/"/>
 </scheme>
 
 <entity name="numexp" value="(?:[Ee][\-+]?\d+)"/>
@@ -113,205 +104,181 @@ SQL syntax in here-strings after <#sql#>
 <entity name="real" value="(?{NumberFloat}\B\.?~1\.\d+%numexp;?%numsuf;\b|\b\d+(?:\.\.?!\d*(?:%numexp;?%numsuf;\b|\B)|%numexp;%numsuf;\b))"/>
 <entity name="int" value="\b(?:(?{NumberDec}\d+%numsuf;)|(?{NumberHex}0[Xx][\dA-Fa-f]+%numsuf;))\b"/>
 <scheme name="number">
-	<regexp match="/%real;|%int;/"/>
+    <regexp match="/%real;|%int;/"/>
 </scheme>
 
 <scheme name="attribute-argument">
-	<regexp match="/(?{Identifier}%sname;)\s*/"/>
-	<inherit scheme="expression"/>
-	<keywords region="Operator">
-		<symb name="="/>
-	</keywords>
-	<inherit scheme="base"/>
+    <regexp match="/(?{Identifier}%sname;)\s*/"/>
+    <inherit scheme="expression"/>
+    <keywords region="Operator">
+        <symb name="="/>
+    </keywords>
+    <inherit scheme="base"/>
 </scheme>
 <scheme name="type-spec">
-	<regexp match="/%sname;(?:[.+]%sname;)*/"/>
-	<block scheme="type-spec" start="/(?{start}\[)/" end="/(?{end}\])/"/>
-	<block scheme="attribute-argument" start="/(?{start}\()/" end="/(?{end}\))/"/>
+    <regexp match="/%sname;(?:[.+]%sname;)*/"/>
+    <block scheme="type-spec" start="/(?{start}\[)/" end="/(?{end}\])/"/>
+    <block scheme="attribute-argument" start="/(?{start}\()/" end="/(?{end}\))/"/>
 </scheme>
 <scheme name="type-literal">
-	<block scheme="type-spec" region="Type"
-	start="/(?{start}\[)\s*\M%sname;/" end="/(?{end}\])/"/>
+    <block scheme="type-spec" region="Type"
+    start="/(?{start}\[)\s*\M%sname;/" end="/(?{end}\])/"/>
 </scheme>
 <scheme name="cmdlet-binding">
-	<block scheme="type-spec" region="Type"
-	start="/(?{start}\[)\s*\MCmdletBinding\b/i" end="/(?{end}\])/"/>
+    <block scheme="type-spec" region="Type"
+    start="/(?{start}\[)\s*\MCmdletBinding\b/i" end="/(?{end}\])/"/>
 </scheme>
 
 <scheme name="variable">
-	<inherit scheme="known-variable"/>
-	<regexp match="/(?{UserVar}\$%vbody;)/"/>
-	<block scheme="escape" region="UserVar" start="/(?{start}\$\{)/" end="/(?{end}\})/"/>
+    <inherit scheme="known-variable"/>
+    <regexp match="/(?{UserVar}\$%vbody;)/"/>
+    <block scheme="escape" region="UserVar" start="/(?{start}\$\{)/" end="/(?{end}\})/"/>
 </scheme>
 <scheme name="known-variable">
-	<keywords ignorecase="yes" region="Constant">
-		<word name="$false"/>
-		<word name="$null"/>
-		<word name="$true"/>
-	</keywords>
-	<keywords ignorecase="yes" region="SystemVar">
-		<!--Known-->
-		<word name="$Far"/>
-		<word name="$Psf"/>
-		<word name="$psISE"/>
-		<!--Automatic-->
-		<word name="$$"/>
-		<word name="$?"/>
-		<word name="$^"/>
-		<word name="$_"/>
-		<word name="$Args"/>
-		<word name="$ConsoleFileName"/>
-		<word name="$Error"/>
-		<word name="$Event"/>
-		<word name="$EventSubscriber"/>
-		<word name="$ExecutionContext"/>
-		<word name="$ForEach"/>
-		<word name="$HOME"/>
-		<word name="$Host"/>
-		<word name="$Input"/>
-		<word name="$LastExitCode"/>
-		<word name="$Matches"/>
-		<word name="$MyInvocation"/>
-		<word name="$NestedPromptLevel"/>
-		<word name="$PID"/>
-		<word name="$Profile"/>
-		<word name="$PSBoundParameters"/>
-		<word name="@PSBoundParameters"/>
-		<word name="$PSCmdlet"/>
-		<word name="$PSCulture"/>
-		<word name="$PSDebugContext"/>
-		<word name="$PSHOME"/>
-		<word name="$PSItem"/>
-		<word name="$PSScriptRoot"/>
-		<word name="$PSSenderInfo"/>
-		<word name="$PSUICulture"/>
-		<word name="$PSVersionTable"/>
-		<word name="$PWD"/>
-		<word name="$ReportErrorShowExceptionClass"/>
-		<word name="$ReportErrorShowInnerException"/>
-		<word name="$ReportErrorShowSource"/>
-		<word name="$ReportErrorShowStackTrace"/>
-		<word name="$Sender"/>
-		<word name="$ShellID"/>
-		<word name="$SourceArgs"/>
-		<word name="$SourceEventArgs"/>
-		<word name="$StackTrace"/>
-		<word name="$This"/>
-		<!--Preference-->
-		<word name="$ConfirmPreference"/>
-		<word name="$DebugPreference"/>
-		<word name="$ErrorActionPreference"/>
-		<word name="$ErrorView"/>
-		<word name="$FormatEnumerationLimit"/>
-		<word name="$LogCommandHealthEvent"/>
-		<word name="$LogCommandLifecycleEvent"/>
-		<word name="$LogEngineHealthEvent"/>
-		<word name="$LogEngineLifecycleEvent"/>
-		<word name="$LogProviderLifecycleEvent"/>
-		<word name="$LogProviderHealthEvent"/>
-		<word name="$MaximumAliasCount"/>
-		<word name="$MaximumDriveCount"/>
-		<word name="$MaximumErrorCount"/>
-		<word name="$MaximumFunctionCount"/>
-		<word name="$MaximumHistoryCount"/>
-		<word name="$MaximumVariableCount"/>
-		<word name="$OFS"/>
-		<word name="$OutputEncoding"/>
-		<word name="$ProgressPreference"/>
-		<word name="$PSDefaultParameterValues"/>
-		<word name="$PSEmailServer"/>
-		<word name="$PSSessionApplicationName"/>
-		<word name="$PSSessionConfigurationName"/>
-		<word name="$PSSessionOption"/>
-		<word name="$VerbosePreference"/>
-		<word name="$WarningPreference"/>
-		<word name="$WhatIfPreference"/>
-	</keywords>
+    <keywords ignorecase="yes" region="Constant">
+        <word name="$false"/>
+        <word name="$null"/>
+        <word name="$true"/>
+    </keywords>
+    <keywords ignorecase="yes" region="SystemVar">
+        <!--Known-->
+        <word name="$Far"/>
+        <word name="$Psf"/>
+        <word name="$psISE"/>
+        <!--Automatic-->
+        <word name="$$"/>
+        <word name="$?"/>
+        <word name="$^"/>
+        <word name="$_"/>
+        <word name="$Args"/>
+        <word name="$ConsoleFileName"/>
+        <word name="$Error"/>
+        <word name="$Event"/>
+        <word name="$EventSubscriber"/>
+        <word name="$ExecutionContext"/>
+        <word name="$ForEach"/>
+        <word name="$HOME"/>
+        <word name="$Host"/>
+        <word name="$Input"/>
+        <word name="$LastExitCode"/>
+        <word name="$Matches"/>
+        <word name="$MyInvocation"/>
+        <word name="$NestedPromptLevel"/>
+        <word name="$PID"/>
+        <word name="$Profile"/>
+        <word name="$PSBoundParameters"/>
+        <word name="@PSBoundParameters"/>
+        <word name="$PSCmdlet"/>
+        <word name="$PSCulture"/>
+        <word name="$PSDebugContext"/>
+        <word name="$PSHOME"/>
+        <word name="$PSItem"/>
+        <word name="$PSScriptRoot"/>
+        <word name="$PSSenderInfo"/>
+        <word name="$PSUICulture"/>
+        <word name="$PSVersionTable"/>
+        <word name="$PWD"/>
+        <word name="$ReportErrorShowExceptionClass"/>
+        <word name="$ReportErrorShowInnerException"/>
+        <word name="$ReportErrorShowSource"/>
+        <word name="$ReportErrorShowStackTrace"/>
+        <word name="$Sender"/>
+        <word name="$ShellID"/>
+        <word name="$SourceArgs"/>
+        <word name="$SourceEventArgs"/>
+        <word name="$StackTrace"/>
+        <word name="$This"/>
+        <!--Preference-->
+        <word name="$ConfirmPreference"/>
+        <word name="$DebugPreference"/>
+        <word name="$ErrorActionPreference"/>
+        <word name="$ErrorView"/>
+        <word name="$FormatEnumerationLimit"/>
+        <word name="$LogCommandHealthEvent"/>
+        <word name="$LogCommandLifecycleEvent"/>
+        <word name="$LogEngineHealthEvent"/>
+        <word name="$LogEngineLifecycleEvent"/>
+        <word name="$LogProviderLifecycleEvent"/>
+        <word name="$LogProviderHealthEvent"/>
+        <word name="$MaximumAliasCount"/>
+        <word name="$MaximumDriveCount"/>
+        <word name="$MaximumErrorCount"/>
+        <word name="$MaximumFunctionCount"/>
+        <word name="$MaximumHistoryCount"/>
+        <word name="$MaximumVariableCount"/>
+        <word name="$OFS"/>
+        <word name="$OutputEncoding"/>
+        <word name="$ProgressPreference"/>
+        <word name="$PSDefaultParameterValues"/>
+        <word name="$PSEmailServer"/>
+        <word name="$PSSessionApplicationName"/>
+        <word name="$PSSessionConfigurationName"/>
+        <word name="$PSSessionOption"/>
+        <word name="$VerbosePreference"/>
+        <word name="$WarningPreference"/>
+        <word name="$WhatIfPreference"/>
+    </keywords>
 </scheme>
 
 <!--''-->
 <scheme name="apos1">
-	<regexp match="/(?{Escape}'')/"/>
+    <regexp match="/(?{Escape}'')/"/>
 </scheme>
 
 <!--@""@-->
 <scheme name="quot2">
-	<inherit scheme="escape"/>
-	<inherit scheme="variable"/>
-	<inherit scheme="subexpr-block"/>
+    <inherit scheme="escape"/>
+    <inherit scheme="variable"/>
+    <inherit scheme="subexpr-block"/>
 </scheme>
 
 <!--""-->
 <scheme name="quot1">
-	<regexp match="/(?{Escape}&#34;&#34;)/"/>
-	<inherit scheme="quot2"/>
+    <regexp match="/(?{Escape}&#34;&#34;)/"/>
+    <inherit scheme="quot2"/>
 </scheme>
 
 <!--RE-->
 <scheme name="re-apos1">
-	<inherit scheme="apos1"/>
-	<inherit scheme="regexp:pcre.regexp"/>
+    <inherit scheme="apos1"/>
+    <inherit scheme="regexp:pcre.regexp"/>
 </scheme>
 <scheme name="re-quot1">
-	<inherit scheme="quot1"/>
-	<inherit scheme="regexp:pcre.regexp"/>
+    <inherit scheme="quot1"/>
+    <inherit scheme="regexp:pcre.regexp"/>
 </scheme>
 <scheme name="re-quot2">
-	<inherit scheme="quot2"/>
-	<inherit scheme="regexp:pcre.regexp"/>
+    <inherit scheme="quot2"/>
+    <inherit scheme="regexp:pcre.regexp"/>
 </scheme>
 
 <!--SQL-->
 <scheme name="sql-apos">
-	<inherit scheme="apos1"/>
-	<inherit scheme="quot2"/>
+    <inherit scheme="apos1"/>
+    <inherit scheme="quot2"/>
 </scheme>
 <scheme name="sql-quot2">
-	<inherit scheme="quot2"/>
-	<inherit scheme="sql:sql">
-		<virtual scheme="sql:stringApost" subst-scheme="sql-apos"/>
-	</inherit>
+    <inherit scheme="quot2"/>
+    <inherit scheme="sql:sql">
+        <virtual scheme="sql:stringApost" subst-scheme="sql-apos"/>
+    </inherit>
 </scheme>
 
 <!--@()-->
 <scheme name="array-expression">
-	<block scheme="statement-list"
-	start="/(?{start}(?{Bracket}\@\())/" end="/(?{end}(?{Bracket}\)))/"/>
+    <block scheme="statement-list"
+    start="/(?{start}(?{Bracket}\@\())/" end="/(?{end}(?{Bracket}\)))/"/>
 </scheme>
 
 <!--@{}-->
 <scheme name="hash-literal-body">
-	<block scheme="statement" start="/(?{Operator}=)/" end="/$|(?{Operator};)|\}?=/"/>
-	<regexp match="/(?{HashKey}%sname;)\s*/"/>
-	<inherit scheme="unary-expression"/>
+    <block scheme="statement" start="/(?{Operator}=)/" end="/$|(?{Operator};)|\}?=/"/>
+    <regexp match="/(?{HashKey}%sname;)\s*/"/>
+    <inherit scheme="unary-expression"/>
 </scheme>
 <scheme name="hash-literal-expression">
-	<block scheme="hash-literal-body"
-	start="/(?{start}(?{Bracket}\@\{))/" end="/(?{end}(?{Bracket}\}))/"/>
-</scheme>
-
-<!--<==>-->
-<scheme name="log">
-	<regexp match="/(?{LogError}^ERROR(?::|\b)|&lt;{4}(?:\s|$))/"/>
-	<regexp match="/^\+\s+(?{LogError}\~+)\s*$/"/>
-	<regexp match="/(?{LogDebug}^DEBUG\b.*$)/"/>
-	<regexp match="/(?{LogVerbose}^VERBOSE\b.*$)/"/>
-	<regexp match="/(?{LogWarning}^WARNING\b.*$)/"/>
-
-	<!--Guid-->
-	<regexp match="/(?{def:URL}\{?\b[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\b\}?)/"/>
-
-	<!--Time+-->
-	<regexp match="/(?{def:Time}\b\d{1,2}:\d{1,2}(?::\d{1,2}(?:\.\d+)?)?\b)/"/>
-
-	<!--Date+-->
-	<regexp match="/(?{def:Date}(^|[^\/\-]?#1)\b\d+[\/\-]\d+[\/\-]\d+\b($|[^\/\-]?=))/"/>
-
-	<!--d.d.d-->
-	<regexp match="/(?{Number}\b[0-9]+[.0-9]*\b)/"/>
-
-	<inherit scheme="def:Path"/>
-	<inherit scheme="number"/>
+    <block scheme="hash-literal-body"
+    start="/(?{start}(?{Bracket}\@\{))/" end="/(?{end}(?{Bracket}\}))/"/>
 </scheme>
 
 <scheme name="cmdlet">
@@ -606,536 +573,495 @@ SQL syntax in here-strings after <#sql#>
 </scheme>
 
 <scheme name="binary-operator">
-	<keywords ignorecase="yes" region="Operator">
-		<word name="-eq"/>
-		<word name="-ne"/>
-		<word name="-ge"/>
-		<word name="-gt"/>
-		<word name="-lt"/>
-		<word name="-le"/>
-		<word name="-like"/>
-		<word name="-notlike"/>
-		<word name="-match"/>
-		<word name="-notmatch"/>
-		<word name="-replace"/>
-		<word name="-contains"/>
-		<word name="-notcontains"/>
-		<word name="-ieq"/>
-		<word name="-ine"/>
-		<word name="-ige"/>
-		<word name="-igt"/>
-		<word name="-ile"/>
-		<word name="-ilt"/>
-		<word name="-ilike"/>
-		<word name="-inotlike"/>
-		<word name="-imatch"/>
-		<word name="-inotmatch"/>
-		<word name="-ireplace"/>
-		<word name="-icontains"/>
-		<word name="-inotcontains"/>
-		<word name="-ceq"/>
-		<word name="-cne"/>
-		<word name="-cge"/>
-		<word name="-cgt"/>
-		<word name="-clt"/>
-		<word name="-cle"/>
-		<word name="-clike"/>
-		<word name="-cnotlike"/>
-		<word name="-cmatch"/>
-		<word name="-cnotmatch"/>
-		<word name="-creplace"/>
-		<word name="-ccontains"/>
-		<word name="-cnotcontains"/>
-		<word name="-is"/>
-		<word name="-isnot"/>
-		<word name="-as"/>
-		<word name="-and"/>
-		<word name="-or"/>
-		<word name="-xor"/>
-		<word name="-band"/>
-		<word name="-bor"/>
-		<word name="-bxor"/>
-		<word name="-f"/>
-		<word name="-in"/>
-		<word name="-cin"/>
-		<word name="-iin"/>
-		<word name="-notin"/>
-		<word name="-cnotin"/>
-		<word name="-inotin"/>
-		<word name="-shl"/>
-		<word name="-shr"/>
-	</keywords>
-	<keywords region="Operator">
-		<symb name=".."/>
-		<symb name="*"/>
-		<symb name="/"/>
-		<symb name="%"/>
-	</keywords>
+    <keywords ignorecase="yes" region="Operator">
+        <word name="-eq"/>
+        <word name="-ne"/>
+        <word name="-ge"/>
+        <word name="-gt"/>
+        <word name="-lt"/>
+        <word name="-le"/>
+        <word name="-like"/>
+        <word name="-notlike"/>
+        <word name="-match"/>
+        <word name="-notmatch"/>
+        <word name="-replace"/>
+        <word name="-contains"/>
+        <word name="-notcontains"/>
+        <word name="-ieq"/>
+        <word name="-ine"/>
+        <word name="-ige"/>
+        <word name="-igt"/>
+        <word name="-ile"/>
+        <word name="-ilt"/>
+        <word name="-ilike"/>
+        <word name="-inotlike"/>
+        <word name="-imatch"/>
+        <word name="-inotmatch"/>
+        <word name="-ireplace"/>
+        <word name="-icontains"/>
+        <word name="-inotcontains"/>
+        <word name="-ceq"/>
+        <word name="-cne"/>
+        <word name="-cge"/>
+        <word name="-cgt"/>
+        <word name="-clt"/>
+        <word name="-cle"/>
+        <word name="-clike"/>
+        <word name="-cnotlike"/>
+        <word name="-cmatch"/>
+        <word name="-cnotmatch"/>
+        <word name="-creplace"/>
+        <word name="-ccontains"/>
+        <word name="-cnotcontains"/>
+        <word name="-is"/>
+        <word name="-isnot"/>
+        <word name="-as"/>
+        <word name="-and"/>
+        <word name="-or"/>
+        <word name="-xor"/>
+        <word name="-band"/>
+        <word name="-bor"/>
+        <word name="-bxor"/>
+        <word name="-f"/>
+        <word name="-in"/>
+        <word name="-cin"/>
+        <word name="-iin"/>
+        <word name="-notin"/>
+        <word name="-cnotin"/>
+        <word name="-inotin"/>
+        <word name="-shl"/>
+        <word name="-shr"/>
+    </keywords>
+    <keywords region="Operator">
+        <symb name=".."/>
+        <symb name="*"/>
+        <symb name="/"/>
+        <symb name="%"/>
+    </keywords>
 </scheme>
 
 <scheme name="statement-block">
-	<block start="/(?{start}(?{Bracket}\{))/" end="/(?{end}(?{Bracket}\}))/" scheme="statement-list"/>
-	<inherit scheme="base"/>
+    <block start="/(?{start}(?{Bracket}\{))/" end="/(?{end}(?{Bracket}\}))/" scheme="statement-list"/>
+    <inherit scheme="base"/>
 </scheme>
 
 <scheme name="subexpr-block">
-	<block start="/(?{start}(?{Bracket}\$\())/" end="/(?{end}(?{Bracket}\)))/" scheme="statement-list"/>
+    <block start="/(?{start}(?{Bracket}\$\())/" end="/(?{end}(?{Bracket}\)))/" scheme="statement-list"/>
 </scheme>
 
 <scheme name="script-block-expression">
-	<block start="/(?{start}(?{Bracket}\{))/" end="/(?{end}(?{Bracket}\}))/" scheme="script-block"/>
+    <block start="/(?{start}(?{Bracket}\{))/" end="/(?{end}(?{Bracket}\}))/" scheme="script-block"/>
 </scheme>
 
 <scheme name="parenthesized-expression">
-	<block start="/(?{start}(?{Bracket}\())/" end="/(?{end}(?{Bracket}\)))/" scheme="pipeline"/>
+    <block start="/(?{start}(?{Bracket}\())/" end="/(?{end}(?{Bracket}\)))/" scheme="pipeline"/>
 </scheme>
 
 <scheme name="element-access">
-	<block start="/(?{start}(?{Bracket}\[))/" end="/(?{end}(?{Bracket}\]))/" scheme="expression"/>
+    <block start="/(?{start}(?{Bracket}\[))/" end="/(?{end}(?{Bracket}\]))/" scheme="expression"/>
 </scheme>
 
 <scheme name="while-until">
-	<inherit scheme="parenthesized-expression"/>
-	<inherit scheme="base"/>
+    <inherit scheme="parenthesized-expression"/>
+    <inherit scheme="base"/>
 </scheme>
 
 <scheme name="if-elseif-while">
-	<inherit scheme="parenthesized-expression"/>
-	<inherit scheme="statement-block"/>
+    <inherit scheme="parenthesized-expression"/>
+    <inherit scheme="statement-block"/>
 </scheme>
 
 <scheme name="catch-trap">
-	<inherit scheme="statement-block"/>
-	<inherit scheme="type-literal"/>
-	<keywords region="Operator">
-		<symb name=","/>
-	</keywords>
+    <inherit scheme="statement-block"/>
+    <inherit scheme="type-literal"/>
+    <keywords region="Operator">
+        <symb name=","/>
+    </keywords>
 </scheme>
 
 <scheme name="parameter-list">
-	<block scheme="expression" start="/(?{Operator}=)/" end="/[,)]?=/"/>
-	<regexp match="/(?{UserVar}\$%vname;)/"/>
-	<inherit scheme="type-literal"/>
-	<keywords region="Operator">
-		<symb name=","/>
-	</keywords>
-	<inherit scheme="base"/>
+    <block scheme="expression" start="/(?{Operator}=)/" end="/[,)]?=/"/>
+    <regexp match="/(?{UserVar}\$%vname;)/"/>
+    <inherit scheme="type-literal"/>
+    <keywords region="Operator">
+        <symb name=","/>
+    </keywords>
+    <inherit scheme="base"/>
 </scheme>
 <scheme name="param">
-	<block start="/(?{start}(?{Bracket}\())/" end="/(?{end}(?{Bracket}\)))/" scheme="parameter-list"/>
-	<inherit scheme="base"/>
+    <block start="/(?{start}(?{Bracket}\())/" end="/(?{end}(?{Bracket}\)))/" scheme="parameter-list"/>
+    <inherit scheme="base"/>
 </scheme>
 
 <scheme name="function">
-	<block start="/(?{start}(?{Bracket}\())/" end="/(?{end}(?{Bracket}\)))/" scheme="parameter-list"/>
-	<inherit scheme="script-block-expression"/>
-	<inherit scheme="base"/>
+    <block start="/(?{start}(?{Bracket}\())/" end="/(?{end}(?{Bracket}\)))/" scheme="parameter-list"/>
+    <inherit scheme="script-block-expression"/>
+    <inherit scheme="base"/>
 </scheme>
 
 <scheme name="class-method-base">
-	<keywords ignorecase="yes" region="Keyword">
-		<word name="base"/>
-	</keywords>
-	<inherit scheme="parenthesized-expression"/>
-	<inherit scheme="base"/>
+    <keywords ignorecase="yes" region="Keyword">
+        <word name="base"/>
+    </keywords>
+    <inherit scheme="parenthesized-expression"/>
+    <inherit scheme="base"/>
 </scheme>
 <scheme name="class-method">
-	<block start="/(?{start}(?{Bracket}\())/" end="/(?{end}(?{Bracket}\)))/" scheme="parameter-list"/>
-	<block scheme="class-method-base" start="/(?{start})(?{Operator}:)/" end="/(?{end}\))?#1/"/>
-	<inherit scheme="script-block-expression"/>
-	<inherit scheme="base"/>
+    <block start="/(?{start}(?{Bracket}\())/" end="/(?{end}(?{Bracket}\)))/" scheme="parameter-list"/>
+    <block scheme="class-method-base" start="/(?{start})(?{Operator}:)/" end="/(?{end}\))?#1/"/>
+    <inherit scheme="script-block-expression"/>
+    <inherit scheme="base"/>
 </scheme>
 <scheme name="class-body">
-	<keywords ignorecase="yes" region="Keyword">
-		<word name="static"/>
-		<word name="hidden"/>
-	</keywords>
-	<inherit scheme="type-literal"/>
-	<block scheme="class-method" start="/(?{start})(?{def:Outlined}(?{Identifier}%sname;))/i" end="/(?{end}\})?#1/"/>
-	<inherit scheme="statement"/>
+    <keywords ignorecase="yes" region="Keyword">
+        <word name="static"/>
+        <word name="hidden"/>
+    </keywords>
+    <inherit scheme="type-literal"/>
+    <block scheme="class-method" start="/(?{start})(?{def:Outlined}(?{Identifier}%sname;))/i" end="/(?{end}\})?#1/"/>
+    <inherit scheme="statement"/>
 </scheme>
 <scheme name="class">
-	<block start="/(?{start}(?{Bracket}\{))/" end="/(?{end}(?{Bracket}\}))/" scheme="class-body"/>
-	<regexp match="/%sname;(?:[.+]%sname;)*/" region="Type"/>
-	<block scheme="type-spec" start="/(?{start}\[)/" end="/(?{end}\])/" region="Type"/>
-	<regexp match="/(?{Operator}[:,])/"/>
-	<inherit scheme="base"/>
+    <block start="/(?{start}(?{Bracket}\{))/" end="/(?{end}(?{Bracket}\}))/" scheme="class-body"/>
+    <regexp match="/%sname;(?:[.+]%sname;)*/" region="Type"/>
+    <block scheme="type-spec" start="/(?{start}\[)/" end="/(?{end}\])/" region="Type"/>
+    <regexp match="/(?{Operator}[:,])/"/>
+    <inherit scheme="base"/>
 </scheme>
 
 <scheme name="enum-body">
-	<block scheme="statement" start="/(?{Operator}=)/" end="/$|(?{Operator};)|\}?=/"/>
-	<regexp match="/(?{EnumKey}%sname;)\s*/"/>
-	<inherit scheme="unary-expression"/>
+    <block scheme="statement" start="/(?{Operator}=)/" end="/$|(?{Operator};)|\}?=/"/>
+    <regexp match="/(?{EnumKey}%sname;)\s*/"/>
+    <inherit scheme="unary-expression"/>
 </scheme>
 <scheme name="enum">
-	<block scheme="enum-body" start="/(?{start}(?{Bracket}\{))/" end="/(?{end}(?{Bracket}\}))/"/>
-	<inherit scheme="base"/>
+    <block scheme="enum-body" start="/(?{start}(?{Bracket}\{))/" end="/(?{end}(?{Bracket}\}))/"/>
+    <inherit scheme="base"/>
 </scheme>
 
 <scheme name="for-paren">
-	<keywords region="Operator">
-		<symb name=";"/>
-	</keywords>
-	<inherit scheme="pipeline"/>
+    <keywords region="Operator">
+        <symb name=";"/>
+    </keywords>
+    <inherit scheme="pipeline"/>
 </scheme>
 <scheme name="for">
-	<block start="/(?{start}(?{Bracket}\())/" end="/(?{end}(?{Bracket}\)))/" scheme="for-paren"/>
-	<inherit scheme="statement-block"/>
+    <block start="/(?{start}(?{Bracket}\())/" end="/(?{end}(?{Bracket}\)))/" scheme="for-paren"/>
+    <inherit scheme="statement-block"/>
 </scheme>
 
 <scheme name="foreach-paren">
-	<block scheme="variable" start="/~/" end="/\b\M(?{Keyword}in)\b/i"/>
-	<block scheme="pipeline" start="/\bin\b/i" end="/\)?=/"/>
+    <block scheme="variable" start="/~/" end="/\b\M(?{Keyword}in)\b/i"/>
+    <block scheme="pipeline" start="/\bin\b/i" end="/\)?=/"/>
 </scheme>
 <scheme name="foreach">
-	<block scheme="foreach-paren" start="/(?{start}(?{Bracket}\())/" end="/(?{end}(?{Bracket}\)))/"/>
-	<inherit scheme="statement-block"/>
+    <block scheme="foreach-paren" start="/(?{start}(?{Bracket}\())/" end="/(?{end}(?{Bracket}\)))/"/>
+    <inherit scheme="statement-block"/>
 </scheme>
 
 <scheme name="do">
-	<inherit scheme="statement-block"/>
-	<block scheme="while-until" start="/(?{start}(?{Keyword}while|until))%token;?!/i" end="/(?{end}\))?#1/"/>
+    <inherit scheme="statement-block"/>
+    <block scheme="while-until" start="/(?{start}(?{Keyword}while|until))%token;?!/i" end="/(?{end}\))?#1/"/>
 </scheme>
 
 <scheme name="data">
-	<inherit scheme="statement-block"/>
-	<inherit scheme="command-element"/>
+    <inherit scheme="statement-block"/>
+    <inherit scheme="command-element"/>
 </scheme>
 
 <scheme name="case">
-	<keywords region="Keyword" ignorecase="yes">
-		<word name="default"/>
-	</keywords>
-	<inherit scheme="statement-block"/>
-	<inherit scheme="argument"/>
+    <keywords region="Keyword" ignorecase="yes">
+        <word name="default"/>
+    </keywords>
+    <inherit scheme="statement-block"/>
+    <inherit scheme="argument"/>
 </scheme>
 <scheme name="switch">
-	<block start="/(?{start}(?{Bracket}\{))/" end="/(?{end}(?{Bracket}\}))/" scheme="case"/>
-	<inherit scheme="command-element"/>
+    <block start="/(?{start}(?{Bracket}\{))/" end="/(?{end}(?{Bracket}\}))/" scheme="case"/>
+    <inherit scheme="command-element"/>
 </scheme>
 
 <scheme name="break-continue">
-	<regexp match="/(?{Label}%sname;)/"/>
-	<inherit scheme="unary-expression"/>
+    <regexp match="/(?{Label}%sname;)/"/>
+    <inherit scheme="unary-expression"/>
 </scheme>
 
 <entity name="sql" value="(?:&lt;#sql#&gt;)?#7"/>
 <entity name="regex" value="(?:(?{Type}\[regex\])\s*|(?:&lt;#regex#&gt;)?#9)"/>
 <scheme name="literal">
-	<inherit scheme="base"/>
+    <inherit scheme="base"/>
 
-	<!--<#sql#>@''@-->
-	<block scheme="sql:sql" content-priority="low"
-	start="/%sql;(?{start}(?{SyntaxEdge}@'$))/i" end="/(?{end}(?{SyntaxEdge}^'@))/"/>
+    <!--<#sql#>@''@-->
+    <block scheme="sql:sql" content-priority="low"
+    start="/%sql;(?{start}(?{SyntaxEdge}@'$))/i" end="/(?{end}(?{SyntaxEdge}^'@))/"/>
 
-	<!--<#sql#>@""@-->
-	<block scheme="sql-quot2" content-priority="low"
-	start="/%sql;(?{start}(?{SyntaxEdge}@&#34;$))/i" end="/(?{end}(?{SyntaxEdge}^&#34;@))/"/>
+    <!--<#sql#>@""@-->
+    <block scheme="sql-quot2" content-priority="low"
+    start="/%sql;(?{start}(?{SyntaxEdge}@&#34;$))/i" end="/(?{end}(?{SyntaxEdge}^&#34;@))/"/>
 
-	<!--[regex]@''@, <#regex#>@''@-->
-	<block scheme="regexp:pcre.regexp" region="String" inner-region="yes"
-	start="/%regex;(?{start}(?{SyntaxEdge}@'$))/i" end="/(?{end}(?{SyntaxEdge}^'@))/"/>
+    <!--[regex]@''@, <#regex#>@''@-->
+    <block scheme="regexp:pcre.regexp" region="String" inner-region="yes"
+    start="/%regex;(?{start}(?{SyntaxEdge}@'$))/i" end="/(?{end}(?{SyntaxEdge}^'@))/"/>
 
-	<!--[regex]'', <#regex#>''-->
-	<block scheme="re-apos1" region="String" inner-region="yes"
-	start="/%regex;(?{start}(?{SyntaxEdge}'))/i" end="/(?{end}(?{SyntaxEdge}'))/"/>
+    <!--[regex]'', <#regex#>''-->
+    <block scheme="re-apos1" region="String" inner-region="yes"
+    start="/%regex;(?{start}(?{SyntaxEdge}'))/i" end="/(?{end}(?{SyntaxEdge}'))/"/>
 
-	<!--[regex]@""@, <#regex#>@""@-->
-	<block scheme="re-quot2" region="String" inner-region="yes"
-	start="/%regex;(?{start}(?{SyntaxEdge}@&#34;$))/i" end="/(?{end}(?{SyntaxEdge}^&#34;@))/"/>
+    <!--[regex]@""@, <#regex#>@""@-->
+    <block scheme="re-quot2" region="String" inner-region="yes"
+    start="/%regex;(?{start}(?{SyntaxEdge}@&#34;$))/i" end="/(?{end}(?{SyntaxEdge}^&#34;@))/"/>
 
-	<!--[regex]"", <#regex#>""-->
-	<block scheme="re-quot1" region="String" inner-region="yes"
-	start="/%regex;(?{start}(?{SyntaxEdge}&#34;))/i" end="/(?{end}(?{SyntaxEdge}&#34;))/"/>
+    <!--[regex]"", <#regex#>""-->
+    <block scheme="re-quot1" region="String" inner-region="yes"
+    start="/%regex;(?{start}(?{SyntaxEdge}&#34;))/i" end="/(?{end}(?{SyntaxEdge}&#34;))/"/>
 
-	<!--op @'RE'@-->
-	<block scheme="regexp:pcre.regexp" region="String" inner-region="yes"
-	start="/(?{start}(?{Keyword}-[cCiI]?(?:match|notmatch|replace))\s*(?{SyntaxEdge}@'$))/i" end="/(?{end}(?{SyntaxEdge}^'@))/"/>
+    <!--op @'RE'@-->
+    <block scheme="regexp:pcre.regexp" region="String" inner-region="yes"
+    start="/(?{start}(?{Keyword}-[cCiI]?(?:match|notmatch|replace))\s*(?{SyntaxEdge}@'$))/i" end="/(?{end}(?{SyntaxEdge}^'@))/"/>
 
-	<!--op 'RE'-->
-	<block scheme="re-apos1" region="String" inner-region="yes"
-	start="/(?{start}(?{Keyword}-[cCiI]?(?:match|notmatch|replace))\s*(?{SyntaxEdge}'))/i" end="/(?{end}(?{SyntaxEdge}'))/"/>
+    <!--op 'RE'-->
+    <block scheme="re-apos1" region="String" inner-region="yes"
+    start="/(?{start}(?{Keyword}-[cCiI]?(?:match|notmatch|replace))\s*(?{SyntaxEdge}'))/i" end="/(?{end}(?{SyntaxEdge}'))/"/>
 
-	<!--op @"RE"@-->
-	<block scheme="re-quot2" region="String" inner-region="yes"
-	start="/(?{start}(?{Keyword}-[cCiI]?(?:match|notmatch|replace))\s*(?{SyntaxEdge}@&#34;$))/i" end="/(?{end}(?{SyntaxEdge}^&#34;@))/"/>
+    <!--op @"RE"@-->
+    <block scheme="re-quot2" region="String" inner-region="yes"
+    start="/(?{start}(?{Keyword}-[cCiI]?(?:match|notmatch|replace))\s*(?{SyntaxEdge}@&#34;$))/i" end="/(?{end}(?{SyntaxEdge}^&#34;@))/"/>
 
-	<!--op "RE"-->
-	<block scheme="re-quot1" region="String" inner-region="yes"
-	start="/(?{start}(?{Keyword}-[cCiI]?(?:match|notmatch|replace))\s*(?{SyntaxEdge}&#34;))/i" end="/(?{end}(?{SyntaxEdge}&#34;))/"/>
+    <!--op "RE"-->
+    <block scheme="re-quot1" region="String" inner-region="yes"
+    start="/(?{start}(?{Keyword}-[cCiI]?(?:match|notmatch|replace))\s*(?{SyntaxEdge}&#34;))/i" end="/(?{end}(?{SyntaxEdge}&#34;))/"/>
 
-	<!--@''@-->
-	<block scheme="def:empty" region="String"
-	start="/(?{start}(?{StringEdge}@'))(?{Error}.+)?$/" end="/(?{end}^(?{StringEdge}'@))/"/>
+    <!--@''@-->
+    <block scheme="def:empty" region="String"
+    start="/(?{start}(?{StringEdge}@'))(?{Error}.+)?$/" end="/(?{end}^(?{StringEdge}'@))/"/>
 
-	<!--''-->
-	<block scheme="apos1" region="String"
-	start="/(?{start}(?{StringEdge}'))/" end="/(?{end}(?{StringEdge}'))/"/>
+    <!--''-->
+    <block scheme="apos1" region="String"
+    start="/(?{start}(?{StringEdge}'))/" end="/(?{end}(?{StringEdge}'))/"/>
 
-	<!--@""@-->
-	<block scheme="quot2" region="String"
-	start="/(?{start}(?{StringEdge}@&#34;))(?{Error}.+)?$/" end="/(?{end}^(?{StringEdge}&#34;@))/"/>
+    <!--@""@-->
+    <block scheme="quot2" region="String"
+    start="/(?{start}(?{StringEdge}@&#34;))(?{Error}.+)?$/" end="/(?{end}^(?{StringEdge}&#34;@))/"/>
 
-	<!--""-->
-	<block scheme="quot1" region="String"
-	start="/(?{start}(?{StringEdge}&#34;))/" end="/(?{end}(?{StringEdge}&#34;))/"/>
+    <!--""-->
+    <block scheme="quot1" region="String"
+    start="/(?{start}(?{StringEdge}&#34;))/" end="/(?{end}(?{StringEdge}&#34;))/"/>
 
-	<inherit scheme="type-literal"/>
+    <inherit scheme="type-literal"/>
 
-	<inherit scheme="number"/>
+    <inherit scheme="number"/>
 </scheme>
 
 <scheme name="value">
-	<inherit scheme="literal"/>
-	<inherit scheme="variable"/>
-	<inherit scheme="hash-literal-expression"/>
-	<inherit scheme="array-expression"/>
-	<inherit scheme="subexpr-block"/>
-	<inherit scheme="script-block-expression"/>
-	<inherit scheme="parenthesized-expression"/>
+    <inherit scheme="literal"/>
+    <inherit scheme="variable"/>
+    <inherit scheme="hash-literal-expression"/>
+    <inherit scheme="array-expression"/>
+    <inherit scheme="subexpr-block"/>
+    <inherit scheme="script-block-expression"/>
+    <inherit scheme="parenthesized-expression"/>
 </scheme>
 
 <scheme name="primary-expression">
-	<inherit scheme="value"/>
-	<regexp match="/\S?#1(?{Operator}\.|::)\s*(?:(?{Identifier}%sname;)|[$\('&#34;]?=)/"/>
-	<inherit scheme="element-access"/>
+    <inherit scheme="value"/>
+    <regexp match="/\S?#1(?{Operator}\.|::)\s*(?:(?{Identifier}%sname;)|[$\('&#34;]?=)/"/>
+    <inherit scheme="element-access"/>
 </scheme>
 
 <scheme name="unary-expression">
-	<inherit scheme="primary-expression"/>
-	<keywords ignorecase="yes" region="Operator">
-		<word name="-not"/>
-		<word name="-bnot"/>
-		<word name="-join"/>
-		<word name="-split"/>
-		<word name="-csplit"/>
-		<word name="-isplit"/>
-	</keywords>
-	<keywords region="Operator">
-		<symb name="--"/>
-		<symb name="++"/>
-		<symb name=","/>
-		<symb name="!"/>
-		<symb name="+"/>
-	</keywords>
-	<regexp match="/(?{Operator}-)(?:\W|\d)?=/"/>
+    <inherit scheme="primary-expression"/>
+    <keywords ignorecase="yes" region="Operator">
+        <word name="-not"/>
+        <word name="-bnot"/>
+        <word name="-join"/>
+        <word name="-split"/>
+        <word name="-csplit"/>
+        <word name="-isplit"/>
+    </keywords>
+    <keywords region="Operator">
+        <symb name="--"/>
+        <symb name="++"/>
+        <symb name=","/>
+        <symb name="!"/>
+        <symb name="+"/>
+    </keywords>
+    <regexp match="/(?{Operator}-)(?:\W|\d)?=/"/>
 </scheme>
 
 <scheme name="expression">
-	<inherit scheme="unary-expression"/>
-	<inherit scheme="binary-operator"/>
+    <inherit scheme="unary-expression"/>
+    <inherit scheme="binary-operator"/>
 </scheme>
 
 <scheme name="command-name">
-	<inherit scheme="cmdlet"/>
-	<inherit scheme="escape"/>
-	<inherit scheme="subexpr-block"/>
+    <inherit scheme="cmdlet"/>
+    <inherit scheme="escape"/>
+    <inherit scheme="subexpr-block"/>
 </scheme>
 
 <scheme name="argument">
-	<block scheme="quot2" region="Argument"
-	start="/(?:\s?#1|^)\M\[/" end="/%token;?!|$/"/>
+    <block scheme="quot2" region="Argument"
+    start="/(?:\s?#1|^)\M\[/" end="/%token;?!|$/"/>
 
-	<inherit scheme="primary-expression"/>
+    <inherit scheme="primary-expression"/>
 
-	<regexp match="/(?{UserVar}@%vbody;)/"/>
+    <regexp match="/(?{UserVar}@%vbody;)/"/>
 
-	<block scheme="quot2" region="Argument"
-	start="/%token;+/" end="/%token;?!|$/"/>
+    <block scheme="quot2" region="Argument"
+    start="/%token;+/" end="/%token;?!|$/"/>
 </scheme>
 
 <scheme name="command-element">
-	<regexp match="/\s+(?{Parameter}-\D?=[\w?][^\s\{}\();,|&amp;.\[:]*)(?{Operator}:?)/"/>
+    <regexp match="/\s+(?{Parameter}-\D?=[\w?][^\s\{}\();,|&amp;.\[:]*)(?{Operator}:?)/"/>
 
-	<inherit scheme="redirection"/>
-	<inherit scheme="argument"/>
+    <inherit scheme="redirection"/>
+    <inherit scheme="argument"/>
 
-	<block scheme="base"
-	start="/(?{Operator},)/" end="/\S?=/"/>
+    <block scheme="base"
+    start="/(?{Operator},)/" end="/\S?=/"/>
 </scheme>
 
 <scheme name="invoke">
-	<block scheme="command-name" region="Command" inner-region="yes"
-	start="/~(?{Operator}[.&amp;])\s*%token;?=/" end="/%token;?!|$/"/>
+    <block scheme="command-name" region="Command" inner-region="yes"
+    start="/~(?{Operator}[.&amp;])\s*%token;?=/" end="/%token;?!|$/"/>
 
-	<regexp match="/~(?{Operator}[.&amp;])/"/>
+    <regexp match="/~(?{Operator}[.&amp;])/"/>
 
-	<inherit scheme="command-element"/>
+    <inherit scheme="command-element"/>
 </scheme>
 
 <scheme name="call">
-	<block scheme="command-name" region="Command"
-	start="/~%token;?=/" end="/%token;?!|$/"/>
+    <block scheme="command-name" region="Command"
+    start="/~%token;?=/" end="/%token;?!|$/"/>
 
-	<inherit scheme="command-element"/>
+    <inherit scheme="command-element"/>
 </scheme>
 
 <scheme name="pipeline-block">
-	<block scheme="command"
-	start="/(?{start}(?{Pipeline}\|))/" end="/(?{end})%end;/"/>
+    <block scheme="command"
+    start="/(?{start}(?{Pipeline}\|))/" end="/(?{end})%end;/"/>
 </scheme>
 
 <scheme name="command">
-	<inherit scheme="base"/>
+    <inherit scheme="base"/>
 
-	<block scheme="invoke"
-	start="/\M(?{start}\.[\s\{\($'&#34;]?=|&amp;)/" end="/(?{end})%end;/"/>
+    <block scheme="invoke"
+    start="/\M(?{start}\.[\s\{\($'&#34;]?=|&amp;)/" end="/(?{end})%end;/"/>
 
-	<block scheme="command-element"
-	start="/(?{start}(?{Keyword}task))\s+(?{def:Outlined}(?{Identifier}%token;+)?)/i" end="/(?{end})%end;/"/>
+    <block scheme="command-element"
+    start="/(?{start}(?{Keyword}task))\s+(?{def:Outlined}(?{Identifier}%token;+)?)/i" end="/(?{end})%end;/"/>
 
-	<block scheme="call"
-	start="/\M(?{start}\S)/" end="/(?{end})%end;/"/>
+    <block scheme="call"
+    start="/\M(?{start}\S)/" end="/(?{end})%end;/"/>
 
-	<inherit scheme="pipeline-block"/>
+    <inherit scheme="pipeline-block"/>
 </scheme>
 
 <entity name="redir" value="(?:[1-6*]?&gt;&gt;?(?:&amp;[1-6])?)"/>
 <scheme name="redirection">
-	<block scheme="argument" region00="Pipeline"
-	start="/(%redir;)(\s*(%redir;))*/" end="/%end;/"/>
+    <block scheme="argument" region00="Pipeline"
+    start="/(%redir;)(\s*(%redir;))*/" end="/%end;/"/>
 </scheme>
 
 <scheme name="assignment-expression">
-	<inherit scheme="redirection"/>
+    <inherit scheme="redirection"/>
 
-	<block scheme="statement"
-	start="/(?{start}(?{Operator}[%*\/+\-]?\=))/" end="/(?{end})%end;/"/>
+    <block scheme="statement"
+    start="/(?{start}(?{Operator}[%*\/+\-]?\=))/" end="/(?{end})%end;/"/>
 
-	<inherit scheme="expression"/>
-	<inherit scheme="pipeline-block"/>
+    <inherit scheme="expression"/>
+    <inherit scheme="pipeline-block"/>
 </scheme>
 
 <scheme name="pipeline">
-	<block scheme="assignment-expression"
-	start="/\M(?:\$\S|[!,+\(\{\['&#34;]|\@[\w\(\{'&#34;]|-?(?:%real;|%int;)|-(?:-|not|bnot|join|[ci]?split)\w?!)/i" end="/%end;/"/>
+    <block scheme="assignment-expression"
+    start="/\M(?:\$\S|[!,+\(\{\['&#34;]|\@[\w\(\{'&#34;]|-?(?:%real;|%int;)|-(?:-|not|bnot|join|[ci]?split)\w?!)/i" end="/%end;/"/>
 
-	<inherit scheme="command"/>
+    <inherit scheme="command"/>
 </scheme>
 
 <scheme name="statement">
-	<inherit scheme="base"/>
+    <inherit scheme="base"/>
 
-	<block scheme="if-elseif-while"
-	start="/(?{start}(?{Keyword}if))%token;?!/i" end="/(?{end}\})?#1/"/>
-	<block scheme="statement-block"
-	start="/(?{start}(?{Keyword}else))%token;?!/i" end="/(?{end}\})?#1/"/>
-	<block scheme="if-elseif-while"
-	start="/(?{start}(?{Keyword}elseif))%token;?!/i" end="/(?{end}\})?#1/"/>
+    <block scheme="if-elseif-while"
+    start="/(?{start}(?{Keyword}if))%token;?!/i" end="/(?{end}\})?#1/"/>
+    <block scheme="statement-block"
+    start="/(?{start}(?{Keyword}else))%token;?!/i" end="/(?{end}\})?#1/"/>
+    <block scheme="if-elseif-while"
+    start="/(?{start}(?{Keyword}elseif))%token;?!/i" end="/(?{end}\})?#1/"/>
 
-	<block scheme="foreach"
-	start="/%s-label;(?{start}(?{Keyword}foreach(\s+(?{Parameter}-parallel))?))%token;?!/i" end="/(?{end}\})?#1/"/>
+    <block scheme="foreach"
+    start="/%s-label;(?{start}(?{Keyword}foreach(\s+(?{Parameter}-parallel))?))%token;?!/i" end="/(?{end}\})?#1/"/>
 
-	<block scheme="for"
-	start="/%s-label;(?{start}(?{Keyword}for))%token;?!/i" end="/(?{end}\})?#1/"/>
+    <block scheme="for"
+    start="/%s-label;(?{start}(?{Keyword}for))%token;?!/i" end="/(?{end}\})?#1/"/>
 
-	<block scheme="if-elseif-while"
-	start="/%s-label;(?{start}(?{Keyword}while))%token;?!/i" end="/(?{end}\})?#1/"/>
+    <block scheme="if-elseif-while"
+    start="/%s-label;(?{start}(?{Keyword}while))%token;?!/i" end="/(?{end}\})?#1/"/>
 
-	<block scheme="switch"
-	start="/%s-label;(?{start}(?{Keyword}switch))%token;?!/i" end="/(?{end}\})?#1/"/>
+    <block scheme="switch"
+    start="/%s-label;(?{start}(?{Keyword}switch))%token;?!/i" end="/(?{end}\})?#1/"/>
 
-	<block scheme="statement-block"
-	start="/(?{start}(?{Keyword}try|finally))%token;?!/i" end="/(?{end}\})?#1/"/>
+    <block scheme="statement-block"
+    start="/(?{start}(?{Keyword}try|finally))%token;?!/i" end="/(?{end}\})?#1/"/>
 
-	<block scheme="catch-trap"
-	start="/(?{start}(?{Keyword}catch|trap))%token;?!/i" end="/(?{end}\})?#1/"/>
+    <block scheme="catch-trap"
+    start="/(?{start}(?{Keyword}catch|trap))%token;?!/i" end="/(?{end}\})?#1/"/>
 
-	<block scheme="do"
-	start="/%s-label;(?{start}(?{Keyword}do))%token;?!/i" end="/(?{end}\))?#1/"/>
+    <block scheme="do"
+    start="/%s-label;(?{start}(?{Keyword}do))%token;?!/i" end="/(?{end}\))?#1/"/>
 
-	<block scheme="data"
-	start="/(?{start}(?{Keyword}data))%token;?!/i" end="/(?{end}\})?#1/"/>
+    <block scheme="data"
+    start="/(?{start}(?{Keyword}data))%token;?!/i" end="/(?{end}\})?#1/"/>
 
-	<block scheme="pipeline"
-	start="/\M\S/" end="//"/>
+    <block scheme="pipeline"
+    start="/\M\S/" end="//"/>
 </scheme>
 
 <scheme name="statement-list">
-	<block scheme="function"
-	start="/(?{start}(?{Keyword}function|filter|workflow|configuration))\s+(?{def:Outlined}(?{Identifier}[^\s$()\{}][^\s()\{}]*|\$\B))%e-function;/i"
-	end="/(?{end}\})?#1/"/>
+    <block scheme="function"
+    start="/(?{start}(?{Keyword}function|filter|workflow|configuration))\s+(?{def:Outlined}(?{Identifier}[^\s$()\{}][^\s()\{}]*|\$\B))%e-function;/i"
+    end="/(?{end}\})?#1/"/>
 
-	<block scheme="class"
-	start="/(?{start}(?{Keyword}class))\s+(?{def:Outlined}(?{Type}%sname;))/i"
-	end="/(?{end}\})?#1/"/>
+    <block scheme="class"
+    start="/(?{start}(?{Keyword}class))\s+(?{def:Outlined}(?{Type}%sname;))/i"
+    end="/(?{end}\})?#1/"/>
 
-	<block scheme="enum"
-	start="/(?{start}(?{Keyword}enum))\s+(?{def:Outlined}(?{Type}%sname;))/i"
-	end="/(?{end}\})?#1/"/>
+    <block scheme="enum"
+    start="/(?{start}(?{Keyword}enum))\s+(?{def:Outlined}(?{Type}%sname;))/i"
+    end="/(?{end}\})?#1/"/>
 
-	<block scheme="break-continue"
-	start="/(?{Keyword}break|continue)%token;?!/i" end="/%end;/"/>
+    <block scheme="break-continue"
+    start="/(?{Keyword}break|continue)%token;?!/i" end="/%end;/"/>
 
-	<block scheme="pipeline"
-	start="/(?{Keyword}throw|return|exit)%token;?!/i" end="/%end;/"/>
+    <block scheme="pipeline"
+    start="/(?{Keyword}throw|return|exit)%token;?!/i" end="/%end;/"/>
 
-	<keywords region="Operator">
-		<symb name=";"/>
-	</keywords>
+    <keywords region="Operator">
+        <symb name=";"/>
+    </keywords>
 
-	<inherit scheme="statement"/>
+    <inherit scheme="statement"/>
 </scheme>
 
 <scheme name="script-block">
-	<inherit scheme="base">
-		<virtual scheme="def:empty" subst-scheme="help"/>
-	</inherit>
+    <inherit scheme="base">
+        <virtual scheme="def:empty" subst-scheme="help"/>
+    </inherit>
 
-	<inherit scheme="cmdlet-binding"/>
+    <inherit scheme="cmdlet-binding"/>
 
-	<block scheme="param"
-	start="/(?{start}(?{Keyword}param))%token;?!/i" end="/(?{end}\))?#1/"/>
+    <block scheme="param"
+    start="/(?{start}(?{Keyword}param))%token;?!/i" end="/(?{end}\))?#1/"/>
 
-	<block scheme="statement-block"
-	start="/(?{start}(?{Keyword}process|begin|end|dynamicparam))%token;?!/i" end="/(?{end}\})?#1/"/>
+    <block scheme="statement-block"
+    start="/(?{start}(?{Keyword}process|begin|end|dynamicparam))%token;?!/i" end="/(?{end}\})?#1/"/>
 
-	<inherit scheme="statement-list"/>
+    <inherit scheme="statement-list"/>
 </scheme>
 
 <scheme name="powershell">
-	<regexp match="/(?{LogEmpty}^&lt;&gt;$)/"/>
-
-	<block scheme="log" region="LogText"
-	start="/(?{start}(?{LogStart}^&lt;=$))/" end="/(?{end}(?{LogEnd}^=&gt;$))/"/>
-
-	<inherit scheme="script-block"/>
+    <inherit scheme="script-block"/>
 </scheme>
 </type>
 </hrc>
-<!--
-LICENSE
-- Version: MPL 1.1/GPL 2.0/LGPL 2.1
--
-- The contents of this file are subject to the Mozilla Public License Version
-- 1.1 (the "License"); you may not use this file except in compliance with
-- the License. You may obtain a copy of the License at
-- http://www.mozilla.org/MPL/
--
-- Software distributed under the License is distributed on an "AS IS" basis,
-- WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
-- for the specific language governing rights and limitations under the
-- License.
--
-- The Original Code is the Colorer Library.
--
-- The Initial Developer of the Original Code is
-- Cail Lomecb <cail@nm.ru>.
-- Portions created by the Initial Developer are Copyright (C) 1999-2005
-- the Initial Developer. All Rights Reserved.
--
-- Contributor(s):
-- Roman Kuzmin
--
-- Alternatively, the contents of this file may be used under the terms of
-- either the GNU General Public License Version 2 or later (the "GPL"), or
-- the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
-- in which case the provisions of the GPL or the LGPL are applicable instead
-- of those above. If you wish to allow use of your version of this file only
-- under the terms of either the GPL or the LGPL, and not to allow others to
-- use your version of this file under the terms of the MPL, indicate your
-- decision by deleting the provisions above and replace them with the notice
-- and other provisions required by the LGPL or the GPL. If you do not delete
-- the provisions above, a recipient may use your version of this file under
-- the terms of any one of the MPL, the GPL or the LGPL.
--->
