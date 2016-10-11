@@ -778,6 +778,7 @@ Continue with this current directory?
 			try
 			{
 				// win7 Indeterminate
+				FarUI.IsProgressStarted = false;
 				Far.Api.UI.SetProgressState(TaskbarProgressBarState.Indeterminate);
 
 				// add history
@@ -829,6 +830,7 @@ Continue with this current directory?
 			finally
 			{
 				// win7 NoProgress
+				FarUI.IsProgressStarted = false;
 				Far.Api.UI.SetProgressState(TaskbarProgressBarState.NoProgress);
 
 				_myCommand = null;

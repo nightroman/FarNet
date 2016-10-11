@@ -168,31 +168,41 @@ namespace PowerShellFar
 			return text;
 		}
 		/// <summary>
+		/// True if there was progress Processing.
+		/// </summary>
+		internal bool IsProgressStarted;
+		/// <summary>
+		/// Used to avoid too frequent progress updates.
+		/// </summary>
+		Stopwatch _progressWatch = Stopwatch.StartNew();
+		/// <summary>
 		/// Shows progress information. Used by Write-Progress cmdlet.
 		/// It actually works at most once a second (for better performance on frequent calls).
 		/// </summary>
 		public override void WriteProgress(long sourceId, ProgressRecord record)
 		{
-			if (record == null)
-				throw new ArgumentNullException("record");
+			if (record == null) throw new ArgumentNullException("record");
 
 			// done
 			if (record.RecordType == ProgressRecordType.Completed)
 			{
-				// title
-				Far.Api.UI.WindowTitle = "Done : " + record.Activity + " : " + record.StatusDescription;
+				//! PS may call Completed without Processing (`gcm zzz`).
+				//! We do not want such a message in the console title.
+				if (IsProgressStarted)
+					Far.Api.UI.WindowTitle = "Done : " + record.Activity + " : " + record.StatusDescription;
 
 				// win7 NoProgress
-				Far.Api.UI.SetProgressState(FarNet.TaskbarProgressBarState.NoProgress);
+				Far.Api.UI.SetProgressState(TaskbarProgressBarState.NoProgress);
 
 				return;
 			}
 
 			// check time
-			if (_progressWatch.ElapsedMilliseconds < 1000)
+			if (IsProgressStarted && _progressWatch.ElapsedMilliseconds < 1000)
 				return;
 
 			// update
+			IsProgressStarted = true;
 			_progressWatch = Stopwatch.StartNew();
 			string text = record.Activity + " : " + record.StatusDescription;
 			if (record.PercentComplete > 0)
@@ -204,7 +214,6 @@ namespace PowerShellFar
 			// win7 %
 			Far.Api.UI.SetProgressValue(record.PercentComplete, 100);
 		}
-		Stopwatch _progressWatch = Stopwatch.StartNew();
 		#endregion
 	}
 }

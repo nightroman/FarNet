@@ -5,13 +5,16 @@ FarNet 5.2.1
 
 = 5.2.1 =
 
-Editor console -> interactive
+Editor console -> Interactive
 
 	The term "editor console" is replaced with "interactive".
 	PowerShellFar and FSharpFar interactive are made similar.
 
+	Interactive output is no longer colored by Colorer.
+	This feature may be restored if it looks important.
+
 	Changed some keys used in interactive, see docs.
-	E.g. use [ShiftEnter] instead of [Enter].
+	(e.g. use [ShiftEnter] instead of [Enter])
 
 = 5.2.0 =
 
