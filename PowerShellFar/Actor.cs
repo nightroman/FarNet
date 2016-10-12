@@ -230,7 +230,7 @@ namespace PowerShellFar
 					ps.AddCommand(Path.Combine(A.Psf.AppHome, "PowerShellFar.ps1"), false).Invoke();
 
 					// user profile, separately for better diagnostics
-					var profile = Path.Combine(A.Psf.Manager.GetFolderPath(SpecialFolder.RoamingData, true), "Profile.ps1");
+					var profile = Entry.RoamingData + "\\Profile.ps1";
 					if (File.Exists(profile))
 					{
 						ps.Commands.Clear();

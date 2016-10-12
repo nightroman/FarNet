@@ -24,14 +24,10 @@ namespace PowerShellFar
 		PowerShell PowerShell;
 		bool _doneTabExpansion;
 
-		static readonly HistoryLog _history = new HistoryLog(GetFolderPath() + @"\InteractiveHistory.log", Settings.Default.MaximumHistoryCount);
-		static string GetFolderPath()
-		{
-			return A.Psf.Manager.GetFolderPath(SpecialFolder.LocalData, true);
-		}
+		static readonly HistoryLog _history = new HistoryLog(Entry.LocalData + "\\InteractiveHistory.log", Settings.Default.MaximumHistoryCount);
 		static string GetFilePath()
 		{
-			return Path.Combine(GetFolderPath(), Kit.ToString(DateTime.Now, "_yyMMdd_HHmmss") + Word.InteractiveSuffix);
+			return Entry.LocalData + "\\" + Kit.ToString(DateTime.Now, "_yyMMdd_HHmmss") + Word.InteractiveSuffix;
 		}
 		/// <summary>
 		/// Creates an interactive.
@@ -151,7 +147,7 @@ namespace PowerShellFar
 		}
 		void InvokeProfile(string fileName, bool remote)
 		{
-			var profile = Path.Combine(A.Psf.Manager.GetFolderPath(SpecialFolder.RoamingData, true), fileName);
+			var profile = Entry.RoamingData + "\\" + fileName;
 			if (!File.Exists(profile))
 				return;
 

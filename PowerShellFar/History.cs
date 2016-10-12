@@ -11,7 +11,7 @@ namespace PowerShellFar
 {
 	static class History
 	{
-		static readonly HistoryLog _log = new HistoryLog(A.Psf.Manager.GetFolderPath(SpecialFolder.LocalData, true) + @"\PowerShellFarHistory.log", Settings.Default.MaximumHistoryCount);
+		static readonly HistoryLog _log = new HistoryLog(Entry.LocalData + "\\PowerShellFarHistory.log", Settings.Default.MaximumHistoryCount);
 		internal static HistoryLog Log { get { return _log; } }
 		/// <summary>
 		/// Gets history lines.

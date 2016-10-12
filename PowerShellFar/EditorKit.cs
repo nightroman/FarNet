@@ -422,7 +422,7 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 
 			try
 			{
-				var profile = Path.Combine(A.Psf.Manager.GetFolderPath(SpecialFolder.RoamingData, true), "Profile-Editor.ps1");
+				var profile = Entry.RoamingData + "\\Profile-Editor.ps1";
 				if (File.Exists(profile))
 				{
 					using (var ps = A.Psf.NewPowerShell())

@@ -15,6 +15,8 @@ namespace PowerShellFar
 	[ModuleHost(Load = true)]
 	public sealed class Entry : ModuleHost
 	{
+		internal static string LocalData { get; private set; } 
+		internal static string RoamingData { get; private set; }
 		/// <summary>
 		/// INTERNAL
 		/// </summary>
@@ -26,6 +28,8 @@ namespace PowerShellFar
 				throw new InvalidOperationException();
 
 			Instance = this;
+			LocalData = Manager.GetFolderPath(SpecialFolder.LocalData, true);
+			RoamingData = Manager.GetFolderPath(SpecialFolder.RoamingData, true);
 		}
 		internal static void Unregister()
 		{
