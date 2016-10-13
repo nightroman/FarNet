@@ -13,6 +13,7 @@ Copyright (c) 2006-2016 Roman Kuzmin
 #include "Far1.h"
 #include "Panel0.h"
 #include "Viewer0.h"
+#include "UI.h"
 
 PluginStartupInfo Info;
 static FarStandardFunctions FSF;
@@ -21,7 +22,7 @@ static FarStandardFunctions FSF;
 DEFINE_GUID(MainGuid, 0x10435532, 0x9bb3, 0x487b, 0xa0, 0x45, 0xb0, 0xe6, 0xec, 0xaa, 0xb6, 0xbc);
 
 #define __START try {
-#define __END } catch(Exception^ e) { Far::Api->ShowError(nullptr, e); }
+#define __END } catch(Exception^ e) { Far::Api->ShowError(nullptr, e); } finally { FarUI::ResetUserScreen(); }
 
 void WINAPI GetGlobalInfoW(struct GlobalInfo* info)
 {

@@ -83,13 +83,6 @@ void Viewer::Open(OpenMode mode)
 		flags,
 		_CodePage); //?? test window values
 
-	//? not needed for dialogs
-	if (Far::Api->UI->IsUserScreen)
-	{
-		Far::Api->UI->ShowUserScreen();
-		Far::Api->UI->SaveUserScreen();
-	}
-
 	// redraw Far
 	if (wt == WindowKind::Dialog)
 		Far::Api->UI->Redraw();

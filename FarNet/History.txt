@@ -1,6 +1,11 @@
 
 NuGet package: https://www.nuget.org/packages/FarNet
-Far Manager 3.0.4782
+Far Manager 3.0.4821
+
+= 5.2.2 =
+
+- Adapt for Far 3.0.4821
+- Remove internal IsUserScreen
 
 = 5.2.1 =
 

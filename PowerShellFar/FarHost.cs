@@ -26,8 +26,6 @@ namespace PowerShellFar
 		PSHostUserInterface _UI;
 		// Nested prompt editor.
 		IEditor _nested;
-		// Level counter.
-		int _BeginApplication;
 		/// <summary>
 		/// Construct an instance of this PSHost implementation.
 		/// Keep a reference to the hosting application object.
@@ -144,16 +142,18 @@ namespace PowerShellFar
 		{
 			//_140311_185917
 			// Why ShowUserScreen/SaveUserScreen:
-			// ps: git log -- [q] => without ShowUserScreen/SaveUserScreen results in not shown panels
+			// ps: git log ;; [q] => without ShowUserScreen/SaveUserScreen results in not shown panels
 			// Why WriteLine:
+
 			// 2016-07-04: cannot repro both:
 			// cc: MarkdownToHtml.exe from=z => error output overrides prompt echo
 			// ps: 42; MarkdownToHtml.exe => error output overrides 42
-			++_BeginApplication;
+
+			// v5.2.2 - remove _BeginApplication and ShowUserScreen.
+			
+			// write a line, it also calls ShowUserScreen and echo ps: ...
 			if (A.Psf.FarUI.Writer is ConsoleOutputWriter)
-				A.Psf.FarUI.Writer.WriteLine(); // also calls ShowUserScreen and echo ps: ...
-			else
-				Far.Api.UI.ShowUserScreen();
+				A.Psf.FarUI.Writer.WriteLine();
 		}
 		/// <summary>
 		/// Called after an external application process finishes.
@@ -164,11 +164,8 @@ namespace PowerShellFar
 			//_140311_185917
 			// Why "if > 0"? NotifyEndApplication may be called without NotifyBeginApplication (no idea why).
 			// :: Panels, F11 PSF 1, PSF history, Enter
-			if (_BeginApplication > 0)
-			{
-				--_BeginApplication;
-				Far.Api.UI.SaveUserScreen();
-			}
+
+			// v5.2.2 - remove _BeginApplication and SaveUserScreen.
 		}
 		/// <summary>
 		/// Indicates to the host that an exit has been requested.

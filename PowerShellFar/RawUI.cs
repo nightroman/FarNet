@@ -26,31 +26,51 @@ namespace PowerShellFar
 		public override int CursorSize
 		{
 			get { return Far.Api.UI.CursorSize; }
-			set { Far.Api.UI.CursorSize = value; }
+			set
+			{
+				Far.Api.UI.ShowUserScreen();
+				Far.Api.UI.CursorSize = value;
+			}
 		}
 
 		public override Coordinates CursorPosition
 		{
 			get { return ToCoordinates(Far.Api.UI.BufferCursor); }
-			set { Far.Api.UI.BufferCursor = ToPoint(value); }
+			set
+			{
+				Far.Api.UI.ShowUserScreen();
+				Far.Api.UI.BufferCursor = ToPoint(value);
+			}
 		}
 
 		public override ConsoleColor BackgroundColor
 		{
 			get { return Far.Api.UI.BackgroundColor; }
-			set { Far.Api.UI.BackgroundColor = value; }
+			set
+			{
+				Far.Api.UI.ShowUserScreen();
+				Far.Api.UI.BackgroundColor = value;
+			}
 		}
 
 		public override ConsoleColor ForegroundColor
 		{
 			get { return Far.Api.UI.ForegroundColor; }
-			set { Far.Api.UI.ForegroundColor = value; }
+			set
+			{
+				Far.Api.UI.ShowUserScreen();
+				Far.Api.UI.ForegroundColor = value;
+			}
 		}
 
 		public override Size BufferSize
 		{
 			get { return ToSize(Far.Api.UI.BufferSize); }
-			set { Far.Api.UI.BufferSize = ToPoint(value); }
+			set
+			{
+				Far.Api.UI.ShowUserScreen();
+				Far.Api.UI.BufferSize = ToPoint(value);
+			}
 		}
 
 		public override bool KeyAvailable
@@ -93,6 +113,7 @@ namespace PowerShellFar
 
 		public override void ScrollBufferContents(Rectangle source, Coordinates destination, Rectangle clip, PS.BufferCell fill)
 		{
+			Far.Api.UI.ShowUserScreen();
 			Far.Api.UI.ScrollBufferContents(ToPlace(source), ToPoint(destination), ToPlace(clip), ToBufferCell(fill));
 		}
 
@@ -110,8 +131,9 @@ namespace PowerShellFar
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional")]
 		public override void SetBufferContents(Coordinates origin, PS.BufferCell[,] contents)
 		{
-			if (contents == null)
-				throw new ArgumentNullException("contents");
+			if (contents == null) throw new ArgumentNullException("contents");
+
+			Far.Api.UI.ShowUserScreen();
 
 			FN.BufferCell[,] r = new FN.BufferCell[contents.GetLength(0), contents.GetLength(1)];
 			for (int i = 0; i < contents.GetLength(0); ++i)
@@ -122,6 +144,7 @@ namespace PowerShellFar
 
 		public override void SetBufferContents(Rectangle rectangle, PS.BufferCell fill)
 		{
+			Far.Api.UI.ShowUserScreen();
 			Far.Api.UI.SetBufferContents(ToPlace(rectangle), ToBufferCell(fill));
 		}
 

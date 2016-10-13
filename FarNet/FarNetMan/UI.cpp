@@ -416,8 +416,6 @@ void FarUI::Write(String^ text)
 	ShowUserScreen();
 
 	WriteRaw(text);
-
-	SaveUserScreen();
 }
 
 //! set colors after user screen
@@ -432,8 +430,6 @@ void FarUI::Write(String^ text, ConsoleColor foregroundColor)
 	Console::ForegroundColor = foregroundColor;
 	WriteRaw(text);
 	Console::ForegroundColor = fc;
-
-	SaveUserScreen();
 }
 
 //! set colors after user screen
@@ -451,8 +447,6 @@ void FarUI::Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backg
 	WriteRaw(text);
 	Console::ForegroundColor = fc;
 	Console::BackgroundColor = bc;
-
-	SaveUserScreen();
 }
 
 void FarUI::SetProgressFlash()
@@ -527,14 +521,11 @@ IntPtr FarUI::MainWindowHandle::get()
 //_140317_201247
 // Why cursor. With Far /s all is fine. Else on `cls` in PSF Command Console
 // the cursor is somewhere and not shown in the prompt until click or type.
-// So maybe one day this is not needed.
+// FarNet.5.2.2 - removed cursor stuff.
 void FarUI::Clear()
 {
-	Point cursor = BufferCursor;
 	ShowUserScreen();
 	Console::Clear();
-	SaveUserScreen();
-	BufferCursor = cursor;
 }
 
 void FarUI::Redraw()
@@ -617,21 +608,34 @@ bool isConsoleModal()
 	return (wi.Flags & WIF_MODAL) != 0;
 }
 
-bool FarUI::IsUserScreen::get()
-{
-	WindowInfo wi;
-	Call_ACTL_GETWINDOWINFO(wi, -1);
-	return wi.Type == WTYPE_DESKTOP && 0 != (wi.Flags & WIF_MODAL);
-}
-
 void FarUI::ShowUserScreen()
 {
-	Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETUSERSCREEN, 0, 0);
+	// only if not shown
+	if (_UserScreenCount == 0)
+		Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETUSERSCREEN, 0, 0);
+	
+	// update always, for stats
+	++_UserScreenCount;
 }
 
 void FarUI::SaveUserScreen()
 {
-	Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, 0, 0);
+	// only if done, assuming paired calls
+	if (_UserScreenCount == 1)
+		Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, 0, 0);
+	
+	// update but keep positive for reset
+	if (_UserScreenCount > 0)
+		--_UserScreenCount;
 }
 
+void FarUI::ResetUserScreen()
+{
+	// only if shown and not done
+	if (_UserScreenCount > 0)
+		Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, 0, 0);
+	
+	// reset
+	_UserScreenCount = 0;
+}
 }

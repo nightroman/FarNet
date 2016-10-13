@@ -114,13 +114,6 @@ void Editor::Open(OpenMode mode)
 		nPos,
 		_CodePage); //?? test window values, make window settable
 
-	//? not needed for dialogs
-	if (Far::Api->UI->IsUserScreen)
-	{
-		Far::Api->UI->ShowUserScreen();
-		Far::Api->UI->SaveUserScreen();
-	}
-
 	// redraw Far
 	if (wt == WindowKind::Dialog)
 		Far::Api->UI->Redraw();
