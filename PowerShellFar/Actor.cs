@@ -809,7 +809,8 @@ Continue with this current directory?
 					if (writer is ConsoleOutputWriter)
 					{
 						color1 = Far.Api.UI.ForegroundColor;
-						FarUI.RawUI.ForegroundColor = Settings.ErrorForegroundColor;
+						Far.Api.UI.ShowUserScreen();
+						Far.Api.UI.ForegroundColor = Settings.ErrorForegroundColor;
 					}
 
 					// write the reason
@@ -820,7 +821,7 @@ Continue with this current directory?
 				{
 					// pop console color
 					if (color1 != ConsoleColor.Black)
-						FarUI.RawUI.ForegroundColor = color1;
+						Far.Api.UI.ForegroundColor = color1;
 				}
 			}
 			finally
