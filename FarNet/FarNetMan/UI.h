@@ -56,7 +56,6 @@ internal:
 	static FarUI Instance;
 	static void ResetUserScreen();
 private:
-	static void WriteRaw(String^ text);
 	static int _UserScreenCount;
 };
 }

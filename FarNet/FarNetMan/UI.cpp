@@ -401,13 +401,6 @@ void FarUI::Break()
 }
 
 //! Console Write() writes some Unicode chars as '?'.
-void FarUI::WriteRaw(String^ text)
-{
-	PIN_NE(pin, text);
-	DWORD cch = text->Length;
-	WriteConsole(GetStdHandle(STD_OUTPUT_HANDLE), pin, cch, &cch, nullptr);
-}
-
 void FarUI::Write(String^ text)
 {
 	if (ES(text))
@@ -415,7 +408,9 @@ void FarUI::Write(String^ text)
 
 	ShowUserScreen();
 
-	WriteRaw(text);
+	PIN_NE(pin, text);
+	DWORD cch = text->Length;
+	WriteConsole(GetStdHandle(STD_OUTPUT_HANDLE), pin, cch, &cch, nullptr);
 }
 
 //! set colors after user screen
@@ -428,7 +423,7 @@ void FarUI::Write(String^ text, ConsoleColor foregroundColor)
 
 	ConsoleColor fc = Console::ForegroundColor;
 	Console::ForegroundColor = foregroundColor;
-	WriteRaw(text);
+	Write(text);
 	Console::ForegroundColor = fc;
 }
 
@@ -444,7 +439,7 @@ void FarUI::Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backg
 	ConsoleColor bc = Console::BackgroundColor;
 	Console::ForegroundColor = foregroundColor;
 	Console::BackgroundColor = backgroundColor;
-	WriteRaw(text);
+	Write(text);
 	Console::ForegroundColor = fc;
 	Console::BackgroundColor = bc;
 }
@@ -612,7 +607,13 @@ void FarUI::ShowUserScreen()
 {
 	// only if not shown
 	if (_UserScreenCount == 0)
+	{
+		ConsoleColor fc = Console::ForegroundColor;
+		ConsoleColor bc = Console::BackgroundColor;
 		Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETUSERSCREEN, 0, 0);
+		Console::ForegroundColor = fc;
+		Console::BackgroundColor = bc;
+	}
 	
 	// update always, for stats
 	++_UserScreenCount;

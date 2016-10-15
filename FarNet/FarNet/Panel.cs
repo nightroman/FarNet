@@ -174,18 +174,20 @@ namespace FarNet
 			WindowKind wt = Far.Api.Window.Kind;
 			if (wt != WindowKind.Panels)
 			{
-				try
-				{
-					Far.Api.Window.SetCurrentAt(-1);
-				}
-				catch (InvalidOperationException ex)
-				{
-					throw new ModuleException("Cannot open a panel because panels cannot be set current.", ex);
-				}
-
 				// 090623 PostJob may not work from the editor, for example, see "... because a module is not called for opening".
 				// In contrast, PostStep calls via the menu where a panel is opened from with no problems.
-				Far.Api.PostStep(Open);
+				Far.Api.PostStep(delegate {
+					// #7 make switching async, SetCurrentAt does not work for user screen
+					try
+					{
+						Far.Api.Window.SetCurrentAt(-1);
+					}
+					catch (InvalidOperationException ex)
+					{
+						throw new ModuleException("Cannot open a panel because panels cannot be set current.", ex);
+					}
+					Open(null, null);
+				});
 				return;
 			}
 
