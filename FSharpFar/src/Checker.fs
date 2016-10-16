@@ -20,7 +20,9 @@ type CheckFileResult = {
 }
 
 let check file text options =
-    let checker = FSharpChecker.Create ()
+    let checker =
+        let msbuild = match options with ProjectOptions _ -> true | _ -> false
+        FSharpChecker.Create (msbuildEnabled = msbuild)
 
     let projOptions =
         match options with

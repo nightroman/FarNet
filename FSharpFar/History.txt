@@ -1,7 +1,14 @@
 
 NuGet package: https://www.nuget.org/packages/FarNet.FSharpFar
-Far Manager 3.0.4782
-FarNet 5.2.1
+Far Manager 3.0.4821
+FarNet 5.2.3
+
+= 1.0.0 =
+
+FSharpFar requires just Far Manager, FarNet, and .NET Framework 4.5+.
+
+MSBuild is not needed, thanks to FCS 8.0.0., unless you are using .fsproj
+project files for configurations. FSharp.Core is included to the package.
 
 = 0.10.0 =
 

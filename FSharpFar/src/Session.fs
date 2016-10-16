@@ -112,7 +112,8 @@ type Session private (configFile) =
         let fsiConfig = FsiEvaluationSession.GetDefaultConfiguration ()
 
         //! collectible=true has issues
-        let fsiSession = FsiEvaluationSession.Create (fsiConfig, args, new StringReader "", evalWriter, evalWriter)
+        let msbuild = match options with ProjectOptions _ -> true | _ -> false
+        let fsiSession = FsiEvaluationSession.Create (fsiConfig, args, new StringReader "", evalWriter, evalWriter, msbuildEnabled = msbuild)
 
         // profiles
         let load2 = Path.ChangeExtension (configFile, ".load.fsx")

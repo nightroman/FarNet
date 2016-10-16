@@ -28,7 +28,12 @@ let private getOptionsFromFile =
             r
 
 let private getOptionsFromIni = getOptionsFromFile (getConfigFromIniFile >> ConfigOptions)
-let private getOptionsFromProj = getOptionsFromFile (ProjectCracker.GetProjectOptionsFromProjectFile >> ProjectOptions)
+
+let private getOptionsFromProj path =
+    try
+        getOptionsFromFile (ProjectCracker.GetProjectOptionsFromProjectFile >> ProjectOptions) path
+    with exn ->
+        raise (InvalidOperationException ("Cannot process .fsproj. Make sure MSBuild is installed and .fsproj is valid. Or use .fs.ini.", exn))
 
 /// Gets options from .fsproj or INI.
 let getOptionsFrom (path: string) =

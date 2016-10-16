@@ -32,7 +32,7 @@ task Kill Clean, {
 
 task Build {
 	use * MSBuild.exe
-	exec {MSBuild.exe $ProjectRoot\$ProjectName /p:FarHome=$FarHome /p:Configuration=$Configuration}
+	exec {MSBuild.exe $ProjectRoot\$ProjectName /p:FarHome=$FarHome /p:Configuration=$Configuration /v:d}
 }
 
 task Clean {
@@ -67,11 +67,18 @@ namespace System.Reflection
 }
 
 task Package Help, {
-	$toModule = "z\tools\FarHome\FarNet\Modules\$ModuleName"
+	$toHome = "z\tools\FarHome"
+	$toModule = "$toHome\FarNet\Modules\$ModuleName"
 	$fromModule = "$FarHome\FarNet\Modules\$ModuleName"
 
 	Remove-Item [z] -Force -Recurse
 	$null = mkdir $toModule
+
+	Copy-Item -Destination $toHome @(
+		"$FarHome\FSharp.Core.dll"
+		"$FarHome\FSharp.Core.optdata"
+		"$FarHome\FSharp.Core.sigdata"
+	)
 
 	Copy-Item -Destination $toModule @(
 		'README.htm'
@@ -79,6 +86,7 @@ task Package Help, {
 		'LICENSE.txt'
 		"$fromModule\$ModuleName.dll"
 		"$fromModule\FSharp.Compiler.Service.dll"
+		"$fromModule\FSharp.Compiler.Service.MSBuild.v12.dll"
 		"$fromModule\FSharp.Compiler.Service.ProjectCracker.dll"
 		"$fromModule\FSharp.Compiler.Service.ProjectCrackerTool.exe"
 		"$fromModule\FSharp.Compiler.Service.ProjectCrackerTool.exe.config"

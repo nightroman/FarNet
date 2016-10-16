@@ -94,14 +94,6 @@ type UsePanelDirectory () =
                 with _ ->
                     ()
 
-type UseUserScreen () =
-    do
-        far.UI.ShowUserScreen ()
-
-    interface IDisposable with
-        member x.Dispose () =
-            far.UI.SaveUserScreen ()
-
 let writeException exn =
     far.UI.WriteLine (sprintf "%A" exn, ConsoleColor.Red)
 

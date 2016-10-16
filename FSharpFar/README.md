@@ -29,15 +29,12 @@ FSharpFar provides F# interactive, scripting, and editor services for Far Manage
 ***
 ## Installation
 
-Get F# 4.0 compiler and tools.
-Consider to install them with Visual Studio 2015.
-Alternatively, see [Option 3: Install the free F# compiler and tools alone](http://fsharp.org/use/windows).
-
-FSharp.Compiler.Service requires MSBuild 14.0.
-It is present if Visual Studio 2015 is installed.
-Otherwise, install [Microsoft Build Tools 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48159).
+FSharpFar requires .NET Framework 4.5+.
 
 [Get, install, update FarNet and FarNet.FSharpFar.](https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt)
+
+MSBuild 14 (12) is only used for processing .fsproj files.
+It is present if Visual Studio 2015 (2013) is installed.
 
 ***
 ## <a id="menus"/> Menus
