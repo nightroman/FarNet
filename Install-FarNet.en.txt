@@ -17,6 +17,7 @@ Far Manager
 
 	This is the case since Windows 7.
 	Otherwise check, download, and install.
+	NOTE: Some modules may require newer versions.
 
 Microsoft Visual C++ 2008 SP1 Redistributable Package
 
@@ -49,7 +50,7 @@ Install or update FarNet
 
 	Install-FarPackage FarNet
 
-Install modules, for example
+Install required modules, for example
 
 	Install-FarPackage FarNet.PowerShellFar
 
@@ -79,9 +80,13 @@ Invoke the preliminary command
 
 	iex (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/nightroman/FarNet/master/web.ps1')
 
-And update installed packages
+In order to update all packages, invoke
 
 	Update-FarPackage
+
+In order to update one package, use Install-FarPackage, e.g.
+
+	Install-FarPackage FarNet.PowerShellFar
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 = DOWNLOAD AND INSTALL FarNet MANUALLY =
