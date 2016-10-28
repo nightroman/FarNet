@@ -7,7 +7,7 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="fsharp">
 <annotation><documentation><![CDATA[
 
-fsharp.hrc by Roman Kuzmin, aka nightroman, 2016-10-05
+fsharp.hrc by Roman Kuzmin, aka nightroman, 2016-10-28
 
 ]]></documentation></annotation>
 
@@ -102,7 +102,7 @@ fsharp.hrc by Roman Kuzmin, aka nightroman, 2016-10-05
 
 <!-- Value -->
 <regexp region="def:Outlined"
-match="/^\s*(static)?\b\s*(let)\b\s*(rec|inline|mutable)?\b\s*(public|private|internal)?\s+(%ident;)/"
+match="/^\s*(static)?\b\s*(let)\b\s*(rec|inline|mutable)?\b\s*(public|private|internal)?\s+(%ident;)?/"
 region1="Keyword" region2="Keyword" region3="Keyword" region4="Keyword" region5="Value"
 />
 
@@ -120,7 +120,7 @@ region1="Keyword" region2="Keyword" region3="Type"
 
 <!-- Member -->
 <regexp region="def:Outlined"
-match="/^\s+(static)?\b\s*(member|override|abstract)\b\s*(val|inline)?\b\s*(public|private|internal)?\s+(%ident;|\(?=)/"
+match="/^\s+(static)?\b\s*(member|override|abstract|default)\b\s*(val|inline)?\b\s*(public|private|internal)?\s+(%ident;|\(?=)/"
 region1="Keyword" region2="Keyword" region3="Keyword" region4="Keyword" region5="Member"
 />
 

@@ -1,4 +1,28 @@
 
+### System.Collections.Immutable and System.Reflection.Metadata
+
+They are used in `FSharp.Compiler.Service\src\absil`
+
+- `ilsign.fs`
+- `ilwritepdb.fs`
+- `ilwritepdb.fsi`
+
+We do not package them.
+Is there a use case when this is a problem?
+
+### 2016-10-21 v1.0, self-contained package
+
+**F# core is included. Why Far home?**
+
+*FSharp.Core.dll* can probably live in some standard assembly search locations, not necessarily Far home.
+But FCS also needs *FSharp.Core.optdata* and *FSharp.Core.sigdata* and its search is not the same.
+Far home works in both cases, so let it be the location of our packaged F# core files.
+
+**MSBuild is no longer needed with FCS 8.0**
+
+See [#631](https://github.com/fsharp/FSharp.Compiler.Service/issues/631).
+In 8.0 MSBuild is still loaded (not used) if it is present.
+
 ### 2016-09-04 `//exec` and console output
 
 Intercept `Console.Out` / `Error` and use `ShowUserScreen` / `SaveUserScreen` automatically.
