@@ -13,7 +13,7 @@ open System.IO
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
 [<System.Runtime.InteropServices.Guid "65bd5625-769a-4253-8fde-ffcc3f72489d">]
-[<ModuleTool (Name = "FSharpFar", Options = ModuleToolOptions.AllMenus)>]
+[<ModuleTool (Name = "FSharpFar", Options = ModuleToolOptions.F11Menus)>]
 type FarTool () =
     inherit ModuleTool ()
 
@@ -49,7 +49,7 @@ type FarTool () =
         let file = editor.FileName
         let ses = Session.FindOrCreate (getConfigPathForFile file)
         let temp = far.TempName "F#"
-        
+
         do
             use writer = new StreamWriter (temp)
             doEval writer (fun () -> ses.EvalScript (writer, file))

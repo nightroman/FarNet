@@ -284,6 +284,8 @@ Use `[F11]` \ `FSharpFar` \ `Tips` in order to get type tips for the symbol at t
 
 Use `[F11]` \ `FSharpFar` \ `Check` in order to check the file for syntax and type errors.
 
+Use `[F11]` \ `FSharpFar` \ `Errors` in order to show the menu with the last check errors.
+
 **Symbol uses**
 
 Use `[F11]` \ `FSharpFar` \ `Uses in file` and `Uses in project`
