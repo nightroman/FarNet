@@ -6,8 +6,6 @@
     fs: //exec file = ...\Try.far.fsx
 *)
 
-#r "FarNet.dll"
-
 #load "TryPanelFSharp.fs"
 open TryPanelFSharp
 

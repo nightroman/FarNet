@@ -9,6 +9,7 @@ open Session
 open System
 open System.IO
 open Command
+open Options
 open FarStdWriter
 open FarInteractive
 
@@ -50,7 +51,7 @@ type FarCommand () =
 
         | Exec args ->
             use std = new FarStdWriter ()
-            let ses = match args.With with | Some path -> Session.FindOrCreate path | _ -> getMainSession ()
+            let ses = Session.FindOrCreate (defaultArg args.With (getConfigPathForFile args.File))
             use writer = new StringWriter ()
 
             let issues r =

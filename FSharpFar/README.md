@@ -115,7 +115,8 @@ In this case use `[ShiftEnter]` in order to open it using the standard Windows a
 
 #### `fs: //exec file = <script> [; with = <config>] [;; F# code]`
 
-Invokes the script in the main or specified session.
+Invokes the script in the specified or default session.
+The default is defined by `.fs.ini` or `.fsproj` in the same folder.
 
 Sample file association:
 
