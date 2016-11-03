@@ -40,12 +40,12 @@ let command name rest sb =
     match name with
     | "open" ->
         Open {
-            With = popStringOpt "with" sb
+            With = popStringOpt "with" sb |> Option.map farResolvePath
         }
     | "exec" ->
         Exec {
-            File = popString "file" sb
-            With = popStringOpt "with" sb
+            File = popString "file" sb |> farResolvePath
+            With = popStringOpt "with" sb |> Option.map farResolvePath
             Code = if String.IsNullOrWhiteSpace rest then None else Some rest
         }
     | _ ->

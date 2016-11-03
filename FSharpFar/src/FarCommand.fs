@@ -18,8 +18,6 @@ open FarInteractive
 type FarCommand () =
     inherit ModuleCommand ()
     override x.Invoke (sender, e) =
-        use cd = new UsePanelDirectory()
-
         let echo () =
             far.UI.WriteLine ((sprintf "fs:%s" e.Command), ConsoleColor.DarkGray)
 

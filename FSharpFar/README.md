@@ -1,6 +1,6 @@
 ﻿
-[TryPanelFSharp.fs]: https://github.com/nightroman/FarNet/blob/master/Modules/TryPanelFSharp/TryPanelFSharp.fs
-[Try.far.fsx]: https://github.com/nightroman/FarNet/blob/master/Modules/TryPanelFSharp/Try.far.fsx
+[samples]: https://github.com/nightroman/FarNet/tree/master/FSharpFar/samples
+[TryPanelFSharp]: https://github.com/nightroman/FarNet/tree/master/FSharpFar/samples/TryPanelFSharp
 
 # FarNet module FSharpFar for Far Manager
 
@@ -32,6 +32,9 @@ FSharpFar provides F# interactive, scripting, and editor services for Far Manage
 FSharpFar requires .NET Framework 4.5+.
 
 [Get, install, update FarNet and FarNet.FSharpFar.](https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt)
+
+In other words, all you need is the proper .NET and module.
+F# does not have to be installed, it comes with the package.
 
 MSBuild 14 (12) is only used for processing .fsproj files.
 It is present if Visual Studio 2015 (2013) is installed.
@@ -115,8 +118,9 @@ In this case use `[ShiftEnter]` in order to open it using the standard Windows a
 
 #### `fs: //exec file = <script> [; with = <config>] [;; F# code]`
 
-Invokes the script in the specified or default session.
-The default is defined by `.fs.ini` or `.fsproj` in the same folder.
+Invokes the specified script with the specified or default configuration.
+The default is defined by a `*.fs.ini` or `*.fsproj` in the script folder.
+If such a file is missing then the main session is used.
 
 Sample file association:
 
@@ -298,6 +302,8 @@ The file is saved before the project uses search.
 ***
 ## <a id="scripts"/> F# script applications
 
+See [samples] for some ready to use examples of F# scripts.
+
 #### Evaluation from editors
 
 Use `[F11]` \ `FSharpFar` \ `Load` in order to evaluate a script being edited.
@@ -365,12 +371,10 @@ Example:
 
 #### F# scripts for F# modules
 
-FSharpFar is not needed for F# modules, it is enough to have FarNet and F#.
-[TryPanelFSharp.fs] is the sample F# module which creates a demo panel. But
-with FSharpFar you can run this code without building and installing the module
-and also without restarting Far Manager after changes. For example, the script
-[Try.far.fsx] in the same directory as the .fs file opens the panel:
+FSharpFar is not needed for F# modules, it is enough to have FarNet and F#. For
+example, the sample [TryPanelFSharp] may be built, installed, and used as a
+module without FSharpFar.
 
-````
-    fs: //exec file = ...\Try.far.fsx
-````
+But with FSharpFar you can run and test some module code without building and
+installing a module and restarting Far Manager after changes. See the sample
+README for the details.

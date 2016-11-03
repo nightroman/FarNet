@@ -75,24 +75,24 @@ type Progress (title) as this =
         far.UI.SetProgressState TaskbarProgressBarState.NoProgress
         far.UI.SetProgressFlash ()
 
-type UsePanelDirectory () =
-    let cd =
-        if far.Panel.Kind = PanelKind.File then
-            let cd = Environment.CurrentDirectory
-            try
-                Environment.CurrentDirectory <- far.Panel.CurrentDirectory
-                cd
-            with _ ->
-                null
-        else null
+/// Gets the active file panel directory or None.
+let farTryPanelDirectory () =
+    let panel = far.Panel
+    if panel <> null && panel.Kind = PanelKind.File && not panel.IsPlugin then
+        Some panel.CurrentDirectory
+    else
+        None
 
-    interface IDisposable with
-        member x.Dispose () =
-            if cd <> null then
-                try
-                    Environment.CurrentDirectory <- cd
-                with _ ->
-                    ()
+/// Expands environment variables and makes the full path based on the active panel.
+let farResolvePath path =
+    let mutable path = Environment.ExpandEnvironmentVariables path
+    if not (Path.IsPathRooted path) then
+        match farTryPanelDirectory () with
+        | Some dir ->
+            path <- Path.Combine (dir, path)
+        | _ ->
+            ()
+    Path.GetFullPath path
 
 let writeException exn =
     far.UI.WriteLine (sprintf "%A" exn, ConsoleColor.Red)

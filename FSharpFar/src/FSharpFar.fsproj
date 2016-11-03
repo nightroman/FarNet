@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -68,11 +68,11 @@
     <Compile Include="FsAutoComplete\TipFormatter.fs" />
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="ProxyWriter.fs" />
-    <Compile Include="Command.fs" />
     <Compile Include="Completer.fs" />
+    <Compile Include="FarKit.fs" />
+    <Compile Include="Command.fs" />
     <Compile Include="Config.fs" />
     <Compile Include="Kit.fs" />
-    <Compile Include="FarKit.fs" />
     <Compile Include="Options.fs" />
     <Compile Include="Session.fs" />
     <Compile Include="Checker.fs" />

@@ -36,7 +36,8 @@ type MyPanel (explorer) =
         if 0 = Far.Api.Message ("Delete files?", "MyPanel", MessageOptions.OkCancel) then
             base.UIDeleteFiles args
 
-/// Demo tool with an item in the plugin menu.
+/// Demo tool with an item in the plugin menu. It is only needed for a module.
+/// For running by a script in FSharpFar this is redundant and may be removed.
 [<System.Runtime.InteropServices.Guid "d6765565-4c52-4877-aac6-3db3e0c88b62">]
 [<ModuleTool (Name = "TryPanelFSharp", Options = ModuleToolOptions.Panels)>]
 type MyTool () =

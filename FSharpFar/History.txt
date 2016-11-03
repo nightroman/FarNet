@@ -1,7 +1,13 @@
 
-NuGet package: https://www.nuget.org/packages/FarNet.FSharpFar
+https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.4821
 FarNet 5.2.3
+
+= 1.0.1 =
+
+- Amended processing of paths in //exec and //open.
+- //exec uses the config from the script folder.
+- Added "samples" to the repository.
 
 = 1.0.0 =
 
