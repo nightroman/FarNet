@@ -3,6 +3,10 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.4821
 FarNet 5.2.3
 
+= 1.0.2 =
+
+Fix #9, completion of identifiers with double-backticks.
+
 = 1.0.1 =
 
 - Amended processing of paths in //exec and //open.

@@ -12,13 +12,13 @@ open System.IO
 let far = Far.Api
 
 /// Obtains the local module folder path.
-let fsfLocalData () = far.GetModuleManager("FSharpFar").GetFolderPath (SpecialFolder.LocalData, true)
+let farLocalData = far.GetModuleManager("FSharpFar").GetFolderPath (SpecialFolder.LocalData, true)
 
 /// Obtains the roming module folder path.
-let fsfRoaminData () = far.GetModuleManager("FSharpFar").GetFolderPath (SpecialFolder.RoamingData, true)
+let farRoaminData = far.GetModuleManager("FSharpFar").GetFolderPath (SpecialFolder.RoamingData, true)
 
 /// Gets the main session config file path.
-let mainSessionConfigPath () = Path.Combine (fsfRoaminData (), "main.fs.ini")
+let mainSessionConfigPath () = Path.Combine (farRoaminData, "main.fs.ini")
 
 type IMenu with
     /// Shows the menu of named actions.
@@ -126,7 +126,16 @@ let completeLine (editLine: ILine) replacementIndex replacementLength (words: st
                     null
 
     if word <> null then
+        // the part being completed, may end with ``
         let head = text.Substring (0, replacementIndex)
+        // amend non-standard identifier
+        let word =
+            if isIdentStr word then
+                word
+            elif head.EndsWith "``" then
+                word + "``"
+            else
+                "``" + word + "``"
         let caret = head.Length + word.Length
         editLine.Text <- head + word + text.Substring (replacementIndex + replacementLength)
         editLine.Caret <- caret

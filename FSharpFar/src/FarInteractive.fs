@@ -11,7 +11,7 @@ open Session
 open System
 open System.IO
 
-let history = HistoryLog (fsfLocalData() + @"\InteractiveHistory.log", 1000);
+let history = HistoryLog (farLocalData + @"\InteractiveHistory.log", 1000);
 
 type FarInteractive(session: Session) =
     inherit InteractiveEditor (far.CreateEditor (), history, "(*(", ")*)", "(**)")
@@ -35,7 +35,7 @@ type FarInteractive(session: Session) =
             base.KeyPressed key
 
     member x.Open () =
-        let path = Path.Combine (fsfLocalData (), (DateTime.Now.ToString "_yyMMdd_HHmmss") + ".interactive.fsx")
+        let path = Path.Combine (farLocalData, (DateTime.Now.ToString "_yyMMdd_HHmmss") + ".interactive.fsx")
         let editor = x.Editor
         
         editor.FileName <- path

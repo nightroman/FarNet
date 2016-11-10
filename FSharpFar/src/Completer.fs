@@ -6,9 +6,7 @@ module FSharpFar.Completer
 
 open System
 
-type Completer (complete) =
-    let complete : (string -> seq<string>) = complete
-
+type Completer (complete : string -> seq<string>) =
     /// Gets available code completions as:
     /// ok, replacement index, completions.
     member x.GetCompletions (input: string, caret: int) =
@@ -16,7 +14,7 @@ type Completer (complete) =
             if start <= 0 then 0 else
             let i = start - 1
             match input.[i] with
-            | c when Char.IsLetterOrDigit c || c = '.' || c = '_' ->
+            | c when Char.IsLetterOrDigit c || c = '.' || c = '_' || c = '`' ->
                 look paren i
             | '(' | '{' | '[' ->
                 if paren > 0 then
@@ -33,6 +31,9 @@ type Completer (complete) =
 
         let name = input.Substring (start, caret - start)
         let iDot = name.LastIndexOf '.'
+
+        //_161108_054202
+        let name = name.Replace ("``", "")
 
         // distinct: Sys[Tab] -> several "System"
         // sort: System.[Tab] -> unsorted

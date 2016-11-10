@@ -22,7 +22,10 @@ let strZipSpace =
 let inline always value = fun _ -> value
 
 /// Gets true if a char is an identifier char.
-let isIdentChar char = Char.IsLetterOrDigit char || char = '_'
+let isIdentChar char = Char.IsLetterOrDigit char || char = '_' || char = '\''
 
 /// Gets true if a char is a long identifier char.
-let isLongIdentChar char = Char.IsLetterOrDigit char || char = '_' || char = '.'
+let isLongIdentChar char = isIdentChar char || char = '.'
+
+/// Gets true if a string is a normal identifier.
+let isIdentStr str = String.forall isIdentChar str
