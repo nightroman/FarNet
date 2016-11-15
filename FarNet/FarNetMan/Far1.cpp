@@ -65,7 +65,7 @@ System::Version^ Far1::FarVersion::get()
 
 System::Version^ Far1::FarNetVersion::get()
 {
-	return Assembly::GetExecutingAssembly()->GetName()->Version;
+	return Far1::typeid->Assembly->GetName()->Version;
 }
 
 IMenu^ Far1::CreateMenu()

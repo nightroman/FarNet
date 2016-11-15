@@ -15,7 +15,7 @@ namespace FarNet.Vessel
 	[ModuleTool(Name = "Vessel", Options = ModuleToolOptions.F11Menus)]
 	public class VesselTool : ModuleTool
 	{
-		static string AppHome { get { return Path.GetDirectoryName((Assembly.GetExecutingAssembly()).Location); } }
+		static string AppHome { get { return Path.GetDirectoryName(typeof(VesselTool).Assembly.Location); } }
 		static string HelpTopic { get { return "<" + AppHome + "\\>"; } }
 		static string _TrainingReport;
 		internal static int TrainingRecordCount { get; set; }

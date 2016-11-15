@@ -35,7 +35,7 @@ public:
 	static void ShowDrawersMenu();
 	static void ShowMenu(ModuleToolOptions from);
 public:
-	static String^ _folder = Path::GetDirectoryName((Assembly::GetExecutingAssembly())->Location);
+	static String^ _folder = Path::GetDirectoryName(Far0::typeid->Assembly->Location);
 	static String^ _helpTopic = "<" + _folder + "\\>";
 	static void InvalidateProxyCommand();
 	static void UnregisterProxyTool(IModuleTool^ tool);

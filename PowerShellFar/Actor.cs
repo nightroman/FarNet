@@ -507,7 +507,7 @@ Continue with this current directory?
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public string AppHome
 		{
-			get { return Path.GetDirectoryName((Assembly.GetExecutingAssembly()).Location); }
+			get { return Path.GetDirectoryName(typeof(Actor).Assembly.Location); }
 		}
 		/// <summary>
 		/// Shows an input dialog and returns entered PowerShell code.

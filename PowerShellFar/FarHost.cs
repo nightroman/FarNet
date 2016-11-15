@@ -76,7 +76,7 @@ namespace PowerShellFar
 		/// </summary>
 		public override Version Version
 		{
-			get { return Assembly.GetExecutingAssembly().GetName().Version; }
+			get { return typeof(Actor).Assembly.GetName().Version; }
 		}
 		/// <summary>
 		/// Instructs the host to interrupt the currently running pipeline and start a new nested input loop.
