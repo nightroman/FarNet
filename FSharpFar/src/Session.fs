@@ -129,13 +129,13 @@ type Session private (configFile) =
             for file in loadFiles do
                 let result, warnings = fsiSession.EvalInteractionNonThrowing (sprintf "#load @\"%s\"" file)
                 for w in warnings do writer.WriteLine (strErrorText w)
-                match result with | Choice2Of2 exn -> raise exn | _ -> ()
+                match result with ErrorChoice exn -> raise exn | _ -> ()
 
             for file in useFiles do
                 let code = File.ReadAllText file
                 let result, warnings = fsiSession.EvalInteractionNonThrowing code
                 for w in warnings do writer.WriteLine (strErrorText w)
-                match result with | Choice2Of2 exn -> raise exn | _ -> ()
+                match result with ErrorChoice exn -> raise exn | _ -> ()
         with exn ->
             writer.WriteLine (sprintf "%A" exn)
 
@@ -148,10 +148,7 @@ type Session private (configFile) =
         evalWriter.Writer <- voidWriter
         {
             Warnings = warnings
-            Exception =
-                match result with
-                | Choice2Of2 exn -> exn
-                | _ -> null
+            Exception = match result with ErrorChoice exn -> exn | _ -> null
         }
 
     static member TryFind (path) =
@@ -203,7 +200,7 @@ type Session private (configFile) =
             Seq.empty
 
 /// Gets or creates the main session.
-let getMainSession () = Session.FindOrCreate (mainSessionConfigPath ())
+let getMainSession () = Session.FindOrCreate farMainSessionConfigPath
 
 /// Gets the main session or none.
-let tryFindMainSession () = Session.TryFind (mainSessionConfigPath ())
+let tryFindMainSession () = Session.TryFind farMainSessionConfigPath

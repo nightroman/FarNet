@@ -11,14 +11,14 @@ open System.IO
 
 let far = Far.Api
 
-/// Obtains the local module folder path.
+/// The local module folder path.
 let farLocalData = far.GetModuleManager("FSharpFar").GetFolderPath (SpecialFolder.LocalData, true)
 
-/// Obtains the roming module folder path.
+/// The roming module folder path.
 let farRoaminData = far.GetModuleManager("FSharpFar").GetFolderPath (SpecialFolder.RoamingData, true)
 
-/// Gets the main session config file path.
-let mainSessionConfigPath () = Path.Combine (farRoaminData, "main.fs.ini")
+/// The main session config file path.
+let farMainSessionConfigPath = Path.Combine (farRoaminData, "main.fs.ini")
 
 type IMenu with
     /// Shows the menu of named actions.

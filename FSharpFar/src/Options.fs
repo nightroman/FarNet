@@ -56,7 +56,7 @@ let getConfigPathForFile path =
         file
     | _ ->
 
-    mainSessionConfigPath ()
+    farMainSessionConfigPath
 
 /// Gets options for a file to be processed.
 let getOptionsForFile path =
@@ -72,4 +72,4 @@ let getOptionsForFile path =
         getOptionsFromProj file
     | _ ->
 
-    getOptionsFromIni (mainSessionConfigPath ())
+    getOptionsFromIni farMainSessionConfigPath

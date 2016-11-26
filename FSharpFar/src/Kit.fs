@@ -29,3 +29,8 @@ let isLongIdentChar char = isIdentChar char || char = '.'
 
 /// Gets true if a string is a normal identifier.
 let isIdentStr str = String.forall isIdentChar str
+
+/// Choice as Result.
+let (|OkChoice|ErrorChoice|) = function
+    | Choice1Of2 r -> OkChoice r
+    | Choice2Of2 e -> ErrorChoice e
