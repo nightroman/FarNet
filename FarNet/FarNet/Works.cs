@@ -76,6 +76,10 @@ namespace FarNet.Works
 		/// <summary>
 		/// INTERNAL
 		/// </summary>
+		public static object Data { get; set; }
+		/// <summary>
+		/// INTERNAL
+		/// </summary>
 		public static string[] SplitLines(string value)
 		{
 			if (value == null)
