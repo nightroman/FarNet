@@ -46,30 +46,24 @@ let getOptionsFrom (path: string) =
 let getConfigPathForFile path =
     let dir = Path.GetDirectoryName path
 
+    // use available custom config
     match Directory.GetFiles (dir, "*.fs.ini") with
     | [|file|] ->
         file
     | _ ->
 
+    // main config for scripts
+    if isScriptFileName path then farMainSessionConfigPath else
+
+    // available F# project
     match Directory.GetFiles (dir, "*.fsproj") with
     | [|file|] ->
         file
     | _ ->
 
+    // main config
     farMainSessionConfigPath
 
 /// Gets options for a file to be processed.
 let getOptionsForFile path =
-    let dir = Path.GetDirectoryName path
-
-    match Directory.GetFiles (dir, "*.fs.ini") with
-    | [|file|] ->
-        getOptionsFromIni file
-    | _ ->
-
-    match Directory.GetFiles (dir, "*.fsproj") with
-    | [|file|] ->
-        getOptionsFromProj file
-    | _ ->
-
-    getOptionsFromIni farMainSessionConfigPath
+    getOptionsFrom (getConfigPathForFile path)

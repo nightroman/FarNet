@@ -3,6 +3,10 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.4821
 FarNet 5.2.3
 
+= 1.0.3 =
+
+Fix #10, scripts of F# projects should use the main config.
+
 = 1.0.2 =
 
 Fix #9, completion of identifiers with double-backticks.
