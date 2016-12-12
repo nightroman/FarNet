@@ -11,10 +11,14 @@ open Session
 open System
 open System.IO
 
-let history = HistoryLog (farLocalData + @"\InteractiveHistory.log", 1000);
+module private My =
+    let history = HistoryLog (farLocalData + @"\InteractiveHistory.log", 1000);
+    let outputMark1 = "(*("
+    let outputMark2 = ")*)"
+    let outputMark3 = "(**)"
 
 type FarInteractive(session: Session) =
-    inherit InteractiveEditor (far.CreateEditor (), history, "(*(", ")*)", "(**)")
+    inherit InteractiveEditor (far.CreateEditor (), My.history, My.outputMark1, My.outputMark2, My.outputMark3)
     let session = session
 
     override x.Invoke (code, area) =
@@ -37,7 +41,7 @@ type FarInteractive(session: Session) =
     member x.Open () =
         let path = Path.Combine (farLocalData, (DateTime.Now.ToString "_yyMMdd_HHmmss") + ".interactive.fsx")
         let editor = x.Editor
-        
+
         editor.FileName <- path
         editor.CodePage <- 65001
         editor.DisableHistory <- true
@@ -45,25 +49,18 @@ type FarInteractive(session: Session) =
 
         // attach to session
         editor.fsSession <- Some session
-        let onSessionClose = Handler<unit> (fun _ _ ->
-            if editor.IsOpened then
-                editor.Close ()
-        )
+        let onSessionClose = Handler<unit> (fun _ _ -> if editor.IsOpened then editor.Close ())
         session.OnClose.AddHandler onSessionClose
-        editor.Closed.Add <| fun _ ->
-            session.OnClose.RemoveHandler onSessionClose
+        editor.Closed.Add (fun _ -> session.OnClose.RemoveHandler onSessionClose)
 
         // Open. Post, to avoid modal. Use case:
         // - open session by `fs: //open`
         // - it writes echo -> user screen
         // - opening from user screen is modal
-        far.PostJob (fun _ ->
-            editor.Open()
-        )
-
-        // Show issues. Post, for legit modal cases like opening from a dialog.
-        // We want some job to be done after opening in any case.
-        far.PostJob (fun () ->
+        // Show errors. Post, for modal cases like opening from a dialog.
+        far.PostSteps (seq {
+            editor.Open ()
             if session.Errors.Length > 0 then
-                showTempText session.Errors ("F# Errors " + session.DisplayName)
-        )
+                yield null
+                editor.Add (sprintf "%s\n%s\n%s\n" My.outputMark1 session.Errors My.outputMark2)
+        })
