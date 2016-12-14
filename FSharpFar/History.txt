@@ -3,6 +3,11 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.4821
 FarNet 5.2.3
 
+= 1.1.0 =
+
+Auto tips on mouse moves over symbols.
+Use "F11 \ FSharpFar \ Enable tips" in F# editors.
+
 = 1.0.4 =
 
 Errors on loading interactive sessions are written to the editor.

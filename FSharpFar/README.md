@@ -66,6 +66,8 @@ Use `[F11] \ FSharpFar` to open the module menu:
     - Shows uses of the symbol in the file as a go to menu.
 - **Uses in project**
     - Shows uses of the symbol in the project in a separate editor.
+- **Enable|Disable tips**
+    - Toggles auto tips on mouse moves over symbols.
 
 ***
 ## <a id="commands"/> Commands
@@ -284,6 +286,8 @@ The output is shown in a new editor.
 **Type info tips**
 
 Use `[F11]` \ `FSharpFar` \ `Tips` in order to get type tips for the symbol at the caret.
+
+Use `[F11]` \ `FSharpFar` \ `Enable|Disable tips` in order to toggle auto tips on mouse moves over symbols.
 
 **Code issues**
 

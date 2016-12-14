@@ -95,18 +95,18 @@ type FarTool () =
 
         match Parsing.findLongIdents (caret.X, lineStr) with
         | None -> ()
-        | Some (col, identIsland) ->
+        | Some (column, idents) ->
 
         let options = editor.getOptions ()
         let file = editor.FileName
         let text = editor.GetText ()
 
-        let fr = Checker.check file text options
-        let tip = fr.CheckResults.GetToolTipTextAlternate (caret.Y + 1, col + 1, lineStr, identIsland, FSharpTokenTag.Identifier) |> Async.RunSynchronously
+        let check = Checker.check file text options
+        let tip = check.CheckResults.GetToolTipTextAlternate (caret.Y + 1, column + 1, lineStr, idents, FSharpTokenTag.Identifier) |> Async.RunSynchronously
 
         progress.Done ()
 
-        far.Message (Checker.strTip tip, "Tips", MessageOptions.LeftAligned) |> ignore
+        showText (Checker.strTip tip) "Tips"
 
     let usesInFile () =
         use progress = new Progress "Getting uses..."
@@ -196,6 +196,9 @@ type FarTool () =
 
         showTempText (w.ToString ()) ("F# Uses " + sym.Symbol.FullName)
 
+    let toggleAutoTips () =
+        editor.fsAutoTips <- not editor.fsAutoTips
+
     override x.Invoke (_, e) =
         editor <- far.Editor
 
@@ -212,11 +215,12 @@ type FarTool () =
                 yield "&L. Load", load
                 yield "&T. Tips", tips
                 // non interactive
-                // - skip checks for interactive because `use` file is used as load, not `use`
+                // - skip checks for interactive
                 if editor.fsSession.IsNone then
                     yield "&C. Check", check
                     if editor.fsErrors.IsSome then
                         yield "&E. Errors", showErrors
                     yield "&F. Uses in file", usesInFile
                     yield "&P. Uses in project", usesInProject
+                    yield (if editor.fsAutoTips then "&I. Disable tips" else "&I. Enable tips"), toggleAutoTips
         |]

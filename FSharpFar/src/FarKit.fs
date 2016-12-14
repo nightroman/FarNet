@@ -175,3 +175,11 @@ let completeCode (editor: IEditor) getCompletions =
         completeLine line start (caret - start) completions
         editor.Redraw ()
     ok
+
+/// Posts the editor job. It will be ignored if the editor is closed.
+let postEditorJob (editor: IEditor) job =
+    far.PostJob (fun () -> if editor.IsOpened then job ())
+
+/// Shows a message with the left aligned text.
+let showText text title =
+    far.Message (text, title, MessageOptions.LeftAligned) |> ignore

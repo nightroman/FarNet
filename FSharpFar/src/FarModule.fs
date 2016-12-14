@@ -13,6 +13,7 @@ open Microsoft.FSharp.Compiler
 module private Key =
     let session = "F# session"
     let errors = "F# errors"
+    let tips = "F# auto tips"
 
 type IEditor with
     member private x.getOpt<'T> (key) =
@@ -31,6 +32,10 @@ type IEditor with
     member x.fsErrors
         with get () = x.getOpt<FSharpErrorInfo []> Key.errors
         and set (value: FSharpErrorInfo [] option) = x.setOpt (Key.errors, value)
+
+    member x.fsAutoTips
+        with get () = defaultArg (x.getOpt<bool> Key.tips) false
+        and set (value: bool) = x.setOpt (Key.tips, Some value)
 
     member x.getOptions () =
         match x.fsSession with
