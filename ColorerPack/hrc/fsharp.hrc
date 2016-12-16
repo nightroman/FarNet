@@ -7,7 +7,7 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="fsharp">
 <annotation><documentation><![CDATA[
 
-fsharp.hrc by Roman Kuzmin, aka nightroman, 2016-10-28
+fsharp.hrc by Roman Kuzmin, aka nightroman, 2016-12-15
 
 ]]></documentation></annotation>
 
@@ -29,6 +29,8 @@ fsharp.hrc by Roman Kuzmin, aka nightroman, 2016-10-28
 <region parent="def:PairStart" name="PairStart"/>
 <region parent="def:String" name="String"/>
 <region parent="def:StringContent" name="StringContent"/>
+<region parent="def:TypeKeyword" name="AttrBlock"/>
+<region parent="def:TypeKeyword" name="AttrIdent"/>
 
 <!-- Identifier -->
 <entity name="ident" value="(?:[_a-zA-Z][.\w&apos;]*|``.+?``)"/>
@@ -41,6 +43,16 @@ fsharp.hrc by Roman Kuzmin, aka nightroman, 2016-10-28
 <regexp match="/&quot;&quot;/" region="StringContent"/>
 </scheme>
 <scheme name="FSVerbatimString2">
+</scheme>
+
+<!-- Identifier -->
+<scheme name="Identifier">
+<regexp match="/%ident;/" region="Identifier"/>
+</scheme>
+
+<!-- Attribute -->
+<scheme name="Attribute">
+<regexp match="/%ident;/" region="AttrIdent"/>
 </scheme>
 
 <!-- Number -->
@@ -83,14 +95,14 @@ fsharp.hrc by Roman Kuzmin, aka nightroman, 2016-10-28
 <regexp match="/&apos;(\\&apos;|\\[bnrt\\&apos;&quot;]|\\u[\da-fA-F]{4}|\\U[\da-fA-F]{8}|.)&apos;B?/" region="String"/>
 
 <!-- Array -->
-<block start="/\[\|/" end="/\|\]/" scheme="fsharp" region00="PairStart" region10="PairEnd"/>
+<block start="/(\[\|)/" end="/(\|\])/" scheme="fsharp" region00="def:Symbol" region01="PairStart" region10="def:Symbol" region11="PairEnd"/>
 
 <!-- Attribute -->
-<block start="/\[&lt;/" end="/&gt;\]/" scheme="fsharp" region00="PairStart" region10="PairEnd"/>
+<block start="/(\[&lt;)/" end="/(&gt;\])/" scheme="FSAttribute" region00="AttrBlock" region01="PairStart" region10="AttrBlock" region11="PairEnd"/>
 
 <!-- Code Quotation -->
-<block start="/&lt;@@/" end="/@@&gt;/" scheme="fsharp" region00="PairStart" region10="PairEnd"/>
-<block start="/&lt;@/" end="/@&gt;/" scheme="fsharp" region00="PairStart" region10="PairEnd"/>
+<block start="/(&lt;@@)/" end="/(@@&gt;)/" scheme="fsharp" region00="def:Symbol" region01="PairStart" region10="def:Symbol" region11="PairEnd"/>
+<block start="/(&lt;@)/" end="/(@&gt;)/" scheme="fsharp" region00="def:Symbol" region01="PairStart" region10="def:Symbol" region11="PairEnd"/>
 
 <!-- Bracket -->
 <inherit scheme="def:PairedBrackets">
@@ -282,11 +294,17 @@ region1="Keyword" region2="Keyword" region3="Keyword" region4="Keyword" region5=
 </keywords>
 
 <!-- Identifier -->
-<regexp match="/%ident;/" region="Identifier"/>
+<inherit scheme="Identifier"/>
 
 <!-- Number -->
 <inherit scheme="FSNumber"/>
 
+</scheme>
+
+<scheme name="FSAttribute">
+<inherit scheme="fsharp">
+  <virtual scheme="Identifier" subst-scheme="Attribute"/>
+</inherit>
 </scheme>
 
 </type>
