@@ -27,7 +27,7 @@ type TipsArgs = {
     FileText : string
 }
 
-type InboxMessage =
+type MouseMessage =
 | Noop
 | Move of LineArgs
 | Tips of TipsArgs
@@ -38,14 +38,12 @@ type FarEditor () =
     inherit ModuleEditor ()
     let mutable editor: IEditor = null
 
-    let inbox = MailboxProcessor.Start (fun inbox ->
-        let rec loop () = async {
-            let! msg = inbox.Receive ()
+    let mouseAgent = MailboxProcessor.Start (fun inbox -> async {
+        while true do
+            let! message = inbox.Receive ()
+            if not editor.fsAutoTips || inbox.CurrentQueueLength > 0 then () else
 
-            if not editor.fsAutoTips || inbox.CurrentQueueLength > 0 then
-                return! loop ()
-
-            match msg with
+            match message with
             | Noop -> ()
 
             | Move it ->
@@ -71,11 +69,7 @@ type FarEditor () =
                     postEditorJob editor (fun () ->
                         showText tips "Tips"
                     )
-
-            return! loop ()
-        }
-        loop ()
-    )
+    })
 
     // https://fsharp.github.io/FSharp.Compiler.Service/editor.html#Getting-auto-complete-lists
     // old EditorTests.fs(265) they use [], "" instead of names, so do we.
@@ -140,17 +134,17 @@ type FarEditor () =
                 | KeyCode.Tab when e.Key.Is () && not editor.SelectionExists ->
                      e.Ignore <- complete ()
                 | _ -> ()
-            editor.MouseDoubleClick.Add (fun _ -> inbox.Post Noop)
-            editor.MouseClick.Add (fun _ -> inbox.Post Noop)
-            editor.MouseWheel.Add (fun _ -> inbox.Post Noop)
+            editor.MouseDoubleClick.Add (fun _ -> mouseAgent.Post Noop)
+            editor.MouseClick.Add (fun _ -> mouseAgent.Post Noop)
+            editor.MouseWheel.Add (fun _ -> mouseAgent.Post Noop)
             editor.MouseMove.Add (fun e ->
                 let pos = editor.ConvertPointScreenToEditor e.Mouse.Where
                 if pos.Y < editor.Count then
                     let line = editor.[pos.Y]
                     if pos.X < line.Length then
-                        inbox.Post (Move {Text = line.Text; Index = pos.Y; Column = pos.X})
+                        mouseAgent.Post (Move {Text = line.Text; Index = pos.Y; Column = pos.X})
                     else
-                        inbox.Post Noop
+                        mouseAgent.Post Noop
                 else
-                    inbox.Post Noop
-                )
+                    mouseAgent.Post Noop
+            )
