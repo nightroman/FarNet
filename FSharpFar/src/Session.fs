@@ -6,7 +6,6 @@ module FSharpFar.Session
 
 open System
 open System.IO
-open System.Text
 open Config
 open Options
 open ProxyWriter

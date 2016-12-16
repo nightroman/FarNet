@@ -3,10 +3,18 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.4821
 FarNet 5.2.3
 
+= 1.2.0 =
+
+Auto checks on typing.
+Use "F11 \ FSharpFar \ Enable auto checks" in F# editors.
+
+Errors are highlighted on auto checks and checks from the menu.
+Error messages are shown when the mouse hovers over error areas.
+
 = 1.1.0 =
 
 Auto tips on mouse moves over symbols.
-Use "F11 \ FSharpFar \ Enable tips" in F# editors.
+Use "F11 \ FSharpFar \ Enable auto tips" in F# editors.
 
 = 1.0.4 =
 

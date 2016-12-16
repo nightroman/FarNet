@@ -75,8 +75,8 @@ type FarTool () =
         let file = editor.FileName
         let text = editor.GetText ()
 
-        let fr = Checker.check file text options
-        let errors = fr.CheckResults.Errors
+        let check = Checker.check file text options
+        let errors = check.CheckResults.Errors
 
         progress.Done ()
 
@@ -199,6 +199,9 @@ type FarTool () =
     let toggleAutoTips () =
         editor.fsAutoTips <- not editor.fsAutoTips
 
+    let toggleAutoCheck () =
+        editor.fsAutoCheck <- not editor.fsAutoCheck
+
     override x.Invoke (_, e) =
         editor <- far.Editor
 
@@ -222,5 +225,6 @@ type FarTool () =
                         yield "&E. Errors", showErrors
                     yield "&F. Uses in file", usesInFile
                     yield "&P. Uses in project", usesInProject
-                    yield (if editor.fsAutoTips then "&I. Disable tips" else "&I. Enable tips"), toggleAutoTips
+                    yield (if editor.fsAutoTips then "&I. Disable auto tips" else "&I. Enable auto tips"), toggleAutoTips
+                    yield (if editor.fsAutoCheck then "&K. Disable auto check" else "&K. Enable auto check"), toggleAutoCheck
         |]

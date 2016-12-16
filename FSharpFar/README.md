@@ -66,8 +66,10 @@ Use `[F11] \ FSharpFar` to open the module menu:
     - Shows uses of the symbol in the file as a go to menu.
 - **Uses in project**
     - Shows uses of the symbol in the project in a separate editor.
-- **Enable|Disable tips**
+- **Enable|Disable auto tips**
     - Toggles auto tips on mouse moves over symbols.
+- **Enable|Disable auto checks**
+    - Toggles auto checks for errors on typing in the editor.
 
 ***
 ## <a id="commands"/> Commands
@@ -287,13 +289,18 @@ The output is shown in a new editor.
 
 Use `[F11]` \ `FSharpFar` \ `Tips` in order to get type tips for the symbol at the caret.
 
-Use `[F11]` \ `FSharpFar` \ `Enable|Disable tips` in order to toggle auto tips on mouse moves over symbols.
+Use `[F11]` \ `FSharpFar` \ `Enable|Disable auto tips` in order to toggle auto tips on mouse moves over symbols.
 
 **Code issues**
 
 Use `[F11]` \ `FSharpFar` \ `Check` in order to check the file for syntax and type errors.
 
 Use `[F11]` \ `FSharpFar` \ `Errors` in order to show the menu with the last check errors.
+
+Use `[F11]` \ `FSharpFar` \ `Enable|Disable auto checks` in order to toggle auto checks on typing.
+
+Found errors and warnings are highlighted in the editor and kept until the editor text changes.
+Error messages are automatically shown when the mouse hovers over highlighted error areas.
 
 **Symbol uses**
 

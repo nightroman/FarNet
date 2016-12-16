@@ -9,11 +9,14 @@ open FarNet
 open Options
 open Session
 open Microsoft.FSharp.Compiler
+open System
+open System.IO
 
 module private Key =
     let session = "F# session"
     let errors = "F# errors"
-    let tips = "F# auto tips"
+    let autoTips = "F# auto tips"
+    let autoCheck = "F# auto check"
 
 type IEditor with
     member private x.getOpt<'T> (key) =
@@ -34,10 +37,23 @@ type IEditor with
         and set (value: FSharpErrorInfo [] option) = x.setOpt (Key.errors, value)
 
     member x.fsAutoTips
-        with get () = defaultArg (x.getOpt<bool> Key.tips) false
-        and set (value: bool) = x.setOpt (Key.tips, Some value)
+        with get () = defaultArg (x.getOpt<bool> Key.autoTips) false
+        and set (value: bool) = x.setOpt (Key.autoTips, Some value)
+
+    member x.fsAutoCheck
+        with get () = defaultArg (x.getOpt<bool> Key.autoCheck) false
+        and set (value: bool) = x.setOpt (Key.autoCheck, Some value)
 
     member x.getOptions () =
         match x.fsSession with
         | Some x -> x.Options
         | _ -> getOptionsForFile x.FileName
+
+    member x.getMyErrors () =
+        match x.fsErrors with
+        | None -> None
+        | Some errors ->
+
+        let file = Path.GetFullPath x.FileName
+        let errors = errors |> Array.filter (fun error -> file.Equals (Path.GetFullPath error.FileName, StringComparison.OrdinalIgnoreCase))
+        if errors.Length = 0 then None else Some errors
