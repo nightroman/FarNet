@@ -115,6 +115,9 @@ type FarEditor () =
                     )
     })
 
+    let postNoop _ =
+        mouseAgent.Post Noop
+
     // https://fsharp.github.io/FSharp.Compiler.Service/editor.html#Getting-auto-complete-lists
     // old EditorTests.fs(265) they use [], "" instead of names, so do we.
     // new Use FsAutoComplete way.
@@ -173,6 +176,7 @@ type FarEditor () =
     override x.Invoke (sender, _) =
         editor <- sender
         if editor.fsSession.IsNone then
+
             editor.KeyDown.Add <| fun e ->
                 match e.Key.VirtualKeyCode with
                 | KeyCode.Tab when e.Key.Is () && not editor.SelectionExists ->
@@ -185,17 +189,19 @@ type FarEditor () =
                     checkAgent.Post Check
             )
 
-            editor.MouseDoubleClick.Add (fun _ -> mouseAgent.Post Noop)
-            editor.MouseClick.Add (fun _ -> mouseAgent.Post Noop)
-            editor.MouseWheel.Add (fun _ -> mouseAgent.Post Noop)
+            editor.MouseDoubleClick.Add postNoop
+            editor.MouseClick.Add postNoop
+            editor.MouseWheel.Add postNoop
             editor.MouseMove.Add (fun e ->
-                let pos = editor.ConvertPointScreenToEditor e.Mouse.Where
-                if pos.Y < editor.Count then
-                    let line = editor.[pos.Y]
-                    if pos.X < line.Length then
-                        mouseAgent.Post (Move {Text = line.Text; Index = pos.Y; Column = pos.X})
-                    else
-                        mouseAgent.Post Noop
-                else
-                    mouseAgent.Post Noop
+                mouseAgent.Post (
+                    if e.Mouse.Is () then
+                        let pos = editor.ConvertPointScreenToEditor e.Mouse.Where
+                        if pos.Y < editor.Count then
+                            let line = editor.[pos.Y]
+                            if pos.X < line.Length then
+                                Move {Text = line.Text; Index = pos.Y; Column = pos.X}
+                            else Noop
+                        else Noop
+                    else Noop
+                )
             )
