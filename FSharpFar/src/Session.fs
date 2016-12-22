@@ -21,11 +21,17 @@ let strErrorSeverity = function
     | FSharpErrorSeverity.Error -> "error"
     | FSharpErrorSeverity.Warning -> "warning"
 
+/// Error text as it is without source info.
 let strErrorText (x : FSharpErrorInfo) =
-    sprintf "%s(%d,%d): %s FS%04d: %s" x.FileName x.StartLineAlternate (x.StartColumn + 1) (strErrorSeverity x.Severity) x.ErrorNumber x.Message
+    sprintf "%s FS%04d: %s" (strErrorSeverity x.Severity) x.ErrorNumber x.Message
 
+/// Error text as it is with full source info.
+let strErrorFull (x : FSharpErrorInfo) =
+    sprintf "%s(%d,%d): %s" x.FileName x.StartLineAlternate (x.StartColumn + 1) (strErrorText x)
+
+/// Error text as line with mini source info.
 let strErrorLine (x : FSharpErrorInfo) =
-    sprintf "%s(%d,%d): %s FS%04d: %s" (Path.GetFileName x.FileName) x.StartLineAlternate (x.StartColumn + 1) (strErrorSeverity x.Severity) x.ErrorNumber (strAsLine x.Message)
+    sprintf "%s(%d,%d): %s" (Path.GetFileName x.FileName) x.StartLineAlternate (x.StartColumn + 1) (strAsLine (strErrorText x))
 
 let doEval writer (eval : unit -> EvalResult) =
     let oldOut = Console.Out
@@ -39,7 +45,7 @@ let doEval writer (eval : unit -> EvalResult) =
             Console.SetOut oldOut
             Console.SetError oldError
     for w in r.Warnings do
-        writer.WriteLine (strErrorText w)
+        writer.WriteLine (strErrorFull w)
     if r.Exception <> null then
         writer.WriteLine (sprintf "%A" r.Exception)
 
@@ -127,13 +133,13 @@ type Session private (configFile) =
         try
             for file in loadFiles do
                 let result, warnings = fsiSession.EvalInteractionNonThrowing (sprintf "#load @\"%s\"" file)
-                for w in warnings do writer.WriteLine (strErrorText w)
+                for w in warnings do writer.WriteLine (strErrorFull w)
                 match result with ErrorChoice exn -> raise exn | _ -> ()
 
             for file in useFiles do
                 let code = File.ReadAllText file
                 let result, warnings = fsiSession.EvalInteractionNonThrowing code
-                for w in warnings do writer.WriteLine (strErrorText w)
+                for w in warnings do writer.WriteLine (strErrorFull w)
                 match result with ErrorChoice exn -> raise exn | _ -> ()
         with exn ->
             writer.WriteLine (sprintf "%A" exn)

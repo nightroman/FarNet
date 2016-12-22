@@ -13,6 +13,10 @@ open FsAutoComplete
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open System
 
+type CheckMessage =
+| Check
+| Check2 of string
+
 type LineArgs = {
     Text : string
     Index : int
@@ -32,10 +36,6 @@ type MouseMessage =
 | Move of LineArgs
 | Tips of TipsArgs
 
-type CheckMessage =
-| Check
-| CheckArgs of string
-
 [<System.Runtime.InteropServices.Guid "B7916B53-2C17-4086-8F13-5FFCF0D82900">]
 [<ModuleEditor (Name = "FSharpFar", Mask = "*.fs;*.fsx;*.fsscript")>]
 type FarEditor () =
@@ -52,10 +52,10 @@ type FarEditor () =
                 do! Async.Sleep 2000
                 if inbox.CurrentQueueLength = 0 then
                     postEditorJob editor (fun () ->
-                        inbox.Post (CheckArgs (editor.GetText ()))
+                        inbox.Post (Check2 (editor.GetText ()))
                     )
 
-            | CheckArgs text ->
+            | Check2 text ->
                 let options = editor.getOptions ()
                 let check = Checker.check editor.FileName text options
                 let errors = check.CheckResults.Errors
@@ -87,8 +87,7 @@ type FarEditor () =
                             it.Index <= err.EndLineAlternate - 1 &&
                             (it.Index > err.StartLineAlternate - 1 || it.Column >= err.StartColumn) &&
                             (it.Index < err.EndLineAlternate - 1 || it.Column <= err.EndColumn))
-                        |> Array.map (fun err ->
-                            sprintf "%s FS%04d: %s" (strErrorSeverity err.Severity) err.ErrorNumber err.Message)
+                        |> Array.map strErrorText
                         |> Array.distinct
                     if lines.Length > 0 then
                         let text = String.Join ("\r", lines)

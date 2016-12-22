@@ -33,8 +33,7 @@ FSharpFar requires .NET Framework 4.5+.
 
 [Get, install, update FarNet and FarNet.FSharpFar.](https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt)
 
-In other words, all you need is the proper .NET and module.
-F# does not have to be installed, it comes with the package.
+Note that F# does not have to be installed.
 
 MSBuild 14 (12) is only used for processing .fsproj files.
 It is present if Visual Studio 2015 (2013) is installed.
@@ -42,7 +41,7 @@ It is present if Visual Studio 2015 (2013) is installed.
 ***
 ## <a id="menus"/> Menus
 
-Use `[F11] \ FSharpFar` to open the module menu:
+Use `[F11]` \ `FSharpFar` to open the module menu:
 
 - **Interactive**
     - Opens the main session interactive.

@@ -23,7 +23,7 @@ type FarCommand () =
 
         let writeResult r =
             for w in r.Warnings do
-                far.UI.WriteLine (strErrorText w, ConsoleColor.Yellow)
+                far.UI.WriteLine (strErrorFull w, ConsoleColor.Yellow)
             if r.Exception <> null then
                 writeException r.Exception
 
