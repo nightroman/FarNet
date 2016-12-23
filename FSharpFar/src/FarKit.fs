@@ -161,6 +161,12 @@ let isScriptFileName (fileName: string) =
 let isFSharpFileName (fileName: string) =
     isScriptFileName fileName || fileName.EndsWith (".fs", StringComparison.OrdinalIgnoreCase)
 
+let isSimpleSource path =
+    isScriptFileName path || (
+        let dir = Path.GetDirectoryName path
+        (Directory.GetFiles (dir, "*.fs.ini")).Length = 1 || (Directory.GetFiles (dir, "*.fsproj")).Length <> 1
+    )
+
 let completeCode (editor: IEditor) getCompletions =
     let line = editor.Line
     let caret = line.Caret

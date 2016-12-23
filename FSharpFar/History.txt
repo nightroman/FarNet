@@ -3,6 +3,12 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.4821
 FarNet 5.2.3
 
+= 1.2.1 =
+
+Enable auto checks and tips by default if .fsproj is not used.
+
+Do not show tips if a control key is pressed on mouse moves.
+
 = 1.2.0 =
 
 Auto checks on typing.
