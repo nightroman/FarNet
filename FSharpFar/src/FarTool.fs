@@ -122,14 +122,14 @@ type FarTool () =
         let file = editor.FileName
         let text = editor.GetText ()
 
-        let fr = Checker.check file text options
-        let symboluse = fr.CheckResults.GetSymbolUseAtLocation (caret.Y + 1, col + 1, lineStr, identIsland) |> Async.RunSynchronously
+        let check = Checker.check file text options
+        let symboluse = check.CheckResults.GetSymbolUseAtLocation (caret.Y + 1, col + 1, lineStr, identIsland) |> Async.RunSynchronously
 
         match symboluse with
         | None -> ()
         | Some symboluse ->
 
-        let uses = fr.CheckResults.GetUsesOfSymbolInFile symboluse.Symbol |> Async.RunSynchronously
+        let uses = check.CheckResults.GetUsesOfSymbolInFile symboluse.Symbol |> Async.RunSynchronously
 
         progress.Done ()
 
@@ -163,14 +163,14 @@ type FarTool () =
         let file = editor.FileName
         let text = editor.GetText ()
 
-        let fr = Checker.check file text options
-        let sym = fr.CheckResults.GetSymbolUseAtLocation (caret.Y + 1, col + 1, lineStr, identIsland) |> Async.RunSynchronously
+        let check = Checker.check file text options
+        let sym = check.CheckResults.GetSymbolUseAtLocation (caret.Y + 1, col + 1, lineStr, identIsland) |> Async.RunSynchronously
 
         match sym with
         | None -> ()
         | Some sym ->
 
-        let pr = fr.Checker.ParseAndCheckProject fr.Options |> Async.RunSynchronously
+        let pr = check.Checker.ParseAndCheckProject check.Options |> Async.RunSynchronously
         let uses = pr.GetUsesOfSymbol sym.Symbol |> Async.RunSynchronously
 
         progress.Done ()
@@ -188,13 +188,13 @@ type FarTool () =
                 map <- map.Add (file, r)
                 r
 
-        use w = new StringWriter ()
+        use writer = new StringWriter ()
         for x in uses do
             let lines = lines x.FileName
             let range = x.RangeAlternate
-            w.WriteLine (sprintf "%s(%d,%d): %s" x.FileName range.StartLine (range.StartColumn + 1) lines.[range.StartLine - 1])
+            fprintfn writer "%s(%d,%d): %s" x.FileName range.StartLine (range.StartColumn + 1) lines.[range.StartLine - 1]
 
-        showTempText (w.ToString ()) ("F# Uses " + sym.Symbol.FullName)
+        showTempText (writer.ToString ()) ("F# Uses " + sym.Symbol.FullName)
 
     let toggleAutoTips () =
         editor.fsAutoTips <- not editor.fsAutoTips

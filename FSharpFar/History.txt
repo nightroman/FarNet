@@ -3,6 +3,14 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.4821
 FarNet 5.2.3
 
+= 1.2.2 =
+
+Color settings: [F11] \ FarNet \ Settings \ FSharpFar Settings.
+
+Use different colors for errors and warnings.
+
+Avoid out of date errors on auto checks.
+
 = 1.2.1 =
 
 Enable auto checks and tips by default if .fsproj is not used.

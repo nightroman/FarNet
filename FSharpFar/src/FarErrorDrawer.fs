@@ -6,13 +6,19 @@ namespace FSharpFar
 
 open FarNet
 open System
+open Microsoft.FSharp.Compiler
 
 [<System.Runtime.InteropServices.Guid "D122FBB8-26FA-4873-8245-A617CE200BCF">]
 [<ModuleDrawer (Name = "F# errors", Mask = "*.fs;*.fsx;*.fsscript")>]
 type FarErrorDrawer () =
     inherit ModuleDrawer ()
 
-    override x.Invoke (editor, e) =
+    let bgError = Settings.Default.ErrorBackgroundColor
+    let fgError = Settings.Default.ErrorForegroundColor
+    let bgWarning = Settings.Default.WarningBackgroundColor
+    let fgWarning = Settings.Default.WarningForegroundColor
+
+    override __.Invoke (editor, e) =
         match editor.getMyErrors () with
         | None -> ()
         | Some errors ->
@@ -28,4 +34,8 @@ type FarErrorDrawer () =
                         else
                             e.StartChar, e.StartChar + 1
                     if st < en then
-                        e.Colors.Add (EditorColor (line.Index, st, en, ConsoleColor.White, ConsoleColor.Red))
+                        let fg, bg =
+                            match err.Severity with
+                            | FSharpErrorSeverity.Error -> fgError, bgError
+                            | FSharpErrorSeverity.Warning -> fgWarning, bgWarning
+                        e.Colors.Add (EditorColor (line.Index, st, en, fg, bg))

@@ -2,8 +2,6 @@
 // FarNet module FSharpFar
 // Copyright (c) 2016 Roman Kuzmin
 
-//TODO https://fsharp.github.io/FSharp.Compiler.Service/editor.html#Getting-parameter-information
-
 namespace FSharpFar
 
 open FarNet
@@ -58,8 +56,12 @@ type FarEditor () =
             | Check2 text ->
                 let options = editor.getOptions ()
                 let check = Checker.check editor.FileName text options
-                let errors = check.CheckResults.Errors
-                editor.fsErrors <- if errors.Length = 0 then None else Some errors
+                editor.fsErrors <-
+                    if inbox.CurrentQueueLength > 0 then
+                        None
+                    else
+                        let errors = check.CheckResults.Errors
+                        if errors.Length = 0 then None else Some errors
                 postEditorJob editor (fun () ->
                     editor.Redraw ()
                 )
@@ -117,9 +119,11 @@ type FarEditor () =
     let postNoop _ =
         mouseAgent.Post Noop
 
-    // https://fsharp.github.io/FSharp.Compiler.Service/editor.html#Getting-auto-complete-lists
-    // old EditorTests.fs(265) they use [], "" instead of names, so do we.
-    // new Use FsAutoComplete way.
+(*
+    https://fsharp.github.io/FSharp.Compiler.Service/editor.html#Getting-auto-complete-lists
+    old EditorTests.fs(265) they use [], "" instead of names, so do we.
+    new Use FsAutoComplete way.
+*)
     let complete () =
         use progress = new Progress "Checking..."
 
@@ -130,7 +134,7 @@ type FarEditor () =
         else
 
         // skip no solid base
-        //TODO completion of parameters? :: x (y, [Tab]
+        //TODO complete parameters -- x (y, [Tab] -- https://fsharp.github.io/FSharp.Compiler.Service/editor.html#Getting-parameter-information
         let lineStr = line.Text
         if Char.IsWhiteSpace lineStr.[caret.X - 1] then false
         else
@@ -157,9 +161,9 @@ type FarEditor () =
         let file = editor.FileName
         let text = editor.GetText ()
 
-        let res = Checker.check file text options
+        let check = Checker.check file text options
 
-        let decs = res.CheckResults.GetDeclarationListInfo (Some res.ParseResults, caret.Y + 1, colAtEndOfPartialName, lineStr, names, residue2, always false) |> Async.RunSynchronously
+        let decs = check.CheckResults.GetDeclarationListInfo (Some check.ParseResults, caret.Y + 1, colAtEndOfPartialName, lineStr, names, residue2, always false) |> Async.RunSynchronously
 
         let completions =
             decs.Items
@@ -195,7 +199,7 @@ type FarEditor () =
             editor.MouseDoubleClick.Add postNoop
             editor.MouseClick.Add postNoop
             editor.MouseWheel.Add postNoop
-            editor.MouseMove.Add (fun e ->
+            editor.MouseMove.Add <| fun e ->
                 mouseAgent.Post (
                     if e.Mouse.Is () then
                         let pos = editor.ConvertPointScreenToEditor e.Mouse.Where
@@ -207,4 +211,3 @@ type FarEditor () =
                         else Noop
                     else Noop
                 )
-            )

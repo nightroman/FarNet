@@ -3,8 +3,4 @@
 #load "FoxesRubbits.fs"
 open FoxesRubbits
 
-async {
-    do! Async.SwitchToNewThread ()
-    form.ShowDialog() |> ignore
-}
-|> Async.StartImmediate
+Async.Start (async { form.ShowDialog() |> ignore })

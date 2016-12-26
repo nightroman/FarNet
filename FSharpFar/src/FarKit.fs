@@ -175,12 +175,13 @@ let completeCode (editor: IEditor) getCompletions =
     let text = line.Text
     if Char.IsWhiteSpace text.[caret - 1] then false else
 
-    let completer = Completer.Completer getCompletions
-    let ok, start, completions = completer.GetCompletions (text, caret)
-    if ok then
-        completeLine line start (caret - start) completions
+    match Completer.complete getCompletions text caret with
+    | Some (replacementIndex, completions) ->
+        completeLine line replacementIndex (caret - replacementIndex) completions
         editor.Redraw ()
-    ok
+        true
+    | _ ->
+        false
 
 /// Posts the editor job. It will be ignored if the editor is closed.
 let postEditorJob (editor: IEditor) job =

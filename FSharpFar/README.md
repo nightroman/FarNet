@@ -301,6 +301,9 @@ Use `[F11]` \ `FSharpFar` \ `Enable|Disable auto checks` in order to toggle auto
 Found errors and warnings are highlighted in the editor and kept until the editor text changes.
 Error messages are automatically shown when the mouse hovers over highlighted error areas.
 
+In order to set different highlighting colors,
+use the settings panel: `[F11]` \ `FarNet` \ `Settings` \ `FSharpFar\Settings`.
+
 **Symbol uses**
 
 Use `[F11]` \ `FSharpFar` \ `Uses in file` and `Uses in project`

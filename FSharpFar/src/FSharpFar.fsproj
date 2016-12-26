@@ -54,6 +54,9 @@
     <Reference Include="FarNet.Tools">
       <Private>False</Private>
     </Reference>
+    <Reference Include="FarNet.Settings">
+      <Private>False</Private>
+    </Reference>
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Private>False</Private>
     </Reference>
@@ -77,6 +80,7 @@
     <Compile Include="Session.fs" />
     <Compile Include="Checker.fs" />
     <Compile Include="FarModule.fs" />
+    <Compile Include="Settings.fs" />
     <Compile Include="FarErrorDrawer.fs" />
     <Compile Include="FarInteractive.fs" />
     <Compile Include="FarStdWriter.fs" />

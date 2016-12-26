@@ -47,7 +47,7 @@ let doEval writer (eval : unit -> EvalResult) =
     for w in r.Warnings do
         writer.WriteLine (strErrorFull w)
     if r.Exception <> null then
-        writer.WriteLine (sprintf "%A" r.Exception)
+        fprintfn writer "%A" r.Exception
 
 let getCompilerOptions () =
     let dir = Path.Combine (Environment.GetEnvironmentVariable "FARHOME", "FarNet")
@@ -142,7 +142,7 @@ type Session private (configFile) =
                 for w in warnings do writer.WriteLine (strErrorFull w)
                 match result with ErrorChoice exn -> raise exn | _ -> ()
         with exn ->
-            writer.WriteLine (sprintf "%A" exn)
+            fprintfn writer "%A" exn
 
         fsiSession, writer.ToString (), options
 
