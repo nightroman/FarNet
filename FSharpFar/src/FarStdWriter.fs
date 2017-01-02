@@ -1,6 +1,6 @@
 ﻿
 // FarNet module FSharpFar
-// Copyright (c) 2016 Roman Kuzmin
+// Copyright (c) Roman Kuzmin
 
 (*
     2016-09-14 Why buffer:

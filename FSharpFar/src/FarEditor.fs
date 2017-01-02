@@ -1,6 +1,6 @@
 ﻿
 // FarNet module FSharpFar
-// Copyright (c) 2016 Roman Kuzmin
+// Copyright (c) Roman Kuzmin
 
 namespace FSharpFar
 
@@ -79,6 +79,7 @@ type FarEditor () =
                 do! Async.Sleep 400
                 if inbox.CurrentQueueLength > 0 then () else
 
+                let mutable autoTips = editor.fsAutoTips
                 match editor.getMyErrors () with
                 | None -> ()
                 | Some errors ->
@@ -92,12 +93,13 @@ type FarEditor () =
                         |> Array.map strErrorText
                         |> Array.distinct
                     if lines.Length > 0 then
+                        autoTips <- false
                         let text = String.Join ("\r", lines)
                         postEditorJob editor (fun () ->
                             showText text "Errors"
                         )
 
-                if editor.fsAutoTips then
+                if autoTips then
                     match Parsing.findLongIdents (it.Column, it.Text) with
                     | None -> ()
                     | Some (column, idents) ->

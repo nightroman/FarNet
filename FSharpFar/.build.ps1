@@ -57,7 +57,7 @@ task Meta -Inputs .build.ps1, History.txt -Outputs src/AssemblyInfo.fs -Jobs Ver
 	Set-Content src/AssemblyInfo.fs @"
 namespace System.Reflection
 [<assembly: AssemblyCompany("https://github.com/nightroman/FarNet")>]
-[<assembly: AssemblyCopyright("Copyright (c) 2016 Roman Kuzmin")>]
+[<assembly: AssemblyCopyright("Copyright (c) 2016-2017 Roman Kuzmin")>]
 [<assembly: AssemblyDescription("F# interactive and editor services for Far Manager.")>]
 [<assembly: AssemblyProduct("FarNet.FSharpFar")>]
 [<assembly: AssemblyTitle("FarNet module FSharpFar for Far Manager")>]
