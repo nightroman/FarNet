@@ -35,11 +35,26 @@
     <CodeAnalysisRuleSet>ExtendedDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <!-- FarHome -->
+  <PropertyGroup Condition="$(FarHome) == '' And Exists('C:\Bin\Far\x64\Far.exe')">
+    <FarHome>C:\Bin\Far\x64</FarHome>
+  </PropertyGroup>
+  <PropertyGroup Condition="$(FarHome) == ''">
+    <FarHome>C:\Bin\Far\Win32</FarHome>
+  </PropertyGroup>
+  <!-- Start -->
+  <PropertyGroup>
+    <StartAction>Program</StartAction>
+    <StartProgram>$(FarHome)\Far.exe</StartProgram>
+  </PropertyGroup>
+  <!-- Main -->
   <ItemGroup>
     <Reference Include="FarNet">
+      <HintPath>$(FarHome)\FarNet\FarNet.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="FarNet.Settings">
+      <HintPath>$(FarHome)\FarNet\FarNet.Settings.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -62,6 +77,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
-    <Copy SourceFiles="Bin\$(Configuration)\$(AssemblyName).dll" DestinationFolder="$(FarHome)\FarNet\Modules\$(AssemblyName)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(FarHome)\FarNet\Modules\$(AssemblyName)" />
   </Target>
 </Project>

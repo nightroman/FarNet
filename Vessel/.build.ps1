@@ -5,11 +5,10 @@
 #>
 
 param(
-	$Platform = (property Platform Win32),
+	$FarHome = (property FarHome C:\Bin\Far\Win32),
 	$TargetFrameworkVersion = (property TargetFrameworkVersion v3.5)
 )
 
-$FarHome = "C:\Bin\Far\$Platform"
 $ModuleHome = "$FarHome\FarNet\Modules\Vessel"
 
 # Synopsis: Build all. Exit Far Manager!
@@ -21,7 +20,7 @@ function Get-Version {
 }
 
 # Synopsis: Generate or update meta files.
-task Meta -Inputs History.txt -Outputs AssemblyInfo.cs {
+task Meta -Inputs History.txt, .build.ps1 -Outputs AssemblyInfo.cs {
 	$Version = Get-Version
 
 	Set-Content AssemblyInfo.cs @"
@@ -34,7 +33,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("FarNet module Vessel for Far Manager")]
 [assembly: AssemblyDescription("FarNet.Vessel: (View/Edit/Save/SELect) file history tools")]
 [assembly: AssemblyCompany("https://github.com/nightroman/FarNet")]
-[assembly: AssemblyCopyright("Copyright (c) 2011-2016 Roman Kuzmin")]
+[assembly: AssemblyCopyright("Copyright (c) 2011-2017 Roman Kuzmin")]
 
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]

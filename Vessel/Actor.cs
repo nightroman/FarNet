@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet module Vessel
-Copyright (c) 2011-2016 Roman Kuzmin
+Copyright (c) Roman Kuzmin
 */
 
 using System;
@@ -419,7 +419,7 @@ namespace FarNet.Vessel
 		{
 			var now = DateTime.Now;
 			Logger.Source.TraceEvent(TraceEventType.Start, 0, "Update {0}", now);
-			
+
 			Settings.Default.LastUpdateTime = now;
 			Settings.Default.Save();
 

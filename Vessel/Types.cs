@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet module Vessel
-Copyright (c) 2011-2016 Roman Kuzmin
+Copyright (c) Roman Kuzmin
 */
 
 using System;
