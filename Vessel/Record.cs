@@ -18,19 +18,16 @@ namespace FarNet.Vessel
 		const string LINE_HEADER = "Time\tKeys\tWhat\tPath";
 		const string LINE_FORMAT = "{0:yyyy-MM-dd HH:mm:ss}\t{1}\t{2}\t{3}";
 		public DateTime Time { get; private set; }
-		public int Keys { get; private set; }
 		public string What { get; private set; }
 		public string Path { get; private set; }
-		Record(DateTime time, int keys, string what, string path)
+		Record(DateTime time, string what, string path)
 		{
 			Time = time;
-			Keys = keys;
 			What = what;
 			Path = path;
 		}
 		public void SetAged()
 		{
-			Keys = 0;
 			What = AGED;
 		}
 		/// <summary>
@@ -76,7 +73,6 @@ namespace FarNet.Vessel
 					var values = line.Split(sep);
 					yield return new Record(
 						DateTime.Parse(values[0].Trim(trim)),
-						int.Parse(values[1].Trim(trim)),
 						values[2].Trim(trim),
 						values[3].Trim(trim));
 				}
@@ -90,16 +86,16 @@ namespace FarNet.Vessel
 			{
 				writer.WriteLine(LINE_HEADER);
 				foreach (var log in records)
-					writer.WriteLine(LINE_FORMAT, log.Time, log.Keys, log.What, log.Path);
+					writer.WriteLine(LINE_FORMAT, log.Time, 0, log.What, log.Path);
 			}
 
 			// replace with the temp
 			File.Replace(temp, store, null);
 		}
-		public static void Append(string store, DateTime time, int keys, string what, string path)
+		public static void Append(string store, DateTime time, string what, string path)
 		{
 			using (StreamWriter writer = new StreamWriter(store, true, Encoding.UTF8))
-				writer.WriteLine(LINE_FORMAT, time, keys, what, path);
+				writer.WriteLine(LINE_FORMAT, time, 0, what, path);
 		}
 		public static void Remove(string store, string path)
 		{

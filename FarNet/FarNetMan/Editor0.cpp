@@ -161,7 +161,6 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "EE_CHANGE");
 
 			Editor^ editor = _editors[FindEditor(info->EditorID)];
-			++editor->_KeyCount;
 
 			if (_anyEditor._Changed || editor->_Changed)
 			{

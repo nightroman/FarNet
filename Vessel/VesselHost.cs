@@ -58,7 +58,7 @@ namespace FarNet.Vessel
 				return;
 
 			// go
-			Update(DateTime.Now, 0, "view", viewer.FileName);
+			Update(DateTime.Now, "view", viewer.FileName);
 		}
 		static void OnEditorClosed(object sender, EventArgs e)
 		{
@@ -75,14 +75,14 @@ namespace FarNet.Vessel
 			if (path.EndsWith("?", StringComparison.Ordinal))
 				return;
 
-			Update(DateTime.Now, editor.KeyCount, (editor.TimeOfSave == DateTime.MinValue ? "edit" : "save"), path);
+			Update(DateTime.Now, (editor.TimeOfSave == DateTime.MinValue ? "edit" : "save"), path);
 		}
-		static void Update(DateTime time, int keys, string what, string path)
+		static void Update(DateTime time, string what, string path)
 		{
 			if (path.StartsWith(Path.GetTempPath(), StringComparison.OrdinalIgnoreCase))
 				return;
 
-			Record.Append(_LogPath, time, keys, what, path);
+			Record.Append(_LogPath, time, what, path);
 
 			if (path.Equals(PathToTrain, StringComparison.OrdinalIgnoreCase))
 			{

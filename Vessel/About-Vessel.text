@@ -89,11 +89,11 @@ The settings panel is opened from the menu in panels:
 
 *MaximumDayCount*
 
- : Maximum number of recorded days to keep the records for. The default is 30.
+ : Maximum number of recorded days to keep the records for. The default is 42.
 
 *MaximumFileCount*
 
- : Maximum number of files to keep the records for. The default is 512.
+ : Maximum number of files to keep the records for. The default is 1000.
 
 *Limit0*
 

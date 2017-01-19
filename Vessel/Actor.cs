@@ -116,7 +116,6 @@ namespace FarNet.Vessel
 					Head = record.Time,
 					Tail = record.Time,
 					Idle = idle,
-					KeyCount = record.Keys,
 					DayCount = 1,
 					UseCount = 1,
 				};
@@ -132,30 +131,25 @@ namespace FarNet.Vessel
 		public Dictionary<string, SpanSet> CollectEvidences()
 		{
 			var result = new Dictionary<string, SpanSet>(StringComparer.OrdinalIgnoreCase);
-			var set1 = new SpanSet();
 
 			foreach (var record in _records)
 			{
-				SpanSet set2;
-				if (!result.TryGetValue(record.Path, out set2))
+				SpanSet spans;
+				if (!result.TryGetValue(record.Path, out spans))
 				{
-					set2 = new SpanSet() { Time = record.Time };
-					result.Add(record.Path, set2);
+					spans = new SpanSet() { Time = record.Time };
+					result.Add(record.Path, spans);
 					continue;
 				}
 
-				var idle = set2.Time - record.Time;
-				set2.Time = record.Time;
+				var idle = spans.Time - record.Time;
+				spans.Time = record.Time;
 
 				int span = Mat.EvidenceSpan(idle.TotalHours, Info.SpanScale);
 				if (span < Info.SpanCount)
-				{
-					++set1.Spans[span];
-					++set2.Spans[span];
-				}
+					++spans.Spans[span];
 			}
 
-			result.Add(string.Empty, set1);
 			return result;
 		}
 		/// <summary>
@@ -163,9 +157,6 @@ namespace FarNet.Vessel
 		/// </summary>
 		static void SetEvidences(IEnumerable<Info> infos, Dictionary<string, SpanSet> map)
 		{
-			// total counts
-			var spans = map[string.Empty].Spans;
-
 			// calculate evidences for idle times
 			foreach (var info in infos)
 			{
@@ -173,10 +164,8 @@ namespace FarNet.Vessel
 				if (span >= Info.SpanCount)
 					continue;
 
-				// skip singles, use at least two cases, or we get huge overfitting
 				int count = map[info.Path].Spans[span];
-				if (count >= 2)
-					info.Evidence = 100 * count / spans[span];
+				info.Evidence = count;
 			}
 		}
 		/// <summary>
@@ -226,13 +215,9 @@ namespace FarNet.Vessel
 					info.Head = record.Time;
 					info.Tail = record.Time;
 					info.Idle = now - record.Time;
-					info.KeyCount = record.Keys;
 					info.DayCount = 1;
 					continue;
 				}
-
-				// sum keys
-				info.KeyCount += record.Keys;
 
 				// different days
 				if (info.Head.Date != record.Time.Date)
@@ -375,8 +360,8 @@ namespace FarNet.Vessel
 		public Result TrainFull(int limit1, int limit2)
 		{
 			_TrainingResults = new List<Result>((limit1 + 1) * (limit2 + 1));
-			for (int i = 0; i <= limit1; ++i)
-				for (int j = i / 24; j <= limit2; ++j)
+			for (int i = 0; i <= limit1; i += 2)
+				for (int j = i / 24; j <= limit2; j += 2)
 					_TrainingResults.Add(new Result() { Factor1 = i, Factor2 = j });
 
 			return Train();

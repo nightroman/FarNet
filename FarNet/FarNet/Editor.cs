@@ -738,13 +738,6 @@ namespace FarNet
 		/// </remarks>
 		public abstract DateTime TimeOfSave { get; }
 		/// <summary>
-		/// Gets count of changes.
-		/// </summary>
-		/// <remarks>
-		/// It is designed for the Vessel module and not recommended for public use.
-		/// </remarks>
-		public abstract int KeyCount { get; }
-		/// <summary>
 		/// Makes the instance window active.
 		/// </summary>
 		/// <remarks>It may throw if the window cannot be activated.</remarks>

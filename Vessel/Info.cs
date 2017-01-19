@@ -49,7 +49,7 @@ namespace FarNet.Vessel
 		/// </summary>
 		public TimeSpan Idle { get; set; }
 		/// <summary>
-		/// Kind of probability in percents.
+		/// Kind of probability.
 		/// </summary>
 		public int Evidence { get; set; }
 		/// <summary>

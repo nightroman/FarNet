@@ -77,7 +77,6 @@ public:
 	virtual property IList<String^>^ Strings { IList<String^>^ get() override; }
 	virtual property int CodePage { int get() override; void set(int value) override; }
 	virtual property int Count { int get() override; }
-	virtual property int KeyCount { int get() override; }
 	virtual property int TabSize { int get() override; void set(int value) override; }
 	virtual property IntPtr Id { IntPtr get() override; }
 	virtual property Place SelectionPlace { Place get() override; }
@@ -166,7 +165,6 @@ private:
 	TextFrame _frameStart;
 internal:
 	DateTime _TimeOfSave;
-	int _KeyCount;
 	// async stuff
 	HANDLE _hMutex;
 	StringBuilder^ _output;

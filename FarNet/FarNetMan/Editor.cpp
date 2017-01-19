@@ -1185,11 +1185,6 @@ DateTime Editor::TimeOfSave::get()
 	return _TimeOfSave;
 }
 
-int Editor::KeyCount::get()
-{
-	return _KeyCount;
-}
-
 void Editor::Activate()
 {
 	int nWindow = Far::Api->Window->Count;

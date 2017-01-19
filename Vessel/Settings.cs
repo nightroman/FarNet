@@ -40,7 +40,7 @@ namespace FarNet.Vessel
 			set { this["Factor2"] = value; }
 		}
 		[UserScopedSetting]
-		[DefaultSettingValue("30")]
+		[DefaultSettingValue("42")]
 		[SettingsManageability(SettingsManageability.Roaming)]
 		public int MaximumDayCount
 		{
@@ -48,7 +48,7 @@ namespace FarNet.Vessel
 			set { this["MaximumDayCount"] = value; }
 		}
 		[UserScopedSetting]
-		[DefaultSettingValue("512")]
+		[DefaultSettingValue("1000")]
 		[SettingsManageability(SettingsManageability.Roaming)]
 		public int MaximumFileCount
 		{

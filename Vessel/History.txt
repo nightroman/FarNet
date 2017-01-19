@@ -1,4 +1,10 @@
 NuGet package: https://www.nuget.org/packages/FarNet.Vessel
+FarNet 5.2.4
+
+= 2.1.0 =
+
+Revise AI and calculate ranks without background training.
+Retire KeyCount as not so important factor.
 
 = 2.0.6 =
 

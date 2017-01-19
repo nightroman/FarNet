@@ -42,7 +42,7 @@ public class ExpandTabsAll : ModuleEditor
 {
 	public override void Invoke(IEditor editor, ModuleEditorEventArgs e)
 	{
-		editor.ExpandTabs = ExpandTabsMode.All;
+		editor.ExpandTabs = editor.DisableHistory ? ExpandTabsMode.New : ExpandTabsMode.All;
 	}
 }
 
@@ -53,7 +53,7 @@ public class ExpandTabsAll2 : ModuleEditor
 {
 	public override void Invoke(IEditor editor, ModuleEditorEventArgs e)
 	{
-		editor.ExpandTabs = ExpandTabsMode.All;
+		editor.ExpandTabs = editor.DisableHistory ? ExpandTabsMode.New : ExpandTabsMode.All;
 		editor.TabSize = 2;
 	}
 }

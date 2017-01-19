@@ -2,6 +2,10 @@
 NuGet package: https://www.nuget.org/packages/FarNet
 Far Manager 3.0.4821
 
+= 5.2.4 =
+
+Remove internal KeyCount from IEditor.
+
 = 5.2.3 =
 
 Fix #6
