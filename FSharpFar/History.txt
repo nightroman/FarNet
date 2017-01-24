@@ -3,6 +3,10 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.4821
 FarNet 5.2.3
 
+= 1.2.4 =
+
+FCS 9.0.0
+
 = 1.2.3 =
 
 Do not show auto tips if an error is shown.
