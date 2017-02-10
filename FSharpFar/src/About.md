@@ -1,4 +1,20 @@
 
+### fsi object
+
+The bad.
+[This](https://fsharp.github.io/FSharp.Compiler.Service/interactive.html) tells how to enable `fsi` in a session.
+It does not tell that *FSharp.Compiler.Interactive.Settings.dll* from *Microsoft SDKs* should be packaged for this.
+If this DLL is not discovered, an app fails with not clear info.
+
+The good.
+For simple stuff like interactive settings this is not a must.
+See *repo\samples\fsi*.
+
+Related?
+
+- [692](https://github.com/fsharp/FSharp.Compiler.Service/issues/692)
+- [127](https://github.com/fsharp/FSharp.Compiler.Service/issues/127)
+
 ### System.Collections.Immutable and System.Reflection.Metadata
 
 They are used in `FSharp.Compiler.Service\src\absil`
