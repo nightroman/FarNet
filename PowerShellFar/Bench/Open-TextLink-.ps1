@@ -158,7 +158,7 @@ $url = [regex]@'
 (?x)
 \b ((https?|ftp|news|nntp|wais|wysiwyg|gopher|javascript|castanet|about|evernote)
 \:\/\/  | (www|ftp|fido[0-9]*)\.)
-[\[\]\@\%\:\+\w\.\/\~\?\-\*=_#&;]+\b\/?
+[\[\]\@\%\:\+\w\.\/\~\?\-\*=_#&;,]+\b\/?
 '@
 
 if ($Text -match $url) {

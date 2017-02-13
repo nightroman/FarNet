@@ -1,5 +1,5 @@
 
-#r @"FarNet\Modules\FSharpFar\FSharp.Compiler.Service.dll"
+#r @"Modules\FSharpFar\FSharp.Compiler.Service.dll"
 
 // the fsi object
 let fsi = Microsoft.FSharp.Compiler.Interactive.Shell.Settings.fsi

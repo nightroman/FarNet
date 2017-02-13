@@ -37,7 +37,7 @@ fsharp.hrc by Roman Kuzmin, aka nightroman, 2016-12-15
 
 <!-- Escaped -->
 <scheme name="FSSimpleString">
-<regexp match="/\\[bnrt\\&quot;&apos;]|\\$|\\u[\da-fA-F]{4}|\\U[\da-fA-F]{8}/" region="StringContent"/>
+<regexp match="/\\[ntbrafv\\&quot;&apos;]|\\$|\\u[\da-fA-F]{4}|\\U[\da-fA-F]{8}|\\\d\d\d/" region="StringContent"/>
 </scheme>
 <scheme name="FSVerbatimString">
 <regexp match="/&quot;&quot;/" region="StringContent"/>

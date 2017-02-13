@@ -57,7 +57,9 @@ type FarTool () =
         showTempFile temp "F# Output"
 
     let showErrors () =
-        let errors = editor.fsErrors.Value
+        let errors =
+            editor.fsErrors.Value
+            |> Array.sortBy (fun x -> x.FileName, x.StartLineAlternate, x.StartColumn)
 
         let menu = far.CreateMenu ()
         menu.Title <- "F# errors"

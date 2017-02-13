@@ -28,8 +28,14 @@ let check file text options =
         match options with
             | ProjectOptions options -> options
             | ConfigOptions config ->
-                // to use it combined with ini, needed for native refs and #load
-                let projOptionsFile = checker.GetProjectOptionsFromScript (file, text) |> Async.RunSynchronously
+                // get script options combined with ini, needed for #I, #r and #load in the script
+                let otherFlags = [|
+                    // our predefined
+                    yield! getCompilerOptions ()
+                    // user fsc
+                    yield! config.FscArgs
+                |]
+                let projOptionsFile = checker.GetProjectOptionsFromScript (file, text, otherFlags = otherFlags) |> Async.RunSynchronously
 
                 let files = ResizeArray ()
                 let addFiles arr =
@@ -42,14 +48,11 @@ let check file text options =
                 addFiles config.UseFiles
                 // #load files and the file itself
                 addFiles projOptionsFile.ProjectFileNames
-
+                
                 let args = [|
                     // "default" options and references
                     yield! projOptionsFile.OtherOptions
-                    // user fsc
-                    yield! config.FscArgs
-                    // our fsc
-                    yield! getCompilerOptions ()
+                    // our files
                     yield! files
                 |]
                 checker.GetProjectOptionsFromCommandLineArgs (file, args)
