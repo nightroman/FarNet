@@ -6,5 +6,4 @@ AssemblyInfo.fs
 bin
 obj
 packages
-paket.lock
 z*

@@ -21,13 +21,12 @@ task Init Meta, {
 }
 
 task Kill Clean, {
-	Remove-Item -Force -Recurse -ErrorAction 0 @(
+	Get-Item -ErrorAction 0 @(
 		'packages'
-		'paket.lock'
 		'src\.vs'
 		'src\FSharpFar.sln'
 		'src\AssemblyInfo.fs'
-	)
+	) | Remove-Item -Force -Recurse
 }
 
 task Build {
@@ -36,13 +35,13 @@ task Build {
 }
 
 task Clean {
-	Remove-Item -Force -Recurse -ErrorAction 0 @(
+	Get-Item -ErrorAction 0 @(
 		'z'
 		'README.htm'
 		"FarNet.$ModuleName.*.nupkg"
 		"$ProjectRoot\bin"
 		"$ProjectRoot\obj"
-	)
+	) | Remove-Item -Force -Recurse
 }
 
 task Help {
