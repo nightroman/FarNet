@@ -5,34 +5,33 @@
 	Author: Roman Kuzmin
 
 .Description
-	In case of several items only the first one is processed.
+	In case of several items only the first is processed.
 
 	Warning: depending on a provider you can create\delete\edit properties in a
 	panel affecting real source data, like registry values, see example.
 
+.Parameter Path
+		Path of an item which properties are shown.
+.Parameter LiteralPath
+		Literal path of an item.
+
 .Example
-	Panel-Property- HKCU:\Soft*\Far2\*\PowerShellFarHistory
+	Panel-Property-.ps1 HKCU:\Environment
+	View/edit user environment variables.
+
+.Example
+	Panel-Property-.ps1 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment'
+	View/edit machine environment variables.
 #>
 
-param
-(
-	# Path of an item which properties are shown.
+[CmdletBinding()] param(
 	$Path,
-
-	# Literal path of an item.
 	$LiteralPath
 )
 
-if ($Path) {
-	$item = @(Get-Item -Path $Path -Force)
-}
-elseif ($LiteralPath) {
-	$item = @(Get-Item -LiteralPath $Path -Force)
-}
-else {
-	$item = @($input)
-	if (!$item) { throw "Missed input, -Path and -LiteralPath." }
-}
-if (!$item) { throw "No items found." }
+$ErrorActionPreference = 'Stop'
+
+$item = @(Get-Item -Force @PSBoundParameters)
+if (!$item) { Write-Error "No items found." }
 
 (New-Object PowerShellFar.PropertyPanel $item[0].PSPath).Open()
