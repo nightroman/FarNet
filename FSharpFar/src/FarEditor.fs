@@ -165,7 +165,7 @@ type FarEditor () =
 
         let check = Checker.check file text options
 
-        let decs = check.CheckResults.GetDeclarationListInfo (Some check.ParseResults, caret.Y + 1, colAtEndOfPartialName, lineStr, names, residue2, always false) |> Async.RunSynchronously
+        let decs = check.CheckResults.GetDeclarationListInfo (Some check.ParseResults, caret.Y + 1, colAtEndOfPartialName, lineStr, names, residue2, always []) |> Async.RunSynchronously
 
         let completions =
             decs.Items

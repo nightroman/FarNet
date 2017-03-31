@@ -2,10 +2,10 @@ REFERENCES: STRICT
 FRAMEWORK: NET45
 NUGET
   remote: https://www.nuget.org/api/v2
-    FSharp.Compiler.Service (11.0.4)
-      System.Collections.Immutable (>= 1.2)
-      System.Reflection.Metadata (>= 1.4.1-beta-24227-04)
-    FSharp.Compiler.Service.ProjectCracker (11.0.4)
+    FSharp.Compiler.Service (12.0.8)
+      System.Collections.Immutable (>= 1.3.1)
+      System.Reflection.Metadata (>= 1.4.2)
+    FSharp.Compiler.Service.ProjectCracker (12.0.8)
     System.Collections.Immutable (1.3.1)
     System.Reflection.Metadata (1.4.2)
       System.Collections.Immutable (>= 1.3.1)

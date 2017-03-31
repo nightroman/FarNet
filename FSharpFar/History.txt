@@ -3,6 +3,10 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.4821
 FarNet 5.2.3
 
+= 1.2.8 =
+
+FSC 12.0.8
+
 = 1.2.7 =
 
 FCS 11.0.4 with fixes of some known issues.

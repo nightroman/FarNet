@@ -35,7 +35,8 @@ let check file text options =
                     // user fsc
                     yield! config.FscArgs
                 |]
-                let projOptionsFile = checker.GetProjectOptionsFromScript (file, text, otherFlags = otherFlags) |> Async.RunSynchronously
+                //TODO use `errors`, FSC 12.0.2
+                let projOptionsFile, errors = checker.GetProjectOptionsFromScript (file, text, otherFlags = otherFlags) |> Async.RunSynchronously
 
                 let files = ResizeArray ()
                 let addFiles arr =

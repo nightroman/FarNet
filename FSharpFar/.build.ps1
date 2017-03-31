@@ -30,8 +30,8 @@ task Kill Clean, {
 }
 
 task Build {
-	use * MSBuild.exe
-	exec {MSBuild.exe $ProjectRoot\$ProjectName /p:FarHome=$FarHome /p:Configuration=$Configuration /v:d}
+	Set-Alias MSBuild (Resolve-MSBuild)
+	exec {MSBuild $ProjectRoot\$ProjectName /p:FarHome=$FarHome /p:Configuration=$Configuration /v:n}
 }
 
 task Clean {
