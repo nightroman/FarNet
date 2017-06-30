@@ -9,8 +9,6 @@ open FarNet
 open System
 open System.IO
 
-let far = Far.Api
-
 /// The local module folder path.
 let farLocalData = far.GetModuleManager("FSharpFar").GetFolderPath (SpecialFolder.LocalData, true)
 
@@ -182,10 +180,6 @@ let completeCode (editor: IEditor) getCompletions =
         true
     | _ ->
         false
-
-/// Posts the editor job. It will be ignored if the editor is closed.
-let postEditorJob (editor: IEditor) job =
-    far.PostJob (fun () -> if editor.IsOpened then job ())
 
 /// Shows a message with the left aligned text.
 let showText text title =

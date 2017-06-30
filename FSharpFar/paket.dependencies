@@ -1,5 +1,8 @@
 framework: net45
+copy_local: false
 references: strict
+
 source https://www.nuget.org/api/v2
 nuget FSharp.Compiler.Service
 nuget FSharp.Compiler.Service.ProjectCracker
+nuget FSharp.Compiler.Service.MSBuild.v12

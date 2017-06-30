@@ -17,6 +17,7 @@ module private Key =
     let errors = "F# errors"
     let autoTips = "F# auto tips"
     let autoCheck = "F# auto check"
+    let fsChecking = "fsChecking"
 
 type IEditor with
     member private x.getOpt<'T> (key) =
@@ -34,7 +35,9 @@ type IEditor with
 
     member x.fsErrors
         with get () = x.getOpt<FSharpErrorInfo []> Key.errors
-        and set (value: FSharpErrorInfo [] option) = x.setOpt (Key.errors, value)
+        and set (value: FSharpErrorInfo [] option) =
+            x.fsChecking <- false
+            x.setOpt (Key.errors, value)
 
     member x.fsAutoTips
         with get () = defaultArg (x.getOpt<bool> Key.autoTips) false
@@ -44,12 +47,16 @@ type IEditor with
         with get () = defaultArg (x.getOpt<bool> Key.autoCheck) false
         and set (value: bool) = x.setOpt (Key.autoCheck, Some value)
 
+    member x.fsChecking
+        with get () = defaultArg (x.getOpt<bool> Key.fsChecking) false
+        and set (value: bool) = x.setOpt (Key.fsChecking, Some value)
+
     member x.getOptions () =
         match x.fsSession with
         | Some x -> x.Options
         | _ -> getOptionsForFile x.FileName
 
-    member x.getMyErrors () =
+    member x.tryMyErrors () =
         match x.fsErrors with
         | None -> None
         | Some errors ->

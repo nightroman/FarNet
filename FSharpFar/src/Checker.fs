@@ -19,14 +19,15 @@ type CheckFileResult = {
     CheckResults: FSharpCheckFileResults
 }
 
-let check file text options =
+let check file text options = async {
     let checker =
         let msbuild = match options with ProjectOptions _ -> true | _ -> false
         FSharpChecker.Create (msbuildEnabled = msbuild)
 
-    let projOptions =
+    let! projOptions = async {
         match options with
-            | ProjectOptions options -> options
+            | ProjectOptions options ->
+                return options
             | ConfigOptions config ->
                 // get script options combined with ini, needed for #I, #r and #load in the script
                 let otherFlags = [|
@@ -36,7 +37,7 @@ let check file text options =
                     yield! config.FscArgs
                 |]
                 //TODO use `errors`, FSC 12.0.2
-                let projOptionsFile, errors = checker.GetProjectOptionsFromScript (file, text, otherFlags = otherFlags) |> Async.RunSynchronously
+                let! projOptionsFile, errors = checker.GetProjectOptionsFromScript (file, text, otherFlags = otherFlags)
 
                 let files = ResizeArray ()
                 let addFiles arr =
@@ -56,20 +57,22 @@ let check file text options =
                     // our files
                     yield! files
                 |]
-                checker.GetProjectOptionsFromCommandLineArgs (file, args)
-
-    let parseResults, checkAnswer = checker.ParseAndCheckFileInProject (file, 0, text, projOptions) |> Async.RunSynchronously
+                return checker.GetProjectOptionsFromCommandLineArgs (file, args)
+    }
+    
+    let! parseResults, checkAnswer = checker.ParseAndCheckFileInProject (file, 0, text, projOptions)
     let checkResults =
         match checkAnswer with
         | FSharpCheckFileAnswer.Succeeded x -> x
-        | _ -> failwith "unexpected aborted"
+        | _ -> invalidOp "Unexpected checker abort."
 
-    {
+    return {
         Checker = checker
         Options = projOptions
         ParseResults = parseResults
         CheckResults = checkResults
     }
+}
 
 let strTip tip =
     use w = new StringWriter ()

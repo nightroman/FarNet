@@ -16,12 +16,12 @@ $ProjectRoot = '.'
 $ProjectName = "$ModuleName.csproj"
 
 task Build {
-	use * MSBuild.exe
-	exec {MSBuild.exe $ProjectRoot\$ProjectName /p:FarHome=$FarHome /p:Configuration=$Configuration /p:FarNetModules=$FarNetModules}
+	Set-Alias MSBuild (Resolve-MSBuild)
+	exec {MSBuild $ProjectRoot\$ProjectName /p:FarHome=$FarHome /p:Configuration=$Configuration /p:FarNetModules=$FarNetModules}
 }
 
 task Clean {
-	Remove-Item $ProjectRoot\bin, $ProjectRoot\obj -Force -Recurse -ErrorAction 0
+	Get-Item $ProjectRoot\bin, $ProjectRoot\obj -ErrorAction 0 | Remove-Item -Force -Recurse
 }
 
 task . Build, Clean

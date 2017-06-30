@@ -9,7 +9,7 @@
 *)
 
 module FSharpFar.FarStdWriter
-
+open FarNet
 open System
 open System.IO
 open System.Text

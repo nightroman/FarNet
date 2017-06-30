@@ -53,8 +53,9 @@ let getCompilerOptions () =
     let dir = Path.Combine (Environment.GetEnvironmentVariable "FARHOME", "FarNet")
     [|
         "--lib:" + dir
-        "-r:" + dir + "\\FarNet.dll"
-        "-r:" + dir + "\\FarNet.Tools.dll"
+        "-r:" + dir + @"\FarNet.dll"
+        "-r:" + dir + @"\FarNet.Tools.dll"
+        "-r:" + dir + @"\Modules\FSharpFar\FSharpFar.dll"
     |]
 
 type Session private (configFile) =
@@ -118,8 +119,13 @@ type Session private (configFile) =
 
         //! collectible=true has issues
         let msbuild = match options with ProjectOptions _ -> true | _ -> false
-        let fsiSession = FsiEvaluationSession.Create (fsiConfig, args, new StringReader "", evalWriter, evalWriter, msbuildEnabled = msbuild)
-
+        let fsiSession =
+            try
+                FsiEvaluationSession.Create (fsiConfig, args, new StringReader "", evalWriter, evalWriter, msbuildEnabled = msbuild)
+            with exn ->
+                // case: `//define=DEBUG` in [fsc]
+                raise (InvalidOperationException ("Cannot create a session. If you use a config file check its syntax and data.", exn))
+                
         // profiles
         let load2 = Path.ChangeExtension (configFile, ".load.fsx")
         if File.Exists load2 then
@@ -134,13 +140,13 @@ type Session private (configFile) =
             for file in loadFiles do
                 let result, warnings = fsiSession.EvalInteractionNonThrowing (sprintf "#load @\"%s\"" file)
                 for w in warnings do writer.WriteLine (strErrorFull w)
-                match result with ErrorChoice exn -> raise exn | _ -> ()
+                match result with Choice2Of2 exn -> raise exn | _ -> ()
 
             for file in useFiles do
                 let code = File.ReadAllText file
                 let result, warnings = fsiSession.EvalInteractionNonThrowing code
                 for w in warnings do writer.WriteLine (strErrorFull w)
-                match result with ErrorChoice exn -> raise exn | _ -> ()
+                match result with Choice2Of2 exn -> raise exn | _ -> ()
         with exn ->
             fprintfn writer "%A" exn
 
@@ -153,7 +159,7 @@ type Session private (configFile) =
         evalWriter.Writer <- voidWriter
         {
             Warnings = warnings
-            Exception = match result with ErrorChoice exn -> exn | _ -> null
+            Exception = match result with Choice2Of2 exn -> exn | _ -> null
         }
 
     static member TryFind (path) =

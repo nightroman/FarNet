@@ -1,4 +1,24 @@
 
+### Editor flow notes
+
+Why `post ... Open`. In modal windows `Open` blocks and the job code after
+`Open` is not called till the exit (and that is why `Open` must be the last
+code in its function). But `post` is not blocking, so the flow continues
+even if `Open` blocks.
+
+Why `.Closed.Add`. I do not have cases but it is possible that something closes
+the editor before our next step. In this case we should skip waiting for exit,
+all is done. So add the handler as store `closed`.
+
+Why `try ... Open`. `Open` may throw. We cannot properly deal with an
+error in the posted code, so we keep the error for the next flow code.
+
+Next step. If `Open` failed then raise the stored error. If the editor is
+already closed the do nothing. Else create and return the waiter. We cannot
+wait in Far code.
+
+Next step. The waiter waits.
+
 ### fsi object
 
 The bad.

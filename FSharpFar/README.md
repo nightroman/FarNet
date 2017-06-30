@@ -9,7 +9,7 @@
 - [Interactive](#interactive)
 - [Configuration](#configuration)
 - [Editor services](#editor)
-- [F# script applications](#scripts)
+- [F# script samples](#scripts)
 
 ***
 ## Synopsis
@@ -210,13 +210,17 @@ Conventions:
 - Use suffix *.fs.ini* for configuration names.
 - Use full option names without `--`.
 - Use switches without values and `=`.
-- FarNet directory is predefined as `lib`.
-- *FarNet.dll* is predefined as `reference`.
 - Keys `lib`, `reference`, `load`, `use` may be used several times.
-  Relative paths should start with a dot.
+- Relative path values should start with a dot.
 - Values are preprocessed:
     - Environment variables defined as `%VARIABLE%` are expanded to their values.
     - `__SOURCE_DIRECTORY__` is replaced with the configuration file directory.
+
+Predefined:
+
+- FarNet directory is predefined as `lib`.
+- *FarNet.dll* is predefined as `reference`.
+- *FSharpFar.dll* is predefined as `reference`.
 
 Sample configuration:
 
@@ -246,15 +250,18 @@ The `use` file is invoked in the session as if it is typed interactively. Its
 role is to prepare the session for interactive work and reduce typing, i.e.
 open modules and namespaces, set some supportive functions and values, etc.
 
-Sample `use` file for dealing with Far Manager:
+Sample `use` file:
 
 ````FSharp
-    #r "FarNet.dll"
+    // reference assemblies
+    #r "MyLib.dll"
 
+    // open namespaces and modules
     open FarNet
     open System
 
-    let far = Far.Api
+    // define stuff for interactive
+    let message text = far.Message text
 ````
 
 **Auto load and use files**
@@ -313,9 +320,9 @@ Project uses are shown in a separate editor.
 The file is saved before the project uses search.
 
 ***
-## <a id="scripts"/> F# script applications
+## <a id="scripts"/> F# script samples
 
-See [samples] for some ready to use examples of F# scripts.
+See the directory [samples] for some ready to use F# scripts.
 
 #### Evaluation from editors
 

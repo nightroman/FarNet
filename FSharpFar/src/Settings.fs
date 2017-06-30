@@ -13,30 +13,22 @@ type Settings () =
     inherit ModuleSettings ()
     static member Default = Settings ()
 
-    [<UserScopedSetting>]
-    [<DefaultSettingValue("Red")>]
-    [<SettingsManageability(SettingsManageability.Roaming)>]
+    [<DefaultSettingValue("Red"); SettingsManageability(SettingsManageability.Roaming); UserScopedSetting>]
     member x.ErrorBackgroundColor
         with get () = x.["ErrorBackgroundColor"] :?> ConsoleColor
         and set (value: ConsoleColor) = x.["ErrorBackgroundColor"] <- value
 
-    [<UserScopedSetting>]
-    [<DefaultSettingValue("White")>]
-    [<SettingsManageability(SettingsManageability.Roaming)>]
+    [<DefaultSettingValue("White"); SettingsManageability(SettingsManageability.Roaming); UserScopedSetting>]
     member x.ErrorForegroundColor
         with get () = x.["ErrorForegroundColor"] :?> ConsoleColor
         and set (value: ConsoleColor) = x.["ErrorForegroundColor"] <- value
 
-    [<UserScopedSetting>]
-    [<DefaultSettingValue("Yellow")>]
-    [<SettingsManageability(SettingsManageability.Roaming)>]
+    [<DefaultSettingValue("Yellow"); SettingsManageability(SettingsManageability.Roaming); UserScopedSetting>]
     member x.WarningBackgroundColor
         with get () = x.["WarningBackgroundColor"] :?> ConsoleColor
         and set (value: ConsoleColor) = x.["WarningBackgroundColor"] <- value
 
-    [<UserScopedSetting>]
-    [<DefaultSettingValue("Black")>]
-    [<SettingsManageability(SettingsManageability.Roaming)>]
+    [<DefaultSettingValue("Black"); SettingsManageability(SettingsManageability.Roaming); UserScopedSetting>]
     member x.WarningForegroundColor
         with get () = x.["WarningForegroundColor"] :?> ConsoleColor
         and set (value: ConsoleColor) = x.["WarningForegroundColor"] <- value

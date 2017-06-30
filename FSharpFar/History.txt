@@ -3,6 +3,18 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.4821
 FarNet 5.2.3
 
+= 1.3.0 =
+
+- FCS 13.0.0
+- Amend config errors
+- Improve editor checks and rendering
+- Predefine "FSharpFar.dll" reference
+- Add `FarNet.Auto` -> `open FarNet` gives `far`
+- Add "Async" samples with Far Manager async flows
+
+Code in "samples/Async/Async.fs" will be eventually included to the core.
+This is some very useful stuff but the development is still in progress.
+
 = 1.2.8 =
 
 FSC 12.0.8
