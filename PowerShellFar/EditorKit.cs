@@ -646,7 +646,10 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 			string text = line.Text;
 
 			int pos = line.Caret;
-			while (--pos >= 0)
+            if (pos > text.Length)
+                return false;
+
+            while (--pos >= 0)
 				if (text[pos] > ' ')
 					return true;
 

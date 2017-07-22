@@ -1,6 +1,6 @@
 
 <#PSScriptInfo
-.VERSION 1.0.2
+.VERSION 1.0.3
 .AUTHOR Roman Kuzmin
 .COPYRIGHT (c) Roman Kuzmin
 .GUID 550bc198-dd44-4bbc-8ad7-ccf4b8bd2aff
@@ -160,17 +160,19 @@ function global:TabExpansion2 {
 		[Parameter(ParameterSetName = 'AstInputSet', Position = 3)]
 		[Hashtable]$options
 	)
-	$private:_inputScript = $inputScript
-	$private:_cursorColumn = $cursorColumn
-	$private:_ast = $ast
-	$private:_tokens = $tokens
-	$private:_positionOfCursor = $positionOfCursor
-	$private:_options = $options
+	${private:*} = @{
+		inputScript = $inputScript
+		cursorColumn = $cursorColumn
+		ast = $ast
+		tokens = $tokens
+		positionOfCursor = $positionOfCursor
+		options = $options
+	}
 	Remove-Variable inputScript, cursorColumn, ast, tokens, positionOfCursor, options
 
 	# take/init global options
-	if (!$_options) {
-		$_options = $PSCmdlet.GetVariableValue('TabExpansionOptions')
+	if (!${*}.options) {
+		${*}.options = $PSCmdlet.GetVariableValue('TabExpansionOptions')
 		if ($PSCmdlet.GetVariableValue('TabExpansionProfile')) {
 			Remove-Variable -Name TabExpansionProfile -Scope Global
 			foreach($_ in Get-Command -Name *ArgumentCompleters.ps1 -CommandType ExternalScript -All) {
@@ -182,47 +184,47 @@ function global:TabExpansion2 {
 	}
 
 	# parse input
-	if ($psCmdlet.ParameterSetName -eq 'ScriptInputSet') {
-		$_ = [System.Management.Automation.CommandCompletion]::MapStringInputToParsedInput($_inputScript, $_cursorColumn)
-		$_ast = $_.Item1
-		$_tokens = $_.Item2
-		$_positionOfCursor = $_.Item3
+	if ($PSCmdlet.ParameterSetName -eq 'ScriptInputSet') {
+		$_ = [System.Management.Automation.CommandCompletion]::MapStringInputToParsedInput(${*}.inputScript, ${*}.cursorColumn)
+		${*}.ast = $_.Item1
+		${*}.tokens = $_.Item2
+		${*}.positionOfCursor = $_.Item3
 	}
 
 	# input processors
-	foreach($_ in $_options['InputProcessors']) {
-		if ($private:result = & $_ $_ast $_tokens $_positionOfCursor $_options) {
-			if ($result -is [System.Management.Automation.CommandCompletion]) {
-				return $result
+	foreach($_ in ${*}.options['InputProcessors']) {
+		if (${*}.result = & $_ ${*}.ast ${*}.tokens ${*}.positionOfCursor ${*}.options) {
+			if (${*}.result -is [System.Management.Automation.CommandCompletion]) {
+				return ${*}.result
 			}
 			Write-Error -ErrorAction 0 "TabExpansion2: Invalid result. Input processor: $_"
 		}
 	}
 
 	# native
-	$private:result = [System.Management.Automation.CommandCompletion]::CompleteInput($_ast, $_tokens, $_positionOfCursor, $_options)
+	${*}.result = [System.Management.Automation.CommandCompletion]::CompleteInput(${*}.ast, ${*}.tokens, ${*}.positionOfCursor, ${*}.options)
 
 	# result processors?
-	if (!($private:processors = $_options['ResultProcessors'])) {
-		return $result
+	if (!(${*}.processors = ${*}.options['ResultProcessors'])) {
+		return ${*}.result
 	}
 
 	# work around read only
-	if ($result.CompletionMatches.IsReadOnly) {
-		if ($result.CompletionMatches) {
-			return $result
+	if (${*}.result.CompletionMatches.IsReadOnly) {
+		if (${*}.result.CompletionMatches) {
+			return ${*}.result
 		}
 		function TabExpansion {'*'}
-		$result = [System.Management.Automation.CommandCompletion]::CompleteInput("$_ast", $_positionOfCursor.Offset, $null)
-		$result.CompletionMatches.Clear()
+		${*}.result = [System.Management.Automation.CommandCompletion]::CompleteInput("$(${*}.ast)", ${*}.positionOfCursor.Offset, $null)
+		${*}.result.CompletionMatches.Clear()
 	}
 
 	# result processors
-	foreach($_ in $processors) {
-		if (& $_ $result $_ast $_tokens $_positionOfCursor $_options) {
+	foreach($_ in ${*}.processors) {
+		if (& $_ ${*}.result ${*}.ast ${*}.tokens ${*}.positionOfCursor ${*}.options) {
 			Write-Error -ErrorAction 0 "TabExpansion2: Unexpected output. Result processor: $_"
 		}
 	}
 
-	$result
+	${*}.result
 }

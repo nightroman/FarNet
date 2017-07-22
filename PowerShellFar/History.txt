@@ -3,6 +3,11 @@ NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 Far Manager 3.0.4821
 FarNet 5.2.2
 
+= 5.2.4 =
+
+Fix #12, exception on "Cursor beyond end of line".
+Tweak TabExpansion2 to avoid noise data in some cases.
+
 = 5.2.3 =
 
 Fix #5
