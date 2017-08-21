@@ -89,6 +89,7 @@
     <Compile Include="FarStdWriter.fs" />
     <Compile Include="FarCommand.fs" />
     <Compile Include="Editor.fs" />
+    <Compile Include="Async.fs" />
     <Compile Include="FarEditor.fs" />
     <Compile Include="FarTool.fs" />
   </ItemGroup>

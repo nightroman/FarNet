@@ -5,6 +5,7 @@
 namespace FSharpFar
 
 open FarNet
+open FarNet.Async
 open Checker
 open Session
 open FsAutoComplete
@@ -27,35 +28,36 @@ type FarEditor () =
     inherit ModuleEditor ()
     let mutable editor: IEditor = null
 
-    let postExn exn = far.PostJob (fun () -> far.ShowError (exn.GetType().Name, exn))
-    let postJob f = far.PostJob (fun () -> if editor.IsOpened then f ())
+    let jobEditor f = Async.FromContinuations (fun (cont, econt, ccont) ->
+        far.PostJob (fun () ->
+            if editor.IsOpened then
+                cont (f ())
+            else
+                ccont (OperationCanceledException ())
+        )
+    )
 
     let checkAgent = MailboxProcessor.Start (fun inbox -> async {
         while true do
             do! inbox.Receive ()
             if inbox.CurrentQueueLength > 0 then () else
 
-            do! Async.Sleep 2000
+            do! Async.Sleep 1000
             if inbox.CurrentQueueLength > 0 then () else
 
-            postJob (fun () ->
-                let text = editor.GetText ()
-                Async.StartWithContinuations (
-                    async {
-                        let options = editor.getOptions ()
-                        let! check = Checker.check editor.FileName text options
-                        editor.fsErrors <-
-                            if inbox.CurrentQueueLength > 0 then
-                                None
-                            else
-                                let errors = check.CheckResults.Errors
-                                if errors.Length = 0 then None else Some errors
-                    },
-                    (fun () -> postJob editor.Redraw),
-                    postExn,
-                    ignore
-                )
-            )
+            let! text = jobEditor editor.GetText
+            try
+                let options = editor.getOptions ()
+                let! check = Checker.check editor.FileName text options
+                editor.fsErrors <-
+                    if inbox.CurrentQueueLength > 0 then
+                        None
+                    else
+                        let errors = check.CheckResults.Errors
+                        if errors.Length = 0 then None else Some errors
+                do! jobEditor editor.Redraw
+            with exn ->
+                postExn exn
     })
 
     let mouseAgent = MailboxProcessor.Start (fun inbox -> async {
@@ -85,26 +87,22 @@ type FarEditor () =
                     if lines.Length > 0 then
                         autoTips <- false
                         let text = String.Join ("\r", lines)
-                        postJob (fun () -> showText text "Errors")
+                        do! jobEditor (fun () -> showText text "Errors")
 
                 if autoTips then
                     match Parsing.findLongIdents (it.Column, it.Text) with
                     | None -> ()
                     | Some (column, idents) ->
-                        postJob (fun () ->
-                            let fileText = editor.GetText ()
-                            Async.StartWithContinuations (
-                                async {
-                                    let options = editor.getOptions ()
-                                    let! check = Checker.check editor.FileName fileText options
-                                    let! tip = check.CheckResults.GetToolTipTextAlternate (it.Index + 1, column + 1, it.Text, idents, FSharpTokenTag.Identifier)
-                                    return Checker.strTip tip
-                                },
-                                (fun tips -> if tips.Length > 0 && inbox.CurrentQueueLength = 0 then postJob (fun () -> showText tips "Tips")),
-                                postExn,
-                                ignore
-                            )
-                        )
+                        let! fileText = jobEditor editor.GetText
+                        try
+                            let options = editor.getOptions ()
+                            let! check = Checker.check editor.FileName fileText options
+                            let! tip = check.CheckResults.GetToolTipTextAlternate (it.Index + 1, column + 1, it.Text, idents, FSharpTokenTag.Identifier)
+                            let tips = Checker.strTip tip
+                            if tips.Length > 0 && inbox.CurrentQueueLength = 0 then
+                                do! jobEditor (fun () -> showText tips "Tips")
+                        with exn ->
+                            postExn exn
     })
 
     let postNoop _ =  mouseAgent.Post Noop

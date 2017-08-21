@@ -48,7 +48,7 @@ let flow = async {
         let! r = Job.message4 text "Continue" MessageOptions.LeftAligned [|"&Yes"; "&No"; "&Cancel"; "&Error"|]
         match r with
         | 2 -> do! Job.cancel
-        | 3 -> invalidOp "Oh"
+        | 3 -> failwith "Oh"
         | _ -> answer <- r
 
     // open panel and wait for closing

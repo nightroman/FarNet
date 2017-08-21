@@ -29,10 +29,14 @@ testing flows in order to check and manipulate the main flow.
       controlled and tested by concurrent flows with different testing
       scenarios.
 - *App.fs* - the sample flow
-- *Async.fs* - the prototype async library
 - *MyPanel.fs* - some panel used by flows
 - *AsyncFar.fs.ini* - FSF config file
 - *AsyncFar.fsproj* - VS project file
+
+**Tools**
+
+- [Async.fs](https://github.com/nightroman/FarNet/blob/master/FSharpFar/src/Async.fs)
+    - The prototype async tools for F#.
 
 **Notes**
 

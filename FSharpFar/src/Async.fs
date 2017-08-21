@@ -7,39 +7,75 @@ module FarNet.Async
 open FarNet
 open System
 
+/// Posts Far job.
+let inline private post f =
+    far.PostJob (Action f)
+
+/// Posts Far step.
+let inline private postStep f =
+    far.PostStep (Action f)
+
 [<RequireQualifiedAccess>]
 module Job =
-    /// Posts Far job.
-    let post f =
-        far.PostJob (Action f)
-
-    /// Posts Far step.
-    let postStep f =
-        far.PostStep (Action f)
-
-    /// Posts Far macro.
-    let postMacro macro =
-        post (fun () -> far.PostMacro macro)
-
-    /// Async.FromContinuations as Far job.
-    let fromContinuations f =
-        Async.FromContinuations (fun (cont, econt, ccont) ->
-            post (fun () -> f (cont, econt, ccont))
-        )
-
-    /// Far job from a function to be posted as job.
+    /// Far job from the function.
     /// f: Far function with any result.
-    let fromFunc f =
+    let func f =
         Async.FromContinuations (fun (cont, econt, ccont) ->
             post (fun () -> cont (f ()))
         )
 
-    /// Far job from a function to be posted as step.
+    /// Far job from the function posted as step.
     /// A function normally opens a panel.
     /// f: Far function with any result.
-    let fromStep f =
+    let step f =
         Async.FromContinuations (fun (cont, econt, ccont) ->
             postStep (fun () -> cont (f ()))
+        )
+
+    /// Far job from the macro code.
+    /// NOTE: It shows an error message with details and then throws an
+    /// exception without details.
+    let macro macro =
+        Async.FromContinuations (fun (cont, econt, ccont) ->
+            post (fun () ->
+                try
+                    far.PostMacro macro
+                    post cont
+                with exn ->
+                    econt exn
+            )
+        )
+
+    /// Far job from the macro keys.
+    /// NOTE: It ignores invalid keys without errors.
+    let keys keys =
+        macro (sprintf "Keys[[%s]]" keys)
+
+    /// Far job from the modal function.
+    /// The flow continues before it returns.
+    /// That is why the function result is unit.
+    /// f: Far function making a modal call in the end.
+    let modal f =
+        Async.FromContinuations (fun (cont, econt, ccont) ->
+            post (fun () ->
+                let mutable error = null
+                post (fun () ->
+                    if error = null then
+                        cont ()
+                    else
+                        econt error
+                )
+                try
+                    f ()
+                with exn ->
+                    error <- exn
+            )
+        )
+
+    /// Far job from the callback, see Async.FromContinuations.
+    let fromContinuations f =
+        Async.FromContinuations (fun (cont, econt, ccont) ->
+            post (fun () -> f (cont, econt, ccont))
         )
 
     /// Cancels the flow.
@@ -54,7 +90,7 @@ module Job =
     /// timeout: Maximum waiting time, non positive ~ infinite.
     let await delay sleep timeout predicate = async {
         let timeout = if timeout > 0 then timeout else Int32.MaxValue
-        let jobPredicate = fromFunc predicate
+        let jobPredicate = func predicate
 
         if delay > 0 then
             do! Async.Sleep delay
@@ -82,7 +118,7 @@ module Job =
             with exn ->
                 error <- exn
         )
-        let! wait = fromFunc (fun () ->
+        let! wait = func (fun () ->
             if error <> null then
                 raise error
             if closed then
@@ -102,7 +138,7 @@ module Job =
         let! _ = await 0 1000 0 (fun () ->
             not far.Window.IsModal
         )
-        do! fromFunc (fun () ->
+        do! func (fun () ->
             if far.Window.Kind <> WindowKind.Panels then
                 try
                     far.Window.SetCurrentAt -1
@@ -110,11 +146,11 @@ module Job =
                     raise (InvalidOperationException ("Cannot set panels.", exn))
         )
         let mutable closed = false
-        do! fromStep (fun () ->
+        do! step (fun () ->
             panel.Closed.Add (fun _ -> closed <- true)
             panel.Open ()
         )
-        let! wait = fromFunc (fun () ->
+        let! wait = func (fun () ->
             if far.Panel <> (panel :> IPanel) then
                 invalidOp "Panel is not opened."
             if closed then
@@ -131,19 +167,21 @@ module Job =
 
     /// Message(text, title) as Far job.
     let message2 text title =
-        fromFunc (fun () -> far.Message (text, title))
+        func (fun () -> far.Message (text, title))
 
     /// Message(text, title, options) as Far job.
     let message3 text title options =
-        fromFunc (fun () -> far.Message (text, title, options))
+        func (fun () -> far.Message (text, title, options))
 
     /// Message(text, title, options, buttons) as Far job.
     let message4 text title options buttons =
-        fromFunc (fun () -> far.Message (text, title, options, buttons))
+        func (fun () -> far.Message (text, title, options, buttons))
 
 /// Posts an exception dialog.
-let private postExn exn =
-    Job.post (fun () -> far.ShowError (exn.GetType().Name, exn))
+let postExn exn =
+    // Use Name instead of FullName in order to distinguish from native FarNet
+    // at least for testing this fact. FullName is still available by [More].
+    post (fun () -> far.ShowError (exn.GetType().Name, exn))
 
 module Async =
     /// Starts Far flow with posted exception dialogs.
