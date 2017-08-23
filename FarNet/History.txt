@@ -1,6 +1,10 @@
 
 NuGet package: https://www.nuget.org/packages/FarNet
-Far Manager 3.0.4821
+Far Manager 3.0.5012
+
+= 5.2.5 =
+
+- Amended PostMacro. Recommended Far Manager 3.0.5012.
 
 = 5.2.4 =
 

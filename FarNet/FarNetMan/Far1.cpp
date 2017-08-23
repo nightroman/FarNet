@@ -393,14 +393,30 @@ void Far1::PostMacro(String^ macro, bool enableOutput, bool disablePlugins)
 	memset(&arg, 0, sizeof(arg));
 	arg.StructSize = sizeof(arg);
 	arg.SequenceText = pin;
-	
+
+	arg.Flags |= KMFLAGS_SILENTCHECK;
 	if (enableOutput)
 		arg.Flags |= KMFLAGS_ENABLEOUTPUT;
 	if (disablePlugins)
 		arg.Flags |= KMFLAGS_NOSENDKEYSTOPLUGINS;
-	
-	if (!Info.MacroControl(&MainGuid, MCTL_SENDSTRING, MSSC_POST, &arg))
-		throw gcnew InvalidOperationException(__FUNCTION__ " failed.");
+
+	if (Info.MacroControl(&MainGuid, MCTL_SENDSTRING, MSSC_POST, &arg))
+		return;
+
+	intptr_t size = Info.MacroControl(&MainGuid, MCTL_GETLASTERROR, 0, 0);
+	MacroParseResult* arg2 = (MacroParseResult*)new char[size];
+	arg2->StructSize = sizeof(*arg2);
+	Info.MacroControl(&MainGuid, MCTL_GETLASTERROR, size, arg2);
+	String^ err = String::Format(
+		"Error message: {0}\n"
+		"Position: {1}, {2}\n"
+		"Macro: {3}",
+		gcnew String(arg2->ErrSrc),
+		arg2->ErrPos.Y,
+		arg2->ErrPos.X,
+		macro);
+	delete arg2;
+	throw gcnew ArgumentException(err, "macro");
 }
 
 void Far1::Quit()

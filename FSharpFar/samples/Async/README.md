@@ -10,25 +10,26 @@ This sample demonstrates non-blocking async flows using the following scenario:
 
 This flow is defined in *App.fs* and it may be invoked by *App1.fsx*.
 
-The main point of interest is that each step in this workflow is non-blocking,
-except dialogs, of course. For example, when an editor is opened a user may
-switch to panels or another editor and do some other work at first and then
-continue with the editor and the rest of flow.
+The point of interest is that each step is non-blocking (except dialogs). When
+an editor is opened a user may switch to other windows and then come back. The
+panel is not blocking by nature but it is still a step of the flow, when it
+exits then the flow continues.
 
-Several flows may be invoked simultaneously and normally a user may do
-something else in Far at the same time. *App2.fsx* is an example of
-concurrent flows, it starts the main sample flow and then starts
-testing flows in order to check and manipulate the main flow.
+Several flows may be in progress simultaneously and normally a user may do some
+other work in Far at the same time.
+
+*App2.fsx* is an example of concurrent flows, it starts the main sample flow
+and then starts testing flows in order to check and manipulate the main flow.
 
 **Files**
 
+- *App.fs* - the sample flow
 - *App1.fsx* - starts the sample flow normally
     - Invoke this script in order to see the flow in action.
 - *App2.fsx* - starts the flow for auto tests
     - Invoke this script in order to see how the flow is automatically
       controlled and tested by concurrent flows with different testing
       scenarios.
-- *App.fs* - the sample flow
 - *MyPanel.fs* - some panel used by flows
 - *AsyncFar.fs.ini* - FSF config file
 - *AsyncFar.fsproj* - VS project file

@@ -33,6 +33,10 @@ let jobEditText text title = async {
     return text
 }
 
+/// Message with buttons as Far job.
+let jobAsk text title buttons =
+    Job.func (fun () -> far.Message (text, title, MessageOptions.LeftAligned, buttons))
+
 /// The main sample flow.
 let flow = async {
     let mutable text = "Hello,\nWorld!"
@@ -45,7 +49,7 @@ let flow = async {
         text <- r
 
         // ask how to continue
-        let! r = Job.message4 text "Continue" MessageOptions.LeftAligned [|"&Yes"; "&No"; "&Cancel"; "&Error"|]
+        let! r = jobAsk text "Continue" [|"&Yes"; "&No"; "&Cancel"; "&Error"|]
         match r with
         | 2 -> do! Job.cancel
         | 3 -> failwith "Oh"
@@ -56,5 +60,5 @@ let flow = async {
     do! Job.flowPanel (MyPanel.panel lines)
 
     // show final message
-    do! Job.message2 text "Done"
+    do! Job.func (fun () -> far.Message (text, "Done"))
 }

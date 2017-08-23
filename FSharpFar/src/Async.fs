@@ -1,6 +1,6 @@
 
 (*
-    Prototype helpers for Far async flows.
+    Prototype helpers Far async flows.
 *)
 
 module FarNet.Async
@@ -164,18 +164,6 @@ module Job =
         | None ->
             ()
     }
-
-    /// Message(text, title) as Far job.
-    let message2 text title =
-        func (fun () -> far.Message (text, title))
-
-    /// Message(text, title, options) as Far job.
-    let message3 text title options =
-        func (fun () -> far.Message (text, title, options))
-
-    /// Message(text, title, options, buttons) as Far job.
-    let message4 text title options buttons =
-        func (fun () -> far.Message (text, title, options, buttons))
 
 /// Posts an exception dialog.
 let postExn exn =

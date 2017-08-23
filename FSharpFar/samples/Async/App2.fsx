@@ -6,29 +6,37 @@
 
 open FarNet
 open Async
+open System
 open System.Diagnostics
 
 /// Check delay. It is not for waiting results! It should work with 0, too, but
 /// it flows too fast, we cannot see anything. With some not too small value we
 /// can see the flow in progress.
-let delay = 200
+let delay = 100
 let wait predicate = async {
     Debug.WriteLine (sprintf "!! wait %A" predicate)
     let! ok = Job.await delay 500 5000 predicate
     if not ok then failwithf "Timeout %A" predicate
 }
 
+let dt index =
+    if far.Window.Kind <> WindowKind.Dialog then failwith "Expected dialog."
+    far.Dialog.[index].Text
+
+let isDialog () =
+    far.Window.Kind = WindowKind.Dialog
+
 let isEditor () =
     far.Window.Kind = WindowKind.Editor && far.Editor.Title = "Demo title"
 
 let isContinue () =
-    far.Window.Kind = WindowKind.Dialog && far.Dialog.[0].Text = "Continue"
+    isDialog () && dt 0 = "Continue"
 
 let isDone () =
-    far.Window.Kind = WindowKind.Dialog && far.Dialog.[0].Text = "Done"
+    isDialog () && dt 0 = "Done"
 
 let isError () =
-    far.Window.Kind = WindowKind.Dialog && far.Dialog.[0].Text = "Exception" && far.Dialog.[1].Text = "Oh"
+    isDialog () && dt 0 = "Exception" && dt 1 = "Oh"
 
 let isMyPanel () =
     far.Window.Kind = WindowKind.Panels && far.Panel.IsPlugin && (
@@ -117,11 +125,11 @@ let testModalDialogDialog = async {
     )
 
     // test and exit dialog 2
-    do! wait (fun () -> far.Dialog.[0].Text = "job4.2")
+    do! wait (fun () -> dt 0 = "job4.2")
     do! Job.keys "Esc"
 
     // test and exit dialog 1
-    do! wait (fun () -> far.Dialog.[0].Text = "job4.1")
+    do! wait (fun () -> dt 0 = "job4.1")
     do! Job.keys "Esc"
 
     // done
@@ -145,10 +153,10 @@ let testModalDialogEditor = async {
     // test and exit editor
     do! wait (fun () -> far.Editor.Title = name)
     do! Job.keys "Esc"
-    do! wait (fun () -> far.Dialog.[1].Text = name)
+    do! wait (fun () -> dt 1 = name)
 
     // test and exit dialog
-    do! wait (fun () -> far.Dialog.[1].Text = name)
+    do! wait (fun () -> dt 1 = name)
     do! Job.keys "Esc"
 
     // done
@@ -173,15 +181,15 @@ let testModalDialogEditorIssues = async {
     Async.farStart jobModalDialogEditorIssues
 
     // nasty Far message
-    do! wait (fun () -> far.Window.Kind = WindowKind.Dialog && far.Dialog.[1].Text = "It is impossible to edit the folder")
+    do! wait (fun () -> isDialog () && dt 1 = "It is impossible to edit the folder")
     do! Job.keys "Esc"
 
     // posted FarNet error
-    do! wait (fun () -> far.Window.Kind = WindowKind.Dialog && far.Dialog.[0].Text = "System.InvalidOperationException")
+    do! wait (fun () -> dt 0 = "System.InvalidOperationException")
     do! Job.keys "Esc"
 
     // posted FarNet error
-    do! wait (fun () -> far.Window.Kind = WindowKind.Dialog && far.Dialog.[0].Text = "before editor")
+    do! wait (fun () -> dt 0 = "before editor")
     do! Job.keys "Esc"
 
     // done
@@ -197,25 +205,47 @@ let jobModalWithError = async {
 }
 let testModalWithError = async {
     Async.farStart jobModalWithError
-    do! wait (fun () -> far.Window.Kind = WindowKind.Dialog && far.Dialog.[0].Text = "Exception" && far.Dialog.[1].Text = "in-modal")
+    do! wait (fun () -> isDialog () && dt 0 = "Exception" && dt 1 = "in-modal")
     do! Job.keys "Esc"
     do! wait isFarPanel
 }
+
+let jobMacroInvalid = async {
+    // invalid macro
+    do! Job.macro "bar"
+    // not called
+    failwith "unexpected"
+}
+let testMacroInvalid = async {
+    Async.farStart jobMacroInvalid
+    // our async exception
+    do! wait (fun () -> isDialog () && dt 0 = "ArgumentException" && dt 1 = "Invalid macro: bar" && dt 2 = "Parameter name: macro")
+    do! Job.keys "Esc"
+    // done
+    do! wait isFarPanel
+}
+testMacroInvalid |> Async.farStart
 
 /// This flow starts the sample flow several times with concurrent testing
 /// flows with different test scenarios. Then it starts other test flows.
 async {
     do! Job.func (fun () -> if far.Window.Count <> 2 then failwith "Close all but panels.")
 
-    // sample tests
+    // sample
     do! testMainWithNo
     do! testMainWithError
     do! testMainWithCancel
 
-    // other tests
+    // modal
     do! testModalDialogDialog
     do! testModalDialogEditor
     do! testModalDialogEditorIssues
     do! testModalWithError
+
+    // macro
+    do! testMacroInvalid
+
+    // done
+    far.UI.WriteLine (DateTime.Now.ToString ())
 }
 |> Async.farStart
