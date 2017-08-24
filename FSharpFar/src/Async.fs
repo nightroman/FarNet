@@ -6,6 +6,7 @@
 module FarNet.Async
 open FarNet
 open System
+open System.IO
 
 /// Posts Far job.
 let inline private post f =
@@ -21,7 +22,12 @@ module Job =
     /// f: Far function with any result.
     let func f =
         Async.FromContinuations (fun (cont, econt, ccont) ->
-            post (fun () -> cont (f ()))
+            post (fun () ->
+                try
+                    cont (f ())
+                with exn ->
+                    econt exn
+            )
         )
 
     /// Far job from the function posted as step.
@@ -29,21 +35,30 @@ module Job =
     /// f: Far function with any result.
     let step f =
         Async.FromContinuations (fun (cont, econt, ccont) ->
-            postStep (fun () -> cont (f ()))
+            postStep (fun () ->
+                try
+                    cont (f ())
+                with exn ->
+                    econt exn
+            )
+        )
+
+    /// Far job from the callback, see Async.FromContinuations.
+    let fromContinuations f =
+        Async.FromContinuations (fun (cont, econt, ccont) ->
+            post (fun () -> f (cont, econt, ccont))
         )
 
     /// Far job from the macro code.
     /// NOTE: It shows an error message with details and then throws an
     /// exception without details.
     let macro macro =
-        Async.FromContinuations (fun (cont, econt, ccont) ->
-            post (fun () ->
-                try
-                    far.PostMacro macro
-                    post cont
-                with exn ->
-                    econt exn
-            )
+        fromContinuations (fun (cont, econt, ccont) ->
+            try
+                far.PostMacro macro
+                post cont
+            with exn ->
+                econt exn
         )
 
     /// Far job from the macro keys.
@@ -56,26 +71,18 @@ module Job =
     /// That is why the function result is unit.
     /// f: Far function making a modal call in the end.
     let modal f =
-        Async.FromContinuations (fun (cont, econt, ccont) ->
+        fromContinuations (fun (cont, econt, ccont) ->
+            let mutable error = null
             post (fun () ->
-                let mutable error = null
-                post (fun () ->
-                    if error = null then
-                        cont ()
-                    else
-                        econt error
-                )
-                try
-                    f ()
-                with exn ->
-                    error <- exn
+                if error = null then
+                    cont ()
+                else
+                    econt error
             )
-        )
-
-    /// Far job from the callback, see Async.FromContinuations.
-    let fromContinuations f =
-        Async.FromContinuations (fun (cont, econt, ccont) ->
-            post (fun () -> f (cont, econt, ccont))
+            try
+                f ()
+            with exn ->
+                error <- exn
         )
 
     /// Cancels the flow.
@@ -125,6 +132,32 @@ module Job =
                 None
             else
                 Some (Async.AwaitEvent editor.Closed)
+        )
+        match wait with
+        | Some wait ->
+            do! wait |> Async.Ignore
+        | None ->
+            ()
+    }
+
+    /// Opens the viewer and waits for closing.
+    let flowViewer (viewer: IViewer) = async {
+        let mutable closed = false
+        let mutable error = null
+        post (fun () ->
+            try
+                viewer.Closed.Add (fun _ -> closed <- true)
+                viewer.Open ()
+            with exn ->
+                error <- exn
+        )
+        let! wait = func (fun () ->
+            if error <> null then
+                raise error
+            if closed then
+                None
+            else
+                Some (Async.AwaitEvent viewer.Closed)
         )
         match wait with
         | Some wait ->

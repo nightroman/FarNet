@@ -1,9 +1,5 @@
 
-(*
-    Starts the flow for normal manual work.
-*)
+// Starts the sample wizard flow.
 
-open FarNet
-open Async
-
-Async.farStart App.flow
+open FarNet.Async
+Async.farStart App.flowWizard

@@ -3,23 +3,27 @@
 
 This sample demonstrates non-blocking async flows using the following scenario:
 
-- A user edits some text in the editor and closes the editor.
-- A dialog with options is shown after that.
-- Then a panel is opened for the next step.
-- When the panel closes a message is shown.
+A wizard-like dialog is shown. The choices are:
+
+- `[OK]` - close the wizard and complete the program.
+- `[Editor]` - non-modal editor to edit some data.
+- `[Panel]` - panel to represent some data.
+- `[Cancel]` - exit the wizard.
+
+The editor and panel steps are non-blocking. When the editor or panel is opened
+a user may switch to other windows and then continue with editor or panel. When
+this editor or panel exits the flow continues and the wizard dialog is resumed.
 
 This flow is defined in *App.fs* and it may be invoked by *App1.fsx*.
 
-The point of interest is that each step is non-blocking (except dialogs). When
-an editor is opened a user may switch to other windows and then come back. The
-panel is not blocking by nature but it is still a step of the flow, when it
-exits then the flow continues.
+Several flows may be in progress simultaneously and a user may do some other
+work at the same time. For example, run *App1.fsx*, click `[Editor]`, switch
+to panels. Then run *App1.fsx* again and also click `[Editor]`. As a result,
+you have two flows running. In order to see this, in two opened editors enter
+different texts. On exit the wizard shows the current flow text.
 
-Several flows may be in progress simultaneously and normally a user may do some
-other work in Far at the same time.
-
-*App2.fsx* is an example of concurrent flows, it starts the main sample flow
-and then starts testing flows in order to check and manipulate the main flow.
+*App2.fsx* is an example of concurrent flows. It starts the sample flows and
+then starts testing flows in order to check and manipulate the sample flows.
 
 **Files**
 
