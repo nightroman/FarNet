@@ -5,7 +5,7 @@
 #>
 
 param(
-	$Platform = (property Platform Win32),
+	$Platform = (property Platform x64),
 	$Configuration = (property Configuration Release)
 )
 $FarHome = "C:\Bin\Far\$Platform"

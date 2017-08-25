@@ -1,10 +1,10 @@
 
 param(
-	$FarHome = "C:\Bin\Far\Win32"
+	$FarHome = (property FarHome C:\Bin\Far\x64)
 )
 
 task Build {
-	use 4.0 MSBuild
+	Set-Alias MSBuild (Resolve-MSBuild)
 	exec { MSBuild FarNetAPI.shfbproj /p:Configuration=Release }
 },
 Test

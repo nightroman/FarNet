@@ -1,6 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
+    <FarHome Condition="'$(FarHome)' == ''">C:\Bin\Far\x64</FarHome>
+  </PropertyGroup>
+  <PropertyGroup>
     <!-- The configuration and platform will be used to determine which
          assemblies to include from solution and project documentation
          sources -->
@@ -36,14 +39,14 @@
     <ContentPlacement>AboveNamespaces</ContentPlacement>
     <VisibleItems>InheritedMembers, Protected</VisibleItems>
     <DocumentationSources>
-      <DocumentationSource sourceFile="C:\Bin\Far\Win32\FarNet\FarNet.dll" xmlns="" />
-      <DocumentationSource sourceFile="C:\Bin\Far\Win32\FarNet\FarNet.Settings.dll" xmlns="" />
-      <DocumentationSource sourceFile="C:\Bin\Far\Win32\FarNet\FarNet.Settings.xml" xmlns="" />
-      <DocumentationSource sourceFile="C:\Bin\Far\Win32\FarNet\FarNet.Tools.dll" xmlns="" />
-      <DocumentationSource sourceFile="C:\Bin\Far\Win32\FarNet\FarNet.Tools.xml" xmlns="" />
-      <DocumentationSource sourceFile="C:\Bin\Far\Win32\FarNet\FarNet.xml" xmlns="" />
-      <DocumentationSource sourceFile="C:\Bin\Far\Win32\FarNet\Modules\PowerShellFar\PowerShellFar.dll" xmlns="" />
-      <DocumentationSource sourceFile="C:\Bin\Far\Win32\FarNet\Modules\PowerShellFar\PowerShellFar.xml" xmlns="" />
+      <DocumentationSource sourceFile="$(FarHome)\FarNet\FarNet.dll" xmlns="" />
+      <DocumentationSource sourceFile="$(FarHome)\FarNet\FarNet.Settings.dll" xmlns="" />
+      <DocumentationSource sourceFile="$(FarHome)\FarNet\FarNet.Settings.xml" xmlns="" />
+      <DocumentationSource sourceFile="$(FarHome)\FarNet\FarNet.Tools.dll" xmlns="" />
+      <DocumentationSource sourceFile="$(FarHome)\FarNet\FarNet.Tools.xml" xmlns="" />
+      <DocumentationSource sourceFile="$(FarHome)\FarNet\FarNet.xml" xmlns="" />
+      <DocumentationSource sourceFile="$(FarHome)\FarNet\Modules\PowerShellFar\PowerShellFar.dll" xmlns="" />
+      <DocumentationSource sourceFile="$(FarHome)\FarNet\Modules\PowerShellFar\PowerShellFar.xml" xmlns="" />
     </DocumentationSources>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="FarNet" isDocumented="True">FarNet module API.</NamespaceSummaryItem>
