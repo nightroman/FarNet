@@ -111,10 +111,6 @@ type FarEditor () =
         editor <- sender
         if editor.fsSession.IsNone then
 
-            if isSimpleSource editor.FileName then
-                editor.fsAutoCheck <- true
-                editor.fsAutoTips <- true
-
             editor.KeyDown.Add <| fun e ->
                 match e.Key.VirtualKeyCode with
                 | KeyCode.Tab when e.Key.Is () && not editor.SelectionExists ->

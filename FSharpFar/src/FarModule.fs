@@ -40,11 +40,11 @@ type IEditor with
             x.setOpt (Key.errors, value)
 
     member x.fsAutoTips
-        with get () = defaultArg (x.getOpt<bool> Key.autoTips) false
+        with get () = defaultArg (x.getOpt<bool> Key.autoTips) true
         and set (value: bool) = x.setOpt (Key.autoTips, Some value)
 
     member x.fsAutoCheck
-        with get () = defaultArg (x.getOpt<bool> Key.autoCheck) false
+        with get () = defaultArg (x.getOpt<bool> Key.autoCheck) true
         and set (value: bool) = x.setOpt (Key.autoCheck, Some value)
 
     member x.fsChecking

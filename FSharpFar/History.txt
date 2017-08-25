@@ -8,15 +8,15 @@ FarNet 5.2.5
 Far Manager 3.0.5013
 FarNet 5.2.5
 
-Upgraded to latest FCS 14.0.2 and FSharp.Core 4.2.3. This enables F# 4.1 in Far.
+Moved to the latest FCS 14.0.2 and FSharp.Core 4.2.3. This enables F# 4.1 in Far.
 
 Removed partial support of .fsproj, MSBuild, and ProjectCracker. Support becomes
 difficult and the value is low. If you have .fsproj then just use VS or VSCode.
 Auto loaded/used files are dropped, too, they were designed for .fsproj cases.
 
-- Moved "Async.fs" from "samples\Async" to the core.
-- Added more tests to "samples\Async\App2.fsx".
-- Used async flows for checks and tips.
+- Moved "Async.fs" from "samples\Async" to FSF and used for checks and tips.
+- Auto checks and tips in F# sources are enabled by default.
+- Redesigned "samples\Async" and added tests to "App2.fs".
 
 = 1.3.0 =
 
