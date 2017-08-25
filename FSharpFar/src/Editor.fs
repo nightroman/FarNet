@@ -78,7 +78,7 @@ let tips (editor: IEditor) =
     let tip =
         async {
             let! check = Checker.check file text options
-            return! check.CheckResults.GetToolTipTextAlternate (caret.Y + 1, column + 1, lineStr, idents, FSharpTokenTag.Identifier)
+            return! check.CheckResults.GetToolTipText (caret.Y + 1, column + 1, lineStr, idents, FSharpTokenTag.Identifier) //??GetToolTipTextAlternate
         }
         |> Async.RunSynchronously
 

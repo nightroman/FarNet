@@ -91,36 +91,12 @@ let private buildFormatComment cmt =
     | _ -> ""
   | _ -> ""
 
-let formatTip (FSharpToolTipText tips) = 
+
+let formatTip (FSharpToolTipText tips) : (string * string) list list =
     tips
-    |> Seq.where (function
-                    | FSharpToolTipElement.Single _ | FSharpToolTipElement.Group _ -> true
-                    | _ -> false)
-    |>  Seq.fold (fun acc t -> match t with
-                                | FSharpToolTipElement.Single (it, comment) -> [(it, comment |> buildFormatComment)]::acc
-                                | FSharpToolTipElement.Group (items) -> (items |> List.map (fun (it, comment) ->  (it, comment |> buildFormatComment) )) :: acc
-                                | _ -> acc) []
-
-let extractSignature (FSharpToolTipText tips) =
-    let getSignature (str: string) =
-        let nlpos = str.IndexOfAny([|'\r';'\n'|])
-        let firstLine =
-            if nlpos > 0 then str.[0..nlpos-1]
-            else str
-
-        if firstLine.StartsWith("type ", StringComparison.Ordinal) then
-            let index = firstLine.LastIndexOf("=", StringComparison.Ordinal)
-            if index > 0 then firstLine.[0..index-1]
-            else firstLine
-        else firstLine
-
-    let firstResult x =
-        match x with
-        | FSharpToolTipElement.Single (t, _) when not (String.IsNullOrWhiteSpace t) -> Some t
-        | FSharpToolTipElement.Group gs -> List.tryPick (fun (t, _) -> if not (String.IsNullOrWhiteSpace t) then Some t else None) gs
-        | _ -> None
-
-    tips
-    |> Seq.tryPick firstResult
-    |> Option.map getSignature
-    |> Option.getOrElse ""
+    |> List.choose (function
+        //| FSharpToolTipElement.Single (it, comment) -> Some [it, buildFormatComment comment]
+        | FSharpToolTipElement.Group items ->
+            Some (items |> List.map (fun x ->  (x.MainDescription, buildFormatComment x.XmlDoc))) //??
+        | FSharpToolTipElement.CompositionError (error) -> Some [("<Note>", error)]
+        | _ -> None)

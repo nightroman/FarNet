@@ -6,7 +6,7 @@ namespace FSharpFar
 
 open FarNet
 open System
-open Microsoft.FSharp.Compiler
+open Microsoft.FSharp.Compiler.SourceCodeServices
 
 [<System.Runtime.InteropServices.Guid "D122FBB8-26FA-4873-8245-A617CE200BCF">]
 [<ModuleDrawer (Name = "F# errors", Mask = "*.fs;*.fsx;*.fsscript")>]

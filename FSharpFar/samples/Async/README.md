@@ -23,19 +23,18 @@ you have two flows running. In order to see this, in two opened editors enter
 different texts. On exit the wizard shows the current flow text.
 
 *App2.fsx* is an example of concurrent flows. It starts the sample flows and
-then starts testing flows in order to check and manipulate the sample flows.
+then starts testing flows in order to check and manipulate existing flows.
 
 **Files**
 
-- *App.fs* - the sample flow
+- *App.fs* - the sample wizard flow
 - *App1.fsx* - starts the sample flow normally
-    - Invoke this script in order to see the flow in action.
-- *App2.fsx* - starts the flow for auto tests
-    - Invoke this script in order to see how the flow is automatically
-      controlled and tested by concurrent flows with different testing
-      scenarios.
+    - Invoke this script in order to work with the wizard.
+- *App2.fsx* - starts flows for auto tests
+    - Invoke this script in order to see how flows are automatically
+      controlled and tested by concurrent flows with testing scenarios.
 - *MyPanel.fs* - some panel used by flows
-- *AsyncFar.fs.ini* - F# config
+- *Async.fs.ini* - F# config
 
 **Tools**
 
@@ -46,4 +45,4 @@ then starts testing flows in order to check and manipulate the sample flows.
 
 This is also an example of a simple FarNet panel created in F#. See another
 sample *TryPanelFSharp* for a more complex panel with some operations like
-adding and removing panels items interactively.
+adding and removing items interactively.

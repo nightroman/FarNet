@@ -48,7 +48,7 @@ let check file text options = async {
                 addFiles config.LoadFiles
                 addFiles config.UseFiles
                 // #load files and the file itself
-                addFiles projOptionsFile.ProjectFileNames
+                addFiles projOptionsFile.SourceFiles
                 
                 let args = [|
                     // "default" options and references

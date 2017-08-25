@@ -12,7 +12,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <Name>FSharpFar</Name>
     <TargetFrameworkProfile />
-    <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
+    <TargetFSharpCoreVersion>4.4.1.0</TargetFSharpCoreVersion>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -42,7 +42,6 @@
     <WarningsAsErrors />
   </PropertyGroup>
   <PropertyGroup>
-    <FSharpSDK>$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\FSharp\.NETFramework\v4.0\4.4.0.0</FSharpSDK>
     <FarHome Condition="'$(FarHome)' == ''">C:\Bin\Far\x64</FarHome>
     <MyOutDir>$(FarHome)\FarNet\Modules\$(AssemblyName)</MyOutDir>
     <StartAction>Program</StartAction>
@@ -57,9 +56,6 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="FarNet.Settings">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Private>False</Private>
     </Reference>
     <Reference Include="mscorlib" />
@@ -100,13 +96,24 @@
   <Target Name="AfterBuild">
     <Copy DestinationFolder="$(MyOutDir)" SourceFiles="$(OutDir)\$(AssemblyName).dll" />
     <Copy DestinationFolder="$(MyOutDir)" SkipUnchangedFiles="true" SourceFiles="..\packages\FSharp.Compiler.Service\lib\net45\FSharp.Compiler.Service.dll" />
-    <Copy DestinationFolder="$(FarHome)" SkipUnchangedFiles="true" SourceFiles="$(FSharpSDK)\FSharp.Core.dll ; $(FSharpSDK)\FSharp.Core.optdata ; $(FSharpSDK)\FSharp.Core.sigdata" />
+    <Copy DestinationFolder="$(FarHome)" SkipUnchangedFiles="true" SourceFiles="..\packages\FSharp.Core\lib\net45\FSharp.Core.dll ; ..\packages\FSharp.Core\lib\net45\FSharp.Core.optdata ; ..\packages\FSharp.Core\lib\net45\FSharp.Core.sigdata" />
   </Target>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.5'">
       <ItemGroup>
         <Reference Include="FSharp.Compiler.Service">
           <HintPath>..\packages\FSharp.Compiler.Service\lib\net45\FSharp.Compiler.Service.dll</HintPath>
+          <Private>False</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.5'">
+      <ItemGroup>
+        <Reference Include="FSharp.Core">
+          <HintPath>..\packages\FSharp.Core\lib\net45\FSharp.Core.dll</HintPath>
           <Private>False</Private>
           <Paket>True</Paket>
         </Reference>

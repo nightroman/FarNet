@@ -3,4 +3,5 @@ copy_local: false
 references: strict
 
 source https://www.nuget.org/api/v2
-nuget FSharp.Compiler.Service = 13.0.0
+nuget FSharp.Compiler.Service
+nuget FSharp.Core

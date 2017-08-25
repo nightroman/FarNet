@@ -8,7 +8,7 @@ module FSharpFar.FarModule
 open FarNet
 open Options
 open Session
-open Microsoft.FSharp.Compiler
+open Microsoft.FSharp.Compiler.SourceCodeServices
 open System
 open System.IO
 

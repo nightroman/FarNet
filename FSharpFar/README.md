@@ -257,15 +257,12 @@ Sample `use` file:
     let message text = far.Message text
 ````
 
-**Auto load and use files**
-
 ***
 ## <a id="editor"/> Editor services
 
-Editor services are automatically available for F# source files opened in
-editors. If files are not self-contained then use the configuration file
-*some.fs.ini* in. be in the same directory as a source file. Required
-references and files should be specified by `reference` and `load`.
+Editor services are automatically available for F# source files opened in editors.
+If files are not self-contained then use the configuration file `*.fs.ini` in the same directory.
+Required references and files should be specified by `reference` and `load` in `[fsc]` and `[fsi]` sections.
 
 **Code completion**
 
@@ -301,8 +298,7 @@ use the settings panel: `[F11]` \ `FarNet` \ `Settings` \ `FSharpFar\Settings`.
 
 **Symbol uses**
 
-Use `[F11]` \ `FSharpFar` \ `Uses in file` and `Uses in project`
-in order to get definitions and references of the symbol at the caret.
+Use `[F11]` \ `FSharpFar` \ `Uses in file` and `Uses in project` in order to get definitions and references of the symbol at the caret.
 Same file uses are shown as a go to menu.
 Project uses are shown in a separate editor.
 The file is saved before the project uses search.

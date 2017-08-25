@@ -97,7 +97,7 @@ type FarEditor () =
                         try
                             let options = editor.getOptions ()
                             let! check = Checker.check editor.FileName fileText options
-                            let! tip = check.CheckResults.GetToolTipTextAlternate (it.Index + 1, column + 1, it.Text, idents, FSharpTokenTag.Identifier)
+                            let! tip = check.CheckResults.GetToolTipText (it.Index + 1, column + 1, it.Text, idents, FSharpTokenTag.Identifier) //??GetToolTipTextAlternate
                             let tips = Checker.strTip tip
                             if tips.Length > 0 && inbox.CurrentQueueLength = 0 then
                                 do! jobEditor (fun () -> showText tips "Tips")

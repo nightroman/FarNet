@@ -9,8 +9,8 @@ open System.IO
 open Config
 open Options
 open ProxyWriter
-open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.Interactive.Shell
+open Microsoft.FSharp.Compiler.SourceCodeServices
 
 type EvalResult = {
     Warnings: FSharpErrorInfo []
