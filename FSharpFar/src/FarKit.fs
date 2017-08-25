@@ -162,7 +162,7 @@ let isFSharpFileName (fileName: string) =
 let isSimpleSource path =
     isScriptFileName path || (
         let dir = Path.GetDirectoryName path
-        (Directory.GetFiles (dir, "*.fs.ini")).Length = 1 || (Directory.GetFiles (dir, "*.fsproj")).Length <> 1
+        (Directory.GetFiles (dir, "*.fs.ini")).Length = 1
     )
 
 let completeCode (editor: IEditor) getCompletions =

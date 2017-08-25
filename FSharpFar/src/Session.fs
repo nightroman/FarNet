@@ -118,22 +118,13 @@ type Session private (configFile) =
         let fsiConfig = FsiEvaluationSession.GetDefaultConfiguration ()
 
         //! collectible=true has issues
-        let msbuild = match options with ProjectOptions _ -> true | _ -> false
         let fsiSession =
             try
-                FsiEvaluationSession.Create (fsiConfig, args, new StringReader "", evalWriter, evalWriter, msbuildEnabled = msbuild)
+                FsiEvaluationSession.Create (fsiConfig, args, new StringReader "", evalWriter, evalWriter)
             with exn ->
                 // case: `//define=DEBUG` in [fsc]
                 raise (InvalidOperationException ("Cannot create a session. If you use a config file check its syntax and data.", exn))
                 
-        // profiles
-        let load2 = Path.ChangeExtension (configFile, ".load.fsx")
-        if File.Exists load2 then
-            loadFiles.Add load2
-        let use2 = Path.ChangeExtension (configFile, ".use.fsx")
-        if File.Exists use2 then
-            useFiles.Add use2
-
         // load and use files
         use writer = new StringWriter ()
         try

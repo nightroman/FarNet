@@ -29,40 +29,21 @@ let private getOptionsFromFile =
 
 let private getOptionsFromIni = getOptionsFromFile (getConfigFromIniFile >> ConfigOptions)
 
-let private getOptionsFromProj path =
-    try
-        getOptionsFromFile (ProjectCracker.GetProjectOptionsFromProjectFile >> ProjectOptions) path
-    with exn ->
-        raise (InvalidOperationException ("Cannot process .fsproj. Make sure MSBuild is installed and .fsproj is valid. Or use .fs.ini.", exn))
-
-/// Gets options from .fsproj or INI.
+/// Gets options from .fs.ini
 let getOptionsFrom (path: string) =
-    if path.EndsWith (".fsproj", StringComparison.OrdinalIgnoreCase) then
-        getOptionsFromProj path
-    else
-        getOptionsFromIni path
+    getOptionsFromIni path
 
 /// Gets the config path for file.
 let getConfigPathForFile path =
     let dir = Path.GetDirectoryName path
 
-    // use available custom config
     match Directory.GetFiles (dir, "*.fs.ini") with
     | [|file|] ->
+        // available custom config
         file
     | _ ->
-
-    // main config for scripts
-    if isScriptFileName path then farMainSessionConfigPath else
-
-    // available F# project
-    match Directory.GetFiles (dir, "*.fsproj") with
-    | [|file|] ->
-        file
-    | _ ->
-
-    // main config
-    farMainSessionConfigPath
+        // main config
+        farMainSessionConfigPath
 
 /// Gets options for a file to be processed.
 let getOptionsForFile path =

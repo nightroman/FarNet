@@ -1,13 +1,16 @@
 
 https://www.nuget.org/packages/FarNet.FSharpFar
-Far Manager 3.0.5012
+Far Manager 3.0.5013
 FarNet 5.2.5
 
-= 1.3.1 =
+= 1.4.0 =
 
-Requires:
-	- Far Manager 3.0.5012
-	- FarNet 5.2.5
+Far Manager 3.0.5013
+FarNet 5.2.5
+
+Removed partial support of .fsproj, MSBuild, and ProjectCracker. Support became
+difficult but the value was low. If you have .fsproj then just use VS or VSCode.
+Auto loaded/used files are not supported, they were designed for .fsproj cases.
 
 - Move "Async.fs" from "samples\Async" to the core
 - Add more tests to "samples\Async\App2.fsx"

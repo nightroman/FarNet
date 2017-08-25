@@ -85,10 +85,6 @@ task Package Help, {
 		'LICENSE.txt'
 		"$fromModule\$ModuleName.dll"
 		"$fromModule\FSharp.Compiler.Service.dll"
-		"$fromModule\FSharp.Compiler.Service.MSBuild.v12.dll"
-		"$fromModule\FSharp.Compiler.Service.ProjectCracker.dll"
-		"$fromModule\FSharp.Compiler.Service.ProjectCrackerTool.exe"
-		"$fromModule\FSharp.Compiler.Service.ProjectCrackerTool.exe.config"
 	)
 }
 

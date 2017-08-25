@@ -30,13 +30,9 @@ FSharpFar provides F# interactive, scripting, and editor services for Far Manage
 ## Installation
 
 FSharpFar requires .NET Framework 4.5+.
+F# itself does not have to be installed.
 
 [Get, install, update FarNet and FarNet.FSharpFar.](https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt)
-
-Note that F# does not have to be installed.
-
-MSBuild 14 (12) is only used for processing .fsproj files.
-It is present if Visual Studio 2015 (2013) is installed.
 
 ***
 ## <a id="menus"/> Menus
@@ -108,7 +104,7 @@ Sample file association:
 
 ````
     A file mask or several file masks:
-    *.fs.ini;*.fsproj
+    *.fs.ini
     Description of the association:
     F# session
     ─────────────────────────────────────
@@ -116,13 +112,10 @@ Sample file association:
         fs: //open with = !\!.!
 ````
 
-Note that if `*.fsproj` is included then `[Enter]` opens an interactive with the project configuration.
-In this case use `[ShiftEnter]` in order to open it using the standard Windows association (Visual Studio).
-
 #### `fs: //exec file = <script> [; with = <config>] [;; F# code]`
 
 Invokes the specified script with the specified or default configuration.
-The default is defined by a `*.fs.ini` or `*.fsproj` in the script folder.
+The default is defined by a `*.fs.ini` in the script folder.
 If such a file is missing then the main session is used.
 
 Sample file association:
@@ -186,7 +179,7 @@ Each session is associated with its configuration file path, existing or not.
 In the latter case, the path is just used as a session ID.
 
 Editor services use the configuration file in a source file directory.
-It is either a single `*.fs.ini` or a standard project file `*.fsproj`.
+It should be a single `*.fs.ini`.
 If such a file is not found then the main configuration is used.
 
 The main configuration file is *%FARPROFILE%\FarNet\FSharpFar\main.fs.ini*.
@@ -266,18 +259,13 @@ Sample `use` file:
 
 **Auto load and use files**
 
-On opening an interactive session with the file `config.ext` (either `.ini` or `.fsproj`),
-existing files `config.load.fsx` and `config.use.fsx` are loaded and used as input.
-This is mostly designed for `.fsproj` but works for `.ini` as well.
-
 ***
 ## <a id="editor"/> Editor services
 
-Editor services are automatically available for F# source files opened in editors.
-If files are not trivial then services may require the configuration *some.fs.ini*.
-The configuration file is expected to be in the same directory as a source file.
-Required references and files should be specified by `reference` and `load`.
-If such a file is not found then a project file `*.fsproj` is used, if any.
+Editor services are automatically available for F# source files opened in
+editors. If files are not self-contained then use the configuration file
+*some.fs.ini* in. be in the same directory as a source file. Required
+references and files should be specified by `reference` and `load`.
 
 **Code completion**
 

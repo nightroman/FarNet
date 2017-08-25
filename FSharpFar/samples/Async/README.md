@@ -35,8 +35,7 @@ then starts testing flows in order to check and manipulate the sample flows.
       controlled and tested by concurrent flows with different testing
       scenarios.
 - *MyPanel.fs* - some panel used by flows
-- *AsyncFar.fs.ini* - FSF config file
-- *AsyncFar.fsproj* - VS project file
+- *AsyncFar.fs.ini* - F# config
 
 **Tools**
 
@@ -44,10 +43,6 @@ then starts testing flows in order to check and manipulate the sample flows.
     - The prototype async tools for F#.
 
 **Notes**
-
-This is also an example of using `.fs.ini` and `.fsproj` together. `.fs.ini` is
-a very simple "project" file for developing and running scripts right in Far.
-`.fsproj` may be used for development with Visual Studio or VSCode.
 
 This is also an example of a simple FarNet panel created in F#. See another
 sample *TryPanelFSharp* for a more complex panel with some operations like

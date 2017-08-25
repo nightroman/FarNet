@@ -3,6 +3,4 @@ copy_local: false
 references: strict
 
 source https://www.nuget.org/api/v2
-nuget FSharp.Compiler.Service
-nuget FSharp.Compiler.Service.ProjectCracker
-nuget FSharp.Compiler.Service.MSBuild.v12
+nuget FSharp.Compiler.Service = 13.0.0
