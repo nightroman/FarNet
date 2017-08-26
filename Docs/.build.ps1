@@ -1,7 +1,8 @@
 
 param(
-	$FarHome = (property FarHome C:\Bin\Far\x64)
+	$Platform = (property Platform x64)
 )
+$FarHome = "C:\Bin\Far\$Platform"
 
 task Build {
 	Set-Alias MSBuild (Resolve-MSBuild)

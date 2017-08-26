@@ -1,8 +1,10 @@
 *.nupkg
 *.sln
 .vs
-AssemblyInfo.fs
 bin
 obj
 packages
 z*
+
+FSharpFar.fs.ini
+AssemblyInfo.fs

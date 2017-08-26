@@ -14,9 +14,14 @@ Removed partial support of .fsproj, MSBuild, and ProjectCracker. Support becomes
 difficult and the value is low. If you have .fsproj then just use VS or VSCode.
 Auto loaded/used files are dropped, too, they were designed for .fsproj cases.
 
-- Moved "Async.fs" from "samples\Async" to FSF and used for checks and tips.
+"repo/tools/Convert-Project.ps1" converts .fsproj to .fs.ini for FSharpFar.
+It requires FSharp.Compiler.Service.ProjectCracker, see comments for help.
+
+Other changes
+
+- Moved "Async.fs" from samples to the core for checks and tips.
 - Auto checks and tips in F# sources are enabled by default.
-- Redesigned "samples\Async" and added tests to "App2.fs".
+- Redesigned "samples/Async" and added tests to "App2.fs".
 
 = 1.3.0 =
 

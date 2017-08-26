@@ -5,3 +5,6 @@ references: strict
 source https://www.nuget.org/api/v2
 nuget FSharp.Compiler.Service
 nuget FSharp.Core
+
+# just for Convert-Project.ps1
+nuget FSharp.Compiler.Service.ProjectCracker

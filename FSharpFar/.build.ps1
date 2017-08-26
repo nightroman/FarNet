@@ -38,6 +38,7 @@ task Clean {
 	Get-Item -ErrorAction 0 @(
 		'z'
 		'README.htm'
+		'src\FSharpFar.fs.ini'
 		"FarNet.$ModuleName.*.nupkg"
 		"$ProjectRoot\bin"
 		"$ProjectRoot\obj"

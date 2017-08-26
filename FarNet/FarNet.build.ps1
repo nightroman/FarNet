@@ -68,12 +68,11 @@ task BeginPackage {
 
 # Make package files
 task Package BeginPackage, Help, {
-	assert ($Platform -eq 'Win32')
-
-	# build x64
+	# build another platform
+	$bit = if ($Platform -eq 'Win32') {'x64'} else {'Win32'}
 	$PlatformToolset = if ($TargetFrameworkVersion -lt 'v4') {'v90'} else {'v140'}
 	exec {
-		MSBuild ..\FarNetAccord.sln /t:FarNetMan /p:Platform=x64 /p:Configuration=Release /p:TargetFrameworkVersion=$TargetFrameworkVersion /p:PlatformToolset=$PlatformToolset
+		MSBuild ..\FarNetAccord.sln /t:FarNetMan /p:Platform=$bit /p:Configuration=Release /p:TargetFrameworkVersion=$TargetFrameworkVersion /p:PlatformToolset=$PlatformToolset
 	}
 
 	# folders
@@ -89,8 +88,14 @@ task Package BeginPackage, Help, {
 	Copy-Item -Destination z\tools\FarHome $FarHome\Far.exe.config
 	Copy-Item -Destination z\tools\FarHome\FarNet $FarHome\FarNet\FarNet*, About-FarNet.htm, History.txt, LICENSE.txt
 	Copy-Item -Destination z\tools\FarHome\Plugins\FarNet $FarHome\Plugins\FarNet\FarNetMan.hlf
-	Copy-Item -Destination z\tools\FarHome.x64\Plugins\FarNet FarNetMan\Release\x64\FarNetMan.dll
-	Copy-Item -Destination z\tools\FarHome.x86\Plugins\FarNet $FarHome\Plugins\FarNet\FarNetMan.dll
+	if ($Platform -eq 'Win32') {
+		Copy-Item -Destination z\tools\FarHome.x64\Plugins\FarNet FarNetMan\Release\x64\FarNetMan.dll
+		Copy-Item -Destination z\tools\FarHome.x86\Plugins\FarNet $FarHome\Plugins\FarNet\FarNetMan.dll
+	}
+	else {
+		Copy-Item -Destination z\tools\FarHome.x64\Plugins\FarNet $FarHome\Plugins\FarNet\FarNetMan.dll
+		Copy-Item -Destination z\tools\FarHome.x86\Plugins\FarNet FarNetMan\Release\Win32\FarNetMan.dll
+	}
 }
 
 # Set version

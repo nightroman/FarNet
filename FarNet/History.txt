@@ -1,10 +1,15 @@
 
 NuGet package: https://www.nuget.org/packages/FarNet
-Far Manager 3.0.5012
+Far Manager 3.0.5013
 
 = 5.2.5 =
 
-- Amended PostMacro. Recommended Far Manager 3.0.5012.
+Far Manager 3.0.5013
+
+"Far.exe.config" is configured for F# 4.1 with FSharpFar 1.4.
+
+PostMacro does not cause the LuaMacro dialog on syntax errors.
+It gets the error info and includes it to the exception message.
 
 = 5.2.4 =
 

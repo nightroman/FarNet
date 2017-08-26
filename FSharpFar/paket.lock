@@ -6,6 +6,7 @@ NUGET
     FSharp.Compiler.Service (14.0.2)
       System.Collections.Immutable (>= 1.2)
       System.Reflection.Metadata (>= 1.4.2)
+    FSharp.Compiler.Service.ProjectCracker (14.0.2)
     FSharp.Core (4.2.3)
     Microsoft.NETCore.Platforms (2.0)
     NETStandard.Library (2.0)
