@@ -49,15 +49,6 @@ let doEval writer (eval : unit -> EvalResult) =
     if r.Exception <> null then
         fprintfn writer "%A" r.Exception
 
-let getCompilerOptions () =
-    let dir = Path.Combine (Environment.GetEnvironmentVariable "FARHOME", "FarNet")
-    [|
-        "--lib:" + dir
-        "-r:" + dir + @"\FarNet.dll"
-        "-r:" + dir + @"\FarNet.Tools.dll"
-        "-r:" + dir + @"\Modules\FSharpFar\FSharpFar.dll"
-    |]
-
 type Session private (configFile) =
     static let mutable sessions : Session list = []
     let configFile = Path.GetFullPath configFile
@@ -80,13 +71,13 @@ type Session private (configFile) =
             yield "--noninteractive"
             match options with
             | ConfigOptions config ->
-                yield! getCompilerOptions ()
+                yield! defaultCompilerArgs
                 yield! config.FscArgs
                 yield! config.FsiArgs
                 loadFiles.AddRange config.LoadFiles
                 useFiles.AddRange config.UseFiles
             | ProjectOptions options ->
-                //TODO what about getCompilerOptions ()?
+                //TODO what about our default args?
                 let known = [
                     "--checked"
                     "--codepage:"

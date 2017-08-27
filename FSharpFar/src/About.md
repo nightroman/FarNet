@@ -1,4 +1,28 @@
 
+### FSharpFar.fs.ini and module FSharpFar.X
+
+If we use `Convert-Project.ps1` to make `FSharpFar.fs.ini` then
+some files works fine, some fail with
+
+    System.Exception: not an assembly reference
+
+Namely, files before
+
+    load=.\FarModule.fs
+
+work. `FarModule.fs` and all after it fails.
+
+This line is the culprit:
+
+    module FSharpFar.FarModule
+
+If I change names then all is fine.
+But it is legal and VS compiles.
+
+It looks like an FCS bug.
+
+***
+
 ### Editor flow notes
 
 Why `post ... Open`. In modal windows `Open` blocks and the job code after

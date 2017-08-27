@@ -8,7 +8,6 @@ open System
 open System.IO
 open Config
 open Options
-open Session
 open FsAutoComplete
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
@@ -20,43 +19,48 @@ type CheckFileResult = {
 }
 
 let check file text options = async {
-    let checker =
-        FSharpChecker.Create ()
+    let checker = FSharpChecker.Create ()
 
     let! projOptions = async {
         match options with
-            | ProjectOptions options ->
-                return options
             | ConfigOptions config ->
                 // get script options combined with ini, needed for #I, #r and #load in the script
-                let otherFlags = [|
-                    // our predefined
-                    yield! getCompilerOptions ()
-                    // user fsc
+                let ourFlags = [|
+                    // our default args
+                    yield! defaultCompilerArgs
+                    // user fsc args
                     yield! config.FscArgs
                 |]
-                //TODO use `errors`, FSC 12.0.2
-                let! projOptionsFile, errors = checker.GetProjectOptionsFromScript (file, text, otherFlags = otherFlags)
 
-                let files = ResizeArray ()
-                let addFiles arr =
-                    for f in arr do
+                // #load files from config
+                let ourFiles = ResizeArray config.LoadFiles
+                let addFiles paths =
+                    for f in paths do
                         let f1 = Path.GetFullPath f
-                        if files.FindIndex (fun x -> f1.Equals (x, StringComparison.OrdinalIgnoreCase)) < 0 then
-                            files.Add f1
+                        if ourFiles.FindIndex (fun x -> f1.Equals (x, StringComparison.OrdinalIgnoreCase)) < 0 then
+                            ourFiles.Add f1
 
-                addFiles config.LoadFiles
-                addFiles config.UseFiles
-                // #load files and the file itself
-                addFiles projOptionsFile.SourceFiles
-                
-                let args = [|
-                    // "default" options and references
-                    yield! projOptionsFile.OtherOptions
-                    // our files
-                    yield! files
-                |]
-                return checker.GetProjectOptionsFromCommandLineArgs (file, args)
+                if isScriptFileName file then
+                    // GetProjectOptionsFromScript gets script #load files and the script itself as SourceFiles
+                    let! options, _errors = checker.GetProjectOptionsFromScript (file, text, otherFlags = ourFlags)
+                    return
+                        { options with
+                            SourceFiles =
+                                [|
+                                    yield! ourFiles
+                                    yield! options.SourceFiles
+                                |]
+                        }
+                else
+                    // add the file itself, case: it is not in .LoadFiles
+                    addFiles [file]
+                    let args = [|
+                        yield! ourFlags
+                        yield! ourFiles
+                    |]
+                    return checker.GetProjectOptionsFromCommandLineArgs (file, args)
+            | ProjectOptions options ->
+                return options
     }
     
     let! parseResults, checkAnswer = checker.ParseAndCheckFileInProject (file, 0, text, projOptions)

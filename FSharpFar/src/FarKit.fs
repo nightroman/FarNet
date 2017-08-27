@@ -18,6 +18,15 @@ let farRoaminData = far.GetModuleManager("FSharpFar").GetFolderPath (SpecialFold
 /// The main session config file path.
 let farMainSessionConfigPath = Path.Combine (farRoaminData, "main.fs.ini")
 
+/// Default flags for checkers and sessions
+let defaultCompilerArgs =
+    let dir = Environment.GetEnvironmentVariable "FARHOME"
+    [|
+        "-r:" + dir + @"\FarNet\FarNet.dll"
+        "-r:" + dir + @"\FarNet\FarNet.Tools.dll"
+        "-r:" + dir + @"\FarNet\Modules\FSharpFar\FSharpFar.dll"
+    |]
+
 type IMenu with
     /// Shows the menu of named actions.
     /// items: pairs of text and actions.

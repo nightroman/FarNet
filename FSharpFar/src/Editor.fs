@@ -21,6 +21,12 @@ let load (editor: IEditor) =
 
     do
         use writer = new StreamWriter (temp)
+
+        // session errors first or issues may look cryptic
+        if ses.Errors.Length > 0 then
+            writer.Write ses.Errors
+
+        // eval anyway, session errors may be warnings
         doEval writer (fun () -> ses.EvalScript (writer, file))
 
     showTempFile temp "F# Output"

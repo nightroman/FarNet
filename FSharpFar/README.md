@@ -203,7 +203,6 @@ Conventions:
 - Use suffix *.fs.ini* for configuration names.
 - Use full option names without `--`.
 - Use switches without values and `=`.
-- Keys `lib`, `reference`, `load`, `use` may be used several times.
 - Relative path values should start with a dot.
 - Values are preprocessed:
     - Environment variables defined as `%VARIABLE%` are expanded to their values.
@@ -211,9 +210,8 @@ Conventions:
 
 Predefined:
 
-- FarNet directory is predefined as `lib`.
-- *FarNet.dll* is predefined as `reference`.
-- *FSharpFar.dll* is predefined as `reference`.
+- Far home directory is predefined as `lib`.
+- *FarNet.dll*, *FarNet.Tools.dll*, *FSharpFar.dll* are predefined as `reference`.
 
 Sample configuration:
 

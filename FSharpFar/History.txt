@@ -3,6 +3,19 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.5013
 FarNet 5.2.5
 
+= 1.4.1 =
+
+Improve diagnostics on session errors. When a script is loaded or invoked and
+fails due to upstream session errors then these errors should be shown first.
+Otherwise, script own errors look cryptic.
+
+Minor improvements in checker and config parser.
+
+Convert-Project.ps1: avoid redundant references.
+
+FarNet directory is no longer predefined as --lib. It turns out Far home
+directory is predefined as --lib by FCS. So FarNet as --lib is redundant.
+
 = 1.4.0 =
 
 Far Manager 3.0.5013

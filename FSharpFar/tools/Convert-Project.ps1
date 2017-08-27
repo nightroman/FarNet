@@ -88,6 +88,10 @@ try {
 	$data = $json | ConvertFrom-Json
 	$options = $data.'Options@'
 
+	### skip predefined or automatically added
+	# FSharp.Core.dll, 2+ references not permitted
+	$skip = 'FSharp.Core.dll', 'FarNet.dll', 'FarNet.Tools.dll', 'FSharpFar.dll'
+
 	### convert options
 	$fsc = [System.Collections.Generic.List[string]]@()
 	$fsi = [System.Collections.Generic.List[string]]@()
@@ -100,10 +104,14 @@ try {
 			if ($value) {
 				$value = Convert-Value $value
 			}
+			### references
 			if ($prefix -eq '-' -and $key -eq 'r') {
 				if (Test-Path -LiteralPath $value) {
-					if ([System.IO.Path]::GetFileName($value) -eq 'FSharp.Core.dll') {
-						# skip FSharp.Core.dll, 2+ references not permitted
+					if ($skip -contains [System.IO.Path]::GetFileName($value)) {
+						# skip some known
+					}
+					elseif ($value -like '*\Reference Assemblies\Microsoft\Framework\.NETFramework\*\Facades\*') {
+						# skip "low level"
 					}
 					else {
 						$fsc.Add("reference=$value")
@@ -113,6 +121,7 @@ try {
 					Write-Warning "Missing reference: $value"
 				}
 			}
+			### other options
 			elseif ($prefix -eq '--') {
 				if ($key -eq 'out') {
 				}
@@ -128,6 +137,7 @@ try {
 			}
 		}
 		else {
+			### source files
 			$fsi.Add("load=$(Convert-Value $option)")
 		}
 	}

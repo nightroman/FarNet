@@ -9,14 +9,12 @@ open System.IO
 
 type private ConfigSection = NoSection | FscSection | FsiSection
 
-type private KeyValue = {Key : string; Value : string}
-
 type private ConfigData =
     | Empty
     | Comment
     | Section of string
     | Switch of string
-    | KeyValue of KeyValue
+    | KeyValue of Key : string * Value : string
 
 let private parse (line: string) =
     let text = line.Trim ()
@@ -33,10 +31,7 @@ let private parse (line: string) =
         if i < 0 then
             Switch text
         else
-            KeyValue {
-                Key = text.Substring(0, i).Trim ()
-                Value = text.Substring(i + 1).Trim ()
-            }
+            KeyValue (text.Substring(0, i).Trim (), text.Substring(i + 1).Trim ())
 
 type Config = {
     FscArgs: string []
@@ -46,6 +41,12 @@ type Config = {
 }
 
 let empty = {FscArgs = [||]; FsiArgs = [||]; LoadFiles = [||]; UseFiles = [||]}
+
+let private resolve root key value =
+    let value = Environment.ExpandEnvironmentVariables(value).Replace ("__SOURCE_DIRECTORY__", root)
+    match key with
+    | "reference" | "load" | "lib" | "use" when value.StartsWith "." -> Path.GetFullPath (Path.Combine(root, value))
+    | _ -> value
 
 let getConfigFromIniFile path =
     let lines = File.ReadAllLines path
@@ -59,12 +60,7 @@ let getConfigFromIniFile path =
     let mutable currentSection = NoSection
     let mutable lineNo = 0
 
-    let resolve kv =
-        let value = Environment.ExpandEnvironmentVariables(kv.Value).Replace ("__SOURCE_DIRECTORY__", root)
-        match kv.Key with
-        | "reference" | "load" | "lib" | "use" when value.StartsWith "." -> Path.GetFullPath (Path.Combine(root, value))
-        | _ -> value
-
+    let raiseSection () = invalidOp "Expected section [fsc] or [fsi], found data or unknown section."
     try
         for line in lines do
             lineNo <- lineNo + 1
@@ -76,28 +72,35 @@ let getConfigFromIniFile path =
                     match section with
                     | "fsc" -> FscSection
                     | "fsi" -> FsiSection
-                    | _ -> NoSection
+                    | _ -> raiseSection ()
             | Switch it ->
                 match currentSection with
-                | FscSection -> fscArgs.Add ("--" + it)
-                | FsiSection -> fsiArgs.Add ("--" + it)
-                | NoSection -> ()
-            | KeyValue it ->
+                | FscSection ->
+                    fscArgs.Add ("--" + it)
+                | FsiSection ->
+                    fsiArgs.Add ("--" + it)
+                | NoSection ->
+                    raiseSection ()
+            | KeyValue (key, value) ->
                 match currentSection with
                 | FscSection ->
-                    let text = resolve it
-                    fscArgs.Add ("--" + it.Key + ":" + text)
+                    let text = resolve root key value
+                    // use -r instead of --reference to avoid duplicates added by FCS
+                    // https://github.com/fsharp/FSharp.Compiler.Service/issues/697
+                    match key with
+                    | "reference" -> fscArgs.Add ("-r:" + text)
+                    | _ -> fscArgs.Add ("--" + key + ":" + text)
                 | FsiSection ->
-                    let text = resolve it
-                    match it.Key with
+                    let text = resolve root key value
+                    match key with
                     | "load" ->
                         loadScripts.Add text
                     | "use" ->
                         useScripts.Add text
                     | _ ->
-                        fsiArgs.Add ("--" + it.Key + ":" + text)
+                        fsiArgs.Add ("--" + key + ":" + text)
                 | NoSection ->
-                    invalidOp "Expected section, found data."
+                    raiseSection ()
      with e ->
         invalidOp (sprintf "%s(%d): %s" path lineNo e.Message)
 

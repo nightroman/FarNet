@@ -52,6 +52,9 @@ type FarCommand () =
             let ses = Session.FindOrCreate (defaultArg args.With (getConfigPathForFile args.File))
             use writer = new StringWriter ()
 
+            let echo =
+                (lazy (echo ())).Force
+            
             let issues r =
                 if r.Warnings.Length > 0 || r.Exception <> null then
                     echo ()
@@ -60,7 +63,13 @@ type FarCommand () =
                     true
                 else
                     false
-
+            
+            // session errors first or issues may look cryptic
+            if ses.Errors.Length > 0 then
+                echo ()
+                far.UI.Write ses.Errors
+            
+            // eval anyway, session errors may be warnings
             let r = ses.EvalScript (writer, args.File)
             if issues r then () else
 
