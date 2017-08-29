@@ -1,4 +1,5 @@
 ﻿
+
 // FarNet module FSharpFar
 // Copyright (c) Roman Kuzmin
 
@@ -29,7 +30,7 @@ type FarEditor () =
     let mutable editor: IEditor = null
 
     let jobEditor f = Async.FromContinuations (fun (cont, econt, ccont) ->
-        far.PostJob (fun () ->
+        far.PostJob (fun _ ->
             if editor.IsOpened then
                 cont (f ())
             else
@@ -47,9 +48,9 @@ type FarEditor () =
 
             let! text = jobEditor editor.GetText
             try
-                let options = editor.getOptions ()
+                let options = editor.MyOptions ()
                 let! check = Checker.check editor.FileName text options
-                editor.fsErrors <-
+                editor.MyErrors <-
                     if inbox.CurrentQueueLength > 0 then
                         None
                     else
@@ -71,8 +72,8 @@ type FarEditor () =
                 do! Async.Sleep 400
                 if inbox.CurrentQueueLength > 0 then () else
 
-                let mutable autoTips = editor.fsAutoTips
-                match editor.tryMyErrors () with
+                let mutable autoTips = editor.MyAutoTips
+                match editor.MyFileErrors () with
                 | None -> ()
                 | Some errors ->
                     let lines =
@@ -87,7 +88,7 @@ type FarEditor () =
                     if lines.Length > 0 then
                         autoTips <- false
                         let text = String.Join ("\r", lines)
-                        do! jobEditor (fun () -> showText text "Errors")
+                        do! jobEditor (fun _ -> showText text "Errors")
 
                 if autoTips then
                     match Parsing.findLongIdents (it.Column, it.Text) with
@@ -95,12 +96,12 @@ type FarEditor () =
                     | Some (column, idents) ->
                         let! fileText = jobEditor editor.GetText
                         try
-                            let options = editor.getOptions ()
+                            let options = editor.MyOptions ()
                             let! check = Checker.check editor.FileName fileText options
                             let! tip = check.CheckResults.GetToolTipText (it.Index + 1, column + 1, it.Text, idents, FSharpTokenTag.Identifier) //??GetToolTipTextAlternate
                             let tips = Checker.strTip tip
                             if tips.Length > 0 && inbox.CurrentQueueLength = 0 then
-                                do! jobEditor (fun () -> showText tips "Tips")
+                                do! jobEditor (fun _ -> showText tips "Tips")
                         with exn ->
                             postExn exn
     })
@@ -109,7 +110,7 @@ type FarEditor () =
 
     override __.Invoke (sender, _) =
         editor <- sender
-        if editor.fsSession.IsNone then
+        if editor.MySession.IsNone then
 
             editor.KeyDown.Add <| fun e ->
                 match e.Key.VirtualKeyCode with
@@ -122,10 +123,10 @@ type FarEditor () =
                 // This does not work well on massive changes like copy/paste, delete many lines.
                 // So lets keep errors only when lines change.
                 if e.Kind = EditorChangeKind.LineChanged then
-                    editor.fsChecking <- true
+                    editor.MyChecking <- true
                 else
-                    editor.fsErrors <- None
-                if editor.fsAutoCheck then
+                    editor.MyErrors <- None
+                if editor.MyAutoCheck then
                     checkAgent.Post ()
 
             editor.MouseDoubleClick.Add postNoop

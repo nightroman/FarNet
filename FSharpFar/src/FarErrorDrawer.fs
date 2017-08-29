@@ -19,11 +19,11 @@ type FarErrorDrawer () =
     let fgWarning = Settings.Default.WarningForegroundColor
 
     override __.Invoke (editor, e) =
-        match editor.tryMyErrors () with
+        match editor.MyFileErrors () with
         | None -> ()
         | Some errors ->
-        
-        let isChecking = editor.fsChecking
+
+        let isChecking = editor.MyChecking
         for line in e.Lines do
             for err in errors do
                 if line.Index >= err.StartLineAlternate - 1 && line.Index <= err.EndLineAlternate - 1 then

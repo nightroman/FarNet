@@ -24,7 +24,7 @@ type FarCommand () =
         let writeResult r =
             for w in r.Warnings do
                 far.UI.WriteLine (strErrorFull w, ConsoleColor.Yellow)
-            if r.Exception <> null then
+            if not (isNull r.Exception) then
                 writeException r.Exception
 
         match parseCommand e.Command with
@@ -54,21 +54,21 @@ type FarCommand () =
 
             let echo =
                 (lazy (echo ())).Force
-            
+
             let issues r =
-                if r.Warnings.Length > 0 || r.Exception <> null then
+                if r.Warnings.Length > 0 || not (isNull r.Exception) then
                     echo ()
                     far.UI.Write (writer.ToString ())
                     writeResult r
                     true
                 else
                     false
-            
+
             // session errors first or issues may look cryptic
             if ses.Errors.Length > 0 then
                 echo ()
                 far.UI.Write ses.Errors
-            
+
             // eval anyway, session errors may be warnings
             let r = ses.EvalScript (writer, args.File)
             if issues r then () else

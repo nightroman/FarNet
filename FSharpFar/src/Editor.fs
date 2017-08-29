@@ -27,20 +27,18 @@ let load (editor: IEditor) =
             writer.Write ses.Errors
 
         // eval anyway, session errors may be warnings
-        doEval writer (fun () -> ses.EvalScript (writer, file))
+        doEval writer (fun _ -> ses.EvalScript (writer, file))
 
     showTempFile temp "F# Output"
 
 let showErrors (editor: IEditor) =
     let errors =
-        editor.fsErrors.Value
+        editor.MyErrors.Value
         |> Array.sortBy (fun x -> x.FileName, x.StartLineAlternate, x.StartColumn)
 
-    let menu = far.CreateMenu ()
-    menu.Title <- "F# errors"
-    menu.ShowAmpersands <- true
+    let menu = far.CreateListMenu (Title = "F# errors", ShowAmpersands = true, UsualMargins = true)
 
-    errors |> menu.showItem strErrorLine (fun error ->
+    errors |> menu.ShowItems strErrorLine (fun error ->
         editor.GoTo (error.StartColumn, error.StartLineAlternate - 1)
         editor.Redraw ()
     )
@@ -48,7 +46,7 @@ let showErrors (editor: IEditor) =
 let check (editor: IEditor) =
     use progress = new Progress "Checking..."
 
-    let options = editor.getOptions ()
+    let options = editor.MyOptions ()
     let file = editor.FileName
     let text = editor.GetText ()
 
@@ -61,10 +59,10 @@ let check (editor: IEditor) =
     progress.Done ()
 
     if errors.Length = 0 then
-        editor.fsErrors <- None
+        editor.MyErrors <- None
         far.Message ("No errors", "F#")
     else
-        editor.fsErrors <- Some errors
+        editor.MyErrors <- Some errors
         showErrors editor
 
 let tips (editor: IEditor) =
@@ -77,7 +75,7 @@ let tips (editor: IEditor) =
     | None -> ()
     | Some (column, idents) ->
 
-    let options = editor.getOptions ()
+    let options = editor.MyOptions ()
     let file = editor.FileName
     let text = editor.GetText ()
 
@@ -102,7 +100,7 @@ let usesInFile (editor: IEditor) =
     | None -> ()
     | Some (col, identIsland) ->
 
-    let options = editor.getOptions ()
+    let options = editor.MyOptions ()
     let file = editor.FileName
     let text = editor.GetText ()
 
@@ -125,15 +123,13 @@ let usesInFile (editor: IEditor) =
 
     progress.Done ()
 
-    let menu = far.CreateMenu ()
-    menu.Title <- "F# uses"
-    menu.ShowAmpersands <- true
+    let menu = far.CreateMenu (Title = "F# uses", ShowAmpersands = true)
 
     let strUseLine (x: FSharpSymbolUse) =
         let range = x.RangeAlternate
         sprintf "%s(%d,%d): %s" (Path.GetFileName x.FileName) range.StartLine (range.StartColumn + 1) editor.[range.StartLine - 1].Text
 
-    uses |> menu.showItem strUseLine (fun x ->
+    uses |> menu.ShowItems strUseLine (fun x ->
         let range = x.RangeAlternate
         editor.GoTo (range.StartColumn, range.StartLine - 1)
         editor.Redraw ()
@@ -151,7 +147,7 @@ let usesInProject (editor: IEditor) =
     | None -> ()
     | Some (col, identIsland) ->
 
-    let options = editor.getOptions ()
+    let options = editor.MyOptions ()
     let file = editor.FileName
     let text = editor.GetText ()
 
@@ -175,9 +171,7 @@ let usesInProject (editor: IEditor) =
 
     progress.Done ()
 
-    let menu = far.CreateMenu ()
-    menu.Title <- "F# uses"
-    menu.ShowAmpersands <- true
+    let menu = far.CreateMenu (Title = "F# uses", ShowAmpersands = true)
 
     let mutable map = Map.empty
     let lines file =
@@ -197,10 +191,10 @@ let usesInProject (editor: IEditor) =
     showTempText (writer.ToString ()) ("F# Uses " + sym.Symbol.FullName)
 
 let toggleAutoTips (editor: IEditor) =
-    editor.fsAutoTips <- not editor.fsAutoTips
+    editor.MyAutoTips <- not editor.MyAutoTips
 
 let toggleAutoCheck (editor: IEditor) =
-    editor.fsAutoCheck <- not editor.fsAutoCheck
+    editor.MyAutoCheck <- not editor.MyAutoCheck
 
 (*
     https://fsharp.github.io/FSharp.Compiler.Service/editor.html#Getting-auto-complete-lists
@@ -240,7 +234,7 @@ let complete (editor: IEditor) =
         residue2 <- ""
         colAtEndOfPartialName <- colAtEndOfPartialName - residue.Length
 
-    let options = editor.getOptions ()
+    let options = editor.MyOptions ()
     let file = editor.FileName
     let text = editor.GetText ()
 

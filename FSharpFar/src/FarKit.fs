@@ -27,44 +27,44 @@ let defaultCompilerArgs =
         "-r:" + dir + @"\FarNet\Modules\FSharpFar\FSharpFar.dll"
     |]
 
-type IMenu with
+type IAnyMenu with
     /// Shows the menu of named actions.
-    /// items: pairs of text and actions.
-    member x.doAction (items: (string * (unit -> unit))[]) =
-        x.Items.Clear ()
-        for item in items do
-            x.Add (fst item) |> ignore
-        if x.Show () then
-            (snd items.[x.Selected]) ()
+    /// items: label * action.
+    member menu.ShowActions (items: (string * (unit -> unit)) seq) =
+        menu.Items.Clear ()
+        for text, action in items do
+            (menu.Add text).Data <- action
+        if menu.Show () then
+            (menu.SelectedData :?> (unit -> unit)) ()
 
     /// Shows the menu of items.
-    /// text: gets an item text.
-    /// show: processes the selected item.
-    member x.showItem (text: 'a -> string) (show: 'a -> 'r) (items: 'a []) =
-        x.Items.Clear ()
+    /// text: Called to get item text.
+    /// show: Called to process selected item.
+    member menu.ShowItems (text: 'Item -> string) (show: 'Item -> 'r) (items: 'Item seq) =
+        menu.Items.Clear ()
         for item in items do
-            x.Add (text item) |> ignore
-        if x.Show () then
-            show items.[x.Selected]
+            (menu.Add (text item)).Data <- item
+        if menu.Show () then
+            show (menu.SelectedData :?> 'Item)
         else
             Unchecked.defaultof<'r>
 
     /// Shows the menu of items with keys.
-    /// text: gets an item text.
-    /// show: processes the selected item and key.
-    member x.showItemKey (text: 'a -> string) (show: 'a -> KeyData -> 'r) (items: 'a []) =
-        x.Items.Clear ()
+    /// text: Called to get item text.
+    /// show: Called to process selected item and key.
+    member menu.ShowItemsWithKeys (text: 'Item -> string) (show: 'Item -> KeyData -> 'r) (items: 'Item seq) =
+        menu.Items.Clear ()
         for item in items do
-            x.Add (text item) |> ignore
-        if x.Show () && x.Selected >= 0 then
-            show items.[x.Selected] x.Key
+            (menu.Add (text item)).Data <- item
+        if menu.Show () && menu.Selected >= 0 then
+            show (menu.SelectedData :?> 'Item) menu.Key
         else
             Unchecked.defaultof<'r>
 
 type Progress (title) as this =
     static let mutable head = Option<Progress>.None
 
-    let title' = far.UI.WindowTitle
+    let oldWindowTitle = far.UI.WindowTitle
     let tail = head
     do
         far.UI.SetProgressState TaskbarProgressBarState.Indeterminate
@@ -72,20 +72,20 @@ type Progress (title) as this =
         head <- Some this
 
     interface IDisposable with
-        member x.Dispose () =
+        member __.Dispose () =
             head <- tail
-            far.UI.WindowTitle <- title'
+            far.UI.WindowTitle <- oldWindowTitle
             if tail.IsNone then
                 far.UI.SetProgressState TaskbarProgressBarState.NoProgress
 
-    member x.Done() =
+    member __.Done() =
         far.UI.SetProgressState TaskbarProgressBarState.NoProgress
         far.UI.SetProgressFlash ()
 
 /// Gets the active file panel directory or None.
 let farTryPanelDirectory () =
     let panel = far.Panel
-    if panel <> null && panel.Kind = PanelKind.File && not panel.IsPlugin then
+    if not (isNull panel) && panel.Kind = PanelKind.File && not panel.IsPlugin then
         Some panel.CurrentDirectory
     else
         None
@@ -113,10 +113,8 @@ let completeLine (editLine: ILine) replacementIndex replacementLength (words: st
         if count = 1 then
              Seq.head words
         else
-            let menu = far.CreateListMenu ()
             let cursor = far.UI.WindowCursor
-            menu.X <- cursor.X
-            menu.Y <- cursor.Y
+            let menu = far.CreateListMenu (X = cursor.X, Y = cursor.Y)
             if count = 0 then
                 menu.Add("Empty").Disabled <- true
                 menu.NoInfo <- true
@@ -132,29 +130,32 @@ let completeLine (editLine: ILine) replacementIndex replacementLength (words: st
                 else
                     null
 
-    if word <> null then
-        // the part being completed, may end with ``
-        let head = text.Substring (0, replacementIndex)
-        // amend non-standard identifier
-        let word =
-            if isIdentStr word then
-                word
-            elif head.EndsWith "``" then
-                word + "``"
-            else
-                "``" + word + "``"
-        let caret = head.Length + word.Length
-        editLine.Text <- head + word + text.Substring (replacementIndex + replacementLength)
-        editLine.Caret <- caret
+    if isNull word then ()
+    else
+    // the part being completed, may end with ``
+    let head = text.Substring (0, replacementIndex)
+    // amend non-standard identifier
+    let word =
+        if isIdentStr word then
+            word
+        elif head.EndsWith "``" then
+            word + "``"
+        else
+            "``" + word + "``"
+    let caret = head.Length + word.Length
+    editLine.Text <- head + word + text.Substring (replacementIndex + replacementLength)
+    editLine.Caret <- caret
 
 let showTempFile file title =
-    let editor = far.CreateEditor ()
-    editor.Title <- title
-    editor.FileName <- file
-    editor.CodePage <- 65001
-    editor.IsLocked <- true
-    editor.DisableHistory <- true
-    editor.DeleteSource <- DeleteSource.UnusedFile
+    let editor =
+        far.CreateEditor (
+            Title = title,
+            FileName = file,
+            CodePage = 65001,
+            IsLocked = true,
+            DisableHistory = true,
+            DeleteSource = DeleteSource.UnusedFile
+        )
     editor.Open ()
 
 let showTempText text title =

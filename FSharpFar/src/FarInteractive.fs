@@ -29,7 +29,7 @@ type FarInteractive(session: Session) =
         // eval code
         else
         let writer = x.Editor.OpenWriter ()
-        doEval writer (fun () -> session.EvalInteraction (writer, code))
+        doEval writer (fun _ -> session.EvalInteraction (writer, code))
 
     override x.KeyPressed key =
         match key.VirtualKeyCode with
@@ -48,7 +48,7 @@ type FarInteractive(session: Session) =
         editor.Title <- sprintf "F# %s %s" (Path.GetFileName session.ConfigFile) (Path.GetFileName path)
 
         // attach to session
-        editor.fsSession <- Some session
+        editor.MySession <- Some session
         let onSessionClose = Handler<unit> (fun _ _ -> if editor.IsOpened then editor.Close ())
         session.OnClose.AddHandler onSessionClose
         editor.Closed.Add (fun _ -> session.OnClose.RemoveHandler onSessionClose)

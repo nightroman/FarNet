@@ -8,7 +8,7 @@ open System.IO
 
 /// Shows a message with the specified buttons and gets the choice index.
 let jobAsk text title buttons =
-    Job.func (fun () -> far.Message (text, title, MessageOptions.LeftAligned, buttons))
+    Job.func (fun _ -> far.Message (text, title, MessageOptions.LeftAligned, buttons))
 
 /// Opens a non-modal editor and gets the result text when the editor exits.
 let jobEditText text title = async {
@@ -16,14 +16,8 @@ let jobEditText text title = async {
     let fileName = far.TempName "F#" + ".txt"
     File.WriteAllText (fileName, text)
 
-    // create and configure editor
-    let editor = far.CreateEditor ()
-    editor.CodePage <- 65001
-    editor.DisableHistory <- true
-    editor.FileName <- fileName
-    editor.Title <- title
-
     // open editor and wait for closing
+    let editor = far.CreateEditor (FileName = fileName, Title = title, CodePage = 65001, DisableHistory = true)
     do! Job.flowEditor editor
 
     // get and return text, delete file
@@ -41,7 +35,7 @@ let flowWizard = async {
         match answer with
         | 0 ->
             // [OK] - close the wizard and show the final message
-            do! Job.func (fun () -> far.Message (text, "Done"))
+            do! Job.func (fun _ -> far.Message (text, "Done"))
             loop <- false
         | 1 ->
             // [Editor] - non-modal editor to edit the text

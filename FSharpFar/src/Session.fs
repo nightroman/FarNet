@@ -46,7 +46,7 @@ let doEval writer (eval : unit -> EvalResult) =
             Console.SetError oldError
     for w in r.Warnings do
         writer.WriteLine (strErrorFull w)
-    if r.Exception <> null then
+    if not (isNull r.Exception) then
         fprintfn writer "%A" r.Exception
 
 type Session private (configFile) =
@@ -115,7 +115,7 @@ type Session private (configFile) =
             with exn ->
                 // case: `//define=DEBUG` in [fsc]
                 raise (InvalidOperationException ("Cannot create a session. If you use a config file check its syntax and data.", exn))
-                
+
         // load and use files
         use writer = new StringWriter ()
         try

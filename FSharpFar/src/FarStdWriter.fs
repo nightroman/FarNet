@@ -45,7 +45,7 @@ type StdWriter (write) as this =
         if value = '\n' then x.Flush ()
 
     override x.Write (value: string) =
-        if value <> null then
+        if not (isNull value) then
             sb.Append value |> ignore
             if value.EndsWith "\n" then x.Flush ()
 
