@@ -8,6 +8,7 @@ module FSharpFar.FarKit
 open FarNet
 open System
 open System.IO
+open FarNet.Works
 
 /// The local module folder path.
 let farLocalData = far.GetModuleManager("FSharpFar").GetFolderPath (SpecialFolder.LocalData, true)
@@ -188,3 +189,18 @@ let completeCode (editor: IEditor) getCompletions =
 /// Shows a message with the left aligned text.
 let showText text title =
     far.Message (text, title, MessageOptions.LeftAligned) |> ignore
+
+let messageWidth full =
+    far.UI.WindowSize.X - (if full then 3 else 16)
+
+let formatMessage width (text: string) =
+    if text.Length <= width then
+        text
+    else
+    let list = ResizeArray ()
+    Works.Kit.FormatMessage (list, text, width, Int32.MaxValue, FormatMessageMode.Word)
+    use w = new StringWriter ()
+    for i in 0 .. list.Count - 2 do
+        w.WriteLine list.[i]
+    w.Write list.[list.Count - 1]
+    w.ToString ()

@@ -16,16 +16,13 @@ type FarProjOptions =
 
 /// Gets cached options from a file.
 let private getOptionsFromFile =
-    let cache = Dictionary<string, DateTime * FarProjOptions> StringComparer.OrdinalIgnoreCase
-    fun getOptions path ->
-        let newStamp = File.GetLastWriteTime path
-        let ok, it = cache.TryGetValue path
-        if ok && newStamp = fst it then
-            snd it
-        else
-            let r = getOptions path
-            cache.[path] <- (newStamp, r)
-            r
+    let cache = System.Collections.Concurrent.ConcurrentDictionary<string, DateTime * FarProjOptions> StringComparer.OrdinalIgnoreCase
+    fun import path ->
+        let time1 = File.GetLastWriteTime path
+        let add path = time1, import path
+        let update path ((time2, _) as value) = if time1 = time2 then value else add path
+        let _, options = cache.AddOrUpdate (path, add, update)
+        options
 
 let private getOptionsFromIni = getOptionsFromFile (getConfigFromIniFile >> ConfigOptions)
 

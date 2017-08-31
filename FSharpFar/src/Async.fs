@@ -8,17 +8,17 @@ open FarNet
 open System
 open System.IO
 
-/// Posts Far job.
+/// Posts the Far job (not for opening panels).
 let inline private post f =
     far.PostJob (Action f)
 
-/// Posts Far step.
+/// Posts the Far step (used for opening panels).
 let inline private postStep f =
     far.PostStep (Action f)
 
 [<RequireQualifiedAccess>]
 module Job =
-    /// Far job from the function.
+    /// Creates the job from function.
     /// f: Far function with any result.
     let func f =
         Async.FromContinuations (fun (cont, econt, ccont) ->
@@ -30,8 +30,8 @@ module Job =
             )
         )
 
-    /// Far job from the function posted as step.
-    /// A function normally opens a panel.
+    /// Creates the job from function posted as step.
+    /// The function normally opens a panel.
     /// f: Far function with any result.
     let step f =
         Async.FromContinuations (fun (cont, econt, ccont) ->
@@ -43,15 +43,15 @@ module Job =
             )
         )
 
-    /// Far job from the callback, see Async.FromContinuations.
+    /// Creates the job from callback, see Async.FromContinuations.
     let fromContinuations f =
         Async.FromContinuations (fun (cont, econt, ccont) ->
             post (fun _ -> f (cont, econt, ccont))
         )
 
-    /// Far job from the macro code.
-    /// NOTE: It shows an error message with details and then throws an
-    /// exception without details.
+    /// Creates the job from macro code.
+    /// Syntax errors cause normal exceptions.
+    /// Runtime errors cause modal error dialogs.
     let macro macro =
         fromContinuations (fun (cont, econt, ccont) ->
             try
@@ -61,12 +61,12 @@ module Job =
                 econt exn
         )
 
-    /// Far job from the macro keys.
-    /// NOTE: It ignores invalid keys without errors.
+    /// Creates the job from macro keys.
+    /// It ignores invalid keys without errors.
     let keys keys =
         macro (sprintf "Keys[[%s]]" keys)
 
-    /// Far job from the modal function.
+    /// Creates the job from modal function.
     /// The flow continues before it returns.
     /// That is why the function result is unit.
     /// f: Far function making a modal call in the end.
@@ -210,6 +210,6 @@ let postExn exn =
     post (fun _ -> far.ShowError (exn.GetType().Name, exn))
 
 module Async =
-    /// Starts Far flow with posted exception dialogs.
+    /// Starts Far flow with exceptions caught and posted as exception dialogs.
     let farStart flow =
         Async.StartWithContinuations (flow, ignore, postExn, ignore)

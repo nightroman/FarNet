@@ -49,6 +49,12 @@ let isMyPanel () =
 let isFarPanel () =
     far.Window.Kind = WindowKind.Panels && not far.Panel.IsPlugin
 
+let showWideDialog () =
+    far.Message "long_text_message_for_wide_dialog"
+
+let isWideDialog () =
+    isDialog () && dt 1 = "long_text_message_for_wide_dialog"
+
 /// Test the sample wizard flow.
 let testWizard = async {
     Async.farStart flowWizard
@@ -189,7 +195,7 @@ let testMainWithCancel = async {
 /// Test Job.modal
 let testModalDialogDialog = async {
     // dialog 1
-    do! Job.modal (fun _ -> far.Message ("some long text to make a wide dialog", "job4.1"))
+    do! Job.modal showWideDialog
 
     // dialog 2 on top of 1
     do! Job.modal (fun _ -> far.Message ("ok", "job4.2"))
@@ -199,7 +205,7 @@ let testModalDialogDialog = async {
     do! Job.keys "Esc"
 
     // test and exit dialog 1
-    do! wait (fun _ -> dt 0 = "job4.1")
+    do! wait isWideDialog
     do! Job.keys "Esc"
 
     // done
@@ -233,8 +239,8 @@ let testModalDialogEditor = async {
 
 module ModalDialogEditorIssues =
     let flow = async {
-        // dialog
-        do! Job.modal (fun _ -> far.Message ("".PadLeft (80, '!'), "before editor"))
+        // dialog before editor
+        do! Job.modal showWideDialog
 
         // editor with problems
         let editor = far.CreateEditor ()
@@ -254,8 +260,8 @@ module ModalDialogEditorIssues =
         do! wait (fun _ -> dt 0 = "InvalidOperationException")
         do! Job.keys "Esc"
 
-        // posted FarNet error
-        do! wait (fun _ -> dt 0 = "before editor")
+        // dialog before editor
+        do! wait isWideDialog
         do! Job.keys "Esc"
 
         // done
@@ -293,31 +299,44 @@ module MacroInvalid =
 
 module FlowViewer =
     let flowNormal = async {
-        let viewer = far.CreateViewer (FileName = __SOURCE_DIRECTORY__)
+        let viewer = far.CreateViewer (FileName = __SOURCE_FILE__, DisableHistory = true)
         do! Job.flowViewer viewer
     }
-    let flowModal = async {
-        do! Job.modal (fun _ -> far.Message "long_text_message_for_wide_dialog")
+    let testNormal = async {
+        Async.farStart flowNormal
 
-        let viewer = far.CreateViewer (FileName = __SOURCE_DIRECTORY__)
+        do! wait (fun _ -> isViewer ())
+        do! Job.keys "Esc"
+
+        do! wait isFarPanel
+    }
+
+    let flowModal = async {
+        do! Job.modal showWideDialog
+
+        let viewer = far.CreateViewer (FileName = __SOURCE_FILE__, DisableHistory = true)
         do! Job.flowViewer viewer
 
         do! Job.func (fun _ -> far.Message "OK")
     }
-    let test = async {
-        Async.farStart flowNormal
-        do! wait (fun _ -> isViewer ())
-        do! Job.keys "Esc"
-        do! wait isFarPanel
-
+    let testModal = async {
         Async.farStart flowModal
+
         do! wait (fun _ -> isViewer ())
         do! Job.keys "Esc"
+
         do! wait (fun _ -> isDialog () && dt 1 = "OK")
         do! Job.keys "Esc"
-        do! wait (fun _ -> isDialog () && dt 1 = "long_text_message_for_wide_dialog")
+
+        do! wait isWideDialog
         do! Job.keys "Esc"
+
         do! wait isFarPanel
+    }
+
+    let test = async {
+        do! testNormal
+        do! testModal
     }
 
 /// This flow starts the sample flow several times with concurrent testing

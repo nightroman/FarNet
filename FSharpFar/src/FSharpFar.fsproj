@@ -64,9 +64,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FsAutoComplete\Lexer.fs" />
     <Compile Include="FsAutoComplete\Parser.fs" />
-    <Compile Include="FsAutoComplete\Utils.fs" />
-    <Compile Include="FsAutoComplete\TipFormatter.fs" />
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="FarNet.Auto.fs" />
     <Compile Include="ProxyWriter.fs" />
@@ -84,6 +83,7 @@
     <Compile Include="FarInteractive.fs" />
     <Compile Include="FarStdWriter.fs" />
     <Compile Include="FarCommand.fs" />
+    <Compile Include="Tips.fs" />
     <Compile Include="Editor.fs" />
     <Compile Include="Async.fs" />
     <Compile Include="FarEditor.fs" />

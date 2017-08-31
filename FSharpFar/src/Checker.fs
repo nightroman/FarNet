@@ -62,7 +62,7 @@ let check file text options = async {
             | ProjectOptions options ->
                 return options
     }
-    
+
     let! parseResults, checkAnswer = checker.ParseAndCheckFileInProject (file, 0, text, projOptions)
     let checkResults =
         match checkAnswer with
@@ -76,17 +76,3 @@ let check file text options = async {
         CheckResults = checkResults
     }
 }
-
-let strTip tip =
-    use w = new StringWriter ()
-
-    let data = TipFormatter.formatTip tip
-    for list in data do
-        for (signature, comment) in list do
-            w.WriteLine signature
-            if not (String.IsNullOrEmpty comment) then
-                if not (comment.StartsWith Environment.NewLine) then
-                    w.WriteLine ()
-                w.WriteLine (strZipSpace comment)
-
-    w.ToString ()

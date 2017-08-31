@@ -98,10 +98,14 @@ type FarEditor () =
                         try
                             let options = editor.MyOptions ()
                             let! check = Checker.check editor.FileName fileText options
-                            let! tip = check.CheckResults.GetToolTipText (it.Index + 1, column + 1, it.Text, idents, FSharpTokenTag.Identifier) //??GetToolTipTextAlternate
-                            let tips = Checker.strTip tip
+                            let! tip = check.CheckResults.GetToolTipText (it.Index + 1, column + 1, it.Text, idents, FSharpTokenTag.Identifier)
+                            let tips = Tips.format tip false
                             if tips.Length > 0 && inbox.CurrentQueueLength = 0 then
-                                do! jobEditor (fun _ -> showText tips "Tips")
+                                do! jobEditor (fun _ ->
+                                    let r = far.Message (tips, "Tips", MessageOptions.LeftAligned, [|"More"; "Close"|])
+                                    if r = 0 then
+                                        showTempText (Tips.format tip true) (String.Join (".", List.toArray idents))
+                                )
                         with exn ->
                             postExn exn
     })

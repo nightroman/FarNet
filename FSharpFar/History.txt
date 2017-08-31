@@ -1,7 +1,16 @@
 
 https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.5013
-FarNet 5.2.5
+FarNet 5.2.6
+
+= 1.4.2 =
+
+FarNet 5.2.6
+
+Improve tips, especially when an XML doc file is available:
+- Tips called from the menu are formatted a la help and shown in an editor.
+- Auto tips message has the button [More] which shows full tips in an editor.
+- Try to get not found framework v4.6.2 XML doc files from a different location.
 
 = 1.4.1 =
 

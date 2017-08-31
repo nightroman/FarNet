@@ -82,13 +82,13 @@ let tips (editor: IEditor) =
     let tip =
         async {
             let! check = Checker.check file text options
-            return! check.CheckResults.GetToolTipText (caret.Y + 1, column + 1, lineStr, idents, FSharpTokenTag.Identifier) //??GetToolTipTextAlternate
+            return! check.CheckResults.GetToolTipText (caret.Y + 1, column + 1, lineStr, idents, FSharpTokenTag.Identifier)
         }
         |> Async.RunSynchronously
 
     progress.Done ()
 
-    showText (Checker.strTip tip) "Tips"
+    showTempText (Tips.format tip true) (String.Join (".", List.toArray idents))
 
 let usesInFile (editor: IEditor) =
     use progress = new Progress "Getting uses..."
@@ -219,18 +219,13 @@ let complete (editor: IEditor) =
     // parse
     let names, residue = Parsing.findLongIdentsAndResidue (caret.X, lineStr)
 
-(*
-    _160922_160602
-    Complete `x.ToString().C` incorrectly gives all globals.
-    But complete `x.ToString().` gives string members.
-    Let's reduce to the working fine case.
-*)
+    // _160922_160602
+    // KO: Complete `x.ToString().C` gives global symbols.
+    // OK: Complete `x.ToString().` gives string members.
+    // Let's reduce to the working case.
     let mutable residue2 = residue
     let mutable colAtEndOfPartialName = caret.X + 1
-    let isDot () =
-        let i = caret.X - 1 - residue.Length
-        i > 0 && lineStr.[i] = '.'
-    if residue.Length > 0 && names.IsEmpty && isDot () then
+    if names.IsEmpty && residue.Length > 0 && (let i = caret.X - residue.Length - 1 in i > 0 && lineStr.[i] = '.') then
         residue2 <- ""
         colAtEndOfPartialName <- colAtEndOfPartialName - residue.Length
 
@@ -247,8 +242,8 @@ let complete (editor: IEditor) =
 
     let completions =
         decs.Items
-        |> Seq.map (fun item -> item.Name)
-        |> Seq.filter (fun name -> name.StartsWith residue)
+        |> Seq.map (fun item -> item.Name) //?? mind NameInCode
+        |> Seq.filter (fun name -> name.StartsWith (if residue.StartsWith "``" then residue.Substring 2 else residue))
 
     progress.Done ()
 
