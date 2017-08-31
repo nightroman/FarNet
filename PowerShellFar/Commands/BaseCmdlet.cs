@@ -1,8 +1,6 @@
 
-/*
-PowerShellFar module for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// PowerShellFar module for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
@@ -26,6 +24,7 @@ namespace PowerShellFar.Commands
 				new SessionStateCmdletEntry("Get-FarFile", typeof(Commands.GetFarFileCommand), Help),
 				new SessionStateCmdletEntry("Get-FarItem", typeof(Commands.GetFarItemCommand), Help),
 				new SessionStateCmdletEntry("Get-FarPath", typeof(Commands.GetFarPathCommand), Help),
+				new SessionStateCmdletEntry("Invoke-Far", typeof(Commands.InvokeFarCommand), Help),
 				new SessionStateCmdletEntry("Invoke-FarStepper", typeof(Commands.InvokeFarStepperCommand), Help),
 				new SessionStateCmdletEntry("New-FarEditor", typeof(Commands.NewFarEditorCommand), Help),
 				new SessionStateCmdletEntry("New-FarFile", typeof(Commands.NewFarFileCommand), Help),

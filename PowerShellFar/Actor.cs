@@ -1,8 +1,6 @@
 
-/*
-PowerShellFar module for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// PowerShellFar module for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using FarNet;
 using System;
@@ -523,7 +521,7 @@ Continue with this current directory?
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public string InputCode()
 		{
-			var ui = new UI.InputDialog() { Caption = Res.Me, History = Res.History, UseLastHistory = true, Prompt = new string[] { Res.InvokeCommands } };
+			var ui = new UI.InputDialog() { Title = Res.Me, History = Res.History, UseLastHistory = true, Prompt = new string[] { Res.InvokeCommands } };
 			return ui.Show() ? ui.Text : null;
 		}
 		/// <summary>

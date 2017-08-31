@@ -1,8 +1,6 @@
 
-/*
-PowerShellFar module for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// PowerShellFar module for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections.Generic;
@@ -15,7 +13,7 @@ namespace PowerShellFar.UI
 	{
 		public static readonly Guid TypeId = new Guid("416ff960-9b6b-4f3f-8bda-0c9274c75e53");
 
-		public string Caption { get; set; }
+		public string Title { get; set; }
 		public IList<string> Prompt { get; set; }
 		public string Text { get; set; }
 		public string History { get; set; }
@@ -31,7 +29,7 @@ namespace PowerShellFar.UI
 
 			var uiDialog = Far.Api.CreateDialog(-1, -1, w, h);
 			uiDialog.TypeId = TypeId;
-			uiDialog.AddBox(3, 1, w - 4, h - 2, Caption);
+			uiDialog.AddBox(3, 1, w - 4, h - 2, Title);
 
 			var uiPrompt = new List<IText>(Prompt.Count);
 			foreach(var s in Prompt)

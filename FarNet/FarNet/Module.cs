@@ -205,6 +205,13 @@ namespace FarNet
 		/// INTERNAL
 		/// </summary>
 		public abstract void SaveSettings();
+		/// <summary>
+		/// Calls <see cref="ModuleHost.Interop"/>.
+		/// </summary>
+		/// <param name="command">.</param>
+		/// <param name="args">.</param>
+		/// <returns>.</returns>
+		public abstract object Interop(string command, object args);
 	}
 
 	/// <summary>
@@ -305,6 +312,16 @@ namespace FarNet
 		public virtual bool CanExit()
 		{
 			return true;
+		}
+		/// <summary>
+		/// Provides cross-module operations without strongly typed interfaces.
+		/// </summary>
+		/// <param name="command">The command provided by the module.</param>
+		/// <param name="args">The command arguments.</param>
+		/// <returns>The command result.</returns>
+		public virtual object Interop(string command, object args)
+		{
+			throw new NotImplementedException();
 		}
 	}
 

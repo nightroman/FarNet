@@ -1,8 +1,6 @@
 ﻿
-/*
-PowerShellFar module for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// PowerShellFar module for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using FarNet;
 using FarNet.Tools;
@@ -64,7 +62,7 @@ namespace PowerShellFar
 			}
 
 			// show "Invoke commands"
-			var ui = new UI.InputDialog() { Caption = Res.Me, History = Res.History, Prompt = new string[] { Res.InvokeCommands }, Text = code };
+			var ui = new UI.InputDialog() { Title = Res.Me, History = Res.History, Prompt = new string[] { Res.InvokeCommands }, Text = code };
 			if (!ui.Show())
 				return;
 

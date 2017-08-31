@@ -83,6 +83,11 @@ task Build Meta, {
 	Invoke-Build Help .\PowerShellFar\PowerShellFar.build.ps1
 }
 
+# Synopsis: Build and install API docs.
+task Docs {
+	Invoke-Build Build, Install, Clean ./Docs/.build.ps1
+}
+
 # Synopsis: Copy files to FarHome.
 task Install {
 	assert (!(Get-Process [F]ar)) 'Please exit Far.'

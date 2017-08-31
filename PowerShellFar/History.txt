@@ -1,7 +1,15 @@
 
 NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
-Far Manager 3.0.4821
-FarNet 5.2.2
+Far Manager 3.0.5013
+FarNet 5.2.6
+
+= 5.2.5 =
+
+FarNet 5.2.6
+
+- Add Invoke-Far, similar to command box but designed for more cases.
+- Open-TextLink-.ps1 new switch -Clip to get text from clipboard.
+- Interop "Stepper". Experimental, to be tested in FS.
 
 = 5.2.4 =
 

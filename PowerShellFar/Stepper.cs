@@ -1,8 +1,6 @@
 
-/*
-PowerShellFar module for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// PowerShellFar module for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections;
@@ -115,6 +113,12 @@ namespace PowerShellFar
 		// Units
 		readonly List<string> _units = new List<string>();
 		ArrayList _steps = new ArrayList();
+		/// <summary>
+		/// Continuation action. If it is set then the stepper works silently
+		/// and calls the action with null for success and exception for
+		/// failure.
+		/// </summary>
+		Action<Exception> _continuation;
 		/// <summary>
 		/// New stepper.
 		/// </summary>
@@ -232,6 +236,11 @@ namespace PowerShellFar
 			if (_RunningInstance == null)
 				Far.Api.PostSteps(this);
 		}
+		internal void Go(Action<Exception> continuation)
+		{
+			_continuation = continuation;
+			Go();
+		}
 		/// <summary>
 		/// Gets the current running step unit or null if there is none.
 		/// </summary>
@@ -250,6 +259,10 @@ namespace PowerShellFar
 			if (_RunningInstance != this && _RunningInstance != null)
 				throw new InvalidOperationException("Stepper is running, nested steppers are not allowed.");
 		}
+		/// <summary>
+		/// Event triggered when a unit completes.
+		/// </summary>
+		public event EventHandler UnitCompleted;
 		/// <summary>
 		/// Event triggered when the stepper state has changed.
 		/// </summary>
@@ -290,8 +303,7 @@ namespace PowerShellFar
 				_state_ = value;
 
 				// trigger
-				if (StateChanged != null)
-					StateChanged(this, null);
+				StateChanged?.Invoke(this, null);
 
 				// remove the helper variable
 				switch (value)
@@ -327,6 +339,9 @@ namespace PowerShellFar
 				// done with steps?
 				if (_StepIndex >= _steps.Count)
 				{
+					// event
+					UnitCompleted?.Invoke(this, null);
+					
 					// remove user data
 					if (_Data != null)
 						_Data.Clear();
@@ -336,6 +351,7 @@ namespace PowerShellFar
 					{
 						// state
 						State = StepperState.Completed;
+						_continuation?.Invoke(null);
 						return false;
 					}
 
@@ -449,7 +465,11 @@ namespace PowerShellFar
 			{
 				_Error = error;
 				State = StepperState.Failed;
-				throw;
+				if (_continuation == null)
+					throw;
+
+				_continuation(error);
+				return false;
 			}
 			finally
 			{

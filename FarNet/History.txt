@@ -2,6 +2,11 @@
 NuGet package: https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5013
 
+= 5.2.6 =
+
+Add "Interop()" to module manager and host.
+Experimental, to be tested in PS and FS.
+
 = 5.2.5 =
 
 Far Manager 3.0.5013

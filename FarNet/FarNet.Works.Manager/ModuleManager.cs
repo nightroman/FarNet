@@ -108,6 +108,15 @@ namespace FarNet.Works
 			if (_ModuleHost != null)
 				_ModuleHost.Invoking();
 		}
+		public override object Interop(string command, object args)
+		{
+			Invoking();
+
+			if (_ModuleHost == null)
+				throw new InvalidOperationException("Module does not have a host.");
+
+			return _ModuleHost.Interop(command, args);
+		}
 		internal bool LoadLoadableModuleHost()
 		{
 			if (_ModuleHostClassType == null)

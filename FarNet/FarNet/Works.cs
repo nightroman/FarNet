@@ -193,4 +193,33 @@ namespace FarNet.Works
 		/// </summary>
 		public static bool MacroOutput { get; set; }
 	}
+	/// <summary>
+	/// INTERNAL
+	/// </summary>
+	public static class Test
+	{
+		static void AssertNormalPanel(IPanel panel)
+		{
+			if (panel == null || panel.IsPlugin || panel.Kind != PanelKind.File || !panel.IsVisible)
+			{
+				throw new InvalidOperationException("Unexpected panel kind or state.");
+			}
+		}
+		/// <summary>
+		/// INTERNAL
+		/// </summary>
+		public static void AssertNormalState()
+		{
+			if (Far.Api.Window.Count != 2)
+			{
+				throw new InvalidOperationException("Unexpected window count.");
+			}
+			if (Far.Api.Window.Kind != WindowKind.Panels)
+			{
+				throw new InvalidOperationException("Unexpected window.");
+			}
+			AssertNormalPanel(Far.Api.Panel);
+			AssertNormalPanel(Far.Api.Panel2);
+		}
+	}
 }

@@ -1,8 +1,6 @@
 
-/*
-PowerShellFar module for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// PowerShellFar module for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections;
@@ -419,7 +417,7 @@ namespace PowerShellFar
 				// show the dialog, get the code
 				UI.InputDialog ui = new UI.InputDialog()
 				{
-					Caption = Res.Me,
+					Title = Res.Me,
 					History = Res.HistoryApply,
 					UseLastHistory = true,
 					Prompt = new string[] { "For each $_ in " + items.Count + " selected:" }

@@ -45,13 +45,26 @@
 .Parameter Text
 		Text with text links. Default: editor active text.
 
+.Parameter Clip
+		Tells to get the text from clipboard.
+
 .Link
 	Get-TextLink-.ps1
 #>
 
 param(
-	$Text = $Psf.ActiveText
+	[Parameter()]
+	[string]$Text,
+	[switch]$Clip
 )
+
+### Get text
+if ($Clip) {
+	$Text = $Far.PasteFromClipboard()
+}
+elseif (!$Text) {
+	$Text = $Psf.ActiveText
+}
 
 $Editor = if ($Far.Window.Kind -eq 'Editor') {$Far.Editor}
 

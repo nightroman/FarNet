@@ -1,8 +1,6 @@
 ﻿
-/*
-PowerShellFar module for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// PowerShellFar module for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using FarNet;
 using System;
@@ -15,7 +13,7 @@ namespace PowerShellFar
 	[ModuleHost(Load = true)]
 	public sealed class Entry : ModuleHost
 	{
-		internal static string LocalData { get; private set; } 
+		internal static string LocalData { get; private set; }
 		internal static string RoamingData { get; private set; }
 		/// <summary>
 		/// INTERNAL
@@ -130,7 +128,7 @@ namespace PowerShellFar
 			{
 				prefix = string.Empty;
 			}
-			
+
 			if (line.StartsWith((tmp = CommandInvoke1.Prefix + ":"), StringComparison.OrdinalIgnoreCase) ||
 				line.StartsWith((tmp = CommandInvoke2.Prefix + ":"), StringComparison.OrdinalIgnoreCase))
 			{
@@ -145,6 +143,21 @@ namespace PowerShellFar
 				prefix += line.Substring(0, delta);
 				line = tmp;
 			}
+		}
+		///
+		public override object Interop(string command, object args)
+		{
+			switch (command)
+			{
+				case "Stepper":
+					return new Action<string, Action<Exception>>(delegate (string path, Action<Exception> result)
+					{
+						var stepper = new Stepper();
+						stepper.AddFile(path);
+						stepper.Go(result);
+					});
+			}
+			throw new ArgumentException("Expected 'Stepper'.", "args");
 		}
 	}
 }

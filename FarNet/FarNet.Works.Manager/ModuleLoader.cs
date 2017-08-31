@@ -379,7 +379,12 @@ namespace FarNet.Works
 		}
 		public static IModuleManager GetModuleManager(string name)
 		{
-			return _Managers[name];
+			ModuleManager r;
+			if (_Managers.TryGetValue(name, out r))
+			{
+				return _Managers[name];
+			}
+			throw new ArgumentException("Cannot find the module name.");
 		}
 	}
 }
