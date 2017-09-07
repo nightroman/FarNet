@@ -3,8 +3,6 @@ module PanelPaths
 open FarNet
 open System
 
-let private far = Far.Api
-
 /// Gets the active panel directory path.
 let panelCurrentDirectory () =
     far.Panel.CurrentDirectory

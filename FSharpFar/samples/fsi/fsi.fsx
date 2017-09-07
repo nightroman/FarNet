@@ -1,5 +1,6 @@
 
-#r @"Modules\FSharpFar\FSharp.Compiler.Service.dll"
+#r @"FarNet\Modules\FSharpFar\FSharp.Compiler.Service.dll"
+open FarNet
 
 // the fsi object
 let fsi = Microsoft.FSharp.Compiler.Interactive.Shell.Settings.fsi
@@ -20,5 +21,4 @@ fsi.PrintLength <- 200
     The default is 78. The following code adjusts it to the Far window.
 *)
 
-let far = FarNet.Far.Api
 fsi.PrintWidth <- far.UI.WindowSize.X - 2
