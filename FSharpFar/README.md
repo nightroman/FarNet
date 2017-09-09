@@ -14,7 +14,7 @@
 ***
 ## Synopsis
 
-FSharpFar provides F# interactive, scripting, and editor services for Far Manager.
+F# interactive, scripting, compiling, and editor services for Far Manager.
 
 **Project**
 
@@ -69,6 +69,7 @@ Use `[F11]` \ `FSharpFar` to open the module menu:
 ***
 ## <a id="commands"/> Commands
 
+***
 ### F# interactive commands
 
 The command line prefix is `fs:`. It is used for evaluating F# code and
@@ -92,10 +93,12 @@ All F# directives:
     fs: #help
 ````
 
+***
 ### FSharpFar module commands
 
 Module commands start with two slashes after the prefix.
 
+****
 #### `fs: //open with = <config>`
 
 Opens an interactive session with the specified configuration.
@@ -112,6 +115,7 @@ Sample file association:
         fs: //open with = !\!.!
 ````
 
+****
 #### `fs: //exec file = <script> [; with = <config>] [;; F# code]`
 
 Invokes the specified script with the specified or default configuration.
@@ -138,6 +142,21 @@ But an extra piece of F# code in the end after `;;` may call a function with par
 ````
     fs: //exec file = Module1.fs ;; Module1.test "answer" 42
 ````
+
+****
+#### `fs: //compile with = <config>`
+
+Compiles a dll or exe from the specified or default configuration.
+The default is the single `*.fs.ini` in the active panel directory.
+
+Requirements:
+
+- At least one source file must be in the `[fsi]` section.
+- In the `[fsc]` section specify `{-o|--out}:<output dll or exe>`.
+- To compile a dll, i.e. not exe, add `-a|--target:library` to `[fsc]`.
+
+This command lets you to compile any .NET assemblies per the specified configuration file.
+But the main goal is making FarNet modules right in FSharpFar without installing anything else.
 
 ***
 ## <a id="interactive"/> Interactive
@@ -178,70 +197,74 @@ The history keys:
 Each session is associated with its configuration file path, existing or not.
 In the latter case, the path is just used as a session ID.
 
-Editor services use the configuration file in a source file directory.
-It should be a single `*.fs.ini`.
-If such a file is not found then the main configuration is used.
+Editor services are looking for a configuration file `*.fs.ini` in the source directory.
+If such a file is not found or there are two or more then the main configuration is used.
 
 The main configuration file is *%FARPROFILE%\FarNet\FSharpFar\main.fs.ini*.
 
-The `.fs.ini` configuration file format is similar to INI.
-Lines staring with `;` or empty are ignored.
-Keys and values are separated by `=`.
-Switches are just keys without `=`.
+The configuration file format is somewhat similar to "ini" with sections and options.
+Options are the same as for `fsc.exe` and `fsi.exe`, one per line.
+Empty lines and lines staring with `;` are ignored.
 
-There are two sections:
+There are three sections:
 
 - `[fsc]` defines [F# Compiler Options](https://docs.microsoft.com/en-us/dotnet/articles/fsharp/language-reference/compiler-options).
-  `lib` and `reference` are the most important for sessions and editor services.
-- `[fsi]` defines [F# Interactive Options](https://docs.microsoft.com/en-us/dotnet/articles/fsharp/tutorials/fsharp-interactive/fsharp-interactive-options).
-  Normally this section contains `load` and `use`.
-  `load` is used for sessions and services.
-  `use` is used for sessions.
+  `-l|--lib` and `-r|--reference` are the most important for sessions and editor services.
+- `[fsi]` defines source files and [F# Interactive Options](https://docs.microsoft.com/en-us/dotnet/articles/fsharp/tutorials/fsharp-interactive/fsharp-interactive-options).
+  Source files are specified literally and used for sessions and services.
+  `--use` files are used for interactive sessions.
+- `[out]` defines options for `fs: //compile`, normally `-a|--target` and `-o|--out`.
 
-Conventions:
+Preprocessing:
 
-- Use suffix *.fs.ini* for configuration names.
-- Use full option names without `--`.
-- Use switches without values and `=`.
-- Relative path values should start with a dot.
-- Values are preprocessed:
-    - Environment variables defined as `%VARIABLE%` are expanded to their values.
-    - `__SOURCE_DIRECTORY__` is replaced with the configuration file directory.
+- Environment variables defined as `%VARIABLE%` are expanded to their values.
+- `__SOURCE_DIRECTORY__` is replaced with the configuration file directory.
+- Paths are relative to the configuration file directory.
 
 Predefined:
 
-- Far home directory is predefined as `lib`.
-- *FarNet.dll*, *FarNet.Tools.dll*, *FSharpFar.dll* are predefined as `reference`.
+- The *%FARHOME%* directory is predefined as `--lib`.
+- *FarNet.dll*, *FarNet.Tools.dll*, *FSharpFar.dll* are predefined as `--reference`.
+
+Important:
+
+- Source files are specified in `[fsi]`, not in `[fsc]`.
+- Output options are specified in `[out`], not in `[fsc]`.
+- Relative `-r|--reference` paths must start with `.\` or `..\`.
 
 Sample configuration:
 
-````ini
+```ini
     [fsc]
-    optimize-
-    fullpaths
-    flaterrors
-    warn = 4
-    debug = full
-    define = DEBUG
-    lib = %SOME_DIR%
-    lib = ..\packages
+    --optimize-
+    --fullpaths
+    --flaterrors
+    --warn:4
+    --debug:full
+    --define:DEBUG
+    --lib:%SOME_DIR%
+    --lib:..\packages
+
+    [out]
+    --target:library
+    --out:bin\MyLibrary.dll
 
     [fsi]
-    load = .\file1.fs
-    load = .\file2.fs
-    use = .\main.fsx
-````
+    file1.fs
+    file2.fs
+    --use:main.fsx
+```
 
-**Session load and use files**
+**Session source and use files**
 
-`load` and `use` files are used in order prepare the session for interactive work.
-Output of invoked `load` and `use` scripts is discarded, only errors and warnings are shown.
+Source and `--use` files are used in order to load the session for checks and interactive work.
+Output of invoked source and `--use` scripts is discarded, only errors and warnings are shown.
 
-The `use` file is invoked in the session as if it is typed interactively. Its
-role is to prepare the session for interactive work and reduce typing, i.e.
-open modules and namespaces, set some supportive functions and values, etc.
+`--use` files are invoked in the session as if they are typed interactively.
+The goal is to prepare the session for interactive work and reduce typing,
+i.e. open modules and namespaces, define some functions and values, etc.
 
-Sample `use` file:
+Sample `--use` file:
 
 ````FSharp
     // reference assemblies
@@ -252,15 +275,15 @@ Sample `use` file:
     open System
 
     // define stuff for interactive
-    let message text = far.Message text
+    let show text = far.Message text
 ````
 
 ***
 ## <a id="editor"/> Editor services
 
-Editor services are automatically available for F# source files opened in editors.
+Editor services are automatically available for F# files opened in editors.
 If files are not self-contained then use the configuration file `*.fs.ini` in the same directory.
-Required references and files should be specified by `reference` and `load` in `[fsc]` and `[fsi]` sections.
+Required references should be specified by `-r|--reference` in `[fsc]` and source files in `[fsi]`.
 
 **Code completion**
 
@@ -371,12 +394,15 @@ Example:
     }
 ````
 
-#### F# scripts for F# modules
+#### F# scripts, F# modules, and other assemblies
 
-FSharpFar is not needed for F# modules, it is enough to have FarNet and F#. For
-example, the sample [TryPanelFSharp] may be built, installed, and used as a
-module without FSharpFar.
+FarNet modules written in F# do not require FSharpFar, just FarNet and F#.
+See the sample [TryPanelFSharp]. It may be compiled as a FarNet module and
+used without FSharpFar.
 
-But with FSharpFar you can run and test some module code without building and
-installing a module and restarting Far Manager after changes. See the sample
-README for the details.
+With FSharpFar you can run and test some module code without building and
+installing a module and restarting Far Manager after changes. See the same
+sample README for the details.
+
+Note that you can compile any .NET assemblies, FarNet or not, by FSharpFar.
+You do not have to install Visual Studio, VSCode, or F# compiler.

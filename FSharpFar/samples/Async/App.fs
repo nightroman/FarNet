@@ -28,24 +28,24 @@ let jobEditText text title = async {
 
 /// Wizard flow with some work in non-modal editor and panel.
 let flowWizard = async {
-    let mutable text = "Edit this text in non-modal editor.\nThe wizard continues when you exit."
-    let mutable loop = true
-    while loop do
-        let! answer = jobAsk text "Wizard" [| "&OK"; "&Editor"; "&Panel"; "&Cancel" |]
+    let text = ref "Edit this text in non-modal editor.\nThe wizard continues when you exit."
+    let loop = ref true
+    while !loop do
+        let! answer = jobAsk !text "Wizard" [| "&OK"; "&Editor"; "&Panel"; "&Cancel" |]
         match answer with
         | 0 ->
             // [OK] - close the wizard and show the final message
-            do! Job.func (fun _ -> far.Message (text, "Done"))
-            loop <- false
+            do! Job.func (fun _ -> far.Message (!text, "Done"))
+            loop := false
         | 1 ->
             // [Editor] - non-modal editor to edit the text
-            let! r = jobEditText text "Demo title"
-            text <- r
+            let! r = jobEditText !text "Demo title"
+            text := r
         | 2 ->
             // [Panel] - panel to show the current text
-            let lines = text.Split [|'\n'|] |> Seq.cast
+            let lines = (!text).Split [|'\n'|] |> Seq.cast
             do! Job.flowPanel (MyPanel.panel lines)
         | _ ->
             // [Cancel] or [Esc] - exit
-            loop <- false
+            loop := false
 }

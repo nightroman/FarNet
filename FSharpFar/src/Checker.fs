@@ -76,3 +76,26 @@ let check file text options = async {
         CheckResults = checkResults
     }
 }
+
+let compile (config: Config) = async {
+    // assert output is set
+    let hasOutOption = config.OutArgs |> Array.exists (fun x -> x.StartsWith "-o:" || x.StartsWith "--out")
+    if not hasOutOption then invalidOp "Configuration must have [out] {-o|--out}:<output exe or dll>."
+
+    // combine options    
+    let args = [|
+        // (0) dummy
+        yield "fsc.exe"
+        // (1) our predefined
+        yield! defaultCompilerArgs
+        // (2) common options
+        yield! config.FscArgs
+        // (3) output + redefines
+        yield! config.OutArgs
+        yield! config.LoadFiles
+    |]
+
+    // compile and get errors and exit code
+    let checker = FSharpChecker.Create()
+    return! checker.Compile args
+}

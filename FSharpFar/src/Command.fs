@@ -19,6 +19,7 @@ type Command =
     | Code of string
     | Open of OpenArgs
     | Exec of ExecArgs
+    | Compile of OpenArgs
 
 let popString key (sb: DbConnectionStringBuilder) =
     let is, it = sb.TryGetValue key
@@ -47,6 +48,10 @@ let command name rest sb =
             File = popString "file" sb |> farResolvePath
             With = popStringOpt "with" sb |> Option.map farResolvePath
             Code = if String.IsNullOrWhiteSpace rest then None else Some rest
+        }
+    | "compile" ->
+        Compile {
+            With = popStringOpt "with" sb |> Option.map farResolvePath
         }
     | _ ->
         invalidOp <| sprintf "Unknown command '%s'." name

@@ -7,14 +7,27 @@ module FSharpFar.Config
 open System
 open System.IO
 
-type private ConfigSection = NoSection | FscSection | FsiSection
+type Config = {
+    FscArgs: string []
+    FsiArgs: string []
+    OutArgs: string []
+    LoadFiles: string []
+    UseFiles: string []
+}
+
+type private ConfigSection =
+    | NoSection
+    | FscSection
+    | FsiSection
+    | OutSection
 
 type private ConfigData =
     | Empty
     | Comment
     | Section of string
     | Switch of string
-    | KeyValue of Key : string * Value : string
+    | Value of string
+    | Pair of Key : string * Value : string
 
 let private parse (line: string) =
     let text = line.Trim ()
@@ -26,27 +39,32 @@ let private parse (line: string) =
         if not (text.EndsWith "]") then
             invalidOp "Invalid section, expected '[...]'."
         Section (text.Substring(1, text.Length - 2).Trim ())
+    elif text.[0] <> '-' then
+        Value text
     else
-        let i = text.IndexOf '='
+        let i = text.IndexOf ':'
         if i < 0 then
             Switch text
         else
-            KeyValue (text.Substring(0, i).Trim (), text.Substring(i + 1).Trim ())
+            Pair (text.Substring(0, i).Trim (), text.Substring(i + 1).Trim ())
 
-type Config = {
-    FscArgs: string []
-    FsiArgs: string []
-    LoadFiles: string []
-    UseFiles: string []
-}
-
-let empty = {FscArgs = [||]; FsiArgs = [||]; LoadFiles = [||]; UseFiles = [||]}
+let empty = {FscArgs = [||]; FsiArgs = [||]; OutArgs = [||]; LoadFiles = [||]; UseFiles = [||]}
 
 let private resolve root key value =
     let value = Environment.ExpandEnvironmentVariables(value).Replace ("__SOURCE_DIRECTORY__", root)
     match key with
-    | "reference" | "load" | "lib" | "use" when value.StartsWith "." -> Path.GetFullPath (Path.Combine(root, value))
-    | _ -> value
+    | "-r" | "--reference" ->
+        if value.[0] = '.' then
+            Path.GetFullPath (Path.Combine(root, value))
+        else
+            value
+    | "" | "-l" | "--lib" | "-o" | "--out" | "--use" ->
+        if Path.IsPathRooted value then
+            Path.GetFullPath value
+        else
+            Path.GetFullPath (Path.Combine(root, value))
+    | _ ->
+        value
 
 let getConfigFromIniFile path =
     let lines = File.ReadAllLines path
@@ -54,13 +72,15 @@ let getConfigFromIniFile path =
 
     let fscArgs = ResizeArray ()
     let fsiArgs = ResizeArray ()
+    let outArgs = ResizeArray ()
     let loadScripts = ResizeArray ()
     let useScripts = ResizeArray ()
 
     let mutable currentSection = NoSection
     let mutable lineNo = 0
 
-    let raiseSection () = invalidOp "Expected section [fsc] or [fsi], found data or unknown section."
+    let raiseSection () = invalidOp "Expected section [fsc]|[fsi]|[out], found data or unknown section."
+    let raiseUnexpected () = invalidOp "Unexpected value."
     try
         for line in lines do
             lineNo <- lineNo + 1
@@ -72,33 +92,42 @@ let getConfigFromIniFile path =
                     match section with
                     | "fsc" -> FscSection
                     | "fsi" -> FsiSection
+                    | "out" -> OutSection
                     | _ -> raiseSection ()
             | Switch it ->
                 match currentSection with
                 | FscSection ->
-                    fscArgs.Add ("--" + it)
+                    fscArgs.Add it
                 | FsiSection ->
-                    fsiArgs.Add ("--" + it)
+                    fsiArgs.Add it
+                | OutSection ->
+                    outArgs.Add it
                 | NoSection ->
                     raiseSection ()
-            | KeyValue (key, value) ->
+            | Value it ->
+                match currentSection with
+                | FsiSection ->
+                    loadScripts.Add (resolve root "" it)
+                | FscSection
+                | OutSection ->
+                    raiseUnexpected ()
+                | NoSection ->
+                    raiseSection ()
+            | Pair (key, value) ->
+                let text = resolve root key value
                 match currentSection with
                 | FscSection ->
-                    let text = resolve root key value
                     // use -r instead of --reference to avoid duplicates added by FCS
                     // https://github.com/fsharp/FSharp.Compiler.Service/issues/697
-                    match key with
-                    | "reference" -> fscArgs.Add ("-r:" + text)
-                    | _ -> fscArgs.Add ("--" + key + ":" + text)
+                    let key = if key = "--reference" then "-r" else key
+                    fscArgs.Add (key + ":" + text)
                 | FsiSection ->
-                    let text = resolve root key value
-                    match key with
-                    | "load" ->
-                        loadScripts.Add text
-                    | "use" ->
+                    if key = "--use" then
                         useScripts.Add text
-                    | _ ->
-                        fsiArgs.Add ("--" + key + ":" + text)
+                    else
+                        fsiArgs.Add (key + ":" + text)
+                | OutSection ->
+                    outArgs.Add (key + ":" + text)
                 | NoSection ->
                     raiseSection ()
      with e ->
@@ -107,6 +136,7 @@ let getConfigFromIniFile path =
     {
         FscArgs = fscArgs.ToArray ()
         FsiArgs = fsiArgs.ToArray ()
+        OutArgs = outArgs.ToArray ()
         LoadFiles = loadScripts.ToArray ()
         UseFiles = useScripts.ToArray ()
     }

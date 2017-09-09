@@ -32,14 +32,21 @@ FSharpFar is enough for F# scripting.
 
 **Using as a module**
 
-You can build and install a FarNet module using the sample source in F# project.
+You can compile this sample as FarNet module right in FSharpFar:
+
+    fs: //compile
+
+Copy *TryPanelFSharp.dll* to *%FARHOME%/FarNet/Modules/TryPanelFSharp* and
+restart Far Manager.
+
 The module adds its item to the plugin menu: `F11` \ `TryPanelFSharp`.
 This item opens the demo panel.
 
-Development and especially debugging of modules may be easier than scripting.
-
 **Using modules and scripts together**
 
-Module development and scripting still may be combined.
-Some pieces of module code may be loaded and tested as scripts.
-In this case you do not have to build and install a module and restart Far Manager after each change.
+This sample is trivial. For complex development and debugging it is better to
+use Visual Studio and assemble your tools for Far Manager as FarNet modules.
+
+But module development and scripting still may be combined.
+Some developing pieces of module code may be loaded and tested as scripts.
+You do not have to compile and install a module and restart Far Manager after changes.

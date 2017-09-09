@@ -11,7 +11,7 @@ type MyExplorer () =
         base.CanCreateFile <- true
         base.CanDeleteFiles <- true
         _files.Add (SetFile (Name = "Add [F7]; Remove [Del]/[F8]", Description = "demo file"))
-    override x.GetFiles args =
+    override x.GetFiles _ =
         upcast _files
     override x.CreateFile args =
         let name = args.Data :?> string
@@ -42,4 +42,4 @@ type MyPanel (explorer) =
 [<ModuleTool (Name = "TryPanelFSharp", Options = ModuleToolOptions.Panels)>]
 type MyTool () =
     inherit ModuleTool ()
-    override x.Invoke (sender, e) = MyPanel(MyExplorer()).Open ()
+    override x.Invoke (_, _) = MyPanel(MyExplorer()).Open ()

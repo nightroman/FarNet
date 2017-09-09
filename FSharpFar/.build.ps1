@@ -17,7 +17,7 @@ $ProjectName = "$ModuleName.fsproj"
 task . Build, Clean
 
 task Init Meta, {
-	exec {paket.exe install --only-referenced}
+	exec {paket.exe install}
 }
 
 task Kill Clean, {
@@ -86,6 +86,7 @@ task Package Help, {
 		'LICENSE.txt'
 		"$fromModule\$ModuleName.dll"
 		"$fromModule\FSharp.Compiler.Service.dll"
+		"$fromModule\System.Reflection.Metadata.dll"
 	)
 }
 

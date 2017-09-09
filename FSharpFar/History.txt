@@ -3,6 +3,21 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.5013
 FarNet 5.2.6
 
+= 1.5.0 =
+
+New command `fs: //compile` lets to compile a dll or exe right in FSF without
+anything else installed like traditional Visual Studio, VSCode, F#. In other
+words, you can make FarNet modules written in F# just with Far Manager + FSF.
+
+Changes in configuration format (SOME BREAKING): (1) Options are used in the
+same way as for "fsc.exe" and "fsi.exe", one option per line, instead of the
+classic "name=value" format. (2) Relative paths do not have to start with "."
+but "-r|--reference" still requires this.
+
+See README for the details of all the above changes.
+
+Updated repo/tools/Convert-Project.ps1
+
 = 1.4.2 =
 
 FarNet 5.2.6

@@ -12,6 +12,8 @@ open Command
 open Options
 open FarStdWriter
 open FarInteractive
+open Options
+open Config
 
 [<System.Runtime.InteropServices.Guid "2b52615b-ea79-46e4-ac9d-78f33599db62">]
 [<ModuleCommand (Name = "FSharpFar", Prefix = "fs")>]
@@ -79,3 +81,27 @@ type FarCommand () =
                 issues r |> ignore
             | _ ->
                 ()
+
+        | Compile args ->
+            use progress = new Progress "Compiling..."
+
+            let path =
+                match args.With with
+                | Some path ->
+                    path
+                | None -> 
+                    match tryConfigPathForDirectory far.Panel.CurrentDirectory with
+                    | Some path ->
+                        path
+                    | None ->
+                        invalidOp "Cannot find configuration file."
+            
+            let config = getConfigFromIniFile path
+            
+            let errors, code = Checker.compile config |> Async.RunSynchronously
+            if errors.Length > 0 then
+                use writer = new StringWriter ()
+                for error in errors do
+                    writer.WriteLine (strErrorLine error)
+                showTempText (writer.ToString ()) "Errors"
+            ()

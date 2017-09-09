@@ -95,17 +95,13 @@ try {
 	### convert options
 	$fsc = [System.Collections.Generic.List[string]]@()
 	$fsi = [System.Collections.Generic.List[string]]@()
+	$out = [System.Collections.Generic.List[string]]@()
 	foreach($option in $options) {
-		if ($option -match '^(-+)([^:]+)(:)?(.*)') {
-			$prefix = $matches[1]
-			$key = $matches[2]
-			$colon = $matches[3]
-			$value = $matches[4]
-			if ($value) {
-				$value = Convert-Value $value
-			}
+		if ($option -match '^(-r|--reference|-l|--lib):(.*)') {
+			$key = $matches[1]
+			$value = Convert-Value $matches[2]
 			### references
-			if ($prefix -eq '-' -and $key -eq 'r') {
+			if ($key -eq '-r' -or $key -eq '--reference') {
 				if (Test-Path -LiteralPath $value) {
 					if ($skip -contains [System.IO.Path]::GetFileName($value)) {
 						# skip some known
@@ -114,42 +110,50 @@ try {
 						# skip "low level"
 					}
 					else {
-						$fsc.Add("reference=$value")
+						$fsc.Add("-r:$value")
 					}
 				}
 				else {
 					Write-Warning "Missing reference: $value"
 				}
 			}
-			### other options
-			elseif ($prefix -eq '--') {
-				if ($key -eq 'out') {
-				}
-				elseif ($colon) {
-					$fsc.Add("$key=$value")
-				}
-				else {
-					$fsc.Add($key)
-				}
-			}
+			### other paths
 			else {
-				Write-Warning "Unknown option: $option"
+				$fsc.Add("${key}:$value")
 			}
+		}
+		elseif ($option -match '^(-o|--out):(.*)') {
+			### -o|--out
+			$key = $matches[1]
+			$value = Convert-Value $matches[2]
+			$out.Add("${key}:$value")
+		}
+		elseif ($option -match '^(-a|--target)\b') {
+			### -a|--target
+			$out.Add($option)
+		}
+		elseif ($option[0] -eq '-') {
+			### other options
+			$fsc.Add((Convert-Value $option))
 		}
 		else {
 			### source files
-			$fsi.Add("load=$(Convert-Value $option)")
+			$fsi.Add((Convert-Value $option))
 		}
 	}
 
 	### write output
-	$out = [System.IO.Path]::ChangeExtension($Path, '.fs.ini')
+	$target = [System.IO.Path]::ChangeExtension($Path, '.fs.ini')
 	$(
-		'[fsi]'
-		$fsi
 		'[fsc]'
 		$fsc
-	) | Set-Content -LiteralPath $out
+		''
+		'[out]'
+		$out
+		''
+		'[fsi]'
+		$fsi
+	) | Set-Content -LiteralPath $target
 }
 finally {
 	Pop-Location

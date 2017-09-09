@@ -30,12 +30,20 @@ let private getOptionsFromIni = getOptionsFromFile (getConfigFromIniFile >> Conf
 let getOptionsFrom (path: string) =
     getOptionsFromIni path
 
+/// Gets some config path for directory.
+let tryConfigPathForDirectory dir =
+    match Directory.GetFiles (dir, "*.fs.ini") with
+    | [|file|] ->
+        Some file
+    | _ ->
+        None
+
 /// Gets the config path for file.
 let getConfigPathForFile path =
     let dir = Path.GetDirectoryName path
 
-    match Directory.GetFiles (dir, "*.fs.ini") with
-    | [|file|] ->
+    match tryConfigPathForDirectory dir with
+    | Some file ->
         // available custom config
         file
     | _ ->
