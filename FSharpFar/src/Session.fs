@@ -7,7 +7,6 @@ module FSharpFar.Session
 open System
 open System.IO
 open Config
-open Options
 open ProxyWriter
 open Microsoft.FSharp.Compiler.Interactive.Shell
 open Microsoft.FSharp.Compiler.SourceCodeServices
@@ -59,52 +58,21 @@ type Session private (configFile) =
     // assigned to the session
     let evalWriter = new ProxyWriter (voidWriter)
 
-    let fsiSession, errors, options =
+    let fsiSession, errors, config =
         use progress = new Progress "Loading session..."
 
-        let options = if File.Exists configFile then getOptionsFrom configFile else ConfigOptions Config.empty
+        let config = if File.Exists configFile then getConfigFromFileCached configFile else Config.empty
         let loadFiles = ResizeArray ()
         let useFiles = ResizeArray ()
         let args = [|
             yield "fsi.exe" //! dummy, else --nologo is consumed
             yield "--nologo"
             yield "--noninteractive"
-            match options with
-            | ConfigOptions config ->
-                yield! defaultCompilerArgs
-                yield! config.FscArgs
-                yield! config.FsiArgs
-                loadFiles.AddRange config.LoadFiles
-                useFiles.AddRange config.UseFiles
-            | ProjectOptions options ->
-                //TODO what about our default args?
-                let known = [
-                    "--checked"
-                    "--codepage:"
-                    "--debug"
-                    "--define:"
-                    "--fullpaths"
-                    "--lib:"
-                    "-l:"
-                    "--mlcompatibility"
-                    "--noframework"
-                    "--nologo"
-                    "--nowarn:"
-                    "--optimize"
-                    "--reference:"
-                    "-r:"
-                    "--utf8output"
-                    "--warn:"
-                    "--warnaserror"
-                ]
-                yield! options.OtherOptions |> Array.filter (fun x ->
-                    if not (x.StartsWith "-") then
-                        //TODO or not?
-                        loadFiles.Add x
-                        false
-                    else
-                        known |> List.exists x.StartsWith
-                )
+            yield! defaultCompilerArgs
+            yield! config.FscArgs
+            yield! config.FsiArgs
+            loadFiles.AddRange config.LoadFiles
+            useFiles.AddRange config.UseFiles
         |]
         let fsiConfig = FsiEvaluationSession.GetDefaultConfiguration ()
 
@@ -132,7 +100,7 @@ type Session private (configFile) =
         with exn ->
             fprintfn writer "%A" exn
 
-        fsiSession, writer.ToString (), options
+        fsiSession, writer.ToString (), config
 
     let eval writer eval x =
         evalWriter.Writer <- writer
@@ -167,7 +135,7 @@ type Session private (configFile) =
 
     member x.ConfigFile = configFile
 
-    member x.Options = options
+    member x.Config = config
 
     member x.DisplayName = sprintf "%s - %s" (Path.GetFileName configFile) (Path.GetDirectoryName configFile)
 
@@ -193,7 +161,7 @@ type Session private (configFile) =
             Seq.empty
 
 /// Gets or creates the main session.
-let getMainSession () = Session.FindOrCreate farMainSessionConfigPath
+let getMainSession () = Session.FindOrCreate farMainConfigPath
 
 /// Gets the main session or none.
-let tryFindMainSession () = Session.TryFind farMainSessionConfigPath
+let tryFindMainSession () = Session.TryFind farMainConfigPath

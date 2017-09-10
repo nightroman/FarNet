@@ -74,7 +74,6 @@
     <Compile Include="FarKit.fs" />
     <Compile Include="Command.fs" />
     <Compile Include="Config.fs" />
-    <Compile Include="Options.fs" />
     <Compile Include="Session.fs" />
     <Compile Include="Checker.fs" />
     <Compile Include="FarModule.fs" />

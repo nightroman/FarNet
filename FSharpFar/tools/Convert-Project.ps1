@@ -97,7 +97,7 @@ try {
 	$fsi = [System.Collections.Generic.List[string]]@()
 	$out = [System.Collections.Generic.List[string]]@()
 	foreach($option in $options) {
-		if ($option -match '^(-r|--reference|-l|--lib):(.*)') {
+		if ($option -match '^(-r|--reference|-l|--lib|--doc):(.*)') {
 			$key = $matches[1]
 			$value = Convert-Value $matches[2]
 			### references

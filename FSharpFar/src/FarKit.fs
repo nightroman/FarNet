@@ -16,8 +16,8 @@ let farLocalData = far.GetModuleManager("FSharpFar").GetFolderPath (SpecialFolde
 /// The roming module folder path.
 let farRoaminData = far.GetModuleManager("FSharpFar").GetFolderPath (SpecialFolder.RoamingData, true)
 
-/// The main session config file path.
-let farMainSessionConfigPath = Path.Combine (farRoaminData, "main.fs.ini")
+/// The config file path used for the main session and as the default for services.
+let farMainConfigPath = Path.Combine (farRoaminData, "main.fs.ini")
 
 /// Default flags for checkers and sessions
 let defaultCompilerArgs =
@@ -62,6 +62,7 @@ type IAnyMenu with
         else
             Unchecked.defaultof<'r>
 
+/// Shows the progress info in the window title and the task bar.
 type Progress (title) as this =
     static let mutable head = Option<Progress>.None
 

@@ -5,7 +5,7 @@
 module FSharpFar.Editor
 
 open FarNet
-open Options
+open Config
 open Session
 open FsAutoComplete
 open System
@@ -46,12 +46,12 @@ let showErrors (editor: IEditor) =
 let check (editor: IEditor) =
     use progress = new Progress "Checking..."
 
-    let options = editor.MyOptions ()
+    let config = editor.MyConfig ()
     let file = editor.FileName
     let text = editor.GetText ()
 
     let check =
-        Checker.check file text options
+        Checker.check file text config
         |> Async.RunSynchronously
 
     let errors = check.CheckResults.Errors
@@ -75,13 +75,13 @@ let tips (editor: IEditor) =
     | None -> ()
     | Some (column, idents) ->
 
-    let options = editor.MyOptions ()
+    let config = editor.MyConfig ()
     let file = editor.FileName
     let text = editor.GetText ()
 
     let tip =
         async {
-            let! check = Checker.check file text options
+            let! check = Checker.check file text config
             return! check.CheckResults.GetToolTipText (caret.Y + 1, column + 1, lineStr, idents, FSharpTokenTag.Identifier)
         }
         |> Async.RunSynchronously
@@ -100,13 +100,13 @@ let usesInFile (editor: IEditor) =
     | None -> ()
     | Some (col, identIsland) ->
 
-    let options = editor.MyOptions ()
+    let config = editor.MyConfig ()
     let file = editor.FileName
     let text = editor.GetText ()
 
     let uses =
         async {
-            let! check = Checker.check file text options
+            let! check = Checker.check file text config
             let! symboluse = check.CheckResults.GetSymbolUseAtLocation (caret.Y + 1, col + 1, lineStr, identIsland)
             match symboluse with
             | None ->
@@ -147,13 +147,13 @@ let usesInProject (editor: IEditor) =
     | None -> ()
     | Some (col, identIsland) ->
 
-    let options = editor.MyOptions ()
+    let config = editor.MyConfig ()
     let file = editor.FileName
     let text = editor.GetText ()
 
     let uses =
         async {
-            let! check = Checker.check file text options
+            let! check = Checker.check file text config
             let! sym = check.CheckResults.GetSymbolUseAtLocation (caret.Y + 1, col + 1, lineStr, identIsland)
             match sym with
             | None ->
@@ -229,13 +229,13 @@ let complete (editor: IEditor) =
         residue2 <- ""
         colAtEndOfPartialName <- colAtEndOfPartialName - residue.Length
 
-    let options = editor.MyOptions ()
+    let config = editor.MyConfig ()
     let file = editor.FileName
     let text = editor.GetText ()
 
     let decs =
         async {
-            let! check = Checker.check file text options
+            let! check = Checker.check file text config
             return! check.CheckResults.GetDeclarationListInfo (Some check.ParseResults, caret.Y + 1, colAtEndOfPartialName, lineStr, names, residue2, always [])
         }
         |> Async.RunSynchronously

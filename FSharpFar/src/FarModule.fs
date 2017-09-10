@@ -6,7 +6,7 @@
 module FSharpFar.FarModule
 
 open FarNet
-open Options
+open Config
 open Session
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open System
@@ -52,10 +52,10 @@ type IEditor with
         with get () = defaultArg (x.GetOpt<bool> Key.checking) false
         and set (value: bool) = x.SetOpt (Key.checking, Some value)
 
-    member x.MyOptions () =
+    member x.MyConfig () =
         match x.MySession with
-        | Some x -> x.Options
-        | _ -> getOptionsForFile x.FileName
+        | Some x -> x.Config
+        | _ -> getConfigForFile x.FileName
 
     member x.MyFileErrors () =
         match x.MyErrors with

@@ -48,8 +48,8 @@ type FarEditor () =
 
             let! text = jobEditor editor.GetText
             try
-                let options = editor.MyOptions ()
-                let! check = Checker.check editor.FileName text options
+                let config = editor.MyConfig ()
+                let! check = Checker.check editor.FileName text config
                 editor.MyErrors <-
                     if inbox.CurrentQueueLength > 0 then
                         None
@@ -96,8 +96,8 @@ type FarEditor () =
                     | Some (column, idents) ->
                         let! fileText = jobEditor editor.GetText
                         try
-                            let options = editor.MyOptions ()
-                            let! check = Checker.check editor.FileName fileText options
+                            let config = editor.MyConfig ()
+                            let! check = Checker.check editor.FileName fileText config
                             let! tip = check.CheckResults.GetToolTipText (it.Index + 1, column + 1, it.Text, idents, FSharpTokenTag.Identifier)
                             let tips = Tips.format tip false
                             if tips.Length > 0 && inbox.CurrentQueueLength = 0 then

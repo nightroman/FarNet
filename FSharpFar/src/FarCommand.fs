@@ -9,10 +9,8 @@ open Session
 open System
 open System.IO
 open Command
-open Options
 open FarStdWriter
 open FarInteractive
-open Options
 open Config
 
 [<System.Runtime.InteropServices.Guid "2b52615b-ea79-46e4-ac9d-78f33599db62">]
@@ -90,13 +88,13 @@ type FarCommand () =
                 | Some path ->
                     path
                 | None -> 
-                    match tryConfigPathForDirectory far.Panel.CurrentDirectory with
+                    match farTryPanelDirectory () |> Option.bind tryConfigPathInDirectory with
                     | Some path ->
                         path
                     | None ->
                         invalidOp "Cannot find configuration file."
             
-            let config = getConfigFromIniFile path
+            let config = readConfigFromFile path
             
             let errors, code = Checker.compile config |> Async.RunSynchronously
             if errors.Length > 0 then

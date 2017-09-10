@@ -3,10 +3,10 @@
 // Copyright (c) Roman Kuzmin
 
 module FSharpFar.Config
-
 open System
 open System.IO
 
+/// Configuration data for checkers and sessions.
 type Config = {
     FscArgs: string []
     FsiArgs: string []
@@ -15,13 +15,16 @@ type Config = {
     UseFiles: string []
 }
 
+/// Empty configuration.
+let empty = {FscArgs = [||]; FsiArgs = [||]; OutArgs = [||]; LoadFiles = [||]; UseFiles = [||]}
+
 type private ConfigSection =
     | NoSection
     | FscSection
     | FsiSection
     | OutSection
 
-type private ConfigData =
+type private ConfigLine =
     | Empty
     | Comment
     | Section of string
@@ -48,8 +51,6 @@ let private parse (line: string) =
         else
             Pair (text.Substring(0, i).Trim (), text.Substring(i + 1).Trim ())
 
-let empty = {FscArgs = [||]; FsiArgs = [||]; OutArgs = [||]; LoadFiles = [||]; UseFiles = [||]}
-
 let private resolve root key value =
     let value = Environment.ExpandEnvironmentVariables(value).Replace ("__SOURCE_DIRECTORY__", root)
     match key with
@@ -58,7 +59,7 @@ let private resolve root key value =
             Path.GetFullPath (Path.Combine(root, value))
         else
             value
-    | "" | "-l" | "--lib" | "-o" | "--out" | "--use" ->
+    | "" | "-l" | "--lib" | "-o" | "--out" | "--use" | "--doc" ->
         if Path.IsPathRooted value then
             Path.GetFullPath value
         else
@@ -66,7 +67,7 @@ let private resolve root key value =
     | _ ->
         value
 
-let getConfigFromIniFile path =
+let readConfigFromFile path =
     let lines = File.ReadAllLines path
     let root = Path.GetDirectoryName path
 
@@ -140,3 +141,36 @@ let getConfigFromIniFile path =
         LoadFiles = loadScripts.ToArray ()
         UseFiles = useScripts.ToArray ()
     }
+
+/// Gets and caches the config from a file.
+let getConfigFromFileCached =
+    let cache = System.Collections.Concurrent.ConcurrentDictionary<string, DateTime * Config> StringComparer.OrdinalIgnoreCase
+    fun path ->
+        let time1 = File.GetLastWriteTime path
+        let add path = time1, readConfigFromFile path
+        let update path ((time2, _) as value) = if time1 = time2 then value else add path
+        let _, config = cache.AddOrUpdate (path, add, update)
+        config
+
+/// Gets some config path in a directory.
+let tryConfigPathInDirectory dir =
+    match Directory.GetFiles (dir, "*.fs.ini") with
+    | [|file|] ->
+        Some file
+    | _ ->
+        None
+
+/// Gets the local or main config path for a file.
+let getConfigPathForFile path =
+    let dir = Path.GetDirectoryName path
+    match tryConfigPathInDirectory dir with
+    // local config
+    | Some file ->
+        file
+    // main config
+    | _ ->
+        farMainConfigPath
+
+/// Gets the local or main config for a file.
+let getConfigForFile path =
+    getConfigFromFileCached (getConfigPathForFile path)
