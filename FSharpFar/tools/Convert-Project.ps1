@@ -94,7 +94,6 @@ try {
 
 	### convert options
 	$fsc = [System.Collections.Generic.List[string]]@()
-	$fsi = [System.Collections.Generic.List[string]]@()
 	$out = [System.Collections.Generic.List[string]]@()
 	foreach($option in $options) {
 		if ($option -match '^(-r|--reference|-l|--lib|--doc):(.*)') {
@@ -138,7 +137,7 @@ try {
 		}
 		else {
 			### source files
-			$fsi.Add((Convert-Value $option))
+			$fsc.Add((Convert-Value $option))
 		}
 	}
 
@@ -150,9 +149,6 @@ try {
 		''
 		'[out]'
 		$out
-		''
-		'[fsi]'
-		$fsi
 	) | Set-Content -LiteralPath $target
 }
 finally {

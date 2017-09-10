@@ -14,7 +14,7 @@
 ***
 ## Synopsis
 
-F# interactive, scripting, compiling, and editor services for Far Manager.
+F# interactive, scripting, compiler, and editor services for Far Manager.
 
 **Project**
 
@@ -52,7 +52,7 @@ Use `[F11]` \ `FSharpFar` to open the module menu:
 - **Load**
     - Evaluates the script opened in editor (`#load`).
 - **Tips**
-    - Shows type tips for the symbol at the caret.
+    - Shows help tips for the symbol at the caret.
 - **Check**
     - Checks the current F# file for errors.
 - **Errors**
@@ -64,7 +64,7 @@ Use `[F11]` \ `FSharpFar` to open the module menu:
 - **Enable|Disable auto tips**
     - Toggles auto tips on mouse moves over symbols.
 - **Enable|Disable auto checks**
-    - Toggles auto checks for errors on typing in the editor.
+    - Toggles auto checks for errors on changes in the editor.
 
 ***
 ## <a id="commands"/> Commands
@@ -151,12 +151,12 @@ The default is the single `*.fs.ini` in the active panel directory.
 
 Requirements:
 
-- At least one source file must be in the `[fsi]` section.
-- In the `[fsc]` section specify `{-o|--out}:<output dll or exe>`.
-- To compile a dll, i.e. not exe, add `-a|--target:library` to `[fsc]`.
+- At least one source file must be specified in the configuration.
+- In the `[out]` section specify `{-o|--out}:<output dll or exe>`.
+- To compile a dll, add `-a|--target:library` to `[out]`.
 
-This command lets you to compile any .NET assemblies per the specified configuration file.
-But the main goal is making FarNet modules right in FSharpFar without installing anything else.
+The main goal is compiling FarNet modules in FSharpFar without installing anything else.
+But this command can compile any .NET assemblies from the specified configuration file.
 
 ***
 ## <a id="interactive"/> Interactive
@@ -194,7 +194,7 @@ The history keys:
 
 ## <a id="configuration"/> Configuration
 
-Each session is associated with its configuration file path, existing or not.
+Each interactive session is associated with its configuration file path, existing or not.
 In the latter case, the path is just used as a session ID.
 
 Editor services are looking for a configuration file `*.fs.ini` in the source directory.
@@ -202,37 +202,44 @@ If such a file is not found or there are two or more then the main configuration
 
 The main configuration file is *%FARPROFILE%\FarNet\FSharpFar\main.fs.ini*.
 
-The configuration file format is somewhat similar to "ini" with sections and options.
+The configuration file format is similar to "ini" with sections and options.
 Options are the same as for `fsc.exe` and `fsi.exe`, one per line.
 Empty lines and lines staring with `;` are ignored.
 
-There are three sections:
+**Available sections:**
 
-- `[fsc]` defines [F# Compiler Options](https://docs.microsoft.com/en-us/dotnet/articles/fsharp/language-reference/compiler-options).
-  `-l|--lib` and `-r|--reference` are the most important for sessions and editor services.
-- `[fsi]` defines source files and [F# Interactive Options](https://docs.microsoft.com/en-us/dotnet/articles/fsharp/tutorials/fsharp-interactive/fsharp-interactive-options).
-  Source files are specified literally and used for sessions and services.
-  `--use` files are used for interactive sessions.
-- `[out]` defines options for `fs: //compile`, normally `-a|--target` and `-o|--out`.
+**`[fsc]`** is the main section. It defines common [F# Compiler Options](https://docs.microsoft.com/en-us/dotnet/articles/fsharp/language-reference/compiler-options)
+and common source files. This section is often enough. Other sections add extra options or override defined in `[fsc]`.
 
-Preprocessing:
+**`[fsi]`** defines [F# Interactive Options](https://docs.microsoft.com/en-us/dotnet/articles/fsharp/tutorials/fsharp-interactive/fsharp-interactive-options)
+and source files used for interactive sessions, including load and exec scenarios.
+`--use` files are particularly useful for interactive sessions.
+
+**`[out]`** defines options for `fs: //compile`, normally `-a|--target` and `-o|--out`.
+It is not needed if you are not compiling .NET assemblies in FSF.
+
+**`[etc]`** defines options for "Editor Tips and Checks", hence the name.
+It is used in special cases, for example, `--define:DEBUG` only in `[etc]` for
+tips and checks of `#if DEBUG` code, while `[fsi]` and `[out]` do not use DEBUG.
+
+**Preprocessing:**
 
 - Environment variables defined as `%VARIABLE%` are expanded to their values.
 - `__SOURCE_DIRECTORY__` is replaced with the configuration file directory.
 - Paths are relative to the configuration file directory.
 
-Predefined:
+**Predefined:**
 
 - The *%FARHOME%* directory is predefined as `--lib`.
 - *FarNet.dll*, *FarNet.Tools.dll*, *FSharpFar.dll* are predefined as `--reference`.
 
-Important:
+**Important:**
 
-- Source files are specified in `[fsi]`, not in `[fsc]`.
 - Output options are specified in `[out`], not in `[fsc]`.
+- Interactive options are specified in `[fsi`], not in `[fsc]`.
 - Relative `-r|--reference` paths must start with `.\` or `..\`.
 
-Sample configuration:
+**Sample configuration:**
 
 ```ini
     [fsc]
@@ -244,14 +251,14 @@ Sample configuration:
     --define:DEBUG
     --lib:%SOME_DIR%
     --lib:..\packages
+    file1.fs
+    file2.fs
 
     [out]
     --target:library
     --out:bin\MyLibrary.dll
 
     [fsi]
-    file1.fs
-    file2.fs
     --use:main.fsx
 ```
 
@@ -270,11 +277,11 @@ Sample `--use` file:
     // reference assemblies
     #r "MyLib.dll"
 
-    // open namespaces and modules
+    // namespaces and modules
     open FarNet
     open System
 
-    // define stuff for interactive
+    // definitions for interactive
     let show text = far.Message text
 ````
 
@@ -283,7 +290,7 @@ Sample `--use` file:
 
 Editor services are automatically available for F# files opened in editors.
 If files are not self-contained then use the configuration file `*.fs.ini` in the same directory.
-Required references should be specified by `-r|--reference` in `[fsc]` and source files in `[fsi]`.
+Specify the required source files and references, normally in the main section `[fsc]` with some tweaks in `[etc]`.
 
 **Code completion**
 

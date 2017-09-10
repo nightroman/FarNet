@@ -62,8 +62,6 @@ type Session private (configFile) =
         use progress = new Progress "Loading session..."
 
         let config = if File.Exists configFile then getConfigFromFileCached configFile else Config.empty
-        let loadFiles = ResizeArray ()
-        let useFiles = ResizeArray ()
         let args = [|
             yield "fsi.exe" //! dummy, else --nologo is consumed
             yield "--nologo"
@@ -71,8 +69,6 @@ type Session private (configFile) =
             yield! defaultCompilerArgs
             yield! config.FscArgs
             yield! config.FsiArgs
-            loadFiles.AddRange config.LoadFiles
-            useFiles.AddRange config.UseFiles
         |]
         let fsiConfig = FsiEvaluationSession.GetDefaultConfiguration ()
 
@@ -87,12 +83,12 @@ type Session private (configFile) =
         // load and use files
         use writer = new StringWriter ()
         try
-            for file in loadFiles do
+            for file in Seq.concat [config.FscFiles; config.FsiFiles] do
                 let result, warnings = fsiSession.EvalInteractionNonThrowing (sprintf "#load @\"%s\"" file)
                 for w in warnings do writer.WriteLine (strErrorFull w)
                 match result with Choice2Of2 exn -> raise exn | _ -> ()
 
-            for file in useFiles do
+            for file in config.FsiFiles2 do
                 let code = File.ReadAllText file
                 let result, warnings = fsiSession.EvalInteractionNonThrowing code
                 for w in warnings do writer.WriteLine (strErrorFull w)

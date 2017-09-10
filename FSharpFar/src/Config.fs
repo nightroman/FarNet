@@ -9,20 +9,35 @@ open System.IO
 /// Configuration data for checkers and sessions.
 type Config = {
     FscArgs: string []
+    FscFiles: string []
     FsiArgs: string []
+    FsiFiles: string []
+    FsiFiles2: string []
     OutArgs: string []
-    LoadFiles: string []
-    UseFiles: string []
+    OutFiles: string []
+    EtcArgs: string []
+    EtcFiles: string []
 }
 
 /// Empty configuration.
-let empty = {FscArgs = [||]; FsiArgs = [||]; OutArgs = [||]; LoadFiles = [||]; UseFiles = [||]}
+let empty = {
+    FscArgs = [||]
+    FscFiles = [||]
+    FsiArgs = [||]
+    FsiFiles = [||]
+    FsiFiles2 = [||]
+    OutArgs = [||]
+    OutFiles = [||]
+    EtcArgs = [||]
+    EtcFiles = [||]
+}
 
 type private ConfigSection =
     | NoSection
     | FscSection
     | FsiSection
     | OutSection
+    | EtcSection
 
 type private ConfigLine =
     | Empty
@@ -72,16 +87,19 @@ let readConfigFromFile path =
     let root = Path.GetDirectoryName path
 
     let fscArgs = ResizeArray ()
+    let fscFiles = ResizeArray ()
     let fsiArgs = ResizeArray ()
+    let fsiFiles = ResizeArray ()
+    let fsiFiles2 = ResizeArray ()
     let outArgs = ResizeArray ()
-    let loadScripts = ResizeArray ()
-    let useScripts = ResizeArray ()
+    let outFiles = ResizeArray ()
+    let etcArgs = ResizeArray ()
+    let etcFiles = ResizeArray ()
 
     let mutable currentSection = NoSection
     let mutable lineNo = 0
 
-    let raiseSection () = invalidOp "Expected section [fsc]|[fsi]|[out], found data or unknown section."
-    let raiseUnexpected () = invalidOp "Unexpected value."
+    let raiseSection () = invalidOp "Expected section [fsc|fsi|out|etc], found data or unknown section."
     try
         for line in lines do
             lineNo <- lineNo + 1
@@ -94,6 +112,7 @@ let readConfigFromFile path =
                     | "fsc" -> FscSection
                     | "fsi" -> FsiSection
                     | "out" -> OutSection
+                    | "etc" -> EtcSection
                     | _ -> raiseSection ()
             | Switch it ->
                 match currentSection with
@@ -103,15 +122,21 @@ let readConfigFromFile path =
                     fsiArgs.Add it
                 | OutSection ->
                     outArgs.Add it
+                | EtcSection ->
+                    etcArgs.Add it
                 | NoSection ->
                     raiseSection ()
             | Value it ->
+                let file = resolve root "" it
                 match currentSection with
+                | FscSection ->
+                    fscFiles.Add file
                 | FsiSection ->
-                    loadScripts.Add (resolve root "" it)
-                | FscSection
+                    fsiFiles.Add file
                 | OutSection ->
-                    raiseUnexpected ()
+                    outFiles.Add file
+                | EtcSection ->
+                    etcFiles.Add file
                 | NoSection ->
                     raiseSection ()
             | Pair (key, value) ->
@@ -124,11 +149,13 @@ let readConfigFromFile path =
                     fscArgs.Add (key + ":" + text)
                 | FsiSection ->
                     if key = "--use" then
-                        useScripts.Add text
+                        fsiFiles2.Add text
                     else
                         fsiArgs.Add (key + ":" + text)
                 | OutSection ->
                     outArgs.Add (key + ":" + text)
+                | EtcSection ->
+                    etcArgs.Add (key + ":" + text)
                 | NoSection ->
                     raiseSection ()
      with e ->
@@ -136,10 +163,14 @@ let readConfigFromFile path =
 
     {
         FscArgs = fscArgs.ToArray ()
+        FscFiles = fscFiles.ToArray ()
         FsiArgs = fsiArgs.ToArray ()
+        FsiFiles = fsiFiles.ToArray ()
+        FsiFiles2 = fsiFiles2.ToArray ()
         OutArgs = outArgs.ToArray ()
-        LoadFiles = loadScripts.ToArray ()
-        UseFiles = useScripts.ToArray ()
+        OutFiles = outFiles.ToArray ()
+        EtcArgs = etcArgs.ToArray ()
+        EtcFiles = etcFiles.ToArray ()
     }
 
 /// Gets and caches the config from a file.

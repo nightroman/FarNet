@@ -23,19 +23,20 @@ let check file text config = async {
     let! options = async {
         // get script options combined with ini, needed for #I, #r and #load in the script
         let ourFlags = [|
-            // our default args
             yield! defaultCompilerArgs
-            // user fsc args
             yield! config.FscArgs
+            yield! config.EtcArgs
         |]
 
-        // #load files from config
-        let ourFiles = ResizeArray config.LoadFiles
+        // files from config
+        let ourFiles = ResizeArray ()
         let addFiles paths =
             for f in paths do
                 let f1 = Path.GetFullPath f
                 if ourFiles.FindIndex (fun x -> f1.Equals (x, StringComparison.OrdinalIgnoreCase)) < 0 then
                     ourFiles.Add f1
+        addFiles config.FscFiles
+        addFiles config.EtcFiles
 
         if isScriptFileName file then
             // GetProjectOptionsFromScript gets script #load files and the script itself as SourceFiles
@@ -79,15 +80,12 @@ let compile (config: Config) = async {
 
     // combine options    
     let args = [|
-        // (0) dummy
         yield "fsc.exe"
-        // (1) our predefined
         yield! defaultCompilerArgs
-        // (2) common options
         yield! config.FscArgs
-        // (3) output + redefines
         yield! config.OutArgs
-        yield! config.LoadFiles
+        yield! config.FscFiles
+        yield! config.OutFiles
     |]
 
     // compile and get errors and exit code
