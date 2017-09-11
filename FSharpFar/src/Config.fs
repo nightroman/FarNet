@@ -70,6 +70,7 @@ let private resolve root key value =
     let value = Environment.ExpandEnvironmentVariables(value).Replace ("__SOURCE_DIRECTORY__", root)
     match key with
     | "-r" | "--reference" ->
+        // resolve a path only if it starts with "." else use as it is, e.g. `-r:System.Management.Automation`
         if value.[0] = '.' then
             Path.GetFullPath (Path.Combine(root, value))
         else

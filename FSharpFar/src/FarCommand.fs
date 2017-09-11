@@ -34,7 +34,7 @@ type FarCommand () =
             | _ -> far.UI.WriteLine "Not opened."
 
         | Open args ->
-            let ses = match args.With with | Some path -> Session.FindOrCreate path | _ -> getMainSession ()
+            let ses = match args.With with | Some path -> Session.GetOrCreate path | _ -> getMainSession ()
             FarInteractive(ses).Open ()
 
         | Code code ->
@@ -49,7 +49,7 @@ type FarCommand () =
 
         | Exec args ->
             use std = new FarStdWriter ()
-            let ses = Session.FindOrCreate (defaultArg args.With (getConfigPathForFile args.File))
+            let ses = Session.GetOrCreate (defaultArg args.With (getConfigPathForFile args.File))
             use writer = new StringWriter ()
 
             let echo =

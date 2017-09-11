@@ -16,7 +16,7 @@ let load (editor: IEditor) =
     editor.Save ()
 
     let file = editor.FileName
-    let ses = Session.FindOrCreate (getConfigPathForFile file)
+    let ses = Session.GetOrCreate (getConfigPathForFile file)
     let temp = far.TempName "F#"
 
     do
@@ -36,7 +36,7 @@ let showErrors (editor: IEditor) =
         editor.MyErrors.Value
         |> Array.sortBy (fun x -> x.FileName, x.StartLineAlternate, x.StartColumn)
 
-    let menu = far.CreateListMenu (Title = "F# errors", ShowAmpersands = true, UsualMargins = true)
+    let menu = far.CreateListMenu (Title = "F# errors", ShowAmpersands = true, UsualMargins = true, IncrementalOptions = PatternOptions.Substring)
 
     errors |> menu.ShowItems strErrorLine (fun error ->
         editor.GoTo (error.StartColumn, error.StartLineAlternate - 1)
@@ -123,7 +123,7 @@ let usesInFile (editor: IEditor) =
 
     progress.Done ()
 
-    let menu = far.CreateMenu (Title = "F# uses", ShowAmpersands = true)
+    let menu = far.CreateListMenu (Title = "F# uses", ShowAmpersands = true, UsualMargins = true, IncrementalOptions = PatternOptions.Substring)
 
     let strUseLine (x: FSharpSymbolUse) =
         let range = x.RangeAlternate

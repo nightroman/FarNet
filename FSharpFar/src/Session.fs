@@ -77,7 +77,7 @@ type Session private (configFile) =
             try
                 FsiEvaluationSession.Create (fsiConfig, args, new StringReader "", evalWriter, evalWriter)
             with exn ->
-                // case: `//define=DEBUG` in [fsc]
+                // case: `//--define:DEBUG` in [fsc]
                 raise (InvalidOperationException ("Cannot create a session. If you use a config file check its syntax and data.", exn))
 
         // load and use files
@@ -99,19 +99,21 @@ type Session private (configFile) =
         fsiSession, writer.ToString (), config
 
     let eval writer eval x =
-        evalWriter.Writer <- writer
-        let result, warnings = eval x
-        //! do not leave the temp writer attached, fsi still writes, e.g. when PSF loads assemblies
-        evalWriter.Writer <- voidWriter
-        {
-            Warnings = warnings
-            Exception = match result with Choice2Of2 exn -> exn | _ -> null
-        }
+        try
+            evalWriter.Writer <- writer
+            let result, warnings = eval x
+            {
+                Warnings = warnings
+                Exception = match result with Choice2Of2 exn -> exn | _ -> null
+            }
+        finally
+            // do not leave the temp writer attached, fsi still writes, e.g. about loaded assemblies
+            evalWriter.Writer <- voidWriter
 
     static member TryFind (path) =
         sessions |> List.tryFind (fun x -> x.IsSameConfigFile path)
 
-    static member FindOrCreate (path) =
+    static member GetOrCreate (path) =
         match Session.TryFind path with
         | Some s -> s
         | _ ->
@@ -129,35 +131,35 @@ type Session private (configFile) =
         voidWriter.Dispose ()
         (fsiSession :> IDisposable).Dispose ()
 
-    member x.ConfigFile = configFile
+    member val ConfigFile = configFile
 
-    member x.Config = config
+    member val Config = config
 
-    member x.DisplayName = sprintf "%s - %s" (Path.GetFileName configFile) (Path.GetDirectoryName configFile)
+    member val DisplayName = sprintf "%s - %s" (Path.GetFileName configFile) (Path.GetDirectoryName configFile)
 
-    member x.Errors = errors
+    member val Errors = errors
 
     [<CLIEvent>]
-    member x.OnClose = onClose.Publish
+    member val OnClose = onClose.Publish
 
-    member x.IsSameConfigFile path =
+    member __.IsSameConfigFile path =
         String.Equals (configFile, Path.GetFullPath path, StringComparison.OrdinalIgnoreCase)
 
-    member x.EvalInteraction (writer, code) =
+    member __.EvalInteraction (writer, code) =
         eval writer fsiSession.EvalInteractionNonThrowing code
 
-    member x.EvalScript (writer, filePath) =
+    member __.EvalScript (writer, filePath) =
         eval writer fsiSession.EvalScriptNonThrowing filePath
 
-    member x.GetCompletions (longIdent) =
-        //! SplitPipeline.SplitPipelineCommand. -> exn
+    member __.GetCompletions (longIdent) =
         try
             fsiSession.GetCompletions longIdent
         with _ ->
+            //! SplitPipeline.SplitPipelineCommand. -> exn
             Seq.empty
 
 /// Gets or creates the main session.
-let getMainSession () = Session.FindOrCreate farMainConfigPath
+let getMainSession () = Session.GetOrCreate farMainConfigPath
 
 /// Gets the main session or none.
 let tryFindMainSession () = Session.TryFind farMainConfigPath
