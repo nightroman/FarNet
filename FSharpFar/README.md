@@ -140,7 +140,7 @@ Sample file association:
 ````
 
 ****
-#### `fs: //compile with = <config>`
+#### `fs: //compile [with = <config>]`
 
 Compiles a dll or exe from the specified or default configuration.
 The default is the single `*.fs.ini` in the active panel directory.
@@ -183,7 +183,7 @@ Use `[F6]` in order to show the history of interactive input.
 The history keys:
 
 - `[Enter]` - append text to the end.
-- `[Del]`, `[CtrlR]` - clean the history.
+- `[Del]`, `[CtrlR]` - tidy up the history.
 - Other keys are for incremental filtering.
 
 ***
