@@ -48,21 +48,26 @@ type FarCommand () =
             writeResult r
 
         | Exec args ->
-            use std = new FarStdWriter ()
-            let ses = Session.GetOrCreate (defaultArg args.With (getConfigPathForFile args.File))
-            use writer = new StringWriter ()
+            use _std = new FarStdWriter ()
+            let ses =
+                match args.With, args.File with
+                | Some configPath, _ -> configPath
+                | _, Some filePath -> getConfigPathForFile filePath
+                | _ -> farMainConfigPath
+                |> Session.GetOrCreate
 
             let echo =
                 (lazy (echo ())).Force
 
-            let issues r =
+            use writer = new StringWriter ()
+            let validate r =
                 if r.Warnings.Length > 0 || not (isNull r.Exception) then
                     echo ()
                     far.UI.Write (writer.ToString ())
                     writeResult r
-                    true
-                else
                     false
+                else
+                    true
 
             // session errors first or issues may look cryptic
             if ses.Errors.Length > 0 then
@@ -70,18 +75,23 @@ type FarCommand () =
                 far.UI.Write ses.Errors
 
             // eval anyway, session errors may be warnings
-            let r = ses.EvalScript (writer, args.File)
-            if issues r then () else
+            let ok =
+                match args.File with
+                | Some file ->
+                    let r = ses.EvalScript (writer, file)
+                    validate r
+                | None ->
+                    true
 
-            match args.Code with
-            | Some code ->
+            match ok, args.Code with
+            | true, Some code ->
                 let r = ses.EvalInteraction (writer, code)
-                issues r |> ignore
+                validate r |> ignore
             | _ ->
                 ()
 
         | Compile args ->
-            use progress = new Progress "Compiling..."
+            use _progress = new Progress "Compiling..."
 
             let path =
                 match args.With with

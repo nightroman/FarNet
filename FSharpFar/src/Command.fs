@@ -12,7 +12,7 @@ let reCommand = Regex @"^\s*//(\w+)\s*(.*)"
 let reQuit = Regex @"^\s*#quit\b"
 
 type OpenArgs = {With : string option}
-type ExecArgs = {File : string; With : string option; Code : string option}
+type ExecArgs = {File : string option; With : string option; Code : string option}
 
 type Command =
     | Quit
@@ -45,7 +45,7 @@ let command name rest sb =
         }
     | "exec" ->
         Exec {
-            File = popString "file" sb |> farResolvePath
+            File = popStringOpt "file" sb |> Option.map farResolvePath
             With = popStringOpt "with" sb |> Option.map farResolvePath
             Code = if String.IsNullOrWhiteSpace rest then None else Some rest
         }

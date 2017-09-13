@@ -90,14 +90,14 @@ F# directives:
 ````
 
 ***
-### FSharpFar module commands
+### F# session commands
 
 Module commands start with two slashes after the prefix.
 
 ****
-#### `fs: //open with = <config>`
+#### `fs: //open [with = <config>]`
 
-Opens an interactive session with the specified configuration.
+Opens an interactive session with the specified or main configuration.
 
 Sample file association:
 
@@ -112,18 +112,23 @@ Sample file association:
 ````
 
 ****
-#### `fs: //exec file = <script> [; with = <config>] [;; F# code]`
+#### `fs: //exec [file = <script>] [; with = <config>] [;; F# code]`
 
 Invokes the script with the specified or default configuration.
 The default is defined by a `*.fs.ini` in the script folder.
 If such a file is missing then the main session is used.
 
-There are no script parameters as such.
-But F# code after `;;` may call functions with parameters:
+Some F# code after `;;` may call loaded functions.
+Examples:
 
 ````
+    fs: //exec file = Script1.fsx
     fs: //exec file = Module1.fs ;; Module1.test "answer" 42
+    fs: //exec with = %TryPanelFSharp%\TryPanelFSharp.fs.ini ;; TryPanelFSharp.run ()
 ````
+
+Note that the first two commands evaluate specified files on every call.
+The last command loads files once, then it just runs the code after `;;`.
 
 Sample file association:
 
@@ -345,7 +350,7 @@ How to plug F# scripts into Far Manager and use them as tools?
 In order to use F# script tools in practice, use the commands like:
 
 ````
-    fs: //exec file = <script> [; with = <config>] [;; F# code]
+    fs: //exec [file = <script>] [; with = <config>] [;; F# code]
 ````
 
 Commands in Far Manager may be invoked is several ways:
