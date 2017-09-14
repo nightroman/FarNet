@@ -7,7 +7,7 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="fsharp">
 <annotation><documentation><![CDATA[
 
-fsharp.hrc by Roman Kuzmin, aka nightroman, 2016-12-15
+fsharp.hrc by Roman Kuzmin, aka nightroman, 2017-09-14
 
 ]]></documentation></annotation>
 
@@ -120,8 +120,7 @@ region1="Keyword" region2="Keyword" region3="Keyword" region4="Keyword" region5=
 
 <!-- Module -->
 <regexp region="def:Outlined"
-match="/^\s*(module|namespace)\b\s*(public|private|internal)?\s+(%ident;)/"
-region1="Keyword" region2="Keyword" region3="Module"
+match="/^\s*(?{Keyword}module|namespace)\b(?:\s+(?{Keyword}public|private|internal))?(?:\s+(?{Keyword}rec))?\s+(?{Module}%ident;)/"
 />
 
 <!-- Type -->
