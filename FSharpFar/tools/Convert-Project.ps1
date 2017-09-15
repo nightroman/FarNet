@@ -24,7 +24,7 @@
 
 param(
 	[Parameter()]
-	[string]$Path = "C:\ROM\FarDev\Code\FSharpFar\src\FSharpFar.fsproj",
+	[string]$Path,
 	[hashtable]$Parameters = @{}
 )
 Set-StrictMode -Version Latest
@@ -62,7 +62,7 @@ if ($Path) {
 	if (![System.IO.File]::Exists($Path)) {throw "Missing file: $Path"}
 }
 else {
-	$projects = @(Get-Item -Filter *.fsproj)
+	$projects = @(Get-ChildItem -Filter *.fsproj)
 	if ($projects.Count -ne 1) {throw "Please, specify the project path."}
 	$Path = $projects[0].FullName
 }
@@ -96,7 +96,7 @@ try {
 	$fsc = [System.Collections.Generic.List[string]]@()
 	$out = [System.Collections.Generic.List[string]]@()
 	foreach($option in $options) {
-		if ($option -match '^(-r|--reference|-l|--lib|--doc):(.*)') {
+		if ($option -match '^(-r|--reference|-l|--lib):(.*)') {
 			$key = $matches[1]
 			$value = Convert-Value $matches[2]
 			### references
@@ -121,8 +121,8 @@ try {
 				$fsc.Add("${key}:$value")
 			}
 		}
-		elseif ($option -match '^(-o|--out):(.*)') {
-			### -o|--out
+		elseif ($option -match '^(-o|--out|--doc):(.*)') {
+			### -o|--out|--doc
 			$key = $matches[1]
 			$value = Convert-Value $matches[2]
 			$out.Add("${key}:$value")

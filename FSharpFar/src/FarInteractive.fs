@@ -1,9 +1,4 @@
-﻿
-// FarNet module FSharpFar
-// Copyright (c) Roman Kuzmin
-
-module FSharpFar.FarInteractive
-
+﻿module FSharpFar.FarInteractive
 open FarNet
 open FarNet.Tools
 open Command
@@ -34,7 +29,7 @@ type FarInteractive(session: Session) =
     override x.KeyPressed key =
         match key.VirtualKeyCode with
         | KeyCode.Tab when key.Is () && not x.Editor.SelectionExists ->
-            completeCode x.Editor session.GetCompletions
+            Editor.completeBy x.Editor session.GetCompletions
         | _ ->
             base.KeyPressed key
 

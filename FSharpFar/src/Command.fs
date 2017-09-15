@@ -1,9 +1,4 @@
-﻿
-// FarNet module FSharpFar
-// Copyright (c) Roman Kuzmin
-
-module FSharpFar.Command
-
+﻿module FSharpFar.Command
 open System
 open System.Data.Common
 open System.Text.RegularExpressions

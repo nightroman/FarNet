@@ -1,11 +1,5 @@
-﻿
-// FarNet module FSharpFar
-// Copyright (c) Roman Kuzmin
-
-namespace FSharpFar
-
+﻿namespace FSharpFar
 open FarNet
-open System
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
 [<System.Runtime.InteropServices.Guid "D122FBB8-26FA-4873-8245-A617CE200BCF">]

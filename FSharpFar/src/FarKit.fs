@@ -1,10 +1,5 @@
-﻿
-// FarNet module FSharpFar
-// Copyright (c) Roman Kuzmin
-
-[<AutoOpen>]
+﻿[<AutoOpen>]
 module FSharpFar.FarKit
-
 open FarNet
 open System
 open System.IO
@@ -22,11 +17,11 @@ let farMainConfigPath = Path.Combine (farRoaminData, "main.fs.ini")
 /// Default flags for checkers and sessions
 let defaultCompilerArgs =
     let dir = Environment.GetEnvironmentVariable "FARHOME"
-    [|
+    [
         "-r:" + dir + @"\FarNet\FarNet.dll"
         "-r:" + dir + @"\FarNet\FarNet.Tools.dll"
         "-r:" + dir + @"\FarNet\Modules\FSharpFar\FSharpFar.dll"
-    |]
+    ]
 
 type IAnyMenu with
     /// Shows the menu of named actions.
@@ -170,22 +165,6 @@ let isScriptFileName (fileName: string) =
 
 let isFSharpFileName (fileName: string) =
     isScriptFileName fileName || fileName.EndsWith (".fs", StringComparison.OrdinalIgnoreCase)
-
-let completeCode (editor: IEditor) getCompletions =
-    let line = editor.Line
-    let caret = line.Caret
-    if caret = 0 || caret > line.Length then false else
-
-    let text = line.Text
-    if Char.IsWhiteSpace text.[caret - 1] then false else
-
-    match Completer.complete getCompletions text caret with
-    | Some (replacementIndex, completions) ->
-        completeLine line replacementIndex (caret - replacementIndex) completions
-        editor.Redraw ()
-        true
-    | _ ->
-        false
 
 /// Shows a message with the left aligned text.
 let showText text title =

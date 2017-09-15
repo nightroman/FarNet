@@ -1,9 +1,4 @@
-﻿
-// FarNet module FSharpFar
-// Copyright (c) Roman Kuzmin
-
-module FSharpFar.ProxyWriter
-
+﻿module FSharpFar.ProxyWriter
 open System.IO
 
 type ProxyWriter (writer: TextWriter) =

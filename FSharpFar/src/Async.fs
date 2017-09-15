@@ -1,12 +1,6 @@
-
-(*
-    Prototype helpers Far async flows.
-*)
-
 module FarNet.Async
 open FarNet
 open System
-open System.IO
 
 /// Posts the Far job (not for opening panels).
 let inline private post f =

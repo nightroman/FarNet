@@ -1,9 +1,4 @@
-﻿
-// FarNet module FSharpFar
-// Copyright (c) Roman Kuzmin
-
-module FSharpFar.Session
-
+﻿module FSharpFar.Session
 open System
 open System.IO
 open Config
@@ -59,7 +54,7 @@ type Session private (configFile) =
     let evalWriter = new ProxyWriter (voidWriter)
 
     let fsiSession, errors, config =
-        use progress = new Progress "Loading session..."
+        use _progress = new Progress "Loading session..."
 
         let config = if File.Exists configFile then getConfigFromFileCached configFile else Config.empty
         let args = [|
@@ -83,12 +78,12 @@ type Session private (configFile) =
         // load and use files
         use writer = new StringWriter ()
         try
-            for file in Seq.concat [config.FscFiles; config.FsiFiles] do
+            for file in config.FscFiles @ config.FsiFiles do
                 let result, warnings = fsiSession.EvalInteractionNonThrowing (sprintf "#load @\"%s\"" file)
                 for w in warnings do writer.WriteLine (strErrorFull w)
                 match result with Choice2Of2 exn -> raise exn | _ -> ()
 
-            for file in config.FsiFiles2 do
+            for file in config.UseFiles do
                 let code = File.ReadAllText file
                 let result, warnings = fsiSession.EvalInteractionNonThrowing code
                 for w in warnings do writer.WriteLine (strErrorFull w)

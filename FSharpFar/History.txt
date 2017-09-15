@@ -5,7 +5,8 @@ FarNet 5.2.6
 
 = 1.5.1 =
 
-//exec: file is optional, `with + code` is often enough and effective.
+- //exec: file is optional, `with + code` is often enough and more effective.
+- Convert-Project.ps1: fixes.
 
 = 1.5.0 =
 

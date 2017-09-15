@@ -1,18 +1,14 @@
-﻿
-// FarNet module FSharpFar
-// Copyright (c) Roman Kuzmin
+﻿module FSharpFar.FarStdWriter
+open FarNet
+open System
+open System.IO
+open System.Text
 
 (*
     2016-09-14 Why buffer:
     - UI.Write is slow, so we avoid too frequent calls
     - Mantis 3297, printfn "x %s y" writes values as x, %s, y and they erase each other.
 *)
-
-module FSharpFar.FarStdWriter
-open FarNet
-open System
-open System.IO
-open System.Text
 
 /// Replaces standard Out and Error with a specified writer function.
 type StdWriter (write) as this =

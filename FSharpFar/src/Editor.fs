@@ -1,13 +1,7 @@
-﻿
-// FarNet module FSharpFar
-// Copyright (c) Roman Kuzmin
-
-module FSharpFar.Editor
-
+﻿module FSharpFar.Editor
 open FarNet
 open Config
 open Session
-open FsAutoComplete
 open System
 open System.IO
 open Microsoft.FSharp.Compiler.SourceCodeServices
@@ -71,7 +65,7 @@ let tips (editor: IEditor) =
     let caret = editor.Caret
     let lineStr = editor.[caret.Y].Text
 
-    match Parsing.findLongIdents (caret.X, lineStr) with
+    match Parser.findLongIdents caret.X lineStr with
     | None -> ()
     | Some (column, idents) ->
 
@@ -96,7 +90,7 @@ let usesInFile (editor: IEditor) =
     let caret = editor.Caret
     let lineStr = editor.[caret.Y].Text
 
-    match Parsing.findLongIdents (caret.X, lineStr) with
+    match Parser.findLongIdents caret.X lineStr with
     | None -> ()
     | Some (col, identIsland) ->
 
@@ -143,7 +137,7 @@ let usesInProject (editor: IEditor) =
     let caret = editor.Caret
     let lineStr = editor.[caret.Y].Text
 
-    match Parsing.findLongIdents (caret.X, lineStr) with
+    match Parser.findLongIdents caret.X lineStr with
     | None -> ()
     | Some (col, identIsland) ->
 
@@ -169,25 +163,21 @@ let usesInProject (editor: IEditor) =
     | None -> ()
     | Some (uses, sym) ->
 
-    progress.Done ()
-
-    let menu = far.CreateMenu (Title = "F# uses", ShowAmpersands = true)
-
-    let mutable map = Map.empty
-    let lines file =
-        match map.TryFind file with
-        | Some r -> r
-        | _ ->
-            let r = File.ReadAllLines file
-            map <- map.Add (file, r)
-            r
+    let fileLines =
+        uses
+        |> Array.map (fun x -> x.FileName)
+        |> Array.distinct
+        |> Array.map (fun file -> file, File.ReadAllLines file)
+        |> Map.ofArray
 
     use writer = new StringWriter ()
     for x in uses do
-        let lines = lines x.FileName
+        let lines = fileLines.[x.FileName]
         let range = x.RangeAlternate
         fprintfn writer "%s(%d,%d): %s" x.FileName range.StartLine (range.StartColumn + 1) lines.[range.StartLine - 1]
 
+    progress.Done ()
+    
     showTempText (writer.ToString ()) ("F# Uses " + sym.Symbol.FullName)
 
 let toggleAutoTips (editor: IEditor) =
@@ -217,7 +207,7 @@ let complete (editor: IEditor) =
     else
 
     // parse
-    let names, residue = Parsing.findLongIdentsAndResidue (caret.X, lineStr)
+    let names, residue = Parser.findLongIdentsAndResidue caret.X lineStr
 
     // _160922_160602
     // KO: Complete `x.ToString().C` gives global symbols.
@@ -248,5 +238,38 @@ let complete (editor: IEditor) =
     progress.Done ()
 
     completeLine editor.Line (caret.X - residue.Length) residue.Length completions
+    editor.Redraw ()
+    true
+
+let completeBy (editor: IEditor) getCompletions =
+    // skip out of text
+    let line = editor.Line
+    let caret = line.Caret
+    if caret = 0 || caret > line.Length then false else
+
+    // skip no solid base
+    let lineStr = line.Text
+    if Char.IsWhiteSpace lineStr.[caret - 1] then false else
+
+    // parse, skip none
+    let longIdent = Parser.findLongIdent caret lineStr
+    if longIdent.Length = 0 then false else
+    
+    let dot = longIdent.LastIndexOf '.'
+    let start = caret - longIdent.Length
+    let replacementIndex = if dot < 0 then start else start + dot + 1
+
+    //_161108_054202
+    let name = longIdent.Replace ("``", "")
+
+    // distinct: Sys[Tab] -> several "System"
+    // sort: System.[Tab] -> unsorted
+    let completions =
+        getCompletions name
+        |> Seq.distinct
+        |> Seq.sort
+        |> Seq.toArray
+
+    completeLine line replacementIndex (caret - replacementIndex) completions
     editor.Redraw ()
     true

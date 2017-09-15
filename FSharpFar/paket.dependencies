@@ -1,6 +1,6 @@
 framework: net45
 copy_local: false
-//references: strict
+references: strict
 
 source https://www.nuget.org/api/v2
 nuget FSharp.Compiler.Service

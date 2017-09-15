@@ -64,12 +64,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FsAutoComplete\Lexer.fs" />
-    <Compile Include="FsAutoComplete\Parser.fs" />
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="Lexer.fs" />
+    <Compile Include="Parser.fs" />
     <Compile Include="FarNet.Auto.fs" />
     <Compile Include="ProxyWriter.fs" />
-    <Compile Include="Completer.fs" />
     <Compile Include="Kit.fs" />
     <Compile Include="FarKit.fs" />
     <Compile Include="Command.fs" />
@@ -79,11 +78,11 @@
     <Compile Include="FarModule.fs" />
     <Compile Include="Settings.fs" />
     <Compile Include="FarErrorDrawer.fs" />
+    <Compile Include="Tips.fs" />
+    <Compile Include="Editor.fs" />
     <Compile Include="FarInteractive.fs" />
     <Compile Include="FarStdWriter.fs" />
     <Compile Include="FarCommand.fs" />
-    <Compile Include="Tips.fs" />
-    <Compile Include="Editor.fs" />
     <Compile Include="Async.fs" />
     <Compile Include="FarEditor.fs" />
     <Compile Include="FarTool.fs" />
@@ -119,38 +118,4 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.5'">
-      <ItemGroup>
-        <Reference Include="System.Collections.Immutable">
-          <HintPath>..\packages\System.Collections.Immutable\lib\netstandard1.0\System.Collections.Immutable.dll</HintPath>
-          <Private>False</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.5'">
-      <ItemGroup>
-        <Reference Include="System.Reflection.Metadata">
-          <HintPath>..\packages\System.Reflection.Metadata\lib\netstandard1.1\System.Reflection.Metadata.dll</HintPath>
-          <Private>False</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.5'">
-      <ItemGroup>
-        <Reference Include="System.Runtime.InteropServices.RuntimeInformation">
-          <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
-          <Private>False</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Import Project="..\packages\NETStandard.Library\build\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library\build\NETStandard.Library.targets')" Label="Paket" />
 </Project>

@@ -1,9 +1,4 @@
-﻿
-// FarNet module FSharpFar
-// Copyright (c) Roman Kuzmin
-
-namespace FSharpFar
-
+﻿namespace FSharpFar
 open System
 open System.Configuration
 open FarNet.Settings

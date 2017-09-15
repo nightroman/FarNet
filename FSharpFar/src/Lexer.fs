@@ -1,7 +1,5 @@
 //[rk] c2903ec ("Update deps to be net45 only (#199)", 2017-08-31)
-
-namespace FsAutoComplete
-
+namespace FSharpFar
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
 [<RequireQualifiedAccess>]
@@ -43,11 +41,8 @@ type private DraftToken =
 
 module Lexer =
     /// Return all tokens of current line
-    let tokenizeLine (args: string[]) lineStr =
-        let defines =
-            args |> Seq.choose (fun s -> if s.StartsWith "--define:" then Some s.[9..] else None)
-                 |> Seq.toList
-        let sourceTokenizer = FSharpSourceTokenizer(defines, Some "/tmp.fsx")
+    let tokenizeLine lineStr =
+        let sourceTokenizer = FSharpSourceTokenizer([], Some "bar")
         let lineTokenizer = sourceTokenizer.CreateLineTokenizer lineStr
         let rec loop lexState acc =
             match lineTokenizer.ScanToken lexState with
@@ -206,10 +201,9 @@ module Lexer =
                   RightColumn = token.RightColumn + 1
                   Text = lineStr.Substring(token.Token.LeftColumn, token.Token.FullMatchedLength) })
 
-    let getSymbol line col lineStr lookupKind (args: string[]) =
-        let tokens = tokenizeLine args lineStr
+    let getSymbol line col lineStr lookupKind =
+        let tokens = tokenizeLine lineStr
         try
             getSymbolFromTokens tokens line col lineStr lookupKind
         with _ ->
-            //LoggingService.LogInfo (sprintf "Getting lex symbols failed with %O" e)
             None

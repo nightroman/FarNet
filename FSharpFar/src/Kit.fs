@@ -1,10 +1,5 @@
-﻿
-// FarNet module FSharpFar
-// Copyright (c) Roman Kuzmin
-
-[<AutoOpen>]
+﻿[<AutoOpen>]
 module FSharpFar.Kit
-
 open System
 open System.Text.RegularExpressions
 

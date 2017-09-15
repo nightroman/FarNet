@@ -1,8 +1,4 @@
-﻿
-// FarNet module FSharpFar
-// Copyright (c) Roman Kuzmin
-
-[<RequireQualifiedAccess>]
+﻿[<RequireQualifiedAccess>]
 module FSharpFar.Tips
 open System
 open System.IO

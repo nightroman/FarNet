@@ -1,13 +1,7 @@
-﻿
-// FarNet module FSharpFar
-// Copyright (c) Roman Kuzmin
-
-module FSharpFar.Checker
-
+﻿module FSharpFar.Checker
 open System
 open System.IO
 open Config
-open FsAutoComplete
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
 type CheckFileResult = {
@@ -21,41 +15,45 @@ let check file text config = async {
     let checker = FSharpChecker.Create ()
 
     let! options = async {
-        // get script options combined with ini, needed for #I, #r and #load in the script
-        let ourFlags = [|
+        // config flags
+        let flags = [|
             yield! defaultCompilerArgs
             yield! config.FscArgs
             yield! config.EtcArgs
         |]
 
-        // files from config
-        let ourFiles = ResizeArray ()
+        // config files and later others
+        let files = ResizeArray ()
         let addFiles paths =
             for f in paths do
                 let f1 = Path.GetFullPath f
-                if ourFiles.FindIndex (fun x -> f1.Equals (x, StringComparison.OrdinalIgnoreCase)) < 0 then
-                    ourFiles.Add f1
+                if files.FindIndex (fun x -> f1.Equals (x, StringComparison.OrdinalIgnoreCase)) < 0 then
+                    files.Add f1
         addFiles config.FscFiles
         addFiles config.EtcFiles
 
+        // .fsx and .fs are different
         if isScriptFileName file then
-            // GetProjectOptionsFromScript gets script #load files and the script itself as SourceFiles
-            let! options, _errors = checker.GetProjectOptionsFromScript (file, text, otherFlags = ourFlags)
-            return
-                { options with
-                    SourceFiles =
-                        [|
-                            yield! ourFiles
-                            yield! options.SourceFiles
-                        |]
-                }
+            // Our flags are used for .fsx #r and #load resolution.
+            // SourceFiles: script #load files and the script itself.
+            let! options, _errors = checker.GetProjectOptionsFromScript (file, text, otherFlags = Seq.toArray flags)
+            
+            // add some new files to ours
+            addFiles options.SourceFiles
+            
+            // result options with combined files
+            return { options with SourceFiles = files.ToArray () }
         else
-            // add the file itself, case: it is not in .LoadFiles
+            // add .fs file, it may not be in config
             addFiles [file]
+
+            // make input flags
             let args = [|
-                yield! ourFlags
-                yield! ourFiles
+                yield! flags
+                yield! files
             |]
+            
+            // options from just our flags
             return checker.GetProjectOptionsFromCommandLineArgs (file, args)
     }
 
@@ -63,7 +61,7 @@ let check file text config = async {
     let checkResults =
         match checkAnswer with
         | FSharpCheckFileAnswer.Succeeded x -> x
-        | _ -> invalidOp "Unexpected checker abort."
+        | FSharpCheckFileAnswer.Aborted -> invalidOp "Unexpected checker abort."
 
     return {
         Checker = checker
@@ -75,7 +73,7 @@ let check file text config = async {
 
 let compile (config: Config) = async {
     // assert output is set
-    let hasOutOption = config.OutArgs |> Array.exists (fun x -> x.StartsWith "-o:" || x.StartsWith "--out")
+    let hasOutOption = config.OutArgs |> List.exists (fun x -> x.StartsWith "-o:" || x.StartsWith "--out:")
     if not hasOutOption then invalidOp "Configuration must have [out] {-o|--out}:<output exe or dll>."
 
     // combine options    

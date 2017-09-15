@@ -14,10 +14,9 @@ $ModuleName = 'FSharpFar'
 $ProjectRoot = 'src'
 $ProjectName = "$ModuleName.fsproj"
 
-task . Build, Clean
-
 task Init Meta, {
 	exec {paket.exe install}
+	Remove-Item paket-files
 }
 
 task Kill Clean, {
@@ -130,3 +129,9 @@ https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
 	# pack
 	exec { NuGet pack z\Package.nuspec -NoPackageAnalysis }
 }
+
+task path {
+	Add-Path tools, packages\FSharp.Compiler.Service.ProjectCracker\utilities\net45
+}
+
+task . Build, Clean

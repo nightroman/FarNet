@@ -1,8 +1,4 @@
-﻿
-// FarNet module FSharpFar
-// Copyright (c) Roman Kuzmin
-
-/// Tools available on `open FarNet`.
+﻿/// Tools available on `open FarNet`.
 [<AutoOpen>]
 module FarNet.Auto
 

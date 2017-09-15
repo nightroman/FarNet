@@ -1,15 +1,8 @@
-﻿
-
-// FarNet module FSharpFar
-// Copyright (c) Roman Kuzmin
-
-namespace FSharpFar
-
+﻿namespace FSharpFar
 open FarNet
 open FarNet.Async
 open Checker
 open Session
-open FsAutoComplete
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open System
 
@@ -91,7 +84,7 @@ type FarEditor () =
                         do! jobEditor (fun _ -> showText text "Errors")
 
                 if autoTips then
-                    match Parsing.findLongIdents (it.Column, it.Text) with
+                    match Parser.findLongIdents it.Column it.Text with
                     | None -> ()
                     | Some (column, idents) ->
                         let! fileText = jobEditor editor.GetText

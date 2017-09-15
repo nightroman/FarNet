@@ -1,35 +1,31 @@
-
-// FarNet module FSharpFar
-// Copyright (c) Roman Kuzmin
-
 module FSharpFar.Config
 open System
 open System.IO
 
 /// Configuration data for checkers and sessions.
 type Config = {
-    FscArgs: string []
-    FscFiles: string []
-    FsiArgs: string []
-    FsiFiles: string []
-    FsiFiles2: string []
-    OutArgs: string []
-    OutFiles: string []
-    EtcArgs: string []
-    EtcFiles: string []
+    FscArgs: string list
+    FscFiles: string list
+    FsiArgs: string list
+    FsiFiles: string list
+    UseFiles: string list
+    OutArgs: string list
+    OutFiles: string list
+    EtcArgs: string list
+    EtcFiles: string list
 }
 
 /// Empty configuration.
 let empty = {
-    FscArgs = [||]
-    FscFiles = [||]
-    FsiArgs = [||]
-    FsiFiles = [||]
-    FsiFiles2 = [||]
-    OutArgs = [||]
-    OutFiles = [||]
-    EtcArgs = [||]
-    EtcFiles = [||]
+    FscArgs = []
+    FscFiles = []
+    FsiArgs = []
+    FsiFiles = []
+    UseFiles = []
+    OutArgs = []
+    OutFiles = []
+    EtcArgs = []
+    EtcFiles = []
 }
 
 type private ConfigSection =
@@ -87,15 +83,15 @@ let readConfigFromFile path =
     let lines = File.ReadAllLines path
     let root = Path.GetDirectoryName path
 
-    let fscArgs = ResizeArray ()
-    let fscFiles = ResizeArray ()
-    let fsiArgs = ResizeArray ()
-    let fsiFiles = ResizeArray ()
-    let fsiFiles2 = ResizeArray ()
-    let outArgs = ResizeArray ()
-    let outFiles = ResizeArray ()
-    let etcArgs = ResizeArray ()
-    let etcFiles = ResizeArray ()
+    let mutable fscArgs = []
+    let mutable fscFiles = []
+    let mutable fsiArgs = []
+    let mutable fsiFiles = []
+    let mutable useFiles = []
+    let mutable outArgs = []
+    let mutable outFiles = []
+    let mutable etcArgs = []
+    let mutable etcFiles = []
 
     let mutable currentSection = NoSection
     let mutable lineNo = 0
@@ -118,26 +114,26 @@ let readConfigFromFile path =
             | Switch it ->
                 match currentSection with
                 | FscSection ->
-                    fscArgs.Add it
+                    fscArgs <- it :: fscArgs
                 | FsiSection ->
-                    fsiArgs.Add it
+                    fsiArgs <- it :: fsiArgs
                 | OutSection ->
-                    outArgs.Add it
+                    outArgs <- it :: outArgs
                 | EtcSection ->
-                    etcArgs.Add it
+                    etcArgs <- it :: etcArgs
                 | NoSection ->
                     raiseSection ()
             | Value it ->
                 let file = resolve root "" it
                 match currentSection with
                 | FscSection ->
-                    fscFiles.Add file
+                    fscFiles <- file :: fscFiles
                 | FsiSection ->
-                    fsiFiles.Add file
+                    fsiFiles <- file :: fsiFiles
                 | OutSection ->
-                    outFiles.Add file
+                    outFiles <- file :: outFiles
                 | EtcSection ->
-                    etcFiles.Add file
+                    etcFiles <- file :: etcFiles
                 | NoSection ->
                     raiseSection ()
             | Pair (key, value) ->
@@ -147,31 +143,31 @@ let readConfigFromFile path =
                     // use -r instead of --reference to avoid duplicates added by FCS
                     // https://github.com/fsharp/FSharp.Compiler.Service/issues/697
                     let key = if key = "--reference" then "-r" else key
-                    fscArgs.Add (key + ":" + text)
+                    fscArgs <- (key + ":" + text) :: fscArgs
                 | FsiSection ->
                     if key = "--use" then
-                        fsiFiles2.Add text
+                        useFiles <- text :: useFiles
                     else
-                        fsiArgs.Add (key + ":" + text)
+                        fsiArgs <- (key + ":" + text) :: fsiArgs
                 | OutSection ->
-                    outArgs.Add (key + ":" + text)
+                    outArgs <- (key + ":" + text) :: outArgs
                 | EtcSection ->
-                    etcArgs.Add (key + ":" + text)
+                    etcArgs <- (key + ":" + text) :: etcArgs
                 | NoSection ->
                     raiseSection ()
      with e ->
         invalidOp (sprintf "%s(%d): %s" path lineNo e.Message)
 
     {
-        FscArgs = fscArgs.ToArray ()
-        FscFiles = fscFiles.ToArray ()
-        FsiArgs = fsiArgs.ToArray ()
-        FsiFiles = fsiFiles.ToArray ()
-        FsiFiles2 = fsiFiles2.ToArray ()
-        OutArgs = outArgs.ToArray ()
-        OutFiles = outFiles.ToArray ()
-        EtcArgs = etcArgs.ToArray ()
-        EtcFiles = etcFiles.ToArray ()
+        FscArgs = List.rev fscArgs
+        FscFiles = List.rev fscFiles
+        FsiArgs = List.rev fsiArgs
+        FsiFiles = List.rev fsiFiles
+        UseFiles = List.rev useFiles
+        OutArgs = List.rev outArgs
+        OutFiles = List.rev outFiles
+        EtcArgs = List.rev etcArgs
+        EtcFiles = List.rev etcFiles
     }
 
 /// Gets and caches the config from a file.

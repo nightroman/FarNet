@@ -1,10 +1,5 @@
-﻿
-// FarNet module FSharpFar
-// Copyright (c) Roman Kuzmin
-
-[<AutoOpen>]
+﻿[<AutoOpen>]
 module FSharpFar.FarModule
-
 open FarNet
 open Config
 open Session
