@@ -1,8 +1,6 @@
 
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 #pragma once
 
@@ -14,6 +12,8 @@ ref class FarControl;
 ref class FarDialog : IDialog
 {
 public: DEF_EVENT2(Idled, _Idled);
+public: DEF_EVENT2(GotFocus, _GotFocus);
+public: DEF_EVENT2(LosingFocus, _LosingFocus);
 public: DEF_EVENT_ARGS2(Closing, _Closing, ClosingEventArgs);
 public: DEF_EVENT_ARGS2(ConsoleSizeChanged, _ConsoleSizeChanged, SizeEventArgs);
 public: DEF_EVENT_ARGS2(Initialized, _Initialized, InitializedEventArgs);
@@ -36,7 +36,6 @@ public:
 	virtual property Place Rect { Place get() override; void set(Place value) override; }
 	virtual property String^ HelpTopic { String^ get() override { return _HelpTopic; } void set(String^ value) override { _HelpTopic = value; } }
 public:
-	virtual bool Show() override;
 	virtual IBox^ AddBox(int left, int top, int right, int bottom, String^ text) override;
 	virtual IButton^ AddButton(int left, int top, String^ text) override;
 	virtual ICheckBox^ AddCheckBox(int left, int top, String^ text) override;
@@ -49,10 +48,13 @@ public:
 	virtual IText^ AddText(int left, int top, int right, String^ text) override;
 	virtual IText^ AddVerticalText(int left, int top, int bottom, String^ text) override;
 	virtual IUserControl^ AddUserControl(int left, int top, int right, int bottom) override;
+	virtual bool Show() override;
 	virtual void Close() override;
 	virtual void DisableRedraw() override;
 	virtual void EnableRedraw() override;
 	virtual void Move(Point point, bool absolute) override;
+	virtual void Open() override;
+	virtual void Redraw() override;
 	virtual void Resize(Point size) override;
 	virtual void SetFocus(int id) override;
 internal:
@@ -66,8 +68,10 @@ internal:
 	List<FarControl^>^ _items;
 private:
 	void AddItem(FarControl^ item);
+	void Free();
 private:
 	int _flags;
+	bool _NoModal;
 	Place _rect;
 	FarControl^ _default;
 	FarControl^ _focused;
@@ -76,6 +80,7 @@ private:
 	bool _NoSmartCoordinates;
 	IButton^ _Cancel;
 	String^ _HelpTopic;
+	FarDialogItem* _farItems;
 };
 
 }

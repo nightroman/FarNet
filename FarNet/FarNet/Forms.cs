@@ -1,8 +1,6 @@
 
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections;
@@ -514,6 +512,14 @@ namespace FarNet.Forms
 		/// </summary>
 		public abstract event EventHandler<SizeEventArgs> ConsoleSizeChanged;
 		/// <summary>
+		/// Called when the non-modal dialog has got focus.
+		/// </summary>
+		public abstract event EventHandler GotFocus;
+		/// <summary>
+		/// Called when the non-modal dialog is losing focus.
+		/// </summary>
+		public abstract event EventHandler LosingFocus;
+		/// <summary>
 		/// Gets or sets the control which has focus.
 		/// </summary>
 		public abstract IControl Focused { get; set; }
@@ -595,6 +601,25 @@ namespace FarNet.Forms
 		/// </summary>
 		/// <returns>False if the user canceled the dialog or clicked the <see cref="Cancel"/> button.</returns>
 		public abstract bool Show();
+		/// <summary>
+		/// Opens the dialog as a non-modal window.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// To prevent closing on mouse clicks outside the dialog, use <see cref="MouseClicked"/> and set
+		/// <see cref="MouseClickedEventArgs.Ignore"/> to true if <see cref="AnyEventArgs.Control"/> is null.
+		/// </para>
+		/// <para>
+		/// Use <see cref="Closing"/> for continuations. If <see cref="AnyEventArgs.Control"/> is null then
+		/// the dialog was canceled. Otherwise, invoke some continuation using the current dialog data. Note
+		/// that the dialog is not yet closed, so some continuations are better with <see cref="IFar.PostJob"/>.
+		/// </para>
+		/// </remarks>
+		public abstract void Open();
+		/// <summary>
+		/// Redraws the dialog.
+		/// </summary>
+		public abstract void Redraw();
 		/// <summary>
 		/// Adds a double or single box control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>

@@ -1,6 +1,15 @@
 
 NuGet package: https://www.nuget.org/packages/FarNet
-Far Manager 3.0.5013
+Far Manager 3.0.5048
+
+= 5.2.7 =
+
+Far Manager 3.0.5048
+
+IDialog:
+- Add method Open, opens non-modal dialogs.
+- Add events GotFocus and LosingFocus, called for non-modal dialogs.
+- Add method Redraw.
 
 = 5.2.6 =
 

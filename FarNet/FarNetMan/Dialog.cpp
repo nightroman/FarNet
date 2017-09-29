@@ -1,8 +1,6 @@
 
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 #include "StdAfx.h"
 #include "Dialog.h"
@@ -264,21 +262,32 @@ IUserControl^ FarDialog::AddUserControl(int left, int top, int right, int bottom
 	return r;
 }
 
+void FarDialog::Open()
+{
+	_NoModal = true;
+	Show();
+}
+
 bool FarDialog::Show()
 {
-	FarDialogItem* items = new FarDialogItem[_items->Count];
+	if (_NoModal)
+		_flags |= FDLG_NONMODAL;
+	else
+		_flags &= ~FDLG_NONMODAL;
+
+	_farItems = new FarDialogItem[_items->Count];
 	try
 	{
 		// setup items
 		for(int i = _items->Count; --i >= 0;)
-			_items[i]->Starting(items[i]);
+			_items[i]->Starting(_farItems[i]);
 
 		// set default
 		if (_default)
 		{
 			int i = _items->IndexOf(_default);
 			if (i >= 0)
-				items[i].Flags |= DIF_DEFAULTBUTTON;
+				_farItems[i].Flags |= DIF_DEFAULTBUTTON;
 		}
 
 		// set focused
@@ -286,14 +295,13 @@ bool FarDialog::Show()
 		{
 			int i = _items->IndexOf(_focused);
 			if (i >= 0)
-				items[i].Flags |= DIF_FOCUS;
+				_farItems[i].Flags |= DIF_FOCUS;
 		}
 
 		// help
 		PIN_NE(pinHelpTopic, HelpTopic);
 
 		// init
-		_dialogs.Add(this);
 		GUID typeId = ToGUID(_typeId);
 		_hDlg = Info.DialogInit(
 			&MainGuid,
@@ -303,7 +311,7 @@ bool FarDialog::Show()
 			_rect.Right,
 			_rect.Bottom,
 			pinHelpTopic,
-			items,
+			_farItems,
 			_items->Count,
 			0,
 			_flags,
@@ -311,6 +319,12 @@ bool FarDialog::Show()
 			nullptr);
 
 		if (_hDlg == INVALID_HANDLE_VALUE)
+			throw gcnew InvalidOperationException("Cannot create dialog.");
+
+		// register
+		_dialogs.Add(this);
+
+		if (_NoModal)
 			return false;
 
 		// show
@@ -334,27 +348,40 @@ bool FarDialog::Show()
 	}
 	finally
 	{
-		// free dialog
-		if (_hDlg != INVALID_HANDLE_VALUE)
+		if (!_NoModal)
 		{
 			Info.DialogFree(_hDlg);
-			_hDlg = INVALID_HANDLE_VALUE;
+			Free();
 		}
-
-		// delete items
-		for(int i = _items->Count; --i >= 0;)
-			_items[i]->Free();
-		delete[] items;
-
-		// unregister
-		_dialogs.Remove(this);
 	}
+}
+
+void FarDialog::Free()
+{
+	// reset session
+	_hDlg = INVALID_HANDLE_VALUE;
+	_NoModal = false;
+
+	// delete items
+	for (int i = _items->Count; --i >= 0;)
+		_items[i]->Free();
+	delete[] _farItems;
+	_farItems = nullptr;
+
+	// unregister
+	_dialogs.Remove(this);
 }
 
 void FarDialog::Close()
 {
 	if (_hDlg != INVALID_HANDLE_VALUE)
 		Info.SendDlgMessage(_hDlg, DM_CLOSE, -1, 0);
+}
+
+void FarDialog::Redraw()
+{
+	if (_hDlg != INVALID_HANDLE_VALUE)
+		Info.SendDlgMessage(_hDlg, DM_REDRAW, 0, 0);
 }
 
 void FarDialog::DisableRedraw()
@@ -516,7 +543,11 @@ INT_PTR FarDialog::DialogProc(intptr_t msg, intptr_t param1, void* param2)
 					if (ea.Ignore)
 						return false;
 				}
-				break;
+				if (_NoModal)
+				{
+					Free();
+				}
+				return true;
 			}
 		case DN_DRAWDLGITEM:
 			{
@@ -573,23 +604,45 @@ INT_PTR FarDialog::DialogProc(intptr_t msg, intptr_t param1, void* param2)
 			}
 		case DN_GOTFOCUS:
 			{
-				FarControl^ fc = _items[(int)param1];
-				if (fc->_GotFocus)
+				int index = (int)param1;
+				if (index == -1)
 				{
-					AnyEventArgs ea(fc);
-					fc->_GotFocus(this, %ea);
+					if (_GotFocus)
+					{
+						_GotFocus(this, nullptr);
+					}
+				}
+				else
+				{
+					FarControl^ fc = _items[index];
+					if (fc->_GotFocus)
+					{
+						AnyEventArgs ea(fc);
+						fc->_GotFocus(this, %ea);
+					}
 				}
 				return 0;
 			}
 		case DN_KILLFOCUS:
 			{
-				FarControl^ fc = _items[(int)param1];
-				if (fc->_LosingFocus)
+				int index = (int)param1;
+				if (index == -1)
 				{
-					LosingFocusEventArgs ea(fc);
-					fc->_LosingFocus(this, %ea);
-					if (ea.Focused)
-						return ea.Focused->Id;
+					if (_LosingFocus)
+					{
+						_LosingFocus(this, nullptr);
+					}
+				}
+				else
+				{
+					FarControl^ fc = _items[index];
+					if (fc->_LosingFocus)
+					{
+						LosingFocusEventArgs ea(fc);
+						fc->_LosingFocus(this, %ea);
+						if (ea.Focused)
+							return ea.Focused->Id;
+					}
 				}
 				return -1;
 			}
