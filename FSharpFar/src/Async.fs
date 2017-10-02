@@ -1,5 +1,6 @@
 module FarNet.Async
 open FarNet
+open FarNet.Forms
 open System
 
 /// Posts the Far job (not for opening panels).
@@ -196,6 +197,27 @@ module Job =
         | None ->
             ()
     }
+
+    /// Opens the non modal dialog with the closing function.
+    /// dialog: Dialog to open.
+    /// closing: Function like Closing handler but with a result.
+    ///          `isNull args.Control` ~ the dialog is canceled.
+    ///          `args.Ignore <- true` ~ do not close, ignore the result.
+    let flowForm (dialog: IDialog) closing =
+        fromContinuations (fun (cont, econt, ccont) ->
+            dialog.Closing.Add (fun args ->
+                try
+                    let r = closing args
+                    if not args.Ignore then
+                        cont r
+                with exn ->
+                    if not args.Ignore then
+                        econt exn
+                    else
+                        reraise ()
+            )
+            dialog.Open ()
+        )
 
 /// Posts an exception dialog.
 let postExn exn =
