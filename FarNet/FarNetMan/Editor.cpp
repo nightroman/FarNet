@@ -1,8 +1,6 @@
 
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 #include "StdAfx.h"
 #include "Editor.h"
@@ -43,9 +41,10 @@ void Editor::Open(OpenMode mode)
 	int nLine = _frameStart.CaretLine >= 0 ? _frameStart.CaretLine + 1 : -1;
 	int nPos = _frameStart.CaretColumn >= 0 ? _frameStart.CaretColumn + 1 : -1;
 
-	// from dialog? set modal
-	WindowKind wt = Far::Api->Window->Kind;
-	if (wt == WindowKind::Dialog || wt == WindowKind::Desktop)
+	// from modal? set modal
+	WindowKind preWindowKind = Far::Api->Window->Kind;
+	bool preIsModal = Far::Api->Window->IsModal;
+	if (preIsModal)
 		mode = OpenMode::Modal;
 
 	// flags
@@ -115,7 +114,7 @@ void Editor::Open(OpenMode mode)
 		_CodePage); //?? test window values, make window settable
 
 	// redraw Far
-	if (wt == WindowKind::Dialog)
+	if (preWindowKind == WindowKind::Dialog) //rk need?
 		Far::Api->UI->Redraw();
 
 	//! Check errors: ID must not be -1 (even if it is already closed then ID = -2).
@@ -823,7 +822,7 @@ void Editor::WordDiv::set(String^ value)
 	_WordDiv = value;
 	if (!IsOpened)
 		return;
-	
+
 	PIN_NE(pin, value);
 	EditorSetParameter esp = {sizeof(esp)};
 	esp.Type = ESPT_SETWORDDIV;
@@ -1241,7 +1240,7 @@ IList<EditorColorInfo^>^ Editor::GetColors(int line)
 			FromGUID(ec.Owner),
 			(int)ec.Priority));
 	}
-	
+
 	return spans;
 }
 
@@ -1261,7 +1260,7 @@ void Editor::WorksSetColors(Guid owner, int priority, IEnumerable<EditorColor^>^
 		ec.EndPos = color->End - 1;
 		ec.Color.BackgroundColor = (COLORREF)color->Background;
 		ec.Color.ForegroundColor = (COLORREF)color->Foreground;
-		
+
 		Info.EditorControl(-1, ECTL_ADDCOLOR, 0, &ec);
 	}
 }
@@ -1270,7 +1269,7 @@ void Editor::AddDrawer(IModuleDrawer^ drawer)
 {
 	if (!_drawers)
 		_drawers = gcnew Dictionary<Guid, DrawerInfo^>;
-	
+
 	DrawerInfo^ info = gcnew DrawerInfo;
 	info->Id = drawer->Id;
 	info->Priority = drawer->Priority;

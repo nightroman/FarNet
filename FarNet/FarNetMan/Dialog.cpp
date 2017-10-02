@@ -264,7 +264,13 @@ IUserControl^ FarDialog::AddUserControl(int left, int top, int right, int bottom
 
 void FarDialog::Open()
 {
-	_NoModal = true;
+	// force modal if pre-modal
+	bool preIsModal = Far::Api->Window->IsModal;
+	if (preIsModal)
+		_NoModal = false;
+	else
+		_NoModal = true;
+	
 	Show();
 }
 

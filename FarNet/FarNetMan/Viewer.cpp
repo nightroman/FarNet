@@ -1,8 +1,6 @@
 
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 #include "StdAfx.h"
 #include "Viewer.h"
@@ -65,9 +63,10 @@ void Viewer::Open(OpenMode mode)
 	PIN_ES(pinFileName, _FileName);
 	PIN_ES(pinTitle, _Title);
 
-	// from dialog? set modal
-	WindowKind wt = Far::Api->Window->Kind;
-	if (wt == WindowKind::Dialog || wt == WindowKind::Desktop)
+	// from modal? set modal
+	WindowKind preWindowKind = Far::Api->Window->Kind;
+	bool preIsModal = Far::Api->Window->IsModal;
+	if (preIsModal)
 		flags &= ~VF_NONMODAL;
 
 	// open: see editor
@@ -84,7 +83,7 @@ void Viewer::Open(OpenMode mode)
 		_CodePage); //?? test window values
 
 	// redraw Far
-	if (wt == WindowKind::Dialog)
+	if (preWindowKind == WindowKind::Dialog) //rk need?
 		Far::Api->UI->Redraw();
 
 	// errors: see editor
@@ -340,7 +339,7 @@ void Viewer::Activate()
 		WindowKind kind = Far::Api->Window->GetKindAt(i);
 		if (kind != WindowKind::Viewer)
 			continue;
-		
+
 		String^ name = Far::Api->Window->GetNameAt(i);
 		if (name == _FileName)
 		{
