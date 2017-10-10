@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.IO;
@@ -11,12 +9,13 @@ using System.Text;
 namespace FarNet.Tools
 {
 	/// <summary>
-	/// TODO
+	/// Base interactive editor used by PowerShellFar and FSharpFar interactive.
+	/// NOTE: It can be used for something else but the API may change.
 	/// </summary>
 	public abstract class InteractiveEditor
 	{
 		/// <summary>
-		/// TODO
+		/// The connected editor.
 		/// </summary>
 		public IEditor Editor { get; private set; }
 		readonly HistoryLog History;
@@ -24,8 +23,13 @@ namespace FarNet.Tools
 		readonly string OutputMark2;
 		readonly string OutputMark3;
 		/// <summary>
-		/// TODO
+		/// New instance.
 		/// </summary>
+		/// <param name="editor">The connected editor.</param>
+		/// <param name="history">The connected history log.</param>
+		/// <param name="outputMark1">The opening output mark.</param>
+		/// <param name="outputMark2">The closing output mark.</param>
+		/// <param name="outputMark3">The empty output mark.</param>
 		protected InteractiveEditor(IEditor editor, HistoryLog history, string outputMark1, string outputMark2, string outputMark3)
 		{
 			Editor = editor;
@@ -38,13 +42,12 @@ namespace FarNet.Tools
 			OutputMark3 = outputMark3;
 		}
 		/// <summary>
-		/// TODO
+		/// Gets true if the editor is async.
 		/// </summary>
 		protected virtual bool IsAsync { get { return false; } }
 		/// <summary>
-		/// TODO
+		/// Gets the current interactive area where the caret is.
 		/// </summary>
-		/// <returns></returns>
 		public InteractiveArea CommandArea()
 		{
 			var r = new InteractiveArea();
@@ -91,8 +94,10 @@ namespace FarNet.Tools
 			return r;
 		}
 		/// <summary>
-		/// TODO
+		/// Invokes the current code.
 		/// </summary>
+		/// <param name="code">Current code to be invoked.</param>
+		/// <param name="area">Current interactive editor area info.</param>
 		protected abstract void Invoke(string code, InteractiveArea area);
 		void DoHistory()
 		{
@@ -184,7 +189,7 @@ namespace FarNet.Tools
 			Editor.InsertText(OutputMark2 + "\r\r");
 		}
 		/// <summary>
-		/// TODO
+		/// It is called in the end of <see cref="Invoke"/>.
 		/// </summary>
 		protected void EndInvoke()
 		{
@@ -239,8 +244,10 @@ namespace FarNet.Tools
 			Editor.Redraw();
 		}
 		/// <summary>
-		/// TODO
+		/// Handles keys.
+		/// The default method handles ShiftEnter, ShiftDel, F6.
 		/// </summary>
+		/// <param name="key">Key info.</param>
 		protected virtual bool KeyPressed(KeyInfo key)
 		{
 			if (key == null) return false;

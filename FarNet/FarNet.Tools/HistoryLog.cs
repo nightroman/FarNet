@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet.Tools for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet.Tools for Far Manager
+// Copyright (c) Roman Kuzmin
 
 // Encoding: UTF8 with no BOM (same as in logging tools, BinaryFormatter, etc).
 // Text line history files are rather logs, not text files for an editor.
@@ -14,16 +12,19 @@ using System.IO;
 namespace FarNet.Tools
 {
 	/// <summary>
-	/// TODO
+	/// The tool for reading, writing, and cleaning history logs.
 	/// </summary>
+	/// <seealso cref="HistoryMenu"/>.
 	public sealed class HistoryLog
 	{
 		readonly string _fileName;
 		readonly int _maximumCount;
 		string _lastLine;
 		/// <summary>
-		/// TODO
+		/// New history log.
 		/// </summary>
+		/// <param name="fileName">History log file name.</param>
+		/// <param name="maximumCount">Maximum number of history records.</param>
 		public HistoryLog(string fileName, int maximumCount)
 		{
 			_fileName = fileName;
@@ -34,7 +35,7 @@ namespace FarNet.Tools
 			File.WriteAllLines(_fileName, lines);
 		}
 		/// <summary>
-		/// TODO Gets history lines.
+		/// Gets history lines.
 		/// </summary>
 		public string[] ReadLines()
 		{
@@ -53,8 +54,10 @@ namespace FarNet.Tools
 			}
 		}
 		/// <summary>
-		/// TODO Removes dupes and extra lines.
+		/// Removes duplicated lines, then lines above the maximum.
 		/// </summary>
+		/// <param name="lines">Input lines.</param>
+		/// <returns>Output lines.</returns>
 		public string[] Update(string[] lines)
 		{
 			// ensure lines
@@ -88,8 +91,9 @@ namespace FarNet.Tools
 			return lines;
 		}
 		/// <summary>
-		/// TODO Add a new history line.
+		/// Adds a new history line.
 		/// </summary>
+		/// <param name="value">History line.</param>
 		public void AddLine(string value)
 		{
 			if (value == _lastLine)

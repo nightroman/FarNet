@@ -1,28 +1,27 @@
 
-/*
-FarNet.Tools for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet.Tools for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 
 namespace FarNet.Tools
 {
 	/// <summary>
-	/// TODO
+	/// The UI dealing with <see cref="HistoryLog"/>.
 	/// </summary>
 	public class HistoryMenu
 	{
 		readonly HistoryLog _history;
 
 		/// <summary>
-		/// TODO
+		/// The connected list menu.
 		/// </summary>
 		public IListMenu Menu { get; private set; }
 
 		/// <summary>
-		/// TODO
+		/// New history UI.
 		/// </summary>
+		/// <param name="history">The connected history log.</param>
 		public HistoryMenu(HistoryLog history)
 		{
 			_history = history;
@@ -39,7 +38,7 @@ namespace FarNet.Tools
 			Menu.AddKey(KeyCode.Delete, ControlKeyStates.None, OnDelete);
 		}
 		/// <summary>
-		/// TODO
+		/// Shows the modal history list.
 		/// </summary>
 		public string Show()
 		{

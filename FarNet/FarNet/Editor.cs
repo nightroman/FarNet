@@ -623,7 +623,7 @@ namespace FarNet
 		/// </remarks>
 		public abstract void EndAsync();
 		/// <summary>
-		/// TODO
+		/// Syncs pending data in the async mode.
 		/// </summary>
 		public abstract void Sync();
 		/// <summary>
@@ -753,6 +753,9 @@ namespace FarNet
 		/// <summary>
 		/// INTERNAL
 		/// </summary>
+		/// <param name="owner">Color owner ID.</param>
+		/// <param name="priority">Color priority.</param>
+		/// <param name="colors">Color info.</param>
 		public abstract void WorksSetColors(Guid owner, int priority, IEnumerable<EditorColor> colors);
 		/// <summary>
 		/// Adds the drawer to this editor.
