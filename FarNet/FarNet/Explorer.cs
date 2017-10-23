@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections.Generic;
@@ -68,6 +66,8 @@ namespace FarNet
 		public ExplorerFunctions Functions { get; set; }
 		/// <summary>
 		/// Gets or sets the flag in the <see cref="Functions"/>.
+		/// If this flag is set to true then the explorer implements <see cref="ExploreLocation"/>
+		/// and works with pure paths, i.e. uses files without attached <see cref="FarFile.Data"/>.
 		/// </summary>
 		public bool CanExploreLocation
 		{
@@ -196,7 +196,8 @@ namespace FarNet
 		/// </summary>
 		/// <param name="args">.</param>
 		/// <remarks>
-		/// It is called only if <see cref="Functions"/> contains the <see cref="ExploreLocation"/> flag.
+		/// It is called only if <see cref="Functions"/> contains the <see cref="ExplorerFunctions.ExploreLocation"/> flag.
+		/// Note that this method works with pure paths, i.e. files without attached <see cref="FarFile.Data"/>.
 		/// <include file='doc.xml' path='doc/ExplorerModes/*'/>
 		/// </remarks>
 		public virtual Explorer ExploreLocation(ExploreLocationEventArgs args) { return null; }

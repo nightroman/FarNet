@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections;
@@ -131,6 +129,16 @@ namespace FarNet
 		// Opening worker, including a posted step
 		void Open(object sender, EventArgs e)
 		{
+			//_171024_175829 inherit explorer location if there is no custom (#13)
+			if (_Panel.CurrentLocation == null)
+			{
+				var location = Explorer.Location;
+				if (location.Length > 0)
+					_Panel.CurrentLocation = location;
+				else
+					_Panel.CurrentLocation = "*";
+			}
+
 			// the first update
 			Explorer.EnterPanel(this);
 
@@ -176,7 +184,8 @@ namespace FarNet
 			{
 				// 090623 PostJob may not work from the editor, for example, see "... because a module is not called for opening".
 				// In contrast, PostStep calls via the menu where a panel is opened from with no problems.
-				Far.Api.PostStep(delegate {
+				Far.Api.PostStep(delegate
+				{
 					// #7 make switching async, SetCurrentAt does not work for user screen
 					try
 					{
@@ -569,9 +578,9 @@ namespace FarNet
 		/// Tells to use the core method instead of explorer if <see cref="RealNames"/> is true.
 		/// </summary>
 		public bool RealNamesDeleteFiles { get { return _Panel.RealNamesDeleteFiles; } set { _Panel.RealNamesDeleteFiles = value; } } //????? to explorer?
-		/// <summary>
-		/// Tells to use the core method instead of explorer if <see cref="RealNames"/> is true.
-		/// </summary>
+																																	  /// <summary>
+																																	  /// Tells to use the core method instead of explorer if <see cref="RealNames"/> is true.
+																																	  /// </summary>
 		public bool RealNamesExportFiles { get { return _Panel.RealNamesExportFiles; } set { _Panel.RealNamesExportFiles = value; } }
 		/// <summary>
 		/// Tells to use the core method instead of explorer if <see cref="RealNames"/> is true.
@@ -623,13 +632,13 @@ namespace FarNet
 		/// It is resolved for module panels, the original current and even selected items should be restored.
 		/// </remarks>
 		public void Close() { _Panel.Close(); } // _090321_210416
-		/// <summary>
-		/// Closes the module panel and all parents and opens the original file panel with the specified path.
-		/// </summary>
-		/// <param name="path">
-		/// Name of the directory that will be set in the panel after closing the panel (or {null|empty}).
-		/// If the path doesn't exist the core shows an error message box always.
-		/// </param>
+												/// <summary>
+												/// Closes the module panel and all parents and opens the original file panel with the specified path.
+												/// </summary>
+												/// <param name="path">
+												/// Name of the directory that will be set in the panel after closing the panel (or {null|empty}).
+												/// If the path doesn't exist the core shows an error message box always.
+												/// </param>
 		public void Close(string path) { _Panel.Close(path); }
 		/// <summary>
 		/// Sets the specified item current by name, if it exists.

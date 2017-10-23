@@ -2,6 +2,10 @@
 NuGet package: https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5048
 
+= 5.2.8 =
+
+Fix #13, panel should inherit its explorer location on opening.
+
 = 5.2.7 =
 
 Far Manager 3.0.5048

@@ -1,8 +1,6 @@
 
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 #include "StdAfx.h"
 #include "Panel2.h"
@@ -854,7 +852,7 @@ void Panel2::OpenExplorer(Explorer^ explorer, ExploreEventArgs^ args)
 		newPanel->PostName(args->PostName);
 	}
 
-	// location
+	//_171024_175829 location
 	String^ location = explorer->Location;
 	if (location->Length)
 		newPanel->CurrentLocation = location;
