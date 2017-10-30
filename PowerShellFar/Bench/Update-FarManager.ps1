@@ -83,11 +83,15 @@ if (!$Platform) {
 #! DownloadFile() depends on IE Tools > Internet Options > Connections > LAN settings
 if (!$Archive) {
 	### get URL: stable, platform
-	$URL = if ($Stable) {"http://www.farmanager.com/files/update$Version.php"} else {"http://www.farmanager.com/nightly/update$Version.php"}
+	$URL = if ($Stable) {"https://www.farmanager.com/files/update$Version.php"} else {"https://www.farmanager.com/nightly/update$Version.php"}
 	$URL += if ($Platform -eq 'x64') {'?p=64'} else {'?p=32'}
 
 	### look for updates (request the archive name)
 	Write-Host -ForegroundColor Cyan "Looking for updates at '$URL'..."
+
+	# https://stackoverflow.com/a/46254549/323582
+	[System.Net.ServicePointManager]::SecurityProtocol = 'Ssl3,Tls,Tls11,Tls12'
+
 	$wc = New-Object Net.WebClient
 	$initext = $wc.DownloadString($URL)
 	if ($initext -notmatch 'arc="(Far[^"]+\.7z)"') {Write-Error "Cannot get archive name from '$ini'."}
