@@ -35,20 +35,22 @@ function Show {
 		MarkdownToHtml.exe "From=$FileName" "To=$htm"
 	}
 	else {
-		$title = [System.IO.Path]::GetFileName($FileName) + ' - ' + [System.IO.Path]::GetDirectoryName($FileName)
+		$name = [System.IO.Path]::GetFileNameWithoutExtension($FileName)
+		$title = $name + ' - ' + [System.IO.Path]::GetDirectoryName($FileName)
 		$format = if ($env:markdown) {
 			$env:markdown
 		}
 		elseif ($ext -eq '.text') {
 			'markdown_phpextra'
 		}
-		elseif ($Path -match '\bwiki\b') {
-			'markdown_github'
+		elseif ($name -eq 'README' -or $FileName -match '\bwiki\b') {
+			'gfm'
 		}
 		else {
 			'markdown_strict+backtick_code_blocks'
 		}
-		pandoc.exe --standalone --title-prefix=$title --from=$format -o $htm $FileName
+		#! https://github.com/jgm/pandoc/issues/4048
+		pandoc.exe --standalone --metadata=pagetitle=$title --from=$format --output=$htm $FileName
 	}
 
 	if ($LastExitCode) {throw 'pandoc.exe failed.'}
