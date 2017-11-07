@@ -1,6 +1,5 @@
 ﻿//[rk] c2903ec ("Update deps to be net45 only (#199)", 2017-08-31)
 module FSharpFar.Parser
-open System
 
 let inline private tryGetLexerSymbolIslands sym =
     if sym.Text.Length = 0 then None else Some (sym.RightColumn, sym.Text.Split '.' |> Array.toList)
@@ -9,7 +8,7 @@ let inline private tryGetLexerSymbolIslands sym =
 // (we look for full identifier in the backward direction, but only
 // for a short identifier forward - this means that when you hover
 // 'B' in 'A.B.C', you will get intellisense for 'A.B' module)
-let findIdents col lineStr lookupType =
+let private findIdents col lineStr lookupType =
     Lexer.getSymbol 0 col lineStr lookupType
     |> Option.bind tryGetLexerSymbolIslands
 

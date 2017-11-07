@@ -3,6 +3,10 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.5013
 FarNet 5.2.6
 
+= 1.5.2 =
+
+FCS 17.0.1
+
 = 1.5.1 =
 
 - //exec: file is optional, `with + code` is often enough and more effective.

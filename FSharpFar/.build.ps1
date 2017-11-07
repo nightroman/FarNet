@@ -4,9 +4,8 @@
 	Build script (https://github.com/nightroman/Invoke-Build)
 #>
 
-[CmdletBinding()]
 param(
-	$FarHome = (property FarHome C:\Bin\Far\Win32),
+	$FarHome = (property FarHome C:\Bin\Far\x64),
 	$Configuration = (property Configuration Release)
 )
 
@@ -44,8 +43,9 @@ task Clean {
 	) | Remove-Item -Force -Recurse
 }
 
-task Help {
-	exec { pandoc.exe --standalone --from=markdown_strict+backtick_code_blocks --output=README.htm README.md }
+task Markdown {
+	function Convert-Markdown($Name) {pandoc.exe --standalone --from=gfm "--output=$Name.htm" "--metadata=pagetitle=$Name" "$Name.md"}
+	exec { Convert-Markdown README }
 }
 
 task Version {
@@ -56,7 +56,7 @@ task Meta -Inputs .build.ps1, History.txt -Outputs src/AssemblyInfo.fs -Jobs Ver
 	Set-Content src/AssemblyInfo.fs @"
 namespace System.Reflection
 [<assembly: AssemblyCompany("https://github.com/nightroman/FarNet")>]
-[<assembly: AssemblyCopyright("Copyright (c) 2016-2017 Roman Kuzmin")>]
+[<assembly: AssemblyCopyright("Copyright (c) 2016-2018 Roman Kuzmin")>]
 [<assembly: AssemblyDescription("F# interactive, scripting, compiler, and editor services for Far Manager.")>]
 [<assembly: AssemblyProduct("FarNet.FSharpFar")>]
 [<assembly: AssemblyTitle("FarNet module FSharpFar for Far Manager")>]
@@ -65,7 +65,7 @@ namespace System.Reflection
 "@
 }
 
-task Package Help, {
+task Package Markdown, {
 	$toHome = "z\tools\FarHome"
 	$toModule = "$toHome\FarNet\Modules\$ModuleName"
 	$fromModule = "$FarHome\FarNet\Modules\$ModuleName"

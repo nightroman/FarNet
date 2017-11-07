@@ -5,6 +5,7 @@ open Session
 open System
 open System.IO
 open Microsoft.FSharp.Compiler.SourceCodeServices
+open Microsoft.FSharp.Compiler
 
 let load (editor: IEditor) =
     editor.Save ()
@@ -207,17 +208,8 @@ let complete (editor: IEditor) =
     else
 
     // parse
-    let names, residue = Parser.findLongIdentsAndResidue caret.X lineStr
-
-    // _160922_160602
-    // KO: Complete `x.ToString().C` gives global symbols.
-    // OK: Complete `x.ToString().` gives string members.
-    // Let's reduce to the working case.
-    let mutable residue2 = residue
-    let mutable colAtEndOfPartialName = caret.X + 1
-    if names.IsEmpty && residue.Length > 0 && (let i = caret.X - residue.Length - 1 in i > 0 && lineStr.[i] = '.') then
-        residue2 <- ""
-        colAtEndOfPartialName <- colAtEndOfPartialName - residue.Length
+    //! `index` is the last char index, not cursor index
+    let partialName = QuickParse.GetPartialLongNameEx(lineStr, caret.X - 1) //rk new
 
     let config = editor.MyConfig ()
     let file = editor.FileName
@@ -226,14 +218,26 @@ let complete (editor: IEditor) =
     let decs =
         async {
             let! check = Checker.check file text config
-            return! check.CheckResults.GetDeclarationListInfo (Some check.ParseResults, caret.Y + 1, colAtEndOfPartialName, lineStr, names, residue2, always [])
+            return! check.CheckResults.GetDeclarationListInfo (Some check.ParseResults, caret.Y + 1, lineStr, partialName, always [])
         }
         |> Async.RunSynchronously
+
+    // _160922_160602
+    // KO: Complete `x.ToString().C` gives global symbols.
+    // OK: Complete `x.ToString().` gives string members.
+    // Let's reduce to the working case.
+    // _171107
+    let residue =
+        if partialName.PartialIdent.Length > 0 then
+            partialName.PartialIdent
+        else
+            let names, residue = Parser.findLongIdentsAndResidue caret.X lineStr // rk old
+            residue
 
     let completions =
         decs.Items
         |> Seq.map (fun item -> item.Name) //?? mind NameInCode
-        |> Seq.filter (fun name -> name.StartsWith (if residue.StartsWith "``" then residue.Substring 2 else residue))
+        |> Seq.filter (fun name -> name.StartsWith (if residue.StartsWith "``" then residue.Substring 2 else residue)) //rk
 
     progress.Done ()
 
