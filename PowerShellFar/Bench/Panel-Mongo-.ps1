@@ -208,7 +208,9 @@ function global:New-MdbcCollectionExplorer($Database, $CollectionName, $File) {
 			}
 			# remove
 			try {
-				$2.FilesData | Remove-MdbcData -Collection $1.Data.Collection -ErrorAction 1
+				$2.FilesData |
+				New-MdbcData |
+				Remove-MdbcData -Collection $1.Data.Collection -ErrorAction 1
 			}
 			catch {
 				$2.Result = 'Incomplete'
