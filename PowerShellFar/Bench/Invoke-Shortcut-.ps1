@@ -41,7 +41,7 @@
 #>
 
 param(
-	[Parameter(Mandatory=1)]
+	[Parameter()]
 	[string]$Path = (Get-FarPath),
 	[switch]$Panel,
 	[switch]$Edit,
