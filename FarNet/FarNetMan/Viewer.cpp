@@ -17,6 +17,7 @@ Viewer::Viewer()
 : _id(-1)
 , _Title(String::Empty)
 , _CodePage(CP_DEFAULT)
+, _Window(0, 0, -1, -1)
 {}
 
 void Viewer::Open(OpenMode mode)

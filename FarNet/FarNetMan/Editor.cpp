@@ -22,6 +22,7 @@ Editor::Editor()
 , _Title(String::Empty)
 , _CodePage(CP_DEFAULT)
 , _frameStart(-1)
+, _Window(0, 0, -1, -1)
 {}
 
 void Editor::Open()

@@ -150,10 +150,14 @@ namespace PowerShellFar
 			// ps: 42; MarkdownToHtml.exe => error output overrides 42
 
 			// v5.2.2 - remove _BeginApplication and ShowUserScreen.
-			
+
 			// write a line, it also calls ShowUserScreen and echo ps: ...
 			if (A.Psf.FarUI.Writer is ConsoleOutputWriter)
 				A.Psf.FarUI.Writer.WriteLine();
+
+			//rk _180127_151931
+			//if (A.Psf.FarUI.Writer is ConsoleOutputWriter)
+			//	Far.Api.UI.ShowUserScreen(true);
 		}
 		/// <summary>
 		/// Called after an external application process finishes.
@@ -166,6 +170,11 @@ namespace PowerShellFar
 			// :: Panels, F11 PSF 1, PSF history, Enter
 
 			// v5.2.2 - remove _BeginApplication and SaveUserScreen.
+
+			//rk _180127_151931
+			// it is called twice but Begin is once...
+			//if (A.Psf.FarUI.Writer is ConsoleOutputWriter)
+			//	Far.Api.UI.SaveUserScreen(true);
 		}
 		/// <summary>
 		/// Indicates to the host that an exit has been requested.
