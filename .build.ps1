@@ -12,7 +12,7 @@ param(
 
 $FarHome = "C:\Bin\Far\$Platform"
 
-use 14.0 MSBuild
+Set-Alias MSBuild (Resolve-MSBuild 15.0)
 
 $Builds = @(
 	'FarNet\FarNet.build.ps1'
@@ -63,7 +63,7 @@ using System.Reflection;
 [assembly: AssemblyCompany("https://github.com/nightroman/FarNet")];
 [assembly: AssemblyTitle("FarNet plugin manager")];
 [assembly: AssemblyDescription("FarNet plugin manager")];
-[assembly: AssemblyCopyright("Copyright (c) 2006-2016 Roman Kuzmin")];
+[assembly: AssemblyCopyright("Copyright (c) 2006-2018 Roman Kuzmin")];
 "@
 
 	Set-Content PowerShellFar\AssemblyMeta.cs @"

@@ -5,7 +5,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 
 namespace FarNet
 {
@@ -414,17 +413,9 @@ namespace FarNet
 		#endregion
 		#region Settable modes
 		/// <summary>
-		/// Gets or sets the case sensitive sort flag.
-		/// </summary>
-		public bool CaseSensitiveSort { get { return _Panel.CaseSensitiveSort; } set { _Panel.CaseSensitiveSort = value; } }
-		/// <summary>
 		/// Gets or sets the directories first sort flag.
 		/// </summary>
 		public bool DirectoriesFirst { get { return _Panel.DirectoriesFirst; } set { _Panel.DirectoriesFirst = value; } }
-		/// <summary>
-		/// Gets or sets the numeric sort flag.
-		/// </summary>
-		public bool NumericSort { get { return _Panel.NumericSort; } set { _Panel.NumericSort = value; } }
 		#endregion
 		#region Read only modes (at least for open)
 		/// <summary>
@@ -658,7 +649,6 @@ namespace FarNet
 		/// <returns>True if a file is found.</returns>
 		/// <param name="name">Name or alternative name of a file to be set current.</param>
 		/// <param name="fail">Fail mode: to throw if a file is not shown.</param>
-		/// <exception cref="FileNotFoundException">Fail mode: a file is not shown.</exception>
 		/// <seealso cref="CurrentDirectory"/>
 		/// <seealso cref="GoToName(string)"/>
 		/// <seealso cref="GoToPath"/>

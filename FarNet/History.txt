@@ -2,6 +2,11 @@
 NuGet package: https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5048
 
+= 5.2.10 =
+
+Remove panel properties NumericSort, CaseSensitiveSort.
+Far 3.0.5150 removed this functionality.
+
 = 5.2.9 =
 
 Fix for Far 5134-5139, editor and viewer start sizes.

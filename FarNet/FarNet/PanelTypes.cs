@@ -1,14 +1,11 @@
 
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 
 namespace FarNet
 {
@@ -20,17 +17,9 @@ namespace FarNet
 	{
 		#region Settable modes
 		/// <summary>
-		/// Gets or sets the case sensitive sort flag.
-		/// </summary>
-		bool CaseSensitiveSort { get; set; }
-		/// <summary>
 		/// Gets or sets the directories first sort flag.
 		/// </summary>
 		bool DirectoriesFirst { get; set; }
-		/// <summary>
-		/// Gets or sets the numeric sort flag.
-		/// </summary>
-		bool NumericSort { get; set; }
 		#endregion
 		#region Read only modes
 		/// <summary>
@@ -213,7 +202,6 @@ namespace FarNet
 		/// <returns>True if a file is found.</returns>
 		/// <param name="name">Name or alternative name of a file to be set current.</param>
 		/// <param name="fail">Fail mode: to throw if a file is not shown.</param>
-		/// <exception cref="FileNotFoundException">Fail mode: a file is not shown.</exception>
 		/// <seealso cref="CurrentDirectory"/>
 		/// <seealso cref="GoToName(string)"/>
 		/// <seealso cref="GoToPath"/>

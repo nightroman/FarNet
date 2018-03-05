@@ -1,8 +1,6 @@
 
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 #include "StdAfx.h"
 #include "Panel1.h"
@@ -299,32 +297,6 @@ bool Panel1::SelectedFirst::get()
 	GetPanelInfo(_handle, pi);
 
 	return (pi.Flags & PFLAGS_SELECTEDFIRST) != 0;
-}
-
-bool Panel1::NumericSort::get()
-{
-	PanelInfo pi;
-	GetPanelInfo(_handle, pi);
-
-	return (pi.Flags & PFLAGS_NUMERICSORT) != 0;
-}
-
-void Panel1::NumericSort::set(bool value)
-{
-	Info.PanelControl(_handle, FCTL_SETNUMERICSORT, (int)value, nullptr);
-}
-
-bool Panel1::CaseSensitiveSort::get()
-{
-	PanelInfo pi;
-	GetPanelInfo(_handle, pi);
-
-	return (pi.Flags & PFLAGS_CASESENSITIVESORT) != 0;
-}
-
-void Panel1::CaseSensitiveSort::set(bool value)
-{
-	Info.PanelControl(_handle, FCTL_SETCASESENSITIVESORT, (int)value, nullptr);
 }
 
 bool Panel1::DirectoriesFirst::get()

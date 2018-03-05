@@ -1,8 +1,6 @@
 
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 #pragma once
 #include "Wrappers.h"
@@ -12,7 +10,6 @@ namespace FarNet
 ref class Panel1 : public IPanel
 {
 public:
-	virtual property bool CaseSensitiveSort { bool get(); void set(bool value); }
 	virtual property bool DirectoriesFirst { bool get(); void set(bool value); }
 	virtual property bool Highlight { bool get(); }
 	virtual property bool IsActive { bool get(); }
@@ -20,7 +17,6 @@ public:
 	virtual property bool IsNavigation { bool get(); }
 	virtual property bool IsPlugin { bool get(); }
 	virtual property bool IsVisible { bool get(); void set(bool value); }
-	virtual property bool NumericSort { bool get(); void set(bool value); }
 	virtual property bool RealNames { bool get(); void set(bool value); }
 	virtual property bool SelectedFirst { bool get(); }
 	virtual property bool SelectionExists { bool get(); }
