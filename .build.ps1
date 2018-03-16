@@ -74,11 +74,19 @@ using System.Reflection;
 "@
 }
 
-# Synopsis: Build projects (Configuration, Platform) and PSF help.
+# Synopsis: Build projects and PSF help.
 task Build Meta, {
 	$PlatformToolset = if ($TargetFrameworkVersion -lt 'v4') {'v90'} else {'v140'}
 	exec {
-		MSBuild FarNetAccord.sln /t:FarNetMan /p:Platform=$Platform /p:Configuration=$Configuration /p:TargetFrameworkVersion=$TargetFrameworkVersion /p:PlatformToolset=$PlatformToolset
+		MSBuild @(
+			'FarNetAccord.sln'
+			'/t:FarNetMan'
+			'/verbosity:minimal'
+			"/p:Platform=$Platform"
+			"/p:Configuration=$Configuration"
+			"/p:TargetFrameworkVersion=$TargetFrameworkVersion"
+			"/p:PlatformToolset=$PlatformToolset"
+		)
 	}
 	Invoke-Build Help .\PowerShellFar\PowerShellFar.build.ps1
 }

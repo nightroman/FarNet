@@ -89,9 +89,7 @@ if (!$Archive) {
 	### look for updates (request the archive name)
 	Write-Host -ForegroundColor Cyan "Looking for updates at '$URL'..."
 
-	# https://stackoverflow.com/a/46254549/323582
-	[System.Net.ServicePointManager]::SecurityProtocol = 'Ssl3,Tls,Tls11,Tls12'
-
+	[System.Net.ServicePointManager]::SecurityProtocol = "$([System.Net.ServicePointManager]::SecurityProtocol),Tls11,Tls12"
 	$wc = New-Object Net.WebClient
 	$initext = $wc.DownloadString($URL)
 	if ($initext -notmatch 'arc="(Far[^"]+\.7z)"') {Write-Error "Cannot get archive name from '$ini'."}
