@@ -256,16 +256,21 @@ let completeBy (editor: IEditor) getCompletions =
     if Char.IsWhiteSpace lineStr.[caret - 1] then false else
 
     // parse, skip none
-    let longIdent = Parser.findLongIdent caret lineStr
+    let longIdent = Parser.findLongIdent caret lineStr //rk retire Parser
     if longIdent.Length = 0 then false else
     
-    let dot = longIdent.LastIndexOf '.'
-    let start = caret - longIdent.Length
-    let replacementIndex = if dot < 0 then start else start + dot + 1
+    let name, replacementIndex =
+        if lineStr.[caret - 1] = '.' then
+            longIdent + ".", caret
+        else
+            let dot = longIdent.LastIndexOf '.'
+            let start = caret - longIdent.Length
+            let replacementIndex = if dot < 0 then start else start + dot + 1
+            longIdent, replacementIndex
 
     //_161108_054202
-    let name = longIdent.Replace ("``", "")
-
+    let name = name.Replace ("``", "")
+    
     // distinct: Sys[Tab] -> several "System"
     // sort: System.[Tab] -> unsorted
     let completions =

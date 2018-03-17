@@ -12,7 +12,6 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <Name>FSharpFar</Name>
     <TargetFrameworkProfile />
-    <TargetFSharpCoreVersion>4.4.1.0</TargetFSharpCoreVersion>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -46,16 +45,18 @@
     <MyOutDir>$(FarHome)\FarNet\Modules\$(AssemblyName)</MyOutDir>
     <StartAction>Program</StartAction>
     <StartProgram>$(FarHome)\Far.exe</StartProgram>
-    <ReferencePath>$(FarHome)\FarNet</ReferencePath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FarNet">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="FarNet.Tools">
+      <HintPath>$(FarHome)\FarNet\FarNet.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="FarNet.Settings">
+      <HintPath>$(FarHome)\FarNet\FarNet.Settings.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="FarNet.Tools">
+      <HintPath>$(FarHome)\FarNet\FarNet.Tools.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="mscorlib" />
@@ -99,6 +100,15 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.5'">
       <ItemGroup>
+        <Reference Include="ISymWrapper, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.IO, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Runtime, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="FSharp.Compiler.Service">
           <HintPath>..\packages\FSharp.Compiler.Service\lib\net45\FSharp.Compiler.Service.dll</HintPath>
           <Private>False</Private>
