@@ -1,0 +1,23 @@
+﻿{
+  "version": "2.0.0",
+  "windows": {
+    "options": {
+      "shell": {
+        "executable": "cmd.exe",
+        "args": [ "/c" ]
+      }
+    }
+  },
+  "tasks": [
+    {
+      "label": "build",
+      "type": "shell",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [ "$msCompile" ],
+      "command": "dotnet build"
+    }
+  ]
+}

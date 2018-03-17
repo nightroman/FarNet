@@ -1,0 +1,22 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": ".NET Far",
+            "type": "clr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "Far.exe",
+            "args": [],
+            "cwd": "${workspaceRoot}",
+            "stopAtEntry": false,
+            "console": "externalTerminal"
+        },
+        {
+            "name": ".NET Far Attach",
+            "type": "clr",
+            "request": "attach",
+            "processName": "Far.exe"
+        }
+    ]
+}

@@ -21,6 +21,7 @@ task Init Meta, {
 task Kill Clean, {
 	Get-Item -ErrorAction 0 @(
 		'packages'
+		'paket-files'
 		'src\.vs'
 		'src\FSharpFar.sln'
 		'src\AssemblyInfo.fs'
@@ -28,8 +29,7 @@ task Kill Clean, {
 }
 
 task Build {
-	Set-Alias MSBuild (Resolve-MSBuild)
-	exec {MSBuild $ProjectRoot\$ProjectName /p:FarHome=$FarHome /p:Configuration=$Configuration /v:n}
+	exec {dotnet build $ProjectRoot\$ProjectName /p:FarHome=$FarHome /p:Configuration=$Configuration /v:n}
 }
 
 task Clean {
@@ -86,13 +86,18 @@ task Package Markdown, {
 		"$fromModule\$ModuleName.dll"
 		"$fromModule\FSharp.Compiler.Service.dll"
 		"$fromModule\System.Reflection.Metadata.dll"
+		"$fromModule\System.ValueTuple.dll"
 	)
 }
 
 task NuGet Package, Version, {
 	# test versions
 	$dllPath = "$FarHome\FarNet\Modules\$ModuleName\$ModuleName.dll"
-	($dllVersion = (Get-Item $dllPath).VersionInfo.FileVersion.ToString())
+
+	#! dotnet made assembly: FileVersion is null
+	($dllVersion = [Reflection.Assembly]::ReflectionOnlyLoadFrom($dllPath).GetName().Version.ToString())
+	#($dllVersion = (Get-Item $dllPath).VersionInfo.FileVersion.ToString())
+
 	assert $dllVersion.StartsWith($Version) 'Versions mismatch.'
 
 	$text = @'

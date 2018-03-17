@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "FSharpFar": {
+      "commandName": "Executable",
+      "executablePath": "Far.exe"
+    }
+  }
+}

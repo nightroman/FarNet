@@ -206,42 +206,37 @@ let complete (editor: IEditor) =
     let lineStr = line.Text
     if Char.IsWhiteSpace lineStr.[caret.X - 1] then false
     else
-
-    // parse
-    //! `index` is the last char index, not cursor index
-    let partialName = QuickParse.GetPartialLongNameEx(lineStr, caret.X - 1) //rk new
-
     let config = editor.MyConfig ()
     let file = editor.FileName
     let text = editor.GetText ()
 
+    // parse
+    //! `index` is the last char index, not cursor index
+    let ident = QuickParse.GetPartialLongNameEx(lineStr, caret.X - 1)
+
+    //! https://github.com/fsharp/FSharp.Compiler.Service/issues/837
+    let partialIdent =
+        if ident.PartialIdent.Length > 0 then
+            ident.PartialIdent
+        else
+            // correct PartialIdent
+            QuickParse.GetPartialLongName(lineStr, caret.X - 1) |> snd
+
     let decs =
         async {
             let! check = Checker.check file text config
-            return! check.CheckResults.GetDeclarationListInfo (Some check.ParseResults, caret.Y + 1, lineStr, partialName, always [])
+            return! check.CheckResults.GetDeclarationListInfo (Some check.ParseResults, caret.Y + 1, lineStr, ident, always [])
         }
         |> Async.RunSynchronously
-
-    // _160922_160602
-    // KO: Complete `x.ToString().C` gives global symbols.
-    // OK: Complete `x.ToString().` gives string members.
-    // Let's reduce to the working case.
-    // _171107
-    let residue =
-        if partialName.PartialIdent.Length > 0 then
-            partialName.PartialIdent
-        else
-            let names, residue = Parser.findLongIdentsAndResidue caret.X lineStr // rk old
-            residue
 
     let completions =
         decs.Items
         |> Seq.map (fun item -> item.Name) //?? mind NameInCode
-        |> Seq.filter (fun name -> name.StartsWith (if residue.StartsWith "``" then residue.Substring 2 else residue)) //rk
+        |> Seq.filter (fun name -> name.StartsWith (if partialIdent.StartsWith "``" then partialIdent.Substring 2 else partialIdent))
 
     progress.Done ()
 
-    completeLine editor.Line (caret.X - residue.Length) residue.Length completions
+    completeLine editor.Line (caret.X - partialIdent.Length) partialIdent.Length completions
     editor.Redraw ()
     true
 
@@ -256,17 +251,19 @@ let completeBy (editor: IEditor) getCompletions =
     if Char.IsWhiteSpace lineStr.[caret - 1] then false else
 
     // parse, skip none
-    let longIdent = Parser.findLongIdent caret lineStr //rk retire Parser
-    if longIdent.Length = 0 then false else
-    
+    let ident = QuickParse.GetPartialLongNameEx(lineStr, caret - 1)
+    let name = Parser.longIdent ident.QualifyingIdents ident.PartialIdent
+    if name.Length = 0 then false else
+
     let name, replacementIndex =
         if lineStr.[caret - 1] = '.' then
-            longIdent + ".", caret
+            name + ".", caret
         else
-            let dot = longIdent.LastIndexOf '.'
-            let start = caret - longIdent.Length
-            let replacementIndex = if dot < 0 then start else start + dot + 1
-            longIdent, replacementIndex
+            match ident.LastDotPos with
+            | Some pos ->
+                name, pos + 1
+            | None ->
+                name, caret - name.Length
 
     //_161108_054202
     let name = name.Replace ("``", "")

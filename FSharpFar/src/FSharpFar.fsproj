@@ -1,72 +1,18 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{19ed2eae-a112-402b-bdac-1cb6737327bf}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AssemblyName>FSharpFar</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <Name>FSharpFar</Name>
-    <TargetFrameworkProfile />
-    <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <Tailcalls>false</Tailcalls>
-    <OutputPath>Bin\$(Configuration)</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>
-    </DocumentationFile>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningsAsErrors />
-    <EnableUnmanagedDebugging>true</EnableUnmanagedDebugging>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
-    <Optimize>true</Optimize>
-    <Tailcalls>true</Tailcalls>
-    <OutputPath>Bin\$(Configuration)</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>
-    </DocumentationFile>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningsAsErrors />
-  </PropertyGroup>
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <FarHome Condition="'$(FarHome)' == ''">C:\Bin\Far\x64</FarHome>
     <MyOutDir>$(FarHome)\FarNet\Modules\$(AssemblyName)</MyOutDir>
-    <StartAction>Program</StartAction>
-    <StartProgram>$(FarHome)\Far.exe</StartProgram>
+    <!-- https://github.com/Microsoft/visualfsharp/issues/3656 -->
+    <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
+    <DisableImplicitSystemValueTupleReference>true</DisableImplicitSystemValueTupleReference>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net45</TargetFramework>
+    <RunPostBuildEvent>1</RunPostBuildEvent>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FarNet">
-      <HintPath>$(FarHome)\FarNet\FarNet.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="FarNet.Settings">
-      <HintPath>$(FarHome)\FarNet\FarNet.Settings.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="FarNet.Tools">
-      <HintPath>$(FarHome)\FarNet\FarNet.Tools.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="mscorlib" />
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="Lexer.fs" />
     <Compile Include="Parser.fs" />
     <Compile Include="FarNet.Auto.fs" />
     <Compile Include="ProxyWriter.fs" />
@@ -88,44 +34,34 @@
     <Compile Include="FarEditor.fs" />
     <Compile Include="FarTool.fs" />
   </ItemGroup>
-  <PropertyGroup>
-    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
-  </PropertyGroup>
-  <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
-  <Target Name="AfterBuild">
+  <ItemGroup>
+    <Reference Include="FarNet">
+      <HintPath>$(FarHome)\FarNet\FarNet.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="FarNet.Settings">
+      <HintPath>$(FarHome)\FarNet\FarNet.Settings.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="FarNet.Tools">
+      <HintPath>$(FarHome)\FarNet\FarNet.Tools.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="FSharp.Core">
+      <HintPath>..\packages\FSharp.Core\lib\$(TargetFramework)\FSharp.Core.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="FSharp.Compiler.Service">
+      <HintPath>..\packages\FSharp.Compiler.Service\lib\$(TargetFramework)\FSharp.Compiler.Service.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Copy DestinationFolder="$(MyOutDir)" SourceFiles="$(OutDir)\$(AssemblyName).dll" />
-    <Copy DestinationFolder="$(MyOutDir)" SkipUnchangedFiles="true" SourceFiles="..\packages\FSharp.Compiler.Service\lib\net45\FSharp.Compiler.Service.dll; ..\packages\System.Reflection.Metadata\lib\portable-net45+win8\System.Reflection.Metadata.dll" />
-    <Copy DestinationFolder="$(FarHome)" SkipUnchangedFiles="true" SourceFiles="..\packages\FSharp.Core\lib\net45\FSharp.Core.dll ; ..\packages\FSharp.Core\lib\net45\FSharp.Core.optdata ; ..\packages\FSharp.Core\lib\net45\FSharp.Core.sigdata" />
+    <Copy DestinationFolder="$(MyOutDir)" SourceFiles="$(OutDir)\$(AssemblyName).pdb" Condition="'$(Configuration)' == 'Debug'" />
+    <Delete Files="$(MyOutDir)\$(AssemblyName).pdb" Condition="'$(Configuration)' == 'Release'" />
+    <Copy DestinationFolder="$(MyOutDir)" SkipUnchangedFiles="true" SourceFiles="..\packages\FSharp.Compiler.Service\lib\$(TargetFramework)\FSharp.Compiler.Service.dll; ..\packages\System.Reflection.Metadata\lib\portable-net45+win8\System.Reflection.Metadata.dll" />
+    <Copy DestinationFolder="$(MyOutDir)" SkipUnchangedFiles="true" SourceFiles="..\packages\System.ValueTuple\lib\portable-net40+sl4+win8+wp8\System.ValueTuple.dll" />
+    <Copy DestinationFolder="$(FarHome)" SkipUnchangedFiles="true" SourceFiles="..\packages\FSharp.Core\lib\$(TargetFramework)\FSharp.Core.dll; ..\packages\FSharp.Core\lib\$(TargetFramework)\FSharp.Core.optdata; ..\packages\FSharp.Core\lib\$(TargetFramework)\FSharp.Core.sigdata" />
   </Target>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.5'">
-      <ItemGroup>
-        <Reference Include="ISymWrapper, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="System.IO, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="System.Runtime, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="FSharp.Compiler.Service">
-          <HintPath>..\packages\FSharp.Compiler.Service\lib\net45\FSharp.Compiler.Service.dll</HintPath>
-          <Private>False</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.5'">
-      <ItemGroup>
-        <Reference Include="FSharp.Core">
-          <HintPath>..\packages\FSharp.Core\lib\net45\FSharp.Core.dll</HintPath>
-          <Private>False</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
 </Project>
