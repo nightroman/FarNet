@@ -7,7 +7,6 @@
 param(
 	$Platform = (property Platform x64)
 )
-
 $FarHome = "C:\Bin\Far\$Platform"
 $ModuleHome = "$FarHome\FarNet\Modules\Explore"
 
@@ -15,7 +14,7 @@ task . Build, Clean
 
 # Build and install
 task Build {
-	use 4.0 MSBuild
+	Set-Alias MSBuild (Resolve-MSBuild)
 	exec { MSBuild Explore.csproj /p:Configuration=Release /p:FarHome=$FarHome }
 }
 
@@ -25,8 +24,7 @@ task Help {
 }
 
 task Clean {
-	Remove-Item -Force -Recurse -ErrorAction 0 -Path `
-	z, bin, obj, About-Explore.htm, FarNet.Explore.*.nupkg
+	remove z, bin, obj, About-Explore.htm, FarNet.Explore.*.nupkg
 }
 
 task Version {
@@ -38,7 +36,7 @@ task Version {
 task Package Help, {
 	$toModule = 'z\tools\FarHome\FarNet\Modules\Explore'
 
-	Remove-Item -Force -Recurse -ErrorAction 0 -Path [z]
+	remove z
 	$null = mkdir $toModule
 
 	Copy-Item -Destination $toModule `

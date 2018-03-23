@@ -52,9 +52,7 @@ task Help {
 
 # Remove temp files
 task Clean {
-	Remove-Item -Force -Recurse -ErrorAction 0 `
-	z, bin, obj, AssemblyInfo.cs,
-	About-RightControl.htm, FarNet.RightControl.*.nupkg
+	remove z, bin, obj, AssemblyInfo.cs, About-RightControl.htm, FarNet.RightControl.*.nupkg
 }
 
 # Set $script:Version
@@ -67,7 +65,7 @@ task Version {
 task Package Help, {
 	$toModule = 'z\tools\FarHome\FarNet\Modules\RightControl'
 
-	Remove-Item -Force -Recurse -ErrorAction 0 -Path [z]
+	remove z
 	$null = mkdir $toModule
 
 	Copy-Item -Destination $toModule `

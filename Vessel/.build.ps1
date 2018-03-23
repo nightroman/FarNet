@@ -5,7 +5,7 @@
 #>
 
 param(
-	$FarHome = (property FarHome C:\Bin\Far\Win32),
+	$FarHome = (property FarHome C:\Bin\Far\x64),
 	$TargetFrameworkVersion = (property TargetFrameworkVersion v3.5)
 )
 
@@ -53,8 +53,7 @@ task Help {
 }
 
 task Clean {
-	Remove-Item -Force -Recurse -ErrorAction 0 `
-	z, bin, obj, About-Vessel.htm, FarNet.Vessel.*.nupkg
+	remove z, bin, obj, About-Vessel.htm, FarNet.Vessel.*.nupkg
 }
 
 task Version {
@@ -64,7 +63,7 @@ task Version {
 task Package Help, {
 	$toModule = 'z\tools\FarHome\FarNet\Modules\Vessel'
 
-	Remove-Item -Force -Recurse -ErrorAction 0 -Path [z]
+	remove z
 	$null = mkdir $toModule
 
 	Copy-Item -Destination $toModule `

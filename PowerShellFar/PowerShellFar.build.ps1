@@ -12,8 +12,7 @@ $FarHome = "C:\Bin\Far\$Platform"
 $PsfHome = "$FarHome\FarNet\Modules\PowerShellFar"
 
 task Clean {
-	Remove-Item -Force -Recurse -ErrorAction 0 -LiteralPath `
-	z, bin, obj, Modules\FarDescription\bin, Modules\FarDescription\obj, About-PowerShellFar.htm
+	remove z, bin, obj, Modules\FarDescription\bin, Modules\FarDescription\obj, About-PowerShellFar.htm
 }
 
 # Install all. Run after Build.
@@ -63,7 +62,7 @@ Convert-Helps "$BuildRoot\Commands\PowerShellFar.dll-Help.ps1" "$Outputs"
 task Package Help, {
 	$dirMain = 'z\tools\FarHome\FarNet\Modules\PowerShellFar'
 
-	Remove-Item [z] -Force -Recurse
+	remove z
 	$null = mkdir $dirMain
 
 	Copy-Item -Destination $dirMain About-PowerShellFar.htm, History.txt, LICENSE.txt, PowerShellFar.macro.lua

@@ -4,9 +4,8 @@
 	Build script (https://github.com/nightroman/Invoke-Build)
 #>
 
-[CmdletBinding()]
 param(
-	$FarHome = (property FarHome C:\Bin\Far\Win32),
+	$FarHome = (property FarHome C:\Bin\Far\x64),
 	$Configuration = (property Configuration Release),
 	$FarNetModules = (property FarNetModules $FarHome\FarNet\Modules)
 )
@@ -16,12 +15,12 @@ $ProjectRoot = '.'
 $ProjectName = "$ModuleName.csproj"
 
 task Build {
-	use * MSBuild.exe
-	exec {MSBuild.exe $ProjectRoot\$ProjectName /p:FarHome=$FarHome /p:Configuration=$Configuration /p:FarNetModules=$FarNetModules}
+	Set-Alias MSBuild (Resolve-MSBuild)
+	exec {MSBuild $ProjectRoot\$ProjectName /p:FarHome=$FarHome /p:Configuration=$Configuration /p:FarNetModules=$FarNetModules}
 }
 
 task Clean {
-	Remove-Item $ProjectRoot\bin, $ProjectRoot\obj -Force -Recurse -ErrorAction 0
+	remove $ProjectRoot\bin, $ProjectRoot\obj
 }
 
 task . Build, Clean

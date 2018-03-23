@@ -25,8 +25,7 @@ task Help {
 }
 
 task Clean {
-	Remove-Item -Force -Recurse -ErrorAction 0 -Path `
-	z, bin, obj, About-FolderChart.htm, FarNet.FolderChart.*.nupkg
+	remove z, bin, obj, About-FolderChart.htm, FarNet.FolderChart.*.nupkg
 }
 
 task Version {
@@ -38,7 +37,7 @@ task Version {
 task Package Help, {
 	$toModule = 'z\tools\FarHome\FarNet\Modules\FolderChart'
 
-	Remove-Item -Force -Recurse -ErrorAction 0 -Path [z]
+	remove z
 	$null = mkdir $toModule
 
 	Copy-Item -Destination $toModule `

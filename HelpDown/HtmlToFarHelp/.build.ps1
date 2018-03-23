@@ -8,8 +8,6 @@ param(
 	$Bin = (property Bin)
 )
 
-Set-StrictMode -Version Latest
-
 # Convert markdown for packaging
 task ConvertMarkdown {
 	exec { MarkdownToHtml.exe "from = README.md; to = README.htm" }
@@ -21,13 +19,13 @@ task ConvertMarkdown {
 
 # Remove temp files
 task Clean {
-	Remove-Item z, bin, obj, Demo.htm, Demo.hlf, README.htm, Release-Notes.htm, HtmlToFarHelp.*.nupkg -Force -Recurse -ErrorAction 0
+	remove z, bin, obj, Demo.htm, Demo.hlf, README.htm, Release-Notes.htm, HtmlToFarHelp.*.nupkg
 }
 
 # Make package in z\tools
 task Package ConvertMarkdown, {
 	# temp package folder
-	Remove-Item [z] -Force -Recurse
+	remove z
 	$null = mkdir z\tools\Demo
 
 	# copy files

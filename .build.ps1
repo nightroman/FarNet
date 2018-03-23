@@ -23,8 +23,7 @@ $Builds = @(
 task Clean {
 	foreach($_ in $Builds) { Invoke-Build Clean $_ }
 
-	Remove-Item -Force -Recurse -ErrorAction 0 `
-	debug, ipch, obj, FarNetAccord.sdf, FarNetAccord.VC.db
+	remove debug, ipch, obj, FarNetAccord.sdf, FarNetAccord.VC.db
 }
 
 # Synopsis: Generate or update meta files.

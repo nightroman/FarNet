@@ -7,7 +7,6 @@
 param(
 	$Platform = (property Platform x64)
 )
-
 $FarHome = "C:\Bin\Far\$Platform"
 $ModuleHome = "$FarHome\FarNet\Modules\Drawer"
 
@@ -15,7 +14,7 @@ task . Build, Clean
 
 # Build and install
 task Build {
-	use 4.0 MSBuild
+	Set-Alias MSBuild (Resolve-MSBuild)
 	exec { MSBuild Drawer.csproj /p:Configuration=Release /p:FarHome=$FarHome }
 }
 
@@ -25,8 +24,7 @@ task Help {
 }
 
 task Clean {
-	Remove-Item -Force -Recurse -ErrorAction 0 -Path `
-	z, bin, obj, About-Drawer.htm, FarNet.Drawer.*.nupkg
+	remove z, bin, obj, About-Drawer.htm, FarNet.Drawer.*.nupkg
 }
 
 task Version {
@@ -38,7 +36,7 @@ task Version {
 task Package Help, {
 	$toModule = 'z\tools\FarHome\FarNet\Modules\Drawer'
 
-	Remove-Item -Force -Recurse -ErrorAction 0 -Path [z]
+	remove z
 	$null = mkdir $toModule
 
 	Copy-Item -Destination $toModule `

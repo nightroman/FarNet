@@ -4,15 +4,14 @@
 	Build script (https://github.com/nightroman/Invoke-Build)
 #>
 
-param
-(
+param(
 	$Platform = (property Platform x64),
 	$Configuration = (property Configuration Release)
 )
 $FarHome = "C:\Bin\Far\$Platform"
 
 task Clean {
-	Remove-Item bin, obj -Recurse -Force -ErrorAction 0
+	remove bin, obj
 }
 
 task Install {
@@ -25,5 +24,5 @@ task Install {
 }
 
 task Uninstall {
-	Remove-Item $FarHome\FarNet\FarNet.dll, $FarHome\FarNet\FarNet.xml -ErrorAction 0
+	remove $FarHome\FarNet\FarNet.dll, $FarHome\FarNet\FarNet.xml
 }

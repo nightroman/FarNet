@@ -20,8 +20,7 @@ task Build {
 }
 
 task Clean {
-	Remove-Item -Force -Recurse -ErrorAction 0 `
-	z, bin, obj, About-RightWords.htm, FarNet.RightWords.*.nupkg
+	remove z, bin, obj, About-RightWords.htm, FarNet.RightWords.*.nupkg
 }
 
 task Help {
@@ -39,7 +38,7 @@ task Package Help, {
 	$toModule = 'z\tools\FarHome\FarNet\Modules\RightWords'
 	$toNHunspell = 'z\tools\FarHome\FarNet\NHunspell'
 
-	Remove-Item -Force -Recurse -ErrorAction 0 -Path [z]
+	remove z
 	$null = mkdir $toModule, $toNHunspell
 
 	Copy-Item -Destination $toModule `

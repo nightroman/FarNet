@@ -10,12 +10,12 @@ param(
 )
 
 task Build {
-	use * MSBuild.exe
-	exec { MSBuild.exe FarNet.Demo.csproj /p:FarHome=$FarHome /p:FarNetModules=$FarNetModules /p:Configuration=Release }
+	Set-Alias MSBuild (Resolve-MSBuild)
+	exec {MSBuild FarNet.Demo.csproj /p:FarHome=$FarHome /p:FarNetModules=$FarNetModules /p:Configuration=Release}
 }
 
 task Clean {
-	Remove-Item bin, obj -Recurse -Force -ErrorAction 0
+	remove bin, obj
 }
 
 task . Build, Clean

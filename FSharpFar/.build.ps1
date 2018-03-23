@@ -70,7 +70,7 @@ task Package Markdown, {
 	$toModule = "$toHome\FarNet\Modules\$ModuleName"
 	$fromModule = "$FarHome\FarNet\Modules\$ModuleName"
 
-	Remove-Item [z] -Force -Recurse
+	remove z
 	$null = mkdir $toModule
 
 	Copy-Item -Destination $toHome @(

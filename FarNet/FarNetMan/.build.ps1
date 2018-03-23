@@ -4,8 +4,7 @@
 	Build script (https://github.com/nightroman/Invoke-Build)
 #>
 
-param
-(
+param(
 	$Platform = (property Platform x64),
 	$Configuration = (property Configuration Release)
 )
@@ -14,7 +13,7 @@ $FarHome = "C:\Bin\Far\$Platform"
 $CopyFile = "$Configuration\$Platform\FarNetMan.dll"
 
 task Clean {
-	Remove-Item Debug, Release, FarNetMan.vcxproj.user -Force -Recurse -ErrorAction 0
+	remove Debug, Release, FarNetMan.vcxproj.user
 }
 
 task Install {
@@ -24,5 +23,5 @@ task Install {
 }
 
 task Uninstall {
-	Remove-Item $FarHome\Plugins\FarNet -Force -Recurse -ErrorAction 0
+	remove $FarHome\Plugins\FarNet
 }

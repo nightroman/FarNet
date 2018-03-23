@@ -11,8 +11,6 @@ param(
 )
 $FarHome = "C:\Bin\Far\$Platform"
 
-use 14.0 MSBuild
-
 $script:Builds = @(
 	'FarNet\.build.ps1'
 	'FarNet.Settings\.build.ps1'
@@ -27,7 +25,7 @@ $script:Builds = @(
 
 function Clean {
 	foreach($_ in $Builds) { Invoke-Build Clean $_ }
-	Remove-Item -Force -Recurse -ErrorAction 0 -LiteralPath z, FarNet.sdf, About-FarNet.htm
+	remove z, FarNet.sdf, About-FarNet.htm
 }
 
 task Clean {
@@ -46,7 +44,7 @@ Help
 
 task Uninstall {
 	foreach($_ in $Builds) { Invoke-Build Uninstall $_ }
-	Remove-Item $FarHome\Far.exe.config -ErrorAction 0
+	remove $FarHome\Far.exe.config
 }
 
 task Help -If ($Configuration -eq 'Release') {
@@ -68,15 +66,23 @@ task BeginPackage {
 
 # Make package files
 task Package BeginPackage, Help, {
+	Set-Alias MSBuild (Resolve-MSBuild)
 	# build another platform
 	$bit = if ($Platform -eq 'Win32') {'x64'} else {'Win32'}
 	$PlatformToolset = if ($TargetFrameworkVersion -lt 'v4') {'v90'} else {'v140'}
 	exec {
-		MSBuild ..\FarNetAccord.sln /t:FarNetMan /p:Platform=$bit /p:Configuration=Release /p:TargetFrameworkVersion=$TargetFrameworkVersion /p:PlatformToolset=$PlatformToolset
+		MSBuild @(
+			"..\FarNetAccord.sln"
+			"/t:FarNetMan"
+			"/p:Platform=$bit"
+			"/p:Configuration=Release"
+			"/p:TargetFrameworkVersion=$TargetFrameworkVersion"
+			"/p:PlatformToolset=$PlatformToolset"
+		)
 	}
 
 	# folders
-	Remove-Item [z] -Recurse -Force
+	remove z
 	$null = mkdir `
 	z\tools\FarHome\FarNet,
 	z\tools\FarHome\Plugins\FarNet,

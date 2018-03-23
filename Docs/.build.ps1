@@ -17,7 +17,7 @@ task Install {
 }
 
 task Clean {
-	Remove-Item -Force -Recurse -ErrorAction 0 -Path Help, obj, *.shfbproj_*
+	remove Help, obj, *.shfbproj_*
 }
 
 task Test {
