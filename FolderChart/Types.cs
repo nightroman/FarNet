@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet module FolderChart
-Copyright (c) 2010-2016 Roman Kuzmin
-*/
+// FarNet module FolderChart
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Globalization;

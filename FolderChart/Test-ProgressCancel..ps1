@@ -4,16 +4,15 @@
 	Test FolderChart cancellations.
 
 .Description
-	* Assume F11 3 ~ FolderChart.
-	* Assume the C: drive contains a lot.
+	* F11 9 ~ FolderChart.
 	* It is run by the PowerShellFar stepper.
 
 	It starts the long job a few times and then cancels it after a random time.
-	We see activity at the Windows 7 task bar. The script stops after a while.
+	We see activity at the Windows task bar. The script stops after a while.
 
-	This is a test for race conditions. It is naive but it finds problems. It
-	is not to be included to the regular test base. Just run it once or even
-	more after relevant code changes and watch for issues.
+	This is a test for race conditions, naive, but it finds problems. It is not
+	to be included to the regular test base. Run it after relevant code changes
+	and watch for issues.
 #>
 
 {
@@ -23,7 +22,7 @@
 
 $test = {
 	{
-		$Far.PostMacro('Keys"F11 3"')
+		$Far.PostMacro('Keys"F11 9"')
 	}
 
 	{

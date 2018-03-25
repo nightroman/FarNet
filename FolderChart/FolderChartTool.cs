@@ -1,12 +1,9 @@
 ﻿
-/*
-FarNet module FolderChart
-Copyright (c) 2010-2016 Roman Kuzmin
-*/
+// FarNet module FolderChart
+// Copyright (c) Roman Kuzmin
 
 using System.IO;
 using System.Linq;
-using System.Text;
 using FarNet;
 
 namespace FolderChart
@@ -35,12 +32,6 @@ namespace FolderChart
 			if (!run.Run(Directory.GetDirectories(path), Directory.GetFiles(path)))
 				return;
 
-			var sb = new StringBuilder();
-			foreach (var it in run.Errors)
-				sb.AppendLine(it.Message);
-			if (sb.Length > 0)
-				Message(sb.ToString());
-
 			var sorted = run.Result.OrderBy(x => x.Size).ToList();
 			if (sorted.Count == 0)
 				return;
@@ -62,6 +53,10 @@ namespace FolderChart
 				sorted.RemoveRange(0, index);
 			if (sumHiddenSizes > 0)
 				sorted.Insert(0, new FolderItem() { Name = string.Empty, Size = sumHiddenSizes });
+
+			var errors = run.GetErrors();
+			if (errors.Length > 0)
+				title = string.Format("{0} ~ Cannot read: {1}", title, errors.Length);
 
 			var result = FolderChartForm.Show(title, sorted, new WindowWrapper(Far.Api.UI.MainWindowHandle));
 			if (result == null)

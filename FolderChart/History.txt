@@ -1,6 +1,11 @@
 
 NuGet package: https://www.nuget.org/packages/FarNet.FolderChart
 
+= 2.2.0 =
+
+Do not show "access denied" dialog.
+Move project to .NET SDK.
+
 = 2.1.1 =
 
 Updated package info after moving to GitHub.

@@ -5,6 +5,7 @@ obj
 ipch
 Debug
 Release
+Properties
 *.opendb
 *.opensdf
 *.sdf

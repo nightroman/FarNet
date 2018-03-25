@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet module FolderChart
-Copyright (c) 2010-2016 Roman Kuzmin
-*/
+// FarNet module FolderChart
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections.Concurrent;
@@ -24,7 +22,7 @@ using FarNet.Tools;
 class SizeRun
 {
 	public IEnumerable<FolderItem> Result { get { return _Result; } }
-	public IEnumerable<Exception> Errors { get { return _Errors; } }
+	public Exception[] GetErrors() { return _Errors.ToArray(); }
 
 	ConcurrentBag<FolderItem> _Result = new ConcurrentBag<FolderItem>();
 	ConcurrentBag<Exception> _Errors = new ConcurrentBag<Exception>();
