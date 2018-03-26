@@ -20,53 +20,44 @@ task Clean {
 }
 
 task Version {
-	($script:Version = switch -regex -file History.txt {'^= (\d+\.\d+\.\d+) =$' {$matches[1]; break}})
+	($script:Version = switch -regex -file History.txt { '^= (\d+\.\d+\.\d+) =$' { $matches[1]; break } })
+	assert $script:Version
 }
 
-task Markdown {
-	function Convert-Markdown($Name) {pandoc.exe --standalone --from=gfm "--output=$Name.htm" "--metadata=pagetitle=$Name" "$Name.md"}
+task Convert {
+	function Convert-Markdown($Name) { pandoc.exe --standalone --from=gfm "--output=$Name.htm" "--metadata=pagetitle=$Name" "$Name.md" }
 	exec { Convert-Markdown README }
 }
 
-task Package Version, Markdown, {
-	$toModule = 'z\tools\FarHome\FarNet\Modules\FolderChart'
+task Package Version, Convert, {
+	# test files
+	$pdb = "$ModuleHome\FolderChart.pdb"
+	assert (!(Test-Path $pdb)) 'Is it the debug build? PDB exists.'
+
+	$dll = Get-Item "$ModuleHome\FolderChart.dll"
+	assert ($dll.VersionInfo.FileVersion -match '^(\d+\.\d+\.\d+)\.0$')
+	equals ($matches[1]) $script:Version
+
+	# package files
+	$dir = "z\tools\FarHome\FarNet\Modules\FolderChart"
 
 	remove z
-	$null = mkdir $toModule
+	$null = mkdir $dir
 
-	Copy-Item -Destination $toModule `
-	README.htm,
-	History.txt,
-	LICENSE.txt,
-	$ModuleHome\FolderChart.dll
-
-	$dll = Get-Item -LiteralPath $ModuleHome\FolderChart.dll
-	assert ($dll.VersionInfo.FileVersion -match '^(\d+\.\d+\.\d+)\.0$')
-	equals $script:Version ($matches[1])
+	Copy-Item -Destination $dir @(
+		"README.htm"
+		"History.txt"
+		"LICENSE.txt"
+		"$ModuleHome\FolderChart.dll"
+	)
 }
 
-task Meta -Inputs .build.ps1, History.txt -Outputs AssemblyInfo.cs -Jobs Version, {
-	Set-Content AssemblyInfo.cs @"
-using System;
-using System.Reflection;
-using System.Runtime.InteropServices;
-[assembly: AssemblyProduct("FarNet.FolderChart")]
-[assembly: AssemblyVersion("$script:Version")]
-[assembly: AssemblyTitle("FarNet module for Far Manager")]
-[assembly: AssemblyDescription("Shows folder item sizes in a chart.")]
-[assembly: AssemblyCompany("https://github.com/nightroman/FarNet")]
-[assembly: AssemblyCopyright("Copyright (c) Roman Kuzmin")]
-[assembly: ComVisible(false)]
-[assembly: CLSCompliant(true)]
-"@
-}
-
-task NuGet Package, Version, {
+task NuGet Package, {
 	$text = @'
 FolderChart is the FarNet module for Far Manager.
 
-For the current directory it calculates file and directory sizes and
-shows the results as a chart in a modal window with some interaction.
+For the current panel directory this tool calculates file and directory sizes
+and shows the results as a chart in a separate window with some interaction.
 
 Requires .NET Framework 4.0
 
@@ -100,6 +91,22 @@ https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
 "@
 	# pack
 	exec { NuGet pack z\Package.nuspec }
+}
+
+task Meta -Inputs .build.ps1, History.txt -Outputs AssemblyInfo.cs -Jobs Version, {
+	Set-Content AssemblyInfo.cs @"
+using System;
+using System.Reflection;
+using System.Runtime.InteropServices;
+[assembly: AssemblyProduct("FarNet.FolderChart")]
+[assembly: AssemblyVersion("$script:Version")]
+[assembly: AssemblyTitle("FarNet module for Far Manager")]
+[assembly: AssemblyDescription("Shows folder item sizes in a chart.")]
+[assembly: AssemblyCompany("https://github.com/nightroman/FarNet")]
+[assembly: AssemblyCopyright("Copyright (c) Roman Kuzmin")]
+[assembly: ComVisible(false)]
+[assembly: CLSCompliant(true)]
+"@
 }
 
 task . Build, Clean

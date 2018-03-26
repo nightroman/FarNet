@@ -2,8 +2,10 @@
 // FarNet module FolderChart
 // Copyright (c) Roman Kuzmin
 
+using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using FarNet;
 
 namespace FolderChart
@@ -58,27 +60,30 @@ namespace FolderChart
 			if (errors.Length > 0)
 				title = string.Format("{0} ~ Cannot read: {1}", title, errors.Length);
 
-			var result = FolderChartForm.Show(title, sorted, new WindowWrapper(Far.Api.UI.MainWindowHandle));
-			if (result == null)
-				return;
+			// handle clicks
+			Action<string> action = (result) =>
+			{
+				Far.Api.PostJob(() =>
+				{
+					var path2 = Path.Combine(path, result);
+					if (Directory.Exists(path2))
+					{
+						panel.CurrentDirectory = path2;
+					}
+					else if (File.Exists(path2))
+					{
+						panel.GoToName(result, false);
+					}
+					panel.Redraw();
+				});
+			};
 
-			var path2 = Path.Combine(path, result);
-			if (Directory.Exists(path2))
+			// start non-blocking form
+			var thread = new Thread(() =>
 			{
-				panel.CurrentDirectory = path2;
-			}
-			else if (File.Exists(path2))
-			{
-				bool ok = panel.GoToName(result, false);
-				if (!ok)
-					Message(path2 + " exists but it is not in the panel.");
-			}
-			else
-			{
-				Message(path2 + " does not exist.");
-			}
-
-			panel.Redraw();
+				FolderChartForm.Show(title, sorted, action);
+			});
+			thread.Start();
 		}
 	}
 }

@@ -2,17 +2,19 @@
 // FarNet module FolderChart
 // Copyright (c) Roman Kuzmin
 
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 
+// Used the parameter `IWin32Window window` and pass `new WindowWrapper(Far.Api.UI.MainWindowHandle)` for `ShowDialog`.
+// With the new pseudo non-modal form this is not good, Far is kind of locked.
+
 static class FolderChartForm
 {
-	public static string Show(string title, IEnumerable<FolderItem> data, IWin32Window window)
+	public static void Show(string title, IEnumerable<FolderItem> data, Action<string> action)
 	{
-		string result = null;
-
 		using (var series = new Series())
 		{
 			series.ChartType = SeriesChartType.Pie;
@@ -38,12 +40,13 @@ static class FolderChartForm
 					{
 						form.Text = title;
 						form.Size = new Size(600, 600);
+						form.TopMost = true;
 						form.StartPosition = FormStartPosition.CenterParent;
 
 						form.Controls.Add(chart);
 
-						// mouse click
-						chart.MouseClick += (sender, e) =>
+						// handle clicks
+						Action<MouseEventArgs, bool> click = (e, isDoubleClick) =>
 						{
 							var hit = chart.HitTest(e.X, e.Y);
 
@@ -54,8 +57,9 @@ static class FolderChartForm
 								{
 									if (hit.PointIndex >= 0 && series.Points[hit.PointIndex].Label.Length > 0)
 									{
-										form.Close();
-										result = series.Points[hit.PointIndex].Label;
+										action(series.Points[hit.PointIndex].Label);
+										if (isDoubleClick)
+											form.Close();
 									}
 								}
 								else
@@ -76,6 +80,10 @@ static class FolderChartForm
 								}
 							}
 						};
+
+						// mouse clicks
+						chart.MouseClick += (sender, e) => { click(e, false); };
+						chart.MouseDoubleClick += (sender, e) => { click(e, true); };
 
 						// mouse move: highlight an item
 						chart.MouseMove += (sender, e) =>
@@ -101,8 +109,7 @@ static class FolderChartForm
 							}
 						};
 
-						form.ShowDialog(window);
-						return result;
+						form.ShowDialog();
 					}
 				}
 			}
