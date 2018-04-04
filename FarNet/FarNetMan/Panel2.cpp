@@ -932,6 +932,7 @@ int Panel2::AsGetFindData(GetFindDataInfo* info)
 			PluginPanelItem& p = info->PanelItem[0];
 			p.UserData.Data = (void*)(-1); //???????
 			p.FileName = dots;
+			p.FileAttributes = FILE_ATTRIBUTE_DIRECTORY;
 			p.Description = NewChars(Host->DotsDescription);
 		}
 

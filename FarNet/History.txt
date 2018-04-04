@@ -2,9 +2,13 @@
 NuGet package: https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5048
 
+= 5.2.12 =
+
+Adapted for Far 3.0.5176, panel items ".." should have the directory attribute.
+
 = 5.2.11 =
 
-Changes for FSharpFar.
+Changes for FSharpFar in Far.exe.config.
 
 = 5.2.10 =
 
