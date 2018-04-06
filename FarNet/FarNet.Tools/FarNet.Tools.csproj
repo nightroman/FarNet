@@ -81,7 +81,6 @@
     <Compile Include="SafeAbort.cs" />
     <Compile Include="SafeAbortEventArgs.cs" />
     <Compile Include="SearchFileCommand.cs" />
-    <Compile Include="SubsetForm.cs" />
     <Compile Include="SuperExplorer.cs" />
     <Compile Include="SuperPanel.cs" />
     <Compile Include="XPathObjectNavigator.cs" />

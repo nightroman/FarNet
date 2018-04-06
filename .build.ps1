@@ -22,6 +22,7 @@ $Builds = @(
 # Synopsis: Remove temp files.
 task Clean {
 	foreach($_ in $Builds) { Invoke-Build Clean $_ }
+	Invoke-Build Clean FSharpFar\.build.ps1
 
 	remove debug, ipch, obj, FarNetAccord.sdf, FarNetAccord.VC.db
 }
