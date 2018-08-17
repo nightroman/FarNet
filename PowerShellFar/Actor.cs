@@ -144,10 +144,12 @@ namespace PowerShellFar
 			Commands.BaseCmdlet.AddCmdlets(state);
 
 			// apartment
-			state.ApartmentState = Environment.GetEnvironmentVariable("PSF.ApartmentState") == "MTA" ? ApartmentState.MTA : ApartmentState.STA;
+			//! cannot use different with PSThreadOptions.UseCurrentThread
+			//state.ApartmentState = Environment.GetEnvironmentVariable("PSF.ApartmentState") == "MTA" ? ApartmentState.MTA : ApartmentState.STA;
 
 			// open/start runspace
 			Runspace = RunspaceFactory.CreateRunspace(FarHost, state);
+			Runspace.ThreadOptions = PSThreadOptions.UseCurrentThread;
 			Runspace.StateChanged += OnRunspaceStateEvent;
 			if (sync)
 				Runspace.Open();

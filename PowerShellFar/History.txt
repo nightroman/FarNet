@@ -3,6 +3,13 @@ NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 Far Manager 3.0.5013
 FarNet 5.2.6
 
+= 5.2.6 =
+
+Use the current thread in the main runspace in order to deal with Far 3.0.5256.
+Far 3.0.5260 reverts use of critical sections on every plugin call but we keep
+our change for other similar problems in Far, e.g. in menus, see Mantis 2241.
+Unfortunately we have to drop the ability to change the apartment state.
+
 = 5.2.5 =
 
 FarNet 5.2.6

@@ -1,8 +1,6 @@
 
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections.Generic;
@@ -434,7 +432,9 @@ namespace FarNet
 		/// </summary>
 		/// <remarks>
 		/// If there are no opened dialogs then it gets null.
-		/// Due to Mantis 2241 null is also returned if a menu is opened after a dialog.
+		/// <para>
+		/// Mantis 2241: This call from not the main thread hangs if a menu is opened after a dialog.
+		/// </para>
 		/// </remarks>
 		public abstract IDialog Dialog { get; }
 		/// <summary>
@@ -442,7 +442,9 @@ namespace FarNet
 		/// </summary>
 		/// <remarks>
 		/// It returns null if there is no current editor line available.
-		/// Due to Mantis 2241 null is also returned for a dialog if a menu is opened after this dialog (e.g. auto complete menu).
+		/// <para>
+		/// Mantis 2241: This call from not the main thread hangs if a menu is opened, e.g. autocomplete.
+		/// </para>
 		/// </remarks>
 		public abstract ILine Line { get; }
 		/// <summary>

@@ -113,6 +113,7 @@ namespace PowerShellFar
 			EnsureHost();
 
 			Runspace = RunspaceFactory.CreateRunspace(FarHost, Runspace.DefaultRunspace.InitialSessionState);
+			Runspace.ThreadOptions = PSThreadOptions.ReuseThread;
 			RunspaceOpen();
 
 			Editor.Title = "PS local session " + Path.GetFileName(Editor.FileName);
