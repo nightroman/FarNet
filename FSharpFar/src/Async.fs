@@ -4,7 +4,7 @@ open FarNet.Forms
 open System
 
 /// Posts the Far job (not for opening panels).
-let inline private post f =
+let inline private postJob f =
     far.PostJob (Action f)
 
 /// Posts the Far step (used for opening panels).
@@ -17,7 +17,7 @@ module Job =
     /// f: Far function with any result.
     let func f =
         Async.FromContinuations (fun (cont, econt, ccont) ->
-            post (fun _ ->
+            postJob (fun () ->
                 try
                     cont (f ())
                 with exn ->
@@ -30,7 +30,7 @@ module Job =
     /// f: Far function with any result.
     let step f =
         Async.FromContinuations (fun (cont, econt, ccont) ->
-            postStep (fun _ ->
+            postStep (fun () ->
                 try
                     cont (f ())
                 with exn ->
@@ -39,19 +39,19 @@ module Job =
         )
 
     /// Creates the job from callback, see Async.FromContinuations.
-    let fromContinuations f =
+    let jobFromContinuations f =
         Async.FromContinuations (fun (cont, econt, ccont) ->
-            post (fun _ -> f (cont, econt, ccont))
+            postJob (fun () -> f (cont, econt, ccont))
         )
 
     /// Creates the job from macro code.
     /// Syntax errors cause normal exceptions.
     /// Runtime errors cause modal error dialogs.
     let macro macro =
-        fromContinuations (fun (cont, econt, ccont) ->
+        jobFromContinuations (fun (cont, econt, ccont) ->
             try
                 far.PostMacro macro
-                post cont
+                postJob cont
             with exn ->
                 econt exn
         )
@@ -61,29 +61,9 @@ module Job =
     let keys keys =
         macro (sprintf "Keys[[%s]]" keys)
 
-    /// Creates the job from modal function.
-    /// The flow continues before it returns.
-    /// That is why the function result is unit.
-    /// f: Far function making a modal call in the end.
-    let modal f =
-        fromContinuations (fun (cont, econt, ccont) ->
-            let mutable error = null
-            post (fun _ ->
-                match error with
-                | null ->
-                    cont ()
-                | _ ->
-                    econt error
-            )
-            try
-                f ()
-            with exn ->
-                error <- exn
-        )
-
     /// Cancels the flow.
     let cancel : Async<unit> =
-        fromContinuations (fun (cont, econt, ccont) ->
+        jobFromContinuations (fun (cont, econt, ccont) ->
             ccont (OperationCanceledException ())
         )
 
@@ -113,23 +93,19 @@ module Job =
     /// Opens the editor and waits for closing.
     let flowEditor (editor: IEditor) = async {
         let mutable closed = false
-        let mutable error = null
-        post (fun _ ->
+        do! jobFromContinuations (fun (cont, econt, ccont) ->
             try
                 editor.Closed.Add (fun _ -> closed <- true)
                 editor.Open ()
+                cont ()
             with exn ->
-                error <- exn
+                econt exn
         )
-        let! wait = func (fun _ ->
-            match error with
-            | null ->
-                if closed then
-                    None
-                else
-                    Some (Async.AwaitEvent editor.Closed)
-            | _ ->
-                raise error
+        let! wait = func (fun () ->
+            if closed then
+                None
+            else
+                Some (Async.AwaitEvent editor.Closed)
         )
         match wait with
         | Some wait ->
@@ -141,23 +117,19 @@ module Job =
     /// Opens the viewer and waits for closing.
     let flowViewer (viewer: IViewer) = async {
         let mutable closed = false
-        let mutable error = null
-        post (fun _ ->
+        do! jobFromContinuations (fun (cont, econt, ccont) ->
             try
                 viewer.Closed.Add (fun _ -> closed <- true)
                 viewer.Open ()
+                cont ()
             with exn ->
-                error <- exn
+                econt exn
         )
-        let! wait = func (fun _ ->
-            match error with
-            | null ->
-                if closed then
-                    None
-                else
-                    Some (Async.AwaitEvent viewer.Closed)
-            | _ ->
-                raise error
+        let! wait = func (fun () ->
+            if closed then
+                None
+            else
+                Some (Async.AwaitEvent viewer.Closed)
         )
         match wait with
         | Some wait ->
@@ -168,10 +140,10 @@ module Job =
 
     /// Opens the panel and waits for closing.
     let flowPanel (panel: Panel) = async {
-        let! _ = await 0 1000 0 (fun _ ->
+        let! _ = await 0 1000 0 (fun () ->
             not far.Window.IsModal
         )
-        do! func (fun _ ->
+        do! func (fun () ->
             if far.Window.Kind <> WindowKind.Panels then
                 try
                     far.Window.SetCurrentAt -1
@@ -179,11 +151,11 @@ module Job =
                     raise (InvalidOperationException ("Cannot set panels.", exn))
         )
         let mutable closed = false
-        do! step (fun _ ->
+        do! step (fun () ->
             panel.Closed.Add (fun _ -> closed <- true)
             panel.Open ()
         )
-        let! wait = func (fun _ ->
+        let! wait = func (fun () ->
             if far.Panel <> (panel :> IPanel) then
                 invalidOp "Panel is not opened."
             if closed then
@@ -204,7 +176,7 @@ module Job =
     ///          `isNull args.Control` ~ the dialog is canceled.
     ///          `args.Ignore <- true` ~ do not close, ignore the result.
     let flowForm (dialog: IDialog) closing =
-        fromContinuations (fun (cont, econt, ccont) ->
+        jobFromContinuations (fun (cont, econt, ccont) ->
             dialog.Closing.Add (fun args ->
                 try
                     let r = closing args
@@ -223,7 +195,7 @@ module Job =
 let postExn exn =
     // Use Name instead of FullName in order to distinguish from native FarNet
     // at least for testing this fact. FullName is still available by [More].
-    post (fun _ -> far.ShowError (exn.GetType().Name, exn))
+    postJob (fun () -> far.ShowError (exn.GetType().Name, exn))
 
 module Async =
     /// Starts Far flow with exceptions caught and posted as exception dialogs.

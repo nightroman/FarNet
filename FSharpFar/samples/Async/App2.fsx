@@ -1,6 +1,6 @@
 
-// Starts the flow several times for automatic testing.
-// Testing is done by flows concurrent with the sample.
+// Tests the main demo flow and other test scenarios.
+// Testing is done by flows concurrent with samples.
 
 open FarNet
 open Async
@@ -12,6 +12,15 @@ open System.Diagnostics
 /// it flows too fast, we cannot see anything. With some not too small value we
 /// can see the flow in progress.
 let delay = 100
+
+let test predicate = async {
+    Debug.WriteLine (sprintf "!! wait %A" predicate)
+    do! Job.func (fun () ->
+        if not (predicate ()) then
+            failwithf "False predicate %A" predicate
+    )
+}
+
 let wait predicate = async {
     Debug.WriteLine (sprintf "!! wait %A" predicate)
     let! ok = Job.await delay 500 5000 predicate
@@ -26,7 +35,7 @@ let isDialog () =
     far.Window.Kind = WindowKind.Dialog
 
 let isEditor () =
-    far.Window.Kind = WindowKind.Editor && far.Editor.Title = "Demo title"
+    far.Window.Kind = WindowKind.Editor
 
 let isViewer () =
     far.Window.Kind = WindowKind.Viewer
@@ -50,10 +59,10 @@ let isFarPanel () =
     far.Window.Kind = WindowKind.Panels && not far.Panel.IsPlugin
 
 let showWideDialog () =
-    far.Message "long_text_message_for_wide_dialog"
+    far.Message "relatively_long_text_message_for_relatively_wide_dialog"
 
 let isWideDialog () =
-    isDialog () && dt 1 = "long_text_message_for_wide_dialog"
+    isDialog () && dt 1 = "relatively_long_text_message_for_relatively_wide_dialog"
 
 /// Test the sample wizard flow.
 let testWizard = async {
@@ -192,19 +201,20 @@ let testMainWithCancel = async {
     do! wait isFarPanel
 }
 
-/// Test Job.modal
+/// Test modal dialog over dialog
 let testModalDialogDialog = async {
     // dialog 1
-    do! Job.modal showWideDialog
+    Job.func showWideDialog
+    |> Async.farStart
+    do! test isWideDialog
 
     // dialog 2 on top of 1
-    do! Job.modal (fun _ -> far.Message ("ok", "job4.2"))
-
-    // test and exit dialog 2
-    do! wait (fun _ -> dt 0 = "job4.2")
+    Job.func (fun () -> far.Message "testModalDialogDialog")
+    |> Async.farStart
+    do! test (fun () -> dt 1 = "testModalDialogDialog")
     do! Job.keys "Esc"
 
-    // test and exit dialog 1
+    // dialog 1
     do! wait isWideDialog
     do! Job.keys "Esc"
 
@@ -212,25 +222,28 @@ let testModalDialogDialog = async {
     do! wait isFarPanel
 }
 
-/// Test Job.modal
+/// Test modal editor over dialog
 let testModalDialogEditor = async {
     let name = "testModalDialogEditor"
 
     // dialog
-    do! Job.modal (fun _ -> far.Message name)
+    fun () -> far.Message name
+    |> Job.func
+    |> Async.farStart
+    do! test isDialog
 
     // editor
-    let editor = far.CreateEditor ()
-    editor.Title <- name
-    do! Job.modal editor.Open
-
-    // test and exit editor
-    do! wait (fun _ -> far.Editor.Title = name)
+    fun () ->
+        let editor = far.CreateEditor ()
+        editor.Title <- name
+        editor.Open ()
+    |> Job.func
+    |> Async.farStart
+    do! test isEditor
     do! Job.keys "Esc"
-    do! wait (fun _ -> dt 1 = name)
 
-    // test and exit dialog
-    do! wait (fun _ -> dt 1 = name)
+    // dialog
+    do! wait isDialog
     do! Job.keys "Esc"
 
     // done
@@ -239,10 +252,12 @@ let testModalDialogEditor = async {
 
 module ModalDialogEditorIssues =
     let flow = async {
-        // dialog before editor
-        do! Job.modal showWideDialog
+        // dialog
+        Job.func showWideDialog
+        |> Async.farStart
+        do! test isDialog
 
-        // editor with problems
+        // editor with problems over the dialog
         let editor = far.CreateEditor ()
         editor.FileName <- __SOURCE_DIRECTORY__
         do! Job.flowEditor editor
@@ -268,15 +283,15 @@ module ModalDialogEditorIssues =
         do! wait isFarPanel
     }
 
-module ModalWithError =
+module FlowWithError =
     let flow = async {
-        // modal with exception
-        do! Job.modal (fun _ -> failwith "in-modal")
+        // with exception
+        do! Job.func (fun () -> failwith "in-Job.func")
         failwith "unexpected"
     }
     let test = async {
         Async.farStart flow
-        do! wait (fun _ -> isDialog () && dt 0 = "Exception" && dt 1 = "in-modal")
+        do! wait (fun () -> isDialog () && dt 0 = "Exception" && dt 1 = "in-Job.func")
         do! Job.keys "Esc"
         do! wait isFarPanel
     }
@@ -312,17 +327,21 @@ module FlowViewer =
     }
 
     let flowModal = async {
-        do! Job.modal showWideDialog
+        // dialog
+        Job.func showWideDialog
+        |> Async.farStart
 
+        // viewer over the diaalog
         let viewer = far.CreateViewer (FileName = __SOURCE_FILE__, DisableHistory = true)
         do! Job.flowViewer viewer
 
+        // OK when viewer closed
         do! Job.func (fun _ -> far.Message "OK")
     }
     let testModal = async {
         Async.farStart flowModal
 
-        do! wait (fun _ -> isViewer ())
+        do! wait isViewer
         do! Job.keys "Esc"
 
         do! wait (fun _ -> isDialog () && dt 1 = "OK")
@@ -356,7 +375,7 @@ async {
     do! testModalDialogDialog
     do! testModalDialogEditor
     do! ModalDialogEditorIssues.test
-    do! ModalWithError.test
+    do! FlowWithError.test
 
     // macro
     do! MacroInvalid.test
@@ -365,6 +384,6 @@ async {
     do! FlowViewer.test
 
     // done
-    far.UI.WriteLine (DateTime.Now.ToString ())
+    far.UI.WriteLine (sprintf "Done %s" __SOURCE_FILE__)
 }
 |> Async.farStart

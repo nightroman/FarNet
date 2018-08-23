@@ -66,7 +66,8 @@ private:
 	static Stack<IEnumerator<Object^>^>^ _steps;
 	// Sync
 	static HANDLE _hMutex;
-	static Action^ _jobs;
+	static intptr_t _nextJobId;
+	static Dictionary<intptr_t, Action^> _jobs;
 };
 
 }

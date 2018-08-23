@@ -792,13 +792,14 @@ void Far0::AsProcessSynchroEvent(const ProcessSynchroEventInfo* info)
 	if (info->Event != SE_COMMONSYNCHRO)
 		return;
 
-	Action^ jobs = nullptr;
+	// remove pending
+	Action^ handler = nullptr;
 	WaitForSingleObject(_hMutex, INFINITE);
 	try
 	{
-		//! handlers can be added during invoking
-		jobs = _jobs;
-		_jobs = nullptr;
+		intptr_t id = (intptr_t)info->Param;
+		handler = _jobs[id];
+		_jobs.Remove(id);
 	}
 	finally
 	{
@@ -806,14 +807,10 @@ void Far0::AsProcessSynchroEvent(const ProcessSynchroEventInfo* info)
 	}
 
 	// invoke out of the lock
-	if (jobs)
-	{
-		Log::Source->TraceInformation("AsProcessSynchroEvent: invoking job(s): {0}", gcnew Works::DelegateToString(jobs));
-		jobs();
-	}
+	Log::Source->TraceInformation("AsProcessSynchroEvent: invoke job: {0}", gcnew Works::DelegateToString(handler));
+	handler();
 }
 
-// We used to avoid duplicated handlers, not sure why.
 void Far0::PostJob(Action^ handler)
 {
 	if (!handler)
@@ -824,19 +821,10 @@ void Far0::PostJob(Action^ handler)
 	WaitForSingleObject(_hMutex, INFINITE);
 	try
 	{
-		if (_jobs)
-		{
-			Log::Source->TraceInformation("PostJob: post to the queue: {0}", %log);
-
-			_jobs += handler;
-		}
-		else
-		{
-			Log::Source->TraceInformation("PostJob: post the first job: {0}", %log);
-
-			_jobs = handler;
-			Info.AdvControl(&MainGuid, ACTL_SYNCHRO, 0, 0);
-		}
+		intptr_t id = _nextJobId++;
+		_jobs.Add(id, handler);
+		Info.AdvControl(&MainGuid, ACTL_SYNCHRO, 0, (void*)id);
+		Log::Source->TraceInformation("PostJob: post job: {0}", %log);
 	}
 	finally
 	{
