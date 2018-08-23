@@ -1,8 +1,6 @@
 
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 // _110628_192511 Open from a quick view panel issue
 // The `from` == OPEN_VIEWER. But the menu has been created for `window` == WTYPE_PANELS.
@@ -289,6 +287,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 	switch(windowKind)
 	{
 	case WTYPE_DIALOG:
+	case WTYPE_VMENU:
 		{
 			if (!_toolDialog)
 			{
@@ -814,6 +813,7 @@ void Far0::AsProcessSynchroEvent(const ProcessSynchroEventInfo* info)
 	}
 }
 
+// We used to avoid duplicated handlers, not sure why.
 void Far0::PostJob(Action^ handler)
 {
 	if (!handler)
@@ -824,12 +824,6 @@ void Far0::PostJob(Action^ handler)
 	WaitForSingleObject(_hMutex, INFINITE);
 	try
 	{
-		if (_jobs && _jobs != Delegate::Remove(_jobs, handler))
-		{
-			Log::Source->TraceInformation("PostJob: skip existing job: {0}", %log);
-			return;
-		}
-
 		if (_jobs)
 		{
 			Log::Source->TraceInformation("PostJob: post to the queue: {0}", %log);
@@ -838,7 +832,7 @@ void Far0::PostJob(Action^ handler)
 		}
 		else
 		{
-			Log::Source->TraceInformation("PostJob: post the head job: {0}", %log);
+			Log::Source->TraceInformation("PostJob: post the first job: {0}", %log);
 
 			_jobs = handler;
 			Info.AdvControl(&MainGuid, ACTL_SYNCHRO, 0, 0);
