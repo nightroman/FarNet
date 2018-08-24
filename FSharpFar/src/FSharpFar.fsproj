@@ -9,6 +9,7 @@
   <PropertyGroup>
     <TargetFramework>net45</TargetFramework>
     <RunPostBuildEvent>1</RunPostBuildEvent>
+    <WarningLevel>5</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>

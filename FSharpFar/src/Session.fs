@@ -6,6 +6,7 @@ open ProxyWriter
 open Microsoft.FSharp.Compiler.Interactive.Shell
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
+[<NoComparison>]
 type EvalResult = {
     Warnings: FSharpErrorInfo []
     Exception: exn

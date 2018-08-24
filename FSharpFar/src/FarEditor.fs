@@ -51,7 +51,7 @@ type FarEditor () =
                         if errors.Length = 0 then None else Some errors
                 do! jobEditor editor.Redraw
             with exn ->
-                postExn exn
+                postShowError exn
     })
 
     let mouseAgent = MailboxProcessor.Start (fun inbox -> async {
@@ -100,7 +100,7 @@ type FarEditor () =
                                         showTempText (Tips.format tip true) (String.Join (".", List.toArray idents))
                                 )
                         with exn ->
-                            postExn exn
+                            postShowError exn
     })
 
     let postNoop _ =  mouseAgent.Post Noop

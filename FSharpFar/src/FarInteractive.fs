@@ -34,7 +34,8 @@ type FarInteractive(session: Session) =
             base.KeyPressed key
 
     member x.Open () =
-        let path = Path.Combine (farLocalData, (DateTime.Now.ToString "_yyMMdd_HHmmss") + ".interactive.fsx")
+        let now = DateTime.Now
+        let path = Path.Combine (farLocalData, (now.ToString "_yyMMdd_HHmmss") + ".interactive.fsx")
         let editor = x.Editor
 
         editor.FileName <- path

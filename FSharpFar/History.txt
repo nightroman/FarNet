@@ -1,11 +1,11 @@
 
 https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.5048
-FarNet 5.2.13
+FarNet 5.2.14
 
 = 1.5.7 =
 
-- Redesign Async tools and samples/tests
+- Rework Async tools with samples and tests
 - FSharp.Core (4.5.2)
 
 = 1.5.6 =

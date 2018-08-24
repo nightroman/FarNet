@@ -1,5 +1,6 @@
 
-// The sample wizard flow. Run it by App1.fsx
+// The sample wizard flow. Run it as:
+// fs: //exec file=App.fs ;; FarNet.Async.startJob App.flowWizard
 
 module App
 open FarNet

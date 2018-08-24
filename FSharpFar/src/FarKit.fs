@@ -171,7 +171,8 @@ let showText text title =
     far.Message (text, title, MessageOptions.LeftAligned) |> ignore
 
 let messageWidth full =
-    far.UI.WindowSize.X - (if full then 3 else 16)
+    let size = far.UI.WindowSize
+    size.X - (if full then 3 else 16)
 
 let formatMessage width (text: string) =
     if text.Length <= width then

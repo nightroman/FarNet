@@ -4,7 +4,9 @@ Far Manager 3.0.5048
 
 = 5.2.14 =
 
-Undo works around Mantis 2241 but add help about when API hangs.
+- Enable FarNet menus in VMENU areas.
+- Rework posting and invoking synchronous jobs.
+- Undo blocking Mantis 2241 but document when API may hang.
 
 = 5.2.13 =
 

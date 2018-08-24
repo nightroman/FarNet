@@ -4,6 +4,7 @@ open System.IO
 open Config
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
+[<NoComparison>]
 type CheckFileResult = {
     Checker: FSharpChecker
     Options: FSharpProjectOptions

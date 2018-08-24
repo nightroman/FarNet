@@ -14,27 +14,27 @@ The editor and panel steps are non-blocking. When the editor or panel is opened
 a user may switch to other windows and then continue with editor or panel. When
 this editor or panel exits the flow continues and the wizard dialog is resumed.
 
-This flow is defined in *App.fs* and it may be invoked by *App1.fsx*.
+This flow is defined in the module file *App.fs* and it may be invoked as:
+
+    fs: //exec file=App.fs ;; FarNet.Async.startJob App.flowWizard
 
 Several flows may be in progress simultaneously and a user may do some other
-work at the same time. For example, run *App1.fsx*, click `[Editor]`, switch
-to panels. Then run *App1.fsx* again and also click `[Editor]`. As a result,
-you have two flows running. In order to see this, in two opened editors enter
+work at the same time. For example, run the flow, click `[Editor]`, switch to
+panels. Then run the flow again and also click `[Editor]`. As a result, you
+have two flows running. In order to see this, in two opened editors enter
 different texts. On exit the wizard shows the current flow text.
 
-*App2.fsx* is an example of concurrent flows. It starts the sample flows and
-then starts testing flows in order to check and manipulate existing flows.
+The script *App.fsx* is an example of concurrent flows. It starts sample flows
+and then starts testing flows in order to check and manipulate sample flows.
 
 **Files**
 
-- *App.fs* - the sample wizard flow
-- *App1.fsx* - starts the sample flow normally
-    - Invoke this script in order to work with the wizard.
-- *App2.fsx* - starts flows for auto tests
-    - Invoke this script in order to see how flows are automatically
-      controlled and tested by concurrent flows with testing scenarios.
-- *MyPanel.fs* - some panel used by flows
 - *Async.fs.ini* - F# config
+- *App.fs* - the sample wizard flow
+- *App.fsx* - starts flows for auto tests
+- *MyPanel.fs* - some panel used by flows
+- *Test.fs* - common test tools
+- *Test...fs* - other test flows
 
 **Tools**
 
