@@ -19,28 +19,27 @@ task Init Meta, {
 }
 
 task Kill Clean, {
-	Get-Item -ErrorAction 0 @(
+	remove @(
 		'packages'
 		'paket-files'
 		'src\.vs'
-		'src\FSharpFar.sln'
-		'src\AssemblyInfo.fs'
-	) | Remove-Item -Force -Recurse
+		'src\Directory.Build.props'
+	)
 }
 
 task Build {
-	exec {dotnet build $ProjectRoot\$ProjectName /p:FarHome=$FarHome /p:Configuration=$Configuration /v:n}
+	exec {dotnet build $ProjectRoot\$ModuleName.sln /p:FarHome=$FarHome /p:Configuration=$Configuration /v:n}
 }
 
 task Clean {
-	Get-Item -ErrorAction 0 @(
+	remove @(
 		'z'
 		'README.htm'
 		'src\FSharpFar.fs.ini'
 		"FarNet.$ModuleName.*.nupkg"
-		"$ProjectRoot\bin"
-		"$ProjectRoot\obj"
-	) | Remove-Item -Force -Recurse
+		"$ProjectRoot\*\bin"
+		"$ProjectRoot\*\obj"
+	)
 }
 
 task Markdown {
@@ -53,7 +52,6 @@ task Version {
 }
 
 task Meta -Inputs .build.ps1, History.txt -Outputs src/Directory.Build.props -Jobs Version, {
-	# https://stackoverflow.com/questions/42138418/equivalent-to-assemblyinfo-in-dotnet-core-csproj
 	Set-Content src/Directory.Build.props @"
 <Project>
 	<PropertyGroup>
@@ -71,6 +69,7 @@ task Meta -Inputs .build.ps1, History.txt -Outputs src/Directory.Build.props -Jo
 
 task Package Markdown, {
 	$toHome = "z\tools\FarHome"
+	$toFarNet = "z\tools\FarHome\FarNet"
 	$toModule = "$toHome\FarNet\Modules\$ModuleName"
 	$fromModule = "$FarHome\FarNet\Modules\$ModuleName"
 
@@ -81,6 +80,11 @@ task Package Markdown, {
 		"$FarHome\FSharp.Core.dll"
 		"$FarHome\FSharp.Core.optdata"
 		"$FarHome\FSharp.Core.sigdata"
+	)
+
+	Copy-Item -Destination $toFarNet @(
+		"$FarHome\FarNet\FarNet.FSharp.dll"
+		"$FarHome\FarNet\FarNet.FSharp.xml"
 	)
 
 	Copy-Item -Destination $toModule @(

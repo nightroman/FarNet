@@ -1,11 +1,9 @@
 
 /// Common test tools.
 module Test
-
 open FarNet
-open Async
+open FarNet.FSharp
 open App
-open System
 
 /// Check delay. It is not for waiting results! It should work with 0, too, but
 /// it plays fast and we cannot see much. With larger value we can see the play.
@@ -15,7 +13,7 @@ let mutable delay = 0
 /// Use it if the result readiness is clear, else use `wait`.
 let test predicate = async {
     do! Async.Sleep delay
-    do! Job.func (fun () ->
+    do! Job.As (fun () ->
         if not (predicate ()) then
             failwithf "False predicate %A" predicate
     )
@@ -24,7 +22,7 @@ let test predicate = async {
 /// Waits for some time until the predicate is true.
 /// Use it if the result readiness is not clear for `test`.
 let wait predicate = async {
-    let! ok = Job.wait delay 500 5000 predicate
+    let! ok = Job.Wait (delay, 200, 5000, predicate)
     if not ok then failwithf "Timeout predicate %A" predicate
 }
 

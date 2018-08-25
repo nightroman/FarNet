@@ -19,6 +19,7 @@ let defaultCompilerArgs =
     let dir = Environment.GetEnvironmentVariable "FARHOME"
     [
         "-r:" + dir + @"\FarNet\FarNet.dll"
+        "-r:" + dir + @"\FarNet\FarNet.FSharp.dll"
         "-r:" + dir + @"\FarNet\FarNet.Tools.dll"
         "-r:" + dir + @"\FarNet\Modules\FSharpFar\FSharpFar.dll"
     ]

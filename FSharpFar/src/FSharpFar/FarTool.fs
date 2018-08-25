@@ -19,7 +19,8 @@ type FarTool () =
                 match key.VirtualKeyCode with
                 | KeyCode.Delete ->
                     ses.Close ()
-                    not Session.Sessions.IsEmpty
+                    //! do not close even empty, keep predictable for typing
+                    true
                 | KeyCode.F4 ->
                     let editor = far.CreateEditor ()
                     editor.FileName <- ses.ConfigFile

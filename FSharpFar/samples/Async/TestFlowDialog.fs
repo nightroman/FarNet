@@ -1,7 +1,7 @@
 
 module TestFlowDialog
 open FarNet
-open Async
+open FarNet.FSharp
 open Test
 
 let flow = async {
@@ -12,7 +12,7 @@ let flow = async {
     edit.Add "item2" |> ignore
 
     // flow
-    let! r = Job.flowDialog dialog (fun args ->
+    let! r = Job.FlowDialog dialog (fun args ->
         if isNull args.Control then
             None
         elif edit.Text = "" then
@@ -25,36 +25,36 @@ let flow = async {
     // show the result text or "cancel"
     match r with
     | Some text ->
-        do! Job.func (fun () -> far.Message text)
+        do! Job.As (fun () -> far.Message text)
     | None ->
-        do! Job.func (fun () -> far.Message "cancel")
+        do! Job.As (fun () -> far.Message "cancel")
 }
 
 let testEmpty = async {
-    startJob flow
+    Job.Start flow
     do! test isDialog
 
     // enter empty text
-    do! Job.keys "Enter"
+    do! Job.Keys "Enter"
     do! test (isDialogText 0 "")
 
     // cancel
-    do! Job.keys "Esc"
+    do! Job.Keys "Esc"
     do! test (isDialogText 1 "cancel")
 
-    do! Job.keys "Esc"
+    do! Job.Keys "Esc"
     do! test isFarPanel
 }
 
 let testItem1 = async {
-    startJob flow
+    Job.Start flow
     do! test isDialog
 
     // enter the first item from the list
-    do! Job.keys "CtrlDown Enter Enter"
+    do! Job.Keys "CtrlDown Enter Enter"
     do! test (isDialogText 1 "item1")
 
-    do! Job.keys "Esc"
+    do! Job.Keys "Esc"
     do! test isFarPanel
 }
 

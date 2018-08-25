@@ -1,45 +1,47 @@
 
 module TestFlowViewer
 open FarNet
-open Async
+open FarNet.FSharp
 open Test
 
 let flowNormal = async {
-    let viewer = far.CreateViewer (FileName = __SOURCE_FILE__, DisableHistory = true)
-    do! Job.flowViewer viewer
+    let viewer = far.CreateViewer (FileName = __SOURCE_FILE__)
+    viewer.DisableHistory <- true
+    do! Job.FlowViewer viewer
 }
 let testNormal = async {
-    startJob flowNormal
+    Job.Start flowNormal
 
     do! test isViewer
-    do! Job.keys "Esc"
+    do! Job.Keys "Esc"
 
     do! test isFarPanel
 }
 
 let flowModal = async {
     // dialog
-    Job.func showWideDialog
-    |> startJob
+    Job.As showWideDialog
+    |> Job.Start
 
     // viewer over the dialog
-    let viewer = far.CreateViewer (FileName = __SOURCE_FILE__, DisableHistory = true)
-    do! Job.flowViewer viewer
+    let viewer = far.CreateViewer (FileName = __SOURCE_FILE__)
+    viewer.DisableHistory <- true
+    do! Job.FlowViewer viewer
 
     // OK when viewer closed
-    do! Job.func (fun () -> far.Message "OK")
+    do! Job.As (fun () -> far.Message "OK")
 }
 let testModal = async {
-    startJob flowModal
+    Job.Start flowModal
 
     do! test isViewer
-    do! Job.keys "Esc"
+    do! Job.Keys "Esc"
 
     do! test (isDialogText 1 "OK")
-    do! Job.keys "Esc"
+    do! Job.Keys "Esc"
 
     do! test isWideDialog
-    do! Job.keys "Esc"
+    do! Job.Keys "Esc"
 
     do! test isFarPanel
 }

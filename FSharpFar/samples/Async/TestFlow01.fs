@@ -1,7 +1,7 @@
 
 module TestFlow01
 open FarNet
-open Async
+open FarNet.FSharp
 open Test
 open App
 
@@ -19,77 +19,77 @@ let flow = async {
         // ask how to continue
         let! r = jobAsk text "Wizard" [|"&Yes"; "&No"; "&Cancel"; "&Error"|]
         match r with
-        | 2 -> do! Job.cancel
+        | 2 -> do! Job.Cancel ()
         | 3 -> failwith "Oh"
         | _ -> answer <- r
 
     // open panel and wait for closing
     let lines = text.Split [|'\n'|] |> Seq.cast
-    do! Job.flowPanel (MyPanel.panel lines)
+    do! Job.FlowPanel (MyPanel.panel lines)
 
     // show final message
-    do! Job.func (fun () -> far.Message (text, "Done"))
+    do! Job.As (fun () -> far.Message (text, "Done"))
 }
 
 /// The full flow with one return to the editor.
 let testNo = async {
-    startJob flow
+    Job.Start flow
     do! test isEditor
 
     // exit editor
-    do! Job.keys "Esc"
+    do! Job.Keys "Esc"
     do! test isWizard
 
     // No -> repeat editor
-    do! Job.keys "N"
+    do! Job.Keys "N"
     do! test isEditor
 
     // exit editor
-    do! Job.keys "Esc"
+    do! Job.Keys "Esc"
     do! test isWizard
 
     // Yes -> my panel
-    do! Job.keys "Y"
+    do! Job.Keys "Y"
     do! test isMyPanel
 
     // exit panel -> dialog
-    do! Job.keys "Esc"
+    do! Job.Keys "Esc"
     do! test isDone
 
     // exit dialog
-    do! Job.keys "Esc"
+    do! Job.Keys "Esc"
     do! test isFarPanel
 }
 
 /// The flow is stopped by an exception.
 let testError = async {
-    startJob flow
+    Job.Start flow
     do! test isEditor
 
     // exit editor
-    do! Job.keys "Esc"
+    do! Job.Keys "Esc"
     do! test isWizard
 
     // Error -> dialog
-    do! Job.keys "E"
+    do! Job.Keys "E"
     do! test isError
 
     // exit dialog
-    do! Job.keys "Esc"
+    do! Job.Keys "Esc"
     do! test isFarPanel
 }
 
 /// The flow is stopped by cancelling.
 let testCancel = async {
-    startJob flow
+    Job.Start flow
     do! test isEditor
 
     // exit editor
-    do! Job.keys "Esc"
+    do! Job.Keys "Esc"
     do! test isWizard
 
     // Cancel -> panels
-    do! Job.keys "C"
+    do! Job.Keys "C"
     do! test isFarPanel
 }
 

@@ -14,7 +14,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Parser.fs" />
-    <Compile Include="FarNet.Auto.fs" />
     <Compile Include="ProxyWriter.fs" />
     <Compile Include="Kit.fs" />
     <Compile Include="FarKit.fs" />
@@ -30,9 +29,13 @@
     <Compile Include="FarInteractive.fs" />
     <Compile Include="FarStdWriter.fs" />
     <Compile Include="FarCommand.fs" />
-    <Compile Include="Async.fs" />
     <Compile Include="FarEditor.fs" />
     <Compile Include="FarTool.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FarNet.FSharp\FarNet.FSharp.fsproj">
+      <Private>false</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FarNet">
@@ -48,11 +51,11 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="FSharp.Core">
-      <HintPath>..\packages\FSharp.Core\lib\$(TargetFramework)\FSharp.Core.dll</HintPath>
+      <HintPath>..\..\packages\FSharp.Core\lib\$(TargetFramework)\FSharp.Core.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="FSharp.Compiler.Service">
-      <HintPath>..\packages\FSharp.Compiler.Service\lib\$(TargetFramework)\FSharp.Compiler.Service.dll</HintPath>
+      <HintPath>..\..\packages\FSharp.Compiler.Service\lib\$(TargetFramework)\FSharp.Compiler.Service.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>
@@ -60,8 +63,8 @@
     <Copy DestinationFolder="$(MyOutDir)" SourceFiles="$(OutDir)\$(AssemblyName).dll" />
     <Copy DestinationFolder="$(MyOutDir)" SourceFiles="$(OutDir)\$(AssemblyName).pdb" Condition="'$(Configuration)' == 'Debug'" />
     <Delete Files="$(MyOutDir)\$(AssemblyName).pdb" Condition="'$(Configuration)' == 'Release'" />
-    <Copy DestinationFolder="$(MyOutDir)" SkipUnchangedFiles="true" SourceFiles="..\packages\FSharp.Compiler.Service\lib\$(TargetFramework)\FSharp.Compiler.Service.dll; ..\packages\System.Reflection.Metadata\lib\portable-net45+win8\System.Reflection.Metadata.dll" />
-    <Copy DestinationFolder="$(MyOutDir)" SkipUnchangedFiles="true" SourceFiles="..\packages\System.ValueTuple\lib\portable-net40+sl4+win8+wp8\System.ValueTuple.dll" />
-    <Copy DestinationFolder="$(FarHome)" SkipUnchangedFiles="true" SourceFiles="..\packages\FSharp.Core\lib\$(TargetFramework)\FSharp.Core.dll; ..\packages\FSharp.Core\lib\$(TargetFramework)\FSharp.Core.optdata; ..\packages\FSharp.Core\lib\$(TargetFramework)\FSharp.Core.sigdata" />
+    <Copy DestinationFolder="$(MyOutDir)" SkipUnchangedFiles="true" SourceFiles="..\..\packages\FSharp.Compiler.Service\lib\$(TargetFramework)\FSharp.Compiler.Service.dll; ..\..\packages\System.Reflection.Metadata\lib\portable-net45+win8\System.Reflection.Metadata.dll" />
+    <Copy DestinationFolder="$(MyOutDir)" SkipUnchangedFiles="true" SourceFiles="..\..\packages\System.ValueTuple\lib\portable-net40+sl4+win8+wp8\System.ValueTuple.dll" />
+    <Copy DestinationFolder="$(FarHome)" SkipUnchangedFiles="true" SourceFiles="..\..\packages\FSharp.Core\lib\$(TargetFramework)\FSharp.Core.dll; ..\..\packages\FSharp.Core\lib\$(TargetFramework)\FSharp.Core.optdata; ..\..\packages\FSharp.Core\lib\$(TargetFramework)\FSharp.Core.sigdata" />
   </Target>
 </Project>

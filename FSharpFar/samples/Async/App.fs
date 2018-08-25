@@ -1,15 +1,15 @@
 
 // The sample wizard flow. Run it as:
-// fs: //exec file=App.fs ;; FarNet.Async.startJob App.flowWizard
+// fs: //exec file=App.fs ;; FarNet.FSharp.Job.Start App.flowWizard
 
 module App
 open FarNet
-open Async
+open FarNet.FSharp
 open System.IO
 
 /// Shows a message with the specified buttons and gets the choice index.
 let jobAsk text title buttons =
-    Job.func (fun _ -> far.Message (text, title, MessageOptions.LeftAligned, buttons))
+    Job.As (fun _ -> far.Message (text, title, MessageOptions.LeftAligned, buttons))
 
 /// Opens a non-modal editor and gets the result text when the editor exits.
 let jobEditText text title = async {
@@ -18,8 +18,9 @@ let jobEditText text title = async {
     File.WriteAllText (fileName, text)
 
     // open editor and wait for closing
-    let editor = far.CreateEditor (FileName = fileName, Title = title, CodePage = 65001, DisableHistory = true)
-    do! Job.flowEditor editor
+    let editor = far.CreateEditor (FileName = fileName, Title = title, CodePage = 65001)
+    editor.DisableHistory <- true
+    do! Job.FlowEditor editor
 
     // get and return text, delete file
     let text = File.ReadAllText fileName
@@ -36,7 +37,7 @@ let flowWizard = async {
         match answer with
         | 0 ->
             // [OK] - close the wizard and show the final message
-            do! Job.func (fun _ -> far.Message (!text, "Done"))
+            do! Job.As (fun _ -> far.Message (!text, "Done"))
             loop := false
         | 1 ->
             // [Editor] - non-modal editor to edit the text
@@ -45,7 +46,7 @@ let flowWizard = async {
         | 2 ->
             // [Panel] - panel to show the current text
             let lines = (!text).Split [|'\n'|] |> Seq.cast
-            do! Job.flowPanel (MyPanel.panel lines)
+            do! Job.FlowPanel (MyPanel.panel lines)
         | _ ->
             // [Cancel] or [Esc] - exit
             loop := false

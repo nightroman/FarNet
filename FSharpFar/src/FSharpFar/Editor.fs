@@ -233,6 +233,7 @@ let complete (editor: IEditor) =
         decs.Items
         |> Seq.map (fun item -> item.Name) //?? mind NameInCode
         |> Seq.filter (fun name -> name.StartsWith (if partialIdent.StartsWith "``" then partialIdent.Substring 2 else partialIdent))
+        |> Seq.sort
 
     progress.Done ()
 

@@ -16,7 +16,7 @@ this editor or panel exits the flow continues and the wizard dialog is resumed.
 
 This flow is defined in the module file *App.fs* and it may be invoked as:
 
-    fs: //exec file=App.fs ;; FarNet.Async.startJob App.flowWizard
+    fs: //exec file=App.fs ;; FarNet.FSharp.Job.Start App.flowWizard
 
 Several flows may be in progress simultaneously and a user may do some other
 work at the same time. For example, run the flow, click `[Editor]`, switch to
@@ -33,16 +33,6 @@ and then starts testing flows in order to check and manipulate sample flows.
 - *App.fs* - the sample wizard flow
 - *App.fsx* - starts flows for auto tests
 - *MyPanel.fs* - some panel used by flows
+- *Parallel.fs* - shows some parallel jobs
 - *Test.fs* - common test tools
 - *Test...fs* - other test flows
-
-**Tools**
-
-- [Async.fs](https://github.com/nightroman/FarNet/blob/master/FSharpFar/src/Async.fs)
-    - The prototype async tools for F#.
-
-**Notes**
-
-This is also an example of a simple FarNet panel created in F#. See another
-sample *TryPanelFSharp* for a more complex panel with some operations like
-adding and removing items interactively.

@@ -1,36 +1,36 @@
 
 module TestModalEditorIssue
 open FarNet
-open Async
+open FarNet.FSharp
 open Test
 
 let flow = async {
     // dialog
-    Job.func showWideDialog
-    |> startJob
+    Job.As showWideDialog
+    |> Job.Start
     do! test isDialog
 
-    // editor with problems over the dialog
-    let editor = far.CreateEditor ()
-    editor.FileName <- __SOURCE_DIRECTORY__
-    do! Job.flowEditor editor
+    // editor with problems (cannot edit directory) over the dialog
+    let editor = far.CreateEditor (FileName = __SOURCE_DIRECTORY__)
+    editor.DisableHistory <- true
+    do! Job.FlowEditor editor
     failwith "unexpected"
 }
 
 let test = async {
-    startJob flow
+    Job.Start flow
 
     // nasty Far message -> `wait`, not `test`
     do! wait (fun () -> isDialog () && dt 1 = "It is impossible to edit the folder")
-    do! Job.keys "Esc"
+    do! Job.Keys "Esc"
 
     // posted FarNet error
     do! test (isDialogText 0 "InvalidOperationException")
-    do! Job.keys "Esc"
+    do! Job.Keys "Esc"
 
     // dialog before editor
     do! test isWideDialog
-    do! Job.keys "Esc"
+    do! Job.Keys "Esc"
 
     // done
     do! test isFarPanel

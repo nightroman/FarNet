@@ -3,6 +3,12 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.5048
 FarNet 5.2.14
 
+= 1.6.0 =
+
+FarNet API moved to FarNet\FarNet.FSharp.dll. It is automatically available for
+scripts as usual and F# FarNet modules, when referenced. Modules do not have to
+reference the whole FSharpFar.dll.
+
 = 1.5.7 =
 
 - Rework Async tools with samples and tests

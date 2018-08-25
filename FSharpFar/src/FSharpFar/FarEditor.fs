@@ -1,7 +1,6 @@
 ﻿namespace FSharpFar
 open FarNet
-open FarNet.Async
-open Checker
+open FarNet.FSharp
 open Session
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open System
@@ -22,13 +21,11 @@ type FarEditor () =
     inherit ModuleEditor ()
     let mutable editor: IEditor = null
 
-    let jobEditor f = Async.FromContinuations (fun (cont, econt, ccont) ->
-        far.PostJob (fun _ ->
-            if editor.IsOpened then
-                cont (f ())
-            else
-                ccont (OperationCanceledException ())
-        )
+    let jobEditor f = Job.FromContinuations (fun (cont, econt, ccont) ->
+        if editor.IsOpened then
+            cont (f ())
+        else
+            ccont (OperationCanceledException ())
     )
 
     let checkAgent = MailboxProcessor.Start (fun inbox -> async {
@@ -51,7 +48,7 @@ type FarEditor () =
                         if errors.Length = 0 then None else Some errors
                 do! jobEditor editor.Redraw
             with exn ->
-                postShowError exn
+                Job.PostShowError exn
     })
 
     let mouseAgent = MailboxProcessor.Start (fun inbox -> async {
@@ -100,7 +97,7 @@ type FarEditor () =
                                         showTempText (Tips.format tip true) (String.Join (".", List.toArray idents))
                                 )
                         with exn ->
-                            postShowError exn
+                            Job.PostShowError exn
     })
 
     let postNoop _ =  mouseAgent.Post Noop
