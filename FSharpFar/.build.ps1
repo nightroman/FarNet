@@ -52,16 +52,20 @@ task Version {
 	($script:Version = switch -regex -file History.txt {'^= (\d+\.\d+\.\d+) =$' {$matches[1]; break}})
 }
 
-task Meta -Inputs .build.ps1, History.txt -Outputs src/AssemblyInfo.fs -Jobs Version, {
-	Set-Content src/AssemblyInfo.fs @"
-namespace System.Reflection
-[<assembly: AssemblyCompany("https://github.com/nightroman/FarNet")>]
-[<assembly: AssemblyCopyright("Copyright (c) 2016-2018 Roman Kuzmin")>]
-[<assembly: AssemblyDescription("F# interactive, scripting, compiler, and editor services for Far Manager.")>]
-[<assembly: AssemblyProduct("FarNet.FSharpFar")>]
-[<assembly: AssemblyTitle("FarNet module FSharpFar for Far Manager")>]
-[<assembly: AssemblyVersion("$Version")>]
-()
+task Meta -Inputs .build.ps1, History.txt -Outputs src/Directory.Build.props -Jobs Version, {
+	# https://stackoverflow.com/questions/42138418/equivalent-to-assemblyinfo-in-dotnet-core-csproj
+	Set-Content src/Directory.Build.props @"
+<Project>
+	<PropertyGroup>
+		<Company>https://github.com/nightroman/FarNet</Company>
+		<Copyright>Copyright (c) 2016-2018 Roman Kuzmin</Copyright>
+		<Description>F# interactive, scripting, compiler, and editor services for Far Manager.</Description>
+		<Product>FarNet.FSharpFar</Product>
+		<Version>$Version</Version>
+		<FileVersion>$Version</FileVersion>
+		<AssemblyVersion>$Version</AssemblyVersion>
+	</PropertyGroup>
+</Project>
 "@
 }
 

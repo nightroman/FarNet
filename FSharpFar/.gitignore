@@ -7,4 +7,4 @@ packages
 z*
 
 FSharpFar.fs.ini
-AssemblyInfo.fs
+Directory.Build.props

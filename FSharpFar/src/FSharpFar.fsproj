@@ -13,7 +13,6 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Parser.fs" />
     <Compile Include="FarNet.Auto.fs" />
     <Compile Include="ProxyWriter.fs" />
