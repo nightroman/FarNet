@@ -68,6 +68,7 @@ internal:
 	List<FarControl^>^ _items;
 private:
 	void AddItem(FarControl^ item);
+	bool Stop(int selected);
 	void Free();
 private:
 	int _flags;

@@ -336,34 +336,39 @@ bool FarDialog::Show()
 		// show
 		int selected = (int)Info.DialogRun(_hDlg);
 
-		// update
-		for(int i = _items->Count; --i >= 0;)
-			_items[i]->Stop(selected >= 0);
-
-		// result
-		if (selected >= 0)
-		{
-			_selected = _items[selected];
-			return (Object^)_selected != (Object^)Cancel;
-		}
-		else
-		{
-			_selected = nullptr;
-			return false;
-		}
+		// stop
+		return Stop(selected);
 	}
 	finally
 	{
 		if (!_NoModal)
-		{
-			Info.DialogFree(_hDlg);
 			Free();
-		}
+	}
+}
+
+bool FarDialog::Stop(int selected)
+{
+	// update
+	for (int i = _items->Count; --i >= 0;)
+		_items[i]->Stop(selected >= 0);
+
+	// result
+	if (selected >= 0)
+	{
+		_selected = _items[selected];
+		return (Object^)_selected != (Object^)Cancel;
+	}
+	else
+	{
+		_selected = nullptr;
+		return false;
 	}
 }
 
 void FarDialog::Free()
 {
+	Info.DialogFree(_hDlg);
+
 	// reset session
 	_hDlg = INVALID_HANDLE_VALUE;
 	_NoModal = false;
@@ -542,7 +547,8 @@ INT_PTR FarDialog::DialogProc(intptr_t msg, intptr_t param1, void* param2)
 			}
 		case DN_CLOSE:
 			{
-				FarControl^ fc = param1 >= 0 ? _items[(int)param1] : nullptr;
+				int selected = (int)param1;
+				FarControl^ fc = selected >= 0 ? _items[selected] : nullptr;
 				if (_Closing)
 				{
 					ClosingEventArgs ea(fc);
@@ -552,6 +558,7 @@ INT_PTR FarDialog::DialogProc(intptr_t msg, intptr_t param1, void* param2)
 				}
 				if (_NoModal)
 				{
+					Stop(selected);
 					Free();
 				}
 				return true;
