@@ -92,7 +92,23 @@ task Package BeginPackage, Help, {
 	# copy
 	[System.IO.File]::Delete("$FarHome\FarNet\FarNetAPI.chw")
 	Copy-Item -Destination z\tools\FarHome $FarHome\Far.exe.config
-	Copy-Item -Destination z\tools\FarHome\FarNet $FarHome\FarNet\FarNet*, About-FarNet.htm, History.txt, LICENSE.txt
+	Copy-Item -Destination z\tools\FarHome\FarNet $(
+		'About-FarNet.htm'
+		'History.txt'
+		'LICENSE.txt'
+		"$FarHome\FarNet\FarNet.dll"
+		"$FarHome\FarNet\FarNet.xml"
+		"$FarHome\FarNet\FarNet.Settings.dll"
+		"$FarHome\FarNet\FarNet.Settings.xml"
+		"$FarHome\FarNet\FarNet.Tools.dll"
+		"$FarHome\FarNet\FarNet.Tools.xml"
+		"$FarHome\FarNet\FarNet.Works.Config.dll"
+		"$FarHome\FarNet\FarNet.Works.Dialog.dll"
+		"$FarHome\FarNet\FarNet.Works.Editor.dll"
+		"$FarHome\FarNet\FarNet.Works.Manager.dll"
+		"$FarHome\FarNet\FarNet.Works.Panels.dll"
+		"$FarHome\FarNet\FarNetAPI.chm"
+	)
 	Copy-Item -Destination z\tools\FarHome\Plugins\FarNet $FarHome\Plugins\FarNet\FarNetMan.hlf
 	if ($Platform -eq 'Win32') {
 		Copy-Item -Destination z\tools\FarHome.x64\Plugins\FarNet FarNetMan\Release\x64\FarNetMan.dll

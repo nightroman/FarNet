@@ -4,6 +4,8 @@
 
 using FarNet;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PowerShellFar
 {
@@ -75,14 +77,13 @@ namespace PowerShellFar
 		///
 		public override void Invoking()
 		{
-			if (!InvokingHasBeenCalled)
+			if (!IsInvokingCalled)
 			{
 				A.Psf.Invoking();
-				InvokingHasBeenCalled = true;
+				IsInvokingCalled = true;
 			}
 		}
-		bool InvokingHasBeenCalled;
-		//! do not call Invoking(), it is done by FarNet
+		bool IsInvokingCalled;
 		internal static IModuleCommand CommandInvoke1 { get; private set; }
 		void OnCommandInvoke1(object sender, ModuleCommandEventArgs e)
 		{
@@ -96,7 +97,6 @@ namespace PowerShellFar
 				A.SetCurrentDirectoryFinally(currentDirectory);
 			}
 		}
-		//! do not call Invoking(), it is done by FarNet
 		internal static IModuleCommand CommandInvoke2 { get; private set; }
 		void OnCommandInvoke2(object sender, ModuleCommandEventArgs e)
 		{
@@ -149,6 +149,12 @@ namespace PowerShellFar
 		{
 			switch (command)
 			{
+				case "InvokeScriptArguments":
+					return new Func<string, object[], object[]>(delegate (string script, object[] arguments)
+					{
+						var r = A.InvokeCode(script, arguments);
+						return r.Select(x => x?.BaseObject).ToArray();
+					});
 				case "Stepper":
 					return new Action<string, Action<Exception>>(delegate (string path, Action<Exception> result)
 					{
@@ -157,7 +163,7 @@ namespace PowerShellFar
 						stepper.Go(result);
 					});
 			}
-			throw new ArgumentException("Expected 'Stepper'.", "args");
+			throw new ArgumentException("Unknown command.", "command");
 		}
 	}
 }

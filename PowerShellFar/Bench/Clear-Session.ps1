@@ -40,6 +40,7 @@ param
 
 	# keep these variables:
 	$keep = @(
+		'VSSetupVersionTable' # module VSSetup
 		'$'
 		'?'
 		'^'

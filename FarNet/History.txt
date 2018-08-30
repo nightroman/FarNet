@@ -2,6 +2,10 @@
 NuGet package: https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5048
 
+= 5.2.15 =
+
+Fix not updated controls on closing non modal dialogs.
+
 = 5.2.14 =
 
 - Enable FarNet menus in VMENU areas.
