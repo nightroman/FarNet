@@ -177,29 +177,41 @@ namespace FarNet
 			if (string.IsNullOrEmpty(Title))
 				Title = DefaultTitle;
 
-			// try to open even not from panels
+			// | open from panels
 			WindowKind wt = Far.Api.Window.Kind;
-			if (wt != WindowKind.Panels)
+			if (wt == WindowKind.Panels)
 			{
-				// 090623 PostJob may not work from the editor, for example, see "... because a module is not called for opening".
-				// In contrast, PostStep calls via the menu where a panel is opened from with no problems.
-				Far.Api.PostStep(delegate
-				{
-					// #7 make switching async, SetCurrentAt does not work for user screen
-					try
-					{
-						Far.Api.Window.SetCurrentAt(-1);
-					}
-					catch (InvalidOperationException ex)
-					{
-						throw new ModuleException("Cannot open a panel because panels cannot be set current.", ex);
-					}
-					Open(null, null);
-				});
+				Open(null, null);
 				return;
 			}
 
-			Open(null, null);
+			// 090623 PostJob may not work from the editor, for example, see "... because a
+			// module is not called for opening". In contrast, PostStep calls via the menu
+			// where a panel is opened fine.
+
+			// 180913 Make it two steps: (1) set panels, (2) open panel. One step used to
+			// work but stopped. Far issue or not, let's use more reliable two step way.
+
+			Far.Api.PostSteps(
+				new Action[] {
+					delegate
+					{
+						// #7 make switching async, SetCurrentAt does not work for user screen
+						try
+						{
+							Far.Api.Window.SetCurrentAt(-1);
+						}
+						catch (InvalidOperationException ex)
+						{
+							throw new ModuleException("Cannot open a panel because panels cannot be set current.", ex);
+						}
+					},
+					delegate
+					{
+						Open(null, null);
+					}
+				}
+			);
 		}
 		/// <summary>
 		/// Calls <see cref="Open()"/> or <see cref="OpenChild"/> depending on the parameter.

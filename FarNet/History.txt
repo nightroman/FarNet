@@ -2,6 +2,11 @@
 NuGet package: https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5048
 
+= 5.2.16 =
+
+- Use noNewLine in SaveUserScreen, ShowUserScreen.
+- Fix opening panels from other windows.
+
 = 5.2.15 =
 
 Fix not updated controls on closing non modal dialogs.

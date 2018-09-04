@@ -1,8 +1,6 @@
 
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 #include "StdAfx.h"
 #include "UI.h"
@@ -603,6 +601,8 @@ bool isConsoleModal()
 	return (wi.Flags & WIF_MODAL) != 0;
 }
 
+const intptr_t UserScreenNoNewLine = 1;
+
 void FarUI::ShowUserScreen()
 {
 	// only if not shown
@@ -610,11 +610,11 @@ void FarUI::ShowUserScreen()
 	{
 		ConsoleColor fc = Console::ForegroundColor;
 		ConsoleColor bc = Console::BackgroundColor;
-		Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETUSERSCREEN, 0, 0);
+		Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETUSERSCREEN, UserScreenNoNewLine, 0);
 		Console::ForegroundColor = fc;
 		Console::BackgroundColor = bc;
 	}
-	
+
 	// update always, for stats
 	++_UserScreenCount;
 }
@@ -623,8 +623,8 @@ void FarUI::SaveUserScreen()
 {
 	// only if done, assuming paired calls
 	if (_UserScreenCount == 1)
-		Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, 0, 0);
-	
+		Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, UserScreenNoNewLine, 0);
+
 	// update but keep positive for reset
 	if (_UserScreenCount > 0)
 		--_UserScreenCount;
@@ -634,8 +634,8 @@ void FarUI::ResetUserScreen()
 {
 	// only if shown and not done
 	if (_UserScreenCount > 0)
-		Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, 0, 0);
-	
+		Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, UserScreenNoNewLine, 0);
+
 	// reset
 	_UserScreenCount = 0;
 }
