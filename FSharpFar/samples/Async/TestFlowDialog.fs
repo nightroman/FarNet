@@ -25,13 +25,13 @@ let flow = async {
     // show the result text or "cancel"
     match r with
     | Some text ->
-        do! Job.As (fun () -> far.Message text)
+        do! job { far.Message text }
     | None ->
-        do! Job.As (fun () -> far.Message "cancel")
+        do! job { far.Message "cancel" }
 }
 
 let testEmpty = async {
-    Job.Start flow
+    Job.StartImmediate flow
     do! test isDialog
 
     // enter empty text
@@ -47,7 +47,7 @@ let testEmpty = async {
 }
 
 let testItem1 = async {
-    Job.Start flow
+    Job.StartImmediate flow
     do! test isDialog
 
     // enter the first item from the list

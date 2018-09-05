@@ -8,13 +8,13 @@ open Test
 let testSkipModal = async {
     async {
         // dialog
-        Job.Start <| Job.As showWideDialog
+        Job.StartImmediateFrom showWideDialog
         // wait
         do! Job.SkipModal ()
         // done
-        do! Job.As (fun () -> far.Message "done")
+        do! job { far.Message "done" }
     }
-    |> Job.Start
+    |> Job.StartImmediate
     do! test isWideDialog
 
     // exit dialog -> trigger "done" after skipModal
@@ -28,11 +28,11 @@ let testSkipModal = async {
 
 let testCannotOpenOnModal = async {
     // dialog
-    Job.Start <| Job.As showWideDialog
+    Job.StartImmediateFrom showWideDialog
     do! test isDialog
 
     // try open panel from dialog -> error dialog
-    Job.Start <| Job.OpenPanel (MyPanel.panel [])
+    Job.StartImmediate <| Job.OpenPanel (MyPanel.panel [])
     do! wait (fun () -> isDialog () && dt 1 = "Cannot switch to panels.")
 
     // exit two dialogs
@@ -42,11 +42,11 @@ let testCannotOpenOnModal = async {
 
 let testCanOpenFromEditor = async {
     // editor
-    do! Job.As (fun () ->
+    do! job {
         let editor = far.CreateEditor (FileName = far.TempName ())
         editor.DisableHistory <- true
         editor.Open ()
-    )
+    }
     do! test isEditor
 
     // panel

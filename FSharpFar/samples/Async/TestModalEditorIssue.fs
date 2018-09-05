@@ -6,8 +6,7 @@ open Test
 
 let flow = async {
     // dialog
-    Job.As showWideDialog
-    |> Job.Start
+    Job.StartImmediateFrom showWideDialog
     do! test isDialog
 
     // editor with problems (cannot edit directory) over the dialog
@@ -18,7 +17,7 @@ let flow = async {
 }
 
 let test = async {
-    Job.Start flow
+    Job.StartImmediate flow
 
     // nasty Far message -> `wait`, not `test`
     do! wait (fun () -> isDialog () && dt 1 = "It is impossible to edit the folder")

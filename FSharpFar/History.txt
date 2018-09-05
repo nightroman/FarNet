@@ -3,6 +3,11 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.5048
 FarNet 5.2.14
 
+= 1.6.1 =
+
+Add job helper: job {...} ~ Job.From (fun () -> ...)
+Rework Job methods.
+
 = 1.6.0 =
 
 FarNet API moved to FarNet\FarNet.FSharp.dll. It is automatically available for

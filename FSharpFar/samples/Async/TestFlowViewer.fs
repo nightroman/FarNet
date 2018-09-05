@@ -10,7 +10,7 @@ let flowNormal = async {
     do! Job.FlowViewer viewer
 }
 let testNormal = async {
-    Job.Start flowNormal
+    Job.StartImmediate flowNormal
 
     do! test isViewer
     do! Job.Keys "Esc"
@@ -20,8 +20,7 @@ let testNormal = async {
 
 let flowModal = async {
     // dialog
-    Job.As showWideDialog
-    |> Job.Start
+    Job.StartImmediateFrom showWideDialog
 
     // viewer over the dialog
     let viewer = far.CreateViewer (FileName = __SOURCE_FILE__)
@@ -29,10 +28,10 @@ let flowModal = async {
     do! Job.FlowViewer viewer
 
     // OK when viewer closed
-    do! Job.As (fun () -> far.Message "OK")
+    do! job { far.Message "OK" }
 }
 let testModal = async {
-    Job.Start flowModal
+    Job.StartImmediate flowModal
 
     do! test isViewer
     do! Job.Keys "Esc"

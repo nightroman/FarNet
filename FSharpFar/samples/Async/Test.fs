@@ -3,7 +3,6 @@
 module Test
 open FarNet
 open FarNet.FSharp
-open App
 
 /// Check delay. It is not for waiting results! It should work with 0, too, but
 /// it plays fast and we cannot see much. With larger value we can see the play.
@@ -13,10 +12,10 @@ let mutable delay = 0
 /// Use it if the result readiness is clear, else use `wait`.
 let test predicate = async {
     do! Async.Sleep delay
-    do! Job.As (fun () ->
+    do! job {
         if not (predicate ()) then
             failwithf "False predicate %A" predicate
-    )
+    }
 }
 
 /// Waits for some time until the predicate is true.

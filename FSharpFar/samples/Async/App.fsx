@@ -9,7 +9,7 @@ open App
 
 /// Test the sample wizard flow.
 let testWizard = async {
-    Job.Start flowWizard
+    Job.StartImmediate flowWizard
     do! test isWizard
 
     // open editor
@@ -57,7 +57,7 @@ let testWizard = async {
 /// flows with different test scenarios. Then it starts other test flows.
 async {
     // Far windows must be closed
-    do! Job.As (fun () -> if far.Window.Count <> 2 then failwith "Close all windows.")
+    do! job { if far.Window.Count <> 2 then failwith "Close all windows." }
 
     // test
     do! testWizard
@@ -71,6 +71,6 @@ async {
     do! TestPanel.test
 
     // done
-    do! Job.As (fun () -> far.UI.WriteLine __SOURCE_FILE__)
+    do! job { far.UI.WriteLine __SOURCE_FILE__ }
 }
-|> Job.Start
+|> Job.StartImmediate

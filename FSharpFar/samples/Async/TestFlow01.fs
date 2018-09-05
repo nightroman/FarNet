@@ -28,12 +28,12 @@ let flow = async {
     do! Job.FlowPanel (MyPanel.panel lines)
 
     // show final message
-    do! Job.As (fun () -> far.Message (text, "Done"))
+    do! job { far.Message (text, "Done") }
 }
 
 /// The full flow with one return to the editor.
 let testNo = async {
-    Job.Start flow
+    Job.StartImmediate flow
     do! test isEditor
 
     // exit editor
@@ -63,7 +63,7 @@ let testNo = async {
 
 /// The flow is stopped by an exception.
 let testError = async {
-    Job.Start flow
+    Job.StartImmediate flow
     do! test isEditor
 
     // exit editor
@@ -81,7 +81,7 @@ let testError = async {
 
 /// The flow is stopped by cancelling.
 let testCancel = async {
-    Job.Start flow
+    Job.StartImmediate flow
     do! test isEditor
 
     // exit editor

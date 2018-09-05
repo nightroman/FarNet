@@ -1,7 +1,7 @@
 namespace FarNet.FSharp
+open System
 open FarNet
 open FarNet.Forms
-open System
 
 // We do not expose anything for steps because they are only needed for opening
 // panels and we provide such jobs. Also, steps are not easy to sync with jobs.
@@ -27,11 +27,20 @@ type Job =
     static member PostShowError exn =
         Job.PostJob (fun () -> far.ShowError (exn.GetType().Name, exn))
 
-    /// Starts the job with exceptions caught and posted as exception dialogs. It
-    /// must be used for production flows (start and use interactively) and may be
-    /// used is test flows (start concurrent, test states, drive through jobs).
+    static member private CatchShowError job = async {
+        let! res = Async.Catch job
+        match res with
+        | Choice1Of2 _ -> ()
+        | Choice2Of2 exn -> Job.PostShowError exn
+    }
+
+    /// Starts the job by Async.Start with exceptions caught and shown as dialogs.
     static member Start job =
-        Async.StartWithContinuations (job, ignore, Job.PostShowError, ignore)
+        Async.Start <| Job.CatchShowError job
+
+    /// Starts the job by Async.StartImmediate with exceptions caught and shown as dialogs.
+    static member StartImmediate job =
+        Async.StartImmediate <| Job.CatchShowError job
 
     // Macros, jobs, and steps are invoked by Far and FarNet in separate queues.
     // As a result, a macro followed by a job or step with `cont` is not good.
@@ -40,19 +49,27 @@ type Job =
     static member private envMacroFlag = "FarNet.Async.macro"
     static member private macroSetFlag = sprintf "mf.env('%s', 1, '1')" Job.envMacroFlag
 
-    /// Wraps the function as a job.
+    /// Creates a job from the function dealing with Far.
     /// f: The function with any result.
-    static member As f =
-        Job.FromContinuations (fun (cont, econt, ccont) ->
+    static member From f =
+        Job.FromContinuations (fun (cont, econt, _) ->
             try
                 cont (f ())
             with exn ->
                 econt exn
         )
 
+    /// Job helper: Job.StartFrom f ~  Job.Start (Job.From f)
+    static member StartFrom f =
+        Job.Start (Job.From f)
+
+    /// Job helper: Job.StartImmediateFrom f ~  Job.StartImmediate (Job.From f)
+    static member StartImmediateFrom f =
+        Job.StartImmediate (Job.From f)
+
     /// Creates a job from the macro text.
     static member Macro text =
-        Async.FromContinuations (fun (cont, econt, ccont) ->
+        Async.FromContinuations (fun (cont, econt, _) ->
             // drop the flag
             Environment.SetEnvironmentVariable (Job.envMacroFlag, "0")
             try
@@ -78,7 +95,7 @@ type Job =
 
     /// The job to cancel the flow.
     static member Cancel () =
-        Job.FromContinuations (fun (cont, econt, ccont) ->
+        Job.FromContinuations (fun (_, _, ccont) ->
             ccont (OperationCanceledException ())
         )
 
@@ -88,7 +105,7 @@ type Job =
     /// timeout: Maximum waiting time, non positive ~ infinite.
     static member Wait (delay, sleep, timeout, predicate) = async {
         let timeout = if timeout > 0 then timeout else Int32.MaxValue
-        let jobPredicate = Job.As predicate
+        let jobPredicate = Job.From predicate
 
         if delay > 0 then
             do! Async.Sleep delay
@@ -117,7 +134,7 @@ type Job =
                 econt exn
         )
         //! check for closed in a job
-        let! wait = Job.As (fun () ->
+        let! wait = Job.From (fun () ->
             if closed then
                 None
             else
@@ -142,7 +159,7 @@ type Job =
                 econt exn
         )
         //! check for closed in a job
-        let! wait = Job.As (fun () ->
+        let! wait = Job.From (fun () ->
             if closed then
                 None
             else
@@ -171,7 +188,7 @@ type Job =
     /// Opens the panel.
     static member OpenPanel (panel: Panel) = async {
         //! in a separate job
-        do! Job.As Job.EnsurePanels
+        do! Job.From Job.EnsurePanels
         // open
         do! Async.FromContinuations (fun (cont, econt, _) ->
             far.PostStep (fun () ->
@@ -209,7 +226,7 @@ type Job =
     ///     else // some result
     ///         Some ...
     static member FlowDialog (dialog: IDialog) closing =
-        Job.FromContinuations (fun (cont, econt, ccont) ->
+        Job.FromContinuations (fun (cont, econt, _) ->
             dialog.Closing.Add (fun args ->
                 try
                     let r = closing args

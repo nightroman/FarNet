@@ -16,6 +16,7 @@
   <ItemGroup>
     <Compile Include="Utility.fs" />
     <Compile Include="Job.fs" />
+    <Compile Include="JobBuilder.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FarNet">

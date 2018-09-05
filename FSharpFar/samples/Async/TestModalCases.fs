@@ -6,13 +6,12 @@ open Test
 
 let testDialogOverDialog = async {
     // dialog 1
-    Job.As showWideDialog
-    |> Job.Start
+    Job.StartImmediateFrom showWideDialog
     do! test isWideDialog
 
     // dialog 2 on top of 1
-    Job.As (fun () -> far.Message "testDialogOverDialog")
-    |> Job.Start
+    job { far.Message "testDialogOverDialog" }
+    |> Job.StartImmediate
     do! test (isDialogText 1 "testDialogOverDialog")
     do! Job.Keys "Esc"
 
@@ -26,18 +25,17 @@ let testDialogOverDialog = async {
 
 let testEditorOverDialog = async {
     // dialog
-    fun () -> far.Message "testEditorOverDialog"
-    |> Job.As
-    |> Job.Start
+    job { far.Message "testEditorOverDialog" }
+    |> Job.StartImmediate
     do! test isDialog
 
     // editor
-    fun () ->
+    job {
         let editor = far.CreateEditor (FileName = far.TempName (), Title = "testEditorOverDialog")
         editor.DisableHistory <- true
         editor.Open ()
-    |> Job.As
-    |> Job.Start
+    }
+    |> Job.StartImmediate
     do! test isEditor
     do! Job.Keys "Esc"
 

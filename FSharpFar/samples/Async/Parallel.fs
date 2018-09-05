@@ -18,21 +18,21 @@ let dialog x y seconds = async {
     // open non modal dialog showing some number
     let dialog = far.CreateDialog (x, y, x + 51, y + 2)
     let text = dialog.AddText (1, 1, 50, "0")
-    do! Job.As dialog.Open
+    do! Job.From dialog.Open
 
     // simulate some work, increment the number
     let random = Random ()
     let sw = Stopwatch.StartNew ()
     while sw.Elapsed.TotalSeconds < seconds do
         do! Async.Sleep (random.Next 20)
-        do! Job.As (fun () -> text.Text <- string (int text.Text + 1))
+        do! job { text.Text <- string (int text.Text + 1) }
 
     // close and return result
-    return! Job.As (fun () ->
+    return! job {
         let result = text.Text
         dialog.Close ()
-        result
-    )
+        return result
+    }
 }
 
 /// Demo flow.
@@ -47,9 +47,7 @@ let flow seconds = async {
         |> Async.Parallel
 
     // show results
-    do! Job.As (fun () ->
-        far.Message (String.Join (" ", results), "done")
-    )
+    do! job { far.Message (String.Join (" ", results), "done") }
 }
 
 open Test
@@ -60,11 +58,11 @@ let test = async {
     Async.Start (flow 1.)
     do! wait (fun () -> isDialog () && dt 0 = "done")
 
-    do! Job.As (fun () ->
+    do! job {
         let text = dt 1
         let m = Regex.Match (text, "^\d+ \d+ \d+$")
         if text = "0 0 0" || not m.Success then failwith "unexpected result"
-    )
+    }
 
     do! Job.Keys "Esc"
     do! test isFarPanel

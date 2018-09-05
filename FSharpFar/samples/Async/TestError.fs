@@ -6,11 +6,11 @@ open Test
 
 let flowFuncError = async {
     // with exception
-    do! Job.As (fun () -> failwith "demo-error")
+    do! job { failwith "demo-error" }
     failwith "unexpected"
 }
 let testFuncError = async {
-    Job.Start flowFuncError
+    Job.StartImmediate flowFuncError
     do! wait (fun () -> isDialog () && dt 0 = "Exception" && dt 1 = "demo-error")
     do! Job.Keys "Esc"
     do! test isFarPanel
@@ -22,7 +22,7 @@ let flowMacroError = async {
     failwith "unexpected"
 }
 let testMacroError = async {
-    Job.Start flowMacroError
+    Job.StartImmediate flowMacroError
     do! wait (fun () -> isDialog () && dt 0 = "ArgumentException" && dt 3 = "Macro: bar" && dt 4 = "Parameter name: macro")
     do! Job.Keys "Esc"
     // done
