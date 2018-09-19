@@ -307,7 +307,7 @@ Interactive completion is based on the current session and its configuration.
 
 **Code evaluation**
 
-Use `[F11]` \ `FSharpFar` \ `Load` in order to evaluate the file.
+Use `[F5]` or `[F11]` \ `FSharpFar` \ `Load` in order to evaluate the file.
 The file is automatically saved before loading.
 The output is shown in a new editor.
 

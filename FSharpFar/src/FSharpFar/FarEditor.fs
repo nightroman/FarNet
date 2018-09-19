@@ -110,6 +110,9 @@ type FarEditor () =
                 match e.Key.VirtualKeyCode with
                 | KeyCode.Tab when e.Key.Is () && not editor.SelectionExists ->
                      e.Ignore <- Editor.complete editor
+                | KeyCode.F5 when e.Key.Is () ->
+                     Editor.load editor
+                     e.Ignore <- true
                 | _ -> ()
 
             editor.Changed.Add <| fun e ->

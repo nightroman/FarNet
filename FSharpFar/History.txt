@@ -3,6 +3,10 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.5048
 FarNet 5.2.14
 
+= 1.6.2 =
+
+`[F5]` in editors is shortcut for `[F11]` \ `FSharpFar` \ `Load`
+
 = 1.6.1 =
 
 Add job helper: job {...} ~ Job.From (fun () -> ...)
