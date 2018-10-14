@@ -181,6 +181,7 @@ if ($Text -match $url) {
 
 ### Markdown in the editor: jump to the internal link target
 if ($Editor -and $Editor.FileName -match '\.(text|md|markdown)$') {
+	# [...](#link)
 	$match = $Editor.Line.MatchCaret('(?:\[.*\])\(#(.*)\)')
 	if ($match) {
 		$pattern = '^#{1,6}.*?\{#' + [regex]::Escape($match.Groups[1]) + '\}'
@@ -190,6 +191,16 @@ if ($Editor -and $Editor.FileName -match '\.(text|md|markdown)$') {
 				$Editor.Redraw()
 				return
 			}
+		}
+	}
+	# [...](file)
+	$match = $Editor.Line.MatchCaret('(?:\[.*\])\((.*)\)')
+	if ($match) {
+		$dir = [IO.Path]::GetDirectoryName($Far.Editor.FileName)
+		$file = [IO.Path]::GetFullPath([IO.Path]::Combine($dir, $match.Groups[1]))
+		if ([IO.File]::Exists($file)) {
+			Open-FarEditor -Path $file
+			return
 		}
 	}
 }
