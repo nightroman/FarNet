@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet module Vessel
-Copyright (c) Roman Kuzmin
-*/
+// FarNet module Vessel
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections.Generic;
@@ -43,7 +41,7 @@ namespace FarNet.Vessel
 			{
 				writer.WriteLine(LINE_HEADER);
 
-				foreach(var it in Far.Api.History.Editor())
+				foreach (var it in Far.Api.History.Editor())
 					writer.WriteLine(LINE_FORMAT, it.Time, 0, "edit", it.Name);
 
 				foreach (var it in Far.Api.History.Viewer())
@@ -70,11 +68,22 @@ namespace FarNet.Vessel
 					if (++index == 0)
 						continue;
 
-					var values = line.Split(sep);
-					yield return new Record(
-						DateTime.Parse(values[0].Trim(trim)),
-						values[2].Trim(trim),
-						values[3].Trim(trim));
+					Record record = null;
+					try
+					{
+						// read and parse the record
+						var values = line.Split(sep);
+						record = new Record(
+							DateTime.Parse(values[0].Trim(trim)),
+							values[2].Trim(trim),
+							values[3].Trim(trim));
+					}
+					catch
+					{
+						//! skip problems
+						continue;
+					}
+					yield return record;
 				}
 			}
 		}

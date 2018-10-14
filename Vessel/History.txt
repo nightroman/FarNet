@@ -1,6 +1,10 @@
 NuGet package: https://www.nuget.org/packages/FarNet.Vessel
 FarNet 5.2.4
 
+= 2.1.1 =
+
+Ignore invalid records in the history file.
+
 = 2.1.0 =
 
 Revise AI and calculate ranks without background training.
