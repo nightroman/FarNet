@@ -41,3 +41,8 @@ exits then opened charts are closed as well.
 * Click in other areas switches the chart modes.
 * Right click hides an item in the chart.
 * Chart tool-tips show approximate sizes.
+
+***
+## Credits
+
+The junction code is borrowed from [Manipulating NTFS Junction Points in .NET](https://www.codeproject.com/Articles/15633/Manipulating-NTFS-Junction-Points-in-NET).

@@ -41,6 +41,9 @@ class SizeRun
 		long size = 0;
 		try
 		{
+			if (Monitor.Core.Utilities.JunctionPoint.Exists(folder))
+				return 0;
+
 			_progress.Activity = folder;
 
 			foreach (var dir in Directory.EnumerateDirectories(folder))
@@ -51,7 +54,9 @@ class SizeRun
 
 			foreach (var file in Directory.EnumerateFiles(folder))
 			{
-				size += (new FileInfo(file)).Length;
+				var info = new FileInfo(file);
+				if ((info.Attributes & FileAttributes.SparseFile) == 0)
+					size += info.Length;
 			}
 		}
 		catch (Exception ex)

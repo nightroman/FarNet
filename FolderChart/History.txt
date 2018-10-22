@@ -1,6 +1,10 @@
 
 NuGet package: https://www.nuget.org/packages/FarNet.FolderChart
 
+= 2.3.1 =
+
+Exclude junctions and sparse files.
+
 = 2.3.0 =
 
 - Chart windows are non-blocking and you can open several charts.
