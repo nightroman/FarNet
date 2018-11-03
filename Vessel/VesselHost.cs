@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet module Vessel
-Copyright (c) Roman Kuzmin
-*/
+// FarNet module Vessel
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.IO;
@@ -34,7 +32,7 @@ namespace FarNet.Vessel
 		public override void Connect()
 		{
 			// ensure the log
-			_LogPath = Path.Combine(Manager.GetFolderPath(SpecialFolder.LocalData, false), NameLogFile);
+			_LogPath = Path.Combine(Manager.GetFolderPath(SpecialFolder.LocalData, true), NameLogFile);
 			if (!File.Exists(_LogPath))
 				Record.CreateLogFile(_LogPath);
 

@@ -1,8 +1,6 @@
 
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections.Generic;
@@ -141,8 +139,14 @@ namespace FarNet
 		/// <param name="folder">Special folder enumeration.</param>
 		/// <param name="create">Tells to create the directory if it does not exist.</param>
 		/// <remarks>
+		/// <para>
 		/// Local and roaming data directories are designed for module data and settings files.
 		/// NOTE: Names like <b>FarNet.*</b> are reserved for the internal use.
+		/// </para>
+		/// <para>
+		/// If <c>create</c> is true and the directory does not exist and cannot be created in
+		/// the usual location (e.g. it is read only) then it is created in <c>%TEMP%\FarNet</c>.
+		/// </para>
 		/// </remarks>
 		public abstract string GetFolderPath(SpecialFolder folder, bool create);
 		/// <summary>

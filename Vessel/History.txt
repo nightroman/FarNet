@@ -1,6 +1,10 @@
 NuGet package: https://www.nuget.org/packages/FarNet.Vessel
 FarNet 5.2.4
 
+= 2.1.2 =
+
+Fix getting the log file path.
+
 = 2.1.1 =
 
 Ignore invalid records in the history file.

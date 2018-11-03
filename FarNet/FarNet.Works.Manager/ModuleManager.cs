@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections;
@@ -295,9 +293,22 @@ namespace FarNet.Works
 		}
 		public override string GetFolderPath(SpecialFolder folder, bool create)
 		{
-			var dir = Far.Api.GetFolderPath(folder) + @"\FarNet\" + ModuleName;
+			// normal dir
+			var dir = Path.Combine(Far.Api.GetFolderPath(folder), @"FarNet\" + ModuleName);
 			if (create && !Directory.Exists(dir))
-				Directory.CreateDirectory(dir);
+			{
+				try
+				{
+					Directory.CreateDirectory(dir);
+				}
+				catch (IOException)
+				{
+					// temp dir
+					dir = Path.Combine(Path.GetTempPath(), @"FarNet\" + folder.ToString() + @"\" + ModuleName);
+					if (!Directory.Exists(dir))
+						Directory.CreateDirectory(dir);
+				}
+			}
 			return dir;
 		}
 		// * This methods can be "slow", it is called from UI only.

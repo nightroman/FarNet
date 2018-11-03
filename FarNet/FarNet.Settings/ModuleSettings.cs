@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet.Settings library for FarNet
-Copyright (c) 2011-2016 Roman Kuzmin
-*/
+// FarNet.Settings library for FarNet
+// Copyright (c) Roman Kuzmin
 
 using System.Configuration;
 
@@ -88,8 +86,8 @@ namespace FarNet.Settings
 		protected ModuleSettings()
 		{
 			var name = GetType().Name;
-			Context[ModuleSettingsProvider.RoamingFileName] = Manager.GetFolderPath(SpecialFolder.RoamingData, false) + "\\" + name + ".resources";
-			Context[ModuleSettingsProvider.LocalFileName] = Manager.GetFolderPath(SpecialFolder.LocalData, false) + "\\" + name + ".local.resources";
+			Context[ModuleSettingsProvider.RoamingFileName] = Manager.GetFolderPath(SpecialFolder.RoamingData, true) + "\\" + name + ".resources";
+			Context[ModuleSettingsProvider.LocalFileName] = Manager.GetFolderPath(SpecialFolder.LocalData, true) + "\\" + name + ".local.resources";
 		}
 		/// <summary>
 		/// Gets the module manager.
