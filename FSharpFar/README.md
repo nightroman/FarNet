@@ -232,8 +232,8 @@ It is not needed if you are not compiling .NET assemblies.
 
 **Predefined:**
 
-- The *%FARHOME%* directory is predefined as `--lib`.
-- *FarNet.dll*, *FarNet.Tools.dll*, *FSharpFar.dll* are predefined as `--reference`.
+- `--lib` : *%FARHOME%*
+- `--reference` : *FarNet.dll*, *FarNet.Tools.dll*, *FarNet.FSharp.dll*, *FSharpFar.dll*
 
 **Important:**
 
