@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet module Vessel
-Copyright (c) Roman Kuzmin
-*/
+// FarNet module Vessel
+// Copyright (c) Roman Kuzmin
 
 using System.Collections.Generic;
 
@@ -10,22 +8,19 @@ namespace FarNet.Vessel
 {
 	class InfoComparer : IComparer<Info>
 	{
-		int _limit0;
-		int _factor1;
-		int _factor2;
-		public InfoComparer(int limit0, int factor1, int factor2)
+		int _group0;
+		int _group1;
+		public InfoComparer(int group0, int group1)
 		{
-			_limit0 = limit0;
-			_factor1 = factor1;
-			_factor2 = factor2;
+			_group0 = group0;
+			_group1 = group1;
 		}
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods")]
 		public int Compare(Info left, Info right)
 		{
 			// group or recent time
 			{
-				var x = left.Group(_limit0, _factor1, _factor2);
-				var y = right.Group(_limit0, _factor1, _factor2);
+				var x = left.Group(_group0, _group1);
+				var y = right.Group(_group0, _group1);
 				if (x < y)
 					return -1;
 				if (x > y)
@@ -58,16 +53,6 @@ namespace FarNet.Vessel
 			{
 				int x = left.DayCount;
 				int y = right.DayCount;
-				if (x > y)
-					return -1;
-				if (x < y)
-					return 1;
-			}
-
-			// keys
-			{
-				int x = Mat.Span(left.KeyCount, 2);
-				int y = Mat.Span(right.KeyCount, 2);
 				if (x > y)
 					return -1;
 				if (x < y)

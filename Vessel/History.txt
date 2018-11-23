@@ -1,6 +1,18 @@
 NuGet package: https://www.nuget.org/packages/FarNet.Vessel
 FarNet 5.2.4
 
+= 2.2.0 =
+
+Smart folder history in addition to file history. It works in a different way
+but the ideas and algorithm are the same. Folder history is a mix of the Far
+folder history and Vessel opening events from the smart folder list.
+
+Remove plain history list, there is no point in it in this module.
+Rework training and updates.
+
+Stop writing obsolete Keys to the log. The log is converted to new format on
+[CtrlR] in history or on the first manual or automatic periodic update.
+
 = 2.1.2 =
 
 Fix getting the log file path.

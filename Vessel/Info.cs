@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet module Vessel
-Copyright (c) Roman Kuzmin
-*/
+// FarNet module Vessel
+// Copyright (c) Roman Kuzmin
 
 using System;
 
@@ -13,9 +11,8 @@ namespace FarNet.Vessel
 	/// </summary>
 	public class Info
 	{
-		// scale 2: 10 ~ 42 days
+		// base 2: 10 ~ 42 days
 		public const int SpanCount = 11;
-		public const int SpanScale = 2;
 		/// <summary>
 		/// File path.
 		/// </summary>
@@ -41,10 +38,6 @@ namespace FarNet.Vessel
 		/// </summary>
 		public int DayCount { get; set; }
 		/// <summary>
-		/// Count of typed keys.
-		/// </summary>
-		public int KeyCount { get; set; }
-		/// <summary>
 		/// Idle span since the last use.
 		/// </summary>
 		public TimeSpan Idle { get; set; }
@@ -55,20 +48,17 @@ namespace FarNet.Vessel
 		/// <summary>
 		/// Recency group: 0 is the most recent to be sorted by time.
 		/// </summary>
-		public int Group(int limit0, int factor1, int factor2)
+		public int Group(int group0, int group1)
 		{
 			var hours = Idle.TotalHours;
 
-			if (hours < limit0)
+			if (hours < group0)
 				return 0;
 
-			if (hours < factor1)
+			if (hours < group1)
 				return 1;
 
-			if (Idle.TotalDays < factor2)
-				return 2;
-
-			return 3;
+			return 2;
 		}
 	}
 }

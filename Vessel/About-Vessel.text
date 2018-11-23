@@ -4,7 +4,6 @@
 Module
 
 * [Synopsis](#Synopsis)
-* [Installation](#Installation)
 * [Description](#Description)
 * [Settings](#Settings)
 
@@ -12,32 +11,23 @@ UI help
 
 * [Menu commands](#MenuCommands)
 * [File history](#FileHistory)
+* [Folder history](#FolderHistory)
 
 *********************************************************************
 ## Synopsis {#Synopsis}
 
 [Contents](#Contents)
 
-Vessel (short for View/Edit/Save/SELect) is the FarNet module for Far
-Manager. It records and maintains history of file view, edit, and save
-operations and provides related tools.
+Vessel (View/Edit/Save/SELect) is the FarNet module for Far Manager. It records
+the history of file view, edit, and save operations, directory select history,
+and provides related tools.
 
 **Project**
 
  * Source: <https://github.com/nightroman/FarNet/tree/master/Vessel>
  * Author: Roman Kuzmin
 
-*********************************************************************
-## Installation {#Installation}
-
-[Contents](#Contents)
-
-**Requirements**
-
- * Far Manager 3.0.3842
- * Plugin FarNet 5.0.48
-
-**Instructions**
+**Installation**
 
 How to get, install, and update *FarNet.Vessel*
 
@@ -50,34 +40,31 @@ How to get, install, and update *FarNet.Vessel*
 
 Features
 
- * Smart and plain history lists
- * Incremental filter (no need for CtrlAltF)
+ * Smart file and folder history lists
+ * Ready for typing incremental filter
  * Reduced noise (e.g. excluded temporary files)
  * For other features see history lists help (F1)
 
-If the log file is missing then it is generated from the existing Far history.
-This history is not yet effective for training. The smart history list will be
-the same as the plain list for some time even after training.
+The history log is updated automatically on editing and viewing files.
+The folders log is updated on openings from the smart history list.
 
-The smart history list shows files in heuristically improved order. Recently
-used files are sorted by last times, as usual. Files not used for a while are
+The smart history list shows items in heuristically improved order. Recently
+used items are sorted by last times, as usual. Items not used for a while are
 sorted by ranks. Rank is based on last time, frequency, activity, and factors
 calculated by training.
 
-How training works. For every file record it builds the plain history list and
-several ranked lists with different factors. The list with the file nearest to
-the top wins. Finally the factors that maximize the total difference between
-the plain and ranked lists for all records are taken.
+How training works. For every item record it builds several ranked lists with
+different factors. The list with the item nearest to the top wins. Finally the
+factors that maximize the total difference between the plain and ranked lists
+for all records are taken.
 
-Automatic fast training starts after updating the history file from the menu
-and after opening not recent files from the smart history. It works in the
-background and it is very fast (~50 times faster than full training).
+Background history training and update starts periodically after selecting
+items from smart lists. Thus, manual trainings and updates and not necessary.
 
-Automatic log update and training is also done once a day on the first use.
-Thus, manual updates and trainings are not normally needed at all.
+History log files:
 
-The history file is:
-*%FARLOCALPROFILE%\FarNet\Vessel\VesselHistory.log*
+- *%FARLOCALPROFILE%\FarNet\Vessel\VesselHistory.txt*
+- *%FARLOCALPROFILE%\FarNet\Vessel\VesselFolders.txt*
 
 *********************************************************************
 ## Settings {#Settings}
@@ -93,19 +80,28 @@ The settings panel is opened from the menu in panels:
 
 *MaximumFileCount*
 
- : Maximum number of files to keep the records for. The default is 1000.
+ : Maximum number of tracked items, files or folders. The default is 1000.
 
 *Limit0*
 
- : Span 0 in hours. It defines the most recent files sorted only by times.
+ : The first group span in hours. It defines the most recently used items.
+   Items are sorted by last used times, like in the usual history. This
+   value also defines the period for automatic background training.
+   The default and recommended value is 2 hours.
 
 *Limit1*
 
- : Maximum span 1 in hours. Training finds the best value (factor 1).
+ : The second group span in hours for *files*. Training finds the best value
+   between *Limit0* and *Limit1*. This group items are not recent and not too
+   old. They are sorted by ranks, separately from the last group of old items.
+   The default is 96 hours. Too large is not useful and makes training slow.
 
 *Limit2*
 
- : Maximum span 2 in days. Training finds the best value (factor 2).
+ : The second group span in hours for *folders*. Training finds the best value
+   between *Limit0* and *Limit2*. This group items are not recent and not too
+   old. They are sorted by ranks, separately from the last group of old items.
+   The default is 96 hours. Too large is not useful and makes training slow.
 
 *********************************************************************
 ## Menu commands {#MenuCommands}
@@ -114,42 +110,45 @@ The settings panel is opened from the menu in panels:
 
 The menu is opened from almost any context: `[F11] \ Vessel`
 
-**Smart file history**
+**Smart history**
 
-Opens the smart file history list. The most recent files are sorted by time,
-other files are sorted by ranks. Rank is based on last open time, frequency,
+Opens the smart file history list. The most recent items are sorted by time,
+other items are sorted by ranks. Rank is based on last open time, frequency,
 and factors calculated by training.
 See [File history](#FileHistory)
 
-**Plain file history**
+**Smart folders**
 
-Opens the plain file history list. The files are sorted by their last open
-times, just like in the standard file history (`[AltF11]`).
-See [File history](#FileHistory)
+Opens the smart folders history. The most recent items are sorted by time,
+other items are sorted by ranks. Rank is based on last open time, frequency,
+and factors calculated by training. The list works in editors and viewers as
+well, switching the window to the selected folder in panels.
+See [Folder history](#FolderHistory)
 
-**Background training**
+**Train history**
 
-Starts full smart history training in the background. When it is done the
-results can be viewed by the *Training results* menu command.
+Starts the file history training. The results are shown in the dialog.
 
-**Training results**
+**Train folders**
 
-Shows the last full or fast training results. The menu item is only shown when
-training has completed and until it is not visited once.
+Starts the folder history training. The results are shown in the dialog.
 
-**Update history file**
+**Update history**
 
-Removes from the history records of missing files, oldest files exceeding the
-limit, and too old records keeping at least one per file. This command also
-starts fast training.
+Removes records of missing files and oldest exceeding the limits.
+Then it starts background training and shows the update results.
+
+**Update folders**
+
+Removes records of missing folders and oldest exceeding the limits.
+Then it starts background training and shows the update results.
 
 *********************************************************************
 ## File history {#FileHistory}
 
 [Contents](#Contents)
 
-The file history list is opened by the menu commands
-*Smart file history* and *Plain file history*.
+The file history list is opened by the menu command *Smart file history*.
 
 Keys and actions:
 
@@ -179,9 +178,26 @@ Keys and actions:
 
 `[ShiftDel]`
 
- : Discards the history of the current file.
+ : Removes the current file from the log.
 
 `[CtrlR]`
 
- : Updates the history file. Unlike the menu command it only removes missing,
-   extra, and old records from the history and does not start fast training.
+ : Updates the history log. It removes missing paths, excess, and old records.
+
+*********************************************************************
+## Folder history {#FolderHistory}
+
+[Contents](#Contents)
+
+The folder list is opened by the menu command *Smart folder history*.
+
+Keys and actions:
+
+`[ShiftDel]`
+
+ : Removes the current folder from the log. The folder is still shown in the
+   list if it exists in the Far folder history but its position is different.
+
+`[CtrlR]`
+
+ : Updates the folders log. It removes missing paths, excess, and old records.

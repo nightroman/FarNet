@@ -64,11 +64,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actor.cs" />
-    <Compile Include="Record.cs" />
+    <Compile Include="Store.cs" />
     <Compile Include="Info.cs" />
     <Compile Include="InfoComparer.cs" />
-    <Compile Include="Logger.cs" />
-    <Compile Include="Result.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Types.cs" />
     <Compile Include="VesselHost.cs" />

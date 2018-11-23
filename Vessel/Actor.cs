@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet module Vessel
-Copyright (c) Roman Kuzmin
-*/
+// FarNet module Vessel
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections.Generic;
@@ -15,52 +13,47 @@ namespace FarNet.Vessel
 {
 	public class Actor
 	{
+		readonly int _mode;
+		readonly int _limit0;
 		readonly string _store;
 		readonly List<Record> _records;
-		private int _FastStep1 = 20;
-		private int _FastStep2 = 4;
-		/// <summary>
-		/// Gets or sets the fast training step 1.
-		/// </summary>
-		public int FastStep1
-		{
-			get { return _FastStep1; }
-			set { _FastStep1 = value; }
-		}
-		/// <summary>
-		/// Gets or sets the fast training step 2.
-		/// </summary>
-		public int FastStep2
-		{
-			get { return _FastStep2; }
-			set { _FastStep2 = value; }
-		}
-		/// <summary>
-		/// Gets or sets the random number generator.
-		/// </summary>
-		/// <remarks>
-		/// It is designed for tests in order to repeat the same sequences.
-		/// If it is not set then a time based instance is created internally.
-		/// </remarks>
-		public Random Random
-		{
-			get { return _Random_ ?? (_Random_ = new Random()); }
-			set { _Random_ = value; }
-		}
-		Random _Random_;
 		/// <summary>
 		/// Creates the instance with data from the default storage.
 		/// </summary>
-		public Actor() : this(null) { }
+		public Actor(int mode) : this(mode, null) { }
 		/// <summary>
 		/// Creates the instance with data ready for analyses.
 		/// </summary>
-		/// <param name="store">The store path. Empty/null is for the default.</param>
-		public Actor(string store)
+		/// <param name="mode">History (0) or Folders (1).</param>
+		/// <param name="store">The store path. Empty/null is the default.</param>
+		/// <param name="noHistory">Tells to exclude Far folder history.</param>
+		public Actor(int mode, string store, bool noHistory = false)
 		{
+			if (mode < 0 || mode > 1) throw new ArgumentException("Invalid mode.", "mode");
+
+			_mode = mode;
 			_store = store;
-			_records = Record.Read(store).ToList();
-			_records.Reverse();
+			_limit0 = Settings.Default.Limit0;
+			_records = Store.Read(mode, store).ToList();
+
+			if (mode == 0 || noHistory)
+			{
+				_records.Reverse();
+			}
+			else
+			{
+				var set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+				foreach (var record in _records)
+				{
+					set.Add(record.Path);
+				}
+				foreach (var folder in Far.Api.History.Folder())
+				{
+					if (!set.Contains(folder.Name))
+						_records.Add(new Record(folder.Time, string.Empty, folder.Name));
+				}
+				_records = new List<Record>(_records.OrderByDescending(x => x.Time));
+			}
 		}
 		/// <summary>
 		/// Gets records from the most recent to old.
@@ -70,20 +63,15 @@ namespace FarNet.Vessel
 		/// Gets the ordered history info list.
 		/// </summary>
 		/// <param name="now">The time to generate the list for, normally the current.</param>
-		/// <param name="factor1">0+: smart history; otherwise: plain history.</param>
-		/// <param name="factor2">0+: smart history second factor.</param>
-		public IEnumerable<Info> GetHistory(DateTime now, int factor1, int factor2)
+		/// <param name="factor">Smart history factor.</param>
+		public IEnumerable<Info> GetHistory(DateTime now, int factor)
 		{
 			// collect
 			var infos = CollectInfo(now, false);
 
-			// order
-			if (factor1 < 0)
-				return infos.OrderByDescending(x => x.Idle);
-
 			// evidences
 			SetEvidences(infos, CollectEvidences());
-			return infos.OrderByDescending(x => x, new InfoComparer(Settings.Default.Limit0, factor1, factor2));
+			return infos.OrderByDescending(x => x, new InfoComparer(_limit0, factor));
 		}
 		/// <summary>
 		/// Collects the unordered history info.
@@ -106,7 +94,7 @@ namespace FarNet.Vessel
 
 				// skip recent and too old
 				var idle = now - record.Time;
-				if (reduced && (idle.TotalHours < Settings.Default.Limit0 || record.What == Record.AGED))
+				if (reduced && (idle.TotalHours < _limit0 || record.What == Record.AGED))
 					continue;
 
 				// init info
@@ -145,7 +133,7 @@ namespace FarNet.Vessel
 				var idle = spans.Time - record.Time;
 				spans.Time = record.Time;
 
-				int span = Mat.EvidenceSpan(idle.TotalHours, Info.SpanScale);
+				int span = Mat.Span(idle.TotalHours);
 				if (span < Info.SpanCount)
 					++spans.Spans[span];
 			}
@@ -160,7 +148,7 @@ namespace FarNet.Vessel
 			// calculate evidences for idle times
 			foreach (var info in infos)
 			{
-				int span = Mat.EvidenceSpan(info.Idle.TotalHours, Info.SpanScale);
+				int span = Mat.Span(info.Idle.TotalHours);
 				if (span >= Info.SpanCount)
 					continue;
 
@@ -183,7 +171,7 @@ namespace FarNet.Vessel
 
 				// get the rest
 				CollectFileInfo(info, iRecord + 1, record.Time);
-				if (info.Idle.TotalHours < Settings.Default.Limit0)
+				if (info.Idle.TotalHours < _limit0)
 					continue;
 
 				// return not empty
@@ -239,27 +227,30 @@ namespace FarNet.Vessel
 			}
 		}
 		/// <summary>
-		/// Gets all the training results.
+		/// Trains the model.
 		/// </summary>
-		public IList<Result> TrainingResults { get { return _TrainingResults; } }
-		List<Result> _TrainingResults;
-		/// <summary>
-		/// Makes training.
-		/// </summary>
-		Result Train()
+		/// <param name="factor">Maximum factor in hours.</param>
+		/// <param name="results">Optional result list.</param>
+		/// <returns>The best training result.</returns>
+		public Result Train(int factor, List<Result> results)
 		{
-			var Limit0 = Settings.Default.Limit0;
+			if (factor < _limit0)
+				factor = _limit0;
+
+			// init results
+			if (results == null)
+				results = new List<Result>();
+			else
+				results.Clear();
+			for (int i = _limit0; i <= factor; i += (i < 24 ? 1 : (i < 48 ? 2 : 4)))
+				results.Add(new Result() { Factor = i });
 
 			// evidences once
 			var map = CollectEvidences();
 
 			// process records
-			VesselTool.TrainingRecordCount = Records.Count;
-			VesselTool.TrainingRecordIndex = 0;
 			foreach (var record in Records)
 			{
-				++VesselTool.TrainingRecordIndex;
-
 				// collect (step back 1 tick, ask to exclude recent) and sort by Idle
 				var infos = CollectInfo(record.Time - new TimeSpan(1), true).OrderBy(x => x.Idle).ToList();
 
@@ -274,9 +265,9 @@ namespace FarNet.Vessel
 				SetEvidences(infos, map);
 
 				// sort with factors, get smart rank
-				foreach (var r in _TrainingResults)
+				foreach (var r in results)
 				{
-					infos.Sort(new InfoComparer(Limit0, r.Factor1, r.Factor2));
+					infos.Sort(new InfoComparer(_limit0, r.Factor));
 					int rankSmart = infos.FindIndex(x => x.Path.Equals(record.Path, StringComparison.OrdinalIgnoreCase));
 
 					int win = rankPlain - rankSmart;
@@ -297,12 +288,12 @@ namespace FarNet.Vessel
 				}
 			}
 
-			// return the best result
+			// the best result
 			Result result = null;
-			var maxTarget = float.MinValue;
-			foreach (var it in _TrainingResults)
+			var maxTarget = int.MinValue;
+			foreach (var it in results)
 			{
-				var target = it.Target;
+				var target = it.TotalSum;
 				if (maxTarget < target)
 				{
 					result = it;
@@ -312,102 +303,8 @@ namespace FarNet.Vessel
 
 			return result;
 		}
-		const int xRadius = 5;
-		const int yRadius = 2;
-		Result TrainFastEpoch(int factor1, int factor2)
-		{
-			var Limit0 = Settings.Default.Limit0;
-			var Limit1 = Settings.Default.Limit1;
-			var Limit2 = Settings.Default.Limit2;
-
-			int x1 = Math.Max(0, factor1 - xRadius);
-			int y1 = Math.Max(0, factor2 - yRadius);
-			int x2 = Math.Min(Limit1, factor1 + xRadius);
-			int y2 = Math.Min(Limit2, factor2 + yRadius);
-
-			_TrainingResults = new List<Result>(
-				(x2 - x1 + 1) * (y2 - y1 + 1) + (Limit1 / _FastStep1 + 1) * (Limit2 / _FastStep2 + 1));
-
-			for (int i = x1; i <= x2; ++i)
-				for (int j = y1; j <= y2; ++j)
-					_TrainingResults.Add(new Result() { Factor1 = i, Factor2 = j });
-
-			int xStart = Random.Next(_FastStep1);
-			int yStart = Random.Next(_FastStep2);
-			for (int i = xStart; i <= Limit1; i += _FastStep1)
-			{
-				for (int j = yStart; j <= Limit2; j += _FastStep2)
-					if (i < x1 || i > x2 || j < y1 || j > y2)
-						_TrainingResults.Add(new Result() { Factor1 = i, Factor2 = j });
-			}
-
-			Logger.Source.TraceInformation("Training: Capacity {0}; Count {1}; Starts {2}/{3}",
-				_TrainingResults.Capacity,
-				_TrainingResults.Count,
-				xStart,
-				yStart);
-
-			var result = Train();
-
-			return result;
-		}
-		/// <summary>
-		/// Trains the model using all factors.
-		/// </summary>
-		/// <param name="limit1">Limit 1 in hours.</param>
-		/// <param name="limit2">Limit 2 in days.</param>
-		/// <returns>The best training result.</returns>
-		public Result TrainFull(int limit1, int limit2)
-		{
-			_TrainingResults = new List<Result>((limit1 + 1) * (limit2 + 1));
-			for (int i = 0; i <= limit1; i += 2)
-				for (int j = i / 24; j <= limit2; j += 2)
-					_TrainingResults.Add(new Result() { Factor1 = i, Factor2 = j });
-
-			return Train();
-		}
-		/// <summary>
-		/// Trains the model using the old factors.
-		/// </summary>
-		/// <param name="factor1">Old factor 1.</param>
-		/// <param name="factor2">Old factor 2.</param>
-		/// <returns>The best training result.</returns>
-		public Result TrainFast(int factor1, int factor2)
-		{
-			var sw = Stopwatch.StartNew();
-			Logger.Source.TraceEvent(TraceEventType.Start, 0, "Training {0}", DateTime.Now);
-
-			if (factor1 < 0)
-			{
-				factor1 = xRadius;
-				factor2 = yRadius;
-			}
-
-			for (; ; )
-			{
-				var result = TrainFastEpoch(factor1, factor2);
-				Logger.Source.TraceInformation("Training: Target {0}; Factors {1}/{2}", result.Target, result.Factor1, result.Factor2);
-
-				if (Math.Abs(factor1 - result.Factor1) > xRadius || Math.Abs(factor2 - result.Factor2) > yRadius)
-				{
-					factor1 = result.Factor1;
-					factor2 = result.Factor2;
-					continue;
-				}
-
-				Logger.Source.TraceEvent(TraceEventType.Stop, 0, "Training {0}", sw.Elapsed);
-				return result;
-			}
-		}
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public string Update()
 		{
-			var now = DateTime.Now;
-			Logger.Source.TraceEvent(TraceEventType.Start, 0, "Update {0}", now);
-
-			Settings.Default.LastUpdateTime = now;
-			Settings.Default.Save();
-
 			// sanity
 			int maxDays = Settings.Default.MaximumDayCount;
 			if (maxDays < 30)
@@ -416,19 +313,36 @@ namespace FarNet.Vessel
 			if (maxFiles < 100)
 				throw new InvalidOperationException("Use at least 100 as the maximum file count.");
 
+			var now = DateTime.Now;
+			Logger.Source.TraceEvent(TraceEventType.Start, 0, "Update {0}", now);
+
+			if (_mode == 0)
+				Settings.Default.LastUpdateTime1 = now;
+			else
+				Settings.Default.LastUpdateTime2 = now;
+			Settings.Default.Save();
+
 			int recordCount = _records.Count;
 
 			// collect and sort by idle
 			var infos = CollectInfo(DateTime.Now, false).OrderBy(x => x.Idle).ToList();
 
-			// step 1: remove missing file data from infos and records
+			// step 1: remove missing files from infos and records
 			int missingFiles = 0;
 			foreach (var path in infos.Select(x => x.Path).ToArray())
 			{
 				try
 				{
-					if (File.Exists(path))
-						continue;
+					if (_mode == 0)
+					{
+						if (File.Exists(path))
+							continue;
+					}
+					else
+					{
+						if (Directory.Exists(path))
+							continue;
+					}
 
 					infos.RemoveAll(x => x.Path == path);
 					int removed = _records.RemoveAll(x => x.Path.Equals(path, StringComparison.OrdinalIgnoreCase));
@@ -441,15 +355,15 @@ namespace FarNet.Vessel
 				}
 			}
 
-			// step 2: remove the most idle extra files
-			int extraFiles = 0;
+			// step 2: remove the most idle excess files
+			int excessFiles = 0;
 			while (infos.Count > maxFiles)
 			{
 				var info = infos[infos.Count - 1];
 				infos.RemoveAt(infos.Count - 1);
 				int removed = _records.RemoveAll(x => x.Path.Equals(info.Path, StringComparison.OrdinalIgnoreCase));
 				Logger.Source.TraceInformation("Extra: {0}: {1}", removed, info.Path);
-				++extraFiles;
+				++excessFiles;
 			}
 
 			// step 3: cound days excluding today and remove aged records
@@ -492,20 +406,22 @@ namespace FarNet.Vessel
 			}
 
 			// save sorted by time
-			Record.Write(_store, _records.Reverse<Record>().OrderBy(x => x.Time));
+			Store.Write(_store, _records.OrderBy(x => x.Time));
 
 			Logger.Source.TraceEvent(TraceEventType.Stop, 0, "Update");
 			return string.Format(@"
-Missing files : {0,4}
-Extra files   : {1,4}
+REMOVE
+Missing paths : {0,4}
+Excess paths  : {1,4}
 Old records   : {2,4}
 
-Aged files    : {3,4}
-Used files    : {4,4}
+RESULT
+Aged paths    : {3,4}
+Used paths    : {4,4}
 Records       : {5,4}
 ",
 			missingFiles,
-			extraFiles,
+			excessFiles,
 			oldRecords,
 			agedFiles,
 			infos.Count - agedFiles,

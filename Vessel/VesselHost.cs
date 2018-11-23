@@ -11,7 +11,8 @@ namespace FarNet.Vessel
 	[ModuleHost(Load = true)]
 	public class VesselHost : ModuleHost
 	{
-		const string NameLogFile = "VesselHistory.txt";
+		const string NameLogFile1 = "VesselHistory.txt";
+		const string NameLogFile2 = "VesselFolders.txt";
 		internal const string NameFactor = "Factor";
 		internal const string NameLimits = "Limits";
 		internal const string NameMaximumDayCount = "MaximumDayCount";
@@ -20,21 +21,17 @@ namespace FarNet.Vessel
 		/// Gets or sets the disabled flag.
 		/// </summary>
 		public static bool IsDisabled { get; set; }
-		/// <summary>
-		/// Tells to train on closing
-		/// </summary>
-		internal static string PathToTrain { get; set; }
-		static string _LogPath;
-		internal static string LogPath
-		{
-			get { return VesselHost._LogPath; }
-		}
+		internal static string[] LogPath { get; private set; }
 		public override void Connect()
 		{
-			// ensure the log
-			_LogPath = Path.Combine(Manager.GetFolderPath(SpecialFolder.LocalData, true), NameLogFile);
-			if (!File.Exists(_LogPath))
-				Record.CreateLogFile(_LogPath);
+			var dir = Manager.GetFolderPath(SpecialFolder.LocalData, true);
+			LogPath = new string[] { Path.Combine(dir, NameLogFile1), Path.Combine(dir, NameLogFile2) };
+
+			// ensure logs
+			if (!File.Exists(LogPath[0]))
+				Store.CreateLogFile(0, LogPath[0]);
+			if (!File.Exists(LogPath[1]))
+				Store.CreateLogFile(1, LogPath[1]);
 
 			// subscribe
 			Far.Api.AnyViewer.Closed += OnViewerClosed;
@@ -56,7 +53,7 @@ namespace FarNet.Vessel
 				return;
 
 			// go
-			Update(DateTime.Now, "view", viewer.FileName);
+			Update(DateTime.Now, Record.VIEW, viewer.FileName);
 		}
 		static void OnEditorClosed(object sender, EventArgs e)
 		{
@@ -73,20 +70,12 @@ namespace FarNet.Vessel
 			if (path.EndsWith("?", StringComparison.Ordinal))
 				return;
 
-			Update(DateTime.Now, (editor.TimeOfSave == DateTime.MinValue ? "edit" : "save"), path);
+			Update(DateTime.Now, (editor.TimeOfSave == DateTime.MinValue ? Record.EDIT : Record.SAVE), path);
 		}
 		static void Update(DateTime time, string what, string path)
 		{
-			if (path.StartsWith(Path.GetTempPath(), StringComparison.OrdinalIgnoreCase))
-				return;
-
-			Record.Append(_LogPath, time, what, path);
-
-			if (path.Equals(PathToTrain, StringComparison.OrdinalIgnoreCase))
-			{
-				PathToTrain = null;
-				VesselTool.StartFastTraining();
-			}
+			if (!path.StartsWith(Path.GetTempPath(), StringComparison.OrdinalIgnoreCase))
+				Store.Append(LogPath[0], time, what, path);
 		}
 	}
 }

@@ -1,12 +1,9 @@
 ﻿
-/*
-FarNet module Vessel
-Copyright (c) Roman Kuzmin
-*/
+// FarNet module Vessel
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.IO;
-using System.Reflection;
 using System.Threading;
 
 namespace FarNet.Vessel
@@ -17,47 +14,19 @@ namespace FarNet.Vessel
 	{
 		static string AppHome { get { return Path.GetDirectoryName(typeof(VesselTool).Assembly.Location); } }
 		static string HelpTopic { get { return "<" + AppHome + "\\>"; } }
-		static string _TrainingReport;
-		internal static int TrainingRecordCount { get; set; }
-		internal static int TrainingRecordIndex { get; set; }
 		public override void Invoke(object sender, ModuleToolEventArgs e)
 		{
 			IMenu menu = Far.Api.CreateMenu();
 			menu.Title = "Vessel";
 			menu.HelpTopic = HelpTopic + "MenuCommands";
-			menu.Add("&1. Smart file history").Click += delegate { ShowHistory(true); };
-			menu.Add("&2. Plain file history").Click += delegate { ShowHistory(false); };
-			switch (TrainingStatus)
-			{
-				case TrainingState.None:
-					menu.Add("&3. Background training").Click += delegate { TrainFull(); };
-					break;
-				case TrainingState.Started:
-					menu.Add("Training: record " + TrainingRecordIndex + "/" + TrainingRecordCount).Disabled = true;
-					break;
-				case TrainingState.Completed:
-					menu.Add("&3. Training results").Click += delegate { ShowResults(); };
-					break;
-			}
-			menu.Add("&0. Update history file").Click += delegate { Update(); };
+			menu.Add("&1. Smart history").Click += delegate { ShowHistory(); };
+			menu.Add("&2. Smart folders").Click += delegate { ShowFolders(); };
+			menu.Add("&3. Train history").Click += delegate { Train(0); };
+			menu.Add("&4. Train folders").Click += delegate { Train(1); };
+			menu.Add("&5. Update history").Click += delegate { Update(0); };
+			menu.Add("&6. Update folders").Click += delegate { Update(1); };
 
 			menu.Show();
-		}
-		static TrainingState TrainingStatus
-		{
-			get
-			{
-				//! snapshot
-				var value = _TrainingReport;
-
-				if (value == null)
-					return TrainingState.None;
-
-				if (value.Length == 0)
-					return TrainingState.Started;
-
-				return TrainingState.Completed;
-			}
 		}
 		static string ResultText(Result result)
 		{
@@ -80,121 +49,92 @@ Factors    : {7,8}
  result.DownSum,
  result.TotalSum,
  result.Average,
- Settings.Default.Limit0.ToString() + "/" + result.Factor1 + "/" + result.Factor2);
+ Settings.Default.Limit0.ToString() + "/" + result.Factor);
 		}
-		static void ShowResults()
-		{
-			Far.Api.Message(_TrainingReport, "Training results", MessageOptions.LeftAligned);
-			_TrainingReport = null;
-		}
-		static void SaveFactors(Result result)
+		static void SaveFactors(int mode, Result result)
 		{
 			var settings = Settings.Default;
-			if (result.Target > 0)
+			var factor = settings.GetFactor(mode);
+			if (result.Factor != factor)
 			{
-				if (result.Factor1 != settings.Factor1 || result.Factor2 != settings.Factor2)
-				{
-					settings.Factor1 = result.Factor1;
-					settings.Factor2 = result.Factor2;
-					settings.Save();
-				}
-			}
-			else
-			{
-				if (settings.Factor1 >= 0)
-				{
-					settings.Factor1 = -1;
-					settings.Factor2 = -1;
-					settings.Save();
-				}
+				settings.SetFactor(mode, result.Factor);
+				settings.Save();
 			}
 		}
-		static void TrainWorkerFull()
+		static void Train(int mode)
 		{
-			// post started
-			_TrainingReport = string.Empty;
-
 			// train/save
-			var algo = new Actor();
-			var result = algo.TrainFull(Settings.Default.Limit1, Settings.Default.Limit2);
-			SaveFactors(result);
+			var algo = new Actor(mode);
+			var result = algo.Train(Settings.Default.GetLimit(mode), null);
+			SaveFactors(mode, result);
 
-			// post done
-			_TrainingReport = ResultText(result);
+			// show report
+			var report = ResultText(result);
+			Far.Api.Message(report, "Training results", MessageOptions.LeftAligned);
 		}
-		static void TrainFull()
+		static void StartTrainingWork(object state)
 		{
-			var thread = new Thread(TrainWorkerFull);
-			thread.Start();
+			int mode = (int)state;
+			var algo = new Actor(mode);
+			var result = algo.Train(Settings.Default.GetLimit(mode), null);
+			SaveFactors(mode, result);
 		}
-		static void TrainWorkerFast()
+		public static void StartTraining(int mode)
 		{
-			// post started
-			_TrainingReport = string.Empty;
-
-			// train/save
-			var algo = new Actor();
-			var result = algo.TrainFast(Settings.Default.Factor1, Settings.Default.Factor2);
-			SaveFactors(result);
-
-			// post done
-			_TrainingReport = ResultText(result);
+			ThreadPool.QueueUserWorkItem(StartTrainingWork, mode);
 		}
-		public static void StartFastTraining()
-		{
-			var thread = new Thread(TrainWorkerFast);
-			thread.Start();
-		}
-		static void Update()
+		static void Update(int mode)
 		{
 			// update
-			var algo = new Actor(VesselHost.LogPath);
+			var algo = new Actor(mode, VesselHost.LogPath[mode], true);
 			var text = algo.Update();
 
-			// retrain
-			StartFastTraining();
+			// train
+			StartTraining(mode);
 
 			// show update info
 			Far.Api.Message(text, "Update", MessageOptions.LeftAligned);
 		}
-		static void UpdateOnce()
+		static void UpdateWork(object state)
+		{
+			int mode = (int)state;
+
+			// update
+			var algo = new Actor(mode, VesselHost.LogPath[mode], mode == 1);
+			algo.Update();
+
+			// train
+			StartTraining(mode);
+		}
+		static void UpdatePeriodically(int mode)
 		{
 			var now = DateTime.Now;
-			if (now.Date == Settings.Default.LastUpdateTime.Date)
+
+			// skip recently updated
+			var lastUpdateTime = mode == 0 ? Settings.Default.LastUpdateTime1 : Settings.Default.LastUpdateTime2;
+			if ((now - lastUpdateTime).TotalHours < Settings.Default.Limit0)
 				return;
 
-			Settings.Default.LastUpdateTime = now;
+			// save new last update time
+			if (mode == 0)
+				Settings.Default.LastUpdateTime1 = now;
+			else
+				Settings.Default.LastUpdateTime2 = now;
 			Settings.Default.Save();
 
-			var thread = new Thread(() =>
-				{
-					// update
-					var algo = new Actor(VesselHost.LogPath);
-					algo.Update();
-
-					// retrain
-					StartFastTraining();
-				});
-			thread.Start();
+			// start work
+			ThreadPool.QueueUserWorkItem(UpdateWork, mode);
 		}
-		static void ShowHistory(bool smart)
+		static void ShowHistory()
 		{
-			var Factor1 = Settings.Default.Factor1;
-			var Factor2 = Settings.Default.Factor2;
-			var Limit0 = Settings.Default.Limit0;
-
-			// drop smart for the negative factor
-			if (smart && Factor1 < 0)
-				smart = false;
+			var factor0 = Settings.Default.Limit0;
+			var factor1 = Settings.Default.Factor1;
 
 			IListMenu menu = Far.Api.CreateListMenu();
 			menu.HelpTopic = HelpTopic + "FileHistory";
 			menu.SelectLast = true;
 			menu.UsualMargins = true;
-			if (smart)
-				menu.Title = string.Format("File history ({0}/{1}/{2})", Limit0, Factor1, Factor2);
-			else
-				menu.Title = "File history (plain)";
+			menu.Title = string.Format("File history ({0}/{1})", factor0, factor1);
 
 			menu.IncrementalOptions = PatternOptions.Substring;
 
@@ -209,24 +149,17 @@ Factors    : {7,8}
 
 			for (; ; menu.Items.Clear())
 			{
-				int group1 = -1;
-				int indexLimit0 = int.MaxValue;
-				foreach (var it in Record.GetHistory(null, DateTime.Now, (smart ? Factor1 : -1), Factor2))
+				int lastGroup = -1;
+				foreach (var it in Store.GetHistory(0, null, DateTime.Now, factor1))
 				{
 					// separator
-					if (smart)
+					int nextGroup = it.Group(factor0, factor1);
+					if (lastGroup != nextGroup)
 					{
-						int group2 = it.Group(Limit0, Factor1, Factor2);
-						if (group1 != group2)
-						{
-							if (group1 >= 0)
-							{
-								menu.Add("").IsSeparator = true;
-								if (group2 == 0)
-									indexLimit0 = menu.Items.Count;
-							}
-							group1 = group2;
-						}
+						if (lastGroup > 0)
+							menu.Add("").IsSeparator = true;
+
+						lastGroup = nextGroup;
 					}
 
 					// item
@@ -243,7 +176,7 @@ Factors    : {7,8}
 				// update:
 				if (menu.Key.IsCtrl(KeyCode.R))
 				{
-					var algo = new Actor(VesselHost.LogPath);
+					var algo = new Actor(0, VesselHost.LogPath[0]);
 					algo.Update();
 					continue;
 				}
@@ -257,7 +190,7 @@ Factors    : {7,8}
 				{
 					if (0 == Far.Api.Message("Discard " + path, "Confirm", MessageOptions.OkCancel))
 					{
-						Record.Remove(VesselHost.LogPath, path);
+						Store.Remove(0, VesselHost.LogPath[0], path);
 						continue;
 					}
 
@@ -286,10 +219,6 @@ Factors    : {7,8}
 					}
 
 					viewer.Open();
-
-					// post fast training
-					if (smart && indexSelected < indexLimit0)
-						VesselHost.PathToTrain = path;
 				}
 				// edit:
 				else
@@ -308,13 +237,84 @@ Factors    : {7,8}
 
 					if (menu.Key.IsShift(KeyCode.Enter))
 						goto show;
-
-					// post fast training
-					if (smart && indexSelected < indexLimit0)
-						VesselHost.PathToTrain = path;
 				}
 
-				UpdateOnce();
+				UpdatePeriodically(0);
+				return;
+			}
+		}
+		static void ShowFolders()
+		{
+			var limit = Settings.Default.Limit0;
+			var factor = Settings.Default.Factor2;
+
+			IListMenu menu = Far.Api.CreateListMenu();
+			menu.HelpTopic = HelpTopic + "FolderHistory";
+			menu.SelectLast = true;
+			menu.UsualMargins = true;
+			menu.Title = string.Format("Folder history ({0}/{1})", limit, factor);
+
+			menu.IncrementalOptions = PatternOptions.Substring;
+
+			menu.AddKey(KeyCode.Delete, ControlKeyStates.ShiftPressed);
+			menu.AddKey(KeyCode.R, ControlKeyStates.LeftCtrlPressed);
+
+			for (; ; menu.Items.Clear())
+			{
+				int lastGroup = -1;
+				foreach (var it in Store.GetHistory(1, null, DateTime.Now, factor))
+				{
+					// separator
+					int nextGroup = it.Group(limit, factor);
+					if (lastGroup != nextGroup)
+					{
+						if (lastGroup > 0)
+							menu.Add("").IsSeparator = true;
+						lastGroup = nextGroup;
+					}
+
+					// item
+					menu.Add(it.Path).Checked = it.Evidence > 0;
+				}
+
+			show:
+
+				//! show and check the result or after Esc index may be > 0
+				//! e.g. ShiftDel the last record + Esc == index out of range
+				if (!menu.Show() || menu.Selected < 0)
+					return;
+
+				// update:
+				if (menu.Key.IsCtrl(KeyCode.R))
+				{
+					var algo = new Actor(1, VesselHost.LogPath[1], true);
+					algo.Update();
+					continue;
+				}
+
+				// the folder
+				int indexSelected = menu.Selected;
+				string path = menu.Items[indexSelected].Text;
+
+				// delete:
+				if (menu.Key.IsShift(KeyCode.Delete))
+				{
+					if (0 == Far.Api.Message("Discard " + path, "Confirm", MessageOptions.OkCancel))
+					{
+						Store.Remove(1, VesselHost.LogPath[1], path);
+						continue;
+					}
+					goto show;
+				}
+
+				// Enter:
+				if (Far.Api.Window.Kind != WindowKind.Panels && !Far.Api.Window.IsModal)
+					Far.Api.Window.SetCurrentAt(-1);
+
+				Far.Api.Panel.CurrentDirectory = path;
+				Store.Append(VesselHost.LogPath[1], DateTime.Now, Record.OPEN, path);
+
+				UpdatePeriodically(1);
 				return;
 			}
 		}
