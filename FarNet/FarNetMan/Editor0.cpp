@@ -282,6 +282,10 @@ int Editor0::AsProcessEditorInput(const ProcessEditorInputInfo* info)
 	const INPUT_RECORD* rec = &info->Rec;
 	Editor^ editor = GetCurrentEditor();
 
+	// exiting Far with not active editor
+	if (editor == nullptr)
+		return 0;
+
 	// async
 	if (editor->_output)
 	{
