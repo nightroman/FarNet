@@ -77,9 +77,8 @@ task Package Help, {
 
 task NuGet Package, Version, {
 	$text = @'
-Vessel (View/Edit/Save/SELect) is the FarNet module for Far Manager.
-
-It records and maintains history of file view, edit, and save operations
+Vessel (View/Edit/Save/SELect) is the FarNet module for Far Manager. It records
+the history of file view, edit, and save operations, directory select history,
 and provides related tools.
 
 ---
