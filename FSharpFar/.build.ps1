@@ -27,8 +27,16 @@ task Kill Clean, {
 	)
 }
 
+# (@1) Use MSBuild to work around missed assembly version
+# see https://github.com/Microsoft/visualfsharp/issues/3113
 task Build {
-	exec {dotnet build $ProjectRoot\$ModuleName.sln /p:FarHome=$FarHome /p:Configuration=$Configuration /v:n}
+	# dotnet build misses version info (@1)
+	#exec {dotnet build $ProjectRoot\$ModuleName.sln /p:FarHome=$FarHome /p:Configuration=$Configuration /v:n}
+
+	# workaround (@1)
+	Set-Alias MSBuild (Resolve-MSBuild 15.0x86)
+	exec {dotnet restore $ProjectRoot\$ModuleName.sln}
+	exec {MSBuild $ProjectRoot\$ModuleName.sln /p:FarHome=$FarHome /p:Configuration=$Configuration /v:n}
 }
 
 task Clean {
@@ -98,14 +106,12 @@ task Package Markdown, {
 	)
 }
 
+#! dotnet made assembly: FileVersion is null (@1); so we used this command:
+# ($dllVersion = [Reflection.Assembly]::ReflectionOnlyLoadFrom($dllPath).GetName().Version.ToString())
 task NuGet Package, Version, {
 	# test versions
 	$dllPath = "$FarHome\FarNet\Modules\$ModuleName\$ModuleName.dll"
-
-	#! dotnet made assembly: FileVersion is null
-	($dllVersion = [Reflection.Assembly]::ReflectionOnlyLoadFrom($dllPath).GetName().Version.ToString())
-	#($dllVersion = (Get-Item $dllPath).VersionInfo.FileVersion.ToString())
-
+	($dllVersion = (Get-Item $dllPath).VersionInfo.FileVersion.ToString())
 	assert $dllVersion.StartsWith($Version) 'Versions mismatch.'
 
 	$text = @'

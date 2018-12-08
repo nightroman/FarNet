@@ -139,7 +139,7 @@ type Session private (configFile) =
     member val OnClose = onClose.Publish
 
     member __.IsSameConfigFile path =
-        String.Equals (configFile, Path.GetFullPath path, StringComparison.OrdinalIgnoreCase)
+        String.equalsIgnoreCase configFile (Path.GetFullPath path)
 
     member __.EvalInteraction (writer, code) =
         eval writer fsiSession.EvalInteractionNonThrowing code

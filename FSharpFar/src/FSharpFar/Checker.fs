@@ -28,7 +28,7 @@ let check file text config = async {
         let addFiles paths =
             for f in paths do
                 let f1 = Path.GetFullPath f
-                if files.FindIndex (fun x -> f1.Equals (x, StringComparison.OrdinalIgnoreCase)) < 0 then
+                if not (Seq.containsIgnoreCase f1 files) then
                     files.Add f1
         addFiles config.FscFiles
         addFiles config.EtcFiles

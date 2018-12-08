@@ -1,6 +1,7 @@
 module FSharpFar.Config
 open System
 open System.IO
+open System.Xml
 
 /// Configuration data for checkers and sessions.
 type Config = {
@@ -202,3 +203,63 @@ let getConfigPathForFile path =
 /// Gets the local or main config for a file.
 let getConfigForFile path =
     getConfigFromFileCached (getConfigPathForFile path)
+
+let generateProject path =
+    let fileName = Path.GetFileNameWithoutExtension path
+    let fileRoot = Path.GetDirectoryName path
+    let nameInTemp = sprintf "FS-%s-%08X" (Path.GetFileName fileRoot) ((fileRoot.ToUpper ()).GetHashCode ())
+    let projectRoot = Path.Combine (Path.GetTempPath (), nameInTemp)
+    let projectPath = Path.Combine (projectRoot, fileName + ".fsproj")
+    Directory.CreateDirectory projectRoot |> ignore
+
+    let config = readConfigFromFile path
+
+    let xml = XmlDocument ()
+    xml.InnerXml <- """<Project Sdk="Microsoft.NET.Sdk"/>"""
+    let doc = xml.DocumentElement
+    let nodeProperties = doc.AppendChild (xml.CreateElement "PropertyGroup")
+    let nodeItems = doc.AppendChild (xml.CreateElement "ItemGroup")
+
+    let addProperty name value =
+        (nodeProperties.AppendChild (xml.CreateElement name)).InnerText <- value
+
+    let addReference reference =
+        let node = xml.CreateElement "Reference"
+        nodeItems.AppendChild node |> ignore
+        node.SetAttribute ("Include", Path.GetFileNameWithoutExtension reference)
+        (node.AppendChild (xml.CreateElement "HintPath")).InnerText <- reference
+        (node.AppendChild (xml.CreateElement "Private")).InnerText <- "false"
+
+    let addFile file =
+        let node = xml.CreateElement "Compile"
+        nodeItems.AppendChild node |> ignore
+        node.SetAttribute ("Include", file)
+
+    addProperty "TargetFramework" "net462"
+    addProperty "DisableImplicitFSharpCoreReference" "true"
+    addProperty "DisableImplicitSystemValueTupleReference" "true"
+
+    let dir = Environment.GetEnvironmentVariable "FARHOME"
+    addReference (dir + @"\FSharp.Core.dll")
+    addReference (dir + @"\FarNet\FarNet.dll")
+    addReference (dir + @"\FarNet\FarNet.FSharp.dll")
+    addReference (dir + @"\FarNet\FarNet.Tools.dll")
+    addReference (dir + @"\FarNet\Modules\FSharpFar\FSharpFar.dll")
+
+    for op in config.FscArgs do
+        if op.StartsWith "-r:" then
+            addReference (op.Substring 3)
+        elif op.StartsWith "-I:" then
+            addProperty "ReferencePath" (op.Substring 3)
+        elif op.StartsWith "--lib:" then
+            addProperty "ReferencePath" (op.Substring 6)
+
+    for file in config.FscFiles do
+        addFile file
+
+    for file in Directory.EnumerateFiles(fileRoot, "*.fs") do
+        if not (Seq.containsIgnoreCase file config.FscFiles) then
+            addFile file
+
+    xml.Save projectPath
+    projectPath

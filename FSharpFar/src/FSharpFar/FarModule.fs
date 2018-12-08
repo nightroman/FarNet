@@ -58,5 +58,5 @@ type IEditor with
         | Some errors ->
 
         let file = Path.GetFullPath x.FileName
-        let errors = errors |> Array.filter (fun error -> file.Equals (Path.GetFullPath error.FileName, StringComparison.OrdinalIgnoreCase))
+        let errors = errors |> Array.filter (fun error -> String.equalsIgnoreCase file (Path.GetFullPath error.FileName))
         if errors.Length = 0 then None else Some errors

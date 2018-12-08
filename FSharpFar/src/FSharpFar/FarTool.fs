@@ -1,4 +1,6 @@
 ﻿namespace FSharpFar
+open System.IO
+open System.Diagnostics
 open FarNet
 open Session
 open FarInteractive
@@ -7,6 +9,13 @@ open FarInteractive
 [<ModuleTool (Name = "FSharpFar", Options = ModuleToolOptions.F11Menus)>]
 type FarTool () =
     inherit ModuleTool ()
+
+    let openProject () =
+        match Config.tryConfigPathInDirectory far.Panel.CurrentDirectory with
+        | Some path ->
+            Config.generateProject path |> Process.Start |> ignore
+        | None ->
+            far.Message ("Cannot find *.fs.ini", "F#")
 
     let showSessions () =
         let menu = far.CreateListMenu (Title = "F# sessions", Bottom = "Enter, Del, F4", ShowAmpersands = true, UsualMargins = true)
@@ -39,6 +48,8 @@ type FarTool () =
             // all menus
             yield "&1. Interactive", (fun _ -> FarInteractive(getMainSession ()).Open ())
             yield "&0. Sessions...", showSessions
+            if e.From = ModuleToolOptions.Panels then
+                yield "&p. Project", openProject
             // editor with F#
             if e.From = ModuleToolOptions.Editor && isFSharpFileName editor.FileName then
                 // all F# files; load interactive, too, i.e. load header then type

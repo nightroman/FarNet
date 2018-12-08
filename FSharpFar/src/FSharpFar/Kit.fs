@@ -24,3 +24,17 @@ let isLongIdentChar char = isIdentChar char || char = '.'
 
 /// Gets true if a string is a normal identifier.
 let isIdentStr str = String.forall isIdentChar str
+
+module Seq =
+    /// Gets true if the string sequence contains the value.
+    let containsIgnoreCase value (source: string seq) =
+        (source |> Seq.tryFind (fun x -> x.Equals(value, StringComparison.OrdinalIgnoreCase))).IsSome
+
+module String =
+    /// Gets true if two strings are equal.
+    let equalsIgnoreCase x y =
+        String.Equals (x, y, StringComparison.OrdinalIgnoreCase)
+
+    /// Gets true if x ends with y.
+    let endsWithIgnoreCase (x: string) (y: string) =
+        x.EndsWith (y, StringComparison.OrdinalIgnoreCase)

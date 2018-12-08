@@ -162,10 +162,10 @@ let showTempText text title =
     showTempFile file title
 
 let isScriptFileName (fileName: string) =
-    fileName.EndsWith (".fsx", StringComparison.OrdinalIgnoreCase) || fileName.EndsWith (".fsscript", StringComparison.OrdinalIgnoreCase)
+    String.endsWithIgnoreCase fileName ".fsx" || String.endsWithIgnoreCase fileName ".fsscript"
 
 let isFSharpFileName (fileName: string) =
-    isScriptFileName fileName || fileName.EndsWith (".fs", StringComparison.OrdinalIgnoreCase)
+    isScriptFileName fileName || String.endsWithIgnoreCase fileName ".fs"
 
 /// Shows a message with the left aligned text.
 let showText text title =

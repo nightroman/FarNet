@@ -1,5 +1,5 @@
 
-## Non-blocking async flows in Far Manager
+# Non-blocking async flows in Far Manager
 
 This sample demonstrates non-blocking async flows using the following scenario:
 
@@ -36,3 +36,8 @@ and then starts testing flows in order to check and manipulate sample flows.
 - *Parallel.fs* - shows some parallel jobs
 - *Test.fs* - common test tools
 - *Test...fs* - other test flows
+
+**NOTE**
+
+If you have Visual Studio installed, invoke `Project` from the module menu in
+order to open this directory files as a project in Visual Studio.

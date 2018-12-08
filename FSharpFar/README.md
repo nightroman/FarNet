@@ -8,6 +8,7 @@
 - [Commands](#commands)
 - [Interactive](#interactive)
 - [Configuration](#configuration)
+- [Use as project](#project)
 - [Editor services](#editor)
 - [Using F# scripts](#scripts)
 
@@ -49,6 +50,8 @@ Use `[F11]` \ `FSharpFar` to open the module menu:
             - Closes the session and interactives.
         - `[F4]`
             - Edits the session configuration file.
+- **Project**
+    - Opens the generated F# project, see [Use as project](#project).
 - **Load**
     - Evaluates the script opened in editor (`#load`).
 - **Tips**
@@ -192,7 +195,6 @@ The history keys:
 - Other keys are for incremental filtering.
 
 ***
-
 ## <a id="configuration"/> Configuration
 
 Each interactive session is associated with its configuration file path, existing or not.
@@ -291,6 +293,37 @@ Sample `--use` file:
     // definitions for interactive
     let show text = far.Message text
 ````
+
+***
+## <a id="project"/> Use as project
+
+When a configuration file `*.fs.ini` is ready you can use the menu command
+`Project` in order to generate a special `*.fsproj` with your source files
+and open it by the associated program, usually Visual Studio. It is not for
+building a module or assembly, it is just for convenient work on your files.
+You do not have to build anything and restart Far Manager in order to use
+updated assemblies. Just edit, save, and run your F# files in this project.
+
+The project is created in its own folder in `%TEMP%` together with its `bin`
+and `obj` folders. You do not have to care of removing its files too often.
+Just use "Disk Cleanup" periodically in order to clean your `%TEMP%`.
+
+The generated project includes:
+
+- References to *FarNet* and *FSharpFar* assemblies.
+- References to assemblies in the `[fsc]` section.
+- Main `*.fs` source files in the `[fsc]` section.
+- Other `*.fs` files in the current panel.
+
+`.fsx` files, true F# scripts, are not included. Ideally, they should contain
+something simple like invoking functions defined in more complex `.fs`. Note
+that in FSharpFar you can invoke `.fs` files as scripts, too.
+
+The generated project path is: `%TEMP%\FS-X-Y\Z.fsproj`, where:
+
+- X is the name of your script directory.
+- Y is some hash code of its full path.
+- Z is the config file base name.
 
 ***
 ## <a id="editor"/> Editor services

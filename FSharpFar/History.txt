@@ -3,6 +3,18 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.5048
 FarNet 5.2.14
 
+= 1.7.0 =
+
+New menu command "Project" makes a special project from your config file and
+opens it, usually in Visual Studio. You get the full power for composing your
+files. You do not have to build anything and restart Far in order to test the
+changes. Just edit, save, and run F# files in this special project.
+See README for details.
+
+Retire tools/Convert-Project.ps1, not so useful now.
+
+FSharp.Core 4.5.4.
+
 = 1.6.2 =
 
 `[F5]` in editors is shortcut for `[F11]` \ `FSharpFar` \ `Load`
