@@ -19,4 +19,4 @@ let findLongIdents caret lineStr =
         None
     | Some (str, pos, x) ->
         let names, partial = QuickParse.GetPartialLongName (str, (str.Length - 1))
-        Some (pos, List.append names [partial])
+        Some (pos, names @ [ partial ])

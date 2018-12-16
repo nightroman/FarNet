@@ -1,9 +1,8 @@
 ﻿namespace FSharpFar
-open System.IO
-open System.Diagnostics
 open FarNet
 open Session
 open FarInteractive
+open System.Diagnostics
 
 [<System.Runtime.InteropServices.Guid "65bd5625-769a-4253-8fde-ffcc3f72489d">]
 [<ModuleTool (Name = "FSharpFar", Options = ModuleToolOptions.F11Menus)>]
@@ -11,11 +10,11 @@ type FarTool () =
     inherit ModuleTool ()
 
     let openProject () =
-        match Config.tryConfigPathInDirectory far.Panel.CurrentDirectory with
-        | Some path ->
-            Config.generateProject path |> Process.Start |> ignore
-        | None ->
-            far.Message ("Cannot find *.fs.ini", "F#")
+        let path =
+            match Config.tryConfigPathInDirectory far.Panel.CurrentDirectory with
+            | Some path -> path
+            | None -> farMainConfigPath
+        Config.generateProject path |> Process.Start |> ignore
 
     let showSessions () =
         let menu = far.CreateListMenu (Title = "F# sessions", Bottom = "Enter, Del, F4", ShowAmpersands = true, UsualMargins = true)

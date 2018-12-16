@@ -57,7 +57,7 @@ type Session private (configFile) =
     let fsiSession, errors, config =
         use _progress = new Progress "Loading session..."
 
-        let config = if File.Exists configFile then getConfigFromFileCached configFile else Config.empty
+        let config = if File.Exists configFile then readConfigFromFile configFile else Config.empty
         let args = [|
             yield "fsi.exe" //! dummy, else --nologo is consumed
             yield "--nologo"
@@ -109,7 +109,17 @@ type Session private (configFile) =
     static member TryFind (path) =
         sessions |> List.tryFind (fun x -> x.IsSameConfigFile path)
 
-    static member GetOrCreate (path) =
+    /// Gets the existing or creates a new session specified by the config path.
+    /// If the path is a directory then its config is used if any else the main.
+    static member GetOrCreate path =
+        let path =
+            if not (File.Exists path) && Directory.Exists path then
+                match tryConfigPathInDirectory path with
+                | Some path -> path
+                | None -> farMainConfigPath
+            else
+                path
+
         match Session.TryFind path with
         | Some s -> s
         | _ ->

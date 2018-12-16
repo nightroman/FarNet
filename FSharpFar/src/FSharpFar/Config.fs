@@ -35,52 +35,56 @@ type private ConfigSection =
     | FsiSection
     | OutSection
     | EtcSection
+    | UseSection
 
 type private ConfigLine =
-    | Empty
-    | Comment
-    | Section of string
-    | Switch of string
-    | Value of string
-    | Pair of Key : string * Value : string
+    | EmptyLine
+    | CommentLine
+    | SectionLine of string
+    | SwitchLine of string
+    | ValueLine of string
+    | KeyValueLine of Key : string * Value : string
 
-let private parse (line: string) =
-    let text = line.Trim ()
-    if text.Length = 0 then
-        Empty
-    elif text.[0] = ';' then
-        Comment
-    elif text.[0] = '[' then
-        if not (text.EndsWith "]") then
+let private parseLine (line: string) =
+    let line = line.Trim ()
+    if line.Length = 0 then
+        EmptyLine
+    elif line.[0] = ';' then
+        CommentLine
+    elif line.[0] = '[' then
+        if not (line.EndsWith "]") then
             invalidOp "Invalid section, expected '[...]'."
-        Section (text.Substring(1, text.Length - 2).Trim ())
-    elif text.[0] <> '-' then
-        Value text
+        SectionLine (line.Substring(1, line.Length - 2).Trim ())
+    elif line.[0] <> '-' then
+        ValueLine line
     else
-        let i = text.IndexOf ':'
+        let i = line.IndexOf ':'
         if i < 0 then
-            Switch text
+            SwitchLine line
         else
-            Pair (text.Substring(0, i).Trim (), text.Substring(i + 1).Trim ())
+            KeyValueLine (line.Substring(0, i).TrimEnd (), line.Substring(i + 1).TrimStart ())
 
-let private resolve root key value =
+// Expands variables and for some keys resolves full paths.
+let private resolveKeyValue root key value =
     let value = Environment.ExpandEnvironmentVariables(value).Replace ("__SOURCE_DIRECTORY__", root)
     match key with
     | "-r" | "--reference" ->
-        // resolve a path only if it starts with "." else use as it is, e.g. `-r:System.Management.Automation`
+        // resolve a path only if it starts with "." else keep it, e.g. `-r:System.Management.Automation`
         if value.[0] = '.' then
-            Path.GetFullPath (Path.Combine(root, value))
+            Path.GetFullPath (Path.Combine (root, value))
         else
             value
     | "" | "-l" | "--lib" | "-o" | "--out" | "--use" | "--doc" ->
         if Path.IsPathRooted value then
             Path.GetFullPath value
         else
-            Path.GetFullPath (Path.Combine(root, value))
+            Path.GetFullPath (Path.Combine (root, value))
     | _ ->
         value
 
-let readConfigFromFile path =
+// Reads configuration from the specified file avoiding recursive loops and duplicated configurations.
+// Duplicates look fine for the compiler but VS is not happy with same items in generated projects.
+let rec private readConfigFromFileRec path parents : Config =
     let lines = File.ReadAllLines path
     let root = Path.GetDirectoryName path
 
@@ -97,22 +101,24 @@ let readConfigFromFile path =
     let mutable currentSection = NoSection
     let mutable lineNo = 0
 
-    let raiseSection () = invalidOp "Expected section [fsc|fsi|out|etc], found data or unknown section."
+    let raiseSection () = invalidOp "Expected section [fsc|fsi|out|etc|use], found data or unknown section."
     try
         for line in lines do
             lineNo <- lineNo + 1
-            match parse line with
-            | Empty | Comment ->
+            match parseLine line with
+            | EmptyLine
+            | CommentLine ->
                 ()
-            | Section section ->
+            | SectionLine section ->
                 currentSection <-
                     match section with
                     | "fsc" -> FscSection
                     | "fsi" -> FsiSection
                     | "out" -> OutSection
                     | "etc" -> EtcSection
+                    | "use" -> UseSection
                     | _ -> raiseSection ()
-            | Switch it ->
+            | SwitchLine it ->
                 match currentSection with
                 | FscSection ->
                     fscArgs <- it :: fscArgs
@@ -122,10 +128,11 @@ let readConfigFromFile path =
                     outArgs <- it :: outArgs
                 | EtcSection ->
                     etcArgs <- it :: etcArgs
+                | UseSection
                 | NoSection ->
                     raiseSection ()
-            | Value it ->
-                let file = resolve root "" it
+            | ValueLine it ->
+                let file = resolveKeyValue root "" it
                 match currentSection with
                 | FscSection ->
                     fscFiles <- file :: fscFiles
@@ -135,10 +142,23 @@ let readConfigFromFile path =
                     outFiles <- file :: outFiles
                 | EtcSection ->
                     etcFiles <- file :: etcFiles
+                | UseSection ->
+                    if not (Seq.containsIgnoreCase file !parents) then
+                        parents := file :: !parents
+                        let config = readConfigFromFileRec file parents
+                        fscArgs <- config.FscArgs @ fscArgs 
+                        fscFiles <- config.FscFiles @ fscFiles
+                        fsiArgs <- config.FsiArgs @ fsiArgs
+                        fsiFiles <- config.FsiFiles @ fsiFiles
+                        useFiles <- config.UseFiles @ useFiles
+                        outArgs <- config.OutArgs @ outArgs
+                        outFiles <- config.OutFiles @ outFiles
+                        etcArgs <- config.EtcArgs @ etcArgs
+                        etcFiles <- config.EtcFiles @ etcFiles
                 | NoSection ->
                     raiseSection ()
-            | Pair (key, value) ->
-                let text = resolve root key value
+            | KeyValueLine (key, value) ->
+                let text = resolveKeyValue root key value
                 match currentSection with
                 | FscSection ->
                     // use -r instead of --reference to avoid duplicates added by FCS
@@ -154,6 +174,7 @@ let readConfigFromFile path =
                     outArgs <- (key + ":" + text) :: outArgs
                 | EtcSection ->
                     etcArgs <- (key + ":" + text) :: etcArgs
+                | UseSection
                 | NoSection ->
                     raiseSection ()
      with e ->
@@ -171,48 +192,43 @@ let readConfigFromFile path =
         EtcFiles = List.rev etcFiles
     }
 
-/// Gets and caches the config from a file.
-let getConfigFromFileCached =
-    let cache = System.Collections.Concurrent.ConcurrentDictionary<string, DateTime * Config> StringComparer.OrdinalIgnoreCase
-    fun path ->
-        let time1 = File.GetLastWriteTime path
-        let add path = time1, readConfigFromFile path
-        let update path ((time2, _) as value) = if time1 = time2 then value else add path
-        let _, config = cache.AddOrUpdate (path, add, update)
-        config
+/// Reads the config from the specified file.
+let readConfigFromFile path =
+    readConfigFromFileRec path (ref [ path ])
 
 /// Gets some config path in a directory.
 let tryConfigPathInDirectory dir =
     match Directory.GetFiles (dir, "*.fs.ini") with
-    | [|file|] ->
+    | [| file |] ->
         Some file
     | _ ->
         None
 
-/// Gets the local or main config path for a file.
+/// Gets the local or main config path for the file.
 let getConfigPathForFile path =
     let dir = Path.GetDirectoryName path
     match tryConfigPathInDirectory dir with
-    // local config
     | Some file ->
+        // local config
         file
-    // main config
-    | _ ->
+    | None ->
+        // main config
         farMainConfigPath
 
-/// Gets the local or main config for a file.
+/// Gets the local or main config for the file.
 let getConfigForFile path =
-    getConfigFromFileCached (getConfigPathForFile path)
+    readConfigFromFile (getConfigPathForFile path)
 
-let generateProject path =
-    let fileName = Path.GetFileNameWithoutExtension path
-    let fileRoot = Path.GetDirectoryName path
-    let nameInTemp = sprintf "FS-%s-%08X" (Path.GetFileName fileRoot) ((fileRoot.ToUpper ()).GetHashCode ())
+/// Makes the temp project for the specified config file.
+let generateProject configPath =
+    let configName = Path.GetFileNameWithoutExtension configPath
+    let configRoot = Path.GetDirectoryName configPath
+    let nameInTemp = sprintf "FS-%s-%08X" (Path.GetFileName configRoot) ((configRoot.ToUpper ()).GetHashCode ())
     let projectRoot = Path.Combine (Path.GetTempPath (), nameInTemp)
-    let projectPath = Path.Combine (projectRoot, fileName + ".fsproj")
+    let projectPath = Path.Combine (projectRoot, configName + ".fsproj")
     Directory.CreateDirectory projectRoot |> ignore
 
-    let config = readConfigFromFile path
+    let config = readConfigFromFile configPath
 
     let xml = XmlDocument ()
     xml.InnerXml <- """<Project Sdk="Microsoft.NET.Sdk"/>"""
@@ -257,7 +273,7 @@ let generateProject path =
     for file in config.FscFiles do
         addFile file
 
-    for file in Directory.EnumerateFiles(fileRoot, "*.fs") do
+    for file in Directory.EnumerateFiles (configRoot, "*.fs") do
         if not (Seq.containsIgnoreCase file config.FscFiles) then
             addFile file
 

@@ -3,6 +3,17 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.5048
 FarNet 5.2.14
 
+= 1.8.0 =
+
+New config file section [use] allows using other config files in the current.
+You can easily compose a session with existing "projects" and new settings.
+
+"Project" opens the main session if there is no config in the current folder.
+
+Add `PowerShellFar.invokeScript`. See "samples\PowerShellFar" in the repo.
+
+Add samples\Lib\SessionVariables.fs, SessionVariablesPanel.fsx
+
 = 1.7.0 =
 
 New menu command "Project" makes a special project from your config file and

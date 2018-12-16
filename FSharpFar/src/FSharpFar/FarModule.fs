@@ -8,6 +8,7 @@ open System
 open System.IO
 
 module private Key =
+    let config = "F# config"
     let session = "F# session"
     let errors = "F# errors"
     let autoTips = "F# auto tips"
@@ -48,9 +49,18 @@ type IEditor with
         and set (value: bool) = x.SetOpt (Key.checking, Some value)
 
     member x.MyConfig () =
-        match x.MySession with
-        | Some x -> x.Config
-        | _ -> getConfigForFile x.FileName
+        match x.GetOpt<Config> Key.config with
+        | Some config ->
+            config
+        | None ->
+            let config =
+                match x.MySession with
+                | Some ses ->
+                    ses.Config
+                | None ->
+                    getConfigForFile x.FileName
+            x.SetOpt (Key.config, Some config)
+            config
 
     member x.MyFileErrors () =
         match x.MyErrors with

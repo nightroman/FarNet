@@ -205,6 +205,9 @@ If such a file is not found or there are many then the main configuration is use
 
 The main configuration file is *%FARPROFILE%\FarNet\FSharpFar\main.fs.ini*.
 
+If you change configuration files then close affected sessions and editors or
+restart Far Manager. Otherwise the old cached configurations may be used.
+
 The configuration file format is like "ini", with sections and options.
 Options are the same as for `fsc.exe` and `fsi.exe`, one per line.
 Empty lines and lines staring with `;` are ignored.
@@ -224,7 +227,11 @@ It is useful in some cases, e.g. `--define:DEBUG` is used in `[etc]` for
 tips and checks in `#if DEBUG` but `[fsi]` and `[out]` do not use DEBUG.
 
 **`[out]`** defines options for `fs: //compile`, like `-a|--target` and `-o|--out`.
-It is not needed if you are not compiling .NET assemblies.
+It is not needed if you are not compiling assemblies.
+
+**`[use]`** defines other configuration files used in the current file, one per
+line, using relative or absolute paths. Thus, the current session may be easily
+composed from existing "projects" with some additional settings and files.
 
 **Preprocessing:**
 
