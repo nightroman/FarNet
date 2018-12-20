@@ -67,8 +67,9 @@ Register-ArgumentCompleter -CommandName git -Native -ScriptBlock {
 	if ($wordToComplete -notmatch '^\w?[\w\-]*$') {return}
 	if ($code -notmatch "^git\s*$wordToComplete$") {return}
 
+	# git 2.20.1.windows.1 needs --no-verbose
 	$wild = "$wordToComplete*"
-	$(foreach($line in git help -a) {
+	$(foreach($line in git help --all --no-verbose) {
 		if ($line -match '^  \S') {
 			foreach($token in $line -split '\s+') {
 				if ($token -and $token -like $wild) {
