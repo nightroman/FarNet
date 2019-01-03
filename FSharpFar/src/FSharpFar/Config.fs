@@ -221,11 +221,14 @@ let getConfigForFile path =
 
 /// Makes the temp project for the specified config file.
 let generateProject configPath =
-    let configName = Path.GetFileNameWithoutExtension configPath
     let configRoot = Path.GetDirectoryName configPath
-    let nameInTemp = sprintf "FS-%s-%08X" (Path.GetFileName configRoot) ((configRoot.ToUpper ()).GetHashCode ())
+    let configRootName = Path.GetFileName configRoot
+    let configBaseName =
+        let name = Path.GetFileNameWithoutExtension configPath
+        if String.equalsIgnoreCase name ".fs" then configRootName + ".fs" else name
+    let nameInTemp = sprintf "_Project-%s-%08x" configRootName ((configRoot.ToUpper ()).GetHashCode ())
     let projectRoot = Path.Combine (Path.GetTempPath (), nameInTemp)
-    let projectPath = Path.Combine (projectRoot, configName + ".fsproj")
+    let projectPath = Path.Combine (projectRoot, configBaseName + ".fsproj")
     Directory.CreateDirectory projectRoot |> ignore
 
     let config = readConfigFromFile configPath

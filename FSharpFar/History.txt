@@ -3,6 +3,11 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.5048
 FarNet 5.2.14
 
+= 1.8.1 =
+
+- Amend temporary paths and names of generated projects.
+- Some more details in samples/fsi.
+
 = 1.8.0 =
 
 New config file section [use] allows using other config files in the current.

@@ -43,22 +43,39 @@ wait in Far code.
 
 Next step. The waiter waits.
 
+***
 ### fsi object
 
-The bad.
+**The bad.**
+
 [This](https://fsharp.github.io/FSharp.Compiler.Service/interactive.html) tells how to enable `fsi` in a session.
 It does not tell that *FSharp.Compiler.Interactive.Settings.dll* from *Microsoft SDKs* should be packaged for this.
 If this DLL is not discovered, an app fails with not clear info.
 
-The good.
-For simple stuff like interactive settings this is not a must.
-See *repo\samples\fsi*.
-
-Related?
-
 - [692](https://github.com/fsharp/FSharp.Compiler.Service/issues/692)
 - [127](https://github.com/fsharp/FSharp.Compiler.Service/issues/127)
 
+In theory, we can make `fsi` available for scripts as
+
+```FSharp
+/// FSharpFar utilities available right away.
+[<AutoOpen>]
+module FSharpFarUtility
+/// Interactive settings.
+let fsi = Microsoft.FSharp.Compiler.Interactive.Shell.Settings.fsi
+```
+
+but this requires the reference to *FSharp.Compiler.Service*.
+We do not want this for all scripts.
+
+**The good.**
+
+This fine tuning is not often needed.
+When it is needed, a documented workaround exists, see *samples\fsi*.
+
+NB This object seems to be global, if we change data in one session then all sessions are affected.
+
+***
 ### System.Collections.Immutable and System.Reflection.Metadata
 
 They are used in `FSharp.Compiler.Service\src\absil`

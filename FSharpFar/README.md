@@ -217,7 +217,7 @@ Empty lines and lines staring with `;` are ignored.
 **`[fsc]`** is the main section. It defines common [F# Compiler Options](https://docs.microsoft.com/en-us/dotnet/articles/fsharp/language-reference/compiler-options)
 and common source files. This section is often enough. Other sections may add extra or override defined options.
 
-**`[fsi]`** defines [F# Interactive Options](https://docs.microsoft.com/en-us/dotnet/articles/fsharp/tutorials/fsharp-interactive/fsharp-interactive-options)
+**`[fsi]`** defines [F# Interactive Options](https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/fsharp-interactive-options)
 and source files used for interactive sessions and evaluating scripts.
 `--use` files are particularly useful for interactive sessions.
 Some *fsi.exe* options are not used.
@@ -311,10 +311,6 @@ building a module or assembly, it is just for convenient work on your files.
 You do not have to build anything and restart Far Manager in order to use
 updated assemblies. Just edit, save, and run your F# files in this project.
 
-The project is created in its own folder in `%TEMP%` together with its `bin`
-and `obj` folders. You do not have to care of removing its files too often.
-Just use "Disk Cleanup" periodically in order to clean your `%TEMP%`.
-
 The generated project includes:
 
 - References to *FarNet* and *FSharpFar* assemblies.
@@ -322,11 +318,11 @@ The generated project includes:
 - Main `*.fs` source files in the `[fsc]` section.
 - Other `*.fs` files in the current panel.
 
-`.fsx` files, true F# scripts, are not included. Ideally, they should contain
-something simple like invoking functions defined in more complex `.fs`. Note
-that in FSharpFar you can invoke `.fs` files as scripts, too.
+The `.fsx` files, F# scripts, are not included. Consider having complex code in
+`.fs` source files and keeping scripts simple. Note that in FSharpFar you can
+invoke source files as scripts, too.
 
-The generated project path is: `%TEMP%\FS-X-Y\Z.fsproj`, where:
+The generated project path is: `%TEMP%\_Project-X-Y\Z.fsproj`, where:
 
 - X is the name of your script directory.
 - Y is some hash code of its full path.
