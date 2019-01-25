@@ -2,6 +2,11 @@
 NuGet package: https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5048
 
+= 5.2.18 =
+
+- Fix null editor on exiting Far with not active editor.
+- Update Far.exe.config for FSharpFar.
+
 = 5.2.17 =
 
 Use %TEMP%\FarNet for module settings if the normal location is RO.

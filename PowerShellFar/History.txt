@@ -3,6 +3,11 @@ NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 Far Manager 3.0.5013
 FarNet 5.2.14
 
+= 5.2.7 =
+
+- Fix ArgumentCompleters for the latest git help syntax.
+- 7za -> 7z in Bench/Update-FarManager.ps1
+
 = 5.2.6 =
 
 Use the current thread in the main runspace in order to deal with Far 3.0.5256.

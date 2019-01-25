@@ -5,6 +5,3 @@ references: strict
 source https://www.nuget.org/api/v2
 nuget FSharp.Compiler.Service
 nuget FSharp.Core
-
-# for compile, use the same as FSC
-nuget System.Reflection.Metadata = 1.4.2
