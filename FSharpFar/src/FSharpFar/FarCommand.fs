@@ -3,7 +3,6 @@ open FarNet
 open Session
 open System
 open System.IO
-open Command
 open FarStdWriter
 open FarInteractive
 open Config
@@ -12,7 +11,7 @@ open Config
 [<ModuleCommand (Name = "FSharpFar", Prefix = "fs")>]
 type FarCommand () =
     inherit ModuleCommand ()
-    override x.Invoke (sender, e) =
+    override __.Invoke (_, e) =
         let echo () =
             far.UI.WriteLine ((sprintf "fs:%s" e.Command), ConsoleColor.DarkGray)
 
@@ -22,19 +21,19 @@ type FarCommand () =
             if not (isNull r.Exception) then
                 writeException r.Exception
 
-        match parseCommand e.Command with
-        | Quit ->
+        match Command.parseCommand e.Command with
+        | Command.Quit ->
             match tryFindMainSession () with
             | Some s -> s.Close ()
             | _ -> far.UI.WriteLine "Not opened."
 
-        | Open args ->
+        | Command.Open args ->
             let ses = match args.With with | Some path -> Session.GetOrCreate path | _ -> getMainSession ()
             FarInteractive(ses).Open ()
 
-        | Code code ->
+        | Command.Code code ->
             echo ()
-            use std = new FarStdWriter ()
+            use _std = new FarStdWriter ()
             let ses = getMainSession ()
             use writer = new StringWriter ()
             let r = ses.EvalInteraction (writer, code)
@@ -42,7 +41,7 @@ type FarCommand () =
             far.UI.Write (writer.ToString ())
             writeResult r
 
-        | Exec args ->
+        | Command.Exec args ->
             use _std = new FarStdWriter ()
             let ses =
                 match args.With, args.File with
@@ -85,7 +84,7 @@ type FarCommand () =
             | _ ->
                 ()
 
-        | Compile args ->
+        | Command.Compile args ->
             use _progress = new Progress "Compiling..."
 
             let path =

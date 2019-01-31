@@ -100,7 +100,7 @@ Module commands start with two slashes after the prefix.
 ****
 #### `fs: //open [with = <config>]`
 
-Opens an interactive session with the specified or main configuration.
+Opens an interactive session with the specified or main configuration file.
 
 Sample file association:
 
@@ -197,13 +197,17 @@ The history keys:
 ***
 ## <a id="configuration"/> Configuration
 
-Each interactive session is associated with its configuration file path, existing or not.
-In the latter case, the path is just used as a session ID.
-
-Editor services look for configuration files `*.fs.ini` in source directories.
-If such a file is not found or there are many then the main configuration is used.
-
+Each interactive session is associated with its configuration file path.
+If the configuration is not specified then the main session file is used.
 The main configuration file is *%FARPROFILE%\FarNet\FSharpFar\main.fs.ini*.
+
+Editor services use configuration files `*.fs.ini` in source directories. If
+there is none then the main configuration file is used, otherwise the first
+file in alphabetical order is used.
+
+In commands with the configuration (e.g.`fs: //exec file=... with=...`) you may
+specify a directory instead of the file in `with=...`. For example, "." may be
+used as "the first `*.fs.ini` in the active panel directory".
 
 If you change configuration files then close affected sessions and editors or
 restart Far Manager. Otherwise the old cached configurations may be used.

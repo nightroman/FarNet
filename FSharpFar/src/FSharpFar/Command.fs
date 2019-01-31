@@ -52,25 +52,23 @@ let command name rest sb =
         invalidOp <| sprintf "Unknown command '%s'." name
 
 let parseCommand text =
-    let maCommand = reCommand.Match text
-    if not maCommand.Success then
-        if reQuit.IsMatch text then
-            Quit
-        else
-            Code text
+    let matchCommand = reCommand.Match text
+    if matchCommand.Success then
+        let commandName = matchCommand.Groups.[1].Value
+        let rest = matchCommand.Groups.[2].Value
+
+        let split = ";;"
+        let index = rest.IndexOf split
+        let part1, part2 = if index < 0 then rest, "" else rest.Substring (0, index), rest.Substring (index + split.Length)
+
+        let sb = DbConnectionStringBuilder ()
+        sb.ConnectionString <- part1
+
+        let r = command commandName part2 sb
+
+        if sb.Count > 0 then invalidOp <| sprintf "Unknown '%s' keys: %s" (r.GetType().Name.ToLower ()) (sb.ToString ())
+        r
+    elif reQuit.IsMatch text then
+        Quit
     else
-
-    let commandName = maCommand.Groups.[1].Value
-    let rest = maCommand.Groups.[2].Value
-
-    let split = ";;"
-    let index = rest.IndexOf split
-    let part1, part2 = if index < 0 then rest, "" else rest.Substring (0, index), rest.Substring (index + split.Length)
-
-    let sb = DbConnectionStringBuilder ()
-    sb.ConnectionString <- part1
-
-    let r = command commandName part2 sb
-
-    if sb.Count > 0 then invalidOp <| sprintf "Unknown '%s' keys: %s" (r.GetType().Name.ToLower ()) (sb.ToString ())
-    r
+        Code text

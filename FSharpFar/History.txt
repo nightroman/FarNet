@@ -3,6 +3,17 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.5048
 FarNet 5.2.18
 
+= 1.9.0 =
+
+FSharp.Compiler.Service (26.0.1) supports all F# 4.6 features, see
+https://blogs.msdn.microsoft.com/dotnet/2019/01/24/announcing-f-4-6-preview/
+Example: "samples\PowerShellFar\PanelObjects.fsx" uses anonymous records.
+
+Tidy up commands and logic with configurations. If a config file is specified
+then it must exist. If a directory is searched for config files then the first
+in alphabetical order is used. If there is none then either the main config is
+used or an error is thrown, depending on an operation.
+
 = 1.8.2 =
 
 - Requires FarNet 5.2.18

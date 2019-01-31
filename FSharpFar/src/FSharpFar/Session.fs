@@ -110,19 +110,24 @@ type Session private (configFile) =
         sessions |> List.tryFind (fun x -> x.IsSameConfigFile path)
 
     /// Gets the existing or creates a new session specified by the config path.
-    /// If the path is a directory then its config is used if any else the main.
+    /// If the path is a directory then its config is used if any else it fails.
     static member GetOrCreate path =
         let path =
-            if not (File.Exists path) && Directory.Exists path then
-                match tryConfigPathInDirectory path with
-                | Some path -> path
-                | None -> farMainConfigPath
-            else
+            if File.Exists path then
                 path
+            elif Directory.Exists path then
+                match tryConfigPathInDirectory path with
+                | Some path ->
+                    path
+                | None ->
+                    invalidOp <| sprintf "Cannot find the config file in '%s'." path
+            else
+                invalidOp <| sprintf "Cannot find the config file or directory '%s'." path
 
         match Session.TryFind path with
-        | Some s -> s
-        | _ ->
+        | Some ses ->
+            ses
+        | None ->
             sessions <- Session path :: sessions
             sessions.Head
 

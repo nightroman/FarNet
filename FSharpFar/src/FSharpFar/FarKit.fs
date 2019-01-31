@@ -11,8 +11,13 @@ let farLocalData = far.GetModuleManager("FSharpFar").GetFolderPath (SpecialFolde
 /// The roming module folder path.
 let farRoaminData = far.GetModuleManager("FSharpFar").GetFolderPath (SpecialFolder.RoamingData, true)
 
-/// The config file path used for the main session and as the default for services.
-let farMainConfigPath = Path.Combine (farRoaminData, "main.fs.ini")
+/// The main session config file path used as the default for services.
+/// A new empty file is created if it does not exist.
+let farMainConfigPath =
+    let path = Path.Combine (farRoaminData, "main.fs.ini")
+    if not (File.Exists path) then
+        File.WriteAllText (path, "")
+    path
 
 /// Default flags for checkers and sessions
 let defaultCompilerArgs =

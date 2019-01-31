@@ -10,10 +10,7 @@ type FarTool () =
     inherit ModuleTool ()
 
     let openProject () =
-        let path =
-            match Config.tryConfigPathInDirectory far.Panel.CurrentDirectory with
-            | Some path -> path
-            | None -> farMainConfigPath
+        let path = Config.getConfigPathInDirectory far.Panel.CurrentDirectory
         Config.generateProject path |> Process.Start |> ignore
 
     let showSessions () =

@@ -196,17 +196,21 @@ let rec private readConfigFromFileRec path parents : Config =
 let readConfigFromFile path =
     readConfigFromFileRec path (ref [ path ])
 
-/// Gets some config path in a directory.
+/// Tries to get the config file path in the specified directory.
+/// If there are many then the first in alphabetical order is used.
 let tryConfigPathInDirectory dir =
-    match Directory.GetFiles (dir, "*.fs.ini") with
-    | [| file |] ->
-        Some file
-    | _ ->
+    let files = Directory.GetFiles (dir, "*.fs.ini")
+    match files.Length with
+    | 1 ->
+        Some files.[0]
+    | 0 ->
         None
+    | _ ->
+        Array.Sort (files, StringComparer.OrdinalIgnoreCase)
+        Some files.[0]
 
-/// Gets the local or main config path for the file.
-let getConfigPathForFile path =
-    let dir = Path.GetDirectoryName path
+/// Get the local or main config file in the specified directory.
+let getConfigPathInDirectory dir =
     match tryConfigPathInDirectory dir with
     | Some file ->
         // local config
@@ -214,6 +218,10 @@ let getConfigPathForFile path =
     | None ->
         // main config
         farMainConfigPath
+
+/// Gets the local or main config path for the file.
+let getConfigPathForFile path =
+    getConfigPathInDirectory (Path.GetDirectoryName path)
 
 /// Gets the local or main config for the file.
 let getConfigForFile path =
