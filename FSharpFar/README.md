@@ -205,7 +205,7 @@ Editor services use configuration files `*.fs.ini` in source directories. If
 there is none then the main configuration file is used, otherwise the first
 file in alphabetical order is used.
 
-In commands with the configuration (e.g.`fs: //exec file=... with=...`) you may
+In commands with the configuration (e.g. `fs: //exec file=... with=...`) you may
 specify a directory instead of the file in `with=...`. For example, "." may be
 used as "the first `*.fs.ini` in the active panel directory".
 
@@ -216,73 +216,106 @@ The configuration file format is like "ini", with sections and options.
 Options are the same as for `fsc.exe` and `fsi.exe`, one per line.
 Empty lines and lines staring with `;` are ignored.
 
-**Available sections:**
+### Available sections
 
-**`[fsc]`** is the main section. It defines common [F# Compiler Options](https://docs.microsoft.com/en-us/dotnet/articles/fsharp/language-reference/compiler-options)
-and common source files. This section is often enough. Other sections may add extra or override defined options.
+#### `[fsc]`
 
-**`[fsi]`** defines [F# Interactive Options](https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/fsharp-interactive-options)
+This is the main section. It defines [F# Compiler Options](https://docs.microsoft.com/en-us/dotnet/articles/fsharp/language-reference/compiler-options)
+and source files. This section is often enough. Other sections may add extra or override defined options.
+
+The specified paths may be absolute and relative with or without environments
+`%variables%` expanded. Important: relative paths for `-r|--reference` must
+start with dots ("`.\`" or "`..\`"), otherwise they are treated as known
+assembly names like `-r:System.Management.Automation`.
+
+```ini
+[fsc]
+--warn:4
+--optimize-
+--debug:full
+--define:DEBUG
+--lib:%SOME_DIR%
+--lib:..\packages
+File1.fs
+File2.fs
+```
+
+#### `[fsi]`
+
+This section defines [F# Interactive Options](https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/fsharp-interactive-options)
 and source files used for interactive sessions and evaluating scripts.
 `--use` files are particularly useful for interactive sessions.
 Some *fsi.exe* options are not used.
 
-**`[etc]`** defines options for "Editor Tips and Checks", hence the name.
+```ini
+[fsi]
+--use:Interactive.fsx
+```
+
+#### `[etc]`
+
+This section defines options for "Editor Tips and Checks", hence the name.
 It is useful in some cases, e.g. `--define:DEBUG` is used in `[etc]` for
 tips and checks in `#if DEBUG` but `[fsi]` and `[out]` do not use DEBUG.
 
-**`[out]`** defines options for `fs: //compile`, like `-a|--target` and `-o|--out`.
+#### `[out]`
+
+This section defines options for `fs: //compile`, like `-a`, `--target`, `-o|--out`.
 It is not needed if you are not compiling assemblies.
 
-**`[use]`** defines other configuration files used in the current file, one per
+```ini
+; Build the class library MyLib.dll.
+[out]
+-a
+-o:MyLib.dll
+```
+
+#### `[use]`
+
+This section defines other configuration files used in the current file, one per
 line, using relative or absolute paths. Thus, the current session may be easily
 composed from existing "projects" with some additional settings and files.
+Example:
 
-**Preprocessing:**
+```ini
+; Use the main session configuration in this configuration.
+[use]
+%FARPROFILE%\FarNet\FSharpFar\main.fs.ini
+```
 
-- Environment variables defined as `%VARIABLE%` are expanded to their values.
+### Preprocessing
+
+The specified paths are preprocessed as follows:
+
+- Environment variables specified as `%VARIABLE%` are expanded to their values.
 - `__SOURCE_DIRECTORY__` is replaced with the configuration file directory.
-- Not rooted paths are relative to the configuration file directory.
+- Not rooted paths are treated as relative to the configuration directory.
 
-**Predefined:**
+### Predefined
+
+Some F# compiler settings are predefined:
 
 - `--lib` : *%FARHOME%*
 - `--reference` : *FarNet.dll*, *FarNet.Tools.dll*, *FarNet.FSharp.dll*, *FSharpFar.dll*
 
-**Important:**
+### Troubleshooting
 
-- Output options are specified in `[out`], not in `[fsc]`.
-- Interactive options are specified in `[fsi`], not in `[fsc]`.
+Mistakes in configurations cause session loading errors, unfortunately often
+without much useful information. Check your configuration files:
+
+- All the specified paths should be resolved to existing targets.
 - Relative `-r|--reference` paths must start with `.\` or `..\`.
+- Interactive options are specified in `[fsi]`, not in `[fsc]`.
+- Output options are specified in `[out]`, not in `[fsc]`.
 
-**Sample configuration:**
-
-```ini
-    [fsc]
-    --warn:4
-    --optimize-
-    --debug:full
-    --define:DEBUG
-    --lib:%SOME_DIR%
-    --lib:..\packages
-    File1.fs
-    File2.fs
-
-    [fsi]
-    --use:main.fsx
-
-    [out]
-    --target:library
-    --out:bin\MyLibrary.dll
-```
-
-**F# scripts and configurations**
+### F# scripts and configurations
 
 - Scripts, i.e. *.fsx* files, should not be added to configurations, except `--use` in `[fsi]`.
 - Scripts may use `#I`, `#r`, `#load` directives instead of or in addition to configurations.
 - Configurations understand environment variables, script directives do not.
 - Configurations may specify compiler options, scripts cannot do this.
 
-**Session source and use files**
+### Session source and use files
 
 Source and `--use` files are used in order to load the session for checks and interactive work.
 Output of invoked source and `--use` scripts is discarded, only errors and warnings are shown.

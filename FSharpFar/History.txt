@@ -3,6 +3,10 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.5048
 FarNet 5.2.18
 
+= 1.9.1 =
+
+FSharp.Core (4.6.1)
+
 = 1.9.0 =
 
 FSharp.Compiler.Service (26.0.1) supports all F# 4.6 features, see

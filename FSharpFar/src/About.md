@@ -1,5 +1,21 @@
+### F# 4.6
 
+- [blog about 4.6](https://blogs.msdn.microsoft.com/dotnet/2019/01/24/announcing-f-4-6-preview/)
+- [my reddit](https://www.reddit.com/r/fsharp/comments/ajj430/announcing_f_46_preview/)
+- [my FSCS issue](https://github.com/fsharp/FSharp.Compiler.Service/issues/884)
+
+***
+### FSharp.Core assembly and package versions
+
+Versions are different, 2019-02-02:
+
+- Assembly version is 4.6.0. This version must be in `Far.exe.config`.
+- Package version is 4.6.1 and it may change further.
+
+***
 ### FSharpFar.fs.ini and module FSharpFar.X
+
+UPDATE: We retired `Convert-Project.ps1`, so the problem is no more.
 
 If we use `Convert-Project.ps1` to make `FSharpFar.fs.ini` then
 some files works fine, some fail with
@@ -22,7 +38,6 @@ But it is legal and VS compiles.
 It looks like an FCS bug.
 
 ***
-
 ### Editor flow notes
 
 Why `post ... Open`. In modal windows `Open` blocks and the job code after
