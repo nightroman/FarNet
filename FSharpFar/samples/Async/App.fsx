@@ -68,7 +68,8 @@ async {
     do! TestFlowViewer.test
     do! TestModalCases.test
     do! TestModalEditorIssue.test
-    do! TestPanel.test
+    do! TestPanel01.test
+    do! TestPanel02.test
 
     // done
     do! job { far.UI.WriteLine __SOURCE_FILE__ }

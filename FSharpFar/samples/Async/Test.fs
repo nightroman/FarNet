@@ -21,7 +21,7 @@ let test predicate = async {
 /// Waits for some time until the predicate is true.
 /// Use it if the result readiness is not clear for `test`.
 let wait predicate = async {
-    let! ok = Job.Wait (delay, 200, 5000, predicate)
+    let! ok = Job.Wait (delay, 200, 9999, predicate)
     if not ok then failwithf "Timeout predicate %A" predicate
 }
 
@@ -62,6 +62,9 @@ let isMyPanel () =
 
 let isFarPanel () =
     far.Window.Kind = WindowKind.Panels && not far.Panel.IsPlugin
+
+let isModulePanel () =
+    far.Window.Kind = WindowKind.Panels && far.Panel :? Panel
 
 let showWideDialog () =
     far.Message "relatively_long_text_message_for_relatively_wide_dialog"

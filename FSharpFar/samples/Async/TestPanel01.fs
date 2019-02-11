@@ -1,8 +1,8 @@
 
-module TestPanel
+module TestPanel01
+open Test
 open FarNet
 open FarNet.FSharp
-open Test
 
 /// Not a panel test but related to panels.
 let testSkipModal = async {

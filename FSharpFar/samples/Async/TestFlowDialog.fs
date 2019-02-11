@@ -12,7 +12,7 @@ let flow = async {
     edit.Add "item2" |> ignore
 
     // flow
-    let! r = Job.FlowDialog dialog (fun args ->
+    let! r = Job.FlowDialog (dialog, fun args ->
         if isNull args.Control then
             None
         elif edit.Text = "" then

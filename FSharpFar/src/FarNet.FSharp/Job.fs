@@ -3,9 +3,12 @@ open System
 open FarNet
 open FarNet.Forms
 
-// We do not expose anything for steps because they are only needed for opening
-// panels and we provide such jobs. Also, steps are not easy to sync with jobs.
-// We may expose proper steps but users may start to use them for no reason.
+// We do not expose anything for posting steps because they are only needed for
+// opening panels. We provide jobs for opening panels. If we expose steps users
+// may start abusing them.
+// @1: Steps are not in sync with jobs, take care:
+// -- use Job.FromContinuations ... PostStep
+// -- use econt, not throw, or exn "leaks"
 
 [<Sealed>]
 type Job =
@@ -177,44 +180,6 @@ type Job =
         do! Job.Wait (0, 1000, 0, fun () -> not far.Window.IsModal) |> Async.Ignore
     }
 
-    /// Sets panels current or fails.
-    static member private EnsurePanels () =
-        if far.Window.Kind <> WindowKind.Panels then
-            try
-                far.Window.SetCurrentAt -1
-            with exn ->
-                raise (InvalidOperationException ("Cannot switch to panels.", exn))
-
-    /// Opens the panel.
-    static member OpenPanel (panel: Panel) = async {
-        //! in a separate job
-        do! Job.From Job.EnsurePanels
-        // open
-        do! Async.FromContinuations (fun (cont, econt, _) ->
-            far.PostStep (fun () ->
-                try
-                    panel.Open ()
-                    cont ()
-                with exn ->
-                    econt exn
-            )
-        )
-        // check
-        do! Async.FromContinuations (fun (cont, _, _) ->
-            far.PostStep (fun () ->
-                if far.Panel <> (upcast panel) then
-                    invalidOp "Panel is not opened."
-                cont ()
-            )
-        )
-    }
-
-    /// Opens the panel and waits for its closing.
-    static member FlowPanel (panel: Panel) = async {
-        do! Job.OpenPanel panel
-        do! Async.AwaitEvent panel.Closed |> Async.Ignore
-    }
-
     /// Opens the non modal dialog with the closing function.
     /// dialog: Dialog to open.
     /// closing: Function like Closing handler but with a result, normally an option:
@@ -225,7 +190,7 @@ type Job =
     ///         None
     ///     else // some result
     ///         Some ...
-    static member FlowDialog (dialog: IDialog) closing =
+    static member FlowDialog (dialog: IDialog, closing) =
         Job.FromContinuations (fun (cont, econt, _) ->
             dialog.Closing.Add (fun args ->
                 try
@@ -240,3 +205,110 @@ type Job =
             )
             dialog.Open ()
         )
+
+    /// Sets panels current or fails.
+    static member private EnsurePanels () =
+        if far.Window.Kind <> WindowKind.Panels then
+            try
+                far.Window.SetCurrentAt -1
+            with exn ->
+                raise (InvalidOperationException ("Cannot switch to panels.", exn))
+
+    /// Opens the panel and waits for its closing.
+    static member FlowPanel (panel: Panel) = async {
+        do! Job.OpenPanel panel
+        do! Job.WaitPanelClosed panel
+    }
+
+    /// Opens the specified panel.
+    static member OpenPanel (panel: Panel) = async {
+        //! in a separate job
+        do! Job.From Job.EnsurePanels
+        // open
+        do! Async.FromContinuations (fun (cont, econt, _) ->
+            far.PostStep (fun () ->
+                try
+                    panel.Open ()
+                    cont ()
+                with exn ->
+                    econt exn
+            )
+        )
+        // check (use PostStep and econt, @1)
+        do! Async.FromContinuations (fun (cont, econt, _) ->
+            far.PostStep (fun () ->
+                try
+                    if far.Panel <> upcast panel then
+                        invalidOp "OpenPanel did not open the panel."
+                    else
+                        cont ()
+                with exn ->
+                    econt exn
+            )
+        )
+    }
+
+    /// Calls the function which opens a panel and returns this panel.
+    static member OpenPanel (f) = async {
+        //! in a separate job
+        do! Job.From Job.EnsurePanels
+        // open
+        let mutable oldPanel = null
+        do! Async.FromContinuations (fun (cont, econt, _) ->
+            far.PostStep (fun () ->
+                oldPanel <- far.Panel
+                try
+                    f ()
+                    cont ()
+                with exn ->
+                    econt exn
+            )
+        )
+        // check (use PostStep and econt, @1) and return the new panel
+        return! Async.FromContinuations (fun (cont, econt, _) ->
+            far.PostStep (fun () ->
+                let newPanel = far.Panel
+                try
+                    match newPanel with
+                    | :? Panel as panel when newPanel <> oldPanel ->
+                        cont panel
+                    | _ ->
+                        invalidOp "OpenPanel did not open a module panel."
+                with exn ->
+                    econt exn
+            )
+        )
+    }
+
+    /// Waits for the specified panel to be closed.
+    /// Does nothing if the panel is not opened (already closed).
+    static member WaitPanelClosed (panel: Panel) = async {
+        let! wait = Job.From (fun () ->
+            if far.Panel <> upcast panel && far.Panel2 <> upcast panel then
+                None
+            else
+                Some (Async.AwaitEvent panel.Closed)
+        )
+        match wait with
+        | Some wait ->
+            do! wait |> Async.Ignore
+        | None ->
+            ()
+    }
+
+    /// Waits for the panel to be closed with the specified closing handler.
+    /// Returns the default if the panel is not opened (already closed).
+    /// Other return values are provided by the closing.
+    static member WaitPanelClosing (panel: Panel, closing: _ -> 'result) = async {
+        let mutable res = Unchecked.defaultof<'result>
+        panel.Closing.Add (fun args ->
+            try
+                let r = closing args
+                if not args.Ignore then
+                    res <- r
+            with exn ->
+                far.ShowError ("Closing function error", exn)
+        )
+        do! Job.WaitPanelClosed panel
+        return res
+    }

@@ -24,8 +24,7 @@ F# interactive, scripting, compiler, and editor services for Far Manager.
 
 **Credits**
 
-- FSharpFar is built and packaged with [F# Compiler Services](https://fsharp.github.io/FSharp.Compiler.Service/index.html).
-- Some solutions are learned and borrowed from [FsAutoComplete](https://github.com/fsharp/FsAutoComplete).
+- FSharpFar is based on [F# Compiler Services](https://fsharp.github.io/FSharp.Compiler.Service/index.html).
 
 ***
 ## Installation
