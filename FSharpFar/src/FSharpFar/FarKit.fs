@@ -19,6 +19,10 @@ let farMainConfigPath =
         File.WriteAllText (path, "")
     path
 
+/// Gets the internal current directory.
+let farCurrentDirectory () =
+    far.CurrentDirectory
+
 /// Default flags for checkers and sessions
 let defaultCompilerArgs =
     let dir = Environment.GetEnvironmentVariable "FARHOME"
@@ -85,24 +89,10 @@ type Progress (title) as this =
         far.UI.SetProgressState TaskbarProgressBarState.NoProgress
         far.UI.SetProgressFlash ()
 
-/// Gets the active file panel directory or None.
-let farTryPanelDirectory () =
-    let panel = far.Panel
-    if not (isNull panel) && panel.Kind = PanelKind.File && not panel.IsPlugin then
-        Some panel.CurrentDirectory
-    else
-        None
-
 /// Expands environment variables and makes the full path based on the active panel.
 let farResolvePath path =
-    let mutable path = Environment.ExpandEnvironmentVariables path
-    if not (Path.IsPathRooted path) then
-        match farTryPanelDirectory () with
-        | Some dir ->
-            path <- Path.Combine (dir, path)
-        | _ ->
-            ()
-    Path.GetFullPath path
+    let path = Environment.ExpandEnvironmentVariables path
+    Path.GetFullPath (if Path.IsPathRooted path then path else Path.Combine (far.CurrentDirectory, path))
 
 let writeException exn =
     far.UI.WriteLine (sprintf "%A" exn, ConsoleColor.Red)

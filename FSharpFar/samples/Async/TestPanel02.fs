@@ -1,44 +1,21 @@
-
+/// Demo/test Job functions for panels.
 module TestPanel02
 open Test
 open FarNet
 open FarNet.FSharp
 
-let flowOpenPanelFails = async {
-    do! Job.OpenPanel ignore |> Async.Ignore
-}
-let testOpenPanelFails = async {
-    Job.Start flowOpenPanelFails
-    do! wait isDialog
-    do! test (isDialogText 0 "InvalidOperationException")
-    do! test (isDialogText 1 "OpenPanel did not open a module panel.")
-    do! Job.Keys "Esc"
-    do! test isFarPanel
-}
-
-let flowWaitPanelClosed = async {
-    let! panel = Job.OpenPanel (fun () ->
-        PowerShellFar.invokeScript "1..3 | Out-FarPanel" null |> ignore
-    )
-    do! Job.WaitPanelClosed panel
-    do! job { far.Message "OK" }
-}
-let testWaitPanelClosed = async {
-    Job.Start flowWaitPanelClosed
-    do! wait isModulePanel
-    do! Job.Keys "Esc"
-    do! test (isDialogText 1 "OK")
-    do! Job.Keys "Esc"
-    do! test isFarPanel
-}
-
+/// Opens a panel with 3 items. After closing shows a message with selected items.
+/// fs: FarNet.FSharp.Job.Start TestPanel02.flowWaitPanelClosing
 let flowWaitPanelClosing = async {
+    // open the panel with 3 items
     let! panel = Job.OpenPanel (fun () ->
         PowerShellFar.invokeScript "11..13 | Out-FarPanel" null |> ignore
     )
+    // wait for closing with the function returning selected files
     let! r = Job.WaitPanelClosing (panel, fun _ ->
         panel.SelectedFiles
     )
+    // show the returned files
     do! job { far.Message (sprintf "%A" r) }
 }
 let testWaitPanelClosing = async {
@@ -50,8 +27,45 @@ let testWaitPanelClosing = async {
     do! test isFarPanel
 }
 
+/// Opens a panel with 3 items. After closing shows a message "OK".
+/// fs: FarNet.FSharp.Job.Start TestPanel02.flowWaitPanelClosed
+let flowWaitPanelClosed = async {
+    // open the panel with 3 items
+    let! panel = Job.OpenPanel (fun () ->
+        PowerShellFar.invokeScript "1..3 | Out-FarPanel" null |> ignore
+    )
+    // wait for closing
+    do! Job.WaitPanelClosed panel
+    // show OK
+    do! job { far.Message "OK" }
+}
+let testWaitPanelClosed = async {
+    Job.Start flowWaitPanelClosed
+    do! wait isModulePanel
+    do! Job.Keys "Esc"
+    do! test (isDialogText 1 "OK")
+    do! Job.Keys "Esc"
+    do! test isFarPanel
+}
+
+/// Fails to open a panel, for testing.
+/// fs: FarNet.FSharp.Job.Start TestPanel02.flowOpenPanelFails
+let flowOpenPanelFails = async {
+    // call OpenPanel with a function not opening a panel
+    do! Job.OpenPanel ignore |> Async.Ignore
+}
+let testOpenPanelFails = async {
+    Job.Start flowOpenPanelFails
+    do! wait isDialog
+    do! test (isDialogText 0 "InvalidOperationException")
+    do! test (isDialogText 1 "OpenPanel did not open a module panel.")
+    do! Job.Keys "Esc"
+    do! test isFarPanel
+}
+
+/// Tests.
 let test = async {
-    do! testOpenPanelFails
-    do! testWaitPanelClosed
     do! testWaitPanelClosing
+    do! testWaitPanelClosed
+    do! testOpenPanelFails
 }

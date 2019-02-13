@@ -3,9 +3,15 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.5048
 FarNet 5.2.18
 
-= 1.10.0 =
+= 1.9.2 =
 
-- Job.FlowDialog - change parameter form
+The default sessions / configurations are now used instead of the main.
+The main is still default for directories with no configuration files.
+
+API
+- Add more Job helper functions for panels.
+- Add demo in samples\Async\TestPanel02.fs.
+- Job.FlowDialog - change parameters style.
 
 = 1.9.1 =
 

@@ -169,8 +169,8 @@ type Session private (configFile) =
             //! SplitPipeline.SplitPipelineCommand. -> exn
             Seq.empty
 
-/// Gets or creates the main session.
-let getMainSession () = Session.GetOrCreate farMainConfigPath
+/// Gets or creates the root session.
+let getRootSession () = Session.GetOrCreate (getRootConfigPath ())
 
 /// Gets the main session or none.
-let tryFindMainSession () = Session.TryFind farMainConfigPath
+let tryRootSession () = Session.TryFind (getRootConfigPath ())

@@ -23,18 +23,21 @@ type FarCommand () =
 
         match Command.parseCommand e.Command with
         | Command.Quit ->
-            match tryFindMainSession () with
-            | Some s -> s.Close ()
-            | _ -> far.UI.WriteLine "Not opened."
+            match tryRootSession () with
+            | Some ses -> ses.Close ()
+            | None -> far.UI.WriteLine "The session is not opened."
 
         | Command.Open args ->
-            let ses = match args.With with | Some path -> Session.GetOrCreate path | _ -> getMainSession ()
+            let ses =
+                match args.With with
+                | Some path -> Session.GetOrCreate path
+                | _ -> getRootSession ()
             FarInteractive(ses).Open ()
 
         | Command.Code code ->
             echo ()
             use _std = new FarStdWriter ()
-            let ses = getMainSession ()
+            let ses = getRootSession ()
             use writer = new StringWriter ()
             let r = ses.EvalInteraction (writer, code)
 
@@ -43,11 +46,13 @@ type FarCommand () =
 
         | Command.Exec args ->
             use _std = new FarStdWriter ()
+
+            //! fs: //exec ;; TryPanelFSharp.run () // must pick up the root config
             let ses =
                 match args.With, args.File with
                 | Some configPath, _ -> configPath
                 | _, Some filePath -> getConfigPathForFile filePath
-                | _ -> farMainConfigPath
+                | _ -> getRootConfigPath ()
                 |> Session.GetOrCreate
 
             let echo =
@@ -91,15 +96,15 @@ type FarCommand () =
                 match args.With with
                 | Some path ->
                     path
-                | None -> 
-                    match farTryPanelDirectory () |> Option.bind tryConfigPathInDirectory with
+                | None ->
+                    match tryConfigPathInDirectory far.CurrentDirectory with
                     | Some path ->
                         path
                     | None ->
                         invalidOp "Cannot find configuration file."
-            
+
             let config = readConfigFromFile path
-            
+
             let errors, code = Checker.compile config |> Async.RunSynchronously
             if errors.Length > 0 then
                 use writer = new StringWriter ()

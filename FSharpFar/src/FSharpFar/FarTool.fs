@@ -9,9 +9,11 @@ open System.Diagnostics
 type FarTool () =
     inherit ModuleTool ()
 
+    let openSession () =
+        FarInteractive(getRootSession ()).Open ()
+
     let openProject () =
-        let path = Config.getConfigPathInDirectory far.Panel.CurrentDirectory
-        Config.generateProject path |> Process.Start |> ignore
+        Config.generateProject (Config.getRootConfigPath ()) |> Process.Start |> ignore
 
     let showSessions () =
         let menu = far.CreateListMenu (Title = "F# sessions", Bottom = "Enter, Del, F4", ShowAmpersands = true, UsualMargins = true)
@@ -42,7 +44,7 @@ type FarTool () =
         let menu = far.CreateMenu (Title = "F#")
         menu.ShowActions [
             // all menus
-            yield "&1. Interactive", (fun _ -> FarInteractive(getMainSession ()).Open ())
+            yield "&1. Interactive", openSession
             yield "&0. Sessions...", showSessions
             if e.From = ModuleToolOptions.Panels then
                 yield "&p. Project", openProject

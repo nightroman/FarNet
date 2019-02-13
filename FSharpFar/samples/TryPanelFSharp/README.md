@@ -18,11 +18,17 @@ The sample creates and opens a plugin panel with the following features
 
 **Using as a script**
 
-You can load `TryPanelFSharp.fs` in FSharpFar and open the panel:
+From this directory use these commands:
 
-````
-    fs: //exec file=TryPanelFSharp.fs ;; TryPanelFSharp.run ()
-````
+    fs: TryPanelFSharp.run ()
+    fs: //exec ;; TryPanelFSharp.run ()
+
+These commands are slightly different. The first is rather for development,
+with some interactive output. The second command omits the interactive info.
+
+From any directory use the command with the configuration:
+
+    fs: //exec with=...\TryPanelFSharp.ini ;; TryPanelFSharp.run ()
 
 **Using as a module**
 

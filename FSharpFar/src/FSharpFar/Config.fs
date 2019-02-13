@@ -219,6 +219,10 @@ let getConfigPathInDirectory dir =
         // main config
         farMainConfigPath
 
+/// Get the local or main config file in the specified directory.
+let getRootConfigPath () =
+    getConfigPathInDirectory (farCurrentDirectory ())
+
 /// Gets the local or main config path for the file.
 let getConfigPathForFile path =
     getConfigPathInDirectory (Path.GetDirectoryName path)
