@@ -8,7 +8,7 @@ NUGET
       System.Collections.Immutable (>= 1.5)
       System.Reflection.Metadata (>= 1.6)
       System.ValueTuple (>= 4.4)
-    FSharp.Core (4.6.1)
+    FSharp.Core (4.6.2)
     System.Collections.Immutable (1.5)
     System.Reflection.Metadata (1.6)
       System.Collections.Immutable (>= 1.5)

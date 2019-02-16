@@ -1,32 +1,37 @@
-
+/// Tests various errors in flows.
 module TestError
 open FarNet
 open FarNet.FSharp
-open Test
 
+/// Exception in a job function.
 let flowFuncError = async {
-    // with exception
     do! job { failwith "demo-error" }
-    failwith "unexpected"
+    Assert.Unexpected ()
 }
 let testFuncError = async {
     Job.StartImmediate flowFuncError
-    do! wait (fun () -> isDialog () && dt 0 = "Exception" && dt 1 = "demo-error")
+    do! Job.Wait (fun () ->
+        Window.IsDialog ()
+        && far.Dialog.[0].Text = "Exception"
+        && far.Dialog.[1].Text = "demo-error")
     do! Job.Keys "Esc"
-    do! test isFarPanel
+    do! job { Assert.NativePanel () }
 }
 
+/// Error due to an invalid macro.
 let flowMacroError = async {
-    // invalid macro
     do! Job.Macro "bar"
-    failwith "unexpected"
+    Assert.Unexpected ()
 }
 let testMacroError = async {
     Job.StartImmediate flowMacroError
-    do! wait (fun () -> isDialog () && dt 0 = "ArgumentException" && dt 3 = "Macro: bar" && dt 4 = "Parameter name: macro")
+    do! Job.Wait (fun () ->
+        Window.IsDialog ()
+        && far.Dialog.[0].Text = "ArgumentException"
+        && far.Dialog.[3].Text = "Macro: bar"
+        && far.Dialog.[4].Text = "Parameter name: macro")
     do! Job.Keys "Esc"
-    // done
-    do! test isFarPanel
+    do! job { Assert.NativePanel () }
 }
 
 let test = async {

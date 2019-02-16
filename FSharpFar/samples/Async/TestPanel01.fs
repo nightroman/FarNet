@@ -15,29 +15,29 @@ let testSkipModal = async {
         do! job { far.Message "done" }
     }
     |> Job.StartImmediate
-    do! test isWideDialog
+    do! job { Assert.True (isWideDialog ()) }
 
     // exit dialog -> trigger "done" after skipModal
     do! Job.Keys "Esc"
-    do! wait (fun () -> isDialog () && dt 1 = "done")
+    do! Job.Wait (fun () -> Window.IsDialog () && far.Dialog.[1].Text = "done")
 
     // exit dialog
     do! Job.Keys "Esc"
-    do! test isFarPanel
+    do! job { Assert.NativePanel () }
 }
 
 let testCannotOpenOnModal = async {
     // dialog
     Job.StartImmediateFrom showWideDialog
-    do! test isDialog
+    do! job { Assert.Dialog () }
 
     // try open panel from dialog -> error dialog
     Job.StartImmediate <| Job.OpenPanel (MyPanel.panel [])
-    do! wait (fun () -> isDialog () && dt 1 = "Cannot switch to panels.")
+    do! Job.Wait (fun () -> Window.IsDialog () && far.Dialog.[1].Text = "Cannot switch to panels.")
 
     // exit two dialogs
     do! Job.Keys "Esc Esc"
-    do! test isFarPanel
+    do! job { Assert.NativePanel () }
 }
 
 let testCanOpenFromEditor = async {
@@ -47,19 +47,22 @@ let testCanOpenFromEditor = async {
         editor.DisableHistory <- true
         editor.Open ()
     }
-    do! test isEditor
+    do! job { Assert.Editor () }
 
     // panel
     do! Job.OpenPanel (MyPanel.panel [])
-    do! test isMyPanel
+    do! job { Assert.True (isMyPanel ()) }
 
     // exit panel
     do! Job.Keys "Esc"
-    do! test isFarPanel
+    do! job { Assert.NativePanel () }
 
     // exit editor
     do! Job.Keys "F12 2 Esc"
-    do! test (fun () -> isFarPanel () && far.Window.Count = 2)
+    do! job {
+        Assert.NativePanel ()
+        Assert.Equal (2, far.Window.Count)
+    }
 }
 
 let test = async {

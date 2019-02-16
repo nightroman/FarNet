@@ -1,6 +1,5 @@
 /// Demo/test Job functions for panels.
 module TestPanel02
-open Test
 open FarNet
 open FarNet.FSharp
 
@@ -20,11 +19,14 @@ let flowWaitPanelClosing = async {
 }
 let testWaitPanelClosing = async {
     Job.Start flowWaitPanelClosing
-    do! wait isModulePanel
+    do! Job.Wait Window.IsModulePanel
     do! Job.Keys "Down Down Esc"
-    do! test (isDialogText 1 "seq [12]")
+    do! job {
+        Assert.Dialog ()
+        Assert.Equal ("seq [12]", far.Dialog.[1].Text)
+    }
     do! Job.Keys "Esc"
-    do! test isFarPanel
+    do! job { Assert.NativePanel () }
 }
 
 /// Opens a panel with 3 items. After closing shows a message "OK".
@@ -41,11 +43,14 @@ let flowWaitPanelClosed = async {
 }
 let testWaitPanelClosed = async {
     Job.Start flowWaitPanelClosed
-    do! wait isModulePanel
+    do! Job.Wait Window.IsModulePanel
     do! Job.Keys "Esc"
-    do! test (isDialogText 1 "OK")
+    do! job {
+        Assert.Dialog ()
+        Assert.Equal ("OK", far.Dialog.[1].Text)
+    }
     do! Job.Keys "Esc"
-    do! test isFarPanel
+    do! job { Assert.NativePanel () }
 }
 
 /// Fails to open a panel, for testing.
@@ -56,11 +61,13 @@ let flowOpenPanelFails = async {
 }
 let testOpenPanelFails = async {
     Job.Start flowOpenPanelFails
-    do! wait isDialog
-    do! test (isDialogText 0 "InvalidOperationException")
-    do! test (isDialogText 1 "OpenPanel did not open a module panel.")
+    do! Job.Wait Window.IsDialog
+    do! job {
+        Assert.Equal ("InvalidOperationException", far.Dialog.[0].Text)
+        Assert.Equal ("OpenPanel did not open a module panel.", far.Dialog.[1].Text)
+    }
     do! Job.Keys "Esc"
-    do! test isFarPanel
+    do! job { Assert.NativePanel () }
 }
 
 /// Tests.

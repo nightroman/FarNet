@@ -1,12 +1,11 @@
-
-/// Far API cannot be used from parallel threads directly.
-/// But F# job flows and Far synchronous jobs can do this.
-///
 /// This demo opens 3 dialogs and updates them in parallel.
 /// While they are working you can work too: try Esc, F12,
 /// switch to other windows, etc. To run for 10 seconds:
 ///
-/// fs: //exec file=Parallel.fs ;; FarNet.FSharp.Job.Start (Parallel.flow 10.)
+/// fs: //exec ;; FarNet.FSharp.Job.Start (Parallel.flow 10.)
+///
+/// Far API cannot be used from parallel threads directly.
+/// But F# job flows and Far synchronous jobs can do this.
 
 module Parallel
 open FarNet
@@ -14,8 +13,9 @@ open FarNet.FSharp
 open System
 open System.Diagnostics
 
+/// Non-modal dialog with some periodically updated data.
 let dialog x y seconds = async {
-    // open non modal dialog showing some number
+    // open the dialog showing some number
     let dialog = far.CreateDialog (x, y, x + 51, y + 2)
     let text = dialog.AddText (1, 1, 50, "0")
     do! Job.From dialog.Open
@@ -27,7 +27,7 @@ let dialog x y seconds = async {
         do! Async.Sleep (random.Next 20)
         do! job { text.Text <- string (int text.Text + 1) }
 
-    // close and return result
+    // close and return the result text
     return! job {
         let result = text.Text
         dialog.Close ()
@@ -35,7 +35,7 @@ let dialog x y seconds = async {
     }
 }
 
-/// Demo flow.
+/// Demo flow with 3 "parallel dialogs".
 let flow seconds = async {
     // start parallel dialogs and get results
     let! results =
@@ -56,14 +56,14 @@ open System.Text.RegularExpressions
 /// Auto test.
 let test = async {
     Async.Start (flow 1.)
-    do! wait (fun () -> isDialog () && dt 0 = "done")
+    do! Job.Wait (fun () -> Window.IsDialog () && far.Dialog.[0].Text = "done")
 
     do! job {
-        let text = dt 1
+        let text = far.Dialog.[1].Text
         let m = Regex.Match (text, "^\d+ \d+ \d+$")
-        if text = "0 0 0" || not m.Success then failwith "unexpected result"
+        Assert.True (m.Success && text <> "0 0 0")
     }
 
     do! Job.Keys "Esc"
-    do! test isFarPanel
+    do! job { Assert.NativePanel () }
 }

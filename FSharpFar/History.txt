@@ -3,6 +3,18 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.5048
 FarNet 5.2.18
 
+= 1.9.3 =
+
+New FarNet.FSharp.Assert methods for typical testing tasks. On failures they
+clearly show the locations in code, unlike often cryptic F# stack traces of
+usual exceptions.
+
+New FarNet.FSharp.Window methods, just helpers, no new functionality.
+
+Use new Assert and Window methods in tests in "samples".
+
+FSharp.Core (4.6.2)
+
 = 1.9.2 =
 
 The default sessions / configurations are now used instead of the main.

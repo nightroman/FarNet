@@ -15,7 +15,6 @@ $ProjectName = "$ModuleName.fsproj"
 
 task Init Meta, {
 	exec {paket.exe install}
-	Remove-Item paket-files
 }
 
 task Kill Clean, {

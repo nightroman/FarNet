@@ -1,5 +1,4 @@
-﻿
-// Simple panel used for by the sample wizard.
+﻿// Simple panel used by the sample wizard.
 
 module MyPanel
 open FarNet

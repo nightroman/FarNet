@@ -7,30 +7,32 @@ open Test
 let flow = async {
     // dialog
     Job.StartImmediateFrom showWideDialog
-    do! test isDialog
+    do! job { Assert.Dialog () }
 
     // editor with problems (cannot edit directory) over the dialog
     let editor = far.CreateEditor (FileName = __SOURCE_DIRECTORY__)
     editor.DisableHistory <- true
     do! Job.FlowEditor editor
-    failwith "unexpected"
+    Assert.Unexpected ()
 }
 
 let test = async {
     Job.StartImmediate flow
 
     // nasty Far message -> `wait`, not `test`
-    do! wait (fun () -> isDialog () && dt 1 = "It is impossible to edit the folder")
+    do! Job.Wait (fun () -> Window.IsDialog () && far.Dialog.[1].Text = "It is impossible to edit the folder")
     do! Job.Keys "Esc"
 
     // posted FarNet error
-    do! test (isDialogText 0 "InvalidOperationException")
+    do! job {
+        Assert.Dialog ()
+        Assert.Equal ("InvalidOperationException", far.Dialog.[0].Text)
+    }
     do! Job.Keys "Esc"
 
     // dialog before editor
-    do! test isWideDialog
+    do! job { Assert.True (isWideDialog ()) }
     do! Job.Keys "Esc"
 
-    // done
-    do! test isFarPanel
+    do! job { Assert.NativePanel () }
 }

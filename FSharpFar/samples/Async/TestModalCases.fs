@@ -7,27 +7,27 @@ open Test
 let testDialogOverDialog = async {
     // dialog 1
     Job.StartImmediateFrom showWideDialog
-    do! test isWideDialog
+    do! job { Assert.True (isWideDialog ()) }
 
     // dialog 2 on top of 1
-    job { far.Message "testDialogOverDialog" }
-    |> Job.StartImmediate
-    do! test (isDialogText 1 "testDialogOverDialog")
+    Job.StartImmediate (job { far.Message "testDialogOverDialog" })
+    do! job {
+        Assert.Dialog ()
+        Assert.Equal ("testDialogOverDialog", far.Dialog.[1].Text)
+    }
     do! Job.Keys "Esc"
 
     // dialog 1
-    do! test isWideDialog
+    do! job { Assert.True (isWideDialog ()) }
     do! Job.Keys "Esc"
 
-    // done
-    do! test isFarPanel
+    do! job { Assert.NativePanel () }
 }
 
 let testEditorOverDialog = async {
     // dialog
-    job { far.Message "testEditorOverDialog" }
-    |> Job.StartImmediate
-    do! test isDialog
+    Job.StartImmediate (job { far.Message "testEditorOverDialog" })
+    do! job { Assert.Dialog () }
 
     // editor
     job {
@@ -36,15 +36,14 @@ let testEditorOverDialog = async {
         editor.Open ()
     }
     |> Job.StartImmediate
-    do! test isEditor
+    do! job { Assert.Editor () }
     do! Job.Keys "Esc"
 
     // dialog
-    do! test isDialog
+    do! job { Assert.Dialog () }
     do! Job.Keys "Esc"
 
-    // done
-    do! test isFarPanel
+    do! job { Assert.NativePanel () }
 }
 
 let test = async {

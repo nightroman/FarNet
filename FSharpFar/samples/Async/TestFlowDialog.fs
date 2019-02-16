@@ -2,7 +2,6 @@
 module TestFlowDialog
 open FarNet
 open FarNet.FSharp
-open Test
 
 let flow = async {
     // dialog
@@ -32,30 +31,39 @@ let flow = async {
 
 let testEmpty = async {
     Job.StartImmediate flow
-    do! test isDialog
+    do! job { Assert.Dialog () }
 
     // enter empty text
     do! Job.Keys "Enter"
-    do! test (isDialogText 0 "")
+    do! job {
+        Assert.Dialog ()
+        Assert.Equal ("", far.Dialog.[0].Text)
+    }
 
     // cancel
     do! Job.Keys "Esc"
-    do! test (isDialogText 1 "cancel")
+    do! job {
+        Assert.Dialog ()
+        Assert.Equal ("cancel", far.Dialog.[1].Text)
+    }
 
     do! Job.Keys "Esc"
-    do! test isFarPanel
+    do! job { Assert.NativePanel () }
 }
 
 let testItem1 = async {
     Job.StartImmediate flow
-    do! test isDialog
+    do! job { Assert.Dialog () }
 
     // enter the first item from the list
     do! Job.Keys "CtrlDown Enter Enter"
-    do! test (isDialogText 1 "item1")
+    do! job {
+        Assert.Dialog ()
+        Assert.Equal ("item1", far.Dialog.[1].Text)
+    }
 
     do! Job.Keys "Esc"
-    do! test isFarPanel
+    do! job { Assert.NativePanel () }
 }
 
 let test = async {

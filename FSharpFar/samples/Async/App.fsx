@@ -1,56 +1,58 @@
-
 // Tests the main demo flow and other test scenarios.
 // Testing is done by flows concurrent with samples.
 
+open Test
 open FarNet
 open FarNet.FSharp
-open Test
 open App
 
 /// Test the sample wizard flow.
 let testWizard = async {
     Job.StartImmediate flowWizard
-    do! test isWizard
+    do! job { Assert.True (isWizard ()) }
 
     // open editor
     do! Job.Keys "E"
-    do! test isEditor
+    do! job { Assert.Editor () }
 
     // go to panels
     do! Job.Keys "F12 1"
-    do! test isFarPanel
+    do! job { Assert.NativePanel () }
 
     // go to editor
     do! Job.Keys "F12 2"
-    do! test isEditor
+    do! job { Assert.Editor () }
 
     // exit editor
     do! Job.Keys "Esc"
-    do! test isWizard
+    do! job { Assert.True (isWizard ()) }
 
     // open my panel
     do! Job.Keys "P"
-    do! test isMyPanel
+    do! job { Assert.True (isMyPanel ()) }
 
     // go to another
     do! Job.Keys "Tab"
-    do! test isFarPanel
+    do! job { Assert.NativePanel () }
 
     // go back to mine
     do! Job.Keys "Tab"
-    do! test isMyPanel
+    do! job { Assert.True (isMyPanel ()) }
 
     // exit panel
     do! Job.Keys "Esc"
-    do! test isWizard
+    do! job { Assert.True (isWizard ()) }
 
     // OK
     do! Job.Keys "Enter"
-    do! test isDone
+    do! job {
+        Assert.Dialog ()
+        Assert.Equal ("Done", far.Dialog.[0].Text)
+    }
 
     // done
     do! Job.Keys "Esc"
-    do! test isFarPanel
+    do! job { Assert.NativePanel () }
 }
 
 /// This flow starts the sample flow several times with concurrent testing

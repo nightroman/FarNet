@@ -87,6 +87,7 @@ F# directives:
 
 ```
 fs: #load @"C:\Scripts\FSharp\Script1.fsx"
+fs: #time "on"
 fs: #help
 ```
 

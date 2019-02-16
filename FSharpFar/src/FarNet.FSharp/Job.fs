@@ -1,7 +1,9 @@
 namespace FarNet.FSharp
-open System
 open FarNet
 open FarNet.Forms
+open System
+open System.Diagnostics
+open System.Runtime.CompilerServices
 
 // We do not expose anything for posting steps because they are only needed for
 // opening panels. We provide jobs for opening panels. If we expose steps users
@@ -102,10 +104,10 @@ type Job =
             ccont (OperationCanceledException ())
         )
 
-    /// Waits for the predicate is true.
-    /// delay: Time to sleep before the first check.
-    /// sleep: Time to sleep after the predicate is false.
-    /// timeout: Maximum waiting time, non positive ~ infinite.
+    /// Waits for the predicate returning true.
+    /// delay: Milliseconds to sleep before the first check.
+    /// sleep: Milliseconds to sleep after the predicate returning false.
+    /// timeout: Maximum waiting time in milliseconds, non positive ~ infinite.
     static member Wait (delay, sleep, timeout, predicate) = async {
         let timeout = if timeout > 0 then timeout else Int32.MaxValue
         let jobPredicate = Job.From predicate
@@ -114,15 +116,21 @@ type Job =
             do! Async.Sleep delay
 
         let mutable ok = false
-        let mutable elapsed = 0
-        while not ok && elapsed < timeout do
+        let sw = Stopwatch.StartNew ()
+        while not ok && int sw.ElapsedMilliseconds < timeout do
             let! r = jobPredicate
             ok <- r
-            if not ok then
+            if not ok && sleep > 0 then
                 do! Async.Sleep sleep
-                elapsed <- elapsed + sleep
 
         return ok
+    }
+
+    /// Waits for a few seconds for the predicate returning true and fails if it always gets false.
+    static member Wait (predicate, [<CallerFilePath>]?path, [<CallerLineNumber>]?line) = async {
+        let! ok = Job.Wait (200, 200, 5000, predicate)
+        if not ok then
+            Assert.Fail ("Timeout", ?path=path, ?line=line)
     }
 
     /// Opens the editor and waits for its closing.
