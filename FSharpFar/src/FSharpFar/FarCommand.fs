@@ -1,11 +1,9 @@
 ﻿namespace FSharpFar
 open FarNet
-open Session
 open System
 open System.IO
 open FarStdWriter
 open FarInteractive
-open Config
 
 [<System.Runtime.InteropServices.Guid "2b52615b-ea79-46e4-ac9d-78f33599db62">]
 [<ModuleCommand (Name = "FSharpFar", Prefix = "fs")>]
@@ -17,13 +15,13 @@ type FarCommand () =
 
         let writeResult r =
             for w in r.Warnings do
-                far.UI.WriteLine (strErrorFull w, ConsoleColor.Yellow)
+                far.UI.WriteLine (FSharpErrorInfo.strErrorFull w, ConsoleColor.Yellow)
             if not (isNull r.Exception) then
                 writeException r.Exception
 
-        match Command.parseCommand e.Command with
+        match Command.parse e.Command with
         | Command.Quit ->
-            match tryRootSession () with
+            match Session.TryDefaultSession () with
             | Some ses -> ses.Close ()
             | None -> far.UI.WriteLine "The session is not opened."
 
@@ -31,13 +29,13 @@ type FarCommand () =
             let ses =
                 match args.With with
                 | Some path -> Session.GetOrCreate path
-                | _ -> getRootSession ()
+                | _ -> Session.DefaultSession ()
             FarInteractive(ses).Open ()
 
         | Command.Code code ->
             echo ()
             use _std = new FarStdWriter ()
-            let ses = getRootSession ()
+            let ses = Session.DefaultSession ()
             use writer = new StringWriter ()
             let r = ses.EvalInteraction (writer, code)
 
@@ -51,8 +49,8 @@ type FarCommand () =
             let ses =
                 match args.With, args.File with
                 | Some configPath, _ -> configPath
-                | _, Some filePath -> getConfigPathForFile filePath
-                | _ -> getRootConfigPath ()
+                | _, Some filePath -> Config.defaultFileForFile filePath
+                | _ -> Config.defaultFile ()
                 |> Session.GetOrCreate
 
             let echo =
@@ -97,18 +95,18 @@ type FarCommand () =
                 | Some path ->
                     path
                 | None ->
-                    match tryConfigPathInDirectory far.CurrentDirectory with
+                    match Config.tryFindFileInDirectory far.CurrentDirectory with
                     | Some path ->
                         path
                     | None ->
                         invalidOp "Cannot find configuration file."
 
-            let config = readConfigFromFile path
+            let config = Config.readFromFile path
 
             let errors, code = Checker.compile config |> Async.RunSynchronously
             if errors.Length > 0 then
                 use writer = new StringWriter ()
                 for error in errors do
-                    writer.WriteLine (strErrorLine error)
+                    writer.WriteLine (FSharpErrorInfo.strErrorLine error)
                 showTempText (writer.ToString ()) "Errors"
             ()

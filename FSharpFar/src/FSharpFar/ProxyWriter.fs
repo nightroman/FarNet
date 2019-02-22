@@ -1,10 +1,10 @@
-﻿module FSharpFar.ProxyWriter
+﻿namespace FSharpFar
 open System.IO
 
 type ProxyWriter (writer: TextWriter) =
     inherit TextWriter ()
-    let mutable _writer = writer
-    override x.Encoding = _writer.Encoding
-    override x.Write (value: char) = _writer.Write value
-    override x.Write (value: string) = _writer.Write value
-    member x.Writer with get () = _writer and set v = _writer <- v
+    let mutable writer = writer
+    override __.Encoding = writer.Encoding
+    override __.Write (value: char) = writer.Write value
+    override __.Write (value: string) = writer.Write value
+    member __.Writer with get () = writer and set value = writer <- value

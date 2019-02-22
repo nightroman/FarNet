@@ -1,57 +1,52 @@
-﻿module FSharpFar.Command
+﻿[<RequireQualifiedAccess>]
+module FSharpFar.Command
 open System
 open System.Data.Common
 open System.Text.RegularExpressions
 
-let reCommand = Regex @"^\s*//(\w+)\s*(.*)"
-let reQuit = Regex @"^\s*#quit\b"
-
-type OpenArgs = {With : string option}
-type ExecArgs = {File : string option; With : string option; Code : string option}
-
-type Command =
+type Data =
     | Quit
     | Code of string
     | Open of OpenArgs
     | Exec of ExecArgs
     | Compile of OpenArgs
+and OpenArgs =
+    { With : string option }
+and ExecArgs =
+    { With : string option; File : string option; Code : string option }
 
-let popString key (sb: DbConnectionStringBuilder) =
-    let is, it = sb.TryGetValue key
-    if is then
+let private tryPopString key (sb: DbConnectionStringBuilder) =
+    match sb.TryGetValue key with 
+    | true, value ->
         sb.Remove key |> ignore
-        it :?> string
-    else
-        invalidOp (sprintf "Missing mandatory key '%s'." key)
-
-let popStringOpt key (sb: DbConnectionStringBuilder) =
-    let is, it = sb.TryGetValue key
-    if is then
-        sb.Remove key |> ignore
-        Some (it :?> string)
-    else
+        Some (value :?> string)
+    | _ ->
         None
 
-let command name rest sb =
+let private command name rest sb =
     match name with
     | "open" ->
         Open {
-            With = popStringOpt "with" sb |> Option.map farResolvePath
+            With = tryPopString "with" sb |> Option.map farResolvePath
         }
     | "exec" ->
         Exec {
-            File = popStringOpt "file" sb |> Option.map farResolvePath
-            With = popStringOpt "with" sb |> Option.map farResolvePath
+            With = tryPopString "with" sb |> Option.map farResolvePath
+            File = tryPopString "file" sb |> Option.map farResolvePath
             Code = if String.IsNullOrWhiteSpace rest then None else Some rest
         }
     | "compile" ->
         Compile {
-            With = popStringOpt "with" sb |> Option.map farResolvePath
+            With = tryPopString "with" sb |> Option.map farResolvePath
         }
     | _ ->
         invalidOp <| sprintf "Unknown command '%s'." name
 
-let parseCommand text =
+let private reCommand = Regex @"^\s*//(\w+)\s*(.*)"
+let private reQuit = Regex @"^\s*#quit\b"
+
+/// Parses the module command "fs:".
+let parse text =
     let matchCommand = reCommand.Match text
     if matchCommand.Success then
         let commandName = matchCommand.Groups.[1].Value

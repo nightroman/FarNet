@@ -1,7 +1,6 @@
-﻿module FSharpFar.Checker
-open System
+﻿[<RequireQualifiedAccess>]
+module FSharpFar.Checker
 open System.IO
-open Config
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
 [<NoComparison>]
@@ -72,12 +71,12 @@ let check file text config = async {
     }
 }
 
-let compile (config: Config) = async {
+let compile config = async {
     // assert output is set
     let hasOutOption = config.OutArgs |> List.exists (fun x -> x.StartsWith "-o:" || x.StartsWith "--out:")
     if not hasOutOption then invalidOp "Configuration must have [out] {-o|--out}:<output exe or dll>."
 
-    // combine options    
+    // combine options
     let args = [|
         yield "fsc.exe"
         yield! defaultCompilerArgs

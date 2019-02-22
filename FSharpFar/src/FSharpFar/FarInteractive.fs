@@ -1,8 +1,6 @@
 ﻿module FSharpFar.FarInteractive
 open FarNet
 open FarNet.Tools
-open Command
-open Session
 open System
 open System.IO
 
@@ -17,14 +15,13 @@ type FarInteractive(session: Session) =
     let session = session
 
     override x.Invoke (code, area) =
-        // one line with a command; for now do #quit and ignore others
-        if area.FirstLineIndex = area.LastLineIndex && (match parseCommand code with Quit -> true | _ -> false) then
+        if area.FirstLineIndex = area.LastLineIndex && (match Command.parse code with Command.Quit -> true | _ -> false) then
+            // one line with a command, for now do #quit and ignore others
             session.Close ()
-
-        // eval code
         else
-        let writer = x.Editor.OpenWriter ()
-        doEval writer (fun _ -> session.EvalInteraction (writer, code))
+            // eval code
+            let writer = x.Editor.OpenWriter ()
+            Session.Eval (writer, fun () -> session.EvalInteraction (writer, code))
 
     override x.KeyPressed key =
         match key.VirtualKeyCode with

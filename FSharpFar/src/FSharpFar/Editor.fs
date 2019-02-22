@@ -1,7 +1,5 @@
 ﻿module FSharpFar.Editor
 open FarNet
-open Config
-open Session
 open System
 open System.IO
 open Microsoft.FSharp.Compiler.SourceCodeServices
@@ -11,7 +9,7 @@ let load (editor: IEditor) =
     editor.Save ()
 
     let file = editor.FileName
-    let ses = Session.GetOrCreate (getConfigPathForFile file)
+    let ses = Session.GetOrCreate (Config.defaultFileForFile file)
     let temp = far.TempName "F#"
 
     do
@@ -22,7 +20,7 @@ let load (editor: IEditor) =
             writer.Write ses.Errors
 
         // eval anyway, session errors may be warnings
-        doEval writer (fun _ -> ses.EvalScript (writer, file))
+        Session.Eval (writer, fun () -> ses.EvalScript (writer, file))
 
     showTempFile temp "F# Output"
 
@@ -33,7 +31,7 @@ let showErrors (editor: IEditor) =
 
     let menu = far.CreateListMenu (Title = "F# errors", ShowAmpersands = true, UsualMargins = true, IncrementalOptions = PatternOptions.Substring)
 
-    errors |> menu.ShowItems strErrorLine (fun error ->
+    errors |> menu.ShowItems FSharpErrorInfo.strErrorLine (fun error ->
         editor.GoTo (error.StartColumn, error.StartLineAlternate - 1)
         editor.Redraw ()
     )

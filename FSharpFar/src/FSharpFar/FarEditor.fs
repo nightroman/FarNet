@@ -1,7 +1,6 @@
 ﻿namespace FSharpFar
 open FarNet
 open FarNet.FSharp
-open Session
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open System
 
@@ -73,7 +72,7 @@ type FarEditor () =
                             it.Index <= err.EndLineAlternate - 1 &&
                             (it.Index > err.StartLineAlternate - 1 || it.Column >= err.StartColumn) &&
                             (it.Index < err.EndLineAlternate - 1 || it.Column <= err.EndColumn))
-                        |> Array.map strErrorText
+                        |> Array.map FSharpErrorInfo.strErrorText
                         |> Array.distinct
                     if lines.Length > 0 then
                         autoTips <- false

@@ -1,6 +1,5 @@
 ﻿namespace FSharpFar
 open FarNet
-open Session
 open FarInteractive
 open System.Diagnostics
 
@@ -10,10 +9,10 @@ type FarTool () =
     inherit ModuleTool ()
 
     let openSession () =
-        FarInteractive(getRootSession ()).Open ()
+        FarInteractive(Session.DefaultSession ()).Open ()
 
     let openProject () =
-        Config.generateProject (Config.getRootConfigPath ()) |> Process.Start |> ignore
+        Config.generateProject (Config.defaultFile ()) |> Process.Start |> ignore
 
     let showSessions () =
         let menu = far.CreateListMenu (Title = "F# sessions", Bottom = "Enter, Del, F4", ShowAmpersands = true, UsualMargins = true)

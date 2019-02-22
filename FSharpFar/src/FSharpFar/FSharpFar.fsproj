@@ -17,11 +17,13 @@
     <Compile Include="ProxyWriter.fs" />
     <Compile Include="Kit.fs" />
     <Compile Include="FarKit.fs" />
+    <Compile Include="Progress.fs" />
     <Compile Include="Command.fs" />
     <Compile Include="Config.fs" />
     <Compile Include="Session.fs" />
     <Compile Include="Checker.fs" />
-    <Compile Include="FarModule.fs" />
+    <Compile Include="IAnyMenuExt.fs" />
+    <Compile Include="IEditorExt.fs" />
     <Compile Include="Settings.fs" />
     <Compile Include="FarErrorDrawer.fs" />
     <Compile Include="Tips.fs" />
