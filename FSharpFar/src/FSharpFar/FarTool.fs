@@ -3,8 +3,8 @@ open FarNet
 open FarInteractive
 open System.Diagnostics
 
-[<System.Runtime.InteropServices.Guid "65bd5625-769a-4253-8fde-ffcc3f72489d">]
 [<ModuleTool (Name = "FSharpFar", Options = ModuleToolOptions.F11Menus)>]
+[<Guid "65bd5625-769a-4253-8fde-ffcc3f72489d">]
 type FarTool () =
     inherit ModuleTool ()
 

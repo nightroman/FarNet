@@ -40,8 +40,8 @@ type MyPanel (explorer) =
 let run () = MyPanel(MyExplorer()).Open()
 
 /// The plugin menu item (used for a module).
-[<System.Runtime.InteropServices.Guid "d6765565-4c52-4877-aac6-3db3e0c88b62">]
 [<ModuleTool (Name = "TryPanelFSharp", Options = ModuleToolOptions.Panels)>]
+[<Guid "d6765565-4c52-4877-aac6-3db3e0c88b62">]
 type MyTool () =
     inherit ModuleTool ()
     override x.Invoke (_, _) = MyPanel(MyExplorer()).Open ()

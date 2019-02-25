@@ -60,6 +60,7 @@ let testWizard = async {
 async {
     // Far windows must be closed
     do! job { if far.Window.Count <> 2 then failwith "Close all windows." }
+    let sw = System.Diagnostics.Stopwatch.StartNew ()
 
     // test
     do! testWizard
@@ -74,6 +75,6 @@ async {
     do! TestPanel02.test
 
     // done
-    do! job { far.UI.WriteLine __SOURCE_FILE__ }
+    do! job { far.UI.WriteLine (sprintf "%s %O" __SOURCE_FILE__ sw.Elapsed) }
 }
 |> Job.StartImmediate

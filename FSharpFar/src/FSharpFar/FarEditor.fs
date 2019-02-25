@@ -14,8 +14,8 @@ type MouseMessage =
 | Noop
 | Move of LineArgs
 
-[<System.Runtime.InteropServices.Guid "B7916B53-2C17-4086-8F13-5FFCF0D82900">]
 [<ModuleEditor (Name = "FSharpFar", Mask = "*.fs;*.fsx;*.fsscript")>]
+[<Guid "B7916B53-2C17-4086-8F13-5FFCF0D82900">]
 type FarEditor () =
     inherit ModuleEditor ()
     let mutable editor: IEditor = null

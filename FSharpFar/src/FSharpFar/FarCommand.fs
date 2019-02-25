@@ -5,8 +5,8 @@ open System.IO
 open FarStdWriter
 open FarInteractive
 
-[<System.Runtime.InteropServices.Guid "2b52615b-ea79-46e4-ac9d-78f33599db62">]
 [<ModuleCommand (Name = "FSharpFar", Prefix = "fs")>]
+[<Guid "2b52615b-ea79-46e4-ac9d-78f33599db62">]
 type FarCommand () =
     inherit ModuleCommand ()
     override __.Invoke (_, e) =

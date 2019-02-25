@@ -14,7 +14,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Utility.fs" />
+    <Compile Include="Works.fs" />
     <Compile Include="Assert.fs" />
     <Compile Include="Window.fs" />
     <Compile Include="Job.fs" />
