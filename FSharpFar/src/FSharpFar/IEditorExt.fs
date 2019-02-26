@@ -2,7 +2,7 @@
 module FSharpFar.IEditorExt
 open FarNet
 open System.IO
-open Microsoft.FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler.SourceCodeServices
 
 module private Key =
     let config = "F# config"

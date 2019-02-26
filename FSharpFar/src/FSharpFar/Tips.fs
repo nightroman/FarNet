@@ -3,7 +3,7 @@ module FSharpFar.Tips
 open System
 open System.IO
 open System.Xml
-open Microsoft.FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler.SourceCodeServices
 
 let private trimTip =
     let chars = [| '\r'; '\n' |]

@@ -2,8 +2,8 @@
 open FarNet
 open System
 open System.IO
-open Microsoft.FSharp.Compiler.SourceCodeServices
-open Microsoft.FSharp.Compiler
+open FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler
 
 let load (editor: IEditor) =
     editor.Save ()

@@ -1,7 +1,7 @@
 ﻿namespace FSharpFar
 open FarNet
 open FarNet.FSharp
-open Microsoft.FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler.SourceCodeServices
 open System
 
 type LineArgs = {

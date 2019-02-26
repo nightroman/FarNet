@@ -15,7 +15,7 @@ open FarNet.FSharp
 
 // The fsi object, F# compiler settings
 #r @"FarNet\Modules\FSharpFar\FSharp.Compiler.Service.dll"
-let fsi = Microsoft.FSharp.Compiler.Interactive.Shell.Settings.fsi
+let fsi = FSharp.Compiler.Interactive.Shell.Settings.fsi
 
 // The psf object, PowerShellFar
 let psf = (PowerShellFar.invokeScript "$Psf" null).[0]

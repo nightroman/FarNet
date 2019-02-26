@@ -77,7 +77,7 @@ In theory, we can make `fsi` available for scripts as
 [<AutoOpen>]
 module FSharpFarUtility
 /// Interactive settings.
-let fsi = Microsoft.FSharp.Compiler.Interactive.Shell.Settings.fsi
+let fsi = FSharp.Compiler.Interactive.Shell.Settings.fsi
 ```
 
 but this requires the reference to *FSharp.Compiler.Service*.

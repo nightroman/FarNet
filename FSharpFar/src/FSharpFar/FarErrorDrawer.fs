@@ -1,6 +1,6 @@
 ﻿namespace FSharpFar
 open FarNet
-open Microsoft.FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler.SourceCodeServices
 
 [<ModuleDrawer (Name = "F# errors", Mask = "*.fs;*.fsx;*.fsscript")>]
 [<Guid "D122FBB8-26FA-4873-8245-A617CE200BCF">]

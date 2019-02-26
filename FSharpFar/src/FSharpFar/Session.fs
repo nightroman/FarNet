@@ -1,8 +1,8 @@
 ﻿namespace FSharpFar
 open System
 open System.IO
-open Microsoft.FSharp.Compiler.Interactive.Shell
-open Microsoft.FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler.Interactive.Shell
+open FSharp.Compiler.SourceCodeServices
 
 [<NoComparison>]
 type EvalResult = {

@@ -3,7 +3,7 @@ COPY-LOCAL: FALSE
 RESTRICTION: == net45
 NUGET
   remote: https://www.nuget.org/api/v2
-    FSharp.Compiler.Service (26.0.1)
+    FSharp.Compiler.Service (27.0.1)
       FSharp.Core (>= 4.5.2)
       System.Collections.Immutable (>= 1.5)
       System.Reflection.Metadata (>= 1.6)
