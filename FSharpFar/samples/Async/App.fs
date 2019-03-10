@@ -31,9 +31,8 @@ let jobEditText text title = async {
 let flowWizard = async {
     let text = ref "Edit this text in non-modal editor.\nThe wizard continues when you exit."
     let loop = ref true
-    while !loop do
-        let! answer = jobAsk !text "Wizard" [| "&OK"; "&Editor"; "&Panel"; "&Cancel" |]
-        match answer with
+    while loop.Value do
+        match! jobAsk !text "Wizard" [| "&OK"; "&Editor"; "&Panel"; "&Cancel" |] with
         | 0 ->
             // [OK] - close the wizard and show the final message
             do! job { far.Message (!text, "Done") }

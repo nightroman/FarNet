@@ -3,7 +3,7 @@ open System
 open System.Configuration
 open FarNet.Settings
 
-[<SettingsProvider(typedefof<ModuleSettingsProvider>)>]
+[<SettingsProvider(typeof<ModuleSettingsProvider>)>]
 type Settings () =
     inherit ModuleSettings ()
     static member Default = Settings ()

@@ -33,10 +33,9 @@ type Job =
         Job.PostJob (fun () -> far.ShowError (exn.GetType().Name, exn))
 
     static member private CatchShowError job = async {
-        let! res = Async.Catch job
-        match res with
-        | Choice1Of2 _ -> ()
+        match! Async.Catch job with
         | Choice2Of2 exn -> Job.PostShowError exn
+        | _ -> ()
     }
 
     /// Starts the job by Async.Start with exceptions caught and shown as dialogs.
@@ -145,13 +144,7 @@ type Job =
                 econt exn
         )
         //! check for closed in a job
-        let! wait = Job.From (fun () ->
-            if closed then
-                None
-            else
-                Some (Async.AwaitEvent editor.Closed)
-        )
-        match wait with
+        match! Job.From (fun () -> if closed then None else Some (Async.AwaitEvent editor.Closed)) with
         | Some wait ->
             do! wait |> Async.Ignore
         | None ->
@@ -170,13 +163,7 @@ type Job =
                 econt exn
         )
         //! check for closed in a job
-        let! wait = Job.From (fun () ->
-            if closed then
-                None
-            else
-                Some (Async.AwaitEvent viewer.Closed)
-        )
-        match wait with
+        match! Job.From (fun () -> if closed then None else Some (Async.AwaitEvent viewer.Closed)) with
         | Some wait ->
             do! wait |> Async.Ignore
         | None ->
@@ -291,13 +278,7 @@ type Job =
     /// Waits for the specified panel to be closed.
     /// Does nothing if the panel is not opened (already closed).
     static member WaitPanelClosed (panel: Panel) = async {
-        let! wait = Job.From (fun () ->
-            if far.Panel <> upcast panel && far.Panel2 <> upcast panel then
-                None
-            else
-                Some (Async.AwaitEvent panel.Closed)
-        )
-        match wait with
+        match! Job.From (fun () -> if far.Panel <> upcast panel && far.Panel2 <> upcast panel then None else Some (Async.AwaitEvent panel.Closed)) with
         | Some wait ->
             do! wait |> Async.Ignore
         | None ->
@@ -320,3 +301,14 @@ type Job =
         do! Job.WaitPanelClosed panel
         return res
     }
+
+[<AutoOpen>]
+module JobBuilder =
+    /// Builds a job from a block.
+    type JobBuilder () =
+        inherit BlockBuilder ()
+        member __.Run (f) =
+            Job.From f
+
+    /// Job helper: job {...} ~ Job.From (fun () -> ...)
+    let job = JobBuilder ()

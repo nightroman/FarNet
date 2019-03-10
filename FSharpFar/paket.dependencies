@@ -1,4 +1,4 @@
-framework: net45
+framework: net461
 copy_local: false
 references: strict
 

@@ -17,11 +17,10 @@ let flow = async {
         text <- r
 
         // ask how to continue
-        let! r = jobAsk text "Wizard" [|"&Yes"; "&No"; "&Cancel"; "&Error"|]
-        match r with
+        match! jobAsk text "Wizard" [|"&Yes"; "&No"; "&Cancel"; "&Error"|] with
         | 2 -> do! Job.Cancel ()
         | 3 -> failwith "Oh"
-        | _ -> answer <- r
+        | _ as r -> answer <- r
 
     // open panel and wait for closing
     let lines = text.Split [|'\n'|] |> Seq.cast

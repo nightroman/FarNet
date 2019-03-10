@@ -10,19 +10,16 @@ let flow = async {
     edit.Add "item1" |> ignore
     edit.Add "item2" |> ignore
 
-    // flow
-    let! r = Job.FlowDialog (dialog, fun args ->
-        if isNull args.Control then
-            None
-        elif edit.Text = "" then
-            args.Ignore <- true
-            None
-        else
-            Some edit.Text
-    )
-
-    // show the result text or "cancel"
-    match r with
+    // flow, show the result text or "cancel"
+    match! Job.FlowDialog (dialog, fun args ->
+            if isNull args.Control then
+                None
+            elif edit.Text = "" then
+                args.Ignore <- true
+                None
+            else
+                Some edit.Text
+        ) with
     | Some text ->
         do! job { far.Message text }
     | None ->

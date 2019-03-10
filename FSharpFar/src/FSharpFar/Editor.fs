@@ -97,20 +97,17 @@ let usesInFile (editor: IEditor) =
     let file = editor.FileName
     let text = editor.GetText ()
 
-    let uses =
-        async {
-            let! check = Checker.check file text config
-            let! symboluse = check.CheckResults.GetSymbolUseAtLocation (caret.Y + 1, col + 1, lineStr, identIsland)
-            match symboluse with
-            | None ->
-                return None
-            | Some symboluse ->
-                let! uses = check.CheckResults.GetUsesOfSymbolInFile symboluse.Symbol
-                return Some uses
-        }
-        |> Async.RunSynchronously
-
-    match uses with
+    async {
+        let! check = Checker.check file text config
+        match! check.CheckResults.GetSymbolUseAtLocation (caret.Y + 1, col + 1, lineStr, identIsland) with
+        | None ->
+            return None
+        | Some symboluse ->
+            let! uses = check.CheckResults.GetUsesOfSymbolInFile symboluse.Symbol
+            return Some uses
+    }
+    |> Async.RunSynchronously
+    |> function
     | None -> ()
     | Some uses ->
 
@@ -144,21 +141,18 @@ let usesInProject (editor: IEditor) =
     let file = editor.FileName
     let text = editor.GetText ()
 
-    let uses =
-        async {
-            let! check = Checker.check file text config
-            let! sym = check.CheckResults.GetSymbolUseAtLocation (caret.Y + 1, col + 1, lineStr, identIsland)
-            match sym with
-            | None ->
-                return None
-            | Some sym ->
-                let! pr = check.Checker.ParseAndCheckProject check.Options
-                let! uses = pr.GetUsesOfSymbol sym.Symbol
-                return Some (uses, sym)
-        }
-        |> Async.RunSynchronously
-
-    match uses with
+    async {
+        let! check = Checker.check file text config
+        match! check.CheckResults.GetSymbolUseAtLocation (caret.Y + 1, col + 1, lineStr, identIsland) with
+        | None ->
+            return None
+        | Some sym ->
+            let! pr = check.Checker.ParseAndCheckProject check.Options
+            let! uses = pr.GetUsesOfSymbol sym.Symbol
+            return Some (uses, sym)
+    }
+    |> Async.RunSynchronously
+    |> function
     | None -> ()
     | Some (uses, sym) ->
 

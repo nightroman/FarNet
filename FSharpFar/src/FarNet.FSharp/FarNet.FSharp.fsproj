@@ -7,18 +7,18 @@
     <DisableImplicitSystemValueTupleReference>true</DisableImplicitSystemValueTupleReference>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFramework>net461</TargetFramework>
     <RunPostBuildEvent>1</RunPostBuildEvent>
     <WarningLevel>5</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="BlockBuilder.fs" />
     <Compile Include="Works.fs" />
     <Compile Include="Assert.fs" />
     <Compile Include="Window.fs" />
     <Compile Include="Job.fs" />
-    <Compile Include="JobBuilder.fs" />
     <Compile Include="PowerShellFar.fs" />
   </ItemGroup>
   <ItemGroup>
@@ -27,7 +27,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="FSharp.Core">
-      <HintPath>..\..\packages\FSharp.Core\lib\$(TargetFramework)\FSharp.Core.dll</HintPath>
+      <HintPath>..\..\packages\FSharp.Core\lib\net45\FSharp.Core.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>

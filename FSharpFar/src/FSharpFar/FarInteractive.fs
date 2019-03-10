@@ -40,11 +40,10 @@ type FarInteractive(session: Session) =
         editor.DisableHistory <- true
         editor.Title <- sprintf "F# %s %s" (Path.GetFileName session.ConfigFile) (Path.GetFileName path)
 
-        // attach to session
+        // connect session
         editor.MySession <- Some session
-        let onSessionClose = Handler<unit> (fun _ _ -> if editor.IsOpened then editor.Close ())
-        session.OnClose.AddHandler onSessionClose
-        editor.Closed.Add (fun _ -> session.OnClose.RemoveHandler onSessionClose)
+        let onSessionClose = session.OnClose.Subscribe (fun () -> if editor.IsOpened then editor.Close ())
+        editor.Closed.Add (fun _ -> onSessionClose.Dispose ())
 
         // Open. Post, to avoid modal. Use case:
         // - open session by `fs: //open`

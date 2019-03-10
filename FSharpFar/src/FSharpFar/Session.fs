@@ -30,7 +30,7 @@ module FSharpErrorInfo =
 
 type Session private (configFile) =
     static let mutable sessions : Session list = []
-    let onClose = new Event<unit> ()
+    let onClose = Event<unit> ()
 
     // The writer for some extra "noise" output, like loading assemblies.
     let voidWriter = new StringWriter ()
@@ -157,7 +157,6 @@ type Session private (configFile) =
     member val Errors = errors
 
     /// Called on closing.
-    [<CLIEvent>]
     member val OnClose = onClose.Publish
 
     member __.EvalInteraction (writer, code) =

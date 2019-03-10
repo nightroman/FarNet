@@ -29,7 +29,7 @@ F# interactive, scripting, compiler, and editor services for Far Manager.
 ***
 ## Installation
 
-FSharpFar requires .NET Framework 4.5+ and FarNet.
+FSharpFar requires .NET Framework 4.6.1 and FarNet.
 F# or anything else does not have to be installed.
 
 [Get, install, update FarNet and FarNet.FSharpFar.](https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt)
