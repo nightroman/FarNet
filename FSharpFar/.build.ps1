@@ -33,7 +33,7 @@ task Build {
 	#exec {dotnet build $ProjectRoot\$ModuleName.sln /p:FarHome=$FarHome /p:Configuration=$Configuration /v:n}
 
 	# workaround (@1)
-	Set-Alias MSBuild (Resolve-MSBuild 15.0x86)
+	Set-Alias MSBuild (Resolve-MSBuild x86)
 	exec {dotnet restore $ProjectRoot\$ModuleName.sln}
 	exec {MSBuild $ProjectRoot\$ModuleName.sln /p:FarHome=$FarHome /p:Configuration=$Configuration /v:n}
 }

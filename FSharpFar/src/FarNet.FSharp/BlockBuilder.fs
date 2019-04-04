@@ -11,8 +11,6 @@ type BlockBuilder () =
         ()
     member __.Return (x) =
         x
-    member __.Bind (x, f) =
-        f x
     member __.Combine (a, b) =
         b a
     member __.For (sequence, body) =

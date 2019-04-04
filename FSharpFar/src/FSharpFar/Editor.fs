@@ -36,12 +36,19 @@ let showErrors (editor: IEditor) =
         editor.Redraw ()
     )
 
+let sourceText (editor: IEditor) =
+    let n = editor.Count
+    let lines = Array.zeroCreate n
+    for i in 0 .. n - 1 do
+        lines.[i] <- editor.[i].Text
+    SourceText.ofLines lines
+
 let check (editor: IEditor) =
     use progress = new Progress "Checking..."
 
     let config = editor.MyConfig ()
     let file = editor.FileName
-    let text = editor.GetText ()
+    let text = sourceText editor
 
     let check =
         Checker.check file text config
@@ -70,7 +77,7 @@ let tips (editor: IEditor) =
 
     let config = editor.MyConfig ()
     let file = editor.FileName
-    let text = editor.GetText ()
+    let text = sourceText editor
 
     let tip =
         async {
@@ -95,7 +102,7 @@ let usesInFile (editor: IEditor) =
 
     let config = editor.MyConfig ()
     let file = editor.FileName
-    let text = editor.GetText ()
+    let text = sourceText editor
 
     async {
         let! check = Checker.check file text config
@@ -139,7 +146,7 @@ let usesInProject (editor: IEditor) =
 
     let config = editor.MyConfig ()
     let file = editor.FileName
-    let text = editor.GetText ()
+    let text = sourceText editor
 
     async {
         let! check = Checker.check file text config
@@ -179,11 +186,9 @@ let toggleAutoTips (editor: IEditor) =
 let toggleAutoCheck (editor: IEditor) =
     editor.MyAutoCheck <- not editor.MyAutoCheck
 
-(*
-    https://fsharp.github.io/FSharp.Compiler.Service/editor.html#Getting-auto-complete-lists
-    old EditorTests.fs(265) they use [], "" instead of names, so do we.
-    new Use FsAutoComplete way.
-*)
+// https://fsharp.github.io/FSharp.Compiler.Service/editor.html#Getting-auto-complete-lists
+// old EditorTests.fs(265) they use [], "" instead of names, so do we.
+// new Use FsAutoComplete way.
 let complete (editor: IEditor) =
     use progress = new Progress "Checking..."
 
@@ -200,7 +205,7 @@ let complete (editor: IEditor) =
     else
     let config = editor.MyConfig ()
     let file = editor.FileName
-    let text = editor.GetText ()
+    let text = sourceText editor
 
     // parse
     //! `index` is the last char index, not cursor index

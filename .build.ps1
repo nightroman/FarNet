@@ -12,7 +12,7 @@ param(
 
 $FarHome = "C:\Bin\Far\$Platform"
 
-Set-Alias MSBuild (Resolve-MSBuild 15.0)
+Set-Alias MSBuild (Resolve-MSBuild)
 
 $Builds = @(
 	'FarNet\FarNet.build.ps1'

@@ -35,7 +35,7 @@ type FarEditor () =
             do! Async.Sleep 1000
             if inbox.CurrentQueueLength > 0 then () else
 
-            let! text = jobEditor editor.GetText
+            let! text = jobEditor (fun () -> Editor.sourceText editor)
             try
                 let config = editor.MyConfig ()
                 let! check = Checker.check editor.FileName text config
@@ -83,10 +83,10 @@ type FarEditor () =
                     match Parser.findLongIdents it.Column it.Text with
                     | None -> ()
                     | Some (column, idents) ->
-                        let! fileText = jobEditor editor.GetText
+                        let! text = jobEditor (fun () -> Editor.sourceText editor)
                         try
                             let config = editor.MyConfig ()
-                            let! check = Checker.check editor.FileName fileText config
+                            let! check = Checker.check editor.FileName text config
                             let! tip = check.CheckResults.GetToolTipText (it.Index + 1, column + 1, it.Text, idents, FSharpTokenTag.Identifier)
                             let tips = Tips.format tip false
                             if tips.Length > 0 && inbox.CurrentQueueLength = 0 then
