@@ -2,6 +2,10 @@
 NuGet package: https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5048
 
+= 5.2.19 =
+
+Fix the exported function signature.
+
 = 5.2.18 =
 
 - Fix null editor on exiting Far with not active editor.

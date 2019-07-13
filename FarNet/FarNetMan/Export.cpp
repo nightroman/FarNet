@@ -158,7 +158,7 @@ intptr_t WINAPI GetFilesW(GetFilesInfo* info)
 	return 0;
 }
 
-int WINAPI PutFilesW(PutFilesInfo* info)
+intptr_t WINAPI PutFilesW(PutFilesInfo* info)
 {
 	__START;
 	return Panel0::AsPutFiles(info);
