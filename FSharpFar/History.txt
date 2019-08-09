@@ -1,7 +1,11 @@
 
 https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.5048
-FarNet 5.2.18
+FarNet 5.2.20
+
+= 1.9.8 =
+
+FSharp.Core (4.7), requires FarNet 5.2.20
 
 = 1.9.7 =
 
