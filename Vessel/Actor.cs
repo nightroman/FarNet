@@ -42,18 +42,22 @@ namespace FarNet.Vessel
 			}
 			else
 			{
-				var set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+				// original latest records by paths
+				var dic = new Dictionary<string, Record>(StringComparer.OrdinalIgnoreCase);
 				foreach (var record in _records)
-				{
-					set.Add(record.Path);
-				}
+					dic[record.Path] = record;
+
+				// add missing and later records from Far history
 				foreach (var folder in Far.Api.History.Folder())
 				{
-					if (!set.Contains(folder.Name))
+					Record record = null;
+					if (!dic.TryGetValue(folder.Name, out record) || folder.Time > record.Time)
 						_records.Add(new Record(folder.Time, string.Empty, folder.Name));
 				}
-				_records = new List<Record>(_records.OrderByDescending(x => x.Time));
 			}
+
+			// get sorted
+			_records = new List<Record>(_records.OrderByDescending(x => x.Time));
 		}
 		/// <summary>
 		/// Gets records from the most recent to old.

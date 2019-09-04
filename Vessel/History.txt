@@ -1,6 +1,10 @@
 NuGet package: https://www.nuget.org/packages/FarNet.Vessel
 FarNet 5.2.4
 
+= 2.2.1 =
+
+Most recent folders from Far history were not properly positioned.
+
 = 2.2.0 =
 
 Smart folder history in addition to file history. It works in a different way
