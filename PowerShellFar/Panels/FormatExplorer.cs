@@ -1,8 +1,6 @@
 ﻿
-/*
-PowerShellFar module for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// PowerShellFar module for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections;
@@ -151,7 +149,7 @@ namespace PowerShellFar
 					MakeMap(metas);
 					if (panel != null)
 						panel.SetPlan(PanelViewMode.AlternativeFull, Format.SetupPanelMode(Metas));
-					
+
 					BuildFiles(values);
 				}
 			}

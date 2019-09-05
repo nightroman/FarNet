@@ -1,6 +1,6 @@
 
 // PowerShellFar module for Far Manager
-// Copyright (c) 2006-2016 Roman Kuzmin
+// Copyright (c) Roman Kuzmin
 
 // It is tempting to call ShowUserScreen on set-members but this is a bad idea.
 // PS core may call these members unexpectedly, and from other threads, too.

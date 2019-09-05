@@ -1,8 +1,6 @@
 
-/*
-PowerShellFar module for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// PowerShellFar module for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections;
@@ -58,11 +56,11 @@ namespace PowerShellFar
 		/// </summary>
 		public string TableName { get; set; }
 		/// <summary>
-		/// Gets or sets the XML reading mode. 
+		/// Gets or sets the XML reading mode.
 		/// </summary>
 		public XmlReadMode XmlReadMode { get; set; }
 		/// <summary>
-		/// Gets or sets the XML writing mode. 
+		/// Gets or sets the XML writing mode.
 		/// </summary>
 		public XmlWriteMode XmlWriteMode { get; set; }
 		static DataTable GetTable(DataSet dataSet, string tableName)

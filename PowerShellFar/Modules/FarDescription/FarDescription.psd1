@@ -3,7 +3,7 @@
 	ModuleVersion = '1.0.0'
 	CompanyName = 'https://github.com/nightroman/FarNet'
 	Description = 'Far Manager file description tools.'
-	Copyright = '(C) 2010 Roman Kuzmin. All rights reserved.'
+	Copyright = 'Copyright (c) Roman Kuzmin'
 
 	NestedModules = 'FarDescription.dll'
 	ModuleToProcess = 'FarDescription.psm1'

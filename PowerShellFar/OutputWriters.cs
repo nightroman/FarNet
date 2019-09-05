@@ -1,8 +1,6 @@
 
-/*
-PowerShellFar module for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// PowerShellFar module for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Diagnostics;
@@ -220,8 +218,8 @@ namespace PowerShellFar
 **********************
 Windows PowerShell transcript start
 Start time: {0:yyyyMMddHHmmss}
-Username  : {1}\{2} 
-Machine	  : {3} ({4}) 
+Username  : {1}\{2}
+Machine	  : {3} ({4})
 **********************
 ";
 		static string TextTranscriptEpilogue = @"
@@ -262,7 +260,7 @@ End time: {0:yyyyMMddHHmmss}
 			{
 				if (_transcript)
 					_writer.Write(string.Format(null, TextTranscriptEpilogue, DateTime.Now));
-				
+
 				_writer.Close();
 				_writer = null;
 			}

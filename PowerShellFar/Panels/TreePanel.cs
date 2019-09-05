@@ -1,8 +1,6 @@
 
-/*
-PowerShellFar module for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// PowerShellFar module for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections.Generic;
@@ -83,7 +81,7 @@ namespace PowerShellFar
 		public override bool UIKeyPressed(KeyInfo key)
 		{
 			if (key == null) throw new ArgumentNullException("key");
-			
+
 			switch (key.VirtualKeyCode)
 			{
 				case KeyCode.LeftArrow:
@@ -159,7 +157,7 @@ namespace PowerShellFar
 			if (args == null) return null;
 
 			args.Parameter = new TreeExplorerGetFilesParameter() { ShowHidden = ShowHidden };
-			
+
 			return base.UIGetFiles(args);
 		}
 	}

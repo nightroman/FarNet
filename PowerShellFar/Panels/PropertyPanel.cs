@@ -1,8 +1,6 @@
 
-/*
-PowerShellFar module for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// PowerShellFar module for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System.Management.Automation;
 using FarNet;
@@ -110,7 +108,7 @@ namespace PowerShellFar
 			Explorer.CreateFile(args);
 			if (args.Result != JobResult.Done)
 				return;
-			
+
 			// update that panel if the path is the same
 			PropertyPanel that = TargetPanel as PropertyPanel;
 			if (that != null && that.Explorer.ItemPath == Explorer.ItemPath)

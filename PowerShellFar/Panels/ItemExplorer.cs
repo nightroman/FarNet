@@ -1,8 +1,6 @@
 ﻿
-/*
-PowerShellFar module for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// PowerShellFar module for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections.ObjectModel;
@@ -81,7 +79,7 @@ namespace PowerShellFar
 					ps.AddCommand("Move-Item").AddParameter(Prm.Force);
 				else
 					ps.AddCommand("Copy-Item").AddParameter(Prm.Recurse);
-				
+
 				ps
 					.AddParameter("Destination", this.Location)
 					.AddParameter(Prm.Confirm)
@@ -329,15 +327,15 @@ namespace PowerShellFar
 						ps.AddCommand("New-Item")
 							.AddParameter("Path", My.PathEx.Combine(Location, ui.Name.Text)) // it is literal
 							.AddParameter(Prm.ErrorAction, ActionPreference.Continue);
-						
+
 						if (ui.Type.Text.Length > 0)
 							ps.AddParameter("ItemType", ui.Type.Text);
-						
+
 						if (ui.Value.Text.Length > 0)
 							ps.AddParameter("Value", ui.Value.Text);
-						
+
 						ps.Invoke();
-						
+
 						if (A.ShowError(ps))
 							continue;
 					}

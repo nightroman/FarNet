@@ -1,8 +1,6 @@
 
-/*
-PowerShellFar module for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// PowerShellFar module for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections.Generic;
@@ -143,7 +141,7 @@ namespace FarDescription
 
 			// replace line breaks
 			value = value.Replace("\r\n", " _ ").Replace("\r", " _ ");
-			
+
 			lock (WeakCache)
 			{
 				// get data and set new value

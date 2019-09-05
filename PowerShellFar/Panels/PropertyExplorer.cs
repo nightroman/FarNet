@@ -1,8 +1,6 @@
 
-/*
-PowerShellFar module for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// PowerShellFar module for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections;
@@ -220,10 +218,10 @@ namespace PowerShellFar
 					.AddParameter(Word.Name, names)
 					.AddParameter(Prm.Force)
 					.AddParameter(Prm.ErrorAction, ActionPreference.Continue);
-				
+
 				if (confirm)
 					ps.AddParameter(Prm.Confirm);
-				
+
 				ps.Invoke();
 
 				// ?? V2 CTP3 bug: Registry: Remove-ItemProperty -Confirm fails on 'No':
@@ -297,7 +295,7 @@ namespace PowerShellFar
 					.AddParameter("NewName", newName)
 					.AddParameter(Prm.Force)
 					.AddParameter(Prm.ErrorAction, ActionPreference.Continue);
-					
+
 				ps.Invoke();
 
 				if (ps.Streams.Error.Count > 0)
@@ -328,12 +326,12 @@ namespace PowerShellFar
 							.AddParameter(Word.Name, ui.Name.Text)
 							.AddParameter("PropertyType", ui.Type.Text)
 							.AddParameter(Prm.ErrorAction, ActionPreference.Continue);
-						
+
 						if (ui.Value.Text.Length > 0)
 							ps.AddParameter("Value", ui.Value.Text);
-						
+
 						ps.Invoke();
-						
+
 						if (A.ShowError(ps))
 							continue;
 					}
@@ -358,7 +356,7 @@ namespace PowerShellFar
 			var newName = args.Parameter as string;
 			if (newName == null)
 				throw new InvalidOperationException(Res.ParameterString);
-			
+
 			string src = Kit.EscapeWildcard(ItemPath);
 			A.Psf.Engine.InvokeProvider.Property.Copy(src, args.File.Name, src, newName);
 

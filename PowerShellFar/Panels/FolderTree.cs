@@ -1,8 +1,6 @@
 
-/*
-PowerShellFar module for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// PowerShellFar module for Far Manager
+// Copyright (c) Roman Kuzmin
 
 /*
 _090810_180151
@@ -58,7 +56,7 @@ namespace PowerShellFar
 		public override void UIRedrawing(PanelEventArgs e)
 		{
 			base.UIRedrawing(e);
-			
+
 			string dir = string.Empty;
 
 			var file = CurrentFile;

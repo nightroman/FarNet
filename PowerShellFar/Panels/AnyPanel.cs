@@ -1,8 +1,6 @@
 
-/*
-PowerShellFar module for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// PowerShellFar module for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections;
@@ -329,7 +327,7 @@ namespace PowerShellFar
 		public override bool UIKeyPressed(KeyInfo key)
 		{
 			if (key == null) throw new ArgumentNullException("key");
-			
+
 			UserWants = UserAction.None;
 			try
 			{

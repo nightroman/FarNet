@@ -1,8 +1,6 @@
 ﻿
-/*
-PowerShellFar module for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// PowerShellFar module for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections.Generic;
@@ -47,7 +45,7 @@ namespace PowerShellFar
 		public override void DoCreateFile(CreateFileEventArgs args)
 		{
 			if (args == null) return;
-			
+
 			args.Result = JobResult.Ignore;
 			Panel.DoCreateFile();
 		}

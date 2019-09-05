@@ -1,8 +1,6 @@
 
-/*
-PowerShellFar module for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// PowerShellFar module for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections.Generic;
@@ -72,7 +70,7 @@ namespace PowerShellFar
 			_handler = handler;
 		}
 		/// <summary>
-		/// New handler with a script block. 
+		/// New handler with a script block.
 		/// </summary>
 		/// <param name="handler">The script block.</param>
 		public ScriptHandler(ScriptBlock handler)
