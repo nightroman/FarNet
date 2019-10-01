@@ -1,8 +1,32 @@
-### F# 4.6
+# About FSharpFar
 
-- [blog about 4.6](https://blogs.msdn.microsoft.com/dotnet/2019/01/24/announcing-f-4-6-preview/)
-- [my reddit](https://www.reddit.com/r/fsharp/comments/ajj430/announcing_f_46_preview/)
-- [my FSCS issue](https://github.com/fsharp/FSharp.Compiler.Service/issues/884)
+- [FSharp.Compiler.Service](https://github.com/fsharp/FSharp.Compiler.Service)
+- [F# 4.7](https://devblogs.microsoft.com/dotnet/announcing-f-4-7/)
+- [F# 4.6](https://blogs.msdn.microsoft.com/dotnet/2019/01/24/announcing-f-4-6-preview/)
+- [FCS issue F# 4.7](https://github.com/fsharp/FSharp.Compiler.Service/issues/912)
+- [FCS issue F# 4.6](https://github.com/fsharp/FSharp.Compiler.Service/issues/884)
+
+***
+### FCS Packages
+
+see .\packages\FSharp.Compiler.Service\FSharp.Compiler.Service.nuspec
+
+    <dependency id="System.Collections.Immutable" version="1.5.0" exclude="Build,Analyzers" />
+    <dependency id="System.Reflection.Metadata" version="1.6.0" exclude="Build,Analyzers" />
+    <dependency id="System.ValueTuple" version="4.4.0" exclude="Build,Analyzers" />
+
+or see <https://github.com/fsharp/FSharp.Compiler.Service/blob/master/fcs/FSharp.Compiler.Service/FSharp.Compiler.Service.fsproj>
+
+DO:
+
+    "System.Collections.Immutable" Version="1.5.0"
+    "System.Reflection.Metadata" Version="1.6.0"
+
+-- need to pin, to keep in sync, latest versions make issues -- more dependencies??
+
+    "System.ValueTuple" version="4.4.0"
+
+-- we use System.ValueTuple (4.5) fine, keep using, mind Far.exe.config
 
 ***
 ### FSharp.Core assembly and package versions
