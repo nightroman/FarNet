@@ -10,10 +10,10 @@ namespace FarNet.Vessel
 {
 	public class Record
 	{
+		internal const string NOOP = "";
 		internal const string AGED = "aged";
 		internal const string EDIT = "edit";
 		internal const string OPEN = "open";
-		internal const string SAVE = "save";
 		internal const string VIEW = "view";
 		public DateTime Time { get; private set; }
 		public string What { get; private set; }

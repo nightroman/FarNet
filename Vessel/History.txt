@@ -1,6 +1,12 @@
 NuGet package: https://www.nuget.org/packages/FarNet.Vessel
 FarNet 5.2.4
 
+= 2.3.0 =
+
+File history works in the same way as folder history, more effective.
+Only openings from lists are logged and then joined with Far history.
+Also, Vessel is not pre-loaded when Far starts.
+
 = 2.2.1 =
 
 Most recent folders from Far history were not properly positioned.

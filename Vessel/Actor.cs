@@ -36,7 +36,7 @@ namespace FarNet.Vessel
 			_limit0 = Settings.Default.Limit0;
 			_records = Store.Read(mode, store).ToList();
 
-			if (mode == 0 || noHistory)
+			if (noHistory)
 			{
 				_records.Reverse();
 			}
@@ -47,22 +47,38 @@ namespace FarNet.Vessel
 				foreach (var record in _records)
 					dic[record.Path] = record;
 
-				// add missing and later records from Far history
-				foreach (var folder in Far.Api.History.Folder())
+				if (mode == 0)
 				{
-					Record record = null;
-					if (!dic.TryGetValue(folder.Name, out record) || folder.Time > record.Time)
-						_records.Add(new Record(folder.Time, string.Empty, folder.Name));
+					// add missing and later records from Far editor history
+					foreach (var item in Far.Api.History.Editor())
+					{
+						Record record = null;
+						if (!dic.TryGetValue(item.Name, out record) || item.Time > record.Time)
+							_records.Add(new Record(item.Time, Record.NOOP, item.Name));
+					}
+					// add missing and later records from Far viewer history
+					foreach (var item in Far.Api.History.Viewer())
+					{
+						Record record = null;
+						if (!dic.TryGetValue(item.Name, out record) || item.Time > record.Time)
+							_records.Add(new Record(item.Time, Record.NOOP, item.Name));
+					}
+				}
+				else
+				{
+					// add missing and later records from Far folder history
+					foreach (var item in Far.Api.History.Folder())
+					{
+						Record record = null;
+						if (!dic.TryGetValue(item.Name, out record) || item.Time > record.Time)
+							_records.Add(new Record(item.Time, Record.NOOP, item.Name));
+					}
 				}
 			}
 
 			// get sorted
 			_records = new List<Record>(_records.OrderByDescending(x => x.Time));
 		}
-		/// <summary>
-		/// Gets records from the most recent to old.
-		/// </summary>
-		public ReadOnlyCollection<Record> Records { get { return new ReadOnlyCollection<Record>(_records); } }
 		/// <summary>
 		/// Gets the ordered history info list.
 		/// </summary>
@@ -253,7 +269,7 @@ namespace FarNet.Vessel
 			var map = CollectEvidences();
 
 			// process records
-			foreach (var record in Records)
+			foreach (var record in _records)
 			{
 				// collect (step back 1 tick, ask to exclude recent) and sort by Idle
 				var infos = CollectInfo(record.Time - new TimeSpan(1), true).OrderBy(x => x.Idle).ToList();

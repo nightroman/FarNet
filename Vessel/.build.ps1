@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Build script (https://github.com/nightroman/Invoke-Build)
@@ -31,9 +30,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("$Version")]
 [assembly: AssemblyProduct("FarNet.Vessel")]
 [assembly: AssemblyTitle("FarNet module Vessel for Far Manager")]
-[assembly: AssemblyDescription("FarNet.Vessel: (View/Edit/Save/SELect) file history tools")]
+[assembly: AssemblyDescription("FarNet.Vessel - smart history of files and folders")]
 [assembly: AssemblyCompany("https://github.com/nightroman/FarNet")]
-[assembly: AssemblyCopyright("Copyright (c) 2011-2017 Roman Kuzmin")]
+[assembly: AssemblyCopyright("Copyright (c) Roman Kuzmin")]
 
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
@@ -42,8 +41,8 @@ using System.Runtime.InteropServices;
 
 # Build and install the assembly.
 task Build Meta, {
-	use 14.0 MSBuild
-	exec { MSBuild Vessel.csproj /p:Configuration=Release /p:FarHome=$FarHome /p:TargetFrameworkVersion=$TargetFrameworkVersion }
+	$MSBuild = Resolve-MSBuild
+	exec { & $MSBuild Vessel.csproj /p:Configuration=Release /p:FarHome=$FarHome /p:TargetFrameworkVersion=$TargetFrameworkVersion }
 }
 
 # In addition to Build: new About-Vessel.htm, $ModuleHome\Vessel.hlf
@@ -66,6 +65,7 @@ task Package Help, {
 	remove z
 	$null = mkdir $toModule
 
+	# main
 	Copy-Item -Destination $toModule `
 	About-Vessel.htm,
 	History.txt,
@@ -73,13 +73,16 @@ task Package Help, {
 	Vessel.macro.lua,
 	$ModuleHome\Vessel.dll,
 	$ModuleHome\Vessel.hlf
+
+	# icon
+	$null = mkdir z\images
+	Copy-Item ..\Zoo\FarNetLogo.png z\images
 }
 
 task NuGet Package, Version, {
 	$text = @'
-Vessel (View/Edit/Save/SELect) is the FarNet module for Far Manager. It records
-the history of file view, edit, and save operations, directory select history,
-and provides related tools.
+Vessel is the FarNet module for Far Manager.
+It provides smart history of files and folders.
 
 ---
 
@@ -99,7 +102,7 @@ https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
 		<owners>Roman Kuzmin</owners>
 		<authors>Roman Kuzmin</authors>
 		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
-		<iconUrl>https://raw.githubusercontent.com/wiki/nightroman/FarNet/images/FarNetLogo.png</iconUrl>
+		<icon>images\FarNetLogo.png</icon>
 		<license type="expression">BSD-3-Clause</license>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$text</summary>

@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Edits multiline Far descriptions in the editor.
@@ -37,7 +36,7 @@ $edit = "$env:TEMP\$([System.IO.Path]::GetFileName($Path)).description.txt"
 [System.IO.File]::WriteAllText($edit, $text, [System.Text.Encoding]::UTF8)
 
 # editor
-$editor = New-FarEditor $edit -Title "Description: $Path" -DeleteSource 'File' -Host $item
+$editor = New-FarEditor $edit -Title "Description: $Path" -DeleteSource 'File' -Host $item -DisableHistory
 
 # saving sets description
 $editor.add_Saving({ $this.Host.FarDescription = $this.GetText("`r") })

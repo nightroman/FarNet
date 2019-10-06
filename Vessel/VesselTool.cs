@@ -100,7 +100,7 @@ Factors    : {7,8}
 			int mode = (int)state;
 
 			// update
-			var algo = new Actor(mode, VesselHost.LogPath[mode], mode == 1);
+			var algo = new Actor(mode, VesselHost.LogPath[mode], true);
 			algo.Update();
 
 			// train
@@ -176,7 +176,7 @@ Factors    : {7,8}
 				// update:
 				if (menu.Key.IsCtrl(KeyCode.R))
 				{
-					var algo = new Actor(0, VesselHost.LogPath[0]);
+					var algo = new Actor(0, VesselHost.LogPath[0], true);
 					algo.Update();
 					continue;
 				}
@@ -218,6 +218,11 @@ Factors    : {7,8}
 						goto show;
 					}
 
+					viewer.Closed += delegate
+					{
+						Store.Append(VesselHost.LogPath[0], DateTime.Now, Record.VIEW, path);
+					};
+
 					viewer.Open();
 				}
 				// edit:
@@ -232,6 +237,11 @@ Factors    : {7,8}
 						editor.Open(OpenMode.Modal);
 						goto show;
 					}
+
+					editor.Closed += delegate
+					{
+						Store.Append(VesselHost.LogPath[0], DateTime.Now, Record.EDIT, path);
+					};
 
 					editor.Open();
 
