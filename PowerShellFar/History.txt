@@ -1,7 +1,15 @@
-
 NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 Far Manager 3.0.5013
 FarNet 5.2.14
+
+= 5.2.8 =
+
+Open-TextLink-.ps1 -- Add `file:` to URL pattern.
+
+Edit-FarDescription-.ps1 -- Use DisableHistory on editing temp files.
+
+Panel-Database-.ps1 -- Moved from the PowerShellFar package to repo/Zoo.
+It is designed and still may be used for somewhat obsolete SQL Express.
 
 = 5.2.7 =
 
