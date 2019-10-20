@@ -13,6 +13,7 @@ namespace FarNet.Vessel
 		internal const string NOOP = "";
 		internal const string AGED = "aged";
 		internal const string EDIT = "edit";
+		internal const string GOTO = "goto";
 		internal const string OPEN = "open";
 		internal const string VIEW = "view";
 		public DateTime Time { get; private set; }

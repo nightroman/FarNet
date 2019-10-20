@@ -1,6 +1,11 @@
 NuGet package: https://www.nuget.org/packages/FarNet.Vessel
 FarNet 5.2.4
 
+= 2.3.1 =
+
+- Add file history records on "go to" from the history list.
+- Do not add almost the same time entries from Far histories.
+
 = 2.3.0 =
 
 File history works in the same way as folder history, more effective.

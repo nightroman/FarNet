@@ -201,6 +201,7 @@ Factors    : {7,8}
 				if (menu.Key.IsCtrl(KeyCode.Enter))
 				{
 					Far.Api.Panel.GoToPath(path);
+					Store.Append(VesselHost.LogPath[0], DateTime.Now, Record.GOTO, path);
 				}
 				// view:
 				else if (menu.Key.VirtualKeyCode == KeyCode.F3)
@@ -211,17 +212,16 @@ Factors    : {7,8}
 					IViewer viewer = Far.Api.CreateViewer();
 					viewer.FileName = path;
 
-					if (menu.Key.IsCtrl())
-					{
-						viewer.DisableHistory = true;
-						viewer.Open(OpenMode.Modal);
-						goto show;
-					}
-
 					viewer.Closed += delegate
 					{
 						Store.Append(VesselHost.LogPath[0], DateTime.Now, Record.VIEW, path);
 					};
+
+					if (menu.Key.IsCtrl())
+					{
+						viewer.Open(OpenMode.Modal);
+						goto show;
+					}
 
 					viewer.Open();
 				}
@@ -231,17 +231,16 @@ Factors    : {7,8}
 					IEditor editor = Far.Api.CreateEditor();
 					editor.FileName = path;
 
-					if (menu.Key.IsCtrl(KeyCode.F4))
-					{
-						editor.DisableHistory = true;
-						editor.Open(OpenMode.Modal);
-						goto show;
-					}
-
 					editor.Closed += delegate
 					{
 						Store.Append(VesselHost.LogPath[0], DateTime.Now, Record.EDIT, path);
 					};
+
+					if (menu.Key.IsCtrl(KeyCode.F4))
+					{
+						editor.Open(OpenMode.Modal);
+						goto show;
+					}
 
 					editor.Open();
 

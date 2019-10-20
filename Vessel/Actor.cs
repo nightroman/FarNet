@@ -13,6 +13,7 @@ namespace FarNet.Vessel
 {
 	public class Actor
 	{
+		readonly static TimeSpan _smallSpan = TimeSpan.FromSeconds(3);
 		readonly int _mode;
 		readonly int _limit0;
 		readonly string _store;
@@ -53,14 +54,14 @@ namespace FarNet.Vessel
 					foreach (var item in Far.Api.History.Editor())
 					{
 						Record record = null;
-						if (!dic.TryGetValue(item.Name, out record) || item.Time > record.Time)
+						if (!dic.TryGetValue(item.Name, out record) || item.Time - record.Time > _smallSpan)
 							_records.Add(new Record(item.Time, Record.NOOP, item.Name));
 					}
 					// add missing and later records from Far viewer history
 					foreach (var item in Far.Api.History.Viewer())
 					{
 						Record record = null;
-						if (!dic.TryGetValue(item.Name, out record) || item.Time > record.Time)
+						if (!dic.TryGetValue(item.Name, out record) || item.Time - record.Time > _smallSpan)
 							_records.Add(new Record(item.Time, Record.NOOP, item.Name));
 					}
 				}
@@ -70,7 +71,7 @@ namespace FarNet.Vessel
 					foreach (var item in Far.Api.History.Folder())
 					{
 						Record record = null;
-						if (!dic.TryGetValue(item.Name, out record) || item.Time > record.Time)
+						if (!dic.TryGetValue(item.Name, out record) || item.Time - record.Time > _smallSpan)
 							_records.Add(new Record(item.Time, Record.NOOP, item.Name));
 					}
 				}
