@@ -104,7 +104,7 @@ The settings panel is opened from the menu in panels:
 
 [Contents](#Contents)
 
-The menu is opened from almost any context: `[F11] \ Vessel`
+The menu is opened from almost any area: `[F11] \ Vessel`
 
 **Smart history**
 
@@ -123,21 +123,23 @@ See [Folder history](#FolderHistory)
 
 **Train history**
 
-Starts the file history training. The results are shown in the dialog.
+Starts the file history training.
+The results are shown in the dialog.
 
 **Train folders**
 
-Starts the folder history training. The results are shown in the dialog.
+Starts the folder history training.
+The results are shown in the dialog.
 
 **Update history**
 
 Removes records of missing files and oldest exceeding the limits.
-Then it starts background training and shows the update results.
+The results are shown in the dialog.
 
 **Update folders**
 
 Removes records of missing folders and oldest exceeding the limits.
-Then it starts background training and shows the update results.
+The results are shown in the dialog.
 
 *********************************************************************
 ## File history {#FileHistory}
@@ -175,6 +177,7 @@ Keys and actions:
 `[ShiftDel]`
 
  : Removes the current file from the log.
+   It is still shown in the list if it exists in the Far history.
 
 `[CtrlR]`
 
@@ -189,10 +192,14 @@ The folder list is opened by the menu command *Smart folder history*.
 
 Keys and actions:
 
+`[Enter]`
+
+ : Opens the folder in the current panel.
+
 `[ShiftDel]`
 
- : Removes the current folder from the log. The folder is still shown in the
-   list if it exists in the Far folder history but its position is different.
+ : Removes the current folder from the log.
+   It is still shown in the list if it exists in the Far history.
 
 `[CtrlR]`
 

@@ -18,6 +18,7 @@ namespace FarNet.Vessel
 		readonly int _limit0;
 		readonly string _store;
 		readonly List<Record> _records;
+		readonly Dictionary<string, Record> _latestRecords;
 		/// <summary>
 		/// Creates the instance with data from the default storage.
 		/// </summary>
@@ -43,10 +44,10 @@ namespace FarNet.Vessel
 			}
 			else
 			{
-				// original latest records by paths
-				var dic = new Dictionary<string, Record>(StringComparer.OrdinalIgnoreCase);
+				// original latest records by paths (assuming ascending order in the log)
+				_latestRecords = new Dictionary<string, Record>(StringComparer.OrdinalIgnoreCase);
 				foreach (var record in _records)
-					dic[record.Path] = record;
+					_latestRecords[record.Path] = record;
 
 				if (mode == 0)
 				{
@@ -54,14 +55,14 @@ namespace FarNet.Vessel
 					foreach (var item in Far.Api.History.Editor())
 					{
 						Record record = null;
-						if (!dic.TryGetValue(item.Name, out record) || item.Time - record.Time > _smallSpan)
+						if (!_latestRecords.TryGetValue(item.Name, out record) || item.Time - record.Time > _smallSpan)
 							_records.Add(new Record(item.Time, Record.NOOP, item.Name));
 					}
 					// add missing and later records from Far viewer history
 					foreach (var item in Far.Api.History.Viewer())
 					{
 						Record record = null;
-						if (!dic.TryGetValue(item.Name, out record) || item.Time - record.Time > _smallSpan)
+						if (!_latestRecords.TryGetValue(item.Name, out record) || item.Time - record.Time > _smallSpan)
 							_records.Add(new Record(item.Time, Record.NOOP, item.Name));
 					}
 				}
@@ -71,7 +72,7 @@ namespace FarNet.Vessel
 					foreach (var item in Far.Api.History.Folder())
 					{
 						Record record = null;
-						if (!dic.TryGetValue(item.Name, out record) || item.Time - record.Time > _smallSpan)
+						if (!_latestRecords.TryGetValue(item.Name, out record) || item.Time - record.Time > _smallSpan)
 							_records.Add(new Record(item.Time, Record.NOOP, item.Name));
 					}
 				}
@@ -79,6 +80,15 @@ namespace FarNet.Vessel
 
 			// get sorted
 			_records = new List<Record>(_records.OrderByDescending(x => x.Time));
+		}
+		/// <summary>
+		/// Gets true if the path exists in the log.
+		/// </summary>
+		public bool IsLoggedPath(string path)
+		{
+			// If _latestRecords is null then Actor is created without
+			// Far history and this method is not supposed to be used.
+			return _latestRecords.ContainsKey(path);
 		}
 		/// <summary>
 		/// Gets the ordered history info list.

@@ -127,14 +127,14 @@ Factors    : {7,8}
 		}
 		static void ShowHistory()
 		{
-			var factor0 = Settings.Default.Limit0;
-			var factor1 = Settings.Default.Factor1;
+			var limit = Settings.Default.Limit0;
+			var factor = Settings.Default.Factor1;
 
 			IListMenu menu = Far.Api.CreateListMenu();
 			menu.HelpTopic = HelpTopic + "FileHistory";
 			menu.SelectLast = true;
 			menu.UsualMargins = true;
-			menu.Title = string.Format("File history ({0}/{1})", factor0, factor1);
+			menu.Title = string.Format("File history ({0}/{1})", limit, factor);
 
 			menu.IncrementalOptions = PatternOptions.Substring;
 
@@ -149,11 +149,12 @@ Factors    : {7,8}
 
 			for (; ; menu.Items.Clear())
 			{
+				var actor = new Actor(0, null);
 				int lastGroup = -1;
-				foreach (var it in Store.GetHistory(0, null, DateTime.Now, factor1))
+				foreach (var it in actor.GetHistory(DateTime.Now, factor))
 				{
 					// separator
-					int nextGroup = it.Group(factor0, factor1);
+					int nextGroup = it.Group(limit, factor);
 					if (lastGroup != nextGroup)
 					{
 						if (lastGroup > 0)
@@ -163,7 +164,10 @@ Factors    : {7,8}
 					}
 
 					// item
-					menu.Add(it.Path).Checked = it.Evidence > 0;
+					var item = menu.Add(it.Path);
+					item.Data = it;
+					if (it.Evidence > 0)
+						item.Checked = true;
 				}
 
 			show:
@@ -197,6 +201,22 @@ Factors    : {7,8}
 					goto show;
 				}
 
+				// missing?
+				if (!File.Exists(path))
+				{
+					Far.Api.Message("File does not exist.");
+					goto show;
+				}
+
+				// if it is not logged yet, log the existing Far record(s)
+				if (!actor.IsLoggedPath(path))
+				{
+					var info = menu.Items[indexSelected].Data as Info;
+					Store.Append(VesselHost.LogPath[0], info.Head, Record.GOTO, path);
+					if (info.Head != info.Tail)
+						Store.Append(VesselHost.LogPath[0], info.Tail, Record.GOTO, path);
+				}
+
 				// go to:
 				if (menu.Key.IsCtrl(KeyCode.Enter))
 				{
@@ -206,9 +226,6 @@ Factors    : {7,8}
 				// view:
 				else if (menu.Key.VirtualKeyCode == KeyCode.F3)
 				{
-					if (!File.Exists(path))
-						continue;
-
 					IViewer viewer = Far.Api.CreateViewer();
 					viewer.FileName = path;
 
@@ -270,8 +287,9 @@ Factors    : {7,8}
 
 			for (; ; menu.Items.Clear())
 			{
+				var actor = new Actor(1, null);
 				int lastGroup = -1;
-				foreach (var it in Store.GetHistory(1, null, DateTime.Now, factor))
+				foreach (var it in actor.GetHistory(DateTime.Now, factor))
 				{
 					// separator
 					int nextGroup = it.Group(limit, factor);
@@ -283,7 +301,10 @@ Factors    : {7,8}
 					}
 
 					// item
-					menu.Add(it.Path).Checked = it.Evidence > 0;
+					var item = menu.Add(it.Path);
+					item.Data = it;
+					if (it.Evidence > 0)
+						item.Checked = true;
 				}
 
 			show:
@@ -320,7 +341,16 @@ Factors    : {7,8}
 				if (Far.Api.Window.Kind != WindowKind.Panels && !Far.Api.Window.IsModal)
 					Far.Api.Window.SetCurrentAt(-1);
 
+				// set the selected path
 				Far.Api.Panel.CurrentDirectory = path;
+
+				// if it is not logged yet, log the existing Far record
+				if (!actor.IsLoggedPath(path))
+				{
+					var info = menu.Items[indexSelected].Data as Info;
+					Store.Append(VesselHost.LogPath[1], info.Head, Record.OPEN, path);
+				}
+				// then log the current record
 				Store.Append(VesselHost.LogPath[1], DateTime.Now, Record.OPEN, path);
 
 				UpdatePeriodically(1);

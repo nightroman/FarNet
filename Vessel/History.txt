@@ -1,6 +1,11 @@
 NuGet package: https://www.nuget.org/packages/FarNet.Vessel
 FarNet 5.2.4
 
+= 2.3.2 =
+
+Log known Far records on first openings from lists.
+This improves predictions for newly opened items.
+
 = 2.3.1 =
 
 - Add file history records on "go to" from the history list.

@@ -123,10 +123,5 @@ namespace FarNet.Vessel
 		{
 			Write(store, Read(mode, store).Where(x => !x.Path.Equals(path, StringComparison.OrdinalIgnoreCase)));
 		}
-		public static IEnumerable<Info> GetHistory(int mode, string store, DateTime now, int factor)
-		{
-			var algo = new Actor(mode, store);
-			return algo.GetHistory(now, factor);
-		}
 	}
 }
