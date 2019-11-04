@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Opens a text link contained in the text.
@@ -201,6 +200,22 @@ if ($Editor -and $Editor.FileName -match '\.(text|md|markdown)$') {
 		if ([IO.File]::Exists($file)) {
 			Open-FarEditor -Path $file
 			return
+		}
+	}
+}
+
+### All URLs in the editor
+if ($Editor) {
+	$items = @(
+		foreach($line in $Editor.Lines) {
+			if ($line.Text -match $url) {
+				New-FarItem $line.Text -Data ($matches[0])
+			}
+		}
+	)
+	if ($items) {
+		if ($data = Out-FarList URL -Items $items) {
+			Start-Process $data
 		}
 	}
 }

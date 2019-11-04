@@ -1,67 +1,84 @@
-
 <#
 .Synopsis
 	MongoDB data browser.
 	Author: Roman Kuzmin
 
 .Description
-	DISCLAIMER: Use this tool on your own risk. You can delete or corrupt
-	databases, collections, documents, and data - the choice is all yours.
+	DISCLAIMER: USE THIS TOOL ON YOUR OWN RISK. YOU CAN DELETE, CHANGE, CORRUPT
+	DATABASES, COLLECTIONS, DOCUMENTS, AND DATA - THE CHOICE AND RISK IS YOURS.
 
 	Requires:
 	- MongoDB server: http://www.mongodb.org/
-	- Mdbc module v2.0.0: https://github.com/nightroman/Mdbc
+	- Mdbc module v6.0.0: https://github.com/nightroman/Mdbc
 
-	The script connects to the specified server and shows available databases,
-	collections, documents, and contents including nested documents and arrays.
+	The script connects the specified server and shows databases, collections,
+	views, documents including nested documents and arrays. Root documents may
+	be viewed and edited as JSON. Nested documents may not be edited directly.
 
 	Paging. Large collections is not a problem. Documents are shown 1000/page.
 	Press [PgDn]/[PgUp] at last/first panel items to show next/previous pages.
 
+	Aggregation pipelines may be defined for custom panel views of collections.
+	If result documents have the same _id as the source collection then they
+	are edited and deleted in the source collection from this custom view.
+
 	KEYS AND ACTIONS
 
 	[Del]
-		Deletes selected documents and empty databases and collections.
+		Deletes selected documents and empty databases, collections, views.
+		For deleting not empty containers use [ShiftDel].
 
 	[ShiftDel]
-		Also deletes not empty databases and collections.
+		Deletes selected databases, collections, views, documents.
 
 	[ShiftF6]
 		Prompts for a new name and renames the current collection.
 
 .Parameter ConnectionString
-		MongoDB server connection string. The default is ".", the default local
-		server and port. If DatabaseName and CollectionName are not defined
-		then a server panel with databases is opened.
+		Specifies the connection string. Use "." for the default local server.
+		If DatabaseName and CollectionName are omitted then the panel shows
+		databases.
 
 .Parameter DatabaseName
-		Specifies the database name. If CollectionName is not defined then a
-		database panel with collections is opened.
+		Specifies the database name. If CollectionName is not defined then the
+		panel shows this database collections.
 
 .Parameter CollectionName
-		Tells to open a panel with documents of the specified collection. This
-		parameter is used together with DatabaseName.
+		Specifies the collection name and tells to show collection documents.
+		This parameter must be used together with DatabaseName. Use Pipeline
+		in order to customise the view of this collection for the panel.
 
-.Parameter File
-		Specifies the bson data file path and tells to open it in the panel.
-		Documents in the file must have unique _id's.
+.Parameter Pipeline
+		Aggregation pipeline for the custom view of the specified collection.
 #>
 
-param
-(
-	[Parameter()]
-	$ConnectionString = '.',
-	$DatabaseName,
-	$CollectionName,
-	$File
+[CmdletBinding()]
+param(
+	[string]$ConnectionString = '.',
+	[string]$DatabaseName,
+	[string]$CollectionName,
+	$Pipeline
 )
 
 Import-Module Mdbc
 
-function global:New-MdbcServerExplorer($ConnectionString) {
+function global:Get-PMSourceCollection($Collection) {
+	$Database = $Collection.Database
+	$views = Get-MdbcCollection system.views
+
+	$r = Get-MdbcData @{_id = $Collection.CollectionNamespace.FullName} -Collection $views
+	if ($r) {
+		Get-MdbcCollection $r.viewOn
+	}
+	else {
+		$Collection
+	}
+}
+
+function global:New-PMServerExplorer($ConnectionString) {
 	Connect-Mdbc $ConnectionString
 	New-Object PowerShellFar.PowerExplorer 35495dbe-e693-45c6-ab0d-30f921b9c46f -Property @{
-		Data = @{Server = $Server}
+		Data = @{Client = $Client}
 		Functions = 'DeleteFiles'
 		AsCreatePanel = {
 			param($1)
@@ -73,13 +90,13 @@ function global:New-MdbcServerExplorer($ConnectionString) {
 		}
 		AsGetFiles = {
 			param($1)
-			foreach($databaseName in $1.Data.Server.GetDatabaseNames()) {
-				New-FarFile -Name $databaseName -Attributes 'Directory'
+			foreach($database in Get-MdbcDatabase -Client $1.Data.Client) {
+				New-FarFile -Name $database.DatabaseNamespace.DatabaseName -Attributes Directory -Data $database
 			}
 		}
 		AsExploreDirectory = {
 			param($1, $2)
-			New-MdbcDatabaseExplorer $1.Data.Server $2.File.Name
+			New-PMDatabaseExplorer $2.File.Data
 		}
 		AsDeleteFiles = {
 			param($1, $2)
@@ -94,14 +111,14 @@ $($2.Files[0..9] -join "`n")
 			# drop
 			foreach($file in $2.Files) {
 				try {
-					$database = $1.Data.Server.GetDatabase($file.Name)
+					$database = $file.Data
 					if (!$2.Force) {
-						$names = $database.GetCollectionNames()
-						if ($names.Count -ge 2 -or ($names.Count -eq 1 -and $names[0] -cne 'system.indexes')) {
-							throw "Database '$($file.Name)' is not empty."
+						$collections = @(Get-MdbcCollection -Database $database)
+						if ($collections) {
+							throw "Database '$($file.Name)' is not empty, $($collections.Count) collections."
 						}
 					}
-					$database.Drop()
+					Remove-MdbcDatabase $database.DatabaseNamespace.DatabaseName -Client $1.Data.Client
 				}
 				catch {
 					$2.Result = 'Incomplete'
@@ -113,9 +130,9 @@ $($2.Files[0..9] -join "`n")
 	}
 }
 
-function global:New-MdbcDatabaseExplorer($Server, $DatabaseName) {
+function global:New-PMDatabaseExplorer($Database) {
 	New-Object PowerShellFar.PowerExplorer f0dbf3cf-d45a-40fd-aa6f-7d8ccf5e3bf5 -Property @{
-		Data = @{Database = $Server.GetDatabase($DatabaseName)}
+		Data = @{Database = $Database}
 		Functions = 'DeleteFiles, RenameFile'
 		AsCreatePanel = {
 			param($1)
@@ -127,20 +144,19 @@ function global:New-MdbcDatabaseExplorer($Server, $DatabaseName) {
 		}
 		AsGetFiles = {
 			param($1)
-			foreach($collectionName in $1.Data.Database.GetCollectionNames()) {
-				New-FarFile -Name $collectionName -Attributes 'Directory'
+			foreach($collection in Get-MdbcCollection -Database $1.Data.Database) {
+				New-FarFile -Name $collection.CollectionNamespace.CollectionName -Attributes 'Directory' -Data $collection
 			}
 		}
 		AsExploreDirectory = {
 			param($1, $2)
-			New-MdbcCollectionExplorer $1.Data.Database $2.File.Name
+			New-PMCollectionExplorer $2.File.Data
 		}
 		AsRenameFile = {
 			param($1, $2)
 			$newName = ([string]$Far.Input('New name', $null, 'Rename', $2.File.Name)).Trim()
 			if (!$newName) {return}
-			if ($1.Data.Database.CollectionExists($newName)) {return $Far.Message('Collection exists')}
-			$1.Data.Database.RenameCollection($2.File.Name, $newName)
+			Rename-MdbcCollection $2.File.Name $newName -Database $1.Data.Database
 			$2.PostName = $newName
 		}
 		AsDeleteFiles = {
@@ -156,11 +172,11 @@ $($2.Files[0..9] -join "`n")
 			# drop
 			foreach($file in $2.Files) {
 				try {
-					$collection = $1.Data.Database.GetCollection($file.Name)
-					if (!$2.Force -and $collection.Count()) {
+					$collection = $file.Data
+					if (!$2.Force -and (Get-MdbcData -Collection $collection -Count -First 1)) {
 						throw "Collection '$($file.Name)' is not empty."
 					}
-					$collection.Drop()
+					Remove-MdbcCollection $collection.CollectionNamespace.CollectionName -Database $1.Data.Database
 				}
 				catch {
 					$2.Result = 'Incomplete'
@@ -172,28 +188,40 @@ $($2.Files[0..9] -join "`n")
 	}
 }
 
-function global:New-MdbcCollectionExplorer($Database, $CollectionName, $File) {
-	if ($File) {
-		Open-MdbcFile $File
-	}
-	else {
-		$Collection = $Database.GetCollection($CollectionName)
-	}
+function global:New-PMCollectionExplorer($Collection, $Pipeline) {
 	New-Object PowerShellFar.ObjectExplorer -Property @{
-		Data = @{ Collection = $Collection }
+		Data = @{
+			Collection = $Collection
+			Pipeline = $Pipeline
+			Source = Get-PMSourceCollection $Collection
+		}
 		FileComparer = [PowerShellFar.FileMetaComparer]'_id'
 		AsCreatePanel = {
 			param($1)
 			$panel = [PowerShellFar.ObjectPanel]$1
-			$panel.Title = 'Documents'
-			$panel.PageLimit = 1000
+			$title = $1.Data.Collection.CollectionNamespace.CollectionName
+			if ($1.Data.Collection -ne $1.Data.Source) {
+				$title = "$title ($($1.Data.Source.CollectionNamespace.CollectionName))"
+			}
+			if ($1.Data.Pipeline) {
+				$panel.Title = $title + ' (aggregate)'
+			}
+			else {
+				$panel.Title = $title
+				$panel.PageLimit = 1000
+			}
 			$1.Data.Panel = $panel
 			$panel
 		}
 		AsGetData = {
 			param($1, $2)
 			if ($2.NewFiles -or !$1.Cache) {
-				Get-MdbcData -Collection $1.Data.Collection -As PS -First $2.Limit -Skip $2.Offset
+				if ($1.Data.Pipeline) {
+					Invoke-MdbcAggregate $1.Data.Pipeline -Collection $1.Data.Collection -As PS
+				}
+				else {
+					Get-MdbcData -Collection $1.Data.Collection -As PS -First $2.Limit -Skip $2.Offset
+				}
 			}
 			else {
 				, $1.Cache
@@ -208,37 +236,28 @@ function global:New-MdbcCollectionExplorer($Database, $CollectionName, $File) {
 			}
 			# remove
 			try {
-				$2.FilesData |
-				New-MdbcData |
-				Remove-MdbcData -Collection $1.Data.Collection -ErrorAction 1
+				foreach($doc in $2.FilesData) {
+					Remove-MdbcData @{_id=$doc._id} -Collection $1.Data.Source -ErrorAction 1
+				}
 			}
 			catch {
 				$2.Result = 'Incomplete'
 				if ($2.UI) {Show-FarMessage "$_"}
 			}
-			Save-MdbcFile -Collection $1.Data.Collection
-			$1.Data.Panel.NeedsNewFiles = $1.Data.Collection -is [MongoDB.Driver.MongoCollection]
+			$1.Data.Panel.NeedsNewFiles = $true
 		}
 		AsGetContent = {
 			param($1, $2)
 
 			$id = $2.File.Data._id
 			if ($null -eq $id) {
-				$2.UseText = $2.File.Data | Format-List | Out-String
-				return
+				$doc = New-MdbcData $2.File.Data
+			}
+			else {
+				$doc = Get-MdbcData @{_id = $id} -Collection $1.Data.Source
 			}
 
-			$Collection = $1.Data.Collection
-			$doc = Get-MdbcData $id
-
-			$writer = New-Object System.IO.StringWriter
-			$settings = New-Object MongoDB.Bson.IO.JsonWriterSettings -Property @{Indent = $true}
-			[MongoDB.Bson.Serialization.BsonSerializer]::Serialize(
-				(New-Object MongoDB.Bson.IO.JsonWriter $writer, $settings),
-				$doc.ToBsonDocument()
-			)
-
-			$2.UseText = $writer.ToString()
+			$2.UseText = $doc.Print()
 			$2.UseFileExtension = '.js'
 			$2.CanSet = $true
 		}
@@ -247,21 +266,22 @@ function global:New-MdbcCollectionExplorer($Database, $CollectionName, $File) {
 
 			$id = $2.File.Data._id
 			if ($null -eq $id) {
+				Show-FarMessage "Document must have _id."
 				return
 			}
 
-			$Collection = $1.Data.Collection
-
-			$reader = [MongoDB.Bson.IO.BsonReader]::Create($2.Text)
-			$new = [MongoDB.Bson.Serialization.BsonSerializer]::Deserialize($reader, [Mdbc.Dictionary])
-
-			if ($id -cne $new._id) {
+			$new = [MongoDB.Bson.BsonDocument]::Parse($2.Text)
+			if ($id -cne $new['_id']) {
 				Show-FarMessage "Cannot change _id."
 				return
 			}
 
-			$new | Add-MdbcData -Update
-			Save-MdbcFile
+			try {
+				Set-MdbcData @{_id = $id} $new -Collection $1.Data.Source -ErrorAction 1
+			}
+			catch {
+				Show-FarMessage $_
+			}
 
 			$1.Cache.Clear()
 			$Far.Panel.Update($true)
@@ -270,16 +290,13 @@ function global:New-MdbcCollectionExplorer($Database, $CollectionName, $File) {
 }
 
 if ($CollectionName) {
-	Connect-Mdbc $ConnectionString $DataBaseName
-	(New-MdbcCollectionExplorer $Database $CollectionName).OpenPanel()
+	Connect-Mdbc $ConnectionString $DataBaseName $CollectionName
+	(New-PMCollectionExplorer $Collection $Pipeline).OpenPanel()
 }
 elseif ($DatabaseName) {
-	Connect-Mdbc $ConnectionString
-	(New-MdbcDatabaseExplorer $Server $DatabaseName).OpenPanel()
-}
-elseif ($File) {
-	(New-MdbcCollectionExplorer -File $File).OpenPanel()
+	Connect-Mdbc $ConnectionString $DatabaseName
+	(New-PMDatabaseExplorer $Database).OpenPanel()
 }
 else {
-	(New-MdbcServerExplorer $ConnectionString).OpenPanel()
+	(New-PMServerExplorer $ConnectionString).OpenPanel()
 }

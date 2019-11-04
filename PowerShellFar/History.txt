@@ -2,6 +2,15 @@ NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 Far Manager 3.0.5013
 FarNet 5.2.14
 
+= 5.2.9 =
+
+Panel-Mongo-.ps1
+- update for Mdbc v6
+- support views and aggregate pipelines
+
+Open-TextLink-.ps1
+- if the line has no links, show all URLs in the file
+
 = 5.2.8 =
 
 Open-TextLink-.ps1 -- Add `file:` to URL pattern.
