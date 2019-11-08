@@ -118,6 +118,10 @@ task Package BeginPackage, Help, {
 		Copy-Item -Destination z\tools\FarHome.x64\Plugins\FarNet $FarHome\Plugins\FarNet\FarNetMan.dll
 		Copy-Item -Destination z\tools\FarHome.x86\Plugins\FarNet FarNetMan\Release\Win32\FarNetMan.dll
 	}
+
+	# icon
+	$null = mkdir z\images
+	Copy-Item ..\Zoo\FarNetLogo.png z\images
 }
 
 # Set version
@@ -150,7 +154,7 @@ https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
 		<authors>Roman Kuzmin</authors>
 		<owners>Roman Kuzmin</owners>
 		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
-		<iconUrl>https://raw.githubusercontent.com/wiki/nightroman/FarNet/images/FarNetLogo.png</iconUrl>
+		<icon>images\FarNetLogo.png</icon>
 		<license type="expression">BSD-3-Clause</license>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$text</summary>

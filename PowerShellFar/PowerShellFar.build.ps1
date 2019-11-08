@@ -68,6 +68,10 @@ task Package Help, {
 	Copy-Item -Destination $dirMain About-PowerShellFar.htm, History.txt, LICENSE.txt, PowerShellFar.macro.lua
 	Copy-Item -Destination $dirMain $FarHome\FarNet\Modules\PowerShellFar\* -Recurse
 	Copy-Item -Destination $dirMain Bench -Recurse -Force
+
+	# icon
+	$null = mkdir z\images
+	Copy-Item ..\Zoo\FarNetLogo.png z\images
 }
 
 # Set version
@@ -100,7 +104,7 @@ https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
 		<authors>Roman Kuzmin</authors>
 		<owners>Roman Kuzmin</owners>
 		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
-		<iconUrl>https://raw.githubusercontent.com/wiki/nightroman/FarNet/images/FarNetLogo.png</iconUrl>
+		<icon>images\FarNetLogo.png</icon>
 		<license type="expression">BSD-3-Clause</license>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$text</summary>

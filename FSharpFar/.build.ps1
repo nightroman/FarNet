@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Build script (https://github.com/nightroman/Invoke-Build)
@@ -103,6 +102,10 @@ task Package Markdown, {
 		"$fromModule\System.Reflection.Metadata.dll"
 		"$fromModule\System.ValueTuple.dll"
 	)
+
+	# icon
+	$null = mkdir z\images
+	Copy-Item ..\Zoo\FarNetLogo.png z\images
 }
 
 #! dotnet made assembly: FileVersion is null (@1); so we used this command:
@@ -134,7 +137,7 @@ https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
 		<authors>Roman Kuzmin</authors>
 		<owners>Roman Kuzmin</owners>
 		<projectUrl>https://github.com/nightroman/FarNet/tree/master/FSharpFar</projectUrl>
-		<iconUrl>https://raw.githubusercontent.com/wiki/nightroman/FarNet/images/FarNetLogo.png</iconUrl>
+		<icon>images\FarNetLogo.png</icon>
 		<license type="expression">BSD-3-Clause</license>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$text</summary>
