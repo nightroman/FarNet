@@ -22,7 +22,6 @@ Panel-BitsTransfer-.ps1 Starts or manages file transfer jobs in a panel.
 Panel-DbData-.ps1 Panel DataTable rows.
 Panel-DbTable-.ps1 Panel database tables for the specified connection.
 Panel-Job-.ps1 Shows PowerShell jobs in a panel.
-Panel-Mongo-.ps1 MongoDB data browser.
 Panel-Process-.ps1 Panel current processes.
 Panel-Property-.ps1 Panel PowerShell provider item properties.
 Profile-.ps1 Main startup code (example).
