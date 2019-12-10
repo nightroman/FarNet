@@ -2,6 +2,15 @@ NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 Far Manager 3.0.5013
 FarNet 5.2.14
 
+= 5.2.11 =
+
+Session ApartmentState and script threads. The default apartment state is STA,
+like in other PowerShell hosts. Scripts are invoked in separate threads.
+Use the environment variable "PSF.ApartmentState" to change this:
+
+- "MTA", "STA" - set MTA/STA, invoke scripts in separate threads
+- "Unknown" - do not set ApartmentState, invoke scripts in the current thread
+
 = 5.2.10 =
 
 Removed Panel-Mongo-.ps1 from the package.

@@ -128,6 +128,22 @@ namespace PowerShellFar
 			}
 		}
 
+		static ApartmentState DefaultApartmentState()
+		{
+			var envApartmentState = Environment.GetEnvironmentVariable("PSF.ApartmentState");
+			if (envApartmentState == null)
+				return ApartmentState.STA;
+
+			try
+			{
+				return (ApartmentState)Enum.Parse(typeof(ApartmentState), envApartmentState);
+			}
+			catch
+			{
+				throw new InvalidOperationException($"{Res.Me}: Invalid environment PSF.ApartmentState={envApartmentState}");
+			}
+		}
+
 		void OpenRunspace(bool sync)
 		{
 			// host and UI
@@ -144,13 +160,16 @@ namespace PowerShellFar
 			Commands.BaseCmdlet.AddCmdlets(state);
 
 			// apartment
-			//! cannot use different with PSThreadOptions.UseCurrentThread
-			//state.ApartmentState = Environment.GetEnvironmentVariable("PSF.ApartmentState") == "MTA" ? ApartmentState.MTA : ApartmentState.STA;
+			//! cannot set different with PSThreadOptions.UseCurrentThread
+			var myApartmentState = DefaultApartmentState();
+			if (myApartmentState != ApartmentState.Unknown)
+				state.ApartmentState = myApartmentState;
 
 			// open/start runspace
 			Runspace = RunspaceFactory.CreateRunspace(FarHost, state);
-			Runspace.ThreadOptions = PSThreadOptions.UseCurrentThread;
 			Runspace.StateChanged += OnRunspaceStateEvent;
+			if (myApartmentState == ApartmentState.Unknown)
+				Runspace.ThreadOptions = PSThreadOptions.UseCurrentThread;
 			if (sync)
 				Runspace.Open();
 			else
