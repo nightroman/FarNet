@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Build script (https://github.com/nightroman/Invoke-Build)
@@ -14,8 +13,7 @@ task . Build, Clean
 
 # Build and install
 task Build {
-	Set-Alias MSBuild (Resolve-MSBuild)
-	exec { MSBuild CopyColor.csproj /p:Configuration=Release /p:FarHome=$FarHome }
+	exec { dotnet build CopyColor.csproj /p:Configuration=Release /p:FarHome=$FarHome }
 }
 
 # New About-CopyColor.htm
