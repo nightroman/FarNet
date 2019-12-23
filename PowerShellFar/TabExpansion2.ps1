@@ -1,6 +1,5 @@
-
 <#PSScriptInfo
-.VERSION 1.0.3
+.VERSION 1.0.4
 .AUTHOR Roman Kuzmin
 .COPYRIGHT (c) Roman Kuzmin
 .GUID 550bc198-dd44-4bbc-8ad7-ccf4b8bd2aff
@@ -205,25 +204,31 @@ function global:TabExpansion2 {
 	${*}.result = [System.Management.Automation.CommandCompletion]::CompleteInput(${*}.ast, ${*}.tokens, ${*}.positionOfCursor, ${*}.options)
 
 	# result processors?
-	if (!(${*}.processors = ${*}.options['ResultProcessors'])) {
-		return ${*}.result
+	if ((${*}.processors = ${*}.options['ResultProcessors'])) {
+		# work around read only
+		if (${*}.result.CompletionMatches.IsReadOnly) {
+			if (${*}.result.CompletionMatches) {
+				return ${*}.result
+			}
+			${*}.result = &{
+				param(${*})
+				function TabExpansion {'*'}
+				[System.Management.Automation.CommandCompletion]::CompleteInput("$(${*}.ast)", ${*}.positionOfCursor.Offset, $null)
+			} ${*}
+			${*}.result.CompletionMatches.Clear()
+		}
+
+		# invoke processors
+		foreach($_ in ${*}.processors) {
+			if (& $_ ${*}.result ${*}.ast ${*}.tokens ${*}.positionOfCursor ${*}.options) {
+				Write-Error -ErrorAction 0 "TabExpansion2: Unexpected output. Result processor: $_"
+			}
+		}
 	}
 
-	# work around read only
-	if (${*}.result.CompletionMatches.IsReadOnly) {
-		if (${*}.result.CompletionMatches) {
-			return ${*}.result
-		}
-		function TabExpansion {'*'}
-		${*}.result = [System.Management.Automation.CommandCompletion]::CompleteInput("$(${*}.ast)", ${*}.positionOfCursor.Offset, $null)
-		${*}.result.CompletionMatches.Clear()
-	}
-
-	# result processors
-	foreach($_ in ${*}.processors) {
-		if (& $_ ${*}.result ${*}.ast ${*}.tokens ${*}.positionOfCursor ${*}.options) {
-			Write-Error -ErrorAction 0 "TabExpansion2: Unexpected output. Result processor: $_"
-		}
+	# nothing and cursor char is `\w`? try insert space
+	if (!${*}.result.CompletionMatches -and ($_ = ${*}.inputScript) -and $_.Length -gt ${*}.cursorColumn -and $_[${*}.cursorColumn] -match '[\w$]') {
+		return TabExpansion2 ($_.Insert(${*}.cursorColumn, ' ')) ${*}.cursorColumn
 	}
 
 	${*}.result
