@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Test editor drawer with all console colors.
@@ -32,23 +31,23 @@ if ($drawer) {
 $drawer = $Psf.Manager.RegisterModuleDrawer(
 	'4ddb64b8-7954-41f0-a93f-d5f6a09cc752',
 	(New-Object FarNet.ModuleDrawerAttribute -Property @{Name = 'Fixed colors'; Mask = 'Colors'; Priority = 1}),
-	{&{
+	{
 		foreach($back in 0..15) {
 			foreach($fore in 0..15) {
 				$_.Colors.Add((New-Object FarNet.EditorColor $back, ($fore * 3), ($fore * 3 + 3), $fore, $back))
 			}
 		}
-	}}
+	}
 )
 
 # Make the temp file with the special text to be coloured on opening in the editor
-.{
+$(
 	foreach($back in 0..15) {
 		$line = ''
 		foreach($fore in 0..15) {$line += " {0:X} " -f $fore}
 		$line + (" {0:X} {0:d2} {1}" -f $back, [ConsoleColor]$back)
 	}
-} | Set-Content -LiteralPath $env:TEMP\Colors
+) | Set-Content -LiteralPath $env:TEMP\Colors
 
 # Open the editor, it will show the text with colours due to the registered drawer
 $Editor = New-FarEditor -Path $env:TEMP\Colors -DeleteSource File -IsLocked

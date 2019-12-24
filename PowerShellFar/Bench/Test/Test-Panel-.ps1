@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Test simple panels.
@@ -24,8 +23,7 @@
 	- [Esc] - closes a panel with a dialog
 #>
 
-param
-(
+param(
 	[switch]$NoDots
 )
 
@@ -42,9 +40,11 @@ $Data = New-Object PSObject -Property @{
 $Data | Add-Member ScriptMethod UpdateInfo {
 	++$this.Total
 
-	# panel, skip alien
+	# panel, skip unknown
 	$Panel = $Far.Panel
-	if ($Panel.Explorer.TypeId -ne 'd797d742-3b57-4bfd-a997-da83ba66b9bb') { return }
+	if ($Panel.Explorer.TypeId -ne 'd797d742-3b57-4bfd-a997-da83ba66b9bb') {
+		return
+	}
 
 	# generate new key labels
 	$Panel.SetKeyBars(@(
@@ -69,7 +69,7 @@ $Data | Add-Member ScriptMethod UpdateInfo {
 
 ### Explorer
 # It does not need the AsGetFiles, it uses the predefined Files list.
-$Explorer = New-Object PowerShellFar.PowerExplorer 'd797d742-3b57-4bfd-a997-da83ba66b9bb' -Property @{
+$Explorer = New-Object PowerShellFar.PowerExplorer d797d742-3b57-4bfd-a997-da83ba66b9bb -Property @{
 	Functions = 'AcceptFiles, DeleteFiles, ExportFiles, ImportFiles, GetContent, CreateFile'
 	Data = $Data
 	### AcceptFiles: called on [F5], [F6]
@@ -187,8 +187,7 @@ $Panel.InfoItems = @(
 )
 
 ### Escaping: closes the panel
-$Panel.add_Escaping({&{
-
+$Panel.add_Escaping({
 	# set processed
 	$_.Ignore = $true
 
@@ -202,11 +201,11 @@ $Panel.add_Escaping({&{
 			$this.Close($this.StartDirectory)
 		}
 	}
-}})
+})
 
 ### KeyPressed
 # Optionally process [F1]
-$Panel.add_KeyPressed({&{
+$Panel.add_KeyPressed({
 	# case [F1]:
 	if ($_.Key.Is([FarNet.KeyCode]::F1)) {
 		if (0 -eq (Show-FarMessage "[F1] has been pressed" "KeyPressed" -Choices '&Handle', '&Default')) {
@@ -214,7 +213,7 @@ $Panel.add_KeyPressed({&{
 			Show-FarMessage "[F1] has been handled" "KeyPressed"
 		}
 	}
-}})
+})
 
 ### Closing:
 <#
@@ -226,9 +225,9 @@ ps: Set-PSBreakpoint -Variable DebugPanelClosing
 ps: 1+1
 -- breakpoint is hit: this is bad, panel is not closing at all!
 #>
-$Panel.add_Closing({&{
+$Panel.add_Closing({
 	$DebugPanelClosing = $true
-}})
+})
 
 # Go!
 $Panel.Open()

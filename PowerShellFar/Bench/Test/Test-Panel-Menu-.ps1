@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Test panel with demo menu called on [ShiftF3]
@@ -19,20 +18,19 @@ $Panel = & $script -NoShow
 
 # called on creation of a menu; we may add our items
 $Panel.add_MenuCreating({
-
 	# to set data; mind Update and Redraw
-	$_.Menu.Items.Add((New-FarItem -Text '1. Set default values' -Click {&{
+	$_.Menu.Items.Add((New-FarItem -Text '1. Set default values' -Click {
 		$v = $this.Value
 		$v.Any = 'String 1'
 		$v.Item = Get-Item "$env:FARHOME\Far.exe"
 		$v.Process = Get-Process -Id $pid
 		$this.Update($true)
 		$this.Redraw()
-	}}))
+	}))
 
 	# to process current and selected items
-	$_.Menu.Items.Add((New-FarItem -Text '2. Get current and selected' -Click {&{
-		$text = .{
+	$_.Menu.Items.Add((New-FarItem -Text '2. Get current and selected' -Click {
+		$text = $(
 			# current item
 			$ci = $this.CurrentItem
 			if ($ci) {
@@ -47,9 +45,9 @@ $Panel.add_MenuCreating({
 			$si | .{process{
 				"$($_.Name) = $($_.Value)"
 			}}
-		} | Out-String
+		) | Out-String
 		$Far.Message($text)
-	}}))
+	}))
 
 	#! to check handlers global scope: variables $tmp1 and $tmp2 are global
 	#! V3 RC - handlers are invoked in own scope, these variables are local

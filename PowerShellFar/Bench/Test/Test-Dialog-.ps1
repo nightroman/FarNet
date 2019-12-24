@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Test dialog controls.
@@ -8,8 +7,7 @@
 	Just run it and press [F1] for description.
 #>
 
-param
-(
+param(
 	[int]$X = 2,
 	[int]$Y = 2
 )
@@ -26,7 +24,7 @@ $uc.NoFocus = $true
 # MouseClicked handler (emulates IDialog.MouseClicked)
 $uc.add_MouseClicked({ Show-FarMessage "UserControl.MouseClicked: $($_.Mouse)" })
 # Drawing; &{} is used to make variables local and avoid conflicts
-$uc.add_Drawing({&{
+$uc.add_Drawing({
 	# absolute dialog rectangle
 	$r1 = $this.Rect
 	# relative control rectangle
@@ -36,7 +34,7 @@ $uc.add_Drawing({&{
 	$y = $r1.Top + $r2.Bottom
 	# write blue text on 'DialogBox' background
 	$Far.UI.DrawColor($x + 4, $y, 'Blue', $Far.UI.GetPaletteBackground('DialogBox'), 'User control: for custom draw, for clicks on "dialog area", and etc.')
-}})
+})
 
 ### Box (double line)
 $b1 = $dialog.AddBox(3, 1, 0, 0, 'Double Box')
@@ -224,7 +222,6 @@ $more.add_ButtonClicked({
 
 ### [Test] Test the dialog by stepper
 $test.add_ButtonClicked({
-
 	# don't close the dialog
 	$_.Ignore = $true
 
@@ -236,8 +233,7 @@ $test.add_ButtonClicked({
 })
 
 ### [List] Test list controls
-function TestList($box, $fast)
-{
+function TestList($box, $fast) {
 	# disable redraw for better performance in 'slow' mode
 	$dialog.DisableRedraw()
 

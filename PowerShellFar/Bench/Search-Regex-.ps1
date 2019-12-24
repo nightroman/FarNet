@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Searches for a regex in files and work on results in a panel
@@ -27,8 +26,7 @@
 		Tells to search in all text, i.e. file read as one string.
 #>
 
-param
-(
+param(
 	$Regex,
 	$Options,
 	$InputObject,
@@ -41,8 +39,7 @@ Assert-Far -Panels -Message "Run this script from panels." -Title "Search-Regex"
 Add-Type @'
 using System;
 [Flags]
-public enum SearchRegexOptions
-{
+public enum SearchRegexOptions {
 	None = 0,
 	IgnoreCase = 1, ic = 1,
 	Multiline = 2, m = 2,
@@ -237,8 +234,7 @@ if ($parameters.Script) {
 
 ### Start search as a background job
 $job = Start-FarJob -Output -Parameters:$parameters {
-	param
-	(
+	param(
 		$Script,
 		$Items,
 		$Regex,
@@ -249,7 +245,7 @@ $job = Start-FarJob -Output -Parameters:$parameters {
 	)
 	$Out.Total = 0
 	$re = $Regex
-	.{
+	$(
 		if ($Script) {
 			Set-Location -LiteralPath $Path
 			& $Script
@@ -257,10 +253,10 @@ $job = Start-FarJob -Output -Parameters:$parameters {
 		else {
 			$Items
 		}
-	} | .{process{
+	) | .{process{
 		$item = $_
 		trap {continue}
-		.{
+		$(
 			if ($item -is [string]) {
 				$item = Get-Item -LiteralPath $item -Force
 			}
@@ -306,7 +302,7 @@ $job = Start-FarJob -Output -Parameters:$parameters {
 					}
 				}
 			}
-		}
+		)
 	}}
 }
 
@@ -347,7 +343,7 @@ $plan.IsFullScreen = $true
 $Panel.SetPlan('LongDescriptions', $plan)
 
 ### Idled: checks new data and updates
-$Panel.add_Idled({&{
+$Panel.add_Idled({
 	$job = $this.Explorer.Data
 	if (!$job.Parameters.Done) {
 		if ($job.Output.Count) {
@@ -363,10 +359,10 @@ $Panel.add_Idled({&{
 			$Far.UI.SetProgressFlash()
 		}
 	}
-}})
+})
 
 ### KeyPressed: handles keys
-$Panel.add_KeyPressed({&{
+$Panel.add_KeyPressed({
 	### [Enter] opens an editor at the selected match
 	if ($_.Key.Is([FarNet.KeyCode]::Enter) -and !$Far.CommandLine.Length) {
 		$file = $this.CurrentFile
@@ -394,10 +390,10 @@ $Panel.add_KeyPressed({&{
 		$_.Ignore = $true
 		return
 	}
-}})
+})
 
 ### Escaping: ask for exit
-$Panel.add_Escaping({&{
+$Panel.add_Escaping({
 	# processed
 	$_.Ignore = $true
 	# close if empty:
@@ -415,7 +411,7 @@ $Panel.add_Escaping({&{
 	elseif ($r -eq 1) {
 		$this.Push()
 	}
-}})
+})
 
 ### Go!
 $Panel.Open()

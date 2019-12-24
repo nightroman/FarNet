@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Shows internal names of pressed keys.
@@ -45,17 +44,17 @@ $5 = $dialog.AddButton(0, 5, 'Cancel')
 $5.CenterGroup = $true
 
 ### process pressed keys
-$2.add_KeyPressed({&{
+$2.add_KeyPressed({
 	if (!$_.Key.Is([FarNet.KeyCode]::Escape) -or $2.Text -ne 'Esc') {
 		$_.Ignore = $true
 		$2.Text = $Far.KeyInfoToName($_.Key)
 	}
-}})
+})
 
 ### copy to clipboard
-$6.add_ButtonClicked({&{
+$6.add_ButtonClicked({
 	$Far.CopyToClipboard($2.Text)
-}})
+})
 
 ### return the key name
 if ($dialog.Show() -and $dialog.Selected -eq $4) {

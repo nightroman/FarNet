@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Editor profile (example).
@@ -16,12 +15,12 @@
 New-Variable Editor.Data @{} -Scope Global -Option ReadOnly -Description 'Editor handlers data.' -ErrorAction Stop
 
 ### GotFocus handler; it resets old data
-$Far.AnyEditor.add_GotFocus({&{
+$Far.AnyEditor.add_GotFocus({
 	${Editor.Data}.Clear()
-}})
+})
 
 ### Key down handler
-$Far.AnyEditor.add_KeyDown({&{
+$Far.AnyEditor.add_KeyDown({
 	### F1
 	if ($_.Key.Is([FarNet.KeyCode]::F1)) {
 		if ($this.FileName -like '*.hlf') {
@@ -33,10 +32,10 @@ $Far.AnyEditor.add_KeyDown({&{
 			Show-Markdown-.ps1 -Help
 		}
 	}
-}})
+})
 
 ### Mouse click handler
-$Far.AnyEditor.add_MouseClick({&{
+$Far.AnyEditor.add_MouseClick({
 	$m = $_.Mouse
 	### Left click
 	if ($m.Buttons -eq 'Left') {
@@ -69,10 +68,10 @@ $Far.AnyEditor.add_MouseClick({&{
 			)
 		}
 	}
-}})
+})
 
 ### Mouse move handler
-$Far.AnyEditor.add_MouseMove({&{
+$Far.AnyEditor.add_MouseMove({
 	$m = $_.Mouse
 	### Left moved
 	if ($m.Buttons -eq 'Left') {
@@ -92,4 +91,4 @@ $Far.AnyEditor.add_MouseMove({&{
 			}
 		}
 	}
-}})
+})
