@@ -647,14 +647,14 @@ Continue with this current directory?
 			string currentDirectory = A.Psf.SyncPaths();
 			try
 			{
-				string drive = UI.SelectMenu.SelectDrive(null, true);
+				string drive = UI.SelectMenu.SelectPowerPanel();
 				if (drive == null)
 					return;
 
 				AnyPanel ap;
-				if (drive == "Folder &tree")
+				if (drive == UI.SelectMenu.TextFolderTree)
 					ap = new FolderTree();
-				else if (drive == "&Any objects")
+				else if (drive == UI.SelectMenu.TextAnyObjects)
 					ap = new ObjectPanel();
 				else
 					ap = new ItemPanel(drive);

@@ -441,8 +441,7 @@ as wildcard characters.
 [Contents](#Contents)
 [Power panel](#PowerPanel)
 
-This menu opens a panel for any .NET objects or a provider panel at the
-selected drive.
+This menu shows special panels and PowerShell provider drive panels.
 
 `[Enter]` Opens the selected panel.
 

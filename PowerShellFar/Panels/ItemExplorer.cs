@@ -231,24 +231,15 @@ namespace PowerShellFar
 			if (path.Length > iSlash + 2)
 				args.PostName = path.Substring(iSlash + 1);
 
+			// remove name
 			path = path.Substring(0, iSlash);
-			if (path.StartsWith("\\\\", StringComparison.Ordinal)) //HACK network path
-			{
-				iSlash = path.LastIndexOf('\\');
-				if (iSlash <= 1)
-				{
-					// show computer shares menu
-					string computer = path.Substring(2);
-					string share = UI.SelectMenu.SelectShare(computer); //???? kill?
-					if (share == null)
-						return null;
-					else
-						path += "\\" + share;
-				}
-			}
+
+			// skip network path root ("\\ComputerName")
+			if (path.StartsWith("\\\\", StringComparison.Ordinal) && path.LastIndexOf('\\') <= 1)
+				return null;
 
 			// add \, else we can't step to the root from level 1
-			if (path != null && path.EndsWith(":", StringComparison.Ordinal))
+			if (path.EndsWith(":", StringComparison.Ordinal))
 				path += "\\";
 
 			return Explore(path);
