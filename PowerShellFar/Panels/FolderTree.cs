@@ -2,15 +2,15 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
-/*
-_090810_180151
- * File system: use and process Hidden attributes in the expected way.
- * Folders use a directory flag (to consume native Far highlighting of directories, not files!).
-*/
+// _090810_180151 Why attributes:
+// * File system: Hidden attribute should work as usual.
+// * Ideally, folders should use Directory flag to consume native Far highlighting of directories.
+// But this is bad due to "Show directories first" which we cannot turn off, there is no "start mode" of it.
+// To work around, drop Directory flags. And maybe then we do not need IgnoreDirectoryFlag (_090810_180151).
+// Unless, start DirectoriesFirst is supported later.
 
-using System;
-using System.Management.Automation;
 using FarNet;
+using System.Management.Automation;
 
 namespace PowerShellFar
 {

@@ -54,11 +54,8 @@ namespace PowerShellFar
 					t.Description = pi.Value.ToString();
 
 				// attributes _090810_180151
-				FileSystemInfo fsi = item.BaseObject as FileSystemInfo;
-				if (fsi != null)
-					t.Attributes = fsi.Attributes;
-				else
-					t.Attributes = FileAttributes.Directory;
+				if (item.BaseObject is FileSystemInfo fsi)
+					t.Attributes = fsi.Attributes & ~FileAttributes.Directory;
 			}
 		}
 		void Reset(string path)
