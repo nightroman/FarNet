@@ -1,5 +1,8 @@
-
 # HtmlToFarHelp Release Notes
+
+## v1.0.5
+
+Avoid unwanted new lines in Pandoc HTML definition lists.
 
 ## v1.0.4
 

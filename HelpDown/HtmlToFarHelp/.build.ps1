@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Build script (https://github.com/nightroman/Invoke-Build)
@@ -31,6 +30,10 @@ task Package ConvertMarkdown, {
 	# copy files
 	Copy-Item -Destination z\tools LICENSE.txt, README.htm, Release-Notes.htm, $Bin\HtmlToFarHelp.exe
 	Copy-Item -Destination z\tools\Demo Demo.text, Demo.htm, Demo.hlf
+
+	# icon
+	$null = mkdir z\images
+	Copy-Item HtmlToFarHelp.png z\images
 }
 
 # Get version
@@ -58,8 +61,8 @@ The tool requires .NET Framework 3.5 or above.
 		<owners>Roman Kuzmin</owners>
 		<authors>Roman Kuzmin</authors>
 		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
-		<iconUrl>https://raw.githubusercontent.com/nightroman/FarNet/master/HelpDown/HtmlToFarHelp/HtmlToFarHelp.png</iconUrl>
-		<licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+		<license type="expression">Apache-2.0</license>
+		<icon>images\HtmlToFarHelp.png</icon>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$text</summary>
 		<description>$text</description>

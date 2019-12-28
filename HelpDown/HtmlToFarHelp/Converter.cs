@@ -1,5 +1,5 @@
 ﻿
-// Copyright 2012-2016 Roman Kuzmin
+// Copyright (c) Roman Kuzmin
 // http://www.apache.org/licenses/LICENSE-2.0
 
 using System;
@@ -272,6 +272,11 @@ namespace HtmlToFarHelp
 				case "strong": Emphasis2(); break;
 				case "ul": List2(); break;
 			}
+
+			//! Pandoc produces `<dd>XYZ\r\n</dd>` with unwanted `\r\n` which leaves _needNewLine=true.
+			//! This affects the next item and gives `\r\n \r\nXYZ` instead of `\r\n XYZ`.
+			//! Ultimate solution: reset _needNewLine on each EndElement.
+			_needNewLine = false;
 		}
 		void A1()
 		{

@@ -1,5 +1,5 @@
 ﻿
-// Copyright 2012-2016 Roman Kuzmin
+// Copyright (c) Roman Kuzmin
 // http://www.apache.org/licenses/LICENSE-2.0
 
 using System;
@@ -11,12 +11,12 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Xml;
 
-[assembly: AssemblyVersion("1.0.4")]
+[assembly: AssemblyVersion("1.0.5")]
 [assembly: AssemblyProduct("HtmlToFarHelp")]
 [assembly: AssemblyTitle("HtmlToFarHelp")]
 [assembly: AssemblyDescription("HtmlToFarHelp - converts HTML to Far Manager help")]
 [assembly: AssemblyCompany("https://github.com/nightroman/FarNet")]
-[assembly: AssemblyCopyright("Copyright (c) 2012-2016 Roman Kuzmin")]
+[assembly: AssemblyCopyright("Copyright (c) Roman Kuzmin")]
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
 

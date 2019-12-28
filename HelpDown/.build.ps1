@@ -1,14 +1,14 @@
-
 <#
 .Synopsis
 	Build script (https://github.com/nightroman/Invoke-Build)
 
 .Description
-	- Before changes run Test. It creates or updates files in SampleHome*.
+	- Before changes run Test. It creates or updates files in $SampleHome*.
 	- Make changes, run Test, watch comparison with saved output samples.
 
 .Parameter Bin
 		Installation directory path for .exe files. Default: %BIN%.
+
 .Parameter Configuration
 		Build configuration. Default: Release.
 #>
@@ -65,7 +65,7 @@ function Test-File($File, $Root, $Mode)
 	# HTML
 	switch($Mode) {
 		1 { exec { MarkdownToHtml.exe From=$File To=$htm } }
-		2 { exec { pandoc.exe --standalone --from=markdown_phpextra --wrap=preserve $File -o $htm } }
+		2 { exec { pandoc.exe  $File -o $htm --standalone --from=markdown_phpextra --wrap=preserve --metadata=pagetitle:Test} }
 	}
 
 	# HLF
