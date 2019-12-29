@@ -1,15 +1,18 @@
-
 # HtmlToFarHelp
 
+[Pandoc]: https://github.com/jgm/pandoc
+[MarkdownToHtml]: https://www.nuget.org/packages/MarkdownToHtml
+[About-PowerShellFar.text]: https://github.com/nightroman/FarNet/blob/master/PowerShellFar/About-PowerShellFar.text
+
+---
 ### Synopsis
 
 HtmlToFarHelp.exe converts HTML files with compatible structure to HLF
 (Far Manager help format) and performs sanity checks for unique topic
 anchors, valid topic links, and etc.
 
-The tool requires .NET Framework 3.5 or above.
+The tool requires .NET Framework 4.0.
 
----
 ### Syntax
 
     HtmlToFarHelp.exe key=value ...
@@ -29,7 +32,7 @@ Examples
 ### Description
 
 *HtmlToFarHelp.exe* is supposed to be used together with markdown converters
-like [pandoc] or [MarkdownToHtml], MarkdownToHtml is obsolete.
+like [Pandoc] or [MarkdownToHtml] (*obsolete, to be retired*).
 
 The recommended scenario is to compose manuals in markdown files, convert them
 to HTML by a converter and then convert to HLF. Markdown is simpler than HLF
@@ -67,7 +70,7 @@ intermediate file, it is also used as the manual.
 ---
 ### Demo
 
-The directory *Demo* contains three files:
+The directory *Demo* contains:
 
 - *Demo.text*: The markdown source file showing a lot of features.
 - *Demo.htm*: The HTML file created from *Demo.text* by *MarkdownToHtml*.
@@ -82,7 +85,6 @@ Download and unpack it in the current location by this PowerShell command:
     Invoke-Expression "& {$((New-Object Net.WebClient).DownloadString('https://github.com/nightroman/PowerShelf/raw/master/Save-NuGetTool.ps1'))} HtmlToFarHelp"
 
 ---
+### See also
 
-[pandoc]: https://github.com/jgm/pandoc
-[MarkdownToHtml]: https://www.nuget.org/packages/MarkdownToHtml
-[About-PowerShellFar.text]: https://github.com/nightroman/FarNet/blob/master/PowerShellFar/About-PowerShellFar.text
+- [Release Notes](https://github.com/nightroman/FarNet/blob/master/HelpDown/HtmlToFarHelp/Release-Notes.md)

@@ -25,14 +25,10 @@ $SampleHome2 = "$HOME\data\HelpDown\2"
 # Default task.
 task . Build, Test, Clean
 
-# Build the solution, install the tools.
+# Build projects.
 task Build {
-	use * MSBuild
-	exec { MSBuild HelpDown.sln /t:Build /p:Configuration=$Configuration }
-	Copy-Item -Destination $Bin -LiteralPath @(
-		"HtmlToFarHelp\Bin\$Configuration\HtmlToFarHelp.exe"
-		"MarkdownToHtml\Bin\$Configuration\MarkdownToHtml.exe"
-	)
+	Invoke-Build Build HtmlToFarHelp\.build.ps1
+	Invoke-Build Build MarkdownToHtml\.build.ps1
 }
 
 # Remove temp files.
@@ -65,7 +61,7 @@ function Test-File($File, $Root, $Mode)
 	# HTML
 	switch($Mode) {
 		1 { exec { MarkdownToHtml.exe From=$File To=$htm } }
-		2 { exec { pandoc.exe  $File -o $htm --standalone --from=markdown_phpextra --wrap=preserve --metadata=pagetitle:Test} }
+		2 { exec { pandoc.exe $File -o $htm --from=markdown_phpextra --wrap=preserve } }
 	}
 
 	# HLF

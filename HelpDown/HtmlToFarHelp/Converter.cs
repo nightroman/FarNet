@@ -28,7 +28,6 @@ namespace HtmlToFarHelp
 		readonly Regex _reSpaces = new Regex(" +");
 		readonly Regex _reUnindent = new Regex(@"\r?\n[\ \t]+");
 		readonly Regex _reOptions = new Regex(@"^\s*HLF:\s*(.*)", RegexOptions.IgnoreCase | RegexOptions.Singleline);
-		readonly Regex _reWinNewLine = new Regex(@"(?<!\r)\n"); //|\r(?!\n)
 		readonly char[] TrimNewLine = new char[] { '\r', '\n' };
 		readonly HashSet<string> _topics = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		readonly HashSet<string> _links = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -195,8 +194,8 @@ namespace HtmlToFarHelp
 		}
 		void Whitespace()
 		{
-			if (_reSpaces.IsMatch(Reader.Value) || _para > 0)
-				Writer.Write(Reader.Value);
+			if (_para > 0 || _reSpaces.IsMatch(Reader.Value))
+				Writer.Write(Kit.FixNewLine(Reader.Value));
 		}
 		void Throw(string text)
 		{
@@ -294,7 +293,7 @@ namespace HtmlToFarHelp
 			if (Reader.NodeType != XmlNodeType.Text)
 				Throw(ErrExpectedA);
 
-			var text = _reWinNewLine.Replace(Reader.Value, "\r\n");
+			var text = Kit.FixNewLine(Reader.Value);
 			Writer.Write("~{0}~@{1}@", Escape(text), href.Replace("@", "@@"));
 		}
 		void Heading1()
@@ -463,8 +462,8 @@ namespace HtmlToFarHelp
 			if (Reader.NodeType != XmlNodeType.Element || Reader.Name != "code")
 				Throw(ErrPreCode);
 
-			var code = Reader.ReadElementContentAsString().Trim();
-			var lines = code.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None); //TODO make a static array
+			var code = Reader.ReadElementContentAsString().TrimEnd();
+			var lines = Kit.TextToLines(code);
 
 			Writer.WriteLine();
 			Writer.WriteLine();
@@ -490,7 +489,7 @@ namespace HtmlToFarHelp
 		void Text()
 		{
 			++_countTextInPara;
-			var text = _reWinNewLine.Replace(Reader.Value, "\r\n");
+			var text = Kit.FixNewLine(Reader.Value);
 
 			NewLine();
 

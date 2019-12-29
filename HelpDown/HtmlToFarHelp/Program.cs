@@ -6,19 +6,8 @@ using System;
 using System.Collections;
 using System.Data.Common;
 using System.IO;
-using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Xml;
-
-[assembly: AssemblyVersion("1.0.5")]
-[assembly: AssemblyProduct("HtmlToFarHelp")]
-[assembly: AssemblyTitle("HtmlToFarHelp")]
-[assembly: AssemblyDescription("HtmlToFarHelp - converts HTML to Far Manager help")]
-[assembly: AssemblyCompany("https://github.com/nightroman/FarNet")]
-[assembly: AssemblyCopyright("Copyright (c) Roman Kuzmin")]
-[assembly: ComVisible(false)]
-[assembly: CLSCompliant(true)]
 
 namespace HtmlToFarHelp
 {
@@ -64,18 +53,24 @@ Keys:
 
 			try
 			{
-				var converter = new Converter();
-				using (var reader = new XmlTextReader(from))
+				var settings = new XmlReaderSettings
 				{
+					ConformanceLevel = ConformanceLevel.Auto,
+					// net40
+					DtdProcessing = DtdProcessing.Ignore,
 					//! pandoc
-					reader.XmlResolver = null;
+					XmlResolver = null
+				};
 
-					using (var writer = new StreamWriter(to, false, Encoding.UTF8))
+				using (var reader = XmlReader.Create(from, settings))
+				using (var writer = new StreamWriter(to, false, Encoding.UTF8))
+				{
+					var converter = new Converter
 					{
-						converter.Reader = reader;
-						converter.Writer = writer;
-						converter.Run();
-					}
+						Reader = reader,
+						Writer = writer
+					};
+					converter.Run();
 				}
 
 				return 0;

@@ -1,12 +1,18 @@
-
 <#
 .Synopsis
 	Build script (https://github.com/nightroman/Invoke-Build)
 #>
 
 param(
-	$Bin = (property Bin)
+	$Bin = (property Bin),
+	$Configuration = (property Configuration Release)
 )
+
+task Build {
+	$MSBuild = Resolve-MSBuild
+	exec { & $MSBuild /t:Build /p:Configuration=$Configuration }
+	Copy-Item -Destination $Bin -LiteralPath Bin\$Configuration\MarkdownToHtml.exe
+}
 
 # Convert markdown for packaging
 task ConvertMarkdown {
