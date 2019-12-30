@@ -20,5 +20,29 @@ namespace HtmlToFarHelp
 		{
 			return text.Split(_splitLines, StringSplitOptions.None);
 		}
+
+		static readonly Regex _reNewLine = new Regex(@"\r?\n");
+		public static string EmphasisText(string text)
+		{
+			return _reNewLine.Replace(text, "#\r\n#");
+		}
+
+		static readonly Regex _reSpaces = new Regex(" +"); //??
+		public static bool HasSpaces(string value)
+		{
+			return _reSpaces.IsMatch(value);
+		}
+
+		static readonly Regex _reUnindent = new Regex(@"\r?\n[\ \t]+");
+		public static string UnindentText(string text)
+		{
+			return _reUnindent.Replace(text, "\r\n");
+		}
+
+		static readonly Regex _reOptions = new Regex(@"^\s*HLF:\s*(.*)", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+		public static Match MatchOptions(string text)
+		{
+			return _reOptions.Match(text);
+		}
 	}
 }

@@ -3,11 +3,8 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Xml;
 
 namespace HtmlToFarHelp
@@ -24,10 +21,6 @@ namespace HtmlToFarHelp
 		const string ErrTwoTopics = "The topic id '{0}' is used twice.";
 		const string ErrUnexpectedElement = "Unexpected element '{0}'.";
 		const string ErrUnexpectedNode = "Unexpected node {0} {1}.";
-		readonly Regex _reNewLine = new Regex(@"\r?\n");
-		readonly Regex _reSpaces = new Regex(" +");
-		readonly Regex _reUnindent = new Regex(@"\r?\n[\ \t]+");
-		readonly Regex _reOptions = new Regex(@"^\s*HLF:\s*(.*)", RegexOptions.IgnoreCase | RegexOptions.Singleline);
 		readonly char[] TrimNewLine = new char[] { '\r', '\n' };
 		readonly HashSet<string> _topics = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		readonly HashSet<string> _links = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -58,39 +51,6 @@ namespace HtmlToFarHelp
 		Options _options;
 		public XmlReader Reader { get; set; }
 		public StreamWriter Writer { get; set; }
-		static Options ParseOptions(Options options, string optionString)
-		{
-			try
-			{
-				var builder = new DbConnectionStringBuilder();
-				builder.ConnectionString = optionString;
-
-				foreach (DictionaryEntry it in (IDictionary)builder)
-				{
-					var value = it.Value.ToString();
-					switch (it.Key.ToString())
-					{
-						case "centerheading": options.CenterHeading = bool.Parse(value); break;
-						case "indentcode": options.IndentCode = int.Parse(value); break;
-						case "indentlist": options.IndentList = int.Parse(value); break;
-						case "indentpara": options.IndentPara = int.Parse(value); break;
-						case "indentquote": options.IndentQuote = int.Parse(value); break;
-						case "language": options.Language = value; break;
-						case "margin": options.Margin = int.Parse(value); break;
-						case "plaincode": options.PlainCode = bool.Parse(value); break;
-						case "plainheading": options.PlainHeading = bool.Parse(value); break;
-						case "plugincontents": options.PluginContents = value; break;
-						default: throw new ArgumentException("Unknown option: " + it.Key);
-					}
-				}
-			}
-			catch (Exception e)
-			{
-				throw new FormatException("Error on parsing HLF options: " + e.Message, e);
-			}
-
-			return options;
-		}
 		void ProcessOptions()
 		{
 			_IndentList_ = "".PadRight(_options.Margin + _options.IndentList, ' ');
@@ -155,7 +115,7 @@ namespace HtmlToFarHelp
 		}
 		void Comment()
 		{
-			var match = _reOptions.Match(Reader.Value);
+			var match = Kit.MatchOptions(Reader.Value);
 			if (!match.Success)
 				return;
 
@@ -168,12 +128,12 @@ namespace HtmlToFarHelp
 			else if (_topics.Count > 0)
 			{
 				// update the current
-				_options = ParseOptions(_options, text);
+				_options = Options.Parse(_options, text);
 			}
 			else
 			{
 				// make the global and current the same
-				_globalOptions = ParseOptions(_globalOptions, text);
+				_globalOptions = Options.Parse(_globalOptions, text);
 				_options = _globalOptions;
 			}
 
@@ -194,7 +154,7 @@ namespace HtmlToFarHelp
 		}
 		void Whitespace()
 		{
-			if (_para > 0 || _reSpaces.IsMatch(Reader.Value))
+			if (_para > 0 || Kit.HasSpaces(Reader.Value))
 				Writer.Write(Kit.FixNewLine(Reader.Value));
 		}
 		void Throw(string text)
@@ -508,14 +468,14 @@ namespace HtmlToFarHelp
 
 			// unindent second+ lines, otherwise HLF treats them as new para
 			if (_para > 0 || _list > 0)
-				text = _reUnindent.Replace(text, "\r\n");
+				text = Kit.UnindentText(text);
 
 			// escape
 			text = Escape(text);
 
 			// add extra # to the line end and to the next line start
 			if (_emphasis > 0)
-				text = _reNewLine.Replace(text, "#\r\n#");
+				text = Kit.EmphasisText(text);
 
 			Writer.Write(text);
 		}
