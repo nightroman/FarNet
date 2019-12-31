@@ -158,7 +158,7 @@ namespace PowerShellFar
 		/// </summary>
 		internal override void ShowHelpForPanel()
 		{
-			Far.Api.ShowHelpTopic("FolderTree");
+			Far.Api.ShowHelpTopic(HelpTopic.FolderTree);
 		}
 	}
 }

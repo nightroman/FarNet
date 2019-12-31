@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Build script (https://github.com/nightroman/Invoke-Build)
@@ -23,8 +22,8 @@ task Uninstall {
 }
 
 task Help {
-	exec { MarkdownToHtml "From=About-PowerShellFar.text" "To=About-PowerShellFar.htm" }
-	exec { HtmlToFarHelp "From=About-PowerShellFar.htm" "To=$PsfHome\PowerShellFar.hlf" }
+	exec { pandoc.exe README.md --output=About-PowerShellFar.htm --from=gfm --standalone --metadata=pagetitle:About-PowerShellFar }
+	exec { HtmlToFarHelp from=About-PowerShellFar.htm to=$PsfHome\PowerShellFar.hlf }
 }
 
 task InstallBin {

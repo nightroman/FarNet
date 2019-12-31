@@ -29,7 +29,6 @@ namespace HtmlToFarHelp
 		int _emphasis;
 		int _countParaInItem;
 		int _countTextInPara;
-		int _heading;
 		int _item;
 		int _itemCount;
 		int _list;
@@ -185,7 +184,7 @@ namespace HtmlToFarHelp
 				case "h3":
 				case "h4":
 				case "h5":
-				case "h6": Heading1(); break;
+				case "h6": Heading1(Reader.Name); break;
 				case "hr": Rule(); break;
 				case "li": Item1(); break;
 				case "ol": List1(ListKind.Ordered); break;
@@ -245,6 +244,8 @@ namespace HtmlToFarHelp
 			if (href.StartsWith("#"))
 			{
 				href = href.Substring(1);
+				if (href == _topicContentsId)
+					href = "Contents";
 				_links.Add(href);
 			}
 
@@ -256,17 +257,18 @@ namespace HtmlToFarHelp
 			var text = Kit.FixNewLine(Reader.Value);
 			Writer.Write("~{0}~@{1}@", Escape(text), href.Replace("@", "@@"));
 		}
-		void Heading1()
+		string _topicContentsId;
+		void Heading1(string tag)
 		{
 			Start();
 
-			++_heading;
 			Writer.WriteLine();
 			Writer.WriteLine();
 
-			string id = Reader.GetAttribute("id");
-			if (id == null)
+			var id = Reader.GetAttribute("id");
+			if (_topicContentsId != null && (id == null || string.CompareOrdinal(tag, _options.TopicHeading) > 0))
 			{
+				// internal heading
 				if (_options.CenterHeading)
 					Writer.Write("^");
 				else
@@ -274,10 +276,23 @@ namespace HtmlToFarHelp
 			}
 			else
 			{
-				if (!_topics.Add(id))
-					Throw(string.Format(ErrTwoTopics, id));
+				// new topic heading
+				if (_topicContentsId == null)
+				{
+					// first topic becomes "Contents"
+					_topicContentsId = id ?? "Contents";
+					_topics.Add("Contents");
+					Writer.WriteLine("@Contents");
+				}
+				else
+				{
+					// other topics
+					if (!_topics.Add(id))
+						Throw(string.Format(ErrTwoTopics, id));
 
-				Writer.WriteLine("@{0}", id);
+					Writer.WriteLine("@{0}", id);
+				}
+
 				if (_options.CenterHeading)
 					Writer.Write("$^");
 				else
@@ -292,7 +307,6 @@ namespace HtmlToFarHelp
 		}
 		void Heading2()
 		{
-			_heading = 0;
 			_emphasis = 0;
 
 			if (!_options.PlainHeading)

@@ -18,7 +18,7 @@ namespace PowerShellFar.UI
 			var m = Far.Api.CreateMenu();
 			m.AutoAssignHotkeys = true;
 			m.Title = "Power panel";
-			m.HelpTopic = Far.Api.GetHelpTopic("MenuPanels");
+			m.HelpTopic = Far.Api.GetHelpTopic(HelpTopic.PowerPanelMenu);
 
 			m.Add(TextFolderTree);
 			m.Add(TextAnyObjects);

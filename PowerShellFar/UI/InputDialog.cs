@@ -52,7 +52,7 @@ namespace PowerShellFar.UI
 						break;
 					case KeyCode.F1:
 						e.Ignore = true;
-						Help.ShowHelpForContext("InvokeCommandsDialog");
+						Help.ShowHelpForContext(HelpTopic.InvokeCommandsDialog);
 						break;
 				}
 			};

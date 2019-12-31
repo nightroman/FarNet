@@ -11,4 +11,10 @@ namespace HtmlToFarHelp
 		Unordered,
 		Definition
 	}
+
+	enum MarkdownKind
+	{
+		None,
+		Gfm
+	}
 }

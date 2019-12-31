@@ -1,24 +1,29 @@
-
 <#
 .Synopsis
 	Shows markdown as HTML or Far help file.
 	Author: Roman Kuzmin
 
 .Description
-	Requires pandoc.exe and HtmlToFarHelp.exe (NuGet) in the path.
+	Requires pandoc.exe and HtmlToFarHelp.exe in the path.
 
-	The script opens the current topic from the Far editor as HLF in the Far
-	help viewer (example: Profile-Editor-.ps1) or as HTML in the default
-	browser (example: Invoke-Editor-.ps1).
+	The script opens the current topic from the editor as HLF in help viewer
+	(example: Profile-Editor.ps1) or as HTML in the default browser (example:
+	Invoke-Editor-.ps1).
+
+	Markdown:
+	- if $env:markdown is set then it is used as pandoc --from
+	- .text files are treated as `markdown_phpextra`
+	- .md, .markdown are converted as `gfm`
 
 .Parameter FileName
-		Markdown path; if none then a file is taken from the editor.
+		Specifies the Markdown file. If it is omitted then the file is taken
+		from the current editor.
 
 .Parameter Topic
-		Help topic in a file.
+		Specifies the help topic.
 
 .Parameter Help
-		Tells to open as Far help.
+		Tells to open as help.
 #>
 
 [CmdletBinding()]
@@ -28,72 +33,89 @@ param(
 	[switch]$Help
 )
 
-function Show {
-	$htm = "$env:TEMP\markdown.htm"
+$ErrorActionPreference = 1
+trap {Write-Error -ErrorRecord $_}
 
-	if ($Help) {
-		MarkdownToHtml.exe "From=$FileName" "To=$htm"
+function Show-Markdown {
+	param(
+		[string]$FileName,
+		[string]$Extension = ([System.IO.Path]::GetExtension($FileName))
+	)
+
+	$htm = "$env:TEMP\markdown.htm"
+	$name = [System.IO.Path]::GetFileNameWithoutExtension($FileName)
+	$title = $name + ' - ' + [System.IO.Path]::GetDirectoryName($FileName)
+	if ($env:markdown) {
+		$format = $env:markdown
+	}
+	elseif ($Extension -eq '.text') {
+		$format = 'markdown_phpextra'
 	}
 	else {
-		$name = [System.IO.Path]::GetFileNameWithoutExtension($FileName)
-		$title = $name + ' - ' + [System.IO.Path]::GetDirectoryName($FileName)
-		$format = if ($env:markdown) {
-			$env:markdown
-		}
-		elseif ($ext -eq '.text') {
-			'markdown_phpextra'
-		}
-		elseif ($name -eq 'README' -or $FileName -match '\bwiki\b') {
-			'gfm'
-		}
-		else {
-			'markdown_strict+backtick_code_blocks'
-		}
-		#! https://github.com/jgm/pandoc/issues/4048
-		pandoc.exe --standalone --metadata=pagetitle=$title --from=$format --output=$htm $FileName
+		$format = 'gfm'
 	}
 
+	pandoc.exe $FileName --output=$htm --from=$format --standalone --metadata=pagetitle=$title
 	if ($LastExitCode) {throw 'pandoc.exe failed.'}
 
 	if ($Help) {
 		$hlf = "$env:TEMP\HtmlToFarHelp.hlf"
-		HtmlToFarHelp "From=$htm" "To=$hlf"
+		HtmlToFarHelp.exe from=$htm to=$hlf
 		if ($LastExitCode) {throw 'HtmlToFarHelp failed.'}
 		$Far.ShowHelp($hlf, $Topic, 'File')
 	}
 	elseif ($Topic) {
-		$url = "$env:TEMP\markdown.url"
-		Set-Content $url -Encoding Unicode "[InternetShortcut]`r`nURL=file://$htm#$Topic"
-		Invoke-Item $url
+		$url = "file://$htm#$Topic"
+		Start-Process $url
 	}
 	else {
 		Invoke-Item $htm
 	}
 }
 
-# open help by path and topic
+### open by path and topic
 if ($FileName) {
-	$FileName = Resolve-Path $FileName
-	Show
+	Show-Markdown (Resolve-Path $FileName)
 	return
 }
 
-# from editor?
+### open help from editor with current topic
+
+# check editor
 $editor = $Far.Editor
-if (!$editor -or $editor.FileName -notmatch '\.(text|md|markdown)$') {
-	Show-FarMessage "Run it with parameters or a markdown file in the editor."
+if (!$editor) {
+	Show-FarMessage "Run it with FileName or from editor."
+	return
+}
+
+# check file
+$FileName = $editor.FileName
+$Extension = [System.IO.Path]::GetExtension($FileName)
+if (@('.md', '.text', '.markdown') -notcontains $Extension) {
+	Show-FarMessage "Run it with FileName or .md, .text, .markdown in editor."
 	return
 }
 
 # commit
 $editor.Save()
 
-# open a file from editor with the current topic
-for($e = $editor.Caret.Y; $e -ge 0; --$e) {
-	if ($editor[$e].Text -match '^#+.*{#([a-zA-Z][a-zA-Z0-9_\-:.]*)}') {
-		$Topic = $matches[1]
-		break
+# open from editor with the current topic
+if ($Extension -eq '.text') {
+	# manual heading identifiers
+	for($i = $editor.Caret.Y; $i -ge 0; --$i) {
+		if ($editor[$i].Text -match '^#+.*{#([a-zA-Z][a-zA-Z0-9_\-:.]*)}') {
+			$Topic = $matches[1]
+			break
+		}
 	}
 }
-$FileName = $editor.FileName
-Show
+else {
+	# generated heading identifiers
+	for($i = $editor.Caret.Y; $i -ge 0; --$i) {
+		if ($editor[$i].Text -match '^##?\s+(.*)' -and $matches[1]) {
+			$Topic = ($matches[1] -replace '\s+', '-' -replace '[^\w\-]').ToLower()
+			break
+		}
+	}
+}
+Show-Markdown $FileName $Extension

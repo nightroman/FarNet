@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using MarkdownDeep;
 
-[assembly: AssemblyVersion("1.0.2")]
+[assembly: AssemblyVersion("1.0.3")]
 [assembly: AssemblyProduct("MarkdownToHtml")]
 [assembly: AssemblyTitle("MarkdownToHtml")]
 [assembly: AssemblyDescription("MarkdownToHtml - converts markdown to HTML")]

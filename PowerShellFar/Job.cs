@@ -399,7 +399,7 @@ namespace PowerShellFar
 			IMenu menu = Far.Api.CreateMenu();
 			menu.Title = Res.BackgroundJobs;
 			menu.ShowAmpersands = true;
-			menu.HelpTopic = Far.Api.GetHelpTopic("MenuBackgroundJobs");
+			menu.HelpTopic = Far.Api.GetHelpTopic(HelpTopic.BackgroundJobsMenu);
 			menu.AddKey(KeyCode.F3);
 			menu.AddKey(KeyCode.F5);
 			menu.AddKey(KeyCode.Delete);

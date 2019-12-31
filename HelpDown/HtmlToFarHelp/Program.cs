@@ -13,16 +13,17 @@ namespace HtmlToFarHelp
 {
 	class Program
 	{
-		const string Usage = @"Error: {0}
-{1}
+		const string Usage = @"
+Input: {0}
+Error: {1}
 
 Usage:
-  HtmlToFarHelp.exe key=value ...
-  HtmlToFarHelp.exe ""key = value; ...""
+    HtmlToFarHelp key=value ...
+    HtmlToFarHelp ""key = value; ...""
 
-Keys:
-  From = Input HTML file
-  To   = Output HLF file
+Input:
+    from = input HTML file
+    to = output HLF file
 ";
 		static int Main(string[] args)
 		{
@@ -38,16 +39,16 @@ Keys:
 					{
 						case "from": from = it.Value.ToString(); break;
 						case "to": to = it.Value.ToString(); break;
-						default: throw new ArgumentException("Unknown key: " + it.Key);
+						default: throw new Exception($"Unknown key: '{it.Key}'.");
 					}
 				}
 
-				if (from == null) throw new ArgumentException("Missing key 'From'.");
-				if (to == null) throw new ArgumentException("Missing key 'To'.");
+				if (from == null) throw new Exception("Missing required `from=<input-file>`");
+				if (to == null) throw new Exception("Missing required `to=<output-file>`");
 			}
-			catch (Exception e)
+			catch (Exception exn)
 			{
-				Console.Error.WriteLine(string.Format(null, Usage, e.Message, parameters));
+				Console.Error.WriteLine(string.Format(null, Usage, parameters, exn.Message));
 				return 1;
 			}
 
@@ -75,9 +76,9 @@ Keys:
 
 				return 0;
 			}
-			catch (Exception e)
+			catch (Exception exn)
 			{
-				Console.Error.WriteLine(e.Message);
+				Console.Error.WriteLine(exn.Message);
 				return 1;
 			}
 		}

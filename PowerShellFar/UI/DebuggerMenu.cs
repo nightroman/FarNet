@@ -19,7 +19,7 @@ namespace PowerShellFar.UI
 		{
 			_menu = Far.Api.CreateListMenu();
 			_menu.Title = "PowerShell debugger tools";
-			_menu.HelpTopic = Far.Api.GetHelpTopic("MenuDebugger");
+			_menu.HelpTopic = Far.Api.GetHelpTopic(HelpTopic.DebuggerMenu);
 			_menu.NoInfo = true;
 			_menu.ScreenMargin = Settings.Default.ListMenuScreenMargin;
 			_menu.UsualMargins = Settings.Default.ListMenuUsualMargins;

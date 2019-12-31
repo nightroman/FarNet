@@ -12,7 +12,7 @@ namespace PowerShellFar.UI
 		public CommandHistoryMenu(string prefix) : base(History.Log)
 		{
 			Settings.Default.ListMenu(Menu);
-			Menu.HelpTopic = Far.Api.GetHelpTopic("MenuCommandHistory");
+			Menu.HelpTopic = Far.Api.GetHelpTopic(HelpTopic.CommandHistory);
 			Menu.Title = "PowerShell history";
 			Menu.Incremental = prefix;
 		}

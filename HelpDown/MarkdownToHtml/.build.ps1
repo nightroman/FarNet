@@ -17,12 +17,11 @@ task Build {
 # Convert markdown for packaging
 task ConvertMarkdown {
 	exec { MarkdownToHtml.exe "from = README.md; to = README.htm" }
-	exec { MarkdownToHtml.exe "from = Release-Notes.md; to = Release-Notes.htm" }
 }
 
 # Remove temp files
 task Clean {
-	remove z, bin, obj, README.htm, Release-Notes.htm, MarkdownToHtml.*.nupkg
+	remove z, bin, obj, README.htm, *.nupkg
 }
 
 # Make package in z\tools
@@ -33,7 +32,7 @@ task Package ConvertMarkdown, {
 
 	# copy files
 	Copy-Item -Destination z\tools `
-	LICENSE.txt, README.htm, Release-Notes.htm, $Bin\MarkdownToHtml.exe, $Bin\MarkdownDeep.dll
+	LICENSE.txt, README.htm, $Bin\MarkdownToHtml.exe, $Bin\MarkdownDeep.dll
 }
 
 # Get version
@@ -45,9 +44,7 @@ task Version {
 # Make NuGet package
 task NuGet Package, Version, {
 	$text = @'
-MarkdownToHtml.exe converts markdown files to HTML files.
-
-The tool requires .NET Framework 3.5 or above.
+Obsolete, will be unlisted, use Pandoc instead.
 '@
 	# NuGet file
 	Set-Content z\Package.nuspec @"
@@ -59,8 +56,7 @@ The tool requires .NET Framework 3.5 or above.
 		<owners>Roman Kuzmin</owners>
 		<authors>Roman Kuzmin</authors>
 		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
-		<iconUrl>https://raw.githubusercontent.com/nightroman/FarNet/master/HelpDown/MarkdownToHtml/MarkdownToHtml.png</iconUrl>
-		<licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+		<license type="expression">Apache-2.0</license>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$text</summary>
 		<description>$text</description>

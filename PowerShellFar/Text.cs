@@ -11,17 +11,17 @@ namespace PowerShellFar
 	{
 		public const string
 			// main menu
-			MenuCommandConsole = "&c. Command console ", //! end space for right margin
-			MenuInvokeCommands = "&1. Invoke commands",
-			MenuInvokeSelected = "&2. Invoke selected",
-			MenuBackgroundJobs = "&3. Background jobs",
-			MenuCommandHistory = "&4. Command history",
-			MenuInteractive    = "&5. Interactive",
-			MenuPowerPanel     = "&6. Power panel",
-			MenuTabExpansion   = "&7. Complete",
-			MenuDebugger       = "&9. Debugger",
-			MenuError          = "&0. Errors",
-			MenuHelp           = "&?. Help",
+			MenuCommandConsole /**/ = "&c. Command console ", //! end space for right margin
+			MenuInvokeCommands /**/ = "&1. Invoke commands",
+			MenuInvokeSelected /**/ = "&2. Invoke selected",
+			MenuBackgroundJobs /**/ = "&3. Background jobs",
+			MenuCommandHistory /**/ = "&4. Command history",
+			MenuInteractive /*   */ = "&5. Interactive",
+			MenuPowerPanel /*    */ = "&6. Power panel",
+			MenuTabExpansion /*  */ = "&7. Complete",
+			MenuDebugger /*      */ = "&9. Debugger",
+			MenuError /*         */ = "&0. Errors",
+			MenuHelp /*          */ = "&?. Help",
 			// ask
 			AskSaveModified = "Would you like to save modified data?",
 			// errors
@@ -62,6 +62,31 @@ namespace PowerShellFar
 
 			// Main name
 			Me = "PowerShellFar";
+	}
+
+	/// <summary>
+	/// Help topics.
+	/// </summary>
+	static class HelpTopic
+	{
+		public const string
+			BreakpointDialog = "breakpoint-dialog",
+			CommandHistory = "command-history",
+			CommandLine = "command-line",
+			BackgroundJobsMenu = "background-jobs-menu",
+			DataPanel = "data-panel",
+			DebuggerDialog = "debugger-dialog",
+			DebuggerMenu = "debugger-menu",
+			ErrorsMenu = "errors-menu",
+			FolderTree = "folder-tree",
+			InteractiveMenu = "interactive-menu",
+			InvokeCommandsDialog = "invoke-commands-dialog",
+			ListPanel = "list-panel",
+			MenuCommands = "menu-commands",
+			PowerPanel = "power-panel",
+			PowerPanelMenu = "power-panel-menu",
+			TreePanel = "tree-panel",
+			Contents = "Contents";
 	}
 
 	/// <summary>

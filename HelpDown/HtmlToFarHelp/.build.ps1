@@ -7,6 +7,7 @@ param(
 	$Bin = (property Bin),
 	$Configuration = (property Configuration Release)
 )
+Set-StrictMode -Version 2
 
 function Get-Version {
 	switch -Regex -File Release-Notes.md { '##\s+v(\d+\.\d+\.\d+)' {return $Matches[1]} }
@@ -41,25 +42,23 @@ task Build {
 # Convert markdown for packaging
 task Markdown {
 	exec { MarkdownToHtml.exe "from = README.md; to = README.htm" }
-
-	exec { MarkdownToHtml.exe "from = Demo.text; to = Demo.htm" }
-	exec { HtmlToFarHelp.exe "from = Demo.htm; to = Demo.hlf" }
+	Demo\Convert-MarkdownToHelp.ps1
 }
 
 # Remove temp files
 task Clean {
-	remove z, bin, obj, Demo.htm, Demo.hlf, README.htm, HtmlToFarHelp.*.nupkg
+	remove z, bin, obj, README.htm, *.nupkg, Demo\README.htm, Demo\README.hlf
 }
 
 # Make package in z\tools
 task Package Markdown, {
-	# temp package folder
+	# package folder
 	remove z
 	$null = mkdir z\tools\Demo
 
 	# copy files
 	Copy-Item -Destination z\tools LICENSE.txt, README.htm, $Bin\HtmlToFarHelp.exe
-	Copy-Item -Destination z\tools\Demo Demo.text, Demo.htm, Demo.hlf
+	Copy-Item -Destination z\tools\Demo Demo\*
 
 	# icon
 	$null = mkdir z\images
@@ -90,9 +89,9 @@ The tool requires .NET Framework 4.0.
 		<version>$Version</version>
 		<owners>Roman Kuzmin</owners>
 		<authors>Roman Kuzmin</authors>
-		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
-		<license type="expression">Apache-2.0</license>
+		<projectUrl>https://github.com/nightroman/FarNet/HelpDown/HtmlToFarHelp</projectUrl>
 		<icon>images\HtmlToFarHelp.png</icon>
+		<license type="expression">Apache-2.0</license>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$text</summary>
 		<description>$text</description>
@@ -103,3 +102,54 @@ The tool requires .NET Framework 4.0.
 	# pack
 	exec { NuGet.exe pack z\Package.nuspec -NoPackageAnalysis }
 }
+
+class TestCase { $File; $Name; $Mode; $Root }
+$SampleHome1 = "$HOME\data\HelpDown\1" # MarkdownToHtml
+$SampleHome2 = "$HOME\data\HelpDown\2" # pandoc markdown_phpextra
+$SampleHome3 = "$HOME\data\HelpDown\3" # pandoc gfm
+
+# Test conversions and compare results.
+task Test {
+	$null = mkdir $SampleHome1 -Force
+	$null = mkdir $SampleHome2 -Force
+	$null = mkdir $SampleHome3 -Force
+
+	$tests = $(
+		foreach($_ in Get-ChildItem -Recurse -LiteralPath C:\ROM\FarDev\Code -Filter *.text) {
+			$Name = [System.IO.Path]::GetFileNameWithoutExtension($_.Name)
+			[TestCase]@{File = $_.FullName; Name = $Name; Mode = 1; Root = $SampleHome1}
+			[TestCase]@{File = $_.FullName; Name = $Name; Mode = 2; Root = $SampleHome2}
+		}
+
+		[TestCase]@{File = "Demo\README.md"; Name = 'HtmlToFarHelp.Demo'; Mode = 3; Root = $SampleHome3}
+		[TestCase]@{File = "..\..\PowerShellFar\README.md"; Name = 'About-PowerShellFar'; Mode = 3; Root = $SampleHome3}
+	)
+
+	foreach($test in $tests) {
+		"Testing $($test.File)"
+		Test-File $test
+	}
+}
+
+# Make HTM and HLF in $SampleHome, compare with saved, remove the same.
+function Test-File([TestCase]$Test) {
+	$htm = '{0}\{1}.htm' -f $Test.Root, $Test.Name
+	$hlf = '{0}\{1}.hlf' -f $Test.Root, $Test.Name
+	$hlf2 = '{0}\{1}.2.hlf' -f $Test.Root, $Test.Name
+
+	# HTML
+	switch($Test.Mode) {
+		1 { exec { MarkdownToHtml.exe from=$($Test.File) to=$htm } }
+		2 { exec { pandoc.exe $Test.File --output=$htm --from=markdown_phpextra --wrap=preserve } }
+		3 { exec { pandoc.exe $Test.File --output=$htm --from=gfm --wrap=preserve } }
+	}
+
+	# HLF
+	exec { HtmlToFarHelp From=$htm To=$hlf }
+
+	# compare
+	Assert-SameFile $hlf2 $hlf $env:MERGE
+	Remove-Item -LiteralPath $htm, $hlf
+}
+
+task . Build, Test, Clean

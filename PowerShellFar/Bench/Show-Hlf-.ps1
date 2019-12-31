@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Shows .hlf help file.
@@ -7,35 +6,33 @@
 .Description
 	It is similar to the plugin HlfViewer.
 
-	"What's it for if there is HlfViewer?" Well, originally it was created to
-	test IFar.ShowHelp(). Then, as far as it is created, why not to use it?
-	Besides, this way is perhaps more flexible.
-
 .Parameter FileName
-		Help file path; if none then a file is taken from the editor.
+		Specifies the help file. If it is omitted then the file is taken from
+		the current editor.
 
 .Parameter Topic
-		Help topic in a file.
+		Specifies the help topic.
 
 .Example
-	# Show Far help
+	># Show Far help
 	Show-Hlf- "$env:FARHOME\FarEng.hlf"
 
-	# Show PowerShellFar help topic Cmdlets
-	Show-Hlf- "$($Psf.AppHome)\PowerShellFar.hlf" Cmdlets
+.Example
+	># Show PowerShellFar help topic "profiles"
+	Show-Hlf- "$($Psf.AppHome)\PowerShellFar.hlf" profiles
 
 .Link
-	Profile-Editor-.ps1 - how to call it for .hlf file in editor by F1
+	Profile-Editor.ps1 - how to call it for .hlf file in editor by F1
 	(this is for demo, a better way is to use the menu and a macro).
 #>
 
-param
-(
-	[Parameter()][string]$FileName,
+[CmdletBinding()]
+param(
+	[string]$FileName,
 	[string]$Topic
 )
 
-# open help by path and topic
+# open by path and topic
 if ($FileName) {
 	$Far.ShowHelp((Resolve-Path $FileName), $Topic, 'File')
 	return
@@ -44,16 +41,16 @@ if ($FileName) {
 # from editor?
 $editor = $Far.Editor
 if (!$editor -or $editor.FileName -notlike '*.hlf') {
-	Show-FarMessage "Run it with parameters or .hlf file in the editor."
+	Show-FarMessage "Run it with FileName or .hlf in the editor."
 	return
 }
 
 # commit
 $editor.Save()
 
-# open a file from editor with the current topic
-for($e = $editor.Caret.Y; $e -ge 0; --$e) {
-	if ($editor[$e].Text -match '^@(\w\S*)') {
+# open from editor with the current topic
+for($i = $editor.Caret.Y; $i -ge 0; --$i) {
+	if ($editor[$i].Text -match '^@(\w\S*)') {
 		$Topic = $matches[1]
 		break
 	}

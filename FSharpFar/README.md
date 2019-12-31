@@ -1,16 +1,15 @@
-﻿
+﻿# FSharpFar module for Far Manager
+
 [samples]: https://github.com/nightroman/FarNet/tree/master/FSharpFar/samples
 [TryPanelFSharp]: https://github.com/nightroman/FarNet/tree/master/FSharpFar/samples/TryPanelFSharp
-
-# FarNet module FSharpFar for Far Manager
 
 - [Menus](#menus)
 - [Commands](#commands)
 - [Configuration](#configuration)
 - [Interactive](#interactive)
-- [Use as project](#project)
-- [Editor services](#editor)
-- [Using F# scripts](#scripts)
+- [Use as project](#use-as-project)
+- [Editor services](#editor-services)
+- [Using F# scripts](#using-f-scripts)
 
 ***
 ## Synopsis
@@ -35,7 +34,7 @@ F# or anything else does not have to be installed.
 [Get, install, update FarNet and FarNet.FSharpFar.](https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt)
 
 ***
-## <a id="menus"/> Menus
+## Menus
 
 Use `[F11]` \ `FSharpFar` to open the module menu:
 
@@ -50,7 +49,7 @@ Use `[F11]` \ `FSharpFar` to open the module menu:
         - `[F4]`
             - Edits the session configuration file.
 - **Project**
-    - Opens the generated F# project, see [Use as project](#project).
+    - Opens the generated F# project, see [Use as project](#use-as-project).
 - **Load**
     - Evaluates the script opened in editor (`#load`).
 - **Tips**
@@ -69,7 +68,7 @@ Use `[F11]` \ `FSharpFar` to open the module menu:
     - Toggles auto checks for errors on changes in the editor.
 
 ***
-## <a id="commands"/> Commands
+## Commands
 
 The command line prefix is `fs:`. It evaluates F# expressions and directives
 with the default session and runs the module commands. The session is defined
@@ -163,7 +162,7 @@ The main goal is compiling FarNet modules in FSharpFar without installing anythi
 But this command can compile any .NET assemblies with the specified configuration file.
 
 ***
-## <a id="configuration"/> Configuration
+## Configuration
 
 Each interactive session is associated with its configuration file path. If the
 configuration is not specified then the default is used. The default is first
@@ -311,7 +310,7 @@ let show text = far.Message text
 ```
 
 ***
-## <a id="interactive"/> Interactive
+## Interactive
 
 F# interactive is the editor session for evaluating one or more lines of code.
 Use `[ShiftEnter]` for evaluating and `[Tab]` for code completion. The output
@@ -343,7 +342,7 @@ The history keys:
 - Other keys are for incremental filtering.
 
 ***
-## <a id="project"/> Use as project
+## Use as project
 
 When a configuration file `*.fs.ini` is ready you can use the menu command
 `Project` in order to generate a special `*.fsproj` with your source files
@@ -371,7 +370,7 @@ The generated project path is `%TEMP%\_Project-X-Y\Z.fsproj`, where:
 - Z is the config file base name.
 
 ***
-## <a id="editor"/> Editor services
+## Editor services
 
 Editor services are automatically available for F# files opened in editors. If
 files are not self-contained then use the configuration file `*.fs.ini` in the
@@ -417,7 +416,7 @@ shown as a go to menu. Project uses are shown in a new editor. The file is
 saved before the project uses search.
 
 ***
-## <a id="scripts"/> Using F# scripts
+## Using F# scripts
 
 (See the repository directory [samples] for some example scripts.)
 

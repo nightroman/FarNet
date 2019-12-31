@@ -1,5 +1,19 @@
 # HtmlToFarHelp Release Notes
 
+## v1.2.0
+
+The first heading, any from `h1` to `h6`, becomes the main topic "Contents",
+even if it does not have an identifier. In theory, this may be incompatible.
+But in practice "Contents" is usually already the first with sort of list of
+links to following topics, so having something before it would be strange.
+
+New conversion option `TopicHeading` tells which headings should be used for
+help topics. The default is `h6`, all headings with identifies define topics.
+
+With these changes HtmlToFarHelp becomes well designed for Markdown dialects
+"Git Flavored Markdown" (modern) and "PHP Markdown Extra" (legacy, obsolete?).
+See README for details.
+
 ## v1.1.0
 
 **Requires .NET Framework 4.0.** It is needed for some new XML features.

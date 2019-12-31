@@ -13,13 +13,14 @@ namespace HtmlToFarHelp
 		public bool CenterHeading;
 		public bool PlainCode;
 		public bool PlainHeading;
-		public int Margin;
 		public int IndentCode;
 		public int IndentList;
 		public int IndentPara;
 		public int IndentQuote;
+		public int Margin;
 		public string Language;
 		public string PluginContents;
+		public string TopicHeading;
 
 		public static Options New()
 		{
@@ -30,15 +31,25 @@ namespace HtmlToFarHelp
 				IndentList = 2,
 				IndentQuote = 4,
 				Language = "English,English",
+				TopicHeading = "h6"
 			};
+		}
+
+		static string ParseTopicHeading(string value)
+		{
+			if (value.Length != 2 || value[0] != 'h' || value[1] < '1' || value[1] > '6')
+				throw new InvalidOperationException("TopicHeading must be h1 - h6");
+			return value;
 		}
 
 		public static Options Parse(Options options, string optionString)
 		{
 			try
 			{
-				var builder = new DbConnectionStringBuilder();
-				builder.ConnectionString = optionString;
+				var builder = new DbConnectionStringBuilder
+				{
+					ConnectionString = optionString
+				};
 
 				foreach (DictionaryEntry it in (IDictionary)builder)
 				{
@@ -55,6 +66,7 @@ namespace HtmlToFarHelp
 						case "plaincode": options.PlainCode = bool.Parse(value); break;
 						case "plainheading": options.PlainHeading = bool.Parse(value); break;
 						case "plugincontents": options.PluginContents = value; break;
+						case "topicheading": options.TopicHeading = ParseTopicHeading(value); break;
 						default: throw new ArgumentException("Unknown option: " + it.Key);
 					}
 				}

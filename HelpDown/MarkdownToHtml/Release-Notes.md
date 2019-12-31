@@ -1,6 +1,10 @@
+# MarkdownToHtml Release Notes
 
-MarkdownToHtml Release Notes
-============================
+## v1.0.3
+
+Discontinued development.
+The tool will be unlisted on NuGet.
+Pandoc is recommended as the replacement.
 
 ## v1.0.2
 

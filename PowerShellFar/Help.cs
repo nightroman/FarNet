@@ -138,10 +138,10 @@ namespace PowerShellFar
 			switch (Far.Api.Window.Kind)
 			{
 				case WindowKind.Panels:
-					Far.Api.ShowHelpTopic("CommandLine");
+					Far.Api.ShowHelpTopic(HelpTopic.CommandLine);
 					return;
 				default:
-					Far.Api.ShowHelpTopic("Contents");
+					Far.Api.ShowHelpTopic(HelpTopic.Contents);
 					return;
 			}
 		}
