@@ -7,7 +7,7 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="markdown">
 <annotation><documentation><![CDATA[
 
-markdown.hrc by Roman Kuzmin, aka NightRoman, 2017-11-17
+markdown.hrc by Roman Kuzmin, aka NightRoman, 2020-01-01
 
 * Inline HTML should be valid XML.
 * Opened spans are always colored.
@@ -76,9 +76,8 @@ markdown.hrc by Roman Kuzmin, aka NightRoman, 2017-11-17
 <entity name="PEnd" value="^(?:%Top;| {,3}:\s+\S|%Fence;|%i3;%Quote;)?="/>
 
 <scheme name="Escape">
-  <regexp match="/(?{Escape}\\[\\\`\*\_\{\}\[\]\(\)&gt;\#\+\-\.\!:|=&lt;])/"/>
+  <regexp match="/(?{Escape}\\([\!\&quot;\#\$\%\&amp;\'\(\)\*\+\,\-\.\/\:\;\&lt;\=\&gt;\?\@\[\\\]\^\_\`\{\|\}\~]|$))/"/>
 </scheme>
-
 <scheme name="CodeSpan">
   <block scheme="def:empty" region="Code"
   start="/(?{start}`+)/" end="/(?{end}\y{start})|%LEnd;/"/>
