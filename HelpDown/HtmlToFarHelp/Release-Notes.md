@@ -8,7 +8,7 @@ But in practice "Contents" is usually already the first with sort of list of
 links to following topics, so having something before it would be strange.
 
 New conversion option `TopicHeading` tells which headings should be used for
-help topics. The default is `h6`, all headings with identifies define topics.
+help topics. The default is `h6`, all headings with identifiers define topics.
 
 With these changes HtmlToFarHelp becomes well designed for Markdown dialects
 "Git Flavored Markdown" (modern) and "PHP Markdown Extra" (legacy, obsolete?).

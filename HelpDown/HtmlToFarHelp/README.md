@@ -80,10 +80,11 @@ Example:
 
 ### Headings and topics
 
-The first heading, any from `h1` to `h6`, becomes the main topic "Contents".
-If it has an identifier and it is not "Contents" then links to this heading
-should use this identifier, to keep GitHub or VSCode internal links valid.
-In HLF these links are replaced with "Contents" automatically.
+The first heading, any of `h1` - `h6`, becomes the main help topic "Contents".
+If it has an identifier other than "Contents" then links to this heading should
+use this identifier in order to be valid HTML links. But in HLF these links are
+replaced with "Contents" automatically. If the original identifier is too long,
+e.g. generated, use the shortcut, see how it is done in *Demo*.
 
 Other headings define topics if they have identifies and their levels are less
 than or equal to `TopicHeading`.
