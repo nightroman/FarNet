@@ -1,6 +1,6 @@
 # HtmlToFarHelp Release Notes
 
-## v1.2.0
+## v1.2.1
 
 The first heading, any from `h1` to `h6`, becomes the main topic "Contents",
 even if it does not have an identifier. In theory, this may be incompatible.
