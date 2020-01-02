@@ -1,4 +1,6 @@
-﻿# FSharpFar module for Far Manager
+﻿# FSharpFar
+
+FarNet module for Far Manager
 
 [samples]: https://github.com/nightroman/FarNet/tree/master/FSharpFar/samples
 [TryPanelFSharp]: https://github.com/nightroman/FarNet/tree/master/FSharpFar/samples/TryPanelFSharp
