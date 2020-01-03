@@ -6,7 +6,7 @@
 ## Synopsis
 
 HtmlToFarHelp converts HTML with compatible structure to HLF (Far Manager help
-format) and performs sanity checks for unique topic identifies and valid links.
+format) and performs sanity checks for unique topic identifiers and valid links.
 
 The tool requires .NET Framework 4.0.
 
@@ -86,15 +86,15 @@ use this identifier in order to be valid HTML links. But in HLF these links are
 replaced with "Contents" automatically. If the original identifier is too long,
 e.g. generated, use the shortcut, see how it is done in *Demo*.
 
-Other headings define topics if they have identifies and their levels are less
+Other headings define topics if they have identifiers and their levels are less
 than or equal to `TopicHeading`.
 
-The default `TopicHeading` is `h6`, so that all headings with identifies define
-help topics. Headings without identifies are internal in help topics.
+The default `TopicHeading` is `h6`, so that all headings with identifiers
+define help topics. Headings without identifiers are internal in help topics.
 
-Some Markdown converters generate identifies for all headings. In this case, in
-order to use internal headings, `TopicHeading` must be changed. For example, if
-it is set to `h2` then headings `h3` - `h6` are internal even with identifiers.
+Some Markdown converters generate identifiers for all headings. In order to use
+internal headings, `TopicHeading` must be changed. For example, if it is set to
+`h2` then headings `h3` - `h6` are internal even with identifiers.
 
 ## Markdown
 
@@ -115,7 +115,7 @@ define the page title as `--metadata=pagetitle:MyHelp`.
 GFM advantages:
 
 - The source is well rendered on GitHub and may be used as README.
-- Useful auto-generated heading identifies for links to topics.
+- Useful auto-generated heading identifiers for links to topics.
 - GitHub and VSCode support navigation by these links.
 - Clear escaping rules ~ any ASCII punctuation.
 

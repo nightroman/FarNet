@@ -22,7 +22,6 @@ Use an empty set in order to reset options to global.
 # Markdown for Far Manager help
 
 <!--Useful shortcut for frequent links to the main help topic-->
-<!--GFM auto-generated identifies may be long, shortcuts help-->
 [Contents]: #markdown-for-far-manager-help
 
 This file is an example of *HelpDown* Markdown for conversion to HLF via HTML.
