@@ -9,7 +9,7 @@ namespace HtmlToFarHelp
 {
 	static class Kit
 	{
-		static readonly Regex _reWinNewLine = new Regex(@"(?<!\r)\n"); //|\r(?!\n)
+		static readonly Regex _reWinNewLine = new Regex(@"(?<!\r)\n");
 		public static string FixNewLine(string value)
 		{
 			return _reWinNewLine.Replace(value, "\r\n");
@@ -27,10 +27,9 @@ namespace HtmlToFarHelp
 			return _reNewLine.Replace(text, "#\r\n#");
 		}
 
-		static readonly Regex _reSpaces = new Regex(" +"); //??
 		public static bool HasSpaces(string value)
 		{
-			return _reSpaces.IsMatch(value);
+			return value.IndexOf(' ') >= 0;
 		}
 
 		static readonly Regex _reUnindent = new Regex(@"\r?\n[\ \t]+");
@@ -43,6 +42,16 @@ namespace HtmlToFarHelp
 		public static Match MatchOptions(string text)
 		{
 			return _reOptions.Match(text);
+		}
+
+		static readonly char[] TrimNewLine = new char[] { '\r', '\n' };
+		public static string TrimStartNewLine(string text)
+		{
+			return text.TrimStart(TrimNewLine);
+		}
+		public static string TrimEndNewLine(string text)
+		{
+			return text.TrimEnd(TrimNewLine);
 		}
 	}
 }

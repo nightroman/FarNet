@@ -1,11 +1,25 @@
 <#
 .Synopsis
 	Build script (https://github.com/nightroman/Invoke-Build)
+
+.Description
+	- Before changes run Test. It creates or updates files in $TestHome.
+	- Make changes, run Test, watch comparison with saved output samples.
+
+.Parameter Bin
+		Publish directory for exe. Default: $env:Bin
+
+.Parameter Configuration
+		Build configuration. Default: 'Release'
+
+.Parameter TestHome
+		Test samples directory. Default: "$HOME\data\HelpDown"
 #>
 
 param(
 	$Bin = (property Bin),
-	$Configuration = (property Configuration Release)
+	$Configuration = 'Release',
+	$TestHome = "$HOME\data\HelpDown"
 )
 Set-StrictMode -Version 2
 
@@ -104,12 +118,12 @@ The tool requires .NET Framework 4.0.
 }
 
 class TestCase { $File; $Name; $Mode; $Root }
-$SampleHome1 = "$HOME\data\HelpDown\1" # MarkdownToHtml
-$SampleHome2 = "$HOME\data\HelpDown\2" # pandoc markdown_phpextra
-$SampleHome3 = "$HOME\data\HelpDown\3" # pandoc gfm
 
 # Test conversions and compare results.
 task Test {
+	$SampleHome1 = "$TestHome\1" # MarkdownToHtml
+	$SampleHome2 = "$TestHome\2" # pandoc markdown_phpextra
+	$SampleHome3 = "$TestHome\3" # pandoc gfm
 	$null = mkdir $SampleHome1 -Force
 	$null = mkdir $SampleHome2 -Force
 	$null = mkdir $SampleHome3 -Force
@@ -131,7 +145,7 @@ task Test {
 	}
 }
 
-# Make HTM and HLF in $SampleHome, compare with saved, remove the same.
+# Make HTM and HLF in .Root, compare with sample, remove the same.
 function Test-File([TestCase]$Test) {
 	$htm = '{0}\{1}.htm' -f $Test.Root, $Test.Name
 	$hlf = '{0}\{1}.hlf' -f $Test.Root, $Test.Name
@@ -145,7 +159,7 @@ function Test-File([TestCase]$Test) {
 	}
 
 	# HLF
-	exec { HtmlToFarHelp From=$htm To=$hlf }
+	exec { HtmlToFarHelp.exe from=$htm to=$hlf }
 
 	# compare
 	Assert-SameFile $hlf2 $hlf $env:MERGE

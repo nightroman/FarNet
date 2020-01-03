@@ -10,19 +10,19 @@ namespace HtmlToFarHelp
 {
 	struct Options
 	{
-		public bool CenterHeading;
-		public bool PlainCode;
-		public bool PlainHeading;
-		public int IndentCode;
-		public int IndentList;
-		public int IndentPara;
-		public int IndentQuote;
-		public int Margin;
-		public string Language;
-		public string PluginContents;
-		public string TopicHeading;
+		public bool CenterHeading { get; private set; }
+		public bool PlainCode { get; private set; }
+		public bool PlainHeading { get; private set; }
+		public int IndentCode { get; private set; }
+		public int IndentList { get; private set; }
+		public int IndentPara { get; private set; }
+		public int IndentQuote { get; private set; }
+		public int Margin { get; private set; }
+		public string Language { get; private set; }
+		public string PluginContents { get; private set; }
+		public string TopicHeading { get; private set; }
 
-		public static Options New()
+		public static Options CreateDefault()
 		{
 			return new Options()
 			{
@@ -67,13 +67,13 @@ namespace HtmlToFarHelp
 						case "plainheading": options.PlainHeading = bool.Parse(value); break;
 						case "plugincontents": options.PluginContents = value; break;
 						case "topicheading": options.TopicHeading = ParseTopicHeading(value); break;
-						default: throw new ArgumentException("Unknown option: " + it.Key);
+						default: throw new FormatException($"Unknown option: 'it.Key'.");
 					}
 				}
 			}
-			catch (Exception e)
+			catch (Exception exn)
 			{
-				throw new FormatException("Error on parsing HLF options: " + e.Message, e);
+				throw new FormatException($"Error on parsing HLF options: {exn.Message}", exn);
 			}
 
 			return options;

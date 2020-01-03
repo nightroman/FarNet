@@ -66,11 +66,7 @@ Input:
 				using (var reader = XmlReader.Create(from, settings))
 				using (var writer = new StreamWriter(to, false, Encoding.UTF8))
 				{
-					var converter = new Converter
-					{
-						Reader = reader,
-						Writer = writer
-					};
+					var converter = new Converter(from, reader, writer);
 					converter.Run();
 				}
 

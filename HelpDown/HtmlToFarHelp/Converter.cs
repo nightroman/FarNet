@@ -13,15 +13,14 @@ namespace HtmlToFarHelp
 	{
 		const string ArgWrap = "§¦";
 		const string ErrExpectedA = "Expected <a href=...>...</a>.";
-		const string ErrInvalidHtml1 = "Invalid or not supported HTML: '{0}'.";
-		const string ErrInvalidHtml2 = "Invalid or not supported HTML: '{0}'. At line {1} char {2}.";
+		const string ErrInvalidHtml1 = "Invalid or not supported HTML: {0} At {1}";
+		const string ErrInvalidHtml2 = "Invalid or not supported HTML: {0} At {1}:{2}:{3}";
 		const string ErrMissingTarget = "Missing href target: {0}.";
 		const string ErrNestedList = "Nested list is not supported.";
 		const string ErrPreCode = "Expected <pre><code>...</code></pre>.";
 		const string ErrTwoTopics = "The topic id '{0}' is used twice.";
 		const string ErrUnexpectedElement = "Unexpected element '{0}'.";
 		const string ErrUnexpectedNode = "Unexpected node {0} {1}.";
-		readonly char[] TrimNewLine = new char[] { '\r', '\n' };
 		readonly HashSet<string> _topics = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		readonly HashSet<string> _links = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		bool _started;
@@ -48,8 +47,15 @@ namespace HtmlToFarHelp
 		string IndentPara { get { return _quote == 0 ? _IndentPara_ : _IndentPara_ + "".PadRight(_quote * _options.IndentQuote, ' '); } }
 		Options _globalOptions;
 		Options _options;
-		public XmlReader Reader { get; set; }
-		public StreamWriter Writer { get; set; }
+		readonly string _fileName;
+		readonly XmlReader _reader;
+		readonly StreamWriter _writer;
+		public Converter(string inputFileName, XmlReader reader, StreamWriter writer)
+		{
+			_fileName = inputFileName;
+			_reader = reader;
+			_writer = writer;
+		}
 		void ProcessOptions()
 		{
 			_IndentList_ = "".PadRight(_options.Margin + _options.IndentList, ' ');
@@ -65,15 +71,15 @@ namespace HtmlToFarHelp
 		}
 		public void Run()
 		{
-			if (Reader == null || Writer == null) throw new InvalidOperationException();
+			if (_reader == null || _writer == null) throw new InvalidOperationException();
 
 			// options
-			_globalOptions = Options.New();
+			_globalOptions = Options.CreateDefault();
 			_options = _globalOptions;
 			ProcessOptions();
 
 			// parse
-			while (Reader.Read())
+			while (_reader.Read())
 				Node();
 
 			// validate links
@@ -85,7 +91,7 @@ namespace HtmlToFarHelp
 		}
 		void Node()
 		{
-			switch (Reader.NodeType)
+			switch (_reader.NodeType)
 			{
 				case XmlNodeType.Comment: Comment(); break;
 				case XmlNodeType.Element: Element(); break;
@@ -94,7 +100,7 @@ namespace HtmlToFarHelp
 				case XmlNodeType.Whitespace: Whitespace(); break;
 				case XmlNodeType.DocumentType: break;
 				default:
-					Throw(string.Format(ErrUnexpectedNode, Reader.NodeType, Reader.Name));
+					Throw(string.Format(ErrUnexpectedNode, _reader.NodeType, _reader.Name));
 					break;
 			}
 		}
@@ -105,16 +111,16 @@ namespace HtmlToFarHelp
 
 			_started = true;
 
-			Writer.WriteLine(".Language=" + _options.Language);
+			_writer.WriteLine(".Language=" + _options.Language);
 
 			if (_options.PluginContents != null)
-				Writer.WriteLine(".PluginContents=" + _options.PluginContents);
+				_writer.WriteLine(".PluginContents=" + _options.PluginContents);
 
-			Writer.WriteLine(".Options CtrlStartPosChar=" + ArgWrap);
+			_writer.WriteLine(".Options CtrlStartPosChar=" + ArgWrap);
 		}
 		void Comment()
 		{
-			var match = Kit.MatchOptions(Reader.Value);
+			var match = Kit.MatchOptions(_reader.Value);
 			if (!match.Success)
 				return;
 
@@ -143,7 +149,7 @@ namespace HtmlToFarHelp
 		{
 			if (_needNewLine)
 			{
-				Writer.WriteLine();
+				_writer.WriteLine();
 				_needNewLine = false;
 			}
 		}
@@ -153,24 +159,22 @@ namespace HtmlToFarHelp
 		}
 		void Whitespace()
 		{
-			if (_para > 0 || Kit.HasSpaces(Reader.Value))
-				Writer.Write(Kit.FixNewLine(Reader.Value));
+			if (_para > 0 || Kit.HasSpaces(_reader.Value))
+				_writer.Write(Kit.FixNewLine(_reader.Value));
 		}
 		void Throw(string text)
 		{
-			var textReader = Reader as XmlTextReader;
-
 			string message;
-			if (textReader == null || !textReader.HasLineInfo())
-				message = string.Format(ErrInvalidHtml1, text);
+			if (_reader is IXmlLineInfo lineInfo && lineInfo.HasLineInfo())
+				message = string.Format(ErrInvalidHtml2, text, _fileName, lineInfo.LineNumber, lineInfo.LinePosition);
 			else
-				message = string.Format(ErrInvalidHtml2, text, textReader.LineNumber, textReader.LinePosition);
+				message = string.Format(ErrInvalidHtml1, text, _fileName);
 
 			throw new InvalidDataException(message);
 		}
 		void Element()
 		{
-			switch (Reader.Name)
+			switch (_reader.Name)
 			{
 				case "a": A1(); break;
 				case "blockquote": Quote1(); break;
@@ -184,7 +188,7 @@ namespace HtmlToFarHelp
 				case "h3":
 				case "h4":
 				case "h5":
-				case "h6": Heading1(Reader.Name); break;
+				case "h6": Heading1(_reader.Name); break;
 				case "hr": Rule(); break;
 				case "li": Item1(); break;
 				case "ol": List1(ListKind.Ordered); break;
@@ -201,16 +205,16 @@ namespace HtmlToFarHelp
 				case "head":
 				case "script": // pandoc email
 				case "title":
-					Reader.Skip();
+					_reader.Skip();
 					break;
 				default:
-					Throw(string.Format(ErrUnexpectedElement, Reader.Name));
+					Throw(string.Format(ErrUnexpectedElement, _reader.Name));
 					break;
 			}
 		}
 		void EndElement()
 		{
-			switch (Reader.Name)
+			switch (_reader.Name)
 			{
 				case "blockquote": Quote2(); break;
 				case "code": Emphasis2(); break;
@@ -238,7 +242,7 @@ namespace HtmlToFarHelp
 		}
 		void A1()
 		{
-			string href = Reader.GetAttribute("href");
+			string href = _reader.GetAttribute("href");
 			if (href == null) Throw(ErrExpectedA);
 
 			if (href.StartsWith("#"))
@@ -249,30 +253,30 @@ namespace HtmlToFarHelp
 				_links.Add(href);
 			}
 
-			Reader.MoveToContent();
-			Reader.Read();
-			if (Reader.NodeType != XmlNodeType.Text)
+			_reader.MoveToContent();
+			_reader.Read();
+			if (_reader.NodeType != XmlNodeType.Text)
 				Throw(ErrExpectedA);
 
-			var text = Kit.FixNewLine(Reader.Value);
-			Writer.Write("~{0}~@{1}@", Escape(text), href.Replace("@", "@@"));
+			var text = Kit.FixNewLine(_reader.Value);
+			_writer.Write("~{0}~@{1}@", Escape(text), href.Replace("@", "@@"));
 		}
 		string _topicContentsId;
 		void Heading1(string tag)
 		{
 			Start();
 
-			Writer.WriteLine();
-			Writer.WriteLine();
+			_writer.WriteLine();
+			_writer.WriteLine();
 
-			var id = Reader.GetAttribute("id");
+			var id = _reader.GetAttribute("id");
 			if (_topicContentsId != null && (id == null || string.CompareOrdinal(tag, _options.TopicHeading) > 0))
 			{
 				// internal heading
 				if (_options.CenterHeading)
-					Writer.Write("^");
+					_writer.Write("^");
 				else
-					Writer.Write(IndentPara);
+					_writer.Write(IndentPara);
 			}
 			else
 			{
@@ -282,7 +286,7 @@ namespace HtmlToFarHelp
 					// first topic becomes "Contents"
 					_topicContentsId = id ?? "Contents";
 					_topics.Add("Contents");
-					Writer.WriteLine("@Contents");
+					_writer.WriteLine("@Contents");
 				}
 				else
 				{
@@ -290,18 +294,18 @@ namespace HtmlToFarHelp
 					if (!_topics.Add(id))
 						Throw(string.Format(ErrTwoTopics, id));
 
-					Writer.WriteLine("@{0}", id);
+					_writer.WriteLine("@{0}", id);
 				}
 
 				if (_options.CenterHeading)
-					Writer.Write("$^");
+					_writer.Write("$^");
 				else
-					Writer.Write("${0}", IndentPara);
+					_writer.Write("${0}", IndentPara);
 			}
 
 			if (!_options.PlainHeading)
 			{
-				Writer.Write("#");
+				_writer.Write("#");
 				++_emphasis;
 			}
 		}
@@ -310,7 +314,7 @@ namespace HtmlToFarHelp
 			_emphasis = 0;
 
 			if (!_options.PlainHeading)
-				Writer.Write("#");
+				_writer.Write("#");
 		}
 		void Emphasis1()
 		{
@@ -319,25 +323,25 @@ namespace HtmlToFarHelp
 			NewLine();
 
 			if (_emphasis == 1)
-				Writer.Write("#");
+				_writer.Write("#");
 		}
 		void Emphasis2()
 		{
 			--_emphasis;
 
 			if (_emphasis == 0)
-				Writer.Write("#");
+				_writer.Write("#");
 		}
 		void Term1()
 		{
 			++_termCount;
 
-			Writer.WriteLine();
+			_writer.WriteLine();
 			if (_termCount > 1)
-				Writer.WriteLine();
+				_writer.WriteLine();
 
 			_countParaInItem = 0;
-			Writer.Write(IndentPara);
+			_writer.Write(IndentPara);
 		}
 		void Item1()
 		{
@@ -346,23 +350,23 @@ namespace HtmlToFarHelp
 			_needNewLine = false;
 			_countTextInPara = 0;
 
-			Writer.WriteLine();
+			_writer.WriteLine();
 			if (_countParaInItem > 0 && _listKind != ListKind.Definition)
-				Writer.WriteLine();
+				_writer.WriteLine();
 
 			_countParaInItem = 0;
 
-			Writer.Write(IndentList);
+			_writer.Write(IndentList);
 			switch (_listKind)
 			{
 				case ListKind.Ordered:
-					Writer.Write("{0}. " + ArgWrap, _itemCount);
+					_writer.Write("{0}. " + ArgWrap, _itemCount);
 					break;
 				case ListKind.Unordered:
-					Writer.Write("• " + ArgWrap);
+					_writer.Write("• " + ArgWrap);
 					break;
 				case ListKind.Definition:
-					Writer.Write("  " + ArgWrap);
+					_writer.Write("  " + ArgWrap);
 					break;
 			}
 		}
@@ -380,7 +384,7 @@ namespace HtmlToFarHelp
 			_itemCount = 0;
 			_termCount = 0;
 
-			Writer.WriteLine();
+			_writer.WriteLine();
 		}
 		void List2()
 		{
@@ -391,9 +395,9 @@ namespace HtmlToFarHelp
 		}
 		void Rule()
 		{
-			Writer.WriteLine();
-			Writer.WriteLine();
-			Writer.Write("@=");
+			_writer.WriteLine();
+			_writer.WriteLine();
+			_writer.Write("@=");
 		}
 		void P1()
 		{
@@ -406,20 +410,20 @@ namespace HtmlToFarHelp
 
 			if (_item == 0)
 			{
-				Writer.WriteLine();
-				Writer.WriteLine();
+				_writer.WriteLine();
+				_writer.WriteLine();
 
-				Writer.Write(IndentPara);
+				_writer.Write(IndentPara);
 			}
 			else if (_countParaInItem > 1)
 			{
-				Writer.WriteLine();
-				Writer.WriteLine();
+				_writer.WriteLine();
+				_writer.WriteLine();
 
 				if (_listKind == ListKind.Ordered)
-					Writer.Write(IndentList + "   " + ArgWrap);
+					_writer.Write(IndentList + "   " + ArgWrap);
 				else
-					Writer.Write(IndentList + "  " + ArgWrap);
+					_writer.Write(IndentList + "  " + ArgWrap);
 			}
 		}
 		void P2()
@@ -430,23 +434,23 @@ namespace HtmlToFarHelp
 		}
 		void Pre()
 		{
-			Reader.Read();
-			if (Reader.NodeType == XmlNodeType.Whitespace)
-				Reader.Read();
-			if (Reader.NodeType != XmlNodeType.Element || Reader.Name != "code")
+			_reader.Read();
+			if (_reader.NodeType == XmlNodeType.Whitespace)
+				_reader.Read();
+			if (_reader.NodeType != XmlNodeType.Element || _reader.Name != "code")
 				Throw(ErrPreCode);
 
-			var code = Reader.ReadElementContentAsString().TrimEnd();
+			var code = _reader.ReadElementContentAsString().TrimEnd();
 			var lines = Kit.TextToLines(code);
 
-			Writer.WriteLine();
-			Writer.WriteLine();
+			_writer.WriteLine();
+			_writer.WriteLine();
 			bool newLine = false;
 			string indent = _list == 0 ? IndentCode : _listKind == ListKind.Ordered ? IndentCode3 : IndentCode2;
 			foreach (var line in lines)
 			{
 				if (newLine)
-					Writer.WriteLine();
+					_writer.WriteLine();
 				else
 					newLine = true;
 
@@ -454,16 +458,16 @@ namespace HtmlToFarHelp
 				{
 					var text = indent + Escape(line.TrimEnd());
 					if (_options.PlainCode)
-						Writer.Write(text);
+						_writer.Write(text);
 					else
-						Writer.Write(" #" + text + "#");
+						_writer.Write(" #" + text + "#");
 				}
 			}
 		}
 		void Text()
 		{
 			++_countTextInPara;
-			var text = Kit.FixNewLine(Reader.Value);
+			var text = Kit.FixNewLine(_reader.Value);
 
 			NewLine();
 
@@ -471,12 +475,12 @@ namespace HtmlToFarHelp
 			if (_list > 0)
 			{
 				var len1 = text.Length;
-				text = text.TrimStart(TrimNewLine);
+				text = Kit.TrimStartNewLine(text);
 				if (len1 != text.Length && _countTextInPara > 1)
-					Writer.WriteLine();
+					_writer.WriteLine();
 
 				var len2 = text.Length;
-				text = text.TrimEnd(TrimNewLine);
+				text = Kit.TrimEndNewLine(text);
 				_needNewLine = len2 != text.Length;
 			}
 
@@ -491,7 +495,7 @@ namespace HtmlToFarHelp
 			if (_emphasis > 0)
 				text = Kit.EmphasisText(text);
 
-			Writer.Write(text);
+			_writer.Write(text);
 		}
 		void Quote1()
 		{

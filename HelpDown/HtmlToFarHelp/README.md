@@ -51,20 +51,25 @@ HTML. Here is the example with all available keys and default values:
     <!--HLF:
         Language = English,English;
         PluginContents = ;
+        TopicHeading = h6;
         Margin = 1;
         IndentCode = 4;
         IndentList = 2;
         IndentPara = 0;
         IndentQuote = 4;
         PlainCode = false;
-        TopicHeading = h6;
         PlainHeading = false;
         CenterHeading = false;
     -->
 
 Global options should be defined before the first heading, `Language` and
-`PluginContents` should be defined there. Other options may change later.
-Use an empty set in order to reset the current options to global.
+`PluginContents` should be defined there. See Far API manuals for help
+options `.Language` and `.PluginContents`.
+
+The role of `TopicHeading` is described further. Other options tell how things
+look in HLF. They may be set anywhere in the source and stay changed until the
+next change or reset. Use an empty set to reset the current options to global.
+
 Example:
 
     <!--Tell to render code blocks as plain text-->
@@ -98,7 +103,7 @@ internal headings, `TopicHeading` must be changed. For example, if it is set to
 
 ## Markdown
 
-### Git Flavored Markdown
+### GitHub Flavored Markdown
 
 HTML may be produced by this command:
 
@@ -157,3 +162,6 @@ The package directory *Demo* contains:
 ## See also
 
 - [Release Notes](https://github.com/nightroman/FarNet/blob/master/HelpDown/HtmlToFarHelp/Release-Notes.md)
+- [Pandoc documentation](https://pandoc.org/MANUAL.html)
+- [GitHub Flavored Markdown](https://github.github.com/gfm/)
+- [PHP Markdown Extra](https://michelf.ca/projects/php-markdown/extra/)

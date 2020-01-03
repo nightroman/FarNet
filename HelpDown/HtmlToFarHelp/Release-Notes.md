@@ -1,5 +1,11 @@
 # HtmlToFarHelp Release Notes
 
+## v1.2.3
+
+Show HTML error position if available.
+
+Some more details in docs.
+
 ## v1.2.2
 
 The first heading, any from `h1` to `h6`, becomes the main topic "Contents",
