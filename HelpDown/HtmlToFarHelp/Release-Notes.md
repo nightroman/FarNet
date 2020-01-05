@@ -1,5 +1,11 @@
 # HtmlToFarHelp Release Notes
 
+## v1.3.0
+
+Support nested lists.
+
+Add nested lists to *Demo/README.md*
+
 ## v1.2.3
 
 Show HTML error position if available.
@@ -17,7 +23,7 @@ New conversion option `TopicHeading` tells which headings should be used for
 help topics. The default is `h6`, all headings with identifiers define topics.
 
 With these changes HtmlToFarHelp becomes well designed for Markdown dialects
-"Git Flavored Markdown" (modern) and "PHP Markdown Extra" (legacy, obsolete?).
+"GitHub Flavored Markdown" (modern) and "PHP Markdown Extra" (obsolete?).
 See README for details.
 
 ## v1.1.0

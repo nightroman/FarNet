@@ -109,13 +109,15 @@ HTML may be produced by this command:
 
     pandoc MyHelp.md --output MyHelp.htm --from=gfm
 
-The above is enough for converting *MyHelp.htm* to HLF.
-
 To keep line breaks similar to source, use `--wrap=preserve`. This should not
 affect HLF help rendering but may be useful for HLF inspection in the editor.
 
+Use `--no-highlight` to disable syntax highlighting for code blocks, if you use
+language attributes. HtmlToFarHelp does not support syntax highlighted blocks.
+
 To make HTML for documentation, not just conversion, use `--standalone` and
-define the page title as `--metadata=pagetitle:MyHelp`.
+define the page title as `--metadata=pagetitle:MyHelp`. If code blocks have
+language attributes, a separate command without `--no-highlight` is needed.
 
 GFM advantages:
 
@@ -159,9 +161,20 @@ The package directory *Demo* contains:
 - *README.hlf*: HLF file created from *README.htm* by *HtmlToFarHelp*.
 - *Convert-MarkdownToHelp.ps1*: Demo script used for the above conversions.
 
+## Tools
+
+The FarNet module PowerShell comes with HLF helper scripts:
+
+- *Show-Markdown-.ps1* may be used for opening HLF viewer at the current topic
+  from the editor with .md or .text files. In other words, on composing HLF in
+  Markdown you may preview result help topics.
+- *Show-Hlf-.ps1* works like the plugin *HlfViewer* and may be used for opening
+  at the current topic from the editor with .hlf files.
+
 ## See also
 
 - [Release Notes](https://github.com/nightroman/FarNet/blob/master/HelpDown/HtmlToFarHelp/Release-Notes.md)
+<!---->
 - [Pandoc documentation](https://pandoc.org/MANUAL.html)
 - [GitHub Flavored Markdown](https://github.github.com/gfm/)
 - [PHP Markdown Extra](https://michelf.ca/projects/php-markdown/extra/)

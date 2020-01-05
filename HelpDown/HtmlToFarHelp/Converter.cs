@@ -13,10 +13,10 @@ namespace HtmlToFarHelp
 	{
 		const string ArgWrap = "§¦";
 		const string ErrExpectedA = "Expected <a href=...>...</a>.";
+		const string ErrExpectedList = "Expected list.";
 		const string ErrInvalidHtml1 = "Invalid or not supported HTML: {0} At {1}";
 		const string ErrInvalidHtml2 = "Invalid or not supported HTML: {0} At {1}:{2}:{3}";
 		const string ErrMissingTarget = "Missing href target: {0}.";
-		const string ErrNestedList = "Nested list is not supported.";
 		const string ErrPreCode = "Expected <pre><code>...</code></pre>.";
 		const string ErrTwoTopics = "The topic id '{0}' is used twice.";
 		const string ErrUnexpectedElement = "Unexpected element '{0}'.";
@@ -26,15 +26,10 @@ namespace HtmlToFarHelp
 		bool _started;
 		bool _needNewLine;
 		int _emphasis;
-		int _countParaInItem;
 		int _countTextInPara;
-		int _item;
-		int _itemCount;
-		int _list;
 		int _para;
 		int _quote;
-		int _termCount;
-		ListKind _listKind;
+		readonly Stack<ListInfo> _list = new Stack<ListInfo>();
 		string _IndentCode_;
 		string IndentCode { get { return _quote == 0 ? _IndentCode_ : _IndentCode_ + "".PadRight(_quote * _options.IndentQuote, ' '); } }
 		string _IndentCode2_;
@@ -42,7 +37,17 @@ namespace HtmlToFarHelp
 		string _IndentCode3_;
 		string IndentCode3 { get { return _quote == 0 ? _IndentCode3_ : _IndentCode3_ + "".PadRight(_quote * _options.IndentQuote, ' '); } }
 		string _IndentList_;
-		string IndentList { get { return _quote == 0 ? _IndentList_ : _IndentList_ + "".PadRight(_quote * _options.IndentQuote, ' '); } }
+		string IndentList
+		{
+			get
+			{
+				var r = _quote == 0 ? _IndentList_ : _IndentList_ + "".PadRight(_quote * _options.IndentQuote, ' ');
+				if (_list.Count > 1)
+					return "".PadRight(4 * (_list.Count - 1), ' ') + r;
+				else
+					return r;
+			}
+		}
 		string _IndentPara_;
 		string IndentPara { get { return _quote == 0 ? _IndentPara_ : _IndentPara_ + "".PadRight(_quote * _options.IndentQuote, ' '); } }
 		Options _globalOptions;
@@ -50,11 +55,13 @@ namespace HtmlToFarHelp
 		readonly string _fileName;
 		readonly XmlReader _reader;
 		readonly StreamWriter _writer;
-		public Converter(string inputFileName, XmlReader reader, StreamWriter writer)
+		readonly bool _verbose;
+		public Converter(string inputFileName, XmlReader reader, StreamWriter writer, bool verbose)
 		{
 			_fileName = inputFileName;
 			_reader = reader;
 			_writer = writer;
+			_verbose = verbose;
 		}
 		void ProcessOptions()
 		{
@@ -280,6 +287,9 @@ namespace HtmlToFarHelp
 			}
 			else
 			{
+				if (_verbose)
+					Console.Out.WriteLine($"HeadingId={id}");
+
 				// new topic heading
 				if (_topicContentsId == null)
 				{
@@ -334,33 +344,42 @@ namespace HtmlToFarHelp
 		}
 		void Term1()
 		{
-			++_termCount;
+			if (_list.Count == 0)
+				Throw(ErrExpectedList);
+
+			var list = _list.Peek();
+			++list.TermCount;
 
 			_writer.WriteLine();
-			if (_termCount > 1)
+			if (list.TermCount > 1)
 				_writer.WriteLine();
 
-			_countParaInItem = 0;
+			list.CountParaInItem = 0;
 			_writer.Write(IndentPara);
 		}
 		void Item1()
 		{
-			++_item;
-			++_itemCount;
+			if (_list.Count == 0)
+				Throw(ErrExpectedList);
+
+			var list = _list.Peek();
+			++list.Item;
+			++list.ItemCount;
 			_needNewLine = false;
 			_countTextInPara = 0;
 
 			_writer.WriteLine();
-			if (_countParaInItem > 0 && _listKind != ListKind.Definition)
+
+			if (list.CountParaInItem > 0 && list.Kind != ListKind.Definition)
 				_writer.WriteLine();
 
-			_countParaInItem = 0;
+			list.CountParaInItem = 0;
 
 			_writer.Write(IndentList);
-			switch (_listKind)
+			switch (list.Kind)
 			{
 				case ListKind.Ordered:
-					_writer.Write("{0}. " + ArgWrap, _itemCount);
+					_writer.Write("{0}. " + ArgWrap, list.ItemCount);
 					break;
 				case ListKind.Unordered:
 					_writer.Write("• " + ArgWrap);
@@ -372,26 +391,20 @@ namespace HtmlToFarHelp
 		}
 		void Item2()
 		{
-			--_item;
+			var list = _list.Peek();
+			--list.Item;
 		}
 		void List1(ListKind kind)
 		{
-			++_list;
-			if (_list > 1)
-				Throw(ErrNestedList);
+			if (_list.Count == 0 || _list.Peek().CountParaInItem > 0)
+				_writer.WriteLine();
 
-			_listKind = kind;
-			_itemCount = 0;
-			_termCount = 0;
-
-			_writer.WriteLine();
+			_list.Push(new ListInfo(kind));
 		}
 		void List2()
 		{
-			--_list;
+			_list.Pop();
 			_needNewLine = false;
-			_countParaInItem = 0;
-			_listKind = ListKind.None;
 		}
 		void Rule()
 		{
@@ -405,22 +418,23 @@ namespace HtmlToFarHelp
 			_needNewLine = false;
 			_countTextInPara = 0;
 
-			if (_item > 0)
-				++_countParaInItem;
+			var tryList = _list.Count == 0 ? null : _list.Peek();
+			if (tryList != null && tryList.Item > 0)
+				++tryList.CountParaInItem;
 
-			if (_item == 0)
+			if (tryList == null || tryList.Item == 0)
 			{
 				_writer.WriteLine();
 				_writer.WriteLine();
 
 				_writer.Write(IndentPara);
 			}
-			else if (_countParaInItem > 1)
+			else if (tryList.CountParaInItem > 1)
 			{
 				_writer.WriteLine();
 				_writer.WriteLine();
 
-				if (_listKind == ListKind.Ordered)
+				if (tryList != null && tryList.Kind == ListKind.Ordered)
 					_writer.Write(IndentList + "   " + ArgWrap);
 				else
 					_writer.Write(IndentList + "  " + ArgWrap);
@@ -446,7 +460,8 @@ namespace HtmlToFarHelp
 			_writer.WriteLine();
 			_writer.WriteLine();
 			bool newLine = false;
-			string indent = _list == 0 ? IndentCode : _listKind == ListKind.Ordered ? IndentCode3 : IndentCode2;
+			var tryList = _list.Count == 0 ? null : _list.Peek();
+			var indent = tryList == null ? IndentCode : tryList.Kind == ListKind.Ordered ? IndentCode3 : IndentCode2;
 			foreach (var line in lines)
 			{
 				if (newLine)
@@ -472,7 +487,7 @@ namespace HtmlToFarHelp
 			NewLine();
 
 			// trim new lines
-			if (_list > 0)
+			if (_list.Count > 0)
 			{
 				var len1 = text.Length;
 				text = Kit.TrimStartNewLine(text);
@@ -485,7 +500,7 @@ namespace HtmlToFarHelp
 			}
 
 			// unindent second+ lines, otherwise HLF treats them as new para
-			if (_para > 0 || _list > 0)
+			if (_para > 0 || _list.Count > 0)
 				text = Kit.UnindentText(text);
 
 			// escape

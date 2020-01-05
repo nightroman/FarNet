@@ -30,6 +30,7 @@ Input:
 			var parameters = string.Join("; ", args);
 			string from = null;
 			string to = null;
+			bool verbose = false;
 			try
 			{
 				var builder = new DbConnectionStringBuilder() { ConnectionString = parameters };
@@ -39,6 +40,7 @@ Input:
 					{
 						case "from": from = it.Value.ToString(); break;
 						case "to": to = it.Value.ToString(); break;
+						case "verbose": verbose = bool.Parse(it.Value.ToString()); break;
 						default: throw new Exception($"Unknown key: '{it.Key}'.");
 					}
 				}
@@ -66,7 +68,7 @@ Input:
 				using (var reader = XmlReader.Create(from, settings))
 				using (var writer = new StreamWriter(to, false, Encoding.UTF8))
 				{
-					var converter = new Converter(from, reader, writer);
+					var converter = new Converter(from, reader, writer, verbose);
 					converter.Run();
 				}
 

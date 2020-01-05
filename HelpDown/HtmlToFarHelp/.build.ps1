@@ -117,7 +117,16 @@ The tool requires .NET Framework 4.0.
 	exec { NuGet.exe pack z\Package.nuspec -NoPackageAnalysis }
 }
 
-class TestCase { $File; $Name; $Mode; $Root }
+class TestCase {
+	# input Markdown file path
+	$File
+	# output file base name
+	$Name
+	# how to convert
+	$Mode
+	# output root
+	$Root
+}
 
 # Test conversions and compare results.
 task Test {
@@ -128,17 +137,26 @@ task Test {
 	$null = mkdir $SampleHome2 -Force
 	$null = mkdir $SampleHome3 -Force
 
+	# make test cases
 	$tests = $(
+		# main demo file
+		[TestCase]@{File = "Demo\README.md"; Name = 'HtmlToFarHelp.Demo'; Mode = 3; Root = $SampleHome3}
+
+		# not used for HLF
+		[TestCase]@{File = "..\..\FSharpFar\README.md"; Name = 'FSharpFar.README'; Mode = 3; Root = $SampleHome3}
+
+		# used for HLF and docs
+		[TestCase]@{File = "..\..\PowerShellFar\README.md"; Name = 'About-PowerShellFar'; Mode = 3; Root = $SampleHome3}
+
+		# legacy .text files
 		foreach($_ in Get-ChildItem -Recurse -LiteralPath C:\ROM\FarDev\Code -Filter *.text) {
 			$Name = [System.IO.Path]::GetFileNameWithoutExtension($_.Name)
 			[TestCase]@{File = $_.FullName; Name = $Name; Mode = 1; Root = $SampleHome1}
 			[TestCase]@{File = $_.FullName; Name = $Name; Mode = 2; Root = $SampleHome2}
 		}
-
-		[TestCase]@{File = "Demo\README.md"; Name = 'HtmlToFarHelp.Demo'; Mode = 3; Root = $SampleHome3}
-		[TestCase]@{File = "..\..\PowerShellFar\README.md"; Name = 'About-PowerShellFar'; Mode = 3; Root = $SampleHome3}
 	)
 
+	# run test cases
 	foreach($test in $tests) {
 		"Testing $($test.File)"
 		Test-File $test
@@ -155,7 +173,7 @@ function Test-File([TestCase]$Test) {
 	switch($Test.Mode) {
 		1 { exec { MarkdownToHtml.exe from=$($Test.File) to=$htm } }
 		2 { exec { pandoc.exe $Test.File --output=$htm --from=markdown_phpextra --wrap=preserve } }
-		3 { exec { pandoc.exe $Test.File --output=$htm --from=gfm --wrap=preserve } }
+		3 { exec { pandoc.exe $Test.File --output=$htm --from=gfm --wrap=preserve --no-highlight } }
 	}
 
 	# HLF

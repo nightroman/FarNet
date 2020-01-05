@@ -7,6 +7,7 @@ Use an empty set in order to reset options to global.
 <!--HLF:
     Language = English,English;
     PluginContents = Demo help;
+    TopicHeading = h2;
     Margin = 1;
     IndentCode = 4;
     IndentList = 2;
@@ -15,7 +16,6 @@ Use an empty set in order to reset options to global.
     CenterHeading = false;
     PlainCode = false;
     PlainHeading = false;
-    TopicHeading = h2;
 -->
 
 <!--The first heading becomes the main help topic "Contents"-->
@@ -316,6 +316,50 @@ Paragraph 1.
 
     Item 1,
     paragraph 3.
+
+### HTML comment separates lists:
+
+- apple
+- banana
+<!---->
+- cat
+- dog
+
+### Nested tight list:
+
+- item 1
+    - item 1.1
+        - item 1.1.1
+        - item 1.1.2
+    - item 1.2
+- item 2
+
+### Nested loose list with paragraphs and code:
+
+- item 1
+para 1.1
+
+    para
+    1.2
+
+    - item 1.1
+    para 1.1.1
+
+        para 1.1.2
+
+            $x = 1
+            Write-Host $x
+
+    - item 1.2
+    para 1.2.1
+
+        para 1.2.2
+
+    para
+    1.3
+
+- item 2
+para 2.1
 
 *********************************************************************
 ## Links

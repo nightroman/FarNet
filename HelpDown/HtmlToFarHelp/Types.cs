@@ -6,9 +6,21 @@ namespace HtmlToFarHelp
 {
 	enum ListKind
 	{
-		None,
 		Ordered,
 		Unordered,
 		Definition
+	}
+
+	class ListInfo
+	{
+		public ListKind Kind { get; private set; }
+		public int Item;
+		public int ItemCount;
+		public int TermCount;
+		public int CountParaInItem;
+		public ListInfo(ListKind kind)
+		{
+			Kind = kind;
+		}
 	}
 }
