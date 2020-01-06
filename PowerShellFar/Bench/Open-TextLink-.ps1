@@ -75,13 +75,13 @@ $Editor = if ($Far.Window.Kind -eq 'Editor') {$Far.Editor}
 #3 PowerShell (file:2 char:3), F# (file:line 2)
 $type = 0
 switch -regex ($Text) {
-	'\b(?<File>\w:[\\/].+?)\((?<Line>\d+),?(?<Char>\d+)?\)(?::\s*(?<Text>.*))?' {$type = 1; break}
+	'(?<File>(?:\b\w:|%\w+%)[\\\/].+?)\((?<Line>\d+),?(?<Char>\d+)?\)(?::\s*(?<Text>.*))?' {$type = 1; break}
 	'^>?\s*(?<File>.+?):(?<Line>\d+):(?<Text>.*)' {$type = 2; break}
-	'\b(?<File>\w:[\\/][^:]+):(?:line )?(?<Line>\d+)(?:\s+\w+:(?<Char>\d+))?' {$type = 3; break}
+	'(?<File>(?:\b\w:|%\w+%)[\\\/][^:]+):(?:line )?(?<Line>\d+)(?:\s+\w+:(?<Char>\d+))?' {$type = 3; break}
 }
 
 if ($type) {
-	$file = $matches.File
+	$file = [System.Environment]::ExpandEnvironmentVariables($matches.File)
 	if (![IO.File]::Exists($file)) {
 		Show-FarMessage "File '$file' does not exist."
 		return
@@ -134,8 +134,8 @@ if ($type) {
 }
 
 ### Full file system paths: quoted and simple.
-if ($Text -match '"(\w+:\\[^"]+)"' -or $Text -match '\b(\w+:\\[^\s:]+)') {
-	$file = $matches[1]
+if ($Text -match '"((?:\w+:|%\w+%)\\[^"]+)"' -or $Text -match '((?:\b\w+:|%\w+%)\\[^\s:]+)') {
+	$file = [System.Environment]::ExpandEnvironmentVariables($matches[1])
 	if (![IO.File]::Exists($file)) {
 		Show-FarMessage "File '$file' does not exist."
 	}

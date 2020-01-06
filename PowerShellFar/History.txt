@@ -2,6 +2,16 @@ NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 Far Manager 3.0.5013
 FarNet 5.2.14
 
+= 5.2.14 =
+
+Show-Markdown-.ps1
+- requires HtmlToFarHelp v1.3.0
+- improve and correct work with headings/topics
+- $env:BrowserForMarkdown may specify custom browser
+
+Open-TextLink-.ps1
+- support paths starting with %Variable%
+
 = 5.2.13 =
 
 Updates for HtmlToFarHelp v1.2.0
