@@ -19,6 +19,8 @@
 
 	"Visual Studio" link hint line can be the next line as well.
 
+	File system links may start with environment %variable%.
+
 	TEXT LINK EXAMPLES
 
 	Web link

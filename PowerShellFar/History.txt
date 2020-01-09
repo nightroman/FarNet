@@ -2,6 +2,11 @@ NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 Far Manager 3.0.5013
 FarNet 5.2.14
 
+= 5.2.15 =
+
+Get-TextLink-.ps1 - $env:TextLinkEnv may define variables for path
+substitutions in text links.
+
 = 5.2.14 =
 
 Show-Markdown-.ps1

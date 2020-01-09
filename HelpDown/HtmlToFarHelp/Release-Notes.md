@@ -1,5 +1,9 @@
 # HtmlToFarHelp Release Notes
 
+## v1.3.1
+
+Tweak documentation.
+
 ## v1.3.0
 
 Support nested lists.
