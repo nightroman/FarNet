@@ -2,11 +2,11 @@
 // FarNet plugin for Far Manager
 // Copyright (c) Roman Kuzmin
 
+using FarNet.Forms;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using FarNet.Forms;
 
 namespace FarNet
 {
@@ -402,10 +402,10 @@ namespace FarNet
 		/// </summary>
 		public abstract MacroState MacroState { get; }
 		/// <summary>
-		/// Generates full path for a temp file or directory in %TEMP% (nothing is created).
+		/// Generates the full path of an item in %TEMP% without creating it.
 		/// </summary>
-		/// <param name="prefix">If empty "FTMP" is generated otherwise at most 4 first characters are used and padded by "0".</param>
-		/// <returns>Generated name.</returns>
+		/// <param name="prefix">If it is null or empty then "FAR" is used.</param>
+		/// <returns>Generated path.</returns>
 		public abstract string TempName(string prefix);
 		/// <summary>
 		/// See <see cref="TempName(string)"/>

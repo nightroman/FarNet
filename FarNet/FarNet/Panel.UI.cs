@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections;
@@ -376,14 +374,15 @@ namespace FarNet
 				return;
 
 			// case: actual file exists
-			var asExportFileEventArgs = xExportArgs as GetContentEventArgs;
-			if (asExportFileEventArgs != null && !string.IsNullOrEmpty(asExportFileEventArgs.UseFileName))
+			if (!string.IsNullOrEmpty(xExportArgs.UseFileName))
 			{
 				var editorActual = Far.Api.CreateEditor();
-				editorActual.FileName = asExportFileEventArgs.UseFileName;
+				editorActual.FileName = xExportArgs.UseFileName;
 				editorActual.Title = file.Name;
-				if (!asExportFileEventArgs.CanSet)
+				if (!xExportArgs.CanSet)
 					editorActual.IsLocked = true;
+				if (xExportArgs.EditorOpened != null)
+					editorActual.Opened += xExportArgs.EditorOpened;
 				editorActual.Open();
 				return;
 			}
@@ -391,7 +390,7 @@ namespace FarNet
 			// rename
 			if (!string.IsNullOrEmpty(xExportArgs.UseFileExtension))
 			{
-				string temp2 = temp + xExportArgs.UseFileExtension;
+				string temp2 = temp + (xExportArgs.UseFileExtension[0] == '.' ? xExportArgs.UseFileExtension : "." + xExportArgs.UseFileExtension);
 				File.Move(temp, temp2);
 				temp = temp2;
 			}
@@ -402,8 +401,10 @@ namespace FarNet
 			editorTemp.DisableHistory = true;
 			editorTemp.FileName = temp;
 			editorTemp.Title = file.Name;
-			if (asExportFileEventArgs.CodePage != 0)
-				editorTemp.CodePage = asExportFileEventArgs.CodePage;
+			if (xExportArgs.CodePage != 0)
+				editorTemp.CodePage = xExportArgs.CodePage;
+			if (xExportArgs.EditorOpened != null)
+				editorTemp.Opened += xExportArgs.EditorOpened;
 
 			// future
 			if (xExportArgs.CanSet)
@@ -461,11 +462,10 @@ namespace FarNet
 				return;
 
 			// case: actual file exists
-			var asExportFileEventArgs = xExportArgs as GetContentEventArgs;
-			if (asExportFileEventArgs != null && !string.IsNullOrEmpty(asExportFileEventArgs.UseFileName))
+			if (!string.IsNullOrEmpty(xExportArgs.UseFileName))
 			{
 				var viewerActual = Far.Api.CreateViewer();
-				viewerActual.FileName = asExportFileEventArgs.UseFileName;
+				viewerActual.FileName = xExportArgs.UseFileName;
 				viewerActual.Title = file.Name;
 				viewerActual.Open();
 				return;
@@ -478,8 +478,8 @@ namespace FarNet
 			viewerTemp.FileName = temp;
 			viewerTemp.Title = file.Name;
 			viewerTemp.Switching = Switching.Enabled;
-			if (asExportFileEventArgs.CodePage != 0)
-				viewerTemp.CodePage = asExportFileEventArgs.CodePage;
+			if (xExportArgs.CodePage != 0)
+				viewerTemp.CodePage = xExportArgs.CodePage;
 
 			// open
 			viewerTemp.Open();
@@ -760,7 +760,7 @@ namespace FarNet
 							int topIndex = TopIndex;
 							PageOffset += PageLimit;
 							NeedsNewFiles = true;
-							
+
 							Update(false);
 							Redraw(currentIndex, topIndex);
 							return true;

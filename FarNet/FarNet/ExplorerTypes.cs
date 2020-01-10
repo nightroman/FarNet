@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections;
@@ -383,6 +381,10 @@ namespace FarNet
 		/// With <see cref="UseText"/> the code page is set to 1200.
 		/// </remarks>
 		public int CodePage { get; set; }
+		/// <summary>
+		/// Called when the editor is opened.
+		/// </summary>
+		public EventHandler EditorOpened { get; set; }
 	}
 
 	/// <summary>

@@ -1,16 +1,13 @@
 
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
+using FarNet.Forms;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
-using FarNet.Forms;
 
 namespace FarNet
 {
@@ -95,14 +92,6 @@ namespace FarNet
 		/// <param name="args">Arguments.</param>
 		/// <returns>The result text.</returns>
 		public abstract string EditText(EditTextArgs args);
-		/// <summary>
-		/// Opens a modal editor in order to edit the text.
-		/// </summary>
-		/// <param name="text">Input text to be edited.</param>
-		/// <param name="title">Editor window title.</param>
-		[Obsolete("Use EditText(args).")]
-		public string EditText(string text, string title)
-		{ return EditText(new EditTextArgs() { Text = text, Title = title }); }
 	}
 
 	/// <summary>
@@ -126,6 +115,10 @@ namespace FarNet
 		/// Tells to open text locked for changes.
 		/// </summary>
 		public bool IsLocked { get; set; }
+		/// <summary>
+		/// Called when the editor is opened.
+		/// </summary>
+		public EventHandler EditorOpened { get; set; }
 	}
 
 	/// <summary>

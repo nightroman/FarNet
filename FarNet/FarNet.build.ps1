@@ -47,10 +47,29 @@ task Uninstall {
 	remove $FarHome\Far.exe.config
 }
 
+# HLF
 task Help -If ($Configuration -eq 'Release') {
-	exec { MarkdownToHtml "From=About-FarNet.text" "To=About-FarNet.htm" }
-	exec { HtmlToFarHelp "From=About-FarNet.htm" "To=$FarHome\Plugins\FarNet\FarNetMan.hlf" }
+	exec { pandoc.exe About-FarNet.text --output=About-FarNet.htm --from=markdown_phpextra }
+	exec { HtmlToFarHelp from=About-FarNet.htm to=$FarHome\Plugins\FarNet\FarNetMan.hlf }
 }
+
+# HTM
+task HelpHtm {
+	assert (Test-Path $env:MarkdownCss)
+	exec {
+		pandoc.exe @(
+			'About-FarNet.text'
+			'--output=About-FarNet.htm'
+			'--from=markdown_phpextra'
+			'--self-contained'
+			"--css=$env:MarkdownCss"
+			'--metadata=pagetitle:FarNet'
+		)
+	}
+}
+
+# HLF and HTM
+task Help2 Help, HelpHtm
 
 # Tests before packaging
 task BeginPackage {
@@ -65,7 +84,7 @@ task BeginPackage {
 }
 
 # Make package files
-task Package BeginPackage, Help, {
+task Package BeginPackage, Help2, {
 	Set-Alias MSBuild (Resolve-MSBuild)
 	# build another platform
 	$bit = if ($Platform -eq 'Win32') {'x64'} else {'Win32'}

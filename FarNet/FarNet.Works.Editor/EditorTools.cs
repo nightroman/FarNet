@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections.Generic;
@@ -28,9 +26,9 @@ namespace FarNet.Works
 			if (args == null) throw new ArgumentNullException("args");
 
 			var file = Far.Api.TempName();
-			if (args.Extension != null)
-				file += "." + args.Extension; 
-			
+			if (!string.IsNullOrEmpty(args.Extension))
+				file += args.Extension[0] == '.' ? args.Extension : "." + args.Extension;
+
 			try
 			{
 				if (!string.IsNullOrEmpty(args.Text))
@@ -44,7 +42,9 @@ namespace FarNet.Works
 					editor.Title = args.Title;
 				if (args.IsLocked)
 					editor.IsLocked = true;
-				
+				if (args.EditorOpened != null)
+					editor.Opened += args.EditorOpened;
+
 				editor.Open(OpenMode.Modal);
 				if (args.IsLocked)
 					return null;
