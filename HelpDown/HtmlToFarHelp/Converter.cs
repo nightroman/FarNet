@@ -197,6 +197,7 @@ namespace HtmlToFarHelp
 				case "h5":
 				case "h6": Heading1(_reader.Name); break;
 				case "hr": Rule(); break;
+				case "kbd": Emphasis1(); break;
 				case "li": Item1(); break;
 				case "ol": List1(ListKind.Ordered); break;
 				case "p": P1(); break;
@@ -235,6 +236,7 @@ namespace HtmlToFarHelp
 				case "h4":
 				case "h5":
 				case "h6": Heading2(); break;
+				case "kbd": Emphasis2(); break;
 				case "li": Item2(); break;
 				case "ol": List2(); break;
 				case "p": P2(); break;

@@ -1,5 +1,9 @@
 # HtmlToFarHelp Release Notes
 
+## v1.3.2
+
+Support HTML tag "kbd", render as emphasis in HLF.
+
 ## v1.3.1
 
 Tweak documentation.

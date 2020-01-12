@@ -41,6 +41,7 @@ See also its raw Markdown for useful details including HTML comments.
 * [Backslash escapes](#backslash-escapes)
 * [Lists](#lists)
 * [Links](#links)
+* [Misc](#misc)
 
 ### Test cases
 
@@ -390,6 +391,13 @@ Headings](#headings) across lines.
 
 This is not a link: [Go To Contents].
 But it is treated as link because it is *potentially* a link.
+
+*********************************************************************
+## Misc
+
+[Contents]
+
+HTML tag "kbd": <kbd>F4</kbd>, <kbd>Ctrl+A</kbd>
 
 *********************************************************************
 ## Italic, bold, code across lines
