@@ -10,18 +10,25 @@
 .Parameter Regex
 		Regular expression pattern or object. If it is not defined then a
 		dialog is opened where you can define this and other parameters.
+
 .Parameter Options
 		.NET regular expression options and extra options. It is used if Regex
 		is defined as a string, i.e. not a ready Regex object. In this case two
 		more options are used: SimpleMatch (1024), WholeWord (2048).
+
 .Parameter InputObject
 		Strings (file paths) and IO.FileInfo (from Get-*Item) as ready input or
 		a script block for background input. If it is not defined then objects
 		come from the pipeline. If there are no objects and Regex is not set
 		then an input command is specified in the dialog.
+
+		Built-in utility commands:
+		* Get-EditorHistory - files from editor history excluding network paths
+
 .Parameter Groups
 		Tells to panel found regex groups instead of full matches.
 		It is ignored if AllText is set.
+
 .Parameter AllText
 		Tells to search in all text, i.e. file read as one string.
 #>
@@ -60,6 +67,13 @@ function WholeWord($_) {
 	"(?(?=\w)\b)$_(?(?<=\w)\b)"
 }
 
+# Utility
+function Get-EditorHistory {
+	$array = $Far.History.Editor()
+	[System.Array]::Reverse($array)
+	$array | .{process{ if (!$_.Name.StartsWith('\\')) {$_.Name} }}
+}
+
 # Collect input if any
 if (!$InputObject) {
 	$Host.UI.RawUI.WindowTitle = 'Collecting input...'
@@ -73,7 +87,7 @@ $parameters = @{}
 if (!$Regex) {
 	$dialog = $Far.CreateDialog(-1, -1, 77, $(if ($InputObject) { 11 } else { 13 }))
 	$dialog.TypeId = 'DA462DD5-7767-471E-9FC8-64A227BEE2B1'
-	$dialog.HelpTopic = "<$($Psf.AppHome)\\>SearchRegex"
+	$dialog.HelpTopic = "<$($Psf.AppHome)\\>search-regex-ps1"
 	[void]$dialog.AddBox(3, 1, 0, 0, 'Search-Regex')
 	$x = 13
 
@@ -386,7 +400,7 @@ $Panel.add_KeyPressed({
 	}
 	### [F1] opens Search-Regex help topic
 	if ($_.Key.Is([FarNet.KeyCode]::F1)) {
-		$Far.ShowHelp($Psf.AppHome, 'SearchRegex', 'Path')
+		$Far.ShowHelp($Psf.AppHome, 'search-regex-ps1', 'Path')
 		$_.Ignore = $true
 		return
 	}

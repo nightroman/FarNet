@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Help script (https://github.com/nightroman/Helps)
@@ -200,11 +199,14 @@ choice buttons and just shows a message.
 ### Start-FarJob
 @{
 	command = 'Start-FarJob'
-	synopsis = 'Starts a new background job (not classic PowerShell job).'
+	synopsis = 'Starts a new background job (not native PowerShell job).'
 	description = @'
-It creates a background job with specified parameters. Note: these jobs are not
-native PowerShell background jobs. They are much simpler. They are designed for
-commands with no output or output suitable for viewing as formatted text.
+It starts a new background job with the specified arguments or parameters.
+
+Far jobs are not native PowerShell jobs (started by Start-Job). They run in
+separated workspaces but in the same process, unlike PowerShell jobs. They
+accept live arguments and may return live output. PowerShell jobs deal with
+serialized arguments and output.
 '@
 	parameters = @{
 		Command = 'A command name or a script block.'

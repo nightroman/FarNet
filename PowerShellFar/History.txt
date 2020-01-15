@@ -2,6 +2,22 @@ NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 Far Manager 3.0.5013
 FarNet 5.2.14
 
+= 5.2.16 =
+
+Show-Markdown-.ps1
+- $env:MarkdownCss may specify the custom CSS, see comments for a good one
+- renamed $env:BrowserForMarkdown to $env:MarkdownBrowser, for consistency
+
+Search-Regex-.ps1
+- built-in command Get-EditorHistory, to search in editor history files
+
+About-PowerShellFar
+- reworked some pieces, including out of date
+- GitHub like CSS in About-PowerShellFar.htm
+
+Module
+- fixed removal of finished background jobs
+
 = 5.2.15 =
 
 Get-TextLink-.ps1 - $env:TextLinkEnv may define variables for path

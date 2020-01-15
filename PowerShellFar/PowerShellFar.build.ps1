@@ -22,8 +22,22 @@ task Uninstall {
 }
 
 task Help {
-	exec { pandoc.exe README.md --output=About-PowerShellFar.htm --from=gfm --standalone --metadata=pagetitle:About-PowerShellFar }
+	# HLF
+	exec { pandoc.exe README.md --output=About-PowerShellFar.htm --from=gfm }
 	exec { HtmlToFarHelp from=About-PowerShellFar.htm to=$PsfHome\PowerShellFar.hlf }
+
+	# HTM
+	assert (Test-Path $env:MarkdownCss)
+		exec {
+		pandoc.exe @(
+			'README.md'
+			'--output=About-PowerShellFar.htm'
+			'--from=gfm'
+			'--self-contained'
+			"--css=$env:MarkdownCss"
+			'--metadata=pagetitle:PowerShellFar'
+		)
+	}
 }
 
 task InstallBin {

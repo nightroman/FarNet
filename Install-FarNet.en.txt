@@ -1,5 +1,4 @@
-﻿
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+﻿~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 = REQUIREMENTS FOR FarNet AND MODULES =
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -19,12 +18,9 @@ Far Manager
 	Otherwise check, download, and install.
 	NOTE: Some modules may require newer versions.
 
-Microsoft Visual C++ 2008 SP1 Redistributable Package
+Microsoft Visual C++ 2008 SP1 Redistributable Package (x64) or (x86)
 
-	x86
-		http://www.microsoft.com/en-US/download/details.aspx?id=5582
-	x64
-		http://www.microsoft.com/en-US/download/details.aspx?id=2092
+	The links keeps changing, so search for it...
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 = DOWNLOAD AND INSTALL WITH PowerShell v2.0+ =

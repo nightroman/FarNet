@@ -15,9 +15,14 @@
 	Otherwise, .text files ~ `markdown_phpextra`, others ~ `gfm`.
 
 	Markdown browser:
-	$env:BrowserForMarkdown may specify the custom browser for the result HTML.
+	$env:MarkdownBrowser may specify the custom browser for the result HTML.
 	For example, if the default is Chrome then it cannot open local URLs like
 	"file://...htm#current-topic". But Firefox can.
+
+	Markdown CSS:
+	$env:MarkdownCss may specify the custom CSS file or URI for the result HTML.
+	This file is pretty for GitHub look: https://gist.github.com/dashed/6714393
+	especially with `max-width: 55em` instead of the original `max-width: 44em`.
 
 .Parameter FileName
 		Specifies the Markdown file. If it is omitted then the file is taken
@@ -70,7 +75,7 @@ else {
 
 ### convert to HTML
 $htm = "$env:TEMP\markdown.htm"
-pandoc.exe $(
+$param = $(
 	$FileName
 	"--output=$htm"
 	"--from=$Format"
@@ -78,12 +83,19 @@ pandoc.exe $(
 		'--no-highlight'
 	}
 	else {
+		# standalone and page title
 		$name1 = [System.IO.Path]::GetFileNameWithoutExtension($FileName)
 		$name2 = [System.IO.Path]::GetDirectoryName($FileName)
 		'--standalone'
-		"--metadata=pagetitle=$name1 - $name2"
+		"--metadata=pagetitle:$name1 - $name2"
+
+		# CSS, Firefox wants URI format
+		if ($css = $env:MarkdownCss) {
+			"--css=$(([Uri]$css).AbsoluteUri)"
+		}
 	}
 )
+pandoc.exe $param
 if ($LastExitCode) {throw 'pandoc.exe failed.'}
 
 function Convert-HelpTopic($Lines) {
@@ -150,7 +162,7 @@ else {
 
 	if ($Topic) {
 		$url = "file://$htm#$Topic"
-		$browser = $env:BrowserForMarkdown
+		$browser = $env:MarkdownBrowser
 		if ($browser) {
 			& $browser $url
 		}

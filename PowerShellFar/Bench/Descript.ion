@@ -13,7 +13,7 @@ Import-Panel-.ps1 Imports objects from files and shows them in a panel.
 Indent-Selection-.ps1 Indents selected lines in the editor.
 Invoke-Editor-.ps1 Invokes a file from the current editor.
 Invoke-Shortcut-.ps1 Opens a shortcut file (.lnk).
-Job-RemoveItem-.ps1 Job: remove the specified provider item(s).
+Job-RemoveItem-.ps1 Job: remove the specified provider items.
 Menu-Favorites-.ps1 Shows Windows Favorites as a menu and invokes items.
 Menu-More-.ps1 Example command menu created by a script.
 Open-TextLink-.ps1 Opens a text link contained in the text.
@@ -31,7 +31,7 @@ Profile.ps1 Main profile (example).
 Reformat-Selection-.ps1 Reformats selected lines or the current line in the editor.
 Reindent-Selection-.ps1 Reindents selected lines or the current line.
 Remove-EmptyString-.ps1 Removes empty strings from a list.
-Remove-EndSpace-.ps1 Removes end spaces in object Text property
+Remove-EndSpace-.ps1 Removes end spaces from the input objects property Text
 Rename-FarFile-.ps1 Renames the current panel file or directory.
 Search-Regex-.ps1 Searches for a regex in files and work on results in a panel
 Select-Bookmark-.ps1 Shows current editor bookmarks and goes to a selected one

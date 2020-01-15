@@ -1,24 +1,23 @@
-
 <#
 .Synopsis
-	Removes end spaces in object Text property
+	Removes end spaces from the input objects property Text
 	Author: Roman Kuzmin
 
 .Description
-	Processes any input objects with string property Text, for example:
+	Processes any input objects with the string property Text.
+	Examples:
 
 	# process all lines in the current text
-	$Far.Editor.Lines | Remove-EndSpace-
+	$Far.Editor.Lines | Remove-EndSpace-.ps1
 
 	# process all currently selected lines
-	$Far.Editor.SelectedLines | Remove-EndSpace-
+	$Far.Editor.SelectedLines | Remove-EndSpace-.ps1
 #>
 
-process
-{
-	$t1 = $_.Text
-	$t2 = $t1.TrimEnd()
-	if ([object]$t1 -ne [object]$t2) {
-		$_.Text = $t2
+process {
+	$text1 = $_.Text
+	$text2 = $text1.TrimEnd()
+	if (![object]::ReferenceEquals($text1, $text2)) {
+		$_.Text = $text2
 	}
 }

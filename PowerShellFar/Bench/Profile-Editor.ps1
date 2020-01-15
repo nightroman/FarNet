@@ -4,7 +4,7 @@
 	Author: Roman Kuzmin
 
 .Description
-	The profile should be in %FARPROFILE%\FarNet\PowerShellFar
+	The editor profile: %FARPROFILE%\FarNet\PowerShellFar\Profile-Editor.ps1
 
 	This is an example of the editor profile which is invoked when an editor is
 	opened the first time. It installs some key and mouse handles. Before using
@@ -23,13 +23,14 @@ $Far.AnyEditor.add_GotFocus({
 $Far.AnyEditor.add_KeyDown({
 	### F1
 	if ($_.Key.Is([FarNet.KeyCode]::F1)) {
-		if ($this.FileName -like '*.hlf') {
-			$_.Ignore = $true
-			Show-Hlf-.ps1
-		}
-		elseif ($this.FileName -match '\.(?:text|md|markdown)$') {
+		$ext = [System.IO.Path]::GetExtension($this.FileName)
+		if ($ext -eq '.md' -or $ext -eq '.text') {
 			$_.Ignore = $true
 			Show-Markdown-.ps1 -Help
+		}
+		elseif ($ext -eq '.hlf') {
+			$_.Ignore = $true
+			Show-Hlf-.ps1
 		}
 	}
 })
