@@ -510,11 +510,9 @@ namespace PowerShellFar
 		static void WatchJobs()
 		{
 			// watch the jobs
-			var finished = new List<Job>(JobList.Count);
-			for (int iJob = 0; iJob < JobList.Count; ++iJob)
+			var finished = new List<Job>();
+			foreach (var job in Jobs)
 			{
-				Job job = JobList[iJob];
-
 				// process alive
 				if (!job.Disposed)
 				{
@@ -532,10 +530,7 @@ namespace PowerShellFar
 
 				// remove killed
 				if (job.Disposed)
-				{
-					JobList.RemoveAt(iJob);
-					--iJob;
-				}
+					JobList.Remove(job);
 			}
 
 			// kill/install the timer
