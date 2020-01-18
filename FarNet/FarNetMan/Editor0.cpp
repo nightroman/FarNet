@@ -1,8 +1,6 @@
 
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 #include "StdAfx.h"
 #include "Editor0.h"
@@ -10,79 +8,91 @@ Copyright (c) 2006-2016 Roman Kuzmin
 #include "Wrappers.h"
 
 namespace FarNet
-{;
-//! CopyTo() is not used because of different return type.
-//! But ToArray() seems to work.
-array<IEditor^>^ Editor0::Editors()
 {
-	return _editors.ToArray();
-}
-
-//! For external use.
-Editor^ Editor0::GetCurrentEditor()
-{
-	// get info
-	AutoEditorInfo ei(-1, true);
-	if (ei.EditorID == -1)
-		return nullptr;
-
-	// search for the connected editor
-	for(int i = 0; i < _editors.Count; ++i)
+	//! CopyTo() is not used because of different return type.
+	//! But ToArray() seems to work.
+	array<IEditor^>^ Editor0::Editors()
 	{
-		if ((intptr_t)_editors[i]->Id == ei.EditorID)
-			return _editors[i];
+		return _editors.ToArray();
 	}
 
-	// create and connect; rare case, e.g. the editor is opened before the core is loaded
-	//_110624_153138 http://forum.farmanager.com/viewtopic.php?f=8&t=6500
-	Log::Source->TraceInformation("Connecting existing editor");
-	Editor^ editor = gcnew Editor;
-	ConnectEditor(editor, ei, false);
-	return editor;
-}
-
-// INTERNAL
-int Editor0::FindEditor(intptr_t id)
-{
-	for(int i = 0; i < _editors.Count; ++i)
-		if (id == (intptr_t)_editors[i]->Id)
-			return i;
-
-	return -1;
-}
-
-void Editor0::ConnectEditor(Editor^ editor, const EditorInfo& ei, bool isEditorWaiting)
-{
-	//_110624_153138 ignore already connected
-	if (FindEditor(ei.EditorID) >= 0)
-		return;
-
-	// register
-	_editors.Insert(0, editor);
-
-	// 1) start the editor; it calls module editor actions, they may add handlers
-	editor->Start(ei, isEditorWaiting);
-
-	// 2) event for any editor handlers, they add this editor handlers
-	if (_anyEditor._Opened)
+	//! For external use.
+	Editor^ Editor0::GetCurrentEditor()
 	{
-		Log::Source->TraceInformation("Opened");
-		_anyEditor._Opened(editor, nullptr);
+		// get info
+		AutoEditorInfo ei(-1, true);
+		if (ei.EditorID == -1)
+			return nullptr;
+
+		// search for the connected editor
+		for (int i = 0; i < _editors.Count; ++i)
+		{
+			if ((intptr_t)_editors[i]->Id == ei.EditorID)
+				return _editors[i];
+		}
+
+		// create and connect; rare case, e.g. the editor is opened before the core is loaded
+		//_110624_153138 http://forum.farmanager.com/viewtopic.php?f=8&t=6500
+		Log::Source->TraceInformation("Connecting existing editor");
+		Editor^ editor = gcnew Editor;
+		ConnectEditor(editor, ei, false);
+		return editor;
 	}
 
-	// 3) event for this editor handlers
-	if (editor->_Opened)
+	// INTERNAL
+	int Editor0::FindEditor(intptr_t id)
 	{
-		Log::Source->TraceInformation("Opened");
-		editor->_Opened(editor, nullptr);
-	}
-}
+		for (int i = 0; i < _editors.Count; ++i)
+			if (id == (intptr_t)_editors[i]->Id)
+				return i;
 
-int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
-{
-	switch(info->Event)
+		return -1;
+	}
+
+	void Editor0::ConnectEditor(Editor^ editor, const EditorInfo& ei, bool isEditorWaiting)
 	{
-	case EE_READ:
+		// 0) first opening
+		if (!_started)
+		{
+			_started = true;
+			if (_anyEditor._FirstOpening)
+			{
+				Log::Source->TraceInformation("FirstOpening");
+				_anyEditor._FirstOpening(editor, nullptr);
+				_anyEditor._FirstOpening = nullptr;
+			}
+		}
+
+		//_110624_153138 ignore already connected
+		if (FindEditor(ei.EditorID) >= 0)
+			return;
+
+		// register
+		_editors.Insert(0, editor);
+
+		// 1) start the editor; it calls module editor actions, they may add handlers
+		editor->Start(ei, isEditorWaiting);
+
+		// 2) event for any editor handlers, they add this editor handlers
+		if (_anyEditor._Opened)
+		{
+			Log::Source->TraceInformation("Opened");
+			_anyEditor._Opened(editor, nullptr);
+		}
+
+		// 3) event for this editor handlers
+		if (editor->_Opened)
+		{
+			Log::Source->TraceInformation("Opened");
+			editor->_Opened(editor, nullptr);
+		}
+	}
+
+	int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
+	{
+		switch (info->Event)
+		{
+		case EE_READ:
 		{
 			Log::Source->TraceInformation("EE_READ");
 
@@ -108,7 +118,7 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 			ConnectEditor(editor, ei, isEditorWaiting);
 		}
 		break;
-	case EE_CLOSE:
+		case EE_CLOSE:
 		{
 			Log::Source->TraceInformation("EE_CLOSE");
 
@@ -137,7 +147,7 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 			DeleteSourceOptional(editor->FileName, editor->DeleteSource);
 		}
 		break;
-	case EE_SAVE:
+		case EE_SAVE:
 		{
 			Log::Source->TraceInformation("EE_SAVE");
 
@@ -150,13 +160,13 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 				EditorSavingEventArgs ea(gcnew String(esf->FileName), (int)esf->CodePage);
 				Log::Source->TraceInformation("Saving");
 				if (_anyEditor._Saving)
-					_anyEditor._Saving(editor, %ea);
+					_anyEditor._Saving(editor, % ea);
 				if (editor->_Saving)
-					editor->_Saving(editor, %ea);
+					editor->_Saving(editor, % ea);
 			}
 		}
 		break;
-	case EE_CHANGE:
+		case EE_CHANGE:
 		{
 			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "EE_CHANGE");
 
@@ -168,13 +178,13 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 				EditorChange* ec = (EditorChange*)info->Param;
 				EditorChangedEventArgs ea((EditorChangeKind)ec->Type, (int)ec->StringNumber);
 				if (_anyEditor._Changed)
-					_anyEditor._Changed(editor, %ea);
+					_anyEditor._Changed(editor, % ea);
 				if (editor->_Changed)
-					editor->_Changed(editor, %ea);
+					editor->_Changed(editor, % ea);
 			}
 		}
 		break;
-	case EE_REDRAW:
+		case EE_REDRAW:
 		{
 			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "EE_REDRAW");
 
@@ -196,7 +206,7 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 			}
 		}
 		break;
-	case EE_GOTFOCUS:
+		case EE_GOTFOCUS:
 		{
 			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "EE_GOTFOCUS");
 
@@ -242,7 +252,7 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 			}
 		}
 		break;
-	case EE_KILLFOCUS:
+		case EE_KILLFOCUS:
 		{
 			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "EE_KILLFOCUS");
 
@@ -272,53 +282,53 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 			}
 		}
 		break;
+		}
+
+		return 0;
 	}
 
-	return 0;
-}
-
-int Editor0::AsProcessEditorInput(const ProcessEditorInputInfo* info)
-{
-	const INPUT_RECORD* rec = &info->Rec;
-	Editor^ editor = GetCurrentEditor();
-
-	// exiting Far with not active editor
-	if (editor == nullptr)
-		return 0;
-
-	// async
-	if (editor->_output)
+	int Editor0::AsProcessEditorInput(const ProcessEditorInputInfo* info)
 	{
-		// sync
-		editor->Sync();
+		const INPUT_RECORD* rec = &info->Rec;
+		Editor^ editor = GetCurrentEditor();
 
-		// ignore most of events
-		if (editor->_hMutex)
+		// exiting Far with not active editor
+		if (editor == nullptr)
+			return 0;
+
+		// async
+		if (editor->_output)
 		{
-			if (rec->EventType != KEY_EVENT)
-				return true;
+			// sync
+			editor->Sync();
 
-			switch(rec->Event.KeyEvent.wVirtualKeyCode)
+			// ignore most of events
+			if (editor->_hMutex)
 			{
-			case KeyCode::Escape:
-			case KeyCode::F10:
-				return false;
-			case KeyCode::C:
-				if ((rec->Event.KeyEvent.dwControlKeyState & int(ControlKeyStates::CtrlAltShift)) == int(ControlKeyStates::LeftCtrlPressed))
+				if (rec->EventType != KEY_EVENT)
+					return true;
+
+				switch (rec->Event.KeyEvent.wVirtualKeyCode)
 				{
-					if (editor->_CtrlCPressed)
-						editor->_CtrlCPressed(editor, nullptr);
+				case KeyCode::Escape:
+				case KeyCode::F10:
+					return false;
+				case KeyCode::C:
+					if ((rec->Event.KeyEvent.dwControlKeyState & int(ControlKeyStates::CtrlAltShift)) == int(ControlKeyStates::LeftCtrlPressed))
+					{
+						if (editor->_CtrlCPressed)
+							editor->_CtrlCPressed(editor, nullptr);
+					}
+					return true;
+				default:
+					return true;
 				}
-				return true;
-			default:
-				return true;
 			}
 		}
-	}
 
-	switch(rec->EventType)
-	{
-	case KEY_EVENT:
+		switch (rec->EventType)
+		{
+		case KEY_EVENT:
 		{
 			const KEY_EVENT_RECORD& key = rec->Event.KeyEvent;
 			// key down
@@ -328,9 +338,9 @@ int Editor0::AsProcessEditorInput(const ProcessEditorInputInfo* info)
 				{
 					KeyEventArgs ea(gcnew KeyInfo(key.wVirtualKeyCode, key.uChar.UnicodeChar, (ControlKeyStates)key.dwControlKeyState, true));
 					if (_anyEditor._KeyDown)
-						_anyEditor._KeyDown(editor, %ea);
+						_anyEditor._KeyDown(editor, % ea);
 					if (editor->_KeyDown)
-						editor->_KeyDown(editor, %ea);
+						editor->_KeyDown(editor, % ea);
 					return ea.Ignore;
 				}
 			}
@@ -341,27 +351,27 @@ int Editor0::AsProcessEditorInput(const ProcessEditorInputInfo* info)
 				{
 					KeyEventArgs ea(gcnew KeyInfo(key.wVirtualKeyCode, key.uChar.UnicodeChar, (ControlKeyStates)key.dwControlKeyState, false));
 					if (_anyEditor._KeyUp)
-						_anyEditor._KeyUp(editor, %ea);
+						_anyEditor._KeyUp(editor, % ea);
 					if (editor->_KeyUp)
-						editor->_KeyUp(editor, %ea);
+						editor->_KeyUp(editor, % ea);
 					return ea.Ignore;
 				}
 			}
 			break;
 		}
-	case MOUSE_EVENT:
+		case MOUSE_EVENT:
 		{
 			const MOUSE_EVENT_RECORD& e = rec->Event.MouseEvent;
-			switch(e.dwEventFlags)
+			switch (e.dwEventFlags)
 			{
 			case 0:
 				if (_anyEditor._MouseClick || editor->_MouseClick)
 				{
 					MouseEventArgs ea(GetMouseInfo(rec->Event.MouseEvent));
 					if (_anyEditor._MouseClick)
-						_anyEditor._MouseClick(editor, %ea);
+						_anyEditor._MouseClick(editor, % ea);
 					if (editor->_MouseClick)
-						editor->_MouseClick(editor, %ea);
+						editor->_MouseClick(editor, % ea);
 					return ea.Ignore;
 				}
 				break;
@@ -370,9 +380,9 @@ int Editor0::AsProcessEditorInput(const ProcessEditorInputInfo* info)
 				{
 					MouseEventArgs ea(GetMouseInfo(rec->Event.MouseEvent));
 					if (_anyEditor._MouseDoubleClick)
-						_anyEditor._MouseDoubleClick(editor, %ea);
+						_anyEditor._MouseDoubleClick(editor, % ea);
 					if (editor->_MouseDoubleClick)
-						editor->_MouseDoubleClick(editor, %ea);
+						editor->_MouseDoubleClick(editor, % ea);
 					return ea.Ignore;
 				}
 				break;
@@ -381,9 +391,9 @@ int Editor0::AsProcessEditorInput(const ProcessEditorInputInfo* info)
 				{
 					MouseEventArgs ea(GetMouseInfo(rec->Event.MouseEvent));
 					if (_anyEditor._MouseMove)
-						_anyEditor._MouseMove(editor, %ea);
+						_anyEditor._MouseMove(editor, % ea);
 					if (editor->_MouseMove)
-						editor->_MouseMove(editor, %ea);
+						editor->_MouseMove(editor, % ea);
 					return ea.Ignore;
 				}
 				break;
@@ -392,18 +402,18 @@ int Editor0::AsProcessEditorInput(const ProcessEditorInputInfo* info)
 				{
 					MouseEventArgs ea(GetMouseInfo(rec->Event.MouseEvent));
 					if (_anyEditor._MouseWheel)
-						_anyEditor._MouseWheel(editor, %ea);
+						_anyEditor._MouseWheel(editor, % ea);
 					if (editor->_MouseWheel)
-						editor->_MouseWheel(editor, %ea);
+						editor->_MouseWheel(editor, % ea);
 					return ea.Ignore;
 				}
 				break;
 			}
 			break;
 		}
-	}
+		}
 
-	return 0;
-}
+		return 0;
+	}
 
 }

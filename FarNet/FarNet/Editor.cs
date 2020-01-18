@@ -87,6 +87,10 @@ namespace FarNet
 	public abstract class IAnyEditor : IEditorBase
 	{
 		/// <summary>
+		/// Called once on opening the first editor.
+		/// </summary>
+		public abstract event EventHandler FirstOpening;
+		/// <summary>
 		/// Opens a modal editor in order to edit the text.
 		/// </summary>
 		/// <param name="args">Arguments.</param>
@@ -1016,7 +1020,7 @@ namespace FarNet
 		{
 			get { return _key; }
 		}
-		KeyInfo _key;
+		readonly KeyInfo _key;
 		/// <summary>
 		/// Ignore event.
 		/// </summary>
@@ -1040,7 +1044,7 @@ namespace FarNet
 		{
 			get { return _mouse; }
 		}
-		MouseInfo _mouse;
+		readonly MouseInfo _mouse;
 		/// <summary>
 		/// Ignore event.
 		/// </summary>

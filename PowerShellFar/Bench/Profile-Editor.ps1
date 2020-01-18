@@ -5,33 +5,37 @@
 
 .Description
 	The editor profile: %FARPROFILE%\FarNet\PowerShellFar\Profile-Editor.ps1
-
-	This is an example of the editor profile which is invoked when an editor is
-	opened the first time. It installs some key and mouse handles. Before using
-	read the help "Profile-Editor.ps1" and the code.
+	Before using read this code and "Profile-Editor.ps1" in HLF or HTM help.
 #>
 
-### Editor data. This line also denies the second call, it fails.
+### Init focus data, also prevent not allowed next calls.
 New-Variable Editor.Data @{} -Scope Global -Option ReadOnly -Description 'Editor handlers data.' -ErrorAction Stop
 
-### GotFocus handler; it resets old data
+### GotFocus: reset focus data
 $Far.AnyEditor.add_GotFocus({
 	${Editor.Data}.Clear()
 })
 
-### Key down handler
-$Far.AnyEditor.add_KeyDown({
-	### F1
-	if ($_.Key.Is([FarNet.KeyCode]::F1)) {
-		$ext = [System.IO.Path]::GetExtension($this.FileName)
-		if ($ext -eq '.md' -or $ext -eq '.text') {
-			$_.Ignore = $true
-			Show-Markdown-.ps1 -Help
-		}
-		elseif ($ext -eq '.hlf') {
-			$_.Ignore = $true
-			Show-Hlf-.ps1
-		}
+### Customise some file types
+$Far.AnyEditor.add_Opened({
+	$ext = [System.IO.Path]::GetExtension($this.FileName)
+	### Markdown: [F1] ~ preview help
+	if ($ext -eq '.md' -or $ext -eq '.text') {
+		$this.add_KeyDown({
+			if ($_.Key.Is([FarNet.KeyCode]::F1)) {
+				$_.Ignore = $true
+				Show-Markdown-.ps1 -Help
+			}
+		})
+	}
+	### HLF: [F1] ~ preview help
+	elseif ($ext -eq '.hlf') {
+		$this.add_KeyDown({
+			if ($_.Key.Is([FarNet.KeyCode]::F1)) {
+				$_.Ignore = $true
+				Show-Hlf-.ps1
+			}
+		})
 	}
 })
 
@@ -41,12 +45,12 @@ $Far.AnyEditor.add_MouseClick({
 	### Left click
 	if ($m.Buttons -eq 'Left') {
 		if ($m.Is()) {
+			# just click, keep the position
 			${Editor.Data}.LCPos = $this.ConvertPointScreenToEditor($m.Where)
-			${Editor.Data}.LMFoo = 1
 		}
 		elseif ($m.IsShift()) {
+			# Shift click, select text from the last to current position
 			$_.Ignore = $true
-			${Editor.Data}.LMFoo = 1
 			$p1 = ${Editor.Data}.LCPos
 			if (!$p1) {
 				$p1 = $this.Caret
@@ -59,6 +63,7 @@ $Far.AnyEditor.add_MouseClick({
 	### Right click
 	elseif ($m.Buttons -eq 'Right') {
 		if ($m.Is()) {
+			# just click, show the menu
 			$_.Ignore = $true
 			$Editor = $this
 			$SelectionExists = $this.SelectionExists
@@ -74,15 +79,10 @@ $Far.AnyEditor.add_MouseClick({
 ### Mouse move handler
 $Far.AnyEditor.add_MouseMove({
 	$m = $_.Mouse
-	### Left moved
+	### Left move
 	if ($m.Buttons -eq 'Left') {
-		# [_090406_225257] skip the 1st move after some mouse actions
-		#  ??? workaround, to remove when fixed in Far or FarNet
-		if (${Editor.Data}.LMFoo) {
-			$_.Ignore = $true
-			${Editor.Data}.LMFoo = 0
-		}
-		elseif ($m.Is()) {
+		if ($m.Is()) {
+			# drag, select text from the last to current position
 			$p1 = ${Editor.Data}.LCPos
 			if ($p1) {
 				$_.Ignore = $true

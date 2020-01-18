@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
-using System.Reflection;
 using System.Threading;
 
 namespace PowerShellFar
@@ -77,10 +76,8 @@ namespace PowerShellFar
 			OpenRunspace(false);
 
 			// subscribe
-			// editor events: OnEditorOpened1 should be called always and first
-			// do Invoking() (at least for TabExpansion) and the startup code
-			Far.Api.AnyEditor.Opened += EditorKit.OnEditorOpened1;
-			Far.Api.AnyEditor.Opened += EditorKit.OnEditorOpened2;
+			Far.Api.AnyEditor.FirstOpening += EditorKit.OnEditorFirstOpening;
+			Far.Api.AnyEditor.Opened += EditorKit.OnEditorOpened;
 
 			//! subscribe only _110301_164313
 			Console.CancelKeyPress += CancelKeyPress; //_110128_075844
@@ -96,8 +93,8 @@ namespace PowerShellFar
 			//Console.CancelKeyPress -= CancelKeyPress; //_110128_075844
 
 			// unsubscribe
-			Far.Api.AnyEditor.Opened -= EditorKit.OnEditorOpened2;
-			Far.Api.AnyEditor.Opened -= EditorKit.OnEditorOpened1;
+			Far.Api.AnyEditor.Opened -= EditorKit.OnEditorOpened;
+			Far.Api.AnyEditor.Opened -= EditorKit.OnEditorFirstOpening;
 
 			// kill menu
 			UI.ActorMenu.Destroy();
@@ -235,11 +232,15 @@ namespace PowerShellFar
 				}
 
 				// new variables
-				PSVariable var1 = new PSVariable("Psf", this, ScopedItemOptions.AllScope | ScopedItemOptions.Constant);
-				var1.Description = "Exposes PowerShellFar.";
+				var var1 = new PSVariable("Psf", this, ScopedItemOptions.AllScope | ScopedItemOptions.Constant)
+				{
+					Description = "Exposes PowerShellFar."
+				};
+				var var2 = new PSVariable("Far", Far.Api, ScopedItemOptions.AllScope | ScopedItemOptions.Constant)
+				{
+					Description = "Exposes FarNet."
+				};
 				Engine.SessionState.PSVariable.Set(var1);
-				PSVariable var2 = new PSVariable("Far", Far.Api, ScopedItemOptions.AllScope | ScopedItemOptions.Constant);
-				var2.Description = "Exposes FarNet.";
 				Engine.SessionState.PSVariable.Set(var2);
 
 				// invoke profiles
@@ -345,18 +346,15 @@ For known issues see 'Problems and solutions' in the FarNet manual.
 			string location = null;
 			if (panel.IsPlugin)
 			{
-				Panel plugin = panel as Panel;
-				if (plugin != null)
+				if (panel is Panel plugin)
 				{
-					var itemPanel = plugin as ItemPanel;
-					if (itemPanel != null)
+					if (plugin is ItemPanel itemPanel)
 					{
 						location = itemPanel.Explorer.Location;
 					}
 					else
 					{
-						FolderTree folderTree = plugin as FolderTree;
-						if (folderTree != null)
+						if (plugin is FolderTree)
 						{
 							location = panel.CurrentDirectory;
 							if (location == "*") //_130117_234326
@@ -898,7 +896,7 @@ Continue with this current directory?
 		public IDictionary Providers
 		{
 			get { return _Providers; }
-			set { _Providers = value == null ? new Hashtable() : value; }
+			set { _Providers = value ?? new Hashtable(); }
 		}
 		IDictionary _Providers = new Hashtable();
 		/// <summary>
@@ -923,8 +921,7 @@ Continue with this current directory?
 		{
 			if (!string.IsNullOrEmpty(e.Breakpoint.Script))
 			{
-				var bp = e.Breakpoint as LineBreakpoint;
-				if (bp != null)
+				if (e.Breakpoint is LineBreakpoint bp)
 				{
 					if (e.UpdateType == BreakpointUpdateType.Removed)
 						Breakpoints.Remove(bp);

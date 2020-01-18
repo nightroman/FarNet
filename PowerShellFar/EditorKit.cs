@@ -148,7 +148,6 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 			var prefix = string.Empty;
 
 			IEditor editor = null;
-			Interactive console;
 			InteractiveArea area;
 
 			// script?
@@ -175,7 +174,7 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 				inputScript = sb.ToString();
 			}
 			// area?
-			else if (editor != null && (console = editor.Host as Interactive) != null && (area = console.CommandArea()) != null)
+			else if (editor != null && editor.Host is Interactive console && (area = console.CommandArea()) != null)
 			{
 				int lineIndex = area.Caret.Y;
 				int lastIndex = area.LastLineIndex;
@@ -321,9 +320,11 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 				foreach (var it in words)
 				{
 					if (it == null) continue;
-					var item = new SetItem();
-					item.Text = TEListItemText(it);
-					item.Data = it;
+					var item = new SetItem
+					{
+						Text = TEListItemText(it),
+						Data = it
+					};
 					menu.Items.Add(item);
 				}
 
@@ -414,7 +415,7 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 					line.ActiveText = value;
 			}
 		}
-		public static void OnEditorOpened1(object sender, EventArgs e)
+		public static void OnEditorFirstOpening(object sender, EventArgs e)
 		{
 			A.Psf.Invoking();
 
@@ -431,12 +432,8 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 			{
 				throw new RuntimeException("Error in Profile-Editor.ps1, see $Error for details.", ex);
 			}
-			finally
-			{
-				Far.Api.AnyEditor.Opened -= OnEditorOpened1;
-			}
 		}
-		public static void OnEditorOpened2(object sender, EventArgs e)
+		public static void OnEditorOpened(object sender, EventArgs e)
 		{
 			var editor = (IEditor)sender;
 			var fileName = editor.FileName;
@@ -547,8 +544,7 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 			else if (wt == WindowKind.Dialog)
 			{
 				IDialog dialog = Far.Api.Dialog;
-				IEdit edit = dialog.Focused as IEdit;
-				if (edit == null)
+				if (!(dialog.Focused is IEdit edit))
 				{
 					Far.Api.Message("The current control must be an edit box.", Res.Me);
 					return;
@@ -567,8 +563,7 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 					toCleanCmdLine = true;
 				}
 
-				string prefix;
-				Entry.SplitCommandWithPrefix(ref code, out prefix);
+				Entry.SplitCommandWithPrefix(ref code, out _);
 			}
 			if (code.Length == 0)
 				return;

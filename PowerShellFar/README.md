@@ -1526,20 +1526,24 @@ Change some `$Psf.Settings`, mostly UI preferences, see API help.
 The editor profile: *%FARPROFILE%\FarNet\PowerShellFar\Profile-Editor.ps1*.
 
 *Bench\Profile-Editor.ps1* is an example, use it as the base for your own.
-
-Read this topic carefully, view the script and then decide what you are going
-to use from this script and what should be removed. If you are not absolutely
-sure just do not use it at all.
+Do not just copy this script, it may not work well in your environment.
 
 The author uses this profile to set some editor event handlers even when macros
 might work better. This is done deliberately in order to be sure that handlers
 work fine. Other users may prefer macros.
 
-- DO NOT use it as it is together with *HlfViewer*. Either disable the plugin
+- Do not use this profile together with *HlfViewer*. Either disable the plugin
   or remove `[F1]` code from the script.
 
-- DO NOT use it as it is with plugins processing mouse events in editors.
+- Do not use this profile with plugins processing mouse events in editors.
   Either disable the plugins or remove mouse code from the script.
+
+- Do not use `$Far.AnyEditor.add_FirstOpening()` in the profile, it is not
+  going to be called because the profile itself is called from this event.
+
+- Use `$Far.AnyEditor.add_Opened()` in order to add handlers depending on file
+  types, see how this is done in the example for Markdown and HLF. In this way
+  often called handlers do not have to check file types.
 
 **Events and actions**
 

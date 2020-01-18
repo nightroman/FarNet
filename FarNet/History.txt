@@ -1,6 +1,10 @@
 NuGet package: https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5048
 
+= 5.2.23 =
+
+Add IAnyEditor.FirstOpening, called once on opening the first editor.
+
 = 5.2.22 =
 
 Add optional EditorOpened handler to EditTextArgs and GetContentEventArgs.
