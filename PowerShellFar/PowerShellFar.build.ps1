@@ -28,7 +28,7 @@ task Help {
 
 	# HTM
 	assert (Test-Path $env:MarkdownCss)
-		exec {
+	exec {
 		pandoc.exe @(
 			'README.md'
 			'--output=About-PowerShellFar.htm'

@@ -1,13 +1,17 @@
 NuGet package: https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5048
 
-= 5.2.21 =
+= 5.2.22 =
 
 Add optional EditorOpened handler to EditTextArgs and GetContentEventArgs.
 
 Remove obsolete EditText(string, string), use EditText(EditTextArgs).
 
 About-FarNet.htm - use GitHub like CSS.
+
+= 5.2.21 =
+
+unlisted
 
 = 5.2.20 =
 

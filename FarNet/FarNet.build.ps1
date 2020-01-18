@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Build script (https://github.com/nightroman/Invoke-Build)
@@ -40,21 +39,22 @@ task Install {
 		Copy-Item FarNet.Settings\bin\Release\FarNet.Settings.xml, FarNet.Tools\bin\Release\FarNet.Tools.xml $FarHome\FarNet
 	}
 },
-Help
+HelpHLF
 
 task Uninstall {
 	foreach($_ in $Builds) { Invoke-Build Uninstall $_ }
 	remove $FarHome\Far.exe.config
 }
 
-# HLF
-task Help -If ($Configuration -eq 'Release') {
-	exec { pandoc.exe About-FarNet.text --output=About-FarNet.htm --from=markdown_phpextra }
-	exec { HtmlToFarHelp from=About-FarNet.htm to=$FarHome\Plugins\FarNet\FarNetMan.hlf }
+# Make HLF, called by Build (Install), depends on x64/x86
+task HelpHLF -If ($Configuration -eq 'Release') {
+	exec { pandoc.exe About-FarNet.text --output=z.htm --from=markdown_phpextra }
+	exec { HtmlToFarHelp from=z.htm to=$FarHome\Plugins\FarNet\FarNetMan.hlf }
+	remove z.htm
 }
 
-# HTM
-task HelpHtm {
+# Make HTM
+task HelpHTM {
 	assert (Test-Path $env:MarkdownCss)
 	exec {
 		pandoc.exe @(
@@ -68,12 +68,9 @@ task HelpHtm {
 	}
 }
 
-# HLF and HTM
-task Help2 Help, HelpHtm
-
-# Tests before packaging
+# Test config and make another platform before packaging
 task BeginPackage {
-	# Far.exe.config
+	# check Far.exe.config
 	$xml = [xml](Get-Content $FarHome\Far.exe.config)
 	$nodes = @($xml.SelectNodes('configuration/appSettings/add'))
 	assert ($nodes.Count -eq 0)
@@ -81,12 +78,9 @@ task BeginPackage {
 	assert ($nodes.Count -eq 1)
 	assert ($nodes[0].name -ceq 'FarNet.Trace')
 	assert ($nodes[0].value -ceq 'Warning')
-}
 
-# Make package files
-task Package BeginPackage, Help2, {
+	# make another platform
 	Set-Alias MSBuild (Resolve-MSBuild)
-	# build another platform
 	$bit = if ($Platform -eq 'Win32') {'x64'} else {'Win32'}
 	$PlatformToolset = if ($TargetFrameworkVersion -lt 'v4') {'v90'} else {'v140'}
 	exec {
@@ -99,7 +93,10 @@ task Package BeginPackage, Help2, {
 			"/p:PlatformToolset=$PlatformToolset"
 		)
 	}
+}
 
+# Make package files
+task Package BeginPackage, HelpHTM, {
 	# folders
 	remove z
 	$null = mkdir `
