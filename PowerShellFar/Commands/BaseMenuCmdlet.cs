@@ -16,17 +16,21 @@ namespace PowerShellFar.Commands
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 		[Parameter(Position = 0)]
 		public string Title { get; set; }
+
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 		[SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		[Parameter(Position = 1)]
 		public FarItem[] Items { get; set; }
+
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 		[Parameter]
 		public SwitchParameter AutoAssignHotkeys { get; set; }
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+
 		[Parameter]
 		public string Bottom { get; set; }
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+
 		[Parameter]
 		public string HelpTopic { get; set; }
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
@@ -42,15 +46,19 @@ namespace PowerShellFar.Commands
 		}
 		int _Selected;
 		bool _setSelected;
+
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 		[Parameter]
 		public SwitchParameter SelectLast { get; set; }
+
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 		[Parameter]
 		public SwitchParameter ShowAmpersands { get; set; }
+
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 		[Parameter]
 		public SwitchParameter WrapCursor { get; set; }
+
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 		[Parameter]
 		public int X
@@ -64,6 +72,7 @@ namespace PowerShellFar.Commands
 		}
 		int _X;
 		bool _setX;
+
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 		[Parameter]
 		public int Y
@@ -77,6 +86,21 @@ namespace PowerShellFar.Commands
 		}
 		int _Y;
 		bool _setY;
+
+		//! it is common for menus and lists but set separately, in lists after preferences if _set*
+		[Parameter]
+		public SwitchParameter NoShadow
+		{
+			get { return _NoShadow; }
+			set
+			{
+				_NoShadow = value;
+				_setNoShadow = true;
+			}
+		}
+		protected SwitchParameter _NoShadow;
+		protected bool _setNoShadow;
+
 		internal void Init(IAnyMenu menu)
 		{
 			menu.Title = Title;

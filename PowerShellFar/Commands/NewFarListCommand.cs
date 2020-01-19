@@ -7,6 +7,7 @@ using FarNet;
 
 namespace PowerShellFar.Commands
 {
+	//! Why _set*: we set preferences from settings first, then change them if _set*.
 	class NewFarListCommand : BaseMenuCmdlet
 	{
 		[Parameter]
@@ -21,6 +22,7 @@ namespace PowerShellFar.Commands
 		}
 		SwitchParameter _AutoSelect;
 		bool _setAutoSelect;
+
 		[Parameter]
 		public string Incremental
 		{
@@ -33,6 +35,7 @@ namespace PowerShellFar.Commands
 		}
 		string _Incremental;
 		bool _setIncremental;
+
 		[Parameter]
 		public PatternOptions IncrementalOptions
 		{
@@ -45,18 +48,7 @@ namespace PowerShellFar.Commands
 		}
 		PatternOptions _IncrementalOptions;
 		bool _setIncrementalOptions;
-		[Parameter]
-		public SwitchParameter NoShadow
-		{
-			get { return _NoShadow; }
-			set
-			{
-				_NoShadow = value;
-				_setNoShadow = true;
-			}
-		}
-		SwitchParameter _NoShadow;
-		bool _setNoShadow;
+
 		[Parameter]
 		public int ScreenMargin
 		{
@@ -69,6 +61,7 @@ namespace PowerShellFar.Commands
 		}
 		int _ScreenMargin;
 		bool _setScreenMargin;
+
 		[Parameter]
 		public SwitchParameter UsualMargins
 		{
@@ -81,8 +74,10 @@ namespace PowerShellFar.Commands
 		}
 		SwitchParameter _UsualMargins;
 		bool _setUsualMargins;
+
 		[Parameter]
 		public SwitchParameter Popup { get; set; }
+
 		internal IListMenu Create()
 		{
 			IListMenu menu = Far.Api.CreateListMenu();
@@ -108,10 +103,10 @@ namespace PowerShellFar.Commands
 
 			return menu;
 		}
+
 		protected override void BeginProcessing()
 		{
-			IListMenu menu = Create();
-			WriteObject(menu);
+			WriteObject(Create());
 		}
 	}
 }

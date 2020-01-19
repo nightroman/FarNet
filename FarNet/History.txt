@@ -1,9 +1,15 @@
 NuGet package: https://www.nuget.org/packages/FarNet
-Far Manager 3.0.5048
+Far Manager 3.0.5505
 
 = 5.2.23 =
 
-Add IAnyEditor.FirstOpening, called once on opening the first editor.
+Requires Far 3.0.5505 for new menu flags
+
+Menu, new options
+- NoBox, NoMargin, SingleBox, NoShadow
+
+IAnyEditor
+- FirstOpening event, called once on opening the first editor
 
 = 5.2.22 =
 

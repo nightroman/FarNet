@@ -1,12 +1,9 @@
 
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace FarNet
 {
@@ -22,7 +19,7 @@ namespace FarNet
 		{
 			_Item = item;
 		}
-		FarItem _Item;
+		readonly FarItem _Item;
 		/// <summary>
 		/// Current item.
 		/// </summary>
@@ -211,6 +208,10 @@ namespace FarNet
 		/// <include file='doc.xml' path='doc/AutoAssignHotkeys/*'/>
 		bool AutoAssignHotkeys { get; set; }
 		/// <summary>
+		/// Tells to not show the dialog shadow.
+		/// </summary>
+		bool NoShadow { get; set; }
+		/// <summary>
 		/// Adds a new item to <see cref="Items"/> and returns it.
 		/// </summary>
 		/// <param name="text">Item text.</param>
@@ -264,6 +265,18 @@ namespace FarNet
 		/// Tells to set the console title to the menu title.
 		/// </summary>
 		bool ChangeConsoleTitle { get; set; }
+		/// <summary>
+		/// Tells to show the menu with no box. Options <see cref="NoMargin"/> and <see cref="SingleBox"/> are not used.
+		/// </summary>
+		bool NoBox { get; set; }
+		/// <summary>
+		/// Tells to show the menu with no margin.
+		/// </summary>
+		bool NoMargin { get; set; }
+		/// <summary>
+		/// Tells to show the menu with single box.
+		/// </summary>
+		bool SingleBox { get; set; }
 		/// <summary>
 		/// Creates low level internal data of the menu from the current items.
 		/// Normally you have to call <see cref="Unlock"/> after use.
@@ -365,10 +378,6 @@ namespace FarNet
 		/// Tells to not show item count information at the bottom line.
 		/// </summary>
 		bool NoInfo { get; set; }
-		/// <summary>
-		/// Tells to not show the dialog shadow.
-		/// </summary>
-		bool NoShadow { get; set; }
 		/// <summary>
 		/// Gets or sets the screen margin size.
 		/// </summary>

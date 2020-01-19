@@ -8,7 +8,7 @@
 	Before using read this code and "Profile-Editor.ps1" in HLF or HTM help.
 #>
 
-### Init focus data, also prevent not allowed next calls.
+### Init focus data, set ReadOnly to prevent next calls.
 New-Variable Editor.Data @{} -Scope Global -Option ReadOnly -Description 'Editor handlers data.' -ErrorAction Stop
 
 ### GotFocus: reset focus data
@@ -67,7 +67,7 @@ $Far.AnyEditor.add_MouseClick({
 			$_.Ignore = $true
 			$Editor = $this
 			$SelectionExists = $this.SelectionExists
-			New-FarMenu -Show -AutoAssignHotkeys -X $m.Where.X -Y $m.Where.Y -Items @(
+			New-FarMenu -Show -AutoAssignHotkeys -NoMargin -X $m.Where.X -Y $m.Where.Y -Items @(
 				New-FarItem 'Cut' { $Far.CopyToClipboard($Editor.GetSelectedText()); $Editor.DeleteText() } -Disabled:(!$SelectionExists)
 				New-FarItem 'Copy' { $Far.CopyToClipboard($Editor.GetSelectedText()) } -Disabled:(!$SelectionExists)
 				New-FarItem 'Paste' { if ($SelectionExists) { $Editor.DeleteText() } $Editor.InsertText($Far.PasteFromClipboard()) }

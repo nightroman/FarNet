@@ -1,15 +1,18 @@
 NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
-Far Manager 3.0.5013
+Far Manager 3.0.5505
 FarNet 5.2.23
 
 = 5.2.17 =
 
-Requires FarNet 5.2.23
+Requires FarNet 5.2.23, Far 3.0.5505, for new menu flags
+
+Menu cmdlets, new switches
+- NoBox, NoMargin, SingleBox, NoShadow
 
 Editor profile
 - Fixed issues with $Far.AnyEditor.add_Opened()
 - Profile-Editor.ps1 uses $Far.AnyEditor.add_Opened()
-- Removed the workaround ignoring the first mouse move
+- Removed old workaround ignoring the first mouse move
 
 = 5.2.16 =
 

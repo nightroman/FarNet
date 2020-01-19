@@ -473,6 +473,7 @@ $BaseMenu = @{
 		AutoAssignHotkeys = 'Sets IAnyMenu.AutoAssignHotkeys'
 		Bottom = 'Sets IAnyMenu.Bottom'
 		HelpTopic = 'Sets IAnyMenu.HelpTopic'
+		NoShadow = 'Sets IAnyMenu.NoShadow'
 		Selected = 'Sets IAnyMenu.Selected'
 		SelectLast = 'Sets IAnyMenu.SelectLast'
 		ShowAmpersands = 'Sets IAnyMenu.ShowAmpersands'
@@ -489,11 +490,14 @@ Merge-Helps $BaseMenu @{
 	parameters = @{
 		ReverseAutoAssign = 'Sets IMenu.ReverseAutoAssign'
 		ChangeConsoleTitle = 'Sets IMenu.ChangeConsoleTitle'
-		Show = 'Tells to show immediately. In this case nothing is returned and all actions are done by item event handlers.'
+		NoBox = 'Sets IMenu.NoBox'
+		NoMargin = 'Sets IMenu.NoMargin'
+		SingleBox = 'Sets IMenu.SingleBox'
+		Show = 'Tells to show immediately. Nothing is returned, actions are done by item event handlers.'
 	}
 	outputs = @{
 		type = 'FarNet.IMenu or none'
-		description = 'A new menu object or none if the Show switch is used.'
+		description = 'A new menu object or none if Show is used.'
 	}
 }
 
@@ -503,7 +507,6 @@ $FarList = Merge-Helps $BaseMenu @{
 		AutoSelect = 'Sets IListMenu.AutoSelect'
 		Incremental = 'Sets IListMenu.Incremental'
 		IncrementalOptions = 'Sets IListMenu.IncrementalOptions'
-		NoShadow = 'Sets IListMenu.NoShadow'
 		ScreenMargin = 'Sets IListMenu.ScreenMargin'
 		UsualMargins = 'Sets IListMenu.UsualMargins'
 		Popup = 'Popup-list style. Uses $Psf.Settings.Popup* options.'

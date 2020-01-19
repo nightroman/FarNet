@@ -11,17 +11,33 @@ namespace PowerShellFar.Commands
 	{
 		[Parameter]
 		public SwitchParameter ReverseAutoAssign { get; set; }
+
 		[Parameter]
 		public SwitchParameter ChangeConsoleTitle { get; set; }
+
+		[Parameter]
+		public SwitchParameter NoBox { get; set; }
+
+		[Parameter]
+		public SwitchParameter NoMargin { get; set; }
+
+		[Parameter]
+		public SwitchParameter SingleBox { get; set; }
+
 		[Parameter]
 		public SwitchParameter Show { get; set; }
+
 		protected override void BeginProcessing()
 		{
-			IMenu menu = Far.Api.CreateMenu();
+			var menu = Far.Api.CreateMenu();
 			Init(menu);
 
 			menu.ReverseAutoAssign = ReverseAutoAssign;
 			menu.ChangeConsoleTitle = ChangeConsoleTitle;
+			menu.NoBox = NoBox;
+			menu.NoMargin = NoMargin;
+			menu.NoShadow = NoShadow;
+			menu.SingleBox = SingleBox;
 
 			if (Show)
 				menu.Show();

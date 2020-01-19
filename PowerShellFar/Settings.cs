@@ -62,7 +62,7 @@ namespace PowerShellFar
 		}
 		bool _PopupNoShadow;
 		/// <summary>
-		/// <see cref="IListMenu.NoShadow"/> for popup menus.
+		/// <see cref="IAnyMenu.NoShadow"/> for popup menus.
 		/// </summary>
 		public bool PopupNoShadow
 		{
@@ -154,11 +154,7 @@ namespace PowerShellFar
 		public string ExternalViewerFileName
 		{
 			get { return _ExternalViewerFileName; }
-			set
-			{
-				if (value == null) throw new ArgumentNullException("value");
-				_ExternalViewerFileName = value;
-			}
+			set { _ExternalViewerFileName = value ?? throw new ArgumentNullException("value"); }
 		}
 		string _ExternalViewerArguments = string.Empty;
 		/// <summary>
@@ -177,11 +173,7 @@ namespace PowerShellFar
 		public string ExternalViewerArguments
 		{
 			get { return _ExternalViewerArguments; }
-			set
-			{
-				if (value == null) throw new ArgumentNullException("value");
-				_ExternalViewerArguments = value;
-			}
+			set { _ExternalViewerArguments = value ?? throw new ArgumentNullException("value"); }
 		}
 		ConsoleColor _CommandForegroundColor = ConsoleColor.DarkGray;
 		/// <summary>
