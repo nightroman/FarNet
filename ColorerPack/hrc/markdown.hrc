@@ -7,11 +7,11 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="markdown">
 <annotation><documentation><![CDATA[
 
-markdown.hrc by Roman Kuzmin, aka NightRoman, 2020-01-01
+markdown.hrc by Roman Kuzmin, aka NightRoman, 2020-01-20
 
 * Inline HTML should be valid XML.
 * Opened spans are always colored.
-* Blockquote contents is not parsed.
+* Blockquotes are only partialy parsed.
 * List levels 4: only items are parsed.
 * List levels 5+: all is colored as code.
 * Indentation: 4/8/12 spaces, 1/2/3 tabs.
@@ -162,6 +162,7 @@ markdown.hrc by Roman Kuzmin, aka NightRoman, 2020-01-01
 
 <scheme name="Quote">
   <inherit scheme="Wrap"/>
+  <inherit scheme="Escape"/>
   <inherit scheme="def:empty"/>
 </scheme>
 
