@@ -68,6 +68,7 @@
     <Delete Files="$(MyOutDir)\$(AssemblyName).pdb" Condition="'$(Configuration)' == 'Release'" />
     <Copy DestinationFolder="$(MyOutDir)" SkipUnchangedFiles="true" SourceFiles="..\..\packages\FSharp.Compiler.Service\lib\$(TargetFramework)\FSharp.Compiler.Service.dll; ..\..\packages\System.Reflection.Metadata\lib\portable-net45+win8\System.Reflection.Metadata.dll" />
     <Copy DestinationFolder="$(MyOutDir)" SkipUnchangedFiles="true" SourceFiles="..\..\packages\System.ValueTuple\lib\portable-net40+sl4+win8+wp8\System.ValueTuple.dll" />
+    <Copy DestinationFolder="$(MyOutDir)" SkipUnchangedFiles="true" SourceFiles="..\..\packages\System.Buffers\lib\netstandard2.0\System.Buffers.dll" />
     <Copy DestinationFolder="$(FarHome)" SkipUnchangedFiles="true" SourceFiles="..\..\packages\FSharp.Core\lib\net45\FSharp.Core.dll; ..\..\packages\FSharp.Core\lib\net45\FSharp.Core.optdata; ..\..\packages\FSharp.Core\lib\net45\FSharp.Core.sigdata" />
   </Target>
 </Project>

@@ -2,6 +2,10 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.5048
 FarNet 5.2.20
 
+= 1.9.13 =
+
+FSharp.Compiler.Service (34.0)
+
 = 1.9.12 =
 
 FSharp.Compiler.Service (33.0.1)

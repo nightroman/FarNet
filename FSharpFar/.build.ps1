@@ -49,8 +49,14 @@ task Clean {
 }
 
 task Markdown {
-	function Convert-Markdown($Name) {pandoc.exe --standalone --from=gfm "--output=$Name.htm" "--metadata=pagetitle=$Name" "$Name.md"}
-	exec { Convert-Markdown README }
+	assert (Test-Path $env:MarkdownCss)
+	exec { pandoc.exe @(
+		'README.md'
+		'--output=README.htm'
+		'--from=gfm'
+		'--self-contained', "--css=$env:MarkdownCss"
+		'--standalone', "--metadata=pagetitle=$ModuleName"
+	)}
 }
 
 task Version {
@@ -74,38 +80,39 @@ task Meta -Inputs .build.ps1, History.txt -Outputs src/Directory.Build.props -Jo
 }
 
 task Package Markdown, {
-	$toHome = "z\tools\FarHome"
-	$toFarNet = "z\tools\FarHome\FarNet"
-	$toModule = "$toHome\FarNet\Modules\$ModuleName"
+	$toModule = "z\tools\FarHome\FarNet\Modules\$ModuleName"
 	$fromModule = "$FarHome\FarNet\Modules\$ModuleName"
 
 	remove z
 	$null = mkdir $toModule
 
-	Copy-Item -Destination $toHome @(
+	# package: logo
+	Copy-Item -Destination z ..\Zoo\FarNetLogo.png
+
+	# FarHome: required here by FCS, available for F# modules
+	Copy-Item -Destination "z\tools\FarHome" @(
 		"$FarHome\FSharp.Core.dll"
 		"$FarHome\FSharp.Core.optdata"
 		"$FarHome\FSharp.Core.sigdata"
 	)
 
-	Copy-Item -Destination $toFarNet @(
+	# FarNet: available for F# modules
+	Copy-Item -Destination "z\tools\FarHome\FarNet" @(
 		"$FarHome\FarNet\FarNet.FSharp.dll"
 		"$FarHome\FarNet\FarNet.FSharp.xml"
 	)
 
+	# module
 	Copy-Item -Destination $toModule @(
 		'README.htm'
 		'History.txt'
 		'LICENSE.txt'
 		"$fromModule\$ModuleName.dll"
 		"$fromModule\FSharp.Compiler.Service.dll"
+		"$fromModule\System.Buffers.dll"
 		"$fromModule\System.Reflection.Metadata.dll"
 		"$fromModule\System.ValueTuple.dll"
 	)
-
-	# icon
-	$null = mkdir z\images
-	Copy-Item ..\Zoo\FarNetLogo.png z\images
 }
 
 #! dotnet made assembly: FileVersion is null (@1); so we used this command:
@@ -137,7 +144,7 @@ https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
 		<authors>Roman Kuzmin</authors>
 		<owners>Roman Kuzmin</owners>
 		<projectUrl>https://github.com/nightroman/FarNet/tree/master/FSharpFar</projectUrl>
-		<icon>images\FarNetLogo.png</icon>
+		<icon>FarNetLogo.png</icon>
 		<license type="expression">BSD-3-Clause</license>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$text</summary>
