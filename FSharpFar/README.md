@@ -56,7 +56,7 @@ Use `[F11]` \ `FSharpFar` to open the module menu:
 
 - **Project**
 
-    Opens the generated F# project, see [Use as project](#use-as-project).
+    Generates and opens F# project by the associated program or VSCode, see [Use as project](#use-as-project).
 
 - **Load**
 
@@ -368,13 +368,16 @@ The history keys:
 ***
 ## Use as project
 
-When a configuration file `*.fs.ini` is ready you can use the menu command
-`Project` in order to generate a special `*.fsproj` with your source files
-and open it by the associated program, usually Visual Studio. It is not for
-building a module or assembly, it is just for convenient work on your files.
-You do not have to build anything and restart Far Manager in order to use
-updated assemblies. Just edit and save your F# files in this project then
-use them in Far Manager by `fs:` commands, directly or via associations.
+When a configuration file `*.fs.ini` is ready use the menu commands `Project
+(fsproj) (VSCode)` in order to generate a special `*.fsproj` with the source
+files and open it by the associated program (usually Visual Studio) or by
+VSCode (ensure `code.cmd` is in the path and the VSCode F# extension is
+installed).
+
+The generated project is not for building but for working with sources using
+powerful development environments. You may build to make sure everything is
+correct but you do not have to, code checkers show errors. Edit your files,
+save, switch to Far Manager (no restart is needed), and run by `fs:`.
 
 The generated project includes:
 
@@ -387,11 +390,10 @@ The scripts (`*.fsx` files), are not included. Consider having complex code in
 source files and keeping scripts simple. Note that you can invoke source files
 as scripts, too.
 
-The generated project path is `%TEMP%\_Project-X-Y\Z.fsproj`, where:
+The generated project path is `%TEMP%\_Project-N-X\N.fsproj`, where:
 
-- X is the name of your script directory.
-- Y is some hash code of its full path.
-- Z is the config file base name.
+- N - configuration file base name
+- X - configuration path hash code
 
 ***
 ## Editor services

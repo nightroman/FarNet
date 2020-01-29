@@ -223,13 +223,12 @@ module Config =
     /// Makes the temp project for the specified config file.
     let generateProject configPath =
         let configRoot = Path.GetDirectoryName configPath
-        let configRootName = Path.GetFileName configRoot
-        let configBaseName =
+        let projectName =
             let name = Path.GetFileNameWithoutExtension configPath
-            if String.equalsIgnoreCase name ".fs" then configRootName + ".fs" else name
-        let nameInTemp = sprintf "_Project-%s-%08x" configRootName ((configRoot.ToUpper ()).GetHashCode ())
+            if String.equalsIgnoreCase name ".fs" then (Path.GetFileName configRoot) + ".fs" else name
+        let nameInTemp = sprintf "_Project-%s-%08x" projectName ((configPath.ToUpper ()).GetHashCode ())
         let projectRoot = Path.Combine (Path.GetTempPath (), nameInTemp)
-        let projectPath = Path.Combine (projectRoot, configBaseName + ".fsproj")
+        let projectPath = Path.Combine (projectRoot, projectName + ".fsproj")
         Directory.CreateDirectory projectRoot |> ignore
 
         let config = readFromFile configPath
