@@ -1,14 +1,17 @@
 ﻿
+// FarNet module RightWords
+// Copyright (c) Roman Kuzmin
+
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyCompany("https://github.com/nightroman/FarNet")]
-[assembly: AssemblyCopyright("Copyright (c) 2011-2016 Roman Kuzmin")]
+[assembly: AssemblyCopyright("Copyright (c) Roman Kuzmin")]
 [assembly: AssemblyDescription("Spell-checker and thesaurus")]
 [assembly: AssemblyProduct("FarNet.RightWords")]
 [assembly: AssemblyTitle("FarNet module RightWords for Far Manager")]
-[assembly: AssemblyVersion("2.1.7")]
+[assembly: AssemblyVersion("2.2.0")]
 
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]

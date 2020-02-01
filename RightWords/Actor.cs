@@ -1,15 +1,14 @@
 ﻿
-/*
-FarNet module RightWords
-Copyright (c) 2011-2016 Roman Kuzmin
-*/
+// FarNet module RightWords
+// Copyright (c) Roman Kuzmin
 
+using NHunspell;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
-using NHunspell;
+
 namespace FarNet.RightWords
 {
 	static class Actor
@@ -492,7 +491,7 @@ namespace FarNet.RightWords
 
 			var word = match.Value;
 
-			for (int i = match.Groups.Count; --i >= 1; )
+			for (int i = match.Groups.Count; --i >= 1;)
 			{
 				var group = match.Groups[i];
 				if (!group.Success)

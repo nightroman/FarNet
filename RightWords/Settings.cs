@@ -1,13 +1,12 @@
 ﻿
-/*
-FarNet module RightWords
-Copyright (c) 2011-2016 Roman Kuzmin
-*/
+// FarNet module RightWords
+// Copyright (c) Roman Kuzmin
 
+using FarNet.Settings;
 using System;
 using System.Configuration;
 using System.Text.RegularExpressions;
-using FarNet.Settings;
+
 namespace FarNet.RightWords
 {
 	[SettingsProvider(typeof(ModuleSettingsProvider))]

@@ -1,5 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="$(FARHOME) == ''">
+    <FARHOME>C:\Bin\Far\x64</FARHOME>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ReferencePath>$(FARHOME)\FarNet;$(FARHOME)\FarNet\NHunspell</ReferencePath>
+  </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>

@@ -1,13 +1,12 @@
 ﻿
-/*
-FarNet module RightWords
-Copyright (c) 2011-2016 Roman Kuzmin
-*/
+// FarNet module RightWords
+// Copyright (c) Roman Kuzmin
 
+using NHunspell;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using NHunspell;
+
 namespace FarNet.RightWords
 {
 	sealed class MultiSpell
@@ -49,7 +48,7 @@ namespace FarNet.RightWords
 					using (var reader = File.OpenText(userWordsPath))
 					{
 						string line;
-						while((line = reader.ReadLine()) != null)
+						while ((line = reader.ReadLine()) != null)
 						{
 							var words = line.Split(' ');
 							if (words.Length == 1)

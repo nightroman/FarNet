@@ -1,12 +1,11 @@
 ﻿
-/*
-FarNet module RightWords
-Copyright (c) 2011-2016 Roman Kuzmin
-*/
+// FarNet module RightWords
+// Copyright (c) Roman Kuzmin
 
+using NHunspell;
 using System;
 using System.Collections.Generic;
-using NHunspell;
+
 namespace FarNet.RightWords
 {
 	sealed class MultiThesaurus : IDisposable

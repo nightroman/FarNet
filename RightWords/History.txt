@@ -1,6 +1,10 @@
-
-NuGet package: https://www.nuget.org/packages/FarNet.RightWords
+https://www.nuget.org/packages/FarNet.RightWords
 FarNet 5.1.0
+
+= 2.2.0 =
+
+- The required .NET Framework is 3.5 (was 4.5).
+- Updated NHunspell to the latest 1.2.5554.16953
 
 = 2.1.7 =
 

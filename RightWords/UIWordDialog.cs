@@ -1,10 +1,9 @@
 
-/*
-FarNet module RightWords
-Copyright (c) 2011-2016 Roman Kuzmin
-*/
+// FarNet module RightWords
+// Copyright (c) Roman Kuzmin
 
 using FarNet.Forms;
+
 namespace FarNet.RightWords
 {
 	class UIWordDialog
