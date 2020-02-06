@@ -3,7 +3,7 @@ COPY-LOCAL: FALSE
 RESTRICTION: == net461
 NUGET
   remote: https://www.nuget.org/api/v2
-    FSharp.Compiler.Service (34.0)
+    FSharp.Compiler.Service (34.0.1)
       FSharp.Core (>= 4.6.2)
       System.Buffers (>= 4.5)
       System.Collections.Immutable (>= 1.5)
