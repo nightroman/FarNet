@@ -559,7 +559,7 @@ namespace FarNet
 	/// </remarks>
 	/// <seealso cref="FarFile.Columns"/>
 	/// <seealso cref="SetFile.Columns"/>
-	public sealed class PanelPlan : ICloneable
+	public sealed class PanelPlan
 	{
 		/// <summary>
 		/// Columns info.
@@ -620,9 +620,9 @@ namespace FarNet
 		/// <remarks>
 		/// Use it to create another mode with the same properties and then change a few of them.
 		/// </remarks>
-		public object Clone()
+		public PanelPlan Clone()
 		{
-			return MemberwiseClone();
+			return (PanelPlan)MemberwiseClone();
 		}
 	}
 
@@ -697,9 +697,7 @@ namespace FarNet
 		/// <summary>
 		/// Default column kind sequence: "N", "Z", "O", "C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9".
 		/// </summary>
-		public static ReadOnlyCollection<string> DefaultColumnKinds { get { return _DefaultColumnKinds; } }
-		// _100202_113617 If count changes update related features.
-		static readonly ReadOnlyCollection<string> _DefaultColumnKinds = new ReadOnlyCollection<string>(new string[] { "N", "Z", "O", "C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9" });
+		public static ReadOnlyCollection<string> DefaultColumnKinds { get; } = new ReadOnlyCollection<string>(new string[] { "N", "Z", "O", "C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9" });
 		/// <summary>
 		/// Only for derived classes.
 		/// </summary>

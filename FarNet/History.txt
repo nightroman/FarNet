@@ -1,6 +1,10 @@
 NuGet package: https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 5.2.24 =
+
+PanelPlan.Clone() returns PanelPlan instead of Object.
+
 = 5.2.23 =
 
 Requires Far 3.0.5505 for new menu flags
