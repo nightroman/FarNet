@@ -3,15 +3,22 @@ COPY-LOCAL: FALSE
 RESTRICTION: == net461
 NUGET
   remote: https://www.nuget.org/api/v2
-    FSharp.Compiler.Service (34.0.1)
+    FSharp.Compiler.Service (34.1)
       FSharp.Core (>= 4.6.2)
       System.Buffers (>= 4.5)
       System.Collections.Immutable (>= 1.5)
+      System.Memory (>= 4.5.3)
       System.Reflection.Metadata (>= 1.6)
       System.ValueTuple (>= 4.4)
     FSharp.Core (4.7)
     System.Buffers (4.5)
     System.Collections.Immutable (1.5)
+    System.Memory (4.5.3)
+      System.Buffers (>= 4.4)
+      System.Numerics.Vectors (>= 4.4)
+      System.Runtime.CompilerServices.Unsafe (>= 4.5.2)
+    System.Numerics.Vectors (4.5)
     System.Reflection.Metadata (1.6)
       System.Collections.Immutable (>= 1.5)
+    System.Runtime.CompilerServices.Unsafe (4.7)
     System.ValueTuple (4.5)
