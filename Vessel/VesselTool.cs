@@ -37,60 +37,30 @@ Same count : {2,8}
 
 Up sum     : {3,8}
 Down sum   : {4,8}
-Total sum  : {5,8}
-
-Average    : {6,8:n2}
-Factors    : {7,8}
+Gain/item  : {5,8:n2}
 ",
  result.UpCount,
  result.DownCount,
  result.SameCount,
  result.UpSum,
  result.DownSum,
- result.TotalSum,
- result.Average,
- Settings.Default.Limit0.ToString() + "/" + result.Factor);
-		}
-		static void SaveFactors(int mode, Result result)
-		{
-			var settings = Settings.Default;
-			var factor = settings.GetFactor(mode);
-			if (result.Factor != factor)
-			{
-				settings.SetFactor(mode, result.Factor);
-				settings.Save();
-			}
+ result.Average);
 		}
 		static void Train(int mode)
 		{
 			// train/save
 			var algo = new Actor(mode);
-			var result = algo.Train(Settings.Default.GetLimit(mode), null);
-			SaveFactors(mode, result);
+			var result = algo.Train();
 
 			// show report
 			var report = ResultText(result);
 			Far.Api.Message(report, "Training results", MessageOptions.LeftAligned);
-		}
-		static void StartTrainingWork(object state)
-		{
-			int mode = (int)state;
-			var algo = new Actor(mode);
-			var result = algo.Train(Settings.Default.GetLimit(mode), null);
-			SaveFactors(mode, result);
-		}
-		public static void StartTraining(int mode)
-		{
-			ThreadPool.QueueUserWorkItem(StartTrainingWork, mode);
 		}
 		static void Update(int mode)
 		{
 			// update
 			var algo = new Actor(mode, VesselHost.LogPath[mode], true);
 			var text = algo.Update();
-
-			// train
-			StartTraining(mode);
 
 			// show update info
 			Far.Api.Message(text, "Update", MessageOptions.LeftAligned);
@@ -102,9 +72,6 @@ Factors    : {7,8}
 			// update
 			var algo = new Actor(mode, VesselHost.LogPath[mode], true);
 			algo.Update();
-
-			// train
-			StartTraining(mode);
 		}
 		static void UpdatePeriodically(int mode)
 		{
@@ -128,13 +95,12 @@ Factors    : {7,8}
 		static void ShowHistory()
 		{
 			var limit = Settings.Default.Limit0;
-			var factor = Settings.Default.Factor1;
 
 			IListMenu menu = Far.Api.CreateListMenu();
 			menu.HelpTopic = HelpTopic + "FileHistory";
 			menu.SelectLast = true;
 			menu.UsualMargins = true;
-			menu.Title = string.Format("File history ({0}/{1})", limit, factor);
+			menu.Title = $"File history ({limit})";
 
 			menu.IncrementalOptions = PatternOptions.Substring;
 
@@ -151,10 +117,10 @@ Factors    : {7,8}
 			{
 				var actor = new Actor(0, null);
 				int lastGroup = -1;
-				foreach (var it in actor.GetHistory(DateTime.Now, factor))
+				foreach (var it in actor.GetHistory(DateTime.Now))
 				{
 					// separator
-					int nextGroup = it.Group(limit, factor);
+					int nextGroup = it.Group(limit);
 					if (lastGroup != nextGroup)
 					{
 						if (lastGroup > 0)
@@ -272,13 +238,12 @@ Factors    : {7,8}
 		static void ShowFolders()
 		{
 			var limit = Settings.Default.Limit0;
-			var factor = Settings.Default.Factor2;
 
 			IListMenu menu = Far.Api.CreateListMenu();
 			menu.HelpTopic = HelpTopic + "FolderHistory";
 			menu.SelectLast = true;
 			menu.UsualMargins = true;
-			menu.Title = string.Format("Folder history ({0}/{1})", limit, factor);
+			menu.Title = $"Folder history ({limit})";
 
 			menu.IncrementalOptions = PatternOptions.Substring;
 
@@ -289,10 +254,10 @@ Factors    : {7,8}
 			{
 				var actor = new Actor(1, null);
 				int lastGroup = -1;
-				foreach (var it in actor.GetHistory(DateTime.Now, factor))
+				foreach (var it in actor.GetHistory(DateTime.Now))
 				{
 					// separator
-					int nextGroup = it.Group(limit, factor);
+					int nextGroup = it.Group(limit);
 					if (lastGroup != nextGroup)
 					{
 						if (lastGroup > 0)

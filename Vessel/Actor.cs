@@ -54,15 +54,13 @@ namespace FarNet.Vessel
 					// add missing and later records from Far editor history
 					foreach (var item in Far.Api.History.Editor())
 					{
-						Record record = null;
-						if (!_latestRecords.TryGetValue(item.Name, out record) || item.Time - record.Time > _smallSpan)
+						if (!_latestRecords.TryGetValue(item.Name, out Record record) || item.Time - record.Time > _smallSpan)
 							_records.Add(new Record(item.Time, Record.NOOP, item.Name));
 					}
 					// add missing and later records from Far viewer history
 					foreach (var item in Far.Api.History.Viewer())
 					{
-						Record record = null;
-						if (!_latestRecords.TryGetValue(item.Name, out record) || item.Time - record.Time > _smallSpan)
+						if (!_latestRecords.TryGetValue(item.Name, out Record record) || item.Time - record.Time > _smallSpan)
 							_records.Add(new Record(item.Time, Record.NOOP, item.Name));
 					}
 				}
@@ -71,8 +69,7 @@ namespace FarNet.Vessel
 					// add missing and later records from Far folder history
 					foreach (var item in Far.Api.History.Folder())
 					{
-						Record record = null;
-						if (!_latestRecords.TryGetValue(item.Name, out record) || item.Time - record.Time > _smallSpan)
+						if (!_latestRecords.TryGetValue(item.Name, out Record record) || item.Time - record.Time > _smallSpan)
 							_records.Add(new Record(item.Time, Record.NOOP, item.Name));
 					}
 				}
@@ -94,15 +91,14 @@ namespace FarNet.Vessel
 		/// Gets the ordered history info list.
 		/// </summary>
 		/// <param name="now">The time to generate the list for, normally the current.</param>
-		/// <param name="factor">Smart history factor.</param>
-		public IEnumerable<Info> GetHistory(DateTime now, int factor)
+		public IEnumerable<Info> GetHistory(DateTime now)
 		{
 			// collect
 			var infos = CollectInfo(now, false);
 
 			// evidences
 			SetEvidences(infos, CollectEvidences());
-			return infos.OrderByDescending(x => x, new InfoComparer(_limit0, factor));
+			return infos.OrderByDescending(x => x, new InfoComparer(_limit0));
 		}
 		/// <summary>
 		/// Collects the unordered history info.
@@ -153,8 +149,7 @@ namespace FarNet.Vessel
 
 			foreach (var record in _records)
 			{
-				SpanSet spans;
-				if (!result.TryGetValue(record.Path, out spans))
+				if (!result.TryGetValue(record.Path, out SpanSet spans))
 				{
 					spans = new SpanSet() { Time = record.Time };
 					result.Add(record.Path, spans);
@@ -249,23 +244,10 @@ namespace FarNet.Vessel
 		/// <summary>
 		/// Trains the model.
 		/// </summary>
-		/// <param name="factor">Maximum factor in hours.</param>
-		/// <param name="results">Optional result list.</param>
 		/// <returns>The best training result.</returns>
-		public Result Train(int factor, List<Result> results)
+		public Result Train()
 		{
-			if (factor < _limit0)
-				factor = _limit0;
-
-			// init results
-			if (results == null)
-				results = new List<Result>();
-			else
-				results.Clear();
-			for (int i = _limit0; i <= factor; i += (i < 24 ? 1 : (i < 48 ? 2 : 4)))
-				results.Add(new Result() { Factor = i });
-
-			// evidences once
+			var result = new Result();
 			var map = CollectEvidences();
 
 			// process records
@@ -285,39 +267,23 @@ namespace FarNet.Vessel
 				SetEvidences(infos, map);
 
 				// sort with factors, get smart rank
-				foreach (var r in results)
-				{
-					infos.Sort(new InfoComparer(_limit0, r.Factor));
-					int rankSmart = infos.FindIndex(x => x.Path.Equals(record.Path, StringComparison.OrdinalIgnoreCase));
+				infos.Sort(new InfoComparer(_limit0));
+				int rankSmart = infos.FindIndex(x => x.Path.Equals(record.Path, StringComparison.OrdinalIgnoreCase));
 
-					int win = rankPlain - rankSmart;
-					if (win < 0)
-					{
-						++r.DownCount;
-						r.DownSum -= win;
-					}
-					else if (win > 0)
-					{
-						++r.UpCount;
-						r.UpSum += win;
-					}
-					else
-					{
-						++r.SameCount;
-					}
+				int win = rankPlain - rankSmart;
+				if (win < 0)
+				{
+					++result.DownCount;
+					result.DownSum -= win;
 				}
-			}
-
-			// the best result
-			Result result = null;
-			var maxTarget = int.MinValue;
-			foreach (var it in results)
-			{
-				var target = it.TotalSum;
-				if (maxTarget < target)
+				else if (win > 0)
 				{
-					result = it;
-					maxTarget = target;
+					++result.UpCount;
+					result.UpSum += win;
+				}
+				else
+				{
+					++result.SameCount;
 				}
 			}
 

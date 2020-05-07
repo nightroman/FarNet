@@ -44,17 +44,9 @@ namespace FarNet.Vessel
 		/// <summary>
 		/// Recency group: 0 is the most recent to be sorted by time.
 		/// </summary>
-		public int Group(int group0, int group1)
+		public int Group(int group0)
 		{
-			var hours = Idle.TotalHours;
-
-			if (hours < group0)
-				return 0;
-
-			if (hours < group1)
-				return 1;
-
-			return 2;
+			return Idle.TotalHours < group0 ? 0 : 1;
 		}
 	}
 }

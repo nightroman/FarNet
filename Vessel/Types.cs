@@ -32,16 +32,11 @@ namespace FarNet.Vessel
 	}
 	public class Result
 	{
-		public int Factor { get; set; }
 		public int UpCount { get; set; }
 		public int DownCount { get; set; }
 		public int SameCount { get; set; }
 		public int UpSum { get; set; }
 		public int DownSum { get; set; }
-		public int TotalSum
-		{
-			get { return UpSum - DownSum; }
-		}
 		public float Average
 		{
 			get
