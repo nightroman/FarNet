@@ -8,8 +8,8 @@ namespace FarNet.Vessel
 {
 	class InfoComparer : IComparer<Info>
 	{
-		int _group0;
-		int _group1;
+		readonly int _group0;
+		readonly int _group1;
 		public InfoComparer(int group0, int group1)
 		{
 			_group0 = group0;
@@ -33,16 +33,6 @@ namespace FarNet.Vessel
 			{
 				var x = left.Evidence;
 				var y = right.Evidence;
-				if (x > y)
-					return -1;
-				if (x < y)
-					return 1;
-			}
-
-			// activity
-			{
-				int x = left.Activity;
-				int y = right.Activity;
 				if (x > y)
 					return -1;
 				if (x < y)

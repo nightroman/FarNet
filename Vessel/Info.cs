@@ -30,10 +30,6 @@ namespace FarNet.Vessel
 		/// </summary>
 		public int UseCount { get; set; }
 		/// <summary>
-		/// Recent activity rank.
-		/// </summary>
-		public int Activity { get; set; }
-		/// <summary>
 		/// Count of days of use.
 		/// </summary>
 		public int DayCount { get; set; }

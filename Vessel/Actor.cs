@@ -240,18 +240,7 @@ namespace FarNet.Vessel
 
 				// different days
 				if (info.Head.Date != record.Time.Date)
-				{
 					++info.DayCount;
-
-					// Why 2 is the best for all records so far, 3..4 are so so, and 5 is bad?
-					// NB
-					// Factor 4 gives values 0..4 (max is used); factors 5..6 still give 0..4 (max is not used).
-					// Should we just use 4 or should we dig the max factor value M which gives values 0..M?
-					// NB
-					// With 2 and Idle > X Activity is rare/never actually equal to 2.
-					if ((now - record.Time).TotalDays < 2)
-						++info.Activity;
-				}
 
 				// now save the record time
 				info.Head = record.Time;
