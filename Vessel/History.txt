@@ -1,6 +1,11 @@
 NuGet package: https://www.nuget.org/packages/FarNet.Vessel
 FarNet 5.2.4
 
+= 2.3.3 =
+
+Retired obsolete bits of code and settings.
+Updated README and wiki: https://github.com/nightroman/FarNet/wiki/Vessel
+
 = 2.3.2 =
 
 Log known Far records on first openings from lists.

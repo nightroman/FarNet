@@ -47,8 +47,22 @@ task Build Meta, {
 
 # In addition to Build: new About-Vessel.htm, $ModuleHome\Vessel.hlf
 task Help {
-	exec { MarkdownToHtml "From=About-Vessel.text" "To=About-Vessel.htm" }
-	exec { HtmlToFarHelp "From=About-Vessel.htm" "To=$ModuleHome\Vessel.hlf" }
+	# HLF
+	exec { pandoc.exe README.md --output=About-Vessel.htm --from=gfm }
+	exec { HtmlToFarHelp "from=About-Vessel.htm" "to=$ModuleHome\Vessel.hlf" }
+
+	# HTM
+	assert (Test-Path $env:MarkdownCss)
+	exec {
+		pandoc.exe @(
+			'README.md'
+			'--output=About-Vessel.htm'
+			'--from=gfm'
+			'--self-contained'
+			"--css=$env:MarkdownCss"
+			'--metadata=pagetitle:Vessel'
+		)
+	}
 }
 
 task Clean {
@@ -75,8 +89,7 @@ task Package Help, {
 	$ModuleHome\Vessel.hlf
 
 	# icon
-	$null = mkdir z\images
-	Copy-Item ..\Zoo\FarNetLogo.png z\images
+	Copy-Item ..\Zoo\FarNetLogo.png z
 }
 
 task NuGet Package, Version, {
@@ -102,7 +115,7 @@ https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
 		<owners>Roman Kuzmin</owners>
 		<authors>Roman Kuzmin</authors>
 		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
-		<icon>images\FarNetLogo.png</icon>
+		<icon>FarNetLogo.png</icon>
 		<license type="expression">BSD-3-Clause</license>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$text</summary>

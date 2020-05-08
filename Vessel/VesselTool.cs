@@ -18,7 +18,7 @@ namespace FarNet.Vessel
 		{
 			IMenu menu = Far.Api.CreateMenu();
 			menu.Title = "Vessel";
-			menu.HelpTopic = HelpTopic + "MenuCommands";
+			menu.HelpTopic = HelpTopic + "menu-commands";
 			menu.Add("&1. Smart history").Click += delegate { ShowHistory(); };
 			menu.Add("&2. Smart folders").Click += delegate { ShowFolders(); };
 			menu.Add("&3. Train history").Click += delegate { Train(0); };
@@ -97,7 +97,7 @@ Gain/item  : {5,8:n2}
 			var limit = Settings.Default.Limit0;
 
 			IListMenu menu = Far.Api.CreateListMenu();
-			menu.HelpTopic = HelpTopic + "FileHistory";
+			menu.HelpTopic = HelpTopic + "file-history";
 			menu.SelectLast = true;
 			menu.UsualMargins = true;
 			menu.Title = $"File history ({limit})";
@@ -240,7 +240,7 @@ Gain/item  : {5,8:n2}
 			var limit = Settings.Default.Limit0;
 
 			IListMenu menu = Far.Api.CreateListMenu();
-			menu.HelpTopic = HelpTopic + "FolderHistory";
+			menu.HelpTopic = HelpTopic + "folder-history";
 			menu.SelectLast = true;
 			menu.UsualMargins = true;
 			menu.Title = $"Folder history ({limit})";

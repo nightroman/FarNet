@@ -147,6 +147,7 @@ task Test {
 		[TestCase]@{File = "..\..\RightWords\README.md"; Name = 'RightWords.README'; Mode = 3; Root = $SampleHome3}
 
 		# used for HLF and docs
+		[TestCase]@{File = "..\..\Vessel\README.md"; Name = 'About-Vessel'; Mode = 3; Root = $SampleHome3}
 		[TestCase]@{File = "..\..\PowerShellFar\README.md"; Name = 'About-PowerShellFar'; Mode = 3; Root = $SampleHome3}
 
 		# legacy .text files
