@@ -179,7 +179,7 @@ namespace FarNet.Vessel
 					continue;
 
 				int count = map[info.Path].Spans[span];
-				info.Evidence = count;
+				info.SetEvidence(count, span);
 			}
 		}
 		/// <summary>
@@ -291,13 +291,16 @@ namespace FarNet.Vessel
 		}
 		public string Update()
 		{
-			// sanity
+			// get settings and check sanity
 			int maxDays = Settings.Default.MaximumDayCount;
 			if (maxDays < 30)
 				throw new InvalidOperationException("Use at least 30 as the maximum day count.");
-			int maxFiles = Settings.Default.MaximumFileCount;
-			if (maxFiles < 100)
+			int maxFileCount = Settings.Default.MaximumFileCount;
+			if (maxFileCount < 100)
 				throw new InvalidOperationException("Use at least 100 as the maximum file count.");
+			int maxFileAge = Settings.Default.MaximumFileAge;
+			if (maxFileAge < maxDays)
+				maxFileAge = maxDays;
 
 			var now = DateTime.Now;
 			Logger.Source.TraceEvent(TraceEventType.Start, 0, "Update {0}", now);
@@ -313,7 +316,7 @@ namespace FarNet.Vessel
 			// collect and sort by idle
 			var infos = CollectInfo(DateTime.Now, false).OrderBy(x => x.Idle).ToList();
 
-			// step 1: remove missing files from infos and records
+			// step: remove missing files from infos and records
 			int missingFiles = 0;
 			foreach (var path in infos.Select(x => x.Path).ToArray())
 			{
@@ -341,9 +344,9 @@ namespace FarNet.Vessel
 				}
 			}
 
-			// step 2: remove the most idle excess files
+			// step: remove the most idle excess files
 			int excessFiles = 0;
-			while (infos.Count > maxFiles)
+			while (infos.Count > maxFileCount || (infos.Count > 0 && infos[infos.Count - 1].Idle.TotalDays > maxFileAge))
 			{
 				var info = infos[infos.Count - 1];
 				infos.RemoveAt(infos.Count - 1);
@@ -352,7 +355,7 @@ namespace FarNet.Vessel
 				++excessFiles;
 			}
 
-			// step 3: cound days excluding today and remove aged records
+			// step: cound days excluding today and remove aged records
 			int agedFiles = 0;
 			int oldRecords = 0;
 			var today = DateTime.Today;
@@ -397,13 +400,13 @@ namespace FarNet.Vessel
 			Logger.Source.TraceEvent(TraceEventType.Stop, 0, "Update");
 			return string.Format(@"
 REMOVE
-Missing paths : {0,4}
-Excess paths  : {1,4}
-Old records   : {2,4}
+Missing items : {0,4}
+Excess items  : {1,4}
+Aged records  : {2,4}
 
 RESULT
-Aged paths    : {3,4}
-Used paths    : {4,4}
+Aged items    : {3,4}
+Used items    : {4,4}
 Records       : {5,4}
 ",
 			missingFiles,

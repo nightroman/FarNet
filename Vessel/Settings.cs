@@ -48,6 +48,15 @@ namespace FarNet.Vessel
 		}
 
 		[UserScopedSetting]
+		[DefaultSettingValue("365")]
+		[SettingsManageability(SettingsManageability.Roaming)]
+		public int MaximumFileAge
+		{
+			get { return (int)this["MaximumFileAge"]; }
+			set { this["MaximumFileAge"] = value; }
+		}
+
+		[UserScopedSetting]
 		[DefaultSettingValue("1000")]
 		[SettingsManageability(SettingsManageability.Roaming)]
 		public int MaximumFileCount

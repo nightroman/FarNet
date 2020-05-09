@@ -11,8 +11,8 @@ namespace FarNet.Vessel
 	/// </summary>
 	public class Info
 	{
-		// base 2: 10 ~ 42 days
-		public const int SpanCount = 11;
+		public const int SpanCount = 10;
+		static readonly int[] _spanLen = new int[SpanCount] { 2, 2, 4, 8, 16, 32, 64, 128, 256, 1024 };
 		/// <summary>
 		/// File path.
 		/// </summary>
@@ -40,13 +40,17 @@ namespace FarNet.Vessel
 		/// <summary>
 		/// Kind of probability.
 		/// </summary>
-		public int Evidence { get; set; }
+		public float Evidence { get; private set; }
 		/// <summary>
 		/// Recency group: 0 is the most recent to be sorted by time.
 		/// </summary>
 		public int Group(int group0)
 		{
 			return Idle.TotalHours < group0 ? 0 : 1;
+		}
+		public void SetEvidence(int count, int span)
+		{
+			Evidence = (float)count / _spanLen[span];
 		}
 	}
 }

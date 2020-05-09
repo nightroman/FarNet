@@ -66,17 +66,25 @@ The settings panel is opened from the menu in panels:
 
 - *MaximumDayCount*
 
-    Maximum number of recorded days to keep the records for. The default is 42.
+    Maximum number of days for keeping all item usage events.
+    On exceeding aged items keep their last events only.
+    The default is 42 days.
+
+- *MaximumFileAge*
+
+    Maximum age of tracked items.
+    The default is 365 days.
 
 - *MaximumFileCount*
 
-    Maximum number of tracked items, files or folders. The default is 1000.
+    Maximum number of tracked files or folders.
+    The default is 1000 items.
 
 - *Limit0*
 
     The first group span in hours. It defines the most recently used items.
-    Items are sorted by last used times, like in the usual history. The default
-    and recommended value is 2 hours.
+    Items are sorted by last used times, like in the usual history.
+    The default and recommended value is 2 hours.
 
 *********************************************************************
 ## Menu commands
