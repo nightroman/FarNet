@@ -131,7 +131,6 @@ namespace FarNet.Vessel
 					Head = record.Time,
 					Tail = record.Time,
 					Idle = idle,
-					DayCount = 1,
 					UseCount = 1,
 				};
 
@@ -229,13 +228,8 @@ namespace FarNet.Vessel
 					info.Head = record.Time;
 					info.Tail = record.Time;
 					info.Idle = now - record.Time;
-					info.DayCount = 1;
 					continue;
 				}
-
-				// different days
-				if (info.Head.Date != record.Time.Date)
-					++info.DayCount;
 
 				// now save the record time
 				info.Head = record.Time;

@@ -30,10 +30,6 @@ namespace FarNet.Vessel
 		/// </summary>
 		public int UseCount { get; set; }
 		/// <summary>
-		/// Count of days of use.
-		/// </summary>
-		public int DayCount { get; set; }
-		/// <summary>
 		/// Idle span since the last use.
 		/// </summary>
 		public TimeSpan Idle { get; set; }

@@ -37,16 +37,6 @@ namespace FarNet.Vessel
 					return 1;
 			}
 
-			// days
-			{
-				int x = left.DayCount;
-				int y = right.DayCount;
-				if (x > y)
-					return -1;
-				if (x < y)
-					return 1;
-			}
-
 			// times
 			return left.Idle.CompareTo(right.Idle);
 		}
