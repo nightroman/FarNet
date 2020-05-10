@@ -25,6 +25,9 @@ namespace FarNet.Vessel
 			menu.Add("&4. Train folders").Click += delegate { Train(1); };
 			menu.Add("&5. Update history").Click += delegate { Update(0); };
 			menu.Add("&6. Update folders").Click += delegate { Update(1); };
+			menu.Add("&7. Smart commands").Click += delegate { ShowCommands(); };
+			menu.Add("&8. Train commands").Click += delegate { Train(2); };
+			menu.Add("&9. Update commands").Click += delegate { Update(2); };
 
 			menu.Show();
 		}
@@ -78,15 +81,20 @@ Gain/item  : {5,8:n2}
 			var now = DateTime.Now;
 
 			// skip recently updated
-			var lastUpdateTime = mode == 0 ? Settings.Default.LastUpdateTime1 : Settings.Default.LastUpdateTime2;
+			var lastUpdateTime =
+				mode == 0 ? Settings.Default.LastUpdateTime1 :
+				mode == 1 ? Settings.Default.LastUpdateTime2 :
+				Settings.Default.LastUpdateTime3;
 			if ((now - lastUpdateTime).TotalHours < Settings.Default.Limit0)
 				return;
 
 			// save new last update time
 			if (mode == 0)
 				Settings.Default.LastUpdateTime1 = now;
-			else
+			else if (mode == 1)
 				Settings.Default.LastUpdateTime2 = now;
+			else
+				Settings.Default.LastUpdateTime3 = now;
 			Settings.Default.Save();
 
 			// start work
@@ -319,6 +327,98 @@ Gain/item  : {5,8:n2}
 				Store.Append(VesselHost.LogPath[1], DateTime.Now, Record.OPEN, path);
 
 				UpdatePeriodically(1);
+				return;
+			}
+		}
+		static void ShowCommands()
+		{
+			var limit = Settings.Default.Limit0;
+
+			IListMenu menu = Far.Api.CreateListMenu();
+			menu.HelpTopic = HelpTopic + "command-history";
+			menu.SelectLast = true;
+			menu.UsualMargins = true;
+			menu.Title = $"Command history ({limit})";
+
+			menu.IncrementalOptions = PatternOptions.Substring;
+
+			menu.AddKey(KeyCode.Delete, ControlKeyStates.ShiftPressed);
+			menu.AddKey(KeyCode.R, ControlKeyStates.LeftCtrlPressed);
+			menu.AddKey(KeyCode.Enter, ControlKeyStates.LeftCtrlPressed);
+
+			for (; ; menu.Items.Clear())
+			{
+				var actor = new Actor(2, null);
+				int lastGroup = -1;
+				foreach (var it in actor.GetHistory(DateTime.Now))
+				{
+					// separator
+					int nextGroup = it.Group(limit);
+					if (lastGroup != nextGroup)
+					{
+						if (lastGroup > 0)
+							menu.Add("").IsSeparator = true;
+						lastGroup = nextGroup;
+					}
+
+					// item
+					var item = menu.Add(it.Path);
+					item.Data = it;
+					if (it.Evidence > 0)
+						item.Checked = true;
+				}
+
+			show:
+
+				//! show and check the result or after Esc index may be > 0
+				//! e.g. ShiftDel the last record + Esc == index out of range
+				if (!menu.Show() || menu.Selected < 0)
+					return;
+
+				// update:
+				if (menu.Key.IsCtrl(KeyCode.R))
+				{
+					var algo = new Actor(2, VesselHost.LogPath[2], true);
+					algo.Update();
+					continue;
+				}
+
+				// the command
+				int indexSelected = menu.Selected;
+				string path = menu.Items[indexSelected].Text;
+
+				// delete:
+				if (menu.Key.IsShift(KeyCode.Delete))
+				{
+					if (0 == Far.Api.Message("Discard " + path, "Confirm", MessageOptions.OkCancel))
+					{
+						Store.Remove(2, VesselHost.LogPath[2], path);
+						continue;
+					}
+					goto show;
+				}
+
+				// Enter | CtrlEnter:
+				if (Far.Api.Window.Kind != WindowKind.Panels && !Far.Api.Window.IsModal)
+					Far.Api.Window.SetCurrentAt(-1);
+
+				// put command
+				Far.Api.CommandLine.Text = path;
+
+				// invoke command
+				if (!menu.Key.IsCtrl())
+					Far.Api.PostMacro("Keys'Enter'");
+
+				// if it is not logged yet, log the existing Far record
+				if (!actor.IsLoggedPath(path))
+				{
+					var info = menu.Items[indexSelected].Data as Info;
+					Store.Append(VesselHost.LogPath[2], info.Head, Record.OPEN, path);
+				}
+				// then log the current record
+				Store.Append(VesselHost.LogPath[2], DateTime.Now, Record.OPEN, path);
+
+				UpdatePeriodically(2);
 				return;
 			}
 		}

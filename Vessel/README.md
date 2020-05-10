@@ -3,7 +3,7 @@
 # Vessel
 
 Vessel is the FarNet module for Far Manager.
-It provides smart history of files and folders.
+It provides smart history of files, folders, commands.
 
 **Module**
 
@@ -15,6 +15,7 @@ It provides smart history of files and folders.
 * [Menu commands](#menu-commands)
 * [File history](#file-history)
 * [Folder history](#folder-history)
+* [Command history](#Command-history)
 
 **Project**
 
@@ -95,17 +96,12 @@ The menu is opened from almost any area: `[F11] \ Vessel`
 
 **Smart history**
 
-Opens the smart file history list. The most recent items are sorted by time,
-other items are sorted by ranks. Rank is based on last open time, frequency,
-and factors calculated by training.
+Opens the smart file history list.
 See [File history](#file-history)
 
 **Smart folders**
 
-Opens the smart folders history. The most recent items are sorted by time,
-other items are sorted by ranks. Rank is based on last open time, frequency,
-and factors calculated by training. The list works in editors and viewers as
-well, switching the window to the selected folder in panels.
+Opens the smart folders history list.
 See [Folder history](#folder-history)
 
 **Train history**
@@ -120,12 +116,27 @@ The results summary is shown in the dialog.
 
 **Update history**
 
-Removes records of missing files and oldest exceeding the limits.
+Removes missing file and excessive records from the log.
 The results are shown in the dialog.
 
 **Update folders**
 
-Removes records of missing folders and oldest exceeding the limits.
+Removes missing folder and excessive records from the log.
+The results are shown in the dialog.
+
+**Smart commands**
+
+Opens the smart command history list.
+See [Command history](#command-history)
+
+**Train commands**
+
+Trains and compares command smart history with normal for all records.
+The results summary is shown in the dialog.
+
+**Update commands**
+
+Removes excessive command records from the log.
 The results are shown in the dialog.
 
 *********************************************************************
@@ -133,7 +144,7 @@ The results are shown in the dialog.
 
 [Contents]
 
-The file history list is opened by the menu command *Smart file history*.
+The file history list is opened by the menu command *Smart history*.
 
 Keys and actions:
 
@@ -164,18 +175,19 @@ Keys and actions:
 - `[ShiftDel]`
 
     Removes the current file from the log.
-   It is still shown in the list if it exists in the Far history.
+    It is still shown in the list if it exists in the Far history.
 
 - `[CtrlR]`
 
-    Updates the history log. It removes missing paths, excess, and old records.
+    Updates the history log.
+    It removes missing paths and excessive records.
 
 *********************************************************************
 ## Folder history
 
 [Contents]
 
-The folder list is opened by the menu command *Smart folder history*.
+The folder list is opened by the menu command *Smart folders*.
 
 Keys and actions:
 
@@ -190,6 +202,35 @@ Keys and actions:
 
 - `[CtrlR]`
 
-    Updates the folders log. It removes missing paths, excess, and old records.
+    Updates the folders log.
+    It removes missing paths and excessive records.
+
+*********************************************************************
+
+## Command history
+
+[Contents]
+
+The command list is opened by the menu command *Smart commands*.
+
+Keys and actions:
+
+- `[Enter]`
+
+    Puts the command to the command line and invokes it.
+
+- `[CtrlEnter]`
+
+    Puts the command to the command line without invoking.
+
+- `[ShiftDel]`
+
+    Removes the current command from the log.
+    It is still shown in the list if it exists in the Far history.
+
+- `[CtrlR]`
+
+    Updates the command log.
+    It removes excessive records.
 
 *********************************************************************

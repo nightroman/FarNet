@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -17,6 +16,7 @@ namespace FarNet.Vessel
 		readonly int _mode;
 		readonly int _limit0;
 		readonly string _store;
+		readonly StringComparer _comparer;
 		readonly List<Record> _records;
 		readonly Dictionary<string, Record> _latestRecords;
 		/// <summary>
@@ -31,7 +31,20 @@ namespace FarNet.Vessel
 		/// <param name="noHistory">Tells to exclude Far folder history.</param>
 		public Actor(int mode, string store, bool noHistory = false)
 		{
-			if (mode < 0 || mode > 1) throw new ArgumentException("Invalid mode.", "mode");
+			switch(mode)
+			{
+				case 0:
+					_comparer = StringComparer.OrdinalIgnoreCase;
+					break;
+				case 1:
+					_comparer = StringComparer.OrdinalIgnoreCase;
+					break;
+				case 2:
+					_comparer = StringComparer.Ordinal;
+					break;
+				default:
+					throw new ArgumentException("Invalid mode.", "mode");
+			}
 
 			_mode = mode;
 			_store = store;
@@ -45,7 +58,7 @@ namespace FarNet.Vessel
 			else
 			{
 				// original latest records by paths (assuming ascending order in the log)
-				_latestRecords = new Dictionary<string, Record>(StringComparer.OrdinalIgnoreCase);
+				_latestRecords = new Dictionary<string, Record>(_comparer);
 				foreach (var record in _records)
 					_latestRecords[record.Path] = record;
 
@@ -64,10 +77,19 @@ namespace FarNet.Vessel
 							_records.Add(new Record(item.Time, Record.NOOP, item.Name));
 					}
 				}
-				else
+				else if (mode == 1)
 				{
 					// add missing and later records from Far folder history
 					foreach (var item in Far.Api.History.Folder())
+					{
+						if (!_latestRecords.TryGetValue(item.Name, out Record record) || item.Time - record.Time > _smallSpan)
+							_records.Add(new Record(item.Time, Record.NOOP, item.Name));
+					}
+				}
+				else
+				{
+					// add missing and later records from Far command history
+					foreach (var item in Far.Api.History.Command())
 					{
 						if (!_latestRecords.TryGetValue(item.Name, out Record record) || item.Time - record.Time > _smallSpan)
 							_records.Add(new Record(item.Time, Record.NOOP, item.Name));
@@ -106,7 +128,7 @@ namespace FarNet.Vessel
 		public IList<Info> CollectInfo(DateTime now, bool reduced)
 		{
 			var result = new List<Info>();
-			var set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			var set = new HashSet<string>(_comparer);
 
 			for (int iRecord = 0; iRecord < _records.Count; ++iRecord)
 			{
@@ -144,7 +166,7 @@ namespace FarNet.Vessel
 		}
 		public Dictionary<string, SpanSet> CollectEvidences()
 		{
-			var result = new Dictionary<string, SpanSet>(StringComparer.OrdinalIgnoreCase);
+			var result = new Dictionary<string, SpanSet>(_comparer);
 
 			foreach (var record in _records)
 			{
@@ -301,8 +323,10 @@ namespace FarNet.Vessel
 
 			if (_mode == 0)
 				Settings.Default.LastUpdateTime1 = now;
-			else
+			else if (_mode == 1)
 				Settings.Default.LastUpdateTime2 = now;
+			else
+				Settings.Default.LastUpdateTime3 = now;
 			Settings.Default.Save();
 
 			int recordCount = _records.Count;
@@ -312,29 +336,32 @@ namespace FarNet.Vessel
 
 			// step: remove missing files from infos and records
 			int missingFiles = 0;
-			foreach (var path in infos.Select(x => x.Path).ToArray())
+			if (_mode == 0 || _mode == 1)
 			{
-				try
+				foreach (var path in infos.Select(x => x.Path).ToArray())
 				{
-					if (_mode == 0)
+					try
 					{
-						if (File.Exists(path))
-							continue;
-					}
-					else
-					{
-						if (Directory.Exists(path))
-							continue;
-					}
+						if (_mode == 0)
+						{
+							if (File.Exists(path))
+								continue;
+						}
+						else
+						{
+							if (Directory.Exists(path))
+								continue;
+						}
 
-					infos.RemoveAll(x => x.Path == path);
-					int removed = _records.RemoveAll(x => x.Path.Equals(path, StringComparison.OrdinalIgnoreCase));
-					Logger.Source.TraceInformation("Missing: {0}: {1}", removed, path);
-					++missingFiles;
-				}
-				catch (Exception ex)
-				{
-					Logger.Source.TraceEvent(TraceEventType.Error, 0, "Error: {0}: {1}", path, ex.Message);
+						infos.RemoveAll(x => x.Path == path);
+						int removed = _records.RemoveAll(x => x.Path.Equals(path, StringComparison.OrdinalIgnoreCase));
+						Logger.Source.TraceInformation("Missing: {0}: {1}", removed, path);
+						++missingFiles;
+					}
+					catch (Exception ex)
+					{
+						Logger.Source.TraceEvent(TraceEventType.Error, 0, "Error: {0}: {1}", path, ex.Message);
+					}
 				}
 			}
 

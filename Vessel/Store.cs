@@ -18,7 +18,7 @@ namespace FarNet.Vessel
 		/// <summary>
 		/// Creates the history file and imports the history.
 		/// </summary>
-		public static void CreateLogFile(int mode, string store)
+		public static void CreateLogFile(string store)
 		{
 			lock (_lock)
 			{
@@ -27,17 +27,7 @@ namespace FarNet.Vessel
 					Directory.CreateDirectory(dir);
 
 				using (StreamWriter writer = new StreamWriter(store, false, Encoding.UTF8))
-				{
 					writer.WriteLine(LINE_HEADER);
-					if (mode == 1)
-						return;
-
-					foreach (var it in Far.Api.History.Editor())
-						writer.WriteLine(LINE_FORMAT, it.Time, Record.EDIT, it.Name);
-
-					foreach (var it in Far.Api.History.Viewer())
-						writer.WriteLine(LINE_FORMAT, it.Time, Record.VIEW, it.Name);
-				}
 			}
 		}
 		/// <summary>
@@ -62,7 +52,7 @@ namespace FarNet.Vessel
 						if (++index == 0)
 							continue;
 
-						Record record = null;
+						Record record;
 						try
 						{
 							// read and parse the record

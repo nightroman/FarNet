@@ -30,7 +30,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("$Version")]
 [assembly: AssemblyProduct("FarNet.Vessel")]
 [assembly: AssemblyTitle("FarNet module Vessel for Far Manager")]
-[assembly: AssemblyDescription("FarNet.Vessel - smart history of files and folders")]
+[assembly: AssemblyDescription("FarNet.Vessel - smart history of files, folders, commands")]
 [assembly: AssemblyCompany("https://github.com/nightroman/FarNet")]
 [assembly: AssemblyCopyright("Copyright (c) Roman Kuzmin")]
 
@@ -95,7 +95,7 @@ task Package Help, {
 task NuGet Package, Version, {
 	$text = @'
 Vessel is the FarNet module for Far Manager.
-It provides smart history of files and folders.
+It provides smart history of files, folders, commands.
 
 ---
 

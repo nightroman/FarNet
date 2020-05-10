@@ -1,10 +1,13 @@
 NuGet package: https://www.nuget.org/packages/FarNet.Vessel
 FarNet 5.2.4
 
-= 2.3.4 =
+= 2.4.0 =
 
-New setting MaximumFileAge (default 365 days) for removing too old items.
-Tweak use of evidences for slightly better predictions.
+Support smart command history in addition to file and folder history.
+
+New setting MaximumFileAge (~ 365 days) for removing old items.
+
+Tweak heuristics for slightly better predictions.
 
 = 2.3.3 =
 

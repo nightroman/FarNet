@@ -38,6 +38,17 @@ namespace FarNet.Vessel
 			set { this["LastUpdateTime2"] = value; }
 		}
 
+		/// <summary>
+		/// Commands log last update time.
+		/// </summary>
+		[Browsable(false)]
+		[UserScopedSetting]
+		public DateTime LastUpdateTime3
+		{
+			get { return (DateTime)this["LastUpdateTime3"]; }
+			set { this["LastUpdateTime3"] = value; }
+		}
+
 		[UserScopedSetting]
 		[DefaultSettingValue("42")]
 		[SettingsManageability(SettingsManageability.Roaming)]
