@@ -1,6 +1,10 @@
 NuGet package: https://www.nuget.org/packages/FarNet.Vessel
 FarNet 5.2.4
 
+= 2.4.1 =
+
+Command history items are case sensitive.
+
 = 2.4.0 =
 
 Support smart command history in addition to file and folder history.

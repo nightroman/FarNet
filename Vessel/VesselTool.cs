@@ -102,6 +102,8 @@ Gain/item  : {5,8:n2}
 		}
 		static void ShowHistory()
 		{
+			var mode = 0;
+			var store = VesselHost.LogPath[mode];
 			var limit = Settings.Default.Limit0;
 
 			IListMenu menu = Far.Api.CreateListMenu();
@@ -123,7 +125,7 @@ Gain/item  : {5,8:n2}
 
 			for (; ; menu.Items.Clear())
 			{
-				var actor = new Actor(0, null);
+				var actor = new Actor(mode, store);
 				int lastGroup = -1;
 				foreach (var it in actor.GetHistory(DateTime.Now))
 				{
@@ -154,7 +156,7 @@ Gain/item  : {5,8:n2}
 				// update:
 				if (menu.Key.IsCtrl(KeyCode.R))
 				{
-					var algo = new Actor(0, VesselHost.LogPath[0], true);
+					var algo = new Actor(mode, store, true);
 					algo.Update();
 					continue;
 				}
@@ -168,7 +170,7 @@ Gain/item  : {5,8:n2}
 				{
 					if (0 == Far.Api.Message("Discard " + path, "Confirm", MessageOptions.OkCancel))
 					{
-						Store.Remove(0, VesselHost.LogPath[0], path);
+						Store.Remove(store, path, StringComparison.OrdinalIgnoreCase);
 						continue;
 					}
 
@@ -186,16 +188,16 @@ Gain/item  : {5,8:n2}
 				if (!actor.IsLoggedPath(path))
 				{
 					var info = menu.Items[indexSelected].Data as Info;
-					Store.Append(VesselHost.LogPath[0], info.Head, Record.GOTO, path);
+					Store.Append(store, info.Head, Record.GOTO, path);
 					if (info.Head != info.Tail)
-						Store.Append(VesselHost.LogPath[0], info.Tail, Record.GOTO, path);
+						Store.Append(store, info.Tail, Record.GOTO, path);
 				}
 
 				// go to:
 				if (menu.Key.IsCtrl(KeyCode.Enter))
 				{
 					Far.Api.Panel.GoToPath(path);
-					Store.Append(VesselHost.LogPath[0], DateTime.Now, Record.GOTO, path);
+					Store.Append(store, DateTime.Now, Record.GOTO, path);
 				}
 				// view:
 				else if (menu.Key.VirtualKeyCode == KeyCode.F3)
@@ -205,7 +207,7 @@ Gain/item  : {5,8:n2}
 
 					viewer.Closed += delegate
 					{
-						Store.Append(VesselHost.LogPath[0], DateTime.Now, Record.VIEW, path);
+						Store.Append(store, DateTime.Now, Record.VIEW, path);
 					};
 
 					if (menu.Key.IsCtrl())
@@ -224,7 +226,7 @@ Gain/item  : {5,8:n2}
 
 					editor.Closed += delegate
 					{
-						Store.Append(VesselHost.LogPath[0], DateTime.Now, Record.EDIT, path);
+						Store.Append(store, DateTime.Now, Record.EDIT, path);
 					};
 
 					if (menu.Key.IsCtrl(KeyCode.F4))
@@ -239,12 +241,14 @@ Gain/item  : {5,8:n2}
 						goto show;
 				}
 
-				UpdatePeriodically(0);
+				UpdatePeriodically(mode);
 				return;
 			}
 		}
 		static void ShowFolders()
 		{
+			var mode = 1;
+			var store = VesselHost.LogPath[mode];
 			var limit = Settings.Default.Limit0;
 
 			IListMenu menu = Far.Api.CreateListMenu();
@@ -260,7 +264,7 @@ Gain/item  : {5,8:n2}
 
 			for (; ; menu.Items.Clear())
 			{
-				var actor = new Actor(1, null);
+				var actor = new Actor(mode, store);
 				int lastGroup = -1;
 				foreach (var it in actor.GetHistory(DateTime.Now))
 				{
@@ -290,7 +294,7 @@ Gain/item  : {5,8:n2}
 				// update:
 				if (menu.Key.IsCtrl(KeyCode.R))
 				{
-					var algo = new Actor(1, VesselHost.LogPath[1], true);
+					var algo = new Actor(mode, store, true);
 					algo.Update();
 					continue;
 				}
@@ -304,7 +308,7 @@ Gain/item  : {5,8:n2}
 				{
 					if (0 == Far.Api.Message("Discard " + path, "Confirm", MessageOptions.OkCancel))
 					{
-						Store.Remove(1, VesselHost.LogPath[1], path);
+						Store.Remove(store, path, StringComparison.OrdinalIgnoreCase);
 						continue;
 					}
 					goto show;
@@ -321,17 +325,19 @@ Gain/item  : {5,8:n2}
 				if (!actor.IsLoggedPath(path))
 				{
 					var info = menu.Items[indexSelected].Data as Info;
-					Store.Append(VesselHost.LogPath[1], info.Head, Record.OPEN, path);
+					Store.Append(store, info.Head, Record.OPEN, path);
 				}
 				// then log the current record
-				Store.Append(VesselHost.LogPath[1], DateTime.Now, Record.OPEN, path);
+				Store.Append(store, DateTime.Now, Record.OPEN, path);
 
-				UpdatePeriodically(1);
+				UpdatePeriodically(mode);
 				return;
 			}
 		}
 		static void ShowCommands()
 		{
+			var mode = 2;
+			var store = VesselHost.LogPath[mode];
 			var limit = Settings.Default.Limit0;
 
 			IListMenu menu = Far.Api.CreateListMenu();
@@ -348,7 +354,7 @@ Gain/item  : {5,8:n2}
 
 			for (; ; menu.Items.Clear())
 			{
-				var actor = new Actor(2, null);
+				var actor = new Actor(mode, store);
 				int lastGroup = -1;
 				foreach (var it in actor.GetHistory(DateTime.Now))
 				{
@@ -378,7 +384,7 @@ Gain/item  : {5,8:n2}
 				// update:
 				if (menu.Key.IsCtrl(KeyCode.R))
 				{
-					var algo = new Actor(2, VesselHost.LogPath[2], true);
+					var algo = new Actor(mode, store, true);
 					algo.Update();
 					continue;
 				}
@@ -392,7 +398,7 @@ Gain/item  : {5,8:n2}
 				{
 					if (0 == Far.Api.Message("Discard " + path, "Confirm", MessageOptions.OkCancel))
 					{
-						Store.Remove(2, VesselHost.LogPath[2], path);
+						Store.Remove(store, path, StringComparison.Ordinal);
 						continue;
 					}
 					goto show;
@@ -413,12 +419,12 @@ Gain/item  : {5,8:n2}
 				if (!actor.IsLoggedPath(path))
 				{
 					var info = menu.Items[indexSelected].Data as Info;
-					Store.Append(VesselHost.LogPath[2], info.Head, Record.OPEN, path);
+					Store.Append(store, info.Head, Record.OPEN, path);
 				}
 				// then log the current record
-				Store.Append(VesselHost.LogPath[2], DateTime.Now, Record.OPEN, path);
+				Store.Append(store, DateTime.Now, Record.OPEN, path);
 
-				UpdatePeriodically(2);
+				UpdatePeriodically(mode);
 				return;
 			}
 		}

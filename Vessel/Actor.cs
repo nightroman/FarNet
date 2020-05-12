@@ -17,6 +17,7 @@ namespace FarNet.Vessel
 		readonly int _limit0;
 		readonly string _store;
 		readonly StringComparer _comparer;
+		readonly StringComparison _comparisonType;
 		readonly List<Record> _records;
 		readonly Dictionary<string, Record> _latestRecords;
 		/// <summary>
@@ -35,21 +36,24 @@ namespace FarNet.Vessel
 			{
 				case 0:
 					_comparer = StringComparer.OrdinalIgnoreCase;
+					_comparisonType = StringComparison.OrdinalIgnoreCase;
 					break;
 				case 1:
 					_comparer = StringComparer.OrdinalIgnoreCase;
+					_comparisonType = StringComparison.OrdinalIgnoreCase;
 					break;
 				case 2:
 					_comparer = StringComparer.Ordinal;
+					_comparisonType = StringComparison.Ordinal;
 					break;
 				default:
 					throw new ArgumentException("Invalid mode.", "mode");
 			}
 
 			_mode = mode;
-			_store = store;
+			_store = store ?? VesselHost.LogPath[mode];
 			_limit0 = Settings.Default.Limit0;
-			_records = Store.Read(mode, store).ToList();
+			_records = Store.Read(_store).ToList();
 
 			if (noHistory)
 			{
@@ -241,7 +245,7 @@ namespace FarNet.Vessel
 					continue;
 
 				// skip alien
-				if (!record.Path.Equals(info.Path, StringComparison.OrdinalIgnoreCase))
+				if (!record.Path.Equals(info.Path, _comparisonType))
 					continue;
 
 				// count cases, init if not yet
@@ -273,7 +277,7 @@ namespace FarNet.Vessel
 				var infos = CollectInfo(record.Time - new TimeSpan(1), true).OrderBy(x => x.Idle).ToList();
 
 				// get the plain rank (it is the same for all other ranks)
-				int rankPlain = infos.FindIndex(x => x.Path.Equals(record.Path, StringComparison.OrdinalIgnoreCase));
+				int rankPlain = infos.FindIndex(x => x.Path.Equals(record.Path, _comparisonType));
 
 				// not found means it is the first history record for the file, skip it
 				if (rankPlain < 0)
@@ -284,7 +288,7 @@ namespace FarNet.Vessel
 
 				// sort with factors, get smart rank
 				infos.Sort(new InfoComparer(_limit0));
-				int rankSmart = infos.FindIndex(x => x.Path.Equals(record.Path, StringComparison.OrdinalIgnoreCase));
+				int rankSmart = infos.FindIndex(x => x.Path.Equals(record.Path, _comparisonType));
 
 				int win = rankPlain - rankSmart;
 				if (win < 0)
@@ -354,7 +358,7 @@ namespace FarNet.Vessel
 						}
 
 						infos.RemoveAll(x => x.Path == path);
-						int removed = _records.RemoveAll(x => x.Path.Equals(path, StringComparison.OrdinalIgnoreCase));
+						int removed = _records.RemoveAll(x => x.Path.Equals(path, _comparisonType));
 						Logger.Source.TraceInformation("Missing: {0}: {1}", removed, path);
 						++missingFiles;
 					}
@@ -371,7 +375,7 @@ namespace FarNet.Vessel
 			{
 				var info = infos[infos.Count - 1];
 				infos.RemoveAt(infos.Count - 1);
-				int removed = _records.RemoveAll(x => x.Path.Equals(info.Path, StringComparison.OrdinalIgnoreCase));
+				int removed = _records.RemoveAll(x => x.Path.Equals(info.Path, _comparisonType));
 				Logger.Source.TraceInformation("Extra: {0}: {1}", removed, info.Path);
 				++excessFiles;
 			}
@@ -394,7 +398,7 @@ namespace FarNet.Vessel
 
 					// remove all aged records but the tail
 					int removed = _records.RemoveAll(x =>
-						x.Time < zero && x.Time != info.Tail && x.Path.Equals(info.Path, StringComparison.OrdinalIgnoreCase));
+						x.Time < zero && x.Time != info.Tail && x.Path.Equals(info.Path, _comparisonType));
 
 					Logger.Source.TraceInformation("Aged records: {0}: {1}", removed, info.Path);
 					oldRecords += removed;

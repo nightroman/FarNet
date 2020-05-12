@@ -33,13 +33,10 @@ namespace FarNet.Vessel
 		/// <summary>
 		/// Reads history records from the store.
 		/// </summary>
-		public static IEnumerable<Record> Read(int mode, string store)
+		public static IEnumerable<Record> Read(string store)
 		{
 			lock (_lock)
 			{
-				if (string.IsNullOrEmpty(store))
-					store = VesselHost.LogPath[mode];
-
 				using (StreamReader reader = new StreamReader(store, Encoding.UTF8))
 				{
 					string line;
@@ -109,9 +106,9 @@ namespace FarNet.Vessel
 					writer.WriteLine(LINE_FORMAT, time, what, path);
 			}
 		}
-		public static void Remove(int mode, string store, string path)
+		public static void Remove(string store, string path, StringComparison comparison)
 		{
-			Write(store, Read(mode, store).Where(x => !x.Path.Equals(path, StringComparison.OrdinalIgnoreCase)));
+			Write(store, Read(store).Where(x => !x.Path.Equals(path, comparison)));
 		}
 	}
 }
