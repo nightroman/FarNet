@@ -1,4 +1,8 @@
-﻿# FSharpFar
+﻿<!--
+https://github.com/fsharp/FSharp.Compiler.Service/blob/master/fcs/RELEASE_NOTES.md
+-->
+
+# FSharpFar
 
 F# interactive, scripting, compiler, and editor services for Far Manager
 
