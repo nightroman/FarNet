@@ -1,4 +1,5 @@
-﻿Clear-Session.ps1 Clears PowerShell session resources.
+﻿ArgumentCompleters.ps1 TabExpansion2 argument completers.
+Clear-Session.ps1 Clears PowerShell session resources.
 Complete-Word-.ps1 Completes the current word in editors.
 Connect-MSAccess-.ps1 Connects .mdb database and optionally shows tables in a panel.
 Connect-SqlCompact-.ps1 Connects .sdf database and optionally shows tables in a panel.
@@ -24,8 +25,6 @@ Panel-DbTable-.ps1 Panel database tables for the specified connection.
 Panel-Job-.ps1 Shows PowerShell jobs in a panel.
 Panel-Process-.ps1 Panel current processes.
 Panel-Property-.ps1 Panel PowerShell provider item properties.
-Profile-.ps1 Main startup code (example).
-Profile-Editor-.ps1 Editor startup code (example).
 Profile-Editor.ps1 Editor profile (example).
 Profile.ps1 Main profile (example).
 Reformat-Selection-.ps1 Reformats selected lines or the current line in the editor.
@@ -45,5 +44,3 @@ Show-KeyName-.ps1 Shows internal names of pressed keys.
 Show-Markdown-.ps1 Shows markdown as HTML or Far help file.
 Start-MSBuild-.ps1 Starts MSBuild with a helper input dialog for the project file.
 Update-FarManager.ps1 Updates Far Manager and standard plugins.
-Update-FarNet.ps1 Updates FarNet products selectively from the project site.
-ArgumentCompleters.ps1 TabExpansion2 argument completers.

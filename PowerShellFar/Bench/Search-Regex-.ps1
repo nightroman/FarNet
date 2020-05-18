@@ -12,8 +12,8 @@
 		dialog is opened where you can define this and other parameters.
 
 .Parameter Options
-		.NET regular expression options and extra options. It is used if Regex
-		is defined as a string, i.e. not a ready Regex object. In this case two
+		Regular expression options and extra options. It is used if Regex is
+		defined as a string, i.e. not a ready Regex object. In this case two
 		more options are used: SimpleMatch (1024), WholeWord (2048).
 
 .Parameter InputObject
