@@ -5,15 +5,15 @@ open System.Xml
 
 /// Configuration data for checkers and sessions.
 type Config = {
-    FscArgs: string list
-    FscFiles: string list
-    FsiArgs: string list
-    FsiFiles: string list
-    UseFiles: string list
-    OutArgs: string list
-    OutFiles: string list
-    EtcArgs: string list
-    EtcFiles: string list
+    FscArgs: string []
+    FscFiles: string []
+    FsiArgs: string []
+    FsiFiles: string []
+    UseFiles: string []
+    OutArgs: string []
+    OutFiles: string []
+    EtcArgs: string []
+    EtcFiles: string []
 }
 
 [<RequireQualifiedAccess>]
@@ -77,15 +77,15 @@ module Config =
         let lines = File.ReadAllLines path
         let root = Path.GetDirectoryName path
 
-        let mutable fscArgs = []
-        let mutable fscFiles = []
-        let mutable fsiArgs = []
-        let mutable fsiFiles = []
-        let mutable useFiles = []
-        let mutable outArgs = []
-        let mutable outFiles = []
-        let mutable etcArgs = []
-        let mutable etcFiles = []
+        let fscArgs = ResizeArray ()
+        let fscFiles = ResizeArray ()
+        let fsiArgs = ResizeArray ()
+        let fsiFiles = ResizeArray ()
+        let useFiles = ResizeArray ()
+        let outArgs = ResizeArray ()
+        let outFiles = ResizeArray ()
+        let etcArgs = ResizeArray ()
+        let etcFiles = ResizeArray ()
 
         let mutable currentSection = NoSection
         let mutable lineNo = 0
@@ -110,13 +110,13 @@ module Config =
                 | SwitchLine it ->
                     match currentSection with
                     | FscSection ->
-                        fscArgs <- it :: fscArgs
+                        fscArgs.Add it
                     | FsiSection ->
-                        fsiArgs <- it :: fsiArgs
+                        fsiArgs.Add it
                     | OutSection ->
-                        outArgs <- it :: outArgs
+                        outArgs.Add it
                     | EtcSection ->
-                        etcArgs <- it :: etcArgs
+                        etcArgs.Add it
                     | UseSection
                     | NoSection ->
                         raiseSection ()
@@ -124,26 +124,26 @@ module Config =
                     let file = resolveKeyValue root "" it
                     match currentSection with
                     | FscSection ->
-                        fscFiles <- file :: fscFiles
+                        fscFiles.Add file
                     | FsiSection ->
-                        fsiFiles <- file :: fsiFiles
+                        fsiFiles.Add file
                     | OutSection ->
-                        outFiles <- file :: outFiles
+                        outFiles.Add file
                     | EtcSection ->
-                        etcFiles <- file :: etcFiles
+                        etcFiles.Add file
                     | UseSection ->
                         if not (Seq.containsIgnoreCase file !parents) then
                             parents := file :: !parents
                             let config = readConfigFromFileRec file parents
-                            fscArgs <- config.FscArgs @ fscArgs 
-                            fscFiles <- config.FscFiles @ fscFiles
-                            fsiArgs <- config.FsiArgs @ fsiArgs
-                            fsiFiles <- config.FsiFiles @ fsiFiles
-                            useFiles <- config.UseFiles @ useFiles
-                            outArgs <- config.OutArgs @ outArgs
-                            outFiles <- config.OutFiles @ outFiles
-                            etcArgs <- config.EtcArgs @ etcArgs
-                            etcFiles <- config.EtcFiles @ etcFiles
+                            fscArgs.AddRange config.FscArgs
+                            fscFiles.AddRange config.FscFiles
+                            fsiArgs.AddRange config.FsiArgs
+                            fsiFiles.AddRange config.FsiFiles
+                            useFiles.AddRange config.UseFiles
+                            outArgs.AddRange config.OutArgs
+                            outFiles.AddRange config.OutFiles
+                            etcArgs.AddRange config.EtcArgs
+                            etcFiles.AddRange config.EtcFiles
                     | NoSection ->
                         raiseSection ()
                 | KeyValueLine (key, value) ->
@@ -153,16 +153,16 @@ module Config =
                         // use -r instead of --reference to avoid duplicates added by FCS
                         // https://github.com/fsharp/FSharp.Compiler.Service/issues/697
                         let key = if key = "--reference" then "-r" else key
-                        fscArgs <- (key + ":" + text) :: fscArgs
+                        fscArgs.Add (key + ":" + text)
                     | FsiSection ->
                         if key = "--use" then
-                            useFiles <- text :: useFiles
+                            useFiles.Add text
                         else
-                            fsiArgs <- (key + ":" + text) :: fsiArgs
+                            fsiArgs.Add (key + ":" + text)
                     | OutSection ->
-                        outArgs <- (key + ":" + text) :: outArgs
+                        outArgs.Add (key + ":" + text)
                     | EtcSection ->
-                        etcArgs <- (key + ":" + text) :: etcArgs
+                        etcArgs.Add (key + ":" + text)
                     | UseSection
                     | NoSection ->
                         raiseSection ()
@@ -170,15 +170,15 @@ module Config =
             invalidOp (sprintf "%s(%d): %s" path lineNo e.Message)
 
         {
-            FscArgs = List.rev fscArgs
-            FscFiles = List.rev fscFiles
-            FsiArgs = List.rev fsiArgs
-            FsiFiles = List.rev fsiFiles
-            UseFiles = List.rev useFiles
-            OutArgs = List.rev outArgs
-            OutFiles = List.rev outFiles
-            EtcArgs = List.rev etcArgs
-            EtcFiles = List.rev etcFiles
+            FscArgs = fscArgs.ToArray ()
+            FscFiles = fscFiles.ToArray ()
+            FsiArgs = fsiArgs.ToArray ()
+            FsiFiles = fsiFiles.ToArray ()
+            UseFiles = useFiles.ToArray ()
+            OutArgs = outArgs.ToArray ()
+            OutFiles = outFiles.ToArray ()
+            EtcArgs = etcArgs.ToArray ()
+            EtcFiles = etcFiles.ToArray ()
         }
 
     /// Reads the config from the specified file.

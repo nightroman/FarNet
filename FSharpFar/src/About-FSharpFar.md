@@ -126,6 +126,27 @@ They are used in `FSharp.Compiler.Service\src\absil`
 We do not package them.
 Is there a use case when this is a problem?
 
+### 2020-05-24 Tempting Script.RelativePath()
+
+Kind of works.
+
+But it's not discoverable.
+
+And it's lame that we can specify the second parameter `root`, why?
+Moreover, it only takes the drive part from `root`, why?
+
+```fsharp
+open System.IO
+open System.Runtime.CompilerServices
+
+/// Script tools.
+type Script =
+    /// Gets the full path combined from the script root and the specified path.
+    /// - path: Relative or absolute path.
+    static member RelativePath (path, [<CallerFilePath>](?root: string)) =
+        Path.GetFullPath(Path.Combine(Path.GetDirectoryName(root.Value), path))
+```
+
 ### 2016-10-21 v1.0, self-contained package
 
 **F# core is included. Why Far home?**

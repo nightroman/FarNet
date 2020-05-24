@@ -186,6 +186,12 @@ let toggleAutoTips (editor: IEditor) =
 let toggleAutoCheck (editor: IEditor) =
     editor.MyAutoCheck <- not editor.MyAutoCheck
 
+let fixComplete word words (ident: PartialLongName) =
+    if Array.isEmpty words && ident.LastDotPos.IsNone && "__SOURCE_DIRECTORY__".StartsWith word && word.Length > 0 then
+        [| "__SOURCE_DIRECTORY__" |]
+    else
+        words
+
 // https://fsharp.github.io/FSharp.Compiler.Service/editor.html#Getting-auto-complete-lists
 // old EditorTests.fs(265) they use [], "" instead of names, so do we.
 // new Use FsAutoComplete way.
@@ -231,8 +237,11 @@ let complete (editor: IEditor) =
         |> Seq.map (fun item -> item.Name) //?? mind NameInCode
         |> Seq.filter (fun name -> name.StartsWith (if partialIdent.StartsWith "``" then partialIdent.Substring 2 else partialIdent))
         |> Seq.sort
+        |> Seq.toArray
 
     progress.Done ()
+
+    let completions = fixComplete partialIdent completions ident
 
     completeLine editor.Line (caret.X - partialIdent.Length) partialIdent.Length completions
     editor.Redraw ()
@@ -273,6 +282,8 @@ let completeBy (editor: IEditor) getCompletions =
         |> Seq.distinct
         |> Seq.sort
         |> Seq.toArray
+
+    let completions = fixComplete name completions ident
 
     completeLine line replacementIndex (caret - replacementIndex) completions
     editor.Redraw ()

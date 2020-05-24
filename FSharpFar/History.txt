@@ -2,6 +2,12 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.5048
 FarNet 5.2.20
 
+= 1.9.20 =
+
+- FSharp.Core 4.7.2
+- complete __SOURCE_DIRECTORY__
+- fix order of included use section items
+
 = 1.9.19 =
 
 FSharp.Compiler.Service (35.0)

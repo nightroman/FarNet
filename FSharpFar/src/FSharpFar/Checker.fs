@@ -73,7 +73,7 @@ let check file text config = async {
 
 let compile config = async {
     // assert output is set
-    let hasOutOption = config.OutArgs |> List.exists (fun x -> x.StartsWith "-o:" || x.StartsWith "--out:")
+    let hasOutOption = config.OutArgs |> Array.exists (fun x -> x.StartsWith "-o:" || x.StartsWith "--out:")
     if not hasOutOption then invalidOp "Configuration must have [out] {-o|--out}:<output exe or dll>."
 
     // combine options

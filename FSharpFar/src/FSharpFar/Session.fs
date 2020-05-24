@@ -64,7 +64,7 @@ type Session private (configFile) =
         // load and use files
         use writer = new StringWriter ()
         try
-            for file in config.FscFiles @ config.FsiFiles do
+            for file in Array.append config.FscFiles config.FsiFiles do
                 let result, warnings = fsiSession.EvalInteractionNonThrowing (sprintf "#load @\"%s\"" file)
                 for w in warnings do writer.WriteLine (FSharpErrorInfo.strErrorFull w)
                 match result with Choice2Of2 exn -> raise exn | _ -> ()

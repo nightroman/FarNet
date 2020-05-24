@@ -42,13 +42,13 @@ let writeException exn =
     far.UI.WriteLine (sprintf "%A" exn, ConsoleColor.Red)
 
 /// Completes an edit line. In an editor callers should Redraw().
-let completeLine (editLine: ILine) replacementIndex replacementLength (words: string seq) =
-    let count = Seq.length words
+let completeLine (editLine: ILine) replacementIndex replacementLength words =
+    let count = Array.length words
     let text = editLine.Text
 
     let word =
         if count = 1 then
-             Seq.head words
+             words.[0]
         else
             let cursor = far.UI.WindowCursor
             let menu = far.CreateListMenu (X = cursor.X, Y = cursor.Y)
