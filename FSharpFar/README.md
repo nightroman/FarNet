@@ -165,13 +165,9 @@ F# script
     fs: #load @"!\!.!"
 ```
 
-`*.fs` files may be used as scripts, in addition to true scripts `*.fsx`. There
-are differences, for example `*.fs` files are included to generated projects
-and may be edited in Visual Studio with full syntax and completion support.
-
-Files designed as scripts (that is to run something) are normally not included
-to configurations, otherwise they really run something on loading each session.
-In other words, scripts (either `*.fsx` or  `*.fs`) are invoked explicitly.
+Files designed as scripts (i.e. to run something) are normally not included as
+source files, otherwise they really run something on loading each session. In
+other words, scripts (either `*.fsx` or `*.fs`) are invoked manually.
 
 ****
 `fs: //compile [with = <config>]`
@@ -372,7 +368,7 @@ The history keys:
 ***
 ## Use as project
 
-When a configuration file `*.fs.ini` is ready use the menu commands `Project
+When a configuration file `*.fs.ini` is ready, use the menu commands `Project
 (fsproj) (VSCode)` in order to generate a special `*.fsproj` with the source
 files and open it by the associated program (usually Visual Studio) or by
 VSCode (ensure `code.cmd` is in the path and the VSCode F# extension is
@@ -389,15 +385,10 @@ The generated project includes:
 - References to assemblies in the `[fsc]` section.
 - Main `*.fs` source files in the `[fsc]` section.
 - Other `*.fs` files in the current panel.
+- `*.fsx` scripts in the current panel.
 
-The scripts (`*.fsx` files), are not included. Consider having complex code in
-source files and keeping scripts simple. Note that you can invoke source files
-as scripts, too.
-
-The generated project path is `%TEMP%\_Project-N-X\N.fsproj`, where:
-
-- N - configuration file base name
-- X - configuration path hash code
+The generated project is `%TEMP%\_Project-X\Y.fsproj` where X and Y are
+based on configuration file name and directory and X includes some hash.
 
 ***
 ## Editor services

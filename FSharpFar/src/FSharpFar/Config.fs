@@ -280,5 +280,9 @@ module Config =
             if not (Seq.containsIgnoreCase file config.FscFiles) then
                 addFile file
 
+        for file in Directory.EnumerateFiles (configRoot, "*.fsx") do
+            if not (Seq.containsIgnoreCase file config.FscFiles) then
+                addFile file
+
         xml.Save projectPath
         projectPath
