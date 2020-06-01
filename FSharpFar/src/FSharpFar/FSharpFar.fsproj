@@ -13,6 +13,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Abc.fs" />
     <Compile Include="SourceText.fs" />
     <Compile Include="Parser.fs" />
     <Compile Include="ProxyWriter.fs" />

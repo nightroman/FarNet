@@ -31,6 +31,7 @@ let defaultCompilerArgs =
         "-r:" + dir + @"\FarNet\FarNet.FSharp.dll"
         "-r:" + dir + @"\FarNet\FarNet.Tools.dll"
         "-r:" + dir + @"\FarNet\Modules\FSharpFar\FSharpFar.dll"
+        "-r:" + dir + @"\FarNet\Modules\FSharpFar\FSharp.Compiler.Service.dll"
     ]
 
 /// Expands environment variables and makes the full path based on the active panel.

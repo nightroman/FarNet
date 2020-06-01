@@ -1,7 +1,4 @@
-
-// The fsi object with interactive settings.
-#r @"FarNet\Modules\FSharpFar\FSharp.Compiler.Service.dll"
-let fsi = FSharp.Compiler.Interactive.Shell.Settings.fsi
+// Configure session settings
 
 // PrintLength - Gets or sets the total print length of the interactive session.
 // The default is 100. If you run `[1..200]` in the interactive then it prints

@@ -264,6 +264,7 @@ module Config =
         addReference (dir + @"\FarNet\FarNet.FSharp.dll")
         addReference (dir + @"\FarNet\FarNet.Tools.dll")
         addReference (dir + @"\FarNet\Modules\FSharpFar\FSharpFar.dll")
+        addReference (dir + @"\FarNet\Modules\FSharpFar\FSharp.Compiler.Service.dll")
 
         for op in config.FscArgs do
             if op.StartsWith "-r:" then
