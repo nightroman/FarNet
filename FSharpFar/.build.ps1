@@ -61,7 +61,7 @@ task Meta -Inputs .build.ps1, History.txt -Outputs src/Directory.Build.props -Jo
 	<PropertyGroup>
 		<Company>https://github.com/nightroman/FarNet</Company>
 		<Copyright>Copyright (c) Roman Kuzmin</Copyright>
-		<Description>F# interactive, scripting, compiler, and editor services for Far Manager.</Description>
+		<Description>F# scripting and interactive services in Far Manager</Description>
 		<Product>FarNet.FSharpFar</Product>
 		<Version>$Version</Version>
 		<FileVersion>$Version</FileVersion>
@@ -81,11 +81,13 @@ task Package Markdown, {
 	# package: logo
 	Copy-Item -Destination z ..\Zoo\FarNetLogo.png
 
-	# FarHome: required here by FCS, available for F# modules
+	# FarHome: FSharp.Core.* required here by FCS, available for F# modules
 	Copy-Item -Destination "z\tools\FarHome" @(
 		"$FarHome\FSharp.Core.dll"
 		"$FarHome\FSharp.Core.optdata"
 		"$FarHome\FSharp.Core.sigdata"
+		"$FarHome\fsx.exe"
+		"$FarHome\fsx.exe.config"
 	)
 
 	# FarNet: available for F# modules

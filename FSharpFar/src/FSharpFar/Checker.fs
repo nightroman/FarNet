@@ -36,7 +36,7 @@ let check file text config = async {
         if isScriptFileName file then
             // Our flags are used for .fsx #r and #load resolution.
             // SourceFiles: script #load files and the script itself.
-            let! options, _errors = checker.GetProjectOptionsFromScript (file, text, otherFlags = Seq.toArray flags)
+            let! options, _errors = checker.GetProjectOptionsFromScript (file, text, otherFlags = flags)
             
             // add some new files to ours
             addFiles options.SourceFiles

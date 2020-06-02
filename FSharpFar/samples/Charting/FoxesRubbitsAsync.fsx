@@ -3,4 +3,5 @@
 #load "FoxesRubbits.fs"
 open FoxesRubbits
 
-Async.Start (async { form.ShowDialog() |> ignore })
+async { form.ShowDialog() |> ignore }
+|> if fsi.CommandLineArgs.[0].EndsWith(".fsx") then Async.RunSynchronously else Async.Start

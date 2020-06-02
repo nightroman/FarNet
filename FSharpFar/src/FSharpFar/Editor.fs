@@ -234,10 +234,9 @@ let complete (editor: IEditor) =
 
     let completions =
         decs.Items
-        |> Seq.map (fun item -> item.Name) //?? mind NameInCode
-        |> Seq.filter (fun name -> name.StartsWith (if partialIdent.StartsWith "``" then partialIdent.Substring 2 else partialIdent))
-        |> Seq.sort
-        |> Seq.toArray
+        |> Array.map (fun item -> item.Name) //?? mind NameInCode
+        |> Array.filter (fun name -> name.StartsWith (if partialIdent.StartsWith "``" then partialIdent.Substring 2 else partialIdent))
+        |> Array.sort
 
     progress.Done ()
 
@@ -258,30 +257,9 @@ let completeBy (editor: IEditor) getCompletions =
     if Char.IsWhiteSpace lineStr.[caret - 1] then false else
 
     // parse, skip none
-    let ident = QuickParse.GetPartialLongNameEx(lineStr, caret - 1)
-    let name = Parser.longIdent ident.QualifyingIdents ident.PartialIdent
-    if name.Length = 0 then false else
-
-    let name, replacementIndex =
-        if lineStr.[caret - 1] = '.' then
-            name + ".", caret
-        else
-            match ident.LastDotPos with
-            | Some pos ->
-                name, pos + 1
-            | None ->
-                name, caret - name.Length
-
-    //_161108_054202
-    let name = name.Replace ("``", "")
-    
-    // distinct: Sys[Tab] -> several "System"
-    // sort: System.[Tab] -> unsorted
-    let completions =
-        getCompletions name
-        |> Seq.distinct
-        |> Seq.sort
-        |> Seq.toArray
+    match Parser.tryCompletions lineStr caret getCompletions with
+    | None -> false
+    | Some (name, replacementIndex, ident, completions) ->
 
     let completions = fixComplete name completions ident
 

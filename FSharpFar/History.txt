@@ -2,6 +2,18 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.5048
 FarNet 5.2.20
 
+= 1.10.0 =
+
+The package includes fsx.exe for running scripts without starting Far Manager.
+As a result, FSharpFar package provides the complete F# scripting tool set.
+See README "Using fsx.exe tool" and "repo/samples/fsx-sample".
+
+The interactive session configuration object `fsi` is available for scripts.
+Use it for customization and for `fsi.CommandLineArgs` in fsx.exe or fsi.exe.
+
+The compiler symbol FARNET is defined for scripts loaded by FSharpFar.
+It is used for conditional compilation to separate FarNet | non-FarNet.
+
 = 1.9.21 =
 
 "Project" commands: generated projects include *.fsx scripts.

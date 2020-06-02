@@ -28,7 +28,7 @@ let isIdentStr str = String.forall isIdentChar str
 module Seq =
     /// Gets true if the string sequence contains the value.
     let containsIgnoreCase value (source: string seq) =
-        (source |> Seq.tryFind (fun x -> x.Equals(value, StringComparison.OrdinalIgnoreCase))).IsSome
+        source |> Seq.exists (fun x -> x.Equals(value, StringComparison.OrdinalIgnoreCase))
 
 module String =
     /// Gets true if two strings are equal.

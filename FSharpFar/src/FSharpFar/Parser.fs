@@ -20,3 +20,34 @@ let findLongIdents caret lineStr =
     | Some (str, pos, x) ->
         let names, partial = QuickParse.GetPartialLongName (str, (str.Length - 1))
         Some (pos, names @ [ partial ])
+
+let tryCompletions lineStr caret getCompletions =
+    let ident = QuickParse.GetPartialLongNameEx(lineStr, caret - 1)
+    let name = longIdent ident.QualifyingIdents ident.PartialIdent
+    if name.Length = 0 then None else
+
+    let name, replacementIndex =
+        if lineStr.[caret - 1] = '.' then
+            name + ".", caret
+        else
+            match ident.LastDotPos with
+            | Some pos ->
+                name, pos + 1
+            | None ->
+                name, caret - name.Length
+
+    //_161108_054202
+    let name = name.Replace ("``", "")
+    
+    // distinct: Sys[Tab] -> several "System"
+    // sort: System.[Tab] -> unsorted
+    try
+        let completions =
+            getCompletions name
+            |> Seq.distinct
+            |> Seq.sort
+            |> Seq.toArray
+
+        Some (name, replacementIndex, ident, completions)
+    with _ ->
+        None

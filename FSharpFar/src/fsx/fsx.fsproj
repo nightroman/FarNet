@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <FarHome Condition="'$(FarHome)' == ''">C:\Bin\Far\x64</FarHome>
+    <MyOutDir>$(FarHome)</MyOutDir>
+    <!-- https://github.com/Microsoft/visualfsharp/issues/3656 -->
+    <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
+    <DisableImplicitSystemValueTupleReference>true</DisableImplicitSystemValueTupleReference>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net461</TargetFramework>
+    <RunPostBuildEvent>1</RunPostBuildEvent>
+    <WarningLevel>5</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\FSharpFar\Abc.fs" />
+    <Compile Include="..\FSharpFar\AbcConfig.fs" />
+    <Compile Include="..\FSharpFar\Parser.fs" />
+    <Compile Include="Console.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="FSharp.Core">
+      <HintPath>..\..\packages\FSharp.Core\lib\net45\FSharp.Core.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="FSharp.Compiler.Service">
+      <HintPath>..\..\packages\FSharp.Compiler.Service\lib\$(TargetFramework)\FSharp.Compiler.Service.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Copy DestinationFolder="$(MyOutDir)" SourceFiles="$(OutDir)\fsx.exe" />
+    <Copy DestinationFolder="$(MyOutDir)" SourceFiles="fsx.exe.config" SkipUnchangedFiles="true" />
+  </Target>
+</Project>
