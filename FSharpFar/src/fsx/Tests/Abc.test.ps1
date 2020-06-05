@@ -1,5 +1,5 @@
 
-task test_01_same_dir {
+task test_01_same_dir_fsx {
 	Set-Location test_01
 	($r = exec {fsx Test.fsx})
 	equals $r.Count 2
@@ -7,7 +7,14 @@ task test_01_same_dir {
 	equals $r[1] 'fsx: [|"Test.fsx"|]'
 }
 
-task test_01_diff_dir {
+task test_01_diff_dir_fsx {
+	($r = exec {fsx test_01\Test.fsx})
+	equals $r.Count 2
+	equals $r[0] 'fs: [|"test_01\Test.fsx"|]'
+	equals $r[1] 'fsx: [|"test_01\Test.fsx"|]'
+}
+
+task test_01_diff_dir_ini {
 	($r = exec {fsx test_01\.fs.ini test_01\Test.fsx})
 	equals $r.Count 2
 	equals $r[0] 'fs: [|"test_01\Test.fsx"|]'

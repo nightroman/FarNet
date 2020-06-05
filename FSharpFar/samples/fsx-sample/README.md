@@ -9,15 +9,15 @@ section (for an assembly it would be `-r:Lib.dll`).
 
 ## Sample 1: fsi.CommandLineArgs
 
-**Task:** Run the function `Module1.hello` with the input parameter "John".
+**Task:** Run the function `Module1.hello` with an input parameter, e.g. "John".
 
-**By fsx:**
+**Run by fsx**
 
 Create the script [App1.fsx](App1.fsx) which uses `fsi.CommandLineArgs` and call it as:
 
     fsx App1.fsx John
 
-**By FSharpFar:**
+**Run by FSharpFar**
 
 We do not need a script for this task:
 
@@ -41,10 +41,10 @@ Create the script [App2.fsx](App2.fsx) which defines input UI using conditional 
 #endif
 ```
 
-**By fsx:**
+**Run by fsx**
 
-    fsx App2.fsx John
+    fsx App2.fsx
 
-**By FSharpFar:**
+**Run by FSharpFar**
 
     fs: //exec file=App2.fsx

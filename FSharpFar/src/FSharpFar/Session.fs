@@ -33,11 +33,12 @@ type Session private (configFile) =
     let onClose = Event<unit> ()
 
     // The writer for some extra "noise" output, like loading assemblies.
-    let voidWriter = new StringWriter ()
+    // It is also useful and used for capturing config file problems.
+    let hiddenWriter = new StringWriter ()
 
     // The permanent writer attached to the session, as required by FCS.
     // The actual writer is changing inside it depending on eval.
-    let evalWriter = new ProxyWriter (voidWriter)
+    let evalWriter = new ProxyWriter (hiddenWriter)
 
     let fsiSession, errors, config =
         use _progress = new Progress "Loading session..."
@@ -58,8 +59,8 @@ type Session private (configFile) =
             try
                 FsiEvaluationSession.Create (fsiConfig, args, new StringReader "", evalWriter, evalWriter)
             with exn ->
-                // case: `//--define:DEBUG` in [fsc]
-                raise (InvalidOperationException ("Cannot create a session. If you use a config file check its syntax and data.", exn))
+                // case: unknown option in [fsc]
+                raise (InvalidOperationException ("Cannot create a session. Ensure valid configuration syntax and data." + hiddenWriter.ToString (), exn))
 
         // load and use files
         use writer = new StringWriter ()
@@ -92,7 +93,7 @@ type Session private (configFile) =
             }
         finally
             // do not leave the temp writer attached, fsi still writes, e.g. about loaded assemblies
-            evalWriter.Writer <- voidWriter
+            evalWriter.Writer <- hiddenWriter
 
     // Used by GetOrCreate and by TryDefaultSession.
     static member private TryFind path =
@@ -141,7 +142,7 @@ type Session private (configFile) =
         sessions <- sessions |> List.except [x]
 
         evalWriter.Dispose ()
-        voidWriter.Dispose ()
+        hiddenWriter.Dispose ()
         (fsiSession :> IDisposable).Dispose ()
 
     /// The full path of config file (normalized, case insensitive).

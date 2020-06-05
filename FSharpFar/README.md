@@ -39,6 +39,20 @@ As a result, you get the complete F# scripting tool set portable with Far Manage
 (assuming .NET 4.6.1+ and Microsoft Visual C++ Redistributable pre-installed).
 Use it inside Far Manager with *FarNet* and outside Far Manager with *fsx.exe*.
 
+**Improve performance**
+
+You may reduce loading times of FarNet assemblies, including FSharpFar and
+fsx.exe, by the following PowerShell commands using [Invoke-Ngen.ps1](https://www.powershellgallery.com/packages/Invoke-Ngen)
+(it is recommended to exit Far Manager before, but not required)
+
+```powershell
+# get the script once
+Install-Script Invoke-Ngen
+
+# run after updates
+Invoke-Ngen -Directory <far-home> -Recurse
+```
+
 ***
 ## Menus
 
@@ -545,26 +559,26 @@ Macro {
 ## Using fsx.exe tool
 
 The included `fsx.exe` may be used like F# official `fsi.exe` for running
-scripts and interactive without Far Manager. Scripts should not depend on
-FarNet, of course.
+scripts and interactive without Far Manager.
 
 `fsx.exe` does not depend on FarNet, FSharpFar, and Far Manager.
-It just uses F# services installed with FSharpFar in Far Manager.
+It just uses F# services installed with FSharpFar.
 
-`fsx.exe` understands `*.fs.ini` configurations and includes minor
-improvements like slightly better F# interactive code completion.
+`fsx.exe` supports `*.fs.ini` configurations and includes minor
+interactive improvements.
 
 **Usage**
 
 ```cmd
-fsx.exe [*.ini] [fsi arguments]
+fsx.exe [*.ini] [options] [script [arguments]]
 ```
 
 If the first argument is like `*.ini` then it is treated as the configuration
-file for F# compiler options, references, and sources.
+file for F# compiler options, references, and sources from the `[fsc]` section.
 
-If the configuration is not specified then `fsx.exe` looks for `*.fs.ini` in
-the current directory and takes the first in alphabetical order.
+If the configuration is omitted then `fsx.exe` looks for `*.fs.ini` in the
+specified script directory or the current directory and takes the first in
+alphabetical order.
 
 Other arguments are [F# Interactive Options](https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/fsharp-interactive-options).
 
@@ -578,8 +592,7 @@ Script arguments specified in the command line are available as the array
 arguments.
 
 Note that if a script is invoked in FSharpFar then arguments are not used.
-`fsi.CommandLineArgs` is available but it contains just a dummy string,
-not the script name.
+`fsi.CommandLineArgs` is available but it contains just a dummy string.
 
 Conditional compilation may be used for separating FarNet code from exclusively
 designed for `fsx` or `fsi`. Use `#if FARNET` or `#if !FARNET` directives.

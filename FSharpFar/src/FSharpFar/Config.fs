@@ -56,9 +56,13 @@ module Config =
         let addReference reference =
             let node = xml.CreateElement "Reference"
             nodeItems.AppendChild node |> ignore
-            node.SetAttribute ("Include", Path.GetFileNameWithoutExtension reference)
-            (node.AppendChild (xml.CreateElement "HintPath")).InnerText <- reference
-            (node.AppendChild (xml.CreateElement "Private")).InnerText <- "false"
+            if File.Exists reference then
+                node.SetAttribute ("Include", Path.GetFileNameWithoutExtension reference)
+                (node.AppendChild (xml.CreateElement "HintPath")).InnerText <- reference
+                (node.AppendChild (xml.CreateElement "Private")).InnerText <- "false"
+            else
+                // -r:System.Management.Automation
+                node.SetAttribute ("Include", reference)
 
         let addFile file =
             let node = xml.CreateElement "Compile"
@@ -68,6 +72,9 @@ module Config =
         addProperty "TargetFramework" "net462"
         addProperty "DisableImplicitFSharpCoreReference" "true"
         addProperty "DisableImplicitSystemValueTupleReference" "true"
+        // https://github.com/dotnet/sdk/issues/987
+        // Works just for VS and MSBuild. Well, at least VS is happy.
+        addProperty "AssemblySearchPaths" "$(AssemblySearchPaths);{GAC}"
 
         do
             let flags = ResizeArray ()

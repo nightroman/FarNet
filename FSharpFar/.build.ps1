@@ -26,7 +26,7 @@ task Kill Clean, {
 }
 
 task Build {
-	exec {dotnet build $ProjectRoot\$ModuleName.sln /p:FarHome=$FarHome /p:Configuration=$Configuration /v:n}
+	exec {dotnet build $ProjectRoot\$ModuleName.sln /p:FarHome=$FarHome /p:Configuration=$Configuration}
 }
 
 task Clean {

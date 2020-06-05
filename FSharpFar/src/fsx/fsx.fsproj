@@ -17,6 +17,7 @@
     <Compile Include="..\FSharpFar\Abc.fs" />
     <Compile Include="..\FSharpFar\AbcConfig.fs" />
     <Compile Include="..\FSharpFar\Parser.fs" />
+    <Compile Include="AbcCommandLine.fs" />
     <Compile Include="Console.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

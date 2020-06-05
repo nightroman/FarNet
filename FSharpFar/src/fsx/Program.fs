@@ -1,7 +1,6 @@
 module internal FSharpFar.Main
 
 open System
-open System.IO
 open System.Reflection
 open FSharp.Compiler.Interactive.Shell
 
@@ -17,13 +16,9 @@ let main _ =
     let home = AppDomain.CurrentDomain.BaseDirectory
     Environment.SetEnvironmentVariable("FARHOME", home)
 
-    let argv = System.Environment.GetCommandLineArgs()
-    let exe, args = argv.[0], Array.skip 1 argv
-    let ini, args =
-        if args.Length > 0 && args.[0].ToLower().EndsWith(".ini") then
-            Some (Path.GetFullPath args.[0]), Array.skip 1 args
-        else
-            Config.tryFindFileInDirectory Environment.CurrentDirectory, args
+    // parse
+    let exe, ini, fsx, args = CommandLine.parseCommandLineArgs (System.Environment.GetCommandLineArgs())
+    let ini = CommandLine.tryResolveIni ini fsx
 
     let argv = [|
         // this app
@@ -33,7 +28,7 @@ let main _ =
         sprintf @"-r:%s\fsx.exe" home
         sprintf @"-r:%s\FarNet\Modules\FSharpFar\FSharp.Compiler.Service.dll" home
 
-        // configuration, omit [fsi], maybe later use [fsx] in addition
+        // configuration, use just [fsc], maybe later use [fsx] in addition
         match ini with
         | Some ini ->
             let config = Config.readFromFile ini
@@ -46,6 +41,7 @@ let main _ =
         yield! args
     |]
 
+    //? dirty, needs checks for `fsx|--|*shadowcopyreferences-`;; but same as fsi (ILSpy)
     let isShadowCopy x = (x = "/shadowcopyreferences" || x = "--shadowcopyreferences" || x = "/shadowcopyreferences+" || x = "--shadowcopyreferences+")
     if AppDomain.CurrentDomain.IsDefaultAppDomain() && argv |> Array.exists isShadowCopy then
         let setupInformation = AppDomain.CurrentDomain.SetupInformation
@@ -55,7 +51,7 @@ let main _ =
 
     try
         let console = InteractiveConsole.ReadLineConsole()
-        let getConsoleReadLine (probeToSeeIfConsoleWorks) =
+        let getConsoleReadLine probeToSeeIfConsoleWorks =
             let consoleIsOperational =
                 if probeToSeeIfConsoleWorks then
                     try
