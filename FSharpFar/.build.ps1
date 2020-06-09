@@ -104,6 +104,7 @@ task Package Markdown, {
 		"$fromModule\$ModuleName.dll"
 		"$fromModule\FSharp.Compiler.Service.dll"
 		"$fromModule\System.Buffers.dll"
+		"$fromModule\System.Collections.Immutable.dll"
 		"$fromModule\System.Reflection.Metadata.dll"
 		"$fromModule\System.ValueTuple.dll"
 	)
