@@ -2,6 +2,13 @@ NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 Far Manager 3.0.5505
 FarNet 5.2.23
 
+= 5.3.1 =
+
+Amend the "Esc" dialog in PS confirmation dialogs.
+
+Retire Start-MSBuild-.ps1 (moved to "repo/Zoo").
+Tweak Invoke-Editor-.ps1, remove Start-MSBuild-.ps1, add fsx.
+
 = 5.3.0 =
 
 PowerShell module FarDescription:

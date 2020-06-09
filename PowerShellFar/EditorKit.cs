@@ -614,8 +614,18 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 				A.Psf.Engine.SessionState.Path.PushCurrentLocation(null);
 				A.Psf.Engine.SessionState.Path.SetLocation(Kit.EscapeWildcard(dir1));
 
-				// invoke the script
-				A.Psf.Act("& '" + editor.FileName.Replace("'", "''") + "'", null, false);
+				// invoke the script by the command runner or directly
+				var fileName = editor.FileName;
+				var root = Path.GetDirectoryName(fileName);
+				if (root.EndsWith(".ps1.commands", StringComparison.OrdinalIgnoreCase))
+				{
+					var runner = root.Substring(0, root.Length - 9);
+					A.Psf.Act($"& '{runner.Replace("'", "''")}' {Path.GetFileNameWithoutExtension(fileName)}", null, false);
+				}
+				else
+				{
+					A.Psf.Act($"& '{fileName.Replace("'", "''")}'", null, false);
+				}
 				Far.Api.UI.WindowTitle = "Done " + DateTime.Now;
 			}
 			catch

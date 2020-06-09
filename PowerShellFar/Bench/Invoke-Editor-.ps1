@@ -1,32 +1,23 @@
-
 <#
 .Synopsis
 	Invokes a file from the current editor.
 	Author: Roman Kuzmin
 
 .Description
-	Saves a file in the editor and invokes it depending on the file type.
+	Saves the editor file and invokes it depending on its type.
 
-	If a file is *-.ps1 it is executed in the current PowerShell session by
-	$Psf.InvokeScriptFromEditor() with $ErrorActionPreference = 'Inquire'
+	*.build.ps1, *.test.ps1 ~ the current task is invoked by
+	Invoke-Build (https://github.com/nightroman/Invoke-Build)
 
-	If a file is *.build|test.ps1 then the current task is invoked by
-	Invoke-Build.ps1 (https://github.com/nightroman/Invoke-Build)
-
-	If a file is *.ps1 it is invoked by PowerShell.exe outside of Far. When it
-	is done you can watch the console output and close the window by [Enter].
-	If it fails the PowerShell is not exited, but stopped, you may work in
-	failed PowerShell session to investigate problems just in place.
+	*.ps1 is invoked by powershell in a separate console.
 
 	Markdown files are opened by Show-Markdown-.ps1
 
-	*.*proj files are processed by Start-MSBuild-.ps1
-
-	If a file is .bat, .cmd, .pl, .mak, makefile, etc. then some typical action
-	is executed, mostly as demo, use your own invocation for practical tasks.
+	If the file is .bat, .cmd, .fsx, .pl, etc. then some typical action is
+	executed, mostly as demo, use your own invocation for practical tasks.
 
 	As for the other files, the script simply calls Invoke-Item for them, i.e.
-	starts a program associated with a file type.
+	starts a program associated with the file type.
 #>
 
 # Save the file and get the normalized path
@@ -39,6 +30,7 @@ $ext = [IO.Path]::GetExtension($path)
 
 ### PowerShell.exe
 if ($ext -eq '.ps1') {
+	# Invoke-Build?
 	if ($path -match '\.(?:build|test)\.ps1$') {
 		$task = '.'
 		$line = $editor.Caret.Y + 1
@@ -53,15 +45,20 @@ if ($ext -eq '.ps1') {
 		)
 	}
 	else {
-		$arg = "-NoExit -ExecutionPolicy Bypass . '$($path.Replace("'", "''"))'"
+		# sub-command?
+		$root = [IO.Path]::GetDirectoryName($path)
+		if ($root.ToLower().EndsWith('.ps1.commands')) {
+			$arg = "-NoExit -ExecutionPolicy Bypass . '{0}' {1}" -f @(
+				$root.Substring(0, $root.Length - 9).Replace("'", "''")
+				[IO.Path]::GetFileNameWithoutExtension($path)
+			)
+		}
+		# generic script
+		else {
+			$arg = "-NoExit -ExecutionPolicy Bypass . '$($path.Replace("'", "''"))'"
+		}
 	}
-	Start-Process PowerShell.exe $arg
-	return
-}
-
-### MSBuild
-if ($ext -like '.*proj') {
-	Start-MSBuild-.ps1 $path
+	Start-Process powershell.exe $arg
 	return
 }
 
@@ -72,19 +69,19 @@ if ('.text', '.md', '.markdown' -contains $ext) {
 	Show-Markdown-.ps1
 }
 
-### Cmd
+### cmd
 elseif ('.bat', '.cmd' -contains $ext) {
 	cmd /c start cmd /k $arg
+}
+
+### fsx
+elseif ('.fsx' -eq $ext) {
+	Start-Process fsx.exe ('--nologo', "--use:$arg")
 }
 
 ### Perl
 elseif ('.pl' -eq $ext) {
 	cmd /c start cmd /k perl $arg
-}
-
-### Makefile
-elseif ('.mak' -eq $ext -or [IO.Path]::GetFileName($path) -eq 'makefile') {
-	cmd /c start cmd /k nmake /f $arg /nologo
 }
 
 ### Others
