@@ -17,6 +17,7 @@ F# scripting and interactive services in Far Manager
 - [Editor services](#editor-services)
 - [Using F# scripts](#using-f-scripts)
 - [Using fsx.exe tool](#using-fsxexe-tool)
+- [FSharpFar packages](#fsharpfar-packages)
 
 **Project**
 
@@ -597,6 +598,27 @@ Note that if a script is invoked in FSharpFar then arguments are not used.
 Conditional compilation may be used for separating FarNet code from exclusively
 designed for `fsx` or `fsi`. Use `#if FARNET` or `#if !FARNET` directives.
 
-See [samples/fsx-sample](https://github.com/nightroman/FarNet/tree/master/FSharpFar/samples/fsx-sample).
+See [/samples/fsx-sample](https://github.com/nightroman/FarNet/tree/master/FSharpFar/samples/fsx-sample).
 
 ***
+## FSharpFar packages
+
+These packages are libraries for F# scripting using FSharpFar and fsx.
+They are installed in the same way as FarNet modules but they are different.
+The directory is `%FARHOME%\FarNet\Lib` instead of `%FARHOME%\FarNet\Modules`.
+
+Once installed, the content of such packages is portable with Far Manager.
+Each package has its `*.ini` file for use in other F# configuration files.
+
+* [FarNet.FSharp.PowerShell](https://github.com/nightroman/FarNet.FSharp.PowerShell)
+
+    F# friendly PowerShell extension
+
+    See [samples](https://github.com/nightroman/FarNet.FSharp.PowerShell/tree/master/samples).
+    Note how the configuration `*.fs.ini` uses the package `*.ini`.
+
+* *FarNet.FSharp.Charting*
+
+    FarNet friendly [FSharp.Charting](https://fslab.org/FSharp.Charting/index.html) extension
+
+    (under construction, to be continued...)
