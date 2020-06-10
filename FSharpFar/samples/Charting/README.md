@@ -8,9 +8,8 @@ The provided examples use `System.Windows.Forms.DataVisualization.Charting` and
 Windows forms directly without any extra packages. Run `*.fsx` scripts in order
 to show sample charts.
 
-For easier charting in F# consider using [FSharp.Charting](https://github.com/fslaborg/FSharp.Charting).
-Similarly, in FSharpFar use the modal method `Chart.Show(chart)`, not modeless `chart.ShowChart()`.
-This way works quite well. See also [#122](https://github.com/fslaborg/FSharp.Charting/issues/122).
+For easier charting in F# consider using [FarNet.FSharp.Charting](https://github.com/nightroman/FarNet.FSharp.Charting),
+see [/samples](https://github.com/nightroman/FarNet.FSharp.Charting/tree/master/samples).
 
 **Using fsx.exe or fsi.exe**
 

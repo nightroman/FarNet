@@ -2,7 +2,7 @@
 https://github.com/fsharp/FSharp.Compiler.Service/blob/master/fcs/RELEASE_NOTES.md
 -->
 
-# FSharpFar
+# FarNet.FSharpFar
 
 F# scripting and interactive services in Far Manager
 
@@ -612,13 +612,10 @@ Each package has its `*.ini` file for use in other F# configuration files.
 
 * [FarNet.FSharp.PowerShell](https://github.com/nightroman/FarNet.FSharp.PowerShell)
 
-    F# friendly PowerShell extension
+    F# friendly PowerShell extension,
+    see [/samples](https://github.com/nightroman/FarNet.FSharp.PowerShell/tree/master/samples).
 
-    See [samples](https://github.com/nightroman/FarNet.FSharp.PowerShell/tree/master/samples).
-    Note how the configuration `*.fs.ini` uses the package `*.ini`.
+* [FarNet.FSharp.Charting](https://github.com/nightroman/FarNet.FSharp.Charting)
 
-* *FarNet.FSharp.Charting*
-
-    FarNet friendly [FSharp.Charting](https://fslab.org/FSharp.Charting/index.html) extension
-
-    (under construction, to be continued...)
+    FarNet friendly [FSharp.Charting](https://fslab.org/FSharp.Charting/index.html) extension,
+    see [/samples](https://github.com/nightroman/FarNet.FSharp.Charting/tree/master/samples).

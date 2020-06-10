@@ -7,6 +7,23 @@
 - [FCS issue F# 4.6](https://github.com/fsharp/FSharp.Compiler.Service/issues/884)
 
 ***
+### FSharp.Compiler.Service hacking
+
+The main repo - https://github.com/dotnet/fsharp
+
+clone,
+
+    cd .\fcs
+    build.cmd
+    cd ..
+    cd .\artifacts\bin\fcs\Release\net461
+
+get:
+
+    FscExe.exe
+    FsiExe.exe
+
+***
 ### FCS Packages
 
 see .\packages\FSharp.Compiler.Service\FSharp.Compiler.Service.nuspec
@@ -84,6 +101,24 @@ Next step. The waiter waits.
 
 ***
 ### fsi object
+
+**Exposed, June 2020**
+
+We provide `fsi` via the auto opened module and its
+
+    let fsi = FSharp.Compiler.Interactive.Shell.Settings.fsi
+
+This requires the extra reference to FCS.dll (alas) but it's worth it:
+
+- `fsi.exe` has it, so users expect it
+- useful for `fsx.exe`
+- useful for session settings
+- useful as existing object to test something
+- this extra reference might be useful for hacking
+
+Interestingly, `fsi.CommandLineArgs` is settable.
+
+**Before...**
 
 **The bad.**
 
