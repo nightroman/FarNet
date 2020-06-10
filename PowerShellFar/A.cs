@@ -42,7 +42,7 @@ namespace PowerShellFar
 		/// </summary>
 		public static void AskStopPipeline()
 		{
-			if (0 == Far.Api.Message("Stop all commands?", Res.Me, MessageOptions.OkCancel | MessageOptions.Warning))
+			if (0 == Far.Api.Message("Stop running commands? (like Ctrl-C in console)", Res.Me, MessageOptions.YesNo))
 				throw new PipelineStoppedException();
 		}
 		/// <summary>
