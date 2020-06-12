@@ -619,3 +619,8 @@ Each package has its `*.ini` file for use in other F# configuration files.
 
     FarNet friendly [FSharp.Charting](https://fslab.org/FSharp.Charting/index.html) extension,
     see [/samples](https://github.com/nightroman/FarNet.FSharp.Charting/tree/master/samples).
+
+* [FarNet.FSharp.Data](https://github.com/nightroman/FarNet.FSharp.Data)
+
+    [FSharp.Data](http://fsharp.github.io/FSharp.Data) package for FarNet.FSharpFar
+    see [/samples](https://github.com/nightroman/FarNet.FSharp.Data/tree/master/samples).
