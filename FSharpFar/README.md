@@ -576,12 +576,11 @@ fsx.exe [*.ini] [options] [script [arguments]]
 
 If the first argument is like `*.ini` then it is treated as the configuration
 file for F# compiler options, references, and sources from the `[fsc]` section.
-
-If the configuration is omitted then `fsx.exe` looks for `*.fs.ini` in the
-specified script directory or the current directory and takes the first in
-alphabetical order.
-
 Other arguments are [F# Interactive Options](https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/fsharp-interactive-options).
+
+If the configuration is omitted then `fsx.exe` looks for `*.fs.ini` in the last
+specified source file directory, or the current directory for a command without
+sources.
 
 **Script environment and arguments**
 

@@ -2,6 +2,12 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.5048
 FarNet 5.2.20
 
+= 1.10.3 =
+
+FSharp.Compiler.Service (36.0.1)
+
+Amend command line parsing in fsx.exe.
+
 = 1.10.2 =
 
 Add missing assembly to the package.

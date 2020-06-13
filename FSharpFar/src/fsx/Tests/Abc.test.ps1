@@ -14,6 +14,13 @@ task test_01_diff_dir_fsx {
 	equals $r[1] 'fsx: [|"test_01\Test.fsx"|]'
 }
 
+task test_01_diff_dir_use {
+	($r = exec {fsx --exec --quiet --use:test_01\Test.fsx})
+	equals $r.Count 2
+	equals $r[0] 'fs: [|"test_01\Test.fsx"|]'
+	equals $r[1] 'fsx: [|"test_01\Test.fsx"|]'
+}
+
 task test_01_diff_dir_ini {
 	($r = exec {fsx test_01\.fs.ini test_01\Test.fsx})
 	equals $r.Count 2

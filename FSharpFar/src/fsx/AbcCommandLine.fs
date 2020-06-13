@@ -3,32 +3,46 @@ module internal FSharpFar.CommandLine
 open System
 open System.IO
 
-/// Gets exe, ?ini, ?fsx, args as they are.
+/// Gets exe, ?ini, ?fsx, FCS args.
+/// fsx is either invoked .fsx or the last of .fs|--use|--load files.
 let parseCommandLineArgs (args: string[]) =
     // [0] - app.exe
     let exe = args.[0]
 
-    // [1] - ?.ini, skip it
-    let ini, index =
-        if args.Length > 1 && args.[1].ToLower().EndsWith(".ini") then
-            Some args.[1], 2
-        else
-            None, 1
+    // [1] ~ .ini? done
+    if args.Length > 1 && args.[1].EndsWith(".ini", StringComparison.OrdinalIgnoreCase) then
+        exe, Some args.[1], None, Array.skip 2 args
+    else
 
-    let r = ResizeArray()
+    let mutable i = 1
     let mutable fsx = None
+    let mutable lastSource = None
     let mutable keepParsing = true
 
-    for i in index .. args.Length - 1 do
+    while keepParsing && i < args.Length do
         let x = args.[i]
-        r.Add(x)
-        if fsx.IsNone && keepParsing then
-            if not (x.StartsWith("-") || x.StartsWith("/")) then
-                fsx <- Some x
-            else if x = "--" then
-                keepParsing <- false
+        i <- i + 1
 
-    exe, ini, fsx, r.ToArray()
+        //| source file
+        if not (x.StartsWith("-") || x.StartsWith("/")) then
+            if x.EndsWith(".fsx", StringComparison.OrdinalIgnoreCase) then
+                // fsx ... my.fsx <arguments>
+                fsx <- Some x
+                keepParsing <- false
+            else
+                // fsx ... my.fs ...
+                lastSource <- Some x
+        //| --use
+        else if x.StartsWith("--use:") then
+            lastSource <- Some (x.Substring(6))
+        //| --load
+        else if x.StartsWith("--load:") then
+            lastSource <- Some (x.Substring(7))
+        //| --
+        else if x = "--" then
+            keepParsing <- false
+
+    exe, None, (if fsx.IsSome then fsx else lastSource), Array.skip 1 args
 
 /// Try get full path of ini given ?ini and ?fsx.
 let tryResolveIni ini fsx =
