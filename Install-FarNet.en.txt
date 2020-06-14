@@ -15,24 +15,23 @@ Far Manager
 .NET Framework 3.5 or newer
 
 	This is the case since Windows 7.
-	Otherwise check, download, and install.
-	NOTE: Some modules may require newer versions.
+	Some modules may require newer versions.
 
 Microsoft Visual C++ 2008 SP1 Redistributable Package (x64) or (x86)
 
 	Search the internet, sources may change.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-= DOWNLOAD AND INSTALL WITH PowerShell v2.0+ =
+= DOWNLOAD AND INSTALL WITH PowerShell =
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This is the recommended and the simplest way of installing FarNet and modules
+This is the recommended and simplest way of installing FarNet and modules
 from NuGet. It helps to avoid several manual steps and possible mistakes.
 
 Close Far Manager and start the PowerShell console
 (as Administrator: depends on Far Manager location)
 
-	PowerShell.exe
+	powershell.exe
 
 Set the Far Manager directory current, e.g.
 
@@ -57,7 +56,7 @@ samples, and etc. The folder FarNet contains About-FarNet.htm и FarNetApi.chm.
 Modules normally have their files in folders like "FarNet\Modules\<module>".
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-= UPDATE FarNet AND MODULES WITH PowerShell v2.0+ =
+= UPDATE FarNet AND MODULES WITH PowerShell =
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Note: FarNet and modules installed manually are not updated in this way.
@@ -66,7 +65,7 @@ Only modules installed by Install-FarPackage are updated.
 Close Far Manager and start the PowerShell console
 (as Administrator: depends on Far Manager location)
 
-	PowerShell.exe
+	powershell.exe
 
 Set the Far Manager directory current, e.g.
 
@@ -87,9 +86,6 @@ In order to update one package, use Install-FarPackage, e.g.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 = DOWNLOAD AND INSTALL FarNet MANUALLY =
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-This may be needed if PowerShell v2.0 or newer is not installed or there is no
-internet connection and packages are brought from another computer.
 
 Download the FarNet package by its direct link
 
@@ -113,8 +109,6 @@ Depending on Far Manager, x64 or x86, copy content of "FarHome.x64" or
 Steps may depend on a module. But the common rule for any module "Bar" is: in
 "Far Manager\FarNet\Modules" there is a folder "Bar" which contains the module
 files. One of these files is the assembly "Bar.dll".
-
-Important: the module folder and assembly must have the same base name.
 
 If a FarNet module is a NuGet package called "Bar" then it can be downloaded by
 its direct link as

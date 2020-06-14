@@ -6,7 +6,8 @@ $uri = 'https://raw.githubusercontent.com/nightroman/FarNet/master/PowerShellFar
 Write-Host "Importing $uri"
 Invoke-Expression $web.DownloadString($uri)
 Write-Host @'
-Imported functions:
-Install-FarPackage - installs or updates one package
-Update-FarPackage - updates all installed packages
+Imported commands (for more details use: Get-Help <command>):
+Install-FarPackage   - installs or updates one package
+Update-FarPackage    - updates all installed packages
+Uninstall-FarPackage - removes the specified package
 '@
