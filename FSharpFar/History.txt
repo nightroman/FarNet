@@ -2,6 +2,11 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.5048
 FarNet 5.2.20
 
+= 1.10.4 =
+
+Added FSharp.Core.xml to the package.
+This makes F# core help tips available.
+
 = 1.10.3 =
 
 FSharp.Compiler.Service (36.0.1)

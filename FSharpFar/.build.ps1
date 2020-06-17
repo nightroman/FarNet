@@ -72,11 +72,9 @@ task Meta -Inputs .build.ps1, History.txt -Outputs src/Directory.Build.props -Jo
 }
 
 task Package Markdown, {
-	$toModule = "z\tools\FarHome\FarNet\Modules\$ModuleName"
-	$fromModule = "$FarHome\FarNet\Modules\$ModuleName"
-
 	remove z
-	$null = mkdir $toModule
+	$toModule = mkdir "z\tools\FarHome\FarNet\Modules\$ModuleName"
+	$fromModule = "$FarHome\FarNet\Modules\$ModuleName"
 
 	# package: logo
 	Copy-Item -Destination z ..\Zoo\FarNetLogo.png
@@ -86,6 +84,7 @@ task Package Markdown, {
 		"$FarHome\FSharp.Core.dll"
 		"$FarHome\FSharp.Core.optdata"
 		"$FarHome\FSharp.Core.sigdata"
+		"$FarHome\FSharp.Core.xml"
 		"$FarHome\fsx.exe"
 		"$FarHome\fsx.exe.config"
 	)
@@ -117,7 +116,7 @@ task NuGet Package, Version, {
 	assert $dllVersion.StartsWith("$Version.") 'Versions mismatch.'
 
 	$text = @'
-F# interactive, scripting, compiler, and editor services for Far Manager.
+F# scripting and interactive services in Far Manager
 
 ---
 
