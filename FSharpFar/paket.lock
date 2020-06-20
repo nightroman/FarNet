@@ -3,14 +3,20 @@ COPY-LOCAL: FALSE
 RESTRICTION: == net461
 NUGET
   remote: https://www.nuget.org/api/v2
-    FSharp.Compiler.Service (36.0.1)
+    FSharp.Compiler.Service (36.0.2)
       FSharp.Core (>= 4.6.2)
+      Microsoft.SourceLink.GitHub (>= 1.0)
       System.Buffers (>= 4.5)
       System.Collections.Immutable (>= 1.5)
       System.Memory (>= 4.5.3)
       System.Reflection.Metadata (>= 1.6)
       System.ValueTuple (>= 4.4)
     FSharp.Core (4.7.2)
+    Microsoft.Build.Tasks.Git (1.0)
+    Microsoft.SourceLink.Common (1.0)
+    Microsoft.SourceLink.GitHub (1.0)
+      Microsoft.Build.Tasks.Git (>= 1.0)
+      Microsoft.SourceLink.Common (>= 1.0)
     System.Buffers (4.5.1)
     System.Collections.Immutable (1.5)
     System.Memory (4.5.4)

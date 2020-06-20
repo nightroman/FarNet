@@ -2,12 +2,12 @@
 https://github.com/fsharp/FSharp.Compiler.Service/blob/master/fcs/RELEASE_NOTES.md
 -->
 
+[/samples]: https://github.com/nightroman/FarNet/tree/master/FSharpFar/samples
+[TryPanelFSharp]: https://github.com/nightroman/FarNet/tree/master/FSharpFar/samples/TryPanelFSharp
+
 # FarNet.FSharpFar
 
 F# scripting and interactive services in Far Manager
-
-[samples]: https://github.com/nightroman/FarNet/tree/master/FSharpFar/samples
-[TryPanelFSharp]: https://github.com/nightroman/FarNet/tree/master/FSharpFar/samples/TryPanelFSharp
 
 - [Menus](#menus)
 - [Commands](#commands)
@@ -30,21 +30,18 @@ F# scripting and interactive services in Far Manager
 
 **Installation**
 
-FSharpFar requires Far Manager, FarNet, .NET 4.6.1.
-
+FSharpFar requires Far Manager, FarNet, .NET 4.6.1. \
 F# or anything else does not have to be installed.
 
 [Get, install, update FarNet and FarNet.FSharpFar.](https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt)
 
-As a result, you get the complete F# scripting tool set portable with Far Manager
-(assuming .NET 4.6.1+ and Microsoft Visual C++ Redistributable pre-installed).
-Use it inside Far Manager with *FarNet* and outside Far Manager with *fsx.exe*.
+As a result, you get the complete F# scripting tool set portable with Far Manager. \
+Use it with Far Manager by FSharpFar or without Far Manager by fsx.exe.
 
 **Improve performance**
 
-You may reduce loading times of FarNet assemblies, including FSharpFar and
-fsx.exe, by the following PowerShell commands using [Invoke-Ngen.ps1](https://www.powershellgallery.com/packages/Invoke-Ngen)
-(it is recommended to exit Far Manager before, but not required)
+You may reduce loading times of FarNet assemblies, especially FSharpFar and fsx.exe,
+by the following PowerShell commands using [Invoke-Ngen.ps1](https://www.powershellgallery.com/packages/Invoke-Ngen)
 
 ```powershell
 # get the script once
@@ -118,10 +115,8 @@ Use `[F11]` \ `FSharpFar` to open the module menu:
 ***
 ## Commands
 
-The command line prefix is `fs:`. It evaluates F# expressions and directives
-with the default session and runs the module commands. The session is defined
-by the configuration file in the active panel. If there is none then the main
-session is used.
+The command prefix is `fs:`. It evaluates F# expressions and directives with
+the specified or default session and runs special commands.
 
 F# expressions:
 
@@ -139,9 +134,11 @@ fs: #help
 ```
 
 ****
+### open
+
 `fs: //open [with = <config>]`
 
-Opens an interactive session with the specified or default configuration.
+Opens the interactive editor with the specified or default configuration.
 
 Sample file association:
 
@@ -149,18 +146,22 @@ Sample file association:
 A file mask or several file masks:
 *.fs.ini
 Description of the association:
-F# session
+F# interactive
 ─────────────────────────────────────
 [x] Execute command (used for Enter):
     fs: //open with = !\!.!
 ```
 
 ****
+### exec
+
 `fs: //exec [file = <script>] [; with = <config>] [;; F# code]`
 
-Invokes script/code with the specified or default configuration. The default is
-defined by `*.fs.ini` in the script folder or the active panel if the script is
-omitted. If there is none then the main configuration is used.
+Invokes the script or F# code with the specified or default configuration.
+The default is `*.fs.ini` in the script folder or the active panel.
+If there is none then the main configuration is used.
+
+Examples:
 
 ```
 fs: //exec file = Script1.fsx
@@ -169,8 +170,8 @@ fs: //exec with = %TryPanelFSharp%\TryPanelFSharp.fs.ini ;; TryPanelFSharp.run (
 ```
 
 The first two commands evaluate the specified files on every call. The last
-command loads files specified by the configuration just once, then it only
-evaluates the code after `;;`.
+command loads files specified by the configuration once, then it just runs
+the code after `;;`.
 
 Sample file association:
 
@@ -186,11 +187,9 @@ F# script
     fs: #load @"!\!.!"
 ```
 
-Files designed as scripts (i.e. to run something) are normally not included as
-source files, otherwise they really run something on loading each session. In
-other words, scripts (either `*.fsx` or `*.fs`) are invoked manually.
-
 ****
+### compile
+
 `fs: //compile [with = <config>]`
 
 Compiles a dll or exe with the specified or default configuration.
@@ -199,7 +198,7 @@ The default should be some existing `*.fs.ini` in the active panel.
 Requirements:
 
 - At least one source file must be specified in the configuration.
-- In the `[out]` section specify `{-o|--out}:<output dll or exe>`.
+- In the `[out]` section specify `{-o|--out}:<dll or exe name>`.
 - To compile a dll, add `-a|--target:library` to `[out]`.
 
 The main goal is compiling FarNet modules in FSharpFar without installing anything else.
@@ -216,14 +215,13 @@ the main configuration is used: *%FARPROFILE%\FarNet\FSharpFar\main.fs.ini*.
 Source file services use configuration files in source directories.
 If they are not found then the main configuration is used.
 
-In commands with the configuration (e.g. `fs: //... with=...`) you may specify
-a directory instead of the file for finding the default. This is shorter and
-does not depend on the exact file name.
+In commands with configurations (`fs: //... with=...`), instead of the
+configuration file you may specify its directory.
 
-If you change configuration files then close affected sessions and editors or
-restart Far Manager. Otherwise the old cached configurations may be used.
+If you change configurations in Far Manager editors then affected sessions are closed automatically. \
+If you change them externally then you may need to reset affected sessions manually.
 
-The configuration file format is like INI, with sections and options.
+The configuration file format is similar to INI, with sections and options.
 Empty lines and lines staring with `;` are ignored.
 
 ### Available sections
@@ -233,10 +231,9 @@ Empty lines and lines staring with `;` are ignored.
 This is the main section. It defines [F# Compiler Options](https://docs.microsoft.com/en-us/dotnet/articles/fsharp/language-reference/compiler-options)
 and source files. This section is often enough. Other sections may add extra or override defined options.
 
-The specified paths may be absolute and relative with or without environment
-*%variables%* expanded. Important: relative paths for `-r|--reference` must
-start with dot(s) ("`.\`" or "`..\`"), otherwise they are treated as known
-assembly names like `-r:System.Management.Automation`.
+The specified paths may be absolute and relative with environment *%variables%* expanded.
+Important: relative paths for `-r|--reference` must start with dot(s) ("`.\`" or "`..\`"),
+otherwise they are treated as known assembly names like `-r:System.Management.Automation`.
 
 ```ini
 ; Main section
@@ -256,7 +253,6 @@ File2.fs
 
 This section defines [F# Interactive Options](https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/fsharp-interactive-options)
 and source files used for interactive sessions and evaluating scripts.
-Some *fsi.exe* options are not used.
 
 `--use` files are particularly useful for interactive commands. They normally
 open frequently used namespaces and modules and define some helper functions
@@ -272,7 +268,7 @@ and variables.
 
 This section defines options for "Editor Tips and Checks", hence the name.
 It is useful in some cases, e.g. `--define:DEBUG` is used in `[etc]` for
-tips and checks in `#if DEBUG` but `[fsi]` and `[out]` do not use DEBUG.
+tips and checks in `#if DEBUG` code blocks.
 
 **`[out]`**
 
@@ -288,10 +284,9 @@ It is not needed if you are not compiling assemblies.
 
 **`[use]`**
 
-This section defines other configuration files used in the current file, one per
-line, using relative or absolute paths. Thus, the current session may be easily
-composed from existing "projects" with some additional settings and files.
-Example:
+This section tells to include other configuration files, one per line, using
+relative or absolute paths. Thus, the current session may be easily composed
+from existing "projects" with some additional settings and files.
 
 ```ini
 ; Use the main configuration in this configuration
@@ -314,15 +309,15 @@ Some F# compiler settings are predefined:
 - `--lib` : *%FARHOME%*
 - `--reference` : *FarNet.dll*, *FarNet.Tools.dll*, *FarNet.FSharp.dll*, *FSharpFar.dll*
 
-The compiler symbol *FARNET* is defined on using with FSharpFar.
-It is not defined in other cases, for example with `fsx.exe`.
+The compiler symbol `FARNET` is defined on using with FSharpFar.
+It is not defined in other cases, for example with fsx.exe.
 Use `#if FARNET` or `#if !FARNET` for conditional compilation:
 
 ```fsharp
 #if FARNET
-// compiled for FSharpFar and FarNet
+// code for FSharpFar and FarNet
 #else
-// compiled for other environments
+// code for fsx.exe or fsi.exe
 #endif
 ```
 
@@ -338,7 +333,7 @@ without much useful information. Check your configuration files:
 
 ### F# scripts and configurations
 
-- Scripts, i.e. *.fsx* files, should not be added to configurations, except `--use` in `[fsi]`.
+- Scripts, i.e. `*.fsx` files, should not be added to configurations, except `--use` in `[fsi]`.
 - Scripts may use `#I`, `#r`, `#load` directives instead of or in addition to configurations.
 - Configurations understand environment variables, script directives do not.
 - Configurations may specify compiler options, scripts cannot do this.
@@ -373,6 +368,10 @@ F# interactive is the editor session for evaluating one or more lines of code.
 Use `[ShiftEnter]` for evaluating and `[Tab]` for code completion. The output
 of evaluated code is appended to the end with the text markers `(*(` and `)*)`.
 
+Note, interactive sessions are closed automatically when you edit and save
+related configuration and source files in the same Far Manager. On editing
+these files externally you may need to reset affected sessions manually.
+
 The structure of interactive text in the editor:
 
 ```
@@ -391,8 +390,8 @@ The structure of interactive text in the editor:
 < end of file, next (*( output )*) >
 ```
 
-Use `[F6]` in order to show the history of interactive input.
-The history keys:
+Use `[F6]` in order to show the interactive history.
+The history list keys:
 
 - `[Enter]` - append code to the interactive.
 - `[Del]`, `[CtrlR]` - tidy up the history.
@@ -466,19 +465,16 @@ use the settings panel: `[F11]` \ `FarNet` \ `Settings` \ `FSharpFar\Settings`.
 
 Use `[F11]` \ `FSharpFar` \ `Uses in file` and `Uses in project` in order to
 get definitions and references of the symbol at the caret. Same file uses are
-shown as a go to menu. Project uses are shown in a new editor. The file is
-saved before the project uses search.
+shown as a go to menu. Project uses are shown in a new editor.
 
 ***
 ## Using F# scripts
 
-(See the repository directory [samples] for some example scripts.)
+(See [/samples] for some example scripts.)
 
-How to use F# scripts in Far Manager as tools?
+How to run F# script tools in Far Manager?
 
 **Running as commands**
-
-In order to use F# script tools in practice, use the commands like:
 
 ```
 fs: //exec [file = <script>] [; with = <config>] [;; F# code]

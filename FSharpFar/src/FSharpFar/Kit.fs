@@ -38,3 +38,11 @@ module String =
     /// Gets true if x ends with y.
     let endsWithIgnoreCase (x: string) (y: string) =
         x.EndsWith (y, StringComparison.OrdinalIgnoreCase)
+
+module Exn =
+    open System.Runtime.ExceptionServices
+
+    /// Raises the exception with its stack trace, normally when reraise is not an option.
+    let reraise exn =
+        ExceptionDispatchInfo.Capture(exn).Throw()
+        Unchecked.defaultof<_>

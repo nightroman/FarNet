@@ -5,7 +5,7 @@ Suppose we have an F# source file [Module1.fs](Module1.fs) (or it could be some
 fsx and FSharpFar.
 
 Create the configuration [.fs.ini](.fs.ini) and add *Module1.fs* to its `[fsc]`
-section (for an assembly it would be `-r:Lib.dll`).
+section (for an assembly it would be some `-r:.\bin\Lib.dll`).
 
 ## Sample 1: fsi.CommandLineArgs
 

@@ -36,6 +36,7 @@
     <Compile Include="FarCommand.fs" />
     <Compile Include="FarEditor.fs" />
     <Compile Include="FarTool.fs" />
+    <Compile Include="FarHost.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FarNet.FSharp\FarNet.FSharp.fsproj">

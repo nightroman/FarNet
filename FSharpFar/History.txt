@@ -2,6 +2,15 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.5048
 FarNet 5.2.20
 
+= 1.10.5 =
+
+FSharp.Compiler.Service (36.0.2)
+(fixed versions in fsx.exe logo)
+
+Close affected sessions on saving config and source files in Far Manager.
+
+Session loading exceptions - throw with the original stack information.
+
 = 1.10.4 =
 
 Added FSharp.Core.xml to the package.

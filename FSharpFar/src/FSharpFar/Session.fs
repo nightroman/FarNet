@@ -45,36 +45,47 @@ type Session private (configFile) =
 
         let config = Config.readFromFile configFile
         let args = [|
-            yield "fsi.exe" //! dummy, else --nologo is consumed
+            yield "fsi.exe" //! dummy ~ fsi.CommandLineArgs.[0]
             yield "--nologo"
             yield "--noninteractive"
             yield! defaultCompilerArgs
             yield! config.FscArgs
             yield! config.FsiArgs
         |]
-        let fsiConfig = FsiEvaluationSession.GetDefaultConfiguration ()
 
         //! collectible=true has issues
         let fsiSession =
             try
-                FsiEvaluationSession.Create (fsiConfig, args, new StringReader "", evalWriter, evalWriter)
+                let fsiConfig = FsiEvaluationSession.GetDefaultConfiguration ()
+                FsiEvaluationSession.Create (fsiConfig, args, stdin, evalWriter, evalWriter)
             with exn ->
                 // case: unknown option in [fsc]
                 raise (InvalidOperationException ("Cannot create a session. Ensure valid configuration syntax and data." + hiddenWriter.ToString (), exn))
 
         // load and use files
+
         use writer = new StringWriter ()
+
+        let check (result, warnings) =
+            for w in warnings do
+                writer.WriteLine (FSharpErrorInfo.strErrorFull w)
+
+            match result with
+            | Choice2Of2 exn ->
+                Exn.reraise exn
+            | _ ->
+                ()
+
         try
             for file in Array.append config.FscFiles config.FsiFiles do
-                let result, warnings = fsiSession.EvalInteractionNonThrowing (sprintf "#load @\"%s\"" file)
-                for w in warnings do writer.WriteLine (FSharpErrorInfo.strErrorFull w)
-                match result with Choice2Of2 exn -> raise exn | _ -> ()
+                fsiSession.EvalInteractionNonThrowing (sprintf "#load @\"%s\"" file)
+                |> check
 
             for file in config.UseFiles do
                 let code = File.ReadAllText file
-                let result, warnings = fsiSession.EvalInteractionNonThrowing code
-                for w in warnings do writer.WriteLine (FSharpErrorInfo.strErrorFull w)
-                match result with Choice2Of2 exn -> raise exn | _ -> ()
+                fsiSession.EvalInteractionNonThrowing code
+                |> check
+
         with exn ->
             fprintfn writer "%A" exn
 
@@ -123,6 +134,25 @@ type Session private (configFile) =
             let ses = Session path
             sessions <- ses :: sessions
             ses
+
+    /// Close affected sessions on saving configs.
+    static member OnSavingConfig path =
+        assert (path = Path.GetFullPath path)
+        for ses in sessions do
+            if String.equalsIgnoreCase ses.ConfigFile path then
+                ses.Close ()
+
+    /// Close affected sessions on saving sources.
+    static member OnSavingSource path =
+        assert (path = Path.GetFullPath path)
+        for ses in sessions do
+            let config = ses.Config
+            if
+                Seq.containsIgnoreCase path config.FscFiles ||
+                Seq.containsIgnoreCase path config.FsiFiles ||
+                Seq.containsIgnoreCase path config.UseFiles
+                then
+                    ses.Close ()
 
     /// Gets or creates the root session.
     static member DefaultSession () =

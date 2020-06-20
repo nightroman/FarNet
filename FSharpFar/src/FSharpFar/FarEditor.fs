@@ -105,6 +105,9 @@ type FarEditor () =
         editor <- sender
         if editor.MySession.IsNone then
 
+            editor.Saving.Add <| fun e ->
+                Session.OnSavingSource e.FileName
+
             editor.KeyDown.Add <| fun e ->
                 match e.Key.VirtualKeyCode with
                 | KeyCode.Tab when e.Key.Is () && not editor.SelectionExists ->
