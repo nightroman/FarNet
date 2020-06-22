@@ -1,4 +1,3 @@
-
 <#
 	NuGet package tools for Far Manager.
 	Author: Roman Kuzmin
@@ -40,7 +39,10 @@ function Install-FarPackage(
 	[string]
 	$Source = 'https://www.nuget.org/api/v2'
 )
-{try{
+{
+	trap {$PSCmdlet.ThrowTerminatingError($_)}
+	$ErrorActionPreference = 1
+
 	# web client
 	$web = New-Object -TypeName System.Net.WebClient
 	$web.UseDefaultCredentials = $true
@@ -91,7 +93,7 @@ function Install-FarPackage(
 
 	# unpack
 	Restore-FarPackage -Path:$Path -FarHome:$FarHome -Platform:$Platform -Source:$Source
-}catch{$PSCmdlet.ThrowTerminatingError($_)}}
+}
 
 <#
 .Synopsis
@@ -123,7 +125,10 @@ function Restore-FarPackage(
 	[string]
 	$Source
 )
-{try{
+{
+	trap {$PSCmdlet.ThrowTerminatingError($_)}
+	$ErrorActionPreference = 1
+
 	$Path = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($Path)
 	if (![System.IO.File]::Exists($Path)) {throw "Missing package '$Path'."}
 
@@ -203,7 +208,7 @@ function Restore-FarPackage(
 	finally {
 		$package.Close()
 	}
-}catch{$PSCmdlet.ThrowTerminatingError($_)}}
+}
 
 <#
 .Synopsis
@@ -225,7 +230,10 @@ function Update-FarPackage(
 	[ValidateSet('x64', 'x86', 'Win32', '')]
 	$Platform
 )
-{try{
+{
+	trap {$PSCmdlet.ThrowTerminatingError($_)}
+	$ErrorActionPreference = 1
+
 	$FarHome = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($FarHome)
 	Write-Host "Updating packages in '$FarHome'"
 	foreach($info in Get-Item "$FarHome\Update.*.info") {
@@ -238,7 +246,7 @@ function Update-FarPackage(
 		}
 		Install-FarPackage -Id:$Id -FarHome:$FarHome -Platform:$Platform -Version:"?$Version" -Source:$Source
 	}
-}catch{$PSCmdlet.ThrowTerminatingError($_)}}
+}
 
 <#
 .Synopsis
@@ -256,7 +264,10 @@ function Uninstall-FarPackage(
 	[string]$Id,
 	[string]$FarHome = '.'
 )
-{try{
+{
+	trap {$PSCmdlet.ThrowTerminatingError($_)}
+	$ErrorActionPreference = 1
+
 	$FarHome = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($FarHome)
 	Write-Host "Uninstalling '$Id' in '$FarHome'" -ForegroundColor Cyan
 
@@ -285,4 +296,4 @@ function Uninstall-FarPackage(
 		Remove-FarPackageEmpty $to
 	}
 	[System.IO.File]::Delete($info)
-}catch{$PSCmdlet.ThrowTerminatingError($_)}}
+}
