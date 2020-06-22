@@ -31,6 +31,7 @@
     <Compile Include="FarErrorDrawer.fs" />
     <Compile Include="Tips.fs" />
     <Compile Include="Editor.fs" />
+    <Compile Include="Watcher.fs" />
     <Compile Include="FarInteractive.fs" />
     <Compile Include="FarStdWriter.fs" />
     <Compile Include="FarCommand.fs" />

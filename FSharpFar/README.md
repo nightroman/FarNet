@@ -368,10 +368,6 @@ F# interactive is the editor session for evaluating one or more lines of code.
 Use `[ShiftEnter]` for evaluating and `[Tab]` for code completion. The output
 of evaluated code is appended to the end with the text markers `(*(` and `)*)`.
 
-Note, interactive sessions are closed automatically when you edit and save
-related configuration and source files in the same Far Manager. On editing
-these files externally you may need to reset affected sessions manually.
-
 The structure of interactive text in the editor:
 
 ```
@@ -396,6 +392,11 @@ The history list keys:
 - `[Enter]` - append code to the interactive.
 - `[Del]`, `[CtrlR]` - tidy up the history.
 - Other keys are for incremental filtering.
+
+Note, interactive sessions are closed automatically when you edit and save
+configuration and source files in the same Far Manager or projects opened by
+"Project" from the same Far Manager. On editing files externally you may need
+to reset affected sessions manually.
 
 ***
 ## Use as project

@@ -13,11 +13,17 @@ type FarTool () =
         FarInteractive(Session.DefaultSession ()).Open ()
 
     let openProjectFile () =
-        Config.generateProject (Config.defaultFile ())
+        let directoryPath = farCurrentDirectory ()
+        Watcher.add directoryPath
+
+        Config.generateProject (Config.defaultFileForDirectory directoryPath)
         |> Process.Start |> ignore
 
     let openProjectVSCode () =
-        let dir = Config.generateProject (Config.defaultFile ()) |> Path.GetDirectoryName
+        let directoryPath = farCurrentDirectory ()
+        Watcher.add directoryPath
+
+        let dir = Config.generateProject (Config.defaultFileForDirectory directoryPath) |> Path.GetDirectoryName
         try
             ProcessStartInfo ("code.cmd", "\"" + dir + "\"", WindowStyle = ProcessWindowStyle.Hidden)
             |> Process.Start |> ignore
