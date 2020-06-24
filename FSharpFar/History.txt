@@ -2,6 +2,12 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.5048
 FarNet 5.2.20
 
+= 1.10.7 =
+
+FSharp.Compiler.Service (36.0.3)
+
+Do not run scripts if session loading has critical errors.
+
 = 1.10.6 =
 
 Add watchers on starting "Project" menu commands for closing sessions

@@ -150,8 +150,18 @@ https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
 	exec { NuGet pack z\Package.nuspec -NoPackageAnalysis }
 }
 
-task Test {
+task TestAsync {
+	Start-Far "fs: //exec file=$env:FarDev\Code\FSharpFar\samples\Async\App.fsx" -ReadOnly -Title Async -Environment @{QuitFarAfterTests=1}
+}
+
+task TestSteps {
+	Start-Far "ps: Test-Far-.ps1 * -Quit" $env:FarDev\Test\FSharpFar.test -ReadOnly -Title Steps
+}
+
+task TestFsx {
 	Invoke-Build Test src\fsx\.build.ps1
 }
+
+task Test TestAsync, TestSteps, TestFsx
 
 task . Build, Clean

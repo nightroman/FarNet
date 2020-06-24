@@ -40,8 +40,9 @@ type Session private (configFile) =
     // The actual writer is changing inside it depending on eval.
     let evalWriter = new ProxyWriter (hiddenWriter)
 
-    let fsiSession, errors, config =
+    let fsiSession, errors, ok, config =
         use _progress = new Progress "Loading session..."
+        let mutable ok = true
 
         let config = Config.readFromFile configFile
         let args = [|
@@ -78,7 +79,7 @@ type Session private (configFile) =
 
         try
             for file in Array.append config.FscFiles config.FsiFiles do
-                fsiSession.EvalInteractionNonThrowing (sprintf "#load @\"%s\"" file)
+                fsiSession.EvalScriptNonThrowing file
                 |> check
 
             for file in config.UseFiles do
@@ -87,9 +88,10 @@ type Session private (configFile) =
                 |> check
 
         with exn ->
+            ok <- false
             fprintfn writer "%A" exn
 
-        fsiSession, writer.ToString (), config
+        fsiSession, writer.ToString (), ok, config
 
     // Calls the evaluation with the custom writer.
     // writer: The writer used during evaluation.
@@ -186,6 +188,9 @@ type Session private (configFile) =
 
     /// The session loading errors.
     member val Errors = errors
+
+    /// The session is OK.
+    member val Ok = ok
 
     /// Called on closing.
     member val OnClose = onClose.Publish

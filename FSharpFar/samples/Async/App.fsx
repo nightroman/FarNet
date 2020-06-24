@@ -5,6 +5,7 @@ open Test
 open FarNet
 open FarNet.FSharp
 open App
+open System
 
 /// Test the sample wizard flow.
 let testWizard = async {
@@ -76,5 +77,9 @@ async {
 
     // done
     do! job { far.UI.WriteLine (sprintf "%s %O" __SOURCE_FILE__ sw.Elapsed) }
+
+    // exit
+    if Environment.GetEnvironmentVariable "QuitFarAfterTests" = "1" then
+        far.Quit ()
 }
 |> Job.StartImmediate

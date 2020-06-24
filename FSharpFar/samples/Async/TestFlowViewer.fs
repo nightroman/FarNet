@@ -4,8 +4,10 @@ open FarNet
 open FarNet.FSharp
 open Test
 
+let fileName = __SOURCE_DIRECTORY__ + "\\" + __SOURCE_FILE__
+
 let flowNormal = async {
-    let viewer = far.CreateViewer (FileName = __SOURCE_FILE__)
+    let viewer = far.CreateViewer (FileName = fileName)
     viewer.DisableHistory <- true
     do! Job.FlowViewer viewer
 }
@@ -21,7 +23,7 @@ let flowModal = async {
     Job.StartImmediateFrom showWideDialog
 
     // viewer over the dialog
-    let viewer = far.CreateViewer (FileName = __SOURCE_FILE__)
+    let viewer = far.CreateViewer (FileName = fileName)
     viewer.DisableHistory <- true
     do! Job.FlowViewer viewer
 

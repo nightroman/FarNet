@@ -19,8 +19,9 @@ let load (editor: IEditor) =
         if ses.Errors.Length > 0 then
             writer.Write ses.Errors
 
-        // eval anyway, session errors may be warnings
-        Session.Eval (writer, fun () -> ses.EvalScript (writer, file))
+        // eval
+        if ses.Ok then
+            Session.Eval (writer, fun () -> ses.EvalScript (writer, file))
 
     showTempFile temp "F# Output"
 

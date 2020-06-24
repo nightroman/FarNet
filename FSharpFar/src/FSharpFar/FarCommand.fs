@@ -43,49 +43,57 @@ type FarCommand () =
             writeResult r
 
         | Command.Exec args ->
-            use _std = new FarStdWriter ()
+            try
+                use _std = new FarStdWriter ()
 
-            //! fs: //exec ;; TryPanelFSharp.run () // must pick up the root config
-            let ses =
-                match args.With, args.File with
-                | Some configPath, _ -> configPath
-                | _, Some filePath -> Config.defaultFileForFile filePath
-                | _ -> Config.defaultFile ()
-                |> Session.GetOrCreate
+                //! fs: //exec ;; TryPanelFSharp.run () // must pick up the root config
+                let ses =
+                    match args.With, args.File with
+                    | Some configPath, _ -> configPath
+                    | _, Some filePath -> Config.defaultFileForFile filePath
+                    | _ -> Config.defaultFile ()
+                    |> Session.GetOrCreate
 
-            let echo =
-                (lazy (echo ())).Force
+                let echo =
+                    (lazy (echo ())).Force
 
-            use writer = new StringWriter ()
-            let validate r =
-                if r.Warnings.Length > 0 || not (isNull r.Exception) then
+                use writer = new StringWriter ()
+                let validate r =
+                    if r.Warnings.Length > 0 || not (isNull r.Exception) then
+                        echo ()
+                        far.UI.Write (writer.ToString ())
+                        writeResult r
+                        false
+                    else
+                        true
+
+                // session errors first or issues may look cryptic
+                if ses.Errors.Length > 0 then
                     echo ()
-                    far.UI.Write (writer.ToString ())
-                    writeResult r
-                    false
-                else
-                    true
+                    far.UI.Write ses.Errors
 
-            // session errors first or issues may look cryptic
-            if ses.Errors.Length > 0 then
-                echo ()
-                far.UI.Write ses.Errors
+                // eval anyway, session errors may be warnings
+                let ok =
+                    if ses.Ok then
+                        match args.File with
+                        | Some file ->
+                            let r = ses.EvalScript (writer, file)
+                            validate r
+                        | None ->
+                            true
+                    else
+                        false
 
-            // eval anyway, session errors may be warnings
-            let ok =
-                match args.File with
-                | Some file ->
-                    let r = ses.EvalScript (writer, file)
-                    validate r
-                | None ->
-                    true
+                match ok, args.Code with
+                | true, Some code ->
+                    let r = ses.EvalInteraction (writer, code)
+                    validate r |> ignore
+                | _ ->
+                    ()
 
-            match ok, args.Code with
-            | true, Some code ->
-                let r = ses.EvalInteraction (writer, code)
-                validate r |> ignore
-            | _ ->
-                ()
+            with exn ->
+                // e.g. on missing file
+                far.ShowError ("fs: //exec", exn)
 
         | Command.Compile args ->
             use _progress = new Progress "Compiling..."
