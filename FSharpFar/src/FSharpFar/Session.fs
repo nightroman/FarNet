@@ -1,6 +1,7 @@
 ﻿namespace FSharpFar
 open System
 open System.IO
+open System.Diagnostics
 open FSharp.Compiler.Interactive.Shell
 open FSharp.Compiler.SourceCodeServices
 
@@ -52,6 +53,10 @@ type Session private (configFile) =
             yield! defaultCompilerArgs
             yield! config.FscArgs
             yield! config.FsiArgs
+            if Debugger.IsAttached then
+                yield "--optimize-"
+                yield "--debug:full"
+                yield "--define:DEBUG"
         |]
 
         //! collectible=true has issues

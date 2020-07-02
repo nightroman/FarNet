@@ -24,6 +24,7 @@ type FarTool () =
         Watcher.add directoryPath
 
         let dir = Config.generateProject (Config.defaultFileForDirectory directoryPath) |> Path.GetDirectoryName
+        Config.writeVSCodeSettings dir
         try
             ProcessStartInfo ("code.cmd", "\"" + dir + "\"", WindowStyle = ProcessWindowStyle.Hidden)
             |> Process.Start |> ignore

@@ -27,6 +27,46 @@ module Config =
     let readForFile path =
         Config.readFromFile (defaultFileForFile path)
 
+    let private getFarExePath () =
+        Path.Combine(Environment.GetEnvironmentVariable "FARHOME", "Far.exe")
+
+    let private textVSCodeSettings () =
+        let template = """{
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Start Far",
+        "type": "clr",
+        "request": "launch",
+        "externalConsole": true,
+        "program": "$FAR"
+      },
+      {
+        "name": "Attach Far",
+        "type": "clr",
+        "request": "attach",
+        "processName": "Far"
+      },
+      {
+        "name": "Attach process",
+        "type": "clr",
+        "request": "attach",
+        "processId": "${command:pickProcess}"
+      }
+    ]
+  }
+}"""
+        template.Replace(
+            "$FAR",
+            getFarExePath().Replace(@"\", @"\\")
+        )
+
+    /// Writes VSCode settings.json
+    let writeVSCodeSettings dir =
+        let dir2 = Directory.CreateDirectory (Path.Combine (dir, ".vscode"))
+        File.WriteAllText (Path.Combine (dir2.FullName, "settings.json"), textVSCodeSettings ())
+
     /// Makes the temp project for the specified config file.
     let generateProject configPath =
         let configRoot = Path.GetDirectoryName configPath
@@ -69,6 +109,8 @@ module Config =
             nodeItems.AppendChild node |> ignore
             node.SetAttribute ("Include", file)
 
+        addProperty "StartAction" "Program"
+        addProperty "StartProgram" (getFarExePath ())
         addProperty "TargetFramework" "net462"
         addProperty "DisableImplicitFSharpCoreReference" "true"
         addProperty "DisableImplicitSystemValueTupleReference" "true"

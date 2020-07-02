@@ -151,7 +151,7 @@ https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
 }
 
 task TestAsync {
-	Start-Far "fs: //exec file=$env:FarDev\Code\FSharpFar\samples\Async\App.fsx" -ReadOnly -Title Async -Environment @{QuitFarAfterTests=1}
+	Start-Far "fs: //exec file=$env:FarDev\Code\FSharpFar\samples\Async\App1.fsx" -ReadOnly -Title Async -Environment @{QuitFarAfterTests=1}
 }
 
 task TestSteps {
