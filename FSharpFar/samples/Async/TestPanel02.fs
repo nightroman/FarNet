@@ -17,6 +17,8 @@ let flowWaitPanelClosing = async {
     // show the returned files
     do! job { far.Message (sprintf "%A" r) }
 }
+
+[<Test>]
 let testWaitPanelClosing = async {
     Job.Start flowWaitPanelClosing
     do! Job.Wait Window.IsModulePanel
@@ -41,6 +43,8 @@ let flowWaitPanelClosed = async {
     // show OK
     do! job { far.Message "OK" }
 }
+
+[<Test>]
 let testWaitPanelClosed = async {
     Job.Start flowWaitPanelClosed
     do! Job.Wait Window.IsModulePanel
@@ -59,6 +63,8 @@ let flowOpenPanelFails = async {
     // call OpenPanel with a function not opening a panel
     do! Job.OpenPanel ignore |> Async.Ignore
 }
+
+[<Test>]
 let testOpenPanelFails = async {
     Job.Start flowOpenPanelFails
     do! Job.Wait Window.IsDialog
@@ -68,11 +74,4 @@ let testOpenPanelFails = async {
     }
     do! Job.Keys "Esc"
     do! job { Assert.NativePanel () }
-}
-
-/// Tests.
-let test = async {
-    do! testWaitPanelClosing
-    do! testWaitPanelClosed
-    do! testOpenPanelFails
 }

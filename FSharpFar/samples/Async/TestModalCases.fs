@@ -1,9 +1,9 @@
-
 module TestModalCases
+open Test
 open FarNet
 open FarNet.FSharp
-open Test
 
+[<Test>]
 let testDialogOverDialog = async {
     // dialog 1
     Job.StartImmediateFrom showWideDialog
@@ -24,6 +24,7 @@ let testDialogOverDialog = async {
     do! job { Assert.NativePanel () }
 }
 
+[<Test>]
 let testEditorOverDialog = async {
     // dialog
     Job.StartImmediate (job { far.Message "testEditorOverDialog" })
@@ -44,9 +45,4 @@ let testEditorOverDialog = async {
     do! Job.Keys "Esc"
 
     do! job { Assert.NativePanel () }
-}
-
-let test = async {
-    do! testDialogOverDialog
-    do! testEditorOverDialog
 }

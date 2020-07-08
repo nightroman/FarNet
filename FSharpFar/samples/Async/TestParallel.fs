@@ -2,12 +2,12 @@
 /// While they are working you can work too: try Esc, F12,
 /// switch to other windows, etc. To run for 10 seconds:
 ///
-/// fs: //exec ;; FarNet.FSharp.Job.Start (Parallel.flow 10.)
+/// fs: Async.Start (Parallel.flow 10.)
 ///
 /// Far API cannot be used from parallel threads directly.
 /// But F# job flows and Far synchronous jobs can do this.
 
-module Parallel
+module TestParallel
 open FarNet
 open FarNet.FSharp
 open System
@@ -50,10 +50,9 @@ let flow seconds = async {
     do! job { far.Message (String.Join (" ", results), "done") }
 }
 
-open Test
 open System.Text.RegularExpressions
 
-/// Auto test.
+[<Test>]
 let test = async {
     Async.Start (flow 1.)
     do! Job.Wait (fun () -> Window.IsDialog () && far.Dialog.[0].Text = "done")

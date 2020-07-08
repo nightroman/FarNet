@@ -1,8 +1,7 @@
-
 module TestModalEditorIssue
+open Test
 open FarNet
 open FarNet.FSharp
-open Test
 
 let flow = async {
     // dialog
@@ -16,6 +15,7 @@ let flow = async {
     Assert.Unexpected ()
 }
 
+[<Test>]
 let test = async {
     Job.StartImmediate flow
 

@@ -8,6 +8,8 @@ let flowFuncError = async {
     do! job { failwith "demo-error" }
     Assert.Unexpected ()
 }
+
+[<Test>]
 let testFuncError = async {
     Job.StartImmediate flowFuncError
     do! Job.Wait (fun () ->
@@ -23,6 +25,8 @@ let flowMacroError = async {
     do! Job.Macro "bar"
     Assert.Unexpected ()
 }
+
+[<Test>]
 let testMacroError = async {
     Job.StartImmediate flowMacroError
     do! Job.Wait (fun () ->
@@ -32,9 +36,4 @@ let testMacroError = async {
         && far.Dialog.[4].Text = "Parameter name: macro")
     do! Job.Keys "Esc"
     do! job { Assert.NativePanel () }
-}
-
-let test = async {
-    do! testFuncError
-    do! testMacroError
 }

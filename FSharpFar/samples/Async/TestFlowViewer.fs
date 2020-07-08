@@ -1,8 +1,7 @@
-
 module TestFlowViewer
+open Test
 open FarNet
 open FarNet.FSharp
-open Test
 
 let fileName = __SOURCE_DIRECTORY__ + "\\" + __SOURCE_FILE__
 
@@ -11,6 +10,8 @@ let flowNormal = async {
     viewer.DisableHistory <- true
     do! Job.FlowViewer viewer
 }
+
+[<Test>]
 let testNormal = async {
     Job.StartImmediate flowNormal
     do! job { Assert.Viewer () }
@@ -30,6 +31,8 @@ let flowModal = async {
     // OK when viewer closed
     do! job { far.Message "OK" }
 }
+
+[<Test>]
 let testModal = async {
     Job.StartImmediate flowModal
     do! job { Assert.Viewer () }
@@ -45,9 +48,4 @@ let testModal = async {
     do! Job.Keys "Esc"
 
     do! job { Assert.NativePanel () }
-}
-
-let test = async {
-    do! testNormal
-    do! testModal
 }

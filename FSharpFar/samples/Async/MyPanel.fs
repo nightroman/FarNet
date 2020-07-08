@@ -6,8 +6,8 @@ open System
 
 type MyFile (obj) =
     inherit FarFile ()
-    override __.Name with get () = sprintf "%A" obj
-    override __.Description with get () = obj.GetType().FullName
+    override __.Name = sprintf "%A" obj
+    override __.Description = obj.GetType().FullName
 
 type MyExplorer (items) =
     inherit Explorer (Guid "4c22f997-b124-490c-a2fe-2364d8d51330")

@@ -1,5 +1,7 @@
-// The sample wizard dialog flow.
-// fs: //exec ;; FarNet.FSharp.Job.Start App.flowWizard
+(*
+    The sample wizard dialog flow.
+    fs: Async.Start App.flowWizard
+*)
 
 module App
 open FarNet

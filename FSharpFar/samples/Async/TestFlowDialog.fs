@@ -1,4 +1,3 @@
-
 module TestFlowDialog
 open FarNet
 open FarNet.FSharp
@@ -26,6 +25,7 @@ let flow = async {
         do! job { far.Message "cancel" }
 }
 
+[<Test>]
 let testEmpty = async {
     Job.StartImmediate flow
     do! job { Assert.Dialog () }
@@ -48,6 +48,7 @@ let testEmpty = async {
     do! job { Assert.NativePanel () }
 }
 
+[<Test>]
 let testItem1 = async {
     Job.StartImmediate flow
     do! job { Assert.Dialog () }
@@ -61,9 +62,4 @@ let testItem1 = async {
 
     do! Job.Keys "Esc"
     do! job { Assert.NativePanel () }
-}
-
-let test = async {
-    do! testEmpty
-    do! testItem1
 }

@@ -1,9 +1,8 @@
-
 module TestFlow01
+open App
+open Test
 open FarNet
 open FarNet.FSharp
-open Test
-open App
 
 /// Similar to flowWizard but simpler + cancel + error.
 let flow = async {
@@ -31,6 +30,7 @@ let flow = async {
 }
 
 /// The full flow with one return to the editor.
+[<Test>]
 let testNo = async {
     Job.StartImmediate flow
     do! job { Assert.Editor () }
@@ -64,6 +64,7 @@ let testNo = async {
 }
 
 /// The flow is stopped by an exception.
+[<Test>]
 let testError = async {
     Job.StartImmediate flow
     do! job { Assert.Editor () }
@@ -82,6 +83,7 @@ let testError = async {
 }
 
 /// The flow is stopped by cancelling.
+[<Test>]
 let testCancel = async {
     Job.StartImmediate flow
     do! job { Assert.Editor () }
@@ -93,10 +95,4 @@ let testCancel = async {
     // Cancel -> panels
     do! Job.Keys "C"
     do! job { Assert.NativePanel () }
-}
-
-let test = async {
-    do! testNo
-    do! testCancel
-    do! testError
 }

@@ -13,10 +13,10 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Abc.fs" />
-    <Compile Include="AbcConfig.fs" />
+    <Compile Include="..\FarNet.Common\Abc.fs" />
+    <Compile Include="..\FarNet.Common\AbcConfig.fs" />
+    <Compile Include="..\FarNet.Common\Parser.fs" />
     <Compile Include="SourceText.fs" />
-    <Compile Include="Parser.fs" />
     <Compile Include="ProxyWriter.fs" />
     <Compile Include="Kit.fs" />
     <Compile Include="FarKit.fs" />

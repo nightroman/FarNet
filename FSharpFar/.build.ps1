@@ -154,14 +154,18 @@ task TestAsync {
 	Start-Far "fs: //exec file=$env:FarDev\Code\FSharpFar\samples\Async\App1.fsx" -ReadOnly -Title Async -Environment @{QuitFarAfterTests=1}
 }
 
+task TestTests {
+	Start-Far "fs: //exec file=$env:FarDev\Code\FSharpFar\samples\Testing\App1.fsx" -ReadOnly -Title Tests -Environment @{QuitFarAfterTests=1}
+}
+
 task TestSteps {
-	Start-Far "ps: Test-Far-.ps1 * -Quit" $env:FarDev\Test\FSharpFar.test -ReadOnly -Title Steps
+	Start-Far "ps: Test-Far-.ps1 * -Quit #" $env:FarDev\Test\FSharpFar.test -ReadOnly -Title Steps
 }
 
 task TestFsx {
 	Invoke-Build Test src\fsx\.build.ps1
 }
 
-task Test TestAsync, TestSteps, TestFsx
+task Test TestAsync, TestSteps, TestTests, TestFsx
 
 task . Build, Clean
