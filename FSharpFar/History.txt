@@ -2,10 +2,13 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.5048
 FarNet 5.2.20
 
+= 1.11.1 =
+
+Add the common test runner and use in samples.
+
 = 1.11.0 =
 
-Add basic test tools.
-See /samples/Testing.
+Add basic test tools. See /samples/Testing.
 
 = 1.10.8 =
 
