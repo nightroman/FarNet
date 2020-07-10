@@ -35,12 +35,17 @@ type FarCommand () =
         | Command.Code code ->
             echo ()
             use _std = new FarStdWriter ()
-            let ses = Session.DefaultSession ()
-            use writer = new StringWriter ()
-            let r = ses.EvalInteraction (writer, code)
 
-            far.UI.Write (writer.ToString ())
-            writeResult r
+            let ses = Session.DefaultSession ()
+            if ses.Errors.Length > 0 then
+                far.UI.Write (ses.Errors, ConsoleColor.Red)
+
+            if ses.Ok then
+                use writer = new StringWriter ()
+                let r = ses.EvalInteraction (writer, code)
+
+                far.UI.Write (writer.ToString ())
+                writeResult r
 
         | Command.Exec args ->
             try
