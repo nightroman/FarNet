@@ -1,5 +1,7 @@
 # Async flows in Far Manager
 
+[/samples/Testing]: https://github.com/nightroman/FarNet/tree/master/FSharpFar/samples/Testing
+
 This sample demonstrates non-blocking async flows using the following scenario:
 
 A wizard-like dialog is shown. The choices are:
@@ -31,7 +33,7 @@ start sample flows and then start testing flows. Testing flows drive the
 samples simulating user interactions and check the expected results.
 
 *App1.fsx* is the test runner.
-For more details about testing see [/samples/Testing](../Testing).
+For more details about testing see [/samples/Testing].
 
 **Files**
 
