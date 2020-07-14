@@ -82,8 +82,6 @@ task Package Markdown, {
 	# FarHome: FSharp.Core.* required here by FCS, available for F# modules
 	Copy-Item -Destination "z\tools\FarHome" @(
 		"$FarHome\FSharp.Core.dll"
-		"$FarHome\FSharp.Core.optdata"
-		"$FarHome\FSharp.Core.sigdata"
 		"$FarHome\FSharp.Core.xml"
 		"$FarHome\fsx.exe"
 		"$FarHome\fsx.exe.config"

@@ -161,6 +161,14 @@ They are used in `FSharp.Compiler.Service\src\absil`
 We do not package them.
 Is there a use case when this is a problem?
 
+### 2020-07-14 Remove FSharp.Core.optdata, FSharp.Core.sigdata
+
+Do I need to include FSharp.Core.optdata and FSharp.Core.sigdata?
+
+-- No, unless you are doing something with very old FSharp.Core.dll.
+
+From <https://fsharp.github.io/FSharp.Compiler.Service/corelib.html>
+
 ### 2020-05-24 Tempting Script.RelativePath()
 
 Kind of works.
