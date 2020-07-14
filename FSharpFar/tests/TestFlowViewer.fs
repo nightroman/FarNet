@@ -1,5 +1,4 @@
 module TestFlowViewer
-open Test
 open FarNet
 open FarNet.FSharp
 

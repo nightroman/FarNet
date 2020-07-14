@@ -1,6 +1,5 @@
 module TestFlow01
-open App
-open Test
+open Wizard
 open FarNet
 open FarNet.FSharp
 

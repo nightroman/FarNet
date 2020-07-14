@@ -1,5 +1,4 @@
 module TestPanel01
-open Test
 open FarNet
 open FarNet.FSharp
 

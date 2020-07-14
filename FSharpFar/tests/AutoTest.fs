@@ -1,5 +1,6 @@
 /// Common test helpers.
-module Test
+[<AutoOpen>]
+module AutoTest
 open FarNet
 open FarNet.FSharp
 

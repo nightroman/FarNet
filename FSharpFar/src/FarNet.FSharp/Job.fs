@@ -311,4 +311,6 @@ module JobBuilder =
             Job.From f
 
     /// Job helper: job {...} ~ Job.From (fun () -> ...)
+    /// This shortcut is designed for very primitive code blocks.
+    /// Use more effective Job.From for code with loops, try, use.
     let job = JobBuilder ()

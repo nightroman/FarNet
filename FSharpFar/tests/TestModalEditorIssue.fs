@@ -1,5 +1,4 @@
 module TestModalEditorIssue
-open Test
 open FarNet
 open FarNet.FSharp
 

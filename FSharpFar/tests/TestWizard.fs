@@ -1,6 +1,5 @@
-module TestApp
-open App
-open Test
+module TestWizard
+open Wizard
 open FarNet
 open FarNet.FSharp
 

@@ -1,5 +1,4 @@
 module TestModalCases
-open Test
 open FarNet
 open FarNet.FSharp
 

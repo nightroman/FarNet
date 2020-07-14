@@ -40,7 +40,7 @@ type Test =
                             name1 + "." + member1.Name
 
                     let invalidType () =
-                        failwithf "Test '%s': not supported type." name1
+                        failwithf "Invalid test '%s'. Valid types: unit -> unit, Async<unit>." name1
 
                     let dispose (value: obj) =
                         match value with
