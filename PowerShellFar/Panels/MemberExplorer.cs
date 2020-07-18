@@ -65,7 +65,7 @@ namespace PowerShellFar
 		}
 		/// <inheritdoc/>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public override IList<FarFile> GetFiles(GetFilesEventArgs args)
+		public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 		{
 			if (args == null) return null;
 

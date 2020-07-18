@@ -51,7 +51,7 @@ namespace PowerShellFar
 		public ScriptBlock AsGetFiles { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
 		/// <param name="args">.</param>
-		public sealed override IList<FarFile> GetFiles(GetFilesEventArgs args)
+		public sealed override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 		{
 			if (AsGetFiles == null)
 				return DoGetFiles(args);

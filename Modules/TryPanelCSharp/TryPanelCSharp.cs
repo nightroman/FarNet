@@ -16,7 +16,7 @@ namespace TryPanelCSharp
 			CanDeleteFiles = true;
 			_files.Add(new SetFile() { Name = "Add [F7]; Remove [Del]/[F8]", Description = "demo file" });
 		}
-		public override IList<FarFile> GetFiles(GetFilesEventArgs args)
+		public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 		{
 			return _files;
 		}

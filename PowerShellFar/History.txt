@@ -1,6 +1,9 @@
-NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
-Far Manager 3.0.5505
-FarNet 5.2.23
+https://www.nuget.org/packages/FarNet.PowerShellFar
+FarNet 5.3.0
+
+= 5.3.2 =
+
+Updates for FarNet 5.3.0
 
 = 5.3.1 =
 

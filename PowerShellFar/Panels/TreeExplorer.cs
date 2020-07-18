@@ -34,7 +34,7 @@ namespace PowerShellFar
 		/// <inheritdoc/>
 		protected TreeExplorer(Guid typeId) : base(typeId) { }
 		/// <inheritdoc/>
-		public override IList<FarFile> GetFiles(GetFilesEventArgs args)
+		public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 		{
 			if (args == null) return null;
 

@@ -78,7 +78,7 @@ namespace FarNet.Tools
 			return new SuperPanel(this);
 		}
 		/// <inheritdoc/>
-		public override IList<FarFile> GetFiles(GetFilesEventArgs args)
+		public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 		{
 			return _Cache;
 		}

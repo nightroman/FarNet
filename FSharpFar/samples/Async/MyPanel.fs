@@ -12,7 +12,7 @@ type MyFile (obj) =
 type MyExplorer (items) =
     inherit Explorer (Guid "4c22f997-b124-490c-a2fe-2364d8d51330")
     override __.GetFiles _ =
-        upcast (items |> Seq.map (fun x -> MyFile x :> FarFile) |> Seq.toArray)
+        items |> Seq.map MyFile |> Seq.cast
 
 type MyPanel (explorer) =
     inherit Panel (explorer)

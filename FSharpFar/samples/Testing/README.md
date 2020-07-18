@@ -30,3 +30,4 @@ Disposal is implemented as `IDisposable.Dispose()`.
 - [.fs.ini](.fs.ini) - configuration
 - [Tests.fs](Tests.fs) - demo tests
 - [App1.fsx](App1.fsx) - test runner
+- [App2.fsx](App2.fsx) - test panel

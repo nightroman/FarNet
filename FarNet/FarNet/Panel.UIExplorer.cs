@@ -18,7 +18,7 @@ namespace FarNet
 		/// Calls <see cref="FarNet.Explorer.GetFiles"/>.
 		/// </summary>
 		/// <param name="args">.</param>
-		public virtual IList<FarFile> UIGetFiles(GetFilesEventArgs args)
+		public virtual IEnumerable<FarFile> UIGetFiles(GetFilesEventArgs args)
 		{
 			return Explorer.GetFiles(args);
 		}

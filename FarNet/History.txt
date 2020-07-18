@@ -1,5 +1,9 @@
-NuGet package: https://www.nuget.org/packages/FarNet
+https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
+
+= 5.3.0 =
+
+GetFiles methods return IEnumerable instead of IList.
 
 = 5.2.24 =
 

@@ -52,7 +52,7 @@ namespace FarNet.Works.Config
 		{
 			return new SettingsPanel(this);
 		}
-		public override IList<FarFile> GetFiles(GetFilesEventArgs args)
+		public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 		{
 			return _files;
 		}

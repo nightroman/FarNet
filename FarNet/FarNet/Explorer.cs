@@ -168,16 +168,13 @@ namespace FarNet
 		/// <param name="args">.</param>
 		/// <remarks>
 		/// <para>
-		/// The method should choose the type of the result list carefully.
-		/// The caller does not make a copy, it users the result as it is.
-		/// The caller may iterate through the list many times.
-		/// The caller assumes that the list is never changed.
-		/// If this is not the case then the method has to return a copy.
-		/// But it is fine to reuse or update the same list on next calls.
+		/// If the result is not <c>IList</c> then it is enumerated once and copied.
+		/// If the result is <c>IList</c> then it may be used several times.
+		/// This list must not change until the next <c>GetFiles</c>.
 		/// </para>
 		/// <include file='doc.xml' path='doc/ExplorerModes/*'/>
 		/// </remarks>
-		public abstract IList<FarFile> GetFiles(GetFilesEventArgs args);
+		public abstract IEnumerable<FarFile> GetFiles(GetFilesEventArgs args);
 		/// <summary>
 		/// Returns a new directory explorer or null. It must not return itself.
 		/// </summary>

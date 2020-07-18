@@ -31,7 +31,7 @@ namespace FarNet.Demo
 				}
 			}
 		}
-		public override IList<FarFile> GetFiles(GetFilesEventArgs args)
+		public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 		{
 			// Return the ready file list. It never changes and this
 			// method does not have to create files again on requests.

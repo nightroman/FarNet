@@ -51,7 +51,7 @@ namespace PowerShellFar
 			return new PropertyPanel(this);
 		}
 		/// <inheritdoc/>
-		public override IList<FarFile> GetFiles(GetFilesEventArgs args)
+		public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 		{
 			var result = new List<FarFile>();
 			if (args == null) return result;

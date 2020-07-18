@@ -898,8 +898,20 @@ int Panel2::AsGetFindData(GetFindDataInfo* info)
 		// get the files
 		if (!_skipUpdateFiles)
 		{
+			// call
 			GetFilesEventArgs args(mode, Host->PageOffset, Host->PageLimit, Host->NeedsNewFiles);
-			_Files_ = Host->UIGetFiles(%args);
+			IEnumerable<FarFile^>^ files = Host->UIGetFiles(% args);
+
+			// store IList or copy IEnumerable
+			_Files_ = dynamic_cast<IList<FarFile^>^>(files);
+			if (_Files_ == nullptr)
+			{
+				List<FarFile^>^ list = gcnew List<FarFile^>();
+				for each (FarFile^ file in files)
+					list->Add(file);
+				_Files_ = list;
+			}
+
 			if (args.Result != JobResult::Done)
 				return 0;
 
@@ -914,7 +926,7 @@ int Panel2::AsGetFindData(GetFindDataInfo* info)
 		if (nItem == 0)
 		{
 			info->PanelItem = 0;
-			return true;
+			return 1;
 		}
 
 		// alloc all

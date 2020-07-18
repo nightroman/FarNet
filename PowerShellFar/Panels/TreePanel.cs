@@ -152,7 +152,7 @@ namespace PowerShellFar
 			return base.UIKeyPressed(key);
 		}
 		/// <inheritdoc/>
-		public override IList<FarFile> UIGetFiles(GetFilesEventArgs args)
+		public override IEnumerable<FarFile> UIGetFiles(GetFilesEventArgs args)
 		{
 			if (args == null) return null;
 
