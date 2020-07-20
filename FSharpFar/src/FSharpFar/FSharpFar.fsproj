@@ -33,7 +33,6 @@
     <Compile Include="Editor.fs" />
     <Compile Include="Watcher.fs" />
     <Compile Include="FarInteractive.fs" />
-    <Compile Include="FarStdWriter.fs" />
     <Compile Include="FarCommand.fs" />
     <Compile Include="FarEditor.fs" />
     <Compile Include="FarTool.fs" />

@@ -1,4 +1,4 @@
-﻿// Simple panel used by the sample wizard.
+﻿// Object panel used by the sample wizard.
 
 module MyPanel
 open FarNet
@@ -6,19 +6,15 @@ open System
 
 type MyFile (obj) =
     inherit FarFile ()
-    override __.Name = sprintf "%A" obj
-    override __.Description = obj.GetType().FullName
+    override _.Name = sprintf "%A" obj
+    override _.Description = obj.GetType().FullName
 
 type MyExplorer (items) =
     inherit Explorer (Guid "4c22f997-b124-490c-a2fe-2364d8d51330")
-    override __.GetFiles _ =
+    override _.GetFiles _ =
         items |> Seq.map MyFile |> Seq.cast
-
-type MyPanel (explorer) =
-    inherit Panel (explorer)
-    do
-        base.SortMode <- PanelSortMode.Unsorted
-        base.ViewMode <- PanelViewMode.Descriptions
+    override x.CreatePanel () =
+        Panel(x, Title="Objects", SortMode=PanelSortMode.Unsorted, ViewMode=PanelViewMode.Descriptions)
 
 let panel items =
-    MyPanel (MyExplorer items)
+    (MyExplorer items).CreatePanel()

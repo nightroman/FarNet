@@ -11,7 +11,7 @@ let isError () =
     Window.IsDialog () && far.Dialog.[0].Text = "Exception" && far.Dialog.[1].Text = "Oh"
 
 let isMyPanel () =
-    Window.IsModulePanel () && ((far.Panel :?> Panel).Title = "MyPanel")
+    Window.IsModulePanel () && ((far.Panel :?> Panel).Title = "Objects")
 
 let showWideDialog () =
     far.Message "relatively_long_text_message_for_relatively_wide_dialog"

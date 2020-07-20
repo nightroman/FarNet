@@ -1,4 +1,4 @@
-﻿module FSharpFar.FarStdWriter
+﻿namespace FarNet.FSharp.Works
 open FarNet
 open System
 open System.IO

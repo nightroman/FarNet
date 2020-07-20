@@ -1,5 +1,4 @@
 module Tests
-open FarNet
 open FarNet.FSharp
 open System
 
@@ -19,7 +18,7 @@ let testSync () =
 /// This is a typical asynchronous test, `Async<unit>` module value.
 [<Test>]
 let testAsync = async {
-    do! job { far.UI.WriteLine "in testAsync" }
+    do! job { printfn "in testAsync" }
 }
 
 /// Body of the test with parameters.
@@ -59,5 +58,5 @@ type Type1 () =
     [<Test>]
     member __.TestAsync = async {
         Assert.Equal(1, x)
-        do! job { far.UI.WriteLine(sprintf "in Type1.TestAsync x=%i" x) }
+        do! job { printfn "in Type1.TestAsync x=%i" x }
     }

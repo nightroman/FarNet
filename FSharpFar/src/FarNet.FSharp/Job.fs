@@ -58,6 +58,7 @@ type Job =
     static member From f =
         Job.FromContinuations (fun (cont, econt, _) ->
             try
+                use _std = new FarNet.FSharp.Works.FarStdWriter()
                 cont (f ())
             with exn ->
                 econt exn

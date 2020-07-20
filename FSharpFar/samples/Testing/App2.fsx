@@ -11,15 +11,15 @@ let tests = Test.GetTests(Assembly.GetExecutingAssembly())
 type TestFile (name, test) =
     inherit FarFile ()
 
-    override __.Name =
+    override _.Name =
         name
 
-    override __.Description =
+    override _.Description =
         match test with
         | Choice1Of2 func -> "sync"
         | Choice2Of2 func -> "async"
 
-    member __.Run () =
+    member _.Run () =
         match test with
         | Choice1Of2 func ->
             far.UI.ShowUserScreen()
@@ -28,16 +28,16 @@ type TestFile (name, test) =
         | Choice2Of2 func ->
             Async.Start func
 
-type TestExplorer () as this =
+type TestExplorer () =
     inherit Explorer (Guid "781a19b5-761d-4b33-a729-61682854de5b", Functions=ExplorerFunctions.OpenFile)
 
-    override __.CreatePanel () =
-        Panel(this, Title="Tests", SortMode=PanelSortMode.Unsorted, ViewMode=PanelViewMode.Descriptions)
+    override x.CreatePanel () =
+        Panel(x, Title="Tests", SortMode=PanelSortMode.Unsorted, ViewMode=PanelViewMode.Descriptions)
 
-    override __.GetFiles _ =
+    override _.GetFiles _ =
         tests |> Seq.map (fun x -> TestFile(x.Key, x.Value) :> FarFile)
 
-    override __.OpenFile args =
+    override _.OpenFile args =
         (args.File :?> TestFile).Run()
         null
 

@@ -2,7 +2,6 @@
 open FarNet
 open System
 open System.IO
-open FarStdWriter
 open FarInteractive
 
 [<ModuleCommand (Name = "FSharpFar", Prefix = "fs")>]
@@ -34,7 +33,7 @@ type FarCommand () =
 
         | Command.Code code ->
             echo ()
-            use _std = new FarStdWriter ()
+            use _std = new FarNet.FSharp.Works.FarStdWriter()
 
             let ses = Session.DefaultSession ()
             if ses.Errors.Length > 0 then
@@ -49,7 +48,7 @@ type FarCommand () =
 
         | Command.Exec args ->
             try
-                use _std = new FarStdWriter ()
+                use _std = new FarNet.FSharp.Works.FarStdWriter()
 
                 //! fs: //exec ;; TryPanelFSharp.run () // must pick up the root config
                 let ses =
