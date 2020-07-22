@@ -27,4 +27,4 @@ type BlockBuilder () =
         finally compensation ()
     member __.Using (disposable:#System.IDisposable, body) =
         try body disposable
-        finally if (not (isNull (disposable :> obj))) then disposable.Dispose ()
+        finally if (not (isNull (box disposable))) then disposable.Dispose ()

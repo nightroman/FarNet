@@ -15,6 +15,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\FarNet.Common\BlockBuilder.fs" />
+    <Compile Include="..\FarNet.Common\TraceBuilder.fs" />
     <Compile Include="Works.fs" />
     <Compile Include="Assert.fs" />
     <Compile Include="Window.fs" />

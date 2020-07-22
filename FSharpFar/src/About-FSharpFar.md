@@ -7,6 +7,28 @@
 - [FCS issue F# 4.6](https://github.com/fsharp/FSharp.Compiler.Service/issues/884)
 
 ***
+### Trace block `trace{}` vs `Trace.Line`
+
+`Trace.Line`
+
+It is slightly more verbose, both in code and output.
+
+Tuples are passed as `((x, y))`.
+Otherwise `y`  in `(x, y)` is treated as the optional parameter.
+This may or may not compile, the latter is even worse.
+This caveat is easy to forget.
+
+`trace{}`
+
+Looks good in code and output.
+
+Effective, yields are inlined.
+
+Be careful on refactoring.
+Deeper nested namespaces or modules may break inlining.
+ILSpy the generated code.
+
+***
 ### FSharp.Compiler.Service hacking
 
 The main repo - https://github.com/dotnet/fsharp
