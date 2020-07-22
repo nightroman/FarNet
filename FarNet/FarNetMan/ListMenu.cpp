@@ -1,8 +1,6 @@
 
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 #include "StdAfx.h"
 #include "ListMenu.h"
@@ -208,9 +206,7 @@ void ListMenu::MakeSizes(FarDialog^ dialog, Point size)
 	if (MaxHeight > 0 && n > MaxHeight)
 		n = MaxHeight;
 
-	// fix width
-	if (w > 127)
-		w = 127;
+	// adjust width
 	if (w < borderTextLength)
 		w = borderTextLength + 4;
 	if (w < bottomTextLength)
@@ -389,7 +385,7 @@ bool ListMenu::Show()
 	//! drop filter indexes because they are invalid on the second show if items have changed
 	_ii = nullptr;
 	_toFilter = true;
-	
+
 	// main loop
 	for(int pass = 0;; ++pass)
 	{
