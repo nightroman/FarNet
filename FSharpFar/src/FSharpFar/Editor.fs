@@ -185,7 +185,13 @@ let toggleAutoTips (editor: IEditor) =
     editor.MyAutoTips <- not editor.MyAutoTips
 
 let toggleAutoCheck (editor: IEditor) =
-    editor.MyAutoCheck <- not editor.MyAutoCheck
+    // toggle flag
+    let isAutoCheck = not editor.MyAutoCheck
+    editor.MyAutoCheck <- isAutoCheck
+
+    // drop errors
+    if not isAutoCheck then
+        editor.MyErrors <- None
 
 let fixComplete word words (ident: PartialLongName) =
     if Array.isEmpty words && ident.LastDotPos.IsNone && "__SOURCE_DIRECTORY__".StartsWith word && word.Length > 0 then

@@ -2,6 +2,10 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.5048
 FarNet 5.2.20
 
+= 1.11.4 =
+
+Amend disabling/enabling editor auto checks.
+
 = 1.11.3 =
 
 Support printf* in async jobs.

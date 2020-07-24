@@ -118,14 +118,17 @@ type FarEditor () =
                 | _ -> ()
 
             editor.Changed.Add <| fun e ->
-                // We want to keep errors visible, so that after a fixing change we see how they go.
-                // This does not work well on massive changes like copy/paste, delete many lines.
-                // So lets keep errors only when lines change.
-                if e.Kind = EditorChangeKind.LineChanged then
+                let isAutoCheck = editor.MyAutoCheck
+
+                // We want to keep errors visible, so that on typing fixes we see how errors go.
+                // This does not work well on massive changes like copy/paste, delete lines.
+                // So keep errors if just a line changes to draw them in "checking" mode.
+                if e.Kind = EditorChangeKind.LineChanged && isAutoCheck then
                     editor.MyChecking <- true
                 else
                     editor.MyErrors <- None
-                if editor.MyAutoCheck then
+
+                if isAutoCheck then
                     checkAgent.Post ()
 
             editor.MouseDoubleClick.Add postNoop
