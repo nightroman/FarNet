@@ -4,8 +4,7 @@
 
 using FarNet;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Management.Automation;
 
 namespace PowerShellFar
 {
@@ -152,9 +151,25 @@ namespace PowerShellFar
 				case "InvokeScriptArguments":
 					return new Func<string, object[], object[]>(delegate (string script, object[] arguments)
 					{
-						var r = A.InvokeCode(script, arguments);
-						return r.Select(x => x?.BaseObject).ToArray();
+						var res = A.InvokeCode(script, arguments);
+						var ret = new object[res.Count];
+						for(int i = 0; i < ret.Length; ++i)
+						{
+							var x = res[i];
+							if (x != null)
+							{
+								if (x.BaseObject is PSCustomObject ps)
+									ret[i] = x;
+								else
+									ret[i] = x.BaseObject;
+							}
+						}
+						return ret;
 					});
+
+				case "Runspace":
+					return A.Psf.Runspace;
+
 				case "Stepper":
 					return new Action<string, Action<Exception>>(delegate (string path, Action<Exception> result)
 					{

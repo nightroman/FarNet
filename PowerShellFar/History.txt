@@ -1,6 +1,12 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 FarNet 5.3.0
 
+= 5.3.3 =
+
+PowerShellFar Interop (e.g. used in FSharpFar)
+- Corrected returned objects of "InvokeScriptArguments"
+- Added "Runspace", the PowerShellFar session runspace
+
 = 5.3.2 =
 
 Updates for FarNet 5.3.0
