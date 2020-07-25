@@ -14,4 +14,4 @@
 open FarNet.FSharp
 
 // get session variables and send them to the panel
-PowerShellFar.invokeScript "$args[0] | Out-FarPanel" [| SessionVariables.getVariables () |]
+PSFar.Invoke("$args[0] | Out-FarPanel", [| SessionVariables.getVariables () |])

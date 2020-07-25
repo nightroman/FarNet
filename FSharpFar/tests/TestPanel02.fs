@@ -8,7 +8,7 @@ open FarNet.FSharp
 let flowWaitPanelClosing = async {
     // open the panel with 3 items
     let! panel = Job.OpenPanel (fun () ->
-        PowerShellFar.invokeScript "11..13 | Out-FarPanel" null |> ignore
+        PSFar.Invoke "11..13 | Out-FarPanel" |> ignore
     )
     // wait for closing with the function returning selected files
     let! r = Job.WaitPanelClosing (panel, fun _ ->
@@ -36,7 +36,7 @@ let testWaitPanelClosing = async {
 let flowWaitPanelClosed = async {
     // open the panel with 3 items
     let! panel = Job.OpenPanel (fun () ->
-        PowerShellFar.invokeScript "1..3 | Out-FarPanel" null |> ignore
+        PSFar.Invoke "1..3 | Out-FarPanel" |> ignore
     )
     // wait for closing
     do! Job.WaitPanelClosed panel

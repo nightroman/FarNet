@@ -12,7 +12,7 @@ open System.Runtime.CompilerServices
 // -- use Job.FromContinuations ... PostStep
 // -- use econt, not throw, or exn "leaks"
 
-[<Sealed>]
+[<AbstractClass; Sealed>]
 type Job =
     /// Posts the Far job for the function.
     /// f: The function invoked in the main Far thread.

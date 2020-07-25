@@ -22,7 +22,7 @@
     <Compile Include="FarStdWriter.fs" />
     <Compile Include="Job.fs" />
     <Compile Include="Test.fs" />
-    <Compile Include="PowerShellFar.fs" />
+    <Compile Include="PSFar.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FarNet">

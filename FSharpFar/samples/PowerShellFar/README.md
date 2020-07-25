@@ -1,8 +1,7 @@
-
 ## PowerShellFar
 
 You can invoke PowerShell scripts from F# using the FarNet module PowerShellFar
-and provided helper functions. The scripts are either pure PowerShell or using
+and provided helper methods. The scripts are either pure PowerShell or using
 FarNet and PowerShellFar API and tools.
 
 Here is the "Hello, World" example which shows all the required pieces, the
@@ -11,7 +10,7 @@ helper function, script, and arguments:
 ```fsharp
 open FarNet.FSharp
 
-PowerShellFar.invokeScript "$Far.Message($args[0])" [| "Hello, World!" |]
+PSFar.Invoke("$Far.Message($args[0])", [| "Hello, World!" |])
 ```
 
 ***

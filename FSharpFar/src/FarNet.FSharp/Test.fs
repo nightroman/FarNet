@@ -21,7 +21,7 @@ type TestAttribute () =
     inherit Attribute ()
 
 /// Test tools.
-[<Sealed>]
+[<AbstractClass; Sealed>]
 type Test =
     static member private GetAssemblyTests (assembly: Assembly) =
         let dic = Dictionary()

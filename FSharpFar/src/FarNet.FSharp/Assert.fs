@@ -10,7 +10,7 @@ type AssertException (message) =
 
 /// Assertion methods for testing and diagnostics.
 /// Exception messages include exact code locations.
-[<Sealed>]
+[<AbstractClass; Sealed>]
 type Assert =
     /// Fails with the specified message.
     static member Fail (message, [<CallerFilePath>]?path, [<CallerLineNumber>]?line) =

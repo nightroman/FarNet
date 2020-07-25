@@ -14,7 +14,7 @@ open FarNet.FSharp
 //
 
 // The psf object, PowerShellFar
-let psf = (PowerShellFar.invokeScript "$Psf" null).[0]
+let psf = (PSFar.Invoke "$Psf").[0]
 
 // The far object, FarNet
 let far = far
@@ -24,4 +24,4 @@ let far = far
 //
 
 #load @"..\Lib\SessionVariables.fs"
-PowerShellFar.invokeScript "$args[0] | Out-FarPanel" [| SessionVariables.getVariables () |]
+PSFar.Invoke("$args[0] | Out-FarPanel", [| SessionVariables.getVariables () |])

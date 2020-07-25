@@ -2,7 +2,7 @@ namespace FarNet.FSharp
 open FarNet
 
 /// Helper methods dealing with Far Manager windows.
-[<Sealed>]
+[<AbstractClass; Sealed>]
 type Window =
     /// Gets true if the current window is dialog.
     static member IsDialog () =
