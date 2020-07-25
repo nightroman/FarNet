@@ -16,6 +16,7 @@
   <ItemGroup>
     <Compile Include="..\FarNet.Common\Abc.fs" />
     <Compile Include="..\FarNet.Common\AbcConfig.fs" />
+    <Compile Include="..\FarNet.Common\AbcService.fs" />
     <Compile Include="..\FarNet.Common\Parser.fs" />
     <Compile Include="..\FarNet.Common\BlockBuilder.fs" />
     <Compile Include="..\FarNet.Common\TraceBuilder.fs" />

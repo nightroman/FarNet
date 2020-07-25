@@ -2,6 +2,20 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.5048
 FarNet 5.2.20
 
+= 1.12.0 =
+
+FaNet.FSharp namespace changes
+
+	Converted PowerShellFar module to PSFar static type
+	-- New property Runspace (latest PowerShellFar)
+	-- Solved conflicts on -r:PowerShellFar.dll
+	-- Renamed invokeScript to Invoke
+
+	Added experimental trace {} with printing yield.
+	Note, implicit yield is supported and handy.
+
+	Experimental auto opening of FarNet.FSharp.
+
 = 1.11.4 =
 
 Amend disabling/enabling editor auto checks.

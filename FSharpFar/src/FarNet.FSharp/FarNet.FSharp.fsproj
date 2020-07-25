@@ -14,6 +14,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\FarNet.Common\Abc.fs" />
     <Compile Include="..\FarNet.Common\BlockBuilder.fs" />
     <Compile Include="..\FarNet.Common\TraceBuilder.fs" />
     <Compile Include="Works.fs" />

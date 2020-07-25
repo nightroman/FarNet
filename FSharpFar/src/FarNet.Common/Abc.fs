@@ -1,5 +1,4 @@
-[<AutoOpen>]
-module FSharpFarAbc
+namespace FarNet.FSharp
 
-/// Interactive session settings.
-let fsi = FSharp.Compiler.Interactive.Shell.Settings.fsi
+[<assembly: AutoOpen("FarNet.FSharp")>]
+do ()
