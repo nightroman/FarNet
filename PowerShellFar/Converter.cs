@@ -126,8 +126,7 @@ namespace PowerShellFar
 		public static string ValueToLine(object value)
 		{
 			// get the base object
-			PSObject asPSObject = value as PSObject;
-			if (asPSObject != null)
+			if (value is PSObject asPSObject)
 				value = asPSObject.BaseObject;
 
 			// skip null and not linear
@@ -157,8 +156,7 @@ namespace PowerShellFar
 			if (r != null)
 				return r;
 
-			IEnumerable en = value as IEnumerable;
-			if (en != null)
+			if (value is IEnumerable en)
 			{
 				StringBuilder sb = new StringBuilder();
 				foreach (object s in en)
@@ -166,8 +164,7 @@ namespace PowerShellFar
 				return sb.ToString();
 			}
 
-			PSObject o = value as PSObject;
-			if (o != null)
+			if (value is PSObject o)
 				return ValueToText(o.BaseObject);
 
 			return null;
@@ -182,8 +179,7 @@ namespace PowerShellFar
 		{
 			try
 			{
-				string s = value as string;
-				if (s != null)
+				if (value is string s)
 				{
 					// primitive
 					switch (info.TypeNameOfValue)
@@ -221,8 +217,7 @@ namespace PowerShellFar
 						return Enum.Parse(info.Value.GetType(), s, true);
 				}
 
-				IList list = value as IList;
-				if (list != null)
+				if (value is IList list)
 				{
 					int i = 0;
 					switch (info.TypeNameOfValue)
@@ -238,7 +233,7 @@ namespace PowerShellFar
 					}
 				}
 
-				throw new RuntimeException("Invalid or not supported property type or value.");
+				throw new RuntimeException($"Cannot convert value to property type '{info.TypeNameOfValue}'.");
 			}
 			catch (ArgumentException ex)
 			{
@@ -317,16 +312,15 @@ namespace PowerShellFar
 		/// </summary>
 		public static string FormatValue(object value, int limit)
 		{
-			IEnumerable asEnumerable;
 			if (value == null || value.GetType() == typeof(DBNull))
 			{
-				return "<null>";
+				return Res.NullText;
 			}
 			else if (value.GetType() == typeof(string))
 			{
 				return (string)value;
 			}
-			else if ((asEnumerable = value as IEnumerable) != null)
+			else if (value is IEnumerable asEnumerable)
 			{
 				return FormatEnumerable(asEnumerable, limit);
 			}
@@ -352,8 +346,7 @@ namespace PowerShellFar
 			if (obj == null)
 				return null;
 
-			PSObject pso = obj as PSObject;
-			if (pso != null)
+			if (obj is PSObject pso)
 				return pso.BaseObject as T;
 			else
 				return obj as T;

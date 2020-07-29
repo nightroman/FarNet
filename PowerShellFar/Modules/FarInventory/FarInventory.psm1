@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Computer inventory tools for Far Manager.
@@ -10,16 +9,12 @@
 	Gets uninstall records from the registry.
 
 .Description
-	This function returns information similar to the "Add or remove programs"
-	Windows tool. The function normally works much faster and gets some more
-	information.
+	This function returns information similar to "Add or remove programs".
+	It normally works much faster and gets some more information.
 
-	Another way to get installed products is: Get-WmiObject Win32_Product. But
-	this command is usually slow and it returns only products installed by
-	Windows Installer.
-
-	x64 notes. 32 bit process: this function does not get installed 64 bit
-	products. 64 bit process: this function gets both 32 and 64 bit products.
+	x64 notes:
+	32 bit process: it does not get 64 bit data
+	64 bit process: it gets both 32 and 64 bit data
 #>
 function Get-Uninstall
 {
@@ -81,8 +76,8 @@ function Open-ServicePanel
 	$ComputerName = '.'
 )
 {
-	Get-WmiObject Win32_Service -ComputerName $ComputerName |
-	Out-FarPanel -HideMemberPattern '^_' @(
+	Get-CimInstance Win32_Service -ComputerName $ComputerName |
+	Out-FarPanel @(
 		'Name'
 		'DisplayName'
 		@{ Expression = 'State'; Width = 9 }
@@ -104,8 +99,8 @@ function Open-StartupCommandPanel
 	$ComputerName = '.'
 )
 {
-	Get-WmiObject Win32_StartupCommand -ComputerName $ComputerName |
-	Out-FarPanel -HideMemberPattern '^_' @(
+	Get-CimInstance Win32_StartupCommand -ComputerName $ComputerName |
+	Out-FarPanel @(
 		'Name'
 		'Command'
 		'Location'
@@ -137,8 +132,8 @@ function Open-LogicalDiskPanel
 		}
 	}
 
-	Get-WmiObject Win32_LogicalDisk -ComputerName $ComputerName |
-	Out-FarPanel -HideMemberPattern '^_' @(
+	Get-CimInstance Win32_LogicalDisk -ComputerName $ComputerName |
+	Out-FarPanel @(
 		@{ Expression = 'Name'; Width = 8 }
 		'Description'
 		@{ Name = 'FS'; Expression = 'FileSystem'; Width = 8 }
@@ -164,14 +159,14 @@ function Open-InventoryPanel
 )
 {
 	.{
-		Get-WmiObject Win32_ComputerSystem -ComputerName $ComputerName
-		Get-WmiObject Win32_Baseboard -ComputerName $ComputerName
-		Get-WmiObject Win32_BIOS -ComputerName $ComputerName
-		Get-WmiObject Win32_OperatingSystem -ComputerName $ComputerName
+		Get-CimInstance Win32_ComputerSystem -ComputerName $ComputerName
+		Get-CimInstance Win32_Baseboard -ComputerName $ComputerName
+		Get-CimInstance Win32_BIOS -ComputerName $ComputerName
+		Get-CimInstance Win32_OperatingSystem -ComputerName $ComputerName
 	} |
-	Out-FarPanel -HideMemberPattern '^_' @(
-		@{ Name = 'Class'; Expression = '__CLASS' }
+	Out-FarPanel @(
 		'Name'
+		@{ Name = 'Class'; Expression = 'CreationClassName' }
 	)
 }
 
@@ -179,15 +174,26 @@ function Open-InventoryPanel
 .Synopsis
 	Shows environment variables in a panel.
 #>
-function Open-EnvironmentPanel
-(
-	$ComputerName = '.'
-)
-{
-	Get-WmiObject Win32_Environment -ComputerName $ComputerName |
-	Out-FarPanel -HideMemberPattern '^_' @(
+function Open-EnvironmentPanel {
+	[CmdletBinding()]
+	param(
+		$ComputerName = '.',
+		[switch]$System,
+		[switch]$User
+	)
+
+	$r = Get-CimInstance Win32_Environment -ComputerName $ComputerName
+	if ($System) {
+		$r = $r | .{process{ if ($_.SystemVariable) {$_} }}
+	}
+	elseif ($User) {
+		$userName = "$([System.Environment]::UserDomainName)\$([System.Environment]::UserName)"
+		$r = $r | .{process{ if ($_.UserName -eq $userName) {$_} }}
+	}
+
+	$r | Out-FarPanel -SortMode Name @(
 		'Name'
+		if (!$System -and !$User) {'UserName'}
 		@{ Name = 'Value'; Expression = 'VariableValue' }
-		'UserName'
 	)
 }

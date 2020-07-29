@@ -63,7 +63,7 @@ namespace PowerShellFar
 			PSPropertyInfo pi = A.FindDisplayProperty(data);
 			if (pi != null)
 			{
-				file.Name = pi.Value == null ? "<null>" : pi.Value.ToString();
+				file.Name = pi.Value == null ? Res.NullText : pi.Value.ToString();
 				return;
 			}
 

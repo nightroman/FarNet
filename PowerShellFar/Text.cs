@@ -44,6 +44,7 @@ namespace PowerShellFar
 			InvokeCommands = "Invoke commands",
 			Remove = "Remove",
 			UIApply = "Apply command",
+			NullText = "<null>",
 
 			// History of main input code, general top level code
 			History = "PowerShellFar",
