@@ -105,14 +105,9 @@
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(FarNetInclude1);C:\ROM\INC;$(IncludePath);$(FarNetInclude2)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <CustomBuildStep>
-      <Command>
-      </Command>
-      <Outputs>%(Outputs)</Outputs>
-    </CustomBuildStep>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>C:\Bin\Far\x64\PluginSDK\Headers.c;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Bin\Far\Win32\PluginSDK\Headers.c;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -134,19 +129,8 @@
       <ImportLibrary>$(OutDir)FarNetMan.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
-    <PostBuildEvent>
-      <Command>PowerShell.exe -NoProfile Invoke-Build.ps1 Install $(SolutionDir).build.ps1 -Configuration $(Configuration) -Platform $(Platform)</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <CustomBuildStep>
-      <Command>
-      </Command>
-      <Outputs>%(Outputs)</Outputs>
-    </CustomBuildStep>
-    <Midl>
-      <TargetEnvironment>X64</TargetEnvironment>
-    </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>C:\Bin\Far\x64\PluginSDK\Headers.c;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -173,18 +157,10 @@
       <ImportLibrary>$(OutDir)FarNetMan.lib</ImportLibrary>
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
-    <PostBuildEvent>
-      <Command>PowerShell.exe -NoProfile Invoke-Build.ps1 Install $(SolutionDir).build.ps1 -Configuration $(Configuration) -Platform $(Platform)</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <CustomBuildStep>
-      <Command>
-      </Command>
-      <Outputs>%(Outputs)</Outputs>
-    </CustomBuildStep>
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Bin\Far\x64\PluginSDK\Headers.c;C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Bin\Far\Win32\PluginSDK\Headers.c;$(FarNetInclude1);%(AdditionalIncludeDirectories);$(FarNetInclude2)</AdditionalIncludeDirectories>
       <AdditionalUsingDirectories>%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -207,21 +183,10 @@
       <ImportLibrary>$(OutDir)FarNetMan.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
-    <PostBuildEvent>
-      <Command>PowerShell.exe -NoProfile Invoke-Build.ps1 Install $(SolutionDir).build.ps1 -Configuration $(Configuration) -Platform $(Platform)</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <CustomBuildStep>
-      <Command>
-      </Command>
-      <Outputs>%(Outputs)</Outputs>
-    </CustomBuildStep>
-    <Midl>
-      <TargetEnvironment>X64</TargetEnvironment>
-    </Midl>
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Bin\Far\x64\PluginSDK\Headers.c;C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Bin\Far\x64\PluginSDK\Headers.c;$(FarNetInclude1);%(AdditionalIncludeDirectories);$(FarNetInclude2)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -242,9 +207,6 @@
       <ImportLibrary>$(OutDir)FarNetMan.lib</ImportLibrary>
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
-    <PostBuildEvent>
-      <Command>PowerShell.exe -NoProfile Invoke-Build.ps1 Install $(SolutionDir).build.ps1 -Configuration $(Configuration) -Platform $(Platform)</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Reference Include="System">
@@ -377,4 +339,9 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ItemDefinitionGroup>
+    <PostBuildEvent>
+      <Command>ib Install $(SolutionDir)\FarNet\FarNet.build.ps1 -Platform $(Platform) -Configuration $(Configuration)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
 </Project>

@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Build script (https://github.com/nightroman/Invoke-Build)
@@ -77,18 +76,19 @@ using System.Reflection;
 # Synopsis: Build projects and PSF help.
 task Build Meta, {
 	$PlatformToolset = if ($TargetFrameworkVersion -lt 'v4') {'v90'} else {'v140'}
-	exec {
-		MSBuild @(
-			'FarNetAccord.sln'
-			'/t:FarNetMan'
-			'/verbosity:minimal'
-			"/p:Platform=$Platform"
-			"/p:Configuration=$Configuration"
-			"/p:TargetFrameworkVersion=$TargetFrameworkVersion"
-			"/p:PlatformToolset=$PlatformToolset"
-		)
-	}
-	Invoke-Build Help .\PowerShellFar\PowerShellFar.build.ps1
+
+	#! build the whole solution, i.e. FarNet, FarNetMan, PowerShellFar
+	exec { MSBuild @(
+		'FarNetAccord.sln'
+		'/verbosity:minimal'
+		"/p:FarHome=$FarHome"
+		"/p:Platform=$Platform"
+		"/p:Configuration=$Configuration"
+		"/p:TargetFrameworkVersion=$TargetFrameworkVersion"
+		"/p:PlatformToolset=$PlatformToolset"
+	)}
+
+	Invoke-Build -File PowerShellFar\PowerShellFar.build.ps1 -Task Help, BuildPowerShellFarHelp
 }
 
 # Synopsis: Build and install API docs.

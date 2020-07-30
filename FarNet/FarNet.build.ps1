@@ -83,6 +83,8 @@ task BeginPackage {
 	Set-Alias MSBuild (Resolve-MSBuild)
 	$bit = if ($Platform -eq 'Win32') {'x64'} else {'Win32'}
 	$PlatformToolset = if ($TargetFrameworkVersion -lt 'v4') {'v90'} else {'v140'}
+
+	#! build just FarNetMan, PowerShellFar is not needed and causes locked files...
 	exec {
 		MSBuild @(
 			"..\FarNetAccord.sln"
@@ -136,8 +138,7 @@ task Package BeginPackage, HelpHTM, {
 	}
 
 	# icon
-	$null = mkdir z\images
-	Copy-Item ..\Zoo\FarNetLogo.png z\images
+	Copy-Item ..\Zoo\FarNetLogo.png z
 }
 
 # Set version
@@ -170,7 +171,7 @@ https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
 		<authors>Roman Kuzmin</authors>
 		<owners>Roman Kuzmin</owners>
 		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
-		<icon>images\FarNetLogo.png</icon>
+		<icon>FarNetLogo.png</icon>
 		<license type="expression">BSD-3-Clause</license>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$text</summary>

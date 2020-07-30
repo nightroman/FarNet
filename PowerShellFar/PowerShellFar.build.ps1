@@ -1,13 +1,12 @@
-<#
+﻿<#
 .Synopsis
 	Build script (https://github.com/nightroman/Invoke-Build)
 #>
 
 param(
-	$Platform = (property Platform x64),
+	$FarHome = (property FarHome C:\Bin\Far\x64),
 	$Configuration = (property Configuration Release)
 )
-$FarHome = "C:\Bin\Far\$Platform"
 $PsfHome = "$FarHome\FarNet\Modules\PowerShellFar"
 
 task Clean {
@@ -15,7 +14,7 @@ task Clean {
 }
 
 # Install all. Run after Build.
-task Install InstallBin, InstallRes, BuildPowerShellFarHelp
+task Install InstallBin, InstallRes
 
 task Uninstall {
 	if (Test-Path $PsfHome) { Remove-Item $PsfHome -Recurse -Force }
@@ -50,11 +49,12 @@ task InstallRes {
 	exec { robocopy Modules\FarPackage $PsfHome\Modules\FarPackage /np } (0..2)
 }
 
+# Run when FarNet and PowerShellFar are installed.
 task BuildPowerShellFarHelp -Inputs {Get-Item Commands\*} -Outputs "$PsfHome\PowerShellFar.dll-Help.xml" {
 	Add-Type -Path $FarHome\FarNet\FarNet.dll
 	Add-Type -Path $FarHome\FarNet\FarNet.Settings.dll
 	Add-Type -Path $FarHome\FarNet\FarNet.Tools.dll
-	Add-Type -Path $FarHome\FarNet\Modules\PowerShellFar\PowerShellFar.dll
+	Add-Type -Path $PsfHome\PowerShellFar.dll
 	$ps = [Management.Automation.PowerShell]::Create()
 	$state = [Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
 	[PowerShellFar.Zoo]::Initialize($state)
@@ -71,18 +71,13 @@ Convert-Helps "$BuildRoot\Commands\PowerShellFar.dll-Help.ps1" "$Outputs"
 
 # Make package files
 task Package Help, {
-	$dirMain = 'z\tools\FarHome\FarNet\Modules\PowerShellFar'
-
 	remove z
-	$null = mkdir $dirMain
+	$dirMain = mkdir 'z\tools\FarHome\FarNet\Modules\PowerShellFar'
 
 	Copy-Item -Destination $dirMain About-PowerShellFar.htm, History.txt, LICENSE.txt, PowerShellFar.macro.lua
 	Copy-Item -Destination $dirMain $FarHome\FarNet\Modules\PowerShellFar\* -Recurse
 	Copy-Item -Destination $dirMain Bench -Recurse -Force
-
-	# icon
-	$null = mkdir z\images
-	Copy-Item ..\Zoo\FarNetLogo.png z\images
+	Copy-Item ..\Zoo\FarNetLogo.png z
 }
 
 # Set version
@@ -115,7 +110,7 @@ https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
 		<authors>Roman Kuzmin</authors>
 		<owners>Roman Kuzmin</owners>
 		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
-		<icon>images\FarNetLogo.png</icon>
+		<icon>FarNetLogo.png</icon>
 		<license type="expression">BSD-3-Clause</license>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$text</summary>

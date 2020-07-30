@@ -1,6 +1,14 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 FarNet 5.3.0
 
+= 5.3.4 =
+
+FarInventory module
+- Use newer Cim cmdlets instead of obsolete Wmi.
+
+TabExpansion
+- Improve for auto complete "insert first".
+
 = 5.3.3 =
 
 PowerShellFar Interop (e.g. used in FSharpFar)

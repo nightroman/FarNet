@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
+    <FarHome Condition=" '$(FarHome)' == '' ">C:\Bin\Far\x64</FarHome>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{602C5210-AF86-471A-BF19-35C0D5A71719}</ProjectGuid>
@@ -8,6 +9,11 @@
     <RootNamespace>PowerShellFar</RootNamespace>
     <AssemblyName>PowerShellFar</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartAction>Program</StartAction>
+    <StartProgram>$(FarHome)\Far.exe</StartProgram>
+    <EnableUnmanagedDebugging>true</EnableUnmanagedDebugging>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -160,8 +166,8 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <!--
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <PropertyGroup>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <PostBuildEvent>ib Install $(MSBuildProjectDirectory)\PowerShellFar.build.ps1 -FarHome $(FarHome) -Configuration $(Configuration)</PostBuildEvent>
+  </PropertyGroup>
 </Project>

@@ -1,6 +1,10 @@
 https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 5.3.2 =
+
+Minor tweaks of help and code.
+
 = 5.3.1 =
 
 Allow list menus to be wider.

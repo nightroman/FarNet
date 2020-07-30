@@ -1,13 +1,7 @@
 
 #pragma once
-
-#define WIN32_LEAN_AND_MEAN	// Exclude rarely-used stuff from Windows headers
-#define NOTEXTMETRIC // Fix pack 2 linking problem
-
-#pragma warning(push,3)
 #include <vcclr.h>
 #include "plugin.hpp"
-#pragma warning(pop)
 
 // Deny .NET
 #define Console stop_Console
@@ -52,4 +46,3 @@ extern const GUID MainGuid;
 
 #include "Log.h"
 #include "Utils.h"
-
