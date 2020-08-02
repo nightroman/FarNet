@@ -1,8 +1,6 @@
 
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 
@@ -614,32 +612,31 @@ OemClear = 254;
 	/// </summary>
 	public abstract class KeyBase
 	{
-		ControlKeyStates _ControlKeyState;
 		///
 		protected KeyBase()
 		{ }
 		/// <param name="controlKeyState">See <see cref="ControlKeyState"/></param>
 		protected KeyBase(ControlKeyStates controlKeyState)
 		{
-			_ControlKeyState = controlKeyState;
+			ControlKeyState = controlKeyState;
 		}
 		/// <summary>
 		/// Gets all control key states including special flags.
 		/// </summary>
-		public ControlKeyStates ControlKeyState { get { return _ControlKeyState; } }
+		public ControlKeyStates ControlKeyState { get; }
 		/// <summary>
 		/// Tests no Ctrl, Alt, or Shift.
 		/// </summary>
 		public bool Is()
 		{
-			return 0 == (_ControlKeyState & ControlKeyStates.CtrlAltShift);
+			return 0 == (ControlKeyState & ControlKeyStates.CtrlAltShift);
 		}
 		/// <summary>
 		/// Tests Alt state.
 		/// </summary>
 		public bool IsAlt()
 		{
-			var value = _ControlKeyState & ControlKeyStates.CtrlAltShift;
+			var value = ControlKeyState & ControlKeyStates.CtrlAltShift;
 			return value == ControlKeyStates.LeftAltPressed || value == ControlKeyStates.RightAltPressed;
 		}
 		/// <summary>
@@ -647,7 +644,7 @@ OemClear = 254;
 		/// </summary>
 		public bool IsCtrl()
 		{
-			var value = _ControlKeyState & ControlKeyStates.CtrlAltShift;
+			var value = ControlKeyState & ControlKeyStates.CtrlAltShift;
 			return value == ControlKeyStates.LeftCtrlPressed || value == ControlKeyStates.RightCtrlPressed;
 		}
 		/// <summary>
@@ -655,14 +652,14 @@ OemClear = 254;
 		/// </summary>
 		public bool IsShift()
 		{
-			return (_ControlKeyState & ControlKeyStates.CtrlAltShift) == ControlKeyStates.ShiftPressed;
+			return (ControlKeyState & ControlKeyStates.CtrlAltShift) == ControlKeyStates.ShiftPressed;
 		}
 		/// <summary>
 		/// Tests AltShift state.
 		/// </summary>
 		public bool IsAltShift()
 		{
-			var value = _ControlKeyState & ControlKeyStates.CtrlAltShift;
+			var value = ControlKeyState & ControlKeyStates.CtrlAltShift;
 			return
 				value == (ControlKeyStates.ShiftPressed | ControlKeyStates.LeftAltPressed) ||
 				value == (ControlKeyStates.ShiftPressed | ControlKeyStates.RightAltPressed);
@@ -672,7 +669,7 @@ OemClear = 254;
 		/// </summary>
 		public bool IsCtrlAlt()
 		{
-			var value = _ControlKeyState & ControlKeyStates.CtrlAltShift;
+			var value = ControlKeyState & ControlKeyStates.CtrlAltShift;
 			return
 				value == (ControlKeyStates.LeftCtrlPressed | ControlKeyStates.LeftAltPressed) ||
 				value == (ControlKeyStates.RightCtrlPressed | ControlKeyStates.RightAltPressed);
@@ -682,7 +679,7 @@ OemClear = 254;
 		/// </summary>
 		public bool IsCtrlShift()
 		{
-			var value = _ControlKeyState & ControlKeyStates.CtrlAltShift;
+			var value = ControlKeyState & ControlKeyStates.CtrlAltShift;
 			return
 				value == (ControlKeyStates.ShiftPressed | ControlKeyStates.LeftCtrlPressed) ||
 				value == (ControlKeyStates.ShiftPressed | ControlKeyStates.RightCtrlPressed);
@@ -692,26 +689,24 @@ OemClear = 254;
 		/// </summary>
 		public ControlKeyStates CtrlAltShift()
 		{
-			return _ControlKeyState & ControlKeyStates.CtrlAltShift;
+			return ControlKeyState & ControlKeyStates.CtrlAltShift;
 		}
 		/// <inheritdoc/>
 		public override bool Equals(object obj)
 		{
-			var that = obj as KeyBase;
-			return that != null &&
-				_ControlKeyState == that._ControlKeyState;
+			return obj is KeyBase that && ControlKeyState == that.ControlKeyState;
 		}
 		/// <inheritdoc/>
 		public override int GetHashCode()
 		{
-			return (int)_ControlKeyState;
+			return (int)ControlKeyState;
 		}
 		/// <summary>
 		/// Returns the string "ControlKeyState".
 		/// </summary>
 		public override string ToString()
 		{
-			return _ControlKeyState.ToString();
+			return ControlKeyState.ToString();
 		}
 	}
 
@@ -721,18 +716,17 @@ OemClear = 254;
 	public class KeyData : KeyBase
 	{
 		static readonly KeyData _Empty = new KeyData(0);
-		int _VirtualKeyCode;
 		/// <param name="virtualKeyCode">See <see cref="VirtualKeyCode"/></param>
 		public KeyData(int virtualKeyCode)
 		{
-			_VirtualKeyCode = virtualKeyCode;
+			VirtualKeyCode = virtualKeyCode;
 		}
 		/// <param name="virtualKeyCode">See <see cref="VirtualKeyCode"/></param>
 		/// <param name="controlKeyState">See <see cref="KeyBase.ControlKeyState"/></param>
 		public KeyData(int virtualKeyCode, ControlKeyStates controlKeyState)
 			: base(controlKeyState)
 		{
-			_VirtualKeyCode = virtualKeyCode;
+			VirtualKeyCode = virtualKeyCode;
 		}
 		/// <summary>
 		/// Gets the empty key instance.
@@ -741,14 +735,14 @@ OemClear = 254;
 		/// <summary>
 		/// Gets the <see cref="KeyCode"/> code.
 		/// </summary>
-		public int VirtualKeyCode { get { return _VirtualKeyCode; } }
+		public int VirtualKeyCode { get; }
 		/// <summary>
 		/// Tests a key code with no Ctrl, Alt, or Shift.
 		/// </summary>
 		/// <param name="virtualKeyCode">The key code to test.</param>
 		public bool Is(int virtualKeyCode)
 		{
-			return _VirtualKeyCode == virtualKeyCode && Is();
+			return VirtualKeyCode == virtualKeyCode && Is();
 		}
 		/// <summary>
 		/// Tests a key code with Alt.
@@ -756,7 +750,7 @@ OemClear = 254;
 		/// <param name="virtualKeyCode">The key code to test.</param>
 		public bool IsAlt(int virtualKeyCode)
 		{
-			return _VirtualKeyCode == virtualKeyCode && IsAlt();
+			return VirtualKeyCode == virtualKeyCode && IsAlt();
 		}
 		/// <summary>
 		/// Tests a key code with Ctrl.
@@ -764,7 +758,7 @@ OemClear = 254;
 		/// <param name="virtualKeyCode">The key code to test.</param>
 		public bool IsCtrl(int virtualKeyCode)
 		{
-			return _VirtualKeyCode == virtualKeyCode && IsCtrl();
+			return VirtualKeyCode == virtualKeyCode && IsCtrl();
 		}
 		/// <summary>
 		/// Tests a key code with Shift.
@@ -772,7 +766,7 @@ OemClear = 254;
 		/// <param name="virtualKeyCode">The key code to test.</param>
 		public bool IsShift(int virtualKeyCode)
 		{
-			return _VirtualKeyCode == virtualKeyCode && IsShift();
+			return VirtualKeyCode == virtualKeyCode && IsShift();
 		}
 		/// <summary>
 		/// Tests a key with AltShift.
@@ -780,7 +774,7 @@ OemClear = 254;
 		/// <param name="virtualKeyCode">The key code to test.</param>
 		public bool IsAltShift(int virtualKeyCode)
 		{
-			return _VirtualKeyCode == virtualKeyCode && IsAltShift();
+			return VirtualKeyCode == virtualKeyCode && IsAltShift();
 		}
 		/// <summary>
 		/// Tests a key with CtrlAlt.
@@ -788,7 +782,7 @@ OemClear = 254;
 		/// <param name="virtualKeyCode">The key code to test.</param>
 		public bool IsCtrlAlt(int virtualKeyCode)
 		{
-			return _VirtualKeyCode == virtualKeyCode && IsCtrlAlt();
+			return VirtualKeyCode == virtualKeyCode && IsCtrlAlt();
 		}
 		/// <summary>
 		/// Tests a key with CtrlShift.
@@ -796,20 +790,17 @@ OemClear = 254;
 		/// <param name="virtualKeyCode">The key code to test.</param>
 		public bool IsCtrlShift(int virtualKeyCode)
 		{
-			return _VirtualKeyCode == virtualKeyCode && IsCtrlShift();
+			return VirtualKeyCode == virtualKeyCode && IsCtrlShift();
 		}
 		/// <inheritdoc/>
 		public override bool Equals(object obj)
 		{
-			var that = obj as KeyData;
-			return that != null &&
-				_VirtualKeyCode == that._VirtualKeyCode &&
-				ControlKeyState == that.ControlKeyState;
+			return obj is KeyData that && VirtualKeyCode == that.VirtualKeyCode && ControlKeyState == that.ControlKeyState;
 		}
 		/// <inheritdoc/>
 		public override int GetHashCode()
 		{
-			uint num = ((uint)ControlKeyState) << 0x10 | (uint)_VirtualKeyCode;
+			uint num = ((uint)ControlKeyState) << 0x10 | (uint)VirtualKeyCode;
 			return num.GetHashCode();
 		}
 		/// <summary>
@@ -817,7 +808,7 @@ OemClear = 254;
 		/// </summary>
 		public override string ToString()
 		{
-			return "(" + ControlKeyState + ")" + _VirtualKeyCode;
+			return "(" + ControlKeyState + ")" + VirtualKeyCode;
 		}
 	}
 
@@ -826,8 +817,6 @@ OemClear = 254;
 	/// </summary>
 	public sealed class KeyInfo : KeyData
 	{
-		char _Character;
-		bool _KeyDown;
 		/// <param name="virtualKeyCode">See <see cref="KeyData.VirtualKeyCode"/></param>
 		/// <param name="character">See <see cref="Character"/></param>
 		/// <param name="controlKeyState">See <see cref="KeyBase.ControlKeyState"/></param>
@@ -835,31 +824,30 @@ OemClear = 254;
 		public KeyInfo(int virtualKeyCode, char character, ControlKeyStates controlKeyState, bool keyDown)
 			: base(virtualKeyCode, controlKeyState)
 		{
-			_Character = character;
-			_KeyDown = keyDown;
+			Character = character;
+			KeyDown = keyDown;
 		}
 		/// <summary>
 		/// Gets the character of the key.
 		/// </summary>
-		public char Character { get { return _Character; } }
+		public char Character { get; }
 		/// <summary>
 		/// Gets true for the key down event.
 		/// </summary>
-		public bool KeyDown { get { return _KeyDown; } }
+		public bool KeyDown { get; }
 		/// <inheritdoc/>
 		public override bool Equals(object obj)
 		{
-			var that = obj as KeyInfo;
-			return that != null &&
+			return obj is KeyInfo that &&
 				VirtualKeyCode == that.VirtualKeyCode &&
 				ControlKeyState == that.ControlKeyState &&
-				_Character == that._Character &&
-				_KeyDown == that._KeyDown;
+				Character == that.Character &&
+				KeyDown == that.KeyDown;
 		}
 		/// <inheritdoc/>
 		public override int GetHashCode()
 		{
-			uint num = _KeyDown ? 0x10000000u : 0;
+			uint num = KeyDown ? 0x10000000u : 0;
 			num |= ((uint)ControlKeyState) << 0x10;
 			num |= (uint)VirtualKeyCode;
 			return num.GetHashCode();
@@ -879,9 +867,6 @@ OemClear = 254;
 	public sealed class MouseInfo : KeyBase
 	{
 		Point _Where;
-		MouseAction _Action;
-		MouseButtons _Buttons;
-		int _Value;
 		/// <param name="where">Position.</param>
 		/// <param name="action">Action.</param>
 		/// <param name="buttons">Buttons.</param>
@@ -891,9 +876,9 @@ OemClear = 254;
 			: base(controls)
 		{
 			_Where = where;
-			_Buttons = buttons;
-			_Action = action;
-			_Value = value;
+			Buttons = buttons;
+			Action = action;
+			Value = value;
 		}
 		/// <summary>
 		/// Mouse positon.
@@ -902,11 +887,11 @@ OemClear = 254;
 		/// <summary>
 		/// Action.
 		/// </summary>
-		public MouseAction Action { get { return _Action; } }
+		public MouseAction Action { get; }
 		/// <summary>
 		/// Buttons.
 		/// </summary>
-		public MouseButtons Buttons { get { return _Buttons; } }
+		public MouseButtons Buttons { get; }
 		/// <summary>
 		/// Wheel value.
 		/// </summary>
@@ -914,21 +899,20 @@ OemClear = 254;
 		/// It is positive or negative depending on the wheel direction.
 		/// The value is normally 120*X but it depends on the mouse driver.
 		/// </remarks>
-		public int Value { get { return _Value; } }
+		public int Value { get; }
 		/// <inheritdoc/>
 		public override bool Equals(object obj)
 		{
-			var that = obj as MouseInfo;
-			return that != null &&
-				_Action == that._Action &&
-				_Buttons == that._Buttons &&
+			return obj is MouseInfo that &&
+				Action == that.Action &&
+				Buttons == that.Buttons &&
 				ControlKeyState == that.ControlKeyState &&
 				_Where == that._Where;
 		}
 		/// <inheritdoc/>
 		public override int GetHashCode()
 		{
-			uint num = (uint)_Action + ((uint)_Buttons << 8) + ((uint)ControlKeyState << 16);
+			uint num = (uint)Action + ((uint)Buttons << 8) + ((uint)ControlKeyState << 16);
 			return num.GetHashCode() ^ _Where.GetHashCode();
 		}
 		/// <summary>
@@ -951,8 +935,8 @@ OemClear = 254;
 	public sealed class IdledHandler
 	{
 		DateTime _Time;
-		double _Seconds;
-		EventHandler _Handler;
+		readonly double _Seconds;
+		readonly EventHandler _Handler;
 		/// <summary>
 		/// Creates a handler with a custom frequency.
 		/// </summary>

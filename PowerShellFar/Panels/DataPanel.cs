@@ -200,8 +200,10 @@ namespace PowerShellFar
 					if (string.IsNullOrEmpty(_XmlFile)) throw new RuntimeException("Table, adapter, or file is not defined.");
 
 					// dataset
-					var ds = new DataSet();
-					ds.Locale = CultureInfo.CurrentCulture; // CA
+					var ds = new DataSet
+					{
+						Locale = CultureInfo.CurrentCulture // CA
+					};
 
 					// read schema
 					if (!string.IsNullOrEmpty(XmlSchema))
@@ -221,8 +223,10 @@ namespace PowerShellFar
 				{
 					if (Adapter.SelectCommand == null) throw new RuntimeException("Adapter select command is null.");
 
-					Table = new DataTable();
-					Table.Locale = CultureInfo.CurrentCulture; // CA
+					Table = new DataTable
+					{
+						Locale = CultureInfo.CurrentCulture // CA
+					};
 				}
 			}
 
@@ -249,8 +253,10 @@ namespace PowerShellFar
 						continue;
 
 					// infer column meta data
-					Meta meta = new Meta(column.ColumnName);
-					meta.Kind = FarColumn.DefaultColumnKinds[nCollected];
+					Meta meta = new Meta(column.ColumnName)
+					{
+						Kind = FarColumn.DefaultColumnKinds[nCollected]
+					};
 					metas.Add(meta);
 					++nCollected;
 					if (nCollected >= Count)
@@ -381,8 +387,7 @@ namespace PowerShellFar
 
 			foreach (var file in args.Files)
 			{
-				var dr = file.Data as DataRow;
-				if (dr == null)
+				if (!(file.Data is DataRow dr))
 				{
 					Files.Remove(file);
 					continue;
@@ -441,8 +446,7 @@ namespace PowerShellFar
 			for (int iFile = Files.Count; --iFile >= 0; )
 			{
 				FarFile f = Files[iFile];
-				DataRow Row = f.Data as DataRow;
-				if (Row == null || Row.RowState == DataRowState.Deleted || Row.RowState == DataRowState.Detached)
+				if (!(f.Data is DataRow Row) || Row.RowState == DataRowState.Deleted || Row.RowState == DataRowState.Detached)
 				{
 					Files.RemoveAt(iFile);
 					continue;
@@ -581,12 +585,10 @@ namespace PowerShellFar
 		///
 		protected override bool CanCloseChild()
 		{
-			MemberPanel mp = Child as MemberPanel;
-			if (mp == null)
+			if (!(Child is MemberPanel mp))
 				return true;
 
-			DataRow dr = mp.Value.BaseObject as DataRow;
-			if (dr == null)
+			if (!(mp.Value.BaseObject is DataRow dr))
 				return true;
 
 			var xRowState = dr.RowState;
@@ -648,13 +650,13 @@ namespace PowerShellFar
 		}
 		void OnSort()
 		{
-			Func<IEnumerable> getWords = delegate
+			IEnumerable getWords()
 			{
 				var list = new List<string>();
 				foreach (DataColumn c in Table.Columns)
 					list.Add(c.ColumnName);
 				return list;
-			};
+			}
 
 			var ui = new UI.InputBoxEx()
 			{
@@ -678,7 +680,7 @@ namespace PowerShellFar
 		}
 		void OnFilter()
 		{
-			Func<IEnumerable> getWords = delegate
+			IEnumerable getWords()
 			{
 				var list = new List<string>();
 				foreach (DataColumn c in Table.Columns)
@@ -689,7 +691,7 @@ namespace PowerShellFar
 });
 
 				return list;
-			};
+			}
 
 			var ui = new UI.InputBoxEx()
 			{
@@ -717,8 +719,7 @@ namespace PowerShellFar
 			if (string.IsNullOrEmpty(text))
 				return;
 
-			int value;
-			if (!int.TryParse(text, out value) || value < 1)
+			if (!int.TryParse(text, out int value) || value < 1)
 			{
 				A.Message("Invalid number");
 				return;
@@ -735,8 +736,7 @@ namespace PowerShellFar
 			if (string.IsNullOrEmpty(text))
 				return;
 
-			int value;
-			if (!int.TryParse(text, out value) || value < 0)
+			if (!int.TryParse(text, out int value) || value < 0)
 			{
 				A.Message("Invalid number");
 				return;

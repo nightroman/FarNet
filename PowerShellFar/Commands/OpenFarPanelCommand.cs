@@ -21,8 +21,7 @@ namespace PowerShellFar.Commands
 				return;
 
 			// get the panel or a new member panel
-			var explorer = InputObject.BaseObject as Explorer;
-			if (explorer == null)
+			if (!(InputObject.BaseObject is Explorer explorer))
 				_Panel = (InputObject.BaseObject as Panel) ?? new MemberPanel(new MemberExplorer(InputObject));
 			else
 				_Panel = explorer.CreatePanel();

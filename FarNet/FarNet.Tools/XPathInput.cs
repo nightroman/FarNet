@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet.Tools library for FarNet
-Copyright (c) 2010 Roman Kuzmin
-*/
+// FarNet.Tools library for FarNet
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections.Generic;
@@ -41,8 +39,10 @@ namespace FarNet.Tools
 		}
 		static XPathInput Parse(string[] lines)
 		{
-			var result = new XPathInput();
-			result.Variables = new Dictionary<string, object>();
+			var result = new XPathInput
+			{
+				Variables = new Dictionary<string, object>()
+			};
 
 			var regex1 = new Regex(@"^declare\s+variable\s+\$(\w+)\s+(.*)");
 			var regex2 = new Regex(@"^external[;\s]*$");
@@ -94,8 +94,7 @@ namespace FarNet.Tools
 						continue;
 					}
 
-					double adouble;
-					if (double.TryParse(text, out adouble))
+					if (double.TryParse(text, out double adouble))
 						result.Variables.Add(name, adouble);
 					else
 						result.Variables.Add(name, text);
@@ -114,8 +113,7 @@ namespace FarNet.Tools
 				}
 				else
 				{
-					double adouble;
-					if (!double.TryParse(text, out adouble))
+					if (!double.TryParse(text, out double adouble))
 						throw new InvalidOperationException("Not supported variable value.");
 					result.Variables.Add(name, adouble);
 				}

@@ -24,7 +24,7 @@ namespace PowerShellFar
 		/// </summary>
 		public string ExcludeMemberPattern
 		{
-			get { return _ExcludeMemberRegex == null ? null : _ExcludeMemberRegex.ToString(); }
+			get { return _ExcludeMemberRegex?.ToString(); }
 			set { _ExcludeMemberRegex = new Regex(value, RegexOptions.IgnoreCase); }
 		}
 		Regex _ExcludeMemberRegex;
@@ -33,7 +33,7 @@ namespace PowerShellFar
 		/// </summary>
 		public string HideMemberPattern
 		{
-			get { return _HideMemberRegex == null ? null : _HideMemberRegex.ToString(); }
+			get { return _HideMemberRegex?.ToString(); }
 			set { _HideMemberRegex = new Regex(value, RegexOptions.IgnoreCase); }
 		}
 		Regex _HideMemberRegex;
@@ -119,8 +119,7 @@ namespace PowerShellFar
 						};
 
 						// base object
-						PSObject asPSObject = value as PSObject;
-						if (asPSObject != null)
+						if (value is PSObject asPSObject)
 							value = asPSObject.BaseObject;
 
 						// value
@@ -150,8 +149,10 @@ namespace PowerShellFar
 						code = "Get-Member -InputObject $args[0] -ErrorAction 0 -View All -Static";
 					foreach (PSObject o in A.InvokeCode(code, Value))
 					{
-						SetFile f = new SetFile();
-						f.Name = o.Properties[Word.Name].Value.ToString();
+						SetFile f = new SetFile
+						{
+							Name = o.Properties[Word.Name].Value.ToString()
+						};
 
 						PSPropertyInfo pi;
 						pi = o.Properties["MemberType"];
@@ -235,8 +236,7 @@ namespace PowerShellFar
 
 				foreach (FarFile file in args.Files)
 				{
-					PSPropertyInfo pi = file.Data as PSPropertyInfo;
-					if (pi == null)
+					if (!(file.Data is PSPropertyInfo pi))
 						continue;
 
 					Value.Properties.Remove(pi.Name);

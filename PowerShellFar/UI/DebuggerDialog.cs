@@ -15,18 +15,18 @@ namespace PowerShellFar.UI
 	{
 		static DebuggerResumeAction _LastAction = DebuggerResumeAction.StepInto;
 		public EventHandler<ButtonClickedEventArgs> OnView { get; set; }
-		InvocationInfo _InvocationInfo;
-		IDialog _Dialog;
-		IListBox _List1;
-		IListBox _List2;
-		IButton _Step;
-		IButton _Over;
-		IButton _Out;
-		IButton _Console;
-		IButton _Edit;
-		IButton _View;
-		IButton _Goto;
-		IButton _Quit;
+		readonly InvocationInfo _InvocationInfo;
+		readonly IDialog _Dialog;
+		readonly IListBox _List1;
+		readonly IListBox _List2;
+		readonly IButton _Step;
+		readonly IButton _Over;
+		readonly IButton _Out;
+		readonly IButton _Console;
+		readonly IButton _Edit;
+		readonly IButton _View;
+		readonly IButton _Goto;
+		readonly IButton _Quit;
 		public DebuggerDialog(DebuggerStopEventArgs e)
 		{
 			_InvocationInfo = e.InvocationInfo;
@@ -76,8 +76,7 @@ namespace PowerShellFar.UI
 			{
 				foreach (Breakpoint bp in e.Breakpoints)
 				{
-					CommandBreakpoint bpc = bp as CommandBreakpoint;
-					if (bpc != null && Kit.Equals(bpc.Command, Commands.AssertFarCommand.MyName))
+					if (bp is CommandBreakpoint bpc && Kit.Equals(bpc.Command, Commands.AssertFarCommand.MyName))
 						A.InvokeCode("Remove-PSBreakpoint -Breakpoint $args[0]", bpc);
 				}
 			}

@@ -15,8 +15,6 @@ namespace FarNet.Works
 	public sealed class ModuleManager : IModuleManager
 	{
 		const int idUICulture = 0;
-		// Assembly
-		string _AssemblyPath;
 		Assembly _AssemblyInstance;
 		CultureInfo _CurrentUICulture;
 		ResourceManager _ResourceManager;
@@ -29,7 +27,7 @@ namespace FarNet.Works
 		// New module manager
 		internal ModuleManager(string assemblyPath)
 		{
-			_AssemblyPath = assemblyPath;
+			AssemblyPath = assemblyPath;
 		}
 		string GetSettingsFileName(bool create)
 		{
@@ -219,7 +217,7 @@ namespace FarNet.Works
 		public Assembly LoadAssembly()
 		{
 			if (_AssemblyInstance == null)
-				_AssemblyInstance = Assembly.LoadFrom(_AssemblyPath);
+				_AssemblyInstance = Assembly.LoadFrom(AssemblyPath);
 
 			return _AssemblyInstance;
 		}
@@ -232,14 +230,11 @@ namespace FarNet.Works
 
 			return _AssemblyInstance;
 		}
-		internal string AssemblyPath
-		{
-			get { return _AssemblyPath; }
-		}
+		internal string AssemblyPath { get; }
 		internal bool CachedResources { get; set; }
 		public override string ModuleName
 		{
-			get { return Path.GetFileNameWithoutExtension(_AssemblyPath); }
+			get { return Path.GetFileNameWithoutExtension(AssemblyPath); }
 		}
 		public override CultureInfo CurrentUICulture
 		{
@@ -284,8 +279,8 @@ namespace FarNet.Works
 		{
 			if (_ResourceManager == null)
 			{
-				string baseName = Path.GetFileNameWithoutExtension(_AssemblyPath);
-				string resourceDir = Path.GetDirectoryName(_AssemblyPath);
+				string baseName = Path.GetFileNameWithoutExtension(AssemblyPath);
+				string resourceDir = Path.GetDirectoryName(AssemblyPath);
 				_ResourceManager = ResourceManager.CreateFileBasedResourceManager(baseName, resourceDir, null);
 			}
 

@@ -2,13 +2,11 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
-using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Management.Automation;
-using System.Management.Automation.Runspaces;
 using FarNet;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Management.Automation;
 
 namespace PowerShellFar
 {
@@ -58,8 +56,8 @@ namespace PowerShellFar
 
 	class FileColumnCollection : My.SimpleCollection
 	{
-		PSObject Value;
-		List<Meta> Columns;
+		readonly PSObject Value;
+		readonly List<Meta> Columns;
 		public FileColumnCollection(PSObject value, List<Meta> columns)
 		{
 			Value = value;
@@ -78,57 +76,21 @@ namespace PowerShellFar
 	class MapFile : FarFile
 	{
 		protected PSObject Value { get; private set; }
-		FileMap Map;
+		readonly FileMap Map;
 		public MapFile(PSObject value, FileMap map)
 		{
 			Value = value;
 			Map = map;
 		}
-		public override string Name
-		{
-			get { return Map.Name == null ? null : Map.Name.GetString(Value); }
-		}
-		public override string Owner
-		{
-			get { return Map.Owner == null ? null : Map.Owner.GetString(Value); }
-		}
-		public override string Description
-		{
-			get { return Map.Description == null ? null : Map.Description.GetString(Value); }
-		}
-		public override long Length
-		{
-			get { return Map.Length == null ? 0 : Map.Length.GetInt64(Value); }
-		}
-		public override DateTime CreationTime
-		{
-			get { return Map.CreationTime == null ? new DateTime() : Map.CreationTime.EvaluateDateTime(Value); }
-		}
-		public override DateTime LastWriteTime
-		{
-			get { return Map.LastWriteTime == null ? new DateTime() : Map.LastWriteTime.EvaluateDateTime(Value); }
-		}
-		public override DateTime LastAccessTime
-		{
-			get { return Map.LastAccessTime == null ? new DateTime() : Map.LastAccessTime.EvaluateDateTime(Value); }
-		}
-		public override System.Collections.ICollection Columns
-		{
-			get
-			{
-				if (Map.Columns.Count > 0)
-					return new FileColumnCollection(Value, Map.Columns);
-				else
-					return null;
-			}
-		}
-		public override object Data
-		{
-			get
-			{
-				return Value;
-			}
-		}
+		public override string Name => Map.Name?.GetString(Value);
+		public override string Owner => Map.Owner?.GetString(Value);
+		public override string Description => Map.Description?.GetString(Value);
+		public override long Length => Map.Length == null ? 0 : Map.Length.GetInt64(Value);
+		public override DateTime CreationTime => Map.CreationTime == null ? new DateTime() : Map.CreationTime.EvaluateDateTime(Value);
+		public override DateTime LastWriteTime => Map.LastWriteTime == null ? new DateTime() : Map.LastWriteTime.EvaluateDateTime(Value);
+		public override DateTime LastAccessTime => Map.LastAccessTime == null ? new DateTime() : Map.LastAccessTime.EvaluateDateTime(Value);
+		public override System.Collections.ICollection Columns => Map.Columns.Count > 0 ? new FileColumnCollection(Value, Map.Columns) : null;
+		public override object Data => Value;
 	}
 
 	/// <summary>
@@ -153,34 +115,12 @@ namespace PowerShellFar
 	sealed class SystemMapFile : MapFile
 	{
 		public SystemMapFile(PSObject value, FileMap map) : base(value, map) { }
-		public override string Name
-		{
-			get { return ((FileSystemInfo)Value.BaseObject).Name; }
-		}
-		public override DateTime CreationTime
-		{
-			get { return ((FileSystemInfo)Value.BaseObject).CreationTime; }
-		}
-		public override DateTime LastAccessTime
-		{
-			get { return ((FileSystemInfo)Value.BaseObject).LastAccessTime; }
-		}
-		public override DateTime LastWriteTime
-		{
-			get { return ((FileSystemInfo)Value.BaseObject).LastWriteTime; }
-		}
-		public override long Length
-		{
-			get
-			{
-				FileInfo file = Value.BaseObject as FileInfo;
-				return file == null ? 0 : file.Length;
-			}
-		}
-		public override FileAttributes Attributes
-		{
-			get { return ((FileSystemInfo)Value.BaseObject).Attributes; }
-		}
+		public override string Name => ((FileSystemInfo)Value.BaseObject).Name;
+		public override DateTime CreationTime => ((FileSystemInfo)Value.BaseObject).CreationTime;
+		public override DateTime LastAccessTime => ((FileSystemInfo)Value.BaseObject).LastAccessTime;
+		public override DateTime LastWriteTime => ((FileSystemInfo)Value.BaseObject).LastWriteTime;
+		public override long Length => !(Value.BaseObject is FileInfo file) ? 0 : file.Length;
+		public override FileAttributes Attributes => ((FileSystemInfo)Value.BaseObject).Attributes;
 	}
 
 }

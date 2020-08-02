@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet.Tools library for FarNet
-Copyright (c) 2010 Roman Kuzmin
-*/
+// FarNet.Tools library for FarNet
+// Copyright (c) Roman Kuzmin
 
 using System;
 using FarNet.Forms;

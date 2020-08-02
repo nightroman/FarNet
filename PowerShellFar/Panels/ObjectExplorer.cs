@@ -279,10 +279,9 @@ namespace PowerShellFar
 		}
 		static int ShowTooManyFiles(int maximumFileCount, IEnumerable enumerable)
 		{
-			ICollection collection = enumerable as ICollection;
-			string message = collection == null ?
-				string.Format(null, "There are more than {0} panel files.", maximumFileCount) :
-				string.Format(null, "There are {0} panel files, the limit is {1}.", collection.Count, maximumFileCount);
+			string message = enumerable is ICollection collection ?
+				$"There are {collection.Count} panel files, the limit is {maximumFileCount}." :
+				$"There are more than {maximumFileCount} panel files.";
 
 			return Far.Api.Message(message, "$Psf.Settings.MaximumPanelFileCount", MessageOptions.AbortRetryIgnore);
 		}

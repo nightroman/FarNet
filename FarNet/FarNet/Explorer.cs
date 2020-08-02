@@ -375,7 +375,7 @@ namespace FarNet
 		public IEqualityComparer<FarFile> FileComparer
 		{
 			get { return _FileComparer ?? (_FileComparer = new FileNameComparer()); }
-			set { if (value == null) throw new ArgumentNullException("value"); _FileComparer = value; }
+			set { _FileComparer = value ?? throw new ArgumentNullException("value"); }
 		}
 		IEqualityComparer<FarFile> _FileComparer;
 		/// <summary>

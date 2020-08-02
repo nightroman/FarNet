@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections;
@@ -11,7 +9,7 @@ namespace FarNet.Works
 {
 	public sealed class ProxyCommand : ProxyAction, IModuleCommand
 	{
-		EventHandler<ModuleCommandEventArgs> _Handler;
+		readonly EventHandler<ModuleCommandEventArgs> _Handler;
 		string _Prefix;
 		internal ProxyCommand(ModuleManager manager, EnumerableReader reader)
 			: base(manager, reader, new ModuleCommandAttribute())

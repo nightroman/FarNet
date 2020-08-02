@@ -261,14 +261,14 @@ namespace PowerShellFar
 		{
 			get
 			{
-				return _PathInfo.Drive == null ? null : _PathInfo.Drive.Name;
+				return _PathInfo.Drive?.Name;
 			}
 		}
 	}
 
 	class DataLookup
 	{
-		string[] _namePairs;
+		readonly string[] _namePairs;
 		public DataLookup(string[] namePairs)
 		{
 			_namePairs = namePairs;
@@ -276,8 +276,7 @@ namespace PowerShellFar
 		public void Invoke(object sender, OpenFileEventArgs e)
 		{
 			// lookup data panel (should be checked, user could use another)
-			DataPanel dp = sender as DataPanel;
-			if (dp == null)
+			if (!(sender is DataPanel dp))
 				throw new InvalidOperationException("Event sender is not a data panel object.");
 
 			// destination row (should be valid, checked on creation by us)
@@ -401,8 +400,7 @@ namespace My
 			if (fi != null)
 				return fi.FullName;
 
-			string path;
-			if (LanguagePrimitives.TryConvertTo<string>(value, out path))
+			if (LanguagePrimitives.TryConvertTo<string>(value, out string path))
 			{
 				// looks like a full path
 				if (path.Length > 3 && path.Substring(1, 2) == ":\\" || path.StartsWith("\\\\", StringComparison.OrdinalIgnoreCase))

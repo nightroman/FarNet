@@ -11,7 +11,7 @@ namespace PowerShellFar
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
 	class JobUI : UniformUI
 	{
-		object _lock = new object();
+		readonly object _lock = new object();
 
 		// Output writers
 		StreamWriter _writer;
@@ -80,10 +80,11 @@ namespace PowerShellFar
 				// 090831 Stopped to use Far.TempName() to avoid MT issues
 				//! NB: GetTempFileName() creates a file, so that then we append
 				_fileName = Path.GetTempFileName();
-				_writer = new StreamWriter(_fileName, true, Encoding.Unicode);
-
-				// for viewing
-				_writer.AutoFlush = true;
+				_writer = new StreamWriter(_fileName, true, Encoding.Unicode)
+				{
+					// for viewing
+					AutoFlush = true
+				};
 
 				// wrap with output
 				_output = new StreamOutputWriter(_writer);

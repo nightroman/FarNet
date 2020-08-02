@@ -10,9 +10,9 @@ namespace PowerShellFar.UI
 	class ConnectionDialog
 	{
 		const int x = 15;
-		IDialog _Dialog;
-		IEdit _ComputerName;
-		IEdit _UserName;
+		readonly IDialog _Dialog;
+		readonly IEdit _ComputerName;
+		readonly IEdit _UserName;
 
 		public string ComputerName { get { return _ComputerName.Text.TrimEnd(); } }
 

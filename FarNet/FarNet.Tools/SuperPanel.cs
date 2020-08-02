@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet.Tools library for FarNet
-Copyright (c) 2010 Roman Kuzmin
-*/
+// FarNet.Tools library for FarNet
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections.Generic;
@@ -37,8 +35,10 @@ namespace FarNet.Tools
 			CurrentLocation = Name;
 			Title = Name;
 
-			var plan = new PanelPlan();
-			plan.Columns = new FarColumn[] { new SetColumn() { Kind = "N" }, new SetColumn() { Kind = "O" } };
+			var plan = new PanelPlan
+			{
+				Columns = new FarColumn[] { new SetColumn() { Kind = "N" }, new SetColumn() { Kind = "O" } }
+			};
 			SetPlan(PanelViewMode.AlternativeFull, plan);
 			ViewMode = PanelViewMode.AlternativeFull;
 			SortMode = PanelSortMode.Unsorted;

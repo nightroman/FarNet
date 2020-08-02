@@ -89,8 +89,10 @@ namespace PowerShellFar
 		IList<object> CollectData()
 		{
 			var Files = Explorer.Cache;
-			var r = new List<object>();
-			r.Capacity = Files.Count;
+			var r = new List<object>
+			{
+				Capacity = Files.Count
+			};
 			foreach (FarFile f in Files)
 				if (f.Data != null)
 					r.Add(f.Data);

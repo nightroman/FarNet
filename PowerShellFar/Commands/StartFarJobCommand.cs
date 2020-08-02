@@ -47,7 +47,7 @@ namespace PowerShellFar.Commands
 			// new
 			Job job = new Job(
 				Command,
-				Parameters == null ? null : Parameters.BaseObject,
+				Parameters?.BaseObject,
 				Name,
 				!Hidden && !Output,
 				KeepSeconds);

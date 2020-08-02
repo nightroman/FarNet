@@ -28,11 +28,10 @@ namespace PowerShellFar
 				case "1": return true;
 			}
 
-			bool r;
-			if (bool.TryParse(value, out r))
+			if (bool.TryParse(value, out bool r))
 				return r;
 
-			throw new RuntimeException("Cannot convert string '" + value + "' to System.Boolean");
+			throw new RuntimeException($"Cannot convert string '{value}' to System.Boolean");
 		}
 
 		/// <summary>
@@ -45,8 +44,10 @@ namespace PowerShellFar
 				return true;
 
 			// some more
-			if (type == typeof(decimal)) return true;
-			if (type == typeof(string)) return true;
+			if (type == typeof(decimal))
+				return true;
+			if (type == typeof(string))
+				return true;
 
 			return false;
 		}
@@ -134,9 +135,8 @@ namespace PowerShellFar
 				return null;
 
 			// format date
-			if (value is DateTime)
+			if (value is DateTime dt)
 			{
-				DateTime dt = (DateTime)value;
 				if (dt.Hour != 0 || dt.Minute != 0 || dt.Second != 0)
 					return dt.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture);
 				else
@@ -259,15 +259,14 @@ namespace PowerShellFar
 		/// <exception cref="ArgumentException">Property is not found.</exception>
 		public static void SetProperties(object target, System.Collections.IDictionary dictionary, bool strict)
 		{
-			PSObject value = PSObject.AsPSObject(target);
+			var value = PSObject.AsPSObject(target);
 			foreach (DictionaryEntry kv in dictionary)
 			{
-				PSPropertyInfo pi = value.Properties[kv.Key.ToString()];
+				var pi = value.Properties[kv.Key.ToString()];
 				if (pi != null)
 					pi.Value = kv.Value;
 				else if (strict)
-					throw new ArgumentException(
-						"Cannot set properties from the dictionary: the key '" + kv.Key + "' is not a target property name.");
+					throw new ArgumentException($"Cannot set properties from dictionary: the key '{kv.Key}' is not a target property name.");
 			}
 		}
 
@@ -279,7 +278,7 @@ namespace PowerShellFar
 			// see Microsoft.PowerShell.Commands.Internal.Format.PSObjectHelper.SmartToString()
 			// we use much simpler version
 
-			IEnumerator it = value.GetEnumerator();
+			var it = value.GetEnumerator();
 			string result = "{";
 			int count = 0;
 			while (count < limit)

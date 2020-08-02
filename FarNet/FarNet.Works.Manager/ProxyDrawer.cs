@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections;
@@ -54,30 +52,17 @@ namespace FarNet.Works
 			data.Add(Attribute.Mask);
 			data.Add(Attribute.Priority);
 		}
-		new ModuleDrawerAttribute Attribute
-		{
-			get { return (ModuleDrawerAttribute)base.Attribute; }
-		}
-		public override ModuleItemKind Kind
-		{
-			get { return ModuleItemKind.Drawer; }
-		}
+		new ModuleDrawerAttribute Attribute => (ModuleDrawerAttribute)base.Attribute;
+		public override ModuleItemKind Kind => ModuleItemKind.Drawer;
 		public string Mask
 		{
 			get { return _Mask; }
-			set
-			{
-				if (value == null) throw new ArgumentNullException("value");
-				_Mask = value;
-			}
+			set { _Mask = value ?? throw new ArgumentNullException("value"); }
 		}
 		public int Priority
 		{
 			get { return _Priority; }
-			set
-			{
-				_Priority = value;
-			}
+			set { _Priority = value; }
 		}
 		void Init()
 		{

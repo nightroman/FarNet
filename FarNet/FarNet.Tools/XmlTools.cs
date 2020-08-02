@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet.Tools library for FarNet
-Copyright (c) 2010 Roman Kuzmin
-*/
+// FarNet.Tools library for FarNet
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections.Generic;
@@ -19,7 +17,7 @@ namespace FarNet.Tools
 	/// </summary>
 	class XsltContextVariable : IXsltContextVariable
 	{
-		object _value;
+		readonly object _value;
 		/// <summary>
 		/// Initializes a new instance of the class.
 		/// </summary>
@@ -29,19 +27,19 @@ namespace FarNet.Tools
 			_value = value;
 
 			if (value is String)
-				_type = XPathResultType.String;
+				VariableType = XPathResultType.String;
 			else if (value is bool)
-				_type = XPathResultType.Boolean;
+				VariableType = XPathResultType.Boolean;
 			else if (value is XPathNavigator)
-				_type = XPathResultType.Navigator;
+				VariableType = XPathResultType.Navigator;
 			else if (value is XPathNodeIterator)
-				_type = XPathResultType.NodeSet;
+				VariableType = XPathResultType.NodeSet;
 			else
 			{
 				// Try to convert to double (native XPath numeric type)
 				if (value is double)
 				{
-					_type = XPathResultType.Number;
+					VariableType = XPathResultType.Number;
 				}
 				else
 				{
@@ -51,29 +49,26 @@ namespace FarNet.Tools
 						{
 							_value = Convert.ToDouble(value, CultureInfo.InvariantCulture);
 							// We suceeded, so it's a number.
-							_type = XPathResultType.Number;
+							VariableType = XPathResultType.Number;
 						}
 						catch (FormatException)
 						{
-							_type = XPathResultType.Any;
+							VariableType = XPathResultType.Any;
 						}
 						catch (OverflowException)
 						{
-							_type = XPathResultType.Any;
+							VariableType = XPathResultType.Any;
 						}
 					}
 					else
 					{
-						_type = XPathResultType.Any;
+						VariableType = XPathResultType.Any;
 					}
 				}
 			}
 		}
-		public XPathResultType VariableType
-		{
-			get { return _type; }
-		}
-		XPathResultType _type;
+		public XPathResultType VariableType { get; }
+
 		public object Evaluate(XsltContext context)
 		{
 			return _value;
@@ -104,12 +99,10 @@ namespace FarNet.Tools
 	{
 		public static string ArgumentToString(object value)
 		{
-			string text = value as string;
-			if (text != null)
+			if (value is string text)
 				return text;
 
-			var iter = value as XPathNodeIterator;
-			if (iter == null)
+			if (!(value is XPathNodeIterator iter))
 				throw new InvalidOperationException("Cannot convert to string.");
 
 			if (!iter.MoveNext())
@@ -207,10 +200,9 @@ namespace FarNet.Tools
 		Dictionary<string, XsltContextVariable> _variables;
 		public override IXsltContextVariable ResolveVariable(string prefix, string name)
 		{
-			XsltContextVariable variable;
 			if (!string.IsNullOrEmpty(prefix))
 				return null;
-			else if (_variables.TryGetValue(name, out variable))
+			else if (_variables.TryGetValue(name, out XsltContextVariable variable))
 				return variable;
 			else
 				return null;

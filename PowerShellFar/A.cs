@@ -17,7 +17,7 @@ namespace PowerShellFar
 	static class A
 	{
 		/// <summary>PowerShellFar actor.</summary>
-		public static Actor Psf { get { return _Psf_; } }
+		public static Actor Psf => _Psf_;
 		static Actor _Psf_;
 		public static void Connect(Actor psf)
 		{
@@ -95,8 +95,7 @@ namespace PowerShellFar
 			writer.WriteLine(ex.GetType().Name + ":");
 			writer.WriteLine(ex.Message);
 
-			RuntimeException asRuntimeException = ex as RuntimeException;
-			if (asRuntimeException != null && asRuntimeException.ErrorRecord != null && asRuntimeException.ErrorRecord.InvocationInfo != null)
+			if (ex is RuntimeException asRuntimeException && asRuntimeException.ErrorRecord != null && asRuntimeException.ErrorRecord.InvocationInfo != null)
 				writer.WriteLine(Kit.PositionMessage(asRuntimeException.ErrorRecord.InvocationInfo.PositionMessage));
 		}
 		/// <summary>
@@ -140,9 +139,8 @@ namespace PowerShellFar
 		/// <param name="ex">Exception.</param>
 		public static void OutReason(PowerShell ps, Exception ex)
 		{
-			RuntimeException asRuntimeException = ex as RuntimeException;
 			object error;
-			if (asRuntimeException == null)
+			if (!(ex is RuntimeException asRuntimeException))
 				error = ex;
 			else
 				error = asRuntimeException.ErrorRecord;
@@ -188,30 +186,20 @@ namespace PowerShellFar
 		/// <remarks>
 		/// "Out-Host" is not suitable for apps with interaction, e.g. more.com, git.exe.
 		/// </remarks>
-		public static Command OutDefaultCommand
+		public static Command OutDefaultCommand => new Command("Out-Default")
 		{
-			get
-			{
-				var command = new Command("Out-Default");
-				command.MergeUnclaimedPreviousCommandResults = PipelineResultTypes.Output | PipelineResultTypes.Error;
-				return command;
-			}
-		}
+			MergeUnclaimedPreviousCommandResults = PipelineResultTypes.Output | PipelineResultTypes.Error
+		};
 		/// <summary>
 		/// Command for formatted output of everything.
 		/// </summary>
 		/// <remarks>
 		/// "Out-Default" is not suitable for external apps, output goes to console.
 		/// </remarks>
-		public static Command OutHostCommand
+		public static Command OutHostCommand => new Command("Out-Host")
 		{
-			get
-			{
-				var command = new Command("Out-Host");
-				command.MergeUnclaimedPreviousCommandResults = PipelineResultTypes.Output | PipelineResultTypes.Error;
-				return command;
-			}
-		}
+			MergeUnclaimedPreviousCommandResults = PipelineResultTypes.Output | PipelineResultTypes.Error
+		};
 		/// <summary>
 		/// Finds heuristically a property to be used to display the object.
 		/// </summary>
@@ -329,8 +317,7 @@ namespace PowerShellFar
 			}
 			else
 			{
-				TableControl result;
-				if (_CacheTableControl.TryGetValue(cacheKey, out result))
+				if (_CacheTableControl.TryGetValue(cacheKey, out TableControl result))
 					return result;
 			}
 
@@ -342,8 +329,7 @@ namespace PowerShellFar
 				{
 					if (string.IsNullOrEmpty(tableName) || string.Equals(tableName, viewDef.Name, StringComparison.OrdinalIgnoreCase))
 					{
-						TableControl table = viewDef.Control as TableControl;
-						if (table != null)
+						if (viewDef.Control is TableControl table)
 						{
 							// cache and return the table
 							_CacheTableControl.Add(cacheKey, table);
@@ -520,8 +506,10 @@ namespace PowerShellFar
 		/// </summary>
 		internal static List<string> FileNameList(IList<FarFile> files)
 		{
-			var r = new List<string>();
-			r.Capacity = files.Count;
+			var r = new List<string>
+			{
+				Capacity = files.Count
+			};
 			foreach (FarFile f in files)
 				r.Add(f.Name);
 			return r;

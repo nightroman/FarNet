@@ -1,8 +1,6 @@
 
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections;
@@ -362,8 +360,7 @@ namespace FarNet
 		/// <param name="file">The base file.</param>
 		public WrapFile(FarFile file)
 		{
-			if (file == null) throw new ArgumentNullException("file");
-			_File = file;
+			_File = file ?? throw new ArgumentNullException("file");
 		}
 		/// <summary>
 		/// Gets the base file.
@@ -448,8 +445,7 @@ namespace FarNet
 		/// <param name="comparer">The string comparer.</param>
 		public FileNameComparer(StringComparer comparer)
 		{
-			if (comparer == null) throw new ArgumentNullException("comparer");
-			_comparer = comparer;
+			_comparer = comparer ?? throw new ArgumentNullException("comparer");
 		}
 		/// <inheritdoc/>
 		public override bool Equals(FarFile x, FarFile y)

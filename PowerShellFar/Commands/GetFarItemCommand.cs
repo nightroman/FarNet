@@ -17,8 +17,7 @@ namespace PowerShellFar.Commands
 				return;
 
 			// case: PSF panel
-			var ap = panel as AnyPanel;
-			if (ap != null)
+			if (panel is AnyPanel ap)
 			{
 				IEnumerable<PSObject> items;
 				if (All)

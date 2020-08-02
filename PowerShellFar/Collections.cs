@@ -19,7 +19,7 @@ namespace My
 	abstract class Enumerator<T, S> : IEnumerator<T>
 	{
 		protected IEnumerator<S> _enumerator;
-		protected T _current = default(T);
+		protected T _current = default;
 
 		public Enumerator(IEnumerable<S> enumerable)
 		{

@@ -1,8 +1,6 @@
 
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 
@@ -16,16 +14,12 @@ namespace FarNet.Forms
 		/// <param name="control">Control involved into this event or null.</param>
 		public AnyEventArgs(IControl control)
 		{
-			_control = control;
+			Control = control;
 		}
 		/// <summary>
 		/// Event's control or null. See the constructor for details.
 		/// </summary>
-		public IControl Control
-		{
-			get { return _control; }
-		}
-		IControl _control;
+		public IControl Control { get; }
 	}
 
 	/// <summary>
@@ -174,7 +168,7 @@ namespace FarNet.Forms
 		public ButtonClickedEventArgs(IControl button, int selected)
 			: base(button)
 		{
-			_selected = selected;
+			Selected = selected;
 		}
 		/// <summary>
 		/// Selected state:
@@ -182,11 +176,7 @@ namespace FarNet.Forms
 		/// <see cref="ICheckBox"/>: 0 (unchecked), 1 (checked) and 2 (undefined for ThreeState);
 		/// <see cref="IRadioButton"/>: 0 - for the previous element in the group, 1 - for the active element in the group.
 		/// </summary>
-		public int Selected
-		{
-			get { return _selected; }
-		}
-		int _selected;
+		public int Selected { get; }
 		/// <summary>
 		/// The message has been handled and it should not be processed by the kernel.
 		/// </summary>
@@ -203,16 +193,12 @@ namespace FarNet.Forms
 		public TextChangedEventArgs(IControl edit, string text)
 			: base(edit)
 		{
-			_text = text;
+			Text = text;
 		}
 		/// <summary>
 		/// New text.
 		/// </summary>
-		public string Text
-		{
-			get { return _text; }
-		}
-		string _text;
+		public string Text { get; }
 		/// <summary>
 		/// Ignore changes.
 		/// </summary>
@@ -229,16 +215,12 @@ namespace FarNet.Forms
 		public KeyPressedEventArgs(IControl control, KeyInfo key)
 			: base(control)
 		{
-			_key = key;
+			Key = key;
 		}
 		/// <summary>
 		/// The key.
 		/// </summary>
-		public KeyInfo Key
-		{
-			get { return _key; }
-		}
-		KeyInfo _key;
+		public KeyInfo Key { get; }
 		/// <summary>
 		/// Ignore further processing.
 		/// </summary>

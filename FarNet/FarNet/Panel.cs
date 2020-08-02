@@ -751,8 +751,7 @@ namespace FarNet
 		{
 			try
 			{
-				if (Closed != null)
-					Closed(this, null);
+				Closed?.Invoke(this, null);
 			}
 			finally
 			{
@@ -783,8 +782,7 @@ namespace FarNet
 		/// </remarks>
 		public virtual void UIClosing(PanelEventArgs e) //_090321_165608
 		{
-			if (Closing != null)
-				Closing(this, e);
+			Closing?.Invoke(this, e);
 		}
 		/// <summary>
 		/// Called on invoking a command from the command line.
@@ -821,8 +819,7 @@ namespace FarNet
 		/// </remarks>
 		public virtual void UIUpdateInfo()
 		{
-			if (UpdateInfo != null)
-				UpdateInfo(this, null);
+			UpdateInfo?.Invoke(this, null);
 		}
 		/// <summary>
 		/// Called by <see cref="UICtrlBreak"/>.
@@ -839,8 +836,7 @@ namespace FarNet
 		/// </remarks>
 		public virtual void UICtrlBreak()
 		{
-			if (CtrlBreak != null)
-				CtrlBreak(this, null);
+			CtrlBreak?.Invoke(this, null);
 		}
 		/// <summary>
 		/// Called by <see cref="UIRedrawing"/>.
@@ -858,8 +854,7 @@ namespace FarNet
 		/// </remarks>
 		public virtual void UIRedrawing(PanelEventArgs e)
 		{
-			if (Redrawing != null)
-				Redrawing(this, e);
+			Redrawing?.Invoke(this, e);
 		}
 		/// <summary>
 		/// Called by <see cref="UIViewChanged"/>.
@@ -874,8 +869,7 @@ namespace FarNet
 		/// </remarks>
 		public void UIViewChanged(ViewChangedEventArgs e)
 		{
-			if (ViewChanged != null)
-				ViewChanged(this, e);
+			ViewChanged?.Invoke(this, e);
 		}
 		/// <summary>
 		/// Called by <see cref="UIGotFocus"/>.
@@ -889,8 +883,7 @@ namespace FarNet
 		/// </remarks>
 		public virtual void UIGotFocus()
 		{
-			if (GotFocus != null)
-				GotFocus(this, null);
+			GotFocus?.Invoke(this, null);
 		}
 		/// <summary>
 		/// Called by <see cref="UILosingFocus"/>.
@@ -904,8 +897,7 @@ namespace FarNet
 		/// </remarks>
 		public virtual void UILosingFocus()
 		{
-			if (LosingFocus != null)
-				LosingFocus(this, null);
+			LosingFocus?.Invoke(this, null);
 		}
 		#endregion
 		#region Other Info

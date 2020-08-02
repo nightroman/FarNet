@@ -51,11 +51,12 @@ namespace PowerShellFar.Commands
 			// system file
 			if (File != null)
 			{
-				var ff = new SetFile(File, FullName);
-
-				ff.Description = Description;
-				ff.Owner = Owner;
-				ff.Columns = Columns;
+				var ff = new SetFile(File, FullName)
+				{
+					Description = Description,
+					Owner = Owner,
+					Columns = Columns
+				};
 				if (Data == null)
 					ff.Data = File;
 				else

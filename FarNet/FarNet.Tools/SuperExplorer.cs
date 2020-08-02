@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet.Tools library for FarNet
-Copyright (c) 2010 Roman Kuzmin
-*/
+// FarNet.Tools library for FarNet
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections.Generic;
@@ -116,11 +114,10 @@ namespace FarNet.Tools
 
 			foreach (var file in args.Files)
 			{
-				var xfile = file as SuperFile;
-				if (xfile == null)
-					Cache.Add(new SuperFile(args.Explorer, file));
-				else
+				if (file is SuperFile xfile)
 					Cache.Add(xfile);
+				else
+					Cache.Add(new SuperFile(args.Explorer, file));
 			}
 		}
 		/// <inheritdoc/>
@@ -191,15 +188,13 @@ namespace FarNet.Tools
 				if (function != ExplorerFunctions.None && 0 == (file.Explorer.Functions & function))
 					continue;
 
-				Dictionary<Explorer, List<SuperFile>> dicExplorer;
-				if (!result.TryGetValue(file.Explorer.TypeId, out dicExplorer))
+				if (!result.TryGetValue(file.Explorer.TypeId, out Dictionary<Explorer, List<SuperFile>> dicExplorer))
 				{
 					dicExplorer = new Dictionary<Explorer, List<SuperFile>>();
 					result.Add(file.Explorer.TypeId, dicExplorer);
 				}
 
-				List<SuperFile> efiles;
-				if (!dicExplorer.TryGetValue(file.Explorer, out efiles))
+				if (!dicExplorer.TryGetValue(file.Explorer, out List<SuperFile> efiles))
 				{
 					efiles = new List<SuperFile>();
 					dicExplorer.Add(file.Explorer, efiles);
@@ -237,8 +232,10 @@ namespace FarNet.Tools
 
 					// accept, mind co-data
 					Log.Source.TraceInformation("AcceptFiles Count='{0}' Location='{1}'", filesToAccept.Count, explorer.Location);
-					var argsAccept = new AcceptFilesEventArgs(ExplorerModes.None, filesToAccept, move, explorer);
-					argsAccept.Data = codata;
+					var argsAccept = new AcceptFilesEventArgs(ExplorerModes.None, filesToAccept, move, explorer)
+					{
+						Data = codata
+					};
 					target.UIAcceptFiles(argsAccept);
 					codata = argsAccept.Data;
 
@@ -327,8 +324,10 @@ namespace FarNet.Tools
 
 			// delete, mind co-data
 			Log.Source.TraceInformation("DeleteFiles Count='{0}' Location='{1}'", efilesToDelete.Count, explorer.Location);
-			var argsDelete = new DeleteFilesEventArgs(mode, efilesToDelete, force);
-			argsDelete.Data = codata;
+			var argsDelete = new DeleteFilesEventArgs(mode, efilesToDelete, force)
+			{
+				Data = codata
+			};
 			explorer.DeleteFiles(argsDelete);
 			codata = argsDelete.Data;
 
@@ -420,8 +419,10 @@ namespace FarNet.Tools
 
 					// export, mind co-data
 					Log.Source.TraceInformation("ExportFiles Count='{0}' Location='{1}' DirectoryName='{2}'", filesToExport.Count, explorer.Location, args.DirectoryName);
-					var argsExport = new ExportFilesEventArgs(ExplorerModes.None, filesToExport, args.Move, args.DirectoryName);
-					argsExport.Data = codata;
+					var argsExport = new ExportFilesEventArgs(ExplorerModes.None, filesToExport, args.Move, args.DirectoryName)
+					{
+						Data = codata
+					};
 					explorer.ExportFiles(argsExport);
 					codata = argsExport.Data;
 

@@ -2,8 +2,6 @@
 // http://msdn.microsoft.com/en-us/library/ms950764.aspx
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Xml;
 using System.Xml.XPath;
 
@@ -21,9 +19,8 @@ namespace FarNet.Tools
 		internal XPathObjectNavigator(object root, XPathObjectContext context)
 		{
 			if (root == null) throw new ArgumentNullException("root");
-			if (context == null) throw new ArgumentNullException("context");
 
-			_context = context;
+			_context = context ?? throw new ArgumentNullException("context");
 			_root = new XPathObjectNode(context, root);
 
 			//???? fails without it
@@ -236,8 +233,7 @@ namespace FarNet.Tools
 		///
 		public override bool IsDescendant(XPathNavigator nav)
 		{
-			var that = nav as XPathObjectNavigator;
-			if (that == null)
+			if (!(nav is XPathObjectNavigator that))
 				return false;
 
 			// if they're in different graphs, they're not the same
@@ -269,8 +265,7 @@ namespace FarNet.Tools
 		///
 		public override bool IsSamePosition(XPathNavigator other)
 		{
-			var that = other as XPathObjectNavigator;
-			if (that == null)
+			if (!(other is XPathObjectNavigator that))
 				return false;
 
 			// if they're in different graphs, they're not the same
@@ -294,8 +289,7 @@ namespace FarNet.Tools
 		///
 		public override bool MoveTo(XPathNavigator other)
 		{
-			var that = other as XPathObjectNavigator;
-			if (that == null)
+			if (!(other is XPathObjectNavigator that))
 				return false;
 
 			_context = that._context;

@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet.Tools library for FarNet
-Copyright (c) 2010 Roman Kuzmin
-*/
+// FarNet.Tools library for FarNet
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections.Generic;
@@ -44,7 +42,7 @@ namespace FarNet.Tools
 		string _Activity = string.Empty;
 		string[] _Lines;
 		int _percentage = -1;
-		Stopwatch _stopwatch = Stopwatch.StartNew();
+		readonly Stopwatch _stopwatch = Stopwatch.StartNew();
 		internal TimeSpan Elapsed { get { return _stopwatch.Elapsed; } }
 		public string Activity
 		{

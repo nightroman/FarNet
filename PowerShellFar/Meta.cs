@@ -40,16 +40,15 @@ namespace PowerShellFar
 	/// </remarks>
 	public sealed class Meta : FarColumn
 	{
-		string _ColumnName;
-		string _Property;
-		ScriptBlock _Script;
+		readonly string _ColumnName;
+		readonly string _Property;
+		readonly ScriptBlock _Script;
 		/// <summary>
 		/// Similar to AsPSObject().
 		/// </summary>
 		internal static Meta AsMeta(object value)
 		{
-			Meta r = value as Meta;
-			return r == null ? new Meta(value) : r;
+			return value is Meta meta ? meta : new Meta(value);
 		}
 		/// <summary>
 		/// Property name.
@@ -64,10 +63,13 @@ namespace PowerShellFar
 		{
 			get
 			{
+				if (_ColumnName != null)
+					return _ColumnName;
+				if (_Property != null)
+					return _Property;
+				if (_Script != null)
+					return _Script.ToString().Trim();
 				return
-					_ColumnName != null ? _ColumnName :
-					_Property != null ? _Property :
-					_Script != null ? _Script.ToString().Trim() :
 					string.Empty;
 			}
 		}
@@ -118,10 +120,7 @@ namespace PowerShellFar
 		/// <param name="script">The script block.</param>
 		public Meta(ScriptBlock script)
 		{
-			if (script == null)
-				throw new ArgumentNullException("script");
-
-			_Script = script;
+			_Script = script ?? throw new ArgumentNullException("script");
 		}
 		/// <summary>
 		/// New from format table control data.
@@ -158,10 +157,9 @@ namespace PowerShellFar
 			if (_Script != null)
 				return;
 
-			System.Collections.IDictionary dic = value as System.Collections.IDictionary;
-			if (dic != null)
+			if (value is IDictionary dic)
 			{
-				foreach (System.Collections.DictionaryEntry kv in dic)
+				foreach (DictionaryEntry kv in dic)
 				{
 					string key = kv.Key.ToString();
 					if (key.Length == 0)
@@ -169,8 +167,8 @@ namespace PowerShellFar
 
 					if (Word.Expression.StartsWith(key, StringComparison.OrdinalIgnoreCase))
 					{
-						if (kv.Value is string)
-							_Property = (string)kv.Value;
+						if (kv.Value is string asString)
+							_Property = asString;
 						else
 							_Script = (ScriptBlock)kv.Value;
 					}
@@ -284,7 +282,7 @@ namespace PowerShellFar
 		{
 			object v = GetValue(value);
 			if (v == null)
-				return default(T);
+				return default;
 			Type type = v.GetType();
 			if (type == typeof(T))
 				return (T)v;
@@ -303,7 +301,7 @@ namespace PowerShellFar
 				if (_Width > 0 && Alignment == Alignment.Right)
 				{
 					string s = Get<string>(value);
-					return s == null ? null : s.PadLeft(_Width);
+					return s?.PadLeft(_Width);
 				}
 
 				// get, null??
@@ -312,13 +310,11 @@ namespace PowerShellFar
 					return null;
 
 				// string??
-				string asString = v as string;
-				if (asString != null)
+				if (v is string asString)
 					return asString;
 
 				// enumerable??
-				IEnumerable asEnumerable = v as IEnumerable;
-				if (asEnumerable != null)
+				if (v is IEnumerable asEnumerable)
 					return Converter.FormatEnumerable(asEnumerable, Settings.Default.FormatEnumerationLimit);
 
 				// others

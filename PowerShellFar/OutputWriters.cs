@@ -191,7 +191,7 @@ namespace PowerShellFar
 
 	sealed class StreamOutputWriter : TextOutputWriter
 	{
-		StreamWriter _writer;
+		readonly StreamWriter _writer;
 		public StreamOutputWriter(StreamWriter writer)
 		{
 			_writer = writer;
@@ -214,7 +214,7 @@ namespace PowerShellFar
 	sealed class TranscriptOutputWriter : TextOutputWriter
 	{
 		public static string LastFileName { get; private set; }
-		static string TextTranscriptPrologue = @"
+		const string TextTranscriptPrologue = @"
 **********************
 Windows PowerShell transcript start
 Start time: {0:yyyyMMddHHmmss}
@@ -222,7 +222,7 @@ Username  : {1}\{2}
 Machine	  : {3} ({4})
 **********************
 ";
-		static string TextTranscriptEpilogue = @"
+		const string TextTranscriptEpilogue = @"
 **********************
 Windows PowerShell transcript end
 End time: {0:yyyyMMddHHmmss}
@@ -232,7 +232,7 @@ End time: {0:yyyyMMddHHmmss}
 		static int _fileNameCount;
 		StreamWriter _writer;
 		string _fileName;
-		bool _transcript;
+		readonly bool _transcript;
 
 		public string FileName { get { return _fileName; } }
 
@@ -240,8 +240,10 @@ End time: {0:yyyyMMddHHmmss}
 		{ }
 		public TranscriptOutputWriter(string path, bool append)
 		{
-			_writer = new StreamWriter(path, append, Encoding.Unicode);
-			_writer.AutoFlush = true;
+			_writer = new StreamWriter(path, append, Encoding.Unicode)
+			{
+				AutoFlush = true
+			};
 			_writer.WriteLine(string.Format(null, TextTranscriptPrologue,
 			DateTime.Now,
 			Environment.UserDomainName,
@@ -290,8 +292,10 @@ End time: {0:yyyyMMddHHmmss}
 				if (_fileName == null)
 					_fileName = NewFileName();
 
-				_writer = new StreamWriter(_fileName, false, Encoding.Unicode);
-				_writer.AutoFlush = true;
+				_writer = new StreamWriter(_fileName, false, Encoding.Unicode)
+				{
+					AutoFlush = true
+				};
 			}
 		}
 		protected override void Append(string value)

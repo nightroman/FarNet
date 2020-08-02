@@ -26,8 +26,7 @@ namespace PowerShellFar
 		/// <param name="action">The delegate.</param>
 		public ScriptAction(Action<T> action)
 		{
-			if (action == null) throw new ArgumentNullException("action");
-			_action = action;
+			_action = action ?? throw new ArgumentNullException("action");
 		}
 		/// <summary>
 		/// New action with a script block.
@@ -35,8 +34,7 @@ namespace PowerShellFar
 		/// <param name="script">The script block.</param>
 		public ScriptAction(ScriptBlock script)
 		{
-			if (script == null) throw new ArgumentNullException("script");
-			_script = script;
+			_script = script ?? throw new ArgumentNullException("script");
 		}
 		/// <summary>
 		/// Invokes the action.
@@ -66,8 +64,7 @@ namespace PowerShellFar
 		/// <param name="handler">The delegate.</param>
 		public ScriptHandler(EventHandler<T> handler)
 		{
-			if (handler == null) throw new ArgumentNullException("handler");
-			_handler = handler;
+			_handler = handler ?? throw new ArgumentNullException("handler");
 		}
 		/// <summary>
 		/// New handler with a script block.
@@ -75,8 +72,7 @@ namespace PowerShellFar
 		/// <param name="handler">The script block.</param>
 		public ScriptHandler(ScriptBlock handler)
 		{
-			if (handler == null) throw new ArgumentNullException("handler");
-			_script = handler;
+			_script = handler ?? throw new ArgumentNullException("handler");
 		}
 		/// <summary>
 		/// New handler with a delegate or a script block.
@@ -85,11 +81,9 @@ namespace PowerShellFar
 		public ScriptHandler(object handler)
 		{
 			if (handler == null) throw new ArgumentNullException("handler");
-			EventHandler<T> asEventHandler;
-			ScriptBlock asScriptBlock;
-			if (null != (asEventHandler = handler as EventHandler<T>))
+			if (handler is EventHandler<T> asEventHandler)
 				_handler = asEventHandler;
-			else if (null != (asScriptBlock = handler as ScriptBlock))
+			else if (handler is ScriptBlock asScriptBlock)
 				_script = asScriptBlock;
 			else
 				throw new ArgumentException("Invalid handler type.", "handler");
@@ -247,7 +241,7 @@ namespace PowerShellFar
 	/// </summary>
 	public sealed class TreeFileCollection : Collection<TreeFile>
 	{
-		TreeFile Parent;
+		readonly TreeFile Parent;
 		internal TreeFileCollection(TreeFile parent)
 		{
 			Parent = parent;
@@ -331,8 +325,7 @@ namespace PowerShellFar
 		/// <param name="meta">The meta for comparison.</param>
 		public FileMetaComparer(Meta meta)
 		{
-			if (meta == null) throw new ArgumentNullException("meta");
-			_meta = meta;
+			_meta = meta ?? throw new ArgumentNullException("meta");
 		}
 		/// <summary>
 		/// New comparer with a property used on comparison.

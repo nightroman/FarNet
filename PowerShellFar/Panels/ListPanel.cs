@@ -22,11 +22,13 @@ namespace PowerShellFar
 			PostName(_lastCurrentName);
 
 			// 090411 Use custom Descriptions mode
-			PanelPlan plan = new PanelPlan();
-			plan.Columns = new FarColumn[]
+			PanelPlan plan = new PanelPlan
 			{
-				new SetColumn() { Kind = "N", Name = "Name" },
-				new SetColumn() { Kind = "Z", Name = "Value" }
+				Columns = new FarColumn[]
+				{
+					new SetColumn() { Kind = "N", Name = "Name" },
+					new SetColumn() { Kind = "Z", Name = "Value" }
+				}
 			};
 			SetPlan(PanelViewMode.AlternativeFull, plan);
 
@@ -45,17 +47,14 @@ namespace PowerShellFar
 			if (file == null)
 				throw new ArgumentNullException("file");
 
-			PSPropertyInfo pi = file.Data as PSPropertyInfo;
-
 			// e.g. visible mode: sender is MemberDefinition
-			if (pi == null)
+			if (!(file.Data is PSPropertyInfo pi))
 				return;
 
 			// lookup opener?
 			if (_LookupOpeners != null)
 			{
-				ScriptHandler<OpenFileEventArgs> handler;
-				if (_LookupOpeners.TryGetValue(file.Name, out handler))
+				if (_LookupOpeners.TryGetValue(file.Name, out ScriptHandler<OpenFileEventArgs> handler))
 				{
 					handler.Invoke(this, new OpenFileEventArgs(file));
 					return;
@@ -88,8 +87,7 @@ namespace PowerShellFar
 		}
 		internal override MemberPanel OpenFileMembers(FarFile file)
 		{
-			PSPropertyInfo pi = file.Data as PSPropertyInfo;
-			if (pi == null)
+			if (!(file.Data is PSPropertyInfo pi))
 				return null;
 			if (pi.Value == null)
 				return null;
@@ -120,8 +118,7 @@ namespace PowerShellFar
 			FarFile f = CurrentFile;
 			if (f == null)
 				return;
-			PSPropertyInfo pi = f.Data as PSPropertyInfo;
-			if (pi == null)
+			if (!(f.Data is PSPropertyInfo pi))
 				return;
 
 			try
@@ -176,8 +173,7 @@ namespace PowerShellFar
 		{
 			foreach (FarFile file in SelectedFiles)
 			{
-				PSPropertyInfo pi = file.Data as PSPropertyInfo;
-				if (pi == null)
+				if (!(file.Data is PSPropertyInfo pi))
 					continue;
 
 				try

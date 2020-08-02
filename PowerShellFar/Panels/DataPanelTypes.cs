@@ -34,8 +34,8 @@ namespace PowerShellFar
 
 	class DataColumnEnumerator : System.Collections.IEnumerator
 	{
-		DataRow Row;
-		List<int> Indexes;
+		readonly DataRow Row;
+		readonly List<int> Indexes;
 		int Index = -1;
 		public DataColumnEnumerator(DataRow row, List<int> indexes)
 		{
@@ -61,8 +61,8 @@ namespace PowerShellFar
 
 	class DataColumnCollection : My.SimpleCollection
 	{
-		DataRow Row;
-		List<int> Indexes;
+		readonly DataRow Row;
+		readonly List<int> Indexes;
 		public DataColumnCollection(DataRow row, List<int> indexes)
 		{
 			Row = row;
@@ -80,8 +80,8 @@ namespace PowerShellFar
 
 	class DataRowFile : FarFile
 	{
-		DataRow Row;
-		DataRowFileMap Map;
+		readonly DataRow Row;
+		readonly DataRowFileMap Map;
 		public DataRowFile(DataRow row, DataRowFileMap map)
 		{
 			Row = row;

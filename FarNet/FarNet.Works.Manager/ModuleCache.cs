@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections;
@@ -18,7 +16,7 @@ namespace FarNet.Works
 		const int idVersion = 0;
 		readonly string _FileName;
 		readonly Hashtable _Cache;
-		int _CountToLoad;
+		readonly int _CountToLoad;
 		bool _ToUpdate;
 		public int CountLoaded { get; set; }
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
@@ -53,8 +51,10 @@ namespace FarNet.Works
 			// new empty cache
 			if (_Cache == null)
 			{
-				_Cache = new Hashtable();
-				_Cache.Add(idVersion, Version);
+				_Cache = new Hashtable
+				{
+					{ idVersion, Version }
+				};
 			}
 
 			// count to load
@@ -70,8 +70,7 @@ namespace FarNet.Works
 
 				foreach (var key in _Cache.Keys)
 				{
-					var name = key as string;
-					if (name != null && !File.Exists(name))
+					if (key is string name && !File.Exists(name))
 						list.Add(name);
 				}
 

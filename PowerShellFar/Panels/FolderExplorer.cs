@@ -78,10 +78,12 @@ namespace PowerShellFar
 
 			// reset roots
 			RootFiles.Clear();
-			TreeFile ti = new TreeFile();
-			ti.Name = location.Path; // special case name for the root
-			ti.Fill = TheFill;
-			ti.Data = data;
+			var ti = new TreeFile
+			{
+				Name = location.Path, // special case name for the root
+				Fill = TheFill,
+				Data = data
+			};
 			RootFiles.Add(ti);
 			ti.Expand();
 

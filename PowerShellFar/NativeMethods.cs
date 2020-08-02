@@ -78,7 +78,7 @@ namespace PowerShellFar
 			{
 				message = "Enter your credentials.";
 			}
-			CREDUI_INFO cREDUI_INFO = default(CREDUI_INFO);
+			CREDUI_INFO cREDUI_INFO = default;
 			cREDUI_INFO.pszCaptionText = caption;
 			cREDUI_INFO.pszMessageText = message;
 			StringBuilder stringBuilder = new StringBuilder(userName, 513);

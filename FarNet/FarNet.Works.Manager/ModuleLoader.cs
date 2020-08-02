@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections;
@@ -379,11 +377,9 @@ namespace FarNet.Works
 		}
 		public static IModuleManager GetModuleManager(string name)
 		{
-			ModuleManager r;
-			if (_Managers.TryGetValue(name, out r))
-			{
-				return _Managers[name];
-			}
+			if (_Managers.TryGetValue(name, out ModuleManager manager))
+				return manager;
+
 			throw new ArgumentException("Cannot find the module name.");
 		}
 	}

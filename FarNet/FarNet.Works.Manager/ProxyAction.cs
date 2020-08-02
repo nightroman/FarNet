@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections;
@@ -12,7 +10,6 @@ namespace FarNet.Works
 {
 	public abstract class ProxyAction : IModuleAction
 	{
-		ModuleActionAttribute _Attribute;
 		string _ClassName;
 		Type _ClassType;
 		Guid _Id;
@@ -23,27 +20,25 @@ namespace FarNet.Works
 				throw new ArgumentNullException("reader");
 
 			_Manager = manager;
-			_Attribute = attribute;
+			Attribute = attribute;
 
 			_ClassName = (string)reader.Read();
-			_Attribute.Name = (string)reader.Read();
+			Attribute.Name = (string)reader.Read();
 			_Id = (Guid)reader.Read();
 		}
 		protected ProxyAction(ModuleManager manager, Guid id, ModuleActionAttribute attribute)
 		{
 			_Manager = manager;
 			_Id = id;
-			_Attribute = attribute;
+			Attribute = attribute;
 
 			Initialize();
 		}
 		protected ProxyAction(ModuleManager manager, Type classType, Type attributeType)
 		{
-			if (classType == null) throw new ArgumentNullException("classType");
-			if (attributeType == null) throw new ArgumentNullException("attributeType");
-
 			_Manager = manager;
-			_ClassType = classType;
+			_ClassType = classType ?? throw new ArgumentNullException("classType");
+			if (attributeType == null) throw new ArgumentNullException("attributeType");
 
 			object[] attrs;
 
@@ -59,22 +54,19 @@ namespace FarNet.Works
 			if (attrs.Length == 0)
 				throw new ModuleException(string.Format(null, "Apply the '{0}' attribute to the '{1}' class.", attributeType.Name, _ClassType.Name));
 
-			_Attribute = (ModuleActionAttribute)attrs[0];
+			Attribute = (ModuleActionAttribute)attrs[0];
 
 			Initialize();
 
-			if (_Attribute.Resources)
+			if (Attribute.Resources)
 			{
 				_Manager.CachedResources = true;
-				string name = _Manager.GetString(_Attribute.Name);
+				string name = _Manager.GetString(Attribute.Name);
 				if (!string.IsNullOrEmpty(name))
-					_Attribute.Name = name;
+					Attribute.Name = name;
 			}
 		}
-		protected ModuleActionAttribute Attribute
-		{
-			get { return _Attribute; }
-		}
+		protected ModuleActionAttribute Attribute { get; }
 		internal ModuleAction GetInstance()
 		{
 			if (_ClassType == null)
@@ -87,7 +79,7 @@ namespace FarNet.Works
 		}
 		void Initialize()
 		{
-			if (string.IsNullOrEmpty(_Attribute.Name))
+			if (string.IsNullOrEmpty(Attribute.Name))
 				throw new ModuleException("Empty module action name is not valid.");
 		}
 		internal void Invoking()
@@ -124,7 +116,7 @@ namespace FarNet.Works
 		public abstract ModuleItemKind Kind { get; }
 		public virtual string Name
 		{
-			get { return _Attribute.Name; }
+			get { return Attribute.Name; }
 		}
 		public IModuleManager Manager
 		{

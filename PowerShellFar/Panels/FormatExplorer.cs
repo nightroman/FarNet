@@ -2,12 +2,11 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
+using FarNet;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Management.Automation;
-using FarNet;
 
 namespace PowerShellFar
 {
@@ -51,8 +50,6 @@ namespace PowerShellFar
 		{
 			if (args == null) return null;
 
-			var panel = args.Parameter as FormatPanel;
-
 			// call the worker
 			// _090408_232925 If we throw then FarNet returns false and Far closes the panel.
 			object data;
@@ -69,8 +66,7 @@ namespace PowerShellFar
 			}
 
 			// if the data are files just use them, assume all is done
-			IList<FarFile> readyFiles = data as IList<FarFile>;
-			if (readyFiles != null)
+			if (data is IList<FarFile> readyFiles)
 			{
 				Cache = readyFiles;
 				return Cache;
@@ -80,6 +76,7 @@ namespace PowerShellFar
 			Collection<PSObject> values = (Collection<PSObject>)data;
 
 			// empty?
+			var panel = args.Parameter as FormatPanel;
 			if (values.Count == 0)
 			{
 				// drop files in any case

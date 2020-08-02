@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet.Tools library for FarNet
-Copyright (c) 2010 Roman Kuzmin
-*/
+// FarNet.Tools library for FarNet
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections.Generic;
@@ -22,8 +20,7 @@ namespace FarNet.Tools
 		public SuperFile(Explorer explorer, FarFile file)
 			: base(file)
 		{
-			if (explorer == null) throw new ArgumentNullException("explorer");
-			_Explorer = explorer;
+			_Explorer = explorer ?? throw new ArgumentNullException("explorer");
 		}
 		/// <summary>
 		/// Gets the source explorer.
@@ -52,8 +49,7 @@ namespace FarNet.Tools
 				foreach (var file in efiles)
 				{
 					//! try: if a module incorrectly gets alien files to stay then they are not hashed
-					SuperFile xfile;
-					if (xhash.TryGetValue(file, out xfile))
+					if (xhash.TryGetValue(file, out SuperFile xfile))
 						yield return xfile;
 				}
 			}

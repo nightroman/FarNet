@@ -108,11 +108,10 @@ namespace PowerShellFar
 		/// As a result, the global scope is not polluted too match by variables.
 		/// $Data is reset for each unit and removed when all units are processed.
 		/// </remarks>
-		public Hashtable Data { get { return _Data; } }
-		readonly Hashtable _Data = new Hashtable();
+		public Hashtable Data { get; } = new Hashtable();
 		// Units
 		readonly List<string> _units = new List<string>();
-		ArrayList _steps = new ArrayList();
+		readonly ArrayList _steps = new ArrayList();
 		/// <summary>
 		/// Continuation action. If it is set then the stepper works silently
 		/// and calls the action with null for success and exception for
@@ -295,7 +294,7 @@ namespace PowerShellFar
 				{
 					case StepperState.Loading:
 					case StepperState.Stepping:
-						A.Psf.Engine.SessionState.PSVariable.Set(DataVariableName, _Data);
+						A.Psf.Engine.SessionState.PSVariable.Set(DataVariableName, Data);
 						break;
 				}
 
@@ -343,8 +342,8 @@ namespace PowerShellFar
 					UnitCompleted?.Invoke(this, null);
 					
 					// remove user data
-					if (_Data != null)
-						_Data.Clear();
+					if (Data != null)
+						Data.Clear();
 
 					// done with units?
 					if (++_UnitIndex >= _units.Count)
@@ -435,8 +434,7 @@ namespace PowerShellFar
 					}
 
 					// extra script, normally starts modal UI
-					ScriptBlock script;
-					if (result.Count == 1 && null != (script = result[0].BaseObject as ScriptBlock))
+					if (result.Count == 1 && result[0].BaseObject is ScriptBlock script)
 					{
 						++_StepIndex;
 						_current = new Action(delegate { script.Invoke(); });

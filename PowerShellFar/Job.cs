@@ -79,7 +79,7 @@ namespace PowerShellFar
 		JobUI JobUI;
 
 		// For UI job: keep succeeded job for this time
-		int KeepSeconds;
+		readonly int KeepSeconds;
 
 		// Stopwatch counting job keeping time
 		Stopwatch KeepStopwatch;
@@ -104,10 +104,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// Gets the wait handle that is signaled when job is finished.
 		/// </summary>
-		public WaitHandle Finished
-		{
-			get { return InvokeResult == null ? null : InvokeResult.AsyncWaitHandle; }
-		}
+		public WaitHandle Finished => InvokeResult?.AsyncWaitHandle;
 		//! Used by Search-Regex-.ps1
 		/// <summary>
 		/// Gets the job command parameters.
@@ -218,11 +215,9 @@ namespace PowerShellFar
 			// add command parameters
 			if (parameters != null)
 			{
-				IDictionary namedParameters = parameters as IDictionary;
-				IList argumentList;
-				if (namedParameters != null)
+				if (parameters is IDictionary namedParameters)
 					PowerShell.AddParameters(namedParameters);
-				else if ((argumentList = parameters as IList) != null)
+				else if (parameters is IList argumentList)
 					PowerShell.AddParameters(argumentList);
 				else
 					PowerShell.AddParameters(new object[] { parameters });
@@ -322,10 +317,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// Output file name or null if output is not started.
 		/// </summary>
-		string FileName
-		{
-			get { return JobUI == null ? null : JobUI.FileName; }
-		}
+		string FileName => JobUI?.FileName;
 
 		/// <summary>
 		/// Is <see cref="Job.Dispose"/> called?

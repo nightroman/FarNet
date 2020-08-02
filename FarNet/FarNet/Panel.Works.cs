@@ -1,11 +1,6 @@
 ﻿
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
-
-using System;
-using System.Collections.Generic;
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 namespace FarNet.Works
 {

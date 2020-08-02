@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections;
@@ -11,7 +9,7 @@ namespace FarNet.Works
 {
 	public sealed class ProxyTool : ProxyAction, IModuleTool
 	{
-		EventHandler<ModuleToolEventArgs> _Handler;
+		readonly EventHandler<ModuleToolEventArgs> _Handler;
 		ModuleToolOptions _Options;
 		internal ProxyTool(ModuleManager manager, EnumerableReader reader)
 			: base(manager, reader, new ModuleToolAttribute())
@@ -53,18 +51,9 @@ namespace FarNet.Works
 			base.WriteCache(data);
 			data.Add((int)Attribute.Options);
 		}
-		new ModuleToolAttribute Attribute
-		{
-			get { return (ModuleToolAttribute)base.Attribute; }
-		}
-		public ModuleToolOptions DefaultOptions
-		{
-			get { return Attribute.Options; }
-		}
-		public override ModuleItemKind Kind
-		{
-			get { return ModuleItemKind.Tool; }
-		}
+		new ModuleToolAttribute Attribute => (ModuleToolAttribute)base.Attribute;
+		public ModuleToolOptions DefaultOptions => Attribute.Options;
+		public override ModuleItemKind Kind => ModuleItemKind.Tool;
 		public ModuleToolOptions Options
 		{
 			get { return _Options; }

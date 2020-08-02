@@ -69,12 +69,14 @@ namespace PowerShellFar
 				Collection<PSObject> bag = A.Psf.Engine.InvokeProvider.Property.Get(Kit.EscapeWildcard(ItemPath), null);
 
 				// filter
-				var filter = new List<string>(5);
-				filter.Add("PSChildName");
-				filter.Add("PSDrive");
-				filter.Add("PSParentPath");
-				filter.Add("PSPath");
-				filter.Add("PSProvider");
+				var filter = new List<string>(5)
+				{
+					"PSChildName",
+					"PSDrive",
+					"PSParentPath",
+					"PSPath",
+					"PSProvider"
+				};
 
 				// add
 				foreach (PSObject o in bag)
@@ -122,8 +124,7 @@ namespace PowerShellFar
 		{
 			if (args == null) return;
 
-			PSPropertyInfo pi = args.File.Data as PSPropertyInfo;
-			if (pi == null)
+			if (!(args.File.Data is PSPropertyInfo pi))
 			{
 				args.Result = JobResult.Ignore;
 				return;
@@ -146,8 +147,7 @@ namespace PowerShellFar
 		{
 			if (args == null) return;
 
-			PSPropertyInfo pi = args.File.Data as PSPropertyInfo;
-			if (pi == null)
+			if (!(args.File.Data is PSPropertyInfo pi))
 			{
 				args.Result = JobResult.Ignore;
 				return;
@@ -241,8 +241,7 @@ namespace PowerShellFar
 			if (args == null) return;
 
 			// that source
-			var that = args.Explorer as PropertyExplorer;
-			if (that == null)
+			if (!(args.Explorer is PropertyExplorer that))
 			{
 				if (args.UI) A.Message(Res.UnknownFileSource);
 				args.Result = JobResult.Ignore;
@@ -274,8 +273,7 @@ namespace PowerShellFar
 		{
 			if (args == null) return;
 
-			var newName = args.Parameter as string;
-			if (newName == null)
+			if (!(args.Parameter is string newName))
 				throw new InvalidOperationException(Res.ParameterString);
 
 			//! Registry: workaround: (default)
@@ -353,8 +351,7 @@ namespace PowerShellFar
 		{
 			if (args == null) return;
 
-			var newName = args.Parameter as string;
-			if (newName == null)
+			if (!(args.Parameter is string newName))
 				throw new InvalidOperationException(Res.ParameterString);
 
 			string src = Kit.EscapeWildcard(ItemPath);

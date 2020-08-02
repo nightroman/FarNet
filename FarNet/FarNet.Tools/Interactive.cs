@@ -1,9 +1,8 @@
 ﻿
-// FarNet plugin for Far Manager
+// FarNet.Tools library for FarNet
 // Copyright (c) Roman Kuzmin
 
 using System;
-using System.IO;
 using System.Text;
 
 namespace FarNet.Tools
@@ -50,8 +49,10 @@ namespace FarNet.Tools
 		/// </summary>
 		public InteractiveArea CommandArea()
 		{
-			var r = new InteractiveArea();
-			r.Caret = Editor.Caret;
+			var r = new InteractiveArea
+			{
+				Caret = Editor.Caret
+			};
 
 			// head line
 			for (int y = r.Caret.Y; --y >= 0;)

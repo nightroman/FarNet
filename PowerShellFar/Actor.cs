@@ -916,7 +916,7 @@ Continue with this current directory?
 			EditorKit.InvokeScriptBeingEdited(null);
 		}
 		HashSet<LineBreakpoint> _breakpoints_;
-		internal HashSet<LineBreakpoint> Breakpoints { get { return _breakpoints_ ?? (_breakpoints_ = new HashSet<LineBreakpoint>()); } }
+		internal HashSet<LineBreakpoint> Breakpoints => _breakpoints_ ?? (_breakpoints_ = new HashSet<LineBreakpoint>());
 		void OnBreakpointUpdated(object sender, BreakpointUpdatedEventArgs e)
 		{
 			if (!string.IsNullOrEmpty(e.Breakpoint.Script))

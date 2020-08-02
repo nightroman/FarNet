@@ -55,8 +55,7 @@ namespace PowerShellFar
 		// Propagates exclude and hidden member patterns from the parent table.
 		void UpdateExplorerPatterns()
 		{
-			TablePanel table = Parent as TablePanel;
-			if (table == null)
+			if (!(Parent is TablePanel table))
 				return;
 
 			if (string.IsNullOrEmpty(Explorer.ExcludeMemberPattern) && !string.IsNullOrEmpty(table.ExcludeMemberPattern))
@@ -230,8 +229,7 @@ namespace PowerShellFar
 				return;
 
 			// update that panel if the instance is the same
-			MemberPanel that = TargetPanel as MemberPanel;
-			if (that != null && that.Target == Target)
+			if (TargetPanel is MemberPanel that && that.Target == Target)
 				that.UpdateRedraw(true);
 		}
 	}

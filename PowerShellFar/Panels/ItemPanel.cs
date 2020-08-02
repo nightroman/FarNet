@@ -11,11 +11,10 @@ _090929_061740 Far 2.0.1145 does not sync the current directory with the panel p
 		Environment.CurrentDirectory = pi.ProviderPath;
 */
 
-using System;
-using System.IO;
-using System.Management.Automation;
 using FarNet;
 using Microsoft.PowerShell.Commands;
+using System;
+using System.IO;
 
 namespace PowerShellFar
 {
@@ -59,13 +58,7 @@ namespace PowerShellFar
 		public string Drive
 		{
 			get { return _Drive; }
-			set
-			{
-				if (value == null)
-					throw new ArgumentNullException("value");
-
-				_Drive = value;
-			}
+			set { _Drive = value ?? throw new ArgumentNullException("value"); }
 		}
 		string _Drive = string.Empty;
 		bool UIAttributesCan()
@@ -109,7 +102,7 @@ namespace PowerShellFar
 		}
 		private void DoExplored(ItemExplorer explorer)
 		{
-			var info1 = explorer == null ? null : explorer.Info();
+			var info1 = explorer?.Info();
 			var info2 = Explorer.Info();
 
 			// fixed drive?
@@ -124,8 +117,7 @@ namespace PowerShellFar
 					Columns = null;
 					ExcludeMemberPattern = null;
 
-					System.Collections.IDictionary options = A.Psf.Providers[info2.Provider.Name] as System.Collections.IDictionary;
-					if (options != null)
+					if (A.Psf.Providers[info2.Provider.Name] is System.Collections.IDictionary options)
 					{
 						try
 						{
@@ -241,8 +233,7 @@ namespace PowerShellFar
 		/// </remarks>
 		public override void OnThatFileChanged(Panel that, EventArgs args)
 		{
-			var panel = that as ItemPanel;
-			if (panel == null)
+			if (!(that is ItemPanel panel))
 				return;
 
 			if (panel.Explorer.Location != Explorer.Location)

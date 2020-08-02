@@ -6,7 +6,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
-using System.Xml;
 
 namespace FarNet.Tools
 {
@@ -21,36 +20,32 @@ namespace FarNet.Tools
 		// Sibling list, elements of the parent (it keeps the weak reference alive).
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
 		readonly IList<XPathObjectNode> _siblings;
+
 		// Index of this node in the sibling list, needed for MoveToNext, MoveToPrevious.
-		int _index;
+		readonly int _index;
 		IList<XmlAttributeInfo> _attributes;
 		readonly WeakReference _elements = new WeakReference(null);
 		public XPathObjectNode(XPathObjectContext context, object target) : this(context, target, null, null, null, -1) { }
 		XPathObjectNode(XPathObjectContext context, object target, string name, XPathObjectNode parent, IList<XPathObjectNode> siblings, int index)
 		{
-			if (context == null) throw new ArgumentNullException("context");
-			if (target == null) throw new ArgumentNullException("target");
-
-			_context = context;
-			_target = target;
+			_context = context ?? throw new ArgumentNullException("context");
+			_target = target ?? throw new ArgumentNullException("target");
 			_parent = parent;
-
 			_siblings = siblings;
 			_index = index;
 
 			if (string.IsNullOrEmpty(name))
 			{
-				var info = target as IXmlInfo;
-				if (info == null)
+				if (target is IXmlInfo info)
+				{
+					name = info.XmlNodeName();
+				}
+				else
 				{
 					var type = target.GetType();
 					name = target.GetType().Name;
 					if (type.IsGenericType)
 						name = name.Remove(name.IndexOf('`'));
-				}
-				else
-				{
-					name = info.XmlNodeName();
 				}
 			}
 			_name = GetAtomicString(name);
@@ -254,8 +249,8 @@ namespace FarNet.Tools
 		}
 		IList<XPathObjectNode> ActivateSimple()
 		{
-			var info = _target as IXmlInfo; //???? need?
-			if (info != null)
+			//?? need?
+			if (_target is IXmlInfo info)
 			{
 				_attributes = info.XmlAttributes();
 				if (_attributes.Count == 0)
@@ -327,8 +322,7 @@ namespace FarNet.Tools
 			}
 
 			// progress
-			if (_context.IncrementDirectoryCount != null)
-				_context.IncrementDirectoryCount(1);
+			_context.IncrementDirectoryCount?.Invoke(1);
 
 			var elements = new List<XPathObjectNode>();
 
@@ -372,23 +366,20 @@ namespace FarNet.Tools
 		internal static string CultureSafeToString(object value)
 		{
 			// string
-			var asString = value as string;
-			if (asString != null)
+			if (value is string asString)
 				return asString;
 
 			if (value is ValueType)
 			{
 				// DateTime
-				if (value is DateTime)
+				if (value is DateTime asDateTime)
 				{
-					var asDateTime = (DateTime)value;
 					return asDateTime.ToString((asDateTime.TimeOfDay.Ticks > 0 ? "yyyy-MM-dd HH:mm:ss" : "yyyy-MM-dd"), null);
 				}
 
 				// Boolean
-				if (value is bool)
+				if (value is bool asBool)
 				{
-					var asBool = (bool)value;
 					return asBool ? "1" : "0";
 				}
 

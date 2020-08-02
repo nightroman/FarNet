@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections.Generic;
@@ -97,12 +95,12 @@ namespace FarNet.Works
 
 				// new options
 				ModuleToolOptions newOptions = ModuleToolOptions.None;
-				if (cbPanels.Selected > 0) newOptions = newOptions | ModuleToolOptions.Panels;
-				if (cbEditor.Selected > 0) newOptions = newOptions | ModuleToolOptions.Editor;
-				if (cbViewer.Selected > 0) newOptions = newOptions | ModuleToolOptions.Viewer;
-				if (cbDialog.Selected > 0) newOptions = newOptions | ModuleToolOptions.Dialog;
-				if (cbConfig.Selected > 0) newOptions = newOptions | ModuleToolOptions.Config;
-				if (cbDisk.Selected > 0) newOptions = newOptions | ModuleToolOptions.Disk;
+				if (cbPanels.Selected > 0) newOptions |= ModuleToolOptions.Panels;
+				if (cbEditor.Selected > 0) newOptions |= ModuleToolOptions.Editor;
+				if (cbViewer.Selected > 0) newOptions |= ModuleToolOptions.Viewer;
+				if (cbDialog.Selected > 0) newOptions |= ModuleToolOptions.Dialog;
+				if (cbConfig.Selected > 0) newOptions |= ModuleToolOptions.Config;
+				if (cbDisk.Selected > 0) newOptions |= ModuleToolOptions.Disk;
 				
 				tool.Options = newOptions;
 				tool.Manager.SaveSettings();

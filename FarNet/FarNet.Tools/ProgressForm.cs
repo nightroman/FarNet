@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet.Tools library for FarNet
-Copyright (c) 2010 Roman Kuzmin
-*/
+// FarNet.Tools library for FarNet
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Threading;
@@ -40,7 +38,7 @@ namespace FarNet.Tools
 	/// </remarks>
 	public sealed class ProgressForm : Form, IProgress
 	{
-		object _lock = new object();
+		readonly object _lock = new object();
 		int _LineCount = 1;
 		bool _isCompleted;
 		bool _isCanceled;
@@ -273,8 +271,7 @@ namespace FarNet.Tools
 					Pfz.Threading.SafeAbort.Abort(_jobThread, 4000, 2000, 1000, true);
 
 				// notify
-				if (Canceled != null)
-					Canceled(this, null);
+				Canceled?.Invoke(this, null);
 			}
 		}
 
@@ -288,12 +285,10 @@ namespace FarNet.Tools
 			}
 
 			// event
-			if (Idled != null)
-				Idled(this, null);
+			Idled?.Invoke(this, null);
 
 			// show
-			string progress;
-			var lines = _progress.Build(out progress, _textActivity.Length);
+			var lines = _progress.Build(out string progress, _textActivity.Length);
 			for (int iLine = 0; iLine < _LineCount && iLine < lines.Length; ++iLine)
 				_textActivity[iLine].Text = lines[iLine];
 			_textProgress.Text = progress;

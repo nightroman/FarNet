@@ -40,14 +40,18 @@ namespace PowerShellFar
 			SetColumn cZ = new SetColumn() { Kind = "Z", Name = "Description" };
 
 			// mode: tree column and description status
-			PanelPlan plan0 = new PanelPlan();
-			plan0.Columns = new FarColumn[] { cO };
-			plan0.StatusColumns = new FarColumn[] { cZ };
+			PanelPlan plan0 = new PanelPlan
+			{
+				Columns = new FarColumn[] { cO },
+				StatusColumns = new FarColumn[] { cZ }
+			};
 			SetPlan((PanelViewMode)0, plan0);
 
 			// mode: tree and description columns
-			PanelPlan plan1 = new PanelPlan();
-			plan1.Columns = new FarColumn[] { cO, cZ };
+			PanelPlan plan1 = new PanelPlan
+			{
+				Columns = new FarColumn[] { cO, cZ }
+			};
 			SetPlan((PanelViewMode)1, plan1);
 		}
 		internal override void ShowHelpForPanel()

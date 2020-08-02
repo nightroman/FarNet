@@ -53,6 +53,9 @@ namespace PowerShellFar
 		public FolderTree()
 			: this((string)null) { }
 		/// <inheritdoc/>
+		// Tempting to set the panel current directory to the current item path (not parent).
+		// This is consistent with opening the folder and useful for invoking commands "here".
+		// But then native path tools (CtrlAltIns, AltShiftIns) get bad paths like ...\N\N.
 		public override void UIRedrawing(PanelEventArgs e)
 		{
 			base.UIRedrawing(e);
@@ -138,8 +141,7 @@ namespace PowerShellFar
 				return;
 
 			TreeFile node = (TreeFile)file;
-			PSObject data = node.Data as PSObject;
-			if (data == null)
+			if (!(node.Data is PSObject data))
 				return;
 
 			// validate provider
@@ -151,7 +153,7 @@ namespace PowerShellFar
 			}
 
 			// show property panel
-			(new PropertyExplorer(node.Path)).OpenPanelChild(this);
+			new PropertyExplorer(node.Path).OpenPanelChild(this);
 		}
 		/// <summary>
 		/// Shows help.

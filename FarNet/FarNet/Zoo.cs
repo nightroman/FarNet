@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 
@@ -100,8 +98,8 @@ namespace FarNet.Works
 		public override bool Equals(object obj)
 		{
 			bool flag = false;
-			if (obj is BufferCell)
-				flag = this == ((BufferCell)obj);
+			if (obj is BufferCell cell)
+				flag = this == cell;
 			return flag;
 		}
 		/// <inheritdoc/>

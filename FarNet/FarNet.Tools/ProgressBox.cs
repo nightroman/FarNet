@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet.Tools library for FarNet
-Copyright (c) 2010 Roman Kuzmin
-*/
+// FarNet.Tools library for FarNet
+// Copyright (c) Roman Kuzmin
 
 using System;
 
@@ -96,8 +94,7 @@ namespace FarNet.Tools
 			Hide();
 			_savedScreen = Far.Api.UI.SaveScreen(0, 0, -1, -1);
 
-			string progress;
-			var lines = _progress.Build(out progress, LineCount);
+			var lines = _progress.Build(out string progress, LineCount);
 			string text;
 			if (lines.Length == 1)
 				text = lines[0] + "\r" + progress;

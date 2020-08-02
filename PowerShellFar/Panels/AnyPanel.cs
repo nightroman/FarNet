@@ -117,8 +117,7 @@ namespace PowerShellFar
 
 			// lookup: try to post the current
 			// 090809 ??? perhaps I have to rethink
-			TablePanel tp = this as TablePanel;
-			if (tp != null)
+			if (this is TablePanel)
 			{
 				// assume parent Description = child Name
 				string value = parent.CurrentFile.Description;
@@ -213,13 +212,14 @@ namespace PowerShellFar
 		internal virtual MemberPanel OpenFileMembers(FarFile file)
 		{
 			//??? _090610_071700, + $panel.SetOpen({ @ Test-Panel-Tree-.ps1
-			object target = file.Data == null ? file : file.Data;
+			object target = file.Data ?? file;
 
-			MemberPanel panel = new MemberPanel(new MemberExplorer(target));
-			panel._LookupOpeners = _LookupOpeners;
+			MemberPanel panel = new MemberPanel(new MemberExplorer(target))
+			{
+				_LookupOpeners = _LookupOpeners
+			};
 
-			var tablePanel = Far.Api.Panel as TablePanel;
-			if (tablePanel != null)
+			if (Far.Api.Panel is TablePanel tablePanel)
 			{
 				if (!string.IsNullOrEmpty(tablePanel.ExcludeMemberPattern))
 					panel.Explorer.ExcludeMemberPattern = tablePanel.ExcludeMemberPattern;
@@ -271,8 +271,7 @@ namespace PowerShellFar
 			PanelMenuEventArgs e = new PanelMenuEventArgs(r, CurrentFile, SelectedList);
 
 			// event
-			if (MenuCreating != null)
-				MenuCreating(this, e);
+			MenuCreating?.Invoke(this, e);
 
 			// init items
 			HelpMenuItems items = new HelpMenuItems();

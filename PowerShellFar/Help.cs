@@ -2,11 +2,10 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
-using System;
+using FarNet;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Management.Automation;
-using FarNet;
 
 namespace PowerShellFar
 {
@@ -46,8 +45,7 @@ namespace PowerShellFar
 			string script = null;
 			string command = null;
 			object[] args = null;
-			Collection<PSParseError> errors;
-			Collection<PSToken> tokens = PSParser.Tokenize(text, out errors);
+			Collection<PSToken> tokens = PSParser.Tokenize(text, out _);
 			foreach (PSToken token in tokens)
 			{
 				if (token.Type == PSTokenType.Command)

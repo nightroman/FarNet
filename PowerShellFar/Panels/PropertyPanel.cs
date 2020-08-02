@@ -110,8 +110,7 @@ namespace PowerShellFar
 				return;
 
 			// update that panel if the path is the same
-			PropertyPanel that = TargetPanel as PropertyPanel;
-			if (that != null && that.Explorer.ItemPath == Explorer.ItemPath)
+			if (TargetPanel is PropertyPanel that && that.Explorer.ItemPath == Explorer.ItemPath)
 				that.UpdateRedraw(true);
 		}
 	}

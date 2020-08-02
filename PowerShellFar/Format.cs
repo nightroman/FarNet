@@ -243,11 +243,10 @@ namespace PowerShellFar
 
 				// discover name
 				// _100309_121508 Linear type case
-				IEnumerable asIEnumerable;
 				PSPropertyInfo pi;
 				if (Converter.IsLinearType(value.BaseObject.GetType()))
 					file.Name = value.ToString();
-				else if ((asIEnumerable = value.BaseObject as IEnumerable) != null)
+				else if (value.BaseObject is IEnumerable asIEnumerable)
 					file.Name = Converter.FormatEnumerable(asIEnumerable, Settings.Default.FormatEnumerationLimit);
 				else if ((pi = A.FindDisplayProperty(value)) != null)
 					file.Name = A.SafeToString(A.SafePropertyValue(pi)); //_131106_104220
@@ -417,9 +416,11 @@ namespace PowerShellFar
 		/// <returns>Meta objects ready for column mapping.</returns>
 		internal static PanelPlan SetupPanelMode(IList<Meta> metas)
 		{
-			PanelPlan r = new PanelPlan();
+			PanelPlan r = new PanelPlan
+			{
+				Columns = new FarColumn[metas.Count]
+			};
 
-			r.Columns = new FarColumn[metas.Count];
 			for (int i = 0; i < metas.Count; ++i)
 				r.Columns[i] = metas[i];
 

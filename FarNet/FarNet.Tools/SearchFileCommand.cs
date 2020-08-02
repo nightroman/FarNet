@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet.Tools library for FarNet
-Copyright (c) 2010 Roman Kuzmin
-*/
+// FarNet.Tools library for FarNet
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections.Generic;
@@ -65,8 +63,7 @@ namespace FarNet.Tools
 		/// <param name="root">The root explorer.</param>
 		public SearchFileCommand(Explorer root)
 		{
-			if (root == null) throw new ArgumentNullException("root");
-			_RootExplorer = root;
+			_RootExplorer = root ?? throw new ArgumentNullException("root");
 		}
 		IEnumerable<FarFile> InvokeWithProgress()
 		{
@@ -219,8 +216,10 @@ namespace FarNet.Tools
 		{
 			if (sourcePanel == null) throw new ArgumentNullException("sourcePanel");
 
-			var panel = new SuperPanel();
-			panel.Title = Res.Searching;
+			var panel = new SuperPanel
+			{
+				Title = Res.Searching
+			};
 
 			// open panel (try)
 			panel.OpenChild(sourcePanel);
@@ -432,8 +431,7 @@ namespace FarNet.Tools
 						break;
 
 					// found file or directory, ignore anything else
-					var currentFile = iterator.Current.UnderlyingObject as SuperFile;
-					if (currentFile == null)
+					if (!(iterator.Current.UnderlyingObject is SuperFile currentFile))
 						continue;
 
 					// filter out directory, it is already done for files

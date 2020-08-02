@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Configuration;
@@ -12,7 +10,7 @@ namespace FarNet.Works.Config
 	class SettingsPanel : Panel
 	{
 		bool _isDirty;
-		SettingsExplorer _Explorer;
+		readonly SettingsExplorer _Explorer;
 		public SettingsPanel(SettingsExplorer explorer)
 			: base(explorer)
 		{
@@ -24,11 +22,13 @@ namespace FarNet.Works.Config
 			SortMode = PanelSortMode.Name;
 			ViewMode = PanelViewMode.AlternativeFull;
 
-			PanelPlan plan = new PanelPlan();
-			plan.Columns = new FarColumn[]
+			PanelPlan plan = new PanelPlan
 			{
-				new SetColumn() { Kind = "O", Name = "Setting" },
-				new SetColumn() { Kind = "Z", Name = "Value" }
+				Columns = new FarColumn[]
+				{
+					new SetColumn() { Kind = "O", Name = "Setting" },
+					new SetColumn() { Kind = "Z", Name = "Value" }
+				}
 			};
 			SetPlan(PanelViewMode.AlternativeFull, plan);
 		}

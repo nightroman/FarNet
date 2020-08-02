@@ -31,8 +31,7 @@ namespace FarNet
 		/// </remarks>
 		public virtual void OnThisFileChanged(EventArgs args)
 		{
-			var that = TargetPanel as Panel;
-			if (that != null)
+			if (TargetPanel is Panel that)
 				that.OnThatFileChanged(this, args);
 		}
 		/// <summary>
@@ -48,8 +47,7 @@ namespace FarNet
 		/// </remarks>
 		public virtual void UIExplorerEntered(ExplorerEnteredEventArgs args)
 		{
-			if (ExplorerEntered != null)
-				ExplorerEntered(this, args);
+			ExplorerEntered?.Invoke(this, args);
 		}
 		///
 		public static GetContentEventArgs WorksExportExplorerFile(Explorer explorer, Panel panel, ExplorerModes mode, FarFile file, string fileName)
@@ -75,18 +73,17 @@ namespace FarNet
 			string text = args.UseText as string;
 			if (text == null)
 			{
-				IEnumerable collection = args.UseText as IEnumerable;
-				if (collection == null)
-				{
-					text = args.UseText.ToString();
-				}
-				else
+				if (args.UseText is IEnumerable collection)
 				{
 					// write collection
 					using (StreamWriter writer = new StreamWriter(fileName, false, Encoding.Unicode))
 						foreach (var it in collection)
 							writer.WriteLine(it);
 					return args;
+				}
+				else
+				{
+					text = args.UseText.ToString();
 				}
 			}
 
@@ -314,8 +311,7 @@ namespace FarNet
 		///
 		public void WorksEscaping(KeyEventArgs e)
 		{
-			if (Escaping != null)
-				Escaping(this, e);
+			Escaping?.Invoke(this, e);
 		}
 		/// <summary>
 		/// Called when [Esc] or [ShiftEsc] is pressed and the command line is empty.
@@ -598,8 +594,7 @@ namespace FarNet
 		/// </remarks>
 		public virtual void UIIdle()
 		{
-			if (Idled != null)
-				Idled(this, null);
+			Idled?.Invoke(this, null);
 		}
 		/// <summary>
 		/// Called when a key is pressed.
@@ -611,8 +606,7 @@ namespace FarNet
 		///
 		public void WorksKeyPressed(KeyEventArgs e)
 		{
-			if (KeyPressed != null)
-				KeyPressed(this, e);
+			KeyPressed?.Invoke(this, e);
 		}
 		/// <summary>
 		/// Called when a key is pressed after the <see cref="KeyPressed"/> event.

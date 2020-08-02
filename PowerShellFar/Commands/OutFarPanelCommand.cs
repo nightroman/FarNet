@@ -27,8 +27,7 @@ namespace PowerShellFar.Commands
 		{
 			if (Append)
 			{
-				var panel = Far.Api.Panel as Panel;
-				if (panel == null || panel.GetType() != typeof(ObjectPanel))
+				if (!(Far.Api.Panel is Panel panel) || panel.GetType() != typeof(ObjectPanel))
 					throw new InvalidOperationException("There is no panel able to append objects.");
 
 				_panel = (ObjectPanel)panel;
@@ -50,8 +49,9 @@ namespace PowerShellFar.Commands
 					_panel.Title = A.Psf._myCommand;
 			}
 		}
+
 		// Use collector to control count of finaly added to the panel.
-		List<object> _Collector = new List<object>();
+		readonly List<object> _Collector = new List<object>();
 		protected override void ProcessRecord()
 		{
 			//! Skip null. 'Out-FarPanel' should open a panel with no items.

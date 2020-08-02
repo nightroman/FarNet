@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet.Settings library for FarNet
-Copyright (c) 2011-2016 Roman Kuzmin
-*/
+// FarNet.Settings library for FarNet
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections;

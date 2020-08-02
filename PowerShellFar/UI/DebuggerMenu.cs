@@ -11,7 +11,7 @@ namespace PowerShellFar.UI
 {
 	class DebuggerMenu
 	{
-		IListMenu _menu;
+		readonly IListMenu _menu;
 		IEditor _editor;
 		Collection<PSObject> _breakpoints;
 		bool _toStop;
@@ -91,8 +91,7 @@ namespace PowerShellFar.UI
 				// find
 				foreach (PSObject o in _breakpoints)
 				{
-					LineBreakpoint lbp = o.BaseObject as LineBreakpoint;
-					if (lbp != null && lbp.Action == null && line == lbp.Line && Kit.Equals(file, lbp.Script))
+					if (o.BaseObject is LineBreakpoint lbp && lbp.Action == null && line == lbp.Line && Kit.Equals(file, lbp.Script))
 					{
 						bpFound = lbp;
 						break;
@@ -187,8 +186,7 @@ namespace PowerShellFar.UI
 		}
 		void OnDelete(object sender, MenuEventArgs e)
 		{
-			Breakpoint bp = _menu.SelectedData as Breakpoint;
-			if (bp == null)
+			if (!(_menu.SelectedData is Breakpoint bp))
 			{
 				e.Ignore = true;
 				return;
@@ -212,8 +210,7 @@ namespace PowerShellFar.UI
 		}
 		void OnToggle(object sender, MenuEventArgs e)
 		{
-			Breakpoint bp = _menu.SelectedData as Breakpoint;
-			if (bp == null)
+			if (!(_menu.SelectedData is Breakpoint bp))
 			{
 				e.Ignore = true;
 				return;
@@ -226,8 +223,7 @@ namespace PowerShellFar.UI
 		}
 		void OnEdit(object sender, MenuEventArgs e)
 		{
-			Breakpoint bp = _menu.SelectedData as Breakpoint;
-			if (bp == null || string.IsNullOrEmpty(bp.Script))
+			if (!(_menu.SelectedData is Breakpoint bp) || string.IsNullOrEmpty(bp.Script))
 			{
 				e.Ignore = true;
 				return;

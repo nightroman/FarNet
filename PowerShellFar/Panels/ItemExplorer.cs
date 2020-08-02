@@ -55,8 +55,7 @@ namespace PowerShellFar
 			if (args == null) return;
 
 			// that source
-			var that = args.Explorer as ItemExplorer;
-			if (that == null)
+			if (!(args.Explorer is ItemExplorer))
 			{
 				if (args.UI) A.Message(Res.UnknownFileSource);
 				args.Result = JobResult.Ignore;
@@ -256,10 +255,11 @@ namespace PowerShellFar
 		Explorer Explore(string location)
 		{
 			//! propagate the provider, or performance sucks
-			var newExplorer = new ItemExplorer(location);
-			newExplorer.Provider = Provider;
-			newExplorer.Columns = Columns;
-			return newExplorer;
+			return new ItemExplorer(location)
+			{
+				Provider = Provider,
+				Columns = Columns
+			};
 		}
 		internal override void BuildFiles(Collection<PSObject> values)
 		{
@@ -291,8 +291,7 @@ namespace PowerShellFar
 		{
 			if (args == null) return;
 
-			var newName = args.Parameter as string;
-			if (newName == null)
+			if (!(args.Parameter is string newName))
 				throw new InvalidOperationException(Res.ParameterString);
 
 			// workaround; Rename-Item has no -LiteralPath; e.g. z`z[z.txt is a big problem
@@ -371,8 +370,7 @@ namespace PowerShellFar
 		{
 			if (args == null) return;
 
-			var newName = args.Parameter as string;
-			if (newName == null)
+			if (!(args.Parameter is string newName))
 				throw new InvalidOperationException(Res.ParameterString);
 
 			string source = Kit.EscapeWildcard(My.PathEx.Combine(Location, args.File.Name));

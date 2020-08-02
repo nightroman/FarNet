@@ -37,20 +37,21 @@ namespace PowerShellFar.Commands
 		public SwitchParameter Asynchronous { get; set; }
 		protected override void BeginProcessing()
 		{
-			Panel panel = Far.Api.Panel as Panel;
-			if (panel == null)
+			if (!(Far.Api.Panel is Panel panel))
 			{
 				WriteWarning("This is not a module panel.");
 				return;
 			}
 
 			// setup the search
-			var search = new SearchFileCommand(panel.Explorer);
-			search.XPath = XPath;
-			search.XFile = XFile;
-			search.Depth = Depth;
-			search.Recurse = Recurse;
-			search.Directory = Directory;
+			var search = new SearchFileCommand(panel.Explorer)
+			{
+				XPath = XPath,
+				XFile = XFile,
+				Depth = Depth,
+				Recurse = Recurse,
+				Directory = Directory
+			};
 			if (Mask != null)
 			{
 				search.Filter = delegate(Explorer explorer, FarFile file)

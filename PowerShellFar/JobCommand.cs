@@ -3,9 +3,7 @@
 // Copyright (c) Roman Kuzmin
 
 using System;
-using System.Collections;
 using System.Management.Automation;
-using System.Management.Automation.Runspaces;
 
 namespace PowerShellFar
 {
@@ -18,7 +16,7 @@ namespace PowerShellFar
 	/// </remarks>
 	public sealed class JobCommand
 	{
-		bool IsScript;
+		readonly bool IsScript;
 
 		/// <summary>
 		/// Command name or code.
@@ -31,10 +29,7 @@ namespace PowerShellFar
 		/// <param name="commandName">Command name or script file name/path.</param>
 		public JobCommand(string commandName)
 		{
-			if (commandName == null)
-				throw new ArgumentNullException("commandName");
-
-			Command = commandName;
+			Command = commandName ?? throw new ArgumentNullException("commandName");
 		}
 
 		/// <summary>
@@ -57,10 +52,7 @@ namespace PowerShellFar
 		/// <param name="isScript">Command text is script code.</param>
 		public JobCommand(string commandText, bool isScript)
 		{
-			if (commandText == null)
-				throw new ArgumentNullException("commandText");
-
-			Command = commandText;
+			Command = commandText ?? throw new ArgumentNullException("commandText");
 			IsScript = isScript;
 		}
 

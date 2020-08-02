@@ -10,21 +10,20 @@ namespace PowerShellFar.UI
 {
 	class BreakpointDialog
 	{
-		static VariableAccessMode variableAccessMode = VariableAccessMode.Write;
+		static readonly VariableAccessMode variableAccessMode = VariableAccessMode.Write;
+		readonly int Type;
+		readonly IDialog UIDialog;
 
-		int Type;
-		IDialog UIDialog;
-
-		IComboBox UIMode;
+		readonly IComboBox UIMode;
 		internal string Mode { get { return UIMode.Text; } }
 
-		IEdit UIMatter;
+		readonly IEdit UIMatter;
 		internal string Matter { get { return UIMatter.Text; } }
 
-		IEdit UIScript;
+		readonly IEdit UIScript;
 		internal string Script { get; private set; }
 
-		IEdit UIAction;
+		readonly IEdit UIAction;
 		internal ScriptBlock Action { get; private set; }
 
 		public BreakpointDialog(int type, string script, int line)
@@ -108,8 +107,7 @@ namespace PowerShellFar.UI
 
 			if (Type == 0)
 			{
-				int value;
-				if (!int.TryParse(UIMatter.Text, out value) || value <= 0)
+				if (!int.TryParse(UIMatter.Text, out int value) || value <= 0)
 				{
 					Far.Api.Message("Invalid line number", "Line");
 					UIDialog.Focused = UIMatter;

@@ -21,9 +21,9 @@ namespace PowerShellFar.Commands
 		public SwitchParameter Passive { get; set; }
 		internal class PathEnumerator : My.Enumerator<string, FarFile>
 		{
-			string _path;
-			bool _realNames;
-			bool _joinRealNames;
+			readonly string _path;
+			readonly bool _realNames;
+			readonly bool _joinRealNames;
 			public PathEnumerator(IEnumerable<FarFile> files, string path, bool realNames, bool joinRealNames)
 				: base(files)
 			{

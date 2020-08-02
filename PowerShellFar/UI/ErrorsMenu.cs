@@ -36,16 +36,14 @@ namespace PowerShellFar.UI
 			foreach (object error in errors)
 			{
 				// exception:
-				var asException = error as Exception;
-				if (asException != null)
+				if (error is Exception asException)
 				{
 					_menu.Add(GetErrorMessage(asException.Message)).Data = error;
 					continue;
 				}
 
 				// record:
-				var asRecord = error as ErrorRecord;
-				if (asRecord != null)
+				if (error is ErrorRecord asRecord)
 				{
 					var item = _menu.Add(GetErrorMessage(asRecord.ToString()));
 					item.Data = error;
@@ -72,8 +70,7 @@ namespace PowerShellFar.UI
 
 				var error = _menu.SelectedData;
 
-				var asException = error as Exception;
-				if (asException != null)
+				if (error is Exception asException)
 				{
 					if (_menu.Key.VirtualKeyCode != 0)
 						continue;
@@ -82,8 +79,7 @@ namespace PowerShellFar.UI
 					continue;
 				}
 
-				var asRecord = error as ErrorRecord;
-				if (asRecord != null)
+				if (error is ErrorRecord asRecord)
 				{
 					if (_menu.Key.Is(KeyCode.F4))
 					{

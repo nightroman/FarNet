@@ -16,18 +16,7 @@ namespace PowerShellFar
 {
 	class FarUI : UniformUI
 	{
-		const string TextDefaultChoiceForMultipleChoices = @"(default is ""{0}"")";
-		const string TextDefaultChoicePrompt = @"(default is ""{0}"")";
-		const string TextDefaultChoicesForMultipleChoices = "(default choices are {0})";
-		const string TextPrompt = ": ";
-		const string TextPromptForChoiceHelp = "[?] Help ";
-
-		const ConsoleColor ForegroundColor = ConsoleColor.Gray;
-		const ConsoleColor BackgroundColor = ConsoleColor.Black;
-		const ConsoleColor PromptColor = ConsoleColor.White;
-		const ConsoleColor DefaultPromptColor = ConsoleColor.Yellow;
-
-		Stack<OutputWriter> _writers = new Stack<OutputWriter>();
+		readonly Stack<OutputWriter> _writers = new Stack<OutputWriter>();
 		ConsoleOutputWriter _console;
 
 		/// <summary>

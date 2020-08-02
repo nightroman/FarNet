@@ -2,12 +2,11 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
+using FarNet;
 using System;
 using System.Globalization;
 using System.Management.Automation.Host;
-using System.Reflection;
 using System.Threading;
-using FarNet;
 
 namespace PowerShellFar
 {
@@ -19,9 +18,9 @@ namespace PowerShellFar
 		// This instance ID.
 		static Guid _InstanceId = Guid.NewGuid();
 		// Original current culture.
-		CultureInfo _CurrentCulture = Thread.CurrentThread.CurrentCulture;
+		readonly CultureInfo _CurrentCulture = Thread.CurrentThread.CurrentCulture;
 		// User interface object.
-		PSHostUserInterface _UI;
+		readonly PSHostUserInterface _UI;
 		// Nested prompt editor.
 		IEditor _nested;
 		/// <summary>

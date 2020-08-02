@@ -2,9 +2,6 @@
 // http://www.codeproject.com/KB/threads/AbortIfSafe.aspx
 
 using System;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Threading;
 
 namespace Pfz.Threading
 {

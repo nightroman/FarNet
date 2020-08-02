@@ -73,8 +73,7 @@ namespace PowerShellFar.UI
 					return;
 				if (ui._Depth.Text.Length != 0)
 				{
-					int r;
-					if (!int.TryParse(ui._Depth.Text, out r) || r <= 0)
+					if (!int.TryParse(ui._Depth.Text, out int r) || r <= 0)
 					{
 						A.Message("Invalid depth value");
 						ui._Dialog.Focused = ui._Depth;

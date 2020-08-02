@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet plugin for Far Manager
-Copyright (c) 2006-2016 Roman Kuzmin
-*/
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
 
 using System.Collections.Generic;
 using FarNet.Forms;
@@ -36,9 +34,8 @@ namespace FarNet.Works
 					if (mask == null)
 						continue;
 
-					int priority;
 					string priorityText = dialog.Priority.Text.Trim();
-					if (!int.TryParse(priorityText, out priority))
+					if (!int.TryParse(priorityText, out int priority))
 					{
 						Far.Api.Message("Invalid Priority.");
 						continue;
