@@ -203,6 +203,12 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 				inputScript = editLine.Text;
 				cursorColumn = editLine.Caret;
 
+				//_200805_i3 Deal with auto complete selection.
+				// use selection start as cursor column
+				var selectionSpan = editLine.SelectionSpan;
+				if (cursorColumn == selectionSpan.End)
+					cursorColumn = selectionSpan.Start;
+
 				// process prefix, used to be just for panels but it is needed in dialogs, too
 				Entry.SplitCommandWithPrefix(ref inputScript, out prefix);
 
@@ -284,9 +290,6 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 		public static void ExpandText(ILine editLine, int replacementIndex, int replacementLength, IList words)
 		{
 			bool isEmpty = words.Count == 0;
-			var text = editLine.Text;
-			var last = replacementIndex + replacementLength - 1;
-			bool custom = last > 0 && last < text.Length && text[last] == '='; //_140112_150217 last can be out of range
 
 			// select a word
 			string word;
@@ -343,6 +346,17 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 					word = TECompletionText(menu.Items[menu.Selected].Data);
 				}
 			}
+
+			// get original text and custom mode
+			var text = editLine.Text;
+			var last = replacementIndex + replacementLength - 1;
+			bool custom = last > 0 && last < text.Length && text[last] == '='; //_140112_150217 last can be out of range
+
+			//_200805_i3 Deal with auto complete selection.
+			// remove selected text before replacement
+			var selectionSpan = editLine.SelectionSpan;
+			if (selectionSpan.Start == replacementIndex + replacementLength)
+				text = text.Substring(0, selectionSpan.Start) + text.Substring(selectionSpan.End, text.Length - selectionSpan.End);
 
 			// replace
 
