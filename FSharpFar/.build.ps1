@@ -12,11 +12,11 @@ $ModuleName = 'FSharpFar'
 $ProjectRoot = 'src'
 $ProjectName = "$ModuleName.fsproj"
 
-task Init Meta, {
+task init meta, {
 	exec {paket.exe install}
 }
 
-task Kill Clean, {
+task kill clean, {
 	remove @(
 		'packages'
 		'paket-files'
@@ -25,11 +25,11 @@ task Kill Clean, {
 	)
 }
 
-task Build {
+task build {
 	exec {dotnet build $ProjectRoot\$ModuleName.sln /p:FarHome=$FarHome /p:Configuration=$Configuration}
 }
 
-task Clean {
+task clean {
 	remove @(
 		'z'
 		'README.htm'
@@ -40,7 +40,7 @@ task Clean {
 	)
 }
 
-task Markdown {
+task markdown {
 	assert (Test-Path $env:MarkdownCss)
 	exec { pandoc.exe @(
 		'README.md'
@@ -51,11 +51,11 @@ task Markdown {
 	)}
 }
 
-task Version {
+task version {
 	($script:Version = switch -regex -file History.txt {'^= (\d+\.\d+\.\d+) =$' {$matches[1]; break}})
 }
 
-task Meta -Inputs .build.ps1, History.txt -Outputs src/Directory.Build.props -Jobs Version, {
+task meta -Inputs .build.ps1, History.txt -Outputs src/Directory.Build.props -Jobs version, {
 	Set-Content src/Directory.Build.props @"
 <Project>
 	<PropertyGroup>
@@ -71,7 +71,7 @@ task Meta -Inputs .build.ps1, History.txt -Outputs src/Directory.Build.props -Jo
 "@
 }
 
-task Package Markdown, {
+task package markdown, {
 	remove z
 	$toModule = mkdir "z\tools\FarHome\FarNet\Modules\$ModuleName"
 	$fromModule = "$FarHome\FarNet\Modules\$ModuleName"
@@ -107,7 +107,7 @@ task Package Markdown, {
 	)
 }
 
-task NuGet Package, Version, {
+task nuget package, version, {
 	# test versions
 	$dllPath = "$FarHome\FarNet\Modules\$ModuleName\$ModuleName.dll"
 	($dllVersion = (Get-Item $dllPath).VersionInfo.FileVersion.ToString())
@@ -148,22 +148,22 @@ https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
 	exec { NuGet pack z\Package.nuspec -NoPackageAnalysis }
 }
 
-task TestTesting {
+task test_testing {
 	Start-Far "fs: //exec file=$env:FarDev\Code\FSharpFar\samples\Testing\App1.fsx" -ReadOnly -Title Testing -Environment @{QuitFarAfterTests=1}
 }
 
-task TestTests {
+task test_tests {
 	Start-Far "fs: //exec file=$env:FarDev\Code\FSharpFar\tests\App1.fsx" -ReadOnly -Title Tests -Environment @{QuitFarAfterTests=1}
 }
 
-task TestSteps {
+task test_steps {
 	Start-Far "ps: Test-Far-.ps1 * -Quit #" $env:FarDev\Test\FSharpFar.test -ReadOnly -Title Steps
 }
 
-task TestFsx {
+task test_fsx {
 	Invoke-Build Test src\fsx\.build.ps1
 }
 
-task Test TestSteps, TestTests, TestTesting, TestFsx
+task test test_steps, test_tests, test_testing, test_fsx
 
-task . Build, Clean
+task . build, clean

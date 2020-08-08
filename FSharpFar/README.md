@@ -4,6 +4,7 @@ https://github.com/fsharp/FSharp.Compiler.Service/blob/master/fcs/RELEASE_NOTES.
 
 [/samples]: https://github.com/nightroman/FarNet/tree/master/FSharpFar/samples
 [TryPanelFSharp]: https://github.com/nightroman/FarNet/tree/master/FSharpFar/samples/TryPanelFSharp
+[F# Interactive Options]: https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/fsharp-interactive-options
 
 # FarNet.FSharpFar
 
@@ -31,12 +32,12 @@ F# scripting and interactive services in Far Manager
 
 **Installation**
 
-FSharpFar requires Far Manager, FarNet, .NET 4.6.1. \
+FSharpFar requires Far Manager, FarNet, .NET 4.7.2 \
 F# or anything else does not have to be installed.
 
 [Get, install, update FarNet and FarNet.FSharpFar.](https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt)
 
-As a result, you get the complete F# scripting tool set portable with Far Manager. \
+As a result, you get the complete F# scripting portable with Far Manager. \
 Use it with Far Manager by FSharpFar or without Far Manager by fsx.exe.
 
 **Improve performance**
@@ -252,8 +253,8 @@ File2.fs
 
 **`[fsi]`**
 
-This section defines [F# Interactive Options](https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/fsharp-interactive-options)
-and source files used for interactive sessions and evaluating scripts.
+This section defines [F# Interactive Options] and source files used for
+interactive sessions and evaluating scripts.
 
 `--use` files are particularly useful for interactive commands. They normally
 open frequently used namespaces and modules and define some helper functions
@@ -599,7 +600,7 @@ fsx.exe [*.ini] [options] [script [arguments]]
 
 If the first argument is like `*.ini` then it is treated as the configuration
 file for F# compiler options, references, and sources from the `[fsc]` section.
-Other arguments are [F# Interactive Options](https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/fsharp-interactive-options).
+Other arguments are [F# Interactive Options].
 
 If the configuration is omitted then `fsx.exe` looks for `*.fs.ini` in the last
 specified source file directory, or the current directory for a command without

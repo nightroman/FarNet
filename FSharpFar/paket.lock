@@ -1,16 +1,32 @@
 REFERENCES: STRICT
 COPY-LOCAL: FALSE
-RESTRICTION: == net461
+RESTRICTION: == net472
 NUGET
   remote: https://www.nuget.org/api/v2
-    FSharp.Compiler.Service (36.0.3)
+    FSharp.Compiler.Service (37.0)
       FSharp.Core (>= 4.6.2)
+      Microsoft.Build.Framework (>= 16.6)
+      Microsoft.Build.Tasks.Core (>= 16.6)
+      Microsoft.Build.Utilities.Core (>= 16.6)
       System.Buffers (>= 4.5)
       System.Collections.Immutable (>= 1.5)
       System.Memory (>= 4.5.3)
       System.Reflection.Metadata (>= 1.6)
       System.ValueTuple (>= 4.4)
     FSharp.Core (4.7.2)
+    Microsoft.Build.Framework (16.6)
+    Microsoft.Build.Tasks.Core (16.6)
+      Microsoft.Build.Framework (>= 16.6)
+      Microsoft.Build.Utilities.Core (>= 16.6)
+      Microsoft.VisualStudio.Setup.Configuration.Interop (>= 1.16.30)
+      System.Collections.Immutable (>= 1.5)
+      System.Resources.Extensions (>= 4.6)
+      System.Threading.Tasks.Dataflow (>= 4.9)
+    Microsoft.Build.Utilities.Core (16.6)
+      Microsoft.Build.Framework (>= 16.6)
+      Microsoft.VisualStudio.Setup.Configuration.Interop (>= 1.16.30)
+      System.Collections.Immutable (>= 1.5)
+    Microsoft.VisualStudio.Setup.Configuration.Interop (1.16.30)
     System.Buffers (4.5.1)
     System.Collections.Immutable (1.5)
     System.Memory (4.5.4)
@@ -20,5 +36,8 @@ NUGET
     System.Numerics.Vectors (4.5)
     System.Reflection.Metadata (1.6)
       System.Collections.Immutable (>= 1.5)
+    System.Resources.Extensions (4.7.1)
+      System.Memory (>= 4.5.4)
     System.Runtime.CompilerServices.Unsafe (4.7.1)
+    System.Threading.Tasks.Dataflow (4.11.1)
     System.ValueTuple (4.5)

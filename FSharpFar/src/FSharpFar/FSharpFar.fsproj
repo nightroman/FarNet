@@ -7,7 +7,7 @@
     <DisableImplicitSystemValueTupleReference>true</DisableImplicitSystemValueTupleReference>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <RunPostBuildEvent>1</RunPostBuildEvent>
     <WarningLevel>5</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -61,18 +61,27 @@
       <Private>false</Private>
     </Reference>
     <Reference Include="FSharp.Compiler.Service">
-      <HintPath>..\..\packages\FSharp.Compiler.Service\lib\$(TargetFramework)\FSharp.Compiler.Service.dll</HintPath>
+      <HintPath>..\..\packages\FSharp.Compiler.Service\lib\net461\FSharp.Compiler.Service.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Copy DestinationFolder="$(MyOutDir)" SourceFiles="$(OutDir)\$(AssemblyName).dll" />
-    <Copy DestinationFolder="$(MyOutDir)" SourceFiles="$(OutDir)\$(AssemblyName).pdb" Condition="'$(Configuration)' == 'Debug'" />
-    <Delete Files="$(MyOutDir)\$(AssemblyName).pdb" Condition="'$(Configuration)' == 'Release'" />
-    <Copy DestinationFolder="$(FarHome)" SkipUnchangedFiles="true" SourceFiles="..\..\packages\FSharp.Core\lib\net45\FSharp.Core.dll; ..\..\packages\FSharp.Core\lib\net45\FSharp.Core.xml" />
-    <Copy DestinationFolder="$(MyOutDir)" SkipUnchangedFiles="true" SourceFiles="..\..\packages\FSharp.Compiler.Service\lib\$(TargetFramework)\FSharp.Compiler.Service.dll; ..\..\packages\System.Reflection.Metadata\lib\portable-net45+win8\System.Reflection.Metadata.dll" />
-    <Copy DestinationFolder="$(MyOutDir)" SkipUnchangedFiles="true" SourceFiles="..\..\packages\System.Buffers\lib\netstandard2.0\System.Buffers.dll" />
-    <Copy DestinationFolder="$(MyOutDir)" SkipUnchangedFiles="true" SourceFiles="..\..\packages\System.Collections.Immutable\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll" />
-    <Copy DestinationFolder="$(MyOutDir)" SkipUnchangedFiles="true" SourceFiles="..\..\packages\System.ValueTuple\lib\portable-net40+sl4+win8+wp8\System.ValueTuple.dll" />
+    <ItemGroup>
+      <MyItem1 Include="..\..\packages\FSharp.Core\lib\net45\FSharp.Core.dll" />
+      <MyItem1 Include="..\..\packages\FSharp.Core\lib\net45\FSharp.Core.xml" />
+    </ItemGroup>
+    <ItemGroup>
+      <MyItem2 Include="$(OutDir)\$(AssemblyName).dll" />
+      <MyItem2 Include="..\..\packages\FSharp.Compiler.Service\lib\net461\FSharp.Compiler.Service.dll" />
+      <MyItem2 Include="..\..\packages\Microsoft.Build.Framework\lib\net472\Microsoft.Build.Framework.dll" />
+      <MyItem2 Include="..\..\packages\Microsoft.Build.Tasks.Core\lib\net472\Microsoft.Build.Tasks.Core.dll" />
+      <MyItem2 Include="..\..\packages\Microsoft.Build.Utilities.Core\lib\net472\Microsoft.Build.Utilities.Core.dll" />
+      <MyItem2 Include="..\..\packages\System.Buffers\lib\netstandard2.0\System.Buffers.dll" />
+      <MyItem2 Include="..\..\packages\System.Collections.Immutable\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll" />
+      <MyItem2 Include="..\..\packages\System.Reflection.Metadata\lib\portable-net45+win8\System.Reflection.Metadata.dll" />
+      <MyItem2 Include="..\..\packages\System.ValueTuple\lib\portable-net40+sl4+win8+wp8\System.ValueTuple.dll" />
+    </ItemGroup>
+    <Copy DestinationFolder="$(FarHome)" SourceFiles="@(MyItem1)" SkipUnchangedFiles="true" />
+    <Copy DestinationFolder="$(MyOutDir)" SourceFiles="@(MyItem2)" SkipUnchangedFiles="true" />
   </Target>
 </Project>
