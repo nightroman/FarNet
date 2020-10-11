@@ -13,7 +13,8 @@ $ProjectRoot = 'src'
 $ProjectName = "$ModuleName.fsproj"
 
 task init meta, {
-	exec {paket.exe install}
+	exec {dotnet tool restore}
+	exec {dotnet paket install}
 }
 
 task kill clean, {
