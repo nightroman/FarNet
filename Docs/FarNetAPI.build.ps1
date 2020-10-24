@@ -4,23 +4,23 @@ param(
 )
 $FarHome = "C:\Bin\Far\$Platform"
 
-task Build {
+task build {
 	Set-Alias MSBuild (Resolve-MSBuild)
 	exec { MSBuild FarNetAPI.shfbproj /p:Configuration=Release }
 },
-Test
+test
 
-task Install {
+task install {
 	assert (Test-Path Help\FarNetAPI.chm) "Please, invoke Build."
-	Remove-Item $FarHome\FarNet\FarNetAPI.*
+	remove $FarHome\FarNet\FarNetAPI.*
 	Copy-Item Help\FarNetAPI.chm $FarHome\FarNet
 }
 
-task Clean {
+task clean {
 	remove Help, obj, *.shfbproj_*
 }
 
-task Test {
+task test {
      $r = Select-Xml -Path Help\LastBuild.log -XPath 'shfbBuild/buildStep[@step="BuildReferenceTopics"]'
      $lines = $r.Node.'#text' -split '[\r\n]+'
      foreach($line in $lines) {
@@ -37,3 +37,9 @@ task Test {
           }
      }
 }
+
+task run {
+	Invoke-Item $FarHome\FarNet\FarNetAPI.chm
+}
+
+task . build, install, run
