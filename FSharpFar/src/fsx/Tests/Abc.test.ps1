@@ -36,6 +36,7 @@ task test_01_arguments {
 
 task test_01_arguments_fsi {
 	if (!$env:fsi) {
+		# set-env fsi "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\fsi.exe"
 		Write-Warning "define env:fsi"
 		return
 	}
