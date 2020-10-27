@@ -2,7 +2,7 @@
 // FarNet plugin for Far Manager
 // Copyright (c) Roman Kuzmin
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "Message.h"
 
 namespace FarNet
@@ -20,39 +20,37 @@ bool Message::Show()
 			flags |= FMSG_MB_OK;
 	}
 
-	int nbItems;
-	CStr* items = CreateBlock(nbItems);
+	auto items = CreateBlock();
+
 	PIN_NS(pinHelpTopic, _helpTopic);
 	_selected = (int)Info.Message(
 		&MainGuid,
 		nullptr,
 		flags,
 		pinHelpTopic,
-		(wchar_t**)items,
-		nbItems,
+		(wchar_t**)items.data(),
+		items.size(),
 		_buttons ? _buttons->Length : 0);
-	delete[] items;
 
 	return _selected != -1;
 }
 
-CStr* Message::CreateBlock(int& outNbItems)
+std::vector<CStr> Message::CreateBlock()
 {
-	outNbItems = (_buttons ? _buttons->Length : 0) + (_body.Count == 0 ? 2 : 1 + _body.Count);
-	CStr* r = new CStr[outNbItems];
+	std::vector<CStr> items((_buttons ? _buttons->Length : 0) + (_body.Count == 0 ? 2 : 1 + _body.Count));
 
-	r[0].Set(_header);
+	items[0].Set(_header);
 	int index = 1;
 	if (_body.Count == 0)
 	{
-		r[index].Set(String::Empty);
+		items[index].Set(String::Empty);
 		++index;
 	}
 	else
 	{
 		for each(String^ s in _body)
 		{
-			r[index].Set(s);
+			items[index].Set(s);
 			++index;
 		}
 	}
@@ -61,12 +59,12 @@ CStr* Message::CreateBlock(int& outNbItems)
 	{
 		for each(String^ s in _buttons)
 		{
-			r[index].Set(s);
+			items[index].Set(s);
 			++index;
 		}
 	}
 
-	return r;
+	return items;
 }
 
 int Message::Show(MessageArgs^ args)

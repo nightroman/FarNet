@@ -6,12 +6,10 @@
 param(
 	$Platform = (property Platform x64),
 	$Configuration = (property Configuration Release),
-	$TargetFrameworkVersion = (property TargetFrameworkVersion v3.5)
+	$TargetFrameworkVersion = (property TargetFrameworkVersion v4.5)
 )
 
 $FarHome = "C:\Bin\Far\$Platform"
-
-Set-Alias MSBuild (Resolve-MSBuild)
 
 $Builds = @(
 	'FarNet\FarNet.build.ps1'
@@ -19,7 +17,7 @@ $Builds = @(
 )
 
 # Synopsis: Remove temp files.
-task Clean {
+task clean {
 	foreach($_ in $Builds) { Invoke-Build Clean $_ }
 	Invoke-Build Clean FSharpFar\.build.ps1
 
@@ -27,7 +25,7 @@ task Clean {
 }
 
 # Synopsis: Generate or update meta files.
-task Meta -Inputs Get-Version.ps1 -Outputs (
+task meta -Inputs .build.ps1, Get-Version.ps1 -Outputs (
 	'FarNet\AssemblyMeta.cs',
 	'FarNet\FarNetMan\Active.h',
 	'FarNet\FarNetMan\AssemblyMeta.h',
@@ -62,7 +60,7 @@ using System.Reflection;
 [assembly: AssemblyCompany("https://github.com/nightroman/FarNet")];
 [assembly: AssemblyTitle("FarNet plugin manager")];
 [assembly: AssemblyDescription("FarNet plugin manager")];
-[assembly: AssemblyCopyright("Copyright (c) 2006-2019 Roman Kuzmin")];
+[assembly: AssemblyCopyright("Copyright (c) Roman Kuzmin")];
 "@
 
 	Set-Content PowerShellFar\AssemblyMeta.cs @"
@@ -74,41 +72,37 @@ using System.Reflection;
 }
 
 # Synopsis: Build projects and PSF help.
-task Build Meta, {
-	$PlatformToolset = if ($TargetFrameworkVersion -lt 'v4') {'v90'} else {'v140'}
-
+task build meta, {
 	#! build the whole solution, i.e. FarNet, FarNetMan, PowerShellFar
-	exec { MSBuild @(
+	exec { & (Resolve-MSBuild) @(
 		'FarNetAccord.sln'
 		'/verbosity:minimal'
 		"/p:FarHome=$FarHome"
 		"/p:Platform=$Platform"
 		"/p:Configuration=$Configuration"
-		"/p:TargetFrameworkVersion=$TargetFrameworkVersion"
-		"/p:PlatformToolset=$PlatformToolset"
 	)}
 
 	Invoke-Build -File PowerShellFar\PowerShellFar.build.ps1 -Task Help, BuildPowerShellFarHelp
 }
 
 # Synopsis: Build and install API docs.
-task Docs {
+task docs {
 	Invoke-Build Build, Install, Clean ./Docs/.build.ps1
 }
 
 # Synopsis: Copy files to FarHome.
-task Install {
+task install {
 	assert (!(Get-Process [F]ar)) 'Please exit Far.'
 	foreach($_ in $Builds) { Invoke-Build Install $_ }
 }
 
 # Synopsis: Remove files from FarHome.
-task Uninstall {
+task uninstall {
 	foreach($_ in $Builds) { Invoke-Build Uninstall $_ }
 }
 
 # Synopsis: Make the NuGet packages at $Home.
-task NuGet {
+task nuget {
 	# Test build of the sample modules, make sure they are alive
 	Invoke-Build TestBuild Modules\Modules.build.ps1
 

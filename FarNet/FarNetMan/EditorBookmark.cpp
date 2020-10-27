@@ -2,7 +2,7 @@
 // FarNet plugin for Far Manager
 // Copyright (c) Roman Kuzmin
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "EditorBookmark.h"
 #include "Wrappers.h"
 
@@ -21,22 +21,21 @@ static TextFrame NewTextFrame(const EditorBookmarks& bookmarks, int index)
 
 static ICollection<TextFrame>^ GetBookmarks(EDITOR_CONTROL_COMMANDS command)
 {
-	size_t size = Info.EditorControl(-1, command, 0, 0);
+	auto size = Info.EditorControl(-1, command, 0, 0);
 	if (size == 0)
 		return gcnew List<TextFrame>();
 	
-	char* buffer = new char[size];
-	EditorBookmarks& ebm = *(EditorBookmarks*)buffer;
-	ebm.StructSize = sizeof(EditorBookmarks);
-	ebm.Size = size;
+	auto data = std::make_unique<char[]>(size);
+	auto ebm = (EditorBookmarks*)data.get();
+	ebm->StructSize = sizeof(EditorBookmarks);
+	ebm->Size = size;
 
-	Info.EditorControl(-1, command, 0, buffer);
-	List<TextFrame>^ r = gcnew List<TextFrame>((int)ebm.Count);
+	Info.EditorControl(-1, command, 0, ebm);
+	List<TextFrame>^ r = gcnew List<TextFrame>((int)ebm->Count);
 
-	for(size_t i = 0; i < ebm.Count; ++i)
-		r->Add(NewTextFrame(ebm, (int)i));
-	
-	delete[] buffer;
+	for (size_t i = 0; i < ebm->Count; ++i)
+		r->Add(NewTextFrame(*ebm, (int)i));
+
 	return r;
 }
 

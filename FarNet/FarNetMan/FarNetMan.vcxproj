@@ -101,8 +101,8 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\$(Platform)\</OutDir>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\ROM\INC;$(IncludePath)</IncludePath>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\ROM\INC;$(IncludePath)</IncludePath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(FarNetInclude1);C:\ROM\INC;$(IncludePath);$(FarNetInclude2)</IncludePath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(FarNetInclude1);C:\ROM\INC;$(IncludePath);$(FarNetInclude2)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\ROM\INC;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\ROM\INC;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -160,7 +160,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Bin\Far\Win32\PluginSDK\Headers.c;$(FarNetInclude1);%(AdditionalIncludeDirectories);$(FarNetInclude2)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Bin\Far\Win32\PluginSDK\Headers.c;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalUsingDirectories>%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -186,7 +186,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Bin\Far\x64\PluginSDK\Headers.c;$(FarNetInclude1);%(AdditionalIncludeDirectories);$(FarNetInclude2)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Bin\Far\x64\PluginSDK\Headers.c;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
       <PrecompiledHeader>Use</PrecompiledHeader>

@@ -1,5 +1,7 @@
 
 #pragma once
+#include <memory>
+#include <vector>
 #include <vcclr.h>
 #include "plugin.hpp"
 

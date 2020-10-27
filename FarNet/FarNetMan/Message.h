@@ -15,7 +15,7 @@ internal:
 private:
 	bool Show();
 	int ShowDialog(int maxTextWidth, bool needButtonList);
-	CStr* CreateBlock(int& outNbItems);
+	std::vector<CStr> CreateBlock();
 	static int GetButtonLineLength(array<String^>^ buttons);
 private:
 	int _flags;

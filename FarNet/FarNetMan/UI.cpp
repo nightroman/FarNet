@@ -2,7 +2,7 @@
 // FarNet plugin for Far Manager
 // Copyright (c) Roman Kuzmin
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UI.h"
 #include "Wrappers.h"
 
@@ -249,57 +249,50 @@ array<Works::BufferCell, 2>^ FarUI::GetBufferContents(Place rectangle)
 	const int w1 = rectangle.Right - rectangle.Left + 1;
 	const int h1 = rectangle.Bottom - rectangle.Top + 1;
 
-	CHAR_INFO* buf = new CHAR_INFO[w1*h1];
-	try
+	auto buf = std::make_unique<CHAR_INFO[]>(w1 * h1);
+	COORD coordBufSize;
+	coordBufSize.X = (SHORT)w1;
+	coordBufSize.Y = (SHORT)h1;
+	COORD coordBufCoord;
+	coordBufCoord.X = 0;
+	coordBufCoord.Y = 0;
+	SMALL_RECT srctReadRect;
+	srctReadRect.Bottom = (SHORT)rectangle.Bottom;
+	srctReadRect.Left = (SHORT)rectangle.Left;
+	srctReadRect.Right = (SHORT)rectangle.Right;
+	srctReadRect.Top = (SHORT)rectangle.Top;
+
+	if (!ReadConsoleOutput(hStdout, buf.get(), coordBufSize, coordBufCoord, &srctReadRect))
+		ThrowWithLastError("ReadConsoleOutput");
+
+	// actual size
+	const int w2 = srctReadRect.Right - srctReadRect.Left + 1;
+	const int h2 = srctReadRect.Bottom - srctReadRect.Top + 1;
+
+	// fill result padding with an empty cell
+	Works::BufferCell empty(' ', Console::ForegroundColor, Console::BackgroundColor, Works::BufferCellType::Complete);
+	array<Works::BufferCell, 2>^ r = gcnew array<Works::BufferCell, 2>(h1, w1);
+	for(int i = 0, k = 0; i < h2; ++i)
 	{
-		COORD coordBufSize;
-		coordBufSize.X = (SHORT)w1;
-		coordBufSize.Y = (SHORT)h1;
-		COORD coordBufCoord;
-		coordBufCoord.X = 0;
-		coordBufCoord.Y = 0;
-		SMALL_RECT srctReadRect;
-		srctReadRect.Bottom = (SHORT)rectangle.Bottom;
-		srctReadRect.Left = (SHORT)rectangle.Left;
-		srctReadRect.Right = (SHORT)rectangle.Right;
-		srctReadRect.Top = (SHORT)rectangle.Top;
-
-		if (!ReadConsoleOutput(hStdout, buf, coordBufSize, coordBufCoord, &srctReadRect))
-			ThrowWithLastError("ReadConsoleOutput");
-
-		// actual size
-		const int w2 = srctReadRect.Right - srctReadRect.Left + 1;
-		const int h2 = srctReadRect.Bottom - srctReadRect.Top + 1;
-
-		// fill result padding with an empty cell
-		Works::BufferCell empty(' ', Console::ForegroundColor, Console::BackgroundColor, Works::BufferCellType::Complete);
-		array<Works::BufferCell, 2>^ r = gcnew array<Works::BufferCell, 2>(h1, w1);
-		for(int i = 0, k = 0; i < h2; ++i)
+		for(int j = 0; j < w2; ++j)
 		{
-			for(int j = 0; j < w2; ++j)
-			{
-				CHAR_INFO& ci = buf[k];
-				r[i, j] = Works::BufferCell(ci.Char.UnicodeChar, (ConsoleColor)(ci.Attributes & 0xF), (ConsoleColor)((ci.Attributes & 0xF0) >> 4), Works::BufferCellType::Complete);
-				++k;
-			}
-			for(int j = w2; j < w1; ++j)
-			{
-				r[i, j] = empty;
-				++k;
-			}
+			CHAR_INFO& ci = buf[k];
+			r[i, j] = Works::BufferCell(ci.Char.UnicodeChar, (ConsoleColor)(ci.Attributes & 0xF), (ConsoleColor)((ci.Attributes & 0xF0) >> 4), Works::BufferCellType::Complete);
+			++k;
 		}
-		for(int i = h2; i < h1; ++i)
+		for(int j = w2; j < w1; ++j)
 		{
-			for(int j = 0; j < w1; ++j)
-				r[i, j] = empty;
+			r[i, j] = empty;
+			++k;
 		}
-
-		return r;
 	}
-	finally
+	for(int i = h2; i < h1; ++i)
 	{
-		delete[] buf;
+		for(int j = 0; j < w1; ++j)
+			r[i, j] = empty;
 	}
+
+	return r;
 }
 
 void FarUI::SetBufferContents(Point origin, array<Works::BufferCell, 2>^ contents)
@@ -320,27 +313,20 @@ void FarUI::SetBufferContents(Point origin, array<Works::BufferCell, 2>^ content
 	rect.Right = rect.Left + bufSize.X - 1;
 	rect.Bottom = rect.Top + bufSize.Y - 1;
 
-	CHAR_INFO* buf = new CHAR_INFO[bufSize.X*bufSize.Y];
-	try
+	auto buf = std::make_unique<CHAR_INFO[]>(bufSize.X * bufSize.Y);
+	for(int i = 0, k = 0; i < bufSize.Y; ++i)
 	{
-		for(int i = 0, k = 0; i < bufSize.Y; ++i)
+		for(int j = 0; j < bufSize.X; ++j)
 		{
-			for(int j = 0; j < bufSize.X; ++j)
-			{
-				CHAR_INFO& ci = buf[k];
-				Works::BufferCell fill = contents[i, j];
-				ci.Char.UnicodeChar = fill.Character;
-				ci.Attributes = COMMON_LVB_LEADING_BYTE | COMMON_LVB_TRAILING_BYTE | (WORD)fill.ForegroundColor | ((WORD)fill.BackgroundColor << 4);
-				++k;
-			}
+			CHAR_INFO& ci = buf[k];
+			Works::BufferCell fill = contents[i, j];
+			ci.Char.UnicodeChar = fill.Character;
+			ci.Attributes = COMMON_LVB_LEADING_BYTE | COMMON_LVB_TRAILING_BYTE | (WORD)fill.ForegroundColor | ((WORD)fill.BackgroundColor << 4);
+			++k;
 		}
-		if (!WriteConsoleOutput(hStdout, buf, bufSize, bufOrigin, &rect))
-			ThrowWithLastError("WriteConsoleOutput");
 	}
-	finally
-	{
-		delete[] buf;
-	}
+	if (!WriteConsoleOutput(hStdout, buf.get(), bufSize, bufOrigin, &rect))
+		ThrowWithLastError("WriteConsoleOutput");
 }
 
 void FarUI::SetBufferContents(Place rectangle, Works::BufferCell fill)
@@ -364,22 +350,15 @@ void FarUI::SetBufferContents(Place rectangle, Works::BufferCell fill)
 	rect.Right = rect.Left + bufSize.X - 1;
 	rect.Bottom = rect.Top + bufSize.Y - 1;
 
-	int total = bufSize.X*bufSize.Y;
-	CHAR_INFO* buf = new CHAR_INFO[total];
+	int total = bufSize.X * bufSize.Y;
+	auto buf = std::make_unique<CHAR_INFO[]>(total);
 	CHAR_INFO ci;
 	ci.Char.UnicodeChar = fill.Character;
 	ci.Attributes = COMMON_LVB_LEADING_BYTE | COMMON_LVB_TRAILING_BYTE | (WORD)fill.ForegroundColor | ((WORD)fill.BackgroundColor << 4);
-	try
-	{
-		for(int k = 0; k < total; ++k)
-			buf[k] = ci;
-		if (!WriteConsoleOutput(hStdout, buf, bufSize, bufOrigin, &rect))
-			ThrowWithLastError("WriteConsoleOutput");
-	}
-	finally
-	{
-		delete[] buf;
-	}
+	for(int k = 0; k < total; ++k)
+		buf[k] = ci;
+	if (!WriteConsoleOutput(hStdout, buf.get(), bufSize, bufOrigin, &rect))
+		ThrowWithLastError("WriteConsoleOutput");
 }
 
 void FarUI::Break()

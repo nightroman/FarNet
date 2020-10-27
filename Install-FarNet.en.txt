@@ -12,12 +12,12 @@ Far Manager
 	x64
 		http://www.farmanager.com/download.php?p=64&l=en
 
-.NET Framework 3.5 or newer
+.NET Framework 4.5 or newer.
 
-	This is the case since Windows 7.
 	Some modules may require newer versions.
 
-Microsoft Visual C++ 2008 SP1 Redistributable Package (x64) or (x86)
+Visual C++ Redistributable for Visual Studio 2019, x64 or x86.
+Visual C++ 2015, 2017 and 2019 share the same redistributable.
 
 	Search the internet, sources may change.
 

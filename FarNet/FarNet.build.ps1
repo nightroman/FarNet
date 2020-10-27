@@ -6,7 +6,7 @@
 param(
 	$Platform = (property Platform x64),
 	$Configuration = (property Configuration Release),
-	$TargetFrameworkVersion = (property TargetFrameworkVersion v3.5)
+	$TargetFrameworkVersion = (property TargetFrameworkVersion v4.5)
 )
 $FarHome = "C:\Bin\Far\$Platform"
 
@@ -27,11 +27,11 @@ function Clean {
 	remove z, FarNet.sdf, About-FarNet.htm
 }
 
-task Clean {
+task clean {
 	Clean
 }
 
-task Install {
+task install {
 	foreach($_ in $Builds) { Invoke-Build Install $_ }
 	Copy-Item Far.exe.config $FarHome
 	# It may fail in Debug...
@@ -39,22 +39,22 @@ task Install {
 		Copy-Item FarNet.Settings\bin\Release\FarNet.Settings.xml, FarNet.Tools\bin\Release\FarNet.Tools.xml $FarHome\FarNet
 	}
 },
-HelpHLF
+helpHLF
 
-task Uninstall {
+task uninstall {
 	foreach($_ in $Builds) { Invoke-Build Uninstall $_ }
 	remove $FarHome\Far.exe.config
 }
 
 # Make HLF, called by Build (Install), depends on x64/x86
-task HelpHLF -If ($Configuration -eq 'Release') {
+task helpHLF -If ($Configuration -eq 'Release') {
 	exec { pandoc.exe About-FarNet.text --output=z.htm --from=markdown_phpextra }
 	exec { HtmlToFarHelp from=z.htm to=$FarHome\Plugins\FarNet\FarNetMan.hlf }
 	remove z.htm
 }
 
 # Make HTM
-task HelpHTM {
+task helpHTM {
 	assert (Test-Path $env:MarkdownCss)
 	exec {
 		pandoc.exe @(
@@ -69,7 +69,7 @@ task HelpHTM {
 }
 
 # Test config and make another platform before packaging
-task BeginPackage {
+task beginPackage {
 	# check Far.exe.config
 	$xml = [xml](Get-Content $FarHome\Far.exe.config)
 	$nodes = @($xml.SelectNodes('configuration/appSettings/add'))
@@ -80,25 +80,19 @@ task BeginPackage {
 	assert ($nodes[0].value -ceq 'Warning')
 
 	# make another platform
-	Set-Alias MSBuild (Resolve-MSBuild)
 	$bit = if ($Platform -eq 'Win32') {'x64'} else {'Win32'}
-	$PlatformToolset = if ($TargetFrameworkVersion -lt 'v4') {'v90'} else {'v140'}
 
 	#! build just FarNetMan, PowerShellFar is not needed and causes locked files...
-	exec {
-		MSBuild @(
-			"..\FarNetAccord.sln"
-			"/t:FarNetMan"
-			"/p:Platform=$bit"
-			"/p:Configuration=Release"
-			"/p:TargetFrameworkVersion=$TargetFrameworkVersion"
-			"/p:PlatformToolset=$PlatformToolset"
-		)
-	}
+	exec { & (Resolve-MSBuild) @(
+		"..\FarNetAccord.sln"
+		"/t:FarNetMan"
+		"/p:Platform=$bit"
+		"/p:Configuration=Release"
+	)}
 }
 
 # Make package files
-task Package BeginPackage, HelpHTM, {
+task package beginPackage, helpHTM, {
 	# folders
 	remove z
 	$null = mkdir `
@@ -142,13 +136,13 @@ task Package BeginPackage, HelpHTM, {
 }
 
 # Set version
-task Version {
+task version {
 	. ..\Get-Version.ps1
 	($script:Version = $FarNetVersion)
 }
 
 # Make NuGet package
-task NuGet Package, Version, {
+task nuget package, version, {
 	$text = @'
 FarNet provides the .NET API for Far Manager and the runtime infrastructure for
 .NET modules. The package includes the framework and the module manager plugin.
@@ -182,5 +176,5 @@ https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
 </package>
 "@
 	# pack
-	exec { NuGet pack z\Package.nuspec -NoPackageAnalysis }
+	exec { NuGet pack z\Package.nuspec }
 }

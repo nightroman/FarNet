@@ -1,6 +1,12 @@
 https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 5.4.0 =
+
+FarNet requires:
+- .NET Framework 4.5 or newer
+- Visual C++ Redistributable for Visual Studio 2019
+
 = 5.3.2 =
 
 Minor tweaks of help and code.
