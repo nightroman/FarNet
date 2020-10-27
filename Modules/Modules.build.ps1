@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Build script (https://github.com/nightroman/Invoke-Build)
@@ -15,10 +14,10 @@ $Builds = @(
 	'TryPanelCSharp\.build.ps1'
 )
 
-task TestBuild {
+task testBuild {
 	# build
 	$FarNetModules = 'C:\TEMP\z'
-	foreach($_ in $Builds) { Invoke-Build Build $_ }
+	foreach($_ in $Builds) { Invoke-Build build $_ }
 
 	# test
 	assert (Test-Path $FarNetModules\Backslash\Backslash.dll)
@@ -29,8 +28,8 @@ task TestBuild {
 	# clean
 	Remove-Item $FarNetModules -Recurse -Force
 },
-Clean
+clean
 
-task Clean {
-	foreach($_ in $Builds) { Invoke-Build Clean $_ }
+task clean {
+	foreach($_ in $Builds) { Invoke-Build clean $_ }
 }

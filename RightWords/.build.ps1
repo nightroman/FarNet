@@ -4,28 +4,26 @@
 #>
 
 param(
-	$Platform = (property Platform x64),
-	$TargetFrameworkVersion = (property TargetFrameworkVersion v3.5)
+	$Platform = (property Platform x64)
 )
 
 $FarHome = "C:\Bin\Far\$Platform"
 $fromModule = "$FarHome\FarNet\Modules\RightWords"
 $fromNHunspell = "$FarHome\FarNet\NHunspell"
 
-task Build {
+task build meta, {
 	exec { & (Resolve-MSBuild) $(
 		"RightWords.csproj"
 		"/p:FarHome=$FarHome"
 		"/p:Configuration=Release"
-		"/p:TargetFrameworkVersion=$TargetFrameworkVersion"
 	)}
 }
 
-task Clean {
+task clean {
 	remove z, bin, obj, README.htm, *.nupkg
 }
 
-task Markdown {
+task markdown {
 	assert (Test-Path $env:MarkdownCss)
 	exec { pandoc.exe @(
 		'README.md'
@@ -36,16 +34,18 @@ task Markdown {
 	)}
 }
 
-task Version {
+task version {
 	($script:Version = switch -regex -file History.txt {'^= (\d+\.\d+\.\d+) =$' {$matches[1]; break}})
-	$item = Get-Item -LiteralPath $fromModule\RightWords.dll
-	assert ($item.VersionInfo.FileVersion -match '^(\d+\.\d+\.\d+)\.0$')
-	assert ($script:Version -eq $matches[1])
+	assert $script:Version
 }
 
-task Package Markdown, {
+task package markdown, version, {
 	$toModule = 'z\tools\FarHome\FarNet\Modules\RightWords'
 	$toNHunspell = 'z\tools\FarHome\FarNet\NHunspell'
+
+	$dll = Get-Item "$fromModule\RightWords.dll"
+	assert ($dll.VersionInfo.FileVersion -match '^(\d+\.\d+\.\d+)\.0$')
+	equals ($matches[1]) $script:Version
 
 	remove z
 	$null = mkdir $toModule, $toNHunspell
@@ -72,7 +72,7 @@ task Package Markdown, {
 	)
 }
 
-task NuGet Package, Version, {
+task nuget package, version, {
 	$text = @'
 FarNet module for Far Manager, spell-checker and thesaurus.
 
@@ -94,7 +94,7 @@ https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
 		<id>FarNet.RightWords</id>
-		<version>$Version</version>
+		<version>$script:Version</version>
 		<authors>Roman Kuzmin</authors>
 		<owners>Roman Kuzmin</owners>
 		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
@@ -112,4 +112,16 @@ https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
 	exec { NuGet pack z\Package.nuspec }
 }
 
-task . Build, Clean
+task meta -Inputs .build.ps1, History.txt -Outputs AssemblyInfo.cs -Jobs version, {
+	Set-Content AssemblyInfo.cs @"
+using System.Reflection;
+[assembly: AssemblyCompany("https://github.com/nightroman/FarNet")]
+[assembly: AssemblyCopyright("Copyright (c) Roman Kuzmin")]
+[assembly: AssemblyDescription("Spell-checker and thesaurus")]
+[assembly: AssemblyProduct("FarNet.RightWords")]
+[assembly: AssemblyTitle("FarNet module RightWords for Far Manager")]
+[assembly: AssemblyVersion("$script:Version")]
+"@
+}
+
+task . build, clean

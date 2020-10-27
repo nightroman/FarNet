@@ -1,5 +1,8 @@
-
 NuGet package: https://www.nuget.org/packages/FarNet.FolderChart
+
+= 2.4.0 =
+
+Requires .NET Framework 4.5
 
 = 2.3.1 =
 

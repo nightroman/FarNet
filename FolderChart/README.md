@@ -1,4 +1,3 @@
-
 # FarNet module *FolderChart*
 
 ## Synopsis
@@ -18,7 +17,6 @@ and shows the results as a chart in a separate window with some interaction.
 
  * Far Manager
  * Plugin FarNet
- * .NET Framework 4.0
 
 **Instructions**
 

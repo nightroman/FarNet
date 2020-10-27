@@ -4,14 +4,13 @@
 #>
 
 param(
-	$FarHome = (property FarHome C:\Bin\Far\x64),
-	$TargetFrameworkVersion = (property TargetFrameworkVersion v3.5)
+	$FarHome = (property FarHome C:\Bin\Far\x64)
 )
 
 $ModuleHome = "$FarHome\FarNet\Modules\Vessel"
 
 # Synopsis: Build all. Exit Far Manager!
-task . Build, Help, Clean
+task . build, help, clean
 
 # Get version from release notes.
 function Get-Version {
@@ -19,7 +18,7 @@ function Get-Version {
 }
 
 # Synopsis: Generate or update meta files.
-task Meta -Inputs History.txt, .build.ps1 -Outputs AssemblyInfo.cs {
+task meta -Inputs History.txt, .build.ps1 -Outputs AssemblyInfo.cs {
 	$Version = Get-Version
 
 	Set-Content AssemblyInfo.cs @"
@@ -40,13 +39,12 @@ using System.Runtime.InteropServices;
 }
 
 # Build and install the assembly.
-task Build Meta, {
-	$MSBuild = Resolve-MSBuild
-	exec { & $MSBuild Vessel.csproj /p:Configuration=Release /p:FarHome=$FarHome /p:TargetFrameworkVersion=$TargetFrameworkVersion }
+task build meta, {
+	exec { & (Resolve-MSBuild) Vessel.csproj /p:Configuration=Release /p:FarHome=$FarHome }
 }
 
 # In addition to Build: new About-Vessel.htm, $ModuleHome\Vessel.hlf
-task Help {
+task help {
 	# HLF
 	exec { pandoc.exe README.md --output=About-Vessel.htm --from=gfm }
 	exec { HtmlToFarHelp "from=About-Vessel.htm" "to=$ModuleHome\Vessel.hlf" }
@@ -65,15 +63,15 @@ task Help {
 	}
 }
 
-task Clean {
+task clean {
 	remove z, bin, obj, About-Vessel.htm, FarNet.Vessel.*.nupkg
 }
 
-task Version {
+task version {
 	($script:Version = Get-Version)
 }
 
-task Package Help, {
+task package help, {
 	$toModule = 'z\tools\FarHome\FarNet\Modules\Vessel'
 
 	remove z
@@ -92,7 +90,7 @@ task Package Help, {
 	Copy-Item ..\Zoo\FarNetLogo.png z
 }
 
-task NuGet Package, Version, {
+task nuget package, version, {
 	$text = @'
 Vessel is the FarNet module for Far Manager.
 It provides smart history of files, folders, commands.

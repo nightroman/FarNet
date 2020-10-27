@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Build script (https://github.com/nightroman/Invoke-Build)
@@ -11,16 +10,14 @@ param(
 )
 
 $ModuleName = 'Backslash'
-$ProjectRoot = '.'
 $ProjectName = "$ModuleName.csproj"
 
-task Build {
-	Set-Alias MSBuild (Resolve-MSBuild)
-	exec {MSBuild $ProjectRoot\$ProjectName /p:FarHome=$FarHome /p:Configuration=$Configuration /p:FarNetModules=$FarNetModules}
+task build {
+	exec {&(Resolve-MSBuild) $ProjectName /p:FarHome=$FarHome /p:Configuration=$Configuration /p:FarNetModules=$FarNetModules}
 }
 
-task Clean {
-	remove $ProjectRoot\bin, $ProjectRoot\obj
+task clean {
+	remove bin, obj
 }
 
-task . Build, Clean
+task . build, clean

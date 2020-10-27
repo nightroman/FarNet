@@ -62,6 +62,7 @@
     <Compile Include="Highlighter.cs" />
     <Compile Include="MultiSpell.cs" />
     <Compile Include="MultiThesaurus.cs" />
+    <Compile Include="My.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="TheTool.cs" />
     <Compile Include="UIWordDialog.cs" />

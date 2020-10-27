@@ -1,6 +1,10 @@
 https://www.nuget.org/packages/FarNet.RightWords
 FarNet 5.1.0
 
+= 2.3.0 =
+
+Requires .NET Framework 4.5
+
 = 2.2.0 =
 
 - The required .NET Framework is 3.5 (was 4.5).

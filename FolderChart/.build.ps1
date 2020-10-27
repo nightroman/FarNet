@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Build script (https://github.com/nightroman/Invoke-Build)
@@ -8,58 +7,62 @@ param(
 	$Platform = (property Platform x64)
 )
 $FarHome = "C:\Bin\Far\$Platform"
-$ModuleHome = "$FarHome\FarNet\Modules\FolderChart"
+$ModuleName = 'FolderChart'
+$ModuleHome = "$FarHome\FarNet\Modules\$ModuleName"
 
-task Build Meta, {
+task build meta, {
 	exec { dotnet restore }
-	exec { dotnet msbuild FolderChart.csproj /p:Configuration=Release /p:FarHome=$FarHome }
+	exec { dotnet msbuild $ModuleName.csproj /p:FarHome=$FarHome /p:Configuration=Release }
 }
 
-task Clean {
+task clean {
 	remove z, bin, obj, README.htm, *.nupkg
 }
 
-task Version {
+task version {
 	($script:Version = switch -regex -file History.txt { '^= (\d+\.\d+\.\d+) =$' { $matches[1]; break } })
 	assert $script:Version
 }
 
-task Convert {
-	function Convert-Markdown($Name) { pandoc.exe --standalone --from=gfm "--output=$Name.htm" "--metadata=pagetitle=$Name" "$Name.md" }
-	exec { Convert-Markdown README }
+task markdown {
+	assert (Test-Path $env:MarkdownCss)
+	exec { pandoc.exe @(
+		'README.md'
+		'--output=README.htm'
+		'--from=gfm'
+		'--self-contained', "--css=$env:MarkdownCss"
+		'--standalone', "--metadata=pagetitle=$ModuleName"
+	)}
 }
 
-task Package Version, Convert, {
+task package version, markdown, {
 	# test files
-	$pdb = "$ModuleHome\FolderChart.pdb"
-	assert (!(Test-Path $pdb)) 'Is it the debug build? PDB exists.'
+	assert (!(Test-Path "$ModuleHome\$ModuleName.pdb")) 'Is it Debug build? .pdb exists.'
 
-	$dll = Get-Item "$ModuleHome\FolderChart.dll"
+	$dll = Get-Item "$ModuleHome\$ModuleName.dll"
 	assert ($dll.VersionInfo.FileVersion -match '^(\d+\.\d+\.\d+)\.0$')
 	equals ($matches[1]) $script:Version
 
 	# package files
-	$dir = "z\tools\FarHome\FarNet\Modules\FolderChart"
-
 	remove z
-	$null = mkdir $dir
+	$dir = mkdir "z\tools\FarHome\FarNet\Modules\$ModuleName"
+
+	Copy-Item -Destination z ..\Zoo\FarNetLogo.png
 
 	Copy-Item -Destination $dir @(
 		"README.htm"
 		"History.txt"
 		"LICENSE.txt"
-		"$ModuleHome\FolderChart.dll"
+		"$ModuleHome\$ModuleName.dll"
 	)
 }
 
-task NuGet Package, {
+task nuget package, {
 	$text = @'
 FolderChart is the FarNet module for Far Manager.
 
 For the current panel directory this tool calculates file and directory sizes
 and shows the results as a chart in a separate window with some interaction.
-
-Requires .NET Framework 4.0
 
 ---
 
@@ -79,12 +82,12 @@ https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
 		<owners>Roman Kuzmin</owners>
 		<authors>Roman Kuzmin</authors>
 		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
-		<iconUrl>https://raw.githubusercontent.com/wiki/nightroman/FarNet/images/FarNetLogo.png</iconUrl>
-		<licenseUrl>https://raw.githubusercontent.com/nightroman/FarNet/master/FolderChart/LICENSE.txt</licenseUrl>
+		<icon>FarNetLogo.png</icon>
+		<license type="expression">BSD-3-Clause</license>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<summary>FarNet module for Far Manager</summary>
+		<summary>$text</summary>
 		<description>$text</description>
-		<releaseNotes>https://raw.githubusercontent.com/nightroman/FarNet/master/FolderChart/History.txt</releaseNotes>
+		<releaseNotes>https://github.com/nightroman/FarNet/blob/master/FolderChart/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module</tags>
 	</metadata>
 </package>
@@ -93,20 +96,16 @@ https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
 	exec { NuGet pack z\Package.nuspec }
 }
 
-task Meta -Inputs .build.ps1, History.txt -Outputs AssemblyInfo.cs -Jobs Version, {
+task meta -Inputs .build.ps1, History.txt -Outputs AssemblyInfo.cs -Jobs version, {
 	Set-Content AssemblyInfo.cs @"
-using System;
 using System.Reflection;
-using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("FarNet.FolderChart")]
 [assembly: AssemblyVersion("$script:Version")]
 [assembly: AssemblyTitle("FarNet module for Far Manager")]
 [assembly: AssemblyDescription("Shows folder item sizes in a chart.")]
 [assembly: AssemblyCompany("https://github.com/nightroman/FarNet")]
 [assembly: AssemblyCopyright("Copyright (c) Roman Kuzmin")]
-[assembly: ComVisible(false)]
-[assembly: CLSCompliant(true)]
 "@
 }
 
-task . Build, Clean
+task . build, clean
