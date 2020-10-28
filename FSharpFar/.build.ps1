@@ -101,11 +101,15 @@ task package markdown, {
 		'LICENSE.txt'
 		"$fromModule\$ModuleName.dll"
 		"$fromModule\FSharp.Compiler.Service.dll"
+		"$fromModule\Microsoft.Build.Framework.dll"
+		"$fromModule\Microsoft.Build.Tasks.Core.dll"
+		"$fromModule\Microsoft.Build.Utilities.Core.dll"
 		"$fromModule\System.Buffers.dll"
 		"$fromModule\System.Collections.Immutable.dll"
 		"$fromModule\System.Reflection.Metadata.dll"
-		"$fromModule\System.ValueTuple.dll"
 	)
+	equals 8 ((Get-Item $fromModule\*.dll).Count)
+	equals 8 ((Get-Item $toModule\*.dll).Count)
 }
 
 task nuget package, version, {
@@ -146,7 +150,7 @@ https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
 </package>
 "@
 	# pack
-	exec { NuGet pack z\Package.nuspec -NoPackageAnalysis }
+	exec { NuGet pack z\Package.nuspec }
 }
 
 task test_testing {

@@ -79,7 +79,6 @@
       <MyItem2 Include="..\..\packages\System.Buffers\lib\netstandard2.0\System.Buffers.dll" />
       <MyItem2 Include="..\..\packages\System.Collections.Immutable\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll" />
       <MyItem2 Include="..\..\packages\System.Reflection.Metadata\lib\portable-net45+win8\System.Reflection.Metadata.dll" />
-      <MyItem2 Include="..\..\packages\System.ValueTuple\lib\portable-net40+sl4+win8+wp8\System.ValueTuple.dll" />
     </ItemGroup>
     <Copy DestinationFolder="$(FarHome)" SourceFiles="@(MyItem1)" SkipUnchangedFiles="true" />
     <Copy DestinationFolder="$(MyOutDir)" SourceFiles="@(MyItem2)" SkipUnchangedFiles="true" />
