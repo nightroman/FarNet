@@ -32,7 +32,7 @@ let showErrors (editor: IEditor) =
 
     let menu = far.CreateListMenu (Title = "F# errors", ShowAmpersands = true, UsualMargins = true, IncrementalOptions = PatternOptions.Substring)
 
-    errors |> menu.ShowItems FSharpErrorInfo.strErrorLine (fun error ->
+    errors |> menu.ShowItems FSharpDiagnostic.strErrorLine (fun error ->
         editor.GoTo (error.StartColumn, error.StartLineAlternate - 1)
         editor.Redraw ()
     )
@@ -83,7 +83,7 @@ let tips (editor: IEditor) =
     let tip =
         async {
             let! check = Checker.check file text config
-            return! check.CheckResults.GetToolTipText (caret.Y + 1, column + 1, lineStr, idents, FSharpTokenTag.Identifier)
+            return check.CheckResults.GetToolTipText (caret.Y + 1, column + 1, lineStr, idents, FSharpTokenTag.Identifier)
         }
         |> Async.RunSynchronously
 
@@ -107,11 +107,11 @@ let usesInFile (editor: IEditor) =
 
     async {
         let! check = Checker.check file text config
-        match! check.CheckResults.GetSymbolUseAtLocation (caret.Y + 1, col + 1, lineStr, identIsland) with
+        match check.CheckResults.GetSymbolUseAtLocation (caret.Y + 1, col + 1, lineStr, identIsland) with
         | None ->
             return None
         | Some symboluse ->
-            let! uses = check.CheckResults.GetUsesOfSymbolInFile symboluse.Symbol
+            let uses = check.CheckResults.GetUsesOfSymbolInFile symboluse.Symbol
             return Some uses
     }
     |> Async.RunSynchronously
@@ -151,12 +151,12 @@ let usesInProject (editor: IEditor) =
 
     async {
         let! check = Checker.check file text config
-        match! check.CheckResults.GetSymbolUseAtLocation (caret.Y + 1, col + 1, lineStr, identIsland) with
+        match check.CheckResults.GetSymbolUseAtLocation (caret.Y + 1, col + 1, lineStr, identIsland) with
         | None ->
             return None
         | Some sym ->
             let! pr = check.Checker.ParseAndCheckProject check.Options
-            let! uses = pr.GetUsesOfSymbol sym.Symbol
+            let uses = pr.GetUsesOfSymbol sym.Symbol
             return Some (uses, sym)
     }
     |> Async.RunSynchronously
@@ -235,7 +235,7 @@ let complete (editor: IEditor) =
     let decs =
         async {
             let! check = Checker.check file text config
-            return! check.CheckResults.GetDeclarationListInfo (Some check.ParseResults, caret.Y + 1, lineStr, ident, always [])
+            return check.CheckResults.GetDeclarationListInfo (Some check.ParseResults, caret.Y + 1, lineStr, ident, always [])
         }
         |> Async.RunSynchronously
 

@@ -1,6 +1,6 @@
 ﻿module FSharpFar.Parser
 open System
-open FSharp.Compiler
+open FSharp.Compiler.SourceCodeServices
 
 /// Joins full names and partial with ".".
 let longIdent (idents: string list) (partial: string) =

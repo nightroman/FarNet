@@ -57,28 +57,29 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="FSharp.Core">
-      <HintPath>..\..\packages\FSharp.Core\lib\net45\FSharp.Core.dll</HintPath>
+      <HintPath>..\..\packages\FSharp.Core\lib\netstandard2.0\FSharp.Core.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="FSharp.Compiler.Service">
-      <HintPath>..\..\packages\FSharp.Compiler.Service\lib\net461\FSharp.Compiler.Service.dll</HintPath>
+      <HintPath>..\..\packages\FSharp.Compiler.Service\lib\netstandard2.0\FSharp.Compiler.Service.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <ItemGroup>
-      <MyItem1 Include="..\..\packages\FSharp.Core\lib\net45\FSharp.Core.dll" />
-      <MyItem1 Include="..\..\packages\FSharp.Core\lib\net45\FSharp.Core.xml" />
+      <MyItem1 Include="..\..\packages\FSharp.Core\lib\netstandard2.0\FSharp.Core.dll" />
+      <MyItem1 Include="..\..\packages\FSharp.Core\lib\netstandard2.0\FSharp.Core.xml" />
     </ItemGroup>
     <ItemGroup>
       <MyItem2 Include="$(OutDir)\$(AssemblyName).dll" />
-      <MyItem2 Include="..\..\packages\FSharp.Compiler.Service\lib\net461\FSharp.Compiler.Service.dll" />
-      <MyItem2 Include="..\..\packages\Microsoft.Build.Framework\lib\net472\Microsoft.Build.Framework.dll" />
-      <MyItem2 Include="..\..\packages\Microsoft.Build.Tasks.Core\lib\net472\Microsoft.Build.Tasks.Core.dll" />
-      <MyItem2 Include="..\..\packages\Microsoft.Build.Utilities.Core\lib\net472\Microsoft.Build.Utilities.Core.dll" />
+      <MyItem2 Include="..\..\packages\FSharp.Compiler.Service\lib\netstandard2.0\FSharp.Compiler.Service.dll" />
+      <MyItem2 Include="..\..\packages\FSharp.Compiler.Service\lib\netstandard2.0\FSharp.DependencyManager.Nuget.dll" />
+      <MyItem2 Include="..\..\packages\Microsoft.Build.Utilities.Core\lib\netstandard2.0\Microsoft.Build.Utilities.Core.dll" />
       <MyItem2 Include="..\..\packages\System.Buffers\lib\netstandard2.0\System.Buffers.dll" />
-      <MyItem2 Include="..\..\packages\System.Collections.Immutable\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll" />
-      <MyItem2 Include="..\..\packages\System.Reflection.Metadata\lib\portable-net45+win8\System.Reflection.Metadata.dll" />
+      <MyItem2 Include="..\..\packages\System.Collections.Immutable\lib\netstandard2.0\System.Collections.Immutable.dll" />
+      <MyItem2 Include="..\..\packages\System.Memory\lib\netstandard2.0\System.Memory.dll" />
+      <MyItem2 Include="..\..\packages\System.Reflection.Metadata\lib\netstandard2.0\System.Reflection.Metadata.dll" />
+      <MyItem2 Include="..\..\packages\System.Runtime.CompilerServices.Unsafe\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll" />
     </ItemGroup>
     <Copy DestinationFolder="$(FarHome)" SourceFiles="@(MyItem1)" SkipUnchangedFiles="true" />
     <Copy DestinationFolder="$(MyOutDir)" SourceFiles="@(MyItem2)" SkipUnchangedFiles="true" />

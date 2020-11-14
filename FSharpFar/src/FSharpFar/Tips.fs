@@ -156,8 +156,8 @@ let private formatComment comment full =
                 ""
         | None ->
             ""
-    | FSharpXmlDoc.Text text ->
-        trimTip text
+    | FSharpXmlDoc.Text (unprocessedLines, _) ->
+        trimTip (String.Join("\r\n", unprocessedLines))
     | FSharpXmlDoc.None ->
         ""
 

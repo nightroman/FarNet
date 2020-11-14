@@ -14,7 +14,6 @@ F# scripting and interactive services in Far Manager
 - [Commands](#commands)
 - [Configuration](#configuration)
 - [Projects](#projects)
-- [Debugging](#debugging)
 - [Interactive](#interactive)
 - [Editor services](#editor-services)
 - [Using F# scripts](#using-f-scripts)
@@ -39,6 +38,13 @@ F# or anything else does not have to be installed.
 
 As a result, you get the complete F# scripting portable with Far Manager. \
 Use it with Far Manager by FSharpFar or without Far Manager by fsx.exe.
+
+**Enable #r "nuget: ..."**
+
+The new F# 5 feature `#r "nuget: ..."` does not work right out of the box.
+You need Visual Studio installed and the environment variable `VSAPPIDDIR` set (use your actual path):
+
+    VSAPPIDDIR=C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\
 
 **Improve performance**
 
@@ -235,7 +241,7 @@ and source files. This section is often enough. Other sections may add extra or 
 
 The specified paths may be absolute and relative with environment *%variables%* expanded.
 Important: relative paths for `-r|--reference` must start with dot(s) ("`.\`" or "`..\`"),
-otherwise they are treated as known assembly names like `-r:System.Management.Automation`.
+otherwise they are treated as known assembly names like `-r:System.ComponentModel.Composition`.
 
 ```ini
 ; Main section
@@ -246,7 +252,7 @@ otherwise they are treated as known assembly names like `-r:System.Management.Au
 --define:DEBUG
 -r:%MyLib%\Lib1.dll
 -r:..\packages\Lib2.dll
--r:System.Management.Automation
+-r:System.ComponentModel.Composition
 File1.fs
 File2.fs
 ```
@@ -373,10 +379,10 @@ VSCode (ensure `code.cmd` is in the path and the VSCode F# extension is
 installed).
 
 Generated projects are not for building but for working with sources using
-powerful development environments, and for debugging (see more later). You may
-build to make sure everything is correct but normally code checkers show errors
-quite well without building. Edit your files, save, switch to Far Manager (no
-restart is needed), and run changed scripts.
+powerful development environments. You may build to make sure everything is
+correct but normally code checkers show errors quite well without building.
+Edit your files, save, switch to Far Manager (no restart needed), and run
+changed scripts.
 
 Generated projects include:
 
@@ -385,33 +391,9 @@ Generated projects include:
 - Main `*.fs` source files in the `[fsc]` section.
 - Other `*.fs` files in the current panel.
 - `*.fsx` scripts in the current panel.
-- Some settings for debugging.
 
 Generated projects are `%TEMP%\_Project-X\Y.fsproj` where X and Y are
 based on configuration file name and directory and X includes some hash.
-
-***
-## Debugging
-
-You can debug scripts using Visual Studio debugger (ensure F# features enabled)
-and VSCode debugger (ensure F# and C# extensions installed).
-
-Debugging does not require generated F# projects but these projects make it
-easier to set the required breakpoints in scripts and start debugging.
-
-**Visual Studio**. The project is ready to debug by `F5` which starts Far
-Manager with the attached debugger. Alternatively, often more conveniently,
-attach the debugger to already running Far Manager.
-
-**VSCode**. The project comes with launch settings. Choose one of them: "Start
-Far", "Attach Far" (exactly one must be running), "Attach process" (you are
-prompted to choose), and start debugging.
-
-You can set debugging options in your configurations but you do not have to.
-When FSharpFar creates F# sessions and finds the attached debugger then the
-following options are added automatically: `--optimize-`, `--debug:full`,
-`--define:DEBUG`. Just make sure a session is created after attaching the
-debugger, not before. Otherwise, remove the old session manually.
 
 ***
 ## Interactive

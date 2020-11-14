@@ -5,5 +5,3 @@ references: strict
 source https://www.nuget.org/api/v2
 nuget FSharp.Compiler.Service
 nuget FSharp.Core
-nuget System.Collections.Immutable 1.5
-nuget System.Reflection.Metadata 1.6

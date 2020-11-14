@@ -98,18 +98,21 @@ task package markdown, {
 	Copy-Item -Destination $toModule @(
 		'README.htm'
 		'History.txt'
-		'LICENSE.txt'
-		"$fromModule\$ModuleName.dll"
+		'..\LICENSE'
 		"$fromModule\FSharp.Compiler.Service.dll"
+		"$fromModule\FSharp.DependencyManager.Nuget.dll"
+		"$fromModule\FSharpFar.dll"
 		"$fromModule\Microsoft.Build.Framework.dll"
 		"$fromModule\Microsoft.Build.Tasks.Core.dll"
 		"$fromModule\Microsoft.Build.Utilities.Core.dll"
 		"$fromModule\System.Buffers.dll"
 		"$fromModule\System.Collections.Immutable.dll"
+		"$fromModule\System.Memory.dll"
 		"$fromModule\System.Reflection.Metadata.dll"
+		"$fromModule\System.Runtime.CompilerServices.Unsafe.dll"
 	)
-	equals 8 ((Get-Item $fromModule\*.dll).Count)
-	equals 8 ((Get-Item $toModule\*.dll).Count)
+	equals 11 ((Get-Item $fromModule\*.dll).Count)
+	equals 11 ((Get-Item $toModule\*.dll).Count)
 }
 
 task nuget package, version, {

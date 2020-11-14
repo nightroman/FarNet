@@ -15,7 +15,7 @@ type FarCommand () =
 
         let writeResult r =
             for w in r.Warnings do
-                far.UI.WriteLine (FSharpErrorInfo.strErrorFull w, ConsoleColor.Yellow)
+                far.UI.WriteLine (FSharpDiagnostic.strErrorFull w, ConsoleColor.Yellow)
             if not (isNull r.Exception) then
                 writeException r.Exception
 
@@ -120,7 +120,7 @@ type FarCommand () =
             if errors.Length > 0 then
                 use writer = new StringWriter ()
                 for error in errors do
-                    writer.WriteLine (FSharpErrorInfo.strErrorLine error)
+                    writer.WriteLine (FSharpDiagnostic.strErrorLine error)
                 showTempText (writer.ToString ()) "Errors"
             ()
 

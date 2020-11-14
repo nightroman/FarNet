@@ -1,5 +1,15 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
-FarNet 5.4.13
+FarNet 5.4.20
+
+= 1.15.0 =
+
+!! Use FarNet 5.4.20
+
+Updated FSharp.Compiler.Service (39.0). This includes FSharp.Core 5.0.1 with
+new F# 5 features.
+
+Note, script debugging is not supported at the moment:
+https://github.com/dotnet/fsharp/issues/10467#issuecomment-774820154
 
 = 1.14.0 =
 

@@ -33,6 +33,8 @@ type FarErrorDrawer () =
                     if st < en then
                         let fg, bg =
                             match err.Severity with
-                            | FSharpErrorSeverity.Error -> fgError, bgError
-                            | FSharpErrorSeverity.Warning -> fgWarning, bgWarning
+                            | FSharpDiagnosticSeverity.Error -> fgError, bgError
+                            | FSharpDiagnosticSeverity.Warning -> fgWarning, bgWarning
+                            | FSharpDiagnosticSeverity.Info -> fgWarning, bgWarning
+                            | FSharpDiagnosticSeverity.Hidden -> fgWarning, bgWarning
                         e.Colors.Add (EditorColor (line.Index, st, en, fg, bg))

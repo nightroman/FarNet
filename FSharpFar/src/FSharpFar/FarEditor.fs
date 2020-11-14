@@ -72,7 +72,7 @@ type FarEditor () =
                             it.Index <= err.EndLineAlternate - 1 &&
                             (it.Index > err.StartLineAlternate - 1 || it.Column >= err.StartColumn) &&
                             (it.Index < err.EndLineAlternate - 1 || it.Column <= err.EndColumn))
-                        |> Array.map FSharpErrorInfo.strErrorText
+                        |> Array.map FSharpDiagnostic.strErrorText
                         |> Array.distinct
                     if lines.Length > 0 then
                         autoTips <- false
@@ -87,7 +87,7 @@ type FarEditor () =
                         try
                             let config = editor.MyConfig ()
                             let! check = Checker.check editor.FileName text config
-                            let! tip = check.CheckResults.GetToolTipText (it.Index + 1, column + 1, it.Text, idents, FSharpTokenTag.Identifier)
+                            let tip = check.CheckResults.GetToolTipText (it.Index + 1, column + 1, it.Text, idents, FSharpTokenTag.Identifier)
                             let tips = Tips.format tip false
                             if tips.Length > 0 && inbox.CurrentQueueLength = 0 then
                                 do! jobEditor (fun _ ->

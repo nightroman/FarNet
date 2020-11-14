@@ -28,8 +28,8 @@ type IEditor with
         and set (value: Session option) = x.SetOpt (Key.session, value)
 
     member x.MyErrors
-        with get () = x.GetOpt<FSharpErrorInfo []> Key.errors
-        and set (value: FSharpErrorInfo [] option) =
+        with get () = x.GetOpt<FSharpDiagnostic []> Key.errors
+        and set (value: FSharpDiagnostic [] option) =
             x.MyChecking <- false
             x.SetOpt (Key.errors, value)
 

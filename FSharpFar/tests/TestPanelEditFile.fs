@@ -3,7 +3,7 @@ open FarNet
 open FarNet.FSharp
 
 /// Common test code
-let testErrorsOnSaving keys1 delay keys2 = async {
+let testErrorsOnSaving keys1 (delay: int) keys2 = async {
     // open panel
     do! Jobs.Job PanelEditFile.run
 

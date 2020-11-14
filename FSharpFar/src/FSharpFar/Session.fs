@@ -7,26 +7,28 @@ open FSharp.Compiler.SourceCodeServices
 
 [<NoComparison>]
 type EvalResult = {
-    Warnings: FSharpErrorInfo []
+    Warnings: FSharpDiagnostic []
     Exception: exn
 }
 
 [<RequireQualifiedAccess>]
-module FSharpErrorInfo =
+module FSharpDiagnostic =
     let private strErrorSeverity = function
-        | FSharpErrorSeverity.Error -> "error"
-        | FSharpErrorSeverity.Warning -> "warning"
+        | FSharpDiagnosticSeverity.Error -> "error"
+        | FSharpDiagnosticSeverity.Warning -> "warning"
+        | FSharpDiagnosticSeverity.Info -> "info"
+        | FSharpDiagnosticSeverity.Hidden -> "hidden"
 
     /// Error text as it is without source info.
-    let strErrorText (x : FSharpErrorInfo) =
+    let strErrorText (x : FSharpDiagnostic) =
         sprintf "%s FS%04d: %s" (strErrorSeverity x.Severity) x.ErrorNumber x.Message
 
     /// Error text as it is with full source info.
-    let strErrorFull (x : FSharpErrorInfo) =
+    let strErrorFull (x : FSharpDiagnostic) =
         sprintf "%s(%d,%d): %s" x.FileName x.StartLineAlternate (x.StartColumn + 1) (strErrorText x)
 
     /// Error text as line with mini source info.
-    let strErrorLine (x : FSharpErrorInfo) =
+    let strErrorLine (x : FSharpDiagnostic) =
         sprintf "%s(%d,%d): %s" (Path.GetFileName x.FileName) x.StartLineAlternate (x.StartColumn + 1) (strAsLine (strErrorText x))
 
 type Session private (configFile) =
@@ -53,6 +55,7 @@ type Session private (configFile) =
             yield! defaultCompilerArgs
             yield! config.FscArgs
             yield! config.FsiArgs
+            //! do not worry about duplicates (or deal with: --optimize- --optimize+ ~ both must be removed)
             if Debugger.IsAttached then
                 yield "--optimize-"
                 yield "--debug:full"
@@ -74,7 +77,7 @@ type Session private (configFile) =
 
         let check (result, warnings) =
             for w in warnings do
-                writer.WriteLine (FSharpErrorInfo.strErrorFull w)
+                writer.WriteLine (FSharpDiagnostic.strErrorFull w)
 
             match result with
             | Choice2Of2 exn ->
@@ -225,6 +228,6 @@ type Session private (configFile) =
                 Console.SetOut oldOut
                 Console.SetError oldError
         for w in r.Warnings do
-            writer.WriteLine (FSharpErrorInfo.strErrorFull w)
+            writer.WriteLine (FSharpDiagnostic.strErrorFull w)
         if not (isNull r.Exception) then
             fprintfn writer "%A" r.Exception
