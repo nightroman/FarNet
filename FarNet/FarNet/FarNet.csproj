@@ -133,6 +133,7 @@
     <Compile Include="Panel.Works.cs" />
     <Compile Include="PanelTypes.cs" />
     <Compile Include="Panel.cs" />
+    <Compile Include="Tasks.cs" />
     <Compile Include="UI.cs" />
     <Compile Include="UserInput.cs" />
     <Compile Include="Works.cs" />
