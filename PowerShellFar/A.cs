@@ -2,6 +2,7 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
+using FarNet;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,7 +11,6 @@ using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Text;
-using FarNet;
 
 namespace PowerShellFar
 {
@@ -408,10 +408,9 @@ namespace PowerShellFar
 					UseLastHistory = true,
 					Prompt = new string[] { "For each $_ in " + items.Count + " selected:" }
 				};
-				if (!ui.Show())
-					return;
-				string code = ui.Text.Trim();
-				if (code.Length == 0)
+
+				var code = ui.Show();
+				if (string.IsNullOrEmpty(code))
 					return;
 
 				// invoke the pipeline using the input

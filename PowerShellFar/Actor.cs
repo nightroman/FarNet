@@ -526,6 +526,10 @@ Continue with this current directory?
 		{
 			get { return Path.GetDirectoryName(typeof(Actor).Assembly.Location); }
 		}
+		static UI.InputDialog CreateInputDialog()
+		{
+			return new UI.InputDialog() { Title = Res.Me, History = Res.History, UseLastHistory = true, Prompt = new string[] { Res.InvokeCommands } };
+		}
 		/// <summary>
 		/// Shows an input dialog and returns entered PowerShell code.
 		/// </summary>
@@ -540,25 +544,29 @@ Continue with this current directory?
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public string InputCode()
 		{
-			var ui = new UI.InputDialog() { Title = Res.Me, History = Res.History, UseLastHistory = true, Prompt = new string[] { Res.InvokeCommands } };
-			return ui.Show() ? ui.Text : null;
+			var ui = CreateInputDialog();
+			return ui.Show();
 		}
 		/// <summary>
 		/// Prompts to input code and invokes it.
-		/// Called on "Invoke commands".
 		/// </summary>
-		/// <remarks>
-		/// If it is called during a macro then commands are not added to the history.
-		/// Note: use of <c>Plugin.Call()</c> (see the FarNet manual) is often better for macros.
-		/// <para>
-		/// In order to input and get the code without invoking use the <see cref="InputCode"/> method.
-		/// </para>
-		/// </remarks>
 		public void InvokeInputCode()
 		{
-			string code = InputCode();
-			if (code != null)
+			var ui = CreateInputDialog();
+			var code = ui.Show();
+			if (!string.IsNullOrEmpty(code))
 				Act(code, null, Far.Api.MacroState == MacroState.None);
+		}
+		/// <summary>
+		/// Prompts to input code using the non-modal dialog and invokes the code.
+		/// Called on "Invoke commands".
+		/// </summary>
+		public async void InvokeInputCodeAsync()
+		{
+			var ui = CreateInputDialog();
+			var code = await ui.ShowAsync();
+			if (!string.IsNullOrEmpty(code))
+				await Tasks.Job(() => Act(code, null, Far.Api.MacroState == MacroState.None));
 		}
 		/// <summary>
 		/// Invokes the selected text or the current line text in the editor or the command line.

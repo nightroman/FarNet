@@ -1,6 +1,11 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 FarNet 5.3.0
 
+= 5.3.5 =
+
+- add InvokeInputCodeAsync, "Input commands" dialog is not modal
+- fix rare case in Complete-Word-.ps1
+
 = 5.3.4 =
 
 FarInventory module

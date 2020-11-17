@@ -774,20 +774,15 @@ types, providers and etc.
 
 * `[F4]`
 
-    Opens the editor for the current item content or property value. Some items
-    or properties are read only or cannot be assigned in this way - this is not
-    always recognized on opening. Editor is not modal, you can edit other items
-    at the same time.
-
-    Data are updated on each saving. It is recommended to save before exiting,
-    in this case on errors you are still in the editor and can fix changes
-    without losing them.
+    Opens an editor for the current item content or property value. The editor
+    is not modal, you can edit other items at the same time. If the item is
+    recognized as read only then the editor is locked for changes.
 
 * `[AltF4]`
 
     Starts Notepad. In contrast to `[F4]` you have to finish editing and exit.
     If there are errors then Notepad is started again with the same temp file,
-    i.e. your changes are not lost, you can try to fix them.
+    i.e. your changes are not lost and you may continue editing.
 
 * `[F5]`
 

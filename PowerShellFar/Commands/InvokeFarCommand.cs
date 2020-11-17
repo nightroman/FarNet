@@ -23,7 +23,7 @@ namespace PowerShellFar.Commands
 				return r.Select(x => x.ToString()).ToArray();
 			}
 		}
-		string GetCode()
+		protected override void BeginProcessing()
 		{
 			var ui = new UI.InputDialog()
 			{
@@ -32,15 +32,9 @@ namespace PowerShellFar.Commands
 				Title = Title ?? Res.Me,
 				UseLastHistory = true,
 			};
-			return ui.Show() ? ui.Text : null;
-		}
-		protected override void BeginProcessing()
-		{
-			var code = GetCode();
-			if (code != null)
-			{
+			var code = ui.Show();
+			if (!string.IsNullOrEmpty(code))
 				A.Psf.Act(code, new ConsoleOutputWriter(Entry.CommandInvoke1.Prefix + ": " + code), false);
-			}
 		}
 	}
 }

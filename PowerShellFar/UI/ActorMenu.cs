@@ -2,11 +2,10 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
+using FarNet;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Management.Automation;
-using FarNet;
 
 namespace PowerShellFar.UI
 {
@@ -37,7 +36,7 @@ namespace PowerShellFar.UI
 			_menuPanels.HelpTopic = helpTopic;
 			_menuViewer.HelpTopic = helpTopic;
 
-			AddTool(Res.MenuInvokeCommands, delegate { A.Psf.InvokeInputCode(); }, ModuleToolOptions.F11Menus);
+			AddTool(Res.MenuInvokeCommands, delegate { A.Psf.InvokeInputCodeAsync(); }, ModuleToolOptions.F11Menus);
 			AddTool(Res.MenuInvokeSelected, delegate { A.Psf.InvokeSelectedCode(); }, ModuleToolOptions.Editor | ModuleToolOptions.Panels | ModuleToolOptions.Dialog);
 			AddTool(Res.MenuBackgroundJobs, delegate { A.Psf.ShowJobs(); }, ModuleToolOptions.F11Menus);
 			AddTool(Res.MenuCommandHistory, delegate { A.Psf.ShowHistory(); }, ModuleToolOptions.F11Menus);

@@ -139,20 +139,15 @@ namespace PowerShellFar
 		/// </summary>
 		public override string ReadLine()
 		{
-			string text;
+			for (;;)
 			{
-				for (;;)
-				{
-					var ui = new UI.InputDialog() { History = Res.HistoryPrompt };
-					if (ui.Show())
-					{
-						text = ui.Text;
-						break;
-					}
-					A.AskStopPipeline();
-				}
+				var ui = new UI.InputDialog() { History = Res.HistoryPrompt };
+				var text = ui.Show();
+				if (text != null)
+					return text;
+
+				A.AskStopPipeline();
 			}
-			return text;
 		}
 		/// <summary>
 		/// True if there was progress Processing.

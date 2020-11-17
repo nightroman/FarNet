@@ -1,6 +1,14 @@
 https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 5.4.1 =
+
+- new static class Tasks with async helpers
+- tweak opening panel from non-panel window
+- fix rare memory leaks and issues in dialogs
+- add EditTextAsync() in addition to EditText()
+- module panel edit file - reopen editor on errors
+
 = 5.4.0 =
 
 FarNet requires:

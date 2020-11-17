@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Completes the current word in editors.
@@ -72,14 +71,14 @@ switch($Line.WindowKind) {
 		$Far.History.Command() | .{process{ $_.Name }} | CollectWords
 	}
 }
-if ($words.Count -eq 0) {
+if ($words.get_Count() -eq 0) {
 	return
 }
 
 # select a word
-if ($words.Count -eq 1) {
-	# 1 word
-	$w = @($words.Keys)[0]
+if ($words.get_Count() -eq 1) {
+	#! do not use `Keys` for 1 word
+	$w = @($words.get_Keys())[0]
 }
 else {
 	# select 1 word from list

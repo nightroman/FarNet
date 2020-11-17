@@ -2,10 +2,11 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
-using System;
-using System.Collections.Generic;
 using FarNet;
 using FarNet.Forms;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace PowerShellFar.UI
 {
@@ -19,7 +20,10 @@ namespace PowerShellFar.UI
 		public string History { get; set; }
 		public bool UseLastHistory { get; set; }
 
-		public bool Show()
+		IDialog uiDialog;
+		IEdit uiEdit;
+
+		void Create()
 		{
 			if (Prompt == null)
 				Prompt = new string[] { };
@@ -27,15 +31,15 @@ namespace PowerShellFar.UI
 			int w = Far.Api.UI.WindowSize.X - 7;
 			int h = 5 + Prompt.Count;
 
-			var uiDialog = Far.Api.CreateDialog(-1, -1, w, h);
+			uiDialog = Far.Api.CreateDialog(-1, -1, w, h);
 			uiDialog.TypeId = TypeId;
 			uiDialog.AddBox(3, 1, w - 4, h - 2, Title);
 
 			var uiPrompt = new List<IText>(Prompt.Count);
-			foreach(var s in Prompt)
+			foreach (var s in Prompt)
 				uiPrompt.Add(uiDialog.AddText(5, -1, w - 6, s));
 
-			var uiEdit = uiDialog.AddEdit(5, -1, w - 6, string.Empty);
+			uiEdit = uiDialog.AddEdit(5, -1, w - 6, string.Empty);
 			uiEdit.IsPath = true;
 			uiEdit.Text = Text ?? string.Empty;
 			uiEdit.History = History;
@@ -56,12 +60,26 @@ namespace PowerShellFar.UI
 						break;
 				}
 			};
+		}
 
-			if (!uiDialog.Show())
-				return false;
+		public string Show()
+		{
+			Create();
+			if (uiDialog.Show())
+				return uiEdit.Text;
+			else
+				return null;
+		}
 
-			Text = uiEdit.Text;
-			return true;
+		public Task<string> ShowAsync()
+		{
+			Create();
+			return Tasks.Dialog(uiDialog, (e) => {
+				if (e.Control == null)
+					return null;
+				else
+					return uiEdit.Text;
+			});
 		}
 	}
 }

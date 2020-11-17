@@ -61,13 +61,16 @@ namespace PowerShellFar
 					return;
 			}
 
-			// show "Invoke commands"
+			InvokeInputCode(code);
+		}
+		static async void InvokeInputCode(string code)
+		{
 			var ui = new UI.InputDialog() { Title = Res.Me, History = Res.History, Prompt = new string[] { Res.InvokeCommands }, Text = code };
-			if (!ui.Show())
-				return;
+			code = await ui.ShowAsync();
 
 			// invoke input
-			A.Psf.Act(ui.Text, null, true);
+			if (!string.IsNullOrEmpty(code))
+				await Tasks.Job(() => A.Psf.Act(code, null, true));
 		}
 	}
 }
