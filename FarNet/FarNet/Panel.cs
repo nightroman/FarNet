@@ -192,26 +192,22 @@ namespace FarNet
 			// 180913 Make it two steps: (1) set panels, (2) open panel. One step used to
 			// work but stopped. Far issue or not, let's use more reliable two step way.
 
-			Far.Api.PostSteps(
-				new Action[] {
-					delegate
-					{
-						// #7 make switching async, SetCurrentAt does not work for user screen
-						try
-						{
-							Far.Api.Window.SetCurrentAt(-1);
-						}
-						catch (InvalidOperationException ex)
-						{
-							throw new ModuleException("Cannot open a panel because panels cannot be set current.", ex);
-						}
-					},
-					delegate
+			Far.Api.PostStep(() =>
+			{
+				// #7 make switching async, SetCurrentAt does not work for user screen
+				try
+				{
+					Far.Api.Window.SetCurrentAt(-1);
+					Far.Api.PostStep(() =>
 					{
 						Open(null, null);
-					}
+					});
 				}
-			);
+				catch (InvalidOperationException ex)
+				{
+					throw new ModuleException("Cannot open a panel because panels cannot be set current.", ex);
+				}
+			});
 		}
 		/// <summary>
 		/// Calls <see cref="Open()"/> or <see cref="OpenChild"/> depending on the parameter.
