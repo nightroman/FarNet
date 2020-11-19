@@ -2,7 +2,7 @@
 // FarNet plugin for Far Manager
 // Copyright (c) Roman Kuzmin
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "Dialog.h"
 #include "DialogControls.h"
 #include "Wrappers.h"
@@ -282,6 +282,7 @@ bool FarDialog::Show()
 		_flags &= ~FDLG_NONMODAL;
 
 	_farItems = new FarDialogItem[_items->Count];
+	bool toFree = false;
 	try
 	{
 		// setup items
@@ -305,7 +306,8 @@ bool FarDialog::Show()
 		}
 
 		// help
-		PIN_NE(pinHelpTopic, HelpTopic);
+		if (HelpTopic)
+			_helpTopic = NewChars(HelpTopic);
 
 		// init
 		GUID typeId = ToGUID(_typeId);
@@ -316,7 +318,7 @@ bool FarDialog::Show()
 			_rect.Top,
 			_rect.Right,
 			_rect.Bottom,
-			pinHelpTopic,
+			_helpTopic,
 			_farItems,
 			_items->Count,
 			0,
@@ -339,10 +341,17 @@ bool FarDialog::Show()
 		// stop
 		return Stop(selected);
 	}
+	catch(Exception^)
+	{
+		toFree = true;
+		throw;
+	}
 	finally
 	{
-		if (!_NoModal)
+		if (toFree || !_NoModal)
+		{
 			Free();
+		}
 	}
 }
 
@@ -378,6 +387,10 @@ void FarDialog::Free()
 		_items[i]->Free();
 	delete[] _farItems;
 	_farItems = nullptr;
+
+	// help
+	delete _helpTopic;
+	_helpTopic = nullptr;
 
 	// unregister
 	_dialogs.Remove(this);
@@ -547,19 +560,29 @@ INT_PTR FarDialog::DialogProc(intptr_t msg, intptr_t param1, void* param2)
 			}
 		case DN_CLOSE:
 			{
+				bool toFree = true;
 				int selected = (int)param1;
 				FarControl^ fc = selected >= 0 ? _items[selected] : nullptr;
-				if (_Closing)
+				try
 				{
-					ClosingEventArgs ea(fc);
-					_Closing(this, %ea);
-					if (ea.Ignore)
-						return false;
+					if (_Closing)
+					{
+						ClosingEventArgs ea(fc);
+						_Closing(this, % ea);
+						if (ea.Ignore)
+						{
+							toFree = false;
+							return false;
+						}
+					}
 				}
-				if (_NoModal)
+				finally
 				{
-					Stop(selected);
-					Free();
+					if (_NoModal && toFree)
+					{
+						Stop(selected);
+						Free();
+					}
 				}
 				return true;
 			}
@@ -829,6 +852,12 @@ INT_PTR FarDialog::DialogProc(intptr_t msg, intptr_t param1, void* param2)
 	{
 		Far::Api->ShowError("Error in " __FUNCTION__, e);
 	}
+
+	//_201118_vk case: exception in Closing in non-modal dialog
+	// (1) the dialog is killed -> INVALID_HANDLE_VALUE
+	// (2) return true, i.e. let it close
+	if (_hDlg == INVALID_HANDLE_VALUE)
+		return true;
 
 	// default
 	return Info.DefDlgProc(_hDlg, msg, param1, param2);

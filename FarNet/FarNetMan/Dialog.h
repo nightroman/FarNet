@@ -82,6 +82,7 @@ private:
 	IButton^ _Cancel;
 	String^ _HelpTopic;
 	FarDialogItem* _farItems;
+	wchar_t* _helpTopic;
 };
 
 }
