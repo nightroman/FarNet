@@ -8,6 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace FarNet
 {
@@ -96,10 +97,16 @@ namespace FarNet
 		/// <param name="args">Arguments.</param>
 		/// <returns>The result text.</returns>
 		public abstract string EditText(EditTextArgs args);
+		/// <summary>
+		/// Opens a non-modal editor in order to edit the text.
+		/// </summary>
+		/// <param name="args">Arguments.</param>
+		/// <returns>The result text task.</returns>
+		public abstract Task<string> EditTextAsync(EditTextArgs args);
 	}
 
 	/// <summary>
-	/// Arguments of <see cref="IAnyEditor.EditText(EditTextArgs)"/>.
+	/// Arguments of <see cref="IAnyEditor.EditText(EditTextArgs)"/> and <see cref="IAnyEditor.EditTextAsync(EditTextArgs)"/>.
 	/// </summary>
 	public class EditTextArgs
 	{

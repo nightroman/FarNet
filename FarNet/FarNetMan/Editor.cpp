@@ -2,7 +2,7 @@
 // FarNet plugin for Far Manager
 // Copyright (c) Roman Kuzmin
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "Editor.h"
 #include "Editor0.h"
 #include "EditorBookmark.h"
@@ -15,6 +15,11 @@ namespace FarNet
 String^ AnyEditor::EditText(EditTextArgs^ args)
 {
 	return Works::EditorTools::EditText(args);
+}
+
+Task<String^>^ AnyEditor::EditTextAsync(EditTextArgs^ args)
+{
+	return Works::EditorTools::EditTextAsync(args);
 }
 
 Editor::Editor()

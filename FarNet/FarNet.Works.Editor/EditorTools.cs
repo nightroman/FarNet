@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace FarNet.Works
 {
@@ -21,38 +22,43 @@ namespace FarNet.Works
 			for (int i = start; i < end; ++i)
 				yield return editor[i].Text;
 		}
-		public static string EditText(EditTextArgs args)
+		// Creates an editor. Async safe. Unlikely throws.
+		static IEditor EditTextCreate(EditTextArgs args)
 		{
-			if (args == null) throw new ArgumentNullException("args");
+			//! FarNet API, safe for async
+			var editor = Far.Api.CreateEditor();
 
-			var file = Far.Api.TempName();
-			if (!string.IsNullOrEmpty(args.Extension))
-				file += args.Extension[0] == '.' ? args.Extension : "." + args.Extension;
+			//! avoid native API, do not use TempName
+			var ext = string.IsNullOrEmpty(args.Extension) ? "tmp" : args.Extension;
+			editor.FileName = Path.GetTempPath() + Path.ChangeExtension(Guid.NewGuid().ToString(), ext);
 
+			editor.CodePage = 1200;
+			editor.DisableHistory = true;
+			if (!string.IsNullOrEmpty(args.Title))
+				editor.Title = args.Title;
+			if (args.IsLocked)
+				editor.IsLocked = true;
+			if (args.EditorOpened != null)
+				editor.Opened += args.EditorOpened;
+
+			//? unlikely throws
+			if (!string.IsNullOrEmpty(args.Text))
+				File.WriteAllText(editor.FileName, args.Text, Encoding.Unicode);
+
+			return editor;
+		}
+		// Gets the edit text result. May throw.
+		static string EditTextResult(IEditor editor, EditTextArgs args)
+		{
 			try
 			{
-				if (!string.IsNullOrEmpty(args.Text))
-					File.WriteAllText(file, args.Text, Encoding.Unicode);
-
-				var editor = Far.Api.CreateEditor();
-				editor.FileName = file;
-				editor.CodePage = 1200;
-				editor.DisableHistory = true;
-				if (!string.IsNullOrEmpty(args.Title))
-					editor.Title = args.Title;
-				if (args.IsLocked)
-					editor.IsLocked = true;
-				if (args.EditorOpened != null)
-					editor.Opened += args.EditorOpened;
-
-				editor.Open(OpenMode.Modal);
 				if (args.IsLocked)
 					return null;
 
-				if (File.Exists(file))
+				if (File.Exists(editor.FileName))
 				{
 					// read and return
-					return File.ReadAllText(file, Encoding.Unicode);
+					return File.ReadAllText(editor.FileName, Encoding.Unicode);
 				}
 				else
 				{
@@ -64,13 +70,29 @@ namespace FarNet.Works
 			{
 				try
 				{
-					File.Delete(file);
+					File.Delete(editor.FileName);
 				}
 				catch (IOException e)
 				{
 					Log.TraceException(e);
 				}
 			}
+		}
+		public static string EditText(EditTextArgs args)
+		{
+			if (args == null) throw new ArgumentNullException(nameof(args));
+
+			var editor = EditTextCreate(args);
+			editor.Open(OpenMode.Modal);
+			return EditTextResult(editor, args);
+		}
+		public static async Task<string> EditTextAsync(EditTextArgs args)
+		{
+			if (args == null) throw new ArgumentNullException(nameof(args));
+
+			var editor = EditTextCreate(args);
+			await Tasks.Editor(editor);
+			return EditTextResult(editor, args);
 		}
 		/*
 		Issue [_090219_121638] On switching to editor the temp file is not deleted;

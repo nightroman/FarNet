@@ -33,6 +33,7 @@ using namespace System::Resources;
 using namespace System::Runtime::CompilerServices;
 using namespace System::Text::RegularExpressions;
 using namespace System::Text;
+using namespace System::Threading::Tasks;
 using namespace System;
 
 #undef CreateDialog

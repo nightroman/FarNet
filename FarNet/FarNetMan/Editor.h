@@ -25,6 +25,7 @@ namespace FarNet
 	public: DEF_EVENT_IMP(Redrawing, _Redrawing);
 	public:
 		virtual String^ EditText(EditTextArgs^ args) override;
+		virtual Task<String^>^ EditTextAsync(EditTextArgs^ args) override;
 	};
 
 	ref class DrawerInfo sealed
