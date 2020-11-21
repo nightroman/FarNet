@@ -393,7 +393,6 @@ namespace FarNet
 
 			// editor
 			var editorTemp = Far.Api.CreateEditor();
-			editorTemp.DeleteSource = DeleteSource.File;
 			editorTemp.DisableHistory = true;
 			editorTemp.FileName = temp;
 			editorTemp.Title = file.Name;
@@ -403,6 +402,9 @@ namespace FarNet
 				editorTemp.Opened += xExportArgs.EditorOpened;
 
 			// future
+			//! Not sure why but with used DisableHistory the file reopens with the last caret restored.
+			//! If this is some Far feature and it changes then save and set the last caret manually.
+			var timeError = DateTime.MinValue;
 			if (xExportArgs.CanSet)
 			{
 				if (Explorer.CanSetText)
@@ -411,30 +413,74 @@ namespace FarNet
 					{
 						var xImportTextArgs = new SetTextEventArgs(ExplorerModes.Edit, file, editorTemp.GetText());
 						Log.Source.TraceInformation("ImportText");
-						UISetText(xImportTextArgs);
+						try
+						{
+							timeError = DateTime.MinValue;
+							UISetText(xImportTextArgs);
+						}
+						catch(Exception exn)
+						{
+							//! show first, then save error time
+							Far.Api.ShowError("Cannot set text", exn);
+							timeError = DateTime.UtcNow;
+						}
+					};
+					editorTemp.Closed += delegate
+					{
+						//! if error was on saving without closing then on closing "much later" without new saving ignore error
+						if (timeError != DateTime.MinValue && (DateTime.UtcNow - timeError).TotalSeconds > 1)
+							timeError = DateTime.MinValue;
 					};
 				}
 				else
 				{
-					editorTemp.Closed += delegate //???? to use Saved (Far 3), update docs.
+					editorTemp.Closed += delegate
 					{
 						if (editorTemp.TimeOfSave == DateTime.MinValue)
 							return;
 
 						var xImportFileArgs = new SetFileEventArgs(ExplorerModes.Edit, file, temp);
 						Log.Source.TraceInformation("ImportFile");
-						UISetFile(xImportFileArgs);
+						try
+						{
+							UISetFile(xImportFileArgs);
+						}
+						catch (Exception exn)
+						{
+							Far.Api.ShowError("Cannot set file", exn);
+							timeError = DateTime.UtcNow;
+						}
 					};
 				}
 			}
 			else
 			{
-				// to lock
+				// lock, do nothing else
 				editorTemp.IsLocked = true;
 			}
 
-			// go
-			editorTemp.Open();
+			// loop while errors on saving
+			async void Loop()
+			{
+				try
+				{
+					for (; ; )
+					{
+						timeError = DateTime.MinValue;
+
+						await Tasks.Editor(editorTemp);
+
+						if (timeError == DateTime.MinValue)
+							break;
+					}
+				}
+				finally
+				{
+					File.Delete(temp);
+				}
+			}
+
+			Loop();
 		}
 		/// <summary>
 		/// Opens the file in the viewer.

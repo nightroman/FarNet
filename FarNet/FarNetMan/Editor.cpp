@@ -880,9 +880,10 @@ void Editor::Start(const EditorInfo& ei, bool waiting)
 	CBox fileName(Info.EditorControl(_id, ECTL_GETFILENAME, 0, 0));
 	Info.EditorControl(_id, ECTL_GETFILENAME, fileName.Size(), fileName);
 
-	// set info
+	// set info, mind this instance may be reopened -> reset some data
 	_id = ei.EditorID;
 	_TimeOfOpen = DateTime::Now;
+	_TimeOfSave = DateTime::MinValue;
 	_FileName = gcnew String(fileName);
 
 	// preset waiting runtime properties
