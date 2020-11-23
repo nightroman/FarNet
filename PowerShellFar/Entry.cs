@@ -151,20 +151,8 @@ namespace PowerShellFar
 				case "InvokeScriptArguments":
 					return new Func<string, object[], object[]>(delegate (string script, object[] arguments)
 					{
-						var res = A.InvokeCode(script, arguments);
-						var ret = new object[res.Count];
-						for(int i = 0; i < ret.Length; ++i)
-						{
-							var x = res[i];
-							if (x != null)
-							{
-								if (x.BaseObject is PSCustomObject ps)
-									ret[i] = x;
-								else
-									ret[i] = x.BaseObject;
-							}
-						}
-						return ret;
+						var result = A.InvokeCode(script, arguments);
+						return A.UnwrapPSObject(result);
 					});
 
 				case "Runspace":

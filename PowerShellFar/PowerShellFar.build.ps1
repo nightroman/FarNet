@@ -9,18 +9,18 @@ param(
 )
 $PsfHome = "$FarHome\FarNet\Modules\PowerShellFar"
 
-task Clean {
+task clean {
 	remove z, bin, obj, About-PowerShellFar.htm
 }
 
 # Install all. Run after Build.
-task Install InstallBin, InstallRes
+task install installBin, installRes
 
-task Uninstall {
+task uninstall {
 	if (Test-Path $PsfHome) { Remove-Item $PsfHome -Recurse -Force }
 }
 
-task Help {
+task help {
 	# HLF
 	exec { pandoc.exe README.md --output=About-PowerShellFar.htm --from=gfm }
 	exec { HtmlToFarHelp from=About-PowerShellFar.htm to=$PsfHome\PowerShellFar.hlf }
@@ -39,18 +39,18 @@ task Help {
 	}
 }
 
-task InstallBin {
-	exec { robocopy Bin\$Configuration $PsfHome PowerShellFar.dll PowerShellFar.xml /np } (0..2)
+task installBin {
+	exec { robocopy Bin\$Configuration $PsfHome PowerShellFar.dll PowerShellFar.xml /r:0 } (0..2)
 }
 
-task InstallRes {
-	exec { robocopy . $PsfHome PowerShellFar.ps1 TabExpansion.ps1 TabExpansion2.ps1 TabExpansion.txt /np } (0..2)
-	exec { robocopy Modules\FarInventory $PsfHome\Modules\FarInventory about_FarInventory.help.txt FarInventory.psm1 /np } (0..2)
-	exec { robocopy Modules\FarPackage $PsfHome\Modules\FarPackage /np } (0..2)
+task installRes {
+	exec { robocopy . $PsfHome PowerShellFar.ps1 TabExpansion.ps1 TabExpansion2.ps1 TabExpansion.txt } (0..2)
+	exec { robocopy Modules\FarInventory $PsfHome\Modules\FarInventory about_FarInventory.help.txt FarInventory.psm1 } (0..2)
+	exec { robocopy Modules\FarPackage $PsfHome\Modules\FarPackage } (0..2)
 }
 
 # Run when FarNet and PowerShellFar are installed.
-task BuildPowerShellFarHelp -Inputs {Get-Item Commands\*} -Outputs "$PsfHome\PowerShellFar.dll-Help.xml" {
+task buildPowerShellFarHelp -Inputs {Get-Item Commands\*} -Outputs "$PsfHome\PowerShellFar.dll-Help.xml" {
 	Add-Type -Path $FarHome\FarNet\FarNet.dll
 	Add-Type -Path $FarHome\FarNet\FarNet.Settings.dll
 	Add-Type -Path $FarHome\FarNet\FarNet.Tools.dll
@@ -70,7 +70,7 @@ Convert-Helps "$BuildRoot\Commands\PowerShellFar.dll-Help.ps1" "$Outputs"
 }
 
 # Make package files
-task Package Help, {
+task package help, {
 	remove z
 	$dirMain = mkdir 'z\tools\FarHome\FarNet\Modules\PowerShellFar'
 
@@ -81,13 +81,13 @@ task Package Help, {
 }
 
 # Set version
-task Version {
+task version {
 	. ..\Get-Version.ps1
 	($script:Version = $PowerShellFarVersion)
 }
 
 # Make NuGet package
-task NuGet Package, Version, {
+task nuget package, version, {
 	$text = @'
 PowerShellFar is the FarNet module for Far Manager, the file manager.
 It is the Windows PowerShell host in the genuine console environment.
@@ -121,5 +121,5 @@ https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
 </package>
 "@
 	# pack
-	exec { NuGet pack z\Package.nuspec -NoPackageAnalysis }
+	exec { nuget pack z\Package.nuspec -NoPackageAnalysis }
 }

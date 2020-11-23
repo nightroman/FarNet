@@ -54,12 +54,12 @@ namespace FarNet
 		/// </remarks>
 		public static Task Job(Action job)
 		{
-			var tcs = new TaskCompletionSource<int>();
+			var tcs = new TaskCompletionSource<object>();
 			Far.Api.PostJob(() => {
 				try
 				{
 					job();
-					tcs.SetResult(0);
+					tcs.SetResult(null);
 				}
 				catch (Exception exn)
 				{
@@ -75,7 +75,7 @@ namespace FarNet
 		/// <returns>The task which completes when the macro is called.</returns>
 		public static Task Macro(string text)
 		{
-			var tcs = new TaskCompletionSource<int>();
+			var tcs = new TaskCompletionSource<object>();
 			Environment.SetEnvironmentVariable(_envMacroFlag, "0");
 			try
 			{
@@ -85,7 +85,7 @@ namespace FarNet
 				{
 					while (Environment.GetEnvironmentVariable(_envMacroFlag) != "1")
 						Thread.Sleep(50);
-					tcs.SetResult(0);
+					tcs.SetResult(null);
 				});
 			}
 			catch (Exception exn)
@@ -110,12 +110,12 @@ namespace FarNet
 		/// <returns>The task which completes when the editor closes.</returns>
 		public static Task Editor(IEditor editor)
 		{
-			var tcs = new TaskCompletionSource<int>();
+			var tcs = new TaskCompletionSource<object>();
 
 			void onClosed(object sender, EventArgs e)
 			{
 				editor.Closed -= onClosed;
-				tcs.SetResult(0);
+				tcs.SetResult(null);
 			}
 
 			Far.Api.PostJob(() => {
@@ -164,6 +164,39 @@ namespace FarNet
 				{
 					dialog.Closing -= onClosing;
 					tcs.SetException(exn);
+				}
+			}
+
+			Far.Api.PostJob(() => {
+				try
+				{
+					dialog.Closing += onClosing;
+					dialog.Open();
+				}
+				catch (Exception exn)
+				{
+					dialog.Closing -= onClosing;
+					tcs.SetException(exn);
+				}
+			});
+
+			return tcs.Task;
+		}
+		/// <summary>
+		/// Creates a task which opens the dialog.
+		/// </summary>
+		/// <param name="dialog">The dialog to be opened.</param>
+		/// <returns>The task which completes when the dialog closes.</returns>
+		public static Task Dialog(IDialog dialog)
+		{
+			var tcs = new TaskCompletionSource<object>();
+
+			void onClosing(object sender, ClosingEventArgs e)
+			{
+				if (!e.Ignore)
+				{
+					dialog.Closing -= onClosing;
+					tcs.SetResult(null);
 				}
 			}
 

@@ -2,6 +2,11 @@ https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.5048
 FarNet 5.2.20
 
+= 1.13.2 =
+
+Add FarNet.FSharp.PSFar StartTaskCode and StartTaskFile for invoking
+PowerShellFar scripts asynchronously by Start-FarTask.
+
 = 1.13.1 =
 
 Add missing Microsoft.Build.*.dll

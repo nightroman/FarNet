@@ -605,3 +605,37 @@ This mode is used for troubleshooting, demonstrations, and etc.
 		Title = 'Title of the box.'
 	}
 }
+
+### Start-FarTask
+@{
+	command = 'Start-FarTask'
+	synopsis = 'Starts the script task.'
+	description = @'
+	This cmdlet starts the specified script task.
+
+	The top level task code is invoked in a new runspace asynchronously. This
+	code should not access $Far and $Psf, it should invoke job blocks instead.
+
+	Task job blocks are called as `job {...}` synchronously. Job scripts are
+	invoked by the core in the main thread. They may work with $Far and $Psf.
+
+	Key macros are called as `keys "..."` from the top level task code.
+
+	The task and jobs may exchange data using the predefined hashtable $Data.
+
+	The cmdlet gets nothing by default and the script output is ignored. Use
+	the switch AsTask in order to output the started task, use it in another
+	async scenario, consume the script output as the task result (object[]).
+'@
+	parameters = @{
+		Script = 'Specifies the task script block.'
+		Code = 'Specifies the task script code.'
+		File = 'Specifies the task script file.'
+		AsTask = 'Tells to output the started task.'
+	}
+
+	outputs = @{
+		type = 'System.Threading.Tasks.Task[object[]]'
+		description = 'With AsTask, the started task.'
+	}
+}

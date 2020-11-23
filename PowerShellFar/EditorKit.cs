@@ -607,9 +607,10 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 
 			// save/set the directory, allow failures (e.g. a long path)
 			// note: GetDirectoryName fails on a long path, too
+			var fileName = editor.FileName;
 			try
 			{
-				dir1 = Path.GetDirectoryName(editor.FileName);
+				dir1 = Path.GetDirectoryName(fileName);
 				dir0 = Environment.CurrentDirectory;
 				Environment.CurrentDirectory = dir1;
 			}
@@ -628,24 +629,20 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 				A.Psf.Engine.SessionState.Path.PushCurrentLocation(null);
 				A.Psf.Engine.SessionState.Path.SetLocation(Kit.EscapeWildcard(dir1));
 
-				// invoke the script by the command runner or directly
-				var fileName = editor.FileName;
-				var root = Path.GetDirectoryName(fileName);
-				if (root.EndsWith(".ps1.commands", StringComparison.OrdinalIgnoreCase))
+				// invoke the script by the runner or directly
+				if (fileName.EndsWith(".fas.ps1", StringComparison.OrdinalIgnoreCase))
 				{
-					var runner = root.Substring(0, root.Length - 9);
+					A.InvokeCode("Start-FarTask $args[0]", editor.FileName);
+				}
+				else if (dir1.EndsWith(".ps1.commands", StringComparison.OrdinalIgnoreCase))
+				{
+					var runner = dir1.Substring(0, dir1.Length - 9);
 					A.Psf.Act($"& '{runner.Replace("'", "''")}' {Path.GetFileNameWithoutExtension(fileName)}", null, false);
 				}
 				else
 				{
 					A.Psf.Act($"& '{fileName.Replace("'", "''")}'", null, false);
 				}
-				Far.Api.UI.WindowTitle = "Done " + DateTime.Now;
-			}
-			catch
-			{
-				Far.Api.UI.WindowTitle = "Failed";
-				throw;
 			}
 			finally
 			{
@@ -663,10 +660,10 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 			string text = line.Text;
 
 			int pos = line.Caret;
-            if (pos > text.Length)
-                return false;
+			if (pos > text.Length)
+				return false;
 
-            while (--pos >= 0)
+			while (--pos >= 0)
 				if (text[pos] > ' ')
 					return true;
 

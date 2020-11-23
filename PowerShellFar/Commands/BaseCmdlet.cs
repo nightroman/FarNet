@@ -39,7 +39,8 @@ namespace PowerShellFar.Commands
 				new SessionStateCmdletEntry("Out-FarPanel", typeof(Commands.OutFarPanelCommand), Help),
 				new SessionStateCmdletEntry("Search-FarFile", typeof(Commands.SearchFarFileCommand), Help),
 				new SessionStateCmdletEntry("Show-FarMessage", typeof(Commands.ShowFarMessageCommand), Help),
-				new SessionStateCmdletEntry("Start-FarJob", typeof(Commands.StartFarJobCommand), Help)
+				new SessionStateCmdletEntry("Start-FarJob", typeof(Commands.StartFarJobCommand), Help),
+				new SessionStateCmdletEntry("Start-FarTask", typeof(Commands.StartFarTaskCommand), Help),
 			});
 		}
 	}

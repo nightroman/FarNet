@@ -1,6 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 FarNet 5.3.0
 
+= 5.3.6 =
+
+Add Start-FarTask for async scripts with sync Far jobs and keys.
+
 = 5.3.5 =
 
 - add InvokeInputCodeAsync, "Input commands" dialog is not modal

@@ -572,5 +572,16 @@ Out-String -Width $args[1]
 				return string.Format(null, "<ERROR: {0}>", e.Message);
 			}
 		}
+		internal static object[] UnwrapPSObject(IList<PSObject> source)
+		{
+			var target = new object[source.Count];
+			for (int i = target.Length; --i >= 0;)
+			{
+				var x = source[i];
+				if (x != null)
+					target[i] = x.BaseObject is PSCustomObject ? x : x.BaseObject;
+			}
+			return target;
+		}
 	}
 }
