@@ -1,6 +1,11 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 Far Manager 3.0.5048
-FarNet 5.2.20
+FarNet 5.4.2
+
+= 1.13.3 =
+
+- Replace StartTaskCode and StartTaskFile with StartTask
+- Add the parameter `parameters` to StartTask
 
 = 1.13.2 =
 

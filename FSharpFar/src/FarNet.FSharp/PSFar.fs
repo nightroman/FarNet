@@ -1,6 +1,7 @@
 ﻿namespace FarNet.FSharp
 open FarNet
 open System
+open System.Collections
 open System.Threading.Tasks
 
 module internal PSFarWorks =
@@ -19,8 +20,7 @@ module internal PSFarWorks =
         manager.Value.Interop ("InvokeScriptArguments", null) :?> Func<string, obj [], obj []>
     )
 
-/// FarNet.PowerShellFar module tools.
-/// The module must be available.
+/// FarNet.PowerShellFar helpers for F#.
 [<AbstractClass; Sealed>]
 type PSFar =
     /// The PowerShellFar runspace object.
@@ -34,18 +34,18 @@ type PSFar =
         let args = defaultArg args null
         PSFarWorks.invokeScript.Value.Invoke (script, args)
 
-    /// Starts the specified script code task.
-    /// Returns the result object array.
-    /// file: The task script code.
-    static member StartTaskCode (code: string) = async {
-        let! task = Job.From (fun () -> PSFarWorks.invokeScript.Value.Invoke ("Start-FarTask -AsTask -Code $args[0]", [| code |]))
-        return! task.[0] :?> Task<obj[]> |> Async.AwaitTask
-    }
-
-    /// Starts the specified script file task.
-    /// Returns the result object array.
-    /// file: The task script file.
-    static member StartTaskFile (file: string) = async {
-        let! task = Job.From (fun () -> PSFarWorks.invokeScript.Value.Invoke ("Start-FarTask -AsTask -File $args[0]", [| file |]))
+    /// Starts the script task by Start-FarTask.
+    /// Returns the async object array.
+    /// script: Script file or code.
+    /// parameters: Script parameters.
+    static member StartTask (script: string, ?parameters: seq<string * obj>) = async {
+        let parameters2 = Hashtable ()
+        match parameters with
+        | Some parameters ->
+            for (k, v) in parameters do
+                parameters2.Add(k, v)
+        | None ->
+            ()
+        let! task = Job.From (fun () -> PSFarWorks.invokeScript.Value.Invoke ("param($Script, $Parameters) Start-FarTask $Script @Parameters -AsTask", [| script; parameters2 |]))
         return! task.[0] :?> Task<obj[]> |> Async.AwaitTask
     }

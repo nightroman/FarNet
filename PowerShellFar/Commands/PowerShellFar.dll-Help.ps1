@@ -611,26 +611,28 @@ This mode is used for troubleshooting, demonstrations, and etc.
 	command = 'Start-FarTask'
 	synopsis = 'Starts the script task.'
 	description = @'
-	This cmdlet starts the specified script task.
+	This cmdlet starts the specified script task. Script parameters are defined
+	in the script and specified for Start-FarTask (dynamic parameters). Known
+	issue: dynamic switch parameters must be specified after Script.
 
-	The top level task code is invoked in a new runspace asynchronously. This
-	code should not access $Far and $Psf, it should invoke job blocks instead.
+	The script is invoked in a new runspace asynchronously. The code must not
+	access $Far and $Psf, it should use job script blocks instead.
 
-	Task job blocks are called as `job {...}` synchronously. Job scripts are
-	invoked by the core in the main thread. They may work with $Far and $Psf.
+	Job blocks are called as `job {...}`. Job scripts are invoked by the core
+	in the main PowerShell session. They may work with $Far and $Psf. If a job
+	outputs a task then this task is awaited and its result is returned.
 
-	Key macros are called as `keys "..."` from the top level task code.
+	Key macros are called as `keys '...'` from the task code. Just like jobs
+	these calls are synchronous for the task code.
 
 	The task and jobs may exchange data using the predefined hashtable $Data.
 
 	The cmdlet gets nothing by default and the script output is ignored. Use
-	the switch AsTask in order to output the started task, use it in another
-	async scenario, consume the script output as the task result (object[]).
+	the switch AsTask in order to output the started task. Use it in another
+	async scenario, consume the script output as the task result, object[].
 '@
 	parameters = @{
-		Script = 'Specifies the task script block.'
-		Code = 'Specifies the task script code.'
-		File = 'Specifies the task script file.'
+		Script = 'Specifies the task as script file, block, or code.'
 		AsTask = 'Tells to output the started task.'
 	}
 
