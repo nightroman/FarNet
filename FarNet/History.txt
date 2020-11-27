@@ -1,9 +1,14 @@
 https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 5.4.3 =
+
+- add event IDialog.Closed
+- simplify Tasks.Macro()
+
 = 5.4.2 =
 
-- add Tasks.Dialog() without the closing function
+Add Tasks.Dialog() without the closing function
 
 = 5.4.1 =
 

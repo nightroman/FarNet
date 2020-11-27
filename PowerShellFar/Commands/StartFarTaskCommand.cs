@@ -21,52 +21,53 @@ namespace PowerShellFar.Commands
 		readonly Hashtable _data = new Hashtable(StringComparer.OrdinalIgnoreCase);
 		ScriptBlock _script;
 		Dictionary<string, ParameterMetadata> _scriptParameters;
+		Exception _scriptError;
 
 		[Parameter(Position = 0, Mandatory = true)]
 		public object Script
 		{
 			set
 			{
-				try
+				if (value is PSObject ps)
+					value = ps.BaseObject;
+
+				if (value is ScriptBlock block)
 				{
-					if (value is PSObject ps)
-						value = ps.BaseObject;
+					_script = block;
+					return;
+				}
 
-					if (value is ScriptBlock block)
-					{
-						_script = block;
-						return;
-					}
+				if (!(value is string text))
+					throw new PSArgumentException("Invalid script type.");
 
-					if (!(value is string text))
-						throw new PSArgumentException("Invalid script type.");
-
-					string path;
-					if (text.EndsWith(".ps1", StringComparison.OrdinalIgnoreCase) && File.Exists(path = GetUnresolvedProviderPathFromPSPath(text)))
+				string path;
+				if (text.EndsWith(".ps1", StringComparison.OrdinalIgnoreCase) && File.Exists(path = GetUnresolvedProviderPathFromPSPath(text)))
+				{
+					try
 					{
 						var info = (ExternalScriptInfo)SessionState.InvokeCommand.GetCommand(path, CommandTypes.ExternalScript);
+						//! throws on syntax errors
 						_script = info.ScriptBlock;
 						_scriptParameters = info.Parameters;
 					}
-					else
+					catch (Exception exn)
 					{
-						_script = ScriptBlock.Create(text);
+						//! throw later, avoid bad error info
+						_scriptError = exn;
 					}
 				}
-				finally
+				else
 				{
-					if (_scriptParameters == null)
-					{
-						var res = A.InvokeCode("$function:_201127_9f = $args[0]; Get-Command _201127_9f -Type Function", _script);
-						var info = (CommandInfo)res[0].BaseObject;
-						_scriptParameters = info.Parameters;
-					}
+					_script = ScriptBlock.Create(text);
 				}
 			}
 		}
 
 		[Parameter]
 		public SwitchParameter AsTask { get; set; }
+
+		[Parameter]
+		public SwitchParameter Confirm { get; set; }
 
 		const string _codeTask = @"
 param(
@@ -89,8 +90,13 @@ function Invoke-FarKeys($Keys) {
 	$StartFarTaskCommand.Keys($Keys)
 }
 
+function Invoke-FarMacro($Keys) {
+	$StartFarTaskCommand.Macro($Keys)
+}
+
 Set-Alias job Invoke-FarJob
 Set-Alias keys Invoke-FarKeys
+Set-Alias macro Invoke-FarMacro
 
 . $Script.GetNewClosure() @Parameters
 ";
@@ -106,6 +112,28 @@ $ErrorActionPreference = 'Stop'
 . $Script.GetNewClosure()
 ";
 
+		bool ShowConfirm(string title, string text)
+		{
+			var args = new MessageArgs()
+			{
+				Text = text,
+				Caption = title,
+				Options = MessageOptions.LeftAligned,
+				Buttons = new string[] { "Step", "Continue", "Cancel" },
+				Position = new Point(int.MaxValue, 1)
+			};
+			switch (Far.Api.Message(args))
+			{
+				case 0:
+					return true;
+				case 1:
+					Confirm = false;
+					return true;
+				default:
+					return false;
+			}
+		}
+
 		// Called by task scripts.
 		//! Catch and return an exception to avoid noise CmdletInvocationException\MethodInvocationException\<ActualException>.
 		//! The task script checks for an exception and throws it.
@@ -116,11 +144,23 @@ $ErrorActionPreference = 'Stop'
 				// post the job as task
 				var task = Tasks.Job(() =>
 				{
+					if (Confirm)
+					{
+						if (!ShowConfirm("Job", $"{job.File}\r\n{job.ToString()}"))
+							throw new PipelineStoppedException();
+					}
+
 					// invoke live script block syncronously in the main session
 					var ps = PowerShell.Create();
 					ps.Runspace = A.Psf.Runspace;
 					ps.AddScript(_codeJob, true).AddArgument(job).AddArgument(_data);
-					return ps.Invoke();
+					var output = ps.Invoke();
+
+					//! Assert-Far may throw special PipelineStoppedException, propagate it
+					if (ps.InvocationStateInfo.Reason != null)
+						throw ps.InvocationStateInfo.Reason;
+
+					return output;
 				});
 
 				// await
@@ -151,9 +191,18 @@ $ErrorActionPreference = 'Stop'
 		}
 
 		// Called by task scripts.
+		//! Confirm has issues, macros fails.
 		public void Keys(string keys)
 		{
 			var task = Tasks.Keys(keys);
+			task.Wait();
+		}
+
+		// Called by task scripts.
+		//! Confirm has issues, macros fails.
+		public void Macro(string macro)
+		{
+			var task = Tasks.Macro(macro);
 			task.Wait();
 		}
 
@@ -175,11 +224,23 @@ $ErrorActionPreference = 'Stop'
 			"Verbose", "Debug", "ErrorAction", "WarningAction", "ErrorVariable", "WarningVariable",
 			"OutVariable", "OutBuffer", "PipelineVariable", "InformationAction", "InformationVariable" };
 		static readonly string[] _paramInvalid = new string[] {
-			"Script", "AsTask" };
+			"Script", "AsTask", "Confirm" };
 		RuntimeDefinedParameterDictionary _paramDynamic;
 
 		public object GetDynamicParameters()
 		{
+			//! throw later, avoid bad error info
+			if (_scriptError != null)
+				return null;
+
+			// get yet missing script block parameters
+			if (_scriptParameters == null)
+			{
+				var res = A.InvokeCode("$function:__GetScriptParameters = $args[0]; Get-Command __GetScriptParameters -Type Function", _script);
+				var info = (CommandInfo)res[0].BaseObject;
+				_scriptParameters = info.Parameters;
+			}
+
 			_paramDynamic = new RuntimeDefinedParameterDictionary();
 			foreach (var p in _scriptParameters.Values)
 			{
@@ -196,6 +257,9 @@ $ErrorActionPreference = 'Stop'
 
 		protected override void BeginProcessing()
 		{
+			if (_scriptError != null)
+				throw new PSArgumentException($"Script error: {_scriptError.Message}", nameof(Script));
+
 			var iss = InitialSessionState.CreateDefault();
 
 			// add variables

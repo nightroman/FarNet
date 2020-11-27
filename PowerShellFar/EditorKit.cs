@@ -623,8 +623,6 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 
 			try
 			{
-				Far.Api.UI.WindowTitle = "Running...";
-
 				// push/set the location; let's ignore issues
 				A.Psf.Engine.SessionState.Path.PushCurrentLocation(null);
 				A.Psf.Engine.SessionState.Path.SetLocation(Kit.EscapeWildcard(dir1));

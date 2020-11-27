@@ -1443,30 +1443,36 @@ see [File associations](:FileAssoc).
 
 **Examples**
 
-PowerShellFar scripts:
+PowerShellFar normal scripts:
 
-    mask     :  *-.ps1
+    mask     :  *.far.ps1,*-.ps1
     commands :
         ps: & (Get-FarPath) #
+
+PowerShellFar async scripts:
+
+    mask     :  *.fas.ps1
+    commands :
+        ps: Start-FarTask -Script (Get-FarPath) #
+        ps: Start-FarTask -Script (Get-FarPath) -Confirm #
 
 PowerShellFar steppers:
 
     mask     :  *..ps1
     commands :
         ps: Invoke-FarStepper -Path (Get-FarPath) #
-        ps: Invoke-FarStepper -Path (Get-FarPath) -Ask #
+        ps: Invoke-FarStepper -Path (Get-FarPath) -Confirm #
 
-Standard PowerShell scripts:
+PowerShell scripts:
 
-    mask     :  *.ps1|*[-.].ps1
+    mask     :  *.ps1|*.far.ps1,*-.ps1,*.fas.ps1,*..ps1
     commands :
-        PowerShell.exe -File "!\!.!"
-        start PowerShell.exe -NoExit -NoLogo -File "!\!.!"
+        powershell.exe -File "!\!.!"
+        start powershell.exe -NoExit -NoLogo -File "!\!.!"
 
-With the associations above when you press `[Enter]` (or another assigned key)
-for scripts in the panel then standard scripts are invoked by PowerShell.exe,
-PowerShellFar scripts are invoked by PowerShellFar and step units are invoked
-by the stepper.
+With these associations when you press `[Enter]` (or another assigned key) for
+scripts in the panel then standard scripts are invoked by powershell.exe and
+PowerShellFar scripts are invoked by one of the associated commands.
 
 
 *********************************************************************

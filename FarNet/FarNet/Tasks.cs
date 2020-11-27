@@ -75,24 +75,14 @@ namespace FarNet
 		/// <returns>The task which completes when the macro is called.</returns>
 		public static Task Macro(string text)
 		{
-			var tcs = new TaskCompletionSource<object>();
 			Environment.SetEnvironmentVariable(_envMacroFlag, "0");
-			try
+			Far.Api.PostMacro(text);
+			Far.Api.PostMacro(_macroSetFlag);
+			return Task.Run(() =>
 			{
-				Far.Api.PostMacro(text);
-				Far.Api.PostMacro(_macroSetFlag);
-				Task.Run(() =>
-				{
-					while (Environment.GetEnvironmentVariable(_envMacroFlag) != "1")
-						Thread.Sleep(50);
-					tcs.SetResult(null);
-				});
-			}
-			catch (Exception exn)
-			{
-				tcs.SetException(exn);
-			}
-			return tcs.Task;
+				while (Environment.GetEnvironmentVariable(_envMacroFlag) != "1")
+					Thread.Sleep(50);
+			});
 		}
 		/// <summary>
 		/// Creates a task which posts the specified keys.

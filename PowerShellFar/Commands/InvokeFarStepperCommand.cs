@@ -4,7 +4,6 @@
 
 using System;
 using System.Management.Automation;
-using System.Management.Automation.Runspaces;
 
 namespace PowerShellFar.Commands
 {
@@ -14,7 +13,7 @@ namespace PowerShellFar.Commands
 		[Alias("PSPath", "FileName")]
 		public string Path { get; set; }
 		[Parameter()]
-		public SwitchParameter Ask { get; set; }
+		public SwitchParameter Confirm { get; set; }
 		readonly Stepper _stepper = new Stepper();
 		public void Dispose()
 		{
@@ -26,7 +25,7 @@ namespace PowerShellFar.Commands
 		}
 		protected override void EndProcessing()
 		{
-			_stepper.Ask = Ask;
+			_stepper.Ask = Confirm;
 			_stepper.Go();
 		}
 	}

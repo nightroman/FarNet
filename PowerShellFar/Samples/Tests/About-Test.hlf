@@ -1,0 +1,131 @@
+.Language=English,English (English)
+.PluginContents=Bench
+.Options TabSize=4
+
+@Contents
+$#PowerShellFar Tests#
+
+PREREQUISITES
+
+*) Include the directory Bench to the path. Tests may call scripts from there.
+
+*) Some tests should be initialized. For example database tests need some data
+to work with. Invoke Initialize-Test-.ps1 before such tests.
+
+SEE ALSO
+
+	~Database Tests~@DataTest@
+	~Dialog Tests~@DialogTest@
+
+@DataTest
+$#Database Tests#
+~Contents~@Contents@
+
+You can invoke Test-Panel-DbText-.ps1 without preparations. See the script
+comments for details.
+
+*) Other scripts are designed for and tested with SQL Server Express (instance
+".\sqlexpress", e.g. installed with Visual Studio), SQL Server Compact
+(installed with Visual Studio), and SQLite (http://system.data.sqlite.org/).
+
+*) If your SQL Server is different, change the connection string in
+Initialize-Test-.ps1, see $DbConnection.ConnectionString = ..
+
+*) Invoke Initialize-Test-.ps1 to create a mini-database with two tables.
+
+	For SQL Server Express it creates two related tables in Tempdb: TestNotes
+	and TestCategories. After tests drop the tables manually or just leave
+	them, they will be removed automatically when the server restarts.
+
+	For SQL Server Compact or SQLite it creates in %TEMP% the file Tempdb.sdf
+	or Tempdb.sqlite and adds the same tables and data. You may remove these
+	files after tests.
+
+Now you are ready to play with scripts. Recommended sequence:
+
+1) Run Panel-DbTable-.ps1 (from Bench), if everything is fine you get all
+tables in your Tempdb including TestNotes and TestCategories. Open them by
+[Enter] and see how they look in basic mode (i.e. without any customisation).
+Note that you can even perform all operations like insert, delete and update
+([F7], [Del], etc.)
+
+2) Run Test-Panel-DbCategories-.ps1 - the table looks different, not much, but
+the field CategoryId is hidden because a user normally should not use or even
+see it, this information is internal.
+
+3) Run Test-Panel-DbNotes-.ps1 - it looks more different (two fields are
+hidden). The important point is that how you modify Category. When you [Enter]
+on it Test-Panel-DbCategories-.ps1 is actually called and the table
+TestCategories is opened for selection of another category. At the same time
+you can modify or add new categories as if you opened it directly in step 2).
+
+#KNOWN ISSUES#
+
+If you are about to delete or modify again just added and saved record then at
+first you have to re-read the table data explicitly by <CtrlR> (otherwise you
+can get concurrency error or record data can be incomplete and etc.).
+
+
+@TestBase
+$#Test-Base-.ps1#
+~Contents~@Contents@
+
+This is just a demo help topic.
+
+
+@DialogTest
+$#Dialog Tests#
+~Contents~@Contents@
+
+The script Test-Dialog-.ps1 demonstrates most of features and functionality
+available in FarNet dialogs. It
+
+	- creates a dialog and sets a help topic from a file in the same folder;
+	- adds most of available FarNet dialog items and their different forms;
+	- sets items properties before Show() and after Show() (see [Code]);
+	- adds a number of various dialog and item event handlers;
+	- sets focused and default item and starts Show().
+	- shows how to emulate IDialog.MouseClicked event.
+	- shows how to use and draw IUserControl.
+
+#[Done]#
+
+When the dialog is closed by [Done] (default button) the script outputs some
+occurred events information and current data of the dialog and items.
+
+#[Fail]#
+
+This is just a test of what happens on an error in an event handler.
+
+#[Test]#
+
+Automated test. It invokes steps from the super-macro "Test-Dialog..ps1" in
+ask-mode so that you can watch each step code or keys and see how each step
+works. At any time you may choose [Cancel] to stop stepping or [Continue] to
+play the rest of steps automatically.
+
+#[List]#
+
+Extra test of three list controls (combo edit, combo box, list box). The code
+shows how to use DetachItems(), AttachItems() for better performance when
+changes are large enough.
+
+#[More]#
+
+This button starts the same dialog to show it is fine to open nested dialogs.
+
+#[Exit]#
+
+'Cancel' button (property IDialog.Cancel): if it is pushed Show() returns false.
+
+#F11 \ PowerShellFar \ Invoke commands#
+
+You can invoke PowerShell commands from dialogs. Thus, you can test a dialog
+and its items manually running PowerShell code right there. Variables defined
+is the dialog script are available. For example you can enter and run:
+
+	$dialog ## gets this dialog properties;
+	$e1 ## gets the first edit control properties;
+	$e1.Text = 'New text' ## sets some new text in it;
+	$e1.Disabled = 1 ## disabled it
+	$lb.Items.RemoveAt(0) ## remove the first list box item

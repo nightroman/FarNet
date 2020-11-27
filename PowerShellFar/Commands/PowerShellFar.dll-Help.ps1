@@ -547,10 +547,12 @@ Example: 'FullName' or {$_.FullName} tell to use a property FullName.
 ### Invoke-FarStepper
 @{
 	command = 'Invoke-FarStepper'
-	synopsis = 'Invokes sequences of asynchronous macro and script block steps.'
+	synopsis = 'Invokes async sequences of macro and script block steps.'
 	description = @'
 This cmdlet provides a simple way to invoke stepper scripts. For more complex
 scenarios with stepping events use the class [PowerShellFar.Stepper] directly.
+
+Consider using Start-FarTask, the modern and more powerful way using tasks.
 '@
 	parameters = @{
 		Path = @'
@@ -558,9 +560,9 @@ A script that gets macros and script blocks. Use either full paths or just
 names of scripts in the system path. Use of relative paths is not recommended
 with more than one unit.
 '@
-		Ask = @'
-Tells to ask a user to choose an action before each step.
-This mode is used for troubleshooting, demonstrations, and etc.
+		Confirm = @'
+Tells to confirm steps before invoking using dialogs.
+Use it for troubleshooting, demonstrations, and etc.
 '@
 	}
 
@@ -579,10 +581,6 @@ This mode is used for troubleshooting, demonstrations, and etc.
 		@{code={
 	# Invoke the current panel file by the stepper
 	Invoke-FarStepper -Path (Get-FarPath)
-		}}
-		@{code={
-	# Invoke the test from Bench\Text with confirmations
-	Invoke-FarStepper .\Test-Stepper..ps1 -Ask
 		}}
 	)
 }
@@ -622,22 +620,30 @@ This mode is used for troubleshooting, demonstrations, and etc.
 	in the main PowerShell session. They may work with $Far and $Psf. If a job
 	outputs a task then this task is awaited and its result is returned.
 
-	Key macros are called as `keys '...'` from the task code. Just like jobs
-	these calls are synchronous for the task code.
+	Macros are called as `keys '...'` and `macro '...'` from the task code.
+	Just like script jobs, these calls are synchronous for the task code.
 
 	The task and jobs may exchange data using the predefined hashtable $Data.
 
-	The cmdlet gets nothing by default and the script output is ignored. Use
-	the switch AsTask in order to output the started task. Use it in another
-	async scenario, consume the script output as the task result, object[].
+	The cmdlet returns nothing by default and the script output is ignored. Use
+	the switch AsTask in order to return the started task. Use it in a calling
+	async scenario and get the script output as the task result, object[].
 '@
 	parameters = @{
 		Script = 'Specifies the task as script file, block, or code.'
-		AsTask = 'Tells to output the started task.'
+		AsTask = 'Tells to return the started task.'
+		Confirm = @'
+Tells to confirm jobs before invoking using dialogs.
+Use it for troubleshooting, demonstrations, and etc.
+'@
 	}
 
 	outputs = @{
 		type = 'System.Threading.Tasks.Task[object[]]'
 		description = 'With AsTask, the started task.'
 	}
+
+	links = @(
+		@{ text = 'Samples'; URI = 'https://github.com/nightroman/FarNet/tree/master/PowerShellFar/Samples/FarTask' }
+	)
 }

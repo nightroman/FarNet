@@ -1,8 +1,6 @@
 ﻿ArgumentCompleters.ps1 TabExpansion2 argument completers.
 Clear-Session.ps1 Clears PowerShell session resources.
 Complete-Word-.ps1 Completes the current word in editors.
-Connect-MSAccess-.ps1 Connects .mdb database and optionally shows tables in a panel.
-Connect-SqlCompact-.ps1 Connects .sdf database and optionally shows tables in a panel.
 Connect-SQLite-.ps1 Connects SQLite database and optionally shows tables in a panel.
 Edit-FarDescription-.ps1 Edits multiline Far descriptions in the editor.
 Generate-Dialog-.ps1 Generates template code for the current dialog.

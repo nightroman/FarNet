@@ -184,3 +184,25 @@ let ParametersScriptCode = async {
     }
     do! Job.Keys "Esc"
 }
+
+// Handling of special PipelineStoppedException, e.g. in Assert-Far.
+[<Test>]
+let AssertFar = async {
+    // run
+    let! _ = PSFar.StartTask("job {Assert-Far 0}; job {throw}") |> Async.StartChild
+
+    // job 1 shows Assert-Far dialog
+    do! Job.Wait Window.IsDialog
+    do! job {
+        Assert.Equal("Assert-Far", far.Dialog.[0].Text)
+        Assert.True(far.Dialog.[3].Text.Contains("{Assert-Far 0}"))
+    }
+
+    // press [Break]
+    do! Job.Keys "Enter"
+
+    //! job 2 must not run
+    do! job {
+        Assert.True(Window.IsNativePanel())
+    }
+}

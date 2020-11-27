@@ -1,19 +1,30 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 FarNet 5.4.2
 
-= 5.3.7 =
+= 5.3.8 =
 
 Start-FarTask (** work in progress, features may change **)
+
+	- Added the switch parameter Confirm.
+	- Added `macro` in addition to `keys`.
+	- Fixed Assert-Far [Break] in jobs.
+
+	Samples: https://github.com/nightroman/FarNet/tree/master/PowerShellFar/Samples/FarTask
+	F# tests: https://github.com/nightroman/FarNet/blob/master/FSharpFar/tests/TestPSFar.fs
+
+Bench/Test moved from the package to Samples/Tests.
+
+Retired (moved to Zoo/PowerShellFar)
+- Connect-MSAccess-.ps1
+- Connect-SqlCompact-.ps1
+
+= 5.3.7 =
+
+Start-FarTask
 
 	- Replaced 3 parameters Script, Code, File with just Script.
 	- Script parameters may be specified for Start-FarTask.
 	- Fixed [F5] in editor for *.fas.ps1 task scripts.
-
-Samples
-	https://github.com/nightroman/FarNet/tree/master/PowerShellFar/Samples/FarTask
-
-F# tests
-	https://github.com/nightroman/FarNet/blob/master/FSharpFar/tests/TestPSFar.fs
 
 = 5.3.6 =
 
