@@ -575,6 +575,11 @@ INT_PTR FarDialog::DialogProc(intptr_t msg, intptr_t param1, void* param2)
 							return false;
 						}
 					}
+					if (_Closed)
+					{
+						AnyEventArgs ea(fc);
+						_Closed(this, % ea);
+					}
 				}
 				finally
 				{

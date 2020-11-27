@@ -14,6 +14,7 @@ ref class FarDialog : IDialog
 public: DEF_EVENT2(Idled, _Idled);
 public: DEF_EVENT2(GotFocus, _GotFocus);
 public: DEF_EVENT2(LosingFocus, _LosingFocus);
+public: DEF_EVENT_ARGS2(Closed, _Closed, AnyEventArgs);
 public: DEF_EVENT_ARGS2(Closing, _Closing, ClosingEventArgs);
 public: DEF_EVENT_ARGS2(ConsoleSizeChanged, _ConsoleSizeChanged, SizeEventArgs);
 public: DEF_EVENT_ARGS2(Initialized, _Initialized, InitializedEventArgs);

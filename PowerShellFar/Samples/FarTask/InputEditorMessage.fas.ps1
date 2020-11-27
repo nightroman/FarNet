@@ -1,7 +1,7 @@
 # Asynchronous demo workflow with some input box, editor, and message box. The
 # data ($Data.Text) flows through three jobs. Note that the editor job is not
 # modal, you can do something else in Far. But when the editor exits the task
-# continue with the next job.
+# continues with the next job.
 
 # Initial text.
 $Data.Text = 'Hello async world'
@@ -14,7 +14,7 @@ $Data.Text = job {
 }
 
 # This job starts a non-modal editor with the initial text $Data.Text and sets
-# the new $Data.Text values in the editor `Saving` event handler.
+# the new $Data.Text value in the editor `Saving` event handler.
 job {
 	$editor = $Far.CreateEditor()
 	$editor.FileName = $Far.TempName()
@@ -30,7 +30,7 @@ job {
 	$Far.Message($Data.Text, "Result")
 }
 
-# Tasks may output data. To consume the result use Start-FarTask -AsTask and
+# Tasks may output data. To consume the result, use Start-FarTask -AsTask and
 # await the result task in the parent async scenario. In this example the
 # output is checked by tests.
 $Data.Text

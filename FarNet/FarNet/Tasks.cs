@@ -191,24 +191,21 @@ namespace FarNet
 		{
 			var tcs = new TaskCompletionSource<object>();
 
-			void onClosing(object sender, ClosingEventArgs e)
+			void onClosed(object sender, AnyEventArgs e)
 			{
-				if (!e.Ignore)
-				{
-					dialog.Closing -= onClosing;
-					tcs.SetResult(null);
-				}
+				dialog.Closed -= onClosed;
+				tcs.SetResult(null);
 			}
 
 			Far.Api.PostJob(() => {
 				try
 				{
-					dialog.Closing += onClosing;
+					dialog.Closed += onClosed;
 					dialog.Open();
 				}
 				catch (Exception exn)
 				{
-					dialog.Closing -= onClosing;
+					dialog.Closed -= onClosed;
 					tcs.SetException(exn);
 				}
 			});

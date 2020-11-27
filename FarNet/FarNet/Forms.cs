@@ -461,7 +461,8 @@ namespace FarNet.Forms
 	/// <li>show the dialog.</li>
 	/// </ul>
 	/// <para>
-	/// Event <see cref="Closing"/> can be used for input data validation without closing the dialog.
+	/// <see cref="Closing"/> may be used for input data validation without closing the dialog.
+	/// <see cref="Closed"/> may be used for cleaning up.
 	/// </para>
 	/// </remarks>
 	public abstract class IDialog
@@ -471,12 +472,12 @@ namespace FarNet.Forms
 		/// </summary>
 		public abstract event EventHandler<InitializedEventArgs> Initialized;
 		/// <summary>
-		/// Called when the dialog is about to be closed (normally a user closes it).
+		/// Called when the dialog is about to be closed (normally by a user).
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// If event argument <see cref="AnyEventArgs.Control"/> is null then the dialog is about to
-		/// be closed by [Esc] or [F10]. In this case normally you should not stop closing.
+		/// If the argument <see cref="AnyEventArgs.Control"/> is null then the dialog
+		/// is about to be closed by [Esc] or [F10]. Handlers should not stop closing.
 		/// </para>
 		/// <para>
 		/// This event can be used for input data validation before closing the dialog.
@@ -489,8 +490,24 @@ namespace FarNet.Forms
 		/// It is not recommended to change control states during this event.
 		/// Doing so may trigger actions that may be unexpected on closing.
 		/// </para>
+		/// <para>
+		/// If handlers do not stop closing then <see cref="Closed"/> is called and then the dialog stops.
+		/// </para>
 		/// </remarks>
 		public abstract event EventHandler<ClosingEventArgs> Closing;
+		/// <summary>
+		/// Called after <see cref="Closing"/> which was not stopped.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// The argument <see cref="AnyEventArgs.Control"/> is null if the dialog is canceled.
+		/// </para>
+		/// <para>
+		/// Handlers can access the dialog controls for reading. Changes should be avoided.
+		/// The dialog closes after this event for sure, unlike on <see cref="Closing"/>.
+		/// </para>
+		/// </remarks>
+		public abstract event EventHandler<AnyEventArgs> Closed;
 		/// <summary>
 		/// Called periodically when a user is idle.
 		/// </summary>

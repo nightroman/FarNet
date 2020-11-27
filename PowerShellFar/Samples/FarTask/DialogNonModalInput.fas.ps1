@@ -21,7 +21,7 @@ job {
 	$null = $dialog.AddText(1, 1, 50, '_201123_rz')
 	$edit = $dialog.AddEdit(1, -1, 50, '')
 
-	$dialog.add_Closing({
+	$dialog.add_Closed({
 		if ($_.Control) {
 			$Data.Input = $edit.Text
 		}
@@ -31,7 +31,7 @@ job {
 }
 
 # use input (how to use in PowerShell scripts like this)
-if ($Data.Input) {
+if ($null -ne $Data.Input) {
 	job {
 		$Far.Message($Data.Input)
 	}
