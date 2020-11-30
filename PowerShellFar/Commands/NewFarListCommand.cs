@@ -2,12 +2,13 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
-using System.Management.Automation;
 using FarNet;
+using System.Management.Automation;
 
 namespace PowerShellFar.Commands
 {
 	//! Why _set*: we set preferences from settings first, then change them if _set*.
+	[OutputType(typeof(IListMenu))]
 	class NewFarListCommand : BaseMenuCmdlet
 	{
 		[Parameter]

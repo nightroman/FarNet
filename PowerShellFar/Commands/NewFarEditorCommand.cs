@@ -2,11 +2,12 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
-using System.Management.Automation;
 using FarNet;
+using System.Management.Automation;
 
 namespace PowerShellFar.Commands
 {
+	[OutputType(typeof(IEditor))]
 	class NewFarEditorCommand : BaseTextCmdlet
 	{
 		[Parameter(Position = 0, ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]

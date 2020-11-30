@@ -435,12 +435,17 @@ directly, instead input objects come from the pipeline.
 '@
 		ExcludeMemberPattern = 'Regular expression pattern of members to be excluded in a child list panel.'
 		HideMemberPattern = 'Regular expression pattern of members to be hidden in a child list panel.'
-		Append = 'Tells to append objects to the active object panel. Other parameters are ignored.'
+		Return = 'Tells to return the panel without opening.'
 	}
 
 	inputs = @{
 		type = '[object]'
 		description = 'Any objects to be shown as panel files.'
+	}
+
+	outputs = @{
+		type = '[PowerShellFar.ObjectPanel]'
+		description = 'With Return, the created panel, not yet opened.'
 	}
 
 	examples = @(

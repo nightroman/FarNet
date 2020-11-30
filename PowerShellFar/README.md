@@ -61,7 +61,7 @@ designed for Far Manager. Colorer takes care of editor syntax highlighting.
 
 **Requirements**
 
-- Windows PowerShell 2.0+
+- Windows PowerShell
 - Far Manager, see the required version in *History.txt*
 - Plugin FarNet, see the required version in *History.txt*
 
@@ -97,7 +97,7 @@ If you are not administrator use the parameter `-Scope CurrentUser`.
 
 Included Bench scripts are ready to use tools for various tasks. In order to to
 use these scripts directly from Bench include the directory Bench in the path.
-There are also tests and scripts for learning PowerShellFar and PowerShell.
+See also sample scripts in the repository.
 
 New users may want to configure the module with [Profile.ps1](#profileps1) in
 *%FARPROFILE%\FarNet\PowerShellFar*.
@@ -593,7 +593,6 @@ or by the command `Show-FarTranscript`.
 ## Interactive
 
 [Contents]
-[Console applications](#console-applications)
 
 Interactive is a *.interactive.ps1* file opened in the editor. Such a file is
 opened in the special console-like mode designed for typing and invoking
@@ -1403,9 +1402,6 @@ Jobs must not be interactive in any way. But you can perform the interactive
 part in the main session (data input and validation with error messages) and
 then, having all data ready, start the job. Example: *Job-RemoveItem-.ps1*
 
-In most cases it is fine to call external applications with or without
-output, see [Console applications](#console-applications).
-
 **Notes**
 
 If you close Far and jobs still exist then for any job you are prompted to
@@ -1422,24 +1418,25 @@ jobs. The macro `[F10]` can get control of exit in panels: see [Examples].
 
 [Contents]
 
-Some scripts in Bench and Test folders ends with "-.ps1" and "..ps1". Why?
+Some scripts names end with ".far.ps1", "-.ps1", ".fas.ps1", "..ps1".
 
-The suffixes designate that these scripts are not standard PowerShell scripts.
+The suffixes mean that scripts are not standard PowerShell scripts.
 
-* Suffix "-.ps1"
+* Suffix ".far.ps1", "-.ps1"
 
-    PowerShellFar scripts invoked with FarHost.
-    Normally they fail with other hosts.
+    Scripts designed for FarNet and invoked with FarHost.
+
+* Suffix ".fas.ps1"
+
+    Asynchronous scripts invoked by `Start-FarTask`.
 
 * Suffix "..ps1"
 
-    PowerShellFar step unit scripts. They are invoked by
-    `PowerShellFar.Stepper` for step sequence processing.
+    Step scripts invoked by `Invoke-FarStepper`.
 
-The suffixes are not mandatory for PowerShellFar scripts or step units, you may
-use any names with or without suffixes. Suffixes are useful for distinguishing
-between different script classes and for assigning commands,
-see [File associations](:FileAssoc).
+The suffixes are not mandatory, you may use any names with or without suffixes.
+Suffixes are useful for distinguishing between different script classes and for
+assigning commands, see [File associations](:FileAssoc).
 
 **Examples**
 
@@ -1470,9 +1467,9 @@ PowerShell scripts:
         powershell.exe -File "!\!.!"
         start powershell.exe -NoExit -NoLogo -File "!\!.!"
 
-With these associations when you press `[Enter]` (or another assigned key) for
-scripts in the panel then standard scripts are invoked by powershell.exe and
-PowerShellFar scripts are invoked by one of the associated commands.
+With these associations `[Enter]` (or another assigned key) in the panel
+invokes standard scripts by powershell.exe and PowerShellFar scripts by
+one of the associated commands.
 
 
 *********************************************************************
@@ -1716,32 +1713,16 @@ A: There are several options
 
 * Easy prefix macro
 
-    Use a macro that expands empty command lines to `ps:`.
+    Use a macro which inserts `ps:` to empty command lines.
     See *PowerShellFar.macro.lua*, `[Space]`.
 
 * Easy invoke macro
 
-    Type and run without prefix using a macro associated with the menu command
-    "Invoke selected". See *PowerShellFar.macro.lua*, `[F5]`.
+    Type and run commands with or without prefix using a macro associated with
+    the menu command "Invoke selected". See *PowerShellFar.macro.lua*, `[F5]`.
 
-    A bonus: if a command fails then its text is still in the command line and
-    the caret position is the same. This is useful on composing and correcting
-    lengthy commands.
-
-
-*********************************************************************
-## Console applications
-
-[Contents]
-
-Since 2.2.10 output of invoked in PSF console applications is not written to
-the console but merged with other commands output. Thus, in most cases it is
-fine to call external applications with output from the command line, scripts,
-interactive, and even background jobs.
-
-Still, console applications with interactions or operating on console directly
-should not be used in PSF. Run them in Far or Cmd. This is especially important
-for asynchronous interactives and background jobs.
+    If a command fails then the command line text and caret are preserved.
+    This is useful for composing and trying lengthy commands.
 
 
 *********************************************************************

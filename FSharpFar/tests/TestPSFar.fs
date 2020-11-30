@@ -206,3 +206,24 @@ let AssertFar = async {
         Assert.True(Window.IsNativePanel())
     }
 }
+
+[<Test>]
+let PanelSelectItem = async {
+    let! _ = PSFar.StartTask(getFarTask "PanelSelectItem.fas.ps1") |> Async.StartChild
+    do! Job.Wait Window.IsModulePanel
+
+    do! Job.Keys "Down"
+    let! file = job { return far.Panel.CurrentFile }
+
+    do! Job.Keys "Esc"
+    do! Job.Wait Window.IsEditor
+    do! job {
+        Assert.True(far.Editor.FileName.EndsWith(file.Name))
+    }
+
+    do! Job.Keys "Esc"
+    do! Job.Wait Window.IsModulePanel
+
+    do! Job.Keys "Esc"
+    do! Job.Wait Window.IsNativePanel
+}

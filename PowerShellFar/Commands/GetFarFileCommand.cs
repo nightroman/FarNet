@@ -2,11 +2,13 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
-using System.Collections.Generic;
 using FarNet;
+using System.Collections.Generic;
+using System.Management.Automation;
 
 namespace PowerShellFar.Commands
 {
+	[OutputType(typeof(FarFile))]
 	sealed class GetFarFileCommand : BaseFileCmdlet
 	{
 		protected override void BeginProcessing()

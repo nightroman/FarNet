@@ -1,9 +1,15 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 FarNet 5.4.2
 
+= 5.3.9 =
+
+- add parameter Return to Out-FarPanel
+- add output type attributes to cmdlets
+- work on PowerShellFar/Samples/FarTask
+
 = 5.3.8 =
 
-Start-FarTask (** work in progress, features may change **)
+Start-FarTask
 
 	- Added the switch parameter Confirm.
 	- Added `macro` in addition to `keys`.

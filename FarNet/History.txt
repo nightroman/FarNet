@@ -1,6 +1,10 @@
 https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 5.4.4 =
+
+- add Tasks.Panel
+
 = 5.4.3 =
 
 - add event IDialog.Closed

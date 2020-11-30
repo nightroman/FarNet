@@ -9,45 +9,42 @@ using FarNet;
 
 namespace PowerShellFar.Commands
 {
+	[OutputType(typeof(Panel))]
 	sealed class OutFarPanelCommand : BasePanelCmdlet
 	{
 		ObjectPanel _panel;
+
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		[Parameter(Position = 0)]
 		public object[] Columns { get; set; }
+
 		[Parameter(ValueFromPipeline = true)]
 		public PSObject InputObject { get; set; }
+
 		[Parameter]
 		public string ExcludeMemberPattern { get; set; }
+
 		[Parameter]
 		public string HideMemberPattern { get; set; }
+
 		[Parameter]
-		public SwitchParameter Append { get; set; }
+		public SwitchParameter Return { get; set; }
+
 		protected override void BeginProcessing()
 		{
-			if (Append)
-			{
-				if (!(Far.Api.Panel is Panel panel) || panel.GetType() != typeof(ObjectPanel))
-					throw new InvalidOperationException("There is no panel able to append objects.");
+			_panel = new ObjectPanel();
 
-				_panel = (ObjectPanel)panel;
-			}
-			else
-			{
-				_panel = new ObjectPanel();
+			// common parameters
+			ApplyParameters(_panel);
 
-				// common parameters
-				ApplyParameters(_panel);
+			// more parameters
+			_panel.Columns = Columns;
+			_panel.ExcludeMemberPattern = ExcludeMemberPattern;
+			_panel.HideMemberPattern = HideMemberPattern;
 
-				// more parameters
-				_panel.Columns = Columns;
-				_panel.ExcludeMemberPattern = ExcludeMemberPattern;
-				_panel.HideMemberPattern = HideMemberPattern;
-
-				// and title, if not yet
-				if (string.IsNullOrEmpty(_panel.Title) && !string.IsNullOrEmpty(A.Psf._myCommand))
-					_panel.Title = A.Psf._myCommand;
-			}
+			// and title, if not yet
+			if (string.IsNullOrEmpty(_panel.Title) && !string.IsNullOrEmpty(A.Psf._myCommand))
+				_panel.Title = A.Psf._myCommand;
 		}
 
 		// Use collector to control count of finaly added to the panel.
@@ -71,8 +68,8 @@ namespace PowerShellFar.Commands
 			else
 				_panel.AddObjects(_Collector);
 
-			if (Append)
-				_panel.UpdateRedraw(true);
+			if (Return)
+				WriteObject(_panel);
 			else
 				_panel.OpenChild(null);
 		}

@@ -2,12 +2,13 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
+using FarNet;
 using System.Collections.Generic;
 using System.Management.Automation;
-using FarNet;
 
 namespace PowerShellFar.Commands
 {
+	[OutputType(typeof(string))]
 	sealed class GetFarPathCommand : BaseFileCmdlet
 	{
 		[Parameter(HelpMessage = "Join requested item names with the opposite panel path.")]

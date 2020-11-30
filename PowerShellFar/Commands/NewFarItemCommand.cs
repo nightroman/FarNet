@@ -2,12 +2,13 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
+using FarNet;
 using System;
 using System.Management.Automation;
-using FarNet;
 
 namespace PowerShellFar.Commands
 {
+	[OutputType(typeof(SetItem))]
 	sealed class NewFarItemCommand : BaseCmdlet
 	{
 		[Parameter(Position = 0)]

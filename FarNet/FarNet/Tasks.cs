@@ -30,7 +30,8 @@ namespace FarNet
 		public static Task<T> Job<T>(Func<T> job)
 		{
 			var tcs = new TaskCompletionSource<T>();
-			Far.Api.PostJob(() => {
+			Far.Api.PostJob(() =>
+			{
 				try
 				{
 					tcs.SetResult(job());
@@ -55,7 +56,8 @@ namespace FarNet
 		public static Task Job(Action job)
 		{
 			var tcs = new TaskCompletionSource<object>();
-			Far.Api.PostJob(() => {
+			Far.Api.PostJob(() =>
+			{
 				try
 				{
 					job();
@@ -108,7 +110,8 @@ namespace FarNet
 				tcs.SetResult(null);
 			}
 
-			Far.Api.PostJob(() => {
+			Far.Api.PostJob(() =>
+			{
 				try
 				{
 					editor.Closed += onClosed;
@@ -157,7 +160,8 @@ namespace FarNet
 				}
 			}
 
-			Far.Api.PostJob(() => {
+			Far.Api.PostJob(() =>
+			{
 				try
 				{
 					dialog.Closing += onClosing;
@@ -187,7 +191,8 @@ namespace FarNet
 				tcs.SetResult(null);
 			}
 
-			Far.Api.PostJob(() => {
+			Far.Api.PostJob(() =>
+			{
 				try
 				{
 					dialog.Closed += onClosed;
@@ -196,6 +201,41 @@ namespace FarNet
 				catch (Exception exn)
 				{
 					dialog.Closed -= onClosed;
+					tcs.SetException(exn);
+				}
+			});
+
+			return tcs.Task;
+		}
+		/// <summary>
+		/// Creates a task which waits for the panel closing.
+		/// </summary>
+		/// <param name="panel">The panel to be awaited.</param>
+		/// <returns>The task which completes when the panel closes.</returns>
+		/// <remarks>
+		/// The panel is opened automatically if it is not yet opened.
+		/// </remarks>
+		public static Task Panel(Panel panel)
+		{
+			var tcs = new TaskCompletionSource<object>();
+
+			void onClosed(object sender, EventArgs e)
+			{
+				panel.Closed -= onClosed;
+				tcs.SetResult(null);
+			}
+
+			Far.Api.PostStep(() =>
+			{
+				try
+				{
+					panel.Closed += onClosed;
+					if (!panel.IsOpened)
+						panel.Open();
+				}
+				catch (Exception exn)
+				{
+					panel.Closed -= onClosed;
 					tcs.SetException(exn);
 				}
 			});

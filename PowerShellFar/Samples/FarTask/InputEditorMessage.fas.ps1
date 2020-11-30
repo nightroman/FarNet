@@ -3,8 +3,10 @@
 # modal, you can do something else in Far. But when the editor exits the task
 # continues with the next job.
 
+param($Text = 'Hello async world')
+
 # Initial text.
-$Data.Text = 'Hello async world'
+$Data.Text = $Text
 
 # Input box with our text as the default. Here the job returns the result, so
 # we use `$Data.Text = job {...}`. Alternatively, we can use a job with no

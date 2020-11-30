@@ -571,6 +571,8 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 			{
 				ILine cl = Far.Api.CommandLine;
 				code = cl.SelectedText;
+
+				// if nothing is selected then get the whole text and tell to clean on success
 				if (string.IsNullOrEmpty(code))
 				{
 					code = cl.Text;
@@ -582,11 +584,11 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 			if (code.Length == 0)
 				return;
 
-			// go
+			// run
 			bool ok = A.Psf.Act(code, null, wt != WindowKind.Editor);
 
-			// clean the command line if ok
-			if (ok && toCleanCmdLine && wt != WindowKind.Editor)
+			// clean the command line on success
+			if (toCleanCmdLine && ok)
 				Far.Api.CommandLine.Text = string.Empty;
 		}
 		// PSF sets the current directory and location to the script directory.
