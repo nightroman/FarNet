@@ -28,7 +28,7 @@ namespace PowerShellFar
 		internal static Meta[] TryFormatByTableControl(PSObject value, int formatWidth)
 		{
 			// try to find a table
-			TableControl table = A.FindTableControl(value.BaseObject.GetType().FullName, null);
+			TableControl table = A.FindTableControl(value.BaseObject.GetType().FullName);
 			if (table == null)
 				return null;
 

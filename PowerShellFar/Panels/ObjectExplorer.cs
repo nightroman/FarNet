@@ -108,7 +108,7 @@ namespace PowerShellFar
 			if (AsGetData != null)
 			{
 				// call
-				var result = A.InvokeScript(AsGetData, this, args);
+				var result = AsGetData.Invoke(this, args);
 
 				// discover and get the cache or get other objects as they are
 				if (result.Count == 1 && result[0].BaseObject == Cache)

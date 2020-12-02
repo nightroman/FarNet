@@ -221,27 +221,9 @@ namespace PowerShellFar
 				// SVN tag 4.2.26
 				_engine_ = Runspace.SessionStateProxy.PSVariable.GetValue(Word.ExecutionContext) as EngineIntrinsics;
 
-				// get version
-				try
-				{
-					_PSVersion = (Version)((IDictionary)Runspace.SessionStateProxy.PSVariable.GetValue("PSVersionTable"))["PSVersion"];
-				}
-				catch
-				{
-					throw new InvalidOperationException("Cannot get PowerShell version.");
-				}
-
-				// new variables
-				var var1 = new PSVariable("Psf", this, ScopedItemOptions.AllScope | ScopedItemOptions.Constant)
-				{
-					Description = "Exposes PowerShellFar."
-				};
-				var var2 = new PSVariable("Far", Far.Api, ScopedItemOptions.AllScope | ScopedItemOptions.Constant)
-				{
-					Description = "Exposes FarNet."
-				};
-				Engine.SessionState.PSVariable.Set(var1);
-				Engine.SessionState.PSVariable.Set(var2);
+				// variables
+				Engine.SessionState.PSVariable.Set(new PSVariable("Far", Far.Api, ScopedItemOptions.AllScope | ScopedItemOptions.Constant) { Description = "Exposes FarNet." });
+				Engine.SessionState.PSVariable.Set(new PSVariable("Psf", this, ScopedItemOptions.AllScope | ScopedItemOptions.Constant) { Description = "Exposes PowerShellFar." });
 
 				// invoke profiles
 				using (var ps = NewPowerShell())
@@ -722,18 +704,9 @@ Continue with this current directory?
 			Help.ShowHelpForContext();
 		}
 		/// <summary>
-		/// Expands PowerShell code in an edit line.
+		/// Expands PowerShell code in the specified edit line.
 		/// </summary>
 		/// <param name="editLine">Editor line, command line or dialog edit box line; if null then <see cref="IFar.Line"/> is used.</param>
-		/// <remarks>
-		/// It implements so called TabExpansion using a menu and inserting a selected text into a current line being edited.
-		/// The edit line can belong to the internal editor, the command line or a dialogs.
-		/// <para>
-		/// When it is called the first time it loads the script TabExpansion.ps1 from the module directory
-		/// which installs the global function TabExpansion. After that this function is always called and
-		/// returned selected text is inserted into the edit line.
-		/// </para>
-		/// </remarks>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void ExpandCode(ILine editLine)
 		{
@@ -750,9 +723,6 @@ Continue with this current directory?
 		// PS engine
 		EngineIntrinsics _engine_;
 		internal EngineIntrinsics Engine { get { return _engine_; } }
-		// PS version
-		Version _PSVersion;
-		internal Version PSVersion { get { return _PSVersion; } }
 		/// <summary>
 		/// Gets a new pipeline or nested one.
 		/// </summary>

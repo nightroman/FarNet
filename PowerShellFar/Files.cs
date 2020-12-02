@@ -45,7 +45,7 @@ namespace PowerShellFar
 			if (_action != null)
 				_action(sender);
 			else if (_script != null)
-				A.InvokeScriptReturnAsIs(_script, sender);
+				_script.InvokeReturnAsIs(sender);
 		}
 	}
 
@@ -98,7 +98,7 @@ namespace PowerShellFar
 			if (_handler != null)
 				_handler(sender, args);
 			else if (_script != null)
-				A.InvokeScriptReturnAsIs(_script, sender, args);
+				_script.InvokeReturnAsIs(sender, args);
 		}
 	}
 

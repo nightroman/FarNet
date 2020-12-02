@@ -140,7 +140,7 @@ namespace PowerShellFar
 		{
 			if (AsSaveData != null)
 			{
-				A.InvokeScriptReturnAsIs(AsSaveData, this);
+				AsSaveData.InvokeReturnAsIs(this);
 				return !Modified;
 			}
 
@@ -185,7 +185,7 @@ namespace PowerShellFar
 				switch (Far.Api.Message(Res.AskSaveModified, "Save", MessageOptions.YesNoCancel))
 				{
 					case 0:
-						A.InvokeScriptReturnAsIs(AsSaveData, this);
+						AsSaveData.InvokeReturnAsIs(this);
 						break;
 					case 1:
 						Modified = false;

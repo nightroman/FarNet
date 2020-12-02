@@ -61,9 +61,11 @@ designed for Far Manager. Colorer takes care of editor syntax highlighting.
 
 **Requirements**
 
-- Windows PowerShell
+- Windows PowerShell v3+ (1)
 - Far Manager, see the required version in *History.txt*
 - Plugin FarNet, see the required version in *History.txt*
+
+(1) PowerShell v5.1 is tested, report issues in older versions.
 
 **Instructions**
 
@@ -1566,18 +1568,16 @@ Mouse events:
 [Contents]
 
 This script replaces the built-in PowerShell function.
-PowerShell v3+ `TabExpansion2` is replaced by *TabExpansion2.ps1*.
-PowerShell v2 `TabExpansion` is replaced by *TabExpansion.ps1*, not tested for a while.
-The scripts come with the PowerShellFar package and they are loaded on the first calls.
+It comes with the module and loaded on the first call.
 
-In PowerShell v3+ *TabExpansion2.ps1* reuses a lot of built-in completions and
-supports extensions added by one or more `*ArgumentCompleters.ps1` profiles.
+*TabExpansion2.ps1* reuses built-in completions and supports
+extensions added by one or more `*ArgumentCompleters.ps1` profiles.
 
-The script *Bench\ArgumentCompleters.ps1* is a sample profile. Use it as the
-base for your own completers. See the script code and comments.
+The script *Bench\ArgumentCompleters.ps1* is a sample profile.
+Use it as the base for your completers. See the script code and comments.
 
-*TabExpansion2.ps1* works with other PowerShell hosts as well (console, VSCode,
-ISE). All you need is to call the script once, normally in a host profile.
+*TabExpansion2.ps1* works with other PowerShell hosts as well.
+All you need is to call the script once, normally in a host profile.
 
 
 *********************************************************************

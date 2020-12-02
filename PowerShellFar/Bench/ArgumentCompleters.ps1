@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	TabExpansion2 argument completers.
@@ -37,7 +36,7 @@ if ($Host.Name -ceq 'FarHost') {
 
 		# column info template
 		$$ = "@{e=''; n=''; k=''; w=0; a=''}"
-		New-Object System.Management.Automation.CompletionResult $$, '@{...}', 'ParameterValue', $$
+		New-Object System.Management.Automation.CompletionResult $$, '@{...}', ParameterValue, $$
 	}
 }
 
@@ -45,12 +44,12 @@ if ($Host.Name -ceq 'FarHost') {
 Register-ArgumentCompleter -ParameterName ComputerName -ScriptBlock {
 	# add this machine first
 	$name = $env:COMPUTERNAME
-	New-Object System.Management.Automation.CompletionResult $name, $name, 'ParameterValue', $name
+	New-Object System.Management.Automation.CompletionResult $name, $name, ParameterValue, $name
 
 	# add others from the list
 	foreach($_ in $env:pc_master, $env:pc_slave) {
 		if ($_ -and $_ -ne $name) {
-			New-Object System.Management.Automation.CompletionResult $_, $_, 'ParameterValue', $_
+			New-Object System.Management.Automation.CompletionResult $_, $_, ParameterValue, $_
 		}
 	}
 }
@@ -81,6 +80,25 @@ Register-ArgumentCompleter -CommandName git -Native -ScriptBlock {
 }
 
 ### Result processors
+
+Register-ResultCompleter {
+	### .WORD[Tab] -> Equals, GetType, ToString
+	param($result, $ast, $tokens, $positionOfCursor, $options)
+
+	if ("$ast".Substring($result.ReplacementIndex, $result.ReplacementLength) -notmatch '(^.*\.)(\w*)$') {
+		return
+	}
+
+	$m1 = $matches[1]
+	$re = "^$($matches[2])"
+	foreach($_ in @('Equals(', 'GetType()', 'ToString()')) {
+		if ($_ -match $re) {
+			$result.CompletionMatches.Add((
+				New-Object System.Management.Automation.CompletionResult ($m1 + $_), $_, Method, $_
+			))
+		}
+	}
+}
 
 Register-ResultCompleter {
 	### WORD=[Tab] completions from TabExpansion.txt in TabExpansion2.ps1 folder
@@ -128,13 +146,13 @@ Register-ResultCompleter {
 	$_.Reverse()
 	$_ | .{process{
 		$result.CompletionMatches.Add((
-			New-Object System.Management.Automation.CompletionResult $_, $_, 'History', $_
+			New-Object System.Management.Automation.CompletionResult $_, $_, History, $_
 		))
 	}}
 }
 
 Register-ResultCompleter {
-	### Complete an alias as definition and remove itself
+	### Expand an alias to its definition
 	param($result, $ast, $tokens, $positionOfCursor, $options)
 
 	$token = foreach($_ in $tokens) {
@@ -165,7 +183,7 @@ Register-ResultCompleter {
 	# insert first
 	$result.CompletionMatches.Insert(0, $(
 		$$ = $aliases[0].Definition
-		New-Object System.Management.Automation.CompletionResult $$, $$, 'Command', $$
+		New-Object System.Management.Automation.CompletionResult $$, $$, Command, $$
 	))
 }
 
@@ -187,7 +205,7 @@ Register-ResultCompleter {
 		if ($_.Name[0] -ne '*') {
 			${*result}.CompletionMatches.Add($(
 				$$ = "`$$($_.Name)"
-				New-Object System.Management.Automation.CompletionResult $$, $$, 'Variable', $$
+				New-Object System.Management.Automation.CompletionResult $$, $$, Variable, $$
 			))
 		}
 	}

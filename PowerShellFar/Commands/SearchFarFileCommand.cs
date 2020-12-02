@@ -63,7 +63,7 @@ namespace PowerShellFar.Commands
 			{
 				search.Filter = delegate(Explorer explorer, FarFile file)
 				{
-					return LanguagePrimitives.IsTrue(A.InvokeScriptReturnAsIs(Script, explorer, file));
+					return LanguagePrimitives.IsTrue(Script.InvokeReturnAsIs(explorer, file));
 				};
 			}
 

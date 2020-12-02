@@ -180,7 +180,6 @@ function Restore-FarPackage(
 		[System.IO.File]::WriteAllText($info, "$Source`r`n$Version`r`n")
 
 		# unpack, install
-		$CLR4 = $PSVersionTable.CLRVersion.Major -ge 4
 		foreach($part in $parts) {
 			if ($part.Uri -notmatch '^/tools/FarHome[^/]*/(.*)') {continue}
 			$it = [System.Uri]::UnescapeDataString($Matches[1])
@@ -191,14 +190,7 @@ function Restore-FarPackage(
 			try {
 				[System.IO.File]::AppendAllText($info, "$it`r`n")
 				$stream1 = $part.GetStream('Open', 'Read')
-				if ($CLR4) {
-					$stream1.CopyTo($stream2)
-				}
-				else {
-					$buffer = New-Object byte[] ($n = $stream1.Length)
-					$null = $stream1.Read($buffer, 0, $n)
-					$stream2.Write($buffer, 0, $n)
-				}
+				$stream1.CopyTo($stream2)
 			}
 			finally {
 				$stream2.Close()

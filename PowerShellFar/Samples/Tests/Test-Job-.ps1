@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Test background jobs.
@@ -169,19 +168,8 @@ Assert-Far @(
 )
 
 # Errors
-if ($PSVersionTable.PSVersion.Major -ge 5) {
-	Assert-Far ($job.Error.Count -eq 2)
-	$4 = $job.Error[0].ToString()
-}
-else {
-	Assert-Far ($job.Error.Count -eq 3)
-	$4 = $job.Error[0].ToString()
-	Assert-Far (
-		$4 -like '*the host program or the command type does not support user interaction*' -or `
-		$4 -eq 'Cannot invoke this function because the current host does not implement it.'
-	) "Actual [[$4]]."
-	$4 = $job.Error[1].ToString()
-}
+Assert-Far ($job.Error.Count -eq 2)
+$4 = $job.Error[0].ToString()
 Assert-Far ($4 -eq 'Test of Write-Error 1') "Actual [[$4]]."
 
 # Debug

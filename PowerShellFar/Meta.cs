@@ -2,12 +2,13 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
+using FarNet;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Management.Automation;
 using System.Text;
-using FarNet;
 
 namespace PowerShellFar
 {
@@ -228,33 +229,33 @@ namespace PowerShellFar
 		/// Gets a meta value.
 		/// </summary>
 		/// <param name="value">The input object.</param>
+		//
+		////! _100410_051915 Use module session state otherwise $_ is not visible, only $global:_ is visible
+		//var session = _Script.Module == null ? A.Psf.Engine.SessionState : _Script.Module.SessionState;
+		//session.PSVariable.Set("_", value);
+		////! finally: Null $_ to avoid a leak
+		//session.PSVariable.Set("_", null);
+		//
 		public object GetValue(object value)
 		{
 			if (_Script != null)
 			{
-				//! _100410_051915 Use module session state otherwise $_ is not visible, only $global:_ is visible
-				var session = _Script.Module == null ? A.Psf.Engine.SessionState : _Script.Module.SessionState;
-				session.PSVariable.Set("_", value);
-
-				//??? suppress for now
-				// ps: .{ls; ps} | op
-				// -- this with fail on processes with file scripts
 				try
 				{
-					object result = _Script.InvokeReturnAsIs();
-					if (result == null)
-						return null;
-					else
-						return ((PSObject)result).BaseObject;
+					var result = A.InvokeScriptWithValue(_Script, value);
+					switch (result.Count)
+					{
+						case 0:
+							return null;
+						case 1:
+							return result[0];
+						default:
+							return result;
+					}
 				}
 				catch (RuntimeException)
 				{
 					return null;
-				}
-				finally
-				{
-					//! Null $_ to avoid a leak
-					session.PSVariable.Set("_", null);
 				}
 			}
 

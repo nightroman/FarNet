@@ -47,18 +47,6 @@ $r = TabExpansion2 @args
 	})
 }
 ";
-		// V2 completion
-		//! Ideally, we should use private variable. But who cares of v2?
-		const string CallTabExpansionV2 = @"
-param($inputScript, $cursorColumn)
-$line = $inputScript.Substring(0, $cursorColumn)
-$word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
-@{
-	ReplacementIndex = $line.Length - $word.Length
-	ReplacementLength = $word.Length
-	CompletionMatches = @(TabExpansion $line $word)
-}
-";
 
 		static bool _doneTabExpansion;
 		static string _pathTabExpansion;
@@ -78,16 +66,8 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 			// init path and caller
 			if (_pathTabExpansion == null)
 			{
-				if (A.Psf.PSVersion.Major > 2)
-				{
-					_pathTabExpansion = Path.Combine(A.Psf.AppHome, "TabExpansion2.ps1");
-					_callTabExpansion = CallTabExpansionV3;
-				}
-				else
-				{
-					_pathTabExpansion = Path.Combine(A.Psf.AppHome, "TabExpansion.ps1");
-					_callTabExpansion = CallTabExpansionV2;
-				}
+				_pathTabExpansion = Path.Combine(A.Psf.AppHome, "TabExpansion2.ps1");
+				_callTabExpansion = CallTabExpansionV3;
 			}
 
 			// load TabExpansion
@@ -151,7 +131,7 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 			InteractiveArea area;
 
 			// script?
-			if (A.Psf.PSVersion.Major > 2 && editLine.WindowKind == WindowKind.Editor && My.PathEx.IsPSFile((editor = Far.Api.Editor).FileName))
+			if (editLine.WindowKind == WindowKind.Editor && My.PathEx.IsPSFile((editor = Far.Api.Editor).FileName))
 			{
 				int lineIndex = editor.Caret.Y;
 				int lastIndex = editor.Count - 1;

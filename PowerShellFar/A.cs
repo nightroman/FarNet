@@ -231,116 +231,71 @@ namespace PowerShellFar
 
 			return null;
 		}
+		/// <summary>
+		/// Gets the type common for all values or null.
+		/// </summary>
+		// Why check for MarshalByRefObject:
+		// System.IO.DirectoryInfo, System.Diagnostics.Process in ps: (Get-Item .), (Get-Process -PID $PID) | op
 		public static Type FindCommonType(Collection<PSObject> values)
 		{
 			Type result = null;
-			object sample = null;
-			bool baseMode = false;
-
 			foreach (PSObject value in values)
 			{
-				// get the sample
-				if (sample == null)
-				{
-					sample = value.BaseObject;
-					result = sample.GetType();
-				}
-				// base mode: compare base types
-				else if (baseMode)
-				{
-					if (GetCommonBaseType(value.BaseObject) != result)
-						return null;
-				}
-				// mono mode: compare directly; works for mono sets
-				else if (value.BaseObject.GetType() != result)
-				{
-					// compare base types
-					result = GetCommonBaseType(sample);
-					if (GetCommonBaseType(value.BaseObject) != result)
-						return null;
+				if (value == null)
+					continue;
 
-					// turn on
-					baseMode = true;
+				var sample = value.BaseObject.GetType();
+				if (result == null)
+				{
+					result = sample;
+					continue;
+				}
+
+				while (!result.IsAssignableFrom(sample))
+				{
+					result = result.BaseType;
+					if (result == null || result == typeof(object) || result == typeof(MarshalByRefObject))
+						return null;
 				}
 			}
-
 			return result;
-		}
-		/// <summary>
-		/// Gets heuristic base type suitable to be common for mixed sets.
-		/// </summary>
-		/// <remarks>
-		/// This method should be consistent with redirection in <see cref="FindTableControl"/>.
-		/// </remarks>
-		static Type GetCommonBaseType(object value)
-		{
-			if (value is System.IO.FileSystemInfo) return typeof(System.IO.FileSystemInfo);
-			if (value is CommandInfo) return typeof(CommandInfo);
-			if (value is Breakpoint) return typeof(Breakpoint);
-			if (value is PSVariable) return typeof(PSVariable);
-			return value.GetType();
 		}
 		//! Get-FormatData is very expensive (~50% on search), use cache.
 		static Dictionary<string, TableControl> _CacheTableControl;
 		/// <summary>
 		/// Finds an available table control.
 		/// </summary>
-		/// <param name="typeName">The type name. To be redirected for some types.</param>
-		/// <param name="tableName">Optional table name to find.</param>
+		/// <param name="typeName">The type name.</param>
 		/// <returns>Found table control or null.</returns>
-		/// <remarks>
-		/// Type name redirection should be consistent with <see cref="GetCommonBaseType"/>.
-		/// </remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
-		public static TableControl FindTableControl(string typeName, string tableName)
+		public static TableControl FindTableControl(string typeName)
 		{
-			// process\redirect special types
-			switch (typeName)
-			{
-				case "System.Management.Automation.PSCustomObject": return null;
-
-				case "System.IO.FileSystemInfo": typeName = "FileSystemTypes"; break;
-				case "System.IO.DirectoryInfo": typeName = "FileSystemTypes"; break;
-				case "System.IO.FileInfo": typeName = "FileSystemTypes"; break;
-
-				case "System.Management.Automation.Breakpoint": typeName = "BreakpointTypes"; break;
-				case "System.Management.Automation.LineBreakpoint": typeName = "BreakpointTypes"; break;
-				case "System.Management.Automation.CommandBreakpoint": typeName = "BreakpointTypes"; break;
-				case "System.Management.Automation.VariableBreakpoint": typeName = "BreakpointTypes"; break;
-			}
-
 			// make/try cache
-			string cacheKey = typeName + "|" + tableName;
 			if (_CacheTableControl == null)
 			{
 				_CacheTableControl = new Dictionary<string, TableControl>();
 			}
-			else
+			else if (_CacheTableControl.TryGetValue(typeName, out TableControl result))
 			{
-				if (_CacheTableControl.TryGetValue(cacheKey, out TableControl result))
-					return result;
+				return result;
 			}
 
 			// extended type definitions:
-			foreach (var pso in InvokeCode("Get-FormatData -TypeName $args[0]", typeName))
+			foreach (var pso in InvokeCode("Get-FormatData -TypeName $args[0] -PowerShellVersion $PSVersionTable.PSVersion", typeName))
 			{
 				var typeDef = (ExtendedTypeDefinition)pso.BaseObject;
 				foreach (var viewDef in typeDef.FormatViewDefinition)
 				{
-					if (string.IsNullOrEmpty(tableName) || string.Equals(tableName, viewDef.Name, StringComparison.OrdinalIgnoreCase))
+					// if it's table, cache and return it
+					if (viewDef.Control is TableControl table)
 					{
-						if (viewDef.Control is TableControl table)
-						{
-							// cache and return the table
-							_CacheTableControl.Add(cacheKey, table);
-							return table;
-						}
+						_CacheTableControl.Add(typeName, table);
+						return table;
 					}
 				}
 			}
 
-			// nothing, cache anyway, and return null
-			_CacheTableControl.Add(cacheKey, null);
+			// nothing, cache anyway and return null
+			_CacheTableControl.Add(typeName, null);
 			return null;
 		}
 		/// <summary>
@@ -430,34 +385,15 @@ namespace PowerShellFar
 		/// <param name="args">Script arguments.</param>
 		internal static Collection<PSObject> InvokeCode(string code, params object[] args)
 		{
-			if (Runspace.DefaultRunspace == null)
-				Runspace.DefaultRunspace = A.Psf.Runspace;
-
 			return ScriptBlock.Create(code).Invoke(args);
 		}
 		/// <summary>
-		/// Invokes the script block and returns the result collection.
+		/// Invokes the script with $_ = value and returns
 		/// </summary>
-		/// <param name="script">The script block to invoke.</param>
-		/// <param name="args">Script arguments.</param>
-		internal static Collection<PSObject> InvokeScript(ScriptBlock script, params object[] args)
+		internal static Collection<PSObject> InvokeScriptWithValue(ScriptBlock script, object value, params object[] args)
 		{
-			if (Runspace.DefaultRunspace == null)
-				Runspace.DefaultRunspace = Psf.Runspace;
-
-			return script.Invoke(args);
-		}
-		/// <summary>
-		/// Invokes the handler-like script and returns the result as it is.
-		/// </summary>
-		/// <param name="script">The script block to invoke.</param>
-		/// <param name="args">Script arguments.</param>
-		internal static object InvokeScriptReturnAsIs(ScriptBlock script, params object[] args)
-		{
-			if (Runspace.DefaultRunspace == null)
-				Runspace.DefaultRunspace = Psf.Runspace;
-
-			return script.InvokeReturnAsIs(args);
+			var vars = new List<PSVariable>() { new PSVariable("_", value) };
+			return script.InvokeWithContext(null, vars, args);
 		}
 		internal static void SetPropertyFromTextUI(object target, PSPropertyInfo pi, string text)
 		{

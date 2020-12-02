@@ -125,7 +125,7 @@ namespace PowerShellFar
 		public sealed override bool SaveData()
 		{
 			if (AsSaveData != null)
-				return LanguagePrimitives.IsTrue(A.InvokeScriptReturnAsIs(AsSaveData, this, null));
+				return LanguagePrimitives.IsTrue(AsSaveData.InvokeReturnAsIs(this, null));
 			else
 				return DoSaveData();
 		}

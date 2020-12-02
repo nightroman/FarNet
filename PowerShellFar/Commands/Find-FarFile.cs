@@ -55,8 +55,11 @@ namespace PowerShellFar.Commands
 				{
 					for (int index = beg[pass]; index != end[pass]; index += step)
 					{
-						SessionState.PSVariable.Set("_", files[index]);
-						if (LanguagePrimitives.IsTrue(Where.InvokeReturnAsIs(null)))
+						var result = A.InvokeScriptWithValue(Where, files[index]);
+						if (result.Count == 0)
+							continue;
+
+						if (result.Count > 1 || LanguagePrimitives.IsTrue(result[0]))
 						{
 							Far.Api.Panel.Redraw(index, -1);
 							return;

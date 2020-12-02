@@ -54,7 +54,7 @@ namespace PowerShellFar
 				return DoGetFiles(args);
 
 			// nothing, use the predefined file list
-			var output = A.InvokeScript(AsGetFiles, this, args);
+			var output = AsGetFiles.Invoke(this, args);
 			if (output.Count == 0)
 				return Cache;
 
@@ -172,7 +172,7 @@ namespace PowerShellFar
 			if (AsGetContent == null)
 				DoGetContent(args);
 			else
-				A.InvokeScriptReturnAsIs(AsGetContent, this, args);
+				AsGetContent.InvokeReturnAsIs(this, args);
 		}
 		/// <summary>
 		/// <see cref="Explorer.SetFile"/> worker.
@@ -204,7 +204,7 @@ namespace PowerShellFar
 			if (AsSetFile == null)
 				DoSetFile(args);
 			else
-				A.InvokeScriptReturnAsIs(AsSetFile, this, args);
+				AsSetFile.InvokeReturnAsIs(this, args);
 		}
 		/// <summary>
 		/// <see cref="Explorer.SetText"/> worker.
@@ -236,7 +236,7 @@ namespace PowerShellFar
 			if (AsSetText == null)
 				DoSetText(args);
 			else
-				A.InvokeScriptReturnAsIs(AsSetText, this, args);
+				AsSetText.InvokeReturnAsIs(this, args);
 		}
 		/// <summary>
 		/// <see cref="Explorer.CloneFile"/> worker.
@@ -257,7 +257,7 @@ namespace PowerShellFar
 			if (AsCloneFile == null)
 				DoCloneFile(args);
 			else
-				A.InvokeScriptReturnAsIs(AsCloneFile, this, args);
+				AsCloneFile.InvokeReturnAsIs(this, args);
 		}
 		/// <summary>
 		/// <see cref="Explorer.CreateFile"/> worker.
@@ -278,7 +278,7 @@ namespace PowerShellFar
 			if (AsCreateFile == null)
 				DoCreateFile(args);
 			else
-				A.InvokeScriptReturnAsIs(AsCreateFile, this, args);
+				AsCreateFile.InvokeReturnAsIs(this, args);
 		}
 		/// <summary>
 		/// <see cref="Explorer.OpenFile"/> worker.
@@ -320,7 +320,7 @@ namespace PowerShellFar
 			if (AsRenameFile == null)
 				DoRenameFile(args);
 			else
-				A.InvokeScriptReturnAsIs(AsRenameFile, this, args);
+				AsRenameFile.InvokeReturnAsIs(this, args);
 		}
 		/// <summary>
 		/// <see cref="Explorer.AcceptFiles"/> worker.
@@ -341,7 +341,7 @@ namespace PowerShellFar
 			if (AsAcceptFiles == null)
 				DoAcceptFiles(args);
 			else
-				A.InvokeScriptReturnAsIs(AsAcceptFiles, this, args);
+				AsAcceptFiles.InvokeReturnAsIs(this, args);
 		}
 		/// <summary>
 		/// <see cref="Explorer.ImportFiles"/> worker.
@@ -362,7 +362,7 @@ namespace PowerShellFar
 			if (AsImportFiles == null)
 				DoImportFiles(args);
 			else
-				A.InvokeScriptReturnAsIs(AsImportFiles, this, args);
+				AsImportFiles.InvokeReturnAsIs(this, args);
 		}
 		/// <summary>
 		/// <see cref="Explorer.ExportFiles"/> worker.
@@ -383,7 +383,7 @@ namespace PowerShellFar
 			if (AsExportFiles == null)
 				DoExportFiles(args);
 			else
-				A.InvokeScriptReturnAsIs(AsExportFiles, this, args);
+				AsExportFiles.InvokeReturnAsIs(this, args);
 		}
 		/// <summary>
 		/// <see cref="Explorer.DeleteFiles"/> worker.
@@ -404,7 +404,7 @@ namespace PowerShellFar
 			if (AsDeleteFiles == null)
 				DoDeleteFiles(args);
 			else
-				A.InvokeScriptReturnAsIs(AsDeleteFiles, this, args);
+				AsDeleteFiles.InvokeReturnAsIs(this, args);
 		}
 		/// <summary>
 		/// <see cref="Explorer.CreatePanel"/> worker.
@@ -423,7 +423,7 @@ namespace PowerShellFar
 			if (AsCreatePanel == null)
 				return DoCreatePanel();
 			else
-				return (Panel)LanguagePrimitives.ConvertTo(A.InvokeScriptReturnAsIs(AsCreatePanel, this), typeof(Panel), null);
+				return (Panel)LanguagePrimitives.ConvertTo(AsCreatePanel.InvokeReturnAsIs(this), typeof(Panel), null);
 		}
 		/// <summary>
 		/// <see cref="Explorer.EnterPanel"/> worker.
@@ -444,11 +444,11 @@ namespace PowerShellFar
 			if (AsEnterPanel == null)
 				DoEnterPanel(panel);
 			else
-				A.InvokeScriptReturnAsIs(AsEnterPanel, this, panel);
+				AsEnterPanel.InvokeReturnAsIs(this, panel);
 		}
 		internal Explorer InvokeExplorerScript(ScriptBlock script, ExplorerEventArgs args)
 		{
-			var data = A.InvokeScript(script, this, args);
+			var data = script.Invoke(this, args);
 			if (data.Count == 0)
 				return null;
 

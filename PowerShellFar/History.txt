@@ -1,6 +1,18 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 FarNet 5.4.2
 
+= 5.4.0 =
+
+** PowerShell v2 is not supported **
+
+	- In theory we support v3+.
+	- But we test only v5.1.
+	- Report v3-v5 issues.
+
+Support more types having table formats in panels.
+
+ArgumentCompleters.ps1 ~ Equals, GetType, ToString.
+
 = 5.3.9 =
 
 - add parameter Return to Out-FarPanel

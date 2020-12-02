@@ -13,7 +13,7 @@
 for() {
 	job {
 		$panel = Get-ChildItem -LiteralPath $PSScriptRoot -File |
-		Out-FarPanel -Return -Columns Name -Title 'Go to a file or dots and close.'
+		Out-FarPanel -Return -Title 'Go to a file or dots and close.'
 		$panel.add_Closing({
 			$Data.CurrentFile = $this.CurrentFile
 		})

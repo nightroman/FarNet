@@ -41,7 +41,7 @@ namespace PowerShellFar
 			// script
 			if (AsOpenFile != null)
 			{
-				A.InvokeScriptReturnAsIs(AsOpenFile, this, new OpenFileEventArgs(file));
+				AsOpenFile.InvokeReturnAsIs(this, new OpenFileEventArgs(file));
 				return;
 			}
 
@@ -103,7 +103,7 @@ namespace PowerShellFar
 		public sealed override void UIEditFile(FarFile file) //_091202_073429 NB: Data can be wrapped by PSObject.
 		{
 			if (AsEditFile != null)
-				A.InvokeScriptReturnAsIs(AsEditFile, this, file);
+				AsEditFile.InvokeReturnAsIs(this, file);
 			else
 				DoEditFile(file);
 		}
@@ -124,7 +124,7 @@ namespace PowerShellFar
 		public sealed override void UIViewFile(FarFile file) //_091202_073429
 		{
 			if (AsViewFile != null)
-				A.InvokeScriptReturnAsIs(AsViewFile, this, file);
+				AsViewFile.InvokeReturnAsIs(this, file);
 			else
 				DoViewFile(file);
 		}
@@ -142,7 +142,7 @@ namespace PowerShellFar
 		{
 			if (AsViewAll != null)
 			{
-				A.InvokeScriptReturnAsIs(AsViewAll, this, null);
+				AsViewAll.InvokeReturnAsIs(this, null);
 				return;
 			}
 
