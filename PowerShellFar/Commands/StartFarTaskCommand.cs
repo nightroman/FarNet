@@ -64,6 +64,9 @@ namespace PowerShellFar.Commands
 		}
 
 		[Parameter]
+		public string[] Variable { get; set; }
+
+		[Parameter]
 		public SwitchParameter AsTask { get; set; }
 
 		[Parameter]
@@ -78,25 +81,33 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-function Invoke-FarJob($Job) {
-	$result = $StartFarTaskCommand.Job($Job)
+function InvokeTaskJob($Job) {
+	$result = $StartFarTaskCommand.InvokeTaskJob($Job)
 	if ($result -is [System.Exception]) {
 		throw $result
 	}
 	$result
 }
 
-function Invoke-FarKeys($Keys) {
-	$StartFarTaskCommand.Keys($Keys)
+function InvokeTaskRun($Job) {
+	$result = $StartFarTaskCommand.InvokeTaskRun($Job)
+	if ($result) {
+		throw $result
+	}
 }
 
-function Invoke-FarMacro($Keys) {
-	$StartFarTaskCommand.Macro($Keys)
+function InvokeTaskKeys($Keys) {
+	$StartFarTaskCommand.InvokeTaskKeys($Keys)
 }
 
-Set-Alias job Invoke-FarJob
-Set-Alias keys Invoke-FarKeys
-Set-Alias macro Invoke-FarMacro
+function InvokeTaskMacro($Keys) {
+	$StartFarTaskCommand.InvokeTaskKeys($Keys)
+}
+
+Set-Alias job InvokeTaskJob
+Set-Alias run InvokeTaskRun
+Set-Alias keys InvokeTaskKeys
+Set-Alias macro InvokeTaskMacro
 
 . $Script.GetNewClosure() @Parameters
 ";
@@ -137,7 +148,7 @@ $ErrorActionPreference = 'Stop'
 		// Called by task scripts.
 		//! Catch and return an exception to avoid noise CmdletInvocationException\MethodInvocationException\<ActualException>.
 		//! The task script checks for an exception and throws it.
-		public object Job(ScriptBlock job)
+		public object InvokeTaskJob(ScriptBlock job)
 		{
 			try
 			{
@@ -146,7 +157,7 @@ $ErrorActionPreference = 'Stop'
 				{
 					if (Confirm)
 					{
-						if (!ShowConfirm("Job", $"{job.File}\r\n{job.ToString()}"))
+						if (!ShowConfirm("Job", $"{job.File}\r\n{job}"))
 							throw new PipelineStoppedException();
 					}
 
@@ -191,8 +202,46 @@ $ErrorActionPreference = 'Stop'
 		}
 
 		// Called by task scripts.
+		//! See InvokeTaskJob notes.
+		public object InvokeTaskRun(ScriptBlock job)
+		{
+			try
+			{
+				Exception reason = null;
+
+				// post the job as task
+				var task = Tasks.Job(() =>
+				{
+					if (Confirm)
+					{
+						if (!ShowConfirm("Run", $"{job.File}\r\n{job}"))
+							throw new PipelineStoppedException();
+					}
+
+					var args = new RunArgs(_codeJob)
+					{
+						Writer = new ConsoleOutputWriter(),
+						NoOutReason = true,
+						UseLocalScope = true,
+						Arguments = new object[] { job, _data }
+					};
+					A.Psf.Run(args);
+					reason = args.Reason;
+				});
+
+				// await
+				task.Wait();
+				return reason;
+			}
+			catch (Exception exn)
+			{
+				return UnwrapAggregateException(exn);
+			}
+		}
+
+		// Called by task scripts.
 		//! Confirm has issues, macros fails.
-		public void Keys(string keys)
+		public void InvokeTaskKeys(string keys)
 		{
 			var task = Tasks.Keys(keys);
 			task.Wait();
@@ -200,7 +249,7 @@ $ErrorActionPreference = 'Stop'
 
 		// Called by task scripts.
 		//! Confirm has issues, macros fails.
-		public void Macro(string macro)
+		public void InvokeTaskMacro(string macro)
 		{
 			var task = Tasks.Macro(macro);
 			task.Wait();
@@ -224,7 +273,7 @@ $ErrorActionPreference = 'Stop'
 			"Verbose", "Debug", "ErrorAction", "WarningAction", "ErrorVariable", "WarningVariable",
 			"OutVariable", "OutBuffer", "PipelineVariable", "InformationAction", "InformationVariable" };
 		static readonly string[] _paramInvalid = new string[] {
-			"Script", "AsTask", "Confirm" };
+			"Script", "AsTask", "Confirm", "Variable" };
 		RuntimeDefinedParameterDictionary _paramDynamic;
 
 		public object GetDynamicParameters()
@@ -233,15 +282,10 @@ $ErrorActionPreference = 'Stop'
 			if (_scriptError != null)
 				return null;
 
-			// get yet missing script block parameters
-			if (_scriptParameters == null)
-			{
-				var res = A.InvokeCode("$function:__GetScriptParameters = $args[0]; Get-Command __GetScriptParameters -Type Function", _script);
-				var info = (CommandInfo)res[0].BaseObject;
-				_scriptParameters = info.Parameters;
-			}
-
 			_paramDynamic = new RuntimeDefinedParameterDictionary();
+			if (_scriptParameters == null)
+				return _paramDynamic;
+
 			foreach (var p in _scriptParameters.Values)
 			{
 				if (!_paramExclude.Contains(p.Name, StringComparer.OrdinalIgnoreCase))
@@ -266,6 +310,11 @@ $ErrorActionPreference = 'Stop'
 			iss.Variables.Add(new SessionStateVariableEntry("StartFarTaskCommand", this, string.Empty));
 			iss.Variables.Add(new SessionStateVariableEntry("LogEngineLifeCycleEvent", false, string.Empty)); // whole log disabled
 			iss.Variables.Add(new SessionStateVariableEntry("LogProviderLifeCycleEvent", false, string.Empty)); // start is still logged
+			if (Variable != null)
+			{
+				foreach (var name in Variable)
+					iss.Variables.Add(new SessionStateVariableEntry(name, GetVariableValue(name), string.Empty));
+			}
 
 			var rs = RunspaceFactory.CreateRunspace(iss);
 			rs.Open();
@@ -301,13 +350,9 @@ $ErrorActionPreference = 'Stop'
 							catch (Exception exn)
 							{
 								if (AsTask)
-								{
 									tcs.SetException(UnwrapAggregateException(exn));
-								}
 								else
-								{
 									ShowError(exn);
-								}
 							}
 							finally
 							{

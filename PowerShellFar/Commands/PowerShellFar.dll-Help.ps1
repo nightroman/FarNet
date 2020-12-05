@@ -614,19 +614,25 @@ Use it for troubleshooting, demonstrations, and etc.
 	command = 'Start-FarTask'
 	synopsis = 'Starts the script task.'
 	description = @'
-	This cmdlet starts the specified script task. Script parameters are defined
-	in the script and specified for Start-FarTask (dynamic parameters). Known
-	issue: dynamic switch parameters must be specified after Script.
+	This cmdlet starts the specified script task. File script parameters are
+	defined in the script and specified for Start-FarTask as its own. Known
+	issue: switch parameters must be specified after Script.
+
+	If the script is a script block or code then parameters are not supported.
+	Use the parameter Variable in order to import specified current session
+	variables to the task session.
 
 	The script is invoked in a new runspace asynchronously. The code must not
-	access $Far and $Psf, it should use job script blocks instead.
+	access $Far and $Psf, it should use `job` and `run` script blocks instead.
 
-	Job blocks are called as `job {...}`. Job scripts are invoked by the core
-	in the main PowerShell session. They may work with $Far and $Psf. If a job
-	outputs a task then this task is awaited and its result is returned.
+	Job blocks are called as `job {...}`. Jobs are invoked in the main session.
+	They may work with $Far and $Psf. Jobs may output data. If a job outputs a
+	task then this task is awaited and its result is returned.
 
-	Macros are called as `keys '...'` and `macro '...'` from the task code.
-	Just like script jobs, these calls are synchronous for the task code.
+	Jobs with console output may be called as `run {...}`.
+	They do not return data due to their console output.
+
+	Macros are called as `keys '...'` and `macro '...'`.
 
 	The task and jobs may exchange data using the predefined hashtable $Data.
 
@@ -640,6 +646,9 @@ Use it for troubleshooting, demonstrations, and etc.
 		Confirm = @'
 Tells to confirm jobs before invoking using dialogs.
 Use it for troubleshooting, demonstrations, and etc.
+'@
+		Variable = @'
+Specifies variables imported from the current session to the task session.
 '@
 	}
 

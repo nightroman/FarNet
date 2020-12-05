@@ -64,6 +64,24 @@ let FarTaskError2 = async {
     do! Job.Keys "Esc"
 }
 
+// Error in run code, ensure it points to the script file.
+[<Test>]
+let FarTaskError3 = async {
+    let _ = PSFar.Invoke(getFarTask "FarTaskError3.far.ps1")
+    do! Job.Wait Window.IsDialog
+    do! job {
+        Assert.Equal("FarTask error", far.Dialog.[0].Text)
+        Assert.Equal("oops-run", far.Dialog.[1].Text)
+    }
+    do! Job.Keys "Tab Enter"
+    do! job {
+        Assert.True(Window.IsEditor())
+        Assert.True(far.Editor.[2].Text.Contains("\FarTaskError3.far.ps1:"))
+        Assert.True(far.Editor.[3].Text.Contains("throw 'oops-run'"))
+    }
+    do! Job.Keys "Esc"
+}
+
 // Ensure result objects are unwrapped and null is preserved.
 [<Test>]
 let StartTaskCode = async {
@@ -71,14 +89,6 @@ let StartTaskCode = async {
     Assert.Equal(2, res.Length)
     Assert.Equal(1, res.[0] :?> int)
     Assert.Null(res.[1])
-}
-
-// Test with parameters and splatting.
-[<Test>]
-let StartTaskParameters = async {
-    let! res = PSFar.StartTask("param($Param1) $Param1", [ "Param1", box 42 ])
-    Assert.Equal(1, res.Length)
-    Assert.Equal(42, res.[0] :?> int)
 }
 
 // This job calls [FarNet.Tasks]::Job<Action>, i.e. by default it's Action for
@@ -167,20 +177,15 @@ let ParametersScriptBlock = async {
 
 [<Test>]
 let ParametersScriptFile = async {
-    let _ = PSFar.Invoke(sprintf "Start-FarTask %s -Param1 hi -Param2 there" (getFarTask "Parameters.fas.ps1"))
+    let! _ =
+        PSFar.StartTask(
+            getFarTask "Parameters.fas.ps1",
+            ["Param1", box "hi"; "Param2", box "there"]
+        )
+        |> Async.StartChild
     do! Job.Wait Window.IsDialog
     do! job {
         Assert.Equal("hi there", far.Dialog.[1].Text)
-    }
-    do! Job.Keys "Esc"
-}
-
-[<Test>]
-let ParametersScriptCode = async {
-    let _ = PSFar.Invoke("Start-FarTask 'param($Param1) $Data.x = $Param1; job {$Far.Message($Data.x)}' -Param1 42")
-    do! Job.Wait Window.IsDialog
-    do! job {
-        Assert.Equal("42", far.Dialog.[1].Text)
     }
     do! Job.Keys "Esc"
 }

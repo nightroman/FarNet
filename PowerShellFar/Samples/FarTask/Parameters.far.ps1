@@ -1,22 +1,25 @@
-# How to pass parameters in a task script block or code.
-# (1) Define parameters in script block/code as usual.
-# (2) Specify dynamic parameters for Start-FarTask:
-#     Start-FarTask {...} -Param1 hi -Param2 there
-# (!) Switch parameters must be specified after the parameter Script.
+<#
+.Synopsis
+	How to pass variables in task script blocks.
 
+.Description
+	Use the parameter Variable in order to import existing variables from the
+	current session to the task session. Note, unlike file scripts, script
+	blocks cannot be invoked with dynamic parameters.
+#>
+
+# variables in the current session
 $text1 = 'hello'
 $text2 = 'world'
 
-Start-FarTask -Param1 $text1 -Param2 $text2 {
-	param(
-		$Param1,
-		$Param2
-	)
+# start task with imported variables
+Start-FarTask -Variable text1, text2 {
 
-	$Data.text1 = $Param1
-	$Data.text2 = $Param2
+	# use imported variables, keep results in $Data
+	$Data.text = "$text1 $text2"
 
+	# call some job using $Data
 	job {
-		$Far.Message($Data.text1 + ' ' + $Data.text2)
+		$Far.Message($Data.text)
 	}
 }

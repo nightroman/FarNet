@@ -12,18 +12,24 @@
 
 for() {
 	job {
-		$panel = Get-ChildItem -LiteralPath $PSScriptRoot -File |
-		Out-FarPanel -Return -Title 'Go to a file or dots and close.'
+		# make a panel with some data
+		$panel = Get-ChildItem -LiteralPath $PSScriptRoot -File | Out-FarPanel -Return -Title 'Go to a file or dots and close.'
+
+		# on closing, get the current file
 		$panel.add_Closing({
 			$Data.CurrentFile = $this.CurrentFile
 		})
+
+		# start and return panel task
 		[FarNet.Tasks]::Panel($panel)
 	}
 
+	# check the result file
 	if (!$Data.CurrentFile) {
 		break
 	}
 
+	# edit the file
 	job {
 		$editor = New-FarEditor "$PSScriptRoot\$($Data.CurrentFile)" -DisableHistory
 		[FarNet.Tasks]::Editor($editor)

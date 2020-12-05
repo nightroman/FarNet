@@ -7,7 +7,7 @@ There are two kind of scripts:
 
 - Scripts `*.fas.ps1` are invoked by `Start-FarTask`, for example by the
   association command defined as `ps: Start-FarTask (Get-FarPath) #`.
-  They may work with FarNet only using `job` blocks.
+  They may work with FarNet only using `job` and `run` blocks.
 
 Task scripts may call other tasks and consume their results, if any. Example:
 `NestedTasks.fas.ps1` calls `DialogNonModalInput.fas.ps1` and uses its result

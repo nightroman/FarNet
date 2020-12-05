@@ -89,7 +89,9 @@ namespace PowerShellFar
 			string currentDirectory = A.Psf.SyncPaths();
 			try
 			{
-				A.Psf.Act(e.Command, new ConsoleOutputWriter(CommandInvoke1.Prefix + ":" + e.Command), !e.IsMacro);
+				var colon = e.Command.Length > 0 && char.IsWhiteSpace(e.Command[0]) ? ":" : ": ";
+				var ok = A.Psf.Act(e.Command, new ConsoleOutputWriter(CommandInvoke1.Prefix + colon + e.Command), !e.IsMacro);
+				e.Ignore = !ok;
 			}
 			finally
 			{
@@ -102,7 +104,8 @@ namespace PowerShellFar
 			string currentDirectory = A.Psf.SyncPaths();
 			try
 			{
-				A.Psf.Act(e.Command, null, !e.IsMacro);
+				var ok = A.Psf.Act(e.Command, null, !e.IsMacro);
+				e.Ignore = !ok;
 			}
 			finally
 			{

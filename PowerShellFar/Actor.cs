@@ -751,17 +751,21 @@ Continue with this current directory?
 		/// <param name="code">PowerShell code.</param>
 		/// <param name="writer">Output writer or null.</param>
 		/// <param name="addHistory">Add command to history.</param>
+		/// <returns>False if the code fails.</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		internal bool Act(string code, OutputWriter writer, bool addHistory)
 		{
-			// result
-			bool ok = true;
+			return Run(new RunArgs(code) { Writer = writer, AddHistory = addHistory });
+		}
+		internal bool Run(RunArgs args)
+		{
+			var code = args.Code;
 
 			// push writer
-			if (writer != null)
+			if (args.Writer != null)
 			{
 				// predefined output
-				FarUI.PushWriter(writer);
+				FarUI.PushWriter(args.Writer);
 			}
 			else
 			{
@@ -777,10 +781,10 @@ Continue with this current directory?
 				Far.Api.UI.SetProgressState(TaskbarProgressBarState.Indeterminate);
 
 				// add history
-				if (addHistory)
+				if (args.AddHistory)
 				{
 					code = code.Trim();
-					if (code.Length > 0 && code[code.Length - 1] != '#')
+					if (!code.EndsWith("#"))
 						History.AddLine(code);
 				}
 
@@ -788,20 +792,32 @@ Continue with this current directory?
 				using (var ps = NewPowerShell())
 				{
 					_myCommand = code;
-					//TODO We may need a mode with Out-Host even for console, e.g. to transcribe apps output
+					var command = ps.Commands.AddScript(code, args.UseLocalScope);
+					if (args.Arguments != null)
+					{
+						foreach (var arg in args.Arguments)
+							command.AddArgument(arg);
+					}
+
 					var output = FarUI.Writer is ConsoleOutputWriter ? A.OutDefaultCommand : A.OutHostCommand;
-					ps.Commands.AddScript(code).AddCommand(output);
+					command.AddCommand(output);
 					ps.Invoke();
+					args.Reason = ps.InvocationStateInfo.Reason;
 				}
+
+				return true;
 			}
 			catch (Exception reason)
 			{
-				ok = false;
+				args.Reason = reason;
+				if (args.NoOutReason)
+					return false;
+
 				ConsoleColor color1 = ConsoleColor.Black;
 				try
 				{
 					// push console color
-					if (writer is ConsoleOutputWriter)
+					if (args.Writer is ConsoleOutputWriter)
 					{
 						color1 = Far.Api.UI.ForegroundColor;
 						Far.Api.UI.ShowUserScreen();
@@ -818,6 +834,8 @@ Continue with this current directory?
 					if (color1 != ConsoleColor.Black)
 						Far.Api.UI.ForegroundColor = color1;
 				}
+
+				return false;
 			}
 			finally
 			{
@@ -829,7 +847,7 @@ Continue with this current directory?
 
 				// pop writer
 				OutputWriter usedWriter = FarUI.PopWriter();
-				if (writer == null)
+				if (args.Writer == null)
 				{
 					// it is the writer created locally;
 					// view its file, if any
@@ -851,8 +869,6 @@ Continue with this current directory?
 				// notify host
 				FarHost.NotifyEndApplication();
 			}
-
-			return ok;
 		}
 		/// <summary>
 		/// Provider settings.

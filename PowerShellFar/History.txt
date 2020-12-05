@@ -1,6 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 FarNet 5.4.2
 
+= 5.4.1 =
+
+Start-FarTask scripts support `run` blocks in addition to `job`.
+
 = 5.4.0 =
 
 ** PowerShell v2 is not supported **
@@ -27,9 +31,6 @@ Start-FarTask
 	- Added `macro` in addition to `keys`.
 	- Fixed Assert-Far [Break] in jobs.
 
-	Samples: https://github.com/nightroman/FarNet/tree/master/PowerShellFar/Samples/FarTask
-	F# tests: https://github.com/nightroman/FarNet/blob/master/FSharpFar/tests/TestPSFar.fs
-
 Bench/Test moved from the package to Samples/Tests.
 
 Retired (moved to Zoo/PowerShellFar)
@@ -47,6 +48,8 @@ Start-FarTask
 = 5.3.6 =
 
 Add Start-FarTask for async scripts with sync Far jobs and keys.
+Samples: https://github.com/nightroman/FarNet/tree/master/PowerShellFar/Samples/FarTask
+F# tests: https://github.com/nightroman/FarNet/blob/master/FSharpFar/tests/TestPSFar.fs
 
 = 5.3.5 =
 
