@@ -1,6 +1,7 @@
 module TestPSFar
 open FarNet
 open FarNet.FSharp
+open System
 open System.IO
 open System.Collections
 
@@ -71,13 +72,13 @@ let FarTaskError3 = async {
     do! Job.Wait Window.IsDialog
     do! job {
         Assert.Equal("FarTask error", far.Dialog.[0].Text)
-        Assert.Equal("oops-run", far.Dialog.[1].Text)
+        Assert.Equal("oops-ps:", far.Dialog.[1].Text)
     }
     do! Job.Keys "Tab Enter"
     do! job {
         Assert.True(Window.IsEditor())
         Assert.True(far.Editor.[2].Text.Contains("\FarTaskError3.far.ps1:"))
-        Assert.True(far.Editor.[3].Text.Contains("throw 'oops-run'"))
+        Assert.True(far.Editor.[3].Text.Contains("throw 'oops-ps:'"))
     }
     do! Job.Keys "Esc"
 }
@@ -136,7 +137,7 @@ let DialogNonModalInput2 = async {
     do! Job.Keys "b a r Enter"
 
     // message with "bar"
-    do! Job.Wait (fun() -> Window.IsDialog() && far.Dialog.[1].Text = "bar")
+    do! Job.Wait (fun()-> Window.IsDialog() && far.Dialog.[1].Text = "bar")
     do! Job.Keys "Esc"
 
     // result is "bar"
@@ -154,10 +155,10 @@ let InputEditorMessage = async {
     }
     do! Job.Keys "f o o Enter"
 
-    do! Job.Wait (fun() -> Window.IsEditor() && far.Editor.[0].Text = "foo")
+    do! Job.Wait (fun()-> Window.IsEditor() && far.Editor.[0].Text = "foo")
     do! Job.Keys "CtrlA b a r F2 Esc"
 
-    do! Job.Wait (fun() -> Window.IsDialog() && far.Dialog.[1].Text = "bar")
+    do! Job.Wait (fun()-> Window.IsDialog() && far.Dialog.[1].Text = "bar")
     do! Job.Keys "CtrlA b a r F2 Esc"
 
     // result is "bar"
@@ -229,6 +230,41 @@ let PanelSelectItem = async {
     do! Job.Keys "Esc"
     do! Job.Wait Window.IsModulePanel
 
+    do! Job.Keys "Esc"
+    do! Job.Wait Window.IsNativePanel
+}
+
+// Test -Confirm flow. Other tests are done by the script.
+[<Test>]
+let KeysAndMacro = async {
+    do! PSFar.StartTask(getFarTask "KeysAndMacro.fas.ps1", ["Confirm", box true]) |> Async.StartChild |> Async.Ignore
+
+    // assert panels
+    do! Job.Wait (fun()-> Window.IsDialog() && far.Dialog.[0].Text = "job")
+    do! Job.Keys "Enter"
+
+    // keys CtrlG
+    do! Job.Wait (fun()-> Window.IsDialog() && far.Dialog.[0].Text = "keys")
+    do! Job.Keys "Enter"
+
+    // assert dialog
+    do! Job.Wait (fun()-> Window.IsDialog() && far.Dialog.[0].Text = "job")
+    do! Job.Keys "Enter"
+
+    // macro cls
+    do! Job.Wait (fun()-> Window.IsDialog() && far.Dialog.[0].Text = "macro")
+    do! Job.Keys "Enter"
+
+    // assert text
+    do! Job.Wait (fun()-> Window.IsDialog() && far.Dialog.[0].Text = "job")
+    do! Job.Keys "Enter"
+
+    //! keys Enter, cancel ~ avoid `cls`
+    do! Job.Wait (fun()-> Window.IsDialog() && far.Dialog.[0].Text = "keys")
+    do! Job.Keys "Esc"
+
+    // Apply command
+    do! Job.Wait (fun()-> Window.IsDialog() && far.Dialog.[0].Text = "Apply command")
     do! Job.Keys "Esc"
     do! Job.Wait Window.IsNativePanel
 }

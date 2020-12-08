@@ -1,6 +1,6 @@
 <#
 This script shows a bar chart of file lengths of the current panel.
-Interaction: clicks on file bars set the corresponding file current.
+Interaction: click on file bars to set the panel file current.
 
 Note, the chart dialog is modal but it does not block Far Manager.
 The dialog is running in a separate thread and PowerShell session.
@@ -44,10 +44,11 @@ $chart.add_MouseClick({
 
 # show dialog
 $form = [Form]@{
-	Text = 'Files'
+	Text = 'Click bars to change current files'
 	StartPosition = 'Manual'
 	Location = [Drawing.Point]::new(0, 0)
 	Size = [Drawing.Size]::new(600, 600)
 }
 $form.Controls.Add($chart)
+$form.add_Load({$this.Activate()})
 $null = $form.ShowDialog()

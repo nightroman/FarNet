@@ -623,13 +623,13 @@ Use it for troubleshooting, demonstrations, and etc.
 	variables to the task session.
 
 	The script is invoked in a new runspace asynchronously. The code must not
-	access $Far and $Psf, it should use `job` and `run` script blocks instead.
+	access $Far and $Psf, it should use `job` and `ps:` script blocks instead.
 
 	Job blocks are called as `job {...}`. Jobs are invoked in the main session.
 	They may work with $Far and $Psf. Jobs may output data. If a job outputs a
 	task then this task is awaited and its result is returned.
 
-	Jobs with console output may be called as `run {...}`.
+	Jobs with console output may be called as `ps: {...}`.
 	They do not return data due to their console output.
 
 	Macros are called as `keys '...'` and `macro '...'`.

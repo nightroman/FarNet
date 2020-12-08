@@ -15,10 +15,10 @@ job {
 	Assert-Far -Dialog
 }
 
-# type "cls" (using `macro` this time, for test sake)
+# type the text, using `macro` this time, for test sake
 macro 'Keys"c l s"'
 
-# the text is typed
+# test the typed text
 job {
 	Assert-Far -Dialog ($Far.Dialog[2].Text -eq 'cls')
 }

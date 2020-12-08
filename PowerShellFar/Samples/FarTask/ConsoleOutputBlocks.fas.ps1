@@ -1,18 +1,18 @@
 <#
 .Synopsis
-	How to use `run` blocks.
+	How to use `ps:` blocks.
 
 .Description
-	`run` blocks are similar to `job`, they are invoked in the main session,
-	but output is written to the console, as if they are invoked from the
-	command line. Note, output of `job` blocks is returned to callers.
+	`ps:` blocks are invoked in the main session, like `job` blocks, but their
+	output is written to the console, as if they were invoked from the command
+	line with the prefix `ps:`.
 #>
 
 # data for jobs
 $Data.Path = "$env:FARHOME\FarNet"
 
 # do work with console output
-run {
+ps: {
 	# show file system items
 	Get-ChildItem -LiteralPath $Data.Path
 
@@ -31,7 +31,7 @@ if ($Data.Escape) {
 }
 
 # continue
-run {
+ps: {
 	# just print
 	'some more work'
 }

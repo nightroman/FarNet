@@ -78,8 +78,10 @@ namespace FarNet
 		public static Task Macro(string text)
 		{
 			Environment.SetEnvironmentVariable(_envMacroFlag, "0");
-			Far.Api.PostMacro(text);
-			Far.Api.PostMacro(_macroSetFlag);
+			Far.Api.PostJob(() => {
+				Far.Api.PostMacro(text);
+				Far.Api.PostMacro(_macroSetFlag);
+			});
 			return Task.Run(() =>
 			{
 				while (Environment.GetEnvironmentVariable(_envMacroFlag) != "1")

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
+using System.Management.Automation.Internal;
 using System.Management.Automation.Runspaces;
 using System.Threading.Tasks;
 
@@ -89,8 +90,8 @@ function InvokeTaskJob($Job) {
 	$result
 }
 
-function InvokeTaskRun($Job) {
-	$result = $StartFarTaskCommand.InvokeTaskRun($Job)
+function InvokeTaskCmd($Job) {
+	$result = $StartFarTaskCommand.InvokeTaskCmd($Job)
 	if ($result) {
 		throw $result
 	}
@@ -101,11 +102,11 @@ function InvokeTaskKeys($Keys) {
 }
 
 function InvokeTaskMacro($Keys) {
-	$StartFarTaskCommand.InvokeTaskKeys($Keys)
+	$StartFarTaskCommand.InvokeTaskMacro($Keys)
 }
 
 Set-Alias job InvokeTaskJob
-Set-Alias run InvokeTaskRun
+Set-Alias ps: InvokeTaskCmd
 Set-Alias keys InvokeTaskKeys
 Set-Alias macro InvokeTaskMacro
 
@@ -157,12 +158,12 @@ $ErrorActionPreference = 'Stop'
 				{
 					if (Confirm)
 					{
-						if (!ShowConfirm("Job", $"{job.File}\r\n{job}"))
+						if (!ShowConfirm("job", $"{job.File}\r\n{job}"))
 							throw new PipelineStoppedException();
 					}
 
 					// invoke live script block syncronously in the main session
-					var ps = PowerShell.Create();
+					var ps = A.Psf.NewPowerShell();
 					ps.Runspace = A.Psf.Runspace;
 					ps.AddScript(_codeJob, true).AddArgument(job).AddArgument(_data);
 					var output = ps.Invoke();
@@ -175,20 +176,20 @@ $ErrorActionPreference = 'Stop'
 				});
 
 				// await
-				task.Wait();
 				var result = task.Result;
 
-				//! if the job returns a task, await and return, replacing null with an empty array
+				//! if the job returns a task, await and return
 				if (result.Count == 1 && result[0] != null && result[0].BaseObject is Task task2)
 				{
 					task2.Wait();
 
+					//! return special null (empty array is ok, too)
 					var pi = task2.GetType().GetProperty("Result");
 					if (pi == null)
-						return new object[] { };
+						return AutomationNull.Value;
 
 					var result2 = pi.GetValue(task2);
-					return result2 ?? new object[] { };
+					return result2 ?? AutomationNull.Value;
 				}
 				else
 				{
@@ -203,7 +204,7 @@ $ErrorActionPreference = 'Stop'
 
 		// Called by task scripts.
 		//! See InvokeTaskJob notes.
-		public object InvokeTaskRun(ScriptBlock job)
+		public object InvokeTaskCmd(ScriptBlock job)
 		{
 			try
 			{
@@ -214,7 +215,7 @@ $ErrorActionPreference = 'Stop'
 				{
 					if (Confirm)
 					{
-						if (!ShowConfirm("Run", $"{job.File}\r\n{job}"))
+						if (!ShowConfirm("ps:", $"{job.File}\r\n{job}"))
 							throw new PipelineStoppedException();
 					}
 
@@ -243,6 +244,12 @@ $ErrorActionPreference = 'Stop'
 		//! Confirm has issues, macros fails.
 		public void InvokeTaskKeys(string keys)
 		{
+			if (Confirm)
+			{
+				var confirm = Tasks.Job(() => ShowConfirm("keys", keys));
+				if (!confirm.Result)
+					throw new PipelineStoppedException();
+			}
 			var task = Tasks.Keys(keys);
 			task.Wait();
 		}
@@ -251,6 +258,12 @@ $ErrorActionPreference = 'Stop'
 		//! Confirm has issues, macros fails.
 		public void InvokeTaskMacro(string macro)
 		{
+			if (Confirm)
+			{
+				var confirm = Tasks.Job(() => ShowConfirm("macro", macro));
+				if (!confirm.Result)
+					throw new PipelineStoppedException();
+			}
 			var task = Tasks.Macro(macro);
 			task.Wait();
 		}

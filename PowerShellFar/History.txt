@@ -1,14 +1,20 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
-FarNet 5.4.2
+FarNet 5.4.5
+
+= 5.4.2 =
+
+Start-FarTask
+	- improve `keys` and `macro` and support with -Confirm
+	- rename `run` blocks to `ps:`
 
 = 5.4.1 =
 
-Start-FarTask scripts support `run` blocks in addition to `job`.
+Start-FarTask
+	- add `run` blocks in addition to `job`
 
 = 5.4.0 =
 
 ** PowerShell v2 is not supported **
-
 	- In theory we support v3+.
 	- But we test only v5.1.
 	- Report v3-v5 issues.
@@ -26,7 +32,6 @@ ArgumentCompleters.ps1 ~ Equals, GetType, ToString.
 = 5.3.8 =
 
 Start-FarTask
-
 	- Added the switch parameter Confirm.
 	- Added `macro` in addition to `keys`.
 	- Fixed Assert-Far [Break] in jobs.

@@ -1,7 +1,7 @@
-# An error in run code.
+# An error in ps: code.
 
 Start-FarTask {
-	run {
-		throw 'oops-run'
+	ps: {
+		throw 'oops-ps:'
 	}
 }

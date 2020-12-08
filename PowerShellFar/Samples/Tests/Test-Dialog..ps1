@@ -1,15 +1,17 @@
-
 <#
 .Synopsis
 	Test unit for Test-Dialog-.ps1.
-	Author: Roman Kuzmin
 
 .Description
-	This is a super-macro to automate testing of a dialog Test-Dialog-.ps1.
-	Note that local variables defined in Test-Dialog-.ps1 are all visible.
+	This is a super-macro to automate testing of Test-Dialog-.ps1.
+	Note, local variables defined in Test-Dialog-.ps1 are visible.
 
 	How to start these steps from UI: run the test dialog Test-Dialog-.ps1,
 	push the button [Test] and watch the steps one by one.
+
+.Parameter TestOpened
+		Tells to test the dialog already opened by Test-Dialog-.ps1 (for
+		example when button [Test] is clicked in this dialog).
 
 .Notes
 	This unit is used by:
@@ -21,21 +23,18 @@
 	and closing the dialog are not returned.
 #>
 
-param
-(
-	[switch]
-	# Tells to test the dialog already opened by Test-Dialog-.ps1 (for example when button [Test] is clicked in this dialog).
-	$TestOpened
+param(
+	[switch]$TestOpened
 )
 
 # this code is invoked before steps as usual code
-$Data.Script = Join-Path (Split-Path $MyInvocation.MyCommand.Path) 'Test-Dialog-.ps1'
+$Data.Script = "$PSScriptRoot\Test-Dialog-.ps1"
 $Data.Value = $null
 
 # open the test dialog if not yet
 if (!$TestOpened) {
 
-	Assert-Far ($Far.Window.Kind -ne 'Dialog') "Do not run this from a dialog" "Test-Dialog..ps1"
+	Assert-Far ($Far.Window.Kind -ne 'Dialog') 'Do not run this from a dialog' 'Test-Dialog..ps1'
 
 	{{
 		# run the dialog
