@@ -1,5 +1,11 @@
-# This script shows how to combine task scripts.
-# Jobs call and return `Start-FarTask ... -AsTask`.
+<#
+.Synopsis
+	How to combine task scripts.
+
+.Description
+	Jobs call `Start-FarTask ... -AsTask` and return tasks.
+	The job runner awaits tasks and outputs their results.
+#>
 
 # Run DialogNonModalInput.fas.ps1 and keep the result in $Data.
 $Data.Text = job {

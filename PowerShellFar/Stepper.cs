@@ -2,12 +2,13 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
+using FarNet;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Management.Automation;
-using FarNet;
+using System.Threading.Tasks;
 
 namespace PowerShellFar
 {
@@ -46,12 +47,19 @@ namespace PowerShellFar
 	/// Invoker of steps (macros and script blocks) and units (scripts getting steps).
 	/// </summary>
 	/// <remarks>
+	/// <para>
+	/// OBSOLETE, WILL BE REMOVED.
+	/// Use <c>Start-FarTask</c> with new task scripts.
+	/// Use <c>Invoke-FarStepper</c> with old step scripts.
+	/// </para>
+	/// <para>
 	/// This class invokes sequences of asynchronous steps: macros and script
 	/// blocks. The core gets control after each step, completes pending jobs
 	/// and invokes the next step. This scenario is used to perform tricky
 	/// operations impossible with synchronous code flow. In particular, it is
 	/// very effective for testing: some steps perform UI actions without much
 	/// programming, following script block steps check expected results.
+	/// </para>
 	/// <para>
 	/// It is possible to add steps during stepping. The current stepper object
 	/// is exposed as <see cref="Actor.Stepper"/> to the current step. The step
@@ -68,11 +76,10 @@ namespace PowerShellFar
 	/// other <c>Write-*</c> cmdlets, they may not work.
 	/// </para>
 	/// <para>
-	/// Consider to use the cmdlet <c>Invoke-FarStepper</c> in order to invoke stepper scripts.
+	/// Consider using <c>Invoke-FarStepper</c> in order to invoke stepper scripts.
 	/// Direct use of this class is needed in more complex scenarous.
 	/// </para>
 	/// </remarks>
-	/// <example>Test-Stepper?.ps1, Test-Dialog?.ps1.</example>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
 	public sealed class Stepper : IEnumerator<object>, IEnumerable<object>
 	{
@@ -113,11 +120,11 @@ namespace PowerShellFar
 		readonly List<string> _units = new List<string>();
 		readonly ArrayList _steps = new ArrayList();
 		/// <summary>
-		/// Continuation action. If it is set then the stepper works silently
+		/// Completion. If it is set then the stepper works silently
 		/// and calls the action with null for success and exception for
 		/// failure.
 		/// </summary>
-		Action<Exception> _continuation;
+		TaskCompletionSource<object> _tcs;
 		/// <summary>
 		/// New stepper.
 		/// </summary>
@@ -235,10 +242,11 @@ namespace PowerShellFar
 			if (_RunningInstance == null)
 				Far.Api.PostSteps(this);
 		}
-		internal void Go(Action<Exception> continuation)
+		internal Task GoAsync()
 		{
-			_continuation = continuation;
+			_tcs = new TaskCompletionSource<object>();
 			Go();
+			return _tcs.Task;
 		}
 		/// <summary>
 		/// Gets the current running step unit or null if there is none.
@@ -350,7 +358,7 @@ namespace PowerShellFar
 					{
 						// state
 						State = StepperState.Completed;
-						_continuation?.Invoke(null);
+						_tcs?.SetResult(null);
 						return false;
 					}
 
@@ -463,10 +471,7 @@ namespace PowerShellFar
 			{
 				_Error = error;
 				State = StepperState.Failed;
-				if (_continuation == null)
-					throw;
-
-				_continuation(error);
+				_tcs?.SetException(error);
 				return false;
 			}
 			finally

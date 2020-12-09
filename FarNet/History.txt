@@ -1,6 +1,10 @@
 https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 5.4.6 =
+
+Add Tasks.Run for running modal UI without blocking tasks
+
 = 5.4.5 =
 
 Improve Tasks.Keys/Macro

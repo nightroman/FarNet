@@ -2,31 +2,33 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
-using System;
 using System.Management.Automation;
 
 namespace PowerShellFar.Commands
 {
-	sealed class InvokeFarStepperCommand : BaseCmdlet, IDisposable
+	sealed class InvokeFarStepperCommand : BaseCmdlet
 	{
-		[Parameter(Position = 0, Mandatory = true, ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
-		[Alias("PSPath", "FileName")]
-		public string Path { get; set; }
-		[Parameter()]
-		public SwitchParameter Confirm { get; set; }
 		readonly Stepper _stepper = new Stepper();
-		public void Dispose()
+
+		[Parameter(Position = 0, Mandatory = true)]
+		public string Path { get; set; }
+
+		[Parameter]
+		public SwitchParameter AsTask { get; set; }
+
+		[Parameter]
+		public SwitchParameter Confirm { get; set; }
+
+		protected override void BeginProcessing()
 		{
-			_stepper.Dispose();
-		}
-		protected override void ProcessRecord()
-		{
+			Path = GetUnresolvedProviderPathFromPSPath(Path);
 			_stepper.AddFile(Path);
-		}
-		protected override void EndProcessing()
-		{
 			_stepper.Ask = Confirm;
-			_stepper.Go();
+
+			if (AsTask)
+				WriteObject(_stepper.GoAsync());
+			else
+				_stepper.Go();
 		}
 	}
 }

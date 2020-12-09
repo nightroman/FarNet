@@ -65,7 +65,20 @@ namespace PowerShellFar.Commands
 		}
 
 		[Parameter]
-		public string[] Variable { get; set; }
+		[ValidateNotNull]
+		public string[] Data
+		{
+			set
+			{
+				foreach (var name in value)
+				{
+					var variable = SessionState.PSVariable.Get(name);
+					if (variable == null)
+						throw new PSArgumentException($"Variable {name} is not found.");
+					_data.Add(variable.Name, variable.Value);
+				}
+			}
+		}
 
 		[Parameter]
 		public SwitchParameter AsTask { get; set; }
@@ -97,6 +110,13 @@ function InvokeTaskCmd($Job) {
 	}
 }
 
+function InvokeTaskRun($Job) {
+	$result = $StartFarTaskCommand.InvokeTaskRun($Job)
+	if ($result) {
+		throw $result
+	}
+}
+
 function InvokeTaskKeys($Keys) {
 	$StartFarTaskCommand.InvokeTaskKeys($Keys)
 }
@@ -107,6 +127,7 @@ function InvokeTaskMacro($Keys) {
 
 Set-Alias job InvokeTaskJob
 Set-Alias ps: InvokeTaskCmd
+Set-Alias run InvokeTaskRun
 Set-Alias keys InvokeTaskKeys
 Set-Alias macro InvokeTaskMacro
 
@@ -164,7 +185,6 @@ $ErrorActionPreference = 'Stop'
 
 					// invoke live script block syncronously in the main session
 					var ps = A.Psf.NewPowerShell();
-					ps.Runspace = A.Psf.Runspace;
 					ps.AddScript(_codeJob, true).AddArgument(job).AddArgument(_data);
 					var output = ps.Invoke();
 
@@ -195,6 +215,42 @@ $ErrorActionPreference = 'Stop'
 				{
 					return result;
 				}
+			}
+			catch (Exception exn)
+			{
+				return UnwrapAggregateException(exn);
+			}
+		}
+
+		// Called by task scripts.
+		//! See InvokeTaskJob notes.
+		public object InvokeTaskRun(ScriptBlock job)
+		{
+			//! show before Tasks.Run or it completes on this dialog
+			if (Confirm)
+			{
+				var confirm = Tasks.Job(() => ShowConfirm("run", $"{job.File}\r\n{job}"));
+				if (!confirm.Result)
+					throw new PipelineStoppedException();
+			}
+
+			try
+			{
+				// post the job as task
+				var task = Tasks.Run(() =>
+				{
+					var ps = A.Psf.NewPowerShell();
+					ps.AddScript(_codeJob, true).AddArgument(job).AddArgument(_data);
+					ps.Invoke();
+
+					//! Assert-Far may throw special PipelineStoppedException, propagate it
+					if (ps.InvocationStateInfo.Reason != null)
+						throw ps.InvocationStateInfo.Reason;
+				});
+
+				// await
+				task.Wait();
+				return AutomationNull.Value;
 			}
 			catch (Exception exn)
 			{
@@ -286,7 +342,7 @@ $ErrorActionPreference = 'Stop'
 			"Verbose", "Debug", "ErrorAction", "WarningAction", "ErrorVariable", "WarningVariable",
 			"OutVariable", "OutBuffer", "PipelineVariable", "InformationAction", "InformationVariable" };
 		static readonly string[] _paramInvalid = new string[] {
-			"Script", "AsTask", "Confirm", "Variable" };
+			"Script", "Data", "AsTask", "Confirm" };
 		RuntimeDefinedParameterDictionary _paramDynamic;
 
 		public object GetDynamicParameters()
@@ -323,11 +379,6 @@ $ErrorActionPreference = 'Stop'
 			iss.Variables.Add(new SessionStateVariableEntry("StartFarTaskCommand", this, string.Empty));
 			iss.Variables.Add(new SessionStateVariableEntry("LogEngineLifeCycleEvent", false, string.Empty)); // whole log disabled
 			iss.Variables.Add(new SessionStateVariableEntry("LogProviderLifeCycleEvent", false, string.Empty)); // start is still logged
-			if (Variable != null)
-			{
-				foreach (var name in Variable)
-					iss.Variables.Add(new SessionStateVariableEntry(name, GetVariableValue(name), string.Empty));
-			}
 
 			var rs = RunspaceFactory.CreateRunspace(iss);
 			rs.Open();

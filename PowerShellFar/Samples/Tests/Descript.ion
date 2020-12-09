@@ -1,4 +1,4 @@
-﻿Initialize-Test-.ps1 Initializes test environment and optional database data.
+﻿Initialize-Test-.ps1 Initializes test database data.
 Test-Base-.ps1 Test base features.
 Test-CallStack-.ps1 Test prompt dialog and shows how to get call stack info.
 Test-Dialog-.ps1 Test dialog controls.

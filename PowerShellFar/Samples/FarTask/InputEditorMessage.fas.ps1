@@ -1,7 +1,12 @@
-# Asynchronous demo workflow with some input box, editor, and message box. The
-# data ($Data.Text) flows through three jobs. Note that the editor job is not
-# modal, you can do something else in Far. But when the editor exits the task
-# continues with the next job.
+<#
+.Synopsis
+	Demo with input box, non-modal editor, message box.
+
+.Description
+	The data ($Data.Text) flows through three jobs. Note that the editor job is
+	not modal, you can do something else in Far. But when the editor exits the
+	task continues with the next job.
+#>
 
 param($Text = 'Hello async world')
 

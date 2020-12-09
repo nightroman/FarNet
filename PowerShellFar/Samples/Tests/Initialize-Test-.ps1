@@ -1,27 +1,23 @@
-
 <#
 .Synopsis
-	Initializes test environment and optional database data.
-	Author: Roman Kuzmin
+	Initializes test database data.
 
 .Description
-	For System.Data.SqlClient and System.Data.SqlServerCe their providers
-	should be registered in the system. For SQLite see Connect-SQLite-.ps1.
+	Database provider requirements:
+		SQLite
+			- see Bench/Connect-SQLite-.ps1 for details
+			- Connect-SQLite-.ps1 must be in the path
+		System.Data.SqlClient
+		System.Data.SqlServerCe
+			- providers should be registered in the system
+			- note, they are not tested for some long time
 #>
 
-param
-(
-	[string]$DbProviderName,
-	[switch]$NoDb
+param(
+	[string]$DbProviderName
 )
 
-# check the host
-if ($Host.Name -ne 'FarHost') { throw "Invoke this script by FarHost." }
-
-# no DB?
-if ($NoDb) { return }
-
-### select a provider if not yet
+### select a provider manually
 if (!$DbProviderName) {
 	$DbProviderName = 'System.Data.SQLite', 'System.Data.SqlClient', 'System.Data.SqlServerCe' | Out-FarList -Title "Database Provider"
 	if (!$DbProviderName) {
@@ -175,14 +171,11 @@ CONSTRAINT [PK_TestNotes] PRIMARY KEY ([NoteId])
 }
 )
 
-### execute commands (*)
+### execute commands
+#! With try/catch/finally ExecuteNonQuery used to fail in stepper. Why?
 foreach($CommandText in $commands) {
 	$c = $DbConnection.CreateCommand()
 	$c.CommandText = $CommandText
 	$null = $c.ExecuteNonQuery()
 	$c.Dispose()
 }
-
-<#
-(*) With try/catch/finally ExecuteNonQuery used to fails in unit step mode. Why?
-#>

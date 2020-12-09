@@ -5,7 +5,7 @@
 
 .Description
 	The editor profile: %FARPROFILE%\FarNet\PowerShellFar\Profile-Editor.ps1
-	Before using read this code and "Profile-Editor.ps1" in HLF or HTM help.
+	Before using read the code and see "Profile-Editor.ps1" in documentation.
 #>
 
 ### Init focus data, set ReadOnly to prevent next calls.
@@ -71,6 +71,8 @@ $Far.AnyEditor.add_MouseClick({
 				New-FarItem 'Cut' { $Far.CopyToClipboard($Editor.GetSelectedText()); $Editor.DeleteText() } -Disabled:(!$SelectionExists)
 				New-FarItem 'Copy' { $Far.CopyToClipboard($Editor.GetSelectedText()) } -Disabled:(!$SelectionExists)
 				New-FarItem 'Paste' { if ($SelectionExists) { $Editor.DeleteText() } $Editor.InsertText($Far.PasteFromClipboard()) }
+				New-FarItem 'Copy name' { $Far.CopyToClipboard([IO.Path]::GetFileName($Editor.FileName)) }
+				New-FarItem 'Copy path' { $Far.CopyToClipboard($Editor.FileName) }
 			)
 		}
 	}

@@ -71,6 +71,39 @@ namespace FarNet
 			return tcs.Task;
 		}
 		/// <summary>
+		/// Creates a task which runs some UI.
+		/// </summary>
+		/// <param name="job">The action to show UI.</param>
+		/// <returns>The task which completes on UI.</returns>
+		/// <remarks>
+		/// The task completes when the core gets control,
+		/// either on UI or job end, whatever happens first.
+		/// <para>
+		/// The job is supposed to show some modal UI and
+		/// let next tasks work for automation, tests, etc.
+		/// </para>
+		/// </remarks>
+		public static Task Run(Action job)
+		{
+			var tcs = new TaskCompletionSource<object>();
+			Far.Api.PostJob(() =>
+			{
+				try
+				{
+					//! try because the job may fail before UI
+					Far.Api.PostJob(() => tcs.TrySetResult(null));
+					job();
+				}
+				catch (Exception exn)
+				{
+					//! try because the task may complete on UI and the job may fail after
+					if (!tcs.TrySetException(exn))
+						throw exn;
+				}
+			});
+			return tcs.Task;
+		}
+		/// <summary>
 		/// Creates a task which posts the specified macro.
 		/// </summary>
 		/// <param name="text">Macro text.</param>

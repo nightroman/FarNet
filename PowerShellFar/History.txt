@@ -1,5 +1,22 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
-FarNet 5.4.5
+FarNet 5.4.6
+
+= 5.4.3 =
+
+Start-FarTask
+	- replace parameter Variable with more useful Data
+	- add `run` blocks for modal UI without blocking
+	- add Samples/FarTask/Test-Dialog.*.ps1 tests
+
+Invoke-FarStepper
+	- obsolete but will be supported
+	- add switch parameter AsTask
+	- retire pipeline input
+
+PowerShellFar.Stepper
+	- obsolete, will be removed from API
+	- use Start-FarTask with new task scripts
+	- use Invoke-FarStepper with old step scripts
 
 = 5.4.2 =
 

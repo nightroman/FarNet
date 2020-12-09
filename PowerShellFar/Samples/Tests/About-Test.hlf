@@ -77,16 +77,16 @@ This is just a demo help topic.
 $#Dialog Tests#
 ~Contents~@Contents@
 
-The script Test-Dialog-.ps1 demonstrates most of features and functionality
-available in FarNet dialogs. It
+The script demonstrates most of features and functionality available in FarNet
+dialogs:
 
-	- creates a dialog and sets a help topic from a file in the same folder;
-	- adds most of available FarNet dialog items and their different forms;
-	- sets items properties before Show() and after Show() (see [Code]);
-	- adds a number of various dialog and item event handlers;
-	- sets focused and default item and starts Show().
-	- shows how to emulate IDialog.MouseClicked event.
-	- shows how to use and draw IUserControl.
+	- it creates a dialog and sets a help topic from a file in the same folder
+	- it adds most of available FarNet dialog items and their different forms
+	- it sets items properties before Show() and after Show() (see [Code])
+	- it adds a number of various dialog and item event handlers
+	- it sets focused and default item and starts Show()
+	- it shows how to emulate IDialog.MouseClicked event
+	- it shows how to use and draw IUserControl
 
 #[Done]#
 
@@ -99,10 +99,9 @@ This is just a test of what happens on an error in an event handler.
 
 #[Test]#
 
-Automated test. It invokes steps from the super-macro "Test-Dialog..ps1" in
-ask-mode so that you can watch each step code or keys and see how each step
-works. At any time you may choose [Cancel] to stop stepping or [Continue] to
-play the rest of steps automatically.
+Automated test. It invokes test steps with confirmations so that you can watch
+each step code or keys and see how each step works. At any time you may choose
+[Cancel] to stop stepping or [Continue] to run the remaining steps at once.
 
 #[List]#
 
@@ -122,10 +121,10 @@ This button starts the same dialog to show it is fine to open nested dialogs.
 
 You can invoke PowerShell commands from dialogs. Thus, you can test a dialog
 and its items manually running PowerShell code right there. Variables defined
-is the dialog script are available. For example you can enter and run:
+in the dialog script are available. For example you can type and run:
 
-	$dialog ## gets this dialog properties;
-	$e1 ## gets the first edit control properties;
-	$e1.Text = 'New text' ## sets some new text in it;
-	$e1.Disabled = 1 ## disabled it
-	$lb.Items.RemoveAt(0) ## remove the first list box item
+	$dialog               ## get this dialog properties
+	$e1                   ## get the edit properties
+	$e1.Text = 'New text' ## assign new text to it
+	$e1.Disabled = $true  ## disable it
+	$lb.Items.RemoveAt(0) ## remove the first list item

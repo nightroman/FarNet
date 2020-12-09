@@ -5,6 +5,7 @@
 using FarNet;
 using System;
 using System.Management.Automation;
+using System.Threading.Tasks;
 
 namespace PowerShellFar
 {
@@ -152,7 +153,7 @@ namespace PowerShellFar
 			switch (command)
 			{
 				case "InvokeScriptArguments":
-					return new Func<string, object[], object[]>(delegate (string script, object[] arguments)
+					return new Func<string, object[], object[]>((string script, object[] arguments) =>
 					{
 						var result = A.InvokeCode(script, arguments);
 						return A.UnwrapPSObject(result);
@@ -162,11 +163,11 @@ namespace PowerShellFar
 					return A.Psf.Runspace;
 
 				case "Stepper":
-					return new Action<string, Action<Exception>>(delegate (string path, Action<Exception> result)
+					return new Func<string, Task>((string path) =>
 					{
 						var stepper = new Stepper();
 						stepper.AddFile(path);
-						stepper.Go(result);
+						return stepper.GoAsync();
 					});
 			}
 			throw new ArgumentException("Unknown command.", "command");

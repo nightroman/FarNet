@@ -1,6 +1,10 @@
-# How to use `keys` and `macro` jobs in task scripts.
-# It opens Apply Command, types and invokes "cls".
-# It checks for expected results at each step.
+<#
+.Synopsis
+	How to use `keys` and `macro` jobs in task scripts.
+
+.Description
+	It opens "Apply command", types "cls", tests results.
+#>
 
 # ensure panels
 job {
@@ -15,8 +19,8 @@ job {
 	Assert-Far -Dialog
 }
 
-# type the text, using `macro` this time, for test sake
-macro 'Keys"c l s"'
+# type the text
+macro 'print"cls"'
 
 # test the typed text
 job {

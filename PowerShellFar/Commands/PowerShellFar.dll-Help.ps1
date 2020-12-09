@@ -554,16 +554,15 @@ Example: 'FullName' or {$_.FullName} tell to use a property FullName.
 	command = 'Invoke-FarStepper'
 	synopsis = 'Invokes async sequences of macro and script block steps.'
 	description = @'
-This cmdlet provides a simple way to invoke stepper scripts. For more complex
-scenarios with stepping events use the class [PowerShellFar.Stepper] directly.
-
-Consider using Start-FarTask, the modern and more powerful way using tasks.
+This cmdlet invokes obsolete step scripts.
+Consider using Start-FarTask with new task scripts.
 '@
 	parameters = @{
 		Path = @'
-A script that gets macros and script blocks. Use either full paths or just
-names of scripts in the system path. Use of relative paths is not recommended
-with more than one unit.
+The script which gets macros and script blocks.
+'@
+		AsTask = @'
+Tells to start as task and return the started task.
 '@
 		Confirm = @'
 Tells to confirm steps before invoking using dialogs.
@@ -571,21 +570,15 @@ Use it for troubleshooting, demonstrations, and etc.
 '@
 	}
 
-	inputs = @(
-		@{
-			type = 'System.String'
-			description = 'Literal stepper script paths. See the Path parameter.'
-		}
-		@{
-			type = 'System.IO.FileInfo'
-			description = 'File items, for example output of Get-*Item cmdlets.'
-		}
-	)
+	outputs = @{
+		type = 'System.Threading.Task'
+		description = 'With AsTask, the started task.'
+	}
 
 	examples = @(
 		@{code={
-	# Invoke the current panel file by the stepper
-	Invoke-FarStepper -Path (Get-FarPath)
+	# Invoke the current panel file
+	Invoke-FarStepper (Get-FarPath)
 		}}
 	)
 }
@@ -623,7 +616,7 @@ Use it for troubleshooting, demonstrations, and etc.
 	variables to the task session.
 
 	The script is invoked in a new runspace asynchronously. The code must not
-	access $Far and $Psf, it should use `job` and `ps:` script blocks instead.
+	access $Far and $Psf, it should use `job`, `ps:`, `run` script blocks.
 
 	Job blocks are called as `job {...}`. Jobs are invoked in the main session.
 	They may work with $Far and $Psf. Jobs may output data. If a job outputs a
@@ -631,6 +624,9 @@ Use it for troubleshooting, demonstrations, and etc.
 
 	Jobs with console output may be called as `ps: {...}`.
 	They do not return data due to their console output.
+
+	To run modal UI without blocking, use `run {...}`.
+	These blocks are used for automation and tests.
 
 	Macros are called as `keys '...'` and `macro '...'`.
 
@@ -647,8 +643,9 @@ Use it for troubleshooting, demonstrations, and etc.
 Tells to confirm jobs before invoking using dialogs.
 Use it for troubleshooting, demonstrations, and etc.
 '@
-		Variable = @'
-Specifies variables imported from the current session to the task session.
+		Data = @'
+Specifies variables to import from the current session to the task $Data.
+Notes: (1) specify variable names, not values; (2) variables must exist.
 '@
 	}
 

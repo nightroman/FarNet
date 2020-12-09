@@ -32,7 +32,7 @@ let Runspace () =
 // Error in async code, ensure it points to the script file.
 [<Test>]
 let FarTaskError1 = async {
-    let _ = PSFar.Invoke(getFarTask "FarTaskError1.far.ps1")
+    let! _ = Job.From (fun()-> PSFar.Invoke(getFarTask "Case/FarTaskError1.far.ps1"))
     do! Job.Wait Window.IsDialog
     do! job {
         Assert.Equal("FarTask error", far.Dialog.[0].Text)
@@ -50,7 +50,7 @@ let FarTaskError1 = async {
 // Error in job code, ensure it points to the script file.
 [<Test>]
 let FarTaskError2 = async {
-    let _ = PSFar.Invoke(getFarTask "FarTaskError2.far.ps1")
+    let! _ = Job.From (fun()-> PSFar.Invoke(getFarTask "Case/FarTaskError2.far.ps1"))
     do! Job.Wait Window.IsDialog
     do! job {
         Assert.Equal("FarTask error", far.Dialog.[0].Text)
@@ -68,7 +68,7 @@ let FarTaskError2 = async {
 // Error in run code, ensure it points to the script file.
 [<Test>]
 let FarTaskError3 = async {
-    let _ = PSFar.Invoke(getFarTask "FarTaskError3.far.ps1")
+    let! _ = Job.From (fun()-> PSFar.Invoke(getFarTask "Case/FarTaskError3.far.ps1"))
     do! Job.Wait Window.IsDialog
     do! job {
         Assert.Equal("FarTask error", far.Dialog.[0].Text)
@@ -79,6 +79,44 @@ let FarTaskError3 = async {
         Assert.True(Window.IsEditor())
         Assert.True(far.Editor.[2].Text.Contains("\FarTaskError3.far.ps1:"))
         Assert.True(far.Editor.[3].Text.Contains("throw 'oops-ps:'"))
+    }
+    do! Job.Keys "Esc"
+}
+
+//! used to fail
+[<Test>]
+let FarTaskError4 = async {
+    let! _ = Job.From (fun()-> PSFar.Invoke(getFarTask "Case/FarTaskError4.far.ps1"))
+    do! Job.Wait Window.IsDialog
+    do! job {
+        Assert.Equal("FarTask error", far.Dialog.[0].Text)
+        Assert.Equal("oops-run-before", far.Dialog.[1].Text)
+    }
+    do! Job.Keys "Tab Enter"
+    do! job {
+        Assert.True(Window.IsEditor())
+        Assert.True(far.Editor.[2].Text.Contains("\FarTaskError4.far.ps1:"))
+        Assert.True(far.Editor.[3].Text.Contains("throw 'oops-run-before'"))
+    }
+    do! Job.Keys "Esc"
+}
+
+//! used to fail
+[<Test>]
+let FarTaskError5 = async {
+    let! _ = Job.From (fun()-> PSFar.Invoke(getFarTask "Case/FarTaskError5.far.ps1"))
+    do! Job.Wait (fun()-> Window.IsDialog() && far.Dialog.[1].Text = "working")
+    do! Job.Keys "Esc"
+    do! job {
+        Assert.True(Window.IsDialog())
+        Assert.Equal("System.Management.Automation.RuntimeException", far.Dialog.[0].Text)
+        Assert.Equal("oops-run-after", far.Dialog.[1].Text)
+    }
+    do! Job.Keys "Tab Enter"
+    do! job {
+        Assert.True(Window.IsEditor())
+        Assert.True(far.Editor.[2].Text.Contains("\FarTaskError5.far.ps1:"))
+        Assert.True(far.Editor.[3].Text.Contains("throw 'oops-run-after'"))
     }
     do! Job.Keys "Esc"
 }

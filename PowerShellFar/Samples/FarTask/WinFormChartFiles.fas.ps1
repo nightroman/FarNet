@@ -1,12 +1,16 @@
 <#
-This script shows a bar chart of file lengths of the current panel.
-Interaction: click on file bars to set the panel file current.
+.Synopsis
+	GUI chart with interaction and panel updates.
 
-Note, the chart dialog is modal but it does not block Far Manager.
-The dialog is running in a separate thread and PowerShell session.
+.Description
+	This script shows a bar chart of file lengths of the current panel.
+	Interaction: click on file bars to set the panel file current.
 
-There are two Far jobs: one gets panel files (including plugins),
-another sets panel files current on clicking chart file bars.
+	Note, the chart dialog is modal but it does not block Far Manager.
+	The dialog is running in a separate thread and PowerShell session.
+
+	There are two Far jobs: one gets panel files (including plugins),
+	another sets panel files current on clicking chart file bars.
 #>
 
 using namespace System.Windows.Forms
