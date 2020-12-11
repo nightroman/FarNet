@@ -1,38 +1,30 @@
-
 <#
 .Synopsis
-	Test unit for the Stepper.
-	Author: Roman Kuzmin
+	Demo step file for tests.
 
 .Description
-	It is a step unit example. Steps are macros and script blocks returned by
-	this script. This script should not be invoked directly. Either use the
-	cmdlet Invoke-FarStepper or call the test Test-Stepper-.ps1.
+	This is a step file example.
 
-	A step unit contains two parts: standard code and script blocks. A unit is
-	invoked as a normal script, it may or may not do some job itself (Part 1).
-	Normally it returns steps (Part 2). It is fine to return nothing.
+	Run step by step:
+	ps: Invoke-FarStepper Test-Stepper..ps1 -Confirm
 
-	Steps may add extra steps by $Psf.Stepper.Go(). Extra steps are inserted
-	into the queue after the current. This is useful when all steps are not
-	known beforehand, e.g. actual steps may depend on a user choice.
+	A step file contains two parts: standard code and steps, script blocks and
+	macros. A file is invoked as a normal script, it may or may not do some job
+	itself (Part 1). Normally it returns steps (Part 2). Empty output is fine.
 
 	Steps are invoked in different scopes and local variables of one step are
 	not available for another. In order to share data between steps use global
-	variables or, even better, the automatic variable $Data (shortcut for
-	$Psf.Stepper.Data).
+	variables or the provided hashtable $Data.
 
-	The script also shows how to enter modal UI and continue steps in it.
+	The script also shows how to run modal steps without blocking other steps.
 #>
 
-### Part 1. Optional code to be invoked before steps.
-# - Good place to check prerequisites and throw on errors.
-# - It is also fine to return with no steps returned at all.
+### Part 1. Optional code invoked before steps.
+# Good place for checks, throw, assert, return.
 
-# check prerequisites and throw on errors
-Assert-Far ($Far.Window.Count -eq 2) "Close Far Manager internal windows before this test." "Assert"
+Assert-Far ($Far.Window.Count -eq 2) 'Close Far Manager internal windows before this test.' 'Assert'
 
-### Part 2. Returned steps: returned keys and script blocks.
+### Part 2. Steps, script blocks and macros.
 
 {
 	# keep some data, use the automatic variable $Data
@@ -58,12 +50,11 @@ Assert-Far ($Far.Window.Count -eq 2) "Close Far Manager internal windows before 
 }
 
 {
-	# find
+	# find file
 	Find-FarFile 'far.exe.config'
 }
 
-# open the attributes dialog
-'Keys"CtrlA"'
+'Keys"CtrlA" -- open attributes dialog'
 
 {
 	# test: a dialog exists and there is a valid control in it
@@ -73,15 +64,14 @@ Assert-Far ($Far.Window.Count -eq 2) "Close Far Manager internal windows before 
 	)
 }
 
-# exit the dialog
-'Keys"Esc"'
+'Keys"Esc" -- exit dialog'
 
 {
 	# test: the window (panels) and item ('far.exe.config')
 	Assert-Far -Panels ((Get-FarFile).Name -eq 'far.exe.config')
 }
 
-# HOW TO: start a modal dialog
+### HOW TO: start a modal dialog
 {{
 	# this command starts a modal dialog, but the step sequence
 	# is not stopped because the command is RETURNED (by {{..}})
@@ -92,8 +82,7 @@ Assert-Far ($Far.Window.Count -eq 2) "Close Far Manager internal windows before 
 	Assert-Far ($text -eq 'Another text')
 }}
 
-# type some text
-'Keys"S a m p l e Space t e x t"'
+'Keys"S a m p l e Space t e x t" -- type some text'
 
 {
 	# test: a dialog exists and there is a valid control in it
@@ -113,9 +102,9 @@ Assert-Far ($Far.Window.Count -eq 2) "Close Far Manager internal windows before 
 	Assert-Far ($Far.Dialog[1].Text -eq 'Another text')
 }
 
-'Keys"Enter" -- enter the text'
+'Keys"Enter" -- enter typed text'
 
-# HOW TO: open a modal editor
+### HOW TO: open a modal editor
 {{
 	# this command starts a modal editor, but the step sequence
 	# is not stopped because the command is RETURNED (by {{..}})
@@ -133,8 +122,7 @@ Assert-Far ($Far.Window.Count -eq 2) "Close Far Manager internal windows before 
 	Assert-Far ($Far.Editor.GetText() -eq 'Modal Editor')
 }
 
-# exit the editor, do not save
-'Keys"Esc n"'
+'Keys"Esc n" -- exit editor, do not save'
 
 {
 	# test: current window is panel
@@ -151,8 +139,7 @@ Assert-Far ($Far.Window.Count -eq 2) "Close Far Manager internal windows before 
 	Assert-Far -Editor
 }
 
-# insert some text
-'print("Modeless Editor")'
+'print("Modeless Editor") -- type some text'
 
 {
 	# test: editor text
@@ -176,29 +163,16 @@ Assert-Far ($Far.Window.Count -eq 2) "Close Far Manager internal windows before 
 	$Panel.Open()
 }
 
+'Keys"Tab" -- go to another panel'
+
 {
-	# optionally open one more panel (by returned extra steps)
-	if ($Psf.Stepper.Ask) {
-		$answer = Show-FarMessage 'Open another panel?' -Choices 'Yes', 'No', 'Fail'
-		if ($answer -eq 2) { throw "This is a demo error." }
-		$Data.AnotherPanel = $answer -eq 0
-	}
-	else {
-		$Data.AnotherPanel = $true
-	}
-	if ($Data.AnotherPanel) {
-		$Psf.Stepper.Go(@(
-			'Keys"Tab"'
-			{
-				# this step was added dynamically to open yet another panel
-				$Panel = New-Object PowerShellFar.ObjectPanel
-				$Panel.AddObjects((Get-ChildItem))
-				$Panel.Open()
-			}
-			'Keys"Tab"'
-		))
-	}
+	# open yet another panel
+	$Panel = New-Object PowerShellFar.ObjectPanel
+	$Panel.AddObjects((Get-ChildItem))
+	$Panel.Open()
 }
+
+'Keys"Tab" -- go back to start panel'
 
 {
 	# go to editor
@@ -210,26 +184,16 @@ Assert-Far ($Far.Window.Count -eq 2) "Close Far Manager internal windows before 
 	Assert-Far -Editor
 }
 
-# exit the editor, do not save
-'Keys"Esc n"'
+'Keys"Esc n" -- exit editor, do not save'
 
 {
 	# test: current window is panel
 	Assert-Far -Panels
 }
 
-# exit the plugin panel
-'Keys"Esc"'
+'Keys"Esc" -- exit module panel'
 
-{
-	# close one more panel (by returned extra steps)
-	if ($Data.AnotherPanel) {
-		$Psf.Stepper.Go(@(
-			'Keys"Tab"'
-			'Keys"Esc Tab"'
-		))
-	}
-}
+'Keys"Tab Esc Tab" -- go to another panel, exit, go back'
 
 {
 	# restore original panel path and item

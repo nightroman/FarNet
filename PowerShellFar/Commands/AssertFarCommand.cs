@@ -2,9 +2,9 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
+using FarNet;
 using System.Collections;
 using System.Management.Automation;
-using FarNet;
 
 namespace PowerShellFar.Commands
 {
@@ -198,54 +198,48 @@ namespace PowerShellFar.Commands
 			// buttons
 			string[] buttons;
 			if (!IsError)
-				buttons = new string[] { BtnBreak, BtnThrow };
+				buttons = new string[] { BtnStop, BtnThrow };
 			else if (string.IsNullOrEmpty(MyInvocation.ScriptName))
-				buttons = new string[] { BtnBreak, BtnThrow, BtnDebug };
+				buttons = new string[] { BtnStop, BtnThrow, BtnDebug };
 			else
-				buttons = new string[] { BtnBreak, BtnThrow, BtnDebug, BtnEdit };
+				buttons = new string[] { BtnStop, BtnEdit, BtnDebug, BtnThrow };
 
 			// prompt
-			for (; ; )
-			{
-				int result = Far.Api.Message(
+			int result = Far.Api.Message(
 				body,
 				Title ?? MyName,
 				IsError ? (MessageOptions.Warning | MessageOptions.LeftAligned) : MessageOptions.None,
 				buttons);
 
-				if (result < 0)
-					continue;
-
-				switch (buttons[result])
-				{
-					case BtnBreak:
-						{
-							throw new PipelineStoppedException();
-						}
-					case BtnThrow:
-						{
-							throw new PSInvalidOperationException(body);
-						}
-					case BtnDebug:
-						{
-							A.InvokeCode("Set-PSBreakpoint -Variable daf01ff6-f004-43bd-b6bf-cf481e9333d3 -Mode Read");
-							SessionState.PSVariable.Set("daf01ff6-f004-43bd-b6bf-cf481e9333d3", null);
-							GetVariableValue("daf01ff6-f004-43bd-b6bf-cf481e9333d3");
-							return;
-						}
-					case BtnEdit:
-						{
-							IEditor editor = Far.Api.CreateEditor();
-							editor.FileName = MyInvocation.ScriptName;
-							editor.GoToLine(MyInvocation.ScriptLineNumber - 1);
-							editor.Open();
-							goto case BtnBreak;
-						}
-				}
+			switch (result < 0 ? BtnStop : buttons[result])
+			{
+				case BtnStop:
+					{
+						throw new PipelineStoppedException();
+					}
+				case BtnThrow:
+					{
+						throw new PSInvalidOperationException(body);
+					}
+				case BtnDebug:
+					{
+						A.InvokeCode("Set-PSBreakpoint -Variable daf01ff6-f004-43bd-b6bf-cf481e9333d3 -Mode Read");
+						SessionState.PSVariable.Set("daf01ff6-f004-43bd-b6bf-cf481e9333d3", null);
+						GetVariableValue("daf01ff6-f004-43bd-b6bf-cf481e9333d3");
+						return;
+					}
+				case BtnEdit:
+					{
+						IEditor editor = Far.Api.CreateEditor();
+						editor.FileName = MyInvocation.ScriptName;
+						editor.GoToLine(MyInvocation.ScriptLineNumber - 1);
+						editor.Open();
+						throw new PipelineStoppedException();
+					}
 			}
 		}
 		const string
-			BtnBreak = "&Break",
+			BtnStop = "&Stop",
 			BtnThrow = "&Throw",
 			BtnDebug = "&Debug",
 			BtnEdit = "&Edit";

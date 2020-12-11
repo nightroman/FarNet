@@ -90,8 +90,21 @@ namespace PowerShellFar
 			string currentDirectory = A.Psf.SyncPaths();
 			try
 			{
-				var colon = e.Command.Length > 0 && char.IsWhiteSpace(e.Command[0]) ? ":" : ": ";
-				var ok = A.Psf.Act(e.Command, new ConsoleOutputWriter(CommandInvoke1.Prefix + colon + e.Command), !e.IsMacro);
+				// if command ends with `#` then omit history and echo else make echo with prefix
+				var echo = e.Command.TrimEnd();
+				var addHistory = !e.IsMacro;
+				if (echo.EndsWith("#"))
+				{
+					addHistory = false;
+					echo = null;
+				}
+				else
+				{
+					var colon = e.Command.Length > 0 && char.IsWhiteSpace(e.Command[0]) ? ":" : ": ";
+					echo = CommandInvoke1.Prefix + colon + e.Command;
+				}
+
+				var ok = A.Psf.Act(e.Command, new ConsoleOutputWriter(echo), addHistory);
 				e.Ignore = !ok;
 			}
 			finally
@@ -161,16 +174,8 @@ namespace PowerShellFar
 
 				case "Runspace":
 					return A.Psf.Runspace;
-
-				case "Stepper":
-					return new Func<string, Task>((string path) =>
-					{
-						var stepper = new Stepper();
-						stepper.AddFile(path);
-						return stepper.GoAsync();
-					});
 			}
-			throw new ArgumentException("Unknown command.", "command");
+			throw new ArgumentException("Unknown command.", nameof(command));
 		}
 	}
 }

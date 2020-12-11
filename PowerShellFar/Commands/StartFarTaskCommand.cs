@@ -41,9 +41,13 @@ namespace PowerShellFar.Commands
 				if (!(value is string text))
 					throw new PSArgumentException("Invalid script type.");
 
-				string path;
-				if (text.EndsWith(".ps1", StringComparison.OrdinalIgnoreCase) && File.Exists(path = GetUnresolvedProviderPathFromPSPath(text)))
+				//! used to `&& File.Exists` -- bad, on missing file it is treated as code -- not clear errors
+				if (text.EndsWith(".ps1", StringComparison.OrdinalIgnoreCase))
 				{
+					var path = GetUnresolvedProviderPathFromPSPath(text);
+					if (!File.Exists(path))
+						throw new PSArgumentException($"Missing script file '{path}'.");
+
 					try
 					{
 						var info = (ExternalScriptInfo)SessionState.InvokeCommand.GetCommand(path, CommandTypes.ExternalScript);
@@ -179,7 +183,7 @@ $ErrorActionPreference = 'Stop'
 				{
 					if (Confirm)
 					{
-						if (!ShowConfirm("job", $"{job.File}\r\n{job}"))
+						if (!ShowConfirm("job", $"{Path.GetFileName(job.File)}\r\n{job}"))
 							throw new PipelineStoppedException();
 					}
 
@@ -271,7 +275,7 @@ $ErrorActionPreference = 'Stop'
 				{
 					if (Confirm)
 					{
-						if (!ShowConfirm("ps:", $"{job.File}\r\n{job}"))
+						if (!ShowConfirm("ps:", $"{Path.GetFileName(job.File)}\r\n{job}"))
 							throw new PipelineStoppedException();
 					}
 

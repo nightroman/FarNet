@@ -1,6 +1,6 @@
 <#
 .Synopsis
-	Tests for Test-Dialog.far.ps1.
+	Tests for ..\Tests\Test-Dialog.far.ps1.
 
 .Description
 	How to start test steps from UI: run the test dialog Test-Dialog.far.ps1,
@@ -26,7 +26,7 @@ else {
 	run {
 		# run the dialog
 		Assert-Far ($Far.Window.Kind -ne 'Dialog') 'Do not run this from a dialog'
-		. "$PSScriptRoot\Test-Dialog.far.ps1" -Locals $Data
+		. "$PSScriptRoot\..\Tests\Test-Dialog.far.ps1" -Locals $Data
 	}
 	job {
 		# dialog?

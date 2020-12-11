@@ -1,8 +1,6 @@
-
 <#
 .Synopsis
 	Test prompt dialog and shows how to get call stack info.
-	Author: Roman Kuzmin
 
 .Description
 	Stack information can be viewed on errors if $ErrorActionPreference is set
@@ -23,7 +21,7 @@ function FailWithZero($prm)
 {
 	if ($prm -eq 0) {
 		# Error: Cannot remove variable Far ...
-		Remove-Variable Far
+		Remove-Variable Far -Scope global
 	}
 }
 

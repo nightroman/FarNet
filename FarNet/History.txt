@@ -1,6 +1,10 @@
 https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 5.4.7 =
+
+Add FarNet.User.Data, dictionary for cross thread and module operations
+
 = 5.4.6 =
 
 Add Tasks.Run for running modal UI without blocking tasks

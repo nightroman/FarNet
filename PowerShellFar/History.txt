@@ -1,5 +1,14 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
-FarNet 5.4.6
+FarNet 5.4.7
+
+= 5.4.4 =
+
+Removed obsolete PowerShellFar.Stepper. Alternatives:
+- Invoke-FarStepper for old step scripts (obsolete)
+- Start-FarTask for new task scripts (recommended)
+
+Invoke-FarStepper will be removed at some point,
+after converting step scripts to task scripts.
 
 = 5.4.3 =
 
@@ -15,8 +24,6 @@ Invoke-FarStepper
 
 PowerShellFar.Stepper
 	- obsolete, will be removed from API
-	- use Start-FarTask with new task scripts
-	- use Invoke-FarStepper with old step scripts
 
 = 5.4.2 =
 

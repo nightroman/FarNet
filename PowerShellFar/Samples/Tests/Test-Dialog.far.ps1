@@ -7,7 +7,7 @@
 		ps: .\Test-Dialog.far.ps1
 
 	Or run auto tests step by step:
-		ps: Start-FarTask Test-Dialog.fas.ps1 -Confirm
+		ps: Start-FarTask ..\FarTask\Test-Dialog.fas.ps1 -Confirm
 #>
 
 param(
@@ -20,7 +20,7 @@ Set-StrictMode -Version 2
 
 ### Create a dialog
 $dialog = $Far.CreateDialog($X, $Y, $X + 78, $Y + 19)
-$dialog.HelpTopic = "<$PSScriptRoot\..\Tests\>DialogTest"
+$dialog.HelpTopic = "<$PSScriptRoot\>DialogTest"
 
 ### User control
 $uc = $dialog.AddUserControl(0, 0, 78, 19)
@@ -233,7 +233,7 @@ $test.add_ButtonClicked({
 	$_.Ignore = $true
 
 	# start test steps
-	Start-FarTask "$PSScriptRoot\Test-Dialog.fas.ps1" -AsTask -Confirm -TestOpened $Locals
+	Start-FarTask "$PSScriptRoot\..\FarTask\Test-Dialog.fas.ps1" -AsTask -Confirm -TestOpened:$Locals
 })
 
 ### [List] Test list controls

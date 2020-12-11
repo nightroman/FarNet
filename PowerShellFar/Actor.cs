@@ -283,7 +283,7 @@ See $Error for details.
 			{
 				//! emergency
 				Entry.Unregister();
-				throw new PowerShellFarException(@"
+				throw new ErrorException(@"
 The engine was not successfully initialized and will be unloaded.
 For known issues see 'Problems and solutions' in the FarNet manual.
 ", _errorFatal);
@@ -952,15 +952,6 @@ Continue with this current directory?
 
 			e.ResumeAction = ui.Show();
 		}
-		/// <summary>
-		/// Gets currently running stepper instance if any or null.
-		/// </summary>
-		/// <remarks>
-		/// It is designed mosttly for use from a step script block being processed.
-		/// It's fine to use this in order to check stepping mode by not null result.
-		/// </remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-		public Stepper Stepper { get { return Stepper.RunningInstance; } }
 		/// <summary>
 		/// FarNet module manager of the PowerShellFar module.
 		/// </summary>

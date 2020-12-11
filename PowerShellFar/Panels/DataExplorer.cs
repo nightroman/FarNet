@@ -29,7 +29,7 @@ namespace PowerShellFar
 		///
 		public override Panel DoCreatePanel()
 		{
-			throw new PowerShellFarException("Data panel is not yet supported.");
+			throw new ErrorException("Data panel is not yet supported.");
 		}
 		///
 		public override IList<FarFile> DoGetFiles(GetFilesEventArgs args)

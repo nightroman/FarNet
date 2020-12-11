@@ -140,12 +140,12 @@ namespace PowerShellFar
 	}
 
 	[Serializable]
-	class PowerShellFarException : ModuleException
+	class ErrorException : ModuleException
 	{
-		public PowerShellFarException() { }
-		public PowerShellFarException(string message) : base(message) { }
-		public PowerShellFarException(string message, Exception innerException) : base(message, innerException) { }
-		protected PowerShellFarException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+		public ErrorException() { }
+		public ErrorException(string message) : base(message) { }
+		public ErrorException(string message, Exception innerException) : base(message, innerException) { }
+		protected ErrorException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 	}
 
 	/// <summary>

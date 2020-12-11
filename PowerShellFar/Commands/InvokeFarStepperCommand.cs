@@ -8,8 +8,6 @@ namespace PowerShellFar.Commands
 {
 	sealed class InvokeFarStepperCommand : BaseCmdlet
 	{
-		readonly Stepper _stepper = new Stepper();
-
 		[Parameter(Position = 0, Mandatory = true)]
 		public string Path { get; set; }
 
@@ -22,13 +20,11 @@ namespace PowerShellFar.Commands
 		protected override void BeginProcessing()
 		{
 			Path = GetUnresolvedProviderPathFromPSPath(Path);
-			_stepper.AddFile(Path);
-			_stepper.Ask = Confirm;
-
+			var args = new Stepper.Args(Path) { Confirm = Confirm };
 			if (AsTask)
-				WriteObject(_stepper.GoAsync());
+				WriteObject(Stepper.RunAsync(args));
 			else
-				_stepper.Go();
+				Stepper.Run(args);
 		}
 	}
 }
