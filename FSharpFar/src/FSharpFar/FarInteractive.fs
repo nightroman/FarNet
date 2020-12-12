@@ -44,15 +44,15 @@ type FarInteractive(session: Session) =
         editor.MySession <- Some session
         let onSessionClose = session.OnClose.Subscribe (fun () -> if editor.IsOpened then editor.Close ())
         editor.Closed.Add (fun _ -> onSessionClose.Dispose ())
+        if session.Errors.Length > 0 then
+            editor.Opened.Add (fun _ ->
+                editor.Add (sprintf "%s\n%s\n%s\n" My.outputMark1 session.Errors My.outputMark2)
+            )
 
         // Open. Post, to avoid modal. Use case:
         // - open session by `fs: //open`
         // - it writes echo -> user screen
         // - opening from user screen is modal
-        // Show errors. Post, for modal cases like opening from a dialog.
-        far.PostSteps (seq {
+        far.PostJob (fun () ->
             editor.Open ()
-            if session.Errors.Length > 0 then
-                yield null
-                editor.Add (sprintf "%s\n%s\n%s\n" My.outputMark1 session.Errors My.outputMark2)
-        })
+        )
