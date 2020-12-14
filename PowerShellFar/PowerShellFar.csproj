@@ -58,7 +58,6 @@
     <Compile Include="Commands\Find-FarFile.cs" />
     <Compile Include="Commands\GetFarFileCommand.cs" />
     <Compile Include="Commands\InvokeFarCommand.cs" />
-    <Compile Include="Commands\InvokeFarStepperCommand.cs" />
     <Compile Include="Commands\StartFarJobCommand.cs" />
     <Compile Include="Commands\SearchFarFileCommand.cs" />
     <Compile Include="Commands\StartFarTaskCommand.cs" />
@@ -116,7 +115,6 @@
     <Compile Include="RawUI.cs" />
     <Compile Include="PowerExplorer.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="Stepper.cs" />
     <Compile Include="Text.cs" />
     <Compile Include="UI\ActorMenu.cs" />
     <Compile Include="UI\BreakpointDialog.cs" />

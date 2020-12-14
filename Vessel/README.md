@@ -15,7 +15,7 @@ It provides smart history of files, folders, commands.
 * [Menu commands](#menu-commands)
 * [File history](#file-history)
 * [Folder history](#folder-history)
-* [Command history](#Command-history)
+* [Command history](#command-history)
 
 **Project**
 

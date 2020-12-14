@@ -201,6 +201,7 @@ $ErrorActionPreference = 'Stop'
 
 				// await
 				var result = task.Result;
+				Far.Api.WorksWaitSteps();
 
 				//! if the job returns a task, await and return
 				if (result.Count == 1 && result[0] != null && result[0].BaseObject is Task task2)
@@ -254,6 +255,7 @@ $ErrorActionPreference = 'Stop'
 
 				// await
 				task.Wait();
+				Far.Api.WorksWaitSteps();
 				return AutomationNull.Value;
 			}
 			catch (Exception exn)
@@ -261,7 +263,6 @@ $ErrorActionPreference = 'Stop'
 				return UnwrapAggregateException(exn);
 			}
 		}
-
 		// Called by task scripts.
 		//! See InvokeTaskJob notes.
 		public object InvokeTaskCmd(ScriptBlock job)
@@ -292,6 +293,7 @@ $ErrorActionPreference = 'Stop'
 
 				// await
 				task.Wait();
+				Far.Api.WorksWaitSteps();
 				return reason;
 			}
 			catch (Exception exn)
@@ -312,6 +314,7 @@ $ErrorActionPreference = 'Stop'
 			}
 			var task = Tasks.Keys(keys);
 			task.Wait();
+			Far.Api.WorksWaitSteps();
 		}
 
 		// Called by task scripts.
@@ -326,6 +329,7 @@ $ErrorActionPreference = 'Stop'
 			}
 			var task = Tasks.Macro(macro);
 			task.Wait();
+			Far.Api.WorksWaitSteps();
 		}
 
 		static Exception UnwrapAggregateException(Exception exn)

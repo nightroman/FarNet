@@ -177,11 +177,19 @@ namespace FarNet
 			if (string.IsNullOrEmpty(Title))
 				Title = DefaultTitle;
 
-			// | open from panels
-			WindowKind wt = Far.Api.Window.Kind;
-			if (wt == WindowKind.Panels)
+			// | open as child
+			if (_Parent != null) //_201216_d3 do not PostStep, it's just replacing panels ??
 			{
 				Open(null, null);
+				return;
+			}
+
+			if (Far.Api.Window.Kind == WindowKind.Panels)
+			{
+				Far.Api.PostStep(() => //_201216_d3
+				{
+					Open(null, null);
+				});
 				return;
 			}
 
@@ -192,20 +200,21 @@ namespace FarNet
 			// 180913 Make it two steps: (1) set panels, (2) open panel. One step used to
 			// work but stopped. Far issue or not, let's use more reliable two step way.
 
+			// #7 make switching async, SetCurrentAt does not work for user screen
+
 			Far.Api.PostStep(() =>
 			{
-				// #7 make switching async, SetCurrentAt does not work for user screen
 				try
 				{
 					Far.Api.Window.SetCurrentAt(-1);
-					Far.Api.PostStep(() =>
+					Far.Api.PostStep(() => //_201216_d3
 					{
 						Open(null, null);
 					});
 				}
 				catch (InvalidOperationException ex)
 				{
-					throw new ModuleException("Cannot open a panel because panels cannot be set current.", ex);
+					throw new ModuleException("Cannot open panel, panels cannot be set current.", ex);
 				}
 			});
 		}
@@ -577,9 +586,9 @@ namespace FarNet
 		/// Tells to use the core method instead of explorer if <see cref="RealNames"/> is true.
 		/// </summary>
 		public bool RealNamesDeleteFiles { get { return _Panel.RealNamesDeleteFiles; } set { _Panel.RealNamesDeleteFiles = value; } } //????? to explorer?
-																																	  /// <summary>
-																																	  /// Tells to use the core method instead of explorer if <see cref="RealNames"/> is true.
-																																	  /// </summary>
+		/// <summary>
+		/// Tells to use the core method instead of explorer if <see cref="RealNames"/> is true.
+		/// </summary>
 		public bool RealNamesExportFiles { get { return _Panel.RealNamesExportFiles; } set { _Panel.RealNamesExportFiles = value; } }
 		/// <summary>
 		/// Tells to use the core method instead of explorer if <see cref="RealNames"/> is true.
@@ -631,13 +640,13 @@ namespace FarNet
 		/// It is resolved for module panels, the original current and even selected items should be restored.
 		/// </remarks>
 		public void Close() { _Panel.Close(); } // _090321_210416
-												/// <summary>
-												/// Closes the module panel and all parents and opens the original file panel with the specified path.
-												/// </summary>
-												/// <param name="path">
-												/// Name of the directory that will be set in the panel after closing the panel (or {null|empty}).
-												/// If the path doesn't exist the core shows an error message box always.
-												/// </param>
+		/// <summary>
+		/// Closes the module panel and all parents and opens the original file panel with the specified path.
+		/// </summary>
+		/// <param name="path">
+		/// Name of the directory that will be set in the panel after closing the panel (or {null|empty}).
+		/// If the path doesn't exist the core shows an error message box always.
+		/// </param>
 		public void Close(string path) { _Panel.Close(path); }
 		/// <summary>
 		/// Sets the specified item current by name, if it exists.

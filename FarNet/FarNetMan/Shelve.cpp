@@ -65,7 +65,7 @@ ShelveInfoNative^ ShelveInfoNative::CreateActiveInfo(bool modes)
 }
 
 // _110313_054719 Now works for passive, too.
-void ShelveInfoNative::Pop(bool active)
+void ShelveInfoNative::PopWork(bool active)
 {
 	HANDLE handle = active ? PANEL_ACTIVE : PANEL_PASSIVE;
 	if (Path)
@@ -113,7 +113,7 @@ String^ ShelveInfoModule::Title::get()
 }
 
 // _110313_054719 Still does not support passive.
-void ShelveInfoModule::Pop(bool active)
+void ShelveInfoModule::PopWork(bool active)
 {
 	Log::Source->TraceInformation(__FUNCTION__);
 	if (!active) throw gcnew NotSupportedException("Passive panel is not supported");

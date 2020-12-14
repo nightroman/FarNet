@@ -549,40 +549,6 @@ Example: 'FullName' or {$_.FullName} tell to use a property FullName.
 	}
 }
 
-### Invoke-FarStepper
-@{
-	command = 'Invoke-FarStepper'
-	synopsis = 'Invokes async sequences of macro and script block steps.'
-	description = @'
-This cmdlet invokes obsolete step scripts.
-Consider using Start-FarTask with new task scripts.
-'@
-	parameters = @{
-		Path = @'
-The script which gets macros and script blocks.
-'@
-		AsTask = @'
-Tells to start as task and return the started task.
-'@
-		Confirm = @'
-Tells to confirm steps before invoking using dialogs.
-Use it for troubleshooting, demonstrations, and etc.
-'@
-	}
-
-	outputs = @{
-		type = 'System.Threading.Task'
-		description = 'With AsTask, the started task.'
-	}
-
-	examples = @(
-		@{code={
-	# Invoke the current panel file
-	Invoke-FarStepper (Get-FarPath)
-		}}
-	)
-}
-
 ### Invoke-Far
 @{
 	command = 'Invoke-Far'

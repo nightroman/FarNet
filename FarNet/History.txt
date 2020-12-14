@@ -1,6 +1,11 @@
 https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 5.4.8 =
+
+Retire IFar.PostSteps designed for removed PSF stepper.
+Use IFar.PostStep (it is mostly needed internally).
+
 = 5.4.7 =
 
 Add FarNet.User.Data, dictionary for cross thread and module operations

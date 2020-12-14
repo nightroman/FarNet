@@ -28,7 +28,7 @@ public:
 	static CultureInfo^ GetCurrentUICulture(bool update);
 	static void ChangeFontSize(bool increase);
 	static void PostJob(Action^ handler);
-	static void PostSteps(IEnumerable<Object^>^ steps);
+	static void PostStep(Action^ step);
 	static void ShowConsoleMenu();
 	static void ShowDrawersMenu();
 	static void ShowMenu(ModuleToolOptions from);
@@ -43,7 +43,6 @@ private:
 	static void PostSelf();
 	static void InvalidateProxyTool(ModuleToolOptions options);
 	static String^ GetMenuText(IModuleTool^ tool);
-	static void DisposeSteps();
 private:
 	static void FreePluginMenuItem(PluginMenuItem& p);
 	static array<IModuleTool^>^ _toolConfig;
@@ -56,12 +55,12 @@ private:
 	static List<IModuleCommand^> _registeredCommand;
 	static List<IModuleDrawer^> _registeredDrawer;
 	static List<IModuleEditor^> _registeredEditor;
+internal:
+	static bool HasPostSteps() { return _postSteps.Count > 0; }
 private:
 	static CultureInfo^ _currentUICulture;
-	// Steps
-	static bool _skipStep;
-	static int _levelPostSelf;
-	static Stack<IEnumerator<Object^>^>^ _steps;
+	// Posted steps
+	static Queue<Action^> _postSteps;
 	// Sync
 	static HANDLE _hMutex;
 	static intptr_t _nextJobId;

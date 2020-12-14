@@ -148,14 +148,14 @@ String^ Far1::KeyInfoToName(KeyInfo^ key)
 {
 	INPUT_RECORD ir;
 	memset(&ir, 0, sizeof(ir));
-	
+
 	ir.EventType = KEY_EVENT;
 	ir.Event.KeyEvent.wVirtualKeyCode = (WORD)key->VirtualKeyCode;
 	ir.Event.KeyEvent.uChar.UnicodeChar = (WCHAR)key->Character;
 	ir.Event.KeyEvent.dwControlKeyState = (DWORD)key->ControlKeyState;
 	ir.Event.KeyEvent.bKeyDown = key->KeyDown;
 	ir.Event.KeyEvent.wRepeatCount = 1;
-	
+
 	const size_t size = 100;
 	wchar_t name[size] = {0};
 	if (!Info.FSF->FarInputRecordToName(&ir, name, size))
@@ -205,7 +205,7 @@ ILine^ Far1::Line::get()
 		if (combo)
 			return combo->Line;
 	}
-	
+
 	return nullptr;
 }
 
@@ -316,6 +316,14 @@ IDialog^ Far1::CreateDialog(int left, int top, int right, int bottom)
 	return gcnew FarDialog(left, top, right, bottom);
 }
 
+void Far1::WorksWaitSteps()
+{
+	while (Far0::HasPostSteps())
+	{
+		System::Threading::Thread::Sleep(10);
+	}
+}
+
 Works::IPanelWorks^ Far1::WorksPanel(FarNet::Panel^ panel, Explorer^ explorer)
 {
 	return gcnew FarNet::Panel2(panel, explorer);
@@ -342,9 +350,9 @@ String^ Far1::Input(String^ prompt, String^ history, String^ title, String^ text
 	return ib.Show() ? ib.Text : nullptr;
 }
 
-void Far1::PostSteps(IEnumerable<Object^>^ steps)
+void Far1::PostStep(Action^ step)
 {
-	Far0::PostSteps(steps);
+	Far0::PostStep(step);
 }
 
 String^ Far1::TempName(String^ prefix)
@@ -353,7 +361,7 @@ String^ Far1::TempName(String^ prefix)
 
 	CBox box;
 	while(box(Info.FSF->MkTemp(box, box.Size(), pin))) {}
-	
+
 	return gcnew String(box);
 }
 
@@ -421,7 +429,7 @@ void Far1::Quit()
 {
 	if (!Works::ModuleLoader::CanExit())
 		return;
-	
+
 	Info.AdvControl(&MainGuid, ACTL_QUIT, 0, 0);
 }
 
@@ -446,7 +454,7 @@ bool Far1::IsMaskMatch(String^ path, String^ mask)
 {
 	if (!path) throw gcnew ArgumentNullException("path");
 	if (!mask) throw gcnew ArgumentNullException("mask");
-	
+
 	// match
 	PIN_NE(pin, path);
 	return Far0::MatchMask(mask, pin, true);
@@ -511,7 +519,7 @@ Object^ Far1::GetSetting(FarSetting settingSet, String^ settingName)
 	FarSettingsItem arg = {sizeof(arg)};
 	if (!settings.Get((int)settingSet, settingName, arg))
 		throw gcnew ArgumentException(String::Format("Cannot get setting: set = '{0}' name = '{1}'", settingSet, settingName));
-	
+
 	switch(arg.Type)
 	{
 	case FST_QWORD:

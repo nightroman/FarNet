@@ -186,7 +186,7 @@ void Panel2::Close()
 {
 	Log::Source->TraceInformation(__FUNCTION__);
 	if (_ActiveInfo)
-		_ActiveInfo->Pop(IsActive);
+		_ActiveInfo->PopWork(IsActive); //
 	else
 		Panel1::Close();
 }

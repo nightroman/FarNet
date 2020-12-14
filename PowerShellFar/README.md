@@ -1432,10 +1432,6 @@ The suffixes mean that scripts are not standard PowerShell scripts.
 
     Asynchronous scripts invoked by `Start-FarTask`.
 
-* Suffix "..ps1"
-
-    Step scripts invoked by `Invoke-FarStepper`.
-
 The suffixes are not mandatory, you may use any names with or without suffixes.
 Suffixes are useful for distinguishing between different script classes and for
 assigning commands, see [File associations](:FileAssoc).
@@ -1455,16 +1451,9 @@ PowerShellFar async scripts:
         ps: Start-FarTask -Script (Get-FarPath) #
         ps: Start-FarTask -Script (Get-FarPath) -Confirm #
 
-PowerShellFar steppers:
-
-    mask     :  *..ps1
-    commands :
-        ps: Invoke-FarStepper -Path (Get-FarPath) #
-        ps: Invoke-FarStepper -Path (Get-FarPath) -Confirm #
-
 PowerShell scripts:
 
-    mask     :  *.ps1|*.far.ps1,*-.ps1,*.fas.ps1,*..ps1
+    mask     :  *.ps1|*.far.ps1,*-.ps1,*.fas.ps1
     commands :
         powershell.exe -File "!\!.!"
         start powershell.exe -NoExit -NoLogo -File "!\!.!"

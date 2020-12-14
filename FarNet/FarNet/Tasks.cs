@@ -118,7 +118,7 @@ namespace FarNet
 			return Task.Run(() =>
 			{
 				while (Environment.GetEnvironmentVariable(_envMacroFlag) != "1")
-					Thread.Sleep(50);
+					Thread.Sleep(10);
 			});
 		}
 		/// <summary>

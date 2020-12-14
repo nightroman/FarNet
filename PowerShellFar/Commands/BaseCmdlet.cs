@@ -25,7 +25,6 @@ namespace PowerShellFar.Commands
 				new SessionStateCmdletEntry("Get-FarItem", typeof(Commands.GetFarItemCommand), Help),
 				new SessionStateCmdletEntry("Get-FarPath", typeof(Commands.GetFarPathCommand), Help),
 				new SessionStateCmdletEntry("Invoke-Far", typeof(Commands.InvokeFarCommand), Help),
-				new SessionStateCmdletEntry("Invoke-FarStepper", typeof(Commands.InvokeFarStepperCommand), Help),
 				new SessionStateCmdletEntry("New-FarEditor", typeof(Commands.NewFarEditorCommand), Help),
 				new SessionStateCmdletEntry("New-FarFile", typeof(Commands.NewFarFileCommand), Help),
 				new SessionStateCmdletEntry("New-FarItem", typeof(Commands.NewFarItemCommand), Help),

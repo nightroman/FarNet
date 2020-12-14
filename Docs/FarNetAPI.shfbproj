@@ -61,6 +61,7 @@
       <Filter entryType="Namespace" fullName="FarNet" isExposed="True">
         <Filter entryType="Class" fullName="FarNet.IFar" filterName="IFar" isExposed="True">
           <Filter entryType="Method" fullName="FarNet.IFar.WorksPanel" filterName="WorksPanel" isExposed="False" />
+          <Filter entryType="Method" fullName="FarNet.IFar.WorksWaitSteps" filterName="WorksWaitSteps" isExposed="False" />
         </Filter>
         <Filter entryType="Class" fullName="FarNet.IUserInterface" filterName="IUserInterface" isExposed="True">
           <Filter entryType="Method" fullName="FarNet.IUserInterface.GetBufferContents" filterName="GetBufferContents" isExposed="False" />

@@ -21,8 +21,11 @@ namespace FarNet.Works
 		int[] _SelectedIndexes;
 		public abstract bool CanRemove { get; }
 		public abstract string Title { get; }
-		public abstract void Pop(bool active);
-		public void Pop() { Pop(true); }
+		public abstract void PopWork(bool active);
+		public void Pop(bool active = true)
+		{
+			Far.Api.PostStep(() => PopWork(active)); //_201216_d3
+		}
 		protected void InitSelectedNames(IPanel panel)
 		{
 			if (panel == null) throw new ArgumentNullException("panel");

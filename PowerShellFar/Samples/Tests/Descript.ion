@@ -18,5 +18,4 @@ Test-ProgressForm-.ps1 Test progress tools.
 Test-RegisterCommand-.ps1 Shows how to register commands dynamically.
 Test-RegisterDrawer-.ps1 Test editor drawer with all console colors.
 Test-RegisterTool-.ps1 Shows how to register tools dynamically.
-Test-Stepper..ps1 Demo step file for tests.
 Test-Write.ps1 Test Write-* cmdlets output.

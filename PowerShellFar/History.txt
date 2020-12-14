@@ -1,14 +1,15 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
-FarNet 5.4.7
+FarNet 5.4.8
+
+= 5.4.5 =
+
+Removed obsolete Invoke-FarStepper. Use Start-FarTask.
 
 = 5.4.4 =
 
 Removed obsolete PowerShellFar.Stepper. Alternatives:
 - Invoke-FarStepper for old step scripts (obsolete)
 - Start-FarTask for new task scripts (recommended)
-
-Invoke-FarStepper will be removed at some point,
-after converting step scripts to task scripts.
 
 = 5.4.3 =
 
@@ -18,7 +19,7 @@ Start-FarTask
 	- add Samples/FarTask/Test-Dialog.*.ps1 tests
 
 Invoke-FarStepper
-	- obsolete but will be supported
+	- obsolete but still supported
 	- add switch parameter AsTask
 	- retire pipeline input
 

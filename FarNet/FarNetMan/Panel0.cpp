@@ -605,11 +605,11 @@ void Panel0::OpenPanel(Panel2^ plugin)
 {
 	// plugin must be called for opening
 	if (_openMode == 0)
-		throw gcnew InvalidOperationException("Cannot open a panel because a module is not called for opening.");
+		throw gcnew InvalidOperationException("Cannot open panel, module is not called for opening.");
 
 	// only one panel can be opened at a time
 	if (_panels[0] && _panels[0] != plugin)
-		throw gcnew InvalidOperationException("Cannot open a panel because another panel is already waiting.");
+		throw gcnew InvalidOperationException("Cannot open panel, another panel is waiting.");
 
 	// panels window should be current
 	try
@@ -619,7 +619,7 @@ void Panel0::OpenPanel(Panel2^ plugin)
 	}
 	catch(InvalidOperationException^ e)
 	{
-		throw gcnew InvalidOperationException("Cannot open a panel because panels cannot be set current.", e);
+		throw gcnew InvalidOperationException("Cannot open panel, panels cannot be set current.", e);
 	}
 
 	_panels[0] = plugin;

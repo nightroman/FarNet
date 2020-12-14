@@ -34,7 +34,3 @@ and press `[ShiftEnter]`. As a result, you can see that
 and press `[ShiftEnter]`. As a result, you can see that files are printed in
 the compact form `{File=...; Length=...}` instead of the default lengthy
 property sets. Which form is "better" is another story, it's just a demo.
-
-***
-
-- [Interactive.InteractiveSession Class](https://msdn.microsoft.com/visualfsharpdocs/conceptual/interactive.interactivesession-class-%5bfsharp%5d)

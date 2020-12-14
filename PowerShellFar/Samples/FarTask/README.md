@@ -11,6 +11,7 @@ There are two kind of scripts:
   association command defined as `ps: Start-FarTask (Get-FarPath) #`.
   They may work with FarNet only using various job blocks.
 
+[Basics.fas.ps1]: Basics.fas.ps1
 [NestedTasks.fas.ps1]: NestedTasks.fas.ps1
 [DialogNonModalInput.fas.ps1]: DialogNonModalInput.fas.ps1
 [InputEditorMessage.fas.ps1]: InputEditorMessage.fas.ps1
@@ -25,7 +26,7 @@ as the parameter for the next task [InputEditorMessage.fas.ps1].
 Apart from practical async applications, `Start-FarTask` is suitable for tests
 implemented as task scripts. For example, the script [KeysAndMacro.fas.ps1] is
 test like: it does not require user interaction and it checks for the expected
-results. Another test is [Test-Dialog.fas.ps1].
+results. Other tests: [Basics.fas.ps1] and [Test-Dialog.fas.ps1].
 
 ## Tips and tricks
 

@@ -36,6 +36,7 @@ public:
 	virtual IViewer^ CreateViewer() override;
 	virtual String^ GetFolderPath(SpecialFolder folder) override;
 	virtual Works::IPanelWorks^ WorksPanel(FarNet::Panel^ panel, Explorer^ explorer) override;
+	virtual void WorksWaitSteps() override;
 public:
 	virtual array<FarNet::Panel^>^ Panels(Guid typeId) override;
 	virtual array<FarNet::Panel^>^ Panels(Type^ type) override;
@@ -58,7 +59,7 @@ public:
 	virtual void CopyToClipboard(String^ text) override;
 	virtual void PostJob(Action^ handler) override;
 	virtual void PostMacro(String^ macro, bool enableOutput, bool disablePlugins) override;
-	virtual void PostSteps(IEnumerable<Object^>^ steps) override;
+	virtual void PostStep(Action^ step) override;
 	virtual void Quit() override;
 	virtual void ShowError(String^ title, Exception^ error) override;
 	virtual void ShowHelp(String^ path, String^ topic, HelpOptions options) override;

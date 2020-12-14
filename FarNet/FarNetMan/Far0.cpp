@@ -572,129 +572,6 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 	}
 }
 
-void Far0::DisposeSteps()
-{
-	while(_steps->Count)
-		delete _steps->Pop();
-}
-
-// Plugin.Menu is not a replacement for F11, it is less predictable on posted keys and async jobs.
-void Far0::PostSelf()
-{
-	Far::Api->PostMacro("Keys('F11') Menu.Select('FarNet', 2) Keys('Enter')", Works::Kit::MacroOutput, false);
-
-	// ++level. With no steps it is normally expected to be 0.
-	// Just in case something was wrong set it to expected 1.
-	if (!_steps || !_steps->Count)
-		_levelPostSelf = 1;
-	else
-		++_levelPostSelf;
-}
-
-// When PostSteps is better than PostJob: PostSteps calls from OpenW(),
-// so that steps can open panels and do most of needed tasks. PostJob
-// does not allow opening panels, calling PostMacro, etc.
-void Far0::PostSteps(IEnumerable<Object^>^ steps)
-{
-	if (!_steps)
-		_steps = gcnew Stack<IEnumerator<Object^>^>;
-
-	_steps->Push(steps->GetEnumerator());
-
-	if (_steps->Count == 1)
-		PostSelf();
-}
-
-/*
-Why fake steps. On Action we PostSelf() and then action(). PostSelf() cannot be
-undone, OpenW() is going to be called anyway. Fake steps are to ignore this call.
-
-Why skip step. MoveNext or Current can start modal UI. [F11] should work for
-a user as usual there even if we are self posted. Thus, we set the flag
-before calling these members and drop it after.
-
-_140316_042825..ps1
-_140316_044206..ps1
-*/
-void Far0::OpenMenu(ModuleToolOptions from)
-{
-	// just show the menu
-	if (!_steps || !_steps->Count || _skipStep)
-	{
-		ShowMenu(from);
-		return;
-	}
-
-	--_levelPostSelf;
-
-	// the current step iterator, null for fake steps to ignore
-	IEnumerator<Object^>^ enumerator = _steps->Peek();
-	if (!enumerator)
-	{
-		_steps->Pop();
-		return;
-	}
-
-	// invoke the next step
-	try
-	{
-		_skipStep = true;
-
-		// end of steps
-		if (!enumerator->MoveNext())
-		{
-			delete _steps->Pop();
-
-			if (_steps->Count)
-				PostSelf();
-
-			return;
-		}
-
-		Object^ current = enumerator->Current;
-		if (!current)
-		{
-			PostSelf();
-			return;
-		}
-
-		String^ macro = dynamic_cast<String^>(current);
-		if (macro)
-		{
-			if (macro->Length > 0)
-				Far::Api->PostMacro(macro);
-
-			PostSelf();
-			return;
-		}
-
-		Action^ action = dynamic_cast<Action^>(current);
-		if (action)
-		{
-			_skipStep = false;
-			PostSelf();
-			action();
-			return;
-		}
-
-		throw gcnew InvalidOperationException("Unexpected step type: " + current->GetType());
-	}
-	catch(...)
-	{
-		DisposeSteps();
-
-		// post fake steps
-		if (_levelPostSelf > 0)
-			_steps->Push(nullptr);
-
-		throw;
-	}
-	finally
-	{
-		_skipStep = false;
-	}
-}
-
 void Far0::OpenConfig() //config//
 {
 	IMenu^ menu = Far::Api->CreateMenu();
@@ -807,7 +684,6 @@ void Far0::AsProcessSynchroEvent(const ProcessSynchroEventInfo* info)
 	}
 
 	// invoke out of the lock
-	Log::Source->TraceInformation("AsProcessSynchroEvent: invoke job: {0}", gcnew Works::DelegateToString(handler));
 	handler();
 }
 
@@ -816,15 +692,12 @@ void Far0::PostJob(Action^ handler)
 	if (!handler)
 		throw gcnew ArgumentNullException("handler");
 
-	Works::DelegateToString log(handler);
-
 	WaitForSingleObject(_hMutex, INFINITE);
 	try
 	{
 		intptr_t id = _nextJobId++;
 		_jobs.Add(id, handler);
 		Info.AdvControl(&MainGuid, ACTL_SYNCHRO, 0, (void*)id);
-		Log::Source->TraceInformation("PostJob: post job: {0}", %log);
 	}
 	finally
 	{
@@ -1081,4 +954,41 @@ bool Far0::InvokeCommand(const wchar_t* command, bool isMacro)
 	return false;
 }
 
+// Plugin.Menu is not a replacement for F11, it is less predictable on posted keys and async jobs.
+void Far0::PostSelf()
+{
+	Far::Api->PostMacro("Keys('F11') Menu.Select('FarNet', 2) Keys('Enter')", Works::Kit::MacroOutput, false);
+}
+
+void Far0::PostStep(Action^ step)
+{
+	_postSteps.Enqueue(step);
+	if (_postSteps.Count == 1)
+		PostSelf();
+}
+
+// _140316_042825 _140316_044206
+void Far0::OpenMenu(ModuleToolOptions from)
+{
+	if (_postSteps.Count == 0)
+	{
+		ShowMenu(from);
+		return;
+	}
+
+	// invoke posted step
+	try
+	{
+		auto step = _postSteps.Peek();
+		step();
+		_postSteps.Dequeue();
+		if (_postSteps.Count > 0)
+			PostSelf();
+	}
+	catch (...)
+	{
+		_postSteps.Clear();
+		throw;
+	}
+}
 }

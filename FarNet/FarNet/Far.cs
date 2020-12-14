@@ -45,6 +45,12 @@ namespace FarNet
 		/// <summary>
 		/// INTERNAL
 		/// </summary>
+		// Waits for posted steps to be invoked.
+		// Must be called from parallel threads.
+		public abstract void WorksWaitSteps();
+		/// <summary>
+		/// INTERNAL
+		/// </summary>
 		public abstract Works.IPanelWorks WorksPanel(Panel panel, Explorer explorer);
 		/// <summary>
 		/// Gets a module action by its ID. Null is returned if the ID is not found.
@@ -346,46 +352,9 @@ namespace FarNet
 		/// <returns>Entered text or null if canceled.</returns>
 		public abstract string Input(string prompt, string history, string title, string text);
 		/// <summary>
-		/// Posts a single step action, see <see cref="PostSteps"/>.
+		/// Posts the job called by the core when it gets control.
 		/// </summary>
-		/// <param name="handler">The step handler.</param>
-		public void PostStep(Action handler) { PostSteps(new object[] { handler }); }
-		/// <summary>
-		/// Posts a sequence of steps enumerated asynchronously (e.g. coroutine with <c>yield</c>).
-		/// </summary>
-		/// <param name="steps">The collection of steps.</param>
-		/// <remarks>
-		/// Some operations take effect only when module code finishes and the core gets control.
-		/// Such operations cannot be invoked synchronously in the middle of module code.
-		/// But with this method they may be invoked in the middle of a step sequence.
-		/// <para>
-		/// This method internally uses the plugin menu [F11] for chaining steps.
-		/// Thus, steps should not end in areas where this menu is not available.
-		/// </para>
-		/// <para>
-		/// Allowed types of step objects:
-		/// *) Nulls are ignored (they may be needed with yield);
-		/// *) Strings are posted as macros;
-		/// *) Action delegates are invoked.
-		/// Action delegates should be not post macros.
-		/// </para>
-		/// <para>
-		/// An enumerator implemented with <c>yield</c> works as "coroutine".
-		/// Its code is suspended on <c>yield return</c> and the core gets
-		/// control. The code is resumed on the next iteration. The code may
-		/// yield nulls in order to separate steps.
-		/// </para>
-		/// <para>
-		/// Multiple and nested step sequences are allowed. The last posted
-		/// sequence is processed first. The only caveat: new sequences must
-		/// not be posted from <c>MoveNext</c> when they return false.
-		/// </para>
-		/// </remarks>
-		public abstract void PostSteps(IEnumerable<object> steps);
-		/// <summary>
-		/// Posts a job that will be called by the core when it gets control.
-		/// </summary>
-		/// <param name="handler">Job handler to be posted.</param>
+		/// <param name="handler">The job action.</param>
 		/// <remarks>
 		/// It is mostly designed for background job calls. Normally other threads are not allowed to call the core.
 		/// Violation of this rule may lead to crashes and unpredictable results. This method is thread safe. It is
@@ -393,6 +362,21 @@ namespace FarNet
 		/// The posted job can call the core as usual.
 		/// </remarks>
 		public abstract void PostJob(Action handler);
+		/// <summary>
+		/// Posts steps, actions called later from the plugin menu.
+		/// </summary>
+		/// <param name="step">The step action.</param>
+		/// <remarks>
+		/// By design, modules may open panels only when called for opening,
+		/// for example from the plugin menu. Steps allow opening from jobs
+		/// and event handlers.
+		/// <para>
+		/// This method uses macros to open the plugin menu which calls the
+		/// posted step action. Thus, steps must be posted from areas where
+		/// the plugin menu is available.
+		/// </para>
+		/// </remarks>
+		public abstract void PostStep(Action step);
 		/// <summary>
 		/// Gets the current macro area.
 		/// </summary>

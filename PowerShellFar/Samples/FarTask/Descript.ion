@@ -1,4 +1,5 @@
-﻿ConsoleGitStatus.far.ps1 Prints brief git status when current directory changes.
+﻿Basics.fas.ps1 Demo task file for tests.
+ConsoleGitStatus.far.ps1 Prints brief git status when current directory changes.
 ConsoleOutputPause.far.ps1 Prints some data and waits for a key.
 DialogNonModalInput.fas.ps1 Non-modal dialog input demo.
 InputEditorMessage.fas.ps1 Demo with input box, non-modal editor, message box.

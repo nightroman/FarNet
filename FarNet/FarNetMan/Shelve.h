@@ -17,7 +17,7 @@ public:
 	ShelveInfoNative(Panel1^ panel, bool modes);
 	virtual property bool CanRemove { bool get() override { return true; } }
 	virtual property String^ Title { String^ get() override { return Path; } }
-	virtual void Pop(bool active) override;
+	virtual void PopWork(bool active) override;
 public:
 	property String^ Path;
 	property String^ Current;
@@ -34,7 +34,7 @@ public:
 	property Panel2^ Panel { Panel2^ get() { return _panel; } }
 	virtual property bool CanRemove { bool get() override { return false; } }
 	virtual property String^ Title { String^ get() override; }
-	virtual void Pop(bool active) override;
+	virtual void PopWork(bool active) override;
 private:
 	Panel2^ _panel;
 };
