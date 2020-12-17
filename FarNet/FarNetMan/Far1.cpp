@@ -316,19 +316,6 @@ IDialog^ Far1::CreateDialog(int left, int top, int right, int bottom)
 	return gcnew FarDialog(left, top, right, bottom);
 }
 
-void Far1::WorksWaitSteps()
-{
-	while (Far0::HasPostSteps())
-	{
-		System::Threading::Thread::Sleep(10);
-	}
-}
-
-Works::IPanelWorks^ Far1::WorksPanel(FarNet::Panel^ panel, Explorer^ explorer)
-{
-	return gcnew FarNet::Panel2(panel, explorer);
-}
-
 array<Panel^>^ Far1::Panels(Guid typeId)
 {
 	return Panel0::PanelsByGuid(typeId);

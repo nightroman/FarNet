@@ -161,14 +161,14 @@ task test_tests {
 	Start-Far "fs: //exec file=$env:FarDev\Code\FSharpFar\tests\App1.fsx" -ReadOnly -Title Tests -Environment @{QuitFarAfterTests=1}
 }
 
-task test_steps {
-	Start-Far "ps: Test-Far-.ps1 * -Quit #" $env:FarDev\Test\FSharpFar.test -ReadOnly -Title Steps
+task test_tasks {
+	Start-Far "ps: Test.far.ps1 * -Quit #" $env:FarDev\Test\FSharpFar.test -ReadOnly -Title Tasks
 }
 
 task test_fsx {
 	Invoke-Build Test src\fsx\.build.ps1
 }
 
-task test test_steps, test_tests, test_testing, test_fsx
+task test test_tasks, test_tests, test_testing, test_fsx
 
 task . build, clean

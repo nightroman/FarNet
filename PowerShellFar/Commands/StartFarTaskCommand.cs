@@ -3,6 +3,7 @@
 // Copyright (c) Roman Kuzmin
 
 using FarNet;
+using FarNet.Works;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -201,7 +202,7 @@ $ErrorActionPreference = 'Stop'
 
 				// await
 				var result = task.Result;
-				Far.Api.WorksWaitSteps();
+				Far2.Api.WaitSteps().Wait();
 
 				//! if the job returns a task, await and return
 				if (result.Count == 1 && result[0] != null && result[0].BaseObject is Task task2)
@@ -255,7 +256,7 @@ $ErrorActionPreference = 'Stop'
 
 				// await
 				task.Wait();
-				Far.Api.WorksWaitSteps();
+				Far2.Api.WaitSteps().Wait();
 				return AutomationNull.Value;
 			}
 			catch (Exception exn)
@@ -263,6 +264,7 @@ $ErrorActionPreference = 'Stop'
 				return UnwrapAggregateException(exn);
 			}
 		}
+
 		// Called by task scripts.
 		//! See InvokeTaskJob notes.
 		public object InvokeTaskCmd(ScriptBlock job)
@@ -293,7 +295,7 @@ $ErrorActionPreference = 'Stop'
 
 				// await
 				task.Wait();
-				Far.Api.WorksWaitSteps();
+				Far2.Api.WaitSteps().Wait();
 				return reason;
 			}
 			catch (Exception exn)
@@ -303,7 +305,6 @@ $ErrorActionPreference = 'Stop'
 		}
 
 		// Called by task scripts.
-		//! Confirm has issues, macros fails.
 		public void InvokeTaskKeys(string keys)
 		{
 			if (Confirm)
@@ -312,13 +313,11 @@ $ErrorActionPreference = 'Stop'
 				if (!confirm.Result)
 					throw new PipelineStoppedException();
 			}
-			var task = Tasks.Keys(keys);
-			task.Wait();
-			Far.Api.WorksWaitSteps();
+			Tasks.Keys(keys).Wait();
+			Far2.Api.WaitSteps().Wait();
 		}
 
 		// Called by task scripts.
-		//! Confirm has issues, macros fails.
 		public void InvokeTaskMacro(string macro)
 		{
 			if (Confirm)
@@ -327,9 +326,8 @@ $ErrorActionPreference = 'Stop'
 				if (!confirm.Result)
 					throw new PipelineStoppedException();
 			}
-			var task = Tasks.Macro(macro);
-			task.Wait();
-			Far.Api.WorksWaitSteps();
+			Tasks.Macro(macro).Wait();
+			Far2.Api.WaitSteps().Wait();
 		}
 
 		static Exception UnwrapAggregateException(Exception exn)

@@ -35,8 +35,6 @@ public:
 	virtual IModuleManager^ GetModuleManager(String^ name) override;
 	virtual IViewer^ CreateViewer() override;
 	virtual String^ GetFolderPath(SpecialFolder folder) override;
-	virtual Works::IPanelWorks^ WorksPanel(FarNet::Panel^ panel, Explorer^ explorer) override;
-	virtual void WorksWaitSteps() override;
 public:
 	virtual array<FarNet::Panel^>^ Panels(Guid typeId) override;
 	virtual array<FarNet::Panel^>^ Panels(Type^ type) override;

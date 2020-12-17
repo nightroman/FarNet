@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
-FarNet 5.4.8
+FarNet 5.4.9
+
+= 5.4.6 =
+
+Tweaks in tasks and jobs code.
 
 = 5.4.5 =
 

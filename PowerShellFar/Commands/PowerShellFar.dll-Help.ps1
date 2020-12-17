@@ -578,25 +578,25 @@ Example: 'FullName' or {$_.FullName} tell to use a property FullName.
 	issue: switch parameters must be specified after Script.
 
 	If the script is a script block or code then parameters are not supported.
-	Use the parameter Variable in order to import specified current session
-	variables to the task session.
+	Use the parameter Data in order to import specified variables to the task
+	automatic hashtable $Data.
 
-	The script is invoked in a new runspace asynchronously. The code must not
-	access $Far and $Psf, it should use `job`, `ps:`, `run` script blocks.
+	The script is invoked in a new runspace asynchronously without blocking the
+	main thread. The code must not work with FarNet, it should use special job
+	blocks instead: `job`, `run`, `ps:`. Jobs are invoked in the main session.
 
-	Job blocks are called as `job {...}`. Jobs are invoked in the main session.
-	They may work with $Far and $Psf. Jobs may output data. If a job outputs a
-	task then this task is awaited and its result is returned.
+	`job {...}` blocks do some work and output data as usual. If a job outputs
+	just a task then this task is awaited and its result is returned instead.
 
-	Jobs with console output may be called as `ps: {...}`.
-	They do not return data due to their console output.
+	`run {...}` jobs are used to run modal UI without blocking next jobs.
+	These jobs may be useful for automation and tests. Output is ignored.
 
-	To run modal UI without blocking, use `run {...}`.
-	These blocks are used for automation and tests.
+	`ps: {...}` job are used for console output as if their commands are
+	invoked from the command line.
 
 	Macros are called as `keys '...'` and `macro '...'`.
 
-	The task and jobs may exchange data using the predefined hashtable $Data.
+	The task and jobs may exchange data using the automatic hashtable $Data.
 
 	The cmdlet returns nothing by default and the script output is ignored. Use
 	the switch AsTask in order to return the started task. Use it in a calling

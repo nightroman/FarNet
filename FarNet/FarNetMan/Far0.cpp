@@ -6,7 +6,7 @@
 // The `from` == OPEN_VIEWER. But the menu has been created for `window` == WTYPE_PANELS.
 // The `item` is related to the panel handlers. But technically it is strange to call them for not really a panel.
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "Far0.h"
 #include "Dialog.h"
 #include "Editor.h"
@@ -24,7 +24,7 @@ static PluginMenuItem _Editor;
 static PluginMenuItem _Panels;
 static PluginMenuItem _Viewer;
 
-ref class FarNetHost : Works::Host
+ref class Host : Works::Host
 {
 public:
 	virtual void RegisterProxyCommand(IModuleCommand^ info) override
@@ -57,6 +57,19 @@ public:
 	}
 };
 
+ref class Far2 : Works::Far2
+{
+public:
+	virtual FarNet::Works::IPanelWorks^ CreatePanel(Panel^ panel, Explorer^ explorer) override
+	{
+		return gcnew Panel2(panel, explorer);
+	}
+	virtual Task^ WaitSteps() override
+	{
+		return Far0::WaitSteps();
+	}
+};
+
 void Far0::FreePluginMenuItem(PluginMenuItem& p)
 {
 	if (p.Count == 0) return;
@@ -78,8 +91,9 @@ void Far0::Start()
 	// init async operations
 	_hMutex = CreateMutex(nullptr, FALSE, nullptr);
 
-	// connect the host
-	Works::Host::Instance = gcnew FarNetHost();
+	// connect implementations
+	Works::Host::Instance = gcnew Host();
+	Works::Far2::Api = gcnew Far2();
 
 	// module path
 	String^ path = Configuration::GetString(Configuration::Modules);
@@ -687,16 +701,16 @@ void Far0::AsProcessSynchroEvent(const ProcessSynchroEventInfo* info)
 	handler();
 }
 
-void Far0::PostJob(Action^ handler)
+void Far0::PostJob(Action^ job)
 {
-	if (!handler)
-		throw gcnew ArgumentNullException("handler");
+	if (!job)
+		throw gcnew ArgumentNullException("job");
 
 	WaitForSingleObject(_hMutex, INFINITE);
 	try
 	{
 		intptr_t id = _nextJobId++;
-		_jobs.Add(id, handler);
+		_jobs.Add(id, job);
 		Info.AdvControl(&MainGuid, ACTL_SYNCHRO, 0, (void*)id);
 	}
 	finally
@@ -960,35 +974,66 @@ void Far0::PostSelf()
 	Far::Api->PostMacro("Keys('F11') Menu.Select('FarNet', 2) Keys('Enter')", Works::Kit::MacroOutput, false);
 }
 
+//! must be sync call
 void Far0::PostStep(Action^ step)
 {
-	_postSteps.Enqueue(step);
-	if (_postSteps.Count == 1)
+	_stepsQueue.Enqueue(step);
+	if (_stepsQueue.Count == 1)
+	{
+		_stepsTaskSource = gcnew TaskCompletionSource<Object^>;
 		PostSelf();
+	}
 }
 
-// _140316_042825 _140316_044206
+//! may be async call
+Task^ Far0::WaitSteps()
+{
+	//! cache before using, it may be set to null by the main thread
+	auto task = _stepsTaskSource;
+	if (task)
+		return task->Task;
+	else
+		return Task::FromResult<Object^>(nullptr);
+}
+
 void Far0::OpenMenu(ModuleToolOptions from)
 {
-	if (_postSteps.Count == 0)
+	// normal call for the menu
+	if (_stepsQueue.Count == 0)
 	{
 		ShowMenu(from);
 		return;
 	}
 
-	// invoke posted step
+	// invoke one posted step
 	try
 	{
-		auto step = _postSteps.Peek();
+		//! peek, to avoid premature PostSelf in PostStep possibly called by this step
+		auto step = _stepsQueue.Peek();
+		
+		// invoke this step
 		step();
-		_postSteps.Dequeue();
-		if (_postSteps.Count > 0)
+
+		// now dequeue and PostSelf if there are more steps
+		_stepsQueue.Dequeue();
+		if (_stepsQueue.Count > 0)
 			PostSelf();
 	}
 	catch (...)
 	{
-		_postSteps.Clear();
+		// discard steps and re-throw
+		_stepsQueue.Clear();
 		throw;
+	}
+	finally
+	{
+		// complete the task
+		if (_stepsQueue.Count == 0)
+		{
+			auto task = _stepsTaskSource;
+			_stepsTaskSource = nullptr;
+			task->SetResult(nullptr);
+		}
 	}
 }
 }

@@ -22,12 +22,13 @@ public:
 	static void Start();
 	static void Stop();
 	static void UnregisterProxyAction(IModuleAction^ action);
+	static Task^ WaitSteps();
 public:
 	static bool MatchMask(String^ mask, const wchar_t* name, bool skipPath);
 	static bool InvokeCommand(const wchar_t* command, bool isMacro);
 	static CultureInfo^ GetCurrentUICulture(bool update);
 	static void ChangeFontSize(bool increase);
-	static void PostJob(Action^ handler);
+	static void PostJob(Action^ job);
 	static void PostStep(Action^ step);
 	static void ShowConsoleMenu();
 	static void ShowDrawersMenu();
@@ -55,12 +56,12 @@ private:
 	static List<IModuleCommand^> _registeredCommand;
 	static List<IModuleDrawer^> _registeredDrawer;
 	static List<IModuleEditor^> _registeredEditor;
-internal:
-	static bool HasPostSteps() { return _postSteps.Count > 0; }
 private:
 	static CultureInfo^ _currentUICulture;
-	// Posted steps
-	static Queue<Action^> _postSteps;
+	/// Posted steps queue
+	static Queue<Action^> _stepsQueue;
+	/// Posted steps task source for WaitSteps()
+	static TaskCompletionSource<Object^>^ _stepsTaskSource;
 	// Sync
 	static HANDLE _hMutex;
 	static intptr_t _nextJobId;

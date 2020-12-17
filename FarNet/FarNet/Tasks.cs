@@ -21,12 +21,7 @@ namespace FarNet
 		/// </summary>
 		/// <typeparam name="T">The function result.</typeparam>
 		/// <param name="job">The function to be posted.</param>
-		/// <returns>The task which completes when the function is called.</returns>
-		/// <remarks>
-		/// The job is posted by <see cref="IFar.PostJob(Action)"/>.
-		/// It invokes the specified function and provides its result.
-		/// The function may call Far as usual but it cannot open panels.
-		/// </remarks>
+		/// <returns>The task which completes when the function completes.</returns>
 		public static Task<T> Job<T>(Func<T> job)
 		{
 			var tcs = new TaskCompletionSource<T>();
@@ -47,12 +42,7 @@ namespace FarNet
 		/// Creates a task with the specified action.
 		/// </summary>
 		/// <param name="job">The action to be posted.</param>
-		/// <returns>The task which completes when the action is called.</returns>
-		/// <remarks>
-		/// The job is posted by <see cref="IFar.PostJob(Action)"/>.
-		/// It invokes the specified action.
-		/// The action may call Far as usual but it cannot open panels.
-		/// </remarks>
+		/// <returns>The task which completes when the action completes.</returns>
 		public static Task Job(Action job)
 		{
 			var tcs = new TaskCompletionSource<object>();
@@ -71,13 +61,14 @@ namespace FarNet
 			return tcs.Task;
 		}
 		/// <summary>
-		/// Creates a task which runs some UI.
+		/// Creates a task which runs the specified action.
 		/// </summary>
-		/// <param name="job">The action to show UI.</param>
-		/// <returns>The task which completes on UI.</returns>
+		/// <param name="job">The action to run.</param>
+		/// <returns>The task which completes when the core gets control.</returns>
 		/// <remarks>
 		/// The task completes when the core gets control,
-		/// either on UI or job end, whatever happens first.
+		/// either on shown modal UI or the job end,
+		/// whatever happens first.
 		/// <para>
 		/// The job is supposed to show some modal UI and
 		/// let next tasks work for automation, tests, etc.
@@ -107,7 +98,7 @@ namespace FarNet
 		/// Creates a task which posts the specified macro.
 		/// </summary>
 		/// <param name="text">Macro text.</param>
-		/// <returns>The task which completes when the macro is called.</returns>
+		/// <returns>The task which completes when the macro completes.</returns>
 		public static Task Macro(string text)
 		{
 			Environment.SetEnvironmentVariable(_envMacroFlag, "0");
@@ -125,7 +116,7 @@ namespace FarNet
 		/// Creates a task which posts the specified keys.
 		/// </summary>
 		/// <param name="keys">Keys text.</param>
-		/// <returns>The task which completes when the keys macro is called.</returns>
+		/// <returns>The task which completes when the keys complete.</returns>
 		public static Task Keys(string keys)
 		{
 			return Macro($"Keys[[{keys}]]");
@@ -212,9 +203,9 @@ namespace FarNet
 			return tcs.Task;
 		}
 		/// <summary>
-		/// Creates a task which opens the dialog.
+		/// Creates a task which opens the dialog and completes when it closes.
 		/// </summary>
-		/// <param name="dialog">The dialog to be opened.</param>
+		/// <param name="dialog">The dialog to open.</param>
 		/// <returns>The task which completes when the dialog closes.</returns>
 		public static Task Dialog(IDialog dialog)
 		{
@@ -245,7 +236,7 @@ namespace FarNet
 		/// <summary>
 		/// Creates a task which waits for the panel closing.
 		/// </summary>
-		/// <param name="panel">The panel to be awaited.</param>
+		/// <param name="panel">The panel to await.</param>
 		/// <returns>The task which completes when the panel closes.</returns>
 		/// <remarks>
 		/// The panel is opened automatically if it is not yet opened.

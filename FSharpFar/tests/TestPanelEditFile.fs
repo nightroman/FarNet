@@ -5,7 +5,7 @@ open FarNet.FSharp
 /// Common test code
 let testErrorsOnSaving keys1 delay keys2 = async {
     // open panel
-    do! job { far.PostStep(fun() -> PanelEditFile.run()) }
+    do! Job.From PanelEditFile.run
 
     // edit file
     do! Job.Keys "F4"

@@ -4,7 +4,6 @@
 
 using FarNet.Forms;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 
@@ -42,16 +41,6 @@ namespace FarNet
 	/// </remarks>
 	public abstract class IFar
 	{
-		/// <summary>
-		/// INTERNAL
-		/// </summary>
-		// Waits for posted steps to be invoked.
-		// Must be called from parallel threads.
-		public abstract void WorksWaitSteps();
-		/// <summary>
-		/// INTERNAL
-		/// </summary>
-		public abstract Works.IPanelWorks WorksPanel(Panel panel, Explorer explorer);
 		/// <summary>
 		/// Gets a module action by its ID. Null is returned if the ID is not found.
 		/// </summary>
@@ -352,28 +341,26 @@ namespace FarNet
 		/// <returns>Entered text or null if canceled.</returns>
 		public abstract string Input(string prompt, string history, string title, string text);
 		/// <summary>
-		/// Posts the job called by the core when it gets control.
+		/// Posts the job to be called when the core gets control.
 		/// </summary>
-		/// <param name="handler">The job action.</param>
+		/// <param name="job">The job action.</param>
 		/// <remarks>
 		/// It is mostly designed for background job calls. Normally other threads are not allowed to call the core.
 		/// Violation of this rule may lead to crashes and unpredictable results. This method is thread safe. It is
 		/// used to post a job that will be called from the main thread as soon as the core gets control.
 		/// The posted job can call the core as usual.
 		/// </remarks>
-		public abstract void PostJob(Action handler);
+		public abstract void PostJob(Action job);
 		/// <summary>
-		/// Posts steps, actions called later from the plugin menu.
+		/// Posts the step, an actions called later from the plugin menu.
 		/// </summary>
 		/// <param name="step">The step action.</param>
 		/// <remarks>
-		/// By design, modules may open panels only when called for opening,
-		/// for example from the plugin menu. Steps allow opening from jobs
-		/// and event handlers.
-		/// <para>
 		/// This method uses macros to open the plugin menu which calls the
-		/// posted step action. Thus, steps must be posted from areas where
-		/// the plugin menu is available.
+		/// posted action. This step call may be needed for opening panels
+		/// in unusual scenarios.
+		/// <para>
+		/// Unlike jobs, steps must not be posted from parallel threads.
 		/// </para>
 		/// </remarks>
 		public abstract void PostStep(Action step);

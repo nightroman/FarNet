@@ -75,7 +75,7 @@ namespace FarNet
 		public Panel(Explorer explorer)
 		{
 			if (explorer == null) throw new ArgumentNullException("explorer");
-			_Panel = Far.Api.WorksPanel(this, explorer);
+			_Panel = Works.Far2.Api.CreatePanel(this, explorer);
 		}
 		/// <summary>
 		/// Gets the current file explorer.

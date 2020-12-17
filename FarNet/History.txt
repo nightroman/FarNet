@@ -1,6 +1,10 @@
 https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 5.4.9 =
+
+Tweaks in tasks and jobs code.
+
 = 5.4.8 =
 
 Retire IFar.PostSteps designed for removed PSF stepper.
