@@ -220,11 +220,19 @@ namespace FarNet.Works
 	/// </summary>
 	public static class Test
 	{
-		static void AssertNormalPanel(IPanel panel)
+		static void AssertNormalPanel(IPanel panel, string active)
 		{
-			if (panel == null || panel.IsPlugin || panel.Kind != PanelKind.File || !panel.IsVisible)
+			if (panel.IsPlugin)
 			{
-				throw new InvalidOperationException("Unexpected panel kind or state.");
+				throw new InvalidOperationException($"Expected {active} panel type: Native, actual: Plugin.");
+			}
+			if (panel.Kind != PanelKind.File)
+			{
+				throw new InvalidOperationException($"Expected {active} panel kind: File, actual: {panel.Kind}.");
+			}
+			if (!panel.IsVisible)
+			{
+				throw new InvalidOperationException($"Expected {active} panel state: Visible, actial: Hidden.");
 			}
 		}
 		/// <summary>
@@ -232,16 +240,18 @@ namespace FarNet.Works
 		/// </summary>
 		public static void AssertNormalState()
 		{
-			if (Far.Api.Window.Count != 2)
-			{
-				throw new InvalidOperationException("Unexpected window count.");
-			}
+			//! test kind first
 			if (Far.Api.Window.Kind != WindowKind.Panels)
 			{
-				throw new InvalidOperationException("Unexpected window.");
+				throw new InvalidOperationException($"Expected window: Panels, actual: {Far.Api.Window.Kind}.");
 			}
-			AssertNormalPanel(Far.Api.Panel);
-			AssertNormalPanel(Far.Api.Panel2);
+			// 2 = Panels + Desktop
+			if (Far.Api.Window.Count != 2)
+			{
+				throw new InvalidOperationException("Expected no windows but Panels.");
+			}
+			AssertNormalPanel(Far.Api.Panel, "active");
+			AssertNormalPanel(Far.Api.Panel2, "passive");
 		}
 	}
 }
