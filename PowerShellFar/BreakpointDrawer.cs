@@ -2,9 +2,10 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
-using System;
-using System.Linq;
 using FarNet;
+using System;
+using System.IO;
+using System.Linq;
 
 namespace PowerShellFar
 {
@@ -20,8 +21,8 @@ namespace PowerShellFar
 		{
 			if (editor == null || e == null) return;
 
-			var script = editor.FileName;
-			var breakpoints = A.Psf.Breakpoints.Where(x => script.Equals(x.Script, StringComparison.OrdinalIgnoreCase));
+			var fullPath = Path.GetFullPath(editor.FileName); //!
+			var breakpoints = A.Psf.Breakpoints.Where(x => fullPath.Equals(x.Script, StringComparison.OrdinalIgnoreCase));
 
 			foreach (var line in e.Lines)
 			{

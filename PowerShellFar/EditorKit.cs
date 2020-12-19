@@ -2,6 +2,9 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
+using FarNet;
+using FarNet.Forms;
+using FarNet.Tools;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,9 +14,6 @@ using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Text;
 using System.Text.RegularExpressions;
-using FarNet;
-using FarNet.Forms;
-using FarNet.Tools;
 
 namespace PowerShellFar
 {
@@ -449,24 +449,24 @@ $r = TabExpansion2 @args
 				return;
 
 			var editor = (IEditor)sender;
-			var script = editor.FileName;
 			var line = e.Line + 1;
+			var fullPath = Path.GetFullPath(editor.FileName); //!
 
 			IEnumerable<LineBreakpoint> bps = null;
 			int delta = 0;
 			if (e.Kind == EditorChangeKind.LineAdded)
 			{
 				delta = 1;
-				bps = A.Psf.Breakpoints.Where(x => x.Line >= line && x.Script.Equals(script, StringComparison.OrdinalIgnoreCase)).ToArray();
+				bps = A.Psf.Breakpoints.Where(x => x.Line >= line && x.Script.Equals(fullPath, StringComparison.OrdinalIgnoreCase)).ToArray();
 			}
 			else
 			{
-				var bp = A.Psf.Breakpoints.FirstOrDefault(x => x.Line == line && x.Script.Equals(script, StringComparison.OrdinalIgnoreCase));
+				var bp = A.Psf.Breakpoints.FirstOrDefault(x => x.Line == line && x.Script.Equals(fullPath, StringComparison.OrdinalIgnoreCase));
 				if (bp != null)
 					A.RemoveBreakpoint(bp);
 
 				delta = -1;
-				bps = A.Psf.Breakpoints.Where(x => x.Line > line && x.Script.Equals(script, StringComparison.OrdinalIgnoreCase)).ToArray();
+				bps = A.Psf.Breakpoints.Where(x => x.Line > line && x.Script.Equals(fullPath, StringComparison.OrdinalIgnoreCase)).ToArray();
 			}
 
 			foreach (var bp in bps)
