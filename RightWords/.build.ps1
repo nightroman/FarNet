@@ -4,20 +4,35 @@
 #>
 
 param(
-	$Platform = (property Platform x64)
+	$FarHome = (property FarHome "C:\Bin\Far\x64")
 )
 
-$FarHome = "C:\Bin\Far\$Platform"
-$fromModule = "$FarHome\FarNet\Modules\RightWords"
-$fromNHunspell = "$FarHome\FarNet\NHunspell"
+Set-StrictMode -Version 2
+$ModuleHome = "$FarHome\FarNet\Modules\RightWords"
+$NHunspellHome = "$FarHome\FarNet\NHunspell"
 
 task build meta, {
-	exec { & (Resolve-MSBuild) $(
-		"RightWords.csproj"
-		"/p:FarHome=$FarHome"
-		"/p:Configuration=Release"
-	)}
+	exec { dotnet restore }
+	exec { dotnet msbuild RightWords.csproj /p:FarHome=$FarHome /p:Configuration=Release }
 }
+
+# https://github.com/nightroman/PowerShelf/blob/master/Invoke-Environment.ps1
+task resgen @{
+	Inputs = 'RightWords.restext', 'RightWords.ru.restext'
+	Outputs = "$ModuleHome\RightWords.resources", "$ModuleHome\RightWords.ru.resources"
+	Partial = $true
+	Jobs = {
+		begin {
+			$VsDevCmd = @(Get-Item "C:\Program Files (x86)\Microsoft Visual Studio\2019\*\Common7\Tools\VsDevCmd.bat")
+			Invoke-Environment.ps1 ('"{0}"' -f $VsDevCmd)
+		}
+		process {
+			exec {resgen.exe $_ $2}
+		}
+	}
+}
+
+task publish resgen
 
 task clean {
 	remove z, bin, obj, README.htm, *.nupkg
@@ -43,7 +58,7 @@ task package markdown, version, {
 	$toModule = 'z\tools\FarHome\FarNet\Modules\RightWords'
 	$toNHunspell = 'z\tools\FarHome\FarNet\NHunspell'
 
-	$dll = Get-Item "$fromModule\RightWords.dll"
+	$dll = Get-Item "$ModuleHome\RightWords.dll"
 	assert ($dll.VersionInfo.FileVersion -match '^(\d+\.\d+\.\d+)\.0$')
 	equals ($matches[1]) $script:Version
 
@@ -55,9 +70,9 @@ task package markdown, version, {
 
 	# FarNet\NHunspell
 	Copy-Item -Destination $toNHunspell $(
-		"$fromNHunspell\Hunspellx64.dll"
-		"$fromNHunspell\Hunspellx86.dll"
-		"$fromNHunspell\NHunspell.dll"
+		"$NHunspellHome\Hunspellx64.dll"
+		"$NHunspellHome\Hunspellx86.dll"
+		"$NHunspellHome\NHunspell.dll"
 	)
 
 	# FarNet\Modules\RightWords
@@ -66,9 +81,9 @@ task package markdown, version, {
 		"History.txt"
 		"LICENSE.txt"
 		"RightWords.macro.lua"
-		"$fromModule\RightWords.dll"
-		"$fromModule\RightWords.resources"
-		"$fromModule\RightWords.ru.resources"
+		"$ModuleHome\RightWords.dll"
+		"$ModuleHome\RightWords.resources"
+		"$ModuleHome\RightWords.ru.resources"
 	)
 }
 

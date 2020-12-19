@@ -1,82 +1,38 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{0E976D42-04C6-4DE7-AF97-7692A020525C}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>FarNet.Demo</RootNamespace>
-    <AssemblyName>FarNet.Demo</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>bin\Release\FarNet.Demo.XML</DocumentationFile>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup>
-    <FarHome Condition="'$(FarHome)' == ''">C:\Bin\Far\Win32</FarHome>
+    <FarHome Condition="'$(FarHome)' == ''">C:\Bin\Far\x64</FarHome>
     <FarNetModules Condition="'$(FarNetModules)' == ''">$(FarHome)\FarNet\Modules</FarNetModules>
-    <StartAction>Program</StartAction>
-    <StartProgram>$(FarHome)\Far.exe</StartProgram>
-    <ReferencePath>$(FarHome)\FarNet</ReferencePath>
+    <MyOutDir>$(FarNetModules)\$(AssemblyName)</MyOutDir>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net45</TargetFramework>
+    <RunPostBuildEvent>1</RunPostBuildEvent>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FarNet">
+      <HintPath>$(FarHome)\FarNet\FarNet.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="FarNet.Settings">
+      <HintPath>$(FarHome)\FarNet\FarNet.Settings.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="DemoCommand.cs" />
-    <Compile Include="DemoExplorer.cs" />
-    <Compile Include="DemoHost.cs" />
-    <Compile Include="DemoTool.cs" />
-    <Compile Include="Settings1.cs" />
-    <Compile Include="Settings2.cs" />
-    <Compile Include="UserData.cs" />
+    <Reference Include="NHunspell">
+      <HintPath>$(FarHome)\FarNet\NHunspell\NHunspell.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Help.en.hlf" />
     <Content Include="Help.ru.hlf" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="Resources">
-    <GenerateResource
-      Sources="FarNet.Demo.restext;FarNet.Demo.ru.restext"
-      OutputResources="$(OutDir)\FarNet.Demo.resources;$(OutDir)\FarNet.Demo.ru.resources" />
-  </Target>
-  <Target Name="AfterBuild" DependsOnTargets="Resources">
-    <Copy
-      SourceFiles="@(Content);$(OutDir)\$(AssemblyName).dll;$(OutDir)\FarNet.Demo.resources;$(OutDir)\FarNet.Demo.ru.resources"
-      DestinationFolder="$(FarNetModules)\$(AssemblyName)"
-      SkipUnchangedFiles="true" />
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Copy DestinationFolder="$(MyOutDir)" SourceFiles="$(OutDir)\$(AssemblyName).dll" />
+    <Copy DestinationFolder="$(MyOutDir)" SourceFiles="$(OutDir)\$(AssemblyName).pdb" Condition="'$(Configuration)' == 'Debug'" />
+    <Delete Files="$(MyOutDir)\$(AssemblyName).pdb" Condition="'$(Configuration)' == 'Release'" />
+    <Copy DestinationFolder="$(MyOutDir)" SourceFiles="@(Content)" SkipUnchangedFiles="true" />
+    <!--publish last, assume output folder exists-->
+    <Exec Command="ib publish -FarHome $(FarHome) -FarNetModules $(FarNetModules)" />
   </Target>
 </Project>
