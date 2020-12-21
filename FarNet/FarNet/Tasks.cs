@@ -102,15 +102,26 @@ namespace FarNet
 		public static Task Macro(string text)
 		{
 			Environment.SetEnvironmentVariable(_envMacroFlag, "0");
+			var task = new TaskCompletionSource<object>();
 			Far.Api.PostJob(() => {
-				Far.Api.PostMacro(text);
-				Far.Api.PostMacro(_macroSetFlag);
+				try
+				{
+					Far.Api.PostMacro(text);
+					Far.Api.PostMacro(_macroSetFlag);
+				}
+				catch(Exception exn)
+				{
+					task.SetException(exn);
+					return;
+				}
+				ThreadPool.QueueUserWorkItem(_ =>
+				{
+					while (Environment.GetEnvironmentVariable(_envMacroFlag) != "1")
+						Thread.Sleep(10);
+					task.SetResult(null);
+				});
 			});
-			return Task.Run(() =>
-			{
-				while (Environment.GetEnvironmentVariable(_envMacroFlag) != "1")
-					Thread.Sleep(10);
-			});
+			return task.Task;
 		}
 		/// <summary>
 		/// Creates a task which posts the specified keys.
