@@ -27,6 +27,7 @@ let testWizard = async {
 
     // open my panel
     do! Job.Keys "P"
+    do! waitSteps ()
     do! job { Assert.True (isMyPanel ()) }
 
     // go to another

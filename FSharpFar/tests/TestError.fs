@@ -28,6 +28,7 @@ let flowMacroError = async {
 
 [<Test>]
 let testMacroError = async {
+    // _201221_2o Keep starting this way, cover the bug.
     Job.StartImmediate flowMacroError
     do! Job.Wait (fun () ->
         Window.IsDialog ()

@@ -14,6 +14,14 @@ open System.Runtime.CompilerServices
 
 [<AbstractClass; Sealed>]
 type Job =
+    /// Creates a job from the macro keys.
+    static member Keys keys =
+        Tasks.Keys keys |> Async.AwaitTask
+
+    /// Creates a job from the macro text.
+    static member Macro text =
+        Tasks.Macro text |> Async.AwaitTask
+
     /// Posts the Far job for the function.
     /// f: The function invoked in the main Far thread.
     static member inline private PostJob f =
@@ -28,8 +36,16 @@ type Job =
     /// Posts an error dialog for the exception.
     /// The exception Name is shown in the title instead of FullName,
     /// in order to be slightly different from other FarNet errors.
-    /// The FullName is still available by [More].
-    static member PostShowError exn =
+    /// Full details are available as usual on [More].
+    // _201221_2o This helps to reveal bugs. When our catch is not called
+    // unexpectedly then the core error dialog is shown, a bit different.
+    static member PostShowError (exn: exn) =
+        let exn =
+            match exn with
+            | :? AggregateException as exn when exn.InnerExceptions.Count = 1 ->
+                exn.InnerExceptions.[0];
+            | _ ->
+                exn;
         Job.PostJob (fun () -> far.ShowError (exn.GetType().Name, exn))
 
     static member private CatchShowError job = async {
@@ -45,13 +61,6 @@ type Job =
     /// Starts the job by Async.StartImmediate with exceptions caught and shown as dialogs.
     static member StartImmediate job =
         Async.StartImmediate <| Job.CatchShowError job
-
-    // Macros, jobs, and steps are invoked by Far and FarNet in separate queues.
-    // As a result, a macro followed by a job or step with `cont` is not good.
-    // Thus, we use a pure macro approach: another macro sets the global flag
-    // and a separate thread waits for this flag in order to call `cont`.
-    static member private envMacroFlag = "FarNet.Async.macro"
-    static member private macroSetFlag = sprintf "mf.env('%s', 1, '1')" Job.envMacroFlag
 
     /// Creates a job from the function dealing with Far.
     /// f: The function with any result.
@@ -71,32 +80,6 @@ type Job =
     /// Job helper: Job.StartImmediateFrom f ~  Job.StartImmediate (Job.From f)
     static member StartImmediateFrom f =
         Job.StartImmediate (Job.From f)
-
-    /// Creates a job from the macro text.
-    static member Macro text =
-        Async.FromContinuations (fun (cont, econt, _) ->
-            // drop the flag
-            Environment.SetEnvironmentVariable (Job.envMacroFlag, "0")
-            try
-                // for clear syntax errors use two macros, do not join
-                // original macro
-                far.PostMacro text
-                // setting the flag
-                far.PostMacro Job.macroSetFlag
-                // waiting for the flag
-                async {
-                    while Environment.GetEnvironmentVariable Job.envMacroFlag <> "1" do
-                        do! Async.Sleep 50
-                    cont ()
-                }
-                |> Async.Start
-            with exn ->
-                econt exn
-        )
-
-    /// Creates a job from the macro keys.
-    static member Keys keys =
-        Job.Macro (sprintf "Keys[[%s]]" keys)
 
     /// The job to cancel the flow.
     static member Cancel () =

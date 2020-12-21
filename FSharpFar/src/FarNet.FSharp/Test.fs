@@ -144,4 +144,4 @@ type Test =
             if tests.Count > 0 && Environment.GetEnvironmentVariable("QuitFarAfterTests") = "1" then
                 do! job { far.Quit() }
         }
-        |> Job.StartImmediate
+        |> Job.Start

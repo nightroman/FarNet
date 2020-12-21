@@ -48,6 +48,7 @@ let testNo = async {
 
     // Yes -> my panel
     do! Job.Keys "Y"
+    do! waitSteps ()
     do! job { Assert.True (isMyPanel ()) }
 
     // exit panel -> dialog

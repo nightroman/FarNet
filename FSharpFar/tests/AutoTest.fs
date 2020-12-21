@@ -18,3 +18,6 @@ let showWideDialog () =
 
 let isWideDialog () =
     Window.IsDialog () && far.Dialog.[1].Text = "relatively_long_text_message_for_relatively_wide_dialog"
+
+let waitSteps () =
+    FarNet.Works.Far2.Api.WaitSteps() |> Async.AwaitTask
