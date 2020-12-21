@@ -1,6 +1,10 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
-Far Manager 3.0.5048
-FarNet 5.4.2
+FarNet 5.4.10
+
+= 1.13.4 =
+
+Use "net472" in generated F# projects.
+Use FarNet.Tasks for Job.Keys and Macro.
 
 = 1.13.3 =
 

@@ -111,7 +111,7 @@ module Config =
 
         addProperty "StartAction" "Program"
         addProperty "StartProgram" (getFarExePath ())
-        addProperty "TargetFramework" "net462"
+        addProperty "TargetFramework" "net472"
         addProperty "DisableImplicitFSharpCoreReference" "true"
         addProperty "DisableImplicitSystemValueTupleReference" "true"
         // https://github.com/dotnet/sdk/issues/987

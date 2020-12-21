@@ -130,18 +130,18 @@ type Test =
             for test in tests do
                 match test.Value with
                 | Choice2Of2 func ->
-                    do! job { outTest test.Key }
+                    do! Job.From <| fun () ->
+                        outTest test.Key
                     do! func
                 | _ ->
                     ()
 
             // summary
-            do! job {
+            do! Job.From <| fun () ->
                 far.UI.WriteLine(sprintf "Done %i tests %O" tests.Count sw.Elapsed, ConsoleColor.Green)
-            }
 
             // exit? (if we have some tests else something is wrong)
             if tests.Count > 0 && Environment.GetEnvironmentVariable("QuitFarAfterTests") = "1" then
-                do! job { far.Quit() }
+                do! Job.From(far.Quit)
         }
         |> Job.Start

@@ -73,14 +73,6 @@ type Job =
                 econt exn
         )
 
-    /// Job helper: Job.StartFrom f ~  Job.Start (Job.From f)
-    static member StartFrom f =
-        Job.Start (Job.From f)
-
-    /// Job helper: Job.StartImmediateFrom f ~  Job.StartImmediate (Job.From f)
-    static member StartImmediateFrom f =
-        Job.StartImmediate (Job.From f)
-
     /// The job to cancel the flow.
     static member Cancel () =
         Job.FromContinuations (fun (_, _, ccont) ->

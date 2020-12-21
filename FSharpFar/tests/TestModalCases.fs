@@ -5,7 +5,7 @@ open FarNet.FSharp
 [<Test>]
 let testDialogOverDialog = async {
     // dialog 1
-    Job.StartImmediateFrom showWideDialog
+    Job.StartImmediate(Job.From showWideDialog)
     do! job { Assert.True (isWideDialog ()) }
 
     // dialog 2 on top of 1

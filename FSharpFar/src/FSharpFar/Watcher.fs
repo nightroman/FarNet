@@ -8,13 +8,11 @@ let private agent = MailboxProcessor.Start (fun inbox -> async {
     while true do
         let! path = inbox.Receive ()
         if isFSharpFileName path then
-            do! job {
+            do! Job.From <| fun () ->
                 Session.OnSavingSource path
-            }
         else if String.endsWithIgnoreCase path ".fs.ini" then
-            do! job {
+            do! Job.From <| fun () ->
                 Session.OnSavingConfig path
-            }
 })
 
 let private watchers = Dictionary (StringComparer.OrdinalIgnoreCase)

@@ -1,6 +1,10 @@
 https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 5.4.10 =
+
+Amend Tasks.Macro on syntax errors.
+
 = 5.4.9 =
 
 Tweaks in tasks and jobs code.

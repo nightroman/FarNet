@@ -20,7 +20,7 @@ let testNormal = async {
 
 let flowModal = async {
     // dialog
-    Job.StartImmediateFrom showWideDialog
+    Job.StartImmediate(Job.From showWideDialog)
 
     // viewer over the dialog
     let viewer = far.CreateViewer (FileName = fileName)

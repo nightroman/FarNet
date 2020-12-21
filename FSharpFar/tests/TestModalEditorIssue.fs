@@ -4,7 +4,7 @@ open FarNet.FSharp
 
 let flow = async {
     // dialog
-    Job.StartImmediateFrom showWideDialog
+    Job.StartImmediate(Job.From showWideDialog)
     do! job { Assert.Dialog () }
 
     // editor with problems (cannot edit directory) over the dialog

@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
-FarNet 5.4.9
+FarNet 5.4.10
+
+= 5.4.7 =
+
+Fix breakpoints in files with DOS names.
 
 = 5.4.6 =
 

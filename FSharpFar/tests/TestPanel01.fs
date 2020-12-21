@@ -7,7 +7,7 @@ open FarNet.FSharp
 let testSkipModal = async {
     async {
         // dialog
-        Job.StartImmediateFrom showWideDialog
+        Job.StartImmediate(Job.From showWideDialog)
         // wait
         do! Job.SkipModal ()
         // done
@@ -28,7 +28,7 @@ let testSkipModal = async {
 [<Test>]
 let testCannotOpenOnModal = async {
     // dialog
-    Job.StartImmediateFrom showWideDialog
+    Job.StartImmediate(Job.From showWideDialog)
     do! job { Assert.Dialog () }
 
     // try open panel from dialog -> error dialog
