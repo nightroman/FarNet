@@ -10,7 +10,7 @@ open System.IO
 
 /// Shows a message with the specified buttons and gets the choice index.
 let jobAsk text title buttons =
-    Job.From (fun () -> far.Message (text, title, MessageOptions.LeftAligned, buttons))
+    job { return far.Message (text, title, MessageOptions.LeftAligned, buttons) }
 
 /// Opens a non-modal editor and gets the result text when the editor exits.
 let jobEditText text title = async {

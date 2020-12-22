@@ -13,19 +13,22 @@ open System
 [<AbstractClass; Sealed>]
 type Job =
     /// Creates a job from the macro keys.
-    static member Keys keys =
-        Tasks.Keys keys |> Async.AwaitTask
+    static member Keys keys = async {
+        do! Tasks.Keys keys |> Async.AwaitTask
+    }
 
     /// Creates a job from the macro text.
-    static member Macro text =
-        Tasks.Macro text |> Async.AwaitTask
+    static member Macro text = async {
+        do! Tasks.Macro text |> Async.AwaitTask
+    }
 
     /// Waits for the predicate returning true.
     /// delay: Milliseconds to sleep before the first check.
     /// sleep: Milliseconds to sleep after the predicate returning false.
     /// timeout: Maximum waiting time in milliseconds, non positive ~ infinite.
-    static member Wait (delay, sleep, timeout, (predicate: unit -> bool)) =
-        Tasks.Wait(delay, sleep, timeout, Func<bool>(predicate)) |> Async.AwaitTask
+    static member Wait (delay, sleep, timeout, (predicate: unit -> bool)) = async {
+        return! Tasks.Wait(delay, sleep, timeout, Func<bool>(predicate)) |> Async.AwaitTask
+    }
 
     /// Posts the Far job for the function.
     /// f: The function invoked in the main Far thread.

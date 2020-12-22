@@ -32,7 +32,7 @@ let Runspace () =
 // Error in async code, ensure it points to the script file.
 [<Test>]
 let FarTaskError1 = async {
-    let! _ = Job.From (fun()-> PSFar.Invoke(getFarTask "Case/FarTaskError1.far.ps1"))
+    let! _ = job { return PSFar.Invoke(getFarTask "Case/FarTaskError1.far.ps1") }
     do! Assert.Wait Window.IsDialog
     do! job {
         Assert.Equal("FarTask error", far.Dialog.[0].Text)
@@ -50,7 +50,7 @@ let FarTaskError1 = async {
 // Error in job code, ensure it points to the script file.
 [<Test>]
 let FarTaskError2 = async {
-    let! _ = Job.From (fun()-> PSFar.Invoke(getFarTask "Case/FarTaskError2.far.ps1"))
+    let! _ = job { return PSFar.Invoke(getFarTask "Case/FarTaskError2.far.ps1") }
     do! Assert.Wait Window.IsDialog
     do! job {
         Assert.Equal("FarTask error", far.Dialog.[0].Text)
@@ -68,7 +68,7 @@ let FarTaskError2 = async {
 // Error in run code, ensure it points to the script file.
 [<Test>]
 let FarTaskError3 = async {
-    let! _ = Job.From (fun()-> PSFar.Invoke(getFarTask "Case/FarTaskError3.far.ps1"))
+    let! _ = job { return PSFar.Invoke(getFarTask "Case/FarTaskError3.far.ps1") }
     do! Assert.Wait Window.IsDialog
     do! job {
         Assert.Equal("FarTask error", far.Dialog.[0].Text)
@@ -86,7 +86,7 @@ let FarTaskError3 = async {
 //! used to fail
 [<Test>]
 let FarTaskError4 = async {
-    let! _ = Job.From (fun()-> PSFar.Invoke(getFarTask "Case/FarTaskError4.far.ps1"))
+    let! _ = job { return PSFar.Invoke(getFarTask "Case/FarTaskError4.far.ps1") }
     do! Assert.Wait Window.IsDialog
     do! job {
         Assert.Equal("FarTask error", far.Dialog.[0].Text)
@@ -104,7 +104,7 @@ let FarTaskError4 = async {
 //! used to fail
 [<Test>]
 let FarTaskError5 = async {
-    let! _ = Job.From (fun()-> PSFar.Invoke(getFarTask "Case/FarTaskError5.far.ps1"))
+    let! _ = job { return PSFar.Invoke(getFarTask "Case/FarTaskError5.far.ps1") }
     do! Assert.Wait (fun()-> Window.IsDialog() && far.Dialog.[1].Text = "working")
     do! Job.Keys "Esc"
     do! job {
