@@ -23,8 +23,8 @@ task resgen @{
 	Partial = $true
 	Jobs = {
 		begin {
-			$VsDevCmd = @(Get-Item "C:\Program Files (x86)\Microsoft Visual Studio\2019\*\Common7\Tools\VsDevCmd.bat")
-			Invoke-Environment.ps1 ('"{0}"' -f $VsDevCmd)
+			$VsDevCmd = @(Get-Item 'C:\Program Files (x86)\Microsoft Visual Studio\2019\*\Common7\Tools\VsDevCmd.bat')
+			Invoke-Environment.ps1 -File ($VsDevCmd[0])
 		}
 		process {
 			exec {resgen.exe $_ $2}
