@@ -21,7 +21,7 @@ let flowWaitPanelClosing = async {
 [<Test>]
 let testWaitPanelClosing = async {
     Job.Start flowWaitPanelClosing
-    do! Job.Wait Window.IsModulePanel
+    do! Assert.Wait Window.IsModulePanel
     do! Job.Keys "Down Down Esc"
     do! job {
         Assert.Dialog ()
@@ -47,7 +47,7 @@ let flowWaitPanelClosed = async {
 [<Test>]
 let testWaitPanelClosed = async {
     Job.Start flowWaitPanelClosed
-    do! Job.Wait Window.IsModulePanel
+    do! Assert.Wait Window.IsModulePanel
     do! Job.Keys "Esc"
     do! job {
         Assert.Dialog ()
@@ -67,7 +67,7 @@ let flowOpenPanelFails = async {
 [<Test>]
 let testOpenPanelFails = async {
     Job.Start flowOpenPanelFails
-    do! Job.Wait Window.IsDialog
+    do! Assert.Wait Window.IsDialog
     do! job {
         Assert.Equal ("InvalidOperationException", far.Dialog.[0].Text)
         Assert.Equal ("OpenPanel did not open a module panel.", far.Dialog.[1].Text)

@@ -18,7 +18,7 @@ let testSkipModal = async {
 
     // exit dialog -> trigger "done" after skipModal
     do! Job.Keys "Esc"
-    do! Job.Wait (fun () -> Window.IsDialog () && far.Dialog.[1].Text = "done")
+    do! Assert.Wait (fun () -> Window.IsDialog () && far.Dialog.[1].Text = "done")
 
     // exit dialog
     do! Job.Keys "Esc"
@@ -33,7 +33,7 @@ let testCannotOpenOnModal = async {
 
     // try open panel from dialog -> error dialog
     Job.StartImmediate <| Job.OpenPanel (MyPanel.panel [])
-    do! Job.Wait (fun () -> Window.IsDialog () && far.Dialog.[1].Text = "Cannot switch to panels.")
+    do! Assert.Wait (fun () -> Window.IsDialog () && far.Dialog.[1].Text = "Cannot switch to panels.")
 
     // exit two dialogs
     do! Job.Keys "Esc Esc"

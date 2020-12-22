@@ -18,10 +18,10 @@
     <Compile Include="..\FarNet.Common\BlockBuilder.fs" />
     <Compile Include="..\FarNet.Common\TraceBuilder.fs" />
     <Compile Include="Works.fs" />
-    <Compile Include="Assert.fs" />
     <Compile Include="Window.fs" />
     <Compile Include="FarStdWriter.fs" />
     <Compile Include="Job.fs" />
+    <Compile Include="Assert.fs" />
     <Compile Include="Test.fs" />
     <Compile Include="PSFar.fs" />
   </ItemGroup>

@@ -4,6 +4,7 @@
 
 using FarNet.Forms;
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -109,7 +110,7 @@ namespace FarNet
 					Far.Api.PostMacro(text);
 					Far.Api.PostMacro(_macroSetFlag);
 				}
-				catch(Exception exn)
+				catch (Exception exn)
 				{
 					task.SetException(exn);
 					return;
@@ -278,6 +279,33 @@ namespace FarNet
 			});
 
 			return tcs.Task;
+		}
+		/// <summary>
+		/// Waits for the predicate job returning true.
+		/// </summary>
+		/// <param name="delay">Milliseconds to sleep before the first check.</param>
+		/// <param name="sleep">Milliseconds to sleep when the predicate returns false.</param>
+		/// <param name="timeout">Maximum waiting time in milliseconds, non positive ~ infinite.</param>
+		/// <param name="predicate">Returns true to stop waiting.</param>
+		/// <returns>True if the predicate returns true before the time is out.</returns>
+		public static async Task<bool> Wait(int delay, int sleep, int timeout, Func<bool> predicate)
+		{
+			if (delay > 0)
+				await Task.Delay(delay);
+
+			var span = timeout > 0 ? TimeSpan.FromMilliseconds(timeout) : TimeSpan.MaxValue;
+			var time = Stopwatch.StartNew();
+			for(; ; )
+			{
+				var ok = await Job(predicate);
+				if (ok)
+					return true;
+
+				if (time.Elapsed > span)
+					return false;
+
+				await Task.Delay(sleep);
+			}
 		}
 	}
 }

@@ -19,7 +19,7 @@ let test = async {
     Job.StartImmediate flow
 
     // nasty Far message -> `wait`, not `test`
-    do! Job.Wait (fun () -> Window.IsDialog () && far.Dialog.[1].Text = "It is impossible to edit the folder")
+    do! Assert.Wait (fun () -> Window.IsDialog () && far.Dialog.[1].Text = "It is impossible to edit the folder")
     do! Job.Keys "Esc"
 
     // posted FarNet error

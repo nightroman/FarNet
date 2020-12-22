@@ -12,7 +12,7 @@ let flowFuncError = async {
 [<Test>]
 let testFuncError = async {
     Job.StartImmediate flowFuncError
-    do! Job.Wait (fun () ->
+    do! Assert.Wait (fun () ->
         Window.IsDialog ()
         && far.Dialog.[0].Text = "Exception"
         && far.Dialog.[1].Text = "demo-error")
@@ -30,7 +30,7 @@ let flowMacroError = async {
 let testMacroError = async {
     // _201221_2o Keep starting this way, cover the bug.
     Job.StartImmediate flowMacroError
-    do! Job.Wait (fun () ->
+    do! Assert.Wait (fun () ->
         Window.IsDialog ()
         && far.Dialog.[0].Text = "ArgumentException"
         && far.Dialog.[3].Text = "Macro: bar"

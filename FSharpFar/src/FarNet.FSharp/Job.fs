@@ -2,8 +2,6 @@ namespace FarNet.FSharp
 open FarNet
 open FarNet.Forms
 open System
-open System.Diagnostics
-open System.Runtime.CompilerServices
 
 // We do not expose anything for posting steps because they are only needed for
 // opening panels. We provide jobs for opening panels. If we expose steps users
@@ -21,6 +19,13 @@ type Job =
     /// Creates a job from the macro text.
     static member Macro text =
         Tasks.Macro text |> Async.AwaitTask
+
+    /// Waits for the predicate returning true.
+    /// delay: Milliseconds to sleep before the first check.
+    /// sleep: Milliseconds to sleep after the predicate returning false.
+    /// timeout: Maximum waiting time in milliseconds, non positive ~ infinite.
+    static member Wait (delay, sleep, timeout, (predicate: unit -> bool)) =
+        Tasks.Wait(delay, sleep, timeout, Func<bool>(predicate)) |> Async.AwaitTask
 
     /// Posts the Far job for the function.
     /// f: The function invoked in the main Far thread.
@@ -78,35 +83,6 @@ type Job =
         Job.FromContinuations (fun (_, _, ccont) ->
             ccont (OperationCanceledException ())
         )
-
-    /// Waits for the predicate returning true.
-    /// delay: Milliseconds to sleep before the first check.
-    /// sleep: Milliseconds to sleep after the predicate returning false.
-    /// timeout: Maximum waiting time in milliseconds, non positive ~ infinite.
-    static member Wait (delay, sleep, timeout, predicate) = async {
-        let timeout = if timeout > 0 then timeout else Int32.MaxValue
-        let jobPredicate = Job.From predicate
-
-        if delay > 0 then
-            do! Async.Sleep delay
-
-        let mutable ok = false
-        let sw = Stopwatch.StartNew ()
-        while not ok && int sw.ElapsedMilliseconds < timeout do
-            let! r = jobPredicate
-            ok <- r
-            if not ok && sleep > 0 then
-                do! Async.Sleep sleep
-
-        return ok
-    }
-
-    /// Waits for a few seconds for the predicate returning true and fails if it always gets false.
-    static member Wait (predicate, [<CallerFilePath>]?path, [<CallerLineNumber>]?line) = async {
-        let! ok = Job.Wait (200, 200, 5000, predicate)
-        if not ok then
-            Assert.Fail ("Timeout", ?path=path, ?line=line)
-    }
 
     /// Opens the editor and waits for its closing.
     static member FlowEditor (editor: IEditor) = async {
