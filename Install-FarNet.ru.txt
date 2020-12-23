@@ -41,6 +41,10 @@ Visual C++ 2015, 2017 и 2019 используют одни и те же фай�
 
 	iex (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/nightroman/FarNet/master/web.ps1')
 
+При ошибках на старых системах выполните это и повторите
+
+	[System.Net.ServicePointManager]::SecurityProtocol = "$([System.Net.ServicePointManager]::SecurityProtocol),Tls11,Tls12"
+
 Установите или обновите FarNet
 
 	Install-FarPackage FarNet

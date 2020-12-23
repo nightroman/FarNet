@@ -1,4 +1,5 @@
 
+[System.Net.ServicePointManager]::SecurityProtocol = "$([System.Net.ServicePointManager]::SecurityProtocol),Tls11,Tls12"
 $web = New-Object -TypeName System.Net.WebClient
 $web.UseDefaultCredentials = $true
 

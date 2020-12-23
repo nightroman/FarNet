@@ -41,6 +41,10 @@ Invoke the preliminary command
 
 	iex (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/nightroman/FarNet/master/web.ps1')
 
+If it fails on older systems, run this and repeat
+
+	[System.Net.ServicePointManager]::SecurityProtocol = "$([System.Net.ServicePointManager]::SecurityProtocol),Tls11,Tls12"
+
 Install or update FarNet
 
 	Install-FarPackage FarNet
