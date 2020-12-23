@@ -2,6 +2,7 @@
 // FarNet plugin for Far Manager
 // Copyright (c) Roman Kuzmin
 
+using FarNet.Works;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -361,8 +362,9 @@ namespace FarNet
 			if (file == null)
 				return;
 
-			// target
-			var temp = Far.Api.TempName();
+			// target file path
+			// _201223_vc Avoid Far.Api.TempName(). I think it reuses names if files do not exist. But file history may exist unexpectedly.
+			var temp = Kit.TempFileName(null);
 
 			// export
 			var xExportArgs = WorksExportExplorerFile(Explorer, this, ExplorerModes.Edit, file, temp);
@@ -386,7 +388,7 @@ namespace FarNet
 			// rename
 			if (!string.IsNullOrEmpty(xExportArgs.UseFileExtension))
 			{
-				string temp2 = temp + (xExportArgs.UseFileExtension[0] == '.' ? xExportArgs.UseFileExtension : "." + xExportArgs.UseFileExtension);
+				var temp2 = Path.ChangeExtension(temp, xExportArgs.UseFileExtension);
 				File.Move(temp, temp2);
 				temp = temp2;
 			}

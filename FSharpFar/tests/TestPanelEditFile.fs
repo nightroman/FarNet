@@ -13,7 +13,7 @@ let testErrorsOnSaving keys1 delay keys2 = async {
         Assert.True (Window.IsEditor())
         Assert.Equal("Euler's number (e)", far.Editor.Title)
         Assert.Equal("2.71828", far.Editor.GetText())
-        Assert.Equal(0, far.Editor.Line.Caret)
+        Assert.Equal(0, far.Editor.Line.Caret) // used to be not 0 sometimes, _201223_vc
     }
 
     // add some letter, make invalid number, save

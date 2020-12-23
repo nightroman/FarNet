@@ -100,6 +100,20 @@ namespace FarNet.Works
 	public static class Kit
 	{
 		/// <summary>
+		/// %TEMP%\GUID.tmp or GUID.extension
+		/// </summary>
+		public static string TempFileName(string extension)
+		{
+			var name = Guid.NewGuid().ToString("N");
+			if (string.IsNullOrEmpty(extension))
+				name += ".tmp";
+			else if (extension[0] == '.')
+				name += extension;
+			else
+				name += "." + extension;
+			return Path.GetTempPath() +  name;
+		}
+		/// <summary>
 		/// INTERNAL
 		/// </summary>
 		public static string[] SplitLines(string value)

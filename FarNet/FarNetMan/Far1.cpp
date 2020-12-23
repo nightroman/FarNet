@@ -352,14 +352,6 @@ String^ Far1::TempName(String^ prefix)
 	return gcnew String(box);
 }
 
-String^ Far1::TempFolder(String^ prefix)
-{
-	String^ dir = TempName(prefix);
-	if (!Directory::Exists(dir))
-		Directory::CreateDirectory(dir);
-	return dir;
-}
-
 IDialog^ Far1::Dialog::get()
 {
 	return FarDialog::GetDialog();

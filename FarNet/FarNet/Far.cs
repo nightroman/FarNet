@@ -386,19 +386,6 @@ namespace FarNet
 			return TempName(null);
 		}
 		/// <summary>
-		/// Creates a folder in %TEMP%.
-		/// </summary>
-		/// <param name="prefix">If empty "FTMP" is generated otherwise at most 4 first characters are used and padded by "0".</param>
-		/// <returns>Full path of the created folder.</returns>
-		public abstract string TempFolder(string prefix);
-		/// <summary>
-		/// See <see cref="TempFolder(string)"/>
-		/// </summary>
-		public string TempFolder()
-		{
-			return TempFolder(null);
-		}
-		/// <summary>
 		/// Gets the most recent opened dialog or null.
 		/// </summary>
 		/// <remarks>

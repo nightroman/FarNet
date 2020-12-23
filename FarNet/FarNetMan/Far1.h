@@ -52,7 +52,6 @@ public:
 	virtual String^ Input(String^ prompt, String^ history, String^ title, String^ text) override;
 	virtual String^ KeyInfoToName(KeyInfo^ key) override;
 	virtual String^ PasteFromClipboard() override;
-	virtual String^ TempFolder(String^ prefix) override;
 	virtual String^ TempName(String^ prefix) override;
 	virtual void CopyToClipboard(String^ text) override;
 	virtual void PostJob(Action^ handler) override;

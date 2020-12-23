@@ -29,8 +29,7 @@ namespace FarNet.Works
 			var editor = Far.Api.CreateEditor();
 
 			//! avoid native API, do not use TempName
-			var ext = string.IsNullOrEmpty(args.Extension) ? "tmp" : args.Extension;
-			editor.FileName = Path.GetTempPath() + Path.ChangeExtension(Guid.NewGuid().ToString(), ext);
+			editor.FileName = Kit.TempFileName(args.Extension);
 
 			editor.CodePage = 1200;
 			editor.DisableHistory = true;
