@@ -94,9 +94,9 @@ It is the Windows PowerShell host in the genuine console environment.
 
 ---
 
-In order to install FarNet and modules, read:
+How to install and update FarNet and modules:
 
-https://github.com/nightroman/FarNet/blob/master/README.md
+https://github.com/nightroman/FarNet#readme
 
 ---
 '@

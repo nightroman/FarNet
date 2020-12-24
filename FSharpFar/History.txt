@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
-FarNet 5.4.11
+FarNet 5.4.12
+
+= 1.13.6 =
+
+Internal
+- Job: remove excessive EnsurePanels
+- simplify Job.OpenPanel (Panel/fun)
 
 = 1.13.5 =
 

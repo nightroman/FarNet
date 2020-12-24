@@ -68,9 +68,8 @@ designed for Far Manager. Colorer takes care of editor syntax highlighting.
 
 **Instructions**
 
-In order to install FarNet and modules, read:
-
-<https://github.com/nightroman/FarNet/blob/master/README.md>
+How to install and update FarNet and modules:\
+<https://github.com/nightroman/FarNet#readme>
 
 ---
 **PowerShell execution policy**

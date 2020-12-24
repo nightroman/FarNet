@@ -3,12 +3,12 @@ open FarNet
 open FarNet.Forms
 open System
 
-// We do not expose anything for posting steps because they are only needed for
-// opening panels. We provide jobs for opening panels. If we expose steps users
-// may start abusing them.
-// @1: Steps are not in sync with jobs, take care:
-// -- use Job.FromContinuations ... PostStep
-// -- use econt, not throw, or exn "leaks"
+(*
+Examine job error dialogs. Titles must be exception short names.
+Full names mean leaked exceptions handled and shown by the core.
+
+Do not use PostStep(), wait for steps instead, when appropriate.
+*)
 
 [<AbstractClass; Sealed>]
 type Job =
@@ -23,9 +23,11 @@ type Job =
     }
 
     /// Waits for the predicate returning true.
+    /// Returns true if this happens before the timeout.
     /// delay: Milliseconds to sleep before the first check.
     /// sleep: Milliseconds to sleep after the predicate returning false.
     /// timeout: Maximum waiting time in milliseconds, non positive ~ infinite.
+    /// predicate: Returns true to stop waiting.
     static member Wait (delay, sleep, timeout, (predicate: unit -> bool)) = async {
         return! Tasks.Wait(delay, sleep, timeout, Func<bool>(predicate)) |> Async.AwaitTask
     }
@@ -156,14 +158,6 @@ type Job =
             dialog.Open ()
         )
 
-    /// Sets panels current or fails.
-    static member private EnsurePanels () =
-        if far.Window.Kind <> WindowKind.Panels then
-            try
-                far.Window.SetCurrentAt -1
-            with exn ->
-                raise (InvalidOperationException ("Cannot switch to panels.", exn))
-
     /// Opens the panel and waits for its closing.
     static member FlowPanel (panel: Panel) = async {
         do! Job.OpenPanel panel
@@ -172,61 +166,41 @@ type Job =
 
     /// Opens the specified panel.
     static member OpenPanel (panel: Panel) = async {
-        //! in a separate job
-        do! Job.From Job.EnsurePanels
         // open
-        do! Async.FromContinuations (fun (cont, econt, _) ->
-            far.PostStep (fun () ->
-                try
-                    panel.Open ()
-                    cont ()
-                with exn ->
-                    econt exn
-            )
-        )
-        // check (use PostStep and econt, @1)
-        do! Async.FromContinuations (fun (cont, econt, _) ->
-            far.PostStep (fun () ->
-                try
-                    if far.Panel <> upcast panel then
-                        invalidOp "OpenPanel did not open the panel."
-                    else
-                        cont ()
-                with exn ->
-                    econt exn
-            )
+        do! Job.From panel.Open
+
+        // wait
+        do! Works.Far2.Api.WaitSteps() |> Async.AwaitTask
+
+        // test
+        do! Job.From (fun () ->
+            if far.Panel <> upcast panel then
+                invalidOp "Panel was not opened."
         )
     }
 
     /// Calls the function which opens a panel and returns this panel.
     static member OpenPanel (f) = async {
-        //! in a separate job
-        do! Job.From Job.EnsurePanels
         // open
-        let mutable oldPanel = null
-        do! Async.FromContinuations (fun (cont, econt, _) ->
-            far.PostStep (fun () ->
-                oldPanel <- far.Panel
-                try
-                    f ()
-                    cont ()
-                with exn ->
-                    econt exn
-            )
+        let! oldPanel = Job.From (fun () ->
+            let panel = far.Panel
+            f ()
+            panel
         )
-        // check (use PostStep and econt, @1) and return the new panel
-        return! Async.FromContinuations (fun (cont, econt, _) ->
-            far.PostStep (fun () ->
-                let newPanel = far.Panel
-                try
-                    match newPanel with
-                    | :? Panel as panel when newPanel <> oldPanel ->
-                        cont panel
-                    | _ ->
-                        invalidOp "OpenPanel did not open a module panel."
-                with exn ->
-                    econt exn
-            )
+
+        // wait
+        do! Works.Far2.Api.WaitSteps() |> Async.AwaitTask
+
+        // test and return new panel
+        return! Job.From (fun () ->
+            let newPanel = far.Panel
+            match newPanel with
+            | :? Panel as panel when newPanel <> oldPanel ->
+                // module panel different from old
+                panel
+            | _ ->
+                // not module panel or old panel
+                invalidOp "Panel was not opened."
         )
     }
 

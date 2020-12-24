@@ -173,6 +173,12 @@ namespace FarNet
 			if (IsOpened)
 				return;
 
+			// fail in modal area except Desktop
+			// _201225_28 - test with opening from Desktop (modal)
+			var area = Far.Api.Window.Kind;
+			if (area != WindowKind.Panels && area != WindowKind.Desktop && Far.Api.Window.IsModal)
+				throw new ModuleException("Cannot open panel from modal window.");
+
 			// set the title to default
 			if (string.IsNullOrEmpty(Title))
 				Title = DefaultTitle;
@@ -184,7 +190,7 @@ namespace FarNet
 				return;
 			}
 
-			if (Far.Api.Window.Kind == WindowKind.Panels)
+			if (area == WindowKind.Panels)
 			{
 				Far.Api.PostStep(() => //_201216_d3
 				{

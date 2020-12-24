@@ -31,9 +31,13 @@ let testCannotOpenOnModal = async {
     Job.StartImmediate(Job.From showWideDialog)
     do! job { Assert.Dialog () }
 
-    // try open panel from dialog -> error dialog
+    // try open panel from dialog -> job error dialog
     Job.StartImmediate <| Job.OpenPanel (MyPanel.panel [])
-    do! Assert.Wait (fun () -> Window.IsDialog () && far.Dialog.[1].Text = "Cannot switch to panels.")
+    do! Assert.Wait (fun () ->
+        Window.IsDialog () &&
+        far.Dialog.[0].Text = "ModuleException" &&
+        far.Dialog.[1].Text = "Cannot open panel from modal window."
+    )
 
     // exit two dialogs
     do! Job.Keys "Esc Esc"

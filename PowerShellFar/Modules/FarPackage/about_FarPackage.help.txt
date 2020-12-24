@@ -75,4 +75,4 @@ OTHER FUNCTIONS
         PS> Uninstall-FarPackage FarNet.Vessel
 
 SEE ALSO
-    Web way: https://github.com/nightroman/FarNet/blob/master/README.md
+    Web way: https://github.com/nightroman/FarNet#readme

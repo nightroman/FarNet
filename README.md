@@ -2,10 +2,8 @@
 
 # FarNet
 
-Far Manager platform for .NET modules, Windows PowerShell, and F#.
-
-[FarNet/wiki](https://github.com/nightroman/FarNet/wiki) describes
-the framework, modules, and available packages.
+Far Manager platform for .NET modules, Windows PowerShell, and F#.\
+[FarNet/wiki](https://github.com/nightroman/FarNet/wiki) describes the framework, modules, and available packages.
 
 ## Prerequisites
 
@@ -16,8 +14,7 @@ registry at:
 
     HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full
 
-If this key is missing, then install .NET Framework 4.5 or above.
-
+If this key is missing, then install .NET Framework 4.5 or above.\
 Some modules may require specific minimum versions.
 
 **Visual C++ Redistributable**
@@ -31,8 +28,7 @@ If they are missing, then install the required.
 
 **Far Manager**
 
-Choose the required from [downloads](https://www.farmanager.com/download.php?l=en).
-
+Choose the required from [downloads](https://www.farmanager.com/download.php?l=en).\
 Normally the stable build is recommended.
 
 

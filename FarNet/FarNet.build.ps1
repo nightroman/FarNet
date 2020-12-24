@@ -149,9 +149,9 @@ FarNet provides the .NET API for Far Manager and the runtime infrastructure for
 
 ---
 
-In order to install FarNet and modules, read:
+How to install and update FarNet and modules:
 
-https://github.com/nightroman/FarNet/blob/master/README.md
+https://github.com/nightroman/FarNet#readme
 
 ---
 '@

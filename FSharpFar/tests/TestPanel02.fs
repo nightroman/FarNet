@@ -70,7 +70,7 @@ let testOpenPanelFails = async {
     do! Assert.Wait Window.IsDialog
     do! job {
         Assert.Equal ("InvalidOperationException", far.Dialog.[0].Text)
-        Assert.Equal ("OpenPanel did not open a module panel.", far.Dialog.[1].Text)
+        Assert.Equal ("Panel was not opened.", far.Dialog.[1].Text)
     }
     do! Job.Keys "Esc"
     do! job { Assert.NativePanel () }

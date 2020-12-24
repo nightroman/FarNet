@@ -1,6 +1,10 @@
 https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 5.4.12 =
+
+Panel.Open should fail in modal areas, except Desktop.
+
 = 5.4.11 =
 
 Add Tasks.Wait().

@@ -611,17 +611,11 @@ void Panel0::OpenPanel(Panel2^ plugin)
 	if (_panels[0] && _panels[0] != plugin)
 		throw gcnew InvalidOperationException("Cannot open panel, another panel is waiting.");
 
-	// panels window should be current
-	try
-	{
-		//_141017_151021
-		Far::Api->Window->SetCurrentAt(-1);
-	}
-	catch(InvalidOperationException^ e)
-	{
-		throw gcnew InvalidOperationException("Cannot open panel, panels cannot be set current.", e);
-	}
+	// panels must be current at this point
+	if (Far::Api->Window->Kind != WindowKind::Panels)
+		throw gcnew InvalidOperationException("Cannot open panel, panels must be current.");
 
+	// set waiting panel
 	_panels[0] = plugin;
 }
 
