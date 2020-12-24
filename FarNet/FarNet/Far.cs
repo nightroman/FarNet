@@ -10,25 +10,6 @@ using System.IO;
 namespace FarNet
 {
 	/// <summary>
-	/// Holder of the global <see cref="IFar"/> host instance.
-	/// </summary>
-	public static class Far
-	{
-		static IFar _Host;
-		/// <summary>
-		/// The global <see cref="IFar"/> instance.
-		/// </summary>
-		public static IFar Api
-		{
-			get { return _Host; }
-			set
-			{
-				if (_Host != null) throw new InvalidOperationException();
-				_Host = value;
-			}
-		}
-	}
-	/// <summary>
 	/// Main interface which exposes top entries of the FarNet object model.
 	/// </summary>
 	/// <remarks>
@@ -485,6 +466,27 @@ namespace FarNet
 		/// <exception cref="ArgumentException">The specified set or name is invalid.</exception>
 		public abstract object GetSetting(FarSetting settingSet, string settingName);
 	}
+
+	/// <summary>
+	/// Holder of the global <see cref="IFar"/> host instance.
+	/// </summary>
+	public static class Far
+	{
+		static IFar _Host;
+		/// <summary>
+		/// The global <see cref="IFar"/> instance.
+		/// </summary>
+		public static IFar Api
+		{
+			get { return _Host; }
+			set
+			{
+				if (_Host != null) throw new InvalidOperationException();
+				_Host = value;
+			}
+		}
+	}
+
 	/// <summary>
 	/// Represents the thumbnail progress bar state.
 	/// </summary>
@@ -512,6 +514,7 @@ namespace FarNet
 		/// </summary>
 		Paused = 8
 	}
+
 	/// <summary>
 	/// Options for <see cref="IFar.ShowHelp"/>.
 	/// </summary>
@@ -550,6 +553,7 @@ namespace FarNet
 		/// </summary>
 		NoError = unchecked((int)0x80000000),
 	}
+
 	/// <summary>
 	/// States of macro processing.
 	/// </summary>
@@ -576,20 +580,22 @@ namespace FarNet
 		/// </summary>
 		RecordingCommon
 	}
+
 	/// <summary>
-	/// Specifies enumerated constants used to retrieve directory paths to system special folders.
+	/// Special folder constants.
 	/// </summary>
 	public enum SpecialFolder
 	{
 		/// <summary>
-		/// The directory that serves as a common repository for application-specific data that is used by the current, non-roaming user.
+		/// Local data folder, %FARLOCALPROFILE%.
 		/// </summary>
 		LocalData = 0,
 		/// <summary>
-		/// The directory that serves as a common repository for application-specific data for the current roaming user.
+		/// Roaming data folder, %FARPROFILE%.
 		/// </summary>
 		RoamingData = 1
 	}
+
 	/// <summary>
 	/// Far Manager settings.
 	/// </summary>

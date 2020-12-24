@@ -22,16 +22,6 @@
 
 namespace FarNet
 {;
-void Far1::Connect()
-{
-	// the instance
-	Far::Api = %Far;
-
-	// initialize data paths
-	_LocalData = Environment::GetEnvironmentVariable("FARLOCALPROFILE");
-	_RoamingData = Environment::GetEnvironmentVariable("FARPROFILE");
-}
-
 String^ Far1::CurrentDirectory::get()
 {
 	CBox box;
@@ -450,11 +440,14 @@ bool Far1::IsMaskValid(String^ mask)
 
 String^ Far1::GetFolderPath(SpecialFolder folder)
 {
-	switch(folder)
+	switch (folder)
 	{
-	case SpecialFolder::LocalData: return _LocalData;
-	case SpecialFolder::RoamingData: return _RoamingData;
-	default: throw gcnew ArgumentException("folder");
+	case SpecialFolder::LocalData:
+		return Environment::GetEnvironmentVariable("FARLOCALPROFILE");
+	case SpecialFolder::RoamingData:
+		return Environment::GetEnvironmentVariable("FARPROFILE");
+	default:
+		throw gcnew ArgumentException("folder");
 	}
 }
 

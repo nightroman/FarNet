@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
-FarNet 5.4.10
+FarNet 5.4.11
+
+= 5.4.8 =
+
+Tweak installation scripts and docs.
 
 = 5.4.7 =
 

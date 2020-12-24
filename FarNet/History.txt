@@ -1,6 +1,11 @@
 https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 5.4.11 =
+
+Add Tasks.Wait().
+Use unique temp names to avoid history in Panel.UIEditFile().
+
 = 5.4.10 =
 
 Amend Tasks.Macro on syntax errors.

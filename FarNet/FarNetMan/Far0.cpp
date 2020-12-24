@@ -55,6 +55,10 @@ public:
 	{
 		Far0::InvalidateProxyCommand();
 	}
+internal:
+	static Host Instance;
+private:
+	Host() {}
 };
 
 ref class Far2 : Works::Far2
@@ -68,6 +72,10 @@ public:
 	{
 		return Far0::WaitSteps();
 	}
+internal:
+	static Far2 Instance;
+private:
+	Far2() {}
 };
 
 void Far0::FreePluginMenuItem(PluginMenuItem& p)
@@ -91,9 +99,9 @@ void Far0::Start()
 	// init async operations
 	_hMutex = CreateMutex(nullptr, FALSE, nullptr);
 
-	// connect implementations
-	Works::Host::Instance = gcnew Host();
-	Works::Far2::Api = gcnew Far2();
+	// inject
+	Works::Host::Instance = % Host::Instance;
+	Works::Far2::Api = % Far2::Instance;
 
 	// module path
 	String^ path = Configuration::GetString(Configuration::Modules);

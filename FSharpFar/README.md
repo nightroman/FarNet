@@ -35,7 +35,7 @@ F# scripting and interactive services in Far Manager
 FSharpFar requires Far Manager, FarNet, .NET 4.7.2 \
 F# or anything else does not have to be installed.
 
-[Get, install, update FarNet and FarNet.FSharpFar.](https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt)
+[Get, install, update FarNet and FarNet.FSharpFar.](https://github.com/nightroman/FarNet/blob/master/README.md)
 
 As a result, you get the complete F# scripting portable with Far Manager. \
 Use it with Far Manager by FSharpFar or without Far Manager by fsx.exe.

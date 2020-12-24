@@ -123,9 +123,9 @@ F# scripting and interactive services in Far Manager
 
 ---
 
-To install FarNet packages, follow these steps:
+In order to install FarNet and modules, read:
 
-https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
+https://github.com/nightroman/FarNet/blob/master/README.md
 
 ---
 '@

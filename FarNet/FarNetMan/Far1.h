@@ -63,13 +63,8 @@ public:
 	[MethodImpl(MethodImplOptions::NoInlining)]
 	virtual void ShowHelpTopic(String^ topic) override;
 internal:
-	static void Connect();
+	static Far1 Instance;
 private:
 	Far1() {}
-	// Instance
-	static Far1 Far;
-	// Paths
-	static String^ _LocalData;
-	static String^ _RoamingData;
 };
 }

@@ -62,16 +62,15 @@ designed for Far Manager. Colorer takes care of editor syntax highlighting.
 **Requirements**
 
 - Windows PowerShell v3+ (1)
-- Far Manager, see the required version in *History.txt*
-- Plugin FarNet, see the required version in *History.txt*
+- Far Manager plugin FarNet
 
 (1) PowerShell v5.1 is tested, report issues in older versions.
 
 **Instructions**
 
-In order to install FarNet and its modules, follow these steps:
+In order to install FarNet and modules, read:
 
-<https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt>
+<https://github.com/nightroman/FarNet/blob/master/README.md>
 
 ---
 **PowerShell execution policy**

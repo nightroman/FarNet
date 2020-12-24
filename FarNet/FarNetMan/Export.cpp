@@ -51,7 +51,8 @@ void WINAPI SetStartupInfoW(const PluginStartupInfo* psi)
 		// loading
 		Works::Host::State = Works::HostState::Loading;
 
-		Far1::Connect();
+		// inject
+		Far::Api = % Far1::Instance;
 
 #ifdef TRACE_MEMORY
 		StartTraceMemory();
