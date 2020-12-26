@@ -1,0 +1,39 @@
+# EditorKit
+
+[EditorConfig]: https://editorconfig.org/
+
+FarNet module for Far Manager editor configuration
+
+## Installation
+
+- Far Manager
+- Plugin [FarNet](https://www.nuget.org/packages/FarNet/)
+- Module [FarNet.EditorKit](https://www.nuget.org/packages/FarNet.EditorKit/)
+
+How to install and update FarNet and modules:\
+https://github.com/nightroman/FarNet#readme
+
+## Description
+
+EditorKit uses `.editorconfig` files, see [EditorConfig], and applies their
+supported settings to the Far Manager editor.
+
+### Supported settings
+
+```ini
+trim_trailing_whitespace = true | false
+indent_style = tab | space
+indent_size = <number>
+```
+
+If a file opened in the editor does not have some settings or they are set to
+unsupported values, deliberately or by mistake, then the module does nothing
+and the Far Manager current settings apply.
+
+### Profile settings
+
+Profile settings may be specified in this configuration file:
+
+    %FARPROFILE%\FarNet\EditorKit\.editorconfig
+
+They are used if the usual `.editorconfig` files are not found.

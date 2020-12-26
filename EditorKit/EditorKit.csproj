@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <FarHome Condition="'$(FarHome)' == ''">C:\Bin\Far\x64</FarHome>
+    <MyOutDir>$(FarHome)\FarNet\Modules\$(AssemblyName)</MyOutDir>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net45</TargetFramework>
+    <RunPostBuildEvent>1</RunPostBuildEvent>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FarNet">
+      <HintPath>$(FarHome)\FarNet\FarNet.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="editorconfig" Version="0.12.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <MyItem Include="$(OutDir)\$(AssemblyName).dll" />
+    <MyItem Include="$(OutDir)\$(AssemblyName).pdb" Condition="'$(Configuration)' == 'Debug'" />
+    <MyItem Include="$(OutDir)\EditorConfig.Core.dll" />
+  </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Copy DestinationFolder="$(MyOutDir)" SourceFiles="@(MyItem)" SkipUnchangedFiles="true" />
+    <Delete Files="$(MyOutDir)\$(AssemblyName).pdb" Condition="'$(Configuration)' == 'Release'" />
+  </Target>
+</Project>

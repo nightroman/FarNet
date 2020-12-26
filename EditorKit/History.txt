@@ -1,0 +1,5 @@
+FarNet.EditorKit
+
+= 0.0.1 =
+
+If you used old demo EditorKit, remove %FARPROFILE%\FarNet\EditorKit\EditorKit.binary

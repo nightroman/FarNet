@@ -18,3 +18,4 @@ Properties
 Active.h
 AssemblyInfo.cs
 AssemblyMeta.*
+Directory.Build.props
