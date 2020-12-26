@@ -7,8 +7,8 @@ FarNet module for Far Manager editor configuration
 ## Installation
 
 - Far Manager
-- Plugin [FarNet](https://www.nuget.org/packages/FarNet/)
-- Module [FarNet.EditorKit](https://www.nuget.org/packages/FarNet.EditorKit/)
+- Package [FarNet](https://www.nuget.org/packages/FarNet/)
+- Package [FarNet.EditorKit](https://www.nuget.org/packages/FarNet.EditorKit/)
 
 How to install and update FarNet and modules:\
 https://github.com/nightroman/FarNet#readme
@@ -17,6 +17,12 @@ https://github.com/nightroman/FarNet#readme
 
 EditorKit uses `.editorconfig` files, see [EditorConfig], and applies their
 supported settings to the Far Manager editor.
+
+What is EditorConfig?
+
+> EditorConfig helps maintain consistent coding styles for multiple developers
+working on the same project across various editors and IDEs. EditorConfig files
+are easily readable and they work nicely with version control systems.
 
 ### Supported settings
 
