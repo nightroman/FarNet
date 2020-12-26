@@ -22,8 +22,10 @@ supported settings to the Far Manager editor.
 
 ```ini
 trim_trailing_whitespace = true | false
+insert_final_newline = true | false
 indent_style = tab | space
 indent_size = <number>
+charset = utf-8 | utf-8-bom | utf-16le | utf-16be
 ```
 
 If a file opened in the editor does not have some settings or they are set to

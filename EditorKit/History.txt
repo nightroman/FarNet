@@ -1,5 +1,10 @@
 FarNet.EditorKit
 
+= 0.0.2 =
+
+Support charset, insert_final_newline.
+Ignore special names ?NewFile?.
+
 = 0.0.1 =
 
 If you used old demo EditorKit, remove %FARPROFILE%\FarNet\EditorKit\EditorKit.binary

@@ -15,7 +15,7 @@ task build meta, {
 }
 
 task clean {
-	remove z, bin, obj, README.htm, "FarNet.$ModuleName.*.nupkg"
+	remove z, bin, obj, README.htm, Directory.Build.props, "*$ModuleName.*.nupkg"
 }
 
 task markdown {

@@ -12,15 +12,24 @@ using System.IO;
 [ModuleEditor(Name = "EditorConfig", Mask = "*")]
 public class Config : ModuleEditor
 {
-	const string trim_trailing_whitespace = "trim_trailing_whitespace";
-	const string indent_style = "indent_style";
-	const string indent_size = "indent_size";
+	const string key_trim_trailing_whitespace = "trim_trailing_whitespace";
+	const string key_insert_final_newline = "insert_final_newline";
+	const string key_indent_style = "indent_style";
+	const string key_indent_size = "indent_size";
+	const string key_charset = "charset";
+
+	bool do_trim_trailing_whitespace;
+	bool do_insert_final_newline;
 
 	// Called by the core when a file matching Mask is opened in the editor.
 	public override void Invoke(IEditor editor, ModuleEditorEventArgs e)
 	{
-		// get the file name, it may change to the profile path
+		// get the file name, it may be amended
 		var fileName = editor.FileName;
+
+		// ?NewFile?
+		if (fileName.Contains("?"))
+			return;
 
 		// get the usual configurations
 		var parser = new EditorConfigParser();
@@ -39,12 +48,22 @@ public class Config : ModuleEditor
 		var config = parser.Parse(fileName, configurations);
 		var properties = config.Properties;
 
-		if (properties.TryGetValue(trim_trailing_whitespace, out var trim) && trim == "true")
+		if (properties.TryGetValue(key_trim_trailing_whitespace, out var trim) && string.Equals(trim, "true", StringComparison.OrdinalIgnoreCase))
+		{
+			do_trim_trailing_whitespace = true;
+		}
+
+		if (properties.TryGetValue(key_insert_final_newline, out var eof) && string.Equals(eof, "true", StringComparison.OrdinalIgnoreCase))
+		{
+			do_insert_final_newline = true;
+		}
+
+		if (do_trim_trailing_whitespace || do_insert_final_newline)
 		{
 			editor.Saving += OnSaving;
 		}
 
-		if (properties.TryGetValue(indent_style, out var style))
+		if (properties.TryGetValue(key_indent_style, out var style))
 		{
 			switch (style)
 			{
@@ -57,25 +76,70 @@ public class Config : ModuleEditor
 			}
 		}
 
-		if (properties.TryGetValue(indent_size, out var size))
+		if (properties.TryGetValue(key_indent_size, out var size))
 		{
 			if (int.TryParse(size, out var value) && value > 0)
 			{
 				editor.TabSize = value;
 			}
 		}
+
+		if (properties.TryGetValue(key_charset, out var charset))
+		{
+			var codePage = editor.CodePage;
+			switch (charset.ToLower())
+			{
+				case "utf-8":
+					if (editor.CodePage != 65001)
+						editor.CodePage = 65001;
+					if (editor.WriteByteOrderMark)
+						editor.WriteByteOrderMark = false;
+					break;
+				case "utf-8-bom":
+					if (editor.CodePage != 65001)
+						editor.CodePage = 65001;
+					if (!editor.WriteByteOrderMark)
+						editor.WriteByteOrderMark = true;
+					break;
+				case "utf-16le":
+					if (editor.CodePage != 1200)
+						editor.CodePage = 1200;
+					editor.WriteByteOrderMark = true;
+					break;
+				case "utf-16be":
+					if (editor.CodePage != 1201)
+						editor.CodePage = 1201;
+					editor.WriteByteOrderMark = true;
+					break;
+			}
+		}
 	}
 
-	// Trims line ends.
+	// Trims lines, etc.
 	void OnSaving(object sender, EventArgs e)
 	{
 		var editor = (IEditor)sender;
-		foreach (ILine line in editor.Lines)
+
+		if (do_trim_trailing_whitespace)
 		{
-			string s1 = line.Text;
-			string s2 = s1.TrimEnd();
-			if (!ReferenceEquals(s1, s2))
-				line.Text = s2;
+			foreach (ILine line in editor.Lines)
+			{
+				string s1 = line.Text;
+				string s2 = s1.TrimEnd();
+				if (!ReferenceEquals(s1, s2))
+					line.Text = s2;
+			}
+		}
+
+		if (do_insert_final_newline)
+		{
+			var line = editor[editor.Count - 1];
+			if (line.Length > 0)
+			{
+				var frame = editor.Frame;
+				editor.Add(string.Empty);
+				editor.Frame = frame;
+			}
 		}
 	}
 
