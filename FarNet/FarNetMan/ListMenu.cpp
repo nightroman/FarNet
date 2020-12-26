@@ -414,7 +414,7 @@ bool ListMenu::Show()
 
 		// dialog
 		FarDialog dialog(1, 1, 1, 1);
-		dialog.HelpTopic = SS(HelpTopic) ? HelpTopic : "ListMenu";
+		dialog.HelpTopic = SS(HelpTopic) ? HelpTopic : "list-menu";
 		dialog.NoShadow = NoShadow;
 
 		// title

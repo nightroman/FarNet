@@ -70,7 +70,7 @@ namespace FarNet.Works
 		{
 			var menu = Far.Api.CreateMenu();
 			menu.AutoAssignHotkeys = true;
-			menu.HelpTopic = "MenuPanels";
+			menu.HelpTopic = "panels-menu";
 			menu.ShowAmpersands = true;
 			menu.Title = "Panels";
 

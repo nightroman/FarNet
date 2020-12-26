@@ -1,10 +1,10 @@
 <#
 .Synopsis
-	Build script (https://github.com/nightroman/Invoke-Build)
+	Build script, https://github.com/nightroman/Invoke-Build
 
 .Description
-	- Before changes run Test. It creates or updates files in $TestHome.
-	- Make changes, run Test, watch comparison with saved output samples.
+	- Before changes run test. It creates or updates files in $TestHome.
+	- Make changes, run test, watch comparison with saved output samples.
 
 .Parameter Bin
 		Publish directory for exe. Default: $env:Bin
@@ -27,7 +27,7 @@ function Get-Version {
 	switch -Regex -File Release-Notes.md { '##\s+v(\d+\.\d+\.\d+)' {return $Matches[1]} }
 }
 
-task Meta @{
+task meta @{
 	Inputs = '.build.ps1', 'Release-Notes.md'
 	Outputs = 'Directory.Build.props'
 	Jobs = {
@@ -48,24 +48,24 @@ task Meta @{
 	}
 }
 
-task Build {
+task build {
 	exec { dotnet build -c $Configuration }
 	Copy-Item -Destination $Bin -LiteralPath Bin\$Configuration\net40\HtmlToFarHelp.exe
 }
 
 # Convert markdown for packaging
-task Markdown {
+task markdown {
 	exec { MarkdownToHtml.exe "from = README.md; to = README.htm" }
 	Demo\Convert-MarkdownToHelp.ps1
 }
 
 # Remove temp files
-task Clean {
+task clean {
 	remove z, bin, obj, README.htm, *.nupkg, Demo\README.htm, Demo\README.hlf
 }
 
 # Make package in z\tools
-task Package Markdown, {
+task package markdown, {
 	# package folder
 	remove z
 	$null = mkdir z\tools\Demo
@@ -80,13 +80,13 @@ task Package Markdown, {
 }
 
 # Get version
-task Version {
+task version {
 	($script:Version = Get-Version)
 	equals (Get-Command HtmlToFarHelp.exe).FileVersionInfo.FileVersion $Version
 }
 
 # Make NuGet package
-task NuGet Package, Version, {
+task nuget package, version, {
 	$text = @'
 HtmlToFarHelp.exe converts HTML files with compatible structure to HLF,
 Far Manager help format. It also performs some sanity checks for unique
@@ -129,7 +129,7 @@ class TestCase {
 }
 
 # Test conversions and compare results.
-task Test {
+task test {
 	$SampleHome1 = "$TestHome\1" # MarkdownToHtml
 	$SampleHome2 = "$TestHome\2" # pandoc markdown_phpextra
 	$SampleHome3 = "$TestHome\3" # pandoc gfm
@@ -147,8 +147,9 @@ task Test {
 		[TestCase]@{File = "..\..\RightWords\README.md"; Name = 'RightWords.README'; Mode = 3; Root = $SampleHome3}
 
 		# used for HLF and docs
-		[TestCase]@{File = "..\..\Vessel\README.md"; Name = 'About-Vessel'; Mode = 3; Root = $SampleHome3}
+		[TestCase]@{File = "..\..\FarNet\README.md"; Name = 'About-FarNet'; Mode = 3; Root = $SampleHome3}
 		[TestCase]@{File = "..\..\PowerShellFar\README.md"; Name = 'About-PowerShellFar'; Mode = 3; Root = $SampleHome3}
+		[TestCase]@{File = "..\..\Vessel\README.md"; Name = 'About-Vessel'; Mode = 3; Root = $SampleHome3}
 
 		# legacy .text files
 		foreach($_ in Get-ChildItem -Recurse -LiteralPath C:\ROM\FarDev\Code -Filter *.text) {
@@ -186,4 +187,4 @@ function Test-File([TestCase]$Test) {
 	Remove-Item -LiteralPath $htm, $hlf
 }
 
-task . Build, Test, Clean
+task . build, test, clean

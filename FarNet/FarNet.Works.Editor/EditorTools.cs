@@ -117,7 +117,7 @@ namespace FarNet.Works
 		public static void ShowEditorsMenu()
 		{
 			var menu = Far.Api.CreateMenu();
-			menu.HelpTopic = "MenuEditors";
+			menu.HelpTopic = "editors-menu";
 			menu.Title = "Editors";
 
 			int index = -1;
@@ -134,7 +134,7 @@ namespace FarNet.Works
 		public static void ShowViewersMenu()
 		{
 			var menu = Far.Api.CreateMenu();
-			menu.HelpTopic = "MenuViewers";
+			menu.HelpTopic = "viewers-menu";
 			menu.Title = "Viewers";
 
 			int index = -1;

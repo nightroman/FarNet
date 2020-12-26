@@ -11,7 +11,7 @@ namespace FarNet.Works.Config
 {
 	public static class SettingsUI
 	{
-		internal const string HelpSettings = "ModuleSettings";
+		internal const string HelpSettings = "module-settings";
 		public static void ShowSettings(IEnumerable<IModuleManager> managers)
 		{
 			if (managers == null) return;

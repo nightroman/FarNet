@@ -598,7 +598,7 @@ void Far0::OpenConfig() //config//
 {
 	IMenu^ menu = Far::Api->CreateMenu();
 	menu->AutoAssignHotkeys = true;
-	menu->HelpTopic = "MenuConfig";
+	menu->HelpTopic = "config-menu";
 	menu->Title = "Modules configuration";
 
 	List<IModuleTool^> tools(Works::Host::EnumTools());
@@ -617,22 +617,22 @@ void Far0::OpenConfig() //config//
 		{
 		case 0:
 			if (_registeredCommand.Count)
-				Works::ConfigCommand::Show(%_registeredCommand, Far0::_helpTopic + "ConfigCommand");
+				Works::ConfigCommand::Show(%_registeredCommand, Far0::_helpTopic + "configure-commands");
 			break;
 		case 1:
 			if (_registeredDrawer.Count)
-				Works::ConfigDrawer::Show(%_registeredDrawer, Far0::_helpTopic + "ConfigDrawer");
+				Works::ConfigDrawer::Show(%_registeredDrawer, Far0::_helpTopic + "configure-drawers");
 			break;
 		case 2:
 			if (_registeredEditor.Count)
-				Works::ConfigEditor::Show(%_registeredEditor, Far0::_helpTopic + "ConfigEditor");
+				Works::ConfigEditor::Show(%_registeredEditor, Far0::_helpTopic + "configure-editors");
 			break;
 		case 3:
 			if (tools.Count)
-				Works::ConfigTool::Show(%tools, Far0::_helpTopic + "ConfigTool", gcnew Func<IModuleTool^, String^>(&Far0::GetMenuText));
+				Works::ConfigTool::Show(%tools, Far0::_helpTopic + "configure-tools", gcnew Func<IModuleTool^, String^>(&Far0::GetMenuText));
 			break;
 		case 5: // +2, mind separator
-			Works::ConfigUICulture::Show(Works::ModuleLoader::GatherModuleManagers(), Far0::_helpTopic + "ConfigUICulture");
+			Works::ConfigUICulture::Show(Works::ModuleLoader::GatherModuleManagers(), Far0::_helpTopic + "module-ui-culture");
 			break;
 		}
 	}
@@ -784,7 +784,7 @@ void Far0::ShowMenu(ModuleToolOptions from)
 	String^ sSettings = "&Settings";
 
 	IMenu^ menu = Far::Api->CreateMenu();
-	menu->HelpTopic = "MenuMain";
+	menu->HelpTopic = "plugin-menu";
 	menu->Title = "FarNet";
 
 	// Panels
@@ -833,7 +833,7 @@ void Far0::ShowDrawersMenu()
 
 	IMenu^ menu = Far::Api->CreateMenu();
 	menu->Title = "Drawers";
-	menu->HelpTopic = "MenuDrawers";
+	menu->HelpTopic = "drawers-menu";
 
 	for each(IModuleDrawer^ drawer in _registeredDrawer)
 	{
@@ -856,7 +856,7 @@ void Far0::ShowDrawersMenu()
 void Far0::ShowConsoleMenu()
 {
 	IMenu^ menu = Far::Api->CreateMenu();
-	menu->HelpTopic = "MenuConsole";
+	menu->HelpTopic = "console-menu";
 	menu->Title = "Console";
 
 	menu->Add("&Decrease font size");

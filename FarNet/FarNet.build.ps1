@@ -48,7 +48,7 @@ task uninstall {
 
 # Make HLF, called by Build (Install), depends on x64/x86
 task helpHLF -If ($Configuration -eq 'Release') {
-	exec { pandoc.exe About-FarNet.text --output=z.htm --from=markdown_phpextra }
+	exec { pandoc.exe README.md --output=z.htm --from=gfm }
 	exec { HtmlToFarHelp from=z.htm to=$FarHome\Plugins\FarNet\FarNetMan.hlf }
 	remove z.htm
 }
@@ -58,9 +58,9 @@ task helpHTM {
 	assert (Test-Path $env:MarkdownCss)
 	exec {
 		pandoc.exe @(
-			'About-FarNet.text'
+			'README.md'
 			'--output=About-FarNet.htm'
-			'--from=markdown_phpextra'
+			'--from=gfm'
 			'--self-contained'
 			"--css=$env:MarkdownCss"
 			'--metadata=pagetitle:FarNet'
