@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet module Explore
-Copyright (c) 2010 Roman Kuzmin
-*/
+// FarNet module Explore
+// Copyright (c) Roman Kuzmin
 
 using System;
 using FarNet.Tools;
@@ -63,7 +61,7 @@ namespace FarNet.Explore
 					var mask = token;
 					if (!Far.Api.IsMaskValid(mask))
 						throw new ModuleException("Invalid mask.");
-					
+
 					search.Filter = delegate(Explorer explorer, FarFile file)
 					{
 						return Far.Api.IsMaskMatch(file.Name, mask);

@@ -1,6 +1,6 @@
 <#
 .Synopsis
-	Build script (https://github.com/nightroman/Invoke-Build)
+	Build script, https://github.com/nightroman/Invoke-Build
 #>
 
 param(
@@ -9,34 +9,43 @@ param(
 $FarHome = "C:\Bin\Far\$Platform"
 $ModuleHome = "$FarHome\FarNet\Modules\CopyColor"
 
-task . Build, Clean
-
-# Build and install
-task Build {
+task build {
 	exec { dotnet build CopyColor.csproj /p:Configuration=Release /p:FarHome=$FarHome }
 }
 
-# New About-CopyColor.htm
-task Help {
-	exec { MarkdownToHtml "From = About-CopyColor.text; To = About-CopyColor.htm" }
+task help {
+	assert (Test-Path $env:MarkdownCss)
+	exec {
+		pandoc.exe @(
+			'README.md'
+			'--output=About-CopyColor.htm'
+			'--from=gfm'
+			'--self-contained'
+			"--css=$env:MarkdownCss"
+			'--metadata=pagetitle:FarNet'
+		)
+	}
 }
 
-task Clean {
+task clean {
 	remove z, bin, obj, About-CopyColor.htm, FarNet.CopyColor.*.nupkg
 }
 
-task Version {
-	$dll = Get-Item -LiteralPath $ModuleHome\CopyColor.dll
-	assert ($dll.VersionInfo.FileVersion -match '^(\d+\.\d+\.\d+)\.0$')
-	($script:Version = $matches[1])
+task version {
+	($script:Version = switch -regex -file History.txt {'^= (\d+\.\d+\.\d+) =$' {$matches[1]; break}})
 }
 
-task Package Help, {
+task package help, version, {
+	equals $Version (Get-Item -LiteralPath $ModuleHome\CopyColor.dll).VersionInfo.FileVersion
 	$toModule = 'z\tools\FarHome\FarNet\Modules\CopyColor'
 
 	remove z
 	$null = mkdir $toModule
 
+	# logo
+	Copy-Item -Destination z ..\Zoo\FarNetLogo.png
+
+	# module
 	Copy-Item -Destination $toModule `
 	About-CopyColor.htm,
 	History.txt,
@@ -44,19 +53,18 @@ task Package Help, {
 	$ModuleHome\CopyColor.dll
 }
 
-task NuGet Package, Version, {
+task nuget package, version, {
 	$text = @'
 CopyColor is the FarNet module for Far Manager.
 
-It copies selected text with colors from the editor to the clipboard
-using HTML clipboard format. This text can be pasted into Microsoft
-Word, Outlook, and some other editors.
+It copies selected text with colors from the editor to the clipboard using HTML
+clipboard format. This text can be pasted to editors supporting this format.
 
 ---
 
-To install FarNet packages, follow these steps:
+How to install and update FarNet and modules:
 
-https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
+https://github.com/nightroman/FarNet#readme
 
 ---
 '@
@@ -70,16 +78,17 @@ https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
 		<owners>Roman Kuzmin</owners>
 		<authors>Roman Kuzmin</authors>
 		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
-		<iconUrl>https://raw.githubusercontent.com/wiki/nightroman/FarNet/images/FarNetLogo.png</iconUrl>
-		<licenseUrl>https://raw.githubusercontent.com/nightroman/FarNet/master/CopyColor/LICENSE.txt</licenseUrl>
+		<icon>FarNetLogo.png</icon>
+		<license type="expression">BSD-3-Clause</license>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<summary>$text</summary>
 		<description>$text</description>
-		<releaseNotes>https://raw.githubusercontent.com/nightroman/FarNet/master/CopyColor/History.txt</releaseNotes>
+		<releaseNotes>https://github.com/nightroman/FarNet/blob/master/CopyColor/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module</tags>
 	</metadata>
 </package>
 "@
 	# pack
-	exec { NuGet pack z\Package.nuspec -NoPackageAnalysis }
+	exec { NuGet pack z\Package.nuspec }
 }
+
+task . build, clean

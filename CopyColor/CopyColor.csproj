@@ -12,9 +12,9 @@
     <Copyright>Copyright (c) Roman Kuzmin</Copyright>
     <Description>FarNet module CopyColor for Far Manager</Description>
     <Product>FarNet.CopyColor</Product>
-    <Version>2.1.1</Version>
-    <FileVersion>2.1.1</FileVersion>
-    <AssemblyVersion>2.1.1</AssemblyVersion>
+    <Version>2.1.2</Version>
+    <FileVersion>$(Version)</FileVersion>
+    <AssemblyVersion>$(Version)</AssemblyVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FarNet">

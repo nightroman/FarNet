@@ -26,7 +26,8 @@ it works with dictionaries published on OpenOffice.org.
 
 **FarNet and RightWords**
 
-[How to get, install, and update.](https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt)
+How to install and update FarNet and modules:\
+<https://github.com/nightroman/FarNet#readme>
 
 **Dictionaries**
 

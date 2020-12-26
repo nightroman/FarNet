@@ -1,6 +1,6 @@
 <#
 .Synopsis
-	Build script (https://github.com/nightroman/Invoke-Build)
+	Build script, https://github.com/nightroman/Invoke-Build
 #>
 
 param(
@@ -66,9 +66,9 @@ and shows the results as a chart in a separate window with some interaction.
 
 ---
 
-To install FarNet packages, follow these steps:
+How to install and update FarNet and modules:
 
-https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
+https://github.com/nightroman/FarNet#readme
 
 ---
 '@
@@ -85,7 +85,6 @@ https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
 		<icon>FarNetLogo.png</icon>
 		<license type="expression">BSD-3-Clause</license>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<summary>$text</summary>
 		<description>$text</description>
 		<releaseNotes>https://github.com/nightroman/FarNet/blob/master/FolderChart/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module</tags>

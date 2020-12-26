@@ -1,8 +1,6 @@
 
-/*
-FarNet module Explore
-Copyright (c) 2010 Roman Kuzmin
-*/
+// FarNet module Explore
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections.Generic;
@@ -22,18 +20,18 @@ namespace FarNet.Explore
 			for (; ; )
 			{
 				int n = reader.Read();
-				
+
 				// end of text
 				if (n < 0)
 				{
 					// error on quote
 					if (quote)
 						throw new InvalidOperationException("Expected '\"', found end of text.");
-					
+
 					// add the token
 					if (sb.Length > 0)
 						list.Add(sb.ToString());
-					
+
 					// done
 					return list;
 				}
@@ -54,7 +52,7 @@ namespace FarNet.Explore
 						// add the token
 						var token = sb.ToString();
 						list.Add(token);
-						
+
 						// the last token? add the rest of text
 						foreach(var last in lasts)
 						{
@@ -64,7 +62,7 @@ namespace FarNet.Explore
 								return list;
 							}
 						}
-						
+
 						// reset
 						sb.Length = 0;
 						continue;
@@ -120,7 +118,7 @@ namespace FarNet.Explore
 					var name2 = names[j];
 					if (!name2.StartsWith(part, StringComparison.OrdinalIgnoreCase))
 						continue;
-					
+
 					if (name2.Length == part.Length)
 						return name2;
 

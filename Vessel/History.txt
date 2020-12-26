@@ -1,5 +1,8 @@
-NuGet package: https://www.nuget.org/packages/FarNet.Vessel
-FarNet 5.2.4
+https://www.nuget.org/packages/FarNet.Vessel
+
+= 2.5.1 =
+
+Minor tweaks.
 
 = 2.5.0 =
 

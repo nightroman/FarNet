@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet module Drawer
-Copyright (c) 2012-2016 Roman Kuzmin
-*/
+// FarNet module Drawer
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Configuration;

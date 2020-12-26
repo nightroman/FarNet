@@ -1,5 +1,6 @@
-﻿
-# FarNet module *Drawer*
+﻿# Drawer
+
+FarNet module Drawer for Far Manager
 
 *********************************************************************
 ## Synopsis
@@ -16,16 +17,14 @@ The module provides a few editor color tools (drawers).
 
 **Requirements**
 
- * Far Manager 3.0.3842
- * Plugin FarNet 5.0.48
+ * Far Manager
+ * Package FarNet
+ * Package FarNet.Drawer
 
 **Instructions**
 
-How to get, install, and update from the NuGet package *FarNet.Drawer*
-
-In English: <https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt>
-
-In Russian: <https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.ru.txt>
+How to install and update FarNet and modules:\
+<https://github.com/nightroman/FarNet#readme>
 
 *********************************************************************
 ## Description
@@ -48,16 +47,19 @@ In order to turn a drawer on and off use the menu: `[F11] | FarNet | Drawers | (
 
 Module settings panel: `[F11] | FarNet | Settings | Drawer`
 
-CurrentWordPattern
-: Defines the regular expression pattern for words of the "Current word"
-  drawer. The default pattern is `\w[-\w]*`
+- CurrentWordPattern
 
-FixedColumnNumber
-: Defines the number of highlighted column in the "Fixed column" drawer. The
-  default column number is 80
+    Defines the regular expression pattern for words of the "Current word"
+    drawer. The default pattern is `\w[-\w]*`
 
-(Drawer)ColorForeground, (Drawer)ColorBackground
-: Drawer colors: Black, DarkBlue, DarkGreen, DarkCyan, DarkRed, DarkMagenta,
-  DarkYellow, Gray, DarkGray, Blue, Green, Cyan, Red, Magenta, Yellow, White.
+- FixedColumnNumber
+
+    Defines the number of highlighted column in the "Fixed column" drawer. The
+    default column number is 80
+
+- ...ColorForeground, ...ColorBackground
+
+    Drawer colors: Black, DarkBlue, DarkGreen, DarkCyan, DarkRed, DarkMagenta,
+    DarkYellow, Gray, DarkGray, Blue, Green, Cyan, Red, Magenta, Yellow, White.
 
 *********************************************************************

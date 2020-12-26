@@ -56,11 +56,11 @@ tiny pieces of boilerplate framework code.
 
 How to install and update FarNet and modules:
 
-https://github.com/nightroman/FarNet#readme
+<https://github.com/nightroman/FarNet#readme>
 
 ---
 
-***Installed files***
+**Installed files**
 
 *%FARHOME%*
 

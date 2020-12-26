@@ -1,4 +1,8 @@
-NuGet package: https://www.nuget.org/packages/FarNet.FolderChart
+https://www.nuget.org/packages/FarNet.FolderChart
+
+= 2.4.1 =
+
+Minor tweaks.
 
 = 2.4.0 =
 

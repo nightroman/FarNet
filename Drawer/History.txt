@@ -1,6 +1,8 @@
-﻿
-NuGet package: https://www.nuget.org/packages/FarNet.Drawer
-FarNet 5.1.0
+﻿https://www.nuget.org/packages/FarNet.Drawer
+
+= 1.1.3 =
+
+Minor tweaks.
 
 = 1.1.2 =
 

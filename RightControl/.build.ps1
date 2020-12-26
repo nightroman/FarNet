@@ -1,7 +1,6 @@
-
 <#
 .Synopsis
-	Build script (https://github.com/nightroman/Invoke-Build)
+	Build script, https://github.com/nightroman/Invoke-Build
 #>
 
 param(
@@ -11,15 +10,13 @@ param(
 $FarHome = "C:\Bin\Far\$Platform"
 $ModuleHome = "$FarHome\FarNet\Modules\RightControl"
 
-task . Build, Clean
-
 # Get version from history.
 function Get-Version {
 	switch -Regex -File History.txt {'=\s*(\d+\.\d+\.\d+)\s*=' {return $Matches[1]} }
 }
 
 # Generate or update meta files.
-task Meta -Inputs History.txt -Outputs AssemblyInfo.cs {
+task meta -Inputs History.txt -Outputs AssemblyInfo.cs {
 	$Version = Get-Version
 
 	Set-Content AssemblyInfo.cs @"
@@ -32,7 +29,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("FarNet module RightControl for Far Manager")]
 [assembly: AssemblyDescription("Some editor actions work like in other editors")]
 [assembly: AssemblyCompany("https://github.com/nightroman/FarNet")]
-[assembly: AssemblyCopyright("Copyright (c) 2010-2016 Roman Kuzmin")]
+[assembly: AssemblyCopyright("Copyright (c) Roman Kuzmin")]
 
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
@@ -40,34 +37,48 @@ using System.Runtime.InteropServices;
 }
 
 # Build and install
-task Build Meta, {
-	use 4.0 MSBuild
-	exec { MSBuild RightControl.csproj /p:Configuration=Release /p:FarHome=$FarHome }
+task build meta, {
+	$MSBuild = Resolve-MSBuild
+	exec { & $MSBuild RightControl.csproj /p:Configuration=Release /p:FarHome=$FarHome }
 }
 
 # New About-RightControl.htm
-task Help {
-	exec { MarkdownToHtml "From = About-RightControl.text; To = About-RightControl.htm" }
+task help {
+	assert (Test-Path $env:MarkdownCss)
+	exec {
+		pandoc.exe @(
+			'README.md'
+			'--output=About-RightControl.htm'
+			'--from=gfm'
+			'--self-contained'
+			"--css=$env:MarkdownCss"
+			'--metadata=pagetitle:FarNet'
+		)
+	}
 }
 
 # Remove temp files
-task Clean {
+task clean {
 	remove z, bin, obj, AssemblyInfo.cs, About-RightControl.htm, FarNet.RightControl.*.nupkg
 }
 
 # Set $script:Version
-task Version {
+task version {
 	($script:Version = Get-Version)
-	assert ((Get-Item $ModuleHome\RightControl.dll).VersionInfo.FileVersion -eq ([Version]"$script:Version.0"))
 }
 
 # Copy package files to z\tools
-task Package Help, {
+task package help, version, {
+	equals "$Version.0" (Get-Item $ModuleHome\RightControl.dll).VersionInfo.FileVersion
 	$toModule = 'z\tools\FarHome\FarNet\Modules\RightControl'
 
 	remove z
 	$null = mkdir $toModule
 
+	# logo
+	Copy-Item -Destination z ..\Zoo\FarNetLogo.png
+
+	# module
 	Copy-Item -Destination $toModule `
 	About-RightControl.htm,
 	History.txt,
@@ -77,7 +88,7 @@ task Package Help, {
 }
 
 # New NuGet package
-task NuGet Package, Version, {
+task nuget package, version, {
 	$text = @'
 RightControl is the FarNet module for Far Manager.
 
@@ -87,9 +98,9 @@ selecting, deleting by words, and etc.
 
 ---
 
-To install FarNet packages, follow these steps:
+How to install and update FarNet and modules:
 
-https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
+https://github.com/nightroman/FarNet#readme
 
 ---
 '@
@@ -103,16 +114,17 @@ https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt
 		<owners>Roman Kuzmin</owners>
 		<authors>Roman Kuzmin</authors>
 		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
-		<iconUrl>https://raw.githubusercontent.com/wiki/nightroman/FarNet/images/FarNetLogo.png</iconUrl>
-		<licenseUrl>https://raw.githubusercontent.com/nightroman/FarNet/master/RightControl/LICENSE.txt</licenseUrl>
+		<icon>FarNetLogo.png</icon>
+		<license type="expression">BSD-3-Clause</license>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<summary>$text</summary>
 		<description>$text</description>
-		<releaseNotes>https://raw.githubusercontent.com/nightroman/FarNet/master/RightControl/History.txt</releaseNotes>
+		<releaseNotes>https://github.com/nightroman/FarNet/blob/master/RightControl/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module</tags>
 	</metadata>
 </package>
 "@
 	# pack
-	exec { NuGet pack z\Package.nuspec -NoPackageAnalysis }
+	exec { NuGet pack z\Package.nuspec }
 }
+
+task . build, clean

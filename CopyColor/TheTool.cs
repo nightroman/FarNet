@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet module CopyColor
-Copyright (c) 2011-2016 Roman Kuzmin
-*/
+// FarNet module CopyColor
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Collections.Generic;

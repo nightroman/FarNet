@@ -1,8 +1,6 @@
 ﻿
-/*
-FarNet module RightControl
-Copyright (c) 2010-2016 Roman Kuzmin
-*/
+// FarNet module RightControl
+// Copyright (c) Roman Kuzmin
 
 using System;
 using System.Text.RegularExpressions;

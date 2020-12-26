@@ -1,8 +1,6 @@
 
-/*
-FarNet module CopyColor
-Copyright (c) 2011-2016 Roman Kuzmin
-*/
+// FarNet module CopyColor
+// Copyright (c) Roman Kuzmin
 
 // HTML formatting code comes from:
 // http://blog.tcx.be/2005/08/copying-html-fragment-to-clipboard.html

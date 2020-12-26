@@ -37,9 +37,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FarNet">
+      <HintPath>$(FarHome)\FarNet\FarNet.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="FarNet.Settings">
+      <HintPath>$(FarHome)\FarNet\FarNet.Settings.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />

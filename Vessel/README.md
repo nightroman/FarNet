@@ -2,7 +2,7 @@
 
 # Vessel
 
-Vessel is the FarNet module for Far Manager.
+Vessel is the FarNet module for Far Manager.\
 It provides smart history of files, folders, commands.
 
 **Module**
@@ -24,9 +24,8 @@ It provides smart history of files, folders, commands.
 
 **Installation**
 
-How to get, install, and update:
-
-<https://raw.githubusercontent.com/nightroman/FarNet/master/Install-FarNet.en.txt>
+How to install and update FarNet and modules:\
+<https://github.com/nightroman/FarNet#readme>
 
 **Technical details**
 
