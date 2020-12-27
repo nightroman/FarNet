@@ -1,37 +1,24 @@
 (*
-    The sample wizard dialog flow.
-    fs: Async.Start Wizard.flowWizard
+    The sample wizard dialog async job.
+    fs: Async.Start Wizard.jobWizard
 *)
 
 module Wizard
 open FarNet
 open FarNet.FSharp
-open System.IO
 
 /// Shows a message with the specified buttons and gets the choice index.
 let jobAsk text title buttons =
     job { return far.Message (text, title, MessageOptions.LeftAligned, buttons) }
 
-/// Opens a non-modal editor and gets the result text when the editor exits.
+/// Opens a modeless editor and gets the result text when the editor exits.
 let jobEditText text title = async {
-    // write text to a temp file
-    let fileName = far.TempName "F#" + ".txt"
-    File.WriteAllText (fileName, text)
-
-    // open editor and wait for closing
-    let editor = far.CreateEditor (FileName = fileName, Title = title, CodePage = 65001)
-    editor.DisableHistory <- true
-    do! Job.FlowEditor editor
-
-    // get and return text, delete file
-    let text = File.ReadAllText fileName
-    File.Delete fileName
-    return text
+    return! far.AnyEditor.EditTextAsync(EditTextArgs(Text=text, Title=title)) |> Async.AwaitTask
 }
 
-/// Wizard flow with some work in non-modal editor and panel.
-let flowWizard = async {
-    let text = ref "Edit this text in non-modal editor.\nThe wizard continues when you exit."
+/// Async loop with modeless editors and panels.
+let jobWizard = async {
+    let text = ref "Edit this text, save, exit.\nThe wizard will continue."
     let loop = ref true
     while loop.Value do
         match! jobAsk !text "Wizard" [| "&OK"; "&Editor"; "&Panel"; "&Cancel" |] with
@@ -46,7 +33,7 @@ let flowWizard = async {
         | 2 ->
             // [Panel] - panel to show the current text
             let lines = (!text).Split [|'\n'|] |> Seq.cast
-            do! Job.FlowPanel (MyPanel.panel lines)
+            do! Jobs.Panel (MyPanel.panel lines)
         | _ ->
             // [Cancel] or [Esc] - exit
             loop := false

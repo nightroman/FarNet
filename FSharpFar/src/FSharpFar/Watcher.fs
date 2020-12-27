@@ -8,10 +8,10 @@ let private agent = MailboxProcessor.Start (fun inbox -> async {
     while true do
         let! path = inbox.Receive ()
         if isFSharpFileName path then
-            do! Job.From <| fun () ->
+            do! Jobs.Job <| fun () ->
                 Session.OnSavingSource path
         else if String.endsWithIgnoreCase path ".fs.ini" then
-            do! Job.From <| fun () ->
+            do! Jobs.Job <| fun () ->
                 Session.OnSavingConfig path
 })
 

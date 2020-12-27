@@ -1,17 +1,16 @@
-/// Demo/test Job functions for panels.
+/// Demo Jobs functions for panels.
 module TestPanel02
 open FarNet
 open FarNet.FSharp
 
 /// Opens a panel with 3 items. After closing shows a message with selected items.
-/// fs: FarNet.FSharp.Job.Start TestPanel02.flowWaitPanelClosing
-let flowWaitPanelClosing = async {
+let workWaitPanelClosing = async {
     // open the panel with 3 items
-    let! panel = Job.OpenPanel (fun () ->
+    let! panel = Jobs.OpenPanel (fun () ->
         PSFar.Invoke "11..13 | Out-FarPanel" |> ignore
     )
     // wait for closing with the function returning selected files
-    let! r = Job.WaitPanelClosing (panel, fun _ ->
+    let! r = Jobs.WaitPanelClosing (panel, fun _ ->
         panel.SelectedFiles
     )
     // show the returned files
@@ -20,58 +19,56 @@ let flowWaitPanelClosing = async {
 
 [<Test>]
 let testWaitPanelClosing = async {
-    Job.Start flowWaitPanelClosing
+    Jobs.Start workWaitPanelClosing
     do! Assert.Wait Window.IsModulePanel
-    do! Job.Keys "Down Down Esc"
+    do! Jobs.Keys "Down Down Esc"
     do! job {
         Assert.Dialog ()
         Assert.Equal ("seq [12]", far.Dialog.[1].Text)
     }
-    do! Job.Keys "Esc"
+    do! Jobs.Keys "Esc"
     do! job { Assert.NativePanel () }
 }
 
 /// Opens a panel with 3 items. After closing shows a message "OK".
-/// fs: FarNet.FSharp.Job.Start TestPanel02.flowWaitPanelClosed
-let flowWaitPanelClosed = async {
+let workWaitPanelClosed = async {
     // open the panel with 3 items
-    let! panel = Job.OpenPanel (fun () ->
+    let! panel = Jobs.OpenPanel (fun () ->
         PSFar.Invoke "1..3 | Out-FarPanel" |> ignore
     )
     // wait for closing
-    do! Job.WaitPanelClosed panel
+    do! Jobs.WaitPanelClosed panel
     // show OK
     do! job { far.Message "OK" }
 }
 
 [<Test>]
 let testWaitPanelClosed = async {
-    Job.Start flowWaitPanelClosed
+    Jobs.Start workWaitPanelClosed
     do! Assert.Wait Window.IsModulePanel
-    do! Job.Keys "Esc"
+    do! Jobs.Keys "Esc"
     do! job {
         Assert.Dialog ()
         Assert.Equal ("OK", far.Dialog.[1].Text)
     }
-    do! Job.Keys "Esc"
+    do! Jobs.Keys "Esc"
     do! job { Assert.NativePanel () }
 }
 
 /// Fails to open a panel, for testing.
-/// fs: FarNet.FSharp.Job.Start TestPanel02.flowOpenPanelFails
-let flowOpenPanelFails = async {
+let workOpenPanelFails = async {
     // call OpenPanel with a function not opening a panel
-    do! Job.OpenPanel ignore |> Async.Ignore
+    do! Jobs.OpenPanel ignore |> Async.Ignore
 }
 
 [<Test>]
 let testOpenPanelFails = async {
-    Job.Start flowOpenPanelFails
+    Jobs.Start workOpenPanelFails
     do! Assert.Wait Window.IsDialog
     do! job {
         Assert.Equal ("InvalidOperationException", far.Dialog.[0].Text)
         Assert.Equal ("Panel was not opened.", far.Dialog.[1].Text)
     }
-    do! Job.Keys "Esc"
+    do! Jobs.Keys "Esc"
     do! job { Assert.NativePanel () }
 }

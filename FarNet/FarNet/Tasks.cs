@@ -11,65 +11,68 @@ using System.Threading.Tasks;
 namespace FarNet
 {
 	/// <summary>
-	/// Task helpers.
+	/// Async helpers for jobs.
+	/// Jobs are actions and functions called by the core when it gets control.
 	/// </summary>
 	public static class Tasks
 	{
 		const string _envMacroFlag = "FarNet.Tasks.macro";
 		const string _macroSetFlag = "mf.env('FarNet.Tasks.macro', 1, '1')";
+
 		/// <summary>
-		/// Creates a task with the specified function.
+		/// Starts a task with the specified function job.
 		/// </summary>
 		/// <typeparam name="T">The function result.</typeparam>
-		/// <param name="job">The function to be posted.</param>
-		/// <returns>The task which completes when the function completes.</returns>
+		/// <param name="job">The function job.</param>
+		/// <returns>The task which completes when the function job completes.</returns>
 		public static Task<T> Job<T>(Func<T> job)
 		{
-			var tcs = new TaskCompletionSource<T>();
+			var task = new TaskCompletionSource<T>();
 			Far.Api.PostJob(() =>
 			{
 				try
 				{
-					tcs.SetResult(job());
+					task.SetResult(job());
 				}
 				catch (Exception exn)
 				{
-					tcs.SetException(exn);
+					task.SetException(exn);
 				}
 			});
-			return tcs.Task;
+			return task.Task;
 		}
+
 		/// <summary>
-		/// Creates a task with the specified action.
+		/// Starts a task with the specified action job.
 		/// </summary>
-		/// <param name="job">The action to be posted.</param>
-		/// <returns>The task which completes when the action completes.</returns>
+		/// <param name="job">The action job.</param>
+		/// <returns>The task which completes when the action job completes.</returns>
 		public static Task Job(Action job)
 		{
-			var tcs = new TaskCompletionSource<object>();
+			var task = new TaskCompletionSource<object>();
 			Far.Api.PostJob(() =>
 			{
 				try
 				{
 					job();
-					tcs.SetResult(null);
+					task.SetResult(null);
 				}
 				catch (Exception exn)
 				{
-					tcs.SetException(exn);
+					task.SetException(exn);
 				}
 			});
-			return tcs.Task;
+			return task.Task;
 		}
+
 		/// <summary>
-		/// Creates a task which runs the specified action.
+		/// Starts a task which runs the job and completes when the core gets control.
 		/// </summary>
-		/// <param name="job">The action to run.</param>
+		/// <param name="job">The job to run.</param>
 		/// <returns>The task which completes when the core gets control.</returns>
 		/// <remarks>
 		/// The task completes when the core gets control,
-		/// either on shown modal UI or the job end,
-		/// whatever happens first.
+		/// either on shown UI or the job end, whatever happens first.
 		/// <para>
 		/// The job is supposed to show some modal UI and
 		/// let next tasks work for automation, tests, etc.
@@ -77,34 +80,46 @@ namespace FarNet
 		/// </remarks>
 		public static Task Run(Action job)
 		{
-			var tcs = new TaskCompletionSource<object>();
+			var task = new TaskCompletionSource<object>();
 			Far.Api.PostJob(() =>
 			{
 				try
 				{
 					//! try because the job may fail before UI
-					Far.Api.PostJob(() => tcs.TrySetResult(null));
+					Far.Api.PostJob(() => task.TrySetResult(null));
 					job();
 				}
 				catch (Exception exn)
 				{
 					//! try because the task may complete on UI and the job may fail after
-					if (!tcs.TrySetException(exn))
+					if (!task.TrySetException(exn))
 						throw exn;
 				}
 			});
-			return tcs.Task;
+			return task.Task;
 		}
+
 		/// <summary>
-		/// Creates a task which posts the specified macro.
+		/// Starts a task which posts the specified keys.
 		/// </summary>
-		/// <param name="text">Macro text.</param>
+		/// <param name="keys">Keys text to post.</param>
+		/// <returns>The task which completes when the keys complete.</returns>
+		public static Task Keys(string keys)
+		{
+			return Macro($"Keys[[{keys}]]");
+		}
+
+		/// <summary>
+		/// Starts a task which posts the specified macro.
+		/// </summary>
+		/// <param name="text">Macro text to post.</param>
 		/// <returns>The task which completes when the macro completes.</returns>
 		public static Task Macro(string text)
 		{
 			Environment.SetEnvironmentVariable(_envMacroFlag, "0");
 			var task = new TaskCompletionSource<object>();
-			Far.Api.PostJob(() => {
+			Far.Api.PostJob(() =>
+			{
 				try
 				{
 					Far.Api.PostMacro(text);
@@ -124,28 +139,20 @@ namespace FarNet
 			});
 			return task.Task;
 		}
+
 		/// <summary>
-		/// Creates a task which posts the specified keys.
+		/// Starts a task which opens the editor and completes when it closes.
 		/// </summary>
-		/// <param name="keys">Keys text.</param>
-		/// <returns>The task which completes when the keys complete.</returns>
-		public static Task Keys(string keys)
-		{
-			return Macro($"Keys[[{keys}]]");
-		}
-		/// <summary>
-		/// Creates a task which opens the editor and completes when it closes.
-		/// </summary>
-		/// <param name="editor">The editor.</param>
+		/// <param name="editor">The editor to open.</param>
 		/// <returns>The task which completes when the editor closes.</returns>
 		public static Task Editor(IEditor editor)
 		{
-			var tcs = new TaskCompletionSource<object>();
+			var task = new TaskCompletionSource<object>();
 
 			void onClosed(object sender, EventArgs e)
 			{
 				editor.Closed -= onClosed;
-				tcs.SetResult(null);
+				task.SetResult(null);
 			}
 
 			Far.Api.PostJob(() =>
@@ -158,17 +165,82 @@ namespace FarNet
 				catch (Exception exn)
 				{
 					editor.Closed -= onClosed;
-					tcs.SetException(exn);
+					task.SetException(exn);
 				}
 			});
 
-			return tcs.Task;
+			return task.Task;
 		}
+
 		/// <summary>
-		/// Creates a task which opens the dialog with the specified closing function.
+		/// Starts a task which opens the viewer and completes when it closes.
+		/// </summary>
+		/// <param name="viewer">The viewer to open.</param>
+		/// <returns>The task which completes when the viewer closes.</returns>
+		public static Task Viewer(IViewer viewer)
+		{
+			var task = new TaskCompletionSource<object>();
+
+			void onClosed(object sender, EventArgs e)
+			{
+				viewer.Closed -= onClosed;
+				task.SetResult(null);
+			}
+
+			Far.Api.PostJob(() =>
+			{
+				try
+				{
+					viewer.Closed += onClosed;
+					viewer.Open();
+				}
+				catch (Exception exn)
+				{
+					viewer.Closed -= onClosed;
+					task.SetException(exn);
+				}
+			});
+
+			return task.Task;
+		}
+
+		/// <summary>
+		/// Starts a task which opens the dialog and completes when it closes.
+		/// </summary>
+		/// <param name="dialog">The dialog to open.</param>
+		/// <returns>The task which completes when the dialog closes.</returns>
+		public static Task Dialog(IDialog dialog)
+		{
+			var task = new TaskCompletionSource<object>();
+
+			void onClosed(object sender, AnyEventArgs e)
+			{
+				dialog.Closed -= onClosed;
+				task.SetResult(null);
+			}
+
+			Far.Api.PostJob(() =>
+			{
+				try
+				{
+					dialog.Closed += onClosed;
+					dialog.Open();
+				}
+				catch (Exception exn)
+				{
+					dialog.Closed -= onClosed;
+					task.SetException(exn);
+				}
+			});
+
+			return task.Task;
+		}
+
+		/// <summary>
+		/// Starts a task which opens the dialog with the specified closing function.
 		/// </summary>
 		/// <typeparam name="T">The closing result.</typeparam>
-		/// <param name="dialog">The dialog to be opened.</param>
+		/// <param name="dialog">The dialog to open.</param>
 		/// <param name="closing">The closing function.</param>
 		/// <returns>The task which completes when the dialog closes.</returns>
 		/// <remarks>
@@ -178,7 +250,7 @@ namespace FarNet
 		/// </remarks>
 		public static Task<T> Dialog<T>(IDialog dialog, Func<ClosingEventArgs, T> closing)
 		{
-			var tcs = new TaskCompletionSource<T>();
+			var task = new TaskCompletionSource<T>();
 
 			void onClosing(object sender, ClosingEventArgs e)
 			{
@@ -189,12 +261,12 @@ namespace FarNet
 						return;
 
 					dialog.Closing -= onClosing;
-					tcs.SetResult(res);
+					task.SetResult(res);
 				}
 				catch (Exception exn)
 				{
 					dialog.Closing -= onClosing;
-					tcs.SetException(exn);
+					task.SetException(exn);
 				}
 			}
 
@@ -208,103 +280,169 @@ namespace FarNet
 				catch (Exception exn)
 				{
 					dialog.Closing -= onClosing;
-					tcs.SetException(exn);
+					task.SetException(exn);
 				}
 			});
 
-			return tcs.Task;
+			return task.Task;
 		}
+
 		/// <summary>
-		/// Creates a task which opens the dialog and completes when it closes.
+		/// Starts a task which opens the specified panel.
 		/// </summary>
-		/// <param name="dialog">The dialog to open.</param>
-		/// <returns>The task which completes when the dialog closes.</returns>
-		public static Task Dialog(IDialog dialog)
+		/// <param name="panel">The panel to open.</param>
+		/// <returns>The task which completes when the panel is opened.</returns>
+		public static async Task OpenPanel(Panel panel)
 		{
-			var tcs = new TaskCompletionSource<object>();
+			// open
+			await Job(panel.Open);
 
-			void onClosed(object sender, AnyEventArgs e)
+			// wait
+			await Works.Far2.Api.WaitSteps();
+
+			// test
+			await Job(() =>
 			{
-				dialog.Closed -= onClosed;
-				tcs.SetResult(null);
-			}
+				if (Far.Api.Panel != panel)
+					throw new InvalidOperationException("Panel was not opened.");
+			});
+		}
 
+		/// <summary>
+		/// Starts a task which calls the specified job which opens a panel.
+		/// </summary>
+		/// <param name="job">The job to open a panel.</param>
+		/// <returns>The task which completes when a panel is opened. Its result is the opened panel.</returns>
+		public static async Task<Panel> OpenPanel(Action job)
+		{
+			// open
+			var oldPanel = await Job(() =>
+			{
+				var panel = Far.Api.Panel;
+				job();
+				return panel;
+			});
+
+			// wait
+			await Works.Far2.Api.WaitSteps();
+
+			// test and return
+			return await Job(() =>
+			{
+				if (Far.Api.Panel is Panel newPanel && newPanel != oldPanel)
+					return newPanel;
+
+				throw new InvalidOperationException("Panel was not opened.");
+			});
+		}
+
+		/// <summary>
+		/// Starts a task which waits until the specified panel is closed.
+		/// </summary>
+		/// <param name="panel">The panel.</param>
+		/// <returns>The task which completes when the panel is closed.</returns>
+		public static Task WaitPanelClosed(Panel panel)
+		{
+			var task = new TaskCompletionSource<object>();
+			//! post to avoid race for IsOpened
 			Far.Api.PostJob(() =>
 			{
-				try
+				if (!panel.IsOpened)
 				{
-					dialog.Closed += onClosed;
-					dialog.Open();
+					task.SetResult(null);
+					return;
 				}
-				catch (Exception exn)
-				{
-					dialog.Closed -= onClosed;
-					tcs.SetException(exn);
-				}
-			});
 
-			return tcs.Task;
-		}
-		/// <summary>
-		/// Creates a task which waits for the panel closing.
-		/// </summary>
-		/// <param name="panel">The panel to await.</param>
-		/// <returns>The task which completes when the panel closes.</returns>
-		/// <remarks>
-		/// The panel is opened automatically if it is not yet opened.
-		/// </remarks>
-		public static Task Panel(Panel panel)
-		{
-			var tcs = new TaskCompletionSource<object>();
-
-			void onClosed(object sender, EventArgs e)
-			{
-				panel.Closed -= onClosed;
-				tcs.SetResult(null);
-			}
-
-			Far.Api.PostStep(() =>
-			{
-				try
-				{
-					panel.Closed += onClosed;
-					if (!panel.IsOpened)
-						panel.Open();
-				}
-				catch (Exception exn)
+				void onClosed(object sender, EventArgs e)
 				{
 					panel.Closed -= onClosed;
-					tcs.SetException(exn);
+					task.SetResult(null);
 				}
-			});
 
-			return tcs.Task;
+				panel.Closed += onClosed;
+			});
+			return task.Task;
+		}
+
+		/// <summary>
+		/// Starts a task which waits until the specified panel is closed with the closing job.
+		/// </summary>
+		/// <typeparam name="T">Type of the closing job result.</typeparam>
+		/// <param name="panel">The panel.</param>
+		/// <param name="closing">The closing job, similar to the closing event handler but with the result.</param>
+		/// <returns>The task which completes when the panel is closed and gets the closing result.</returns>
+		public static Task<T> WaitPanelClosing<T>(Panel panel, Func<PanelEventArgs, T> closing)
+		{
+			var task = new TaskCompletionSource<T>();
+			//! post to avoid race for IsOpened
+			Far.Api.PostJob(() =>
+			{
+				var result = default(T);
+
+				if (!panel.IsOpened)
+				{
+					task.SetResult(result);
+					return;
+				}
+
+				void onClosing(object sender, PanelEventArgs e)
+				{
+					try
+					{
+						var r = closing(e);
+						if (!e.Ignore)
+							result = r;
+					}
+					catch (Exception exn)
+					{
+						task.SetException(exn);
+					}
+				}
+
+				void onClosed(object sender, EventArgs e)
+				{
+					panel.Closing -= onClosing;
+					panel.Closed -= onClosed;
+					task.TrySetResult(result);
+				}
+
+				panel.Closing += onClosing;
+				panel.Closed += onClosed;
+			});
+			return task.Task;
+		}
+
+		/// <summary>
+		/// Starts a task which opens the specified panel and waits until it is closed.
+		/// </summary>
+		/// <param name="panel">The panel.</param>
+		/// <returns>The task which completes when the panel is closed.</returns>
+		public static async Task Panel(Panel panel)
+		{
+			await OpenPanel(panel);
+			await WaitPanelClosed(panel);
 		}
 		/// <summary>
-		/// Waits for the predicate job returning true.
+		/// Starts a task which waits until the job returns true.
 		/// </summary>
-		/// <param name="delay">Milliseconds to sleep before the first check.</param>
-		/// <param name="sleep">Milliseconds to sleep when the predicate returns false.</param>
-		/// <param name="timeout">Maximum waiting time in milliseconds, non positive ~ infinite.</param>
-		/// <param name="predicate">Returns true to stop waiting.</param>
-		/// <returns>True if the predicate returns true before the time is out.</returns>
-		public static async Task<bool> Wait(int delay, int sleep, int timeout, Func<bool> predicate)
+		/// <param name="delay">Milliseconds to delay when the predicate returns false.</param>
+		/// <param name="timeout">Maximum waiting time in milliseconds. Use 0 for infinite.</param>
+		/// <param name="job">Returns true to stop waiting.</param>
+		/// <returns>True if the job returns true before the time is out.</returns>
+		public static async Task<bool> Wait(int delay, int timeout, Func<bool> job)
 		{
-			if (delay > 0)
-				await Task.Delay(delay);
-
 			var span = timeout > 0 ? TimeSpan.FromMilliseconds(timeout) : TimeSpan.MaxValue;
 			var time = Stopwatch.StartNew();
-			for(; ; )
+			for (; ; )
 			{
-				var ok = await Job(predicate);
+				var ok = await Job(job);
 				if (ok)
 					return true;
 
 				if (time.Elapsed > span)
 					return false;
 
-				await Task.Delay(sleep);
+				await Task.Delay(delay);
 			}
 		}
 	}

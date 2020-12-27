@@ -5,10 +5,10 @@ open FarNet.FSharp
 /// Common test code
 let testErrorsOnSaving keys1 delay keys2 = async {
     // open panel
-    do! Job.From PanelEditFile.run
+    do! Jobs.Job PanelEditFile.run
 
     // edit file
-    do! Job.Keys "F4"
+    do! Jobs.Keys "F4"
     do! job {
         Assert.True (Window.IsEditor())
         Assert.Equal("Euler's number (e)", far.Editor.Title)
@@ -17,8 +17,8 @@ let testErrorsOnSaving keys1 delay keys2 = async {
     }
 
     // add some letter, make invalid number, save
-    do! Job.Keys "End z"
-    do! Job.Keys keys1
+    do! Jobs.Keys "End z"
+    do! Jobs.Keys keys1
 
     // assert error dialog
     do! job {
@@ -27,7 +27,7 @@ let testErrorsOnSaving keys1 delay keys2 = async {
     }
 
     // exit dialog, wait for the specified time
-    do! Job.Keys "Esc"
+    do! Jobs.Keys "Esc"
     do! Async.Sleep delay
     do! job {
         Assert.True (Window.IsEditor())
@@ -35,16 +35,16 @@ let testErrorsOnSaving keys1 delay keys2 = async {
     }
 
     // exit editor, same Description
-    do! Job.Keys "Esc"
+    do! Jobs.Keys "Esc"
     do! job {
         Assert.True (Window.IsModulePanel())
         Assert.Equal("2.71828", far.Panel.CurrentFile.Description)
     }
 
     // edit again, valid number
-    do! Job.Keys "F4"
-    do! Job.Keys "CtrlA 2 . 7 1"
-    do! Job.Keys keys2
+    do! Jobs.Keys "F4"
+    do! Jobs.Keys "CtrlA 2 . 7 1"
+    do! Jobs.Keys keys2
 
     // assert updated panel
     do! job {
@@ -53,7 +53,7 @@ let testErrorsOnSaving keys1 delay keys2 = async {
     }
 
     // exit panel
-    do! Job.Keys "Esc"
+    do! Jobs.Keys "Esc"
 }
 
 /// Errors on saving without closing the editor

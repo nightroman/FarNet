@@ -117,7 +117,7 @@ https://github.com/nightroman/FarNet#readme
 		<license type="expression">BSD-3-Clause</license>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>$text</description>
-		<releaseNotes>https://raw.githubusercontent.com/nightroman/FarNet/master/RightWords/History.txt</releaseNotes>
+		<releaseNotes>https://github.com/nightroman/FarNet/blob/master/RightWords/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module NHunspell</tags>
 	</metadata>
 </package>

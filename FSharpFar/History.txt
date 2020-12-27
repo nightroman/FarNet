@@ -1,5 +1,12 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
-FarNet 5.4.12
+FarNet 5.4.13
+
+= 1.14.0 =
+
+Use FarNet 5.4.13 with new FarNet.Tasks.
+
+Renamed Job to Jobs and redesigned it.
+Most of methods are wrappers of Tasks.
 
 = 1.13.6 =
 

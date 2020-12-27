@@ -20,7 +20,7 @@ type FarEditor () =
     inherit ModuleEditor ()
     let mutable editor: IEditor = null
 
-    let jobEditor f = Job.FromContinuations (fun (cont, econt, ccont) ->
+    let jobEditor f = Jobs.FromContinuations (fun (cont, econt, ccont) ->
         if editor.IsOpened then
             cont (f ())
         else
@@ -47,7 +47,7 @@ type FarEditor () =
                         if errors.Length = 0 then None else Some errors
                 do! jobEditor editor.Redraw
             with exn ->
-                Job.PostShowError exn
+                Jobs.PostShowError exn
     })
 
     let mouseAgent = MailboxProcessor.Start (fun inbox -> async {
@@ -96,7 +96,7 @@ type FarEditor () =
                                         showTempText (Tips.format tip true) (String.Join (".", List.toArray idents))
                                 )
                         with exn ->
-                            Job.PostShowError exn
+                            Jobs.PostShowError exn
     })
 
     let postNoop _ =  mouseAgent.Post Noop

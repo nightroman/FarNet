@@ -113,14 +113,14 @@ type Test =
         let tests = Test.GetAssemblyTests(assembly)
         let sw = Stopwatch.StartNew()
 
-        let outTest name =
-            far.UI.WriteLine(sprintf "Test %s" name, ConsoleColor.Cyan)
+        let outTest text =
+            far.UI.WriteLine(text, ConsoleColor.Cyan)
 
-        // run synch tests
+        // run sync tests
         for test in tests do
             match test.Value with
             | Choice1Of2 func ->
-                outTest test.Key
+                sprintf "fs: %s()" test.Key |> outTest
                 func ()
             | _ ->
                 ()
@@ -130,18 +130,18 @@ type Test =
             for test in tests do
                 match test.Value with
                 | Choice2Of2 func ->
-                    do! Job.From <| fun () ->
-                        outTest test.Key
+                    do! Jobs.Job <| fun () ->
+                        sprintf "fs: test %s" test.Key |> outTest
                     do! func
                 | _ ->
                     ()
 
             // summary
-            do! Job.From <| fun () ->
+            do! Jobs.Job <| fun () ->
                 far.UI.WriteLine(sprintf "Done %i tests %O" tests.Count sw.Elapsed, ConsoleColor.Green)
 
             // exit? (if we have some tests else something is wrong)
             if tests.Count > 0 && Environment.GetEnvironmentVariable("QuitFarAfterTests") = "1" then
-                do! Job.From(far.Quit)
+                do! Jobs.Job(far.Quit)
         }
-        |> Job.Start
+        |> Jobs.Start

@@ -7,32 +7,32 @@ open FarNet.FSharp
 let testSkipModal = async {
     async {
         // dialog
-        Job.StartImmediate(Job.From showWideDialog)
+        Jobs.StartImmediate(Jobs.Job showWideDialog)
         // wait
-        do! Job.SkipModal ()
+        do! Jobs.WaitModeless ()
         // done
         do! job { far.Message "done" }
     }
-    |> Job.StartImmediate
+    |> Jobs.StartImmediate
     do! job { Assert.True (isWideDialog ()) }
 
-    // exit dialog -> trigger "done" after skipModal
-    do! Job.Keys "Esc"
+    // exit dialog -> trigger "done" after waiting
+    do! Jobs.Keys "Esc"
     do! Assert.Wait (fun () -> Window.IsDialog () && far.Dialog.[1].Text = "done")
 
     // exit dialog
-    do! Job.Keys "Esc"
+    do! Jobs.Keys "Esc"
     do! job { Assert.NativePanel () }
 }
 
 [<Test>]
 let testCannotOpenOnModal = async {
     // dialog
-    Job.StartImmediate(Job.From showWideDialog)
+    Jobs.StartImmediate(Jobs.Job showWideDialog)
     do! job { Assert.Dialog () }
 
     // try open panel from dialog -> job error dialog
-    Job.StartImmediate <| Job.OpenPanel (MyPanel.panel [])
+    Jobs.StartImmediate <| Jobs.OpenPanel (MyPanel.panel [])
     do! Assert.Wait (fun () ->
         Window.IsDialog () &&
         far.Dialog.[0].Text = "ModuleException" &&
@@ -40,7 +40,7 @@ let testCannotOpenOnModal = async {
     )
 
     // exit two dialogs
-    do! Job.Keys "Esc Esc"
+    do! Jobs.Keys "Esc Esc"
     do! job { Assert.NativePanel () }
 }
 
@@ -55,15 +55,15 @@ let testCanOpenFromEditor = async {
     do! job { Assert.Editor () }
 
     // panel
-    do! Job.OpenPanel (MyPanel.panel [])
+    do! Jobs.OpenPanel (MyPanel.panel [])
     do! job { Assert.True (isMyPanel ()) }
 
     // exit panel
-    do! Job.Keys "Esc"
+    do! Jobs.Keys "Esc"
     do! job { Assert.NativePanel () }
 
     // exit editor
-    do! Job.Keys "F12 2 Esc"
+    do! Jobs.Keys "F12 2 Esc"
     do! job {
         Assert.NativePanel ()
         Assert.Equal (2, far.Window.Count)

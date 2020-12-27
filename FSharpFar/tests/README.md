@@ -10,6 +10,6 @@ How to run a particular function:
 
     fs: ModuleName.FunctionName()
 
-How to run a particular async expression:
+How to run a particular async job:
 
-    fs: FarNet.FSharp.Job.Start ModuleName.AsyncName
+    fs: test ModuleName.AsyncName

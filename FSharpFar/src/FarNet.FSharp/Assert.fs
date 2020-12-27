@@ -9,7 +9,7 @@ type AssertException (message) =
     inherit exn (message)
 
 module internal Assert =
-    let mutable _WaitDelaySleepTimeout = 50, 50, 5000
+    let mutable _WaitDelayTimeout = 50, 5000
 
 /// Assertion methods for testing and diagnostics.
 /// Exception messages include exact code locations.
@@ -100,17 +100,12 @@ type Assert =
         if far.Window.Kind <> WindowKind.Panels || not (far.Panel :? Panel) then
             Assert.Fail ("Expected module panel", ?path=path, ?line=line)
 
-    /// Default wait times (delay, sleep, timeout).
-    static member WaitDelaySleepTimeout
-        with get () = Assert._WaitDelaySleepTimeout
-        and set x = Assert._WaitDelaySleepTimeout <- x
-
     /// Waits for the predicate returning true and fails on timeout.
     /// predicate: The predicate job.
-    /// times: The waiting times (delay, sleep, timeout) in milliseconds.
+    /// times: The waiting times (delay, timeout) in milliseconds.
     static member Wait (predicate, ?times, [<CallerFilePath>]?path, [<CallerLineNumber>]?line) = async {
-        let delay, sleep, timeout = defaultArg times Assert._WaitDelaySleepTimeout
-        let! ok = Job.Wait (delay, sleep, timeout, predicate)
+        let delay, timeout = defaultArg times Assert._WaitDelayTimeout
+        let! ok = Jobs.Wait (delay, timeout, predicate)
         if not ok then
             Assert.Fail ("Timeout", ?path=path, ?line=line)
     }

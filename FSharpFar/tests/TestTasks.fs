@@ -4,7 +4,7 @@ open FarNet.FSharp
 open System
 
 /// Use Tasks.Job, Tasks.Job<T>, Tasks.Editor, Tasks.Keys
-let flowTasks = async {
+let workTasks = async {
     // task with action
     do! Tasks.Job(fun() -> far.Message("Action")) |> Async.AwaitTask
 
@@ -24,31 +24,31 @@ let flowTasks = async {
 
 [<Test>]
 let testTasks = async {
-    Job.StartImmediate flowTasks
+    Jobs.StartImmediate workTasks
 
     // message box
     do! Assert.Wait Window.IsDialog
     Assert.Equal("Action", far.Dialog.[1].Text)
-    do! Job.Keys "Esc"
+    do! Jobs.Keys "Esc"
 
     // input box, enter "bar"
     do! Assert.Wait Window.IsDialog
     Assert.Equal("Function", far.Dialog.[1].Text)
-    do! Job.Keys "b a r Enter"
+    do! Jobs.Keys "b a r Enter"
 
     // editor, exit
     do! Assert.Wait Window.IsEditor
     Assert.True(far.Editor.Title.EndsWith(__SOURCE_FILE__));
-    do! Job.Keys "Esc"
+    do! Jobs.Keys "Esc"
 
     // CtrlG dialog, exit
     do! Assert.Wait Window.IsDialog
     Assert.Equal(Guid("044ef83e-8146-41b2-97f0-404c2f4c7b69"), far.Dialog.TypeId)
-    do! Job.Keys "Esc"
+    do! Jobs.Keys "Esc"
 }
 
 /// Call EditTextAsync twice, expected text 1: $x=1; 2: $x=3
-let flowEditText = async {
+let workEditText = async {
     let args = EditTextArgs()
     args.Text <- ""
     args.Extension <- "ps1"
@@ -63,13 +63,13 @@ let flowEditText = async {
 
 [<Test>]
 let testEditText = async {
-    Job.StartImmediate flowEditText
+    Jobs.StartImmediate workEditText
 
     // type $x=1, save, exit
     do! Assert.Wait (fun() -> Window.IsEditor() && far.Editor.GetText() = "")
-    do! Job.Keys "$ x = 1 F2 Esc"
+    do! Jobs.Keys "$ x = 1 F2 Esc"
 
     // select all, type $x=2, save, exit
     do! Assert.Wait (fun() -> Window.IsEditor() && far.Editor.[0].Text = "$x=2")
-    do! Job.Keys "CtrlA $ x = 3 F2 Esc"
+    do! Jobs.Keys "CtrlA $ x = 3 F2 Esc"
 }
