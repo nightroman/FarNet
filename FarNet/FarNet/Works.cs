@@ -100,6 +100,16 @@ namespace FarNet.Works
 	public static class Kit
 	{
 		/// <summary>
+		/// INTERNAL
+		/// </summary>
+		public static Exception UnwrapAggregateException(Exception exn)
+		{
+			if (exn is AggregateException aggregate && aggregate.InnerExceptions.Count == 1)
+				return aggregate.InnerExceptions[0];
+			else
+				return exn;
+		}
+		/// <summary>
 		/// %TEMP%\GUID.tmp or GUID.extension
 		/// </summary>
 		public static string TempFileName(string extension)

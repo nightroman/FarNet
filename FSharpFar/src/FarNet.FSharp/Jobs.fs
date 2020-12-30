@@ -97,12 +97,7 @@ type Jobs =
     // _201221_2o This helps to reveal bugs. When our catch is not called
     // unexpectedly then the core error dialog is shown, a bit different.
     static member PostShowError (exn: exn) =
-        let exn =
-            match exn with
-            | :? AggregateException as exn when exn.InnerExceptions.Count = 1 ->
-                exn.InnerExceptions.[0];
-            | _ ->
-                exn;
+        let exn = Works.Kit.UnwrapAggregateException exn;
         far.PostJob (fun () -> far.ShowError (exn.GetType().Name, exn))
 
     static member private CatchShowError job = async {

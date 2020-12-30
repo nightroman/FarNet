@@ -40,12 +40,13 @@ let private command name rest sb =
             With = tryPopString "with" sb |> Option.map farResolvePath
         }
     | _ ->
-        invalidOp <| sprintf "Unknown command '%s'." name
+        failwithf "Unknown command '%s'." name
 
 let private reCommand = Regex @"^\s*//(\w+)\s*(.*)"
 let private reQuit = Regex @"^\s*#quit\b"
 
 /// Parses the module command "fs:".
+/// Failure ~ user error.
 let parse text =
     let matchCommand = reCommand.Match text
     if matchCommand.Success then
@@ -61,7 +62,8 @@ let parse text =
 
         let r = command commandName part2 sb
 
-        if sb.Count > 0 then invalidOp <| sprintf "Unknown '%s' keys: %s" (r.GetType().Name.ToLower ()) (sb.ToString ())
+        if sb.Count > 0 then
+            failwithf "Unknown '%s' keys: %O" (r.GetType().Name.ToLower ()) sb
         r
     elif reQuit.IsMatch text then
         Quit

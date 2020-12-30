@@ -230,75 +230,56 @@ void Far1::ShowError(String^ title, Exception^ error)
 	if (!error)
 		return;
 
-	// stop a running macro
+	// stop running macros
 	String^ msgMacro = nullptr;
 	FarNet::MacroState macro = MacroState;
 	if (macro == FarNet::MacroState::Executing || macro == FarNet::MacroState::ExecutingCommon)
 	{
 		// log
-		msgMacro = "A macro has been stopped.";
+		msgMacro = "A macro was stopped.";
 		Log::Source->TraceEvent(TraceEventType::Warning, 0, msgMacro);
 
 		// stop
 		UI->Break();
 	}
 
-	// log
-	String^ info = Log::TraceException(error);
+	// unwrap
+	error = Works::Kit::UnwrapAggregateException(error);
 
-	// case: not loaded
-	//! non-stop loading
-	//! no UI on unloading
-	if (Works::Host::State != Works::HostState::Loaded)
-	{
-		//! trace the full string, so that a user can report this
-		Log::TraceError(error->ToString());
-
-		// info to show
-		if (!info)
-			info = Log::FormatException(error);
-
-		// with title
-		info += title + Environment::NewLine;
-
-		if (Works::Host::State == Works::HostState::Loading)
-			Far::Api->UI->Write(info, ConsoleColor::Red);
-		else
-			Far::Api->Message(info + Environment::NewLine + error->ToString(), title, (MessageOptions::Gui | MessageOptions::Warning));
-
-		return;
-	}
-
-	// quiet: CtrlBreak in a dialog
+	// quietly ignore PowerShell stopped pipelines, they are like cancels
 	if (error->GetType()->FullName == "System.Management.Automation.PipelineStoppedException") //_110128_075844
 		return;
 
-	// ask
-	int res = Message(
-		error->Message,
-		String::IsNullOrEmpty(title) ? error->GetType()->FullName : title,
-		MessageOptions::LeftAligned | MessageOptions::Warning,
-		gcnew array<String^>{"Ok", "More"});
-	if (res < 1)
+	// trace
+	Log::TraceException(error);
+
+	// case: loaded
+	if (Works::Host::State == Works::HostState::Loaded)
+	{
+		Works::ErrorDialog::Show(title, error, msgMacro);
 		return;
+	}
 
-	// info to show
-	if (!info)
-		info = Log::FormatException(error);
+	//! do not UI on loading
+	//! cannot UI on unloading
 
-	// add macro info
-	if (msgMacro)
-		info += Environment::NewLine + msgMacro + Environment::NewLine;
+	//! trace full, so users can report
+	auto errorString = error->ToString();
+	Log::TraceError(errorString);
 
-	// add verbose information
-	info += Environment::NewLine + error->ToString();
+	auto text = gcnew StringWriter;
+	Log::FormatException(text, error);
+	text->WriteLine(title);
 
-	// locked editor
-	EditTextArgs args;
-	args.Text = info;
-	args.Title = error->GetType()->FullName;
-	args.IsLocked = true;
-	Works::EditorTools::EditText(%args);
+	if (Works::Host::State == Works::HostState::Loading)
+	{
+		Far::Api->UI->Write(text->ToString(), ConsoleColor::Red);
+	}
+	else
+	{
+		text->Write(errorString);
+		Far::Api->Message(text->ToString(), title, (MessageOptions::Gui | MessageOptions::Warning));
+	}
 }
 
 IDialog^ Far1::CreateDialog(int left, int top, int right, int bottom)

@@ -166,6 +166,10 @@ namespace FarNet.Tools
 
 				Invoke(code, area);
 			}
+			catch (ModuleException e)
+			{
+				Editor.InsertText($"{e.Source}: {e.Message}");
+			}
 			catch (Exception e)
 			{
 				Editor.InsertText(e.ToString());

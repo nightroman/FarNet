@@ -8,9 +8,10 @@ open FarInteractive
 [<Guid "2b52615b-ea79-46e4-ac9d-78f33599db62">]
 type FarCommand () =
     inherit ModuleCommand ()
-    override __.Invoke (_, e) =
+
+    let invoke command =
         let echo () =
-            far.UI.WriteLine ((sprintf "fs:%s" e.Command), ConsoleColor.DarkGray)
+            far.UI.WriteLine ((sprintf "fs:%s" command), ConsoleColor.DarkGray)
 
         let writeResult r =
             for w in r.Warnings do
@@ -18,7 +19,7 @@ type FarCommand () =
             if not (isNull r.Exception) then
                 writeException r.Exception
 
-        match Command.parse e.Command with
+        match Command.parse command with
         | Command.Quit ->
             match Session.TryDefaultSession () with
             | Some ses -> ses.Close ()
@@ -122,3 +123,10 @@ type FarCommand () =
                     writer.WriteLine (FSharpErrorInfo.strErrorLine error)
                 showTempText (writer.ToString ()) "Errors"
             ()
+
+    override __.Invoke (_, e) =
+        try
+            invoke e.Command
+        with
+            Failure error ->
+                raise (ModuleException(error, Source = "F# command"))

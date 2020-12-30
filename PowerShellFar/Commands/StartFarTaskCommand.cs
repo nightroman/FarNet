@@ -3,7 +3,6 @@
 // Copyright (c) Roman Kuzmin
 
 using FarNet;
-using FarNet.Works;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -202,7 +201,7 @@ $ErrorActionPreference = 'Stop'
 
 				// await
 				var result = task.Result;
-				Far2.Api.WaitSteps().Wait();
+				FarNet.Works.Far2.Api.WaitSteps().Wait();
 
 				//! if the job returns a task, await and return
 				if (result.Count == 1 && result[0] != null && result[0].BaseObject is Task task2)
@@ -224,7 +223,7 @@ $ErrorActionPreference = 'Stop'
 			}
 			catch (Exception exn)
 			{
-				return UnwrapAggregateException(exn);
+				return FarNet.Works.Kit.UnwrapAggregateException(exn);
 			}
 		}
 
@@ -256,12 +255,12 @@ $ErrorActionPreference = 'Stop'
 
 				// await
 				task.Wait();
-				Far2.Api.WaitSteps().Wait();
+				FarNet.Works.Far2.Api.WaitSteps().Wait();
 				return AutomationNull.Value;
 			}
 			catch (Exception exn)
 			{
-				return UnwrapAggregateException(exn);
+				return FarNet.Works.Kit.UnwrapAggregateException(exn);
 			}
 		}
 
@@ -295,12 +294,12 @@ $ErrorActionPreference = 'Stop'
 
 				// await
 				task.Wait();
-				Far2.Api.WaitSteps().Wait();
+				FarNet.Works.Far2.Api.WaitSteps().Wait();
 				return reason;
 			}
 			catch (Exception exn)
 			{
-				return UnwrapAggregateException(exn);
+				return FarNet.Works.Kit.UnwrapAggregateException(exn);
 			}
 		}
 
@@ -314,7 +313,7 @@ $ErrorActionPreference = 'Stop'
 					throw new PipelineStoppedException();
 			}
 			Tasks.Keys(keys).Wait();
-			Far2.Api.WaitSteps().Wait();
+			FarNet.Works.Far2.Api.WaitSteps().Wait();
 		}
 
 		// Called by task scripts.
@@ -327,20 +326,12 @@ $ErrorActionPreference = 'Stop'
 					throw new PipelineStoppedException();
 			}
 			Tasks.Macro(macro).Wait();
-			Far2.Api.WaitSteps().Wait();
-		}
-
-		static Exception UnwrapAggregateException(Exception exn)
-		{
-			if (exn is AggregateException aggregate && aggregate.InnerExceptions.Count == 1)
-				return aggregate.InnerExceptions[0];
-			else
-				return exn;
+			FarNet.Works.Far2.Api.WaitSteps().Wait();
 		}
 
 		static void ShowError(Exception exn)
 		{
-			exn = UnwrapAggregateException(exn);
+			exn = FarNet.Works.Kit.UnwrapAggregateException(exn);
 			Far.Api.ShowError("FarTask error", exn);
 		}
 
@@ -420,7 +411,7 @@ $ErrorActionPreference = 'Stop'
 							catch (Exception exn)
 							{
 								if (AsTask)
-									tcs.SetException(UnwrapAggregateException(exn));
+									tcs.SetException(FarNet.Works.Kit.UnwrapAggregateException(exn));
 								else
 									ShowError(exn);
 							}
@@ -436,7 +427,7 @@ $ErrorActionPreference = 'Stop'
 						{
 							if (AsTask)
 							{
-								tcs.SetException(UnwrapAggregateException(e.InvocationStateInfo.Reason));
+								tcs.SetException(FarNet.Works.Kit.UnwrapAggregateException(e.InvocationStateInfo.Reason));
 							}
 							else
 							{

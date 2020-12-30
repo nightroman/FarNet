@@ -14,8 +14,15 @@ type FarInteractive(session: Session) =
     inherit InteractiveEditor (far.CreateEditor (), My.history, My.outputMark1, My.outputMark2, My.outputMark3)
     let session = session
 
+    let isQuit code =
+        try
+            Command.parse code = Command.Quit
+        with
+            Failure error ->
+                raise (ModuleException(error, Source = "F# command"))
+
     override x.Invoke (code, area) =
-        if area.FirstLineIndex = area.LastLineIndex && (match Command.parse code with Command.Quit -> true | _ -> false) then
+        if area.FirstLineIndex = area.LastLineIndex && isQuit code then
             // one line with a command, for now do #quit and ignore others
             session.Close ()
         else

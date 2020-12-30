@@ -86,27 +86,37 @@ namespace FarNet
 	/// Module exception.
 	/// </summary>
 	/// <remarks>
-	/// If a module throws exceptions shown to a user in message boxes consider
-	/// to use this or derived classes in order to let a user to distinguish
-	/// between exceptions processed by a module and other exceptions.
+	/// This exception is supposed to be caught by the core and shown as an error.
+	/// It is used to distinguish processed module errors from other exceptions.
 	/// <para>
-	/// Scenario. Catch some exception, wrap it by a new module exception with
-	/// a more detailed explanation of the problem, and throw the new one. The
-	/// inner exception information is not lost. Its details are available in
-	/// the error message box.
+	/// Scenario. Catch some exception, wrap by a module exception with more
+	/// specific explanation of the problem in the context, throw the new.
+	/// Attach the original inner exception if it is useful for analysis.
 	/// </para>
 	/// </remarks>
 	[Serializable]
 	public class ModuleException : Exception
 	{
 		///
-		public ModuleException() { }
+		public ModuleException()
+		{ }
 		/// <inheritdoc/>
-		public ModuleException(string message) : base(message) { }
+		public ModuleException(string message) : base(message)
+		{ }
 		/// <inheritdoc/>
-		public ModuleException(string message, Exception innerException) : base(message, innerException) { }
+		public ModuleException(string message, Exception innerException) : base(message, innerException)
+		{ }
 		/// <inheritdoc/>
 		protected ModuleException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+		/// <summary>
+		/// This text is used as the error dialog title.
+		/// By default it is the exception type name.
+		/// </summary>
+		public override string Source
+		{
+			get => base.Source ?? GetType().FullName;
+			set => base.Source = value;
+		}
 	}
 
 	/// <summary>
