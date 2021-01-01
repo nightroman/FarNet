@@ -1,4 +1,4 @@
-<#
+п»ї<#
 .Synopsis
 	Tests for ..\Tests\Test-Dialog.far.ps1.
 
@@ -37,24 +37,24 @@ else {
 ### Edit (standard)
 
 # go to edit 1 (by hotkey) and type
-keys 'AltT Home ShiftEnd Del о к а'
+keys 'AltT Home ShiftEnd Del Рѕ Рє Р°'
 job {
 	Assert-Far @(
 		# editbox is current
 		$Data.dialog.Focused -eq $Data.e1
 		# its text
-		$Data.e1.Text -eq 'ока'
+		$Data.e1.Text -eq 'РѕРєР°'
 	)
 }
 job {
 	# set and test text
-	$Data.e1.Text = 'волга'
-	Assert-Far ($Data.e1.Text -eq 'волга')
+	$Data.e1.Text = 'РІРѕР»РіР°'
+	Assert-Far ($Data.e1.Text -eq 'РІРѕР»РіР°')
 }
 job {
 	# set and test text selection
 	$Data.e1.Line.SelectText(1, 4)
-	Assert-Far ($Data.e1.Line.SelectedText -eq 'олг')
+	Assert-Far ($Data.e1.Line.SelectedText -eq 'РѕР»Рі')
 }
 job {
 	# disable and check
@@ -69,8 +69,8 @@ job {
 job {
 	# test text and selection
 	Assert-Far @(
-		$Data.e1.Text -eq 'волга'
-		$Data.e1.Line.SelectedText -eq 'олг'
+		$Data.e1.Text -eq 'РІРѕР»РіР°'
+		$Data.e1.Line.SelectedText -eq 'РѕР»Рі'
 	)
 }
 job {
