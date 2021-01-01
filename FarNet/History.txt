@@ -1,6 +1,10 @@
 https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 5.4.14 =
+
+Improve Tasks.Macro, more reliable and effective waiting for completion.
+
 = 5.4.13 =
 
 New Tasks methods: OpenPanel, WaitPanelClosed, WaitPanelClosing, Viewer.

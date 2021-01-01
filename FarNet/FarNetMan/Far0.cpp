@@ -16,7 +16,7 @@
 #include "Wrappers.h"
 
 namespace FarNet
-{;
+{
 static PluginMenuItem _Config;
 static PluginMenuItem _Dialog;
 static PluginMenuItem _Disk;
@@ -72,6 +72,10 @@ public:
 	{
 		return Far0::WaitSteps();
 	}
+	virtual WaitHandle^ PostMacroWait(String^ macro) override
+	{
+		return Far0::PostMacroWait(macro);
+	}
 internal:
 	static Far2 Instance;
 private:
@@ -96,9 +100,6 @@ void Far0::FreePluginMenuItem(PluginMenuItem& p)
 
 void Far0::Start()
 {
-	// init async operations
-	_hMutex = CreateMutex(nullptr, FALSE, nullptr);
-
 	// inject
 	Works::Host::Instance = % Host::Instance;
 	Works::Far2::Api = % Far2::Instance;
@@ -116,7 +117,6 @@ void Far0::Start()
 //! Don't use Far UI
 void Far0::Stop()
 {
-	CloseHandle(_hMutex);
 	Works::ModuleLoader::UnloadModules();
 
 	FreePluginMenuItem(_Config);
@@ -470,25 +470,41 @@ bool Far0::AsConfigure(const ConfigureInfo* info) //config//
 // It may create a panel waiting for opening.
 HANDLE Far0::AsOpen(const OpenInfo* info)
 {
-	Panel0::BeginOpenMode();
+	// case: macro
+	if (info->OpenFrom == OPEN_FROMMACRO)
+	{
+		//! do not trace yet, it is called often on tests
+		OpenMacroInfo* mi = (OpenMacroInfo*)info->Data;
 
+		// we expect a string but users may call with garbage
+		if (mi->Count == 0 || mi->Values[0].Type != FMVT_STRING)
+			return 0;
+
+		// the command
+		auto command = mi->Values[0].String;
+
+		// called to signal some macro completion
+		if (lstrcmpW(command, L"signal_macro") == 0)
+		{
+			auto wait = _macroWait.Dequeue();
+			wait->Set();
+			return 0;
+		}
+
+		// normal command
+		Log::Source->TraceInformation("OPEN_FROMMACRO");
+		if (InvokeCommand(command, true))
+			return (HANDLE)1;
+		else
+			return 0;
+	}
+
+	// now we can open panels
+	Panel0::BeginOpenMode();
 	try
 	{
 		switch(info->OpenFrom)
 		{
-		case OPEN_FROMMACRO:
-			{
-				Log::Source->TraceInformation("OPEN_FROMMACRO");
-				OpenMacroInfo* mi = (OpenMacroInfo*)info->Data;
-				if (mi->Count == 1 && mi->Values[0].Type == FMVT_STRING)
-				{
-					if (InvokeCommand(mi->Values[0].String, true))
-						return (HANDLE)1;
-					else
-						return 0;
-				}
-			}
-			break;
 		case OPEN_COMMANDLINE:
 			{
 				Log::Source->TraceInformation("OPEN_COMMANDLINE");
@@ -617,22 +633,22 @@ void Far0::OpenConfig() //config//
 		{
 		case 0:
 			if (_registeredCommand.Count)
-				Works::ConfigCommand::Show(%_registeredCommand, Far0::_helpTopic + "configure-commands");
+				Works::ConfigCommand::Show(%_registeredCommand, Far0::HelpTopic() + "configure-commands");
 			break;
 		case 1:
 			if (_registeredDrawer.Count)
-				Works::ConfigDrawer::Show(%_registeredDrawer, Far0::_helpTopic + "configure-drawers");
+				Works::ConfigDrawer::Show(%_registeredDrawer, Far0::HelpTopic() + "configure-drawers");
 			break;
 		case 2:
 			if (_registeredEditor.Count)
-				Works::ConfigEditor::Show(%_registeredEditor, Far0::_helpTopic + "configure-editors");
+				Works::ConfigEditor::Show(%_registeredEditor, Far0::HelpTopic() + "configure-editors");
 			break;
 		case 3:
 			if (tools.Count)
-				Works::ConfigTool::Show(%tools, Far0::_helpTopic + "configure-tools", gcnew Func<IModuleTool^, String^>(&Far0::GetMenuText));
+				Works::ConfigTool::Show(%tools, Far0::HelpTopic() + "configure-tools", gcnew Func<IModuleTool^, String^>(&Far0::GetMenuText));
 			break;
 		case 5: // +2, mind separator
-			Works::ConfigUICulture::Show(Works::ModuleLoader::GatherModuleManagers(), Far0::_helpTopic + "module-ui-culture");
+			Works::ConfigUICulture::Show(Works::ModuleLoader::GatherModuleManagers(), Far0::HelpTopic() + "module-ui-culture");
 			break;
 		}
 	}
@@ -691,22 +707,18 @@ void Far0::AsProcessSynchroEvent(const ProcessSynchroEventInfo* info)
 	if (info->Event != SE_COMMONSYNCHRO)
 		return;
 
-	// remove pending
-	Action^ handler = nullptr;
-	WaitForSingleObject(_hMutex, INFINITE);
+	Action^ job = nullptr;
+	Monitor::Enter(% _jobs);
 	try
 	{
-		intptr_t id = (intptr_t)info->Param;
-		handler = _jobs[id];
-		_jobs.Remove(id);
+		job = _jobs.Dequeue();
 	}
 	finally
 	{
-		ReleaseMutex(_hMutex);
+		Monitor::Exit(% _jobs);
 	}
 
-	// invoke out of the lock
-	handler();
+	job();
 }
 
 void Far0::PostJob(Action^ job)
@@ -714,16 +726,15 @@ void Far0::PostJob(Action^ job)
 	if (!job)
 		throw gcnew ArgumentNullException("job");
 
-	WaitForSingleObject(_hMutex, INFINITE);
+	Monitor::Enter(% _jobs);
 	try
 	{
-		intptr_t id = _nextJobId++;
-		_jobs.Add(id, job);
-		Info.AdvControl(&MainGuid, ACTL_SYNCHRO, 0, (void*)id);
+		_jobs.Enqueue(job);
+		Info.AdvControl(&MainGuid, ACTL_SYNCHRO, 0, 0);
 	}
 	finally
 	{
-		ReleaseMutex(_hMutex);
+		Monitor::Exit(% _jobs);
 	}
 }
 
@@ -985,10 +996,10 @@ void Far0::PostSelf()
 //! must be sync call
 void Far0::PostStep(Action^ step)
 {
-	_stepsQueue.Enqueue(step);
-	if (_stepsQueue.Count == 1)
+	_steps.Enqueue(step);
+	if (_steps.Count == 1)
 	{
-		_stepsTaskSource = gcnew TaskCompletionSource<Object^>;
+		_stepsTask = gcnew TaskCompletionSource<Object^>;
 		PostSelf();
 	}
 }
@@ -996,18 +1007,33 @@ void Far0::PostStep(Action^ step)
 //! may be async call
 Task^ Far0::WaitSteps()
 {
-	//! cache before using, it may be set to null by the main thread
-	auto task = _stepsTaskSource;
+	//! cache, if it is nulled by main then `->Task` NRE
+	auto task = _stepsTask;
 	if (task)
 		return task->Task;
 	else
 		return Task::FromResult<Object^>(nullptr);
 }
 
+//! must be sync call, so we use the queue, first posted/added will be first signaled/removed
+WaitHandle^ Far0::PostMacroWait(String^ macro)
+{
+	//! post 2 macros instead of 1 combined because:
+	//! - clear syntax error messages without 2nd part
+	//! - combined does not work any faster, so KISS
+	Far::Api->PostMacro(macro);
+	Far::Api->PostMacro("Plugin.SyncCall('10435532-9BB3-487B-A045-B0E6ECAAB6BC', 'signal_macro')");
+
+	// add and return wait handle, it will be signaled and removed when signal_macro is called
+	auto wait = gcnew ManualResetEvent(false);
+	_macroWait.Enqueue(wait);
+	return wait;
+}
+
 void Far0::OpenMenu(ModuleToolOptions from)
 {
 	// normal call for the menu
-	if (_stepsQueue.Count == 0)
+	if (_steps.Count == 0)
 	{
 		ShowMenu(from);
 		return;
@@ -1017,29 +1043,29 @@ void Far0::OpenMenu(ModuleToolOptions from)
 	try
 	{
 		//! peek, to avoid premature PostSelf in PostStep possibly called by this step
-		auto step = _stepsQueue.Peek();
+		auto step = _steps.Peek();
 		
 		// invoke this step
 		step();
 
 		// now dequeue and PostSelf if there are more steps
-		_stepsQueue.Dequeue();
-		if (_stepsQueue.Count > 0)
+		_steps.Dequeue();
+		if (_steps.Count > 0)
 			PostSelf();
 	}
 	catch (...)
 	{
 		// discard steps and re-throw
-		_stepsQueue.Clear();
+		_steps.Clear();
 		throw;
 	}
 	finally
 	{
 		// complete the task
-		if (_stepsQueue.Count == 0)
+		if (_steps.Count == 0)
 		{
-			auto task = _stepsTaskSource;
-			_stepsTaskSource = nullptr;
+			auto task = _stepsTask;
+			_stepsTask = nullptr;
 			task->SetResult(nullptr);
 		}
 	}

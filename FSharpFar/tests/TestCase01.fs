@@ -36,11 +36,11 @@ let testNo = async {
 
     // exit editor
     do! Jobs.Keys "Esc"
-    do! job { Assert.True (isWizard ()) }
+    do! Assert.Wait isWizard
 
     // No -> repeat editor
     do! Jobs.Keys "N"
-    do! job { Assert.Editor () }
+    do! Assert.Wait Window.IsEditor
 
     // exit editor
     do! Jobs.Keys "Esc"
@@ -70,11 +70,11 @@ let testError = async {
 
     // exit editor
     do! Jobs.Keys "Esc"
-    do! job { Assert.True (isWizard ()) }
+    do! Assert.Wait isWizard
 
     // Error -> dialog
     do! Jobs.Keys "E"
-    do! job { Assert.True (isError ()) }
+    do! Assert.Wait isError
 
     // exit dialog
     do! Jobs.Keys "Esc"

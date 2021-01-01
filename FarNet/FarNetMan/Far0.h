@@ -5,7 +5,7 @@
 #pragma once
 
 namespace FarNet
-{;
+{
 ref class Far0
 {
 public:
@@ -23,6 +23,7 @@ public:
 	static void Stop();
 	static void UnregisterProxyAction(IModuleAction^ action);
 	static Task^ WaitSteps();
+	static WaitHandle^ PostMacroWait(String^ macro);
 public:
 	static bool MatchMask(String^ mask, const wchar_t* name, bool skipPath);
 	static bool InvokeCommand(const wchar_t* command, bool isMacro);
@@ -34,8 +35,8 @@ public:
 	static void ShowDrawersMenu();
 	static void ShowMenu(ModuleToolOptions from);
 public:
-	static String^ _folder = Path::GetDirectoryName(Far0::typeid->Assembly->Location);
-	static String^ _helpTopic = "<" + _folder + "\\>";
+	static String^ FarNetRoot() { return Environment::GetEnvironmentVariable("FARHOME") + "\\FarNet"; }
+	static String^ HelpTopic() { return "<" + FarNetRoot() + "\\>"; }
 	static void InvalidateProxyCommand();
 	static void UnregisterProxyTool(IModuleTool^ tool);
 private:
@@ -58,14 +59,13 @@ private:
 	static List<IModuleEditor^> _registeredEditor;
 private:
 	static CultureInfo^ _currentUICulture;
-	/// Posted steps queue
-	static Queue<Action^> _stepsQueue;
-	/// Posted steps task source for WaitSteps()
-	static TaskCompletionSource<Object^>^ _stepsTaskSource;
-	// Sync
-	static HANDLE _hMutex;
-	static intptr_t _nextJobId;
-	static Dictionary<intptr_t, Action^> _jobs;
+	/// Posted steps
+	static Queue<Action^> _steps;
+	/// Posted steps task
+	static TaskCompletionSource<Object^>^ _stepsTask;
+	/// Posted macro wait handles
+	static Queue<ManualResetEvent^> _macroWait;
+	/// Posted jobs
+	static Queue<Action^> _jobs;
 };
-
 }

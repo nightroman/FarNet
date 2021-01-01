@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FarNet.Works
@@ -38,6 +39,10 @@ namespace FarNet.Works
 		/// Waits for posted steps to be invoked.
 		/// </summary>
 		public abstract Task WaitSteps();
+		/// <summary>
+		/// Posts macro and gets its wait handle.
+		/// </summary>
+		public abstract WaitHandle PostMacroWait(string macro);
 	}
 	/// <summary>
 	/// INTERNAL

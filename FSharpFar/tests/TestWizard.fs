@@ -11,7 +11,7 @@ let testWizard = async {
 
     // open editor
     do! Jobs.Keys "E"
-    do! job { Assert.Editor () }
+    do! Assert.Wait Window.IsEditor
 
     // go to panels
     do! Jobs.Keys "F12 1"

@@ -16,9 +16,6 @@ namespace FarNet
 	/// </summary>
 	public static class Tasks
 	{
-		const string _envMacroFlag = "FarNet.Tasks.macro";
-		const string _macroSetFlag = "mf.env('FarNet.Tasks.macro', 1, '1')";
-
 		/// <summary>
 		/// Starts a task with the specified function job.
 		/// </summary>
@@ -116,26 +113,24 @@ namespace FarNet
 		/// <returns>The task which completes when the macro completes.</returns>
 		public static Task Macro(string text)
 		{
-			Environment.SetEnvironmentVariable(_envMacroFlag, "0");
 			var task = new TaskCompletionSource<object>();
 			Far.Api.PostJob(() =>
 			{
 				try
 				{
-					Far.Api.PostMacro(text);
-					Far.Api.PostMacro(_macroSetFlag);
+					var wait = Works.Far2.Api.PostMacroWait(text);
+					ThreadPool.QueueUserWorkItem(_ =>
+					{
+						wait.WaitOne();
+						wait.Dispose();
+						task.SetResult(null);
+					});
 				}
 				catch (Exception exn)
 				{
 					task.SetException(exn);
 					return;
 				}
-				ThreadPool.QueueUserWorkItem(_ =>
-				{
-					while (Environment.GetEnvironmentVariable(_envMacroFlag) != "1")
-						Thread.Sleep(10);
-					task.SetResult(null);
-				});
 			});
 			return task.Task;
 		}

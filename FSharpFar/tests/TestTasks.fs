@@ -28,22 +28,22 @@ let testTasks = async {
 
     // message box
     do! Assert.Wait Window.IsDialog
-    Assert.Equal("Action", far.Dialog.[1].Text)
+    do! job { Assert.Equal("Action", far.Dialog.[1].Text) }
     do! Jobs.Keys "Esc"
 
     // input box, enter "bar"
     do! Assert.Wait Window.IsDialog
-    Assert.Equal("Function", far.Dialog.[1].Text)
+    do! job { Assert.Equal("Function", far.Dialog.[1].Text) }
     do! Jobs.Keys "b a r Enter"
 
     // editor, exit
     do! Assert.Wait Window.IsEditor
-    Assert.True(far.Editor.Title.EndsWith(__SOURCE_FILE__));
+    do! job { Assert.True(far.Editor.Title.EndsWith(__SOURCE_FILE__)) }
     do! Jobs.Keys "Esc"
 
     // CtrlG dialog, exit
     do! Assert.Wait Window.IsDialog
-    Assert.Equal(Guid("044ef83e-8146-41b2-97f0-404c2f4c7b69"), far.Dialog.TypeId)
+    do! job { Assert.Equal(Guid("044ef83e-8146-41b2-97f0-404c2f4c7b69"), far.Dialog.TypeId) }
     do! Jobs.Keys "Esc"
 }
 
