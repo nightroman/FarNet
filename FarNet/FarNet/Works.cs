@@ -107,6 +107,18 @@ namespace FarNet.Works
 		/// <summary>
 		/// INTERNAL
 		/// </summary>
+		// Joins two strings with a space. Either string may be null or empty.
+		public static string JoinText(string head, string tail)
+		{
+			if (string.IsNullOrEmpty(head))
+				return tail ?? string.Empty;
+			if (string.IsNullOrEmpty(tail))
+				return head ?? string.Empty;
+			return head + " " + tail;
+		}
+		/// <summary>
+		/// INTERNAL
+		/// </summary>
 		public static Exception UnwrapAggregateException(Exception exn)
 		{
 			if (exn is AggregateException aggregate && aggregate.InnerExceptions.Count == 1)

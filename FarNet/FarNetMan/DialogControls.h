@@ -188,6 +188,7 @@ public:
 	virtual FarItem^ Add(String^ text);
 	virtual void AttachItems();
 	virtual void DetachItems();
+	virtual void ReplaceItems(IList<FarItem^>^ items, IList<int>^ subset);
 protected:
 	FarBaseList(FarDialog^ dialog, int index);
 	FarBaseList(FarDialog^ dialog, int left, int top, int right, int bottom, String^ text);
@@ -197,10 +198,9 @@ internal:
 	void FreeItems();
 	static void InitFarListItem(FarListItem& i2, FarItem^ i1);
 	static void InitFarListItemShort(FarListItem& i2, FarItem^ i1);
-internal:
-	IList<FarItem^>^ _Items;
-	List<int>^ _ii;
 private:
+	IList<FarItem^>^ _Items;
+	IList<int>^ _ii;
 	FarList* _pFarList;
 };
 

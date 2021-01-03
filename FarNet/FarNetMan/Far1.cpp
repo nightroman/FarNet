@@ -10,7 +10,6 @@
 #include "Far0.h"
 #include "History.h"
 #include "InputBox.h"
-#include "ListMenu.h"
 #include "Menu.h"
 #include "Message.h"
 #include "Panel0.h"
@@ -63,7 +62,7 @@ IMenu^ Far1::CreateMenu()
 
 IListMenu^ Far1::CreateListMenu()
 {
-	return gcnew ListMenu;
+	return gcnew Works::ListMenu;
 }
 
 FarNet::MacroArea Far1::MacroArea::get()

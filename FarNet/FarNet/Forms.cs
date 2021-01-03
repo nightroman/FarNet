@@ -408,6 +408,12 @@ namespace FarNet.Forms
 		void DetachItems();
 		/// <include file='doc.xml' path='doc/BaseListItems/*'/>
 		IList<FarItem> Items { get; }
+		/// <summary>
+		/// INTERNAL
+		/// </summary>
+		/// <param name="items">.</param>
+		/// <param name="subset">.</param>
+		void ReplaceItems(IList<FarItem> items, IList<int> subset);
 	}
 
 	/// <summary>

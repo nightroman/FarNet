@@ -14,6 +14,7 @@ namespace FarNet.Vessel
 	{
 		static string AppHome { get { return Path.GetDirectoryName(typeof(VesselTool).Assembly.Location); } }
 		static string HelpTopic { get { return "<" + AppHome + "\\>"; } }
+
 		public override void Invoke(object sender, ModuleToolEventArgs e)
 		{
 			IMenu menu = Far.Api.CreateMenu();
@@ -31,6 +32,7 @@ namespace FarNet.Vessel
 
 			menu.Show();
 		}
+
 		static string ResultText(Result result)
 		{
 			return string.Format(@"
@@ -49,6 +51,7 @@ Gain/item  : {5,8:n2}
  result.DownSum,
  result.Average);
 		}
+
 		static void Train(int mode)
 		{
 			// train/save
@@ -59,6 +62,7 @@ Gain/item  : {5,8:n2}
 			var report = ResultText(result);
 			Far.Api.Message(report, "Training results", MessageOptions.LeftAligned);
 		}
+
 		static void Update(int mode)
 		{
 			// update
@@ -68,6 +72,7 @@ Gain/item  : {5,8:n2}
 			// show update info
 			Far.Api.Message(text, "Update", MessageOptions.LeftAligned);
 		}
+
 		static void UpdateWork(object state)
 		{
 			int mode = (int)state;
@@ -76,6 +81,7 @@ Gain/item  : {5,8:n2}
 			var algo = new Actor(mode, VesselHost.LogPath[mode], true);
 			algo.Update();
 		}
+
 		static void UpdatePeriodically(int mode)
 		{
 			var now = DateTime.Now;
@@ -100,19 +106,26 @@ Gain/item  : {5,8:n2}
 			// start work
 			ThreadPool.QueueUserWorkItem(UpdateWork, mode);
 		}
+
+		static IListMenu CreateListMenu()
+		{
+			var menu = Far.Api.CreateListMenu();
+			menu.IncrementalOptions = PatternOptions.Substring;
+			menu.SelectLast = true;
+			menu.UsualMargins = true;
+			return menu;
+		}
+
 		static void ShowHistory()
 		{
 			var mode = 0;
 			var store = VesselHost.LogPath[mode];
 			var limit = Settings.Default.Limit0;
 
-			IListMenu menu = Far.Api.CreateListMenu();
+			var menu = CreateListMenu();
 			menu.HelpTopic = HelpTopic + "file-history";
-			menu.SelectLast = true;
-			menu.UsualMargins = true;
 			menu.Title = $"File history ({limit})";
-
-			menu.IncrementalOptions = PatternOptions.Substring;
+			menu.TypeId = new Guid("23b390e8-d91d-4ff1-a9ab-de0ceffdc0ac");
 
 			menu.AddKey(KeyCode.Delete, ControlKeyStates.ShiftPressed);
 			menu.AddKey(KeyCode.Enter, ControlKeyStates.LeftCtrlPressed);
@@ -245,19 +258,17 @@ Gain/item  : {5,8:n2}
 				return;
 			}
 		}
+
 		static void ShowFolders()
 		{
 			var mode = 1;
 			var store = VesselHost.LogPath[mode];
 			var limit = Settings.Default.Limit0;
 
-			IListMenu menu = Far.Api.CreateListMenu();
+			var menu = CreateListMenu();
 			menu.HelpTopic = HelpTopic + "folder-history";
-			menu.SelectLast = true;
-			menu.UsualMargins = true;
 			menu.Title = $"Folder history ({limit})";
-
-			menu.IncrementalOptions = PatternOptions.Substring;
+			menu.TypeId = new Guid("ee448906-ec7d-4ea7-bc2e-848f48cddd39");
 
 			menu.AddKey(KeyCode.Delete, ControlKeyStates.ShiftPressed);
 			menu.AddKey(KeyCode.R, ControlKeyStates.LeftCtrlPressed);
@@ -334,19 +345,17 @@ Gain/item  : {5,8:n2}
 				return;
 			}
 		}
+
 		static void ShowCommands()
 		{
 			var mode = 2;
 			var store = VesselHost.LogPath[mode];
 			var limit = Settings.Default.Limit0;
 
-			IListMenu menu = Far.Api.CreateListMenu();
+			var menu = CreateListMenu();
 			menu.HelpTopic = HelpTopic + "command-history";
-			menu.SelectLast = true;
-			menu.UsualMargins = true;
 			menu.Title = $"Command history ({limit})";
-
-			menu.IncrementalOptions = PatternOptions.Substring;
+			menu.TypeId = new Guid("1baa6870-4d49-40e5-8d20-19ff4b8ac5e6");
 
 			menu.AddKey(KeyCode.Delete, ControlKeyStates.ShiftPressed);
 			menu.AddKey(KeyCode.R, ControlKeyStates.LeftCtrlPressed);

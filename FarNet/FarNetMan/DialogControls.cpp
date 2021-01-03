@@ -2,7 +2,7 @@
 // FarNet plugin for Far Manager
 // Copyright (c) Roman Kuzmin
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "DialogControls.h"
 #include "Dialog.h"
 #include "DialogLine.h"
@@ -15,7 +15,7 @@ bool Class::Prop::get() { return GetFlag(Flag); }\
 void Class::Prop::set(bool value) { SetFlag(Flag, value); }
 
 namespace FarNet
-{;
+{
 #pragma region FarControl
 
 FarControl::FarControl(FarDialog^ dialog, int index)
@@ -751,6 +751,12 @@ void FarBaseList::Free()
 	FreeItems();
 }
 
+void FarBaseList::ReplaceItems(IList<FarItem^>^ items, IList<int>^ subset)
+{
+	_Items = items;
+	_ii = subset;
+}
+
 void FarBaseList::DetachItems()
 {
 	if (_dialog->_hDlg == INVALID_HANDLE_VALUE)
@@ -989,5 +995,4 @@ void FarListBox::SetFrame(int selected, int top)
 }
 
 #pragma endregion
-
 }

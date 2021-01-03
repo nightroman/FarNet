@@ -386,5 +386,9 @@ namespace FarNet
 		/// Tells to use usual Far menu margins.
 		/// </summary>
 		bool UsualMargins { get; set; }
+		/// <summary>
+		/// Gets or sets the dialog type ID.
+		/// </summary>
+		Guid TypeId { get; set; }
 	}
 }

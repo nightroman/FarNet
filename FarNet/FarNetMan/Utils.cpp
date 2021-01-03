@@ -411,52 +411,6 @@ FILETIME DateTimeToFileTime(DateTime time)
 	return *(FILETIME*)&r;
 }
 
-// Simple wildcard (* and ?)
-String^ Wildcard(String^ pattern)
-{
-	pattern = Regex::Escape(pattern);
-	for(int i = 0; i < pattern->Length - 1; ++i)
-	{
-		if (pattern[i] != '\\')
-			continue;
-
-		if (pattern[i + 1] == '*')
-			pattern = pattern->Substring(0, i) + ".*" + pattern->Substring(i + 2);
-		if (pattern[i + 1] == '?')
-			pattern = pattern->Substring(0, i) + ".?" + pattern->Substring(i + 2);
-		else
-			++i;
-	}
-	return pattern;
-}
-
-// Joins strings with spaces
-String^ JoinText(String^ head, String^ tail)
-{
-	if (String::IsNullOrEmpty(head))
-		return tail ? tail : String::Empty;
-	if (String::IsNullOrEmpty(tail))
-		return head ? head : String::Empty;
-	return head + " " + tail;
-}
-
-// Validates rect position and width by screen size so that rect is visible.
-void ValidateRect(int& x, int& w, int min, int size)
-{
-	if (x < 0)
-		x = min + (size - w)/2;
-	int r = x + w - 1;
-	if (r > min + size - 1)
-	{
-		x -= (r - min - size + 1);
-		if (x < min)
-			x = min;
-		r = x + w - 1;
-		if (r > min + size - 1)
-			w -= (r - min - size + 1);
-	}
-}
-
 void DeleteSourceOptional(String^ path, DeleteSource option)
 {
 	if (option != DeleteSource::File && option != DeleteSource::Folder)

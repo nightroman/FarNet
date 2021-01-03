@@ -254,7 +254,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AnyMenu.cpp" />
     <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="CommandLine.cpp" />
     <ClCompile Include="Dialog.cpp" />
@@ -270,7 +269,6 @@
     <ClCompile Include="History.cpp" />
     <ClCompile Include="InputBox.cpp" />
     <ClCompile Include="ListItemCollection.cpp" />
-    <ClCompile Include="ListMenu.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="Message.cpp" />
     <ClCompile Include="Panel0.cpp" />
@@ -296,7 +294,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Active.h" />
-    <ClInclude Include="AnyMenu.h" />
     <ClInclude Include="CommandLine.h" />
     <ClInclude Include="Dialog.h" />
     <ClInclude Include="DialogControls.h" />
@@ -312,7 +309,6 @@
     <ClInclude Include="History.h" />
     <ClInclude Include="InputBox.h" />
     <ClInclude Include="ListItemCollection.h" />
-    <ClInclude Include="ListMenu.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="Message.h" />

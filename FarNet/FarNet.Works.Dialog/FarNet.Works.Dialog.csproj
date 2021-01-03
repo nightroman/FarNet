@@ -66,8 +66,10 @@
       <Link>AssemblyMeta.cs</Link>
     </Compile>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="AnyMenu.cs" />
     <Compile Include="DialogTools.cs" />
     <Compile Include="ErrorDialog.cs" />
+    <Compile Include="ListMenu.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FarNet\FarNet.csproj">

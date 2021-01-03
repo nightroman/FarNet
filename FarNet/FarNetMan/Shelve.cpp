@@ -109,7 +109,7 @@ ShelveInfoModule::ShelveInfoModule(Panel2^ panel)
 
 String^ ShelveInfoModule::Title::get()
 {
-	return JoinText(_panel->Title, _panel->CurrentLocation);
+	return Works::Kit::JoinText(_panel->Title, _panel->CurrentLocation);
 }
 
 // _110313_054719 Still does not support passive.

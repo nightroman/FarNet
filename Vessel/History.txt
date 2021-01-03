@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.Vessel
-FarNet 5.4.15
+FarNet 5.4.17
+
+= 2.5.3 =
+
+Use FarNet 5.4.17
+Assign 3 different guid to file, folder, command history dialogs.
 
 = 2.5.2 =
 
