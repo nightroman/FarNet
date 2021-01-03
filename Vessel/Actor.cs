@@ -66,43 +66,42 @@ namespace FarNet.Vessel
 				foreach (var record in _records)
 					_latestRecords[record.Path] = record;
 
+				var args = new GetHistoryArgs() { Last = Settings.Default.MaximumFileCountFromFar };
 				if (mode == 0)
 				{
 					// add missing and later records from Far editor history
-					foreach (var item in Far.Api.History.Editor())
-					{
-						if (!_latestRecords.TryGetValue(item.Name, out Record record) || item.Time - record.Time > _smallSpan)
-							_records.Add(new Record(item.Time, Record.NOOP, item.Name));
-					}
+					args.Kind = HistoryKind.Editor;
+					AddFarHistory(args);
+
 					// add missing and later records from Far viewer history
-					foreach (var item in Far.Api.History.Viewer())
-					{
-						if (!_latestRecords.TryGetValue(item.Name, out Record record) || item.Time - record.Time > _smallSpan)
-							_records.Add(new Record(item.Time, Record.NOOP, item.Name));
-					}
+					args.Kind = HistoryKind.Viewer;
+					AddFarHistory(args);
 				}
 				else if (mode == 1)
 				{
 					// add missing and later records from Far folder history
-					foreach (var item in Far.Api.History.Folder())
-					{
-						if (!_latestRecords.TryGetValue(item.Name, out Record record) || item.Time - record.Time > _smallSpan)
-							_records.Add(new Record(item.Time, Record.NOOP, item.Name));
-					}
+					args.Kind = HistoryKind.Folder;
+					AddFarHistory(args);
 				}
 				else
 				{
 					// add missing and later records from Far command history
-					foreach (var item in Far.Api.History.Command())
-					{
-						if (!_latestRecords.TryGetValue(item.Name, out Record record) || item.Time - record.Time > _smallSpan)
-							_records.Add(new Record(item.Time, Record.NOOP, item.Name));
-					}
+					args.Kind = HistoryKind.Viewer;
+					AddFarHistory(args);
 				}
 			}
 
 			// get sorted
 			_records = new List<Record>(_records.OrderByDescending(x => x.Time));
+		}
+		void AddFarHistory(GetHistoryArgs args)
+		{
+			var items = Far.Api.History.GetHistory(args);
+			foreach (var item in items)
+			{
+				if (!_latestRecords.TryGetValue(item.Name, out Record record) || item.Time - record.Time > _smallSpan)
+					_records.Add(new Record(item.Time, Record.NOOP, item.Name));
+			}
 		}
 		/// <summary>
 		/// Gets true if the path exists in the log.

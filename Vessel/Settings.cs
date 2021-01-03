@@ -76,6 +76,15 @@ namespace FarNet.Vessel
 			set { this["MaximumFileCount"] = value; }
 		}
 
+		[UserScopedSetting]
+		[DefaultSettingValue("1000")]
+		[SettingsManageability(SettingsManageability.Roaming)]
+		public int MaximumFileCountFromFar
+		{
+			get { return (int)this["MaximumFileCountFromFar"]; }
+			set { this["MaximumFileCountFromFar"] = value; }
+		}
+
 		/// <summary>
 		/// Limit in hours for the first sort group.
 		/// The default and recommended value is 2.

@@ -77,7 +77,12 @@ The settings panel is opened from the menu in panels:
 
 - *MaximumFileCount*
 
-    Maximum number of tracked files or folders.
+    Maximum number of tracked items.
+    The default is 1000 items.
+
+- *MaximumFileCountFromFar*
+
+    Maximum number of last items taken from far history.
     The default is 1000 items.
 
 - *Limit0*

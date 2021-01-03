@@ -2,92 +2,53 @@
 // FarNet plugin for Far Manager
 // Copyright (c) Roman Kuzmin
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "History.h"
 #include "Settings.h"
 
 namespace FarNet
-{;
+{
 static HistoryInfo^ NewHistoryInfo(const FarSettingsHistory& that)
 {
 	return gcnew HistoryInfo(gcnew String(that.Name), FileTimeToDateTime(that.Time), that.Lock != 0);
 }
 
-array<HistoryInfo^>^ History::Command()
+array<HistoryInfo^>^ History::GetHistory(GetHistoryArgs^ args)
 {
+	if (!args)
+		throw gcnew ArgumentNullException("args");
+
 	Settings settings(FarGuid);
 
-	FarSettingsEnum arg = {sizeof(arg)};
-	settings.Enum(FSSF_HISTORY_CMD, arg);
-
-	array<HistoryInfo^>^ result = gcnew array<HistoryInfo^>((int)arg.Count);
-	for(int i = 0; i < (int)arg.Count; ++i)
-		result[i] = NewHistoryInfo(arg.Histories[i]);
-
-	return result;
-}
-
-array<HistoryInfo^>^ History::Editor()
-{
-	Settings settings(FarGuid);
-
-	FarSettingsEnum arg = {sizeof(arg)};
-	settings.Enum(FSSF_HISTORY_EDIT, arg);
-
-	array<HistoryInfo^>^ result = gcnew array<HistoryInfo^>((int)arg.Count);
-	for(int i = 0; i < (int)arg.Count; ++i)
-		result[i] = NewHistoryInfo(arg.Histories[i]);
-
-	return result;
-}
-
-array<HistoryInfo^>^ History::Viewer()
-{
-	Settings settings(FarGuid);
-
-	FarSettingsEnum arg = {sizeof(arg)};
-	settings.Enum(FSSF_HISTORY_VIEW, arg);
-
-	array<HistoryInfo^>^ result = gcnew array<HistoryInfo^>((int)arg.Count);
-	for(int i = 0; i < (int)arg.Count; ++i)
-		result[i] = NewHistoryInfo(arg.Histories[i]);
-
-	return result;
-}
-
-array<HistoryInfo^>^ History::Folder()
-{
-	Settings settings(FarGuid);
-
-	FarSettingsEnum arg = {sizeof(arg)};
-	settings.Enum(FSSF_HISTORY_FOLDER, arg);
-
-	List<HistoryInfo^> list((int)arg.Count);
-	for(int i = 0; i < (int)arg.Count; ++i)
+	// resolve query root
+	int root;
+	if (args->Name)
 	{
-		// skip not native folders
-		if (memcmp(&arg.Histories[i].PluginId, &FarGuid, sizeof(GUID)))
-			continue;
-		
-		list.Add(NewHistoryInfo(arg.Histories[i]));
+		// named
+		PIN_NE(pin, args->Name);
+		root = settings.OpenSubKey(0, pin);
+	}
+	else
+	{
+		// fixed
+		root = (FARSETTINGS_SUBFOLDERS)args->Kind;
 	}
 
-	return list.ToArray();
-}
-
-array<HistoryInfo^>^ History::Dialog(String^ name)
-{
-	Settings settings(FarGuid);
-
-	PIN_NE(pin, name);
-	int root = settings.OpenSubKey(0, pin);
-
-	FarSettingsEnum arg = {sizeof(arg)};
+	FarSettingsEnum arg = { sizeof(arg) };
 	settings.Enum(root, arg);
 
-	array<HistoryInfo^>^ result = gcnew array<HistoryInfo^>((int)arg.Count);
-	for(int i = 0; i < (int)arg.Count; ++i)
-		result[i] = NewHistoryInfo(arg.Histories[i]);
+	int st = 0;
+	int en = (int)arg.Count;
+	if (args->Last > 0)
+	{
+		st = en - args->Last;
+		if (st < 0)
+			st = 0;
+	}
+
+	array<HistoryInfo^>^ result = gcnew array<HistoryInfo^>(en - st);
+	for (int i = st, r = 0; i < en; ++i, ++r)
+		result[r] = NewHistoryInfo(arg.Histories[i]);
 
 	return result;
 }

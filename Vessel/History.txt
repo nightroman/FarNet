@@ -1,4 +1,10 @@
 https://www.nuget.org/packages/FarNet.Vessel
+FarNet 5.4.15
+
+= 2.5.2 =
+
+Use FarNet 5.4.15
+New setting MaximumFileCountFromFar limits items from Far history.
 
 = 2.5.1 =
 
