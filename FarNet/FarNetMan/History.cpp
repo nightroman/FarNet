@@ -20,7 +20,7 @@ array<HistoryInfo^>^ History::GetHistory(GetHistoryArgs^ args)
 
 	Settings settings(FarGuid);
 
-	// resolve query root
+	// resolve root
 	int root;
 	if (args->Name)
 	{
@@ -34,9 +34,11 @@ array<HistoryInfo^>^ History::GetHistory(GetHistoryArgs^ args)
 		root = (FARSETTINGS_SUBFOLDERS)args->Kind;
 	}
 
+	// get items
 	FarSettingsEnum arg = { sizeof(arg) };
 	settings.Enum(root, arg);
 
+	// start and end indexes
 	int st = 0;
 	int en = (int)arg.Count;
 	if (args->Last > 0)
@@ -46,10 +48,24 @@ array<HistoryInfo^>^ History::GetHistory(GetHistoryArgs^ args)
 			st = 0;
 	}
 
-	array<HistoryInfo^>^ result = gcnew array<HistoryInfo^>(en - st);
-	for (int i = st, r = 0; i < en; ++i, ++r)
-		result[r] = NewHistoryInfo(arg.Histories[i]);
+	// case: folders, skip plugin records
+	if (root == FSSF_HISTORY_FOLDER)
+	{
+		List<HistoryInfo^> list(en - st);
+		for (int i = st; i < en; ++i)
+		{
+			if (0 == memcmp(&arg.Histories[i].PluginId, &FarGuid, sizeof(GUID)))
+				list.Add(NewHistoryInfo(arg.Histories[i]));
+		}
+		return list.ToArray();
+	}
 
+	// case: others, take all records
+	auto result = gcnew array<HistoryInfo^>(en - st);
+	for (int i = st, r = 0; i < en; ++i, ++r)
+	{
+		result[r] = NewHistoryInfo(arg.Histories[i]);
+	}
 	return result;
 }
 }

@@ -1,6 +1,10 @@
 https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 5.4.16 =
+
+Skip plugins on getting folder history.
+
 = 5.4.15 =
 
 Add IHistory.GetHistory(GetHistoryArgs).
