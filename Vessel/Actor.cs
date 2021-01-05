@@ -86,7 +86,7 @@ namespace FarNet.Vessel
 				else
 				{
 					// add missing and later records from Far command history
-					args.Kind = HistoryKind.Viewer;
+					args.Kind = HistoryKind.Command;
 					AddFarHistory(args);
 				}
 			}
