@@ -1,32 +1,35 @@
-﻿# RightWords
+﻿[Contents]: #rightwords
 
-FarNet module for Far Manager, spell-checker and thesaurus.
-
-* [Synopsis](#synopsis)
-* [Installation](#installation)
-* [Description](#description)
-* [Dictionaries](#dictionaries)
-* [Options](#options)
-* [Settings](#settings)
-
-*********************************************************************
-## Synopsis
+# RightWords
 
 RightWords is the FarNet module for Far Manager. It provides the spell-checker
 and thesaurus based on NHunspell. The core Hunspell is used in OpenOffice and
 it works with dictionaries published on OpenOffice.org.
 
-**Project**
+* [Installation](#installation)
+* [Options](#options)
+* [Settings](#settings)
 
- * Source: <https://github.com/nightroman/FarNet/tree/master/RightWords>
- * Author: Roman Kuzmin
+Interface
+
+* [Main menu](#main-menu)
+* [Thesaurus menu](#thesaurus-menu)
+* [Correction list](#correction-list)
+* [Add to Dictionary](#add-to-dictionary)
+
+Project
+
+* Source: <https://github.com/nightroman/FarNet/tree/master/RightWords>
+* Author: Roman Kuzmin
 
 *********************************************************************
 ## Installation
 
+[Contents]
+
 **FarNet and RightWords**
 
-How to install and update FarNet and modules:\
+How to install and update FarNet and modules:
 <https://github.com/nightroman/FarNet#readme>
 
 **Dictionaries**
@@ -51,6 +54,7 @@ The installed file structure (dictionaries may be different):
         LICENSE.txt - the license
 
         RightWords.dll - module assembly
+        RightWords.hlf - module help file
         RightWords.resources - English UI strings
         RightWords.ru.resources - Russian UI strings
 
@@ -68,84 +72,37 @@ The installed file structure (dictionaries may be different):
 
 NOTES
 
-- Do not rename or move the NHunspell directory.
-- Collection of dictionaries is up to a user.
+- Dictionaries are up to a user.
 - Thesaurus files are optional.
 - Dictionary directories may have any names. The names are used in the
   dictionary menu and in the user dictionary file names (e.g. English ->
   RightWords.English.dic).
 
 *********************************************************************
-## Description
+## Options
 
-In order to turn "Spelling mistakes" highlighting on and off use the menu:
+[Contents]
+
 `[F11] \ FarNet \ Drawers \ Spelling mistakes`
 
-For other actions use the module menu `[F11] \ RightWords`:
-
-- Correct word (editor, dialog, command line)
-
-    Checks spelling and shows the suggestion menu for the current word. Menu
-    actions are the same as for *Correct text*.
-
-- Correct text (editor)
-
-    Checks spelling, shows suggestions, and corrects words in the selected text
-    or starting from the caret position. `[Enter]` in the suggestion menu
-    replaces the highlighted word with the selected suggestion.
-
-- Menu commands
-    - *Ignore* - ignores the word once
-    - *Ignore All* - ignores the word in the current session
-    - *Add to Dictionary* - adds the word to the user dictionary
-
-<!---->
-
-- Thesaurus
-
-    Prompts to enter a word and shows the list of available meanings and
-    synonyms. `[Enter]` in the menu copies the current item text to the
-    clipboard.
-
-*********************************************************************
-## Dictionaries
-
-*Add to Dictionary* command supports the common and language dictionaries. In
-order to add a word into a language dictionary two stems should be provided: a
-new word stem and its example stem. If the example stem is empty then the word
-is added as it is, this case is not very different from the common dictionary.
-
-Examples:
-
-English stems: plugin + pin
-These forms become correct:
-
-    plugin   plugins   Plugin   Plugins
-
-Russian stems: плагин + камин
-These forms become correct:
-
-    плагин   плагины   Плагин   Плагины
-    плагина  плагинов  Плагина  Плагинов
-    плагину  плагинам  Плагину  Плагинам
-    плагином плагинами Плагином Плагинами
-    плагине  плагинах  Плагине  Плагинах
-
-CAUTION: Mind word capitalization, e.g. add "plugin", not "Plugin".
-
-User dictionaries are UTF-8 text files in the module roaming directory:
-*RightWords.dic* (common) and files like *RightWords.XYZ.dic* (languages).
-
-*********************************************************************
-## Options
+Switches "Spelling mistakes" highlighting in the current editor.
 
 `[F9] \ Options \ Plugin configuration \ FarNet \ Drawers \ Spelling mistakes`
 
-* Mask - mask of files where the "Spelling mistakes" is turned on automatically.
-* Priority - drawer color priority.
+The dialog with permanent options:
+
+- `Mask`
+
+    Specifies the files for "Spelling mistakes" highlighting turned on.
+
+- `Priority`
+
+    Specifies the color priority.
 
 *********************************************************************
 ## Settings
+
+[Contents]
 
 Open the module settings panel: `[F11] \ FarNet \ Settings \ RightWords`
 
@@ -198,3 +155,103 @@ The default is the module roaming directory.
 
 If it is set to a positive value then it tells to not check too long lines and
 highlight them all. Otherwise too long lines may cause lags on highlighting.
+
+*********************************************************************
+## Main menu
+
+[Contents]
+
+This menu is called by `[F11] \ RightWords`.
+
+Commands:
+
+- *Correct word* (editor, dialog, command line)
+
+    Checks spelling and shows suggestions for the current word.
+    See [Correction list](#correction-list).
+
+- *Correct text* (editor)
+
+    Checks spelling and shows suggestions in the selected text or starting from the caret position.
+    See [Correction list](#correction-list).
+
+- *Thesaurus...*
+
+    Prompts for a word and shows the list of its meanings and synonyms.
+    See [Thesaurus menu](#thesaurus-menu).
+
+See also [Options](#options).
+
+*********************************************************************
+## Thesaurus menu
+
+[Contents]
+
+This menu shows words in groups of synonyms and related concepts.
+
+Keys and actions:
+
+- `[Esc]`, `[Enter]`
+
+    Close the menu.
+
+- `[CtrlC]`, `[CtrlIns]`
+
+    Copy the word to clipboard.
+
+*********************************************************************
+## Correction list
+
+[Contents]
+
+This list shows suggestions for correcting a misspelled word and additional commands.
+
+Additional commands:
+
+- *Ignore*
+
+    Ignores the word once.
+
+- *Ignore All*
+
+    Ignores the word in the current session.
+
+- *Add to Dictionary*
+
+    Adds the word to the user dictionary.
+
+*********************************************************************
+## Add to Dictionary
+
+[Contents]
+
+*Add to Dictionary* supports the common and language dictionaries.
+
+On adding a word to the common dictionary, choose one of the suggested variants.
+
+On adding a word to a language dictionary, provide two stems: the new word stem
+and its example stem. If the example stem is empty then the word is added as it
+is (not very different from adding to the common dictionary).
+
+Examples:
+
+English stems: plugin + pin
+These forms become correct:
+
+    plugin   plugins   Plugin   Plugins
+
+Russian stems: плагин + камин
+These forms become correct:
+
+    плагин   плагины   Плагин   Плагины
+    плагина  плагинов  Плагина  Плагинов
+    плагину  плагинам  Плагину  Плагинам
+    плагином плагинами Плагином Плагинами
+    плагине  плагинах  Плагине  Плагинах
+
+CAUTION: Mind word capitalization, e.g. add "plugin", not "Plugin".
+
+User dictionaries are UTF-8 text files in the module roaming directory:
+*RightWords.dic* (common) and files like *RightWords.XYZ.dic* (languages).
+
+*********************************************************************

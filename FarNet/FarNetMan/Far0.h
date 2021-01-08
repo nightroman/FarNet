@@ -35,8 +35,8 @@ public:
 	static void ShowDrawersMenu();
 	static void ShowMenu(ModuleToolOptions from);
 public:
-	static String^ FarNetRoot() { return Environment::GetEnvironmentVariable("FARHOME") + "\\FarNet"; }
-	static String^ HelpTopic() { return "<" + FarNetRoot() + "\\>"; }
+	static String^ FarNetManRoot() { return Environment::GetEnvironmentVariable("FARHOME") + "\\Plugins\\FarNet"; }
+	static String^ HelpTopic() { return "<" + FarNetManRoot() + "\\>"; }
 	static void InvalidateProxyCommand();
 	static void UnregisterProxyTool(IModuleTool^ tool);
 private:

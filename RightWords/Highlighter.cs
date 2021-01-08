@@ -8,9 +8,8 @@ using System.Text.RegularExpressions;
 
 namespace FarNet.RightWords
 {
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
-	[System.Runtime.InteropServices.Guid("bbed2ef1-97d1-4ba2-ac56-9de56bc8030c")]
 	[ModuleDrawer(Name = "Spelling mistakes", Mask = "*.hlf;*.htm;*.html;*.lng;*.restext", Priority = 1)]
+	[System.Runtime.InteropServices.Guid("bbed2ef1-97d1-4ba2-ac56-9de56bc8030c")]
 	public class Highlighter : ModuleDrawer
 	{
 		readonly MultiSpell Spell = MultiSpell.Get();

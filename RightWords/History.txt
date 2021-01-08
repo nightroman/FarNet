@@ -1,6 +1,14 @@
 https://www.nuget.org/packages/FarNet.RightWords
 FarNet 5.4.13
 
+= 2.3.3 =
+
+Add help and connect to user interface.
+
+Thesaurus menu:
+- Esc, Enter - close, do nothing
+- CtrlC, CtrlIns - copy to clipboard
+
 = 2.3.2 =
 
 Update for FarNet 5.4.13

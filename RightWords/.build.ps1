@@ -16,6 +16,16 @@ task build meta, {
 	exec { dotnet msbuild RightWords.csproj /p:FarHome=$FarHome /p:Configuration=Release }
 }
 
+task help @{
+	Inputs = 'README.md'
+	Outputs = "$ModuleHome\RightWords.hlf"
+	Jobs = {
+		exec { pandoc.exe README.md --output=z.htm --from=gfm }
+		exec { HtmlToFarHelp from=z.htm to=$ModuleHome\RightWords.hlf }
+		remove z.htm
+	}
+}
+
 # https://github.com/nightroman/PowerShelf/blob/master/Invoke-Environment.ps1
 task resgen @{
 	Inputs = 'RightWords.restext', 'RightWords.ru.restext'
@@ -32,7 +42,7 @@ task resgen @{
 	}
 }
 
-task publish resgen
+task publish help, resgen
 
 task clean {
 	remove z, bin, obj, README.htm, *.nupkg
@@ -82,6 +92,7 @@ task package markdown, version, {
 		"LICENSE.txt"
 		"RightWords.macro.lua"
 		"$ModuleHome\RightWords.dll"
+		"$ModuleHome\RightWords.hlf"
 		"$ModuleHome\RightWords.resources"
 		"$ModuleHome\RightWords.ru.resources"
 	)

@@ -17,6 +17,8 @@ namespace FarNet.RightWords
 			const int x = 20;
 
 			_Dialog = Far.Api.CreateDialog(-1, -1, 77, h);
+			_Dialog.HelpTopic = My.AddToDictionaryHelp;
+
 			_Dialog.AddBox(3, 1, 0, 0, My.AddToDictionary);
 			int y = 1;
 

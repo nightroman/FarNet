@@ -62,7 +62,6 @@ namespace FarNet.RightWords
 			get { return (int)this["MaximumLineLength"]; }
 			set { this["MaximumLineLength"] = value; }
 		}
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults")]
 		public override void Save()
 		{
 			if (!string.IsNullOrEmpty(SkipPattern))

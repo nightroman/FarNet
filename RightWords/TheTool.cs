@@ -14,6 +14,7 @@ namespace FarNet.RightWords
 
 			var menu = Far.Api.CreateMenu();
 			menu.Title = Settings.ModuleName;
+			menu.HelpTopic = Far.Api.GetHelpTopic("main-menu");
 
 			menu.Add(My.DoCorrectWord).Click = delegate { Actor.CorrectWord(); };
 

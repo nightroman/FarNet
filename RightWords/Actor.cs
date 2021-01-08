@@ -17,9 +17,7 @@ namespace FarNet.RightWords
 		public static readonly HashSet<string> IgnoreWords = new HashSet<string>();
 		static readonly IModuleManager Manager = Far.Api.GetModuleManager(Settings.ModuleName);
 		static readonly WeakReference CommonWords = new WeakReference(null);
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		static readonly bool Initialized = Initialize();
-		static bool Initialize()
+		static Actor()
 		{
 			// home directory, for libraries and dictionaries
 			var home = Path.GetDirectoryName(typeof(Hunspell).Assembly.Location);
@@ -44,8 +42,6 @@ namespace FarNet.RightWords
 					}
 				}
 			}
-
-			return true;
 		}
 		public static HashSet<string> GetCommonWords()
 		{
@@ -80,8 +76,8 @@ namespace FarNet.RightWords
 		}
 		public static void CorrectWord()
 		{
-			ILine line = null;
-			IEditor editor = null;
+			ILine line;
+			IEditor editor;
 
 			var kind = Far.Api.Window.Kind;
 			if (kind == WindowKind.Editor)
@@ -164,6 +160,9 @@ namespace FarNet.RightWords
 
 			var menu = Far.Api.CreateMenu();
 			menu.Title = word;
+			menu.HelpTopic = Far.Api.GetHelpTopic("thesaurus-menu");
+			menu.AddKey(KeyCode.C, ControlKeyStates.LeftCtrlPressed);
+			menu.AddKey(KeyCode.Insert, ControlKeyStates.LeftCtrlPressed);
 
 			Far.Api.UI.SetProgressState(TaskbarProgressBarState.Indeterminate);
 			Far.Api.UI.WindowTitle = My.Searching;
@@ -187,10 +186,20 @@ namespace FarNet.RightWords
 				Far.Api.UI.SetProgressState(TaskbarProgressBarState.NoProgress);
 			}
 
-			if (!menu.Show())
+			if (!menu.Show() || menu.Selected < 0)
 				return;
 
-			Far.Api.CopyToClipboard(menu.Items[menu.Selected].Text);
+			// copy
+			if (menu.Key.IsCtrl() && (menu.Key.VirtualKeyCode == KeyCode.C || menu.Key.VirtualKeyCode == KeyCode.Insert))
+			{
+				// get text and remove "(...)"
+				var text = menu.Items[menu.Selected].Text;
+				var index = text.IndexOf('(');
+				if (index >= 0)
+					text = text.Substring(0, index).Trim();
+
+				Far.Api.CopyToClipboard(text);
+			}
 		}
 		public static bool HasMatch(MatchCollection matches, Match match)
 		{
@@ -203,7 +212,7 @@ namespace FarNet.RightWords
 		}
 		public static MatchCollection GetMatches(Regex regex, string text)
 		{
-			return regex == null ? null : regex.Matches(text);
+			return regex?.Matches(text);
 		}
 		public static Regex GetRegexSkip()
 		{
@@ -384,6 +393,7 @@ namespace FarNet.RightWords
 
 			var menu = Far.Api.CreateMenu();
 			menu.Title = My.AddToDictionary;
+			menu.HelpTopic = My.AddToDictionaryHelp;
 			menu.Add(word);
 			menu.Add(word + ", " + word2);
 			if (!menu.Show())
@@ -403,6 +413,7 @@ namespace FarNet.RightWords
 			// dictionary menu
 			var menu = Far.Api.CreateMenu();
 			menu.Title = My.AddToDictionary;
+			menu.HelpTopic = My.AddToDictionaryHelp;
 			menu.AutoAssignHotkeys = true;
 			menu.Add(My.Common);
 			foreach (string name in languages)

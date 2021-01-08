@@ -20,6 +20,7 @@ namespace FarNet.RightWords
 			_menu.NoInfo = true;
 			_menu.X = column;
 			_menu.Y = line;
+			_menu.HelpTopic = Far.Api.GetHelpTopic("correction-list");
 
 			// menu keys
 			_menu.AddKey(KeyCode.D1);
