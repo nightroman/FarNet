@@ -37,22 +37,22 @@ namespace FarNet.Works
 		protected ProxyAction(ModuleManager manager, Type classType, Type attributeType)
 		{
 			_Manager = manager;
-			_ClassType = classType ?? throw new ArgumentNullException("classType");
-			if (attributeType == null) throw new ArgumentNullException("attributeType");
+			_ClassType = classType ?? throw new ArgumentNullException();
+			if (attributeType == null) throw new ArgumentNullException();
 
 			object[] attrs;
 
-			// Guid attribute; get it this way, not as Type.GUID, to be sure the attribute is applied
+			// Guid attribute. Do not Type.GUID, make sure Guid is used.
 			attrs = _ClassType.GetCustomAttributes(typeof(GuidAttribute), false);
 			if (attrs.Length == 0)
-				throw new ModuleException(string.Format(null, "Apply the Guid attribute to the '{0}' class.", _ClassType.Name));
+				throw new ModuleException($"Use '{typeof(GuidAttribute).FullName}' attribute for '{_ClassType.Name}'.");
 
 			_Id = new Guid(((GuidAttribute)attrs[0]).Value);
 			
 			// Module* attribure
 			attrs = _ClassType.GetCustomAttributes(attributeType, false);
 			if (attrs.Length == 0)
-				throw new ModuleException(string.Format(null, "Apply the '{0}' attribute to the '{1}' class.", attributeType.Name, _ClassType.Name));
+				throw new ModuleException($"Use '{attributeType.FullName}' attribute for '{_ClassType.Name}' class.");
 
 			Attribute = (ModuleActionAttribute)attrs[0];
 
@@ -67,7 +67,7 @@ namespace FarNet.Works
 			}
 		}
 		protected ModuleActionAttribute Attribute { get; }
-		internal ModuleAction GetInstance()
+		internal object GetInstance()
 		{
 			if (_ClassType == null)
 			{
@@ -75,12 +75,12 @@ namespace FarNet.Works
 				_ClassName = null;
 			}
 
-			return (ModuleAction)ModuleManager.CreateEntry(_ClassType);
+			return Activator.CreateInstance(_ClassType, false);
 		}
 		void Initialize()
 		{
 			if (string.IsNullOrEmpty(Attribute.Name))
-				throw new ModuleException("Empty module action name is not valid.");
+				throw new ModuleException("Module action name cannot be empty.");
 		}
 		internal void Invoking()
 		{
@@ -88,7 +88,7 @@ namespace FarNet.Works
 		}
 		public override string ToString()
 		{
-			return string.Format(null, "{0} {1} {2} Name='{3}'", _Manager.ModuleName, Id, Kind, Name);
+			return $"{_Manager.ModuleName} {Id} {Kind} Name='{Name}'";
 		}
 		public virtual void Unregister()
 		{
@@ -102,26 +102,12 @@ namespace FarNet.Works
 			data.Add(_Id);
 		}
 		// Properties
-		internal string ClassName
-		{
-			get
-			{
-				return _ClassType == null ? _ClassName : _ClassType.FullName;
-			}
-		}
-		public virtual Guid Id
-		{
-			get { return _Id; }
-		}
+		public virtual Guid Id => _Id;
+		public virtual string Name => Attribute.Name;
+		public IModuleManager Manager => _Manager;
+		internal string ClassName => _ClassType == null ? _ClassName : _ClassType.FullName;
+		// Abstract
 		public abstract ModuleItemKind Kind { get; }
-		public virtual string Name
-		{
-			get { return Attribute.Name; }
-		}
-		public IModuleManager Manager
-		{
-			get { return _Manager; }
-		}
 		internal abstract Hashtable SaveData();
 		internal abstract void LoadData(Hashtable data);
 	}

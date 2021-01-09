@@ -477,7 +477,7 @@ is enabled). By default symbols * and ? are wildcards.
 
 - `[BS]`
 
-    Removes the last symbol from the current incremental filter pattern.
+    Removes the last character from the current filter.
 
 - `[ShiftBS]`
 
@@ -486,6 +486,10 @@ is enabled). By default symbols * and ? are wildcards.
 - `[CtrlC]`, `[CtrlIns]`
 
     Copies the current item text to the clipboard.
+
+- `[CtrlV]`, `[ShiftIns]`
+
+    Appends the clipboard text to the filter.
 
 *********************************************************************
 ## Module settings

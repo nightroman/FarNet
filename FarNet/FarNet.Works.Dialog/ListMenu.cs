@@ -47,10 +47,7 @@ namespace FarNet.Works
 			get { return _Incremental_; }
 			set
 			{
-				if (value == null)
-					throw new ArgumentNullException("value");
-
-				_Incremental_ = value;
+				_Incremental_ = value ?? throw new ArgumentNullException("value");
 				_filter = value;
 				_re = null;
 			}
@@ -190,7 +187,7 @@ namespace FarNet.Works
 
 		void GetInfo(out string head, out string foot)
 		{
-			head = Title == null ? string.Empty : Title;
+			head = Title ?? string.Empty;
 			foot = NoInfo ? string.Empty : InfoLine();
 			if (!string.IsNullOrEmpty(Bottom))
 				foot += " ";
@@ -352,7 +349,7 @@ namespace FarNet.Works
 				return;
 			}
 
-			// incremental
+			// not incremental?
 			if (IncrementalOptions == 0)
 				return;
 
@@ -394,19 +391,28 @@ namespace FarNet.Works
 			}
 			else
 			{
-				var c = e.Key.Character;
-				if (c >= ' ')
+				// char or paste
+				var append = string.Empty;
+				if (e.Key.Character > ' ')
+				{
+					append = e.Key.Character.ToString();
+				}
+				else if (e.Key.IsCtrl(KeyCode.V) || e.Key.IsShift(KeyCode.Insert))
+				{
+					append = Far.Api.PasteFromClipboard();
+				}
+
+				if (append.Length > 0)
 				{
 					// keep and change filter
 					var filterBak = _filter;
 					var reBak = _re;
-					_filter += c;
+					_filter += append;
 					_re = null;
 
-					// * and ?
-					if (0 == (IncrementalOptions & PatternOptions.Literal) && (c == '*' || c == '?'))
+					// append "*" -> do not close, just update title/bottom
+					if (0 == (IncrementalOptions & PatternOptions.Literal) && append == "*")
 					{
-						// update title/bottom
 						GetInfo(out string t, out string b);
 						dialog[0].Text = t;
 						dialog[2].Text = b;
@@ -462,8 +468,7 @@ namespace FarNet.Works
 				}
 
 				// title, bottom
-				string title, info;
-				GetInfo(out title, out info);
+				GetInfo(out string title, out string info);
 
 				// dialog
 				var dialog = Far.Api.CreateDialog(1, 1, 1, 1);
@@ -527,7 +532,7 @@ namespace FarNet.Works
 					}
 				}
 
-				//! [Enter] on empty gives -1
+				//! empty + enter = -1
 				return Selected >= 0;
 			}
 		}

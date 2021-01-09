@@ -48,11 +48,11 @@ The installed file structure (dictionaries may be different):
 
     %FARHOME%\FarNet\Modules\RightWords
 
-        About-RightWords.htm - documentation
-        RightWords.macro.lua - sample macros
+        README.htm - documentation
         History.txt - the change log
-        LICENSE.txt - the license
+        RightWords.macro.lua - sample macros
 
+        LICENSE.txt - the license
         RightWords.dll - module assembly
         RightWords.hlf - module help file
         RightWords.resources - English UI strings

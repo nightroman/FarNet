@@ -59,15 +59,11 @@ namespace FarNet.Works
 		}
 		void ConnectModuleHost()
 		{
-			_ModuleHost = (ModuleHost)CreateEntry(_ModuleHostClassType);
+			_ModuleHost = (ModuleHost)Activator.CreateInstance(_ModuleHostClassType, false);
 			_ModuleHostClassType = null;
 
 			Log.Source.TraceInformation("Connect {0}", _ModuleHost);
 			_ModuleHost.Connect();
-		}
-		internal static BaseModuleItem CreateEntry(Type type)
-		{
-			return (BaseModuleItem)Activator.CreateInstance(type);
 		}
 		internal ModuleHost GetLoadedModuleHost()
 		{

@@ -1,212 +1,211 @@
 <?xml version="1.0" encoding='utf-8'?>
 <doc>
-	<!--
-	/// <include file='doc.xml' path='doc/UnselectNames/*'/>
-	/// <include file='doc.xml' path='doc/N1[@name="N2"]/*'/>
-	-->
-	<OpEqual>
-		<summary>Compares two objects.</summary>
-		<param name="left">The left object to compare.</param>
-		<param name="right">The right object to compare.</param>
-		<returns>true if objects are equal; otherwise, false.</returns>
-	</OpEqual>
-	<OpNotEqual>
-		<summary>Compares two objects.</summary>
-		<param name="left">The left object to compare.</param>
-		<param name="right">The right object to compare.</param>
-		<returns>true if objects are not equal; otherwise, false.</returns>
-	</OpNotEqual>
-	<SelectNames>
-		<summary>
-			Select panel items with specified names.
-		</summary>
-		<param name="names">
-			Names to be selected or objects converted to strings by <c>ToString()</c>. Null is OK.
-		</param>
-		<remarks>
-			Call <see cref="Redraw()"/> after that.
-			<para>
-				Names are processed as case sensitive, not found input names are ignored.
-			</para>
-		</remarks>
-	</SelectNames>
-	<UnselectNames>
-		<summary>
-			Unselect panel items with specified names.
-		</summary>
-		<param name="names">
-			Names to be unselected or objects converted to strings by <c>ToString()</c>. Null is OK.
-		</param>
-		<remarks>
-			Call <see cref="Redraw()"/> after that.
-			<para>
-				Names are processed as case sensitive, not found input names are ignored.
-			</para>
-		</remarks>
-	</UnselectNames>
-	<ViewPlan>
-		<summary>
-			Gets the current view plan.
-		</summary>
-		<remarks>
-			This plan info is incomplete, for example column names are empty.
-		</remarks>
-		<seealso cref="Panel.GetPlan"/>
-	</ViewPlan>
-	<CurrentDirectory>
-		<summary>
-			Gets the panel directory or sets a new directory and opens its native file panel.
-		</summary>
-		<remarks>
-			If it is a directory tree panel then the path is the currently selected directory in the tree.
-			If it is a module panel then it normally returns <see cref="FarNet.Explorer.Location"/>
-			or the value assigned to the <see cref="Panel.CurrentLocation"/>.
-			<para>
-				It throws on setting if a directory path is not valid or does not exist.
-			</para>
-			<para>
-				Call <see cref="Redraw()"/> after changing the directory in order to show changes immediately.
-			</para>
-		</remarks>
-		<seealso cref="GoToName(string)"/>
-		<seealso cref="GoToPath"/>
-	</CurrentDirectory>
-	<ExplorerModes>
-		<para>
-			In the "Find" mode the method may be called from a background thread, most of FarNet API is not allowed.
-			In the "Silent" mode any user interactions including error messages are not allowed.
-		</para>
-	</ExplorerModes>
-	<Data>
-		<summary>
-			Gets the user data key/value table.
-		</summary>
-		<remarks>
-			Any user data can be attached by one or more external tools.
-			Keys should be chosen carefully in order to avoid conflicts.
-			When in doubts generate and use <c>Guid</c> based keys.
-		</remarks>
-	</Data>
-	<Experimental>
-		<para>
-			WARNING: This feature should work fine but it is experimental.
-			It is not yet clear that it is needed. User feedback is welcome.
-		</para>
-	</Experimental>
-	<EditorList>
-		<para>
-			This list is only for iterations, access by indexes, and removal by
-			indexes. Accessed lines allow changes but new strings should not
-			contain line separators. Other editor changes during using this
-			list may cause unexpected results and should be avoided.
-		</para>
-	</EditorList>
-	<RegisterModule>
-		<para>
-			If you plan to unregister this action then keep the returned reference and call its <see cref="IModuleAction.Unregister"/> later.
-			Instead of keeping the reference you can get it by its ID by the <see cref="IFar"/>.<c>GetModule*()</c> methods.
-		</para>
-	</RegisterModule>
-	<ActionGuid>
-		<para>
-			It is mandatory to set the action ID by <c>System.Runtime.InteropServices.GuidAttribute</c>.
-			The ID has to be generated exactly for this class and it should never change.
-			FarNet uses this ID internally for storing and restoring data.
-			Other modules may use this ID to access and call this action.
-		</para>
-	</ActionGuid>
-	<UseLastHistory>
-		<summary>
-			Tells to use the last history as the initial text if it is not set.
-		</summary>
-	</UseLastHistory>
-	<WrapCursor>
-		<summary>
-			Tells to use the wrap cursor mode.
-		</summary>
-		<remarks>
-			In the wrap cursor mode moving the cursor up from the first element or down from the last element
-			moves the cursor to the bottom or the top. In menus the default is true, as recommended by the API.
-		</remarks>
-	</WrapCursor>
-	<AutoAssignHotkeys>
-		<summary>
-			Tells to assigns item hotkeys automatically starting with the first item.
-		</summary>
-	</AutoAssignHotkeys>
-	<ExpandEnvironmentVariables>
-		<summary>
-			Tells to expand environment variables in the input text.
-		</summary>
-	</ExpandEnvironmentVariables>
-	<ButtonClicked>
-		<summary>
-			Called on the button clicks and similar actions: [Enter] when focused or the hotkey at any time.
-		</summary>
-		<remarks>
-			NOTE: even if this is the default control (<see cref="IDialog.Default"/>) or
-			the cancel button (<see cref="IDialog.Cancel"/>) the event is not triggered
-			if the button is not explicitly clicked or a similar action is performed.
-			Thus, [CtrlEnter] (accept the dialog) and [Esc] (cancel the dialog)
-			do not trigger this event.
-		</remarks>
-	</ButtonClicked>
-	<ShowAmpersand>
-		<summary>
-			Tells to show ampersand symbols in the text instead of using them as hotkey marks.
-		</summary>
-	</ShowAmpersand>
-	<CenterGroup>
-		<summary>
-			Tells that the control if one of the centered group.
-		</summary>
-		<remarks>
-			Sequential items having this flag set and the same vertical coordinates are centered horizontally.
-			Their horizontal coordinates are ignored.
-		</remarks>
-	</CenterGroup>
-	<NoFocus>
-		<summary>
-			Tells that the control cannot get focus. But it still processes other events.
-		</summary>
-	</NoFocus>
-	<HelpTopic>
-		<summary>
-			Help topic. Use <see cref="IFar.GetHelpTopic"/>. (Format details: <see cref="IFar.ShowHelp"/>)
-		</summary>
-	</HelpTopic>
-	<LT>
-		<param name="left">Left position.</param>
-		<param name="top">Top line.</param>
-	</LT>
-	<LTB>
-		<param name="left">Left position.</param>
-		<param name="top">Top line.</param>
-		<param name="bottom">Bottom line.</param>
-	</LTB>
-	<LTR>
-		<param name="left">Left position.</param>
-		<param name="top">Top line.</param>
-		<param name="right">Right position.</param>
-	</LTR>
-	<LTRB>
-		<param name="left">Left position.</param>
-		<param name="top">Top line.</param>
-		<param name="right">Right position.</param>
-		<param name="bottom">Bottom line.</param>
-	</LTRB>
-	<ShowHelp>
-		<summary>Shows the help topic from a help file.</summary>
-		<param name="path">Help file location, see options.</param>
-		<param name="topic">Help topic. If this parameter is empty, then the topic "Contents" is used.</param>
-		<param name="options">Help options describing path and topic.</param>
-		<remarks>
-			This method is used in special cases when <see cref="ShowHelpTopic"/> is not enough.
-			<para>
-			The <c>topic</c> parameter describes a help topic and can be in one of the following formats:
-			</para>
-			<code>
-				<![CDATA[
+  <!--
+    /// <include file='doc.xml' path='doc/UnselectNames/*'/>
+    /// <include file='doc.xml' path='doc/N1[@name="N2"]/*'/>
+    -->
+  <OpEqual>
+    <summary>Compares two objects.</summary>
+    <param name="left">The left object to compare.</param>
+    <param name="right">The right object to compare.</param>
+    <returns>true if objects are equal; otherwise, false.</returns>
+  </OpEqual>
+  <OpNotEqual>
+    <summary>Compares two objects.</summary>
+    <param name="left">The left object to compare.</param>
+    <param name="right">The right object to compare.</param>
+    <returns>true if objects are not equal; otherwise, false.</returns>
+  </OpNotEqual>
+  <SelectNames>
+    <summary>
+      Select panel items with specified names.
+    </summary>
+    <param name="names">
+      Names to be selected or objects converted to strings by <c>ToString()</c>. Null is OK.
+    </param>
+    <remarks>
+      Call <see cref="Redraw()"/> after that.
+      <para>
+        Names are processed as case sensitive, not found input names are ignored.
+      </para>
+    </remarks>
+  </SelectNames>
+  <UnselectNames>
+    <summary>
+      Unselect panel items with specified names.
+    </summary>
+    <param name="names">
+      Names to be unselected or objects converted to strings by <c>ToString()</c>. Null is OK.
+    </param>
+    <remarks>
+      Call <see cref="Redraw()"/> after that.
+      <para>
+        Names are processed as case sensitive, not found input names are ignored.
+      </para>
+    </remarks>
+  </UnselectNames>
+  <ViewPlan>
+    <summary>
+      Gets the current view plan.
+    </summary>
+    <remarks>
+      This plan info is incomplete, for example column names are empty.
+    </remarks>
+    <seealso cref="Panel.GetPlan"/>
+  </ViewPlan>
+  <CurrentDirectory>
+    <summary>
+      Gets the panel directory or sets a new directory and opens its native file panel.
+    </summary>
+    <remarks>
+      If it is a directory tree panel then the path is the currently selected directory in the tree.
+      If it is a module panel then it normally returns <see cref="FarNet.Explorer.Location"/>
+      or the value assigned to the <see cref="Panel.CurrentLocation"/>.
+      <para>
+        It throws on setting if a directory path is not valid or does not exist.
+      </para>
+      <para>
+        Call <see cref="Redraw()"/> after changing the directory in order to show changes immediately.
+      </para>
+    </remarks>
+    <seealso cref="GoToName(string)"/>
+    <seealso cref="GoToPath"/>
+  </CurrentDirectory>
+  <ExplorerModes>
+    <para>
+      In the "Find" mode the method may be called from a background thread, most of FarNet API is not allowed.
+      In the "Silent" mode any user interactions including error messages are not allowed.
+    </para>
+  </ExplorerModes>
+  <Data>
+    <summary>
+      Gets the user data key/value table.
+    </summary>
+    <remarks>
+      Any user data can be attached by one or more external tools.
+      Keys should be chosen carefully in order to avoid conflicts.
+      When in doubts generate and use <c>Guid</c> based keys.
+    </remarks>
+  </Data>
+  <Experimental>
+    <para>
+      WARNING: This feature should work fine but it is experimental.
+      It is not yet clear that it is needed. User feedback is welcome.
+    </para>
+  </Experimental>
+  <EditorList>
+    <para>
+      This list is only for iterations, access by indexes, and removal by
+      indexes. Accessed lines allow changes but new strings should not
+      contain line separators. Other editor changes during using this
+      list may cause unexpected results and should be avoided.
+    </para>
+  </EditorList>
+  <RegisterModule>
+    <para>
+      If you plan to unregister this action then keep the returned reference and call its <see cref="IModuleAction.Unregister"/> later.
+      Instead of keeping the reference you can get it by its ID by the <see cref="IFar"/>.<c>GetModule*()</c> methods.
+    </para>
+  </RegisterModule>
+  <ActionGuid>
+    <para>
+      Use <c>System.Runtime.InteropServices.GuidAttribute</c> for the action ID.
+      The ID must be unique and it should never change.
+      It is used for storing data and interoperability.
+    </para>
+  </ActionGuid>
+  <UseLastHistory>
+    <summary>
+      Tells to use the last history as the initial text if it is not set.
+    </summary>
+  </UseLastHistory>
+  <WrapCursor>
+    <summary>
+      Tells to use the wrap cursor mode.
+    </summary>
+    <remarks>
+      In the wrap cursor mode moving the cursor up from the first element or down from the last element
+      moves the cursor to the bottom or the top. In menus the default is true, as recommended by the API.
+    </remarks>
+  </WrapCursor>
+  <AutoAssignHotkeys>
+    <summary>
+      Tells to assigns item hotkeys automatically starting with the first item.
+    </summary>
+  </AutoAssignHotkeys>
+  <ExpandEnvironmentVariables>
+    <summary>
+      Tells to expand environment variables in the input text.
+    </summary>
+  </ExpandEnvironmentVariables>
+  <ButtonClicked>
+    <summary>
+      Called on the button clicks and similar actions: [Enter] when focused or the hotkey at any time.
+    </summary>
+    <remarks>
+      NOTE: even if this is the default control (<see cref="IDialog.Default"/>) or
+      the cancel button (<see cref="IDialog.Cancel"/>) the event is not triggered
+      if the button is not explicitly clicked or a similar action is performed.
+      Thus, [CtrlEnter] (accept the dialog) and [Esc] (cancel the dialog)
+      do not trigger this event.
+    </remarks>
+  </ButtonClicked>
+  <ShowAmpersand>
+    <summary>
+      Tells to show ampersand symbols in the text instead of using them as hotkey marks.
+    </summary>
+  </ShowAmpersand>
+  <CenterGroup>
+    <summary>
+      Tells that the control if one of the centered group.
+    </summary>
+    <remarks>
+      Sequential items having this flag set and the same vertical coordinates are centered horizontally.
+      Their horizontal coordinates are ignored.
+    </remarks>
+  </CenterGroup>
+  <NoFocus>
+    <summary>
+      Tells that the control cannot get focus. But it still processes other events.
+    </summary>
+  </NoFocus>
+  <HelpTopic>
+    <summary>
+      Help topic. Use <see cref="IFar.GetHelpTopic"/>. (Format details: <see cref="IFar.ShowHelp"/>)
+    </summary>
+  </HelpTopic>
+  <LT>
+    <param name="left">Left position.</param>
+    <param name="top">Top line.</param>
+  </LT>
+  <LTB>
+    <param name="left">Left position.</param>
+    <param name="top">Top line.</param>
+    <param name="bottom">Bottom line.</param>
+  </LTB>
+  <LTR>
+    <param name="left">Left position.</param>
+    <param name="top">Top line.</param>
+    <param name="right">Right position.</param>
+  </LTR>
+  <LTRB>
+    <param name="left">Left position.</param>
+    <param name="top">Top line.</param>
+    <param name="right">Right position.</param>
+    <param name="bottom">Bottom line.</param>
+  </LTRB>
+  <ShowHelp>
+    <summary>Shows the help topic from a help file.</summary>
+    <param name="path">Help file location, see options.</param>
+    <param name="topic">Help topic. If this parameter is empty, then the topic "Contents" is used.</param>
+    <param name="options">Help options describing path and topic.</param>
+    <remarks>
+      This method is used in special cases when <see cref="ShowHelpTopic"/> is not enough.
+      <para>
+        The <c>topic</c> parameter describes a help topic and can be in one of the following formats:
+      </para>
+      <code>
+        <![CDATA[
 "Topic"
 Reference to a topic in the help file.
 
@@ -227,47 +226,47 @@ split on mutiple lines. For example, we need the help topic "FooInfo" from the
 help file of the module Foo "D:\Far\FarNet\Modules\Foo\Foo.dll":
 "<D:\Far\FarNet\Modules\Foo\Foo.dll>FooInfo"
 ]]>
-			</code>
-		</remarks>
-	</ShowHelp>
-	<Colors>
-		<param name="foregroundColor">Foreground color.</param>
-		<param name="backgroundColor">Background color.</param>
-	</Colors>
-	<Include>
-		<summary>
-			Creates and shows <see cref="IInputBox"/>.
-			Note: <see cref="IInputBox.EmptyEnabled"/> is set to true.
-			If you need more input box options, use the interface directly.
-		</summary>
-	</Include>
-	<FileMask>
-		<summary>
-			File(s) mask, see Far API help topic [File masks]; format "include|exclude" is also supported.
-			This value is only the default suggestion, actual mask may be changed by a user.
-		</summary>
-	</FileMask>
-	<BaseListItems>
-		<summary>
-			List item collection. STOP: see remarks.
-		</summary>
-		<remarks>
-			Normally you fill the list with items and set their properties before opening a
-			dialog. After opening this collection is mapped to a control dynamically, i.e.
-			all operations (set, insert, remove and etc.) are displayed immediately. The
-			items themselves are not mapped dynamically, so that if you change an item then
-			you have to reset it explicitly, see the example.
-			<para>
-				Dynamic mapping is simple, useful and effective when you change (or add, remove)
-				one item at a time (or just a few items). But if you actually recreate all the
-				items then for better performance you have to use <see cref="DetachItems"/>
-				before changes and <see cref="AttachItems"/> after changes.
-			</para>
-		</remarks>
-		<example>
-			(PowerShell): how to set an item checked when the dialog is running
-			<code>
-				<![CDATA[
+      </code>
+    </remarks>
+  </ShowHelp>
+  <Colors>
+    <param name="foregroundColor">Foreground color.</param>
+    <param name="backgroundColor">Background color.</param>
+  </Colors>
+  <Include>
+    <summary>
+      Creates and shows <see cref="IInputBox"/>.
+      Note: <see cref="IInputBox.EmptyEnabled"/> is set to true.
+      If you need more input box options, use the interface directly.
+    </summary>
+  </Include>
+  <FileMask>
+    <summary>
+      File(s) mask, see Far API help topic [File masks]; format "include|exclude" is also supported.
+      This value is only the default suggestion, actual mask may be changed by a user.
+    </summary>
+  </FileMask>
+  <BaseListItems>
+    <summary>
+      List item collection. STOP: see remarks.
+    </summary>
+    <remarks>
+      Normally you fill the list with items and set their properties before opening a
+      dialog. After opening this collection is mapped to a control dynamically, i.e.
+      all operations (set, insert, remove and etc.) are displayed immediately. The
+      items themselves are not mapped dynamically, so that if you change an item then
+      you have to reset it explicitly, see the example.
+      <para>
+        Dynamic mapping is simple, useful and effective when you change (or add, remove)
+        one item at a time (or just a few items). But if you actually recreate all the
+        items then for better performance you have to use <see cref="DetachItems"/>
+        before changes and <see cref="AttachItems"/> after changes.
+      </para>
+    </remarks>
+    <example>
+      (PowerShell): how to set an item checked when the dialog is running
+      <code>
+        <![CDATA[
 # get an item
 $item = $listbox.Items[3]
 # change it
@@ -275,7 +274,7 @@ $item.Checked = $true
 # set it!
 $listbox.Items[3] = $item
 ]]>
-			</code>
-		</example>
-	</BaseListItems>
+      </code>
+    </example>
+  </BaseListItems>
 </doc>

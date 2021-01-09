@@ -345,7 +345,7 @@ namespace FarNet
 	public abstract class ModuleActionAttribute : Attribute, ICloneable
 	{
 		/// <summary>
-		/// The action name shown in menus. It is mandatory to specify.
+		/// The mandatory action name shown in menus.
 		/// </summary>
 		/// <remarks>
 		/// <para>
@@ -382,7 +382,7 @@ namespace FarNet
 	public sealed class ModuleCommandAttribute : ModuleActionAttribute
 	{
 		/// <summary>
-		/// The command prefix. It is mandatory to specify a not empty value.
+		/// The mandatory not empty command prefix.
 		/// </summary>
 		/// <remarks>
 		/// This prefix is only a suggestion, the actual prefix is configured by a user.
@@ -437,7 +437,7 @@ namespace FarNet
 	/// commands by <c>Plugin.Call()</c> (see the FarNet manual).
 	/// </para>
 	/// <para>
-	/// It is mandatory to use <see cref="ModuleCommandAttribute"/> and specify the <see cref="ModuleActionAttribute.Name"/>
+	/// Use <see cref="ModuleCommandAttribute"/> and specify the <see cref="ModuleActionAttribute.Name"/>
 	/// and the default command prefix <see cref="ModuleCommandAttribute.Prefix"/>.
 	/// </para>
 	/// <include file='doc.xml' path='doc/ActionGuid/*'/>
@@ -521,13 +521,13 @@ namespace FarNet
 	/// A module editor action.
 	/// </summary>
 	/// <remarks>
-	/// This action deals with an editor opening, not with menu commands in editors
-	/// (in the latter case use <see cref="ModuleTool"/> configured for editors).
+	/// This action deals with opening an editor, not with editor menu commands.
+	/// For menu commands use <see cref="ModuleTool"/> configured for editors.
 	/// <para>
 	/// The <see cref="Invoke"/> method has to be implemented.
 	/// </para>
 	/// <para>
-	/// It is mandatory to use <see cref="ModuleEditorAttribute"/> and specify the <see cref="ModuleActionAttribute.Name"/>.
+	/// Use <see cref="ModuleEditorAttribute"/> and specify the <see cref="ModuleActionAttribute.Name"/>.
 	/// The optional default file mask is defined as <see cref="ModuleEditorAttribute.Mask"/>.
 	/// </para>
 	/// <include file='doc.xml' path='doc/ActionGuid/*'/>
@@ -540,12 +540,11 @@ namespace FarNet
 		/// <param name="editor">The editor.</param>
 		/// <param name="e">The arguments.</param>
 		/// <remarks>
-		/// This method is called once on opening an editor.
+		/// This method is called on opening an editor.
 		/// Normally it adds editor event handlers, then they do the jobs.
 		/// </remarks>
 		/// <example>
-		/// See the demo module <c>EditorKit</c> and its module editor classes.
-		/// It is not just an example, it can be used for real.
+		/// See the <c>EditorKit</c> module.
 		/// </example>
 		public abstract void Invoke(IEditor editor, ModuleEditorEventArgs e);
 	}
@@ -561,7 +560,7 @@ namespace FarNet
 	/// Its goal is to fill the color collection, it should not change anything.
 	/// </para>
 	/// <para>
-	/// It is mandatory to use <see cref="ModuleDrawerAttribute"/> and specify the <see cref="ModuleActionAttribute.Name"/>.
+	/// Use <see cref="ModuleDrawerAttribute"/> and specify the <see cref="ModuleActionAttribute.Name"/>.
 	/// The optional default file mask is defined as <see cref="ModuleDrawerAttribute.Mask"/>
 	/// and the default color priority <see cref="ModuleDrawerAttribute.Priority"/>.
 	/// </para>
@@ -636,7 +635,7 @@ namespace FarNet
 	public sealed class ModuleToolAttribute : ModuleActionAttribute
 	{
 		/// <summary>
-		/// Tool options. It is mandatory to specify at least one menu or other area.
+		/// The tool options with at least one target area specified.
 		/// </summary>
 		public ModuleToolOptions Options { get; set; }
 	}
@@ -669,7 +668,7 @@ namespace FarNet
 	/// <remarks>
 	/// The <see cref="Invoke"/> method has to be implemented.
 	/// <para>
-	/// It is mandatory to use <see cref="ModuleToolAttribute"/> and specify the <see cref="ModuleActionAttribute.Name"/>
+	/// Use <see cref="ModuleToolAttribute"/> and specify the <see cref="ModuleActionAttribute.Name"/>
 	/// and the menu areas <see cref="ModuleToolAttribute.Options"/>.
 	/// </para>
 	/// <include file='doc.xml' path='doc/ActionGuid/*'/>
