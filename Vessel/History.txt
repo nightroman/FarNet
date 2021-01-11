@@ -1,6 +1,10 @@
 https://www.nuget.org/packages/FarNet.Vessel
 FarNet 5.4.17
 
+= 2.5.5 =
+
+ShiftDel in lists also removes from Far history.
+
 = 2.5.4 =
 
 Fix command history regression.

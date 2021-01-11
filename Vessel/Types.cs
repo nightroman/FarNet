@@ -3,6 +3,7 @@
 // Copyright (c) Roman Kuzmin
 
 using System;
+using System.IO;
 using System.Diagnostics;
 using System.Collections.Generic;
 
@@ -48,8 +49,7 @@ namespace FarNet.Vessel
 	}
 	public static class Logger
 	{
-		public static TraceSource Source { get { return _Source; } }
-		static readonly TraceSource _Source = new TraceSource("Vessel", SourceLevels.All);
+		public static TraceSource Source { get; } = new TraceSource(My.Name, SourceLevels.All);
 	}
 	static class Mat
 	{
@@ -77,5 +77,22 @@ namespace FarNet.Vessel
 		readonly int[] _Spans = new int[Info.SpanCount];
 		public IList<int> Spans { get { return _Spans; } }
 		internal DateTime Time { get; set; }
+	}
+	static class Lua
+	{
+		public static string StringLiteral(string value)
+		{
+			value = value.Replace(@"\", @"\\").Replace(@"'", @"\'");
+			return $"'{value}'";
+		}
+	}
+	static class My
+	{
+		public const string Name = "Vessel";
+		static string AppHome => Path.GetDirectoryName(typeof(My).Assembly.Location);
+		static string HelpRoot => "<" + AppHome + "\\>";
+		public static string HelpTopic(string topic) => HelpRoot + topic;
+		public static void BadWindow() => Far.Api.Message("Unexpected window.", My.Name);
+		public static bool AskDiscard(string value) => 0 == Far.Api.Message(value, "Discard", MessageOptions.OkCancel);
 	}
 }

@@ -176,15 +176,14 @@ Keys and actions:
 
     Opens the file in the modal viewer.
 
-- `[ShiftDel]`
-
-    Removes the current file from the log.
-    It is still shown in the list if it exists in the Far history.
-
 - `[CtrlR]`
 
     Updates the history log.
     It removes missing paths and excessive records.
+
+- `[ShiftDel]` (Panels, Editor, Viewer)
+
+    Removes the current file from history.
 
 *********************************************************************
 ## Folder history
@@ -199,15 +198,14 @@ Keys and actions:
 
     Opens the folder in the current panel.
 
-- `[ShiftDel]`
-
-    Removes the current folder from the log.
-    It is still shown in the list if it exists in the Far history.
-
 - `[CtrlR]`
 
     Updates the folders log.
     It removes missing paths and excessive records.
+
+- `[ShiftDel]` (Panels)
+
+    Removes the current folder from history.
 
 *********************************************************************
 
@@ -227,14 +225,13 @@ Keys and actions:
 
     Puts the command to the command line without invoking.
 
-- `[ShiftDel]`
-
-    Removes the current command from the log.
-    It is still shown in the list if it exists in the Far history.
-
 - `[CtrlR]`
 
     Updates the command log.
     It removes excessive records.
+
+- `[ShiftDel]` (Panels)
+
+    Removes the current command from history.
 
 *********************************************************************

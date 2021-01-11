@@ -9,17 +9,14 @@ using System.Threading;
 namespace FarNet.Vessel
 {
 	[System.Runtime.InteropServices.Guid("58ad5e13-d2ba-4f4c-82cd-f53a66e9e8c0")]
-	[ModuleTool(Name = "Vessel", Options = ModuleToolOptions.F11Menus)]
+	[ModuleTool(Name = My.Name, Options = ModuleToolOptions.F11Menus)]
 	public class VesselTool : ModuleTool
 	{
-		static string AppHome { get { return Path.GetDirectoryName(typeof(VesselTool).Assembly.Location); } }
-		static string HelpTopic { get { return "<" + AppHome + "\\>"; } }
-
 		public override void Invoke(object sender, ModuleToolEventArgs e)
 		{
 			IMenu menu = Far.Api.CreateMenu();
-			menu.Title = "Vessel";
-			menu.HelpTopic = HelpTopic + "menu-commands";
+			menu.Title = My.Name;
+			menu.HelpTopic = My.HelpTopic("menu-commands");
 			menu.Add("&1. Smart history").Click += delegate { ShowHistory(); };
 			menu.Add("&2. Smart folders").Click += delegate { ShowFolders(); };
 			menu.Add("&3. Train history").Click += delegate { Train(0); };
@@ -123,11 +120,10 @@ Gain/item  : {5,8:n2}
 			var limit = Settings.Default.Limit0;
 
 			var menu = CreateListMenu();
-			menu.HelpTopic = HelpTopic + "file-history";
+			menu.HelpTopic = My.HelpTopic("file-history");
 			menu.Title = $"File history ({limit})";
 			menu.TypeId = new Guid("23b390e8-d91d-4ff1-a9ab-de0ceffdc0ac");
 
-			menu.AddKey(KeyCode.Delete, ControlKeyStates.ShiftPressed);
 			menu.AddKey(KeyCode.Enter, ControlKeyStates.LeftCtrlPressed);
 			menu.AddKey(KeyCode.Enter, ControlKeyStates.ShiftPressed);
 			menu.AddKey(KeyCode.F3);
@@ -135,6 +131,9 @@ Gain/item  : {5,8:n2}
 			menu.AddKey(KeyCode.F4);
 			menu.AddKey(KeyCode.F4, ControlKeyStates.LeftCtrlPressed);
 			menu.AddKey(KeyCode.R, ControlKeyStates.LeftCtrlPressed);
+			var area = Far.Api.Window.Kind;
+			if (area == WindowKind.Panels || area == WindowKind.Editor || area == WindowKind.Viewer)
+				menu.AddKey(KeyCode.Delete, ControlKeyStates.ShiftPressed);
 
 			for (; ; menu.Items.Clear())
 			{
@@ -181,10 +180,11 @@ Gain/item  : {5,8:n2}
 				// delete:
 				if (menu.Key.IsShift(KeyCode.Delete))
 				{
-					if (0 == Far.Api.Message("Discard " + path, "Confirm", MessageOptions.OkCancel))
+					if (My.AskDiscard(path))
 					{
 						Store.Remove(store, path, StringComparison.OrdinalIgnoreCase);
-						continue;
+						Far.Api.PostMacro($"Keys 'AltF11'; while Menu.Select({Lua.StringLiteral(": " + path)}, 2) > 0 do Keys 'ShiftDel' end; if Area.Menu then Keys 'Esc' end");
+						return; //!
 					}
 
 					goto show;
@@ -266,12 +266,13 @@ Gain/item  : {5,8:n2}
 			var limit = Settings.Default.Limit0;
 
 			var menu = CreateListMenu();
-			menu.HelpTopic = HelpTopic + "folder-history";
+			menu.HelpTopic = My.HelpTopic("folder-history");
 			menu.Title = $"Folder history ({limit})";
 			menu.TypeId = new Guid("ee448906-ec7d-4ea7-bc2e-848f48cddd39");
 
-			menu.AddKey(KeyCode.Delete, ControlKeyStates.ShiftPressed);
 			menu.AddKey(KeyCode.R, ControlKeyStates.LeftCtrlPressed);
+			if (Far.Api.Window.Kind == WindowKind.Panels)
+				menu.AddKey(KeyCode.Delete, ControlKeyStates.ShiftPressed);
 
 			for (; ; menu.Items.Clear())
 			{
@@ -317,10 +318,11 @@ Gain/item  : {5,8:n2}
 				// delete:
 				if (menu.Key.IsShift(KeyCode.Delete))
 				{
-					if (0 == Far.Api.Message("Discard " + path, "Confirm", MessageOptions.OkCancel))
+					if (My.AskDiscard(path))
 					{
 						Store.Remove(store, path, StringComparison.OrdinalIgnoreCase);
-						continue;
+						Far.Api.PostMacro($"Keys 'AltF12'; if Menu.Select({Lua.StringLiteral(path)}) > 0 then Keys 'ShiftDel' end; if Area.Menu then Keys 'Esc' end");
+						return; //!
 					}
 					goto show;
 				}
@@ -329,8 +331,15 @@ Gain/item  : {5,8:n2}
 				if (Far.Api.Window.Kind != WindowKind.Panels && !Far.Api.Window.IsModal)
 					Far.Api.Window.SetCurrentAt(-1);
 
-				// set the selected path
-				Far.Api.Panel.CurrentDirectory = path;
+				// set selected path
+				if (Far.Api.Window.Kind == WindowKind.Panels)
+				{
+					Far.Api.Panel.CurrentDirectory = path;
+				}
+				else
+				{
+					My.BadWindow();
+				}
 
 				// if it is not logged yet, log the existing Far record
 				if (!actor.IsLoggedPath(path))
@@ -353,13 +362,14 @@ Gain/item  : {5,8:n2}
 			var limit = Settings.Default.Limit0;
 
 			var menu = CreateListMenu();
-			menu.HelpTopic = HelpTopic + "command-history";
+			menu.HelpTopic = My.HelpTopic("command-history");
 			menu.Title = $"Command history ({limit})";
 			menu.TypeId = new Guid("1baa6870-4d49-40e5-8d20-19ff4b8ac5e6");
 
-			menu.AddKey(KeyCode.Delete, ControlKeyStates.ShiftPressed);
 			menu.AddKey(KeyCode.R, ControlKeyStates.LeftCtrlPressed);
 			menu.AddKey(KeyCode.Enter, ControlKeyStates.LeftCtrlPressed);
+			if (Far.Api.Window.Kind == WindowKind.Panels)
+				menu.AddKey(KeyCode.Delete, ControlKeyStates.ShiftPressed);
 
 			for (; ; menu.Items.Clear())
 			{
@@ -405,10 +415,11 @@ Gain/item  : {5,8:n2}
 				// delete:
 				if (menu.Key.IsShift(KeyCode.Delete))
 				{
-					if (0 == Far.Api.Message("Discard " + path, "Confirm", MessageOptions.OkCancel))
+					if (My.AskDiscard(path))
 					{
 						Store.Remove(store, path, StringComparison.Ordinal);
-						continue;
+						Far.Api.PostMacro($"Keys 'AltF8'; if Menu.Select({Lua.StringLiteral(path)}) > 0 then Keys 'ShiftDel' end; if Area.Menu then Keys 'Esc' end");
+						return; //!
 					}
 					goto show;
 				}
@@ -417,12 +428,17 @@ Gain/item  : {5,8:n2}
 				if (Far.Api.Window.Kind != WindowKind.Panels && !Far.Api.Window.IsModal)
 					Far.Api.Window.SetCurrentAt(-1);
 
-				// put command
-				Far.Api.CommandLine.Text = path;
-
-				// invoke command
-				if (!menu.Key.IsCtrl())
-					Far.Api.PostMacro("Keys'Enter'");
+				// put/post command
+				if (Far.Api.Window.Kind == WindowKind.Panels)
+				{
+					Far.Api.CommandLine.Text = path;
+					if (!menu.Key.IsCtrl())
+						Far.Api.PostMacro("Keys'Enter'");
+				}
+				else
+				{
+					My.BadWindow();
+				}
 
 				// if it is not logged yet, log the existing Far record
 				if (!actor.IsLoggedPath(path))
