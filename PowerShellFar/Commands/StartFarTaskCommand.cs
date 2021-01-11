@@ -121,12 +121,12 @@ function InvokeTaskRun($Job) {
 	}
 }
 
-function InvokeTaskKeys($Keys) {
-	$StartFarTaskCommand.InvokeTaskKeys($Keys)
+function InvokeTaskKeys {
+	$StartFarTaskCommand.InvokeTaskKeys($args)
 }
 
-function InvokeTaskMacro($Keys) {
-	$StartFarTaskCommand.InvokeTaskMacro($Keys)
+function InvokeTaskMacro($Macro) {
+	$StartFarTaskCommand.InvokeTaskMacro($Macro)
 }
 
 Set-Alias job InvokeTaskJob
@@ -304,8 +304,9 @@ $ErrorActionPreference = 'Stop'
 		}
 
 		// Called by task scripts.
-		public void InvokeTaskKeys(string keys)
+		public void InvokeTaskKeys(string[] args)
 		{
+			var keys = string.Join(" ", args);
 			if (Confirm)
 			{
 				var confirm = Tasks.Job(() => ShowConfirm("keys", keys));

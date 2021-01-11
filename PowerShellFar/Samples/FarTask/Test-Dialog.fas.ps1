@@ -37,7 +37,7 @@ else {
 ### Edit (standard)
 
 # go to edit 1 (by hotkey) and type
-keys 'AltT Home ShiftEnd Del о к а'
+keys AltT Home ShiftEnd Del о к а
 job {
 	Assert-Far @(
 		# editbox is current
@@ -97,7 +97,7 @@ job {
 }
 
 # switch checkbox
-keys 'Space'
+keys Space
 job {
 	# test new checkbox state, should be different
 	Assert-Far ($Data.Value -ne $Data.x1.Selected)
@@ -119,14 +119,14 @@ job {
 }
 
 # switch
-keys 'Space'
+keys Space
 job {
 	# test state
 	Assert-Far ($Data.x2.Selected -eq 1)
 }
 
 # switch
-keys 'Space'
+keys Space
 job {
 	# test state
 	Assert-Far ($Data.x2.Selected -eq 2)
@@ -135,7 +135,7 @@ job {
 ### Edit (fixed)
 
 # type 'Text12345', mask should deny '12345'
-keys 'Tab Home ShiftEnd Del T e x t 1 2 3 4 5'
+keys Tab Home ShiftEnd Del T e x t 1 2 3 4 5
 job {
 	# test focus and text
 	Assert-Far @(
@@ -146,7 +146,7 @@ job {
 
 ### Edit (password)
 
-keys 'Tab Del W o r d'
+keys Tab Del W o r d
 job {
 	# test focus and text
 	Assert-Far @(
@@ -169,7 +169,7 @@ job {
 }
 
 # go to button 2 and select
-keys 'Right Space'
+keys Right Space
 job {
 	Assert-Far @(
 		$Data.dialog.Focused -eq $Data.r2
@@ -226,7 +226,7 @@ job {
 }
 
 # push the button 1st time
-keys 'Enter'
+keys Enter
 job {
 	# test listbox data
 	Assert-Far @(
@@ -236,7 +236,7 @@ job {
 }
 
 # push the button 2nd time
-keys 'Enter'
+keys Enter
 job {
 	# test listbox data
 	Assert-Far ($Data.lb.Title -match '^Slow ')
@@ -251,7 +251,7 @@ if ($TestOpened) {
 }
 else {
 	# exit
-	keys 'Esc'
+	keys Esc
 	job {
 		# no dialog
 		Assert-Far ($Far.Window.Kind -ne 'Dialog')
