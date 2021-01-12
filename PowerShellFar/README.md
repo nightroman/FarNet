@@ -1474,14 +1474,6 @@ The main session profile: *%FARPROFILE%\FarNet\PowerShellFar\Profile.ps1*
 
 ---
 
-    # Recommended error action
-    $ErrorActionPreference = 'Stop'
-
-*Stop* is safe. The default *Continue* does not stop on non terminating errors,
-including quite serious like not found commands and even .NET exceptions.
-
----
-
     # Aliases
     Set-Alias fff Find-FarFile -Description 'Finds the panel file'
     ...

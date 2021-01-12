@@ -14,9 +14,6 @@ param(
 	$Param2 = 'world'
 )
 
-$Data.text1 = $Param1
-$Data.text2 = $Param2
-
-job {
-	$Far.Message($Data.text1 + ' ' + $Data.text2)
+job -Arguments $Param1, $Param2 {
+	$Far.Message($args[0] + ' ' + $args[1])
 }

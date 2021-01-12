@@ -582,31 +582,48 @@ Example: 'FullName' or {$_.FullName} tell to use a property FullName.
 	automatic hashtable $Data.
 
 	The script is invoked in a new runspace asynchronously without blocking the
-	main thread. The code must not work with FarNet, it should use special job
-	blocks instead: `job`, `run`, `ps:`. Jobs are invoked in the main session.
-
-	`job {...}` blocks do some work and output data as usual. If a job outputs
-	just a task then this task is awaited and its result is returned instead.
-
-	`run {...}` jobs are used to run modal UI without blocking next jobs.
-	These jobs may be useful for automation and tests. Output is ignored.
-
-	`ps: {...}` job are used for console output as if their commands are
-	invoked from the command line.
-
-	Macros are called as `keys '...'` and `macro '...'`.
+	main thread. The code must not work with FarNet directly, it should use job
+	blocks instead. Jobs are invoked in the main session.
 
 	The task and jobs may exchange data using the automatic hashtable $Data.
 
 	The cmdlet returns nothing by default and the script output is ignored. Use
 	the switch AsTask in order to return the started task. Use it in a calling
 	async scenario and get the script output as the task result, object[].
+
+	JOBS AND MACROS
+
+	job [-Arguments ...] [-Script] {...}
+
+		This job works with FarNet and may output data as usual. Special case:
+		if the output is a task then this task is awaited and its result is
+		returned instead.
+
+	ps: [-Arguments ...] [-Script] {...}
+
+		This job is used for console output as if its commands are invoked from
+		the command line. It returns nothing because the output is sent to the
+		console.
+
+	run [-Arguments ...] [-Script] {...}
+
+		This job is used to run modal UI without blocking the task.
+		It is useful for automation and tests. Output is ignored.
+
+	keys <keys> [<keys> [...]]
+
+		This command invokes the specified keys.
+		Arguments are concatenated with spaces.
+
+	macro <code>
+
+		This command invokes the specified macro.
 '@
 	parameters = @{
 		Script = 'Specifies the task as script file, block, or code.'
 		AsTask = 'Tells to return the started task.'
 		Confirm = @'
-Tells to confirm jobs before invoking using dialogs.
+Tells to confirm steps before invoking using dialogs.
 Use it for troubleshooting, demonstrations, and etc.
 '@
 		Data = @'

@@ -1,8 +1,6 @@
-
 <#
 .Synopsis
 	Main profile (example).
-	Author: Roman Kuzmin
 
 .Description
 	The profile should be in %FARPROFILE%\FarNet\PowerShellFar
@@ -10,9 +8,6 @@
 	See API: Action [PowerShellFar.Actor]
 	See help: Profile.ps1, Global objects
 #>
-
-### Recommended error action
-$ErrorActionPreference = 'Stop'
 
 ### Aliases
 Set-Alias fff Find-FarFile -Description 'Finds the panel file'

@@ -1,6 +1,11 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 FarNet 5.4.13
 
+= 5.4.11 =
+
+Tweak PSF session loading, use $ErrorActionPreference='Stop' by default.
+Start-FarTask jobs support the parameter Arguments ~ $args in jobs.
+
 = 5.4.10 =
 
 Start-FarTask: `keys` supports many arguments joined with spaces.

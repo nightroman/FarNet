@@ -40,9 +40,8 @@ $chart.add_MouseClick({
 	if ($hit.PointIndex -lt 0) {return}
 
 	# Far job 2: set the clicked file current in the panel
-	$Data.FileName = $series.Points[$hit.PointIndex].Label
-	job {
-		$Far.Panel.GoToName($Data.FileName)
+	job -Arguments $series.Points[$hit.PointIndex].Label {
+		$Far.Panel.GoToName($args[0])
 	}
 })
 

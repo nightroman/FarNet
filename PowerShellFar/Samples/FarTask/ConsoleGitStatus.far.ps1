@@ -55,9 +55,9 @@ Start-FarTask {
 
 		# job 2: print to Far console
 		if ($LastInfo -ne $info) {
-			$Data.ToPrint = $LastInfo = $info
-			ps: {
-				$Data.ToPrint
+			$LastInfo = $info
+			ps: -Arguments $info {
+				$args[0]
 			}
 		}
 	}

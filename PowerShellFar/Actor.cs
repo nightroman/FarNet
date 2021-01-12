@@ -149,6 +149,12 @@ namespace PowerShellFar
 
 			// initial state
 			var state = InitialSessionState.CreateDefault();
+			state.Variables.Add(new SessionStateVariableEntry[] {
+				new SessionStateVariableEntry("Far", Far.Api, "Exposes FarNet.", ScopedItemOptions.AllScope | ScopedItemOptions.Constant),
+				new SessionStateVariableEntry("Psf", this, "Exposes PowerShellFar.", ScopedItemOptions.AllScope | ScopedItemOptions.Constant),
+				new SessionStateVariableEntry("LogEngineLifeCycleEvent", false, string.Empty),
+				new SessionStateVariableEntry("LogProviderLifeCycleEvent", false, string.Empty),
+			});
 
 			// can run scripts regadless of execution policy
 			state.AuthorizationManager = new AuthorizationManager(Res.Me);
@@ -218,12 +224,10 @@ namespace PowerShellFar
 				//_090315_091325
 				// Get engine once to avoid this: "A pipeline is already executing. Concurrent SessionStateProxy method call is not allowed."
 				// Looks like a hack, but it works fine. Problem case: run Test-CallStack-.ps1, Esc -> the error above.
-				// SVN tag 4.2.26
 				_engine_ = Runspace.SessionStateProxy.PSVariable.GetValue(Word.ExecutionContext) as EngineIntrinsics;
 
-				// variables
-				Engine.SessionState.PSVariable.Set(new PSVariable("Far", Far.Api, ScopedItemOptions.AllScope | ScopedItemOptions.Constant) { Description = "Exposes FarNet." });
-				Engine.SessionState.PSVariable.Set(new PSVariable("Psf", this, ScopedItemOptions.AllScope | ScopedItemOptions.Constant) { Description = "Exposes PowerShellFar." });
+				//? set instead of adding to initial state
+				_engine_.SessionState.PSVariable.Set("ErrorActionPreference", ActionPreference.Stop);
 
 				// invoke profiles
 				using (var ps = NewPowerShell())
