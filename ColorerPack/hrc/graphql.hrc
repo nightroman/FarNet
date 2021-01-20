@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hrc version="take5"
+xmlns="http://colorer.sf.net/2003/hrc"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hrc.xsd">
+
+<type name="graphql">
+<annotation><documentation><![CDATA[
+
+graphql.hrc by Roman Kuzmin, aka NightRoman, 2021-01-15
+
+]]></documentation></annotation>
+
+<region name="Comment"     parent="def:Comment"       description="Comments."/>
+<region name="Comma"       parent="def:Comment"       description="Comma."/>
+<region name="Constant"    parent="def:Constant"      description="Constants."/>
+<region name="Directive"   parent="def:Directive"     description="@..."/>
+<region name="Escape"      parent="def:StringContent" description="Escaping."/>
+<region name="Keyword"     parent="def:Keyword"       description="Keywords."/>
+<region name="Name"        parent="def:Identifier"/>
+<region name="Operator"    parent="def:Operator"      description="Punctuation."/>
+<region name="Quote"       parent="def:StringEdge"    description="Quotation marks."/>
+<region name="String"      parent="def:String"        description="Text in strings."/>
+<region name="Type"        parent="def:TypeKeyword"   description="Types."/>
+<region name="Var"         parent="def:Var"           description="$..."/>
+
+<region name="Number"      parent="def:Number"/>
+<region name="NumberDec"   parent="def:NumberDec"     description="Decimal numbers."/>
+<region name="NumberFloat" parent="def:NumberFloat"   description="Floating numbers."/>
+
+<region name="start" parent="def:PairStart"/>
+<region name="end" parent="def:PairEnd"/>
+
+<entity name="name" value="[_A-Za-z][_0-9A-Za-z]*"/>
+<entity name="numexp" value="([eE][\-+]?\d+)"/>
+
+<scheme name="Constant">
+  <keywords region="Constant">
+    <word name="null"/>
+    <word name="true"/>
+    <word name="false"/>
+  </keywords>
+</scheme>
+
+<scheme name="Name">
+  <regexp match="/%name;/" region="Name"/>
+</scheme>
+
+<scheme name="Number">
+  <regexp region="NumberFloat" match="/-?\B\.?~1\.\d+%numexp;?\b/"/>
+  <regexp region="NumberFloat" match="/-?\b\d+\.\.?!\d*(%numexp;?\b|\B)/"/>
+  <regexp region="NumberFloat" match="/-?\s*\b\d+%numexp;\b/"/>
+  <regexp region="NumberDec" match="/-?\b\d+\b/"/>
+</scheme>
+
+<!--### and #-->
+<scheme name="Comment">
+  <regexp match="/(?{Comment}(?{def:Outlined}#{3}#?!.*))/"/>
+  <block scheme="def:Comment" region="Comment" start="/#/" end="/$/"/>
+</scheme>
+
+<!--""" and ""-->
+<scheme name="String">
+  <block scheme="String1" region="String" start="/(?{start}(?{Quote}&#34;&#34;&#34;))/" end="/(?{end}(?{Quote}&#34;&#34;&#34;))/"/>
+  <block scheme="String2" region="String" start="/(?{start}(?{Quote}&#34;))/" end="/(?{end}(?{Quote}&#34;))/"/>
+</scheme>
+
+<scheme name="String1">
+  <regexp match="/(?{Escape}\\&#34;&#34;&#34;)/"/>
+</scheme>
+
+<scheme name="String2">
+  <regexp match="/(?{Escape}\\([&#34;\\/bfnrt]|[0-9A-Fa-f]{4}))/"/>
+</scheme>
+
+<!--Name ! opt or [...] ! opt-->
+<scheme name="Type">
+  <regexp match="/(?{Type}%name;(\s*!)?)/"/>
+  <block scheme="Type" start="/(?{start}(?{Type}\[))/" end="/(?{end}(?{Type}\](\s*!)?))/"/>
+</scheme>
+
+<!--$Name-->
+<scheme name="Variable">
+  <regexp match="/(?{Var}\$%name;)/"/>
+</scheme>
+
+<!--spaces, comments, commas-->
+<scheme name="Base">
+  <regexp match="/(?{def:default}\s+)/"/>
+  <inherit scheme="Comment"/>
+  <keywords region="Comma">
+    <symb name=","/>
+  </keywords>
+</scheme>
+
+<!--@Name Arguments opt-->
+<scheme name="Directive">
+  <block scheme="Arguments" start="/(?{Directive}@%name;)/" end="/\)?#1|[\s]?!|$/"/>
+</scheme>
+
+<!--( Argument )-->
+<scheme name="Arguments">
+  <block scheme="Argument" start="/(?{start}(?{def:Symbol}\())/" end="/(?{end}(?{def:Symbol}\)))/"/>
+</scheme>
+
+<!--Name : Value-->
+<scheme name="Argument">
+  <inherit scheme="Value"/>
+  <keywords region="Operator">
+    <symb name=":"/>
+  </keywords>
+</scheme>
+
+<!--[schema] Directives opt { OperationTypeDefinition }-->
+<scheme name="SchemaDefinition">
+  <inherit scheme="Base"/>
+  <inherit scheme="Directive"/>
+  <block scheme="OperationTypeDefinition" start="/(?{start}(?{def:SymbolStrong}\{))/" end="/(?{end}(?{def:SymbolStrong}\}))/"/>
+</scheme>
+
+<!--OperationType : NamedType-->
+<scheme name="OperationTypeDefinition">
+  <inherit scheme="Base"/>
+  <keywords region="Keyword">
+    <word name="query"/>
+    <word name="mutation"/>
+    <word name="subscription"/>
+  </keywords>
+  <keywords region="Operator">
+    <symb name=":"/>
+  </keywords>
+  <inherit scheme="Type"/>
+</scheme>
+
+<!--[fragment] FragmentName TypeCondition Directives opt SelectionSet-->
+<scheme name="FragmentDefinition">
+  <inherit scheme="Base"/>
+  <regexp match="/(?{Keyword}on)\s+(?{Type}%name;)/"/>
+  <inherit scheme="Name"/>
+  <inherit scheme="Directive"/>
+  <inherit scheme="SelectionSet"/>
+</scheme>
+
+<!--[query] Name opt VariableDefinitions opt Directives opt SelectionSet-->
+<scheme name="OperationDefinition">
+  <inherit scheme="Base"/>
+  <inherit scheme="Name"/>
+  <inherit scheme="Directive"/>
+  <block scheme="VariableDefinition" start="/(?{start}(?{def:Symbol}\())/" end="/(?{end}(?{def:Symbol}\)))/"/>
+  <inherit scheme="SelectionSet"/>
+</scheme>
+
+<!--$Name : Type-->
+<scheme name="VariableDefinition">
+  <inherit scheme="Base"/>
+  <block scheme="Type" start="/(?{Var}\$%name;)\s*(?{Operator}:)/" end="/[\$\)\,]?=/"/>
+</scheme>
+
+<!--{ Selection }-->
+<scheme name="SelectionSet">
+  <block scheme="Selection" start="/(?{start}(?{def:SymbolStrong}\{))/" end="/(?{end}(?{def:SymbolStrong}\}))/"/>
+</scheme>
+
+<!--
+Alias opt Name Arguments opt Directives opt SelectionSet opt
+...FragmentName Directives opt
+...TypeCondition opt Directives opt SelectionSet
+-->
+<scheme name="Selection">
+  <inherit scheme="Base"/>
+
+  <!--fragments-->
+  <regexp match="/(?{Operator}\.\.\.)\s*(?{Keyword}on)\s+(?{Type}%name;)/"/>
+  <regexp match="/(?{Operator}\.\.\.)\s*(?{Name}%name;)/"/>
+  <regexp match="/(?{Operator}\.\.\.)\s*(?{Directive}@%name;)/"/>
+
+  <inherit scheme="Name"/>
+  <inherit scheme="Directive"/>
+  <inherit scheme="Arguments"/>
+  <inherit scheme="SelectionSet"/>
+
+  <keywords region="Operator">
+    <symb name=":"/>
+  </keywords>
+</scheme>
+
+<!--[directive @Name] ArgumentsDefinition opt [on DirectiveLocations]-->
+<scheme name="DirectiveDefinition">
+  <block scheme="InputValueDefinition" start="/(?{start}(?{def:Symbol}\())/" end="/(?{end}(?{def:Symbol}\)))/"/>
+</scheme>
+
+<!--Description opt Name : Type DefaultValue opt Directives opt-->
+<scheme name="InputValueDefinition">
+  <inherit scheme="ColonType"/>
+  <inherit scheme="Directive"/>
+  <inherit scheme="Value"/>
+  <keywords region="Operator">
+    <symb name="="/>
+  </keywords>
+</scheme>
+
+<!--: Type-->
+<scheme name="ColonType">
+  <regexp match="/(?{Operator}:)\s*(?{Type}%name;(\s*!)?)/"/>
+  <block scheme="Type" start="/(?{Operator}:)(\s*(?{Type}\[))/" end="/(?{Type}\](\s*!)?)/"/>
+</scheme>
+
+<!--{ Name : Value }-->
+<scheme name="ObjectValue">
+  <block scheme="ObjectField" start="/(?{start}(?{def:SymbolStrong}\{))/" end="/(?{end}(?{def:SymbolStrong}\}))/"/>
+</scheme>
+
+<!--Name : Value-->
+<scheme name="ObjectField">
+  <inherit scheme="Value"/>
+  <keywords region="Operator">
+    <symb name=":"/>
+  </keywords>
+</scheme>
+
+<!--[ Value ]-->
+<scheme name="ListValue">
+  <block scheme="Value" start="/(?{start}(?{def:Symbol}\[))/" end="/(?{end}(?{def:Symbol}\]))/"/>
+</scheme>
+
+<!--Value-->
+<scheme name="Value">
+  <inherit scheme="Base"/>
+
+  <inherit scheme="String"/>
+  <inherit scheme="Variable"/>
+  <inherit scheme="ListValue"/>
+  <inherit scheme="ObjectValue"/>
+
+  <inherit scheme="Constant"/>
+  <inherit scheme="Number"/>
+  <inherit scheme="Name"/>
+</scheme>
+
+<!--[input] Name Directives opt { InputValueDefinition } opt-->
+<scheme name="InputObjectTypeDefinition">
+  <inherit scheme="Base"/>
+  <regexp match="/(?{Type}%name;)/"/>
+  <inherit scheme="Directive"/>
+  <block scheme="InputValueDefinition" start="/(?{start}(?{def:SymbolStrong}\{))/" end="/(?{end}(?{def:SymbolStrong}\}))/"/>
+</scheme>
+
+<!--[enum] Name Directives opt { EnumValueDefinition } opt-->
+<scheme name="EnumTypeDefinition">
+  <inherit scheme="Base"/>
+  <regexp match="/(?{Type}%name;)/"/>
+  <inherit scheme="Directive"/>
+  <block scheme="EnumValueDefinition" start="/(?{start}(?{def:SymbolStrong}\{))/" end="/(?{end}(?{def:SymbolStrong}\}))/"/>
+</scheme>
+
+<!--Description opt EnumValue Directives opt-->
+<scheme name="EnumValueDefinition">
+  <inherit scheme="Base"/>
+  <inherit scheme="Name"/>
+  <inherit scheme="String"/>
+  <inherit scheme="Directive"/>
+</scheme>
+
+<!--[union] Name Directives opt UnionMemberTypes opt-->
+<scheme name="UnionTypeDefinition">
+  <inherit scheme="Base"/>
+  <regexp match="/(?{Type}%name;)/"/>
+  <inherit scheme="Directive"/>
+  <block scheme="UnionMemberTypes" start="/(?{Operator}=)/" end="/$/"/>
+</scheme>
+
+<!--| opt NamedType-->
+<scheme name="UnionMemberTypes">
+  <inherit scheme="Base"/>
+  <regexp match="/(?{Type}%name;)/"/>
+  <keywords region="Operator">
+    <symb name="|"/>
+  </keywords>
+</scheme>
+
+<!--[type Name] ImplementsInterfaces opt Directives opt { FieldDefinition } opt-->
+<scheme name="TypeDefinition">
+  <inherit scheme="Base"/>
+  <inherit scheme="Directive"/>
+  <block scheme="ImplementsInterfaces" start="/(?{Keyword}implements)/" end="/([\s&amp;_A-Za-z])?!|$/"/>
+  <block scheme="FieldsDefinition" start="/(?{start}(?{def:SymbolStrong}\{))/" end="/(?{end}(?{def:SymbolStrong}\}))/"/>
+</scheme>
+
+<!--[implements] & opt NamedType-->
+<scheme name="ImplementsInterfaces">
+  <regexp match="/%name;/" region="Type"/>
+  <keywords region="Operator">
+    <symb name="&amp;"/>
+  </keywords>
+</scheme>
+
+<!-- Description opt Name ArgumentsDefinition opt : Type Directives opt -->
+<scheme name="FieldsDefinition">
+  <inherit scheme="Base"/>
+  <inherit scheme="String"/>
+  <inherit scheme="ColonType"/>
+  <inherit scheme="Directive"/>
+  <block scheme="InputValueDefinition" start="/(?{start}(?{def:Symbol}\())/" end="/(?{end}(?{def:Symbol}\)))/"/>
+  <block scheme="FieldsDefinition" start="/(?{start}(?{def:SymbolStrong}\{))/" end="/(?{end}(?{def:SymbolStrong}\}))/"/>
+  <inherit scheme="Name"/>
+</scheme>
+
+<!--Document-->
+<scheme name="graphql">
+  <inherit scheme="Base"/>
+  <inherit scheme="String"/>
+
+  <block scheme="SchemaDefinition" start="/(?{def:Outlined}(?{Keyword}schema))/" end="/\}?#1|$/"/>
+  <block scheme="OperationDefinition" start="/(?{def:Outlined}(?{Keyword}query|mutation|subscription))/" end="/\}?#1/"/>
+  <block scheme="FragmentDefinition" start="/(?{def:Outlined}(?{Keyword}fragment))/" end="/\}?#1/"/>
+  <block scheme="DirectiveDefinition" start="/(?{def:Outlined}(?{Keyword}directive)\s+(?{Directive}@%name;))/" end="/\)?#1|\s?!/"/>
+
+  <!--type, interface-->
+  <block scheme="TypeDefinition" start="/(?{def:Outlined}(?{Keyword}type|interface)\s+(?{Type}%name;))/" end="/\}?#1|[_A-Za-z]?=/"/>
+  <!--input-->
+  <block scheme="InputObjectTypeDefinition" start="/(?{def:Outlined}(?{Keyword}input))/" end="/\}?#1|\s?!/"/>
+  <!--scalar-->
+  <block scheme="Directive" start="/(?{def:Outlined}(?{Keyword}scalar)\s+(?{Type}%name;))/" end="/\s?!|$/"/>
+  <!--enum-->
+  <block scheme="EnumTypeDefinition" start="/(?{def:Outlined}(?{Keyword}enum))/" end="/\}?#1|\s?!/"/>
+  <!--union-->
+  <block scheme="UnionTypeDefinition" start="/(?{def:Outlined}(?{Keyword}union))/" end="/$/"/>
+
+  <!--shorthand query-->
+  <inherit scheme="SelectionSet"/>
+
+  <keywords region="Operator">
+    <symb name="|"/>
+  </keywords>
+
+  <keywords region="Keyword">
+    <word name="on"/>
+    <word name="extend"/>
+    <word name="repeatable"/>
+  </keywords>
+
+  <keywords region="Constant">
+    <word name="QUERY"/>
+    <word name="MUTATION"/>
+    <word name="SUBSCRIPTION"/>
+    <word name="FIELD"/>
+    <word name="FRAGMENT_DEFINITION"/>
+    <word name="FRAGMENT_SPREAD"/>
+    <word name="INLINE_FRAGMENT"/>
+    <word name="SCHEMA"/>
+    <word name="SCALAR"/>
+    <word name="OBJECT"/>
+    <word name="FIELD_DEFINITION"/>
+    <word name="ARGUMENT_DEFINITION"/>
+    <word name="INTERFACE"/>
+    <word name="UNION"/>
+    <word name="ENUM"/>
+    <word name="ENUM_VALUE"/>
+    <word name="INPUT_OBJECT"/>
+    <word name="INPUT_FIELD_DEFINITION"/>
+  </keywords>
+</scheme>
+
+</type>
+</hrc>

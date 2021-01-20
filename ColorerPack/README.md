@@ -1,14 +1,14 @@
-
 # ColorerPack - syntax and color schemes for Colorer
 
 - fsharp.hrc
+- graphql.hrc
 - markdown.hrc
-- [powershell.hrc](#powershell)
-- [r.hrc](#r)
-- [visual.hrd](#visual)
+- [powershell.hrc](#powershell-hrc)
+- [r.hrc](#r-hrc)
+- [visual.hrd](#visual-hrd)
 
 *********************************************************************
-## <a id="powershell"/> powershell.hrc
+## powershell.hrc
 
 Windows PowerShell syntax scheme. It is designed for PowerShell 2.0 and above.
 In addition to standard language it recognizes some useful external features.
@@ -69,7 +69,7 @@ conventional comment `<#sql#>`:
 - Output areas have light gray background.
 
 *********************************************************************
-## <a id="r"/> r.hrc
+## r.hrc
 
 R syntax scheme. R is a programming language and software environment for
 statistical computing and graphics.
@@ -93,7 +93,7 @@ This code snippet highlights some typical features:
 </pre>
 
 *********************************************************************
-## <a id="visual"/> visual.hrd
+## visual.hrd
 
 ***visual.hrd***
 

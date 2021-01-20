@@ -1,8 +1,6 @@
-
 <#
 .Synopsis
 	Shows Colorer scheme graph using Graphviz.
-	Author: Roman Kuzmin, 2016-02-05
 
 .Description
 	Requires:
@@ -19,7 +17,7 @@
 		Custom DOT code added to the graph definition, see Graphviz manuals.
 		The default 'graph [rankdir=TB]' tells edges to go from top to bottom.
 .Parameter NoShow
-		Tells to not show the graph after creation.
+		Tells not to show the graph after creation.
 #>
 
 param(
@@ -31,6 +29,7 @@ param(
 	[switch]$NoShow
 )
 
+$ErrorActionPreference = 1
 trap {$PSCmdlet.ThrowTerminatingError($_)}
 
 # resolve dot.exe
