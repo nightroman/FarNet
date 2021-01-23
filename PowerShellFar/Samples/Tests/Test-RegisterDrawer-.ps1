@@ -1,13 +1,11 @@
 <#
 .Synopsis
 	Test editor drawer with all console colors.
-	Author: Roman Kuzmin
 
 .Description
 	This script registers a drawer which gets fixed color collection for files
 	named "Colors". Then it creates one such file and opens it in the editor.
-	The second call of the same script removes the drawer; this is only for
-	testing, normally drawers should not be unregistered.
+	The second call of the same script removes the drawer.
 
 	RegisterModuleDrawer() provides an id, attributes (name, mask, priority)
 	and a script that uses two automatic variables:
@@ -50,5 +48,5 @@ $(
 ) | Set-Content -LiteralPath $env:TEMP\Colors
 
 # Open the editor, it will show the text with colours due to the registered drawer
-$Editor = New-FarEditor -Path $env:TEMP\Colors -DeleteSource File -IsLocked
+$Editor = New-FarEditor -Path $env:TEMP\Colors -DeleteSource File -IsLocked -DisableHistory
 $Editor.Open()

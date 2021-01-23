@@ -183,7 +183,10 @@ Gain/item  : {5,8:n2}
 					if (My.AskDiscard(path))
 					{
 						Store.Remove(store, path, StringComparison.OrdinalIgnoreCase);
-						Far.Api.PostMacro($"Keys 'AltF11'; while Menu.Select({Lua.StringLiteral(": " + path)}, 2) > 0 do Keys 'ShiftDel' end; if Area.Menu then Keys 'Esc' end");
+
+						// Known far history items: Edit: PATH | Edit:-PATH | View: PATH | Ext.: ...
+						// Remove 1-3 and 4 if 4 ends with PATH (note, proper commands use "PATH", i.e. do not end with PATH)
+						Far.Api.PostMacro($"Keys 'AltF11'; while Menu.Select({Lua.StringLiteral(path)}, 2) > 0 do Keys 'ShiftDel' end; if Area.Menu then Keys 'Esc' end");
 						return; //!
 					}
 
