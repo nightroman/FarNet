@@ -14,7 +14,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="editorconfig" Version="0.12.2" />
+    <Reference Include="EditorConfig.Core.dll">
+      <HintPath>C:\-\GIT\editorconfig-core-net\src\EditorConfig.Core\bin\release\net45\EditorConfig.Core.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <MyItem Include="$(OutDir)\$(AssemblyName).dll" />

@@ -1,5 +1,9 @@
 FarNet.EditorKit
 
+= 0.0.3 =
+
+Temporary work around https://github.com/editorconfig/editorconfig-core-net/issues/15
+
 = 0.0.2 =
 
 Support charset, insert_final_newline.

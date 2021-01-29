@@ -61,7 +61,7 @@ task package markdown, {
 	Copy-Item -Destination $toModule @(
 		'README.htm'
 		'History.txt'
-		'LICENSE.txt'
+		'..\LICENSE'
 		"$fromModule\$ModuleName.dll"
 		"$fromModule\EditorConfig.core.dll"
 	)
