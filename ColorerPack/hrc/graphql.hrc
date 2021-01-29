@@ -7,26 +7,29 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="graphql">
 <annotation><documentation><![CDATA[
 
-graphql.hrc by Roman Kuzmin, aka NightRoman, 2021-01-15
+graphql.hrc by Roman Kuzmin aka NightRoman 2021-02-02
 
 ]]></documentation></annotation>
 
-<region name="Comment"     parent="def:Comment"       description="Comments."/>
-<region name="Comma"       parent="def:Comment"       description="Comma."/>
-<region name="Constant"    parent="def:Constant"      description="Constants."/>
-<region name="Directive"   parent="def:Directive"     description="@..."/>
-<region name="Escape"      parent="def:StringContent" description="Escaping."/>
-<region name="Keyword"     parent="def:Keyword"       description="Keywords."/>
-<region name="Name"        parent="def:Identifier"/>
-<region name="Operator"    parent="def:Operator"      description="Punctuation."/>
-<region name="Quote"       parent="def:StringEdge"    description="Quotation marks."/>
-<region name="String"      parent="def:String"        description="Text in strings."/>
-<region name="Type"        parent="def:TypeKeyword"   description="Types."/>
-<region name="Var"         parent="def:Var"           description="$..."/>
-
-<region name="Number"      parent="def:Number"/>
-<region name="NumberDec"   parent="def:NumberDec"     description="Decimal numbers."/>
-<region name="NumberFloat" parent="def:NumberFloat"   description="Floating numbers."/>
+<region name="Comma" parent="def:Symbol" description="Comma."/>
+<region name="Comment" parent="def:Comment" description="Comments."/>
+<region name="Constant" parent="def:Constant" description="Constants."/>
+<region name="Description" parent="def:CommentDoc" description="Descriptions."/>
+<region name="Directive" parent="def:Directive" description="@..."/>
+<region name="Error" parent="def:ErrorText"/>
+<region name="Escape" parent="def:StringContent" description="Escaping."/>
+<region name="Keyword" parent="def:Keyword" description="Keywords."/>
+<region name="Name" parent="def:Identifier"/>
+<region name="Number" parent="def:Number"/>
+<region name="NumberDec" parent="def:NumberDec" description="Decimal numbers."/>
+<region name="NumberFloat" parent="def:NumberFloat" description="Floating numbers."/>
+<region name="Quote" parent="def:StringEdge" description="Quotation marks."/>
+<region name="QuoteDoc" parent="def:CommentDocEdge" description="Description quotation marks."/>
+<region name="String" parent="def:String" description="Text in strings."/>
+<region name="Symbol" parent="def:Symbol" description="Punctuation."/>
+<region name="SymbolStrong" parent="def:SymbolStrong"/>
+<region name="Type" parent="def:TypeKeyword" description="Types."/>
+<region name="Var" parent="def:Var" description="$..."/>
 
 <region name="start" parent="def:PairStart"/>
 <region name="end" parent="def:PairEnd"/>
@@ -47,16 +50,22 @@ graphql.hrc by Roman Kuzmin, aka NightRoman, 2021-01-15
 </scheme>
 
 <scheme name="Number">
-  <regexp region="NumberFloat" match="/-?\B\.?~1\.\d+%numexp;?\b/"/>
-  <regexp region="NumberFloat" match="/-?\b\d+\.\.?!\d*(%numexp;?\b|\B)/"/>
-  <regexp region="NumberFloat" match="/-?\s*\b\d+%numexp;\b/"/>
-  <regexp region="NumberDec" match="/-?\b\d+\b/"/>
+  <regexp region="NumberFloat" match="/-?\d+\.\d+%numexp;?\b/"/>
+  <regexp region="NumberFloat" match="/-?\d+%numexp;\b/"/>
+  <regexp region="NumberDec" match="/-?\d+\b/"/>
+  <regexp region="Error" match="/\./"/>
 </scheme>
 
 <!--### and #-->
 <scheme name="Comment">
   <regexp match="/(?{Comment}(?{def:Outlined}#{3}#?!.*))/"/>
   <block scheme="def:Comment" region="Comment" start="/#/" end="/$/"/>
+</scheme>
+
+<!--""" and ""-->
+<scheme name="Description">
+  <block scheme="String1" region="Description" start="/(?{start}(?{QuoteDoc}&#34;&#34;&#34;))/" end="/(?{end}(?{QuoteDoc}&#34;&#34;&#34;))/"/>
+  <block scheme="String2" region="Description" start="/(?{start}(?{QuoteDoc}&#34;))/" end="/(?{end}(?{QuoteDoc}&#34;))/"/>
 </scheme>
 
 <!--""" and ""-->
@@ -86,7 +95,6 @@ graphql.hrc by Roman Kuzmin, aka NightRoman, 2021-01-15
 
 <!--spaces, comments, commas-->
 <scheme name="Base">
-  <regexp match="/(?{def:default}\s+)/"/>
   <inherit scheme="Comment"/>
   <keywords region="Comma">
     <symb name=","/>
@@ -100,65 +108,66 @@ graphql.hrc by Roman Kuzmin, aka NightRoman, 2021-01-15
 
 <!--( Argument )-->
 <scheme name="Arguments">
-  <block scheme="Argument" start="/(?{start}(?{def:Symbol}\())/" end="/(?{end}(?{def:Symbol}\)))/"/>
+  <block scheme="Argument" start="/(?{start}(?{Symbol}\())/" end="/(?{end}(?{Symbol}\)))/"/>
 </scheme>
 
 <!--Name : Value-->
 <scheme name="Argument">
   <inherit scheme="Value"/>
-  <keywords region="Operator">
+  <keywords region="Symbol">
     <symb name=":"/>
   </keywords>
+  <inherit scheme="Base"/>
 </scheme>
 
 <!--[schema] Directives opt { OperationTypeDefinition }-->
 <scheme name="SchemaDefinition">
-  <inherit scheme="Base"/>
+  <block scheme="OperationTypeDefinition" start="/(?{start}(?{SymbolStrong}\{))/" end="/(?{end}(?{SymbolStrong}\}))/"/>
   <inherit scheme="Directive"/>
-  <block scheme="OperationTypeDefinition" start="/(?{start}(?{def:SymbolStrong}\{))/" end="/(?{end}(?{def:SymbolStrong}\}))/"/>
+  <inherit scheme="Base"/>
 </scheme>
 
 <!--OperationType : NamedType-->
 <scheme name="OperationTypeDefinition">
-  <inherit scheme="Base"/>
   <keywords region="Keyword">
     <word name="query"/>
     <word name="mutation"/>
     <word name="subscription"/>
   </keywords>
-  <keywords region="Operator">
+  <keywords region="Symbol">
     <symb name=":"/>
   </keywords>
   <inherit scheme="Type"/>
+  <inherit scheme="Base"/>
 </scheme>
 
 <!--[fragment] FragmentName TypeCondition Directives opt SelectionSet-->
 <scheme name="FragmentDefinition">
-  <inherit scheme="Base"/>
   <regexp match="/(?{Keyword}on)\s+(?{Type}%name;)/"/>
   <inherit scheme="Name"/>
   <inherit scheme="Directive"/>
   <inherit scheme="SelectionSet"/>
+  <inherit scheme="Base"/>
 </scheme>
 
 <!--[query] Name opt VariableDefinitions opt Directives opt SelectionSet-->
 <scheme name="OperationDefinition">
-  <inherit scheme="Base"/>
   <inherit scheme="Name"/>
-  <inherit scheme="Directive"/>
-  <block scheme="VariableDefinition" start="/(?{start}(?{def:Symbol}\())/" end="/(?{end}(?{def:Symbol}\)))/"/>
+  <block scheme="VariableDefinition" start="/(?{start}(?{Symbol}\())/" end="/(?{end}(?{Symbol}\)))/"/>
   <inherit scheme="SelectionSet"/>
+  <inherit scheme="Directive"/>
+  <inherit scheme="Base"/>
 </scheme>
 
 <!--$Name : Type-->
 <scheme name="VariableDefinition">
+  <block scheme="Type" start="/(?{Var}\$%name;)\s*(?{Symbol}:)/" end="/[\$\)\,]?=/"/>
   <inherit scheme="Base"/>
-  <block scheme="Type" start="/(?{Var}\$%name;)\s*(?{Operator}:)/" end="/[\$\)\,]?=/"/>
 </scheme>
 
 <!--{ Selection }-->
 <scheme name="SelectionSet">
-  <block scheme="Selection" start="/(?{start}(?{def:SymbolStrong}\{))/" end="/(?{end}(?{def:SymbolStrong}\}))/"/>
+  <block scheme="Selection" start="/(?{start}(?{SymbolStrong}\{))/" end="/(?{end}(?{SymbolStrong}\}))/"/>
 </scheme>
 
 <!--
@@ -167,66 +176,76 @@ Alias opt Name Arguments opt Directives opt SelectionSet opt
 ...TypeCondition opt Directives opt SelectionSet
 -->
 <scheme name="Selection">
-  <inherit scheme="Base"/>
-
   <!--fragments-->
-  <regexp match="/(?{Operator}\.\.\.)\s*(?{Keyword}on)\s+(?{Type}%name;)/"/>
-  <regexp match="/(?{Operator}\.\.\.)\s*(?{Name}%name;)/"/>
-  <regexp match="/(?{Operator}\.\.\.)\s*(?{Directive}@%name;)/"/>
+  <regexp match="/(?{Symbol}\.\.\.)\s*(?{Keyword}on)\s+(?{Type}%name;)/"/>
+  <regexp match="/(?{Symbol}\.\.\.)\s*(?{Name}%name;)/"/>
+  <regexp match="/(?{Symbol}\.\.\.)\s*(?{Directive}@%name;)/"/>
 
   <inherit scheme="Name"/>
   <inherit scheme="Directive"/>
   <inherit scheme="Arguments"/>
   <inherit scheme="SelectionSet"/>
 
-  <keywords region="Operator">
+  <keywords region="Symbol">
     <symb name=":"/>
   </keywords>
+
+  <inherit scheme="Base"/>
 </scheme>
 
 <!--[directive @Name] ArgumentsDefinition opt [on DirectiveLocations]-->
 <scheme name="DirectiveDefinition">
-  <block scheme="InputValueDefinition" start="/(?{start}(?{def:Symbol}\())/" end="/(?{end}(?{def:Symbol}\)))/"/>
+  <block scheme="InputValueDefinition" start="/(?{start}(?{Symbol}\())/" end="/(?{end}(?{Symbol}\)))/"/>
 </scheme>
 
 <!--Description opt Name : Type DefaultValue opt Directives opt-->
 <scheme name="InputValueDefinition">
+  <inherit scheme="Description"/>
+  <inherit scheme="Name"/>
   <inherit scheme="ColonType"/>
+  <inherit scheme="DefaultValue"/>
   <inherit scheme="Directive"/>
-  <inherit scheme="Value"/>
-  <keywords region="Operator">
-    <symb name="="/>
-  </keywords>
+  <inherit scheme="Base"/>
+</scheme>
+
+<!--= Value-->
+<scheme name="DefaultValue">
+  <block scheme="Values" start="/(?{Symbol}=)/" end="/([&quot;\}\]]|\w\b)?#1|\)?=/"/>
 </scheme>
 
 <!--: Type-->
 <scheme name="ColonType">
-  <regexp match="/(?{Operator}:)\s*(?{Type}%name;(\s*!)?)/"/>
-  <block scheme="Type" start="/(?{Operator}:)(\s*(?{Type}\[))/" end="/(?{Type}\](\s*!)?)/"/>
+  <regexp match="/(?{Symbol}:)\s*(?{Type}%name;(\s*!)?)/"/>
+  <block scheme="Type" start="/(?{Symbol}:)(\s*(?{Type}\[))/" end="/(?{Type}\](\s*!)?)/"/>
 </scheme>
 
 <!--{ Name : Value }-->
 <scheme name="ObjectValue">
-  <block scheme="ObjectField" start="/(?{start}(?{def:SymbolStrong}\{))/" end="/(?{end}(?{def:SymbolStrong}\}))/"/>
+  <block scheme="ObjectField" start="/(?{start}(?{SymbolStrong}\{))/" end="/(?{end}(?{SymbolStrong}\}))/"/>
 </scheme>
 
 <!--Name : Value-->
 <scheme name="ObjectField">
   <inherit scheme="Value"/>
-  <keywords region="Operator">
+  <keywords region="Symbol">
     <symb name=":"/>
   </keywords>
+  <inherit scheme="Base"/>
 </scheme>
 
 <!--[ Value ]-->
 <scheme name="ListValue">
-  <block scheme="Value" start="/(?{start}(?{def:Symbol}\[))/" end="/(?{end}(?{def:Symbol}\]))/"/>
+  <block scheme="Values" start="/(?{start}(?{Symbol}\[))/" end="/(?{end}(?{Symbol}\]))/"/>
+</scheme>
+
+<!--Value, ...-->
+<scheme name="Values">
+  <inherit scheme="Value"/>
+  <inherit scheme="Base"/>
 </scheme>
 
 <!--Value-->
 <scheme name="Value">
-  <inherit scheme="Base"/>
-
   <inherit scheme="String"/>
   <inherit scheme="Variable"/>
   <inherit scheme="ListValue"/>
@@ -239,76 +258,76 @@ Alias opt Name Arguments opt Directives opt SelectionSet opt
 
 <!--[input] Name Directives opt { InputValueDefinition } opt-->
 <scheme name="InputObjectTypeDefinition">
-  <inherit scheme="Base"/>
   <regexp match="/(?{Type}%name;)/"/>
   <inherit scheme="Directive"/>
-  <block scheme="InputValueDefinition" start="/(?{start}(?{def:SymbolStrong}\{))/" end="/(?{end}(?{def:SymbolStrong}\}))/"/>
+  <block scheme="InputValueDefinition" start="/(?{start}(?{SymbolStrong}\{))/" end="/(?{end}(?{SymbolStrong}\}))/"/>
+  <inherit scheme="Base"/>
 </scheme>
 
 <!--[enum] Name Directives opt { EnumValueDefinition } opt-->
 <scheme name="EnumTypeDefinition">
-  <inherit scheme="Base"/>
   <regexp match="/(?{Type}%name;)/"/>
   <inherit scheme="Directive"/>
-  <block scheme="EnumValueDefinition" start="/(?{start}(?{def:SymbolStrong}\{))/" end="/(?{end}(?{def:SymbolStrong}\}))/"/>
+  <block scheme="EnumValueDefinition" start="/(?{start}(?{SymbolStrong}\{))/" end="/(?{end}(?{SymbolStrong}\}))/"/>
+  <inherit scheme="Base"/>
 </scheme>
 
 <!--Description opt EnumValue Directives opt-->
 <scheme name="EnumValueDefinition">
-  <inherit scheme="Base"/>
+  <inherit scheme="Description"/>
   <inherit scheme="Name"/>
-  <inherit scheme="String"/>
   <inherit scheme="Directive"/>
+  <inherit scheme="Base"/>
 </scheme>
 
 <!--[union] Name Directives opt UnionMemberTypes opt-->
 <scheme name="UnionTypeDefinition">
-  <inherit scheme="Base"/>
   <regexp match="/(?{Type}%name;)/"/>
   <inherit scheme="Directive"/>
-  <block scheme="UnionMemberTypes" start="/(?{Operator}=)/" end="/$/"/>
+  <block scheme="UnionMemberTypes" start="/(?{Symbol}=)/" end="/$/"/>
+  <inherit scheme="Base"/>
 </scheme>
 
 <!--| opt NamedType-->
 <scheme name="UnionMemberTypes">
-  <inherit scheme="Base"/>
   <regexp match="/(?{Type}%name;)/"/>
-  <keywords region="Operator">
+  <keywords region="Symbol">
     <symb name="|"/>
   </keywords>
+  <inherit scheme="Base"/>
 </scheme>
 
 <!--[type Name] ImplementsInterfaces opt Directives opt { FieldDefinition } opt-->
 <scheme name="TypeDefinition">
-  <inherit scheme="Base"/>
-  <inherit scheme="Directive"/>
   <block scheme="ImplementsInterfaces" start="/(?{Keyword}implements)/" end="/([\s&amp;_A-Za-z])?!|$/"/>
-  <block scheme="FieldsDefinition" start="/(?{start}(?{def:SymbolStrong}\{))/" end="/(?{end}(?{def:SymbolStrong}\}))/"/>
+  <block scheme="FieldsDefinition" start="/(?{start}(?{SymbolStrong}\{))/" end="/(?{end}(?{SymbolStrong}\}))/"/>
+  <inherit scheme="Directive"/>
+  <inherit scheme="Base"/>
 </scheme>
 
 <!--[implements] & opt NamedType-->
 <scheme name="ImplementsInterfaces">
   <regexp match="/%name;/" region="Type"/>
-  <keywords region="Operator">
+  <keywords region="Symbol">
     <symb name="&amp;"/>
   </keywords>
 </scheme>
 
 <!-- Description opt Name ArgumentsDefinition opt : Type Directives opt -->
 <scheme name="FieldsDefinition">
-  <inherit scheme="Base"/>
-  <inherit scheme="String"/>
+  <inherit scheme="Description"/>
+  <inherit scheme="Name"/>
   <inherit scheme="ColonType"/>
   <inherit scheme="Directive"/>
-  <block scheme="InputValueDefinition" start="/(?{start}(?{def:Symbol}\())/" end="/(?{end}(?{def:Symbol}\)))/"/>
-  <block scheme="FieldsDefinition" start="/(?{start}(?{def:SymbolStrong}\{))/" end="/(?{end}(?{def:SymbolStrong}\}))/"/>
-  <inherit scheme="Name"/>
+  <block scheme="InputValueDefinition" start="/(?{start}(?{Symbol}\())/" end="/(?{end}(?{Symbol}\)))/"/>
+  <block scheme="FieldsDefinition" start="/(?{start}(?{SymbolStrong}\{))/" end="/(?{end}(?{SymbolStrong}\}))/"/>
+  <inherit scheme="Base"/>
 </scheme>
 
 <!--Document-->
 <scheme name="graphql">
   <inherit scheme="Base"/>
-  <inherit scheme="String"/>
+  <inherit scheme="Description"/>
 
   <block scheme="SchemaDefinition" start="/(?{def:Outlined}(?{Keyword}schema))/" end="/\}?#1|$/"/>
   <block scheme="OperationDefinition" start="/(?{def:Outlined}(?{Keyword}query|mutation|subscription))/" end="/\}?#1/"/>
@@ -329,7 +348,7 @@ Alias opt Name Arguments opt Directives opt SelectionSet opt
   <!--shorthand query-->
   <inherit scheme="SelectionSet"/>
 
-  <keywords region="Operator">
+  <keywords region="Symbol">
     <symb name="|"/>
   </keywords>
 

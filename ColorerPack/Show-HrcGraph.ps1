@@ -57,12 +57,16 @@ $text = @(
 
 		$num = 0
 		foreach($node in $it.ChildNodes) {
-			++$num
 			if ($node.LocalName -eq 'inherit') {
+				++$num
 				'"{0}" -> "{1}" [{2}]' -f $name, $node.scheme, " label=$num "
 			}
 			elseif ($node.LocalName -eq 'block') {
+				++$num
 				'"{0}" -> "{1}" [{2}]' -f $name, $node.scheme, " style=dotted label=$num "
+			}
+			elseif ($node.LocalName -ceq 'regexp') {
+				++$num
 			}
 		}
 	}
