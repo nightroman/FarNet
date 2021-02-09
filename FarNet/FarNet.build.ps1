@@ -107,7 +107,7 @@ task package beginPackage, helpHTM, {
 	Copy-Item -Destination z\tools\FarHome\FarNet $(
 		'About-FarNet.htm'
 		'History.txt'
-		'LICENSE.txt'
+		'..\LICENSE'
 		"$FarHome\FarNet\FarNet.dll"
 		"$FarHome\FarNet\FarNet.xml"
 		"$FarHome\FarNet\FarNet.Settings.dll"

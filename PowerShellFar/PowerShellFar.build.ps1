@@ -74,7 +74,7 @@ task package help, {
 	remove z
 	$dirMain = mkdir 'z\tools\FarHome\FarNet\Modules\PowerShellFar'
 
-	Copy-Item -Destination $dirMain About-PowerShellFar.htm, History.txt, LICENSE.txt, PowerShellFar.macro.lua
+	Copy-Item -Destination $dirMain About-PowerShellFar.htm, History.txt, ..\LICENSE, PowerShellFar.macro.lua
 	Copy-Item -Destination $dirMain $FarHome\FarNet\Modules\PowerShellFar\* -Recurse
 	Copy-Item -Destination $dirMain Bench -Recurse -Force
 	Copy-Item ..\Zoo\FarNetLogo.png z

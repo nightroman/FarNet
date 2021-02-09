@@ -71,7 +71,7 @@ How to install and update FarNet and modules:
 
 - *FarNetMan.dll* - Far Manager plugin and module manager
 - *FarNetMan.hlf* - FarNet UI help
-- *LICENSE.txt* - the license
+- *LICENSE* - the license
 
 *%FARHOME%\FarNet*
 
