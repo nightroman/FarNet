@@ -346,16 +346,15 @@ without much useful information. Check your configuration files:
 - Configurations understand environment variables, script directives do not.
 - Configurations may specify compiler options, scripts cannot do this.
 
-### Session source and use files
+### Session source and use-files
 
-Source and `--use` files are used in order to load the session for checks and interactive work.
-Output of invoked source and `--use` scripts is discarded, only errors and warnings are shown.
+Source and use-files (`--use`) are used in order to load the session for checks and interactive work.
 
-`--use` files are invoked in the session as if they are typed interactively.
+Use-files are invoked in the session as if they are typed interactively.
 The goal is to prepare the session for interactive work and reduce typing,
 i.e. open modules and namespaces, define some functions and values, etc.
 
-Sample `--use` file:
+Sample use-file:
 
 ```FSharp
 // reference assemblies

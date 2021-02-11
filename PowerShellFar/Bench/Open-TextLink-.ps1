@@ -78,7 +78,8 @@ $Editor = if ($Far.Window.Kind -eq 'Editor') {$Far.Editor}
 $type = 0
 switch -regex ($Text) {
 	'(?<File>(?:\b\w:|%\w+%)[\\\/].+?)\((?<Line>\d+),?(?<Char>\d+)?\)(?::\s*(?<Text>.*))?' {$type = 1; break}
-	'^>?\s*(?<File>.+?):(?<Line>\d+):(?<Text>.*)' {$type = 2; break}
+	#! use `\.\w+` to exclude times like `2021-02-20T05:45:42.8715715Z`
+	'^>?\s*(?<File>.+?\.\w+):(?<Line>\d+):(?<Text>.*)' {$type = 2; break}
 	'(?<File>(?:\b\w:|%\w+%)[\\\/][^:]+):(?:line )?(?<Line>\d+)(?:\s+\w+:(?<Char>\d+))?' {$type = 3; break}
 }
 

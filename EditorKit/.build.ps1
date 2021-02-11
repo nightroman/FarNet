@@ -95,7 +95,7 @@ https://github.com/nightroman/FarNet#readme
 		<owners>Roman Kuzmin</owners>
 		<projectUrl>https://github.com/nightroman/FarNet/tree/master/$ModuleName</projectUrl>
 		<icon>FarNetLogo.png</icon>
-		<license type="expression">BSD-2-Clause</license>
+		<license type="expression">BSD-3-Clause</license>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>$text</description>
 		<releaseNotes>https://github.com/nightroman/FarNet/blob/master/$ModuleName/History.txt</releaseNotes>
