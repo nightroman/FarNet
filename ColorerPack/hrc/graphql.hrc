@@ -7,7 +7,7 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="graphql">
 <annotation><documentation>
 
-graphql.hrc by Roman Kuzmin aka NightRoman 2021-02-04
+graphql.hrc by Roman Kuzmin aka NightRoman 2021-03-08
 
 </documentation></annotation>
 
@@ -261,7 +261,7 @@ Alias opt Name Arguments opt Directives opt SelectionSet opt
 
 <!--[input] Name Directives opt { InputValueDefinition } opt-->
 <scheme name="InputObjectTypeDefinition">
-  <regexp match="/(?{Type}%_name;)/"/>
+  <regexp match="/(?{def:Outlined}(?{Type}%_name;))/"/>
   <inherit scheme="Directive"/>
   <block scheme="InputValueDefinition" start="/(?{start}(?{SymbolStrong}\{))/" end="/(?{end}(?{SymbolStrong}\}))/"/>
   <inherit scheme="Base"/>
@@ -269,7 +269,7 @@ Alias opt Name Arguments opt Directives opt SelectionSet opt
 
 <!--[enum] Name Directives opt { EnumValueDefinition } opt-->
 <scheme name="EnumTypeDefinition">
-  <regexp match="/(?{Type}%_name;)/"/>
+  <regexp match="/(?{def:Outlined}(?{Type}%_name;))/"/>
   <inherit scheme="Directive"/>
   <block scheme="EnumValueDefinition" start="/(?{start}(?{SymbolStrong}\{))/" end="/(?{end}(?{SymbolStrong}\}))/"/>
   <inherit scheme="Base"/>
@@ -285,7 +285,7 @@ Alias opt Name Arguments opt Directives opt SelectionSet opt
 
 <!--[union] Name Directives opt UnionMemberTypes opt-->
 <scheme name="UnionTypeDefinition">
-  <regexp match="/(?{Type}%_name;)/" priority="low"/>
+  <regexp match="/(?{def:Outlined}(?{Type}%_name;))/" priority="low"/>
   <keywords region="Symbol">
     <symb name="="/>
     <symb name="|"/>
