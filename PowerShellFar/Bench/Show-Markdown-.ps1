@@ -84,10 +84,13 @@ $param = $(
 	}
 	else {
 		# standalone and page title
-		$name1 = [System.IO.Path]::GetFileNameWithoutExtension($FileName)
-		$name2 = [System.IO.Path]::GetDirectoryName($FileName)
+		$name = [System.IO.Path]::GetFileNameWithoutExtension($FileName)
+		$root = [System.IO.Path]::GetDirectoryName($FileName)
+		$more = [System.IO.Path]::GetFileName($root)
 		'--standalone'
-		"--metadata=pagetitle:$name1 - $name2"
+		'--self-contained'
+		"--metadata=pagetitle:$name - $more"
+		"--resource-path=$root"
 
 		# CSS, Firefox wants URI format
 		if ($css = $env:MarkdownCss) {
