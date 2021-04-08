@@ -194,10 +194,10 @@ function Restore-FarPackage(
 #>
 function Update-FarPackage(
 	[Parameter(Position=0)]
-	[string]$FarHome = '.',
-	[string]
+	[string]$FarHome = '.'
+	,
 	[ValidateSet('x64', 'x86', 'Win32', '')]
-	$Platform
+	[string]$Platform
 )
 {
 	trap {$PSCmdlet.ThrowTerminatingError($_)}
@@ -230,7 +230,8 @@ function Update-FarPackage(
 #>
 function Uninstall-FarPackage(
 	[Parameter(Mandatory=1)]
-	[string]$Id,
+	[string]$Id
+	,
 	[string]$FarHome = '.'
 )
 {

@@ -46,7 +46,6 @@ task installBin {
 task installRes {
 	exec { robocopy . $PsfHome PowerShellFar.ps1 TabExpansion2.ps1 TabExpansion.txt } (0..2)
 	exec { robocopy Modules\FarInventory $PsfHome\Modules\FarInventory about_FarInventory.help.txt FarInventory.psm1 } (0..2)
-	exec { robocopy Modules\FarPackage $PsfHome\Modules\FarPackage } (0..2)
 }
 
 # Run when FarNet and PowerShellFar are installed.

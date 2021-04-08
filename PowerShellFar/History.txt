@@ -1,6 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 FarNet 5.4.13
 
+= 5.4.13 =
+
+Removed FarPackage, see https://github.com/nightroman/FarNet/issues/20
+
 = 5.4.12 =
 
 - FarPackage - use NuGet v3 API
