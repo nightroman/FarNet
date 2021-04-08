@@ -3,6 +3,9 @@
 	Author: Roman Kuzmin
 #>
 
+$script:FarPackageBaseAddress = ''
+[System.Net.ServicePointManager]::SecurityProtocol = "$([System.Net.ServicePointManager]::SecurityProtocol),Tls11,Tls12"
+
 <#
 .Synopsis
 	Installs or updates the specified package from web.
@@ -20,46 +23,28 @@
 .Parameter Version
 		The package version, e.g. 5.0.40
 		By default the latest is assumed.
-.Parameter Source
-		The package web source.
-		By default the NuGet gallery is used.
 #>
 function Install-FarPackage(
 	[Parameter(Position=0, Mandatory=1)]
-	[string]
-	$Id,
-	[string]
+	[string]$Id
+	,
 	[Parameter(Position=1)]
-	$FarHome = '.',
-	[string]
+	[string]$FarHome = '.'
+	,
 	[ValidateSet('x64', 'x86', 'Win32', '')]
-	$Platform,
+	[string]$Platform
+	,
 	[string]
-	$Version,
-	[string]
-	$Source = 'https://www.nuget.org/api/v2'
+	$Version
 )
 {
 	trap {$PSCmdlet.ThrowTerminatingError($_)}
 	$ErrorActionPreference = 1
 
-	# web client
-	[System.Net.ServicePointManager]::SecurityProtocol = "$([System.Net.ServicePointManager]::SecurityProtocol),Tls11,Tls12"
-	$web = New-Object -TypeName System.Net.WebClient
-	$web.UseDefaultCredentials = $true
-
 	# get latest version
 	if (!$Version -or $Version[0] -eq '?') {
 		Write-Host "Getting the latest version of '$Id'"
-		$xml = [xml]$web.DownloadString("$Source/Packages()?`$filter=Id eq '$Id' and IsLatestVersion eq true")
-		$latest = try {
-			foreach($_ in $xml.feed.entry) {
-				if ($_.id -match "Id='([^']+)'") { $Id = $Matches[1] }
-				$_.properties.Version
-				break
-			}
-		} catch {}
-
+		$latest = Get-FarPackageVersion $Id
 		if (!$latest) {throw "Cannot get the latest version of '$Id'."}
 		Write-Host "The latest version is '$latest'."
 
@@ -89,11 +74,11 @@ function Install-FarPackage(
 		# download nupkg
 		Write-Host "Downloading package '$Path'" -ForegroundColor Cyan
 		$null = [System.IO.Directory]::CreateDirectory($CacheDirectory)
-		$web.DownloadFile("$Source/package/$Id/$Version", $Path)
+		Save-FarPackage $Id $Version $Path
 	}
 
 	# unpack
-	Restore-FarPackage -Path:$Path -FarHome:$FarHome -Platform:$Platform -Source:$Source
+	Restore-FarPackage -Path:$Path -FarHome:$FarHome -Platform:$Platform
 }
 
 <#
@@ -109,22 +94,16 @@ function Install-FarPackage(
 .Parameter Platform
 		Far Manager platform, x64 or x86|Win32.
 		It is not needed if Far.exe is in FarHome.
-.Parameter Source
-		The package web source.
-		Normally it should be omitted.
 #>
 function Restore-FarPackage(
 	[Parameter(Position=0, Mandatory=1)]
-	[string]
-	$Path,
+	[string]$Path
+	,
 	[Parameter(Position=1)]
-	[string]
-	$FarHome = '.',
-	[string]
+	[string]$FarHome = '.'
+	,
 	[ValidateSet('x64', 'x86', 'Win32', '')]
-	$Platform,
-	[string]
-	$Source
+	[string]$Platform
 )
 {
 	trap {$PSCmdlet.ThrowTerminatingError($_)}
@@ -164,12 +143,9 @@ function Restore-FarPackage(
 			$part
 		}
 
-		# old info, get Source, uninstall
+		# old info, uninstall
 		$info = "$FarHome\Update.$Id.info"
 		if ([System.IO.File]::Exists($info)) {
-			if (!$Source) {
-				$Source, $null = [System.IO.File]::ReadAllLines($info)
-			}
 			Uninstall-FarPackage -Id:$Id -FarHome:$FarHome
 		}
 		else {
@@ -178,7 +154,7 @@ function Restore-FarPackage(
 
 		# new info
 		Write-Host "Installing '$Id' in '$FarHome'" -ForegroundColor Cyan
-		[System.IO.File]::WriteAllText($info, "$Source`r`n$Version`r`n")
+		[System.IO.File]::WriteAllText($info, "NuGet`r`n$Version`r`n")
 
 		# unpack, install
 		foreach($part in $parts) {
@@ -237,7 +213,7 @@ function Update-FarPackage(
 			Write-Warning "Cannot update '$Id'. Missing source in '$info'."
 			continue
 		}
-		Install-FarPackage -Id:$Id -FarHome:$FarHome -Platform:$Platform -Version:"?$Version" -Source:$Source
+		Install-FarPackage -Id:$Id -FarHome:$FarHome -Platform:$Platform -Version:"?$Version"
 	}
 }
 
@@ -289,4 +265,28 @@ function Uninstall-FarPackage(
 		Remove-FarPackageEmpty $to
 	}
 	[System.IO.File]::Delete($info)
+}
+
+function Get-FarPackageBaseAddress {
+	if (!$script:FarPackageBaseAddress) {
+		$r1 = Invoke-RestMethod https://api.nuget.org/v3/index.json
+		$r2 = switch($r1.resources) {{$_.'@type' -eq 'PackageBaseAddress/3.0.0'} {$_; break}}
+		if (!$r2) {throw "Cannot find 'PackageBaseAddress/3.0.0'"}
+		$script:FarPackageBaseAddress = ($r2.'@id').TrimEnd('/')
+	}
+	$script:FarPackageBaseAddress
+}
+
+function Get-FarPackageVersion([string]$Id) {
+	$endpoint = Get-FarPackageBaseAddress
+	$Id = $Id.ToLowerInvariant()
+	$r = Invoke-RestMethod "$endpoint/$Id/index.json"
+	$r.versions[-1]
+}
+
+function Save-FarPackage([string]$Id, [string]$Version, [string]$Path) {
+	$endpoint = Get-FarPackageBaseAddress
+	$Id = $Id.ToLowerInvariant()
+	$Version = $Version.ToLowerInvariant()
+	Invoke-WebRequest "$endpoint/$Id/$Version/$Id.$Version.nupkg" -OutFile $Path
 }

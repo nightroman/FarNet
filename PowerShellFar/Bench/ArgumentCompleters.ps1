@@ -166,7 +166,7 @@ Register-ResultCompleter {
 	}
 
 	# aliases
-	$name = "$token"
+	$name = [WildcardPattern]::Escape("$token")
 	$aliases = @(Get-Alias $name -ErrorAction Ignore)
 	if ($aliases.Count -ne 1) {
 		return
