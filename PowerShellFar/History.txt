@@ -1,6 +1,13 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 FarNet 5.4.13
 
+= 5.4.12 =
+
+- FarPackage - use NuGet v3 API
+- ArgumentCompleters.ps1 - escape aliases pattern
+- Open-TextLink-.ps1 - tweak pattern
+- Show-Markdown-.ps1 - support images (--self-contained)
+
 = 5.4.11 =
 
 Tweak PSF session loading, use $ErrorActionPreference='Stop' by default.
