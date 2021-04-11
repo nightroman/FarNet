@@ -378,7 +378,7 @@ $Panel.add_Idled({
 ### KeyPressed: handles keys
 $Panel.add_KeyPressed({
 	### [Enter] opens an editor at the selected match
-	if ($_.Key.Is([FarNet.KeyCode]::Enter) -and !$Far.CommandLine.Length) {
+	if ($_.Key.Is([FarNet.KeyCode]::Enter)) {
 		$file = $this.CurrentFile
 		if (!$file -or $file.Description -notmatch '^\s*(\d+):') {
 			return
