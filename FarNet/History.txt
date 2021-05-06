@@ -1,6 +1,10 @@
 https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 5.4.21 =
+
+Fix GetColors (adapt for build 5788).
+
 = 5.4.20 =
 
 Updated Far.exe.config for latest FSharpFar.

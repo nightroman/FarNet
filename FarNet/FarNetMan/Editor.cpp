@@ -1242,8 +1242,8 @@ IList<EditorColorInfo^>^ Editor::GetColors(int line)
 			line,
 			(int)ec.StartPos,
 			(int)ec.EndPos + 1,
-			(ConsoleColor)ec.Color.ForegroundColor,
-			(ConsoleColor)ec.Color.BackgroundColor,
+			(ConsoleColor)(ec.Color.ForegroundColor & 0xFF),
+			(ConsoleColor)(ec.Color.BackgroundColor & 0xFF),
 			FromGUID(ec.Owner),
 			(int)ec.Priority));
 	}
