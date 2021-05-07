@@ -121,7 +121,7 @@ task nuget package, version, {
 	($dllVersion = (Get-Item $dllPath).VersionInfo.FileVersion.ToString())
 	assert $dllVersion.StartsWith("$Version.") 'Versions mismatch.'
 
-	$text = @'
+	$description = @'
 F# scripting and interactive services in Far Manager
 
 ---
@@ -145,8 +145,7 @@ https://github.com/nightroman/FarNet#readme
 		<icon>FarNetLogo.png</icon>
 		<license type="expression">BSD-3-Clause</license>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<summary>$text</summary>
-		<description>$text</description>
+		<description>$description</description>
 		<releaseNotes>https://github.com/nightroman/FarNet/blob/master/FSharpFar/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module FSharp</tags>
 	</metadata>

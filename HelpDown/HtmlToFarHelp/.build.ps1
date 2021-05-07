@@ -87,7 +87,7 @@ task version {
 
 # Make NuGet package
 task nuget package, version, {
-	$text = @'
+	$description = @'
 HtmlToFarHelp.exe converts HTML files with compatible structure to HLF,
 Far Manager help format. It also performs some sanity checks for unique
 topic anchors, valid topic links, and etc.
@@ -107,8 +107,7 @@ The tool requires .NET Framework 4.0.
 		<icon>images\HtmlToFarHelp.png</icon>
 		<license type="expression">Apache-2.0</license>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<summary>$text</summary>
-		<description>$text</description>
+		<description>$description</description>
 		<tags>FarManager Markdown HTML HLF</tags>
 	</metadata>
 </package>

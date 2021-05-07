@@ -87,7 +87,7 @@ task version {
 
 # Make NuGet package
 task nuget package, version, {
-	$text = @'
+	$description = @'
 PowerShellFar is the FarNet module for Far Manager, the file manager.
 It is the Windows PowerShell host in the genuine console environment.
 
@@ -112,8 +112,7 @@ https://github.com/nightroman/FarNet#readme
 		<icon>FarNetLogo.png</icon>
 		<license type="expression">BSD-3-Clause</license>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<summary>$text</summary>
-		<description>$text</description>
+		<description>$description</description>
 		<releaseNotes>https://github.com/nightroman/FarNet/blob/master/PowerShellFar/History.txt</releaseNotes>
 		<tags>FarManager FarNet PowerShell Module Plugin</tags>
 	</metadata>

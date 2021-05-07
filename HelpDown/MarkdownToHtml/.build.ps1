@@ -43,7 +43,7 @@ task Version {
 
 # Make NuGet package
 task NuGet Package, Version, {
-	$text = @'
+	$description = @'
 Obsolete, will be unlisted, use Pandoc instead.
 '@
 	# NuGet file
@@ -58,8 +58,7 @@ Obsolete, will be unlisted, use Pandoc instead.
 		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
 		<license type="expression">Apache-2.0</license>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<summary>$text</summary>
-		<description>$text</description>
+		<description>$description</description>
 		<tags>Markdown MarkdownDeep</tags>
 	</metadata>
 </package>
