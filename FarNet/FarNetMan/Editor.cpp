@@ -1265,8 +1265,8 @@ void Editor::WorksSetColors(Guid owner, int priority, IEnumerable<EditorColor^>^
 		ec.StringNumber = color->Line;
 		ec.StartPos = color->Start;
 		ec.EndPos = color->End - 1;
-		ec.Color.BackgroundColor = (COLORREF)color->Background;
-		ec.Color.ForegroundColor = (COLORREF)color->Foreground;
+		ec.Color.BackgroundColor = 0xFF000000 | (COLORREF)color->Background;
+		ec.Color.ForegroundColor = 0xFF000000 | (COLORREF)color->Foreground;
 
 		Info.EditorControl(-1, ECTL_ADDCOLOR, 0, &ec);
 	}
