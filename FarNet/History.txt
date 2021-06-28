@@ -1,6 +1,10 @@
 https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 5.4.23 =
+
+Make ProgressForm based on timer instead of unreliable idle events.
+
 = 5.4.22 =
 
 Fix setting colors (adapt for build 5821).

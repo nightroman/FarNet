@@ -515,9 +515,8 @@ namespace FarNet.Forms
 		/// </remarks>
 		public abstract event EventHandler<AnyEventArgs> Closed;
 		/// <summary>
-		/// Called periodically when a user is idle.
+		/// Called after some period of no user input.
 		/// </summary>
-		/// <seealso cref="IdledHandler"/>
 		public abstract event EventHandler Idled;
 		/// <summary>
 		/// Called on mouse clicks outside of the dialog and on not handled clicks on the controls.

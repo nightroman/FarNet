@@ -9,13 +9,9 @@ using FarNet.Forms;
 namespace FarNet.Tools
 {
 	/// <summary>
-	/// Andvanced form to show progress of potentially long background jobs.
+	/// A form to show progress of potentially long background jobs.
 	/// </summary>
 	/// <remarks>
-	/// <para>
-	/// Consider to use much simpler <see cref="ProgressBox"/>.
-	/// This form is useful in cases that allow job thread abortion.
-	/// </para>
 	/// <para>
 	/// This form should be created and shown in the main thread.
 	/// Some members are designed for use in other threads, for example:
@@ -23,18 +19,18 @@ namespace FarNet.Tools
 	/// cancellation cases: <see cref="Close"/>, <see cref="IsClosed"/>, <see cref="Canceled"/>.
 	/// </para>
 	/// <para>
-	/// The form can be shown once and cannot be reused after closing.
+	/// The form must be shown once. It cannot be reused after closing.
 	/// </para>
 	/// <para>
 	/// The standard scenario:
 	/// <ul>
 	/// <li>create a progress form but do not show yet;</li>
 	/// <li>start a job in another thread and give it this form;</li>
-	/// <li>let the main thread to sleep a bit: a fast job may complete;</li>
-	/// <li>show the form; the progress form is shown if a job is not yet done.</li>
+	/// <li>let the main thread to sleep a little, a fast job may complete;</li>
+	/// <li>show the form; the progress form is shown if a job is not complete.</li>
 	/// </ul>
 	/// </para>
-	/// There is yet another simpler scenario using the <see cref="Invoke"/>, see remarks there.
+	/// There is another simpler scenario using the <see cref="Invoke"/>, see remarks there.
 	/// </remarks>
 	public sealed class ProgressForm : Form, IProgress
 	{
@@ -43,6 +39,7 @@ namespace FarNet.Tools
 		bool _isCompleted;
 		bool _isCanceled;
 		bool _isClosed;
+		Timer _timer;
 
 		readonly Progress _progress = new Progress();
 		readonly Thread _mainThread;
@@ -221,11 +218,23 @@ namespace FarNet.Tools
 
 			try
 			{
+				// start timer
+				_timer = new Timer(OnTimer, null, 200, 200);
+
+				// show modal
 				base.Show();
 				return _isCompleted && !_isCanceled;
 			}
 			finally
 			{
+				// stop timer
+				if (_timer != null)
+				{
+					_timer.Dispose();
+					_timer = null;
+				}
+
+				// reset progress
 				Far.Api.UI.SetProgressState(TaskbarProgressBarState.NoProgress);
 				Far.Api.UI.SetProgressFlash();
 			}
@@ -275,23 +284,30 @@ namespace FarNet.Tools
 			}
 		}
 
-		void OnIdled(object sender, EventArgs e)
+		void OnTimer(object sender)
 		{
-			// if the form is closed and the dialog is still alive the closed the dialog directly
-			if (_isClosed)
-			{
-				Dialog.Close();
+			// the dialog is closed?
+			if (_timer == null)
 				return;
-			}
 
-			// event
-			Idled?.Invoke(this, null);
+			Far.Api.PostJob(() =>
+			{
+				// if the form is closed and the dialog is still alive then close the dialog directly
+				if (_isClosed)
+				{
+					Dialog.Close();
+					return;
+				}
 
-			// show
-			var lines = _progress.Build(out string progress, _textActivity.Length);
-			for (int iLine = 0; iLine < _LineCount && iLine < lines.Length; ++iLine)
-				_textActivity[iLine].Text = lines[iLine];
-			_textProgress.Text = progress;
+				// event
+				Idled?.Invoke(this, null);
+
+				// show
+				var lines = _progress.Build(out string progress, _textActivity.Length);
+				for (int iLine = 0; iLine < _LineCount && iLine < lines.Length; ++iLine)
+					_textActivity[iLine].Text = lines[iLine];
+				_textProgress.Text = progress;
+			});
 		}
 
 		void Init()
@@ -316,7 +332,6 @@ namespace FarNet.Tools
 
 			Dialog.Initialized += OnInitialized;
 			Dialog.Closing += OnClosing;
-			Dialog.Idled += OnIdled;
 		}
 
 		/// <summary>
