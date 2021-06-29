@@ -269,6 +269,7 @@ static bool _reenterOnRedrawing;
 int Panel0::AsProcessPanelEvent(const ProcessPanelEventInfo* info)
 {
 	Panel2^ pp = HandleToPanel(info->hPanel);
+
 	switch(info->Event)
 	{
 	case FE_BREAK:
@@ -281,6 +282,13 @@ int Panel0::AsProcessPanelEvent(const ProcessPanelEventInfo* info)
 	case FE_CLOSE:
 		{
 			Log::Source->TraceInformation("FE_CLOSE");
+
+			// stop timer //_210630_hi
+			if (pp->_timerInstance)
+			{
+				delete pp->_timerInstance;
+				pp->_timerInstance = nullptr;
+			}
 
 			//_090321_165608 FE_CLOSE issues
 			if (!pp->_Pushed)
@@ -327,22 +335,6 @@ int Panel0::AsProcessPanelEvent(const ProcessPanelEventInfo* info)
 			pp->Host->UIViewChanged(%e);
 		}
 		break;
-	case FE_IDLE:
-		{
-			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "FE_IDLE");
-
-			// 1) call
-			pp->Host->UIIdle();
-
-			// 2) update after the handler: if the panel has set both IdleUpdate and Idled
-			// then in Idled it should not care of data updates, it is done after that.
-			if (pp->Host->IdleUpdate)
-			{
-				pp->Update(true);
-				pp->Redraw();
-			}
-		}
-		break;
 	case FE_GOTFOCUS:
 		{
 			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "FE_GOTFOCUS");
@@ -373,6 +365,10 @@ int Panel0::AsProcessPanelEvent(const ProcessPanelEventInfo* info)
 				_reenterOnRedrawing = false;
 				return 0;
 			}
+
+			// start timer //_210630_hi
+			if (pp->Host->TimerInterval > 0 && !pp->_timerInstance)
+				pp->_timerInstance = gcnew Timer(gcnew TimerCallback(pp, &Panel2::OnTimer), nullptr, pp->Host->TimerInterval, pp->Host->TimerInterval);
 
 			PanelEventArgs e;
 			pp->Host->UIRedrawing(%e);

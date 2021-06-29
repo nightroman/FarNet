@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Starts or manages file transfer jobs in a panel.
@@ -76,12 +75,18 @@
 #>
 
 [CmdletBinding()]
-param
-(
-	[string[]]$Source,
-	[string[]]$Destination,
-	[string]$DisplayName = ([DateTime]::Now.ToString('s')),
-	[switch]$Auto
+param(
+	[string[]]
+	$Source
+	,
+	[string[]]
+	$Destination
+	,
+	[string]
+	$DisplayName = ([DateTime]::Now.ToString('s'))
+	,
+	[switch]
+	$Auto
 )
 
 Set-StrictMode -Version 2
@@ -172,4 +177,4 @@ New-Object PowerShellFar.ObjectPanel $Explorer -Property @{
 		@{ Kind = 'O'; Label = 'State'; Width = 15; Expression = 'JobState' }
 		@{ Kind = 'DC'; Label = 'Created'; Expression = 'CreationTime' }
 	)
-} | Open-FarPanel -TypeId $id -Title 'BITS Jobs' -DataId 'JobId' -IdleUpdate
+} | Open-FarPanel -TypeId $id -Title 'BITS Jobs' -DataId 'JobId' -TimerUpdate 5000

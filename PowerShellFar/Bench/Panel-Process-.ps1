@@ -1,12 +1,10 @@
-
 <#
 .Synopsis
 	Panel current processes.
 	Author: Roman Kuzmin
 
 .Description
-	Shows the list of current processes in a panel and updates these data
-	periodically when idle.
+	Shows the list of current processes in a panel and updates these data.
 
 	Hotkeys:
 
@@ -25,16 +23,20 @@
 
 	[F3], [CtrlQ]
 	Shows process information as text.
+
+.Parameter Name
+		Process name(s), see Get-Process -Name.
+
+.Parameter Where
+		Filter script. Example:
+		{ $_.WS -gt 10Mb } # where working set is greater than 10Mb
 #>
 
-param
-(
+param(
 	[string[]]
-	# Process name(s). See Get-Process -Name.
 	$Name = '*'
 	,
 	[scriptblock]
-	# Filter script. Example: { $_.WS -gt 10Mb } ~ where working set is greater than 10Mb.
 	$Where
 )
 
@@ -92,7 +94,8 @@ New-Object PowerShellFar.ObjectExplorer -Property @{
 		param($0, $_)
 		New-Object PowerShellFar.ObjectPanel $0 -Property @{
 			Title = $0.Data.Title
-			IdleUpdate = $true
+			IsTimerUpdate = $true
+			TimerInterval = 5000
 		}
 	}
 } | Open-FarPanel

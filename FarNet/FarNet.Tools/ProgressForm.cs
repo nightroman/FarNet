@@ -34,12 +34,14 @@ namespace FarNet.Tools
 	/// </remarks>
 	public sealed class ProgressForm : Form, IProgress
 	{
+		const int DeafultShowDelay = 500;
+		const int DeaufltTimerInterval = 200;
+
 		readonly object _lock = new object();
 		int _LineCount = 1;
 		bool _isCompleted;
 		bool _isCanceled;
 		bool _isClosed;
-		Timer _timer;
 
 		readonly Progress _progress = new Progress();
 		readonly Thread _mainThread;
@@ -111,7 +113,7 @@ namespace FarNet.Tools
 		/// and user interaction with dialogs. A handler is called from the main thread and
 		/// may use the API as usual.
 		/// </remarks>
-		public event EventHandler Idled;
+		public event EventHandler Timer;
 
 		/// <summary>
 		/// Gets true if a closing method has been called or a user has canceled the form.
@@ -218,22 +220,12 @@ namespace FarNet.Tools
 
 			try
 			{
-				// start timer
-				_timer = new Timer(OnTimer, null, 200, 200);
-
 				// show modal
 				base.Show();
 				return _isCompleted && !_isCanceled;
 			}
 			finally
 			{
-				// stop timer
-				if (_timer != null)
-				{
-					_timer.Dispose();
-					_timer = null;
-				}
-
 				// reset progress
 				Far.Api.UI.SetProgressState(TaskbarProgressBarState.NoProgress);
 				Far.Api.UI.SetProgressFlash();
@@ -284,34 +276,28 @@ namespace FarNet.Tools
 			}
 		}
 
-		void OnTimer(object sender)
+		void OnTimer(object sender, EventArgs e)
 		{
-			// the dialog is closed?
-			if (_timer == null)
-				return;
-
-			Far.Api.PostJob(() =>
+			// if the form is closed and the dialog is still alive then close the dialog directly
+			if (_isClosed)
 			{
-				// if the form is closed and the dialog is still alive then close the dialog directly
-				if (_isClosed)
-				{
-					Dialog.Close();
-					return;
-				}
+				Dialog.Close();
+				return;
+			}
 
-				// event
-				Idled?.Invoke(this, null);
+			// event
+			Timer?.Invoke(this, null);
 
-				// show
-				var lines = _progress.Build(out string progress, _textActivity.Length);
-				for (int iLine = 0; iLine < _LineCount && iLine < lines.Length; ++iLine)
-					_textActivity[iLine].Text = lines[iLine];
-				_textProgress.Text = progress;
-			});
+			// show
+			var lines = _progress.Build(out string progress, _textActivity.Length);
+			for (int iLine = 0; iLine < _LineCount && iLine < lines.Length; ++iLine)
+				_textActivity[iLine].Text = lines[iLine];
+			_textProgress.Text = progress;
 		}
 
 		void Init()
 		{
+			Dialog.TimerInterval = DeaufltTimerInterval;
 			Dialog.KeepWindowTitle = true;
 
 			SetSize(Progress.FORM_WIDTH, (CanCancel ? 7 : 5) + _LineCount);
@@ -332,6 +318,7 @@ namespace FarNet.Tools
 
 			Dialog.Initialized += OnInitialized;
 			Dialog.Closing += OnClosing;
+			Dialog.Timer += OnTimer;
 		}
 
 		/// <summary>
@@ -359,7 +346,7 @@ namespace FarNet.Tools
 			_jobThread.Start();
 
 			// wait a little bit
-			Thread.Sleep(500);
+			Thread.Sleep(DeafultShowDelay);
 
 			// show the form and return null if it is completed
 			if (Show())
@@ -369,7 +356,6 @@ namespace FarNet.Tools
 			return _jobError ?? new OperationCanceledException();
 		}
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		void Job(ThreadStart job)
 		{
 			try

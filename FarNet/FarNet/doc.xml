@@ -4,6 +4,20 @@
     /// <include file='doc.xml' path='doc/UnselectNames/*'/>
     /// <include file='doc.xml' path='doc/N1[@name="N2"]/*'/>
     -->
+  <Timer>
+    <summary>Called periodically if the timer interval is set to a positive value.</summary>
+    <seealso cref="TimerInterval"/>
+  </Timer>
+  <TimerInterval>
+    <summary>
+      The time interval between invocations of timer events, in milliseconds.
+    </summary>
+    <remarks>
+      This value must be set before opening, changing it after has no effect.
+      If the value is not positive then the timer events are not triggered.
+    </remarks>
+    <seealso cref="Timer"/>
+  </TimerInterval>
   <OpEqual>
     <summary>Compares two objects.</summary>
     <param name="left">The left object to compare.</param>

@@ -735,7 +735,7 @@ void Panel2::CreateKeyBars(KeyBarTitles& b)
 {
 	b.CountLabels = _keyBars->Length;
 	b.Labels = new KeyBarLabel[_keyBars->Length];
-	
+
 	for(int i = _keyBars->Length; --i >= 0;)
 	{
 		KeyBarLabel& it = b.Labels[i];
@@ -1118,6 +1118,31 @@ FarFile^ Panel2::GetFileByUserData(void* data)
 	if (key < -1)
 		return FileStore::GetFile(key);
 	return nullptr;
+}
+
+// called from the timer thread //_210630_hi
+void Panel2::OnTimer(Object^)
+{
+	if (_timerInstance && IsOpened)
+		Far::Api->PostJob(gcnew Action(this, &Panel2::OnTimerJob));
+}
+
+// called from the main thread //_210630_hi
+void Panel2::OnTimerJob()
+{
+	if (_timerInstance && IsOpened)
+	{
+		// 1) call
+		Host->UITimer();
+
+		// 2) update after the handler: if a panel sets both Timer and IsTimerUpdate
+		// then in Timer it should not care of data updates, it is done after that.
+		if (Host->IsTimerUpdate)
+		{
+			Update(true);
+			Redraw();
+		}
+	}
 }
 
 }

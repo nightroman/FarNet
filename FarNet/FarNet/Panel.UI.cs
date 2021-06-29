@@ -618,31 +618,31 @@ namespace FarNet
 			Redraw();
 		}
 		/// <summary>
-		/// Tells to update and redraw the panel automatically when idle.
+		/// Tells to update and redraw the panel on timer events.
 		/// </summary>
 		/// <remarks>
-		/// If it is set the panel is updated automatically every few seconds when idle.
-		/// This is suitable only for panels with very frequently changed data,
-		/// otherwise it results in expensive updates for nothing.
+		/// This is suitable for panels with frequently changed source data.
+		/// Note, you should enable timer events by setting the timer interval.
 		/// </remarks>
-		/// <seealso cref="Idled"/>
-		public bool IdleUpdate { get; set; }
-		/// <summary>
-		/// Called periodically when a user is idle.
-		/// </summary>
-		/// <seealso cref="IdleUpdate"/>
-		/// <seealso cref="IdledHandler"/>
-		public event EventHandler Idled;
+		/// <seealso cref="Timer"/>
+		/// <seealso cref="TimerInterval"/>
+		public bool IsTimerUpdate { get; set; }
+		/// <include file='doc.xml' path='doc/Timer/*'/>
+		/// <seealso cref="IsTimerUpdate"/>
+		public event EventHandler Timer;
+		/// <include file='doc.xml' path='doc/TimerInterval/*'/>
+		/// <seealso cref="IsTimerUpdate"/>
+		public int TimerInterval { get; set; }
 		/// <summary>
 		/// Called periodically when idle.
 		/// </summary>
 		/// <remarks>
 		/// It is used for panel updating and redrawing if data have changed.
-		/// The base method triggers the <see cref="Idled"/> event.
+		/// The base method triggers the <see cref="Timer"/> event.
 		/// </remarks>
-		public virtual void UIIdle()
+		public virtual void UITimer()
 		{
-			Idled?.Invoke(this, null);
+			Timer?.Invoke(this, null);
 		}
 		/// <summary>
 		/// Called when a key is pressed.
@@ -661,7 +661,6 @@ namespace FarNet
 		/// </summary>
 		/// <param name="key">The pressed key.</param>
 		/// <returns>True if the key has been processed.</returns>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		public virtual bool UIKeyPressed(KeyInfo key)
 		{
 			if (key == null) throw new ArgumentNullException("key");

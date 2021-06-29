@@ -69,10 +69,10 @@ namespace FarNet.Tools
 			this.Explorer.CommitFiles(this, that, files, move);
 		}
 		/// <inheritdoc/>
-		public override void UIIdle()
+		public override void UITimer()
 		{
 			// let event happens first
-			base.UIIdle();
+			base.UITimer();
 
 			// no job
 			if (_idleFiles == null)

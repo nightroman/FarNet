@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Shows PowerShell jobs in a panel.
@@ -96,7 +95,6 @@ $Explorer = New-Object PowerShellFar.ObjectExplorer -Property @{
 
 New-Object PowerShellFar.ObjectPanel $Explorer -Property @{
 	Title = "PowerShell Jobs"
-	IdleUpdate = $true
 	Columns = @(
 		@{ Expression = 'Id'; Width = 6 }
 		'Name'
@@ -104,4 +102,4 @@ New-Object PowerShellFar.ObjectPanel $Explorer -Property @{
 		@{ Label = 'Data'; Expression = 'HasMoreData'; Width = 5 }
 		@{ Label = 'Command'; Expression = { $_.Command.ToString().TrimStart() } }
 	)
-} | Open-FarPanel
+} | Open-FarPanel -TimerUpdate 2000

@@ -151,10 +151,11 @@ $dialog.add_Initialized({
 	$e1.Text = '<Edit>'
 })
 
-### Idled: how to use custom frequency (show time in the console title every 2 seconds)
-$dialog.add_Idled([FarNet.IdledHandler]::Create(2, {
-	$Host.UI.RawUI.WindowTitle = [datetime]::Now
-}))
+### Timer: enable by setting the internal and show time in window title
+$dialog.TimerInterval = 2000
+$dialog.add_Timer({
+	$Far.UI.WindowTitle = [datetime]::Now
+})
 
 ### MouseClicked: how to get not processed mouse event and out-of-dialog mouse events
 $dialog.add_MouseClicked({

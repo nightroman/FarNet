@@ -356,8 +356,9 @@ $plan = $plan.Clone()
 $plan.IsFullScreen = $true
 $Panel.SetPlan('LongDescriptions', $plan)
 
-### Idled: checks new data and updates
-$Panel.add_Idled({
+### Timer: check new data and updates
+$Panel.TimerInterval = 2000
+$Panel.add_Timer({
 	$job = $this.Explorer.Data
 	if (!$job.Parameters.Done) {
 		if ($job.Output.Count) {

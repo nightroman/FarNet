@@ -330,9 +330,9 @@ $BasePanel = @{
 		Data = @'
 Specifies any object which is used later by custom panel event handlers.
 '@
-		IdleUpdate = @'
-Tells to update the panel periodically when idle. This is useful for panel
-objects that change their properties over time, e.g. system processes.
+		TimerUpdate = @'
+Tells to update the panel on timer events and specifies the interval in
+milliseconds. Useful for objects changing their properties over time.
 '@
 		DataId = @'
 Specifies the custom data ID used to distinguish files by their data.

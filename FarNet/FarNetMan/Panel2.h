@@ -119,6 +119,9 @@ private:
 	FarFile^ GetFileByUserData(void* data);
 	void OpenExplorer(Explorer^ explorer, ExploreEventArgs^ args);
 	void ReplaceExplorer(Explorer^ explorer);
+	void OnTimerJob();
+internal:
+	void OnTimer(Object^ state);
 private:
 	IList<FarFile^>^ _Files_;
 	Explorer^ _MyExplorer;
@@ -131,5 +134,7 @@ private:
 	array<DataItem^>^ _InfoItems;
 	array<PanelPlan^>^ _Plans;
 	array<KeyBar^>^ _keyBars;
+internal:
+	Timer^ _timerInstance;
 };
 }

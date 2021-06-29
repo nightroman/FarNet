@@ -931,7 +931,6 @@ namespace FarNet
 		/// If you get it and change items then set it again after changes.
 		/// Without that individual item changes will have no effect.
 		/// </remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		public DataItem[] InfoItems { get { return _Panel.InfoItems; } set { _Panel.InfoItems = value; } }
 		/// <summary>
 		/// Sets key bars.

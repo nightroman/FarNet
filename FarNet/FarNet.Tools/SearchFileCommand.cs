@@ -126,7 +126,7 @@ namespace FarNet.Tools
 				panel.AddFilesAsync(files);
 
 			if (IsCompleted)
-				panel.Idled -= OnPanelIdled;
+				panel.Timer -= OnPanelIdled;
 
 			string title = string.Format(null, "Found {0} items in {1} directories. {2}",
 				FoundFileCount, ProcessedDirectoryCount,
@@ -230,7 +230,7 @@ namespace FarNet.Tools
 			// subscribe
 			panel.Escaping += OnPanelEscaping;
 			panel.Closed += OnPanelClosed;
-			panel.Idled += OnPanelIdled;
+			panel.Timer += OnPanelIdled;
 		}
 		bool UIUserStop()
 		{

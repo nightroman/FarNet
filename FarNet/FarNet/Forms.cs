@@ -114,7 +114,6 @@ namespace FarNet.Forms
 		/// <summary>
 		/// Tells to disable text changes for a user.
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
 		bool ReadOnly { get; set; }
 		/// <summary>
 		/// Tells to select the text when the control gets focus.
@@ -140,7 +139,6 @@ namespace FarNet.Forms
 		/// <summary>
 		/// Tells to create the single line box.
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
 		bool Single { get; set; }
 		/// <summary>
 		/// Tells to align the text left.
@@ -514,10 +512,10 @@ namespace FarNet.Forms
 		/// </para>
 		/// </remarks>
 		public abstract event EventHandler<AnyEventArgs> Closed;
-		/// <summary>
-		/// Called after some period of no user input.
-		/// </summary>
-		public abstract event EventHandler Idled;
+		/// <include file='doc.xml' path='doc/Timer/*'/>
+		public abstract event EventHandler Timer;
+		/// <include file='doc.xml' path='doc/TimerInterval/*'/>
+		public abstract int TimerInterval { get; set; }
 		/// <summary>
 		/// Called on mouse clicks outside of the dialog and on not handled clicks on the controls.
 		/// </summary>
@@ -616,7 +614,6 @@ namespace FarNet.Forms
 		/// <remarks>
 		/// NOTE: "selected" and "clicked" are different events, see <see cref="IButton.ButtonClicked"/> remarks.
 		/// </remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
 		public abstract IControl Default { get; set; }
 		/// <summary>
 		/// Shows the dialog.
