@@ -614,11 +614,6 @@ $r = TabExpansion2 @args
 				{
 					A.InvokeCode("Start-FarTask $args[0]", editor.FileName);
 				}
-				else if (dir1.EndsWith(".ps1.commands", StringComparison.OrdinalIgnoreCase))
-				{
-					var runner = dir1.Substring(0, dir1.Length - 9);
-					A.Psf.Act($"& '{runner.Replace("'", "''")}' {Path.GetFileNameWithoutExtension(fileName)}", null, false);
-				}
 				else
 				{
 					A.Psf.Act($"& '{fileName.Replace("'", "''")}'", null, false);

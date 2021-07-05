@@ -44,19 +44,9 @@ if ($ext -eq '.ps1') {
 			$path.Replace("'", "''")
 		)
 	}
+	# generic script
 	else {
-		# sub-command?
-		$root = [IO.Path]::GetDirectoryName($path)
-		if ($root.ToLower().EndsWith('.ps1.commands')) {
-			$arg = "-NoExit -ExecutionPolicy Bypass . '{0}' {1}" -f @(
-				$root.Substring(0, $root.Length - 9).Replace("'", "''")
-				[IO.Path]::GetFileNameWithoutExtension($path)
-			)
-		}
-		# generic script
-		else {
-			$arg = "-NoExit -ExecutionPolicy Bypass . '$($path.Replace("'", "''"))'"
-		}
+		$arg = "-NoExit -ExecutionPolicy Bypass . '$($path.Replace("'", "''"))'"
 	}
 	Start-Process powershell.exe $arg
 	return
