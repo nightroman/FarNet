@@ -1,7 +1,7 @@
 ﻿[<RequireQualifiedAccess>]
 module FSharpFar.Checker
 open System.IO
-open FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler.CodeAnalysis
 
 [<NoComparison>]
 type CheckFileResult = {

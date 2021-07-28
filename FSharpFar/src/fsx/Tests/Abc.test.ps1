@@ -35,7 +35,7 @@ task test_01_arguments {
 }
 
 <#
-set-env fsi (ls "C:\Program Files (x86)\Microsoft Visual Studio\2019\*\Common7\IDE\CommonExtensions\Microsoft\FSharp\fsi.exe").FullName
+set-env fsi (ls "C:\Program Files (x86)\Microsoft Visual Studio\2019\*\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools\fsi.exe").FullName
 #>
 task test_01_arguments_fsi {
 	if (!$env:fsi) {

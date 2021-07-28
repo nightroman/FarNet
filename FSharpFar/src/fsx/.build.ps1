@@ -8,16 +8,16 @@ param(
 	$Configuration = (property Configuration Release)
 )
 
-task Build {
+task build {
 	exec {dotnet build /p:FarHome=$FarHome /p:Configuration=$Configuration}
 }
 
-task Clean {
+task clean {
 	remove bin, obj
 }
 
-task Test {
+task test {
 	Invoke-Build ** Tests
 }
 
-task . Build, Test, Clean
+task . build, test, clean

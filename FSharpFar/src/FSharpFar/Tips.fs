@@ -3,7 +3,8 @@ module FSharpFar.Tips
 open System
 open System.IO
 open System.Xml
-open FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler.EditorServices
+open FSharp.Compiler.Symbols
 
 let private trimTip =
     let chars = [| '\r'; '\n' |]
@@ -13,7 +14,8 @@ let rec private getContent (elem: XmlElement) : string =
     use w = new StringWriter ()
     for node in elem.ChildNodes do
         match node.NodeType with
-        | XmlNodeType.Text -> w.Write node.Value
+        | XmlNodeType.Text ->
+            w.Write node.Value
         | XmlNodeType.Element ->
             let e = node :?> XmlElement
             match e.Name with
@@ -146,7 +148,7 @@ let private tryXmlDocMap =
 
 let private formatComment comment full =
     match comment with
-    | FSharpXmlDoc.XmlDocFileSignature (dllFile, memberName) ->
+    | FSharpXmlDoc.FromXmlFile (dllFile, memberName) ->
         match tryXmlDocMap dllFile with
         | Some map ->
             match map.TryFind memberName with
@@ -156,23 +158,34 @@ let private formatComment comment full =
                 ""
         | None ->
             ""
-    | FSharpXmlDoc.Text (unprocessedLines, _) ->
-        trimTip (String.Join("\r\n", unprocessedLines))
+
+    | FSharpXmlDoc.FromXmlText xmlDoc ->
+        if xmlDoc.IsEmpty then ""
+        else
+        let text = xmlDoc.GetXmlText ()
+
+        let xml = XmlDocument ()
+        xml.LoadXml "<root/>"
+        xml.DocumentElement.InnerXml <- text
+
+        let xmlDocMember = XmlDocMember xml.DocumentElement
+        xmlDocMember.Format full
+
     | FSharpXmlDoc.None ->
         ""
 
-let private formatTip (FSharpToolTipText tips) full =
+let private formatTip (ToolTipText tips) full =
     tips
     |> List.choose (function
-        | FSharpToolTipElement.Group items ->
+        | ToolTipElement.Group items ->
             let commentsBySignatures = [
                 for it in items do
                     yield it.MainDescription, formatComment it.XmlDoc full
             ]
             Some commentsBySignatures
-        | FSharpToolTipElement.CompositionError error ->
-            Some ["<error>", error]
-        | FSharpToolTipElement.None ->
+        | ToolTipElement.CompositionError error ->
+            Some [ [||], error ]
+        | ToolTipElement.None ->
             None
     )
 
@@ -186,7 +199,15 @@ let format tips full =
             if full && w.GetStringBuilder().Length > 0 then
                 w.WriteLine ()
                 w.WriteLine ("".PadRight (messageWidth, '~'))
-            w.WriteLine (formatMessage signature)
+
+            //? token.Tag is not used
+            use w2 = new StringWriter ()
+            for token in signature do
+                w2.Write token.Text
+
+            let signatureText = w2.ToString ();
+            signatureText |> formatMessage |> w.WriteLine
+
             if comment.Length > 0 then
                 w.WriteLine comment
     w.ToString ()

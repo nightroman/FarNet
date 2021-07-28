@@ -1,8 +1,8 @@
 ﻿namespace FSharpFar
 open FarNet
 open FarNet.FSharp
-open FSharp.Compiler.SourceCodeServices
 open System
+open FSharp.Compiler.Tokenization
 
 type LineArgs = {
     Text : string
@@ -43,7 +43,7 @@ type FarEditor () =
                     if inbox.CurrentQueueLength > 0 then
                         None
                     else
-                        let errors = check.CheckResults.Errors
+                        let errors = check.CheckResults.Diagnostics
                         if errors.Length = 0 then None else Some errors
                 do! jobEditor editor.Redraw
             with exn ->
@@ -68,10 +68,10 @@ type FarEditor () =
                     let lines =
                         errors
                         |> Array.filter (fun err ->
-                            it.Index >= err.StartLineAlternate - 1 &&
-                            it.Index <= err.EndLineAlternate - 1 &&
-                            (it.Index > err.StartLineAlternate - 1 || it.Column >= err.StartColumn) &&
-                            (it.Index < err.EndLineAlternate - 1 || it.Column <= err.EndColumn))
+                            it.Index >= err.StartLine - 1 &&
+                            it.Index <= err.EndLine - 1 &&
+                            (it.Index > err.StartLine - 1 || it.Column >= err.StartColumn) &&
+                            (it.Index < err.EndLine - 1 || it.Column <= err.EndColumn))
                         |> Array.map FSharpDiagnostic.strErrorText
                         |> Array.distinct
                     if lines.Length > 0 then
@@ -87,7 +87,7 @@ type FarEditor () =
                         try
                             let config = editor.MyConfig ()
                             let! check = Checker.check editor.FileName text config
-                            let tip = check.CheckResults.GetToolTipText (it.Index + 1, column + 1, it.Text, idents, FSharpTokenTag.Identifier)
+                            let tip = check.CheckResults.GetToolTip (it.Index + 1, column + 1, it.Text, idents, FSharpTokenTag.Identifier)
                             let tips = Tips.format tip false
                             if tips.Length > 0 && inbox.CurrentQueueLength = 0 then
                                 do! jobEditor (fun _ ->

@@ -2,8 +2,9 @@
 open FarNet
 open System
 open System.IO
-open FSharp.Compiler.SourceCodeServices
-open FSharp.Compiler
+open FSharp.Compiler.EditorServices
+open FSharp.Compiler.Tokenization
+open FSharp.Compiler.CodeAnalysis
 
 let load (editor: IEditor) =
     editor.Save ()
@@ -28,12 +29,12 @@ let load (editor: IEditor) =
 let showErrors (editor: IEditor) =
     let errors =
         editor.MyErrors.Value
-        |> Array.sortBy (fun x -> x.FileName, x.StartLineAlternate, x.StartColumn)
+        |> Array.sortBy (fun x -> x.FileName, x.StartLine, x.StartColumn)
 
     let menu = far.CreateListMenu (Title = "F# errors", ShowAmpersands = true, UsualMargins = true, IncrementalOptions = PatternOptions.Substring)
 
     errors |> menu.ShowItems FSharpDiagnostic.strErrorLine (fun error ->
-        editor.GoTo (error.StartColumn, error.StartLineAlternate - 1)
+        editor.GoTo (error.StartColumn, error.StartLine - 1)
         editor.Redraw ()
     )
 
@@ -55,7 +56,7 @@ let check (editor: IEditor) =
         Checker.check file text config
         |> Async.RunSynchronously
 
-    let errors = check.CheckResults.Errors
+    let errors = check.CheckResults.Diagnostics
 
     progress.Done ()
 
@@ -83,7 +84,7 @@ let tips (editor: IEditor) =
     let tip =
         async {
             let! check = Checker.check file text config
-            return check.CheckResults.GetToolTipText (caret.Y + 1, column + 1, lineStr, idents, FSharpTokenTag.Identifier)
+            return check.CheckResults.GetToolTip (caret.Y + 1, column + 1, lineStr, idents, FSharpTokenTag.Identifier)
         }
         |> Async.RunSynchronously
 
@@ -124,11 +125,11 @@ let usesInFile (editor: IEditor) =
     let menu = far.CreateListMenu (Title = "F# uses", ShowAmpersands = true, UsualMargins = true, IncrementalOptions = PatternOptions.Substring)
 
     let strUseLine (x: FSharpSymbolUse) =
-        let range = x.RangeAlternate
+        let range = x.Range
         sprintf "%s(%d,%d): %s" (Path.GetFileName x.FileName) range.StartLine (range.StartColumn + 1) editor.[range.StartLine - 1].Text
 
     uses |> menu.ShowItems strUseLine (fun x ->
-        let range = x.RangeAlternate
+        let range = x.Range
         editor.GoTo (range.StartColumn, range.StartLine - 1)
         editor.Redraw ()
     )
@@ -174,7 +175,7 @@ let usesInProject (editor: IEditor) =
     use writer = new StringWriter ()
     for x in uses do
         let lines = fileLines.[x.FileName]
-        let range = x.RangeAlternate
+        let range = x.Range
         fprintfn writer "%s(%d,%d): %s" x.FileName range.StartLine (range.StartColumn + 1) lines.[range.StartLine - 1]
 
     progress.Done ()

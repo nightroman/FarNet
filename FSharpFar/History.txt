@@ -1,6 +1,10 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 FarNet 5.4.20
 
+= 1.15.1 =
+
+Updated FSharp.Compiler.Service (40.0), FSharp.Core (5.0.2).
+
 = 1.15.0 =
 
 !! Use FarNet 5.4.20

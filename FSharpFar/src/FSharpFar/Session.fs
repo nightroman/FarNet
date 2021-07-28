@@ -3,7 +3,7 @@ open System
 open System.IO
 open System.Diagnostics
 open FSharp.Compiler.Interactive.Shell
-open FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler.Diagnostics
 
 [<NoComparison>]
 type EvalResult = {
@@ -25,11 +25,11 @@ module FSharpDiagnostic =
 
     /// Error text as it is with full source info.
     let strErrorFull (x : FSharpDiagnostic) =
-        sprintf "%s(%d,%d): %s" x.FileName x.StartLineAlternate (x.StartColumn + 1) (strErrorText x)
+        sprintf "%s(%d,%d): %s" x.FileName x.StartLine (x.StartColumn + 1) (strErrorText x)
 
     /// Error text as line with mini source info.
     let strErrorLine (x : FSharpDiagnostic) =
-        sprintf "%s(%d,%d): %s" (Path.GetFileName x.FileName) x.StartLineAlternate (x.StartColumn + 1) (strAsLine (strErrorText x))
+        sprintf "%s(%d,%d): %s" (Path.GetFileName x.FileName) x.StartLine (x.StartColumn + 1) (strAsLine (strErrorText x))
 
 type Session private (configFile) =
     static let mutable sessions : Session list = []
