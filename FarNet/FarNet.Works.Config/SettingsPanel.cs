@@ -9,7 +9,6 @@ namespace FarNet.Works.Config
 {
 	class SettingsPanel : Panel
 	{
-		bool _isDirty;
 		readonly SettingsExplorer _Explorer;
 		public SettingsPanel(SettingsExplorer explorer)
 			: base(explorer)
@@ -22,7 +21,7 @@ namespace FarNet.Works.Config
 			SortMode = PanelSortMode.Name;
 			ViewMode = PanelViewMode.AlternativeFull;
 
-			PanelPlan plan = new PanelPlan
+			var plan = new PanelPlan
 			{
 				Columns = new FarColumn[]
 				{
@@ -39,7 +38,7 @@ namespace FarNet.Works.Config
 			Update(true);
 			Redraw();
 
-			_isDirty = true;
+			SaveData();
 		}
 		void SetDefaults()
 		{
@@ -48,15 +47,17 @@ namespace FarNet.Works.Config
 				var value = (SettingsPropertyValue)file.Data;
 				file.Description = SettingsExplorer.SetPropertyValueDefault(value);
 				SettingsExplorer.CompleteFileData(file, value);
-				_isDirty = true;
 			}
 
 			Update(false);
 			Redraw();
+
+			SaveData();
 		}
 		public override bool UIKeyPressed(KeyInfo key)
 		{
 			if (key == null) throw new ArgumentNullException("key");
+
 			switch (key.VirtualKeyCode)
 			{
 				case KeyCode.F1:
@@ -78,26 +79,13 @@ namespace FarNet.Works.Config
 
 			return base.UIKeyPressed(key);
 		}
+		// Call this on changing any value (used to be called on closing).
+		// This allows applying changes in modules with overridden `Save`.
+		// E.g. RightControl updates cached regexes on `Save`.
 		public override bool SaveData()
 		{
-			if (_isDirty)
-			{
-				_Explorer.Settings.Save();
-				_isDirty = false;
-			}
+			_Explorer.Settings.Save();
 			return true;
-		}
-		protected override bool CanClose()
-		{
-			if (!SaveData())
-				return false;
-
-			return base.CanClose();
-		}
-		public override void UIClosed()
-		{
-			SaveData();
-			base.UIClosed();
 		}
 	}
 }

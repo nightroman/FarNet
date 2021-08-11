@@ -59,7 +59,7 @@ task help {
 
 # Remove temp files
 task clean {
-	remove z, bin, obj, AssemblyInfo.cs, About-RightControl.htm, FarNet.RightControl.*.nupkg
+	remove z, bin, obj, About-RightControl.htm, FarNet.RightControl.*.nupkg
 }
 
 # Set $script:Version
@@ -82,7 +82,7 @@ task package help, version, {
 	Copy-Item -Destination $toModule `
 	About-RightControl.htm,
 	History.txt,
-	LICENSE.txt,
+	LICENSE,
 	RightControl.macro.lua,
 	$ModuleHome\RightControl.dll
 }

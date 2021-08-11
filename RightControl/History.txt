@@ -1,5 +1,12 @@
 https://www.nuget.org/packages/FarNet.RightControl
 
+= 2.3.0 =
+
+Use FarNet 5.5.1 (changes in settings saving).
+
+Replaced the setting Regex with two RegexLeft and RegexRight.
+This way is more flexible and expressions may be simpler.
+
 = 2.2.2 =
 
 Minor tweaks.

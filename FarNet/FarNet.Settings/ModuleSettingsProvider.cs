@@ -105,7 +105,6 @@ namespace FarNet.Settings
 			return data;
 		}
 		/// <inheritdoc/>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods")]
 		public override SettingsPropertyValueCollection GetPropertyValues(SettingsContext context, SettingsPropertyCollection collection)
 		{
 			var result = new SettingsPropertyValueCollection();
@@ -131,7 +130,6 @@ namespace FarNet.Settings
 			return result;
 		}
 		/// <inheritdoc/>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods")]
 		public override void SetPropertyValues(SettingsContext context, SettingsPropertyValueCollection collection)
 		{
 			bool dirtyRoaming = false;

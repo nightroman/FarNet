@@ -2,23 +2,17 @@
 // FarNet module RightControl
 // Copyright (c) Roman Kuzmin
 
-using System;
 using System.Text.RegularExpressions;
-using FarNet.Forms;
 
 namespace FarNet.RightControl
 {
 	[System.Runtime.InteropServices.Guid("1b42c03e-40c4-45db-a3ce-eb0825fe16d1")]
-	[ModuleCommand(Name = TheCommand.Name, Prefix = TheCommand.Name)]
+	[ModuleCommand(Name = Name, Prefix = Name)]
 	public class TheCommand : ModuleCommand
 	{
 		const string Name = "RightControl";
-		static Regex Regex { get { if (_Regex_ == null) InitRegex(null); return _Regex_; } }
-		static Regex _Regex_;
 		public override void Invoke(object sender, ModuleCommandEventArgs e)
 		{
-			InitRegex(Manager);
-
 			ILine line = null;
 			IEditor editor = null;
 			var kind = Far.Api.Window.Kind;
@@ -48,22 +42,6 @@ namespace FarNet.RightControl
 				default: throw new ModuleException("Unknown command: " + e.Command);
 			}
 		}
-		static void InitRegex(IModuleManager manager)
-		{
-			if (_Regex_ != null)
-				return;
-
-			var settings = new Settings();
-			try
-			{
-				_Regex_ = new Regex(settings.Regex, RegexOptions.IgnorePatternWhitespace);
-			}
-			catch (Exception e)
-			{
-				Far.Api.Message("Regular expression error:\r" + e.Message, "RightControl", MessageOptions.LeftAligned | MessageOptions.Warning);
-				_Regex_ = new Regex(Settings.RegexDefault, RegexOptions.IgnorePatternWhitespace);
-			}
-		}
 		/// <summary>
 		/// Operation kind.
 		/// </summary>
@@ -83,6 +61,7 @@ namespace FarNet.RightControl
 		/// <param name="alt">True for the alternative operation.</param>
 		static void Run(IEditor editor, ILine line, Operation operation, bool right, bool alt)
 		{
+			var regex = right ? Settings.Default.GetRegexRight() : Settings.Default.GetRegexLeft();
 			Point caret = line == null ? editor.Caret : new Point(line.Caret, 0);
 			int iColumn = caret.X;
 			int iLine = caret.Y;
@@ -93,7 +72,7 @@ namespace FarNet.RightControl
 				var text = currentLine.Text;
 
 				int newX = -1;
-				foreach (Match match in Regex.Matches(text))
+				foreach (Match match in regex.Matches(text))
 				{
 					if (right)
 					{

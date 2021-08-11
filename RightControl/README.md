@@ -58,26 +58,36 @@ The module works by commands called from macros associated with keys:
 
 Module settings panel: `[F11] \ FarNet \ Settings \ RightControl`
 
-- `Regex`
+- `RegexLeft`
 
-    A regular expression pattern that defines text break points.
+    This regular expression defines caret stops on moving left.
+
+- `RegexRight`
+
+    This regular expression defines caret stops on moving right.
 
 **Regex examples**
 
-Default pattern. Breaks are very similar to Visual Studio:
+Default patterns. Stops are similar to Visual Studio:
 
     ^ | $ | (?<=\b|\s)\S
+    ^ | $ | (?<=\b|\s)\S
 
-Pattern with breaks similar to Word/WordPad. "_" breaks, too:
+Patterns with stops similar to Word/WordPad (`_` stops, too):
 
     ^ | $ | (?<=\b|\s)\S | (?<=[^_])_ | (?<=_)[^_\s]
+    ^ | $ | (?<=\b|\s)\S | (?<=[^_])_ | (?<=_)[^_\s]
 
-Default pattern with two more breaks: letter case and number breaks:
+Default patterns with two more breaks: letter case and digits:
 
     ^ | $ | (?<=\b|\s)\S | (?<=\p{Ll})\p{Lu} | (?<=\D)\d | (?<=\d)[^\d\s]
+    ^ | $ | (?<=\b|\s)\S | (?<=\p{Ll})\p{Lu} | (?<=\D)\d | (?<=\d)[^\d\s]
 
-The same pattern written with inline comments. All the text below is a valid
-regular expression pattern that can be stored in settings just like that:
+**Notes**
+
+Spaces, tabs and line breaks are ignored in patterns. Specify `\s`, `\ `, `\t`,
+etc. explicitly. Line comments are supported. This multiline text is a valid
+regular expression pattern with comments:
 
 ```
 ^ | $ # start or end of line

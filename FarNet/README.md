@@ -505,19 +505,13 @@ settings panel. The settings panel is uniform for all modules.
 
 **Settings panel**
 
-The module settings panel shows two columns: setting names and values. Use
-`[F4]` in order to edit values in text editors. Editors are not modal, several
-editors can be opened at the same time. Changed values are applied immediately
-and cannot be undone. The settings are saved when the panel closes (`[Esc]`).
+The module settings panel has two columns: setting names and values. Use `[F4]`
+in order to edit the current value in the text editor. The settings are saved
+when the editor text is saved.
 
-In editors consider to save changes before closing. In this case if the text is
-not valid then after an error message on saving the editor stays opened and the
-text can be corrected. It is recommended to exit all settings editors before
-closing the panel.
-
-Default setting names start with "-". Ever edited setting names start with "+".
-To reset selected values to default use `[Del]` or `[F8]` in the panel. Default
-values are not stored in files, they are defined in modules.
+Default settings are shown with "-". Changed settings are shown with "+". To
+reset selected values to default use `[Del]` or `[F8]`. Default settings are
+not stored in files, they are defined in modules.
 
 `[CtrlF11]` in the panel shows default and edited values sorted separately.
 `[CtrlF3]` restores sorting by names.
