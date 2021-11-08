@@ -42,7 +42,7 @@ let sourceText (editor: IEditor) =
     let n = editor.Count
     let lines = Array.zeroCreate n
     for i in 0 .. n - 1 do
-        lines.[i] <- editor.[i].Text
+        lines[i] <- editor[i].Text
     SourceText.ofLines lines
 
 let check (editor: IEditor) =
@@ -71,7 +71,7 @@ let tips (editor: IEditor) =
     use progress = new Progress "Getting tips..."
 
     let caret = editor.Caret
-    let lineStr = editor.[caret.Y].Text
+    let lineStr = editor[caret.Y].Text
 
     match Parser.findLongIdents caret.X lineStr with
     | None -> ()
@@ -96,7 +96,7 @@ let usesInFile (editor: IEditor) =
     use progress = new Progress "Getting uses..."
 
     let caret = editor.Caret
-    let lineStr = editor.[caret.Y].Text
+    let lineStr = editor[caret.Y].Text
 
     match Parser.findLongIdents caret.X lineStr with
     | None -> ()
@@ -126,7 +126,7 @@ let usesInFile (editor: IEditor) =
 
     let strUseLine (x: FSharpSymbolUse) =
         let range = x.Range
-        sprintf "%s(%d,%d): %s" (Path.GetFileName x.FileName) range.StartLine (range.StartColumn + 1) editor.[range.StartLine - 1].Text
+        sprintf "%s(%d,%d): %s" (Path.GetFileName x.FileName) range.StartLine (range.StartColumn + 1) editor[range.StartLine - 1].Text
 
     uses |> menu.ShowItems strUseLine (fun x ->
         let range = x.Range
@@ -140,7 +140,7 @@ let usesInProject (editor: IEditor) =
     editor.Save()
 
     let caret = editor.Caret
-    let lineStr = editor.[caret.Y].Text
+    let lineStr = editor[caret.Y].Text
 
     match Parser.findLongIdents caret.X lineStr with
     | None -> ()
@@ -174,12 +174,12 @@ let usesInProject (editor: IEditor) =
 
     use writer = new StringWriter ()
     for x in uses do
-        let lines = fileLines.[x.FileName]
+        let lines = fileLines[x.FileName]
         let range = x.Range
-        fprintfn writer "%s(%d,%d): %s" x.FileName range.StartLine (range.StartColumn + 1) lines.[range.StartLine - 1]
+        fprintfn writer "%s(%d,%d): %s" x.FileName range.StartLine (range.StartColumn + 1) lines[range.StartLine - 1]
 
     progress.Done ()
-    
+
     showTempText (writer.ToString ()) ("F# Uses " + sym.Symbol.FullName)
 
 let toggleAutoTips (editor: IEditor) =
@@ -198,6 +198,14 @@ let fixComplete word words (ident: PartialLongName) =
     if Array.isEmpty words && ident.LastDotPos.IsNone && "__SOURCE_DIRECTORY__".StartsWith word && word.Length > 0 then
         [| "__SOURCE_DIRECTORY__" |]
     else
+        // amend non-standard identifiers
+        for i in 0 .. words.Length - 1 do
+            let word = words[i]
+            //_211111_g4 case of already quioted, e.g. ``aa-1``
+            if isIdentStr word || word.StartsWith("``") && word.EndsWith("``") then
+                ()
+            else
+                words[i] <- "``" + word + "``"
         words
 
 // https://fsharp.github.io/FSharp.Compiler.Service/editor.html#Getting-auto-complete-lists
@@ -208,14 +216,14 @@ let complete (editor: IEditor) =
 
     // skip out of text
     let caret = editor.Caret
-    let line = editor.[caret.Y]
+    let line = editor[caret.Y]
     if caret.X = 0 || caret.X > line.Length then false
     else
 
     // skip no solid base
     //TODO complete parameters -- x (y, [Tab] -- https://fsharp.github.io/FSharp.Compiler.Service/editor.html#Getting-parameter-information
     let lineStr = line.Text
-    if Char.IsWhiteSpace lineStr.[caret.X - 1] then false
+    if Char.IsWhiteSpace lineStr[caret.X - 1] then false
     else
     let config = editor.MyConfig ()
     let file = editor.FileName
@@ -262,7 +270,7 @@ let completeBy (editor: IEditor) getCompletions =
 
     // skip no solid base
     let lineStr = line.Text
-    if Char.IsWhiteSpace lineStr.[caret - 1] then false else
+    if Char.IsWhiteSpace lineStr[caret - 1] then false else
 
     // parse, skip none
     match Parser.tryCompletions lineStr caret getCompletions with

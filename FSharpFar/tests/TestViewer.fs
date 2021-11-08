@@ -39,7 +39,7 @@ let testModal = async {
 
     do! job {
         Assert.Dialog ()
-        Assert.Equal ("OK", far.Dialog.[1].Text)
+        Assert.Equal ("OK", far.Dialog[1].Text)
     }
     do! Jobs.Keys "Esc"
 

@@ -47,5 +47,5 @@ type PSFar =
         | None ->
             ()
         let! task = Jobs.Job (fun () -> PSFarWorks.invokeScript.Value.Invoke ("param($Script, $Parameters) Start-FarTask $Script @Parameters -AsTask", [| script; parameters2 |]))
-        return! task.[0] :?> Task<obj[]> |> Async.AwaitTask
+        return! task[0] :?> Task<obj[]> |> Async.AwaitTask
     }

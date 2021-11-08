@@ -1,4 +1,3 @@
-
 ## Create a panel with some operations
 
 [TryPanelFSharp.fs](TryPanelFSharp.fs) shows how to program a plugin panel with some operations in F#.
@@ -16,26 +15,54 @@ The sample creates and opens a plugin panel with the following features
     - Use `[Del]`/`[F8]` in order to delete the target items.
     - Answer `OK` in the confirmation dialog.
 
-**Using as a script**
+### Using as a script
 
 From this directory use these commands:
 
     fs: TryPanelFSharp.run ()
     fs: //exec ;; TryPanelFSharp.run ()
 
-These commands are slightly different. The first is rather for development,
-with some interactive output. The second command omits the interactive info.
+The first command is rather for development, with interactive output.
+The second command omits the interactive info.
 
-From any directory use the command with the configuration:
+From any directory use the command with the specified configuration:
 
     fs: //exec with=...\TryPanelFSharp.ini ;; TryPanelFSharp.run ()
 
-**Using as a module**
+### Using as a module
 
-You can compile this sample as a FarNet module right in FSharpFar:
+**Step 1: Add some module code**
+
+FarNet modules must implement at least one module action (menu, command, etc.)
+This sample implements the plugin menu item "TryPanelFSharp" and the command
+"TryPanelFSharp:". They both open a demo panel.
+See [Module.fs](Module.fs).
+
+**Step 2: Configure the output**
+
+In the configuration file specify the output section:
+
+```ini
+[out]
+Module.fs
+--target:library
+--out:%FARHOME%\FarNet\Modules\TryPanelFSharp\TryPanelFSharp.dll
+```
+
+Mind the standard FarNet module location and naming convention:
+the module directory name should be the same as the assembly name.
+
+**Step 3: Build, run, debug**
+
+Use `F11` \ `FSharpFar` \ `Project (fsproj) (VSCode)`
+to generate and open the temp F# project for the FarNet module.
+Use this project in order to edit sources, build, run, debug.
+
+Alternatively, you can build the module by this command:
 
     fs: //compile
 
-Then copy *TryPanelFSharp.dll* to *%FARHOME%/FarNet/Modules/TryPanelFSharp*
-and restart Far Manager. Find the menu item `F11` \ `TryPanelFSharp`.
-It opens the demo panel.
+One way or another, after building start Far Manager.
+Use the menu item `F11` \ `TryPanelFSharp`
+or type the command `TryPanelFSharp:`.
+They both open a demo panel.

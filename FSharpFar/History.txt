@@ -1,6 +1,26 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 FarNet 5.5.2
 
+= 1.16.1 =
+
+Respect the configuration section [out] by the Project commands.
+As a result, you can build, run, debug FarNet modules on the fly.
+
+	Example: https://github.com/nightroman/FarNet/tree/master/FSharpFar/samples/TryPanelFSharp
+
+Engage F# v6 features in samples and tests.
+
+	If you use Visual Studio, 2022 is recommended for working with sources.
+	VS 2019 with the old F# compiler may not recognise some new syntax.
+	(reminder: VS is not needed for running F# script in FSF)
+
+Associate .fsproj with Visual Studio 2022
+
+	On problems with associating .fsproj files with Visual Studio 2022, use this registry tweak:
+
+		HKEY_CLASSES_ROOT\fsproj_auto_file\shell\open\command
+		"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\devenv.exe" "%1"
+
 = 1.16.0 =
 
 F# v6, new features

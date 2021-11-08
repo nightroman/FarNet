@@ -50,8 +50,8 @@ let private reQuit = Regex @"^\s*#quit\b"
 let parse text =
     let matchCommand = reCommand.Match text
     if matchCommand.Success then
-        let commandName = matchCommand.Groups.[1].Value
-        let rest = matchCommand.Groups.[2].Value
+        let commandName = matchCommand.Groups[1].Value
+        let rest = matchCommand.Groups[2].Value
 
         let split = ";;"
         let index = rest.IndexOf split

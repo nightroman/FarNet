@@ -5,7 +5,7 @@ open System
 open System.IO
 
 module private My =
-    let history = HistoryLog (farLocalData + @"\InteractiveHistory.log", 1000);
+    let history = HistoryLog (farLocalData + @"\InteractiveHistory.log", 1000)
     let outputMark1 = "(*("
     let outputMark2 = ")*)"
     let outputMark3 = "(**)"

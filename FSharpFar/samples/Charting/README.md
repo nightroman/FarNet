@@ -29,5 +29,5 @@ The following code automatically chooses the starting method:
 async {
     ...
 }
-|> if fsi.CommandLineArgs.[0].EndsWith(".fsx") then Async.RunSynchronously else Async.Start
+|> if fsi.CommandLineArgs[0].EndsWith(".fsx") then Async.RunSynchronously else Async.Start
 ```

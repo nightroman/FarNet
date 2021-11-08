@@ -21,8 +21,8 @@ Some modules may require specific minimum versions.
 
 Look at the installed programs and find entries like:
 
-- Microsoft Visual C++ 2015-2019 Redistributable (x64)
-- Microsoft Visual C++ 2015-2019 Redistributable (x86)
+- Microsoft Visual C++ 2015-2022 Redistributable (x64)
+- Microsoft Visual C++ 2015-2022 Redistributable (x86)
 
 If they are missing, then install the required.
 

@@ -14,7 +14,7 @@ open FarNet.FSharp
 //
 
 // The psf object, PowerShellFar
-let psf = (PSFar.Invoke "$Psf").[0]
+let psf = (PSFar.Invoke "$Psf")[0]
 
 // The far object, FarNet
 let far = far

@@ -51,7 +51,7 @@ let completeLine (editLine: ILine) replacementIndex replacementLength words =
 
     let word =
         if count = 1 then
-             words.[0]
+             words[0]
         else
             let cursor = far.UI.WindowCursor
             let menu = far.CreateListMenu (X = cursor.X, Y = cursor.Y)
@@ -66,22 +66,20 @@ let completeLine (editLine: ILine) replacementIndex replacementLength words =
                 for word in words do
                     menu.Add word |> ignore
                 if menu.Show () then
-                    menu.Items.[menu.Selected].Text
+                    menu.Items[menu.Selected].Text
                 else
                     null
 
     if isNull word then ()
     else
     // the part being completed, may end with ``
+    //_211111_fs case of existing backticks
     let head = text.Substring (0, replacementIndex)
-    // amend non-standard identifier
     let word =
-        if isIdentStr word then
-            word
-        elif head.EndsWith "``" then
-            word + "``"
+        if head.EndsWith("``") && word.StartsWith("``") then
+            word[2..]
         else
-            "``" + word + "``"
+            word
     let caret = head.Length + word.Length
     editLine.Text <- head + word + text.Substring (replacementIndex + replacementLength)
     editLine.Caret <- caret
@@ -125,6 +123,6 @@ let formatMessage width (text: string) =
     Works.Kit.FormatMessage (list, text, width, Int32.MaxValue, FormatMessageMode.Word)
     use w = new StringWriter ()
     for i in 0 .. list.Count - 2 do
-        w.WriteLine list.[i]
-    w.Write list.[list.Count - 1]
+        w.WriteLine list[i]
+    w.Write list[list.Count - 1]
     w.ToString ()

@@ -45,7 +45,7 @@ let testWizard = async {
     do! Jobs.Keys "Enter"
     do! job {
         Assert.Dialog ()
-        Assert.Equal ("Done", far.Dialog.[0].Text)
+        Assert.Equal ("Done", far.Dialog[0].Text)
     }
 
     // done

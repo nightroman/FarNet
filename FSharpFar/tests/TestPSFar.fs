@@ -12,10 +12,10 @@ let PSCustomObject () =
     let r = PSFar.Invoke """ $Host; [PSCustomObject]@{name='foo'; version='bar'} """
     Assert.Equal(2, r.Length)
 
-    let r1 = r.[0]
+    let r1 = r[0]
     Assert.Equal("System.Management.Automation.Internal.Host.InternalHost", r1.GetType().FullName)
 
-    let r2 = r.[1]
+    let r2 = r[1]
     Assert.Equal("System.Management.Automation.PSObject", r2.GetType().FullName)
 
 // PowerShellFar runspace is designed for advanced uses, for example with
@@ -23,7 +23,7 @@ let PSCustomObject () =
 [<Test>]
 let Runspace () =
     let r1 = PSFar.Runspace
-    let r2 = (PSFar.Invoke "[runspace]::DefaultRunspace").[0]
+    let r2 = (PSFar.Invoke "[runspace]::DefaultRunspace")[0]
     Assert.True(obj.ReferenceEquals(r1, r2))
 
 // Error in async code, ensure it points to the script file.
@@ -32,14 +32,14 @@ let FarTaskError1 = async {
     let! _ = job { return PSFar.Invoke(getFarTask "Case/FarTaskError1.far.ps1") }
     do! Assert.Wait Window.IsDialog
     do! job {
-        Assert.Equal("FarTask error", far.Dialog.[0].Text)
-        Assert.Equal("oops-async", far.Dialog.[1].Text)
+        Assert.Equal("FarTask error", far.Dialog[0].Text)
+        Assert.Equal("oops-async", far.Dialog[1].Text)
     }
     do! Jobs.Keys "Tab Enter"
     do! job {
         Assert.True(Window.IsEditor())
-        Assert.True(far.Editor.[2].Text.Contains("\FarTaskError1.far.ps1:"))
-        Assert.True(far.Editor.[3].Text.Contains("throw 'oops-async'"))
+        Assert.True(far.Editor[2].Text.Contains("\FarTaskError1.far.ps1:"))
+        Assert.True(far.Editor[3].Text.Contains("throw 'oops-async'"))
     }
     do! Jobs.Keys "Esc"
 }
@@ -50,14 +50,14 @@ let FarTaskError2 = async {
     let! _ = job { return PSFar.Invoke(getFarTask "Case/FarTaskError2.far.ps1") }
     do! Assert.Wait Window.IsDialog
     do! job {
-        Assert.Equal("FarTask error", far.Dialog.[0].Text)
-        Assert.Equal("oops-job", far.Dialog.[1].Text)
+        Assert.Equal("FarTask error", far.Dialog[0].Text)
+        Assert.Equal("oops-job", far.Dialog[1].Text)
     }
     do! Jobs.Keys "Tab Enter"
     do! job {
         Assert.True(Window.IsEditor())
-        Assert.True(far.Editor.[2].Text.Contains("\FarTaskError2.far.ps1:"))
-        Assert.True(far.Editor.[3].Text.Contains("throw 'oops-job'"))
+        Assert.True(far.Editor[2].Text.Contains("\FarTaskError2.far.ps1:"))
+        Assert.True(far.Editor[3].Text.Contains("throw 'oops-job'"))
     }
     do! Jobs.Keys "Esc"
 }
@@ -68,14 +68,14 @@ let FarTaskError3 = async {
     let! _ = job { return PSFar.Invoke(getFarTask "Case/FarTaskError3.far.ps1") }
     do! Assert.Wait Window.IsDialog
     do! job {
-        Assert.Equal("FarTask error", far.Dialog.[0].Text)
-        Assert.Equal("oops-ps:", far.Dialog.[1].Text)
+        Assert.Equal("FarTask error", far.Dialog[0].Text)
+        Assert.Equal("oops-ps:", far.Dialog[1].Text)
     }
     do! Jobs.Keys "Tab Enter"
     do! job {
         Assert.True(Window.IsEditor())
-        Assert.True(far.Editor.[2].Text.Contains("\FarTaskError3.far.ps1:"))
-        Assert.True(far.Editor.[3].Text.Contains("throw 'oops-ps:'"))
+        Assert.True(far.Editor[2].Text.Contains("\FarTaskError3.far.ps1:"))
+        Assert.True(far.Editor[3].Text.Contains("throw 'oops-ps:'"))
     }
     do! Jobs.Keys "Esc"
 }
@@ -86,14 +86,14 @@ let FarTaskError4 = async {
     let! _ = job { return PSFar.Invoke(getFarTask "Case/FarTaskError4.far.ps1") }
     do! Assert.Wait Window.IsDialog
     do! job {
-        Assert.Equal("FarTask error", far.Dialog.[0].Text)
-        Assert.Equal("oops-run-before", far.Dialog.[1].Text)
+        Assert.Equal("FarTask error", far.Dialog[0].Text)
+        Assert.Equal("oops-run-before", far.Dialog[1].Text)
     }
     do! Jobs.Keys "Tab Enter"
     do! job {
         Assert.True(Window.IsEditor())
-        Assert.True(far.Editor.[2].Text.Contains("\FarTaskError4.far.ps1:"))
-        Assert.True(far.Editor.[3].Text.Contains("throw 'oops-run-before'"))
+        Assert.True(far.Editor[2].Text.Contains("\FarTaskError4.far.ps1:"))
+        Assert.True(far.Editor[3].Text.Contains("throw 'oops-run-before'"))
     }
     do! Jobs.Keys "Esc"
 }
@@ -102,18 +102,18 @@ let FarTaskError4 = async {
 [<Test>]
 let FarTaskError5 = async {
     let! _ = job { return PSFar.Invoke(getFarTask "Case/FarTaskError5.far.ps1") }
-    do! Assert.Wait (fun()-> Window.IsDialog() && far.Dialog.[1].Text = "working")
+    do! Assert.Wait (fun()-> Window.IsDialog() && far.Dialog[1].Text = "working")
     do! Jobs.Keys "Esc"
     do! job {
         Assert.True(Window.IsDialog())
-        Assert.Equal("System.Management.Automation.RuntimeException", far.Dialog.[0].Text)
-        Assert.Equal("oops-run-after", far.Dialog.[1].Text)
+        Assert.Equal("System.Management.Automation.RuntimeException", far.Dialog[0].Text)
+        Assert.Equal("oops-run-after", far.Dialog[1].Text)
     }
     do! Jobs.Keys "Tab Enter"
     do! job {
         Assert.True(Window.IsEditor())
-        Assert.True(far.Editor.[2].Text.Contains("\FarTaskError5.far.ps1:"))
-        Assert.True(far.Editor.[3].Text.Contains("throw 'oops-run-after'"))
+        Assert.True(far.Editor[2].Text.Contains("\FarTaskError5.far.ps1:"))
+        Assert.True(far.Editor[3].Text.Contains("throw 'oops-run-after'"))
     }
     do! Jobs.Keys "Esc"
 }
@@ -123,8 +123,8 @@ let FarTaskError5 = async {
 let StartTaskCode = async {
     let! res = PSFar.StartTask("1; $null")
     Assert.Equal(2, res.Length)
-    Assert.Equal(1, res.[0] :?> int)
-    Assert.Null(res.[1])
+    Assert.Equal(1, res[0] :?> int)
+    Assert.Null(res[1])
 }
 
 // This job calls [FarNet.Tasks]::Job<Action>, i.e. by default it's Action for
@@ -141,7 +141,7 @@ let TaskJobActionNull = async {
 let TaskJobFuncInt = async {
     let! res = PSFar.StartTask("job { [FarNet.Tasks]::Job(([System.Func[int]]{42})) }")
     Assert.Equal(1, res.Length)
-    Assert.Equal(42, res.[0] :?> int)
+    Assert.Equal(42, res[0] :?> int)
 }
 
 // Scenario: cancel -> result is null
@@ -151,13 +151,13 @@ let DialogNonModalInput1 = async {
     let! complete = PSFar.StartTask(getFarTask "DialogNonModalInput.fas.ps1") |> Async.StartChild
     do! Assert.Wait Window.IsDialog
     do! job {
-        Assert.Equal("_201123_rz", far.Dialog.[0].Text)
+        Assert.Equal("_201123_rz", far.Dialog[0].Text)
     }
     do! Jobs.Keys "Esc"
 
     // result is null
     let! r = complete
-    Assert.Null(r.[0])
+    Assert.Null(r[0])
 }
 
 // Scenario: enter "bar" -> result is "bar"
@@ -167,17 +167,17 @@ let DialogNonModalInput2 = async {
     let! complete = PSFar.StartTask(getFarTask "DialogNonModalInput.fas.ps1") |> Async.StartChild
     do! Assert.Wait Window.IsDialog
     do! job {
-        Assert.Equal("_201123_rz", far.Dialog.[0].Text)
+        Assert.Equal("_201123_rz", far.Dialog[0].Text)
     }
     do! Jobs.Keys "b a r Enter"
 
     // message with "bar"
-    do! Assert.Wait (fun()-> Window.IsDialog() && far.Dialog.[1].Text = "bar")
+    do! Assert.Wait (fun()-> Window.IsDialog() && far.Dialog[1].Text = "bar")
     do! Jobs.Keys "Esc"
 
     // result is "bar"
     let! r = complete
-    Assert.Equal("bar", r.[0] :?> string)
+    Assert.Equal("bar", r[0] :?> string)
 }
 
 // Scenario: input box -> non-modal editor -> message box -> task result
@@ -186,19 +186,19 @@ let InputEditorMessage = async {
     let! complete = PSFar.StartTask(getFarTask "InputEditorMessage.fas.ps1") |> Async.StartChild
     do! Assert.Wait Window.IsDialog
     do! job {
-        Assert.Equal("Hello async world", far.Dialog.[2].Text)
+        Assert.Equal("Hello async world", far.Dialog[2].Text)
     }
     do! Jobs.Keys "f o o Enter"
 
-    do! Assert.Wait (fun()-> Window.IsEditor() && far.Editor.[0].Text = "foo")
+    do! Assert.Wait (fun()-> Window.IsEditor() && far.Editor[0].Text = "foo")
     do! Jobs.Keys "CtrlA b a r F2 Esc"
 
-    do! Assert.Wait (fun()-> Window.IsDialog() && far.Dialog.[1].Text = "bar")
+    do! Assert.Wait (fun()-> Window.IsDialog() && far.Dialog[1].Text = "bar")
     do! Jobs.Keys "CtrlA b a r F2 Esc"
 
     // result is "bar"
     let! r = complete
-    Assert.Equal("bar", r.[0] :?> string)
+    Assert.Equal("bar", r[0] :?> string)
 }
 
 [<Test>]
@@ -206,7 +206,7 @@ let ParametersScriptBlock = async {
     do! job { PSFar.Invoke(getFarTask "Parameters.far.ps1") |> ignore }
     do! Assert.Wait Window.IsDialog
     do! job {
-        Assert.Equal("hello world", far.Dialog.[1].Text)
+        Assert.Equal("hello world", far.Dialog[1].Text)
     }
     do! Jobs.Keys "Esc"
 }
@@ -221,7 +221,7 @@ let ParametersScriptFile = async {
         |> Async.StartChild
     do! Assert.Wait Window.IsDialog
     do! job {
-        Assert.Equal("hi there", far.Dialog.[1].Text)
+        Assert.Equal("hi there", far.Dialog[1].Text)
     }
     do! Jobs.Keys "Esc"
 }
@@ -235,8 +235,8 @@ let AssertFar = async {
     // job 1 shows Assert-Far dialog
     do! Assert.Wait Window.IsDialog
     do! job {
-        Assert.Equal("Assert-Far", far.Dialog.[0].Text)
-        Assert.True(far.Dialog.[3].Text.Contains("{Assert-Far 0}"))
+        Assert.Equal("Assert-Far", far.Dialog[0].Text)
+        Assert.True(far.Dialog[3].Text.Contains("{Assert-Far 0}"))
     }
 
     // press [Break]
@@ -275,31 +275,31 @@ let KeysAndMacro = async {
     do! PSFar.StartTask(getFarTask "KeysAndMacro.fas.ps1", ["Confirm", box true]) |> Async.StartChild |> Async.Ignore
 
     // assert panels
-    do! Assert.Wait (fun()-> Window.IsDialog() && far.Dialog.[0].Text = "job")
+    do! Assert.Wait (fun()-> Window.IsDialog() && far.Dialog[0].Text = "job")
     do! Jobs.Keys "Enter"
 
     // keys CtrlG
-    do! Assert.Wait (fun()-> Window.IsDialog() && far.Dialog.[0].Text = "keys")
+    do! Assert.Wait (fun()-> Window.IsDialog() && far.Dialog[0].Text = "keys")
     do! Jobs.Keys "Enter"
 
     // assert dialog
-    do! Assert.Wait (fun()-> Window.IsDialog() && far.Dialog.[0].Text = "job")
+    do! Assert.Wait (fun()-> Window.IsDialog() && far.Dialog[0].Text = "job")
     do! Jobs.Keys "Enter"
 
     // macro cls
-    do! Assert.Wait (fun()-> Window.IsDialog() && far.Dialog.[0].Text = "macro")
+    do! Assert.Wait (fun()-> Window.IsDialog() && far.Dialog[0].Text = "macro")
     do! Jobs.Keys "Enter"
 
     // assert text
-    do! Assert.Wait (fun()-> Window.IsDialog() && far.Dialog.[0].Text = "job")
+    do! Assert.Wait (fun()-> Window.IsDialog() && far.Dialog[0].Text = "job")
     do! Jobs.Keys "Enter"
 
     //! keys Enter, cancel ~ avoid `cls`
-    do! Assert.Wait (fun()-> Window.IsDialog() && far.Dialog.[0].Text = "keys")
+    do! Assert.Wait (fun()-> Window.IsDialog() && far.Dialog[0].Text = "keys")
     do! Jobs.Keys "Esc"
 
     // Apply command
-    do! Assert.Wait (fun()-> Window.IsDialog() && far.Dialog.[0].Text = "Apply command")
+    do! Assert.Wait (fun()-> Window.IsDialog() && far.Dialog[0].Text = "Apply command")
     do! Jobs.Keys "Esc"
     do! Assert.Wait Window.IsNativePanel
 }

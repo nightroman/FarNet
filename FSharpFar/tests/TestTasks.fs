@@ -28,12 +28,12 @@ let testTasks = async {
 
     // message box
     do! Assert.Wait Window.IsDialog
-    do! job { Assert.Equal("Action", far.Dialog.[1].Text) }
+    do! job { Assert.Equal("Action", far.Dialog[1].Text) }
     do! Jobs.Keys "Esc"
 
     // input box, enter "bar"
     do! Assert.Wait Window.IsDialog
-    do! job { Assert.Equal("Function", far.Dialog.[1].Text) }
+    do! job { Assert.Equal("Function", far.Dialog[1].Text) }
     do! Jobs.Keys "b a r Enter"
 
     // editor, exit
@@ -70,6 +70,6 @@ let testEditText = async {
     do! Jobs.Keys "$ x = 1 F2 Esc"
 
     // select all, type $x=2, save, exit
-    do! Assert.Wait (fun() -> Window.IsEditor() && far.Editor.[0].Text = "$x=2")
+    do! Assert.Wait (fun() -> Window.IsEditor() && far.Editor[0].Text = "$x=2")
     do! Jobs.Keys "CtrlA $ x = 3 F2 Esc"
 }

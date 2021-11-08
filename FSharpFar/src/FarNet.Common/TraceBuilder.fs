@@ -38,7 +38,7 @@ type TraceBuilder () =
         if line > text.Length then
             printfn "%A" value
         else
-            printfn "%A ~ %s ~ %s:%i" value (text.[line - 1].Trim()) path line
+            printfn "%A ~ %s ~ %s:%i" value (text[line - 1].Trim()) path line
 
 /// Creates `trace {}` block with tracing `yield`, including implicit.
 /// Yields print values with source line, file path, and line number.

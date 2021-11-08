@@ -38,13 +38,13 @@ module Config =
         let line = line.Trim ()
         if line.Length = 0 then
             EmptyLine
-        elif line.[0] = ';' then
+        elif line[0] = ';' then
             CommentLine
-        elif line.[0] = '[' then
+        elif line[0] = '[' then
             if not (line.EndsWith "]") then
                 invalidOp "Invalid section, expected '[...]'."
             SectionLine (line.Substring(1, line.Length - 2).Trim ())
-        elif line.[0] <> '-' then
+        elif line[0] <> '-' then
             ValueLine line
         else
             let i = line.IndexOf ':'
@@ -59,7 +59,7 @@ module Config =
         match key with
         | "-r" | "--reference" ->
             // resolve a path only if it starts with "." else keep it, e.g. `-r:System.Management.Automation`
-            if value.[0] = '.' then
+            if value[0] = '.' then
                 Path.GetFullPath (Path.Combine (root, value))
             else
                 value
@@ -191,9 +191,9 @@ module Config =
         let files = Directory.GetFiles (dir, "*.fs.ini")
         match files.Length with
         | 1 ->
-            Some files.[0]
+            Some files[0]
         | 0 ->
             None
         | _ ->
             Array.Sort (files, StringComparer.OrdinalIgnoreCase)
-            Some files.[0]
+            Some files[0]

@@ -6,15 +6,15 @@ open FarNet.FSharp
 let testDialogOverDialog = async {
     // dialog 1
     do! run { far.Message "testDialogOverDialog_1" }
-    do! job { Assert.Equal("testDialogOverDialog_1", far.Dialog.[1].Text) }
+    do! job { Assert.Equal("testDialogOverDialog_1", far.Dialog[1].Text) }
 
     // dialog 2 on top of 1
     do! run { far.Message "testDialogOverDialog_2" }
-    do! job { Assert.Equal("testDialogOverDialog_2", far.Dialog.[1].Text) }
+    do! job { Assert.Equal("testDialogOverDialog_2", far.Dialog[1].Text) }
 
     // exit 2
     do! Jobs.Keys "Esc"
-    do! job { Assert.Equal("testDialogOverDialog_1", far.Dialog.[1].Text) }
+    do! job { Assert.Equal("testDialogOverDialog_1", far.Dialog[1].Text) }
 
     // exit 1
     do! Jobs.Keys "Esc"
@@ -25,7 +25,7 @@ let testDialogOverDialog = async {
 let testEditorOverDialog = async {
     // dialog
     do! run { far.Message "testEditorOverDialog" }
-    do! job { Assert.Equal("testEditorOverDialog", far.Dialog.[1].Text) }
+    do! job { Assert.Equal("testEditorOverDialog", far.Dialog[1].Text) }
 
     // editor
     do! run {
@@ -59,13 +59,13 @@ let testModalEditorIssue = async {
     |> Jobs.StartImmediate
 
     // nasty Far message -> `wait`, not `test`
-    do! Assert.Wait (fun () -> Window.IsDialog () && far.Dialog.[1].Text = "It is impossible to edit the folder")
+    do! Assert.Wait (fun () -> Window.IsDialog () && far.Dialog[1].Text = "It is impossible to edit the folder")
     do! Jobs.Keys "Esc"
 
     // posted error
     do! job {
         Assert.Dialog ()
-        Assert.Equal ("InvalidOperationException", far.Dialog.[0].Text)
+        Assert.Equal ("InvalidOperationException", far.Dialog[0].Text)
     }
     do! Jobs.Keys "Esc"
 

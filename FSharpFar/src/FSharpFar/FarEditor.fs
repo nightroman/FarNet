@@ -140,7 +140,7 @@ type FarEditor () =
                     if e.Mouse.Is () then
                         let pos = editor.ConvertPointScreenToEditor e.Mouse.Where
                         if pos.Y < editor.Count then
-                            let line = editor.[pos.Y]
+                            let line = editor[pos.Y]
                             if pos.X < line.Length then
                                 Move {Text = line.Text; Index = pos.Y; Column = pos.X}
                             else Noop

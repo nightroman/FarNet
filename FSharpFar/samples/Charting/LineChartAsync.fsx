@@ -1,4 +1,3 @@
-
 #r "System.Windows.Forms.DataVisualization.dll"
 #load "LineChart.fs"
 open LineChart
@@ -11,4 +10,4 @@ let data = [
 let form = new LineChartForm ("sin", data)
 
 async { form.ShowDialog() |> ignore }
-|> if fsi.CommandLineArgs.[0].EndsWith(".fsx") then Async.RunSynchronously else Async.Start
+|> if fsi.CommandLineArgs[0].EndsWith(".fsx") then Async.RunSynchronously else Async.Start

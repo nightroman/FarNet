@@ -35,14 +35,14 @@ let testEmpty = async {
     do! Jobs.Keys "Enter"
     do! job {
         Assert.Dialog ()
-        Assert.Equal ("", far.Dialog.[0].Text)
+        Assert.Equal ("", far.Dialog[0].Text)
     }
 
     // cancel
     do! Jobs.Keys "Esc"
     do! job {
         Assert.Dialog ()
-        Assert.Equal ("cancel", far.Dialog.[1].Text)
+        Assert.Equal ("cancel", far.Dialog[1].Text)
     }
 
     do! Jobs.Keys "Esc"
@@ -58,7 +58,7 @@ let testItem1 = async {
     do! Jobs.Keys "CtrlDown Enter Enter"
     do! job {
         Assert.Dialog ()
-        Assert.Equal ("item1", far.Dialog.[1].Text)
+        Assert.Equal ("item1", far.Dialog[1].Text)
     }
 
     do! Jobs.Keys "Esc"

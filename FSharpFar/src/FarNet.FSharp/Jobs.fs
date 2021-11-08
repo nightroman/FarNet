@@ -54,22 +54,22 @@ type Jobs =
 
     /// Opens the panel and waits until it is opened (FarNet.Tasks.OpenPanel).
     static member OpenPanel (panel: Panel) = async {
-        do! Tasks.OpenPanel(panel) |> Async.AwaitTask;
+        do! Tasks.OpenPanel(panel) |> Async.AwaitTask
     }
 
     /// Posts the job which opens a panel, waits until the panel is opened, returns the panel (FarNet.Tasks.OpenPanel).
     static member OpenPanel (job: unit -> unit) = async {
-        return! Tasks.OpenPanel(job) |> Async.AwaitTask;
+        return! Tasks.OpenPanel(job) |> Async.AwaitTask
     }
 
     /// Waits until the specified panel is closed (FarNet.Tasks.WaitPanelClosed).
     static member WaitPanelClosed (panel: Panel) = async {
-        do! Tasks.WaitPanelClosed(panel) |> Async.AwaitTask;
+        do! Tasks.WaitPanelClosed(panel) |> Async.AwaitTask
     }
 
     /// Waits until the panel is closed with the specified closing job and gets the closing result (FarNet.Tasks.WaitPanelClosing).
     static member WaitPanelClosing (panel: Panel, closing: PanelEventArgs -> 't) = async {
-        return! Tasks.WaitPanelClosing(panel, Func<PanelEventArgs, 't> closing) |> Async.AwaitTask;
+        return! Tasks.WaitPanelClosing(panel, Func<PanelEventArgs, 't> closing) |> Async.AwaitTask
     }
 
     /// Opens the panel and waits until it is closed (FarNet.Tasks.Panel).
@@ -97,7 +97,7 @@ type Jobs =
     // _201221_2o This helps to reveal bugs. When our catch is not called
     // unexpectedly then the core error dialog is shown, a bit different.
     static member PostShowError (exn: exn) =
-        let exn = Works.Kit.UnwrapAggregateException exn;
+        let exn = Works.Kit.UnwrapAggregateException exn
         far.PostJob (fun () -> far.ShowError (exn.GetType().Name, exn))
 
     static member private CatchShowError job = async {

@@ -24,7 +24,7 @@ let testWaitPanelClosing = async {
     do! Jobs.Keys "Down Down Esc"
     do! job {
         Assert.Dialog ()
-        Assert.Equal ("seq [12]", far.Dialog.[1].Text)
+        Assert.Equal ("seq [12]", far.Dialog[1].Text)
     }
     do! Jobs.Keys "Esc"
     do! job { Assert.NativePanel () }
@@ -49,7 +49,7 @@ let testWaitPanelClosed = async {
     do! Jobs.Keys "Esc"
     do! job {
         Assert.Dialog ()
-        Assert.Equal ("OK", far.Dialog.[1].Text)
+        Assert.Equal ("OK", far.Dialog[1].Text)
     }
     do! Jobs.Keys "Esc"
     do! job { Assert.NativePanel () }
@@ -66,8 +66,8 @@ let testOpenPanelFails = async {
     Jobs.Start workOpenPanelFails
     do! Assert.Wait Window.IsDialog
     do! job {
-        Assert.Equal ("InvalidOperationException", far.Dialog.[0].Text)
-        Assert.Equal ("Panel was not opened.", far.Dialog.[1].Text)
+        Assert.Equal ("InvalidOperationException", far.Dialog[0].Text)
+        Assert.Equal ("Panel was not opened.", far.Dialog[1].Text)
     }
     do! Jobs.Keys "Esc"
     do! job { Assert.NativePanel () }

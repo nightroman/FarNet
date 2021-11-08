@@ -39,24 +39,17 @@ F# or anything else does not have to be installed.
 As a result, you get the complete F# scripting portable with Far Manager. \
 Use it with Far Manager by FSharpFar or without Far Manager by fsx.exe.
 
-**Enable #r "nuget: ..."**
-
-The new F# 5 feature `#r "nuget: ..."` does not work right out of the box.
-You need Visual Studio installed and the environment variable `VSAPPIDDIR` set (use your actual path):
-
-    VSAPPIDDIR=C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\
-
 **Improve performance**
 
 You may reduce loading times of FarNet assemblies, especially FSharpFar and fsx.exe,
-by the following PowerShell commands using [Invoke-Ngen.ps1](https://www.powershellgallery.com/packages/Invoke-Ngen)
+by these PowerShell commands using [Invoke-Ngen.ps1](https://www.powershellgallery.com/packages/Invoke-Ngen)
 
 ```powershell
 # get the script once
 Install-Script Invoke-Ngen
 
 # run after updates
-Invoke-Ngen -Directory <far-home> -Recurse
+Invoke-Ngen -Directory $env:FARHOME -Recurse
 ```
 
 ***
@@ -223,8 +216,8 @@ the main configuration is used: *%FARPROFILE%\FarNet\FSharpFar\main.fs.ini*.
 Source file services use configuration files in source directories.
 If they are not found then the main configuration is used.
 
-In commands with configurations (`fs: //... with=...`), instead of the
-configuration file you may specify its directory.
+In commands with configurations (`fs: //... with=...`)
+you may specify configuration directory instead of file.
 
 If you change configurations in Far Manager editors then affected sessions are closed automatically. \
 If you change them externally then you may need to reset affected sessions manually.
@@ -257,6 +250,34 @@ File1.fs
 File2.fs
 ```
 
+**`[out]`**
+
+This section defines options for `fs: //compile`, like `-a`, `--target`, `-o|--out`.
+It is also used by [Projects](#projects) commands, e.g. for making FarNet modules.
+
+Example: [TryPanelFSharp] - how to make FarNet modules from sources.
+
+```ini
+; Build FarNet module TryPanelFSharp
+[out]
+--target:library
+--out:%FARHOME%\FarNet\Modules\TryPanelFSharp\TryPanelFSharp.dll
+```
+
+The output section is not needed if you are not compiling assemblies.
+
+**`[use]`**
+
+This section tells to include other configuration files, one per line, using
+relative or absolute paths. Thus, the current session may be easily composed
+from existing "projects" with some additional settings and files.
+
+```ini
+; Use the main configuration in this configuration
+[use]
+%FARPROFILE%\FarNet\FSharpFar\main.fs.ini
+```
+
 **`[fsi]`**
 
 This section defines [F# Interactive Options] and source files used for
@@ -277,30 +298,6 @@ and variables.
 This section defines options for "Editor Tips and Checks", hence the name.
 It is useful in some cases, e.g. `--define:DEBUG` is used in `[etc]` for
 tips and checks in `#if DEBUG` code blocks.
-
-**`[out]`**
-
-This section defines options for `fs: //compile`, like `-a`, `--target`, `-o|--out`.
-It is not needed if you are not compiling assemblies.
-
-```ini
-; Build the class library MyLib.dll
-[out]
--a
--o:MyLib.dll
-```
-
-**`[use]`**
-
-This section tells to include other configuration files, one per line, using
-relative or absolute paths. Thus, the current session may be easily composed
-from existing "projects" with some additional settings and files.
-
-```ini
-; Use the main configuration in this configuration
-[use]
-%FARPROFILE%\FarNet\FSharpFar\main.fs.ini
-```
 
 ### Preprocessing
 
@@ -377,8 +374,14 @@ files and open it by the associated program (usually Visual Studio) or by
 VSCode (ensure `code.cmd` is in the path and the VSCode F# extension is
 installed).
 
-Generated projects are not for building but for working with sources using
-powerful development environments. You may build to make sure everything is
+If the configuration specifies the output section, the generated project is
+configured accordingly. This may be effectively used for building, running,
+and debugging FarNet modules from sources.
+
+Example: [TryPanelFSharp] - how to make FarNet modules from sources.
+
+Without the configured output generated projects are still useful for working
+with sources using powerful IDE. You may build to make sure everything is
 correct but normally code checkers show errors quite well without building.
 Edit your files, save, switch to Far Manager (no restart needed), and run
 changed scripts.
@@ -387,12 +390,21 @@ Generated projects include:
 
 - References to *FarNet* and *FSharpFar* assemblies.
 - References to assemblies in the `[fsc]` section.
-- Main `*.fs` source files in the `[fsc]` section.
+- `*.fs` source files in `[fsc]` and `[out]`.
 - Other `*.fs` files in the current panel.
 - `*.fsx` scripts in the current panel.
 
 Generated projects are `%TEMP%\_Project-X\Y.fsproj` where X and Y are
 based on configuration file name and directory and X includes some hash.
+
+**Associate .fsproj with Visual Studio 2022**
+
+On problems with associating .fsproj files with Visual Studio 2022, use this registry tweak:
+
+```
+HKEY_CLASSES_ROOT\fsproj_auto_file\shell\open\command
+"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\devenv.exe" "%1"
+```
 
 ***
 ## Interactive
@@ -561,17 +573,23 @@ Macro {
 }
 ```
 
+**Scripts debugging**
+
+For debugging, use temporary FarNet modules, see [Projects](#projects).
+
+> FSharp.Compiler.Service stopped supporting script debugging (38.0+).
+
 ***
 ## Using fsx.exe tool
 
-The included `fsx.exe` may be used like F# official `fsi.exe` for running
-scripts and interactive without Far Manager.
+The included `fsx.exe` may be used for running
+scripts or interactive sessions without Far Manager.
 
 `fsx.exe` does not depend on FarNet, FSharpFar, and Far Manager.
 It just uses F# services installed with FSharpFar.
 
-`fsx.exe` supports `*.fs.ini` configurations and includes minor
-interactive improvements.
+Comparing to the official F# interactive, `fsx.exe` supports `*.fs.ini`
+configurations and includes minor interactive improvements.
 
 **Usage**
 

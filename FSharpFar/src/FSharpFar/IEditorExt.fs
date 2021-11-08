@@ -14,13 +14,13 @@ module private Key =
 
 type IEditor with
     member private x.GetOpt<'T> (key) =
-        match x.Data.[key] with
+        match x.Data[key] with
         | null -> None
         | data -> Some (data :?> 'T)
 
     member private x.SetOpt (key, value) =
         match value with
-        | Some v -> x.Data.[key] <- v
+        | Some v -> x.Data[key] <- v
         | _ -> x.Data.Remove key
 
     member x.MySession

@@ -14,8 +14,8 @@ let testFuncError = async {
     Jobs.StartImmediate workFuncError
     do! Assert.Wait (fun () ->
         Window.IsDialog ()
-        && far.Dialog.[0].Text = "Exception"
-        && far.Dialog.[1].Text = "demo-error")
+        && far.Dialog[0].Text = "Exception"
+        && far.Dialog[1].Text = "demo-error")
     do! Jobs.Keys "Esc"
     do! job { Assert.NativePanel () }
 }
@@ -32,9 +32,9 @@ let testMacroError = async {
     Jobs.StartImmediate workMacroError
     do! Assert.Wait (fun () ->
         Window.IsDialog ()
-        && far.Dialog.[0].Text = "ArgumentException"
-        && far.Dialog.[3].Text = "Macro: bar"
-        && far.Dialog.[4].Text = "Parameter name: macro")
+        && far.Dialog[0].Text = "ArgumentException"
+        && far.Dialog[3].Text = "Macro: bar"
+        && far.Dialog[4].Text = "Parameter name: macro")
     do! Jobs.Keys "Esc"
     do! job { Assert.NativePanel () }
 }

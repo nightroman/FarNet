@@ -7,11 +7,11 @@ open System.IO
 /// fsx is either invoked .fsx or the last of .fs|--use|--load files.
 let parseCommandLineArgs (args: string[]) =
     // [0] - app.exe
-    let exe = args.[0]
+    let exe = args[0]
 
     // [1] ~ .ini? done
-    if args.Length > 1 && args.[1].EndsWith(".ini", StringComparison.OrdinalIgnoreCase) then
-        exe, Some args.[1], None, Array.skip 2 args
+    if args.Length > 1 && args[1].EndsWith(".ini", StringComparison.OrdinalIgnoreCase) then
+        exe, Some args[1], None, Array.skip 2 args
     else
 
     let mutable i = 1
@@ -20,7 +20,7 @@ let parseCommandLineArgs (args: string[]) =
     let mutable keepParsing = true
 
     while keepParsing && i < args.Length do
-        let x = args.[i]
+        let x = args[i]
         i <- i + 1
 
         //| source file

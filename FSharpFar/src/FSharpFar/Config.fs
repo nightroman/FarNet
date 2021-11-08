@@ -118,6 +118,23 @@ module Config =
         // Works just for VS and MSBuild. Well, at least VS is happy.
         addProperty "AssemblySearchPaths" "$(AssemblySearchPaths);{GAC}"
 
+        // respect output
+        config.OutArgs
+        |> Array.tryPick (fun x ->
+            if x.StartsWith("--out:") then
+                Some x[6..]
+            else if x.StartsWith("-o:") then
+                Some x[3..]
+            else
+                None
+        )
+        |> function
+        | None ->
+            ()
+        | Some output ->
+            addProperty "OutDir" (Path.GetDirectoryName(output))
+            addProperty "AssemblyName" (Path.GetFileNameWithoutExtension(output))
+
         do
             let flags = ResizeArray ()
 

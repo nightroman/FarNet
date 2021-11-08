@@ -7,6 +7,47 @@
 - [FCS issue F# 4.6](https://github.com/fsharp/FSharp.Compiler.Service/issues/884)
 
 ***
+### F# v6, dotnet 6, etc.
+
+#### Outdated package test
+
+    dotnet paket outdated -s
+
+gets
+
+```
+Outdated packages found:
+  Group: Main
+    * Microsoft.Build.Framework 16.11 -> 17.0.0
+    * Microsoft.Build.Tasks.Core 16.11 -> 17.0.0
+    * Microsoft.Build.Utilities.Core 16.11 -> 17.0.0
+    * Microsoft.VisualStudio.Setup.Configuration.Interop 1.16.30 -> 3.0.4492
+    * System.Collections.Immutable 5.0 -> 6.0.0
+    * System.Configuration.ConfigurationManager 5.0 -> 6.0.0
+    * System.Reflection.Metadata 5.0 -> 6.0.0
+    * System.Resources.Extensions 5.0 -> 6.0.0
+    * System.Runtime.CompilerServices.Unsafe 5.0 -> 6.0.0
+    * System.Security.AccessControl 5.0 -> 6.0.0
+    * System.Security.Permissions 5.0 -> 6.0.0
+    * System.Threading.Tasks.Dataflow 5.0 -> 6.0.0
+```
+
+Do not follow. This builds but fails on running (assembly version not found).
+
+Relay on versions used by FSharp.Compiler.Service, see
+
+    C:\ROM\FarDev\Code\FSharpFar\packages\FSharp.Compiler.Service\FSharp.Compiler.Service.nuspec
+
+#### Retire workaround for nuget in scripts
+
+**Enable #r "nuget: ..."**
+
+The new F# 5 feature `#r "nuget: ..."` does not work right out of the box.
+You need Visual Studio installed and the environment variable `VSAPPIDDIR` set (use your actual path):
+
+    VSAPPIDDIR=C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\
+
+***
 ### Trace block `trace{}` vs `Trace.Line`
 
 `Trace.Line`

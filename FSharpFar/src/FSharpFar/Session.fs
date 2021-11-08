@@ -49,7 +49,7 @@ type Session private (configFile) =
 
         let config = Config.readFromFile configFile
         let args = [|
-            yield "fsi.exe" //! dummy ~ fsi.CommandLineArgs.[0]
+            yield "fsi.exe" //! dummy ~ fsi.CommandLineArgs[0]
             yield "--nologo"
             yield "--noninteractive"
             yield! defaultCompilerArgs

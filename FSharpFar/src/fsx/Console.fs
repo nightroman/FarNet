@@ -13,7 +13,7 @@ type internal History() =
     member _.Count = list.Count
 
     member _.Current =
-        if current >= 0 && current < list.Count then list.[current] else String.Empty
+        if current >= 0 && current < list.Count then list[current] else String.Empty
 
     member _.Clear() =
         list.Clear()
@@ -90,7 +90,7 @@ type internal ReadLineConsole() =
     member _.GetOptions(input:string, caret:int) =
         let options = Options()
 
-        if caret = 0 || Char.IsWhiteSpace(input.[caret - 1]) then
+        if caret = 0 || Char.IsWhiteSpace(input[caret - 1]) then
             options, false
         else
 

@@ -23,7 +23,7 @@ let testErrorsOnSaving keys1 (delay: int) keys2 = async {
     // assert error dialog
     do! job {
         Assert.True (Window.IsDialog())
-        Assert.Equal("Cannot set text", far.Dialog.[0].Text)
+        Assert.Equal("Cannot set text", far.Dialog[0].Text)
     }
 
     // exit dialog, wait for the specified time

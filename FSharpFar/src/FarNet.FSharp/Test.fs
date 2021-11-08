@@ -56,12 +56,12 @@ type Test =
 
                         if mi.IsStatic then
                             // module function or type static method
-                            dic.[name1] <- Choice1Of2 (fun () ->
+                            dic[name1] <- Choice1Of2 (fun () ->
                                 mi.Invoke(null, null) |> ignore
                             )
                         else
                             // type instance method
-                            dic.[name1] <- Choice1Of2 (fun () ->
+                            dic[name1] <- Choice1Of2 (fun () ->
                                 let instance = Activator.CreateInstance(mi.DeclaringType)
                                 try
                                     mi.Invoke(instance, null) |> ignore
@@ -72,10 +72,10 @@ type Test =
                         if pi.PropertyType = typeof<Async<unit>> then
                             if pi.GetGetMethod().IsStatic then
                                 // module value or type static property
-                                dic.[name1] <- Choice2Of2 (pi.GetValue(null) :?> Async<unit>)
+                                dic[name1] <- Choice2Of2 (pi.GetValue(null) :?> Async<unit>)
                             else
                                 // type instance property
-                                dic.[name1] <- Choice2Of2 (async {
+                                dic[name1] <- Choice2Of2 (async {
                                     let instance = Activator.CreateInstance(pi.DeclaringType)
                                     try
                                         do! (pi.GetValue(instance) :?> Async<unit>)
@@ -84,9 +84,9 @@ type Test =
                                 })
                         else if pi.PropertyType = typeof<FSharpFunc<unit, unit>> then
                             if pi.GetGetMethod().IsStatic then
-                                dic.[name1] <- Choice1Of2 (pi.GetValue(null) :?> FSharpFunc<unit, unit>)
+                                dic[name1] <- Choice1Of2 (pi.GetValue(null) :?> FSharpFunc<unit, unit>)
                             else
-                                dic.[name1] <- Choice1Of2 (fun () ->
+                                dic[name1] <- Choice1Of2 (fun () ->
                                     let instance = Activator.CreateInstance(pi.DeclaringType)
                                     try
                                         (pi.GetValue(instance) :?> FSharpFunc<unit, unit>)()

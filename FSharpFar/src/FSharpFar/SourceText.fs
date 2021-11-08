@@ -12,16 +12,16 @@ type private LinesSourceText (lines: string []) =
     member val String = str
 
     interface ISourceText with
-        member __.Item with get index = str.[index]
+        member __.Item with get index = str[index]
 
         member __.GetLastCharacterPosition () =
             if lines.Length > 0 then
-                lines.Length, lines.[lines.Length - 1].Length
+                lines.Length, lines[lines.Length - 1].Length
             else
                 0, 0
 
         member __.GetLineString (lineIndex) =
-            lines.[lineIndex]
+            lines[lineIndex]
 
         member __.GetLineCount () =
             lines.Length

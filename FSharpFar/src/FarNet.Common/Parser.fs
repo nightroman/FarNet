@@ -27,7 +27,7 @@ let tryCompletions lineStr caret getCompletions =
     if name.Length = 0 then None else
 
     let name, replacementIndex =
-        if lineStr.[caret - 1] = '.' then
+        if lineStr[caret - 1] = '.' then
             name + ".", caret
         else
             match ident.LastDotPos with
@@ -36,9 +36,6 @@ let tryCompletions lineStr caret getCompletions =
             | None ->
                 name, caret - name.Length
 
-    //_161108_054202
-    let name = name.Replace ("``", "")
-    
     // distinct: Sys[Tab] -> several "System"
     // sort: System.[Tab] -> unsorted
     try

@@ -44,7 +44,7 @@ type private XmlDocMember (elem: XmlElement) =
         if nodes.Count = 0 then
             ""
         else
-            getContent (nodes.[0] :?> XmlElement)
+            getContent (nodes[0] :?> XmlElement)
 
     let getChildren name =
         elem.GetElementsByTagName name
@@ -205,7 +205,7 @@ let format tips full =
             for token in signature do
                 w2.Write token.Text
 
-            let signatureText = w2.ToString ();
+            let signatureText = w2.ToString ()
             signatureText |> formatMessage |> w.WriteLine
 
             if comment.Length > 0 then

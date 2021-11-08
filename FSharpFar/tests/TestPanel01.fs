@@ -18,7 +18,7 @@ let testSkipModal = async {
 
     // exit dialog -> trigger "done" after waiting
     do! Jobs.Keys "Esc"
-    do! Assert.Wait (fun () -> Window.IsDialog () && far.Dialog.[1].Text = "done")
+    do! Assert.Wait (fun () -> Window.IsDialog () && far.Dialog[1].Text = "done")
 
     // exit dialog
     do! Jobs.Keys "Esc"
@@ -35,8 +35,8 @@ let testCannotOpenOnModal = async {
     Jobs.StartImmediate <| Jobs.OpenPanel (MyPanel.panel [])
     do! Assert.Wait (fun () ->
         Window.IsDialog () &&
-        far.Dialog.[0].Text = "ModuleException" &&
-        far.Dialog.[1].Text = "Cannot open panel from modal window."
+        far.Dialog[0].Text = "ModuleException" &&
+        far.Dialog[1].Text = "Cannot open panel from modal window."
     )
 
     // exit two dialogs
