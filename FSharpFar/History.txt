@@ -1,6 +1,12 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 FarNet 5.5.2
 
+= 1.16.2 =
+
+Fix existing (System.Text.Json) and potential assembly conflicts:
+- Amend packaged assemblies (net4* instead of netstandard2.0)
+- Add System.Numerics.Vectors.dll
+
 = 1.16.1 =
 
 Respect the configuration section [out] by the Project commands.

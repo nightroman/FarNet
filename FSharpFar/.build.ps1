@@ -77,6 +77,23 @@ task package markdown, {
 	$toModule = mkdir "z\tools\FarHome\FarNet\Modules\$ModuleName"
 	$fromModule = "$FarHome\FarNet\Modules\$ModuleName"
 
+	# assert module files, to copy all by *
+	$moduleFiles = (Get-ChildItem $fromModule -Name | Out-String).Trim()
+	equals $moduleFiles @'
+FSharp.Compiler.Service.dll
+FSharp.DependencyManager.Nuget.dll
+FSharpFar.dll
+Microsoft.Build.Framework.dll
+Microsoft.Build.Tasks.Core.dll
+Microsoft.Build.Utilities.Core.dll
+System.Buffers.dll
+System.Collections.Immutable.dll
+System.Memory.dll
+System.Numerics.Vectors.dll
+System.Reflection.Metadata.dll
+System.Runtime.CompilerServices.Unsafe.dll
+'@
+
 	# package: logo
 	Copy-Item -Destination z ..\Zoo\FarNetLogo.png
 
@@ -99,20 +116,8 @@ task package markdown, {
 		'README.htm'
 		'History.txt'
 		'..\LICENSE'
-		"$fromModule\FSharp.Compiler.Service.dll"
-		"$fromModule\FSharp.DependencyManager.Nuget.dll"
-		"$fromModule\FSharpFar.dll"
-		"$fromModule\Microsoft.Build.Framework.dll"
-		"$fromModule\Microsoft.Build.Tasks.Core.dll"
-		"$fromModule\Microsoft.Build.Utilities.Core.dll"
-		"$fromModule\System.Buffers.dll"
-		"$fromModule\System.Collections.Immutable.dll"
-		"$fromModule\System.Memory.dll"
-		"$fromModule\System.Reflection.Metadata.dll"
-		"$fromModule\System.Runtime.CompilerServices.Unsafe.dll"
+		"$fromModule\*"
 	)
-	equals 11 ((Get-Item $fromModule\*.dll).Count)
-	equals 11 ((Get-Item $toModule\*.dll).Count)
 }
 
 task nuget package, version, {

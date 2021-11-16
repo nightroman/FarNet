@@ -7,6 +7,43 @@
 - [FCS issue F# 4.6](https://github.com/fsharp/FSharp.Compiler.Service/issues/884)
 
 ***
+### DLL hell System.Text.Json
+
+v1.16.2 - use lib\net4* assemblies if available.
+
+System.Memory (FSharpFar) was netstandard2.0.
+~ System.Numerics.Vectors is take from GAC (C:\Windows\Microsoft.NET\Framework64\v4.0.30319\System.Numerics.Vectors.dll).
+And
+
+    Could not load type 'System.Numerics.Vector`1' from assembly 'System.Numerics.Vectors, Version=4.0.0.0...
+
+Using lib\net* fixed the problem in scripts run by FSharpFar.
+
+But it is not enough for fsx, System.Numerics.Vectors is still taken from GAC.
+Solved by adding System.Numerics.Vectors to FSharpFar.
+
+NB
+Ideas of what's wrong came from using `#r "nuget: System.Text.Json,6.0.0"` in a separate script that worked.
+See generated `C:\TEMP\TEMP\NuGet\*\Project.fsproj.fsx` lines like `-r:...`
+
+NB
+And the proper understanding of wrong loads came from `GetAssemblies.fsx`.
+
+NB
+Still mystery: fsx interactive with `#load "...\1-JsonNode.fsx"` shows
+assemblies loaded from GAC (unlike with FSharpFar).
+
+***
+### v1.16.2 System.Runtime.CompilerServices.Unsafe and System.Buffers
+
+If remove from .config ~ all runs but on editing scripts in Far a red mark is shown at (1,1).
+Hove mouse ~ "cannot find System.Runtime.CompilerServices.Unsafe".
+So keep it at least for smooth editing.
+
+As for System.Buffers, it all starts to fail without it.
+Sure keep it.
+
+***
 ### F# v6, dotnet 6, etc.
 
 #### Outdated package test
