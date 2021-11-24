@@ -34,10 +34,10 @@ let parseCommandLineArgs (args: string[]) =
                 lastSource <- Some x
         //| --use
         else if x.StartsWith("--use:") then
-            lastSource <- Some (x.Substring(6))
+            lastSource <- Some(x.Substring(6))
         //| --load
         else if x.StartsWith("--load:") then
-            lastSource <- Some (x.Substring(7))
+            lastSource <- Some(x.Substring(7))
         //| --
         else if x = "--" then
             keepParsing <- false
@@ -48,7 +48,7 @@ let parseCommandLineArgs (args: string[]) =
 let tryResolveIni ini fsx =
     match ini with
     | Some ini ->
-        Some (Path.GetFullPath(ini))
+        Some(Path.GetFullPath(ini))
     | None ->
         Config.tryFindFileInDirectory (
             match fsx with

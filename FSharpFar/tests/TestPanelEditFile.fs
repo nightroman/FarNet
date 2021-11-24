@@ -10,7 +10,7 @@ let testErrorsOnSaving keys1 (delay: int) keys2 = async {
     // edit file
     do! Jobs.Keys "F4"
     do! job {
-        Assert.True (Window.IsEditor())
+        Assert.True(Window.IsEditor())
         Assert.Equal("Euler's number (e)", far.Editor.Title)
         Assert.Equal("2.71828", far.Editor.GetText())
         Assert.Equal(0, far.Editor.Line.Caret) // used to be not 0 sometimes, _201223_vc
@@ -22,7 +22,7 @@ let testErrorsOnSaving keys1 (delay: int) keys2 = async {
 
     // assert error dialog
     do! job {
-        Assert.True (Window.IsDialog())
+        Assert.True(Window.IsDialog())
         Assert.Equal("Cannot set text", far.Dialog[0].Text)
     }
 
@@ -30,14 +30,14 @@ let testErrorsOnSaving keys1 (delay: int) keys2 = async {
     do! Jobs.Keys "Esc"
     do! Async.Sleep delay
     do! job {
-        Assert.True (Window.IsEditor())
+        Assert.True(Window.IsEditor())
         Assert.Equal(8, far.Editor.Line.Caret)
     }
 
     // exit editor, same Description
     do! Jobs.Keys "Esc"
     do! job {
-        Assert.True (Window.IsModulePanel())
+        Assert.True(Window.IsModulePanel())
         Assert.Equal("2.71828", far.Panel.CurrentFile.Description)
     }
 
@@ -48,7 +48,7 @@ let testErrorsOnSaving keys1 (delay: int) keys2 = async {
 
     // assert updated panel
     do! job {
-        Assert.True (Window.IsModulePanel())
+        Assert.True(Window.IsModulePanel())
         Assert.Equal("2.71", far.Panel.CurrentFile.Description)
     }
 

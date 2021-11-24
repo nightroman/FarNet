@@ -193,17 +193,16 @@ F# script
 
 `fs: //compile [with = <config>]`
 
-Compiles a dll or exe with the specified or default configuration.
-The default should be some existing `*.fs.ini` in the active panel.
+Compiles a library (dll) with the specified or default configuration.
+The default is `*.fs.ini` in the active panel.
 
-Requirements:
+The command is useful for making FarNet modules without installing anything else.
+But it may create any .NET Framework libraries, not just FarNet modules.
 
-- At least one source file must be specified in the configuration.
-- In the `[out]` section specify `{-o|--out}:<dll or exe name>`.
-- To compile a dll, add `-a|--target:library` to `[out]`.
+Configuration requirements:
 
-The main goal is compiling FarNet modules in FSharpFar without installing anything else.
-But this command can compile any .NET assemblies with the specified configuration file.
+- At least one source file must be specified.
+- `[out]` must specify `{-o|--out}:<file.dll>`.
 
 ***
 ## Configuration
@@ -252,7 +251,7 @@ File2.fs
 
 **`[out]`**
 
-This section defines options for `fs: //compile`, like `-a`, `--target`, `-o|--out`.
+This section defines options for `fs: //compile` with `{-o|--out}:<file.dll>` required.
 It is also used by [Projects](#projects) commands, e.g. for making FarNet modules.
 
 Example: [TryPanelFSharp] - how to make FarNet modules from sources.
@@ -260,11 +259,13 @@ Example: [TryPanelFSharp] - how to make FarNet modules from sources.
 ```ini
 ; Build FarNet module TryPanelFSharp
 [out]
---target:library
---out:%FARHOME%\FarNet\Modules\TryPanelFSharp\TryPanelFSharp.dll
+Module.fs
+-o:%FARHOME%\FarNet\Modules\TryPanelFSharp\TryPanelFSharp.dll
 ```
 
-The output section is not needed if you are not compiling assemblies.
+Options `-a` and `--target` are ignored, `--target:library` is always used.
+
+The output section is not needed if you are not compiling libraries.
 
 **`[use]`**
 

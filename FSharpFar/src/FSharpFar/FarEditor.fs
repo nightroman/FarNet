@@ -14,22 +14,22 @@ type MouseMessage =
 | Noop
 | Move of LineArgs
 
-[<ModuleEditor (Name = "FSharpFar", Mask = "*.fs;*.fsx;*.fsscript")>]
+[<ModuleEditor(Name = "FSharpFar", Mask = "*.fs;*.fsx;*.fsscript")>]
 [<Guid "B7916B53-2C17-4086-8F13-5FFCF0D82900">]
-type FarEditor () =
-    inherit ModuleEditor ()
+type FarEditor() =
+    inherit ModuleEditor()
     let mutable editor: IEditor = null
 
-    let jobEditor f = Jobs.FromContinuations (fun (cont, econt, ccont) ->
+    let jobEditor f = Jobs.FromContinuations(fun (cont, econt, ccont) ->
         if editor.IsOpened then
             cont (f ())
         else
-            ccont (OperationCanceledException ())
+            ccont (OperationCanceledException())
     )
 
-    let checkAgent = MailboxProcessor.Start (fun inbox -> async {
+    let checkAgent = MailboxProcessor.Start(fun inbox -> async {
         while true do
-            do! inbox.Receive ()
+            do! inbox.Receive()
             if inbox.CurrentQueueLength > 0 then () else
 
             do! Async.Sleep 1000
@@ -37,7 +37,7 @@ type FarEditor () =
 
             let! text = jobEditor (fun () -> Editor.sourceText editor)
             try
-                let config = editor.MyConfig ()
+                let config = editor.MyConfig()
                 let! check = Checker.check editor.FileName text config
                 editor.MyErrors <-
                     if inbox.CurrentQueueLength > 0 then
@@ -50,9 +50,9 @@ type FarEditor () =
                 Jobs.PostShowError exn
     })
 
-    let mouseAgent = MailboxProcessor.Start (fun inbox -> async {
+    let mouseAgent = MailboxProcessor.Start(fun inbox -> async {
         while true do
-            let! message = inbox.Receive ()
+            let! message = inbox.Receive()
             if inbox.CurrentQueueLength > 0 then () else
 
             match message with
@@ -62,7 +62,7 @@ type FarEditor () =
                 if inbox.CurrentQueueLength > 0 then () else
 
                 let mutable autoTips = editor.MyAutoTips
-                match editor.MyFileErrors () with
+                match editor.MyFileErrors() with
                 | None -> ()
                 | Some errors ->
                     let lines =
@@ -76,7 +76,7 @@ type FarEditor () =
                         |> Array.distinct
                     if lines.Length > 0 then
                         autoTips <- false
-                        let text = String.Join ("\r", lines)
+                        let text = String.Join("\r", lines)
                         do! jobEditor (fun _ -> showText text "Errors")
 
                 if autoTips then
@@ -85,15 +85,15 @@ type FarEditor () =
                     | Some (column, idents) ->
                         let! text = jobEditor (fun () -> Editor.sourceText editor)
                         try
-                            let config = editor.MyConfig ()
+                            let config = editor.MyConfig()
                             let! check = Checker.check editor.FileName text config
-                            let tip = check.CheckResults.GetToolTip (it.Index + 1, column + 1, it.Text, idents, FSharpTokenTag.Identifier)
+                            let tip = check.CheckResults.GetToolTip(it.Index + 1, column + 1, it.Text, idents, FSharpTokenTag.Identifier)
                             let tips = Tips.format tip false
                             if tips.Length > 0 && inbox.CurrentQueueLength = 0 then
                                 do! jobEditor (fun _ ->
-                                    let r = far.Message (tips, "Tips", MessageOptions.LeftAligned, [|"More"; "Close"|])
+                                    let r = far.Message(tips, "Tips", MessageOptions.LeftAligned, [|"More"; "Close"|])
                                     if r = 0 then
-                                        showTempText (Tips.format tip true) (String.Join (".", List.toArray idents))
+                                        showTempText (Tips.format tip true) (String.Join(".", List.toArray idents))
                                 )
                         with exn ->
                             Jobs.PostShowError exn
@@ -101,7 +101,7 @@ type FarEditor () =
 
     let postNoop _ =  mouseAgent.Post Noop
 
-    override __.Invoke (sender, _) =
+    override __.Invoke(sender, _) =
         editor <- sender
         if editor.MySession.IsNone then
 
@@ -110,9 +110,9 @@ type FarEditor () =
 
             editor.KeyDown.Add <| fun e ->
                 match e.Key.VirtualKeyCode with
-                | KeyCode.Tab when e.Key.Is () && not editor.SelectionExists ->
+                | KeyCode.Tab when e.Key.Is() && not editor.SelectionExists ->
                      e.Ignore <- Editor.complete editor
-                | KeyCode.F5 when e.Key.Is () ->
+                | KeyCode.F5 when e.Key.Is() ->
                      Editor.load editor
                      e.Ignore <- true
                 | _ -> ()
@@ -129,15 +129,15 @@ type FarEditor () =
                     editor.MyErrors <- None
 
                 if isAutoCheck then
-                    checkAgent.Post ()
+                    checkAgent.Post()
 
             editor.MouseDoubleClick.Add postNoop
             editor.MouseClick.Add postNoop
             editor.MouseWheel.Add postNoop
 
             editor.MouseMove.Add <| fun e ->
-                mouseAgent.Post (
-                    if e.Mouse.Is () then
+                mouseAgent.Post(
+                    if e.Mouse.Is() then
                         let pos = editor.ConvertPointScreenToEditor e.Mouse.Where
                         if pos.Y < editor.Count then
                             let line = editor[pos.Y]

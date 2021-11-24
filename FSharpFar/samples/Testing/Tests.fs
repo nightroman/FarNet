@@ -34,7 +34,7 @@ let testWithParameter1 = testWithParameter 1
 let testWithParameter2 = testWithParameter 2
 
 /// Use types for groups of tests with common initialization and disposal.
-type Type1 () =
+type Type1() =
     // To test initialization (increment) and disposal (decrement).
     // In each test x must be equal to 1.
     static let mutable x = 0
@@ -51,7 +51,7 @@ type Type1 () =
             x <- x - 1
 
     [<Test>]
-    member __.TestSync () =
+    member __.TestSync() =
         Assert.Equal(1, x)
         printfn "in Type1.TestSync x=%i" x
 

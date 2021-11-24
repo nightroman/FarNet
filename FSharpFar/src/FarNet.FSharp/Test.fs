@@ -17,13 +17,13 @@ open System.Reflection
 
 /// Marks methods and properties designed as tests.
 [<AttributeUsage(AttributeTargets.Method ||| AttributeTargets.Property)>]
-type TestAttribute () =
-    inherit Attribute ()
+type TestAttribute() =
+    inherit Attribute()
 
 /// Test tools.
 [<AbstractClass; Sealed>]
 type Test =
-    static member private GetAssemblyTests (assembly: Assembly) =
+    static member private GetAssemblyTests(assembly: Assembly) =
         let dic = Dictionary()
         for type1 in assembly.GetTypes() do
             for member1 in type1.GetMembers(BindingFlags.Public ||| BindingFlags.NonPublic ||| BindingFlags.Static ||| BindingFlags.Instance) do
@@ -56,12 +56,12 @@ type Test =
 
                         if mi.IsStatic then
                             // module function or type static method
-                            dic[name1] <- Choice1Of2 (fun () ->
+                            dic[name1] <- Choice1Of2(fun () ->
                                 mi.Invoke(null, null) |> ignore
                             )
                         else
                             // type instance method
-                            dic[name1] <- Choice1Of2 (fun () ->
+                            dic[name1] <- Choice1Of2(fun () ->
                                 let instance = Activator.CreateInstance(mi.DeclaringType)
                                 try
                                     mi.Invoke(instance, null) |> ignore
@@ -72,10 +72,10 @@ type Test =
                         if pi.PropertyType = typeof<Async<unit>> then
                             if pi.GetGetMethod().IsStatic then
                                 // module value or type static property
-                                dic[name1] <- Choice2Of2 (pi.GetValue(null) :?> Async<unit>)
+                                dic[name1] <- Choice2Of2(pi.GetValue(null) :?> Async<unit>)
                             else
                                 // type instance property
-                                dic[name1] <- Choice2Of2 (async {
+                                dic[name1] <- Choice2Of2(async {
                                     let instance = Activator.CreateInstance(pi.DeclaringType)
                                     try
                                         do! (pi.GetValue(instance) :?> Async<unit>)
@@ -84,9 +84,9 @@ type Test =
                                 })
                         else if pi.PropertyType = typeof<FSharpFunc<unit, unit>> then
                             if pi.GetGetMethod().IsStatic then
-                                dic[name1] <- Choice1Of2 (pi.GetValue(null) :?> FSharpFunc<unit, unit>)
+                                dic[name1] <- Choice1Of2(pi.GetValue(null) :?> FSharpFunc<unit, unit>)
                             else
-                                dic[name1] <- Choice1Of2 (fun () ->
+                                dic[name1] <- Choice1Of2(fun () ->
                                     let instance = Activator.CreateInstance(pi.DeclaringType)
                                     try
                                         (pi.GetValue(instance) :?> FSharpFunc<unit, unit>)()
@@ -101,14 +101,14 @@ type Test =
 
     /// Gets members with the attribute Test from the interactive assembly types.
     /// It should be called from a script invoked in an interactive session.
-    static member GetTests (?assembly: Assembly) =
+    static member GetTests(?assembly: Assembly) =
         let assembly = defaultArg assembly (Assembly.GetCallingAssembly())
         Test.GetAssemblyTests(assembly)
 
     /// Runs tests available in the calling interactive assembly.
     /// It runs synchronous tests first, then starts asynchronous.
     /// Information about running tests is printed to the console.
-    static member Run (?assembly: Assembly) =
+    static member Run(?assembly: Assembly) =
         let assembly = defaultArg assembly (Assembly.GetCallingAssembly())
         let tests = Test.GetAssemblyTests(assembly)
         let sw = Stopwatch.StartNew()
@@ -120,7 +120,7 @@ type Test =
         for test in tests do
             match test.Value with
             | Choice1Of2 func ->
-                sprintf "fs: %s()" test.Key |> outTest
+                outTest $"fs: {test.Key}()"
                 func ()
             | _ ->
                 ()
@@ -131,14 +131,14 @@ type Test =
                 match test.Value with
                 | Choice2Of2 func ->
                     do! Jobs.Job <| fun () ->
-                        sprintf "fs: test %s" test.Key |> outTest
+                        outTest $"fs: test {test.Key}"
                     do! func
                 | _ ->
                     ()
 
             // summary
             do! Jobs.Job <| fun () ->
-                far.UI.WriteLine(sprintf "Done %i tests %O" tests.Count sw.Elapsed, ConsoleColor.Green)
+                far.UI.WriteLine($"Done {tests.Count} tests {sw.Elapsed}", ConsoleColor.Green)
 
             // exit? (if we have some tests else something is wrong)
             if tests.Count > 0 && Environment.GetEnvironmentVariable("QuitFarAfterTests") = "1" then

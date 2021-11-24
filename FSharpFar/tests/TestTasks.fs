@@ -6,10 +6,10 @@ open System
 /// Use Tasks.Job, Tasks.Job<T>, Tasks.Editor, Tasks.Keys
 let workTasks = async {
     // task with action
-    do! Tasks.Job(fun() -> far.Message("Action")) |> Async.AwaitTask
+    do! Tasks.Job(fun () -> far.Message("Action")) |> Async.AwaitTask
 
     // task with function
-    let! r = Tasks.Job(fun() -> far.Input("Function")) |> Async.AwaitTask
+    let! r = Tasks.Job(fun () -> far.Input("Function")) |> Async.AwaitTask
     Assert.Equal("bar", r)
 
     // task with editor
@@ -66,10 +66,10 @@ let testEditText = async {
     Jobs.StartImmediate workEditText
 
     // type $x=1, save, exit
-    do! Assert.Wait (fun() -> Window.IsEditor() && far.Editor.GetText() = "")
+    do! Assert.Wait(fun () -> Window.IsEditor() && far.Editor.GetText() = "")
     do! Jobs.Keys "$ x = 1 F2 Esc"
 
     // select all, type $x=2, save, exit
-    do! Assert.Wait (fun() -> Window.IsEditor() && far.Editor[0].Text = "$x=2")
+    do! Assert.Wait(fun () -> Window.IsEditor() && far.Editor[0].Text = "$x=2")
     do! Jobs.Keys "CtrlA $ x = 3 F2 Esc"
 }

@@ -3,7 +3,7 @@ open FarNet
 open System
 
 /// Shows the progress info in the window title and the task bar.
-type Progress (title) as this =
+type Progress(title) as this =
     static let mutable head = Option<Progress>.None
 
     let oldWindowTitle = far.UI.WindowTitle
@@ -14,7 +14,7 @@ type Progress (title) as this =
         head <- Some this
 
     interface IDisposable with
-        member __.Dispose () =
+        member __.Dispose() =
             head <- tail
             far.UI.WindowTitle <- oldWindowTitle
             if tail.IsNone then
@@ -22,4 +22,4 @@ type Progress (title) as this =
 
     member __.Done() =
         far.UI.SetProgressState TaskbarProgressBarState.NoProgress
-        far.UI.SetProgressFlash ()
+        far.UI.SetProgressFlash()

@@ -7,14 +7,14 @@ open FSharp.Compiler.Tokenization
 open FSharp.Compiler.CodeAnalysis
 
 let load (editor: IEditor) =
-    editor.Save ()
+    editor.Save()
 
     let file = editor.FileName
-    let ses = Session.GetOrCreate (Config.defaultFileForFile file)
+    let ses = Session.GetOrCreate(Config.defaultFileForFile file)
     let temp = far.TempName "F#"
 
     do
-        use writer = new StreamWriter (temp)
+        use writer = new StreamWriter(temp)
 
         // session errors first or issues may look cryptic
         if ses.Errors.Length > 0 then
@@ -22,7 +22,7 @@ let load (editor: IEditor) =
 
         // eval
         if ses.Ok then
-            Session.Eval (writer, fun () -> ses.EvalScript (writer, file))
+            Session.Eval(writer, fun () -> ses.EvalScript(writer, file))
 
     showTempFile temp "F# Output"
 
@@ -31,11 +31,11 @@ let showErrors (editor: IEditor) =
         editor.MyErrors.Value
         |> Array.sortBy (fun x -> x.FileName, x.StartLine, x.StartColumn)
 
-    let menu = far.CreateListMenu (Title = "F# errors", ShowAmpersands = true, UsualMargins = true, IncrementalOptions = PatternOptions.Substring)
+    let menu = far.CreateListMenu(Title = "F# errors", ShowAmpersands = true, UsualMargins = true, IncrementalOptions = PatternOptions.Substring)
 
     errors |> menu.ShowItems FSharpDiagnostic.strErrorLine (fun error ->
-        editor.GoTo (error.StartColumn, error.StartLine - 1)
-        editor.Redraw ()
+        editor.GoTo(error.StartColumn, error.StartLine - 1)
+        editor.Redraw()
     )
 
 let sourceText (editor: IEditor) =
@@ -48,7 +48,7 @@ let sourceText (editor: IEditor) =
 let check (editor: IEditor) =
     use progress = new Progress "Checking..."
 
-    let config = editor.MyConfig ()
+    let config = editor.MyConfig()
     let file = editor.FileName
     let text = sourceText editor
 
@@ -58,11 +58,11 @@ let check (editor: IEditor) =
 
     let errors = check.CheckResults.Diagnostics
 
-    progress.Done ()
+    progress.Done()
 
     if errors.Length = 0 then
         editor.MyErrors <- None
-        far.Message ("No errors", "F#")
+        far.Message("No errors", "F#")
     else
         editor.MyErrors <- Some errors
         showErrors editor
@@ -77,20 +77,20 @@ let tips (editor: IEditor) =
     | None -> ()
     | Some (column, idents) ->
 
-    let config = editor.MyConfig ()
+    let config = editor.MyConfig()
     let file = editor.FileName
     let text = sourceText editor
 
     let tip =
         async {
             let! check = Checker.check file text config
-            return check.CheckResults.GetToolTip (caret.Y + 1, column + 1, lineStr, idents, FSharpTokenTag.Identifier)
+            return check.CheckResults.GetToolTip(caret.Y + 1, column + 1, lineStr, idents, FSharpTokenTag.Identifier)
         }
         |> Async.RunSynchronously
 
-    progress.Done ()
+    progress.Done()
 
-    showTempText (Tips.format tip true) (String.Join (".", List.toArray idents))
+    showTempText (Tips.format tip true) (String.Join(".", List.toArray idents))
 
 let usesInFile (editor: IEditor) =
     use progress = new Progress "Getting uses..."
@@ -102,13 +102,13 @@ let usesInFile (editor: IEditor) =
     | None -> ()
     | Some (col, identIsland) ->
 
-    let config = editor.MyConfig ()
+    let config = editor.MyConfig()
     let file = editor.FileName
     let text = sourceText editor
 
     async {
         let! check = Checker.check file text config
-        match check.CheckResults.GetSymbolUseAtLocation (caret.Y + 1, col + 1, lineStr, identIsland) with
+        match check.CheckResults.GetSymbolUseAtLocation(caret.Y + 1, col + 1, lineStr, identIsland) with
         | None ->
             return None
         | Some symboluse ->
@@ -120,18 +120,18 @@ let usesInFile (editor: IEditor) =
     | None -> ()
     | Some uses ->
 
-    progress.Done ()
+    progress.Done()
 
-    let menu = far.CreateListMenu (Title = "F# uses", ShowAmpersands = true, UsualMargins = true, IncrementalOptions = PatternOptions.Substring)
+    let menu = far.CreateListMenu(Title = "F# uses", ShowAmpersands = true, UsualMargins = true, IncrementalOptions = PatternOptions.Substring)
 
     let strUseLine (x: FSharpSymbolUse) =
         let range = x.Range
-        sprintf "%s(%d,%d): %s" (Path.GetFileName x.FileName) range.StartLine (range.StartColumn + 1) editor[range.StartLine - 1].Text
+        $"{Path.GetFileName x.FileName}({range.StartLine},{range.StartColumn + 1}): {editor[range.StartLine - 1].Text}"
 
     uses |> menu.ShowItems strUseLine (fun x ->
         let range = x.Range
-        editor.GoTo (range.StartColumn, range.StartLine - 1)
-        editor.Redraw ()
+        editor.GoTo(range.StartColumn, range.StartLine - 1)
+        editor.Redraw()
     )
 
 let usesInProject (editor: IEditor) =
@@ -146,19 +146,19 @@ let usesInProject (editor: IEditor) =
     | None -> ()
     | Some (col, identIsland) ->
 
-    let config = editor.MyConfig ()
+    let config = editor.MyConfig()
     let file = editor.FileName
     let text = sourceText editor
 
     async {
         let! check = Checker.check file text config
-        match check.CheckResults.GetSymbolUseAtLocation (caret.Y + 1, col + 1, lineStr, identIsland) with
+        match check.CheckResults.GetSymbolUseAtLocation(caret.Y + 1, col + 1, lineStr, identIsland) with
         | None ->
             return None
         | Some sym ->
             let! pr = check.Checker.ParseAndCheckProject check.Options
             let uses = pr.GetUsesOfSymbol sym.Symbol
-            return Some (uses, sym)
+            return Some(uses, sym)
     }
     |> Async.RunSynchronously
     |> function
@@ -172,15 +172,15 @@ let usesInProject (editor: IEditor) =
         |> Array.map (fun file -> file, File.ReadAllLines file)
         |> Map.ofArray
 
-    use writer = new StringWriter ()
+    use writer = new StringWriter()
     for x in uses do
         let lines = fileLines[x.FileName]
         let range = x.Range
         fprintfn writer "%s(%d,%d): %s" x.FileName range.StartLine (range.StartColumn + 1) lines[range.StartLine - 1]
 
-    progress.Done ()
+    progress.Done()
 
-    showTempText (writer.ToString ()) ("F# Uses " + sym.Symbol.FullName)
+    showTempText (writer.ToString()) ("F# Uses " + sym.Symbol.FullName)
 
 let toggleAutoTips (editor: IEditor) =
     editor.MyAutoTips <- not editor.MyAutoTips
@@ -225,7 +225,7 @@ let complete (editor: IEditor) =
     let lineStr = line.Text
     if Char.IsWhiteSpace lineStr[caret.X - 1] then false
     else
-    let config = editor.MyConfig ()
+    let config = editor.MyConfig()
     let file = editor.FileName
     let text = sourceText editor
 
@@ -244,22 +244,22 @@ let complete (editor: IEditor) =
     let decs =
         async {
             let! check = Checker.check file text config
-            return check.CheckResults.GetDeclarationListInfo (Some check.ParseResults, caret.Y + 1, lineStr, ident, always [])
+            return check.CheckResults.GetDeclarationListInfo(Some check.ParseResults, caret.Y + 1, lineStr, ident, always [])
         }
         |> Async.RunSynchronously
 
     let completions =
         decs.Items
         |> Array.map (fun item -> item.Name) //?? mind NameInCode
-        |> Array.filter (fun name -> name.StartsWith (if partialIdent.StartsWith "``" then partialIdent.Substring 2 else partialIdent))
+        |> Array.filter (fun name -> name.StartsWith(if partialIdent.StartsWith "``" then partialIdent.Substring 2 else partialIdent))
         |> Array.sort
 
-    progress.Done ()
+    progress.Done()
 
     let completions = fixComplete partialIdent completions ident
 
     completeLine editor.Line (caret.X - partialIdent.Length) partialIdent.Length completions
-    editor.Redraw ()
+    editor.Redraw()
     true
 
 let completeBy (editor: IEditor) getCompletions =
@@ -280,5 +280,5 @@ let completeBy (editor: IEditor) getCompletions =
     let completions = fixComplete name completions ident
 
     completeLine line replacementIndex (caret - replacementIndex) completions
-    editor.Redraw ()
+    editor.Redraw()
     true

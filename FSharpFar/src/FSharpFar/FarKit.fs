@@ -6,17 +6,17 @@ open System.IO
 open FarNet.Works
 
 /// The local module folder path.
-let farLocalData = far.GetModuleManager("FSharpFar").GetFolderPath (SpecialFolder.LocalData, true)
+let farLocalData = far.GetModuleManager("FSharpFar").GetFolderPath(SpecialFolder.LocalData, true)
 
 /// The roming module folder path.
-let farRoaminData = far.GetModuleManager("FSharpFar").GetFolderPath (SpecialFolder.RoamingData, true)
+let farRoaminData = far.GetModuleManager("FSharpFar").GetFolderPath(SpecialFolder.RoamingData, true)
 
 /// The main session config file path used as the default for services.
 /// A new empty file is created if it does not exist.
 let farMainConfigPath =
-    let path = Path.Combine (farRoaminData, "main.fs.ini")
+    let path = Path.Combine(farRoaminData, "main.fs.ini")
     if not (File.Exists path) then
-        File.WriteAllText (path, "")
+        File.WriteAllText(path, "")
     path
 
 /// Gets the internal current directory.
@@ -39,10 +39,10 @@ let defaultCompilerArgs =
 /// Expands environment variables and makes the full path based on the active panel.
 let farResolvePath path =
     let path = Environment.ExpandEnvironmentVariables path
-    Path.GetFullPath (if Path.IsPathRooted path then path else Path.Combine (far.CurrentDirectory, path))
+    Path.GetFullPath(if Path.IsPathRooted path then path else Path.Combine(far.CurrentDirectory, path))
 
 let writeException exn =
-    far.UI.WriteLine (sprintf "%A" exn, ConsoleColor.Red)
+    far.UI.WriteLine(sprintf "%A" exn, ConsoleColor.Red)
 
 /// Completes an edit line. In an editor callers should Redraw().
 let completeLine (editLine: ILine) replacementIndex replacementLength words =
@@ -54,18 +54,18 @@ let completeLine (editLine: ILine) replacementIndex replacementLength words =
              words[0]
         else
             let cursor = far.UI.WindowCursor
-            let menu = far.CreateListMenu (X = cursor.X, Y = cursor.Y)
+            let menu = far.CreateListMenu(X = cursor.X, Y = cursor.Y)
             if count = 0 then
                 menu.Add("Empty").Disabled <- true
                 menu.NoInfo <- true
-                menu.Show () |> ignore
+                menu.Show() |> ignore
                 null
             else
                 menu.Incremental <- "*"
                 menu.IncrementalOptions <- PatternOptions.Substring
                 for word in words do
                     menu.Add word |> ignore
-                if menu.Show () then
+                if menu.Show() then
                     menu.Items[menu.Selected].Text
                 else
                     null
@@ -74,19 +74,19 @@ let completeLine (editLine: ILine) replacementIndex replacementLength words =
     else
     // the part being completed, may end with ``
     //_211111_fs case of existing backticks
-    let head = text.Substring (0, replacementIndex)
+    let head = text.Substring(0, replacementIndex)
     let word =
         if head.EndsWith("``") && word.StartsWith("``") then
             word[2..]
         else
             word
     let caret = head.Length + word.Length
-    editLine.Text <- head + word + text.Substring (replacementIndex + replacementLength)
+    editLine.Text <- head + word + text.Substring(replacementIndex + replacementLength)
     editLine.Caret <- caret
 
 let showTempFile file title =
     let editor =
-        far.CreateEditor (
+        far.CreateEditor(
             Title = title,
             FileName = file,
             CodePage = 65001,
@@ -94,11 +94,11 @@ let showTempFile file title =
             DisableHistory = true,
             DeleteSource = DeleteSource.UnusedFile
         )
-    editor.Open ()
+    editor.Open()
 
 let showTempText text title =
     let file = far.TempName("F#") + ".txt"
-    File.WriteAllText (file, text)
+    File.WriteAllText(file, text)
     showTempFile file title
 
 let isScriptFileName (fileName: string) =
@@ -109,7 +109,7 @@ let isFSharpFileName (fileName: string) =
 
 /// Shows a message with the left aligned text.
 let showText text title =
-    far.Message (text, title, MessageOptions.LeftAligned) |> ignore
+    far.Message(text, title, MessageOptions.LeftAligned) |> ignore
 
 let messageWidth full =
     let size = far.UI.WindowSize
@@ -119,10 +119,10 @@ let formatMessage width (text: string) =
     if text.Length <= width then
         text
     else
-    let list = ResizeArray ()
-    Works.Kit.FormatMessage (list, text, width, Int32.MaxValue, FormatMessageMode.Word)
-    use w = new StringWriter ()
+    let list = ResizeArray()
+    Works.Kit.FormatMessage(list, text, width, Int32.MaxValue, FormatMessageMode.Word)
+    use w = new StringWriter()
     for i in 0 .. list.Count - 2 do
         w.WriteLine list[i]
     w.Write list[list.Count - 1]
-    w.ToString ()
+    w.ToString()

@@ -14,19 +14,19 @@ let trajectory g k t =
 let series = new Series(ChartType = SeriesChartType.Line)
 
 for x, y in trajectory 0.02 5e2 1500 do
-    series.Points.AddXY (x, y) |> ignore
+    series.Points.AddXY(x, y) |> ignore
 
-let area = new ChartArea ()
+let area = new ChartArea()
 
 area.AxisX.Title <- "Rabbits"
 area.AxisY.Title <- "Foxes"
 area.AxisX.Minimum <- 0.0
 
-let chart = new Chart (Dock = DockStyle.Fill)
+let chart = new Chart(Dock = DockStyle.Fill)
 
 chart.ChartAreas.Add area
 chart.Series.Add series
 
-let form = new Form ()
+let form = new Form()
 form.Controls.Add chart
-form.Load.Add (fun _ -> form.Activate ())
+form.Load.Add(fun _ -> form.Activate())

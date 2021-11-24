@@ -4,13 +4,13 @@ open FarInteractive
 open System.IO
 open System.Diagnostics
 
-[<ModuleTool (Name = "FSharpFar", Options = ModuleToolOptions.F11Menus)>]
+[<ModuleTool(Name = "FSharpFar", Options = ModuleToolOptions.F11Menus)>]
 [<Guid "65bd5625-769a-4253-8fde-ffcc3f72489d">]
-type FarTool () =
-    inherit ModuleTool ()
+type FarTool() =
+    inherit ModuleTool()
 
     let openSession () =
-        FarInteractive(Session.DefaultSession ()).Open ()
+        FarInteractive(Session.DefaultSession()).Open()
 
     let openProjectFile () =
         let directoryPath = farCurrentDirectory ()
@@ -26,38 +26,38 @@ type FarTool () =
         let dir = Config.generateProject (Config.defaultFileForDirectory directoryPath) |> Path.GetDirectoryName
         Config.writeVSCodeSettings dir
         try
-            ProcessStartInfo ("code.cmd", "\"" + dir + "\"", WindowStyle = ProcessWindowStyle.Hidden)
+            ProcessStartInfo("code.cmd", "\"" + dir + "\"", WindowStyle = ProcessWindowStyle.Hidden)
             |> Process.Start |> ignore
         with exn ->
             showText exn.Message "Cannot start code.cmd"
 
     let showSessions () =
-        let menu = far.CreateListMenu (Title = "F# sessions", Bottom = "Enter, Del, F4", ShowAmpersands = true, UsualMargins = true)
+        let menu = far.CreateListMenu(Title = "F# sessions", Bottom = "Enter, Del, F4", ShowAmpersands = true, UsualMargins = true)
         menu.AddKey KeyCode.Delete
         menu.AddKey KeyCode.F4
 
         let mutable loop = true
         while loop do
-            loop <- Session.Sessions |> menu.ShowItemsWithKeys (fun ses -> ses.DisplayName) (fun ses key ->
+            loop <- Session.Sessions |> menu.ShowItemsWithKeys(fun ses -> ses.DisplayName) (fun ses key ->
                 match key.VirtualKeyCode with
                 | KeyCode.Delete ->
-                    ses.Close ()
+                    ses.Close()
                     //! do not close even empty, keep predictable for typing
                     true
                 | KeyCode.F4 ->
-                    let editor = far.CreateEditor ()
+                    let editor = far.CreateEditor()
                     editor.FileName <- ses.ConfigFile
-                    editor.Open ()
+                    editor.Open()
                     false
                 | _ ->
-                    FarInteractive(ses).Open ()
+                    FarInteractive(ses).Open()
                     false
             )
 
-    override __.Invoke (_, e) =
+    override __.Invoke(_, e) =
         let editor = far.Editor
 
-        let menu = far.CreateMenu (Title = "F#")
+        let menu = far.CreateMenu(Title = "F#")
         menu.ShowActions [
             // all menus
             "&1. Interactive", openSession

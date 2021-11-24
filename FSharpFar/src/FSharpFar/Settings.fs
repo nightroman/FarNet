@@ -4,9 +4,9 @@ open System.Configuration
 open FarNet.Settings
 
 [<SettingsProvider(typeof<ModuleSettingsProvider>)>]
-type Settings () =
-    inherit ModuleSettings ()
-    static member Default = Settings ()
+type Settings() =
+    inherit ModuleSettings()
+    static member Default = Settings()
 
     [<DefaultSettingValue("Red"); SettingsManageability(SettingsManageability.Roaming); UserScopedSetting>]
     member x.ErrorBackgroundColor

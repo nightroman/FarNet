@@ -7,7 +7,7 @@ let longIdent (idents: string list) (partial: string) =
     if idents.IsEmpty then
         partial
     else
-        let idents = String.Join (".", idents)
+        let idents = String.Join(".", idents)
         if partial.Length = 0 then
             idents
         else
@@ -18,8 +18,8 @@ let findLongIdents caret lineStr =
     | None ->
         None
     | Some (str, pos, x) ->
-        let names, partial = QuickParse.GetPartialLongName (str, (str.Length - 1))
-        Some (pos, names @ [ partial ])
+        let names, partial = QuickParse.GetPartialLongName(str, (str.Length - 1))
+        Some(pos, names @ [ partial ])
 
 let tryCompletions lineStr caret getCompletions =
     let ident = QuickParse.GetPartialLongNameEx(lineStr, caret - 1)
@@ -45,6 +45,6 @@ let tryCompletions lineStr caret getCompletions =
             |> Seq.sort
             |> Seq.toArray
 
-        Some (name, replacementIndex, ident, completions)
+        Some(name, replacementIndex, ident, completions)
     with _ ->
         None

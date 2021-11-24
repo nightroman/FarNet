@@ -25,11 +25,11 @@ module FSharpDiagnostic =
 
     /// Error text as it is with full source info.
     let strErrorFull (x : FSharpDiagnostic) =
-        sprintf "%s(%d,%d): %s" x.FileName x.StartLine (x.StartColumn + 1) (strErrorText x)
+        $"{x.FileName}({x.StartLine},{x.StartColumn + 1}): {strErrorText x}"
 
     /// Error text as line with mini source info.
     let strErrorLine (x : FSharpDiagnostic) =
-        sprintf "%s(%d,%d): %s" (Path.GetFileName x.FileName) x.StartLine (x.StartColumn + 1) (strAsLine (strErrorText x))
+        $"{Path.GetFileName x.FileName}({x.StartLine},{x.StartColumn + 1}): {strAsLine (strErrorText x)}"
 
 type Session private (configFile) =
     static let mutable sessions : Session list = []
@@ -37,11 +37,11 @@ type Session private (configFile) =
 
     // The writer for some extra "noise" output, like loading assemblies.
     // It is also useful and used for capturing config file problems.
-    let hiddenWriter = new StringWriter ()
+    let hiddenWriter = new StringWriter()
 
     // The permanent writer attached to the session, as required by FCS.
     // The actual writer is changing inside it depending on eval.
-    let evalWriter = new ProxyWriter (hiddenWriter)
+    let evalWriter = new ProxyWriter(hiddenWriter)
 
     let fsiSession, errors, ok, config =
         use _progress = new Progress "Loading session..."
@@ -65,19 +65,19 @@ type Session private (configFile) =
         //! collectible=true has issues
         let fsiSession =
             try
-                let fsiConfig = FsiEvaluationSession.GetDefaultConfiguration ()
-                FsiEvaluationSession.Create (fsiConfig, args, stdin, evalWriter, evalWriter)
+                let fsiConfig = FsiEvaluationSession.GetDefaultConfiguration()
+                FsiEvaluationSession.Create(fsiConfig, args, stdin, evalWriter, evalWriter)
             with exn ->
                 // case: unknown option in [fsc]
-                raise (InvalidOperationException ("Cannot create a session. Ensure valid configuration syntax and data." + hiddenWriter.ToString (), exn))
+                raise (InvalidOperationException("Cannot create a session. Ensure valid configuration syntax and data." + hiddenWriter.ToString(), exn))
 
         // load and use files
 
-        use writer = new StringWriter ()
+        use writer = new StringWriter()
 
         let check (result, warnings) =
             for w in warnings do
-                writer.WriteLine (FSharpDiagnostic.strErrorFull w)
+                writer.WriteLine(FSharpDiagnostic.strErrorFull w)
 
             match result with
             | Choice2Of2 exn ->
@@ -99,7 +99,7 @@ type Session private (configFile) =
             ok <- false
             fprintfn writer "%A" exn
 
-        fsiSession, writer.ToString (), ok, config
+        fsiSession, writer.ToString(), ok, config
 
     // Calls the evaluation with the custom writer.
     // writer: The writer used during evaluation.
@@ -133,9 +133,9 @@ type Session private (configFile) =
                 | Some path ->
                     path
                 | None ->
-                    invalidOp <| sprintf "Cannot find the config file in '%s'." path
+                    invalidOp $"Cannot find the config file in '{path}'."
             else
-                invalidOp <| sprintf "Cannot find the config file or directory '%s'." path
+                invalidOp $"Cannot find the config file or directory '{path}'."
 
         match Session.TryFind path with
         | Some ses ->
@@ -150,7 +150,7 @@ type Session private (configFile) =
         assert (path = Path.GetFullPath path)
         for ses in sessions do
             if String.equalsIgnoreCase ses.ConfigFile path then
-                ses.Close ()
+                ses.Close()
 
     /// Close affected sessions on saving sources.
     static member OnSavingSource path =
@@ -162,28 +162,28 @@ type Session private (configFile) =
                 Seq.containsIgnoreCase path config.FsiFiles ||
                 Seq.containsIgnoreCase path config.UseFiles
                 then
-                    ses.Close ()
+                    ses.Close()
 
     /// Gets or creates the root session.
-    static member DefaultSession () =
-        Session.GetOrCreate (Config.defaultFile ())
+    static member DefaultSession() =
+        Session.GetOrCreate(Config.defaultFile ())
 
     /// Gets the main session or none.
-    static member TryDefaultSession () =
-        Session.TryFind (Config.defaultFile ())
+    static member TryDefaultSession() =
+        Session.TryFind(Config.defaultFile ())
 
     /// Gets the list of created sessions.
     static member Sessions = sessions
 
     /// Closes the session and resources and triggers OnClose.
-    member x.Close () =
-        onClose.Trigger ()
+    member x.Close() =
+        onClose.Trigger()
 
         sessions <- sessions |> List.except [x]
 
-        evalWriter.Dispose ()
-        hiddenWriter.Dispose ()
-        (fsiSession :> IDisposable).Dispose ()
+        evalWriter.Dispose()
+        hiddenWriter.Dispose()
+        (fsiSession :> IDisposable).Dispose()
 
     /// The full path of config file (normalized, case insensitive).
     member val ConfigFile = configFile
@@ -192,7 +192,7 @@ type Session private (configFile) =
     member val Config = config
 
     /// The session display name for menus, editors, etc.
-    member val DisplayName = sprintf "%s - %s" (Path.GetFileName configFile) (Path.GetDirectoryName configFile)
+    member val DisplayName = $"{Path.GetFileName configFile} - {Path.GetDirectoryName configFile}"
 
     /// The session loading errors.
     member val Errors = errors
@@ -203,20 +203,20 @@ type Session private (configFile) =
     /// Called on closing.
     member val OnClose = onClose.Publish
 
-    member __.EvalInteraction (writer, code) =
+    member __.EvalInteraction(writer, code) =
         eval writer (fun () -> fsiSession.EvalInteractionNonThrowing code)
 
-    member __.EvalScript (writer, filePath) =
+    member __.EvalScript(writer, filePath) =
         eval writer (fun () -> fsiSession.EvalScriptNonThrowing filePath)
 
-    member __.GetCompletions (longIdent) =
+    member __.GetCompletions(longIdent) =
         try
             fsiSession.GetCompletions longIdent
         with _ ->
             //! SplitPipeline.SplitPipelineCommand. -> exn
             Seq.empty
 
-    static member Eval (writer, eval : unit -> EvalResult) =
+    static member Eval(writer, eval : unit -> EvalResult) =
         let oldOut = Console.Out
         let oldError = Console.Error
         let r =
@@ -228,6 +228,6 @@ type Session private (configFile) =
                 Console.SetOut oldOut
                 Console.SetError oldError
         for w in r.Warnings do
-            writer.WriteLine (FSharpDiagnostic.strErrorFull w)
+            writer.WriteLine(FSharpDiagnostic.strErrorFull w)
         if not (isNull r.Exception) then
             fprintfn writer "%A" r.Exception

@@ -4,47 +4,47 @@ open System
 open System.IO
 open FarInteractive
 
-[<ModuleCommand (Name = "FSharpFar", Prefix = "fs")>]
+[<ModuleCommand(Name = "FSharpFar", Prefix = "fs")>]
 [<Guid "2b52615b-ea79-46e4-ac9d-78f33599db62">]
-type FarCommand () =
-    inherit ModuleCommand ()
+type FarCommand() =
+    inherit ModuleCommand()
 
     let invoke command =
         let echo () =
-            far.UI.WriteLine ((sprintf "fs:%s" command), ConsoleColor.DarkGray)
+            far.UI.WriteLine($"fs:{command}", ConsoleColor.DarkGray)
 
         let writeResult r =
             for w in r.Warnings do
-                far.UI.WriteLine (FSharpDiagnostic.strErrorFull w, ConsoleColor.Yellow)
+                far.UI.WriteLine(FSharpDiagnostic.strErrorFull w, ConsoleColor.Yellow)
             if not (isNull r.Exception) then
                 writeException r.Exception
 
         match Command.parse command with
         | Command.Quit ->
-            match Session.TryDefaultSession () with
-            | Some ses -> ses.Close ()
+            match Session.TryDefaultSession() with
+            | Some ses -> ses.Close()
             | None -> far.UI.WriteLine "The session is not opened."
 
         | Command.Open args ->
             let ses =
                 match args.With with
                 | Some path -> Session.GetOrCreate path
-                | _ -> Session.DefaultSession ()
-            FarInteractive(ses).Open ()
+                | _ -> Session.DefaultSession()
+            FarInteractive(ses).Open()
 
         | Command.Code code ->
             echo ()
             use _std = new FarNet.FSharp.Works.FarStdWriter()
 
-            let ses = Session.DefaultSession ()
+            let ses = Session.DefaultSession()
             if ses.Errors.Length > 0 then
-                far.UI.Write (ses.Errors, ConsoleColor.Red)
+                far.UI.Write(ses.Errors, ConsoleColor.Red)
 
             if ses.Ok then
-                use writer = new StringWriter ()
-                let r = ses.EvalInteraction (writer, code)
+                use writer = new StringWriter()
+                let r = ses.EvalInteraction(writer, code)
 
-                far.UI.Write (writer.ToString ())
+                far.UI.Write(writer.ToString())
                 writeResult r
 
         | Command.Exec args ->
@@ -62,11 +62,11 @@ type FarCommand () =
                 let echo =
                     (lazy (echo ())).Force
 
-                use writer = new StringWriter ()
+                use writer = new StringWriter()
                 let validate r =
                     if r.Warnings.Length > 0 || not (isNull r.Exception) then
                         echo ()
-                        far.UI.Write (writer.ToString ())
+                        far.UI.Write(writer.ToString())
                         writeResult r
                         false
                     else
@@ -82,7 +82,7 @@ type FarCommand () =
                     if ses.Ok then
                         match args.File with
                         | Some file ->
-                            let r = ses.EvalScript (writer, file)
+                            let r = ses.EvalScript(writer, file)
                             validate r
                         | None ->
                             true
@@ -91,14 +91,14 @@ type FarCommand () =
 
                 match ok, args.Code with
                 | true, Some code ->
-                    let r = ses.EvalInteraction (writer, code)
+                    let r = ses.EvalInteraction(writer, code)
                     validate r |> ignore
                 | _ ->
                     ()
 
             with exn ->
                 // e.g. on missing file
-                far.ShowError ("fs: //exec", exn)
+                far.ShowError("fs: //exec", exn)
 
         | Command.Compile args ->
             use _progress = new Progress "Compiling..."
@@ -118,13 +118,13 @@ type FarCommand () =
 
             let errors, code = Checker.compile config |> Async.RunSynchronously
             if errors.Length > 0 then
-                use writer = new StringWriter ()
+                use writer = new StringWriter()
                 for error in errors do
-                    writer.WriteLine (FSharpDiagnostic.strErrorLine error)
-                showTempText (writer.ToString ()) "Errors"
+                    writer.WriteLine(FSharpDiagnostic.strErrorLine error)
+                showTempText (writer.ToString()) "Errors"
             ()
 
-    override __.Invoke (_, e) =
+    override __.Invoke(_, e) =
         try
             invoke e.Command
         with

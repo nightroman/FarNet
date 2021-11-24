@@ -7,6 +7,21 @@
 - [FCS issue F# 4.6](https://github.com/fsharp/FSharp.Compiler.Service/issues/884)
 
 ***
+### 1.16.3 Always use --target:library
+
+We can build apps but they cannot run without FSharp.Core.dll and others.
+Unless apps are in FARHOME, which is odd.
+
+So let's build just libraries and simplify configuration as a result:
+options -a or --target are not needed (ignored).
+
+Change:
+
+- nothing on reading config
+- nothing on `Project`, the default target of .fsproj is library
+- on `//compile`, add `--target:library` after other options, it takes over
+
+***
 ### DLL hell System.Text.Json
 
 v1.16.2 - use lib\net4* assemblies if available.

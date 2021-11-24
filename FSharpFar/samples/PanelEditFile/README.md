@@ -16,7 +16,7 @@ To start, run
 
 or, the same
 
-    fs: //exec;; PanelEditFile.run()
+    fs: //exec;; PanelEditFile.run ()
 
 This opens the panel with some files with two columns, Name and Description.
 

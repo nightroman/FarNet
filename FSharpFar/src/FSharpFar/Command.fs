@@ -19,7 +19,7 @@ let private tryPopString key (sb: DbConnectionStringBuilder) =
     match sb.TryGetValue key with 
     | true, value ->
         sb.Remove key |> ignore
-        Some (value :?> string)
+        Some(value :?> string)
     | _ ->
         None
 
@@ -55,15 +55,15 @@ let parse text =
 
         let split = ";;"
         let index = rest.IndexOf split
-        let part1, part2 = if index < 0 then rest, "" else rest.Substring (0, index), rest.Substring (index + split.Length)
+        let part1, part2 = if index < 0 then rest, "" else rest.Substring(0, index), rest.Substring(index + split.Length)
 
-        let sb = DbConnectionStringBuilder ()
+        let sb = DbConnectionStringBuilder()
         sb.ConnectionString <- part1
 
         let r = command commandName part2 sb
 
         if sb.Count > 0 then
-            failwithf "Unknown '%s' keys: %O" (r.GetType().Name.ToLower ()) sb
+            failwithf "Unknown '%s' keys: %O" (r.GetType().Name.ToLower()) sb
         r
     elif reQuit.IsMatch text then
         Quit

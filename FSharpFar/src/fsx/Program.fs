@@ -25,8 +25,8 @@ let main _ =
         exe
 
         // references for `fsi`
-        sprintf @"-r:%s\fsx.exe" home
-        sprintf @"-r:%s\FarNet\Modules\FSharpFar\FSharp.Compiler.Service.dll" home
+        $@"-r:{home}\fsx.exe"
+        $@"-r:{home}\FarNet\Modules\FSharpFar\FSharp.Compiler.Service.dll"
 
         // configuration, use just [fsc], maybe later use [fsx] in addition
         match ini with

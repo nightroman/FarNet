@@ -16,23 +16,23 @@ let work = async {
 
         // ask how to continue
         match! jobAsk text "Wizard" [|"&Yes"; "&No"; "&Cancel"; "&Error"|] with
-        | 2 -> do! Jobs.Cancel ()
+        | 2 -> do! Jobs.Cancel()
         | 3 -> failwith "Oh"
         | _ as r -> answer <- r
 
     // open panel and wait for closing
     let lines = text.Split [|'\n'|] |> Seq.cast
-    do! Jobs.Panel (MyPanel.panel lines)
+    do! Jobs.Panel(MyPanel.panel lines)
 
     // show final message
-    do! job { far.Message (text, "Done") }
+    do! job { far.Message(text, "Done") }
 }
 
 /// The full demo with one return to the editor.
 [<Test>]
 let testNo = async {
     Jobs.StartImmediate work
-    do! job { Assert.Editor () }
+    do! job { Assert.Editor() }
 
     // exit editor
     do! Jobs.Keys "Esc"
@@ -44,7 +44,7 @@ let testNo = async {
 
     // exit editor
     do! Jobs.Keys "Esc"
-    do! job { Assert.True (isWizard ()) }
+    do! job { Assert.True(isWizard ()) }
 
     // Yes -> my panel
     do! Jobs.Keys "Y"
@@ -53,20 +53,20 @@ let testNo = async {
     // exit panel -> dialog
     do! Jobs.Keys "Esc"
     do! job {
-        Assert.Dialog ()
-        Assert.Equal ("Done", far.Dialog[0].Text)
+        Assert.Dialog()
+        Assert.Equal("Done", far.Dialog[0].Text)
     }
 
     // exit dialog
     do! Jobs.Keys "Esc"
-    do! job { Assert.NativePanel () }
+    do! job { Assert.NativePanel() }
 }
 
 /// The job is stopped by exception.
 [<Test>]
 let testError = async {
     Jobs.StartImmediate work
-    do! job { Assert.Editor () }
+    do! job { Assert.Editor() }
 
     // exit editor
     do! Jobs.Keys "Esc"
@@ -78,20 +78,20 @@ let testError = async {
 
     // exit dialog
     do! Jobs.Keys "Esc"
-    do! job { Assert.NativePanel () }
+    do! job { Assert.NativePanel() }
 }
 
 /// The job is stopped by cancel.
 [<Test>]
 let testCancel = async {
     Jobs.StartImmediate work
-    do! job { Assert.Editor () }
+    do! job { Assert.Editor() }
 
     // exit editor
     do! Jobs.Keys "Esc"
-    do! job { Assert.True (isWizard ()) }
+    do! job { Assert.True(isWizard ()) }
 
     // Cancel -> panels
     do! Jobs.Keys "C"
-    do! job { Assert.NativePanel () }
+    do! job { Assert.NativePanel() }
 }

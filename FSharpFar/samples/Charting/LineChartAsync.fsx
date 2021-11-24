@@ -7,7 +7,7 @@ let data = [
         yield sin (float i / 100.0)
 ]
 
-let form = new LineChartForm ("sin", data)
+let form = new LineChartForm("sin", data)
 
 async { form.ShowDialog() |> ignore }
 |> if fsi.CommandLineArgs[0].EndsWith(".fsx") then Async.RunSynchronously else Async.Start

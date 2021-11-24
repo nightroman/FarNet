@@ -18,6 +18,6 @@ fsi.PrintWidth <- far.UI.WindowSize.X - 2
 // AddPrinter - Adds a "printer", the function ('T -> string) converting a type
 // instance to a string printed as the interactive output.
 
-fsi.AddPrinter (fun (file: FarFile) ->
+fsi.AddPrinter(fun (file: FarFile) ->
     sprintf "{Name=%s; Length=%i}" file.Name file.Length
 )

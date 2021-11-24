@@ -35,7 +35,7 @@ module Config =
         | KeyValueLine of Key : string * Value : string
 
     let private parseLine (line: string) =
-        let line = line.Trim ()
+        let line = line.Trim()
         if line.Length = 0 then
             EmptyLine
         elif line[0] = ';' then
@@ -43,7 +43,7 @@ module Config =
         elif line[0] = '[' then
             if not (line.EndsWith "]") then
                 invalidOp "Invalid section, expected '[...]'."
-            SectionLine (line.Substring(1, line.Length - 2).Trim ())
+            SectionLine(line.Substring(1, line.Length - 2).Trim())
         elif line[0] <> '-' then
             ValueLine line
         else
@@ -51,41 +51,41 @@ module Config =
             if i < 0 then
                 SwitchLine line
             else
-                KeyValueLine (line.Substring(0, i).TrimEnd (), line.Substring(i + 1).TrimStart ())
+                KeyValueLine(line.Substring(0, i).TrimEnd(), line.Substring(i + 1).TrimStart())
 
     // Expands variables and for some keys resolves full paths.
     let private resolveKeyValue root key value =
-        let value = Environment.ExpandEnvironmentVariables(value).Replace ("__SOURCE_DIRECTORY__", root)
+        let value = Environment.ExpandEnvironmentVariables(value).Replace("__SOURCE_DIRECTORY__", root)
         match key with
         | "-r" | "--reference" ->
             // resolve a path only if it starts with "." else keep it, e.g. `-r:System.Management.Automation`
             if value[0] = '.' then
-                Path.GetFullPath (Path.Combine (root, value))
+                Path.GetFullPath(Path.Combine(root, value))
             else
                 value
         | "" | "-l" | "--lib" | "-o" | "--out" | "--use" | "--doc" ->
             if Path.IsPathRooted value then
                 Path.GetFullPath value
             else
-                Path.GetFullPath (Path.Combine (root, value))
+                Path.GetFullPath(Path.Combine(root, value))
         | _ ->
             value
 
     // Reads configuration from the specified file avoiding recursive loops and duplicated configurations.
     // Duplicates look fine for the compiler but VS is not happy with same items in generated projects.
-    let rec private readConfigFromFileRec path parents : Config =
+    let rec private readConfigFromFileRec path (parents: string list ref) : Config =
         let lines = File.ReadAllLines path
         let root = Path.GetDirectoryName path
 
-        let fscArgs = ResizeArray ()
-        let fscFiles = ResizeArray ()
-        let fsiArgs = ResizeArray ()
-        let fsiFiles = ResizeArray ()
-        let useFiles = ResizeArray ()
-        let outArgs = ResizeArray ()
-        let outFiles = ResizeArray ()
-        let etcArgs = ResizeArray ()
-        let etcFiles = ResizeArray ()
+        let fscArgs = ResizeArray()
+        let fscFiles = ResizeArray()
+        let fsiArgs = ResizeArray()
+        let fsiFiles = ResizeArray()
+        let useFiles = ResizeArray()
+        let outArgs = ResizeArray()
+        let outFiles = ResizeArray()
+        let etcArgs = ResizeArray()
+        let etcFiles = ResizeArray()
 
         let mutable currentSection = NoSection
         let mutable lineNo = 0
@@ -132,8 +132,8 @@ module Config =
                     | EtcSection ->
                         etcFiles.Add file
                     | UseSection ->
-                        if not (!parents |> Seq.exists (fun x -> file.Equals(x, StringComparison.OrdinalIgnoreCase))) then
-                            parents := file :: !parents
+                        if not (parents.Value |> Seq.exists (fun x -> file.Equals(x, StringComparison.OrdinalIgnoreCase))) then
+                            parents.Value <- file :: parents.Value
                             let config = readConfigFromFileRec file parents
                             fscArgs.AddRange config.FscArgs
                             fscFiles.AddRange config.FscFiles
@@ -146,39 +146,39 @@ module Config =
                             etcFiles.AddRange config.EtcFiles
                     | NoSection ->
                         raiseSection ()
-                | KeyValueLine (key, value) ->
+                | KeyValueLine(key, value) ->
                     let text = resolveKeyValue root key value
                     match currentSection with
                     | FscSection ->
                         // use -r instead of --reference to avoid duplicates added by FCS
                         // https://github.com/fsharp/FSharp.Compiler.Service/issues/697
                         let key = if key = "--reference" then "-r" else key
-                        fscArgs.Add (key + ":" + text)
+                        fscArgs.Add(key + ":" + text)
                     | FsiSection ->
                         if key = "--use" then
                             useFiles.Add text
                         else
-                            fsiArgs.Add (key + ":" + text)
+                            fsiArgs.Add(key + ":" + text)
                     | OutSection ->
-                        outArgs.Add (key + ":" + text)
+                        outArgs.Add(key + ":" + text)
                     | EtcSection ->
-                        etcArgs.Add (key + ":" + text)
+                        etcArgs.Add(key + ":" + text)
                     | UseSection
                     | NoSection ->
                         raiseSection ()
          with e ->
-            invalidOp (sprintf "%s(%d): %s" path lineNo e.Message)
+            invalidOp $"{path}({lineNo}): {e.Message}"
 
         {
-            FscArgs = fscArgs.ToArray ()
-            FscFiles = fscFiles.ToArray ()
-            FsiArgs = fsiArgs.ToArray ()
-            FsiFiles = fsiFiles.ToArray ()
-            UseFiles = useFiles.ToArray ()
-            OutArgs = outArgs.ToArray ()
-            OutFiles = outFiles.ToArray ()
-            EtcArgs = etcArgs.ToArray ()
-            EtcFiles = etcFiles.ToArray ()
+            FscArgs = fscArgs.ToArray()
+            FscFiles = fscFiles.ToArray()
+            FsiArgs = fsiArgs.ToArray()
+            FsiFiles = fsiFiles.ToArray()
+            UseFiles = useFiles.ToArray()
+            OutArgs = outArgs.ToArray()
+            OutFiles = outFiles.ToArray()
+            EtcArgs = etcArgs.ToArray()
+            EtcFiles = etcFiles.ToArray()
         }
 
     /// Reads the config from the specified file.
@@ -188,12 +188,12 @@ module Config =
     /// Tries to get the config file path in the specified directory.
     /// If there are many then the first in alphabetical order is used.
     let tryFindFileInDirectory dir =
-        let files = Directory.GetFiles (dir, "*.fs.ini")
+        let files = Directory.GetFiles(dir, "*.fs.ini")
         match files.Length with
         | 1 ->
             Some files[0]
         | 0 ->
             None
         | _ ->
-            Array.Sort (files, StringComparer.OrdinalIgnoreCase)
+            Array.Sort(files, StringComparer.OrdinalIgnoreCase)
             Some files[0]

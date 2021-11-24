@@ -5,8 +5,8 @@ open System.IO
 open System.Runtime.CompilerServices
 
 /// Trace builder.
-type TraceBuilder () =
-    inherit BlockBuilder ()
+type TraceBuilder() =
+    inherit BlockBuilder()
 
     let mutable lastPath = ""
     let mutable lastText : WeakReference = null
@@ -31,7 +31,7 @@ type TraceBuilder () =
         else
             cacheText path
 
-    member __.Yield (value, [<CallerFilePath>]?path, [<CallerLineNumber>]?line) =
+    member __.Yield(value, [<CallerFilePath>]?path, [<CallerLineNumber>]?line) =
         let path = defaultArg path ""
         let line = defaultArg line 0
         let text = getText path

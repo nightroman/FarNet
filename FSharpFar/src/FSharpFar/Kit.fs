@@ -6,12 +6,12 @@ open System.Text.RegularExpressions
 /// Makes a string for one line show.
 let strAsLine =
     let re = Regex @"[\r\n\t]+"
-    fun x -> re.Replace (x, " ")
+    fun x -> re.Replace(x, " ")
 
 /// Zips 2+ spaces into one.
 let strZipSpace =
     let re = Regex @"[ \t]{2,}"
-    fun x -> re.Replace (x, " ")
+    fun x -> re.Replace(x, " ")
 
 /// A function that always returns the same value.
 let inline always value = fun _ -> value
@@ -33,11 +33,11 @@ module Seq =
 module String =
     /// Gets true if two strings are equal.
     let equalsIgnoreCase x y =
-        String.Equals (x, y, StringComparison.OrdinalIgnoreCase)
+        String.Equals(x, y, StringComparison.OrdinalIgnoreCase)
 
     /// Gets true if x ends with y.
     let endsWithIgnoreCase (x: string) (y: string) =
-        x.EndsWith (y, StringComparison.OrdinalIgnoreCase)
+        x.EndsWith(y, StringComparison.OrdinalIgnoreCase)
 
 module Exn =
     open System.Runtime.ExceptionServices

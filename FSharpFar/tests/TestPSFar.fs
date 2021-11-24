@@ -8,7 +8,7 @@ let getFarTask name =
 // PowerShellFar unwraps PSObject unless its BaseObject is PSCustomObject.
 // In this case the original PSObject is returned.
 [<Test>]
-let PSCustomObject () =
+let PSCustomObject() =
     let r = PSFar.Invoke """ $Host; [PSCustomObject]@{name='foo'; version='bar'} """
     Assert.Equal(2, r.Length)
 
@@ -21,7 +21,7 @@ let PSCustomObject () =
 // PowerShellFar runspace is designed for advanced uses, for example with
 // System.Management.Automation or FarNet.FSharp.PowerShell NuGet library.
 [<Test>]
-let Runspace () =
+let Runspace() =
     let r1 = PSFar.Runspace
     let r2 = (PSFar.Invoke "[runspace]::DefaultRunspace")[0]
     Assert.True(obj.ReferenceEquals(r1, r2))
@@ -102,7 +102,7 @@ let FarTaskError4 = async {
 [<Test>]
 let FarTaskError5 = async {
     let! _ = job { return PSFar.Invoke(getFarTask "Case/FarTaskError5.far.ps1") }
-    do! Assert.Wait (fun()-> Window.IsDialog() && far.Dialog[1].Text = "working")
+    do! Assert.Wait(fun () -> Window.IsDialog() && far.Dialog[1].Text = "working")
     do! Jobs.Keys "Esc"
     do! job {
         Assert.True(Window.IsDialog())
@@ -172,7 +172,7 @@ let DialogNonModalInput2 = async {
     do! Jobs.Keys "b a r Enter"
 
     // message with "bar"
-    do! Assert.Wait (fun()-> Window.IsDialog() && far.Dialog[1].Text = "bar")
+    do! Assert.Wait(fun () -> Window.IsDialog() && far.Dialog[1].Text = "bar")
     do! Jobs.Keys "Esc"
 
     // result is "bar"
@@ -190,10 +190,10 @@ let InputEditorMessage = async {
     }
     do! Jobs.Keys "f o o Enter"
 
-    do! Assert.Wait (fun()-> Window.IsEditor() && far.Editor[0].Text = "foo")
+    do! Assert.Wait(fun () -> Window.IsEditor() && far.Editor[0].Text = "foo")
     do! Jobs.Keys "CtrlA b a r F2 Esc"
 
-    do! Assert.Wait (fun()-> Window.IsDialog() && far.Dialog[1].Text = "bar")
+    do! Assert.Wait(fun () -> Window.IsDialog() && far.Dialog[1].Text = "bar")
     do! Jobs.Keys "CtrlA b a r F2 Esc"
 
     // result is "bar"
@@ -275,31 +275,31 @@ let KeysAndMacro = async {
     do! PSFar.StartTask(getFarTask "KeysAndMacro.fas.ps1", ["Confirm", box true]) |> Async.StartChild |> Async.Ignore
 
     // assert panels
-    do! Assert.Wait (fun()-> Window.IsDialog() && far.Dialog[0].Text = "job")
+    do! Assert.Wait(fun () -> Window.IsDialog() && far.Dialog[0].Text = "job")
     do! Jobs.Keys "Enter"
 
     // keys CtrlG
-    do! Assert.Wait (fun()-> Window.IsDialog() && far.Dialog[0].Text = "keys")
+    do! Assert.Wait(fun () -> Window.IsDialog() && far.Dialog[0].Text = "keys")
     do! Jobs.Keys "Enter"
 
     // assert dialog
-    do! Assert.Wait (fun()-> Window.IsDialog() && far.Dialog[0].Text = "job")
+    do! Assert.Wait(fun () -> Window.IsDialog() && far.Dialog[0].Text = "job")
     do! Jobs.Keys "Enter"
 
     // macro cls
-    do! Assert.Wait (fun()-> Window.IsDialog() && far.Dialog[0].Text = "macro")
+    do! Assert.Wait(fun () -> Window.IsDialog() && far.Dialog[0].Text = "macro")
     do! Jobs.Keys "Enter"
 
     // assert text
-    do! Assert.Wait (fun()-> Window.IsDialog() && far.Dialog[0].Text = "job")
+    do! Assert.Wait(fun () -> Window.IsDialog() && far.Dialog[0].Text = "job")
     do! Jobs.Keys "Enter"
 
     //! keys Enter, cancel ~ avoid `cls`
-    do! Assert.Wait (fun()-> Window.IsDialog() && far.Dialog[0].Text = "keys")
+    do! Assert.Wait(fun () -> Window.IsDialog() && far.Dialog[0].Text = "keys")
     do! Jobs.Keys "Esc"
 
     // Apply command
-    do! Assert.Wait (fun()-> Window.IsDialog() && far.Dialog[0].Text = "Apply command")
+    do! Assert.Wait(fun () -> Window.IsDialog() && far.Dialog[0].Text = "Apply command")
     do! Jobs.Keys "Esc"
     do! Assert.Wait Window.IsNativePanel
 }

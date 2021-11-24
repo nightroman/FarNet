@@ -5,7 +5,7 @@ open FarNet.FSharp
 let fileName = __SOURCE_DIRECTORY__ + "\\" + __SOURCE_FILE__
 
 let workNormal = async {
-    let viewer = far.CreateViewer (FileName = fileName)
+    let viewer = far.CreateViewer(FileName = fileName)
     viewer.DisableHistory <- true
     do! Jobs.Viewer viewer
 }
@@ -13,9 +13,9 @@ let workNormal = async {
 [<Test>]
 let testNormal = async {
     Jobs.StartImmediate workNormal
-    do! job { Assert.Viewer () }
+    do! job { Assert.Viewer() }
     do! Jobs.Keys "Esc"
-    do! job { Assert.NativePanel () }
+    do! job { Assert.NativePanel() }
 }
 
 let workModal = async {
@@ -23,7 +23,7 @@ let workModal = async {
     Jobs.StartImmediate(Jobs.Job showWideDialog)
 
     // viewer over the dialog
-    let viewer = far.CreateViewer (FileName = fileName)
+    let viewer = far.CreateViewer(FileName = fileName)
     viewer.DisableHistory <- true
     do! Jobs.Viewer viewer
 
@@ -34,17 +34,17 @@ let workModal = async {
 [<Test>]
 let testModal = async {
     Jobs.StartImmediate workModal
-    do! job { Assert.Viewer () }
+    do! job { Assert.Viewer() }
     do! Jobs.Keys "Esc"
 
     do! job {
-        Assert.Dialog ()
-        Assert.Equal ("OK", far.Dialog[1].Text)
+        Assert.Dialog()
+        Assert.Equal("OK", far.Dialog[1].Text)
     }
     do! Jobs.Keys "Esc"
 
-    do! job { Assert.True (isWideDialog ()) }
+    do! job { Assert.True(isWideDialog ()) }
     do! Jobs.Keys "Esc"
 
-    do! job { Assert.NativePanel () }
+    do! job { Assert.NativePanel() }
 }

@@ -16,8 +16,8 @@ let private getTypes () =
 let getVariables () =
     [
         for t in getTypes () do
-            for m in t.GetProperties (BindingFlags.Static ||| BindingFlags.NonPublic ||| BindingFlags.Public) do
+            for m in t.GetProperties(BindingFlags.Static ||| BindingFlags.NonPublic ||| BindingFlags.Public) do
                 if not (m.Name.Contains "@") then
-                    yield m.Name, m.GetValue (null, [||])
+                    yield m.Name, m.GetValue(null, [||])
     ]
     |> dict

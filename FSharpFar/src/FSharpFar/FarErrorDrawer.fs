@@ -2,18 +2,18 @@
 open FarNet
 open FSharp.Compiler.Diagnostics
 
-[<ModuleDrawer (Name = "F# errors", Mask = "*.fs;*.fsx;*.fsscript")>]
+[<ModuleDrawer(Name = "F# errors", Mask = "*.fs;*.fsx;*.fsscript")>]
 [<Guid "D122FBB8-26FA-4873-8245-A617CE200BCF">]
-type FarErrorDrawer () =
-    inherit ModuleDrawer ()
+type FarErrorDrawer() =
+    inherit ModuleDrawer()
 
     let bgError = Settings.Default.ErrorBackgroundColor
     let fgError = Settings.Default.ErrorForegroundColor
     let bgWarning = Settings.Default.WarningBackgroundColor
     let fgWarning = Settings.Default.WarningForegroundColor
 
-    override __.Invoke (editor, e) =
-        match editor.MyFileErrors () with
+    override __.Invoke(editor, e) =
+        match editor.MyFileErrors() with
         | None -> ()
         | Some errors ->
 
@@ -37,4 +37,4 @@ type FarErrorDrawer () =
                             | FSharpDiagnosticSeverity.Warning -> fgWarning, bgWarning
                             | FSharpDiagnosticSeverity.Info -> fgWarning, bgWarning
                             | FSharpDiagnosticSeverity.Hidden -> fgWarning, bgWarning
-                        e.Colors.Add (EditorColor (line.Index, st, en, fg, bg))
+                        e.Colors.Add(EditorColor(line.Index, st, en, fg, bg))
