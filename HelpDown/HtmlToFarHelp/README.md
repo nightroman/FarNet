@@ -1,7 +1,6 @@
 # HtmlToFarHelp
 
 [Pandoc]: https://github.com/jgm/pandoc
-[MarkdownToHtml]: https://www.nuget.org/packages/MarkdownToHtml
 
 ## Synopsis
 
@@ -139,14 +138,11 @@ HtmlToFarHelp was originally designed for this Markdown dialect because it
 supported heading identifiers and definition lists and MarkdownDeep was
 available at that time.
 
-Today, the recommended converter is [Pandoc]:
+The recommended converter is [Pandoc]:
 
     pandoc MyHelp.md --output MyHelp.htm --from=markdown_phpextra
 
-The obsolete converter [MarkdownToHtml] is still available but it will be
-unlisted on NuGet in the future.
-
-Pandoc `markdown_phpextra` comparison with MarkdownDeep (MarkdownToHtml):
+Pandoc `markdown_phpextra` comparison with obsolete MarkdownDeep:
 
 - Escaping: Pandoc ~ "Standard Markdown", MarkdownDeep ~ "PHP Markdown Extra"
 - Pandoc does not handle fenced code blocks in lists (not very useful in HLF)

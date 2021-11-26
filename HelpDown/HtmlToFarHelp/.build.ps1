@@ -35,13 +35,11 @@ task meta @{
 		Set-Content Directory.Build.props @"
 <Project>
 	<PropertyGroup>
-		<Product>HtmlToFarHelp</Product>
-		<Description>"HtmlToFarHelp - converts HTML to Far Manager help"</Description>
 		<Company>https://github.com/nightroman/FarNet</Company>
 		<Copyright>Copyright (c) Roman Kuzmin</Copyright>
+		<Product>HtmlToFarHelp</Product>
 		<Version>$Version</Version>
-		<FileVersion>$Version</FileVersion>
-		<AssemblyVersion>$Version</AssemblyVersion>
+		<Description>"HtmlToFarHelp - converts HTML to Far Manager help"</Description>
 	</PropertyGroup>
 </Project>
 "@
@@ -55,7 +53,7 @@ task build {
 
 # Convert markdown for packaging
 task markdown {
-	exec { MarkdownToHtml.exe "from = README.md; to = README.htm" }
+	exec { pandoc.exe README.md --output=README.htm --from=gfm --standalone --metadata=pagetitle:HtmlToFarHelp }
 	Demo\Convert-MarkdownToHelp.ps1
 }
 
@@ -71,7 +69,7 @@ task package markdown, {
 	$null = mkdir z\tools\Demo
 
 	# copy files
-	Copy-Item -Destination z\tools LICENSE.txt, README.htm, $Bin\HtmlToFarHelp.exe
+	Copy-Item -Destination z\tools LICENSE, README.htm, $Bin\HtmlToFarHelp.exe
 	Copy-Item -Destination z\tools\Demo Demo\*
 
 	# icon
@@ -129,10 +127,8 @@ class TestCase {
 
 # Test conversions and compare results.
 task test {
-	$SampleHome1 = "$TestHome\1" # MarkdownToHtml
 	$SampleHome2 = "$TestHome\2" # pandoc markdown_phpextra
 	$SampleHome3 = "$TestHome\3" # pandoc gfm
-	$null = mkdir $SampleHome1 -Force
 	$null = mkdir $SampleHome2 -Force
 	$null = mkdir $SampleHome3 -Force
 
@@ -157,7 +153,6 @@ task test {
 		# legacy .text files
 		foreach($_ in Get-ChildItem -Recurse -LiteralPath C:\ROM\FarDev\Code -Filter *.text) {
 			$Name = [System.IO.Path]::GetFileNameWithoutExtension($_.Name)
-			[TestCase]@{File = $_.FullName; Name = $Name; Mode = 1; Root = $SampleHome1}
 			[TestCase]@{File = $_.FullName; Name = $Name; Mode = 2; Root = $SampleHome2}
 		}
 	)
@@ -177,7 +172,6 @@ function Test-File([TestCase]$Test) {
 
 	# HTML
 	switch($Test.Mode) {
-		1 { exec { MarkdownToHtml.exe from=$($Test.File) to=$htm } }
 		2 { exec { pandoc.exe $Test.File --output=$htm --from=markdown_phpextra --wrap=preserve } }
 		3 { exec { pandoc.exe $Test.File --output=$htm --from=gfm --wrap=preserve --no-highlight } }
 	}
