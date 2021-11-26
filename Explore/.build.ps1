@@ -10,8 +10,7 @@ $FarHome = "C:\Bin\Far\$Platform"
 $ModuleHome = "$FarHome\FarNet\Modules\Explore"
 
 task build {
-	Set-Alias MSBuild (Resolve-MSBuild)
-	exec { MSBuild Explore.csproj /p:Configuration=Release /p:FarHome=$FarHome }
+	exec { dotnet build -c Release /p:FarHome=$FarHome }
 }
 
 task help {
@@ -50,7 +49,7 @@ task package help, version, {
 	Copy-Item -Destination $toModule `
 	About-Explore.htm,
 	History.txt,
-	LICENSE.txt,
+	LICENSE,
 	$ModuleHome\Explore.dll
 }
 
@@ -66,10 +65,8 @@ It is invoked from the command line with the prefix "Explore:".
 How to install and update FarNet and modules:
 
 https://github.com/nightroman/FarNet#readme
-
----
 '@
-	# nuspec
+
 	Set-Content z\Package.nuspec @"
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
@@ -88,8 +85,8 @@ https://github.com/nightroman/FarNet#readme
 	</metadata>
 </package>
 "@
-	# pack
-	exec { NuGet pack z\Package.nuspec }
+
+	exec { NuGet.exe pack z\Package.nuspec }
 }
 
 task . build, clean

@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.Explore
 
+= 2.1.3 =
+
+Maintenance.
+
 = 2.1.2 =
 
 Minor tweaks.
