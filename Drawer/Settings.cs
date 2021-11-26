@@ -2,10 +2,11 @@
 // FarNet module Drawer
 // Copyright (c) Roman Kuzmin
 
+using FarNet.Settings;
 using System;
 using System.Configuration;
 using System.Text.RegularExpressions;
-using FarNet.Settings;
+
 namespace FarNet.Drawer
 {
 	[SettingsProvider(typeof(ModuleSettingsProvider))]
@@ -15,8 +16,8 @@ namespace FarNet.Drawer
 		public const string CurrentWordName = "Current word";
 		public const string FixedColumnGuid = "efe9454e-0284-4047-ba74-a00685fe40a6";
 		public const string FixedColumnName = "Fixed column";
-		static readonly Settings _Default = new Settings();
-		public static Settings Default { get { return _Default; } }
+
+		public static Settings Default { get; } = new Settings();
 		[UserScopedSetting]
 		[DefaultSettingValue(@"\w[-\w]*")]
 		[SettingsManageability(SettingsManageability.Roaming)]
@@ -65,14 +66,19 @@ namespace FarNet.Drawer
 			get { return (ConsoleColor)this["FixedColumnColorBackground"]; }
 			set { this["FixedColumnColorBackground"] = value; }
 		}
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults")]
 		public override void Save()
 		{
-			if (CurrentWordPattern == null || CurrentWordPattern.Trim().Length == 0)
+			if (string.IsNullOrWhiteSpace(CurrentWordPattern))
 				throw new ModuleException("Empty current word pattern is invalid.");
 
-			try { new Regex(CurrentWordPattern, RegexOptions.IgnorePatternWhitespace); }
-			catch (ArgumentException ex) { throw new ModuleException("Invalid current word pattern: " + ex.Message); }
+			try
+			{
+				new Regex(CurrentWordPattern, RegexOptions.IgnorePatternWhitespace);
+			}
+			catch (ArgumentException ex)
+			{
+				throw new ModuleException("Invalid current word pattern: " + ex.Message);
+			}
 
 			base.Save();
 		}
