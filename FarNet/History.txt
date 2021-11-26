@@ -1,6 +1,10 @@
 https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 5.5.3 =
+
+Maintenance.
+
 = 5.5.2 =
 
 Update Far.exe.config for F# v6.

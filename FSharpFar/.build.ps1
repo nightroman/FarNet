@@ -9,7 +9,6 @@ param(
 )
 
 $ModuleName = 'FSharpFar'
-$ProjectRoot = 'src'
 $ProjectName = "$ModuleName.fsproj"
 
 task init meta, {
@@ -27,17 +26,17 @@ task kill clean, {
 }
 
 task build {
-	exec {dotnet build $ProjectRoot\$ModuleName.sln /p:FarHome=$FarHome /p:Configuration=$Configuration}
+	assert (Test-Path packages) 'Please, ib init'
+	exec {dotnet build "src\$ModuleName.sln" "/p:FarHome=$FarHome" "/p:Configuration=$Configuration"}
 }
 
 task clean {
 	remove @(
 		'z'
 		'README.htm'
-		'src\FSharpFar.fs.ini'
 		"FarNet.$ModuleName.*.nupkg"
-		"$ProjectRoot\*\bin"
-		"$ProjectRoot\*\obj"
+		"src\*\bin"
+		"src\*\obj"
 	)
 }
 
@@ -65,8 +64,6 @@ task meta -Inputs .build.ps1, History.txt -Outputs src/Directory.Build.props -Jo
 		<Description>F# scripting and interactive services in Far Manager</Description>
 		<Product>FarNet.FSharpFar</Product>
 		<Version>$Version</Version>
-		<FileVersion>$Version</FileVersion>
-		<AssemblyVersion>$Version</AssemblyVersion>
 	</PropertyGroup>
 </Project>
 "@
@@ -134,8 +131,6 @@ F# scripting and interactive services in Far Manager
 How to install and update FarNet and modules:
 
 https://github.com/nightroman/FarNet#readme
-
----
 '@
 	# nuspec
 	Set-Content z\Package.nuspec @"

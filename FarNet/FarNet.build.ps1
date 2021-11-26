@@ -6,7 +6,7 @@
 param(
 	$Platform = (property Platform x64),
 	$Configuration = (property Configuration Release),
-	$TargetFrameworkVersion = (property TargetFrameworkVersion v4.5)
+	$TargetFramework = (property TargetFramework net45)
 )
 $FarHome = "C:\Bin\Far\$Platform"
 
@@ -22,27 +22,27 @@ $script:Builds = @(
 	'FarNetMan\.build.ps1'
 )
 
-function Clean {
-	foreach($_ in $Builds) { Invoke-Build Clean $_ }
+function do-clean {
+	foreach($_ in $Builds) { Invoke-Build clean $_ }
 	remove z, FarNet.sdf, About-FarNet.htm
 }
 
 task clean {
-	Clean
+	do-clean
 }
 
 task install {
-	foreach($_ in $Builds) { Invoke-Build Install $_ }
+	foreach($_ in $Builds) { Invoke-Build install $_ }
 	Copy-Item Far.exe.config $FarHome
-	# It may fail in Debug...
-	if ($Configuration -eq 'Release') {
-		Copy-Item FarNet.Settings\bin\Release\FarNet.Settings.xml, FarNet.Tools\bin\Release\FarNet.Tools.xml $FarHome\FarNet
-	}
+	Copy-Item -Destination "$FarHome\FarNet" @(
+		"FarNet.Settings\bin\$Configuration\$TargetFramework\FarNet.Settings.xml"
+		"FarNet.Tools\bin\$Configuration\$TargetFramework\FarNet.Tools.xml"
+	)
 },
 helpHLF
 
 task uninstall {
-	foreach($_ in $Builds) { Invoke-Build Uninstall $_ }
+	foreach($_ in $Builds) { Invoke-Build uninstall $_ }
 	remove $FarHome\Far.exe.config
 }
 
@@ -85,7 +85,7 @@ task beginPackage {
 	#! build just FarNetMan, PowerShellFar is not needed and causes locked files...
 	exec { & (Resolve-MSBuild) @(
 		"..\FarNetAccord.sln"
-		"/t:FarNetMan"
+		"/t:restore,FarNetMan"
 		"/p:Platform=$bit"
 		"/p:Configuration=Release"
 	)}
@@ -152,10 +152,8 @@ FarNet provides the .NET API for Far Manager and the runtime infrastructure for
 How to install and update FarNet and modules:
 
 https://github.com/nightroman/FarNet#readme
-
----
 '@
-	# nuspec
+
 	Set-Content z\Package.nuspec @"
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
@@ -174,6 +172,6 @@ https://github.com/nightroman/FarNet#readme
 	</metadata>
 </package>
 "@
-	# pack
-	exec { NuGet pack z\Package.nuspec }
+
+	exec { NuGet.exe pack z\Package.nuspec }
 }

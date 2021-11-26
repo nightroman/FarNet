@@ -5,7 +5,8 @@
 
 param(
 	$FarHome = (property FarHome C:\Bin\Far\x64),
-	$Configuration = (property Configuration Release)
+	$Configuration = (property Configuration Release),
+	$TargetFramework = (property TargetFramework net45)
 )
 $PsfHome = "$FarHome\FarNet\Modules\PowerShellFar"
 
@@ -40,7 +41,7 @@ task help {
 }
 
 task installBin {
-	exec { robocopy Bin\$Configuration $PsfHome PowerShellFar.dll PowerShellFar.xml /r:0 } (0..2)
+	exec { robocopy Bin\$Configuration\$TargetFramework $PsfHome PowerShellFar.dll PowerShellFar.xml /r:0 } (0..2)
 }
 
 task installRes {

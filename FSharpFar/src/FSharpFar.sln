@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30128.74
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharpFar", "FSharpFar\FSharpFar.fsproj", "{F4E93973-9C88-4F3D-9081-EE1817B573D2}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FarNet.FSharp", "FarNet.FSharp\FarNet.FSharp.fsproj", "{5CD4168D-A053-486B-B82E-6D1B7F305960}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "fsx", "fsx\fsx.fsproj", "{C6F80189-36C3-4877-BE50-EAD66BB41D81}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F4E93973-9C88-4F3D-9081-EE1817B573D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4E93973-9C88-4F3D-9081-EE1817B573D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4E93973-9C88-4F3D-9081-EE1817B573D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4E93973-9C88-4F3D-9081-EE1817B573D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CD4168D-A053-486B-B82E-6D1B7F305960}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CD4168D-A053-486B-B82E-6D1B7F305960}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CD4168D-A053-486B-B82E-6D1B7F305960}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CD4168D-A053-486B-B82E-6D1B7F305960}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6F80189-36C3-4877-BE50-EAD66BB41D81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6F80189-36C3-4877-BE50-EAD66BB41D81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6F80189-36C3-4877-BE50-EAD66BB41D81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6F80189-36C3-4877-BE50-EAD66BB41D81}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {95550C92-069A-4192-96B7-30F853251B6D}
+	EndGlobalSection
+EndGlobal

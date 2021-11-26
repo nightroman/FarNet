@@ -1,10 +1,12 @@
-*.nupkg
-*.sln
-.vs
-bin
-obj
-packages
-z*
+.vs/
+bin/
+obj/
+z/
 
-FSharpFar.fs.ini
+packages/
+paket-files
+
+*.nupkg
+z.*
+
 Directory.Build.props

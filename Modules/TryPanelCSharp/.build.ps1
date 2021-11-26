@@ -1,6 +1,6 @@
 <#
 .Synopsis
-	Build script (https://github.com/nightroman/Invoke-Build)
+	Build script, https://github.com/nightroman/Invoke-Build
 #>
 
 param(
@@ -9,11 +9,8 @@ param(
 	$FarNetModules = (property FarNetModules $FarHome\FarNet\Modules)
 )
 
-$ModuleName = 'TryPanelCSharp'
-$ProjectName = "$ModuleName.csproj"
-
 task build {
-	exec {&(Resolve-MSBuild) $ProjectName /p:FarHome=$FarHome /p:Configuration=$Configuration /p:FarNetModules=$FarNetModules}
+	exec { dotnet build -c $Configuration /p:FarHome=$FarHome /p:FarNetModules=$FarNetModules }
 }
 
 task clean {

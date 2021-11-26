@@ -1,172 +1,30 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <FarHome Condition=" '$(FarHome)' == '' ">C:\Bin\Far\x64</FarHome>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{602C5210-AF86-471A-BF19-35C0D5A71719}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>PowerShellFar</RootNamespace>
-    <AssemblyName>PowerShellFar</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <Description>PowerShell scripting for FarNet</Description>
+    <TargetFramework>net45</TargetFramework>
+    <WarningLevel>5</WarningLevel>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartAction>Program</StartAction>
-    <StartProgram>$(FarHome)\Far.exe</StartProgram>
-    <EnableUnmanagedDebugging>true</EnableUnmanagedDebugging>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>bin\Debug\PowerShellFar.xml</DocumentationFile>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>bin\Release\PowerShellFar.xml</DocumentationFile>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <CodeAnalysisRules>
-    </CodeAnalysisRules>
-    <CodeAnalysisRuleSet>..\FarNet\CodeAnalysis.ruleset</CodeAnalysisRuleSet>
-    <DebugSymbols>true</DebugSymbols>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="System.XML" />
+    <Compile Remove="Bench\**" />
+    <Compile Remove="Modules\**" />
+    <Compile Remove="Samples\**" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="AssemblyMeta.cs" />
-    <Compile Include="BreakpointDrawer.cs" />
-    <Compile Include="Commands\AssertFarCommand.cs" />
-    <Compile Include="Commands\Find-FarFile.cs" />
-    <Compile Include="Commands\GetFarFileCommand.cs" />
-    <Compile Include="Commands\InvokeFarCommand.cs" />
-    <Compile Include="Commands\StartFarJobCommand.cs" />
-    <Compile Include="Commands\SearchFarFileCommand.cs" />
-    <Compile Include="Commands\StartFarTaskCommand.cs" />
-    <Compile Include="Interactive.cs" />
-    <Compile Include="EditorKit.cs" />
-    <Compile Include="Format.cs" />
-    <Compile Include="Help.cs" />
-    <Compile Include="JobCommand.cs" />
-    <Compile Include="NativeMethods.cs" />
-    <Compile Include="Panels\AnyPanelSet.cs" />
-    <Compile Include="Panels\AnyPanelTypes.cs" />
-    <Compile Include="Panels\DataExplorer.cs" />
-    <Compile Include="Panels\DataPanelTypes.cs" />
-    <Compile Include="Entry.cs" />
-    <Compile Include="A.cs" />
-    <Compile Include="Commands\BaseCmdlet.cs" />
-    <Compile Include="Collections.cs" />
-    <Compile Include="Commands\BaseMenuCmdlet.cs" />
-    <Compile Include="Commands\BaseTextCmdlet.cs" />
-    <Compile Include="Commands\BaseFileCmdlet.cs" />
-    <Compile Include="Commands\BasePanelCmdlet.cs" />
-    <Compile Include="Commands\GetFarItemCommand.cs" />
-    <Compile Include="Commands\GetFarPathCommand.cs" />
-    <Compile Include="Commands\NewFarEditorCommand.cs" />
-    <Compile Include="Commands\NewFarListCommand.cs" />
-    <Compile Include="Commands\NewFarMenuCommand.cs" />
-    <Compile Include="Commands\NewFarItemCommand.cs" />
-    <Compile Include="Commands\NewFarFileCommand.cs" />
-    <Compile Include="Commands\NewFarViewerCommand.cs" />
-    <Compile Include="Commands\OutFarListCommand.cs" />
-    <Compile Include="Commands\OutFarPanelCommand.cs" />
-    <Compile Include="Commands\ShowFarMessageCommand.cs" />
-    <Compile Include="Commands\OpenFarEditorCommand.cs" />
-    <Compile Include="Commands\OpenFarPanelCommand.cs" />
-    <Compile Include="Commands\OpenFarViewerCommand.cs" />
-    <Compile Include="Converter.cs" />
-    <Compile Include="Files.cs" />
-    <Compile Include="Panels\FolderExplorer.cs" />
-    <Compile Include="Panels\FormatExplorer.cs" />
-    <Compile Include="Panels\FormatPanel.cs" />
-    <Compile Include="Panels\FormatPanelTypes.cs" />
-    <Compile Include="History.cs" />
-    <Compile Include="Panels\ItemExplorer.cs" />
-    <Compile Include="Panels\ListPanel.cs" />
-    <Compile Include="Panels\MemberExplorer.cs" />
-    <Compile Include="Panels\MemberPanel.cs" />
-    <Compile Include="Panels\AnyPanel.cs" />
-    <Compile Include="Panels\ItemPanel.cs" />
-    <Compile Include="Meta.cs" />
-    <Compile Include="OutputWriters.cs" />
-    <Compile Include="Panels\ObjectExplorer.cs" />
-    <Compile Include="Panels\PropertyExplorer.cs" />
-    <Compile Include="Panels\TableExplorer.cs" />
-    <Compile Include="Panels\TreeExplorer.cs" />
-    <Compile Include="RawUI.cs" />
-    <Compile Include="PowerExplorer.cs" />
-    <Compile Include="Settings.cs" />
-    <Compile Include="Text.cs" />
-    <Compile Include="UI\ActorMenu.cs" />
-    <Compile Include="UI\BreakpointDialog.cs" />
-    <Compile Include="UI\ChoiceMsg.cs" />
-    <Compile Include="UI\CommandHistoryMenu.cs" />
-    <Compile Include="UI\ConnectionDialog.cs" />
-    <Compile Include="UI\DebuggerDialog.cs" />
-    <Compile Include="UI\DebuggerMenu.cs" />
-    <Compile Include="UI\ErrorsMenu.cs" />
-    <Compile Include="UI\ExportDialog.cs" />
-    <Compile Include="UI\InputBoxEx.cs" />
-    <Compile Include="UI\InputDialog.cs" />
-    <Compile Include="UI\NewValueDialog.cs" />
-    <Compile Include="UI\SelectMenu.cs" />
-    <Compile Include="Panels\ObjectPanel.cs" />
-    <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="FarHost.cs" />
-    <Compile Include="Actor.cs" />
-    <Compile Include="Job.cs" />
-    <Compile Include="Panels\PropertyPanel.cs" />
-    <Compile Include="Panels\FolderTree.cs" />
-    <Compile Include="FarUI.cs" />
-    <Compile Include="JobUI.cs" />
-    <Compile Include="Panels\DataPanel.cs" />
-    <Compile Include="Panels\TablePanel.cs" />
-    <Compile Include="Panels\TreePanel.cs" />
-    <Compile Include="UniformUI.cs" />
-    <Compile Include="Utility.cs" />
+    <ProjectReference Include="..\FarNet\FarNet.Tools\FarNet.Tools.csproj" />
+    <ProjectReference Include="..\FarNet\FarNet\FarNet.csproj" />
+    <Reference Include="System.Management.Automation">
+      <HintPath>$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\WindowsPowerShell\3.0\System.Management.Automation.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <CodeAnalysisDictionary Include="..\FarNet\CustomDictionary.xml">
-      <Link>CustomDictionary.xml</Link>
-    </CodeAnalysisDictionary>
-    <Content Include="doc.xml">
-      <SubType>Designer</SubType>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\FarNet\FarNet.Tools\FarNet.Tools.csproj">
-      <Project>{3FEFB36E-496D-4DA9-B185-1DE4683B5BA1}</Project>
-      <Name>FarNet.Tools</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\FarNet\FarNet\FarNet.csproj">
-      <Project>{264744C1-B6FF-4B75-8AD0-0920BCCFF3D3}</Project>
-      <Name>FarNet</Name>
-      <Private>False</Private>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-    <PostBuildEvent>ib Install $(MSBuildProjectDirectory)\PowerShellFar.build.ps1 -FarHome $(FarHome) -Configuration $(Configuration)</PostBuildEvent>
-  </PropertyGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="ib Install $(MSBuildProjectDirectory)\PowerShellFar.build.ps1 -FarHome $(FarHome) -Configuration $(Configuration) -TargetFramework $(TargetFramework)" />
+  </Target>
+
 </Project>

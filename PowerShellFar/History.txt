@@ -1,6 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 FarNet 5.5.0
 
+= 5.5.1 =
+
+Maintenance.
+
 = 5.5.0 =
 
 Requires FarNet 5.5.0
