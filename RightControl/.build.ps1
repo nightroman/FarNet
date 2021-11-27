@@ -16,30 +16,25 @@ function Get-Version {
 }
 
 # Generate or update meta files.
-task meta -Inputs History.txt -Outputs AssemblyInfo.cs {
+task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props {
 	$Version = Get-Version
 
-	Set-Content AssemblyInfo.cs @"
-using System;
-using System.Reflection;
-using System.Runtime.InteropServices;
-
-[assembly: AssemblyProduct("FarNet.RightControl")]
-[assembly: AssemblyVersion("$Version")]
-[assembly: AssemblyTitle("FarNet module RightControl for Far Manager")]
-[assembly: AssemblyDescription("Some editor actions work like in other editors")]
-[assembly: AssemblyCompany("https://github.com/nightroman/FarNet")]
-[assembly: AssemblyCopyright("Copyright (c) Roman Kuzmin")]
-
-[assembly: ComVisible(false)]
-[assembly: CLSCompliant(true)]
+	Set-Content Directory.Build.props @"
+<Project>
+  <PropertyGroup>
+    <Company>https://github.com/nightroman/FarNet</Company>
+    <Copyright>Copyright (c) Roman Kuzmin</Copyright>
+    <Product>FarNet.RightControl</Product>
+    <Version>$Version</Version>
+    <Description>Far Manager editor and line editor tweaks</Description>
+  </PropertyGroup>
+</Project>
 "@
 }
 
 # Build and install
 task build meta, {
-	$MSBuild = Resolve-MSBuild
-	exec { & $MSBuild RightControl.csproj /p:Configuration=Release /p:FarHome=$FarHome }
+	exec { dotnet build -c Release "/p:FarHome=$FarHome" }
 }
 
 # New About-RightControl.htm
@@ -57,7 +52,7 @@ task help {
 	}
 }
 
-# Remove temp files
+# Remove temp files.
 task clean {
 	remove z, bin, obj, About-RightControl.htm, FarNet.RightControl.*.nupkg
 }
@@ -89,7 +84,7 @@ task package help, version, {
 
 # New NuGet package
 task nuget package, version, {
-	$text = @'
+	$description = @'
 RightControl is the FarNet module for Far Manager.
 
 It alters some actions in editors, edit controls, and the command line.
@@ -101,10 +96,8 @@ selecting, deleting by words, and etc.
 How to install and update FarNet and modules:
 
 https://github.com/nightroman/FarNet#readme
-
----
 '@
-	# nuspec
+
 	Set-Content z\Package.nuspec @"
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
@@ -117,14 +110,14 @@ https://github.com/nightroman/FarNet#readme
 		<icon>FarNetLogo.png</icon>
 		<license type="expression">BSD-3-Clause</license>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<description>$text</description>
+		<description>$description</description>
 		<releaseNotes>https://github.com/nightroman/FarNet/blob/master/RightControl/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module</tags>
 	</metadata>
 </package>
 "@
-	# pack
-	exec { NuGet pack z\Package.nuspec }
+
+	exec { NuGet.exe pack z\Package.nuspec }
 }
 
 task . build, clean

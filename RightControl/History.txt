@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.RightControl
 
+= 2.3.1 =
+
+Maintenance.
+
 = 2.3.0 =
 
 Use FarNet 5.5.1 (changes in settings saving).
