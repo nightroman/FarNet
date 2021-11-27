@@ -18,29 +18,25 @@ function Get-Version {
 }
 
 # Synopsis: Generate or update meta files.
-task meta -Inputs History.txt, .build.ps1 -Outputs AssemblyInfo.cs {
+task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props {
 	$Version = Get-Version
 
-	Set-Content AssemblyInfo.cs @"
-using System;
-using System.Reflection;
-using System.Runtime.InteropServices;
-
-[assembly: AssemblyVersion("$Version")]
-[assembly: AssemblyProduct("FarNet.Vessel")]
-[assembly: AssemblyTitle("FarNet module Vessel for Far Manager")]
-[assembly: AssemblyDescription("FarNet.Vessel - smart history of files, folders, commands")]
-[assembly: AssemblyCompany("https://github.com/nightroman/FarNet")]
-[assembly: AssemblyCopyright("Copyright (c) Roman Kuzmin")]
-
-[assembly: ComVisible(false)]
-[assembly: CLSCompliant(true)]
+	Set-Content Directory.Build.props @"
+<Project>
+  <PropertyGroup>
+    <Company>https://github.com/nightroman/FarNet</Company>
+    <Copyright>Copyright (c) Roman Kuzmin</Copyright>
+    <Product>FarNet.Vessel</Product>
+    <Version>$Version</Version>
+    <Description>Far Manager smart history of files, folders, commands</Description>
+  </PropertyGroup>
+</Project>
 "@
 }
 
 # Build and install the assembly.
 task build meta, {
-	exec { & (Resolve-MSBuild) Vessel.csproj /p:Configuration=Release /p:FarHome=$FarHome }
+	exec { dotnet build -c Release "/p:FarHome=$FarHome" }
 }
 
 # In addition to Build: new About-Vessel.htm, $ModuleHome\Vessel.hlf
@@ -81,7 +77,7 @@ task package help, {
 	Copy-Item -Destination $toModule `
 	About-Vessel.htm,
 	History.txt,
-	LICENSE.txt,
+	LICENSE,
 	Vessel.macro.lua,
 	$ModuleHome\Vessel.dll,
 	$ModuleHome\Vessel.hlf
@@ -91,7 +87,7 @@ task package help, {
 }
 
 task nuget package, version, {
-	$text = @'
+	$description = @'
 Vessel is the FarNet module for Far Manager.
 It provides smart history of files, folders, commands.
 
@@ -100,10 +96,8 @@ It provides smart history of files, folders, commands.
 How to install and update FarNet and modules:
 
 https://github.com/nightroman/FarNet#readme
-
----
 '@
-	# nuspec
+
 	Set-Content z\Package.nuspec @"
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
@@ -116,12 +110,12 @@ https://github.com/nightroman/FarNet#readme
 		<icon>FarNetLogo.png</icon>
 		<license type="expression">BSD-3-Clause</license>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<description>$text</description>
+		<description>$description</description>
 		<releaseNotes>https://github.com/nightroman/FarNet/blob/master/Vessel/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module</tags>
 	</metadata>
 </package>
 "@
-	# pack
-	exec { NuGet pack z\Package.nuspec -NoPackageAnalysis }
+
+	exec { NuGet.exe pack z\Package.nuspec }
 }

@@ -1,6 +1,10 @@
 https://www.nuget.org/packages/FarNet.Vessel
 FarNet 5.4.17
 
+= 2.5.7 =
+
+Maintenance.
+
 = 2.5.6 =
 
 Amend ShiftDel in file history for locked entries.
