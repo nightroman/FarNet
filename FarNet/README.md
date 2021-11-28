@@ -77,7 +77,6 @@ How to install and update FarNet and modules:
 
 - *FarNet.dll*, *FarNet.xml* - FarNet API for .NET modules (and XML API comments).
 - *FarNet.Tools.dll*, *FarNet.Tools.xml* - FarNet module tools library.
-- *FarNet.Settings.dll*, *FarNet.Settings.xml* - FarNet module settings library.
 - *FarNet...dll* - other FarNet libraries used internally by the core.
 
 *%FARHOME%\FarNet\Modules*
@@ -498,23 +497,14 @@ is enabled). By default symbols * and ? are wildcards.
 
 **Settings menu**
 
-The settings menu shows settings implemented by modules and discovered by the
-core (a module normally has one setting set but it may have several). On
-selection of a set from the menu its properties are shown in its module
-settings panel. The settings panel is uniform for all modules.
+This menu shows browsable settings implemented by modules. A module normally
+has one settings set but it may have several. On selection from the menu the
+settings file is opened in the editor.
 
-**Settings panel**
+**Settings editor**
 
-The module settings panel has two columns: setting names and values. Use `[F4]`
-in order to edit the current value in the text editor. The settings are saved
-when the editor text is saved.
-
-Default settings are shown with "-". Changed settings are shown with "+". To
-reset selected values to default use `[Del]` or `[F8]`. Default settings are
-not stored in files, they are defined in modules.
-
-`[CtrlF11]` in the panel shows default and edited values sorted separately.
-`[CtrlF3]` restores sorting by names.
+Edit and save the module settings XML. If the module implements and use the
+`Default` settings instance then changes are instantly applied.
 
 ---
 

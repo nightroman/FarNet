@@ -1,29 +1,16 @@
 ﻿namespace FSharpFar
+open FarNet
 open System
-open System.Configuration
-open FarNet.Settings
+open System.Xml.Serialization
 
-[<SettingsProvider(typeof<ModuleSettingsProvider>)>]
+[<Serializable>]
+[<XmlRoot("Data")>]
+type SettingsData() =
+    member val ErrorBackgroundColor = ConsoleColor.Red with get, set
+    member val ErrorForegroundColor = ConsoleColor.White with get, set
+    member val WarningBackgroundColor = ConsoleColor.Yellow with get, set
+    member val WarningForegroundColor = ConsoleColor.Black with get, set
+
 type Settings() =
-    inherit ModuleSettings()
-    static member Default = Settings()
-
-    [<DefaultSettingValue("Red"); SettingsManageability(SettingsManageability.Roaming); UserScopedSetting>]
-    member x.ErrorBackgroundColor
-        with get () = x["ErrorBackgroundColor"] :?> ConsoleColor
-        and set (value: ConsoleColor) = x["ErrorBackgroundColor"] <- value
-
-    [<DefaultSettingValue("White"); SettingsManageability(SettingsManageability.Roaming); UserScopedSetting>]
-    member x.ErrorForegroundColor
-        with get () = x["ErrorForegroundColor"] :?> ConsoleColor
-        and set (value: ConsoleColor) = x["ErrorForegroundColor"] <- value
-
-    [<DefaultSettingValue("Yellow"); SettingsManageability(SettingsManageability.Roaming); UserScopedSetting>]
-    member x.WarningBackgroundColor
-        with get () = x["WarningBackgroundColor"] :?> ConsoleColor
-        and set (value: ConsoleColor) = x["WarningBackgroundColor"] <- value
-
-    [<DefaultSettingValue("Black"); SettingsManageability(SettingsManageability.Roaming); UserScopedSetting>]
-    member x.WarningForegroundColor
-        with get () = x["WarningForegroundColor"] :?> ConsoleColor
-        and set (value: ConsoleColor) = x["WarningForegroundColor"] <- value
+    inherit ModuleSettings<SettingsData>()
+    static member val Default = Settings()

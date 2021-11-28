@@ -89,7 +89,7 @@ task package markdown, version, {
 	Copy-Item -Destination $toModule $(
 		"README.htm"
 		"History.txt"
-		"LICENSE.txt"
+		"LICENSE"
 		"RightWords.macro.lua"
 		"$ModuleHome\RightWords.dll"
 		"$ModuleHome\RightWords.hlf"

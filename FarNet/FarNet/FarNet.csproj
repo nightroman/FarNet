@@ -6,6 +6,7 @@
     <WarningLevel>5</WarningLevel>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <LangVersion>9.0</LangVersion>
   </PropertyGroup>
 
 </Project>

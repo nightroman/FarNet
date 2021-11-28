@@ -81,24 +81,27 @@ Gain/item  : {5,8:n2}
 
 		static void UpdatePeriodically(int mode)
 		{
+			var sets = Settings.Default.GetData();
+			var workings = new Workings();
+			var works = workings.GetData();
 			var now = DateTime.Now;
 
 			// skip recently updated
 			var lastUpdateTime =
-				mode == 0 ? Settings.Default.LastUpdateTime1 :
-				mode == 1 ? Settings.Default.LastUpdateTime2 :
-				Settings.Default.LastUpdateTime3;
-			if ((now - lastUpdateTime).TotalHours < Settings.Default.Limit0)
+				mode == 0 ? works.LastUpdateTime1 :
+				mode == 1 ? works.LastUpdateTime2 :
+				works.LastUpdateTime3;
+			if ((now - lastUpdateTime).TotalHours < sets.Limit0)
 				return;
 
 			// save new last update time
 			if (mode == 0)
-				Settings.Default.LastUpdateTime1 = now;
+				works.LastUpdateTime1 = now;
 			else if (mode == 1)
-				Settings.Default.LastUpdateTime2 = now;
+				works.LastUpdateTime2 = now;
 			else
-				Settings.Default.LastUpdateTime3 = now;
-			Settings.Default.Save();
+				works.LastUpdateTime3 = now;
+			workings.Save();
 
 			// start work
 			ThreadPool.QueueUserWorkItem(UpdateWork, mode);
@@ -115,9 +118,11 @@ Gain/item  : {5,8:n2}
 
 		static void ShowHistory()
 		{
+			var sets = Settings.Default.GetData();
+
 			var mode = 0;
 			var store = VesselHost.LogPath[mode];
-			var limit = Settings.Default.Limit0;
+			var limit = sets.Limit0;
 
 			var menu = CreateListMenu();
 			menu.HelpTopic = My.HelpTopic("file-history");
@@ -264,9 +269,11 @@ Gain/item  : {5,8:n2}
 
 		static void ShowFolders()
 		{
+			var sets = Settings.Default.GetData();
+
 			var mode = 1;
 			var store = VesselHost.LogPath[mode];
-			var limit = Settings.Default.Limit0;
+			var limit = sets.Limit0;
 
 			var menu = CreateListMenu();
 			menu.HelpTopic = My.HelpTopic("folder-history");
@@ -360,9 +367,11 @@ Gain/item  : {5,8:n2}
 
 		static void ShowCommands()
 		{
+			var sets = Settings.Default.GetData();
+
 			var mode = 2;
 			var store = VesselHost.LogPath[mode];
-			var limit = Settings.Default.Limit0;
+			var limit = sets.Limit0;
 
 			var menu = CreateListMenu();
 			menu.HelpTopic = My.HelpTopic("command-history");

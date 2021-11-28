@@ -18,7 +18,7 @@ task help {
 	exec {
 		pandoc.exe @(
 			'README.md'
-			'--output=About-CopyColor.htm'
+			'--output=README.htm'
 			'--from=gfm'
 			'--self-contained'
 			"--css=$env:MarkdownCss"
@@ -28,7 +28,7 @@ task help {
 }
 
 task clean {
-	remove z, bin, obj, About-CopyColor.htm, FarNet.CopyColor.*.nupkg
+	remove z, bin, obj, README.htm, FarNet.CopyColor.*.nupkg
 }
 
 task version {
@@ -47,7 +47,7 @@ task package help, version, {
 
 	# module
 	Copy-Item -Destination $toModule `
-	About-CopyColor.htm,
+	README.htm,
 	History.txt,
 	LICENSE.txt,
 	$ModuleHome\CopyColor.dll

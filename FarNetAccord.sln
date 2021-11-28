@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30104.148
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{41B8AD22-D6A2-4056-92DD-7BC963D754DC}"
 	ProjectSection(SolutionItems) = preProject
@@ -10,27 +10,24 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FarNetMan", "FarNet\FarNetMan\FarNetMan.vcxproj", "{A5F07EDB-2242-4A92-BFD1-48396007C625}"
 	ProjectSection(ProjectDependencies) = postProject
-		{A9D3605F-2853-4F71-A34A-6EFF4941AA90} = {A9D3605F-2853-4F71-A34A-6EFF4941AA90}
 		{3FEFB36E-496D-4DA9-B185-1DE4683B5BA1} = {3FEFB36E-496D-4DA9-B185-1DE4683B5BA1}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarNet", "FarNet\FarNet\FarNet.csproj", "{264744C1-B6FF-4B75-8AD0-0920BCCFF3D3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FarNet", "FarNet\FarNet\FarNet.csproj", "{264744C1-B6FF-4B75-8AD0-0920BCCFF3D3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarNet.Tools", "FarNet\FarNet.Tools\FarNet.Tools.csproj", "{3FEFB36E-496D-4DA9-B185-1DE4683B5BA1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FarNet.Tools", "FarNet\FarNet.Tools\FarNet.Tools.csproj", "{3FEFB36E-496D-4DA9-B185-1DE4683B5BA1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarNet.Settings", "FarNet\FarNet.Settings\FarNet.Settings.csproj", "{A9D3605F-2853-4F71-A34A-6EFF4941AA90}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FarNet.Works.Manager", "FarNet\FarNet.Works.Manager\FarNet.Works.Manager.csproj", "{516A2D89-4E77-4F24-89C2-A6D9E1C36998}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarNet.Works.Manager", "FarNet\FarNet.Works.Manager\FarNet.Works.Manager.csproj", "{516A2D89-4E77-4F24-89C2-A6D9E1C36998}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FarNet.Works.Config", "FarNet\FarNet.Works.Config\FarNet.Works.Config.csproj", "{752846B8-08B9-4D22-97B5-0F2C8020FB51}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarNet.Works.Config", "FarNet\FarNet.Works.Config\FarNet.Works.Config.csproj", "{752846B8-08B9-4D22-97B5-0F2C8020FB51}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FarNet.Works.Dialog", "FarNet\FarNet.Works.Dialog\FarNet.Works.Dialog.csproj", "{0BE8F8D1-F15A-4C53-BD71-4BC6E5005EF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarNet.Works.Dialog", "FarNet\FarNet.Works.Dialog\FarNet.Works.Dialog.csproj", "{0BE8F8D1-F15A-4C53-BD71-4BC6E5005EF7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FarNet.Works.Editor", "FarNet\FarNet.Works.Editor\FarNet.Works.Editor.csproj", "{E95736AD-A80B-42D0-BE74-095F7A558BC0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarNet.Works.Editor", "FarNet\FarNet.Works.Editor\FarNet.Works.Editor.csproj", "{E95736AD-A80B-42D0-BE74-095F7A558BC0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FarNet.Works.Panels", "FarNet\FarNet.Works.Panels\FarNet.Works.Panels.csproj", "{054F6FF3-F3F6-41CA-B2AF-D791411261D1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarNet.Works.Panels", "FarNet\FarNet.Works.Panels\FarNet.Works.Panels.csproj", "{054F6FF3-F3F6-41CA-B2AF-D791411261D1}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerShellFar", "PowerShellFar\PowerShellFar.csproj", "{602C5210-AF86-471A-BF19-35C0D5A71719}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PowerShellFar", "PowerShellFar\PowerShellFar.csproj", "{602C5210-AF86-471A-BF19-35C0D5A71719}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A5F07EDB-2242-4A92-BFD1-48396007C625} = {A5F07EDB-2242-4A92-BFD1-48396007C625}
 	EndProjectSection
@@ -67,14 +64,6 @@ Global
 		{3FEFB36E-496D-4DA9-B185-1DE4683B5BA1}.Release|Win32.Build.0 = Release|Any CPU
 		{3FEFB36E-496D-4DA9-B185-1DE4683B5BA1}.Release|x64.ActiveCfg = Release|Any CPU
 		{3FEFB36E-496D-4DA9-B185-1DE4683B5BA1}.Release|x64.Build.0 = Release|Any CPU
-		{A9D3605F-2853-4F71-A34A-6EFF4941AA90}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{A9D3605F-2853-4F71-A34A-6EFF4941AA90}.Debug|Win32.Build.0 = Debug|Any CPU
-		{A9D3605F-2853-4F71-A34A-6EFF4941AA90}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{A9D3605F-2853-4F71-A34A-6EFF4941AA90}.Debug|x64.Build.0 = Debug|Any CPU
-		{A9D3605F-2853-4F71-A34A-6EFF4941AA90}.Release|Win32.ActiveCfg = Release|Any CPU
-		{A9D3605F-2853-4F71-A34A-6EFF4941AA90}.Release|Win32.Build.0 = Release|Any CPU
-		{A9D3605F-2853-4F71-A34A-6EFF4941AA90}.Release|x64.ActiveCfg = Release|Any CPU
-		{A9D3605F-2853-4F71-A34A-6EFF4941AA90}.Release|x64.Build.0 = Release|Any CPU
 		{516A2D89-4E77-4F24-89C2-A6D9E1C36998}.Debug|Win32.ActiveCfg = Debug|Any CPU
 		{516A2D89-4E77-4F24-89C2-A6D9E1C36998}.Debug|Win32.Build.0 = Debug|Any CPU
 		{516A2D89-4E77-4F24-89C2-A6D9E1C36998}.Debug|x64.ActiveCfg = Debug|Any CPU

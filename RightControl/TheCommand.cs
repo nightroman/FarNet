@@ -61,7 +61,8 @@ namespace FarNet.RightControl
 		/// <param name="alt">True for the alternative operation.</param>
 		static void Run(IEditor editor, ILine line, Operation operation, bool right, bool alt)
 		{
-			var regex = right ? Settings.Default.GetRegexRight() : Settings.Default.GetRegexLeft();
+			var sets = Settings.Default.GetData();
+			var regex = right ? sets.RegexRight2 : sets.RegexLeft2;
 			Point caret = line == null ? editor.Caret : new Point(line.Caret, 0);
 			int iColumn = caret.X;
 			int iLine = caret.Y;

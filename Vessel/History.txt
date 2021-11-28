@@ -1,6 +1,14 @@
 https://www.nuget.org/packages/FarNet.Vessel
 FarNet 5.4.17
 
+= 2.6.0 =
+
+Requires FarNet 5.6.0.
+Uses new XML settings.
+Remove old:
+- %FARPROFILE%\FarNet\Vessel\Settings.resources
+- %FARLOCALPROFILE%\FarNet\Vessel\Settings.local.resources
+
 = 2.5.7 =
 
 Maintenance.
@@ -203,7 +211,7 @@ Fixed the plain history list and minor defects in 1.0.3.
 * Use of closing time instead of opening time is better for a few reasons.
 * Smart history list shows separators of the groups defined by factors.
 * Training shows the progress form.
-* Option Limits (see About-Vessel).
+* Option Limits (see README).
 * Ranking model is based on two factors instead of one. As a result:
 - Training is slow but factors can live longer without re-training.
 - Expected about 10% more total gain.

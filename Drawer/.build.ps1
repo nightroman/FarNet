@@ -9,6 +9,20 @@ param(
 $FarHome = "C:\Bin\Far\$Platform"
 $ModuleHome = "$FarHome\FarNet\Modules\Drawer"
 
+task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props version, {
+	Set-Content Directory.Build.props @"
+<Project>
+  <PropertyGroup>
+    <Company>https://github.com/nightroman/FarNet</Company>
+    <Copyright>Copyright (c) Roman Kuzmin</Copyright>
+    <Product>FarNet.Drawer</Product>
+    <Version>$Version</Version>
+    <Description>Editor color tools</Description>
+  </PropertyGroup>
+</Project>
+"@
+}
+
 task build {
 	exec { dotnet build -c Release /p:FarHome=$FarHome }
 }
@@ -18,7 +32,7 @@ task help {
 	exec {
 		pandoc.exe @(
 			'README.md'
-			'--output=About-Drawer.htm'
+			'--output=README.htm'
 			'--from=gfm'
 			'--self-contained'
 			"--css=$env:MarkdownCss"
@@ -28,11 +42,12 @@ task help {
 }
 
 task clean {
-	remove z, bin, obj, About-Drawer.htm, FarNet.Drawer.*.nupkg
+	remove z, bin, obj, README.htm, FarNet.Drawer.*.nupkg
 }
 
 task version {
 	($script:Version = switch -regex -file History.txt {'^= (\d+\.\d+\.\d+) =$' {$matches[1]; break}})
+	assert $script:Version
 }
 
 task package help, version, {
@@ -47,7 +62,7 @@ task package help, version, {
 
 	# module
 	Copy-Item -Destination $toModule @(
-		'About-Drawer.htm'
+		'README.htm'
 		'History.txt'
 		'LICENSE'
 		"$ModuleHome\Drawer.dll"

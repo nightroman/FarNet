@@ -48,10 +48,6 @@
       <HintPath>$(FarHome)\FarNet\FarNet.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="FarNet.Settings">
-      <HintPath>$(FarHome)\FarNet\FarNet.Settings.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="FarNet.Tools">
       <HintPath>$(FarHome)\FarNet\FarNet.Tools.dll</HintPath>
       <Private>False</Private>

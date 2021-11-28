@@ -7,15 +7,12 @@ open FSharp.Compiler.Diagnostics
 type FarErrorDrawer() =
     inherit ModuleDrawer()
 
-    let bgError = Settings.Default.ErrorBackgroundColor
-    let fgError = Settings.Default.ErrorForegroundColor
-    let bgWarning = Settings.Default.WarningBackgroundColor
-    let fgWarning = Settings.Default.WarningForegroundColor
-
     override __.Invoke(editor, e) =
         match editor.MyFileErrors() with
         | None -> ()
         | Some errors ->
+
+        let sets = Settings.Default.GetData()
 
         let isChecking = editor.MyChecking
         for line in e.Lines do
@@ -33,8 +30,8 @@ type FarErrorDrawer() =
                     if st < en then
                         let fg, bg =
                             match err.Severity with
-                            | FSharpDiagnosticSeverity.Error -> fgError, bgError
-                            | FSharpDiagnosticSeverity.Warning -> fgWarning, bgWarning
-                            | FSharpDiagnosticSeverity.Info -> fgWarning, bgWarning
-                            | FSharpDiagnosticSeverity.Hidden -> fgWarning, bgWarning
+                            | FSharpDiagnosticSeverity.Error -> sets.ErrorForegroundColor, sets.ErrorBackgroundColor
+                            | FSharpDiagnosticSeverity.Warning -> sets.WarningForegroundColor, sets.WarningBackgroundColor
+                            | FSharpDiagnosticSeverity.Info -> sets.WarningForegroundColor, sets.WarningBackgroundColor
+                            | FSharpDiagnosticSeverity.Hidden -> sets.WarningForegroundColor, sets.WarningBackgroundColor
                         e.Colors.Add(EditorColor(line.Index, st, en, fg, bg))

@@ -93,7 +93,8 @@ namespace FarNet.RightWords
 			}
 
 			// search for the current word
-			var match = MatchCaret(new Regex(Settings.Default.WordPattern, RegexOptions.IgnorePatternWhitespace), line.Text, line.Caret, false);
+			var sets = Settings.Default.GetData();
+			var match = MatchCaret(sets.WordRegex2, line.Text, line.Caret, false);
 			if (match == null)
 				return;
 
@@ -145,11 +146,13 @@ namespace FarNet.RightWords
 		}
 		public static void ShowThesaurus()
 		{
+			var sets = Settings.Default.GetData();
+
 			string word = string.Empty;
 			var line = Far.Api.Line;
 			if (line != null)
 			{
-				var match = MatchCaret(new Regex(Settings.Default.WordPattern, RegexOptions.IgnorePatternWhitespace), line.Text, line.Caret, false);
+				var match = MatchCaret(sets.WordRegex2, line.Text, line.Caret, false);
 				if (match != null)
 					word = match.Value;
 			}
@@ -214,16 +217,9 @@ namespace FarNet.RightWords
 		{
 			return regex?.Matches(text);
 		}
-		public static Regex GetRegexSkip()
-		{
-			var pattern = Settings.Default.SkipPattern;
-			return string.IsNullOrEmpty(pattern) ? null : new Regex(pattern, RegexOptions.IgnorePatternWhitespace);
-		}
 		public static void CorrectText()
 		{
-			// regular expressions
-			var regexWord = new Regex(Settings.Default.WordPattern, RegexOptions.IgnorePatternWhitespace);
-			Regex regexSkip = GetRegexSkip();
+			var sets = Settings.Default.GetData();
 
 			// right words
 			var rightWords = GetCommonWords();
@@ -261,7 +257,7 @@ namespace FarNet.RightWords
 					var text = line.Text;
 
 					// the first word
-					Match match = MatchCaret(regexWord, text, line.Caret, true);
+					Match match = MatchCaret(sets.WordRegex2, text, line.Caret, true);
 					if (match == null)
 						goto NextLine;
 
@@ -281,7 +277,7 @@ namespace FarNet.RightWords
 							continue;
 
 						// expensive skip pattern
-						if (Actor.HasMatch(skip ?? (skip = Actor.GetMatches(regexSkip, text)), match))
+						if (HasMatch(skip ?? (skip = GetMatches(sets.SkipRegex2, text)), match))
 							continue;
 
 						// check spelling and get suggestions
@@ -365,7 +361,9 @@ namespace FarNet.RightWords
 		}
 		static string GetUserDictionaryDirectory(bool create)
 		{
-			var path = Settings.Default.UserDictionaryDirectory;
+			var sets = Settings.Default.GetData();
+
+			var path = sets.UserDictionaryDirectory;
 			if (string.IsNullOrEmpty(path))
 				return Manager.GetFolderPath(SpecialFolder.RoamingData, create);
 
@@ -482,7 +480,7 @@ namespace FarNet.RightWords
 						continue;
 					}
 
-					var path = Actor.GetUserDictionaryPath(language, true);
+					var path = GetUserDictionaryPath(language, true);
 					using (var writer = File.AppendText(path))
 					{
 						if (stem2.Length == 0)

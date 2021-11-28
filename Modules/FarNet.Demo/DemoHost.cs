@@ -1,3 +1,4 @@
+using System;
 
 namespace FarNet.Demo
 {
@@ -9,11 +10,18 @@ namespace FarNet.Demo
 	public class DemoHost : ModuleHost
 	{
 		/// <summary>
-		/// This method is called once first of all.
+		/// This method is called once before anything else.
 		/// </summary>
 		public override void Connect()
 		{
+			// update the local settings
+			var settings = new Workings();
+			var data = settings.GetData();
+			data.LastLoadTime = DateTime.Now;
+			data.LoadCount += 1;
+			settings.Save();
 		}
+
 		/// <summary>
 		/// This method is called once on exit.
 		/// NOTE: it should not call the core.

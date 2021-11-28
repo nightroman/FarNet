@@ -12,7 +12,6 @@ $FarHome = "C:\Bin\Far\$Platform"
 
 $script:Builds = @(
 	'FarNet\.build.ps1'
-	'FarNet.Settings\.build.ps1'
 	'FarNet.Tools\.build.ps1'
 	'FarNet.Works.Config\.build.ps1'
 	'FarNet.Works.Dialog\.build.ps1'
@@ -35,7 +34,6 @@ task install {
 	foreach($_ in $Builds) { Invoke-Build install $_ }
 	Copy-Item Far.exe.config $FarHome
 	Copy-Item -Destination "$FarHome\FarNet" @(
-		"FarNet.Settings\bin\$Configuration\$TargetFramework\FarNet.Settings.xml"
 		"FarNet.Tools\bin\$Configuration\$TargetFramework\FarNet.Tools.xml"
 	)
 },
@@ -110,8 +108,6 @@ task package beginPackage, helpHTM, {
 		'..\LICENSE'
 		"$FarHome\FarNet\FarNet.dll"
 		"$FarHome\FarNet\FarNet.xml"
-		"$FarHome\FarNet\FarNet.Settings.dll"
-		"$FarHome\FarNet\FarNet.Settings.xml"
 		"$FarHome\FarNet\FarNet.Tools.dll"
 		"$FarHome\FarNet\FarNet.Tools.xml"
 		"$FarHome\FarNet\FarNet.Works.Config.dll"

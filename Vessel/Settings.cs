@@ -3,99 +3,29 @@
 // Copyright (c) Roman Kuzmin
 
 using System;
-using System.ComponentModel;
-using System.Configuration;
-using FarNet.Settings;
 
 namespace FarNet.Vessel
 {
-	[SettingsProvider(typeof(ModuleSettingsProvider))]
-	public sealed class Settings : ModuleSettings
+	public sealed class Settings : ModuleSettings<Settings.Data>
 	{
-		// synchronized settings because we use threads for training and saving
-		static readonly Settings _Default = (Settings)SettingsBase.Synchronized(new Settings());
-		public static Settings Default { get { return _Default; } }
+		public static Settings Default { get; } = new Settings();
 
-		/// <summary>
-		/// History log last update time.
-		/// </summary>
-		[Browsable(false)]
-		[UserScopedSetting]
-		public DateTime LastUpdateTime1
+		[Serializable]
+		public class Data
 		{
-			get { return (DateTime)this["LastUpdateTime1"]; }
-			set { this["LastUpdateTime1"] = value; }
-		}
+			public int MaximumDayCount { get; set; } = 42;
 
-		/// <summary>
-		/// Folders log last update time.
-		/// </summary>
-		[Browsable(false)]
-		[UserScopedSetting]
-		public DateTime LastUpdateTime2
-		{
-			get { return (DateTime)this["LastUpdateTime2"]; }
-			set { this["LastUpdateTime2"] = value; }
-		}
+			public int MaximumFileAge { get; set; } = 365;
 
-		/// <summary>
-		/// Commands log last update time.
-		/// </summary>
-		[Browsable(false)]
-		[UserScopedSetting]
-		public DateTime LastUpdateTime3
-		{
-			get { return (DateTime)this["LastUpdateTime3"]; }
-			set { this["LastUpdateTime3"] = value; }
-		}
+			public int MaximumFileCount { get; set; } = 1000;
 
-		[UserScopedSetting]
-		[DefaultSettingValue("42")]
-		[SettingsManageability(SettingsManageability.Roaming)]
-		public int MaximumDayCount
-		{
-			get { return (int)this["MaximumDayCount"]; }
-			set { this["MaximumDayCount"] = value; }
-		}
+			public int MaximumFileCountFromFar { get; set; } = 1000;
 
-		[UserScopedSetting]
-		[DefaultSettingValue("365")]
-		[SettingsManageability(SettingsManageability.Roaming)]
-		public int MaximumFileAge
-		{
-			get { return (int)this["MaximumFileAge"]; }
-			set { this["MaximumFileAge"] = value; }
-		}
-
-		[UserScopedSetting]
-		[DefaultSettingValue("1000")]
-		[SettingsManageability(SettingsManageability.Roaming)]
-		public int MaximumFileCount
-		{
-			get { return (int)this["MaximumFileCount"]; }
-			set { this["MaximumFileCount"] = value; }
-		}
-
-		[UserScopedSetting]
-		[DefaultSettingValue("1000")]
-		[SettingsManageability(SettingsManageability.Roaming)]
-		public int MaximumFileCountFromFar
-		{
-			get { return (int)this["MaximumFileCountFromFar"]; }
-			set { this["MaximumFileCountFromFar"] = value; }
-		}
-
-		/// <summary>
-		/// Limit in hours for the first sort group.
-		/// The default and recommended value is 2.
-		/// </summary>
-		[UserScopedSetting]
-		[DefaultSettingValue("2")]
-		[SettingsManageability(SettingsManageability.Roaming)]
-		public int Limit0
-		{
-			get { return (int)this["Limit0"]; }
-			set { this["Limit0"] = value; }
+			/// <summary>
+			/// Limit in hours for the first sort group.
+			/// The default and recommended value is 2.
+			/// </summary>
+			public int Limit0 { get; set; } = 2;
 		}
 	}
 }

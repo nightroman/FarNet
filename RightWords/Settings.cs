@@ -2,81 +2,61 @@
 // FarNet module RightWords
 // Copyright (c) Roman Kuzmin
 
-using FarNet.Settings;
 using System;
-using System.Configuration;
 using System.Text.RegularExpressions;
 
 namespace FarNet.RightWords
 {
-	[SettingsProvider(typeof(ModuleSettingsProvider))]
-	public sealed class Settings : ModuleSettings
+	public sealed class Settings : ModuleSettings<Settings.Data>
 	{
 		internal const string ModuleName = "RightWords";
 		internal const string UserFile = "RightWords.dic";
-		static readonly Settings _Default = new Settings();
-		public static Settings Default { get { return _Default; } }
-		[UserScopedSetting]
-		[SettingsManageability(SettingsManageability.Roaming)]
-		public string SkipPattern
+
+		public static Settings Default { get; } = new Settings();
+
+		[Serializable]
+		public class Data : IValidate
 		{
-			get { return (string)this["SkipPattern"]; }
-			set { this["SkipPattern"] = value; }
-		}
-		[UserScopedSetting]
-		[DefaultSettingValue(@"[\p{Lu}\p{Ll}]\p{Ll}+")] // \p{Lu}?\p{Ll}+
-		[SettingsManageability(SettingsManageability.Roaming)]
-		public string WordPattern
-		{
-			get { return (string)this["WordPattern"]; }
-			set { this["WordPattern"] = value; }
-		}
-		[UserScopedSetting]
-		[DefaultSettingValue("Yellow")]
-		[SettingsManageability(SettingsManageability.Roaming)]
-		public ConsoleColor HighlightingBackgroundColor
-		{
-			get { return (ConsoleColor)this["HighlightingBackgroundColor"]; }
-			set { this["HighlightingBackgroundColor"] = value; }
-		}
-		[UserScopedSetting]
-		[DefaultSettingValue("Black")]
-		[SettingsManageability(SettingsManageability.Roaming)]
-		public ConsoleColor HighlightingForegroundColor
-		{
-			get { return (ConsoleColor)this["HighlightingForegroundColor"]; }
-			set { this["HighlightingForegroundColor"] = value; }
-		}
-		[UserScopedSetting]
-		[SettingsManageability(SettingsManageability.Roaming)]
-		public string UserDictionaryDirectory
-		{
-			get { return (string)this["UserDictionaryDirectory"]; }
-			set { this["UserDictionaryDirectory"] = value; }
-		}
-		[UserScopedSetting]
-		[DefaultSettingValue("0")]
-		[SettingsManageability(SettingsManageability.Roaming)]
-		public int MaximumLineLength
-		{
-			get { return (int)this["MaximumLineLength"]; }
-			set { this["MaximumLineLength"] = value; }
-		}
-		public override void Save()
-		{
-			if (!string.IsNullOrEmpty(SkipPattern))
+			public XmlCData WordRegex { get; set; } = new XmlCData(@"[\p{Lu}\p{Ll}]\p{Ll}+");
+
+			public XmlCData SkipRegex { get; set; }
+
+			public ConsoleColor HighlightingForegroundColor { get; set; } = ConsoleColor.Black;
+
+			public ConsoleColor HighlightingBackgroundColor { get; set; } = ConsoleColor.Yellow;
+
+			public string UserDictionaryDirectory { get; set; }
+
+			public int MaximumLineLength { get; set; } = 0;
+
+			internal Regex WordRegex2 { get; private set; }
+			internal Regex SkipRegex2 { get; private set; }
+			public void Validate()
 			{
-				try { new Regex(SkipPattern, RegexOptions.IgnorePatternWhitespace); }
-				catch (ArgumentException ex) { throw new ModuleException("Invalid skip pattern: " + ex.Message); }
+				if (string.IsNullOrWhiteSpace(WordRegex.Value))
+					throw new ModuleException("WordRegex cannot be empty.");
+
+				try
+				{
+					WordRegex2 = new Regex(WordRegex.Value);
+				}
+				catch (ArgumentException ex)
+				{
+					throw new ModuleException($"WordRegex: {ex.Message}");
+				}
+
+				if (!string.IsNullOrWhiteSpace(SkipRegex.Value))
+				{
+					try
+					{
+						SkipRegex2 = new Regex(SkipRegex.Value);
+					}
+					catch (ArgumentException ex)
+					{
+						throw new ModuleException($"SkipRegex: {ex.Message}");
+					}
+				}
 			}
-
-			if (WordPattern == null || WordPattern.Trim().Length == 0)
-				throw new ModuleException("Empty word pattern is invalid.");
-
-			try { new Regex(WordPattern, RegexOptions.IgnorePatternWhitespace); }
-			catch (ArgumentException ex) { throw new ModuleException("Invalid word pattern: " + ex.Message); }
-
-			base.Save();
 		}
 	}
 }

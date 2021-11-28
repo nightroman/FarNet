@@ -52,7 +52,6 @@ task installRes {
 # Run when FarNet and PowerShellFar are installed.
 task buildPowerShellFarHelp -Inputs {Get-Item Commands\*} -Outputs "$PsfHome\PowerShellFar.dll-Help.xml" {
 	Add-Type -Path $FarHome\FarNet\FarNet.dll
-	Add-Type -Path $FarHome\FarNet\FarNet.Settings.dll
 	Add-Type -Path $FarHome\FarNet\FarNet.Tools.dll
 	Add-Type -Path $PsfHome\PowerShellFar.dll
 	$ps = [Management.Automation.PowerShell]::Create()

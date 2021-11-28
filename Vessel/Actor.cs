@@ -50,9 +50,11 @@ namespace FarNet.Vessel
 					throw new ArgumentException("Invalid mode.", "mode");
 			}
 
+			var sets = Settings.Default.GetData();
+
 			_mode = mode;
 			_store = store ?? VesselHost.LogPath[mode];
-			_limit0 = Settings.Default.Limit0;
+			_limit0 = sets.Limit0;
 			_records = Store.Read(_store).ToList();
 
 			if (noHistory)
@@ -66,7 +68,7 @@ namespace FarNet.Vessel
 				foreach (var record in _records)
 					_latestRecords[record.Path] = record;
 
-				var args = new GetHistoryArgs() { Last = Settings.Default.MaximumFileCountFromFar };
+				var args = new GetHistoryArgs() { Last = sets.MaximumFileCountFromFar };
 				if (mode == 0)
 				{
 					// add missing and later records from Far editor history
@@ -310,27 +312,31 @@ namespace FarNet.Vessel
 		}
 		public string Update()
 		{
+			var sets = Settings.Default.GetData();
+
 			// get settings and check sanity
-			int maxDays = Settings.Default.MaximumDayCount;
+			int maxDays = sets.MaximumDayCount;
 			if (maxDays < 30)
 				throw new InvalidOperationException("Use at least 30 as the maximum day count.");
-			int maxFileCount = Settings.Default.MaximumFileCount;
+			int maxFileCount = sets.MaximumFileCount;
 			if (maxFileCount < 100)
 				throw new InvalidOperationException("Use at least 100 as the maximum file count.");
-			int maxFileAge = Settings.Default.MaximumFileAge;
+			int maxFileAge = sets.MaximumFileAge;
 			if (maxFileAge < maxDays)
 				maxFileAge = maxDays;
 
 			var now = DateTime.Now;
 			Logger.Source.TraceEvent(TraceEventType.Start, 0, "Update {0}", now);
 
+			var workings = new Workings();
+			var works = workings.GetData();
 			if (_mode == 0)
-				Settings.Default.LastUpdateTime1 = now;
+				works.LastUpdateTime1 = now;
 			else if (_mode == 1)
-				Settings.Default.LastUpdateTime2 = now;
+				works.LastUpdateTime2 = now;
 			else
-				Settings.Default.LastUpdateTime3 = now;
-			Settings.Default.Save();
+				works.LastUpdateTime3 = now;
+			workings.Save();
 
 			int recordCount = _records.Count;
 

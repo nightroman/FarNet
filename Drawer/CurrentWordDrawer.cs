@@ -11,13 +11,13 @@ namespace FarNet.Drawer
 	[ModuleDrawer(Name = Settings.CurrentWordName, Priority = 1)]
 	public class CurrentWordDrawer : ModuleDrawer
 	{
-		readonly Regex _regex = new Regex(Settings.Default.CurrentWordPattern);
-		readonly ConsoleColor _foreground = Settings.Default.CurrentWordColorForeground;
-		readonly ConsoleColor _background = Settings.Default.CurrentWordColorBackground;
 		public override void Invoke(IEditor editor, ModuleDrawerEventArgs e)
 		{
+			var sets = Settings.Default.GetData().CurrentWord;
+
 			// get current word
-			var match = editor.Line.MatchCaret(_regex);
+			var regex = new Regex(sets.WordRegex.Value);
+			var match = editor.Line.MatchCaret(regex);
 			if (match == null)
 				return;
 
@@ -30,9 +30,9 @@ namespace FarNet.Drawer
 				if (text.Length == 0 || text.IndexOf(word, StringComparison.OrdinalIgnoreCase) < 0)
 					continue;
 
-				for (match = _regex.Match(text); match.Success; match = match.NextMatch())
+				for (match = regex.Match(text); match.Success; match = match.NextMatch())
 					if (match.Value.Equals(word, StringComparison.OrdinalIgnoreCase))
-						e.Colors.Add(new EditorColor(line.Index, match.Index, match.Index + match.Length, _foreground, _background));
+						e.Colors.Add(new EditorColor(line.Index, match.Index, match.Index + match.Length, sets.ColorForeground, sets.ColorBackground));
 			}
 		}
 	}

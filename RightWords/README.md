@@ -22,6 +22,11 @@ Project
 * Source: <https://github.com/nightroman/FarNet/tree/master/RightWords>
 * Author: Roman Kuzmin
 
+Credits
+
+NHunspell - Hunspell Spell Checking for .NET
+<https://www.nuget.org/packages/NHunspell/>
+
 *********************************************************************
 ## Installation
 
@@ -104,11 +109,7 @@ The dialog with permanent options:
 
 [Contents]
 
-Open the module settings panel: `[F11] \ FarNet \ Settings \ RightWords`
-
-Regular expression patterns are created with IgnorePatternWhitespace option, so
-that they support line comments (`#`) and all white spaces should be explicitly
-specified as `\ `, `\t`, `\s`, etc.
+Module settings: `[F11] \ FarNet \ Settings \ RightWords`
 
 **WordPattern**
 
@@ -122,8 +123,7 @@ This is used for checking spelling of words with embedded "noise" parts, like
 the hotkey markers `&` in *.lng* or *.restext* files. Use not capturing groups
 `(?:)` in all other cases where grouping is needed.
 
-NOTE: Nested capturing groups are not supported and they are not really needed.
-For performance reasons no checks are done in order to detected nested groups.
+Nested capturing groups are not supported and they are not really needed.
 
 Example pattern for *.lng* and *.restext* files:
 `[\p{Lu}\p{Ll}](?:\p{Ll}|(&))+`
@@ -133,11 +133,13 @@ Example pattern for *.lng* and *.restext* files:
 Defines the regular expression pattern for text areas to be ignored. The
 default pattern is null (not specified, nothing is ignored).
 
-Sample pattern:
+Sample pattern (using `(?x:)` for comments and ignored white spaces):
 
-    \w*\d\w* # words with digits
-    | "(?:\w+:|\.+)?[\\/][^"]+" # quoted path-like text
-    | (?:\w+:|\.+)?[\\/][^\s]+ # simple path-like text
+    (?x:
+        \w*\d\w* # words with digits
+        | "(?:\w+:|\.+)?[\\/][^"]+" # quoted path-like text
+        | (?:\w+:|\.+)?[\\/][^\s]+ # simple path-like text
+    )
 
 **HighlightingBackgroundColor**\
 **HighlightingForegroundColor**

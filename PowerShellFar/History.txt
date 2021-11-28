@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
-FarNet 5.5.0
+FarNet 5.6.0
+
+= 5.6.0 =
+
+Version update to align with FarNet and minor tweaks.
 
 = 5.5.1 =
 

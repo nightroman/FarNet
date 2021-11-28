@@ -56,7 +56,7 @@ The module works by commands called from macros associated with keys:
 *********************************************************************
 ## Settings
 
-Module settings panel: `[F11] \ FarNet \ Settings \ RightControl`
+Module settings: `[F11] \ FarNet \ Settings \ RightControl`
 
 - `RegexLeft`
 
@@ -70,33 +70,28 @@ Module settings panel: `[F11] \ FarNet \ Settings \ RightControl`
 
 Default patterns. Stops are similar to Visual Studio:
 
-    ^ | $ | (?<=\b|\s)\S
-    ^ | $ | (?<=\b|\s)\S
+    (?x: ^ | $ | (?<=\b|\s)\S )
+    (?x: ^ | $ | (?<=\b|\s)\S )
 
 Patterns with stops similar to Word/WordPad (`_` stops, too):
 
-    ^ | $ | (?<=\b|\s)\S | (?<=[^_])_ | (?<=_)[^_\s]
-    ^ | $ | (?<=\b|\s)\S | (?<=[^_])_ | (?<=_)[^_\s]
+    (?x: ^ | $ | (?<=\b|\s)\S | (?<=[^_])_ | (?<=_)[^_\s] )
+    (?x: ^ | $ | (?<=\b|\s)\S | (?<=[^_])_ | (?<=_)[^_\s] )
 
 Default patterns with two more breaks: letter case and digits:
 
-    ^ | $ | (?<=\b|\s)\S | (?<=\p{Ll})\p{Lu} | (?<=\D)\d | (?<=\d)[^\d\s]
-    ^ | $ | (?<=\b|\s)\S | (?<=\p{Ll})\p{Lu} | (?<=\D)\d | (?<=\d)[^\d\s]
+    (?x: ^ | $ | (?<=\b|\s)\S | (?<=\p{Ll})\p{Lu} | (?<=\D)\d | (?<=\d)[^\d\s] )
+    (?x: ^ | $ | (?<=\b|\s)\S | (?<=\p{Ll})\p{Lu} | (?<=\D)\d | (?<=\d)[^\d\s] )
 
-**Notes**
 
-Spaces, tabs and line breaks are ignored in patterns. Specify `\s`, `\ `, `\t`,
-etc. explicitly. Line comments are supported. This multiline text is a valid
-regular expression pattern with comments:
+The same with comments, thanks to `(?x:)` together with ignored white spaces:
 
-```
-^ | $ # start or end of line
-|
-(?<=\b|\s)\S # not a space with a word bound or a space before
-|
-(?<=\p{Ll})\p{Lu} # an upper case letter with a lower case letter before
-|
-(?<=\D)\d | (?<=\d)[^\d\s] # a digit/not-digit with a not-digit/digit before
-```
-
-*********************************************************************
+    (?x:
+        ^ | $ # start or end of line
+        |
+        (?<=\b|\s)\S # not a space with a word bound or a space before
+        |
+        (?<=\p{Ll})\p{Lu} # an upper case letter with a lower case letter before
+        |
+        (?<=\D)\d | (?<=\d)[^\d\s] # a digit/not-digit with a not-digit/digit before
+    )

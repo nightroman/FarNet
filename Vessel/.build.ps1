@@ -9,18 +9,7 @@ param(
 
 $ModuleHome = "$FarHome\FarNet\Modules\Vessel"
 
-# Synopsis: Build all. Exit Far Manager!
-task . build, help, clean
-
-# Get version from release notes.
-function Get-Version {
-	switch -Regex -File History.txt {'=\s+(\d+\.\d+\.\d+)\s+=' {return $Matches[1]} }
-}
-
-# Synopsis: Generate or update meta files.
-task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props {
-	$Version = Get-Version
-
+task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props version, {
 	Set-Content Directory.Build.props @"
 <Project>
   <PropertyGroup>
@@ -34,23 +23,21 @@ task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props {
 "@
 }
 
-# Build and install the assembly.
 task build meta, {
 	exec { dotnet build -c Release "/p:FarHome=$FarHome" }
 }
 
-# In addition to Build: new About-Vessel.htm, $ModuleHome\Vessel.hlf
 task help {
 	# HLF
-	exec { pandoc.exe README.md --output=About-Vessel.htm --from=gfm }
-	exec { HtmlToFarHelp "from=About-Vessel.htm" "to=$ModuleHome\Vessel.hlf" }
+	exec { pandoc.exe README.md --output=README.htm --from=gfm }
+	exec { HtmlToFarHelp "from=README.htm" "to=$ModuleHome\Vessel.hlf" }
 
 	# HTM
 	assert (Test-Path $env:MarkdownCss)
 	exec {
 		pandoc.exe @(
 			'README.md'
-			'--output=About-Vessel.htm'
+			'--output=README.htm'
 			'--from=gfm'
 			'--self-contained'
 			"--css=$env:MarkdownCss"
@@ -60,11 +47,12 @@ task help {
 }
 
 task clean {
-	remove z, bin, obj, About-Vessel.htm, FarNet.Vessel.*.nupkg
+	remove z, bin, obj, README.htm, FarNet.Vessel.*.nupkg
 }
 
 task version {
-	($script:Version = Get-Version)
+	($script:Version = switch -regex -file History.txt {'^= (\d+\.\d+\.\d+) =$' {$matches[1]; break}})
+	assert $script:Version
 }
 
 task package help, {
@@ -75,7 +63,7 @@ task package help, {
 
 	# main
 	Copy-Item -Destination $toModule `
-	About-Vessel.htm,
+	README.htm,
 	History.txt,
 	LICENSE,
 	Vessel.macro.lua,
@@ -119,3 +107,5 @@ https://github.com/nightroman/FarNet#readme
 
 	exec { NuGet.exe pack z\Package.nuspec }
 }
+
+task . build, help, clean

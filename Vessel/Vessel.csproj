@@ -16,10 +16,6 @@
       <HintPath>$(FarHome)\FarNet\FarNet.Tools.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="FarNet.Settings">
-      <HintPath>$(FarHome)\FarNet\FarNet.Settings.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <MyItem Include="$(OutDir)\$(AssemblyName).dll" />

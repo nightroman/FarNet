@@ -37,13 +37,13 @@ task build meta, {
 	exec { dotnet build -c Release "/p:FarHome=$FarHome" }
 }
 
-# New About-RightControl.htm
+# New README.htm
 task help {
 	assert (Test-Path $env:MarkdownCss)
 	exec {
 		pandoc.exe @(
 			'README.md'
-			'--output=About-RightControl.htm'
+			'--output=README.htm'
 			'--from=gfm'
 			'--self-contained'
 			"--css=$env:MarkdownCss"
@@ -54,7 +54,7 @@ task help {
 
 # Remove temp files.
 task clean {
-	remove z, bin, obj, About-RightControl.htm, FarNet.RightControl.*.nupkg
+	remove z, bin, obj, README.htm, FarNet.RightControl.*.nupkg
 }
 
 # Set $script:Version
@@ -75,7 +75,7 @@ task package help, version, {
 
 	# module
 	Copy-Item -Destination $toModule `
-	About-RightControl.htm,
+	README.htm,
 	History.txt,
 	LICENSE,
 	RightControl.macro.lua,

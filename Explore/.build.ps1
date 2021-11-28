@@ -18,7 +18,7 @@ task help {
 	exec {
 		pandoc.exe @(
 			'README.md'
-			'--output=About-Explore.htm'
+			'--output=README.htm'
 			'--from=gfm'
 			'--self-contained'
 			"--css=$env:MarkdownCss"
@@ -28,7 +28,7 @@ task help {
 }
 
 task clean {
-	remove z, bin, obj, About-Explore.htm, FarNet.Explore.*.nupkg
+	remove z, bin, obj, README.htm, FarNet.Explore.*.nupkg
 }
 
 task Version {
@@ -47,7 +47,7 @@ task package help, version, {
 
 	# module
 	Copy-Item -Destination $toModule `
-	About-Explore.htm,
+	README.htm,
 	History.txt,
 	LICENSE,
 	$ModuleHome\Explore.dll

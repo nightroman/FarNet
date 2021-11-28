@@ -460,12 +460,18 @@ Continue with this current directory?
 		/// Gets the configuration settings and the session settings.
 		/// </summary>
 		/// <remarks>
-		/// Permanent settings are changed in the module settings panel.
 		/// Session preferences are usually set in the profile.
+		/// Or change them temporary in the panel, command, script.
 		/// <para>
 		/// See also the manual [Settings].
 		/// </para>
 		/// </remarks>
+		/// <example>
+		/// <code>
+		/// # Show settings in the panel
+		/// Open-FarPanel $Psf.Settings
+		/// </code>
+		/// </example>
 		public Settings Settings
 		{
 			get { return Settings.Default; }

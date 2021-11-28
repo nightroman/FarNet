@@ -13,33 +13,30 @@ namespace FarNet.RightWords
 	public class Highlighter : ModuleDrawer
 	{
 		readonly MultiSpell Spell = MultiSpell.Get();
-		readonly Regex RegexSkip = Actor.GetRegexSkip();
-		readonly Regex RegexWord = new Regex(Settings.Default.WordPattern, RegexOptions.IgnorePatternWhitespace);
 		readonly HashSet<string> CommonWords = Actor.GetCommonWords();
-		readonly ConsoleColor HighlightingBackgroundColor = Settings.Default.HighlightingBackgroundColor;
-		readonly ConsoleColor HighlightingForegroundColor = Settings.Default.HighlightingForegroundColor;
-		readonly int MaximumLineLength = Settings.Default.MaximumLineLength;
 		public override void Invoke(IEditor editor, ModuleDrawerEventArgs e)
 		{
+			var sets = Settings.Default.GetData();
+
 			foreach (var line in e.Lines)
 			{
 				var text = line.Text;
 				if (text.Length == 0)
 					continue;
 
-				if (MaximumLineLength > 0 && text.Length > MaximumLineLength)
+				if (sets.MaximumLineLength > 0 && text.Length > sets.MaximumLineLength)
 				{
 					e.Colors.Add(new EditorColor(
 						line.Index,
 						0,
 						text.Length,
-						HighlightingForegroundColor,
-						HighlightingBackgroundColor));
+						sets.HighlightingForegroundColor,
+						sets.HighlightingBackgroundColor));
 					continue;
 				}
 
 				MatchCollection skip = null;
-				for (var match = RegexWord.Match(text); match.Success; match = match.NextMatch())
+				for (var match = sets.WordRegex2.Match(text); match.Success; match = match.NextMatch())
 				{
 					// the target word
 					var word = Actor.MatchToWord(match);
@@ -53,7 +50,7 @@ namespace FarNet.RightWords
 						continue;
 
 					// expensive skip pattern
-					if (Actor.HasMatch(skip ?? (skip = Actor.GetMatches(RegexSkip, text)), match))
+					if (Actor.HasMatch(skip ?? (skip = Actor.GetMatches(sets.SkipRegex2, text)), match))
 						continue;
 
 					// add color
@@ -61,8 +58,8 @@ namespace FarNet.RightWords
 						line.Index,
 						match.Index,
 						match.Index + match.Length,
-						HighlightingForegroundColor,
-						HighlightingBackgroundColor));
+						sets.HighlightingForegroundColor,
+						sets.HighlightingBackgroundColor));
 				}
 			}
 		}

@@ -816,8 +816,7 @@ void Far0::ShowMenu(ModuleToolOptions from)
 	menu->Add(sConsole);
 
 	// Settings
-	if (from == ModuleToolOptions::Panels)
-		menu->Add(sSettings);
+	menu->Add(sSettings);
 
 	if (!menu->Show())
 		return;

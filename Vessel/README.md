@@ -61,31 +61,30 @@ History log files:
 
 [Contents]
 
-The settings panel is opened from the menu in panels:
-`[F11] \ FarNet \ Settings \ Vessel`
+Module settings: `[F11] \ FarNet \ Settings \ Vessel`
 
-- *MaximumDayCount*
+- `MaximumDayCount`
 
     Maximum number of days for keeping all item usage events.
     On exceeding aged items keep their last events only.
     The default is 42 days.
 
-- *MaximumFileAge*
+- `MaximumFileAge`
 
     Maximum age of tracked items.
     The default is 365 days.
 
-- *MaximumFileCount*
+- `MaximumFileCount`
 
     Maximum number of tracked items.
     The default is 1000 items.
 
-- *MaximumFileCountFromFar*
+- `MaximumFileCountFromFar`
 
     Maximum number of last items taken from far history.
     The default is 1000 items.
 
-- *Limit0*
+- `Limit0`
 
     The first group span in hours. It defines the most recently used items.
     Items are sorted by last used times, like in the usual history.

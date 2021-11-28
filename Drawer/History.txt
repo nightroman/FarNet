@@ -1,5 +1,13 @@
 ﻿https://www.nuget.org/packages/FarNet.Drawer
 
+= 1.2.0 =
+
+Requires FarNet 5.6.0.
+Uses new XML settings.
+Remove old %FARPROFILE%\FarNet\Drawer\Settings.resources
+
+FixedColumn drawer supports any number of columns specified in settings.
+
 = 1.1.4 =
 
 Maintenance.

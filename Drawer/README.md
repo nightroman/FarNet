@@ -45,21 +45,19 @@ In order to turn a drawer on and off use the menu: `[F11] | FarNet | Drawers | (
 
 ### Settings
 
-Module settings panel: `[F11] | FarNet | Settings | Drawer`
+Module settings: `[F11] | FarNet | Settings | Drawer`
 
-- CurrentWordPattern
+- `CurrentWord/WordRegex`
 
-    Defines the regular expression pattern for words of the "Current word"
-    drawer. The default pattern is `\w[-\w]*`
+    Defines the regular expression pattern for words of the "Current word" drawer.
+    Default pattern: `\w[-\w]*`
 
-- FixedColumnNumber
+- `FixedColumn/ColumnNumbers`
 
-    Defines the number of highlighted column in the "Fixed column" drawer. The
-    default column number is 80
+    Defines the numbers of highlighted columns in the "Fixed column" drawer.
+    Default columns: 80, 120
 
-- ...ColorForeground, ...ColorBackground
+- `.../ColorForeground`, `.../ColorBackground`
 
     Drawer colors: Black, DarkBlue, DarkGreen, DarkCyan, DarkRed, DarkMagenta,
     DarkYellow, Gray, DarkGray, Blue, Green, Cyan, Red, Magenta, Yellow, White.
-
-*********************************************************************

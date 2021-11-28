@@ -41,8 +41,6 @@
     <VisibleItems>InheritedMembers, Protected</VisibleItems>
     <DocumentationSources>
       <DocumentationSource sourceFile="$(FarHome)\FarNet\FarNet.dll" xmlns="" />
-      <DocumentationSource sourceFile="$(FarHome)\FarNet\FarNet.Settings.dll" xmlns="" />
-      <DocumentationSource sourceFile="$(FarHome)\FarNet\FarNet.Settings.xml" xmlns="" />
       <DocumentationSource sourceFile="$(FarHome)\FarNet\FarNet.Tools.dll" xmlns="" />
       <DocumentationSource sourceFile="$(FarHome)\FarNet\FarNet.Tools.xml" xmlns="" />
       <DocumentationSource sourceFile="$(FarHome)\FarNet\FarNet.xml" xmlns="" />
@@ -52,7 +50,6 @@
     <NamespaceSummaries>
       <NamespaceSummaryItem name="FarNet" isDocumented="True">FarNet module API.</NamespaceSummaryItem>
       <NamespaceSummaryItem name="FarNet.Forms" isDocumented="True">FarNet dialog API.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="FarNet.Settings" isDocumented="True">Module settings.</NamespaceSummaryItem>
       <NamespaceSummaryItem name="FarNet.Tools" isDocumented="True">Extra FarNet tools.</NamespaceSummaryItem>
       <NamespaceSummaryItem name="FarNet.Works" isDocumented="False" />
       <NamespaceSummaryItem name="PowerShellFar" isDocumented="True">PowerShell scripting API.</NamespaceSummaryItem>

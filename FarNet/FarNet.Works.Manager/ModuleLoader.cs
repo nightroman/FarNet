@@ -5,7 +5,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Configuration;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -81,10 +81,25 @@ namespace FarNet.Works
 				Assembly assembly = manager.LoadAssembly();
 				foreach (Type type in assembly.GetExportedTypes())
 				{
-					if (typeof(BaseModuleItem).IsAssignableFrom(type) && !type.IsAbstract)
+					if (type.IsAbstract)
+						continue;
+
+					if (typeof(BaseModuleItem).IsAssignableFrom(type))
+					{
 						actionCount += LoadType(manager, settings, type);
-					else if (!manager.HasSettings && typeof(ApplicationSettingsBase).IsAssignableFrom(type) && !type.IsAbstract)
-						manager.HasSettings = true;
+						continue;
+					}
+
+					if (!manager.HasSettings)
+					{
+						if (typeof(ModuleSettingsBase).IsAssignableFrom(type))
+						{
+							var browsable = type.GetCustomAttribute<BrowsableAttribute>();
+							if (browsable is null || browsable.Browsable)
+								manager.HasSettings = true;
+							continue;
+						}
+					}
 				}
 
 				// if the module has the host to load then load it now, if it is not loaded then the module should be cached
@@ -244,7 +259,7 @@ namespace FarNet.Works
 			}
 
 			// case: settings
-			if (typeof(ApplicationSettingsBase).IsAssignableFrom(type))
+			if (typeof(ModuleSettingsBase).IsAssignableFrom(type)) //rk-settings Browsable?
 			{
 				manager.HasSettings = true;
 				return 0;

@@ -1,6 +1,20 @@
 https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 5.6.0 =
+
+Retired FarNet.Settings library and types.
+New XML based ModuleSettings is used instead.
+Details: https://github.com/nightroman/FarNet/wiki/Zoo#retired-farnetsettings
+
+All FarNet.* module packages are updated:
+- FarNet.Demo (sample code)
+- Drawer
+- FSharpFar
+- RightControl
+- RightWords
+- Vessel
+
 = 5.5.3 =
 
 Maintenance.
