@@ -26,7 +26,6 @@ namespace FarNet
 		/// <summary>
 		/// Message buttons. Not supported with <c>Gui*</c> options.
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		public string[] Buttons { get; set; }
 		/// <summary>
 		/// <include file='doc.xml' path='doc/HelpTopic/*'/>

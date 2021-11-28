@@ -99,7 +99,6 @@ namespace FarNet.Works.Config
 			var prefix = value.UsingDefaultValue ? "- " : "+ ";
 			file.Owner = prefix + file.Name;
 		}
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		static Exception ValidatePropertyText(SettingsProperty property, string text)
 		{
 			try
@@ -130,7 +129,6 @@ namespace FarNet.Works.Config
 
 			return new NotSupportedException("Cannot convert.");
 		}
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
 		static string GetPropertyValueText(SettingsPropertyValue value)
 		{
 			// get its default or serialized text (the latter may be not set if the default is used)
@@ -139,7 +137,6 @@ namespace FarNet.Works.Config
 			else
 				return value.SerializedValue as string ?? string.Empty;
 		}
-		//[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
 		internal static string SetPropertyValueDefault(SettingsPropertyValue value)
 		{
 			//! fragile
@@ -153,7 +150,6 @@ namespace FarNet.Works.Config
 			value.IsDirty = true;
 			return value.Property.DefaultValue as string ?? string.Empty;
 		}
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
 		internal static string SetPropertyValueText(SettingsPropertyValue value, string text)
 		{
 			if (value.Property.SerializeAs != SettingsSerializeAs.String && value.Property.SerializeAs != SettingsSerializeAs.Xml)

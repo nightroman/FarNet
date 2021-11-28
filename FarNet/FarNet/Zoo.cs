@@ -16,7 +16,7 @@ namespace FarNet
 		/// Gets the concurrent dictionary suitable for cross thread and module operations.
 		/// </summary>
 		static public ConcurrentDictionary<string, object> Data { get { return _Data; } }
-		static ConcurrentDictionary<string, object> _Data = new ConcurrentDictionary<string, object>();
+		static readonly ConcurrentDictionary<string, object> _Data = new ConcurrentDictionary<string, object>();
 	}
 }
 

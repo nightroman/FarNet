@@ -583,7 +583,6 @@ namespace FarNet
 		/// </ul>
 		/// </para>
 		/// </remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		public FarColumn[] Columns { get; set; }
 		/// <summary>
 		/// Status columns info.
@@ -592,7 +591,6 @@ namespace FarNet
 		/// Use it for status columns in the same way as <see cref="Columns"/> is used.
 		/// Column names are ignored.
 		/// </remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		public FarColumn[] StatusColumns { get; set; }
 		/// <summary>
 		/// Tells to resize panel to fill the entire window (instead of a half).

@@ -2,13 +2,11 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
-using System;
 using System.IO;
 using System.Text;
 
 namespace PowerShellFar
 {
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
 	class JobUI : UniformUI
 	{
 		readonly object _lock = new object();

@@ -26,7 +26,6 @@ namespace FarNet.Works
 		/// Loads modules from the root directory.
 		/// </summary>
 		/// <param name="rootPath">The root module directory path.</param>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public void LoadModules(string rootPath)
 		{
 			// directories

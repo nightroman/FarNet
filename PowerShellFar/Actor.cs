@@ -33,7 +33,6 @@ namespace PowerShellFar
 	/// Register-EngineEvent -SourceIdentifier PowerShell.Exiting -Action { $Far.Message('See you', 'Exit', 'Gui') }
 	/// </code>
 	/// </example>
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
 	public sealed class Actor
 	{
 		// guard
@@ -467,7 +466,6 @@ Continue with this current directory?
 		/// See also the manual [Settings].
 		/// </para>
 		/// </remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public Settings Settings
 		{
 			get { return Settings.Default; }
@@ -479,7 +477,6 @@ Continue with this current directory?
 		/// Gets or sets selected text if selection exists in the current editor or an editor line,
 		/// else a line text if any kind of editor line is active.
 		/// </remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public string ActiveText
 		{
 			get { return EditorKit.ActiveText; }
@@ -496,7 +493,6 @@ Continue with this current directory?
 		/// </para>
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">The current window must be an editor.</exception>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public IEditor Editor()
 		{
 			if (Far.Api.Window.Kind != WindowKind.Editor)
@@ -507,7 +503,6 @@ Continue with this current directory?
 		/// <summary>
 		/// Returns PowerShellFar home path. Designed for internal use.
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public string AppHome
 		{
 			get { return Path.GetDirectoryName(typeof(Actor).Assembly.Location); }
@@ -527,7 +522,6 @@ Continue with this current directory?
 		/// The code is simply returned, if you want to execute it then call <see cref="InvokeInputCode"/>.
 		/// </para>
 		/// </remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public string InputCode()
 		{
 			var ui = CreateInputDialog();
@@ -558,7 +552,6 @@ Continue with this current directory?
 		/// Invokes the selected text or the current line text in the editor or the command line.
 		/// Called on "Invoke selected".
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void InvokeSelectedCode()
 		{
 			EditorKit.InvokeSelectedCode();
@@ -575,7 +568,6 @@ Continue with this current directory?
 		/// It can be used to prevent closing of Far by [F10] with existing background jobs.
 		/// </para>
 		/// </remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public bool CanExit()
 		{
 			return Job.CanExit();
@@ -593,7 +585,6 @@ Continue with this current directory?
 		/// </para>
 		/// </remarks>
 		/// <param name="count">Number of last commands to be returned. 0: all commands.</param>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public IList<string> GetHistory(int count)
 		{
 			var lines = History.ReadLines();
@@ -611,7 +602,6 @@ Continue with this current directory?
 		/// This method opens a modal interactive. It can be called in the middle of something to perform actions manually
 		/// and then to continue interrupted execution on exit. It is similar to PowerShell nested prompt.
 		/// </remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void ShowInteractive()
 		{
 			var inter = Interactive.Create(true);
@@ -622,7 +612,6 @@ Continue with this current directory?
 		/// Shows a new interactive in the specified mode.
 		/// </summary>
 		/// <param name="mode">The editor open mode.</param>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void ShowInteractive(OpenMode mode)
 		{
 			var inter = Interactive.Create(true);
@@ -633,7 +622,6 @@ Continue with this current directory?
 		/// Shows a menu of available PowerShellFar panels to open.
 		/// Called on "Power panel".
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void ShowPanel()
 		{
 			string currentDirectory = A.Psf.SyncPaths();
@@ -661,7 +649,6 @@ Continue with this current directory?
 		/// Shows the background job list.
 		/// Called on "Background jobs" and by <see cref="CanExit"/>.
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void ShowJobs()
 		{
 			Job.ShowJobs();
@@ -671,7 +658,6 @@ Continue with this current directory?
 		/// Called on "Command history".
 		/// </summary>
 		/// <seealso cref="GetHistory"/>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void ShowHistory()
 		{
 			History.ShowHistory();
@@ -679,7 +665,6 @@ Continue with this current directory?
 		/// <summary>
 		/// Shows PowerShell debugger tools menu.
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void ShowDebugger()
 		{
 			var ui = new UI.DebuggerMenu();
@@ -688,7 +673,6 @@ Continue with this current directory?
 		/// <summary>
 		/// Shows PowerShell errors.
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void ShowErrors()
 		{
 			var ui = new UI.ErrorsMenu();
@@ -702,7 +686,6 @@ Continue with this current directory?
 		/// information and shows it in the viewer. In code editors and input code boxes
 		/// this action is associated with [ShiftF1].
 		/// </remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void ShowHelp()
 		{
 			Help.ShowHelpForContext();
@@ -711,7 +694,6 @@ Continue with this current directory?
 		/// Expands PowerShell code in the specified edit line.
 		/// </summary>
 		/// <param name="editLine">Editor line, command line or dialog edit box line; if null then <see cref="IFar.Line"/> is used.</param>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void ExpandCode(ILine editLine)
 		{
 			EditorKit.ExpandCode(editLine, null);
@@ -756,7 +738,6 @@ Continue with this current directory?
 		/// <param name="writer">Output writer or null.</param>
 		/// <param name="addHistory">Add command to history.</param>
 		/// <returns>False if the code fails.</returns>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		internal bool Act(string code, OutputWriter writer, bool addHistory)
 		{
 			return Run(new RunArgs(code) { Writer = writer, AddHistory = addHistory });
@@ -890,7 +871,6 @@ Continue with this current directory?
 		/// Their values depend on that properties, see help.
 		/// </para>
 		/// </remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 		public IDictionary Providers
 		{
 			get { return _Providers; }
@@ -908,7 +888,6 @@ Continue with this current directory?
 		/// but if the file is modified then it is saved before invoking.
 		/// </para>
 		/// </remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void InvokeScriptFromEditor()
 		{
 			EditorKit.InvokeScriptBeingEdited(null);
@@ -966,7 +945,6 @@ Continue with this current directory?
 		/// <c>$PSUICulture</c> or <c>$Host.CurrentUICulture</c>
 		/// </para>
 		/// </remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public IModuleManager Manager
 		{
 			get { return Entry.Instance.Manager; }

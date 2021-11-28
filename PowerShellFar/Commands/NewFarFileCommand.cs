@@ -17,7 +17,6 @@ namespace PowerShellFar.Commands
 		public string Description { get; set; }
 		[Parameter]
 		public string Owner { get; set; }
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 		[Parameter]
 		public System.Collections.ICollection Columns { get; set; }
 		[Parameter]

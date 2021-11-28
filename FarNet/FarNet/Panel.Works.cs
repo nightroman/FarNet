@@ -68,7 +68,6 @@ namespace FarNet.Works
 		string HostFile { get; set; }
 		#endregion
 		///
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		DataItem[] InfoItems { get; set; }
 		///
 		void SetKeyBars(KeyBar[] bars);

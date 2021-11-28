@@ -25,7 +25,7 @@ namespace FarNet.Tools
 		/// New search explorer with the search root.
 		/// </summary>
 		public SuperExplorer()
-			: base(new System.Guid(TypeIdString))
+			: base(new Guid(TypeIdString))
 		{
 			// base
 			FileComparer = new FileFileComparer();
@@ -41,7 +41,6 @@ namespace FarNet.Tools
 			// this
 			_Cache = new List<FarFile>();
 		}
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		internal static Explorer ExploreSuperDirectory(Explorer explorer, ExplorerModes mode, FarFile file)
 		{
 			try

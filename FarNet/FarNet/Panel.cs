@@ -40,7 +40,6 @@ namespace FarNet
 	/// All <c>Works*</c> members are for internal use only.
 	/// </para>
 	/// </remarks>
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
 	public partial class Panel : IPanel
 	{
 		/// <summary>

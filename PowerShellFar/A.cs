@@ -493,7 +493,6 @@ Out-String -Width $args[1]
 				return string.Format(null, "<ERROR: {0}>", e.Message);
 			}
 		}
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		internal static string SafeToString(object value)
 		{
 			if (value == null)

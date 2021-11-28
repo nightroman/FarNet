@@ -322,7 +322,6 @@ namespace PowerShellFar
 		/// <seealso cref="ShowMenu"/>
 		public event EventHandler<PanelMenuEventArgs> MenuCreating;
 		/// <inheritdoc/>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		public override bool UIKeyPressed(KeyInfo key)
 		{
 			if (key == null) throw new ArgumentNullException("key");

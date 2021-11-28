@@ -98,7 +98,6 @@ namespace PowerShellFar
 			Far.Api.UI.ScrollBufferContents(ToPlace(source), ToPoint(destination), ToPlace(clip), ToBufferCell(fill));
 		}
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional")]
 		public override PS.BufferCell[,] GetBufferContents(Rectangle rectangle)
 		{
 			FN.BufferCell[,] r1 = Far.Api.UI.GetBufferContents(ToPlace(rectangle));
@@ -109,7 +108,6 @@ namespace PowerShellFar
 			return r2;
 		}
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional")]
 		public override void SetBufferContents(Coordinates origin, PS.BufferCell[,] contents)
 		{
 			if (contents == null)

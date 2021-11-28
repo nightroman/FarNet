@@ -3,7 +3,6 @@
 // Copyright (c) Roman Kuzmin
 
 using System.Management.Automation;
-using System.Diagnostics.CodeAnalysis;
 using FarNet;
 
 namespace PowerShellFar.Commands
@@ -13,27 +12,20 @@ namespace PowerShellFar.Commands
 	/// </summary>
 	class BaseMenuCmdlet : BaseCmdlet
 	{
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 		[Parameter(Position = 0)]
 		public string Title { get; set; }
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		[SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		[Parameter(Position = 1)]
 		public FarItem[] Items { get; set; }
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 		[Parameter]
 		public SwitchParameter AutoAssignHotkeys { get; set; }
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 
 		[Parameter]
 		public string Bottom { get; set; }
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 
 		[Parameter]
 		public string HelpTopic { get; set; }
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 		[Parameter]
 		public int Selected
 		{
@@ -47,19 +39,15 @@ namespace PowerShellFar.Commands
 		int _Selected;
 		bool _setSelected;
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 		[Parameter]
 		public SwitchParameter SelectLast { get; set; }
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 		[Parameter]
 		public SwitchParameter ShowAmpersands { get; set; }
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 		[Parameter]
 		public SwitchParameter WrapCursor { get; set; }
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 		[Parameter]
 		public int X
 		{
@@ -73,7 +61,6 @@ namespace PowerShellFar.Commands
 		int _X;
 		bool _setX;
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 		[Parameter]
 		public int Y
 		{

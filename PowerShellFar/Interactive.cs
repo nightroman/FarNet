@@ -284,7 +284,6 @@ namespace PowerShellFar
 		{
 			PowerShell.EndStop(ar);
 		}
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		void EndOutput(EditorOutputWriter1 writer)
 		{
 			// custom extra output

@@ -90,12 +90,10 @@ namespace FarNet
 		/// <remarks>Either <see cref="ReadKeyOptions.IncludeKeyDown"/>, <see cref="ReadKeyOptions.IncludeKeyUp"/> or both must be specified.</remarks>
 		public abstract KeyInfo ReadKey(ReadKeyOptions options);
 		///
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional")]
 		public abstract BufferCell[,] GetBufferContents(Place rectangle);
 		///
 		public abstract void ScrollBufferContents(Place source, Point destination, Place clip, BufferCell fill);
 		///
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional")]
 		public abstract void SetBufferContents(Point origin, BufferCell[,] contents);
 		///
 		public abstract void SetBufferContents(Place rectangle, BufferCell fill);

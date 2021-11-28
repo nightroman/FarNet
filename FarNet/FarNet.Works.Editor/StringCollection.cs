@@ -27,7 +27,6 @@ namespace FarNet.Works
 			set { _Editor[index].Text = value; }
 		}
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public bool IsFixedSize
 		{
 			get { return false; }
@@ -38,7 +37,6 @@ namespace FarNet.Works
 			get { return false; }
 		}
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public bool IsSynchronized
 		{
 			get { return false; }

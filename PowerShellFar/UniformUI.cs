@@ -8,7 +8,6 @@ using System.Collections.ObjectModel;
 using System.Management.Automation;
 using System.Management.Automation.Host;
 using System.Security;
-using FarNet;
 
 namespace PowerShellFar
 {
@@ -40,7 +39,6 @@ namespace PowerShellFar
 
 		protected virtual void Writing() { }
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		static protected PSObject ValueToResult(string value, bool safe)
 		{
 			object r;

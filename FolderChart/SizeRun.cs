@@ -35,7 +35,6 @@ class SizeRun
 		_cancel.ThrowIfCancellationRequested();
 	}
 
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 	long CalculateFolderSize(string folder)
 	{
 		long size = 0;
@@ -66,7 +65,6 @@ class SizeRun
 		return size;
 	}
 
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 	public bool Run(IList<string> folders, IList<string> files)
 	{
 		var cancellation = new CancellationTokenSource();

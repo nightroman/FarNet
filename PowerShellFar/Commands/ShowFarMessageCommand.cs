@@ -17,7 +17,6 @@ namespace PowerShellFar.Commands
 		public string Caption { get; set; }
 		[Parameter(Position = 2)]
 		public ButtonSet Buttons { get; set; }
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		[Parameter]
 		public string[] Choices { get; set; }
 		[Parameter]

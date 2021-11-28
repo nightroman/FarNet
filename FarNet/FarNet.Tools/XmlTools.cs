@@ -117,7 +117,6 @@ namespace FarNet.Tools
 		public int Maxargs { get { return 2; } }
 		public XPathResultType ReturnType { get { return XPathResultType.Boolean; } }
 		public XPathResultType[] ArgTypes { get { return new XPathResultType[] { XPathResultType.String, XPathResultType.String }; } }
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods")]
 		public object Invoke(XsltContext xsltContext, object[] args, XPathNavigator docContext)
 		{
 			var value1 = Xslt.ArgumentToString(args[0]);
@@ -131,7 +130,6 @@ namespace FarNet.Tools
 		public int Maxargs { get { return 2; } }
 		public XPathResultType ReturnType { get { return XPathResultType.Boolean; } }
 		public XPathResultType[] ArgTypes { get { return new XPathResultType[] { XPathResultType.String, XPathResultType.String }; } }
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods")]
 		public object Invoke(XsltContext xsltContext, object[] args, XPathNavigator docContext)
 		{
 			var value1 = Xslt.ArgumentToString(args[0]);
@@ -145,7 +143,6 @@ namespace FarNet.Tools
 		public int Maxargs { get { return 2; } }
 		public XPathResultType ReturnType { get { return XPathResultType.Boolean; } }
 		public XPathResultType[] ArgTypes { get { return new XPathResultType[] { XPathResultType.String, XPathResultType.String }; } }
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods")]
 		public object Invoke(XsltContext xsltContext, object[] args, XPathNavigator docContext)
 		{
 			var input = Xslt.ArgumentToString(args[0]);
@@ -165,7 +162,6 @@ namespace FarNet.Tools
 	}
 	class XsltFunctionToUpper : XsltFunctionAnyStringConvert
 	{
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods")]
 		protected override string Invoke(string value) { return value.ToUpper(CultureInfo.InvariantCulture); }
 	}
 #endif

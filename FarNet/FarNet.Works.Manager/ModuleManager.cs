@@ -181,8 +181,6 @@ namespace FarNet.Works
 			_ModuleHostClassType = type;
 		}
 		//! Don't use Far UI
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
 		public override void Unregister()
 		{
 			Log.Source.TraceInformation("Unregister module {0}", ModuleName);
@@ -209,7 +207,6 @@ namespace FarNet.Works
 				ModuleLoader.RemoveModuleManager(this);
 			}
 		}
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2001:AvoidCallingProblematicMethods")]
 		public Assembly LoadAssembly()
 		{
 			if (_AssemblyInstance == null)

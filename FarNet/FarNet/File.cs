@@ -132,7 +132,6 @@ namespace FarNet
 		/// <summary>
 		/// Custom columns. See <see cref="PanelPlan"/>.
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 		public virtual ICollection Columns
 		{
 			get { return null; }
@@ -237,7 +236,6 @@ namespace FarNet
 			return IsDirectory ? "Directory" : "File";
 		}
 		static ReadOnlyCollection<XmlAttributeInfo> _attrs;
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		static ReadOnlyCollection<XmlAttributeInfo> XmlAttr()
 		{
 			if (_attrs != null)
@@ -345,7 +343,6 @@ namespace FarNet
 		/// <inheritdoc/>
 		public override FileAttributes Attributes { get; set; }
 		/// <inheritdoc/>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 		public override ICollection Columns { get; set; }
 	}
 

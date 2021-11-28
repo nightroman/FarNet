@@ -17,7 +17,6 @@ namespace PowerShellFar
 		public new TableExplorer Explorer { get { return (TableExplorer)base.Explorer; } }
 		internal TablePanel(TableExplorer explorer) : base(explorer) { }
 		/// <include file='doc.xml' path='doc/Columns/*'/>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		public object[] Columns { get { return Explorer.Columns; } set { Explorer.Columns = value; } }
 		/// <summary>
 		/// Regular expression pattern of members to be excluded in a child <see cref="ListPanel"/>.

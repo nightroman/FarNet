@@ -210,7 +210,6 @@ namespace PowerShellFar
 		}
 	}
 
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
 	sealed class TranscriptOutputWriter : TextOutputWriter
 	{
 		public static string LastFileName { get; private set; }

@@ -65,7 +65,6 @@ namespace PowerShellFar.Commands
 			get { return Title == null; }
 		}
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		protected override void BeginProcessing()
 		{
 			// to be false on extra checks

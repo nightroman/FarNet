@@ -185,8 +185,6 @@ namespace PowerShellFar
 		/// <summary>
 		/// Fills data table and shows the panel.
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		public override void Open()
 		{
 			if (IsOpened)
@@ -467,7 +465,6 @@ namespace PowerShellFar
 
 			OpenFileActor(file);
 		}
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		void Fill()
 		{
 			if (Adapter != null)

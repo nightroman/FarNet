@@ -185,7 +185,6 @@ namespace PowerShellFar
 		/// <remarks>
 		/// Arguments: 0: this explorer, 1: <see cref="SetFileEventArgs"/>.
 		/// </remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "AsSet")]
 		public ScriptBlock AsSetFile
 		{
 			get { return _AsSetFile; }
@@ -217,7 +216,6 @@ namespace PowerShellFar
 		/// <remarks>
 		/// Arguments: 0: this explorer, 1: <see cref="SetTextEventArgs"/>.
 		/// </remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "AsSet")]
 		public ScriptBlock AsSetText
 		{
 			get { return _AsSetText; }

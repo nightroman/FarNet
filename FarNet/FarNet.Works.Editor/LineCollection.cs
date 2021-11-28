@@ -53,12 +53,10 @@ namespace FarNet.Works
 		public IEnumerator<ILine> GetEnumerator() { return EditorTools.EnumerateLines(_Editor, _Start, _Start + _Count).GetEnumerator(); }
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() { return GetEnumerator(); }
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public bool IsFixedSize { get { return false; } }
 
 		public bool IsReadOnly { get { return false; } }
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public bool IsSynchronized { get { return false; } }
 
 		public object SyncRoot { get { return this; } }

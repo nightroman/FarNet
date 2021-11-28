@@ -490,7 +490,6 @@ namespace FarNet
 	/// <summary>
 	/// Represents the thumbnail progress bar state.
 	/// </summary>
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1027:MarkEnumsWithFlags")]
 	public enum TaskbarProgressBarState
 	{
 		/// <summary>
@@ -518,7 +517,6 @@ namespace FarNet
 	/// <summary>
 	/// Options for <see cref="IFar.ShowHelp"/>.
 	/// </summary>
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2217:DoNotMarkEnumsWithFlags")]
 	[Flags]
 	public enum HelpOptions
 	{

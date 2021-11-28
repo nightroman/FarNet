@@ -2,9 +2,8 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
-using System;
-using System.Collections.Generic;
 using FarNet;
+using System;
 
 namespace PowerShellFar
 {
@@ -16,7 +15,6 @@ namespace PowerShellFar
 		/// <inheritdoc/>
 		protected TableExplorer(Guid typeId) : base(typeId) { }
 		/// <include file='doc.xml' path='doc/Columns/*'/>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		internal virtual object[] Columns { get; set; }
 	}
 }

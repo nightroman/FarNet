@@ -115,7 +115,6 @@ namespace FarNet.Tools
 			Editor.EndUndo();
 			Editor.Redraw();
 		}
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		bool DoInvoke()
 		{
 			var area = CommandArea();

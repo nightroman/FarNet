@@ -49,7 +49,6 @@ namespace FarNet
 		/// <summary>Shift.</summary>
 		ShiftPressed = 0x0010,
 		/// <summary>NumLock.</summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
 		NumLockOn = 0x0020,
 		/// <summary>ScrollLock.</summary>
 		ScrollLockOn = 0x0040,
@@ -88,7 +87,6 @@ namespace FarNet
 	/// <summary>
 	/// Mouse action.
 	/// </summary>
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1027:MarkEnumsWithFlags")]
 	public enum MouseAction
 	{
 		/// <summary>
@@ -126,8 +124,6 @@ namespace FarNet
 		/// <summary>
 		/// .
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly")]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
 		public const int
 Backspace = 8,
 Tab = 9,

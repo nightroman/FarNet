@@ -2,10 +2,9 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
-using System;
+using FarNet;
 using System.Collections.Generic;
 using System.Management.Automation;
-using FarNet;
 
 namespace PowerShellFar.Commands
 {
@@ -14,7 +13,6 @@ namespace PowerShellFar.Commands
 	{
 		ObjectPanel _panel;
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		[Parameter(Position = 0)]
 		public object[] Columns { get; set; }
 

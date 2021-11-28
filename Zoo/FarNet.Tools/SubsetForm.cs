@@ -23,13 +23,11 @@ namespace FarNet.Tools
 		/// <summary>
 		/// Gets or sets indexes of the selected items.
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		public int[] Indexes { get; set; }
 
 		/// <summary>
 		/// Gets or sets the items to select from.
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		public object[] Items { get; set; }
 
 		/// <summary>

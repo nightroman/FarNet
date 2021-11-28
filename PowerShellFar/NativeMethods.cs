@@ -67,7 +67,6 @@ namespace PowerShellFar
 		}
 
 		// From System.Management.Automation.HostUtilities, adapted
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		public static PSCredential PromptForCredential(string caption, string message, string userName, string targetName, PSCredentialTypes allowedCredentialTypes, PSCredentialUIOptions options)
 		{
 			if (string.IsNullOrEmpty(caption))

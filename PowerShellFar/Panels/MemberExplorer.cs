@@ -64,7 +64,6 @@ namespace PowerShellFar
 			return new MemberPanel(this);
 		}
 		/// <inheritdoc/>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 		{
 			if (args == null) return null;

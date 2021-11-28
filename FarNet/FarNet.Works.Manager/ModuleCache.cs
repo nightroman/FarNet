@@ -19,7 +19,6 @@ namespace FarNet.Works
 		readonly int _CountToLoad;
 		bool _ToUpdate;
 		public int CountLoaded { get; set; }
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public ModuleCache()
 		{
 			//! read the cache; do not check existence, normally it exists
@@ -60,7 +59,6 @@ namespace FarNet.Works
 			// count to load
 			_CountToLoad = _Cache.Count - 1;
 		}
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public void Update()
 		{
 			// obsolete records? 

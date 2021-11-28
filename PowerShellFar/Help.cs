@@ -14,7 +14,6 @@ namespace PowerShellFar
 	/// </summary>
 	static class Help
 	{
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		internal static void ShowHelpForContext(string defaultTopic = null)
 		{
 			ILine line = Far.Api.Line;

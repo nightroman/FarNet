@@ -19,10 +19,6 @@ namespace Pfz.Threading
 		/// guaranteeing all "using" blocks to work and even doing some user validations).
 		/// Returns if the Thread.Abort() was called or not.
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2001:AvoidCallingProblematicMethods", MessageId = "System.Threading.Thread.Resume")]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2001:AvoidCallingProblematicMethods", MessageId = "System.Threading.Thread.Suspend")]
 		public static bool AbortIfSafe(Thread thread, SafeAbortMode mode = SafeAbortMode.RunAllValidations, object stateInfo = null)
 		{
 			if (thread == null)
