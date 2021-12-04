@@ -23,25 +23,20 @@ namespace FarNet
 		/// </summary>
 		public string FileName { get; }
 
-		/// <summary>
-		/// Gets true for local settings.
-		/// </summary>
-		public bool IsLocal { get; }
-
-		/// <summary>
-		/// Gets the module manager.
-		/// </summary>
-		public IModuleManager Manager { get; }
-
 		internal ModuleSettingsBase(Type dataType, ModuleSettingsArgs args)
 		{
 			_type = dataType;
-			IsLocal = args.IsLocal;
 
-			var myType = GetType();
-			Manager = Far.Api.GetModuleManager(myType);
-
-			FileName = Manager.GetFolderPath(IsLocal ? SpecialFolder.LocalData : SpecialFolder.RoamingData, true) + "\\" + myType.Name + ".xml";
+			if (args.FileName is null)
+			{
+				var myType = GetType();
+				var manager = Far.Api.GetModuleManager(myType);
+				FileName = manager.GetFolderPath(args.IsLocal ? SpecialFolder.LocalData : SpecialFolder.RoamingData, true) + "\\" + myType.Name + ".xml";
+			}
+			else
+			{
+				FileName = args.FileName;
+			}
 		}
 
 		internal object GetOrReadData()
@@ -55,6 +50,8 @@ namespace FarNet
 				try
 				{
 					data = Read();
+					if (DoUpdateData(data))
+						Save(FileName, data);
 				}
 				catch (Exception ex)
 				{
@@ -69,6 +66,8 @@ namespace FarNet
 			ValidateData(data);
 			return _data = data;
 		}
+
+		internal abstract bool DoUpdateData(object data);
 
 		object Read()
 		{
@@ -100,11 +99,19 @@ namespace FarNet
 		}
 
 		/// <summary>
-		/// Saves the settings.
+		/// Saves the data.
 		/// </summary>
 		public void Save()
 		{
 			Save(FileName, GetOrReadData());
+		}
+
+		/// <summary>
+		/// Resets the data.
+		/// </summary>
+		public void Reset()
+		{
+			_data = null;
 		}
 
 		/// <summary>
@@ -160,10 +167,16 @@ namespace FarNet
 
 				// get new XML via file, avoid UTF16 on using StringWriter
 				var temp = Kit.TempFileName(null);
-				Save(temp, _data);
-				var newText = File.ReadAllText(temp);
-				File.Delete(temp);
-				editor.SetText(newText);
+				try
+				{
+					Save(temp, _data);
+					var newText = File.ReadAllText(temp);
+					editor.SetText(newText);
+				}
+				finally
+				{
+					File.Delete(temp);
+				}
 			};
 
 			editor.Open();
@@ -171,14 +184,14 @@ namespace FarNet
 
 		const string DifferentXml = @"
 The XML is different from the current settings XML.
-Replace the text with the current settings XML?
+Update the text with the current settings XML?
 
 You may undo this change before saving.
 
 What you may get:
 - Original formatting and elements order
 - Added new and removed old elements
-- Comments are removed
+- Some old data migrated
 ";
 	}
 }

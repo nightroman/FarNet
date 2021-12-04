@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace FarNet.Demo
 {
 	/// <summary>
-	/// To define roaming browsable settings, just implement <see cref="ModuleSettings{T}"/>.
+	/// This class implements browsable roaming settings.
 	/// </summary>
 	/// <remarks>
 	/// The type name is used as the settings file name and as the display name in the settings menu.
@@ -15,25 +16,42 @@ namespace FarNet.Demo
 	public class Settings : ModuleSettings<Settings.Data>
 	{
 		/// <summary>
-		/// This cached global settings is known to FarNet due to the conventional name <c>Default</c>.
-		/// When you edit settings via the FarNet settings menu this instance is updated automatically.
+		/// The current data version.
+		/// </summary>
+		const int CurrentVersion = 1;
+
+		/// <summary>
+		/// This cached static object is known to FarNet due to the conventional name <c>Default</c>.
+		/// When you edit settings from the FarNet settings menu this object is updated automatically.
 		/// </summary>
 		public static Settings Default { get; } = new Settings();
 
 		/// <summary>
-		/// This type defines the settings.
+		/// This class defines the settings data.
 		/// </summary>
 		/// <remarks>
-		/// Use the required attribute <see cref="SerializableAttribute"/> and optional <see cref="XmlRootAttribute"/>.
-		/// Optionally implement the <see cref="IValidate"/> interface with the method <see cref="Validate"/>.
-		/// This method is automatically called after deserializing.
+		/// Use the required <c>[Serializable]</c>.
+		/// Optionally use <see cref="XmlRootAttribute"/> for the root name.
+		/// Optionally implement <see cref="IValidate"/> for data validation.
 		/// </remarks>
 		[Serializable]
 		[XmlRoot("Data")]
 		public class Data : IValidate
 		{
+			internal int SavedVersion;
+
 			/// <summary>
-			/// Some simple string.
+			/// This property is for serialization only.
+			/// Use <see cref="SavedVersion"/> and <see cref="CurrentVersion"/> instead.
+			/// </summary>
+			public int Version
+			{
+				get => CurrentVersion;
+				set => SavedVersion = value;
+			}
+
+			/// <summary>
+			/// Some string.
 			/// </summary>
 			public string Name { get; set; } = "John Doe";
 
@@ -43,44 +61,72 @@ namespace FarNet.Demo
 			public int Age { get; set; } = 42;
 
 			/// <summary>
-			/// Some list of strings.
-			/// </summary>
-			public string[] Paths { get; set; } = new string[] { Environment.GetEnvironmentVariable("FARHOME") };
-
-			/// <summary>
-			/// CDATA with empty default.
+			/// CDATA with empty text.
 			/// </summary>
 			public XmlCData Memo { get; set; }
 
 			/// <summary>
-			/// CDATA with default text.
+			/// CDATA with some text.
 			/// </summary>
-			public XmlCData Regex { get; set; } = new XmlCData("([<>&]+)");
+			public XmlCData Regex { get; set; } = "([<>&]+)";
 
 			/// <summary>
-			/// Internal regex created by <see cref="Validate"/> from <see cref="Regex"/>.
+			/// Some list of strings.
 			/// </summary>
-			internal Regex Regex2 { get; set; }
+			public string[] Paths { get; set; } = new string[] { "%FARHOME%" };
 
 			/// <summary>
-			/// This interface method is automatically called after deserializing.
+			/// Regex created by <see cref="Validate"/> from <see cref="Regex"/>.
+			/// </summary>
+			[XmlIgnore]
+			public Regex Regex2 { get; set; }
+
+			/// <summary>
+			/// Example of validating and completing data.
 			/// </summary>
 			/// <remarks>
-			/// This sample creates the cached <see cref="Regex2"/> from its pattern <see cref="Regex"/>.
+			/// This interface method is called after deserializing or creating default data.
+			/// This sample creates <see cref="Regex2"/> from its pattern <see cref="Regex"/>.
 			/// </remarks>
 			public void Validate()
 			{
 				try
 				{
 					// try to create the regex from its pattern
-					Regex2 = new Regex(Regex.Value);
+					Regex2 = new Regex(Regex);
 				}
 				catch (Exception ex)
 				{
-					// throw another exception with the data name included in the message.
+					// throw amended exception with invalid data details
 					throw new Exception($"{nameof(Regex)}: {ex.Message}", ex);
 				}
 			}
+		}
+
+		/// <summary>
+		/// Example of migrating data from the old XML.
+		/// </summary>
+		/// <remarks>
+		/// In order to test, remove the XML element <c>Version</c> or set it to 0.
+		/// </remarks>
+		protected override bool UpdateData(Data data)
+		{
+			// do noting if the saved version is current or future
+			if (data.SavedVersion >= CurrentVersion)
+				return false;
+
+			// get the old XML
+			var xml = new XmlDocument();
+			xml.Load(FileName);
+
+			// get old data
+			var nodeVersion = xml.SelectSingleNode("Data/Version");
+
+			// update new data
+			data.Name = $"Updated from version '{nodeVersion?.InnerText}'.";
+
+			// tell to save new data (the current version is saved, too)
+			return true;
 		}
 	}
 }

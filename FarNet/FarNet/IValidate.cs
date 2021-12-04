@@ -5,12 +5,13 @@
 namespace FarNet
 {
 	/// <summary>
-	/// Implements the validation method.
+	/// Validates and completes data.
 	/// </summary>
+	/// <seealso cref="ModuleSettings{T}"/>
 	public interface IValidate
 	{
 		/// <summary>
-		/// Validates and completes data and throws errors on issues.
+		/// Validates and completes data.
 		/// </summary>
 		void Validate();
 	}

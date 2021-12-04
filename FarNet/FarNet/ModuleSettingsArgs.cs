@@ -13,5 +13,10 @@ namespace FarNet
 		/// Tells to use the local settings file.
 		/// </summary>
 		public bool IsLocal { get; set; }
+
+		/// <summary>
+		/// Tells to use the spefified file path.
+		/// </summary>
+		public string FileName { get; set; }
 	}
 }

@@ -27,45 +27,40 @@ namespace FarNet
 		/// </summary>
 		public string Value { get; set; }
 
-		/// <summary>
-		/// .
-		/// </summary>
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return Value;
 		}
 
-		/// <summary>
-		/// .
-		/// </summary>
+		/// <inheritdoc/>
 		public XmlSchema GetSchema()
 		{
 			return null;
 		}
 
-		/// <summary>
-		/// .
-		/// </summary>
-		/// <param name="reader">.</param>
+		/// <inheritdoc/>
 		public void ReadXml(XmlReader reader)
 		{
-			reader.MoveToContent();
-			var isEmptyElement = reader.IsEmptyElement;
-			reader.ReadStartElement();
-			if (!isEmptyElement)
-			{
-				Value = reader.ReadContentAsString();
-				reader.ReadEndElement();
-			}
+			Value = reader.ReadElementContentAsString();
 		}
 
-		/// <summary>
-		/// .
-		/// </summary>
-		/// <param name="writer">.</param>
+		/// <inheritdoc/>
 		public void WriteXml(XmlWriter writer)
 		{
 			writer.WriteCData(Value);
 		}
+
+		/// <summary>
+		/// Converts from string.
+		/// </summary>
+		/// <param name="value">.</param>
+		public static implicit operator XmlCData(string value) => new(value);
+
+		/// <summary>
+		/// Converts to string.
+		/// </summary>
+		/// <param name="value">.</param>
+		public static implicit operator string(XmlCData value) => value.Value;
 	}
 }

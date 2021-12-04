@@ -14,14 +14,20 @@ This modules demonstrates some FarNet module features:
 
 ## Module settings
 
-Module may implement settings by deriving from and implementing `ModuleSettings` class.
+Module may define settings by implementing `ModuleSettings`.
 
 Settings may be roaming (default) or local and browsable (default) or non-browsable, in any combination.
-Here are the two most typical examples:
+Typical examples:
 
 - Browsable roaming settings [Settings.cs](Settings.cs)
 - Non-browsable local settings [Workings.cs](Workings.cs)
 
 Roaming settings are stored in `%FARPROFILE%\FarNet\<Module>`, local in `%FARLOCALPROFILE%\FarNet\<Module>`.
 
-Browsable settings are shown in the `[F11]` \ `FarNet` \ `Settings` menu, non-browsable are excluded.
+Browsable settings are shown by `F11 / FarNet / Settings`, non-browsable are excluded from the menu.
+
+Sample PowerShellFar scripts dealing with settings:
+
+- [Settings.far.ps1](Scripts/Settings.far.ps1)
+- [Workings.far.ps1](Scripts/Workings.far.ps1)
+- [MySettings.far.ps1](Scripts/MySettings.far.ps1)
