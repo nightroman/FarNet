@@ -17,7 +17,7 @@ namespace FarNet.RightWords
 		[Serializable]
 		public class Data : IValidate
 		{
-			public XmlCData WordRegex { get; set; } = new XmlCData(@"[\p{Lu}\p{Ll}]\p{Ll}+");
+			public XmlCData WordRegex { get; set; } = @"[\p{Lu}\p{Ll}]\p{Ll}+";
 
 			public XmlCData SkipRegex { get; set; }
 
@@ -33,23 +33,23 @@ namespace FarNet.RightWords
 			internal Regex SkipRegex2 { get; private set; }
 			public void Validate()
 			{
-				if (string.IsNullOrWhiteSpace(WordRegex.Value))
+				if (string.IsNullOrWhiteSpace(WordRegex))
 					throw new ModuleException("WordRegex cannot be empty.");
 
 				try
 				{
-					WordRegex2 = new Regex(WordRegex.Value);
+					WordRegex2 = new Regex(WordRegex);
 				}
 				catch (ArgumentException ex)
 				{
 					throw new ModuleException($"WordRegex: {ex.Message}");
 				}
 
-				if (!string.IsNullOrWhiteSpace(SkipRegex.Value))
+				if (!string.IsNullOrWhiteSpace(SkipRegex))
 				{
 					try
 					{
-						SkipRegex2 = new Regex(SkipRegex.Value);
+						SkipRegex2 = new Regex(SkipRegex);
 					}
 					catch (ArgumentException ex)
 					{

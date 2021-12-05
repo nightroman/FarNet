@@ -25,7 +25,7 @@ namespace FarNet.Drawer
 		[Serializable]
 		public class CurrentWord
 		{
-			public XmlCData WordRegex { get; set; } = new XmlCData(@"\w[-\w]*");
+			public XmlCData WordRegex { get; set; } = @"\w[-\w]*";
 
 			public ConsoleColor ColorForeground { get; set; } = ConsoleColor.Black;
 

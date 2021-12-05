@@ -14,9 +14,9 @@ namespace FarNet.RightControl
 		[Serializable]
 		public class Data : IValidate
 		{
-			public XmlCData RegexLeft { get; set; } = new XmlCData(@"(?x: ^ | $ | (?<=\b|\s)\S )");
+			public XmlCData RegexLeft { get; set; } = @"(?x: ^ | $ | (?<=\b|\s)\S )";
 
-			public XmlCData RegexRight { get; set; } = new XmlCData(@"(?x: ^ | $ | (?<=\b|\s)\S )");
+			public XmlCData RegexRight { get; set; } = @"(?x: ^ | $ | (?<=\b|\s)\S )";
 
 			internal Regex RegexLeft2 { get; private set; }
 			internal Regex RegexRight2 { get; private set; }
@@ -24,7 +24,7 @@ namespace FarNet.RightControl
 			{
 				try
 				{
-					RegexLeft2 = new Regex(RegexLeft.Value);
+					RegexLeft2 = new Regex(RegexLeft);
 				}
 				catch (Exception ex)
 				{
@@ -33,7 +33,7 @@ namespace FarNet.RightControl
 
 				try
 				{
-					RegexRight2 = new Regex(RegexRight.Value);
+					RegexRight2 = new Regex(RegexRight);
 				}
 				catch (Exception ex)
 				{

@@ -16,7 +16,7 @@ namespace FarNet.Drawer
 			var sets = Settings.Default.GetData().CurrentWord;
 
 			// get current word
-			var regex = new Regex(sets.WordRegex.Value);
+			var regex = new Regex(sets.WordRegex);
 			var match = editor.Line.MatchCaret(regex);
 			if (match == null)
 				return;
