@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Reflection;
 
 namespace FarNet.Works.Config
@@ -14,26 +13,12 @@ namespace FarNet.Works.Config
 		internal const string HelpSettings = "module-settings";
 		public static void ShowSettings(IEnumerable<IModuleManager> managers)
 		{
-			if (managers is null)
-				return;
-
-			// collect data sorted, sort is needed for 2+ settings in an assembly
-			var list = new SortedList<string, Type>(StringComparer.OrdinalIgnoreCase);
+			// collect sorted data
+			var list = new SortedList<string, KeyValuePair<string, IModuleManager>>(StringComparer.OrdinalIgnoreCase);
 			foreach (var manager in managers)
 			{
-				foreach (Type type in manager.LoadAssembly(false).GetExportedTypes())
-				{
-					if (type.IsAbstract)
-						continue;
-
-					if (typeof(ModuleSettingsBase).IsAssignableFrom(type))
-					{
-						var browsable = type.GetCustomAttribute<BrowsableAttribute>();
-						if (browsable is null || browsable.Browsable)
-							list.Add(manager.ModuleName + "\\" + type.Name, type);
-						continue;
-					}
-				}
+				foreach (var typeName in manager.SettingsTypeNames)
+					list.Add($"{manager.ModuleName} {typeName}", new KeyValuePair<string, IModuleManager>(typeName, manager));
 			}
 
 			// do menu
@@ -49,9 +34,11 @@ namespace FarNet.Works.Config
 			if (!menu.Show())
 				return;
 
-			var settingsType = (Type)menu.SelectedData;
+			var data = (KeyValuePair<string, IModuleManager>)menu.SelectedData;
 
 			// obtain settings
+			var assembly = data.Value.LoadAssembly(false);
+			var settingsType = assembly.GetType(data.Key);
 			var info = settingsType.GetProperty("Default", BindingFlags.Static | BindingFlags.Public);
 
 			ModuleSettingsBase settingsInstance;
@@ -69,7 +56,7 @@ namespace FarNet.Works.Config
 
 				//! `Default` must be its type
 				if (settingsInstance.GetType() != settingsType)
-					throw new InvalidOperationException($"{settingsType.FullName} property 'Default' must have the same type.");
+					throw new InvalidOperationException($"{settingsType.FullName} property 'Default' must have this type.");
 			}
 
 			// open the editor

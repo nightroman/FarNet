@@ -218,7 +218,11 @@ namespace FarNet
 		/// <summary>
 		/// INTERNAL
 		/// </summary>
-		public abstract void SaveSettings();
+		public abstract void SaveConfig();
+		/// <summary>
+		/// INTERNAL
+		/// </summary>
+		public abstract IReadOnlyList<string> SettingsTypeNames { get; }
 		/// <summary>
 		/// Calls <see cref="ModuleHost.Interop"/>.
 		/// </summary>

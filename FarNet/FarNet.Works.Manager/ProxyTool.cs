@@ -4,32 +4,50 @@
 
 using System;
 using System.Collections;
+using System.IO;
 
 namespace FarNet.Works
 {
 	public sealed class ProxyTool : ProxyAction, IModuleTool
 	{
-		readonly EventHandler<ModuleToolEventArgs> _Handler;
+		const int idOptions = 1;
 		ModuleToolOptions _Options;
-		internal ProxyTool(ModuleManager manager, EnumerableReader reader)
+		readonly EventHandler<ModuleToolEventArgs> _Handler;
+
+		new ModuleToolAttribute Attribute => (ModuleToolAttribute)base.Attribute;
+		public ModuleToolOptions DefaultOptions => Attribute.Options;
+		public override ModuleItemKind Kind => ModuleItemKind.Tool;
+
+		internal ProxyTool(ModuleManager manager, BinaryReader reader)
 			: base(manager, reader, new ModuleToolAttribute())
 		{
-			Attribute.Options = (ModuleToolOptions)reader.Read();
+			// [1]
+			Attribute.Options = (ModuleToolOptions)reader.ReadInt32();
 		}
+
+		internal sealed override void WriteCache(BinaryWriter writer)
+		{
+			base.WriteCache(writer);
+
+			// [1]
+			writer.Write((int)Attribute.Options);
+		}
+
 		internal ProxyTool(ModuleManager manager, Type classType)
 			: base(manager, classType, typeof(ModuleToolAttribute))
 		{ }
+
 		internal ProxyTool(ModuleManager manager, Guid id, ModuleToolAttribute attribute, EventHandler<ModuleToolEventArgs> handler)
 			: base(manager, id, (ModuleToolAttribute)attribute.Clone())
 		{
 			_Handler = handler;
 		}
+
 		public void Invoke(object sender, ModuleToolEventArgs e)
 		{
 			if (e == null)
 				throw new ArgumentNullException("e");
 
-			Log.Source.TraceInformation("Invoking {0} From='{1}'", this, e.From);
 			Invoking();
 
 			if (_Handler != null)
@@ -42,21 +60,15 @@ namespace FarNet.Works
 				instance.Invoke(sender, e);
 			}
 		}
+
 		public sealed override string ToString()
 		{
-			return string.Format(null, "{0} Options='{1}'", base.ToString(), Attribute.Options);
+			return $"{base.ToString()} Options='{Attribute.Options}'";
 		}
-		internal sealed override void WriteCache(IList data)
-		{
-			base.WriteCache(data);
-			data.Add((int)Attribute.Options);
-		}
-		new ModuleToolAttribute Attribute => (ModuleToolAttribute)base.Attribute;
-		public ModuleToolOptions DefaultOptions => Attribute.Options;
-		public override ModuleItemKind Kind => ModuleItemKind.Tool;
+
 		public ModuleToolOptions Options
 		{
-			get { return _Options; }
+			get => _Options;
 			set
 			{
 				// unregister the current
@@ -68,15 +80,16 @@ namespace FarNet.Works
 				Host.Instance.RegisterProxyTool(this);
 			}
 		}
-		const int idOptions = 1;
-		internal override Hashtable SaveData()
+
+		internal override Hashtable SaveConfig()
 		{
 			var data = new Hashtable();
 			if (_Options != DefaultOptions)
-				data.Add(idOptions, ~(((int)Attribute.Options) & (~((int)_Options)))); 
+				data.Add(idOptions, ~(((int)Attribute.Options) & (~((int)_Options))));
 			return data;
 		}
-		internal override void LoadData(Hashtable data)
+
+		internal override void LoadConfig(Hashtable data)
 		{
 			if (data == null)
 			{

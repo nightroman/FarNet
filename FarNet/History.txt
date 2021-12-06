@@ -1,6 +1,15 @@
 https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 5.6.2 =
+
+Minor tweaks in module settings.
+
+Avoided unnecessary assemblies loading for settings menu.
+
+Reworked module cache (Cache*.bin).
+You may remove old %FARLOCALPROFILE%\FarNet\Cache*.binary
+
 = 5.6.1 =
 
 Work on XML settings, support versioning

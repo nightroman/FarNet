@@ -4,6 +4,8 @@
 
 using System;
 using System.Collections;
+using System.IO;
+using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 
 namespace FarNet.Works
@@ -13,19 +15,44 @@ namespace FarNet.Works
 		string _ClassName;
 		Type _ClassType;
 		Guid _Id;
+		Func<object> _Constructor;
 		readonly ModuleManager _Manager;
-		protected ProxyAction(ModuleManager manager, EnumerableReader reader, ModuleActionAttribute attribute)
-		{
-			if (reader == null)
-				throw new ArgumentNullException("reader");
+		protected ModuleActionAttribute Attribute { get; }
 
+		// Properties
+		public virtual Guid Id => _Id;
+		public virtual string Name => Attribute.Name;
+		public IModuleManager Manager => _Manager;
+		internal string ClassName => _ClassType == null ? _ClassName : _ClassType.FullName;
+
+		// Abstract
+		public abstract ModuleItemKind Kind { get; }
+		internal abstract Hashtable SaveConfig();
+		internal abstract void LoadConfig(Hashtable data);
+
+		internal ProxyAction(ModuleManager manager, BinaryReader reader, ModuleActionAttribute attribute)
+		{
 			_Manager = manager;
 			Attribute = attribute;
 
-			_ClassName = (string)reader.Read();
-			Attribute.Name = (string)reader.Read();
-			_Id = (Guid)reader.Read();
+			// [1]
+			_ClassName = reader.ReadString();
+			// [2]
+			Attribute.Name = reader.ReadString();
+			// [3]
+			_Id = new Guid(reader.ReadBytes(16));
 		}
+
+		internal virtual void WriteCache(BinaryWriter writer)
+		{
+			// [1]
+			writer.Write(ClassName);
+			// [2]
+			writer.Write(Name);
+			// [3]
+			writer.Write(_Id.ToByteArray());
+		}
+
 		protected ProxyAction(ModuleManager manager, Guid id, ModuleActionAttribute attribute)
 		{
 			_Manager = manager;
@@ -34,6 +61,7 @@ namespace FarNet.Works
 
 			Initialize();
 		}
+
 		protected ProxyAction(ModuleManager manager, Type classType, Type attributeType)
 		{
 			_Manager = manager;
@@ -48,7 +76,7 @@ namespace FarNet.Works
 				throw new ModuleException($"Use '{typeof(GuidAttribute).FullName}' attribute for '{_ClassType.Name}'.");
 
 			_Id = new Guid(((GuidAttribute)attrs[0]).Value);
-			
+
 			// Module* attribure
 			attrs = _ClassType.GetCustomAttributes(attributeType, false);
 			if (attrs.Length == 0)
@@ -60,55 +88,52 @@ namespace FarNet.Works
 
 			if (Attribute.Resources)
 			{
-				_Manager.CachedResources = true;
 				string name = _Manager.GetString(Attribute.Name);
 				if (!string.IsNullOrEmpty(name))
 					Attribute.Name = name;
 			}
 		}
-		protected ModuleActionAttribute Attribute { get; }
+
 		internal object GetInstance()
 		{
-			if (_ClassType == null)
+			// resolve class name to its type
+			if (_ClassType is null)
 			{
 				_ClassType = _Manager.LoadAssembly().GetType(_ClassName, true, false);
 				_ClassName = null;
 			}
 
-			return Activator.CreateInstance(_ClassType, false);
+			// compile its default constructor
+			// Faster than Activator.CreateInstance for 2+ calls.
+			// For singletons still use Activator.CreateInstance.
+			if (_Constructor is null)
+			{
+				_Constructor = Expression.Lambda<Func<object>>(Expression.New(_ClassType)).Compile();
+			}
+
+			// get new instance
+			return _Constructor();
 		}
+
 		void Initialize()
 		{
 			if (string.IsNullOrEmpty(Attribute.Name))
 				throw new ModuleException("Module action name cannot be empty.");
 		}
+
 		internal void Invoking()
 		{
 			_Manager.Invoking();
 		}
+
 		public override string ToString()
 		{
 			return $"{_Manager.ModuleName} {Id} {Kind} Name='{Name}'";
 		}
+
 		public virtual void Unregister()
 		{
 			Host.Instance.UnregisterProxyAction(this);
 		}
-		internal virtual void WriteCache(IList data)
-		{
-			data.Add((int)Kind);
-			data.Add(ClassName);
-			data.Add(Name);
-			data.Add(_Id);
-		}
-		// Properties
-		public virtual Guid Id => _Id;
-		public virtual string Name => Attribute.Name;
-		public IModuleManager Manager => _Manager;
-		internal string ClassName => _ClassType == null ? _ClassName : _ClassType.FullName;
-		// Abstract
-		public abstract ModuleItemKind Kind { get; }
-		internal abstract Hashtable SaveData();
-		internal abstract void LoadData(Hashtable data);
 	}
 }

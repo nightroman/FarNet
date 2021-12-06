@@ -3,116 +3,131 @@
 // Copyright (c) Roman Kuzmin
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 
 namespace FarNet.Works
 {
+	/// <summary>
+	/// Reads and writes, wraps the dictionary.
+	/// This is it, keep it simple.
+	/// </summary>
 	class ModuleCache
 	{
-		const int Version = 4;
-		const int idVersion = 0;
+		const int CurrentVersion = 0;
 		readonly string _FileName;
-		readonly Hashtable _Cache;
-		readonly int _CountToLoad;
+		readonly int _CountCached;
+		internal int CountFound;
 		bool _ToUpdate;
-		public int CountLoaded { get; set; }
+		readonly Dictionary<string, ModuleManager> _Cache = new();
+
 		public ModuleCache()
 		{
-			//! read the cache; do not check existence, normally it exists
-			_FileName = Far.Api.GetFolderPath(SpecialFolder.LocalData) + (IntPtr.Size == 4 ? @"\FarNet\Cache32.binary" : @"\FarNet\Cache64.binary");
+			//! read the cache, let it fail if missing
+			_FileName = Far.Api.GetFolderPath(SpecialFolder.LocalData) + (IntPtr.Size == 4 ? @"\FarNet\Cache32.bin" : @"\FarNet\Cache64.bin");
 			try
 			{
-				object deserialized;
-				var formatter = new BinaryFormatter();
-				using (var stream = new FileStream(_FileName, FileMode.Open, FileAccess.Read, FileShare.Read))
-					deserialized = formatter.Deserialize(stream);
+				using var stream = new FileStream(_FileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+				using var reader = new BinaryReader(stream);
 
-				_Cache = deserialized as Hashtable;
+				// [1]
+				var savedVersion = reader.ReadUInt32();
+				if (savedVersion != CurrentVersion)
+					throw new IOException("Version");
 
-				if (_Cache != null && Version != (int)_Cache[idVersion])
-					_Cache = null;
+				// [2]
+				var moduleCount = reader.ReadUInt32();
+				for (int i = 0; i < moduleCount; i++)
+				{
+					// [3]
+					var assemblyPath = reader.ReadString();
+
+					// [4]
+					var moduleManager = new ModuleManager(assemblyPath);
+					moduleManager.ReadCache(reader);
+
+					_Cache.Add(assemblyPath, moduleManager);
+				}
 			}
 			catch (IOException) //! FileNotFoundException, DirectoryNotFoundException
 			{
-				_Cache = null;
+				_Cache.Clear();
 				_ToUpdate = true;
 			}
 			catch (Exception ex)
 			{
-				_Cache = null;
+				_Cache.Clear();
 				_ToUpdate = true;
 				Far.Api.ShowError("Reading cache", ex);
 			}
 
-			// new empty cache
-			if (_Cache == null)
-			{
-				_Cache = new Hashtable
-				{
-					{ idVersion, Version }
-				};
-			}
-
 			// count to load
-			_CountToLoad = _Cache.Count - 1;
+			_CountCached = _Cache.Count;
 		}
+
+		void Write()
+		{
+			// ensure the directory
+			Directory.CreateDirectory(Path.GetDirectoryName(_FileName));
+
+			// write the cache
+			using var stream = new FileStream(_FileName, FileMode.Create, FileAccess.Write, FileShare.None);
+			using var writer = new BinaryWriter(stream);
+
+			// [1]
+			writer.Write(CurrentVersion);
+
+			// [2]
+			writer.Write(_Cache.Count);
+			foreach (var kv in _Cache)
+			{
+				// [3]
+				writer.Write(kv.Key);
+
+				// [4]
+				kv.Value.WriteCache(writer);
+			}
+		}
+
 		public void Update()
 		{
-			// obsolete records? 
-			if (_CountToLoad != CountLoaded)
+			// obsolete records?
+			if (_CountCached != CountFound)
 			{
-				var list = new List<string>();
-
-				foreach (var key in _Cache.Keys)
+				var missingAssemblyPaths = new List<string>();
+				foreach (var assemblyPath in _Cache.Keys)
 				{
-					if (key is string name && !File.Exists(name))
-						list.Add(name);
+					if (!File.Exists(assemblyPath))
+						missingAssemblyPaths.Add(assemblyPath);
 				}
 
-				if (list.Count > 0)
+				if (missingAssemblyPaths.Count > 0)
 				{
 					_ToUpdate = true;
-					foreach (var name in list)
-						_Cache.Remove(name);
+					foreach (var assemblyPath in missingAssemblyPaths)
+						_Cache.Remove(assemblyPath);
 				}
 			}
 
-			// write cache
+			// write changed
 			if (_ToUpdate)
-			{
-				try
-				{
-					// ensure the directory
-					var dir = Path.GetDirectoryName(_FileName);
-					if (!Directory.Exists(dir))
-						Directory.CreateDirectory(dir);
+				Write();
+		}
 
-					// write the cache
-					var formatter = new BinaryFormatter();
-					using (var stream = new FileStream(_FileName, FileMode.Create, FileAccess.Write, FileShare.None))
-						formatter.Serialize(stream, _Cache);
-				}
-				catch (Exception ex)
-				{
-					Far.Api.ShowError("Writing cache", ex);
-				}
-			}
-		}
-		public object Get(string key)
+		public ModuleManager Find(string assemblyPath)
 		{
-			return _Cache[key];
+			return _Cache.TryGetValue(assemblyPath, out var manager) ? manager : null;
 		}
-		public void Set(string key, object data)
+
+		public void Set(string assemblyPath, ModuleManager manager)
 		{
-			_Cache[key] = data;
+			_Cache[assemblyPath] = manager;
 			_ToUpdate = true;
 		}
-		public void Remove(string key)
+
+		public void Remove(string assemblyPath)
 		{
-			_Cache.Remove(key);
+			_Cache.Remove(assemblyPath);
 			_ToUpdate = true;
 		}
 	}

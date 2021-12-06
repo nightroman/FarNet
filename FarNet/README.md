@@ -175,7 +175,7 @@ Normally the core discovers module changes and updates the cache itself. In
 rare cases the cache may have to be removed manually and the core restarted.
 Note that data of removed modules are removed from the cache automatically.
 
-The module cache file is *%FARLOCALPROFILE%\FarNet\Cache??.binary*
+The module cache file is `%FARLOCALPROFILE%\FarNet\Cache*.bin`
 
 ---
 
@@ -211,7 +211,7 @@ home directory.
 **Problem:** After updating of a FarNet module this module cannot start, shows
 incorrect menu, or works incorrectly.
 
-Try again after removing the FarNet module cache *%FARLOCALPROFILE%\FarNet\Cache??.binary*
+Try again after removing the module cache `%FARLOCALPROFILE%\FarNet\Cache*.bin`
 
 ---
 
@@ -495,16 +495,25 @@ is enabled). By default symbols * and ? are wildcards.
 
 [Contents]
 
-**Settings menu**
+The settings menu shows browsable settings implemented by modules. On selection
+from the menu the settings file is opened in the editor, with special features.
 
-This menu shows browsable settings implemented by modules. A module normally
-has one settings set but it may have several. On selection from the menu the
-settings file is opened in the editor.
+The saved and current settings are compared for some XML differences. You may
+be prompted to replace the editor text with the saved settings adjusted to
+current. You may undo this change before saving.
 
-**Settings editor**
+What you may get:
+- Added new and removed old elements
+- Original formatting and elements order
 
-Edit and save the module settings XML. If the module implements and use the
-`Default` settings instance then changes are instantly applied.
+On saving settings are deserialized from XML. You may get validation errors.
+Fix the issues or undo the problematic changes and save again. Note that the
+file is written on saving in any case, valid or not. So do not leave it with
+issues or the module may not work properly on next loading.
+
+Avoid opening settings files in the editor directly, use the settings menu.
+On direct editing the changes are not applied to the current settings and
+validation errors may be discovered later.
 
 ---
 

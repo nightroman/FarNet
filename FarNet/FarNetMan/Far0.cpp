@@ -140,8 +140,6 @@ void Far0::UnregisterProxyAction(IModuleAction^ action)
 		}
 	}
 
-	Log::Source->TraceInformation("Unregister {0}", action);
-
 	Works::Host::Actions->Remove(action->Id);
 
 	{
@@ -174,8 +172,6 @@ void Far0::UnregisterProxyAction(IModuleAction^ action)
 
 void Far0::UnregisterProxyTool(IModuleTool^ tool)
 {
-	Log::Source->TraceInformation("Unregister {0}", tool);
-
 	Works::Host::Actions->Remove(tool->Id);
 
 	InvalidateProxyTool(tool->Options);
@@ -222,8 +218,6 @@ void Far0::InvalidateProxyTool(ModuleToolOptions options)
 
 void Far0::RegisterProxyCommand(IModuleCommand^ info)
 {
-	Log::Source->TraceInformation("Register {0}", info);
-
 	Works::Host::Actions->Add(info->Id, info);
 
 	_registeredCommand.Add(info);
@@ -233,8 +227,6 @@ void Far0::RegisterProxyCommand(IModuleCommand^ info)
 
 void Far0::RegisterProxyDrawer(IModuleDrawer^ info)
 {
-	Log::Source->TraceInformation("Register {0}", info);
-
 	Works::Host::Actions->Add(info->Id, info);
 
 	_registeredDrawer.Add(info);
@@ -242,8 +234,6 @@ void Far0::RegisterProxyDrawer(IModuleDrawer^ info)
 
 void Far0::RegisterProxyEditor(IModuleEditor^ info)
 {
-	Log::Source->TraceInformation("Register {0}", info);
-
 	Works::Host::Actions->Add(info->Id, info);
 
 	_registeredEditor.Add(info);
@@ -251,8 +241,6 @@ void Far0::RegisterProxyEditor(IModuleEditor^ info)
 
 void Far0::RegisterProxyTool(IModuleTool^ info)
 {
-	Log::Source->TraceInformation("Register {0}", info);
-
 	Works::Host::Actions->Add(info->Id, info);
 
 	InvalidateProxyTool(info->Options);
@@ -824,7 +812,7 @@ void Far0::ShowMenu(ModuleToolOptions from)
 	String^ text = menu->Items[menu->Selected]->Text;
 
 	if (Object::ReferenceEquals(text, sSettings))
-		Works::Config::SettingsUI::ShowSettings(Works::ModuleLoader::EnumSettings());
+		Works::Config::SettingsUI::ShowSettings(Works::ModuleLoader::GatherModuleManagers());
 	else if (Object::ReferenceEquals(text, sPanels))
 		Works::PanelTools::ShowPanelsMenu();
 	else if (Object::ReferenceEquals(text, sEditors))

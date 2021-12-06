@@ -52,7 +52,7 @@ namespace FarNet
 	/// It is called when the data are deserialized or default created.
 	/// </para>
 	/// </remarks>
-	public abstract class ModuleSettings<T> : ModuleSettingsBase
+	public abstract class ModuleSettings<T> : ModuleSettingsBase where T : new()
 	{
 		/// <summary>
 		/// Creates roaming settings.
@@ -103,6 +103,11 @@ namespace FarNet
 		protected virtual bool UpdateData(T data)
 		{
 			return false;
+		}
+
+		internal sealed override object DoNewData()
+		{
+			return new T();
 		}
 
 		internal sealed override bool DoUpdateData(object data)

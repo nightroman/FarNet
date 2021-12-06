@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net45</TargetFramework>
+    <LangVersion>9.0</LangVersion>
     <WarningLevel>5</WarningLevel>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>

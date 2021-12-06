@@ -66,7 +66,7 @@ namespace FarNet.Works
 
 				// reset
 				command.Prefix = prefix;
-				command.Manager.SaveSettings();
+				command.Manager.SaveConfig();
 			}
 		}
 	}

@@ -4,6 +4,8 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
@@ -12,30 +14,40 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace FarNet.Works
 {
-	public sealed class ModuleManager : IModuleManager
+	public sealed partial class ModuleManager : IModuleManager
 	{
 		const int idUICulture = 0;
 		Assembly _AssemblyInstance;
 		CultureInfo _CurrentUICulture;
 		ResourceManager _ResourceManager;
+		internal string AssemblyPath { get; }
+
 		// Module host
-		string _ModuleHostClassName;
-		Type _ModuleHostClassType;
+		string _ModuleHostTypeName;
+		Type _ModuleHostType;
 		ModuleHost _ModuleHost;
-		// Has user settings sets?
-		internal bool HasSettings { get; set; }
+
+		// from cache or reflection
+		readonly List<string> _SettingsTypeNames = new();
+		// used by loader on reflection
+		public void AddSettingsTypeName(string name) => _SettingsTypeNames.Add(name);
+		// used for the settings menu and caching
+		public override IReadOnlyList<string> SettingsTypeNames => _SettingsTypeNames;
+
 		// New module manager
 		internal ModuleManager(string assemblyPath)
 		{
 			AssemblyPath = assemblyPath;
 		}
-		string GetSettingsFileName(bool create)
+
+		string GetConfigPath(bool create)
 		{
 			return GetFolderPath(SpecialFolder.RoamingData, create) + @"\FarNet.binary";
 		}
-		internal Hashtable ReadSettings()
+
+		internal Hashtable ReadConfig()
 		{
-			var file = GetSettingsFileName(false);
+			var file = GetConfigPath(false);
 			if (!File.Exists(file))
 				return new Hashtable();
 
@@ -46,146 +58,156 @@ namespace FarNet.Works
 
 			return deserialized as Hashtable ?? new Hashtable();
 		}
-		internal void LoadData(Hashtable data)
+
+		internal void LoadConfig(Hashtable data)
 		{
 			_StoredUICulture = data[idUICulture] as string;
 		}
-		internal void SaveData(Hashtable data)
+
+		internal void SaveConfig(Hashtable data)
 		{
 			if (string.IsNullOrEmpty(_StoredUICulture))
 				data.Remove(idUICulture);
 			else
 				data[idUICulture] = _StoredUICulture;
 		}
+
 		void ConnectModuleHost()
 		{
-			_ModuleHost = (ModuleHost)Activator.CreateInstance(_ModuleHostClassType, false);
-			_ModuleHostClassType = null;
-
-			Log.Source.TraceInformation("Connect {0}", _ModuleHost);
+			_ModuleHost = (ModuleHost)Activator.CreateInstance(_ModuleHostType, false);
+			_ModuleHostType = null;
 			_ModuleHost.Connect();
 		}
+
 		internal ModuleHost GetLoadedModuleHost()
 		{
 			return _ModuleHost;
 		}
+
 		internal string GetModuleHostClassName()
 		{
-			if (_ModuleHostClassName != null)
-				return _ModuleHostClassName;
+			if (_ModuleHostTypeName is not null)
+				return _ModuleHostTypeName;
 
-			if (_ModuleHostClassType != null)
-				return _ModuleHostClassType.FullName;
+			if (_ModuleHostType is not null)
+				return _ModuleHostType.FullName;
 
-			if (_ModuleHost != null)
+			if (_ModuleHost is not null)
 				return _ModuleHost.GetType().FullName;
 
 			return null;
 		}
-		internal bool HasHost()
+
+		[Conditional("DEBUG")]
+		internal void AssertNoHost()
 		{
-			return _ModuleHost != null || _ModuleHostClassName != null || _ModuleHostClassType != null;
+			Debug.Assert(_ModuleHost is null && _ModuleHostTypeName is null && _ModuleHostType is null);
 		}
+
 		internal void Invoking()
 		{
-			if (_ModuleHostClassName != null)
+			if (_ModuleHostTypeName is not null)
 			{
-				_ModuleHostClassType = LoadAssembly().GetType(_ModuleHostClassName, true, false);
-				_ModuleHostClassName = null;
+				_ModuleHostType = LoadAssembly().GetType(_ModuleHostTypeName, true, false);
+				_ModuleHostTypeName = null;
 			}
 
-			if (_ModuleHostClassType != null)
+			if (_ModuleHostType is not null)
 				ConnectModuleHost();
 
-			if (_ModuleHost != null)
+			if (_ModuleHost is not null)
 				_ModuleHost.Invoking();
 		}
+
 		public override object Interop(string command, object args)
 		{
 			Invoking();
 
-			if (_ModuleHost == null)
+			if (_ModuleHost is null)
 				throw new InvalidOperationException("Module does not have a host.");
 
 			return _ModuleHost.Interop(command, args);
 		}
+
 		internal bool LoadLoadableModuleHost()
 		{
-			if (_ModuleHostClassType == null)
+			if (_ModuleHostType is null)
 				return false;
 
-			object[] attrs = _ModuleHostClassType.GetCustomAttributes(typeof(ModuleHostAttribute), false);
+			object[] attrs = _ModuleHostType.GetCustomAttributes(typeof(ModuleHostAttribute), false);
 			if (attrs.Length == 0 || !((ModuleHostAttribute)attrs[0]).Load)
 				return false;
 
 			ConnectModuleHost();
 			return true;
 		}
+
 		public override IModuleCommand RegisterModuleCommand(Guid id, ModuleCommandAttribute attribute, EventHandler<ModuleCommandEventArgs> handler)
 		{
-			if (handler == null)
+			if (handler is null)
 				throw new ArgumentNullException("handler");
-			if (attribute == null)
+			if (attribute is null)
 				throw new ArgumentNullException("attribute");
 			if (string.IsNullOrEmpty(attribute.Name))
 				throw new ArgumentException("'attribute.Name' must not be empty.");
 
-			ProxyCommand it = new ProxyCommand(this, id, attribute, handler);
-			it.LoadData((Hashtable)ReadSettings()[it.Id]);
+			var it = new ProxyCommand(this, id, attribute, handler);
+			it.LoadConfig((Hashtable)ReadConfig()[it.Id]);
 
 			Host.Instance.RegisterProxyCommand(it);
 			return it;
 		}
+
 		public override IModuleDrawer RegisterModuleDrawer(Guid id, ModuleDrawerAttribute attribute, Action<IEditor, ModuleDrawerEventArgs> handler)
 		{
-			if (handler == null)
+			if (handler is null)
 				throw new ArgumentNullException("handler");
-			if (attribute == null)
+			if (attribute is null)
 				throw new ArgumentNullException("attribute");
 			if (string.IsNullOrEmpty(attribute.Name))
 				throw new ArgumentException("'attribute.Name' must not be empty.");
 
-			ProxyDrawer it = new ProxyDrawer(this, id, attribute, handler);
-			it.LoadData((Hashtable)ReadSettings()[it.Id]);
+			var it = new ProxyDrawer(this, id, attribute, handler);
+			it.LoadConfig((Hashtable)ReadConfig()[it.Id]);
 
 			Host.Instance.RegisterProxyDrawer(it);
 			return it;
 		}
+
 		public override IModuleTool RegisterModuleTool(Guid id, ModuleToolAttribute attribute, EventHandler<ModuleToolEventArgs> handler)
 		{
-			if (handler == null)
+			if (handler is null)
 				throw new ArgumentNullException("handler");
-			if (attribute == null)
+			if (attribute is null)
 				throw new ArgumentNullException("attribute");
 			if (string.IsNullOrEmpty(attribute.Name))
 				throw new ArgumentException("'attribute.Name' must not be empty.");
 
-			ProxyTool it = new ProxyTool(this, id, attribute, handler);
-			it.LoadData((Hashtable)ReadSettings()[it.Id]);
+			var it = new ProxyTool(this, id, attribute, handler);
+			it.LoadConfig((Hashtable)ReadConfig()[it.Id]);
 
 			Host.Instance.RegisterProxyTool(it);
 			return it;
 		}
-		internal void SetModuleHost(string type)
-		{
-			if (HasHost())
-				throw new ModuleException("The module host is already set.");
 
-			_ModuleHostClassName = type;
-		}
-		internal void SetModuleHost(Type type)
+		internal void SetModuleHostType(Type type)
 		{
-			if (HasHost())
-				throw new ModuleException("The module host is already set.");
+			AssertNoHost();
 
-			_ModuleHostClassType = type;
+			_ModuleHostType = type;
 		}
+
+		internal void SetModuleHostTypeName(string type)
+		{
+			AssertNoHost();
+
+			_ModuleHostTypeName = type;
+		}
+
 		//! Don't use Far UI
 		public override void Unregister()
 		{
-			Log.Source.TraceInformation("Unregister module {0}", ModuleName);
-
-			if (_ModuleHost == null)
+			if (_ModuleHost is null)
 			{
 				ModuleLoader.RemoveModuleManager(this);
 				return;
@@ -193,7 +215,6 @@ namespace FarNet.Works
 
 			try
 			{
-				Log.Source.TraceInformation("Disconnect {0}", _ModuleHost);
 				_ModuleHost.Disconnect();
 			}
 			catch (Exception ex)
@@ -207,13 +228,15 @@ namespace FarNet.Works
 				ModuleLoader.RemoveModuleManager(this);
 			}
 		}
+
 		public Assembly LoadAssembly()
 		{
-			if (_AssemblyInstance == null)
+			if (_AssemblyInstance is null)
 				_AssemblyInstance = Assembly.LoadFrom(AssemblyPath);
 
 			return _AssemblyInstance;
 		}
+
 		public override Assembly LoadAssembly(bool connect)
 		{
 			if (connect)
@@ -223,18 +246,31 @@ namespace FarNet.Works
 
 			return _AssemblyInstance;
 		}
-		internal string AssemblyPath { get; }
-		internal bool CachedResources { get; set; }
+
 		public override string ModuleName
 		{
 			get { return Path.GetFileNameWithoutExtension(AssemblyPath); }
 		}
+
+		// faster than CurrentUICulture.Name
+		internal string CurrentUICultureName()
+		{
+			if (_CurrentUICulture is not null)
+				return _CurrentUICulture.Name;
+
+			if (!string.IsNullOrEmpty(_StoredUICulture))
+				return _StoredUICulture;
+
+			_CurrentUICulture = Far.Api.GetCurrentUICulture(false);
+			return _CurrentUICulture.Name;
+		}
+
 		public override CultureInfo CurrentUICulture
 		{
 			get
 			{
 				// once
-				if (_CurrentUICulture == null)
+				if (_CurrentUICulture is null)
 				{
 					// load, try, drop bad, keep mom
 					string cultureName = StoredUICulture;
@@ -251,7 +287,7 @@ namespace FarNet.Works
 					}
 
 					// not yet? use current
-					if (_CurrentUICulture == null)
+					if (_CurrentUICulture is null)
 						_CurrentUICulture = Far.Api.GetCurrentUICulture(false);
 				}
 
@@ -262,15 +298,17 @@ namespace FarNet.Works
 				_CurrentUICulture = value;
 			}
 		}
+
 		string _StoredUICulture;
 		public override string StoredUICulture
 		{
-			get { return _StoredUICulture ?? string.Empty; }
-			set { _StoredUICulture = value; }
+			get => _StoredUICulture ?? string.Empty;
+			set => _StoredUICulture = value;
 		}
+
 		public override string GetString(string name)
 		{
-			if (_ResourceManager == null)
+			if (_ResourceManager is null)
 			{
 				string baseName = Path.GetFileNameWithoutExtension(AssemblyPath);
 				string resourceDir = Path.GetDirectoryName(AssemblyPath);
@@ -279,6 +317,7 @@ namespace FarNet.Works
 
 			return _ResourceManager.GetString(name, CurrentUICulture);
 		}
+
 		public override string GetFolderPath(SpecialFolder folder, bool create)
 		{
 			// normal dir
@@ -299,16 +338,17 @@ namespace FarNet.Works
 			}
 			return dir;
 		}
+
 		// * This methods can be "slow", it is called from UI only.
-		// * Read data first and merge with the current settings.
-		// We have actions registered explicitly, they may be not loaded now and still have stored settings to be preserved.
-		public override void SaveSettings()
+		// * Read data first and merge with current.
+		// We have actions registered explicitly, they may be not loaded now and still have data to preserve.
+		public override void SaveConfig()
 		{
-			// read existing settings
-			var settings = ReadSettings();
+			// read existing
+			var config = ReadConfig();
 
 			// save module data
-			SaveData(settings);
+			SaveConfig(config);
 
 			// save action data
 			foreach (ProxyAction action in Host.Actions.Values)
@@ -316,17 +356,17 @@ namespace FarNet.Works
 				if (action.Manager != this)
 					continue;
 
-				var data = action.SaveData();
-				if (data == null || data.Count == 0)
-					settings.Remove(action.Id);
+				var data = action.SaveConfig();
+				if (data is null || data.Count == 0)
+					config.Remove(action.Id);
 				else
-					settings[action.Id] = data;
+					config[action.Id] = data;
 			}
 
-			// write merged settings
+			// write merged
 			var formatter = new BinaryFormatter();
-			using (var stream = new FileStream(GetSettingsFileName(true), FileMode.Create, FileAccess.Write, FileShare.None))
-				formatter.Serialize(stream, settings);
+			using var stream = new FileStream(GetConfigPath(true), FileMode.Create, FileAccess.Write, FileShare.None);
+			formatter.Serialize(stream, config);
 		}
 	}
 }

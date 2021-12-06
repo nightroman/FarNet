@@ -60,13 +60,14 @@ namespace FarNet
 			}
 			else
 			{
-				data = Activator.CreateInstance(_type);
+				data = DoNewData();
 			}
 
 			ValidateData(data);
 			return _data = data;
 		}
 
+		internal abstract object DoNewData();
 		internal abstract bool DoUpdateData(object data);
 
 		object Read()
@@ -189,9 +190,8 @@ Update the text with the current settings XML?
 You may undo this change before saving.
 
 What you may get:
-- Original formatting and elements order
 - Added new and removed old elements
-- Some old data migrated
+- Original formatting and elements order
 ";
 	}
 }

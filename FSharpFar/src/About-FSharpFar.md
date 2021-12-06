@@ -7,6 +7,42 @@
 - [FCS issue F# 4.6](https://github.com/fsharp/FSharp.Compiler.Service/issues/884)
 
 ***
+### ModuleSettings
+
+Do not use records, they are odd and in fact require more ceremony.
+
+```fsharp
+[<CLIMutable>]
+type Data = {
+    Name: string
+    Age: int
+}
+
+type MySettings(fileName: string) =
+    inherit ModuleSettings<Data>(fileName)
+    override _.NewData() = { Name = "qwerty"; Age = 0 }
+```
+
+(1) `[<CLIMutable>]` noise.
+
+(2) Records have no defaults. OK, this is solved by added `NewData`.
+Also noise and values are set not where defined.
+
+(3) Immutability. Needs some not yet added `SetData`.
+Note that `mutable` is no go, not CLI-compliant.
+
+The class type works better, even with its own noise:
+
+```fsharp
+type Data() =
+    member val Name = "q1" with get, set
+    member val Age = 0 with get, set
+
+type MySettings(fileName: string) =
+    inherit ModuleSettings<Data>(fileName)
+```
+
+***
 ### 1.16.3 Always use --target:library
 
 We can build apps but they cannot run without FSharp.Core.dll and others.

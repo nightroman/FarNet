@@ -9,8 +9,7 @@ namespace FarNet.Works
 {
 	public abstract class Host
 	{
-		public static Dictionary<Guid, IModuleAction> Actions { get { return _Actions; } }
-		static readonly Dictionary<Guid, IModuleAction> _Actions = new Dictionary<Guid, IModuleAction>();
+		public static Dictionary<Guid, IModuleAction> Actions { get; } = new();
 
 		public static Host Instance
 		{
@@ -27,13 +26,8 @@ namespace FarNet.Works
 
 		public static HostState State
 		{
-			get { return _State_; }
-			set
-			{
-				Log.Source.TraceInformation("Host state has changed from {0} to {1}", _State_, value);
-
-				_State_ = value;
-			}
+			get => _State_;
+			set => _State_ = value;
 		}
 		static HostState _State_;
 
@@ -47,7 +41,7 @@ namespace FarNet.Works
 
 		public static IEnumerable<IModuleTool> EnumTools()
 		{
-			foreach (IModuleAction action in _Actions.Values)
+			foreach (IModuleAction action in Actions.Values)
 			{
 				if (action.Kind == ModuleItemKind.Tool)
 					yield return (IModuleTool)action;
@@ -56,8 +50,8 @@ namespace FarNet.Works
 
 		public static IModuleTool[] GetTools(ModuleToolOptions option)
 		{
-			var list = new List<IModuleTool>(_Actions.Count);
-			foreach (IModuleAction action in _Actions.Values)
+			var list = new List<IModuleTool>(Actions.Count);
+			foreach (IModuleAction action in Actions.Values)
 			{
 				if (action.Kind != ModuleItemKind.Tool)
 					continue;

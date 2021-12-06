@@ -4,25 +4,42 @@
 
 using System;
 using System.Collections;
+using System.IO;
 
 namespace FarNet.Works
 {
 	public sealed class ProxyCommand : ProxyAction, IModuleCommand
 	{
-		readonly EventHandler<ModuleCommandEventArgs> _Handler;
+		const int idPrefix = 0;
 		string _Prefix;
-		internal ProxyCommand(ModuleManager manager, EnumerableReader reader)
+		readonly EventHandler<ModuleCommandEventArgs> _Handler;
+
+		new ModuleCommandAttribute Attribute => (ModuleCommandAttribute)base.Attribute;
+		public override ModuleItemKind Kind => ModuleItemKind.Command;
+
+		internal ProxyCommand(ModuleManager manager, BinaryReader reader)
 			: base(manager, reader, new ModuleCommandAttribute())
 		{
-			Attribute.Prefix = (string)reader.Read();
+			// [1]
+			Attribute.Prefix = reader.ReadString();
 
 			Init();
 		}
+
+		internal sealed override void WriteCache(BinaryWriter writer)
+		{
+			base.WriteCache(writer);
+
+			// [1]
+			writer.Write(Attribute.Prefix);
+		}
+
 		internal ProxyCommand(ModuleManager manager, Type classType)
 			: base(manager, classType, typeof(ModuleCommandAttribute))
 		{
 			Init();
 		}
+
 		public ProxyCommand(ModuleManager manager, Guid id, ModuleCommandAttribute attribute, EventHandler<ModuleCommandEventArgs> handler)
 			: base(manager, id, (attribute == null ? null : (ModuleCommandAttribute)attribute.Clone()))
 		{
@@ -30,11 +47,12 @@ namespace FarNet.Works
 
 			Init();
 		}
+
 		public void Invoke(object sender, ModuleCommandEventArgs e)
 		{
-			if (e == null) throw new ArgumentNullException("e");
+			if (e == null)
+				throw new ArgumentNullException("e");
 
-			Log.Source.TraceInformation("Invoking {0} Command='{1}'", this, e.Command);
 			Invoking();
 
 			if (_Handler != null)
@@ -47,26 +65,15 @@ namespace FarNet.Works
 				instance.Invoke(sender, e);
 			}
 		}
+
 		public sealed override string ToString()
 		{
-			return string.Format(null, "{0} Prefix='{1}'", base.ToString(), Prefix);
+			return $"{base.ToString()} Prefix='{Prefix}'";
 		}
-		internal sealed override void WriteCache(IList data)
-		{
-			base.WriteCache(data);
-			data.Add(Attribute.Prefix);
-		}
-		new ModuleCommandAttribute Attribute
-		{
-			get { return (ModuleCommandAttribute)base.Attribute; }
-		}
-		public override ModuleItemKind Kind
-		{
-			get { return ModuleItemKind.Command; }
-		}
+
 		public string Prefix
 		{
-			get { return _Prefix; }
+			get => _Prefix;
 			set
 			{
 				if (string.IsNullOrEmpty(value)) value = Attribute.Prefix;
@@ -74,21 +81,23 @@ namespace FarNet.Works
 				_Prefix = value;
 			}
 		}
+
 		void Init()
 		{
 			// solid prefix!
 			if (string.IsNullOrEmpty(Attribute.Prefix))
 				throw new ModuleException("Empty command prefix is not valid.");
 		}
-		const int idPrefix = 0;
-		internal override Hashtable SaveData()
+
+		internal override Hashtable SaveConfig()
 		{
 			var data = new Hashtable();
 			if (_Prefix != Attribute.Prefix)
 				data.Add(idPrefix, _Prefix);
 			return data;
 		}
-		internal override void LoadData(Hashtable data)
+
+		internal override void LoadConfig(Hashtable data)
 		{
 			if (data == null)
 				_Prefix = Attribute.Prefix;

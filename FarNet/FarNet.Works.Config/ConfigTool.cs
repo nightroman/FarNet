@@ -103,7 +103,7 @@ namespace FarNet.Works
 				if (cbDisk.Selected > 0) newOptions |= ModuleToolOptions.Disk;
 				
 				tool.Options = newOptions;
-				tool.Manager.SaveSettings();
+				tool.Manager.SaveConfig();
 			}
 		}
 		static ICheckBox AddOption(IDialog dialog, string text, ModuleToolOptions option, ModuleToolOptions defaultOptions, ModuleToolOptions currentOptions)
