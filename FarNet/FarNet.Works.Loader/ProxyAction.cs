@@ -27,8 +27,6 @@ namespace FarNet.Works
 
 		// Abstract
 		public abstract ModuleItemKind Kind { get; }
-		internal abstract Hashtable SaveConfig();
-		internal abstract void LoadConfig(Hashtable data);
 
 		internal ProxyAction(ModuleManager manager, BinaryReader reader, ModuleActionAttribute attribute)
 		{

@@ -3,14 +3,12 @@
 // Copyright (c) Roman Kuzmin
 
 using System;
-using System.Collections;
 using System.IO;
 
 namespace FarNet.Works
 {
 	public sealed class ProxyCommand : ProxyAction, IModuleCommand
 	{
-		const int idPrefix = 0;
 		string _Prefix;
 		readonly EventHandler<ModuleCommandEventArgs> _Handler;
 
@@ -89,20 +87,25 @@ namespace FarNet.Works
 				throw new ModuleException("Empty command prefix is not valid.");
 		}
 
-		internal override Hashtable SaveConfig()
+		internal Configuration.Command SaveConfig()
 		{
-			var data = new Hashtable();
-			if (_Prefix != Attribute.Prefix)
-				data.Add(idPrefix, _Prefix);
-			return data;
+			if (_Prefix == Attribute.Prefix)
+				return null;
+
+			return new Configuration.Command { Id = Id, Prefix = _Prefix };
 		}
 
-		internal override void LoadConfig(Hashtable data)
+		internal void LoadConfig(Configuration.Module moduleData)
 		{
-			if (data == null)
-				_Prefix = Attribute.Prefix;
+			Configuration.Command data;
+			if (moduleData != null && (data = moduleData.GetCommand(Id)) != null)
+			{
+				_Prefix = data.Prefix ?? Attribute.Prefix;
+			}
 			else
-				_Prefix = data[idPrefix] as string ?? Attribute.Prefix;
+			{
+				_Prefix = Attribute.Prefix;
+			}
 		}
 	}
 }

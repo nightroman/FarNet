@@ -3,14 +3,12 @@
 // Copyright (c) Roman Kuzmin
 
 using System;
-using System.Collections;
 using System.IO;
 
 namespace FarNet.Works
 {
 	public sealed class ProxyEditor : ProxyAction, IModuleEditor
 	{
-		readonly int idMask = 0;
 		string _Mask;
 
 		new ModuleEditorAttribute Attribute => (ModuleEditorAttribute)base.Attribute;
@@ -64,20 +62,25 @@ namespace FarNet.Works
 				Attribute.Mask = string.Empty;
 		}
 
-		internal override Hashtable SaveConfig()
+		internal Configuration.Editor SaveConfig()
 		{
-			var data = new Hashtable();
-			if (_Mask != Attribute.Mask)
-				data.Add(idMask, _Mask);
-			return data;
+			if (_Mask == Attribute.Mask)
+				return null;
+
+			return new Configuration.Editor { Id = Id, Mask = _Mask };
 		}
 
-		internal override void LoadConfig(Hashtable data)
+		internal void LoadConfig(Configuration.Module moduleData)
 		{
-			if (data == null)
-				_Mask = Attribute.Mask;
+			Configuration.Editor data;
+			if (moduleData != null && (data = moduleData.GetEditor(Id)) != null)
+			{
+				_Mask = data.Mask ?? Attribute.Mask;
+			}
 			else
-				_Mask = data[idMask] as string ?? Attribute.Mask;
+			{
+				_Mask = Attribute.Mask;
+			}
 		}
 	}
 }

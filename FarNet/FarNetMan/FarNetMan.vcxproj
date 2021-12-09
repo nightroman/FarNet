@@ -210,7 +210,7 @@
       <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\FarNet.Works.Manager\FarNet.Works.Manager.csproj">
+    <ProjectReference Include="..\FarNet.Works.Loader\FarNet.Works.Loader.csproj">
       <Project>{516a2d89-4e77-4f24-89c2-a6d9e1c36998}</Project>
       <Private>false</Private>
       <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>

@@ -44,7 +44,7 @@ namespace FarNet.Works
 					// set
 					drawer.Mask = mask;
 					drawer.Priority = priority;
-					drawer.Manager.SaveConfig();
+					drawer.Manager.SaveConfiguration();
 					break;
 				}
 			}

@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FarNet", "FarNet\FarNet\Far
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FarNet.Tools", "FarNet\FarNet.Tools\FarNet.Tools.csproj", "{3FEFB36E-496D-4DA9-B185-1DE4683B5BA1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FarNet.Works.Manager", "FarNet\FarNet.Works.Manager\FarNet.Works.Manager.csproj", "{516A2D89-4E77-4F24-89C2-A6D9E1C36998}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FarNet.Works.Loader", "FarNet\FarNet.Works.Loader\FarNet.Works.Loader.csproj", "{516A2D89-4E77-4F24-89C2-A6D9E1C36998}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FarNet.Works.Config", "FarNet\FarNet.Works.Config\FarNet.Works.Config.csproj", "{752846B8-08B9-4D22-97B5-0F2C8020FB51}"
 EndProject

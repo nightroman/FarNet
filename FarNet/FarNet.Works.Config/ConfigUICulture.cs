@@ -61,7 +61,7 @@ namespace FarNet.Works
 
 					// save the name from the culture, not from a user
 					manager.StoredUICulture = ci.Name;
-					manager.SaveConfig();
+					manager.SaveConfiguration();
 
 					// use the current Far culture instead of invariant
 					if (ci.Name.Length == 0)

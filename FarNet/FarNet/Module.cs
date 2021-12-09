@@ -218,7 +218,7 @@ namespace FarNet
 		/// <summary>
 		/// INTERNAL
 		/// </summary>
-		public abstract void SaveConfig();
+		public abstract void SaveConfiguration();
 		/// <summary>
 		/// INTERNAL
 		/// </summary>

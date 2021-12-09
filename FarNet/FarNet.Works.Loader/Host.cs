@@ -10,26 +10,8 @@ namespace FarNet.Works
 	public abstract class Host
 	{
 		public static Dictionary<Guid, IModuleAction> Actions { get; } = new();
-
-		public static Host Instance
-		{
-			get { return _Instance_; }
-			set
-			{
-				if (_Instance_ != null)
-					throw new InvalidOperationException();
-
-				_Instance_ = value;
-			}
-		}
-		static Host _Instance_;
-
-		public static HostState State
-		{
-			get => _State_;
-			set => _State_ = value;
-		}
-		static HostState _State_;
+		public static Host Instance { get; set; }
+		public static HostState State { get; set; }
 
 		public abstract void RegisterProxyCommand(IModuleCommand info);
 		public abstract void RegisterProxyDrawer(IModuleDrawer info);
@@ -39,30 +21,29 @@ namespace FarNet.Works
 		public abstract void UnregisterProxyTool(IModuleTool tool);
 		public abstract void InvalidateProxyCommand();
 
-		public static IEnumerable<IModuleTool> EnumTools()
+		public static List<IModuleTool> ListTools()
 		{
+			var tools = new List<IModuleTool>(Actions.Count);
 			foreach (IModuleAction action in Actions.Values)
-			{
 				if (action.Kind == ModuleItemKind.Tool)
-					yield return (IModuleTool)action;
-			}
+					tools.Add((IModuleTool)action);
+			return tools;
 		}
 
 		public static IModuleTool[] GetTools(ModuleToolOptions option)
 		{
-			var list = new List<IModuleTool>(Actions.Count);
-			foreach (IModuleAction action in Actions.Values)
+			var tools = new List<IModuleTool>(Actions.Count);
+			foreach (var action in Actions.Values)
 			{
 				if (action.Kind != ModuleItemKind.Tool)
 					continue;
 
-				IModuleTool tool = (IModuleTool)action;
+				var tool = (IModuleTool)action;
 				if (0 != (tool.Options & option))
-					list.Add(tool);
+					tools.Add(tool);
 			}
-			return list.ToArray();
+			return tools.ToArray();
 		}
-
 	}
 
 	public enum HostState

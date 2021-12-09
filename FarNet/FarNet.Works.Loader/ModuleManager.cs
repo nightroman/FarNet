@@ -3,20 +3,17 @@
 // Copyright (c) Roman Kuzmin
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Resources;
-using System.Runtime.Serialization.Formatters.Binary;
 
 namespace FarNet.Works
 {
 	public sealed partial class ModuleManager : IModuleManager
 	{
-		const int idUICulture = 0;
 		Assembly _AssemblyInstance;
 		CultureInfo _CurrentUICulture;
 		ResourceManager _ResourceManager;
@@ -40,36 +37,18 @@ namespace FarNet.Works
 			AssemblyPath = assemblyPath;
 		}
 
-		string GetConfigPath(bool create)
+		/// <summary>
+		/// Sets properties from data, if not null.
+		/// </summary>
+		internal void LoadConfig(Configuration.Module data)
 		{
-			return GetFolderPath(SpecialFolder.RoamingData, create) + @"\FarNet.binary";
+			if (data is not null)
+				_StoredUICulture = data.Culture;
 		}
 
-		internal Hashtable ReadConfig()
+		internal void SaveConfig(Configuration.Module data)
 		{
-			var file = GetConfigPath(false);
-			if (!File.Exists(file))
-				return new Hashtable();
-
-			object deserialized;
-			var formatter = new BinaryFormatter();
-			using (var stream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read))
-				deserialized = formatter.Deserialize(stream);
-
-			return deserialized as Hashtable ?? new Hashtable();
-		}
-
-		internal void LoadConfig(Hashtable data)
-		{
-			_StoredUICulture = data[idUICulture] as string;
-		}
-
-		internal void SaveConfig(Hashtable data)
-		{
-			if (string.IsNullOrEmpty(_StoredUICulture))
-				data.Remove(idUICulture);
-			else
-				data[idUICulture] = _StoredUICulture;
+			data.Culture = _StoredUICulture;
 		}
 
 		void ConnectModuleHost()
@@ -152,7 +131,8 @@ namespace FarNet.Works
 				throw new ArgumentException("'attribute.Name' must not be empty.");
 
 			var it = new ProxyCommand(this, id, attribute, handler);
-			it.LoadConfig((Hashtable)ReadConfig()[it.Id]);
+			var data = Configuration.Default.GetData();
+			it.LoadConfig(data.GetModule(ModuleName));
 
 			Host.Instance.RegisterProxyCommand(it);
 			return it;
@@ -168,7 +148,8 @@ namespace FarNet.Works
 				throw new ArgumentException("'attribute.Name' must not be empty.");
 
 			var it = new ProxyDrawer(this, id, attribute, handler);
-			it.LoadConfig((Hashtable)ReadConfig()[it.Id]);
+			var data = Configuration.Default.GetData();
+			it.LoadConfig(data.GetModule(ModuleName));
 
 			Host.Instance.RegisterProxyDrawer(it);
 			return it;
@@ -184,7 +165,8 @@ namespace FarNet.Works
 				throw new ArgumentException("'attribute.Name' must not be empty.");
 
 			var it = new ProxyTool(this, id, attribute, handler);
-			it.LoadConfig((Hashtable)ReadConfig()[it.Id]);
+			var data = Configuration.Default.GetData();
+			it.LoadConfig(data.GetModule(ModuleName));
 
 			Host.Instance.RegisterProxyTool(it);
 			return it;
@@ -252,13 +234,13 @@ namespace FarNet.Works
 			get { return Path.GetFileNameWithoutExtension(AssemblyPath); }
 		}
 
-		// faster than CurrentUICulture.Name
+		// faster than `CurrentUICulture.Name`
 		internal string CurrentUICultureName()
 		{
 			if (_CurrentUICulture is not null)
 				return _CurrentUICulture.Name;
 
-			if (!string.IsNullOrEmpty(_StoredUICulture))
+			if (_StoredUICulture is not null)
 				return _StoredUICulture;
 
 			_CurrentUICulture = Far.Api.GetCurrentUICulture(false);
@@ -272,17 +254,28 @@ namespace FarNet.Works
 				// once
 				if (_CurrentUICulture is null)
 				{
-					// load, try, drop bad, keep mom
-					string cultureName = StoredUICulture;
-					if (cultureName.Length > 0)
+					// try, drop bad, keep mom
+					if (_StoredUICulture is not null)
 					{
 						try
 						{
-							_CurrentUICulture = CultureInfo.GetCultureInfo(cultureName);
+							_CurrentUICulture = CultureInfo.GetCultureInfo(_StoredUICulture);
 						}
 						catch (ArgumentException)
 						{
+							// drop bad culture
 							_StoredUICulture = null;
+
+							// drop in config, too (do not Reset(), config may be in use)
+							var data = Configuration.Default.GetData();
+							var module = data.GetModule(ModuleName);
+							if (module is not null)
+							{
+								module.Culture = null;
+								if (module.IsDefault())
+									data.RemoveModule(ModuleName);
+								Configuration.Default.Save();
+							}
 						}
 					}
 
@@ -290,7 +283,6 @@ namespace FarNet.Works
 					if (_CurrentUICulture is null)
 						_CurrentUICulture = Far.Api.GetCurrentUICulture(false);
 				}
-
 				return _CurrentUICulture;
 			}
 			set
@@ -299,11 +291,18 @@ namespace FarNet.Works
 			}
 		}
 
+		/// <summary>
+		/// Valur from config (null ~ default).
+		/// </summary>
 		string _StoredUICulture;
+
+		/// <summary>
+		/// Wraps internal value: get: null to empty; set: empty to null.
+		/// </summary>
 		public override string StoredUICulture
 		{
 			get => _StoredUICulture ?? string.Empty;
-			set => _StoredUICulture = value;
+			set => _StoredUICulture = string.IsNullOrEmpty(value) ? null : value;
 		}
 
 		public override string GetString(string name)
@@ -339,34 +338,72 @@ namespace FarNet.Works
 			return dir;
 		}
 
-		// * This methods can be "slow", it is called from UI only.
-		// * Read data first and merge with current.
-		// We have actions registered explicitly, they may be not loaded now and still have data to preserve.
-		public override void SaveConfig()
+		// This methods is "slow", UI only.
+		// Merge existing module data with current.
+		// We have actions added manually, not loaded but with data to keep.
+		public override void SaveConfiguration()
 		{
-			// read existing
-			var config = ReadConfig();
+			// get data with reset for the latest
+			Configuration.Default.Reset();
+			var data = Configuration.Default.GetData();
 
-			// save module data
-			SaveConfig(config);
+			// get existing and save module data
+			var module = data.GetModule(ModuleName) ?? new();
+			SaveConfig(module);
 
 			// save action data
-			foreach (ProxyAction action in Host.Actions.Values)
+			foreach (var action in Host.Actions.Values)
 			{
 				if (action.Manager != this)
 					continue;
 
-				var data = action.SaveConfig();
-				if (data is null || data.Count == 0)
-					config.Remove(action.Id);
-				else
-					config[action.Id] = data;
+				switch (action.Kind)
+				{
+					case ModuleItemKind.Command:
+						{
+							var it1 = (ProxyCommand)action;
+							var it2 = it1.SaveConfig();
+							module.SetCommand(it1.Id, it2);
+						}
+						break;
+					case ModuleItemKind.Drawer:
+						{
+							var it1 = (ProxyDrawer)action;
+							var it2 = it1.SaveConfig();
+							module.SetDrawer(it1.Id, it2);
+						}
+						break;
+					case ModuleItemKind.Editor:
+						{
+							var it1 = (ProxyEditor)action;
+							var it2 = it1.SaveConfig();
+							module.SetEditor(it1.Id, it2);
+						}
+						break;
+					case ModuleItemKind.Tool:
+						{
+							var it1 = (ProxyTool)action;
+							var it2 = it1.SaveConfig();
+							module.SetTool(it1.Id, it2);
+						}
+						break;
+				}
 			}
 
-			// write merged
-			var formatter = new BinaryFormatter();
-			using var stream = new FileStream(GetConfigPath(true), FileMode.Create, FileAccess.Write, FileShare.None);
-			formatter.Serialize(stream, config);
+			// remove default or set module
+			if (module.IsDefault())
+			{
+				data.RemoveModule(ModuleName);
+			}
+			else
+			{
+				module.Name = ModuleName;
+				data.SetModule(module);
+			}
+
+			// save merged
+			Configuration.Default.Save();
+			Configuration.Default.Reset();
 		}
 	}
 }

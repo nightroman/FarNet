@@ -605,13 +605,13 @@ void Far0::OpenConfig() //config//
 	menu->HelpTopic = "config-menu";
 	menu->Title = "Modules configuration";
 
-	List<IModuleTool^> tools(Works::Host::EnumTools());
+	auto tools = Works::Host::ListTools();
 
 	String^ format = "{0,-10} : {1,2}";
 	menu->Add(String::Format(format, Res::ModuleCommands, _registeredCommand.Count));
 	menu->Add(String::Format(format, Res::ModuleDrawers, _registeredDrawer.Count));
 	menu->Add(String::Format(format, Res::ModuleEditors, _registeredEditor.Count));
-	menu->Add(String::Format(format, Res::ModuleTools, tools.Count));
+	menu->Add(String::Format(format, Res::ModuleTools, tools->Count));
 	menu->Add("Settings")->IsSeparator = true;
 	menu->Add("UI culture");
 
@@ -632,8 +632,8 @@ void Far0::OpenConfig() //config//
 				Works::ConfigEditor::Show(%_registeredEditor, Far0::HelpTopic() + "configure-editors");
 			break;
 		case 3:
-			if (tools.Count)
-				Works::ConfigTool::Show(%tools, Far0::HelpTopic() + "configure-tools", gcnew Func<IModuleTool^, String^>(&Far0::GetMenuText));
+			if (tools->Count)
+				Works::ConfigTool::Show(tools, Far0::HelpTopic() + "configure-tools", gcnew Func<IModuleTool^, String^>(&Far0::GetMenuText));
 			break;
 		case 5: // +2, mind separator
 			Works::ConfigUICulture::Show(Works::ModuleLoader::GatherModuleManagers(), Far0::HelpTopic() + "module-ui-culture");

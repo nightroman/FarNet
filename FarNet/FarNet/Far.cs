@@ -271,9 +271,14 @@ namespace FarNet
 		/// <include file='doc.xml' path='doc/ShowHelp/*'/>
 		public abstract void ShowHelp(string path, string topic, HelpOptions options);
 		/// <summary>
-		/// Shows the help topic from a help file located in the directory of the calling assembly.
+		/// Shows the help topic from a help file in the directory of the calling assembly.
 		/// </summary>
 		/// <param name="topic">The help topic.</param>
+		/// <remarks>
+		/// If it is called from one of module <c>Invoke</c> methods then
+		/// specify <c>[MethodImpl(MethodImplOptions.NoInlining)]</c>
+		/// for <c>Invoke</c> to avoid calling assembly confusion.
+		/// </remarks>
 		public abstract void ShowHelpTopic(string topic);
 		/// <summary>
 		/// Formats the help topic path for <c>HelpTopic</c> properties of various UI classes.

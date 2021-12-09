@@ -50,7 +50,7 @@ namespace FarNet.Works
 
 				// set
 				editor.Mask = mask;
-				editor.Manager.SaveConfig();
+				editor.Manager.SaveConfiguration();
 			}
 		}
 	}

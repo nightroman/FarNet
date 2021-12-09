@@ -3,7 +3,6 @@
 // Copyright (c) Roman Kuzmin
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -29,12 +28,15 @@ namespace FarNet.Works
 		/// <param name="rootPath">The root module directory path.</param>
 		public void LoadModules(string rootPath)
 		{
+			// config
+			var data = Configuration.Default.GetData();
+
 			// directories
 			foreach (string dir in Directory.GetDirectories(rootPath))
 			{
 				try
 				{
-					LoadModule(dir + "\\" + Path.GetFileName(dir) + ".dll");
+					LoadModule(dir + "\\" + Path.GetFileName(dir) + ".dll", data);
 				}
 				catch (Exception ex)
 				{
@@ -42,26 +44,27 @@ namespace FarNet.Works
 				}
 			}
 
-			// write the cache
+			// write and free the cache
 			_Cache.Update();
-
-			// drop not used
 			_Cache = null;
 			foreach (var manager in _Managers.Values)
 				manager.DropCache();
+
+			// free config data
+			Configuration.Default.Reset();
 		}
 
 		/// <summary>
 		/// Loads the module assembly.
 		/// </summary>
 		/// <param name="assemblyPath">The assembly path to load a module from.</param>
-		void LoadModule(string assemblyPath)
+		void LoadModule(string assemblyPath, Configuration.Data data)
 		{
 			// use the file info to reduce file access
 			var assemblyFileInfo = new FileInfo(assemblyPath);
 
 			// try load from the cache
-			if (LoadModuleFromCache(assemblyFileInfo))
+			if (LoadModuleFromCache(assemblyFileInfo, data))
 				return;
 
 			// add new module manager now, it will be removed on errors
@@ -71,9 +74,8 @@ namespace FarNet.Works
 			// load using reflection
 			try
 			{
-				// read and load config
-				var config = manager.ReadConfig();
-				manager.LoadConfig(config);
+				var moduleData = data.GetModule(manager.ModuleName);
+				manager.LoadConfig(moduleData);
 
 				var assembly = manager.LoadAssembly();
 				foreach (var type in assembly.GetExportedTypes())
@@ -83,7 +85,7 @@ namespace FarNet.Works
 
 					if (typeof(BaseModuleItem).IsAssignableFrom(type))
 					{
-						LoadModuleItemType(manager, config, type);
+						LoadModuleItemType(manager, type, moduleData);
 						continue;
 					}
 
@@ -112,7 +114,7 @@ namespace FarNet.Works
 		/// </summary>
 		/// <param name="assemblyFileInfo">Module file information.</param>
 		/// <returns>True if the module has been loaded from the cache.</returns>
-		bool LoadModuleFromCache(FileInfo assemblyFileInfo)
+		bool LoadModuleFromCache(FileInfo assemblyFileInfo, Configuration.Data config)
 		{
 			var assemblyPath = assemblyFileInfo.FullName;
 			var manager = _Cache.Find(assemblyPath);
@@ -132,9 +134,9 @@ namespace FarNet.Works
 			// module is legit for loading from cache
 			try
 			{
-				// read and load config
-				var config = manager.ReadConfig();
-				manager.LoadConfig(config);
+				// load config
+				var moduleData = config.GetModule(manager.ModuleName);
+				manager.LoadConfig(moduleData);
 
 				// if the culture changed, drop cache
 				var currentCultureName = manager.CurrentUICultureName();
@@ -148,23 +150,36 @@ namespace FarNet.Works
 					switch (action.Kind)
 					{
 						case ModuleItemKind.Command:
-							Host.Instance.RegisterProxyCommand((ProxyCommand)action);
+							{
+								var it = (ProxyCommand)action;
+								it.LoadConfig(moduleData);
+								Host.Instance.RegisterProxyCommand(it);
+							}
 							break;
 						case ModuleItemKind.Drawer:
-							Host.Instance.RegisterProxyDrawer((ProxyDrawer)action);
+							{
+								var it = (ProxyDrawer)action;
+								it.LoadConfig(moduleData);
+								Host.Instance.RegisterProxyDrawer(it);
+							}
 							break;
 						case ModuleItemKind.Editor:
-							Host.Instance.RegisterProxyEditor((ProxyEditor)action);
+							{
+								var it = (ProxyEditor)action;
+								it.LoadConfig(moduleData);
+								Host.Instance.RegisterProxyEditor(it);
+							}
 							break;
 						case ModuleItemKind.Tool:
-							Host.Instance.RegisterProxyTool((ProxyTool)action);
+							{
+								var it = (ProxyTool)action;
+								it.LoadConfig(moduleData);
+								Host.Instance.RegisterProxyTool(it);
+							}
 							break;
 						default:
 							throw new ModuleException();
 					}
-
-					// configure
-					action.LoadConfig((Hashtable)config[action.Id]);
 				}
 
 				// now module is loaded from cache, register
@@ -190,34 +205,38 @@ namespace FarNet.Works
 		/// <summary>
 		/// Loads one of <see cref="BaseModuleItem"/> types.
 		/// </summary>
-		static void LoadModuleItemType(ModuleManager manager, Hashtable config, Type type)
+		static void LoadModuleItemType(ModuleManager manager, Type type, Configuration.Module moduleData)
 		{
 			// command
 			ProxyAction action;
 			if (typeof(ModuleCommand).IsAssignableFrom(type))
 			{
 				var it = new ProxyCommand(manager, type);
+				it.LoadConfig(moduleData);
 				Host.Instance.RegisterProxyCommand(it);
-				action = it;
-			}
-			// editor
-			else if (typeof(ModuleEditor).IsAssignableFrom(type))
-			{
-				var it = new ProxyEditor(manager, type);
-				Host.Instance.RegisterProxyEditor(it);
 				action = it;
 			}
 			// drawer
 			else if (typeof(ModuleDrawer).IsAssignableFrom(type))
 			{
 				var it = new ProxyDrawer(manager, type);
+				it.LoadConfig(moduleData);
 				Host.Instance.RegisterProxyDrawer(it);
+				action = it;
+			}
+			// editor
+			else if (typeof(ModuleEditor).IsAssignableFrom(type))
+			{
+				var it = new ProxyEditor(manager, type);
+				it.LoadConfig(moduleData);
+				Host.Instance.RegisterProxyEditor(it);
 				action = it;
 			}
 			// tool
 			else if (typeof(ModuleTool).IsAssignableFrom(type))
 			{
 				var it = new ProxyTool(manager, type);
+				it.LoadConfig(moduleData);
 				Host.Instance.RegisterProxyTool(it);
 				action = it;
 			}
@@ -231,9 +250,6 @@ namespace FarNet.Works
 			{
 				throw new ModuleException("Unknown module item type.");
 			}
-
-			// configure
-			action.LoadConfig((Hashtable)config[action.Id]);
 
 			// to cache
 			manager.ProxyActions.Add(action);

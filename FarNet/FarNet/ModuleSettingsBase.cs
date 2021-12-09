@@ -79,6 +79,10 @@ namespace FarNet
 
 		static void Save(string fileName, object data)
 		{
+			//! ensure the directory, e.g. FarNet\FarNet.xml in vanilla FarNet
+			Directory.CreateDirectory(Path.GetDirectoryName(fileName));
+
+			// serialize
 			using var writer = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None);
 			var serializer = new XmlSerializer(data.GetType());
 			serializer.Serialize(writer, data);

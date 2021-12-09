@@ -3,14 +3,12 @@
 // Copyright (c) Roman Kuzmin
 
 using System;
-using System.Collections;
 using System.IO;
 
 namespace FarNet.Works
 {
 	public sealed class ProxyDrawer : ProxyAction, IModuleDrawer
 	{
-		const int idMask = 0, idPriority = 1;
 		readonly Action<IEditor, ModuleDrawerEventArgs> _Handler;
 		string _Mask;
 		int _Priority;
@@ -86,30 +84,44 @@ namespace FarNet.Works
 				Attribute.Mask = string.Empty;
 		}
 
-		internal override Hashtable SaveConfig()
+		internal Configuration.Drawer SaveConfig()
 		{
-			var data = new Hashtable();
+			var data = new Configuration.Drawer();
+			bool save = false;
 
 			if (_Mask != Attribute.Mask)
-				data.Add(idMask, _Mask);
+			{
+				data.Mask = _Mask;
+				save = true;
+			}
 
 			if (_Priority != Attribute.Priority)
-				data.Add(idPriority, _Priority);
+			{
+				data.Priority = _Priority.ToString();
+				save = true;
+			}
 
-			return data;
+			if (save)
+			{
+				data.Id = Id;
+				return data;
+			}
+
+			return null;
 		}
 
-		internal override void LoadConfig(Hashtable data)
+		internal void LoadConfig(Configuration.Module moduleData)
 		{
-			if (data == null)
+			Configuration.Drawer data;
+			if (moduleData != null && (data = moduleData.GetDrawer(Id)) != null)
 			{
-				_Mask = Attribute.Mask;
-				_Priority = Attribute.Priority;
+				_Mask = data.Mask ?? Attribute.Mask;
+				_Priority = data.Priority is null ? Attribute.Priority : int.Parse(data.Priority);
 			}
 			else
 			{
-				_Mask = data[idMask] as string ?? Attribute.Mask;
-				_Priority = (int)(data[idPriority] ?? Attribute.Priority);
+				_Mask = Attribute.Mask;
+				_Priority = Attribute.Priority;
 			}
 		}
 	}

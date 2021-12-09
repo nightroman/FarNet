@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+
 namespace FarNet.Demo
 {
 	/// <summary>
@@ -17,19 +18,16 @@ namespace FarNet.Demo
 		const int kb = 1024;
 		/// <summary>
 		/// This method implements the command action.
-		/// The command text is the Command property value.
 		/// </summary>
 		public override void Invoke(object sender, ModuleCommandEventArgs e)
 		{
-			switch (e.Command.Trim().ToUpper())
+			var commandText = e.Command.Trim();
+			switch (commandText.ToUpper())
 			{
 				case "PROCESS": DoProcess(); break;
 				case "ASSEMBLY": DoAssembly(); break;
 				case "RESOURCES": DoResources(); break;
-				default:
-					// Show help in the help viewer
-					Far.Api.ShowHelpTopic("DemoCommand");
-					break;
+				default: DoShowHelp(); break;
 			}
 		}
 		/// <summary>
@@ -85,6 +83,13 @@ Managed memory : {3,7:n0} kb
 				return;
 
 			(new DemoExplorer(path)).OpenPanel();
+		}
+		/// <summary>
+		/// Shows help in the help viewer.
+		/// </summary>
+		void DoShowHelp()
+		{
+			Far.Api.ShowHelpTopic("DemoCommand");
 		}
 	}
 }

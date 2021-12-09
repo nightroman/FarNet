@@ -1,6 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 FarNet 5.6.0
 
+= 5.7.0 =
+
+Breakpoint colors: use yellow background and original foreground.
+
 = 5.6.0 =
 
 Version update to align with FarNet and minor tweaks.

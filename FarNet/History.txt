@@ -1,6 +1,13 @@
 https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 5.7.0 =
+
+Reworked modules configuration, maintained by Options \ Plugin configuration \ FarNet.
+Details: https://github.com/nightroman/FarNet/wiki/Zoo
+
+Package: replaced "FarNet.Works.Manager.dll" with "FarNet.Works.Loader".
+
 = 5.6.2 =
 
 Minor tweaks in module settings.

@@ -3,14 +3,12 @@
 // Copyright (c) Roman Kuzmin
 
 using System;
-using System.Collections;
 using System.IO;
 
 namespace FarNet.Works
 {
 	public sealed class ProxyTool : ProxyAction, IModuleTool
 	{
-		const int idOptions = 1;
 		ModuleToolOptions _Options;
 		readonly EventHandler<ModuleToolEventArgs> _Handler;
 
@@ -81,27 +79,28 @@ namespace FarNet.Works
 			}
 		}
 
-		internal override Hashtable SaveConfig()
+		internal Configuration.Tool SaveConfig()
 		{
-			var data = new Hashtable();
-			if (_Options != DefaultOptions)
-				data.Add(idOptions, ~(((int)Attribute.Options) & (~((int)_Options))));
-			return data;
+			if (_Options == DefaultOptions)
+				return null;
+
+			return new Configuration.Tool { Id = Id, Options = ((int)_Options).ToString() };
 		}
 
-		internal override void LoadConfig(Hashtable data)
+		internal void LoadConfig(Configuration.Module moduleData)
 		{
-			if (data == null)
+			Configuration.Tool data;
+			if (moduleData != null && (data = moduleData.GetTool(Id)) != null)
 			{
-				_Options = DefaultOptions;
+				var options = data.Options;
+				if (options is null)
+					_Options = DefaultOptions;
+				else
+					_Options = DefaultOptions & (ModuleToolOptions)int.Parse(options);
 			}
 			else
 			{
-				var options = data[idOptions];
-				if (options == null)
-					_Options = DefaultOptions;
-				else
-					_Options = DefaultOptions & (ModuleToolOptions)options;
+				_Options = DefaultOptions;
 			}
 		}
 	}
