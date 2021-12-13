@@ -8,10 +8,12 @@
 #include "EditorBookmark.h"
 #include "EditorLine.h"
 #include "Far0.h"
+#include "Settings.h"
 #include "Wrappers.h"
 
 namespace FarNet
-{;
+{
+;
 String^ AnyEditor::EditText(EditTextArgs^ args)
 {
 	return Works::EditorTools::EditText(args);
@@ -23,11 +25,11 @@ Task<String^>^ AnyEditor::EditTextAsync(EditTextArgs^ args)
 }
 
 Editor::Editor()
-: _id(-1)
-, _Title(String::Empty)
-, _CodePage(CP_DEFAULT)
-, _frameStart(-1)
-, _Window(0, 0, -1, -1)
+	: _id(-1)
+	, _Title(String::Empty)
+	, _CodePage(CP_DEFAULT)
+	, _frameStart(-1)
+	, _Window(0, 0, -1, -1)
 {}
 
 void Editor::Open()
@@ -62,7 +64,7 @@ void Editor::Open(OpenMode mode)
 	if (_DisableHistory)
 		flags |= EF_DISABLEHISTORY;
 
-	switch(_Switching)
+	switch (_Switching)
 	{
 	case FarNet::Switching::Enabled:
 		flags |= VF_ENABLE_F6;
@@ -85,7 +87,7 @@ void Editor::Open(OpenMode mode)
 		break;
 	}
 
-	switch(_DeleteSource)
+	switch (_DeleteSource)
 	{
 	case FarNet::DeleteSource::UnusedFile:
 		flags |= EF_DELETEONLYFILEONCLOSE; break;
@@ -93,7 +95,7 @@ void Editor::Open(OpenMode mode)
 		flags |= EF_DELETEONCLOSE; break;
 	}
 
-	switch(mode)
+	switch (mode)
 	{
 	case OpenMode::None:
 		flags |= (EF_NONMODAL | EF_IMMEDIATERETURN); break;
@@ -259,7 +261,7 @@ void Editor::CodePage::set(int value)
 {
 	if (IsOpened)
 	{
-		EditorSetParameter esp = {sizeof(esp)};
+		EditorSetParameter esp = { sizeof(esp) };
 		esp.Type = ESPT_CODEPAGE;
 		esp.iParam = value;
 		EditorControl_ECTL_SETPARAM(_id, esp);
@@ -284,7 +286,7 @@ ExpandTabsMode Editor::ExpandTabs::get()
 
 void Editor::ExpandTabs::set(ExpandTabsMode value)
 {
-	EditorSetParameter esp = {sizeof(esp)};
+	EditorSetParameter esp = { sizeof(esp) };
 	esp.Type = ESPT_EXPANDTABS;
 	esp.iParam = (int)value;
 	EditorControl_ECTL_SETPARAM(_id, esp);
@@ -310,7 +312,7 @@ void Editor::TabSize::set(int value)
 	if (value <= 0)
 		throw gcnew ArgumentException("'value' must be positive.");
 
-	EditorSetParameter esp = {sizeof(esp)};
+	EditorSetParameter esp = { sizeof(esp) };
 	esp.Type = ESPT_TABSIZE;
 	esp.iParam = value;
 	EditorControl_ECTL_SETPARAM(_id, esp);
@@ -488,7 +490,7 @@ void Editor::Save(String^ fileName)
 	if (fileName == nullptr)
 		return Save();
 
-	EditorSaveFile esf = {sizeof(esf), 0, 0, 0};
+	EditorSaveFile esf = { sizeof(esf), 0, 0, 0 };
 
 	PIN_NE(pin, fileName);
 	esf.FileName = pin;
@@ -530,7 +532,7 @@ void Editor::Frame::set(TextFrame value)
 		return;
 	}
 
-    SEditorSetPosition esp;
+	SEditorSetPosition esp;
 	if (value.CaretLine >= 0)
 		esp.CurLine = value.CaretLine;
 	if (value.CaretColumn >= 0)
@@ -541,12 +543,12 @@ void Editor::Frame::set(TextFrame value)
 		esp.TopScreenLine = value.VisibleLine;
 	if (value.VisibleChar >= 0)
 		esp.LeftPos = value.VisibleChar;
-    EditorControl_ECTL_SETPOSITION(_id, esp);
+	EditorControl_ECTL_SETPOSITION(_id, esp);
 }
 
 int Editor::ConvertColumnEditorToScreen(int line, int column)
 {
-	EditorConvertPos ecp = {sizeof(ecp)};
+	EditorConvertPos ecp = { sizeof(ecp) };
 	ecp.StringNumber = line;
 	ecp.SrcPos = column;
 	Info.EditorControl(_id, ECTL_REALTOTAB, 0, &ecp);
@@ -555,7 +557,7 @@ int Editor::ConvertColumnEditorToScreen(int line, int column)
 
 int Editor::ConvertColumnScreenToEditor(int line, int column)
 {
-	EditorConvertPos ecp = {sizeof(ecp)};
+	EditorConvertPos ecp = { sizeof(ecp) };
 	ecp.StringNumber = line;
 	ecp.SrcPos = column;
 	Info.EditorControl(_id, ECTL_TABTOREAL, 0, &ecp);
@@ -615,7 +617,7 @@ void Editor::GoToEnd(bool addLine)
 		esp.CurLine = ei.TotalLines - 1;
 		EditorControl_ECTL_SETPOSITION(_id, esp);
 	}
-	EditorGetString egs = {sizeof(egs)};
+	EditorGetString egs = { sizeof(egs) };
 	EditorControl_ECTL_GETSTRING(egs, _id, -1);
 	if (egs.StringLength > 0)
 	{
@@ -633,17 +635,17 @@ String^ Editor::GetText(String^ separator)
 	if (separator == nullptr)
 		separator = CV::CRLF;
 
-    AutoEditorInfo ei(_id);
+	AutoEditorInfo ei(_id);
 
-   	EditorGetString egs = {sizeof(egs)};
-	for(egs.StringNumber = 0; egs.StringNumber < ei.TotalLines; ++egs.StringNumber)
-    {
-        Info.EditorControl(_id, ECTL_GETSTRING, 0, &egs);
+	EditorGetString egs = { sizeof(egs) };
+	for (egs.StringNumber = 0; egs.StringNumber < ei.TotalLines; ++egs.StringNumber)
+	{
+		Info.EditorControl(_id, ECTL_GETSTRING, 0, &egs);
 		if (egs.StringNumber > 0)
 			sb.Append(separator);
 		if (egs.StringLength > 0)
 			sb.Append(gcnew String(egs.StringText, 0, (int)egs.StringLength));
-    }
+	}
 
 	return sb.ToString();
 }
@@ -676,7 +678,7 @@ void Editor::SetText(String^ text)
 
 		// replace existing lines
 		int i;
-		for(i = 0; i < newLines->Length; ++i)
+		for (i = 0; i < newLines->Length; ++i)
 		{
 			if (i < ei.TotalLines)
 			{
@@ -685,7 +687,7 @@ void Editor::SetText(String^ text)
 			}
 
 			GoToEnd(false);
-			while(i < newLines->Length)
+			while (i < newLines->Length)
 			{
 				EditorControl_ECTL_INSERTSTRING(_id, false);
 				EditorControl_ECTL_INSERTTEXT(_id, newLines[i], -1);
@@ -720,25 +722,25 @@ void Editor::SetText(String^ text)
 
 void Editor::BeginUndo()
 {
-	EditorUndoRedo eur = {sizeof(eur), EUR_BEGIN};
+	EditorUndoRedo eur = { sizeof(eur), EUR_BEGIN };
 	Info.EditorControl(_id, ECTL_UNDOREDO, 0, &eur);
 }
 
 void Editor::EndUndo()
 {
-	EditorUndoRedo eur = {sizeof(eur), EUR_END};
+	EditorUndoRedo eur = { sizeof(eur), EUR_END };
 	Info.EditorControl(_id, ECTL_UNDOREDO, 0, &eur);
 }
 
 void Editor::Undo()
 {
-	EditorUndoRedo eur = {sizeof(eur), EUR_UNDO};
+	EditorUndoRedo eur = { sizeof(eur), EUR_UNDO };
 	Info.EditorControl(_id, ECTL_UNDOREDO, 0, &eur);
 }
 
 void Editor::Redo()
 {
-	EditorUndoRedo eur = {sizeof(eur), EUR_REDO};
+	EditorUndoRedo eur = { sizeof(eur), EUR_REDO };
 	Info.EditorControl(_id, ECTL_UNDOREDO, 0, &eur);
 }
 
@@ -809,7 +811,7 @@ String^ Editor::WordDiv::get()
 	if (!IsOpened)
 		return _WordDiv ? _WordDiv : String::Empty;
 
-	EditorSetParameter esp = {sizeof(esp)};
+	EditorSetParameter esp = { sizeof(esp) };
 	esp.Type = ESPT_GETWORDDIV;
 	esp.wszParam = 0;
 	esp.Size = EditorControl_ECTL_SETPARAM(_id, esp);
@@ -830,7 +832,7 @@ void Editor::WordDiv::set(String^ value)
 		return;
 
 	PIN_NE(pin, value);
-	EditorSetParameter esp = {sizeof(esp)};
+	EditorSetParameter esp = { sizeof(esp) };
 	esp.Type = ESPT_SETWORDDIV;
 	esp.wszParam = (wchar_t*)pin;
 	EditorControl_ECTL_SETPARAM(_id, esp);
@@ -869,7 +871,7 @@ void Editor::WriteByteOrderMark::set(bool value)
 }
 void Editor::SetBoolOption(EDITOR_SETPARAMETER_TYPES option, bool value)
 {
-	EditorSetParameter esp = {sizeof(esp)};
+	EditorSetParameter esp = { sizeof(esp) };
 	esp.Type = option;
 	esp.iParam = (int)value;
 	EditorControl_ECTL_SETPARAM(_id, esp);
@@ -903,7 +905,7 @@ void Editor::Start(const EditorInfo& ei, bool waiting)
 	}
 
 	// subscribe to change events Far 3.0.3371
-	EditorSubscribeChangeEvent esce = {sizeof(EditorSubscribeChangeEvent), MainGuid};
+	EditorSubscribeChangeEvent esce = { sizeof(EditorSubscribeChangeEvent), MainGuid };
 	Info.EditorControl(_id, ECTL_SUBSCRIBECHANGEEVENT, 0, &esce);
 
 	// now call the modules
@@ -927,10 +929,10 @@ String^ Editor::GetSelectedText(String^ separator)
 	if (separator == nullptr)
 		separator = CV::CRLF;
 
-	EditorGetString egs = {sizeof(egs)};
-	for(egs.StringNumber = ei.BlockStartLine; egs.StringNumber < ei.TotalLines; ++egs.StringNumber)
-    {
-        Info.EditorControl(_id, ECTL_GETSTRING, 0, &egs);
+	EditorGetString egs = { sizeof(egs) };
+	for (egs.StringNumber = ei.BlockStartLine; egs.StringNumber < ei.TotalLines; ++egs.StringNumber)
+	{
+		Info.EditorControl(_id, ECTL_GETSTRING, 0, &egs);
 		if (egs.SelStart < 0)
 			break;
 		if (egs.StringNumber > ei.BlockStartLine)
@@ -948,7 +950,7 @@ String^ Editor::GetSelectedText(String^ separator)
 				sb.Append((gcnew String(egs.StringText + egs.SelStart))->PadRight(len));
 			}
 		}
-    }
+	}
 
 	return sb.ToString();
 }
@@ -960,7 +962,7 @@ void Editor::SetSelectedText(String^ text)
 	if (ei.BlockType == BTYPE_NONE)
 		throw gcnew InvalidOperationException(Res::EditorNoSelection);
 
-	EditorGetString egs = {sizeof(egs)};
+	EditorGetString egs = { sizeof(egs) };
 	EditorControl_ECTL_GETSTRING(egs, _id, (int)ei.BlockStartLine);
 	if (ei.BlockType == BTYPE_COLUMN && egs.SelEnd < 0)
 		throw gcnew InvalidOperationException(Res::EditorBadSelection);
@@ -984,8 +986,8 @@ void Editor::SetSelectedText(String^ text)
 void Editor::SelectText(int column1, int line1, int column2, int line2, PlaceKind kind)
 {
 	// type
-	EditorSelect es = {sizeof(es)};
-	switch(kind)
+	EditorSelect es = { sizeof(es) };
+	switch (kind)
 	{
 	case PlaceKind::None:
 		es.BlockType = BTYPE_NONE;
@@ -1020,14 +1022,14 @@ void Editor::SelectText(int column1, int line1, int column2, int line2, PlaceKin
 void Editor::SelectAllText()
 {
 	AutoEditorInfo ei(_id);
-	EditorGetString egs = {sizeof(egs)};
+	EditorGetString egs = { sizeof(egs) };
 	EditorControl_ECTL_GETSTRING(egs, _id, (int)ei.TotalLines - 1);
 	SelectText(0, 0, (int)egs.StringLength - 1, (int)ei.TotalLines - 1, PlaceKind::Stream);
 }
 
 void Editor::UnselectText()
 {
-	EditorSelect es = {sizeof(es)};
+	EditorSelect es = { sizeof(es) };
 	es.BlockType = BTYPE_NONE;
 	EditorControl_ECTL_SELECT(_id, es);
 }
@@ -1065,12 +1067,12 @@ int Editor::Count::get()
 
 ILine^ Editor::default::get(int index)
 {
-    return gcnew EditorLine(_id, index);
+	return gcnew EditorLine(_id, index);
 }
 
 ILine^ Editor::Line::get()
 {
-    return gcnew EditorLine(_id, -1);
+	return gcnew EditorLine(_id, -1);
 }
 
 void Editor::RemoveAt(int index)
@@ -1089,7 +1091,7 @@ Point Editor::SelectionPoint::get()
 	if (ei.BlockType == BTYPE_NONE)
 		return Point(-1);
 
-	EditorGetString egs = {sizeof(egs)};
+	EditorGetString egs = { sizeof(egs) };
 	EditorControl_ECTL_GETSTRING(egs, _id, (int)ei.BlockStartLine);
 	return Point((int)egs.SelStart, (int)ei.BlockStartLine);
 }
@@ -1101,7 +1103,7 @@ void Editor::Add(String^ text)
 
 void Editor::Insert(int line, String^ text)
 {
-    if (text == nullptr)
+	if (text == nullptr)
 		throw gcnew ArgumentNullException("text");
 
 	AutoEditorInfo ei(_id);
@@ -1133,7 +1135,7 @@ void Editor::Insert(int line, String^ text)
 	if (line <= ei.CurLine)
 	{
 		++ei.CurLine;
-		for each(Char c in text)
+		for each (Char c in text)
 			if (c == '\r')
 				++ei.CurLine;
 	}
@@ -1178,7 +1180,7 @@ IList<ILine^>^ Editor::SelectedLines::get()
 
 IEditorBookmark^ Editor::Bookmark::get()
 {
-	return %EditorBookmark::Instance;
+	return % EditorBookmark::Instance;
 }
 
 DateTime Editor::TimeOfOpen::get()
@@ -1194,7 +1196,7 @@ DateTime Editor::TimeOfSave::get()
 void Editor::Activate()
 {
 	int nWindow = Far::Api->Window->Count;
-	for(int i = 0; i < nWindow; ++i)
+	for (int i = 0; i < nWindow; ++i)
 	{
 		WindowKind kind = Far::Api->Window->GetKindAt(i);
 		if (kind != WindowKind::Editor)
@@ -1229,16 +1231,39 @@ void Editor::IsLocked::set(bool value)
 		SetBoolOption(ESPT_LOCKMODE, value);
 }
 
-IList<EditorColorInfo^>^ Editor::GetColors(int line)
+// cached for this editor
+bool Editor::HasColorer()
+{
+	if (_HasColorer)
+		return _HasColorer == 1;
+
+	_HasColorer = -1;
+
+	Settings settings(ColorerGuid, true);
+	if (settings.Handle() == INVALID_HANDLE_VALUE)
+		return false;
+
+	bool isEnabled = settings.GetBool(0, L"Enabled", true);
+	if (isEnabled)
+	{
+		_HasColorer = 1;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+void Editor::GetColors(int line, List<EditorColorInfo^>^ colors)
 {
 	::EditorColor ec; ec.StructSize = sizeof(ec);
 	ec.StringNumber = line;
 
-	List<EditorColorInfo^>^ spans = gcnew List<EditorColorInfo^>;
-
-	for(ec.ColorItem = 0; Info.EditorControl(_id, ECTL_GETCOLOR, 0, &ec); ++ec.ColorItem)
+	colors->Clear();
+	for (ec.ColorItem = 0; Info.EditorControl(_id, ECTL_GETCOLOR, 0, &ec); ++ec.ColorItem)
 	{
-		spans->Add(gcnew EditorColorInfo(
+		colors->Add(gcnew EditorColorInfo(
 			line,
 			(int)ec.StartPos,
 			(int)ec.EndPos + 1,
@@ -1247,8 +1272,6 @@ IList<EditorColorInfo^>^ Editor::GetColors(int line)
 			FromGUID(ec.Owner),
 			(int)ec.Priority));
 	}
-
-	return spans;
 }
 
 void Editor::WorksSetColors(Guid owner, int priority, IEnumerable<EditorColor^>^ colors)
@@ -1260,7 +1283,7 @@ void Editor::WorksSetColors(Guid owner, int priority, IEnumerable<EditorColor^>^
 	ec.Color.Flags = FCF_4BITMASK;
 	ec.Owner = ToGUID(owner);
 
-	for each(EditorColor^ color in colors)
+	for each (EditorColor ^ color in colors)
 	{
 		ec.StringNumber = color->Line;
 		ec.StartPos = color->Start;
@@ -1302,14 +1325,14 @@ void Editor::InvokeDrawers()
 
 	List<EditorColor^> colors;
 	Works::LineCollection lines(this, startLine, endLine - startLine);
-	ModuleDrawerEventArgs args(%colors, %lines, frame.VisibleChar, frame.VisibleChar + size.X);
+	ModuleDrawerEventArgs args(% colors, % lines, frame.VisibleChar, frame.VisibleChar + size.X);
 
-	for each(DrawerInfo^ it in _drawers->Values)
+	for each (DrawerInfo ^ it in _drawers->Values)
 	{
 		colors.Clear();
-		it->Handler(this, %args);
+		it->Handler(this, % args);
 
-		WorksSetColors(it->Id, it->Priority, %colors);
+		WorksSetColors(it->Id, it->Priority, % colors);
 	}
 }
 

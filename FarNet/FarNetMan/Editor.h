@@ -91,7 +91,7 @@ namespace FarNet
 		virtual property FarNet::Switching Switching { FarNet::Switching get() override; void set(FarNet::Switching value) override; }
 		virtual property TextFrame Frame { TextFrame get() override; void set(TextFrame value) override; }
 	public:
-		virtual IList<EditorColorInfo^>^ GetColors(int line) override;
+		virtual bool HasColorer() override;
 		virtual int ConvertColumnEditorToScreen(int line, int column) override;
 		virtual int ConvertColumnScreenToEditor(int line, int column) override;
 		virtual Point ConvertPointEditorToScreen(Point point) override;
@@ -111,6 +111,7 @@ namespace FarNet
 		virtual void DeleteText() override;
 		virtual void EndAsync() override;
 		virtual void EndUndo() override;
+		virtual void GetColors(int line, List<EditorColorInfo^>^ colors) override;
 		virtual void GoTo(int column, int line) override;
 		virtual void GoToColumn(int pos) override;
 		virtual void GoToEnd(bool addLine) override;
@@ -159,6 +160,7 @@ namespace FarNet
 		FarNet::DeleteSource _DeleteSource;
 		FarNet::Switching _Switching;
 		bool _DisableHistory;
+		int _HasColorer;
 		Place _Window;
 		String^ _Title;
 		intptr_t _CodePage;

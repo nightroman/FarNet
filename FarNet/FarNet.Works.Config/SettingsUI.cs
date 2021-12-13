@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace FarNet.Works.Config
@@ -14,12 +15,11 @@ namespace FarNet.Works.Config
 		public static void ShowSettings(IEnumerable<IModuleManager> managers)
 		{
 			// collect sorted data
-			var list = new SortedList<string, KeyValuePair<string, IModuleManager>>(StringComparer.OrdinalIgnoreCase);
-			foreach (var manager in managers)
-			{
-				foreach (var typeName in manager.SettingsTypeNames)
-					list.Add($"{manager.ModuleName} {typeName}", new KeyValuePair<string, IModuleManager>(typeName, manager));
-			}
+			var list = managers
+				.SelectMany(manager => manager.SettingsTypeNames.Select(typeName => new KeyValuePair<IModuleManager, string>(manager, typeName)))
+				.OrderBy(x => x.Key.ModuleName, StringComparer.OrdinalIgnoreCase)
+				.ThenBy(x => x.Value, StringComparer.OrdinalIgnoreCase)
+				.ToList();
 
 			// do menu
 
@@ -28,39 +28,36 @@ namespace FarNet.Works.Config
 			menu.Title = "Module settings";
 			menu.HelpTopic = HelpSettings;
 
+			var maxModuleName = list.Max(x => x.Key.ModuleName.Length);
 			foreach (var it in list)
-				menu.Add(it.Key).Data = it.Value;
+				menu.Add($"{it.Key.ModuleName.PadRight(maxModuleName)} {it.Value}").Data = it;
 
 			if (!menu.Show())
 				return;
 
-			var data = (KeyValuePair<string, IModuleManager>)menu.SelectedData;
+			var data = (KeyValuePair<IModuleManager, string>)menu.SelectedData;
 
 			// obtain settings
-			var assembly = data.Value.LoadAssembly(false);
-			var settingsType = assembly.GetType(data.Key);
+			var assembly = data.Key.LoadAssembly(false);
+			var settingsType = assembly.GetType(data.Value);
 			var info = settingsType.GetProperty("Default", BindingFlags.Static | BindingFlags.Public);
 
-			ModuleSettingsBase settingsInstance;
+			ModuleSettingsBase instance;
 			if (info is null)
 			{
-				//! `Default` does not have to be defined, e.g. to always use fresh data.
-				settingsInstance = (ModuleSettingsBase)Activator.CreateInstance(settingsType);
+				//! no `Default` is fine, use new
+				instance = (ModuleSettingsBase)Activator.CreateInstance(settingsType);
 			}
 			else
 			{
-				//! `Default` must be set
-				settingsInstance = (ModuleSettingsBase)info.GetValue(null, null);
-				if (settingsInstance is null)
-					throw new InvalidOperationException($"{settingsType.FullName} property 'Default' must be not null.");
-
-				//! `Default` must be its type
-				if (settingsInstance.GetType() != settingsType)
-					throw new InvalidOperationException($"{settingsType.FullName} property 'Default' must have this type.");
+				//! assert `Default`
+				instance = (ModuleSettingsBase)info.GetValue(null, null);
+				if (instance is null || instance.GetType() != settingsType)
+					throw new ModuleException($"{settingsType.FullName}.Default must be assigned to the same type instance.");
 			}
 
-			// open the editor
-			settingsInstance.Edit();
+			// open
+			instance.Edit();
 		}
 	}
 }

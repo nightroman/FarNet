@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
-FarNet 5.6.0
+
+= 5.7.2 =
+
+Requires FarNet 5.7.1
+Updated for new GetColors.
 
 = 5.7.1 =
 

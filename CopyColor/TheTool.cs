@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
 namespace FarNet.CopyColor
 {
 	[System.Runtime.InteropServices.Guid("e9a7fa32-15e0-4f19-b004-9148df346794")]
@@ -42,6 +43,7 @@ namespace FarNet.CopyColor
 			var linespans = new List<EditorColorInfo[]>();
 			var bgcount = new int[16];
 
+			var allColors = new List<EditorColorInfo>();
 			for (int line = iLine1; line <= iLine2; ++line)
 			{
 				var text = editor[line].Text;
@@ -50,9 +52,10 @@ namespace FarNet.CopyColor
 				var colors = new EditorColorInfo[text.Length];
 				linespans.Add(colors);
 
-				var spans = editor.GetColors(line).Where(x => x.Owner == Colorer).ToList();
-				int min = spans.Count > 0 ? spans.Min(x => x.Start) : 1;
-				int max = spans.Count > 0 ? spans.Max(x => x.End) : -1;
+				editor.GetColors(line, allColors);
+				var colorerColors = allColors.Where(x => x.Owner == Colorer).ToList();
+				int min = colorerColors.Count > 0 ? colorerColors.Min(x => x.Start) : 1;
+				int max = colorerColors.Count > 0 ? colorerColors.Max(x => x.End) : -1;
 				if (min > 0 || max < text.Length)
 				{
 					Far.Api.Message(@"
@@ -62,7 +65,7 @@ Try to scroll the text. Long lines are not supported.
 					return;
 				}
 
-				foreach (var span in spans)
+				foreach (var span in colorerColors)
 				{
 					for (int ch = span.Start; ch < span.End; ++ch)
 					{

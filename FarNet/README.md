@@ -519,6 +519,6 @@ validation errors may be discovered later.
 
 These settings are *user settings* provided by modules. In addition to them
 modules may also have *system settings* menus and dialogs shown by the core.
-See [Config menu](#config-menu) (`[F9] \ Options \ Plugin configuration`).
+See [Config menu](#config-menu) (`Options \ Plugin configuration \ FarNet`).
 
 *********************************************************************

@@ -7,15 +7,6 @@
     <TargetFramework>net45</TargetFramework>
     <RunPostBuildEvent>1</RunPostBuildEvent>
   </PropertyGroup>
-  <PropertyGroup>
-    <Company>https://github.com/nightroman/FarNet</Company>
-    <Copyright>Copyright (c) Roman Kuzmin</Copyright>
-    <Description>FarNet module CopyColor for Far Manager</Description>
-    <Product>FarNet.CopyColor</Product>
-    <Version>2.1.2</Version>
-    <FileVersion>$(Version)</FileVersion>
-    <AssemblyVersion>$(Version)</AssemblyVersion>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="FarNet">
       <HintPath>$(FarHome)\FarNet\FarNet.dll</HintPath>

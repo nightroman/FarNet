@@ -19,6 +19,9 @@ static FarStandardFunctions FSF;
 // {10435532-9BB3-487B-A045-B0E6ECAAB6BC}
 DEFINE_GUID(MainGuid, 0x10435532, 0x9bb3, 0x487b, 0xa0, 0x45, 0xb0, 0xe6, 0xec, 0xaa, 0xb6, 0xbc);
 
+// {D2F36B62-A470-418d-83A3-ED7A3710E5B5}
+DEFINE_GUID(ColorerGuid, 0xd2f36b62, 0xa470, 0x418d, 0x83, 0xa3, 0xed, 0x7a, 0x37, 0x10, 0xe5, 0xb5);
+
 #define __START try {
 #define __END } catch(Exception^ e) { Far::Api->ShowError(nullptr, e); } finally { FarUI::ResetUserScreen(); }
 

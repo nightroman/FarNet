@@ -92,7 +92,7 @@ NOTES
 
 Switches "Spelling mistakes" highlighting in the current editor.
 
-`[F9] \ Options \ Plugin configuration \ FarNet \ Drawers \ Spelling mistakes`
+`Options \ Plugin configuration \ FarNet \ Drawers \ Spelling mistakes`
 
 The dialog with permanent options:
 

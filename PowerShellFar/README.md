@@ -151,11 +151,10 @@ which invoke PowerShell commands. See [Examples].
 
 **User menu and file associations**
 
-The user menu (`[F2]`) and file associations (`[F9] \ Commands \ File
-associations`) may include PowerShell commands with prefixes. See Far Manager
-help for details. Note that the user menu can be opened in any area, not just
-panels, but Far Manager does not provide a standard key, so choose a key and
-assign a macro `mf.usermenu(0, "")`.
+The user menu (`[F2]`) and file associations (`Commands \ File associations`)
+may include PowerShell commands with prefixes. See Far Manager help. Note that
+the user menu can be opened in any area, not just panels, but Far Manager does
+not provide a standard key, so use some key and macro `mf.usermenu(0, "")`.
 
 **Event handlers**
 

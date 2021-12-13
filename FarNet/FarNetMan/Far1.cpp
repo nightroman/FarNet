@@ -468,7 +468,7 @@ Object^ Far1::GetSetting(FarSetting settingSet, String^ settingName)
 {
 	Settings settings(FarGuid);
 
-	FarSettingsItem arg = {sizeof(arg)};
+	FarSettingsItem arg;
 	if (!settings.Get((int)settingSet, settingName, arg))
 		throw gcnew ArgumentException(String::Format("Cannot get setting: set = '{0}' name = '{1}'", settingSet, settingName));
 

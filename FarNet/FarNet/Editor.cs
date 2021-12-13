@@ -749,10 +749,22 @@ namespace FarNet
 		public Hashtable Data { get { return _Data ?? (_Data = new Hashtable()); } }
 		Hashtable _Data;
 		/// <summary>
-		/// Returns color spans of the specified line.
+		/// OBSOLETE: use <see cref="GetColors(int, List{EditorColorInfo})"/>.
+		/// </summary>
+		/// <param name="line">.</param>
+		[Obsolete("Use GetColors(int, List).")]
+		public IList<EditorColorInfo> GetColors(int line)
+		{
+			var colors = new List<EditorColorInfo>();
+			GetColors(line, colors);
+			return colors;
+		}
+		/// <summary>
+		/// Collects color spans of the specified line.
 		/// </summary>
 		/// <param name="line">Index of the line.</param>
-		public abstract IList<EditorColorInfo> GetColors(int line);
+		/// <param name="colors">Line colors.</param>
+		public abstract void GetColors(int line, List<EditorColorInfo> colors);
 		/// <summary>
 		/// INTERNAL
 		/// </summary>
@@ -770,6 +782,13 @@ namespace FarNet
 		/// </summary>
 		/// <param name="id">The drawer ID.</param>
 		public abstract void RemoveDrawer(Guid id);
+		/// <summary>
+		/// Gets true if the plugin Colorer is enabled.
+		/// </summary>
+		/// <remarks>
+		/// This method gets the result once for this editor, then returns the same value.
+		/// </remarks>
+		public abstract bool HasColorer();
 	}
 
 	/// <summary>
@@ -1137,11 +1156,11 @@ namespace FarNet
 			return CaretLine | (CaretColumn << 16);
 		}
 		/// <summary>
-		/// Returns the string "(({0}/{1}, {2})({3}, {4}))", CaretColumn, CaretScreenColumn, CaretLine, VisibleChar, VisibleLine.
+		/// Returns "(({CaretColumn}/{CaretScreenColumn}, {CaretLine})({VisibleChar}, {VisibleLine}))".
 		/// </summary>
 		public override string ToString()
 		{
-			return string.Format(null, "(({0}/{1}, {2})({3}, {4}))", CaretColumn, CaretScreenColumn, CaretLine, VisibleChar, VisibleLine);
+			return $"(({CaretColumn}/{CaretScreenColumn}, {CaretLine})({VisibleChar}, {VisibleLine}))";
 		}
 	}
 
@@ -1184,11 +1203,11 @@ namespace FarNet
 		/// </summary>
 		public ConsoleColor Background { get; private set; }
 		/// <summary>
-		/// Returns the string "({0}, {1}) {2}/{3}", Start, End, Foreground, Background.
+		/// Returns "({Start}, {End}) {Foreground}/{Background}".
 		/// </summary>
 		public override string ToString()
 		{
-			return string.Format(null, "({0}, {1}) {2}/{3}", Start, End, Foreground, Background);
+			return $"({Start}, {End}) {Foreground}/{Background}";
 		}
 	}
 
@@ -1219,11 +1238,11 @@ namespace FarNet
 		/// </summary>
 		public int Priority { get; private set; }
 		/// <summary>
-		/// Returns the string "{0} {1} {2} ({3}, {4}) {5}/{6}", Priority, Owner, Line, Start, End, Foreground, Background.
+		/// Returns "{Priority} {Owner} {Line} ({Start}, {End}) {Foreground}/{Background}".
 		/// </summary>
 		public override string ToString()
 		{
-			return string.Format(null, "{0} {1} {2} ({3}, {4}) {5}/{6}", Priority, Owner, Line, Start, End, Foreground, Background);
+			return $"{Priority} {Owner} {Line} ({Start}, {End}) {Foreground}/{Background}";
 		}
 	}
 }

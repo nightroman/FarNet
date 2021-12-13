@@ -1,5 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet.Drawer
 
+= 1.2.2 =
+
+Requires FarNet 5.7.1
+`Current word`: keep Colorer foreground and use smart background.
+
 = 1.2.1 =
 
 CurrentWordDrawer: use default color priority 2.

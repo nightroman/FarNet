@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Opens a shortcut file (.lnk).
@@ -16,7 +15,7 @@
 
 	HOW TO OPEN .LNK FILES FROM PANELS
 
-	[F9] \ Commands \ File associations
+	Commands \ File associations
 
 		Mask: *.lnk
 		[Enter]
