@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.Drawer
 
+= 1.2.1 =
+
+CurrentWordDrawer: use default color priority 2.
+
 = 1.2.0 =
 
 Requires FarNet 5.6.0.

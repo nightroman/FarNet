@@ -7,8 +7,9 @@ using System.Text.RegularExpressions;
 
 namespace FarNet.Drawer
 {
+	// `Priority = 2` because e.g. PowerShell breakpoints use 1.
 	[System.Runtime.InteropServices.Guid(Settings.CurrentWordGuid)]
-	[ModuleDrawer(Name = Settings.CurrentWordName, Priority = 1)]
+	[ModuleDrawer(Name = Settings.CurrentWordName, Priority = 2)]
 	public class CurrentWordDrawer : ModuleDrawer
 	{
 		public override void Invoke(IEditor editor, ModuleDrawerEventArgs e)
