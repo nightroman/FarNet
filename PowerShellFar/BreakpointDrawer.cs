@@ -4,6 +4,7 @@
 
 using FarNet;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -19,10 +20,11 @@ namespace PowerShellFar
 		/// <inheritdoc/>
 		public override void Invoke(IEditor editor, ModuleDrawerEventArgs e)
 		{
-			if (editor == null || e == null) return;
-
 			var fullPath = Path.GetFullPath(editor.FileName); //!
 			var breakpoints = A.Psf.Breakpoints.Where(x => fullPath.Equals(x.Script, StringComparison.OrdinalIgnoreCase));
+
+			bool? isColorer = null;
+			var guidColorer = new Guid("d2f36b62-a470-418d-83a3-ed7a3710e5b5");
 
 			foreach (var line in e.Lines)
 			{
@@ -32,17 +34,35 @@ namespace PowerShellFar
 						continue;
 
 					var colors = editor.GetColors(line.Index);
-					foreach (var color in colors)
+					if (!isColorer.HasValue && colors.Count > 0)
+						isColorer = colors.FirstOrDefault(x => x.Owner == guidColorer) != null;
+
+					if (isColorer.GetValueOrDefault())
 					{
-						// foreground: keep original but replace yellow and white with black (assume FarColorer)
+						// foreground: keep original but replace yellow and white with black
 						// background: yellow
-						e.Colors.Add(new EditorColor(
+						foreach (var color in colors)
+						{
+							e.Colors.Add(new EditorColor(
 							line.Index,
 							color.Start,
 							color.End,
 							(color.Foreground == ConsoleColor.Yellow || color.Foreground == ConsoleColor.White) ? ConsoleColor.Black : color.Foreground,
 							ConsoleColor.Yellow));
+						}
 					}
+					else
+					{
+						// color all black on yellow
+						e.Colors.Add(new EditorColor(
+							line.Index,
+							e.StartChar,
+							e.EndChar,
+							ConsoleColor.Black,
+							ConsoleColor.Yellow));
+					}
+
+					// with 2+ bp per line coloring one is enough, we color whole line for simplicity
 					break;
 				}
 			}
