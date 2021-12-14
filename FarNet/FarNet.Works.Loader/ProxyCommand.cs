@@ -87,18 +87,18 @@ namespace FarNet.Works
 				throw new ModuleException("Empty command prefix is not valid.");
 		}
 
-		internal Configuration.Command SaveConfig()
+		internal Config.Command SaveConfig()
 		{
 			if (_Prefix == Attribute.Prefix)
 				return null;
 
-			return new Configuration.Command { Id = Id, Prefix = _Prefix };
+			return new Config.Command { Id = Id, Prefix = _Prefix };
 		}
 
-		internal void LoadConfig(Configuration.Module moduleData)
+		internal void LoadConfig(Config.Module config)
 		{
-			Configuration.Command data;
-			if (moduleData != null && (data = moduleData.GetCommand(Id)) != null)
+			Config.Command data;
+			if (config != null && (data = config.GetCommand(Id)) != null)
 			{
 				_Prefix = data.Prefix ?? Attribute.Prefix;
 			}

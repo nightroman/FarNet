@@ -5,54 +5,46 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 namespace FarNet.Works
 {
 	public static class ConfigUICulture
 	{
-		public static void Show(IList<IModuleManager> managers, string helpTopic)
+		const string HelpTopic = "module-ui-culture";
+
+		public static void Show(List<IModuleManager> managers)
 		{
-			if (managers == null)
-				return;
-
-			IMenu menu = Far.Api.CreateMenu();
-			menu.Title = "Module UI culture";
-			menu.HelpTopic = helpTopic;
+			var menu = Far.Api.CreateMenu();
 			menu.AutoAssignHotkeys = true;
+			menu.HelpTopic = HelpTopic;
+			menu.Title = "Module UI culture";
 
-			int width = 0;
-			{
-				foreach (IModuleManager it in managers)
-					if (width < it.ModuleName.Length)
-						width = it.ModuleName.Length;
-			}
-
+			int max1 = managers.Max(x => x.ModuleName.Length);
 			for (; ; )
 			{
 				menu.Items.Clear();
-				{
-					foreach (IModuleManager it in managers)
-						menu.Add(string.Format(null, "{0} : {1}", it.ModuleName.PadRight(width), it.StoredUICulture)).Data = it;
-				}
+				foreach (IModuleManager it in managers)
+					menu.Add($"{it.ModuleName.PadRight(max1)} : {it.StoredUICulture}").Data = it;
 
 				if (!menu.Show())
 					return;
 
-				IModuleManager manager = (IModuleManager)menu.SelectedData;
+				var manager = (IModuleManager)menu.SelectedData;
 
 				// show the input box
-				IInputBox ib = Far.Api.CreateInputBox();
+				var ib = Far.Api.CreateInputBox();
 				ib.Title = manager.ModuleName;
 				ib.Prompt = "Culture name (empty = the Far culture)";
 				ib.Text = manager.StoredUICulture;
 				ib.History = "Culture";
-				ib.HelpTopic = helpTopic;
+				ib.HelpTopic = menu.HelpTopic;
 				ib.EmptyEnabled = true;
 				if (!ib.Show())
 					continue;
 
-				// set the culture (even the same, to refresh)
-				string cultureName = ib.Text.Trim();
+				// set the culture, even the same, to refresh
+				var cultureName = ib.Text;
 				CultureInfo ci;
 				try
 				{
@@ -61,7 +53,7 @@ namespace FarNet.Works
 
 					// save the name from the culture, not from a user
 					manager.StoredUICulture = ci.Name;
-					manager.SaveConfiguration();
+					manager.SaveConfig();
 
 					// use the current Far culture instead of invariant
 					if (ci.Name.Length == 0)

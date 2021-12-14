@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace FarNet.Works.Config
+namespace FarNet.Works
 {
 	public static class SettingsUI
 	{

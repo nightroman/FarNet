@@ -269,6 +269,7 @@ namespace FarNet
 		/// </remarks>
 		public abstract IDialog CreateDialog(int left, int top, int right, int bottom);
 		/// <include file='doc.xml' path='doc/ShowHelp/*'/>
+		/// <seealso cref="ShowHelpTopic(string)"/>
 		public abstract void ShowHelp(string path, string topic, HelpOptions options);
 		/// <summary>
 		/// Shows the help topic from a help file in the directory of the calling assembly.
@@ -279,6 +280,7 @@ namespace FarNet
 		/// specify <c>[MethodImpl(MethodImplOptions.NoInlining)]</c>
 		/// for <c>Invoke</c> to avoid calling assembly confusion.
 		/// </remarks>
+		/// <seealso cref="ShowHelp(string, string, HelpOptions)"/>
 		public abstract void ShowHelpTopic(string topic);
 		/// <summary>
 		/// Formats the help topic path for <c>HelpTopic</c> properties of various UI classes.

@@ -51,7 +51,7 @@ task version {
 }
 
 task package help, version, {
-	equals $Version (Get-Item $ModuleHome\CopyColor.dll).VersionInfo.FileVersion
+	equals "$Version.0" (Get-Item $ModuleHome\CopyColor.dll).VersionInfo.FileVersion
 	$toModule = 'z\tools\FarHome\FarNet\Modules\CopyColor'
 
 	remove z

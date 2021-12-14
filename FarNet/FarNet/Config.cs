@@ -11,13 +11,13 @@ namespace FarNet.Works
 	///
 	// Check for empty lists, not nulls.
 	// Use strings for value types, so that null means default.
-	public class Configuration : ModuleSettings<Configuration.Data>
+	public class Config : ModuleSettings<Config.Data>
 	{
 		///
-		public static Configuration Default { get; } = new Configuration();
+		public static Config Default { get; } = new Config();
 
 		///
-		Configuration() : base(Far.Api.GetFolderPath(SpecialFolder.RoamingData) + @"\FarNet\FarNet.xml")
+		Config() : base(Far.Api.GetFolderPath(SpecialFolder.RoamingData) + @"\FarNet\FarNet.xml")
 		{ }
 
 		///

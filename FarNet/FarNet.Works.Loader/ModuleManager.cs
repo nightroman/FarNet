@@ -40,15 +40,15 @@ namespace FarNet.Works
 		/// <summary>
 		/// Sets properties from data, if not null.
 		/// </summary>
-		internal void LoadConfig(Configuration.Module data)
+		internal void LoadConfig(Config.Module config)
 		{
-			if (data is not null)
-				_StoredUICulture = data.Culture;
+			if (config is not null)
+				_StoredUICulture = config.Culture;
 		}
 
-		internal void SaveConfig(Configuration.Module data)
+		internal void SaveConfig(Config.Module config)
 		{
-			data.Culture = _StoredUICulture;
+			config.Culture = _StoredUICulture;
 		}
 
 		void ConnectModuleHost()
@@ -131,8 +131,8 @@ namespace FarNet.Works
 				throw new ArgumentException("'attribute.Name' must not be empty.");
 
 			var it = new ProxyCommand(this, id, attribute, handler);
-			var data = Configuration.Default.GetData();
-			it.LoadConfig(data.GetModule(ModuleName));
+			var config = Config.Default.GetData();
+			it.LoadConfig(config.GetModule(ModuleName));
 
 			Host.Instance.RegisterProxyCommand(it);
 			return it;
@@ -148,8 +148,8 @@ namespace FarNet.Works
 				throw new ArgumentException("'attribute.Name' must not be empty.");
 
 			var it = new ProxyDrawer(this, id, attribute, handler);
-			var data = Configuration.Default.GetData();
-			it.LoadConfig(data.GetModule(ModuleName));
+			var config = Config.Default.GetData();
+			it.LoadConfig(config.GetModule(ModuleName));
 
 			Host.Instance.RegisterProxyDrawer(it);
 			return it;
@@ -165,8 +165,8 @@ namespace FarNet.Works
 				throw new ArgumentException("'attribute.Name' must not be empty.");
 
 			var it = new ProxyTool(this, id, attribute, handler);
-			var data = Configuration.Default.GetData();
-			it.LoadConfig(data.GetModule(ModuleName));
+			var config = Config.Default.GetData();
+			it.LoadConfig(config.GetModule(ModuleName));
 
 			Host.Instance.RegisterProxyTool(it);
 			return it;
@@ -267,14 +267,14 @@ namespace FarNet.Works
 							_StoredUICulture = null;
 
 							// drop in config, too (do not Reset(), config may be in use)
-							var data = Configuration.Default.GetData();
-							var module = data.GetModule(ModuleName);
+							var config = Config.Default.GetData();
+							var module = config.GetModule(ModuleName);
 							if (module is not null)
 							{
 								module.Culture = null;
 								if (module.IsDefault())
-									data.RemoveModule(ModuleName);
-								Configuration.Default.Save();
+									config.RemoveModule(ModuleName);
+								Config.Default.Save();
 							}
 						}
 					}
@@ -341,14 +341,14 @@ namespace FarNet.Works
 		// This methods is "slow", UI only.
 		// Merge existing module data with current.
 		// We have actions added manually, not loaded but with data to keep.
-		public override void SaveConfiguration()
+		public override void SaveConfig()
 		{
 			// get data with reset for the latest
-			Configuration.Default.Reset();
-			var data = Configuration.Default.GetData();
+			Config.Default.Reset();
+			var config = Config.Default.GetData();
 
 			// get existing and save module data
-			var module = data.GetModule(ModuleName) ?? new();
+			var module = config.GetModule(ModuleName) ?? new();
 			SaveConfig(module);
 
 			// save action data
@@ -393,17 +393,17 @@ namespace FarNet.Works
 			// remove default or set module
 			if (module.IsDefault())
 			{
-				data.RemoveModule(ModuleName);
+				config.RemoveModule(ModuleName);
 			}
 			else
 			{
 				module.Name = ModuleName;
-				data.SetModule(module);
+				config.SetModule(module);
 			}
 
 			// save merged
-			Configuration.Default.Save();
-			Configuration.Default.Reset();
+			Config.Default.Save();
+			Config.Default.Reset();
 		}
 	}
 }

@@ -62,18 +62,18 @@ namespace FarNet.Works
 				Attribute.Mask = string.Empty;
 		}
 
-		internal Configuration.Editor SaveConfig()
+		internal Config.Editor SaveConfig()
 		{
 			if (_Mask == Attribute.Mask)
 				return null;
 
-			return new Configuration.Editor { Id = Id, Mask = _Mask };
+			return new Config.Editor { Id = Id, Mask = _Mask };
 		}
 
-		internal void LoadConfig(Configuration.Module moduleData)
+		internal void LoadConfig(Config.Module config)
 		{
-			Configuration.Editor data;
-			if (moduleData != null && (data = moduleData.GetEditor(Id)) != null)
+			Config.Editor data;
+			if (config != null && (data = config.GetEditor(Id)) != null)
 			{
 				_Mask = data.Mask ?? Attribute.Mask;
 			}

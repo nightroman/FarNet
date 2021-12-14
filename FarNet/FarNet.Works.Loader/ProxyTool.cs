@@ -79,18 +79,18 @@ namespace FarNet.Works
 			}
 		}
 
-		internal Configuration.Tool SaveConfig()
+		internal Config.Tool SaveConfig()
 		{
 			if (_Options == DefaultOptions)
 				return null;
 
-			return new Configuration.Tool { Id = Id, Options = ((int)_Options).ToString() };
+			return new Config.Tool { Id = Id, Options = ((int)_Options).ToString() };
 		}
 
-		internal void LoadConfig(Configuration.Module moduleData)
+		internal void LoadConfig(Config.Module config)
 		{
-			Configuration.Tool data;
-			if (moduleData != null && (data = moduleData.GetTool(Id)) != null)
+			Config.Tool data;
+			if (config != null && (data = config.GetTool(Id)) != null)
 			{
 				var options = data.Options;
 				if (options is null)

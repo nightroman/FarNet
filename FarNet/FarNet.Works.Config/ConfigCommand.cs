@@ -3,48 +3,39 @@
 // Copyright (c) Roman Kuzmin
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FarNet.Works
 {
 	public static class ConfigCommand
 	{
-		public static void Show(IList<IModuleCommand> commands, string helpTopic)
-		{
-			if (commands == null)
-				return;
+		const string HelpTopic = "configure-commands";
 
-			IMenu menu = Far.Api.CreateMenu();
+		public static void Show(List<IModuleCommand> commands)
+		{
+			var menu = Far.Api.CreateMenu();
 			menu.AutoAssignHotkeys = true;
-			menu.HelpTopic = helpTopic;
-			menu.Title = Res.ModuleCommands;
+			menu.HelpTopic = HelpTopic;
+			menu.Title = "Commands (prefix, name, module)";
 
 			for (; ; )
 			{
-				int widthName = 9; // Name
-				int widthPref = 6; // Prefix
-				foreach (IModuleCommand it in commands)
-				{
-					if (widthName < it.Name.Length)
-						widthName = it.Name.Length;
-					if (widthPref < it.Prefix.Length)
-						widthPref = it.Prefix.Length;
-				}
-				string format = "{0,-" + widthPref + "} : {1,-" + widthName + "} : {2}";
+				int max1 = commands.Max(x => x.Prefix.Length);
+				int max2 = commands.Max(x => x.Name.Length);
+				int max3 = commands.Max(x => x.Manager.ModuleName.Length);
 
 				menu.Items.Clear();
-				menu.Add(string.Format(null, format, "Prefix", "Name", "Address")).Disabled = true;
-				foreach (IModuleCommand it in commands)
-					menu.Add(string.Format(null, format, it.Prefix, it.Name, it.Manager.ModuleName + "\\" + it.Id)).Data = it;
+				foreach (var it in commands)
+					menu.Add($"{it.Prefix.PadRight(max1)} {it.Name.PadRight(max2)} {it.Manager.ModuleName.PadRight(max3)} {it.Id}").Data = it;
 
 				if (!menu.Show())
 					return;
 
-				FarItem mi = menu.Items[menu.Selected];
-				IModuleCommand command = (IModuleCommand)mi.Data;
+				var command = (IModuleCommand)menu.SelectedData;
 
-				IInputBox ib = Far.Api.CreateInputBox();
+				var ib = Far.Api.CreateInputBox();
 				ib.EmptyEnabled = true;
-				ib.HelpTopic = helpTopic;
+				ib.HelpTopic = HelpTopic;
 				ib.Prompt = "Prefix";
 				ib.Text = command.Prefix;
 				ib.Title = command.Name;
@@ -52,7 +43,7 @@ namespace FarNet.Works
 				string prefix = null;
 				while (ib.Show())
 				{
-					prefix = ib.Text.Trim();
+					prefix = ib.Text;
 					if (prefix.IndexOf(' ') >= 0 || prefix.IndexOf(':') >= 0)
 					{
 						Far.Api.Message("Prefix must not contain ' ' or ':'.");
@@ -64,9 +55,8 @@ namespace FarNet.Works
 				if (prefix == null)
 					continue;
 
-				// reset
 				command.Prefix = prefix;
-				command.Manager.SaveConfiguration();
+				command.Manager.SaveConfig();
 			}
 		}
 	}

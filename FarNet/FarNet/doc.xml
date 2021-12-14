@@ -211,34 +211,27 @@
   <ShowHelp>
     <summary>Shows the help topic from a help file.</summary>
     <param name="path">Help file location, see options.</param>
-    <param name="topic">Help topic. If this parameter is empty, then the topic "Contents" is used.</param>
+    <param name="topic">Help topic. If empty, "Contents" is used.</param>
     <param name="options">Help options describing path and topic.</param>
     <remarks>
-      This method is used in special cases when <see cref="ShowHelpTopic"/> is not enough.
       <para>
-        The <c>topic</c> parameter describes a help topic and can be in one of the following formats:
+        The <c>topic</c> formats:
       </para>
       <code>
         <![CDATA[
+"<ModulePath>Topic"
+Help files in the folder of the specified file.
+Example: "<D:\Far\FarNet\Modules\Foo\Foo.dll>Bar"
+
+"<FolderPath\>Topic"
+Help files in the specified folder.
+Example: "<D:\Far\FarNet\Modules\Foo\>Bar"
+
 "Topic"
-Reference to a topic in the help file.
+Reference to the FarNet plugin help.
 
 ":Topic"
-Reference to a topic from the main Far Manager help file.
-
-"<FullPath\>Topic"
-Reference to a topic in a help file located in a folder with full or relative
-path of FullPath. An ending backslash must be added. The reference must not be
-split on multiple lines. For example, the help file is located in the folder
-"D:\Far\FarNet\Modules\Foo" and we need the topic "FooInfo" from it:
-"<D:\Far\FarNet\Modules\Foo\>FooInfo"
-
-"<FullModuleName>Topic"
-Reference to a topic in a help file located in the same folder as the module
-with the relative or full path of FullModuleName. The reference must not be
-split on mutiple lines. For example, we need the help topic "FooInfo" from the
-help file of the module Foo "D:\Far\FarNet\Modules\Foo\Foo.dll":
-"<D:\Far\FarNet\Modules\Foo\Foo.dll>FooInfo"
+Reference to the Far Manager help.
 ]]>
       </code>
     </remarks>

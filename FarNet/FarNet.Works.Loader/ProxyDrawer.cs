@@ -84,9 +84,9 @@ namespace FarNet.Works
 				Attribute.Mask = string.Empty;
 		}
 
-		internal Configuration.Drawer SaveConfig()
+		internal Config.Drawer SaveConfig()
 		{
-			var data = new Configuration.Drawer();
+			var data = new Config.Drawer();
 			bool save = false;
 
 			if (_Mask != Attribute.Mask)
@@ -110,10 +110,10 @@ namespace FarNet.Works
 			return null;
 		}
 
-		internal void LoadConfig(Configuration.Module moduleData)
+		internal void LoadConfig(Config.Module config)
 		{
-			Configuration.Drawer data;
-			if (moduleData != null && (data = moduleData.GetDrawer(Id)) != null)
+			Config.Drawer data;
+			if (config != null && (data = config.GetDrawer(Id)) != null)
 			{
 				_Mask = data.Mask ?? Attribute.Mask;
 				_Priority = data.Priority is null ? Attribute.Priority : int.Parse(data.Priority);

@@ -56,7 +56,7 @@ namespace FarNet
 		/// </summary>
 		bool ButtonsAreVisible { get; set; }
 		/// <summary>
-		/// Gets or sets the help topic; the only supported format is "&lt;FullPath\&gt;Topic", see <see cref="IFar.ShowHelp"/>.
+		/// Gets or sets the help topic. See <see cref="IFar.ShowHelp"/>.
 		/// </summary>
 		string HelpTopic { get; set; }
 		/// <summary>

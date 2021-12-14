@@ -11,10 +11,10 @@ namespace FarNet.Works
 {
 	public static class ConfigTool
 	{
+		const string HelpTopic = "configure-tools";
+
 		public static string ValidateMask(string mask)
 		{
-			if (mask == null) throw new ArgumentNullException("mask");
-
 			mask = mask.Trim();
 			if (mask.Length == 0 || Far.Api.IsMaskValid(mask))
 				return mask;
@@ -22,69 +22,48 @@ namespace FarNet.Works
 			Far.Api.Message("Invalid Mask.");
 			return null;
 		}
-		public static void Show(IList<IModuleTool> toolsIn, string helpTopic, Func<IModuleTool, string> getMenuText)
+
+		public static void Show(List<IModuleTool> tools)
 		{
-			if (getMenuText == null)
-				throw new ArgumentNullException("getMenuText");
+			var list = tools.OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase).ToList();
 
-			var sorted = toolsIn.OrderBy(getMenuText, StringComparer.OrdinalIgnoreCase).ToList();
+			var menu = Far.Api.CreateMenu();
+			menu.AutoAssignHotkeys = true;
+			menu.HelpTopic = HelpTopic;
+			menu.Title = "Tools (name, options, module)";
 
-			IMenu menu = Far.Api.CreateMenu();
-			menu.HelpTopic = helpTopic;
-			menu.Title = Res.ModuleTools;
-
-			IModuleTool tool = null;
 			for (; ; )
 			{
-				// format
-				int widthName = 9; // Name
-				int widthAttr = 7; // Options
-				if (sorted.Count > 0)
-				{
-					widthName = Math.Max(widthName, sorted.Max(x => getMenuText(x).Length));
-					widthAttr = Math.Max(widthAttr, sorted.Max(x => x.Options.ToString().Length));
-				}
-				widthName += 3;
-				string format = "{0,-" + widthName + "} : {1,-" + widthAttr + "} : {2}";
+				int max1 = list.Max(x => x.Name.Length);
+				int max2 = list.Max(x => x.Options.ToString().Length);
+				int max3 = list.Max(x => x.Manager.ModuleName.Length);
 
-				// refill
 				menu.Items.Clear();
-				menu.Add(string.Format(null, format, "Title", "Options", "Address")).Disabled = true;
-				foreach (IModuleTool it in sorted)
-				{
-					// 1) restore the current item, its index vary due to sorting with new hotkeys
-					if (tool != null && it == tool)
-						menu.Selected = menu.Items.Count;
+				foreach (var it in list)
+					menu.Add($"{it.Name.PadRight(max1)} {it.Options.ToString().PadRight(max2)} {it.Manager.ModuleName.PadRight(max3)} {it.Id}").Data = it;
 
-					// 2) add the item
-					menu.Add(string.Format(null, format, getMenuText(it), it.Options, it.Manager.ModuleName + "\\" + it.Id)).Data = it;
-				}
-
-				// show
 				if (!menu.Show())
 					return;
 
-				// the tool
-				tool = (IModuleTool)menu.SelectedData;
+				var tool = (IModuleTool)menu.SelectedData;
 
-				// dialog
-				IDialog dialog = Far.Api.CreateDialog(-1, -1, 77, 12);
-				dialog.HelpTopic = helpTopic;
+				var dialog = Far.Api.CreateDialog(-1, -1, 77, 12);
+				dialog.HelpTopic = HelpTopic;
 				dialog.AddBox(3, 1, 0, 0, tool.Name);
 
-				ModuleToolOptions defaultOptions = tool.DefaultOptions;
-				ModuleToolOptions currentOptions = tool.Options;
+				var defaultOptions = tool.DefaultOptions;
+				var currentOptions = tool.Options;
 
-				ICheckBox cbPanels = AddOption(dialog, "&Panels", ModuleToolOptions.Panels, defaultOptions, currentOptions);
-				ICheckBox cbEditor = AddOption(dialog, "&Editor", ModuleToolOptions.Editor, defaultOptions, currentOptions);
-				ICheckBox cbViewer = AddOption(dialog, "&Viewer", ModuleToolOptions.Viewer, defaultOptions, currentOptions);
-				ICheckBox cbDialog = AddOption(dialog, "&Dialog", ModuleToolOptions.Dialog, defaultOptions, currentOptions);
-				ICheckBox cbConfig = AddOption(dialog, "&Config", ModuleToolOptions.Config, defaultOptions, currentOptions);
-				ICheckBox cbDisk = AddOption(dialog, "Dis&k", ModuleToolOptions.Disk, defaultOptions, currentOptions);
+				var cbPanels = AddOption(dialog, "&Panels", ModuleToolOptions.Panels, defaultOptions, currentOptions);
+				var cbEditor = AddOption(dialog, "&Editor", ModuleToolOptions.Editor, defaultOptions, currentOptions);
+				var cbViewer = AddOption(dialog, "&Viewer", ModuleToolOptions.Viewer, defaultOptions, currentOptions);
+				var cbDialog = AddOption(dialog, "&Dialog", ModuleToolOptions.Dialog, defaultOptions, currentOptions);
+				var cbConfig = AddOption(dialog, "&Config", ModuleToolOptions.Config, defaultOptions, currentOptions);
+				var cbDisk = AddOption(dialog, "Dis&k", ModuleToolOptions.Disk, defaultOptions, currentOptions);
 
 				dialog.AddText(5, -1, 0, string.Empty).Separator = 1;
 
-				IButton buttonOK = dialog.AddButton(0, -1, "Ok");
+				var buttonOK = dialog.AddButton(0, -1, "Ok");
 				buttonOK.CenterGroup = true;
 				dialog.Default = buttonOK;
 				dialog.Cancel = dialog.AddButton(0, 0, "Cancel");
@@ -93,8 +72,7 @@ namespace FarNet.Works
 				if (!dialog.Show())
 					continue;
 
-				// new options
-				ModuleToolOptions newOptions = ModuleToolOptions.None;
+				var newOptions = ModuleToolOptions.None;
 				if (cbPanels.Selected > 0) newOptions |= ModuleToolOptions.Panels;
 				if (cbEditor.Selected > 0) newOptions |= ModuleToolOptions.Editor;
 				if (cbViewer.Selected > 0) newOptions |= ModuleToolOptions.Viewer;
@@ -103,12 +81,13 @@ namespace FarNet.Works
 				if (cbDisk.Selected > 0) newOptions |= ModuleToolOptions.Disk;
 				
 				tool.Options = newOptions;
-				tool.Manager.SaveConfiguration();
+				tool.Manager.SaveConfig();
 			}
 		}
+
 		static ICheckBox AddOption(IDialog dialog, string text, ModuleToolOptions option, ModuleToolOptions defaultOptions, ModuleToolOptions currentOptions)
 		{
-			ICheckBox result = dialog.AddCheckBox(5, -1, text);
+			var result = dialog.AddCheckBox(5, -1, text);
 			if (0 == (option & defaultOptions))
 				result.Disabled = true;
 			else if (0 != (option & currentOptions))

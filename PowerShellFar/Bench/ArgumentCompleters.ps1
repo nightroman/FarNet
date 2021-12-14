@@ -85,7 +85,7 @@ Register-ResultCompleter {
 	### .WORD[Tab] -> Equals, GetType, ToString
 	param($result, $ast, $tokens, $positionOfCursor, $options)
 
-	if ("$ast".Substring($result.ReplacementIndex, $result.ReplacementLength) -notmatch '(^.*\.)(\w*)$') {
+	if ("$ast".Substring($result.ReplacementIndex, $result.ReplacementLength) -notmatch '(^.*?\.)(\w*)$') {
 		return
 	}
 
@@ -110,7 +110,7 @@ Register-ResultCompleter {
 	}
 
 	# WORD=?
-	if ("$ast".Substring($result.ReplacementIndex, $result.ReplacementLength) -notmatch '(^.*)=$') {
+	if ("$ast".Substring($result.ReplacementIndex, $result.ReplacementLength) -notmatch '(^.*?)=$') {
 		return
 	}
 
@@ -136,7 +136,7 @@ Register-ResultCompleter {
 	}
 
 	# WORD#?
-	if ("$ast".Substring($result.ReplacementIndex, $result.ReplacementLength) -notmatch '(^.*)#$') {
+	if ("$ast".Substring($result.ReplacementIndex, $result.ReplacementLength) -notmatch '(^.*?)#$') {
 		return
 	}
 

@@ -9,25 +9,21 @@ namespace FarNet.Works
 {
 	public static class ConfigDrawer
 	{
-		public static void Show(IList<IModuleDrawer> drawers, string helpTopic)
+		internal const string HelpTopic = "configure-drawers";
+
+		public static void Show(List<IModuleDrawer> drawers)
 		{
-			if (drawers == null)
-				return;
-
-			IMenu menu = Far.Api.CreateMenu();
+			var menu = Far.Api.CreateMenu();
 			menu.AutoAssignHotkeys = true;
-			menu.HelpTopic = helpTopic;
-			menu.Title = Res.ModuleDrawers;
-
-			foreach (IModuleDrawer it in drawers)
-				menu.Add(Utility.FormatConfigMenu(it)).Data = it;
+			menu.HelpTopic = HelpTopic;
+			menu.Title = "Drawers";
+			menu.AddSimpleConfigItems(drawers);
 
 			while (menu.Show())
 			{
-				FarItem mi = menu.Items[menu.Selected];
-				IModuleDrawer drawer = (IModuleDrawer)mi.Data;
+				var drawer = (IModuleDrawer)menu.Items[menu.Selected].Data;
 
-				var dialog = new ConfigDrawerDialog(drawer, helpTopic);
+				var dialog = new ConfigDrawerDialog(drawer);
 				while (dialog.Dialog.Show())
 				{
 					var mask = ConfigTool.ValidateMask(dialog.Mask.Text);
@@ -41,10 +37,9 @@ namespace FarNet.Works
 						continue;
 					}
 
-					// set
 					drawer.Mask = mask;
 					drawer.Priority = priority;
-					drawer.Manager.SaveConfiguration();
+					drawer.Manager.SaveConfig();
 					break;
 				}
 			}
@@ -56,10 +51,10 @@ namespace FarNet.Works
 		public IDialog Dialog;
 		public IEdit Mask;
 		public IEdit Priority;
-		public ConfigDrawerDialog(IModuleDrawer drawer, string helpTopic)
+		public ConfigDrawerDialog(IModuleDrawer drawer)
 		{
 			Dialog = Far.Api.CreateDialog(-1, -1, 77, 8);
-			Dialog.HelpTopic = helpTopic;
+			Dialog.HelpTopic = ConfigDrawer.HelpTopic;
 
 			// Box
 			Dialog.AddBox(3, 1, 0, 0, drawer.Name);
@@ -71,14 +66,14 @@ namespace FarNet.Works
 
 			// Priority
 			Dialog.AddText(5, -1, 0, "&Priority");
-			Priority = Dialog.AddEdit(x, 0, 71, string.Format(null, "{0}", drawer.Priority));
+			Priority = Dialog.AddEdit(x, 0, 71, drawer.Priority.ToString());
 
 			Dialog.AddText(5, -1, 0, string.Empty).Separator = 1;
 
-			IButton buttonOK = Dialog.AddButton(0, -1, "Ok");
+			var buttonOK = Dialog.AddButton(0, -1, "Ok");
 			buttonOK.CenterGroup = true;
 
-			IButton buttonCancel = Dialog.AddButton(0, 0, "Cancel");
+			var buttonCancel = Dialog.AddButton(0, 0, "Cancel");
 			buttonCancel.CenterGroup = true;
 		}
 	}

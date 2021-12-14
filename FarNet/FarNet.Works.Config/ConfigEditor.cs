@@ -6,37 +6,25 @@ using System.Collections.Generic;
 
 namespace FarNet.Works
 {
-	static class Utility
-	{
-		internal static string FormatConfigMenu(IModuleAction action)
-		{
-			return string.Format(null, "{0} {1}\\{2}", action.Name, action.Manager.ModuleName, action.Id);
-		}
-	}
-
 	public static class ConfigEditor
 	{
-		public static void Show(IList<IModuleEditor> editors, string helpTopic)
+		const string HelpTopic = "configure-editors";
+
+		public static void Show(List<IModuleEditor> editors)
 		{
-			if (editors == null)
-				return;
-
-			IMenu menu = Far.Api.CreateMenu();
+			var menu = Far.Api.CreateMenu();
 			menu.AutoAssignHotkeys = true;
-			menu.HelpTopic = helpTopic;
-			menu.Title = Res.ModuleEditors;
-
-			foreach (IModuleEditor it in editors)
-				menu.Add(Utility.FormatConfigMenu(it)).Data = it;
+			menu.HelpTopic = HelpTopic;
+			menu.Title = "Editors";
+			menu.AddSimpleConfigItems(editors);
 
 			while (menu.Show())
 			{
-				FarItem mi = menu.Items[menu.Selected];
-				IModuleEditor editor = (IModuleEditor)mi.Data;
+				var editor = (IModuleEditor)menu.Items[menu.Selected].Data;
 
-				IInputBox ib = Far.Api.CreateInputBox();
+				var ib = Far.Api.CreateInputBox();
 				ib.EmptyEnabled = true;
-				ib.HelpTopic = helpTopic;
+				ib.HelpTopic = HelpTopic;
 				ib.History = "Masks";
 				ib.Prompt = "Mask";
 				ib.Text = editor.Mask;
@@ -48,9 +36,8 @@ namespace FarNet.Works
 				if (mask == null)
 					continue;
 
-				// set
 				editor.Mask = mask;
-				editor.Manager.SaveConfiguration();
+				editor.Manager.SaveConfig();
 			}
 		}
 	}

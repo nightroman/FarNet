@@ -287,7 +287,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 			for(int i = _toolConfig->Length; --i >= 0;)
 			{
 				guids[i + 1] = ToGUID(_toolConfig[i]->Id);
-				strings[i + 1] = NewChars(GetMenuText(_toolConfig[i]));
+				strings[i + 1] = NewChars(_toolConfig[i]->Name);
 			}
 		}
 		pi->PluginConfig = _Config;
@@ -315,7 +315,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 				for(int i = _toolDialog->Length; --i >= 0;)
 				{
 					guids[i + 1] = ToGUID(_toolDialog[i]->Id);
-					strings[i + 1] = NewChars(GetMenuText(_toolDialog[i]));
+					strings[i + 1] = NewChars(_toolDialog[i]->Name);
 				}
 			}
 			pi->PluginMenu = _Dialog;
@@ -339,7 +339,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 				for(int i = _toolEditor->Length; --i >= 0;)
 				{
 					guids[i + 1] = ToGUID(_toolEditor[i]->Id);
-					strings[i + 1] = NewChars(GetMenuText(_toolEditor[i]));
+					strings[i + 1] = NewChars(_toolEditor[i]->Name);
 				}
 			}
 			pi->PluginMenu = _Editor;
@@ -363,7 +363,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 				for(int i = _toolViewer->Length; --i >= 0;)
 				{
 					guids[i + 1] = ToGUID(_toolViewer[i]->Id);
-					strings[i + 1] = NewChars(GetMenuText(_toolViewer[i]));
+					strings[i + 1] = NewChars(_toolViewer[i]->Name);
 				}
 			}
 			pi->PluginMenu = _Viewer;
@@ -388,7 +388,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 				for(int i = _toolPanels->Length; --i >= 0;)
 				{
 					guids[i + 1] = ToGUID(_toolPanels[i]->Id);
-					strings[i + 1] = NewChars(GetMenuText(_toolPanels[i]));
+					strings[i + 1] = NewChars(_toolPanels[i]->Name);
 				}
 			}
 			pi->PluginMenu = _Panels;
@@ -621,22 +621,22 @@ void Far0::OpenConfig() //config//
 		{
 		case 0:
 			if (_registeredCommand.Count)
-				Works::ConfigCommand::Show(%_registeredCommand, Far0::HelpTopic() + "configure-commands");
+				Works::ConfigCommand::Show(%_registeredCommand);
 			break;
 		case 1:
 			if (_registeredDrawer.Count)
-				Works::ConfigDrawer::Show(%_registeredDrawer, Far0::HelpTopic() + "configure-drawers");
+				Works::ConfigDrawer::Show(%_registeredDrawer);
 			break;
 		case 2:
 			if (_registeredEditor.Count)
-				Works::ConfigEditor::Show(%_registeredEditor, Far0::HelpTopic() + "configure-editors");
+				Works::ConfigEditor::Show(%_registeredEditor);
 			break;
 		case 3:
 			if (tools->Count)
-				Works::ConfigTool::Show(tools, Far0::HelpTopic() + "configure-tools", gcnew Func<IModuleTool^, String^>(&Far0::GetMenuText));
+				Works::ConfigTool::Show(tools);
 			break;
 		case 5: // +2, mind separator
-			Works::ConfigUICulture::Show(Works::ModuleLoader::GatherModuleManagers(), Far0::HelpTopic() + "module-ui-culture");
+			Works::ConfigUICulture::Show(Works::ModuleLoader::GatherModuleManagers());
 			break;
 		}
 	}
@@ -768,11 +768,6 @@ void Far0::InvalidateProxyCommand()
 	_prefixes = 0;
 }
 
-String^ Far0::GetMenuText(IModuleTool^ tool)
-{
-	return tool->Name;
-}
-
 void Far0::ShowMenu(ModuleToolOptions from)
 {
 	String^ sPanels = "&Panels";
@@ -812,7 +807,7 @@ void Far0::ShowMenu(ModuleToolOptions from)
 	String^ text = menu->Items[menu->Selected]->Text;
 
 	if (Object::ReferenceEquals(text, sSettings))
-		Works::Config::SettingsUI::ShowSettings(Works::ModuleLoader::GatherModuleManagers());
+		Works::SettingsUI::ShowSettings(Works::ModuleLoader::GatherModuleManagers());
 	else if (Object::ReferenceEquals(text, sPanels))
 		Works::PanelTools::ShowPanelsMenu();
 	else if (Object::ReferenceEquals(text, sEditors))
