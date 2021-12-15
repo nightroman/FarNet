@@ -301,33 +301,25 @@ namespace FarNet
 
 	/// <summary>
 	/// Filter pattern options.
-	/// All combinations are allowed though normally you have to set one and only of
-	/// <see cref="Regex"/>, <see cref="Prefix"/> or <see cref="Substring"/>.
 	/// </summary>
 	[Flags]
 	public enum PatternOptions
 	{
 		/// <summary>
-		/// None. Usually it means that filter is not enabled.
+		/// No filter.
 		/// </summary>
 		None,
 		/// <summary>
-		/// Regular expression with forms: <c>standard</c> | <c>?prefix</c> | <c>*substring</c>.
-		/// In prefix and substring forms * and ? are wildcards if <see cref="Literal"/> is not set,
-		/// otherwise prefix and substring are exact string parts.
-		/// </summary>
-		Regex = 1,
-		/// <summary>
-		/// Prefix pattern, * and ? are wildcards if <see cref="Literal"/> is not set.
+		/// Prefix pattern.
 		/// </summary>
 		Prefix = 2,
 		/// <summary>
-		/// Substring pattern, * and ? are wildcards if <see cref="Literal"/> is not set.
+		/// Substring pattern.
 		/// </summary>
 		Substring = 4,
 		/// <summary>
-		/// All filter symbols including * and ? are literal.
-		/// Should be used with one of <see cref="Regex"/>, <see cref="Prefix"/> or <see cref="Substring"/>.
+		/// Used with <see cref="Prefix"/> or <see cref="Substring"/>
+		/// to treat all filter symbols literally, including '*'.
 		/// </summary>
 		Literal = 8
 	}

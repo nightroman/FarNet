@@ -471,8 +471,8 @@ Actual keys and actions depend on a context.
 
 **Incremental filter**
 
-Incremental filter is applied immediately on typing (if incremental filtering
-is enabled). By default symbols * and ? are wildcards.
+Incremental filter, if enabled, is applied immediately on typing.
+By default * is wildcard.
 
 - `[BS]`
 

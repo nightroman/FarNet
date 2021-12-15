@@ -14,7 +14,7 @@ namespace FarNet.Works
 		IListBox _box;
 		// Original user defined filter
 		string _Incremental_;
-		PatternOptions _IncrementalOptions;
+
 		// Currently used filter
 		string _filter;
 		// To update the filter
@@ -30,21 +30,11 @@ namespace FarNet.Works
 		public bool UsualMargins { get; set; }
 		public int ScreenMargin { get; set; }
 		public Guid TypeId { get; set; }
-
-		public PatternOptions IncrementalOptions
-		{
-			get { return _IncrementalOptions; }
-			set
-			{
-				if ((value & PatternOptions.Regex) != 0)
-					throw new ArgumentException("Incremental filter can not be 'Regex'.");
-				_IncrementalOptions = value;
-			}
-		}
+		public PatternOptions IncrementalOptions { get; set; }
 
 		public string Incremental
 		{
-			get { return _Incremental_; }
+			get => _Incremental_;
 			set
 			{
 				_Incremental_ = value ?? throw new ArgumentNullException("value");
@@ -60,7 +50,7 @@ namespace FarNet.Works
 			TypeId = new Guid("01a43865-b81d-4bca-b3a4-a9ae4f9f7b55");
 		}
 
-		// Simple wildcard (* and ?)
+		// Simple wildcard (*)
 		static string Wildcard(string pattern)
 		{
 			pattern = Regex.Escape(pattern);
@@ -70,9 +60,7 @@ namespace FarNet.Works
 					continue;
 
 				if (pattern[i + 1] == '*')
-					pattern = pattern.Substring(0, i) + ".*" + pattern.Substring(i + 2);
-				if (pattern[i + 1] == '?')
-					pattern = pattern.Substring(0, i) + ".?" + pattern.Substring(i + 2);
+					pattern = pattern.Substring(0, i) + ".*?" + pattern.Substring(i + 2);
 				else
 					++i;
 			}
@@ -84,53 +72,13 @@ namespace FarNet.Works
 			if (string.IsNullOrEmpty(pattern) || options == 0)
 				return null;
 
-			// regex?
-			if ((options & PatternOptions.Regex) != 0)
-			{
-				try
-				{
-					if (pattern.StartsWith("?"))
-					{
-						// prefix
-						if (pattern.Length <= 1)
-							return null;
-
-						pattern = pattern.Substring(1);
-						options |= PatternOptions.Prefix;
-					}
-					else if (pattern.StartsWith("*"))
-					{
-						// substring
-						if (pattern.Length <= 1)
-							return null;
-
-						pattern = pattern.Substring(1);
-						options |= PatternOptions.Substring;
-					}
-					else
-					{
-						//! standard regex; errors may come here
-						return new Regex(pattern, RegexOptions.IgnoreCase);
-					}
-				}
-				catch (ArgumentException)
-				{
-					return null;
-				}
-			}
-
 			// literal else wildcard
-			string re;
-			if ((options & PatternOptions.Literal) != 0)
-				re = Regex.Escape(pattern);
-			else
-				re = Wildcard(pattern);
+			string re = (options & PatternOptions.Literal) != 0 ? Regex.Escape(pattern) : Wildcard(pattern);
 
 			// prefix?
 			if ((options & PatternOptions.Prefix) != 0)
 				re = "^" + re;
 
-			//! normally errors must not come here
 			return new Regex(re, RegexOptions.IgnoreCase);
 		}
 
@@ -374,8 +322,8 @@ namespace FarNet.Works
 					char c = _filter[_filter.Length - 1];
 					_filter = _filter.Substring(0, _filter.Length - 1);
 					_re = null;
-					// * and ?
-					if (0 == (IncrementalOptions & PatternOptions.Literal) && (c == '*' || c == '?'))
+					// '*'
+					if (0 == (IncrementalOptions & PatternOptions.Literal) && c == '*')
 					{
 						// update title/bottom
 						GetInfo(out string t, out string b);
