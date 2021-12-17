@@ -13,7 +13,7 @@ namespace FarNet.Vessel
 	public class Actor
 	{
 		readonly static TimeSpan _smallSpan = TimeSpan.FromSeconds(3);
-		readonly int _mode;
+		readonly Mode _mode;
 		readonly int _limit0;
 		readonly string _store;
 		readonly StringComparer _comparer;
@@ -23,37 +23,37 @@ namespace FarNet.Vessel
 		/// <summary>
 		/// Creates the instance with data from the default storage.
 		/// </summary>
-		public Actor(int mode) : this(mode, null) { }
+		public Actor(Mode mode) : this(mode, null) { }
 		/// <summary>
 		/// Creates the instance with data ready for analyses.
 		/// </summary>
 		/// <param name="mode">History (0) or Folders (1).</param>
 		/// <param name="store">The store path. Empty/null is the default.</param>
 		/// <param name="noHistory">Tells to exclude Far folder history.</param>
-		public Actor(int mode, string store, bool noHistory = false)
+		public Actor(Mode mode, string store, bool noHistory = false)
 		{
-			switch(mode)
+			switch (mode)
 			{
-				case 0:
+				case Mode.File:
 					_comparer = StringComparer.OrdinalIgnoreCase;
 					_comparisonType = StringComparison.OrdinalIgnoreCase;
 					break;
-				case 1:
+				case Mode.Folder:
 					_comparer = StringComparer.OrdinalIgnoreCase;
 					_comparisonType = StringComparison.OrdinalIgnoreCase;
 					break;
-				case 2:
+				case Mode.Command:
 					_comparer = StringComparer.Ordinal;
 					_comparisonType = StringComparison.Ordinal;
 					break;
 				default:
-					throw new ArgumentException("Invalid mode.", "mode");
+					throw new ArgumentException("Invalid mode.", nameof(mode));
 			}
 
 			var sets = Settings.Default.GetData();
 
 			_mode = mode;
-			_store = store ?? VesselHost.LogPath[mode];
+			_store = store ?? VesselHost.LogPath[(int)mode];
 			_limit0 = sets.Limit0;
 			_records = Store.Read(_store).ToList();
 
@@ -69,27 +69,27 @@ namespace FarNet.Vessel
 					_latestRecords[record.Path] = record;
 
 				var args = new GetHistoryArgs() { Last = sets.MaximumFileCountFromFar };
-				if (mode == 0)
+				switch (mode)
 				{
-					// add missing and later records from Far editor history
-					args.Kind = HistoryKind.Editor;
-					AddFarHistory(args);
+					case Mode.File:
+						// add missing and later records from Far editor history
+						args.Kind = HistoryKind.Editor;
+						AddFarHistory(args);
 
-					// add missing and later records from Far viewer history
-					args.Kind = HistoryKind.Viewer;
-					AddFarHistory(args);
-				}
-				else if (mode == 1)
-				{
-					// add missing and later records from Far folder history
-					args.Kind = HistoryKind.Folder;
-					AddFarHistory(args);
-				}
-				else
-				{
-					// add missing and later records from Far command history
-					args.Kind = HistoryKind.Command;
-					AddFarHistory(args);
+						// add missing and later records from Far viewer history
+						args.Kind = HistoryKind.Viewer;
+						AddFarHistory(args);
+						break;
+					case Mode.Folder:
+						// add missing and later records from Far folder history
+						args.Kind = HistoryKind.Folder;
+						AddFarHistory(args);
+						break;
+					case Mode.Command:
+						// add missing and later records from Far command history
+						args.Kind = HistoryKind.Command;
+						AddFarHistory(args);
+						break;
 				}
 			}
 
@@ -330,12 +330,18 @@ namespace FarNet.Vessel
 
 			var workings = new Workings();
 			var works = workings.GetData();
-			if (_mode == 0)
-				works.LastUpdateTime1 = now;
-			else if (_mode == 1)
-				works.LastUpdateTime2 = now;
-			else
-				works.LastUpdateTime3 = now;
+			switch (_mode)
+			{
+				case Mode.File:
+					works.LastUpdateTime1 = now;
+					break;
+				case Mode.Folder:
+					works.LastUpdateTime2 = now;
+					break;
+				case Mode.Command:
+					works.LastUpdateTime3 = now;
+					break;
+			}
 			workings.Save();
 
 			int recordCount = _records.Count;
@@ -345,13 +351,13 @@ namespace FarNet.Vessel
 
 			// step: remove missing files from infos and records
 			int missingFiles = 0;
-			if (_mode == 0 || _mode == 1)
+			if (_mode == Mode.File || _mode == Mode.Folder)
 			{
 				foreach (var path in infos.Select(x => x.Path).ToArray())
 				{
 					try
 					{
-						if (_mode == 0)
+						if (_mode == Mode.File)
 						{
 							if (File.Exists(path))
 								continue;

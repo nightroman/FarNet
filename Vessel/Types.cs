@@ -9,6 +9,13 @@ using System.Collections.Generic;
 
 namespace FarNet.Vessel
 {
+	public enum Mode
+	{
+		File,
+		Folder,
+		Command
+	}
+
 	public class Record
 	{
 		internal const string NOOP = "";
@@ -31,6 +38,7 @@ namespace FarNet.Vessel
 			What = AGED;
 		}
 	}
+
 	public class Result
 	{
 		public int UpCount { get; set; }
@@ -47,10 +55,12 @@ namespace FarNet.Vessel
 			}
 		}
 	}
+
 	public static class Logger
 	{
 		public static TraceSource Source { get; } = new TraceSource(My.Name, SourceLevels.All);
 	}
+
 	static class Mat
 	{
 		/// <summary>
@@ -72,12 +82,14 @@ namespace FarNet.Vessel
 			return result;
 		}
 	}
+
 	public class SpanSet
 	{
 		readonly int[] _Spans = new int[Info.SpanCount];
 		public IList<int> Spans { get { return _Spans; } }
 		internal DateTime Time { get; set; }
 	}
+
 	static class Lua
 	{
 		public static string StringLiteral(string value)
@@ -86,6 +98,7 @@ namespace FarNet.Vessel
 			return $"'{value}'";
 		}
 	}
+
 	static class My
 	{
 		public const string Name = "Vessel";

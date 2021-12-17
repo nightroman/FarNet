@@ -19,13 +19,13 @@ namespace FarNet.Vessel
 			menu.HelpTopic = My.HelpTopic("menu-commands");
 			menu.Add("&1. Smart history").Click += delegate { ShowHistory(); };
 			menu.Add("&2. Smart folders").Click += delegate { ShowFolders(); };
-			menu.Add("&3. Train history").Click += delegate { Train(0); };
-			menu.Add("&4. Train folders").Click += delegate { Train(1); };
-			menu.Add("&5. Update history").Click += delegate { Update(0); };
-			menu.Add("&6. Update folders").Click += delegate { Update(1); };
+			menu.Add("&3. Train history").Click += delegate { Train(Mode.File); };
+			menu.Add("&4. Train folders").Click += delegate { Train(Mode.Folder); };
+			menu.Add("&5. Update history").Click += delegate { Update(Mode.File); };
+			menu.Add("&6. Update folders").Click += delegate { Update(Mode.Folder); };
 			menu.Add("&7. Smart commands").Click += delegate { ShowCommands(); };
-			menu.Add("&8. Train commands").Click += delegate { Train(2); };
-			menu.Add("&9. Update commands").Click += delegate { Update(2); };
+			menu.Add("&8. Train commands").Click += delegate { Train(Mode.Command); };
+			menu.Add("&9. Update commands").Click += delegate { Update(Mode.Command); };
 
 			menu.Show();
 		}
@@ -49,7 +49,7 @@ Gain/item  : {5,8:n2}
  result.Average);
 		}
 
-		static void Train(int mode)
+		static void Train(Mode mode)
 		{
 			// train/save
 			var algo = new Actor(mode);
@@ -60,10 +60,10 @@ Gain/item  : {5,8:n2}
 			Far.Api.Message(report, "Training results", MessageOptions.LeftAligned);
 		}
 
-		static void Update(int mode)
+		static void Update(Mode mode)
 		{
 			// update
-			var algo = new Actor(mode, VesselHost.LogPath[mode], true);
+			var algo = new Actor(mode, VesselHost.LogPath[(int)mode], true);
 			var text = algo.Update();
 
 			// show update info
@@ -72,14 +72,14 @@ Gain/item  : {5,8:n2}
 
 		static void UpdateWork(object state)
 		{
-			int mode = (int)state;
+			var mode = (Mode)state;
 
 			// update
-			var algo = new Actor(mode, VesselHost.LogPath[mode], true);
+			var algo = new Actor(mode, VesselHost.LogPath[(int)mode], true);
 			algo.Update();
 		}
 
-		static void UpdatePeriodically(int mode)
+		static void UpdatePeriodically(Mode mode)
 		{
 			var sets = Settings.Default.GetData();
 			var workings = new Workings();
@@ -87,20 +87,37 @@ Gain/item  : {5,8:n2}
 			var now = DateTime.Now;
 
 			// skip recently updated
-			var lastUpdateTime =
-				mode == 0 ? works.LastUpdateTime1 :
-				mode == 1 ? works.LastUpdateTime2 :
-				works.LastUpdateTime3;
+			DateTime lastUpdateTime;
+			switch (mode)
+			{
+				case Mode.File:
+					lastUpdateTime = works.LastUpdateTime1;
+					break;
+				case Mode.Folder:
+					lastUpdateTime = works.LastUpdateTime2;
+					break;
+				case Mode.Command:
+					lastUpdateTime = works.LastUpdateTime3;
+					break;
+				default:
+					throw new Exception();
+			}
 			if ((now - lastUpdateTime).TotalHours < sets.Limit0)
 				return;
 
 			// save new last update time
-			if (mode == 0)
-				works.LastUpdateTime1 = now;
-			else if (mode == 1)
-				works.LastUpdateTime2 = now;
-			else
-				works.LastUpdateTime3 = now;
+			switch (mode)
+			{
+				case Mode.File:
+					works.LastUpdateTime1 = now;
+					break;
+				case Mode.Folder:
+					works.LastUpdateTime2 = now;
+					break;
+				case Mode.Command:
+					works.LastUpdateTime3 = now;
+					break;
+			}
 			workings.Save();
 
 			// start work
@@ -120,8 +137,8 @@ Gain/item  : {5,8:n2}
 		{
 			var sets = Settings.Default.GetData();
 
-			var mode = 0;
-			var store = VesselHost.LogPath[mode];
+			var mode = Mode.File;
+			var store = VesselHost.LogPath[(int)mode];
 			var limit = sets.Limit0;
 
 			var menu = CreateListMenu();
@@ -271,8 +288,8 @@ Gain/item  : {5,8:n2}
 		{
 			var sets = Settings.Default.GetData();
 
-			var mode = 1;
-			var store = VesselHost.LogPath[mode];
+			var mode = Mode.Folder;
+			var store = VesselHost.LogPath[(int)mode];
 			var limit = sets.Limit0;
 
 			var menu = CreateListMenu();
@@ -369,8 +386,8 @@ Gain/item  : {5,8:n2}
 		{
 			var sets = Settings.Default.GetData();
 
-			var mode = 2;
-			var store = VesselHost.LogPath[mode];
+			var mode = Mode.Command;
+			var store = VesselHost.LogPath[(int)mode];
 			var limit = sets.Limit0;
 
 			var menu = CreateListMenu();
