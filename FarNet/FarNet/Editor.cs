@@ -749,17 +749,6 @@ namespace FarNet
 		public Hashtable Data { get { return _Data ?? (_Data = new Hashtable()); } }
 		Hashtable _Data;
 		/// <summary>
-		/// OBSOLETE: use <see cref="GetColors(int, List{EditorColorInfo})"/>.
-		/// </summary>
-		/// <param name="line">.</param>
-		[Obsolete("Use GetColors(int, List).")]
-		public IList<EditorColorInfo> GetColors(int line)
-		{
-			var colors = new List<EditorColorInfo>();
-			GetColors(line, colors);
-			return colors;
-		}
-		/// <summary>
 		/// Collects color spans of the specified line.
 		/// </summary>
 		/// <param name="line">Index of the line.</param>

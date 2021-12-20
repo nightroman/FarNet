@@ -1,7 +1,9 @@
 https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
-Deprecated IList IEditor.GetColors(int) will be removed in the next update.
+= 5.7.3 =
+
+Removed deprecated IEditor.GetColors().
 
 = 5.7.2 =
 
