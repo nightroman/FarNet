@@ -41,6 +41,7 @@ namespace FarNet.Drawer
 				return;
 
 			var word = match.Value;
+			var caret = editor.Caret;
 
 			// color occurrences
 			var colors = new List<EditorColorInfo>();
@@ -51,20 +52,32 @@ namespace FarNet.Drawer
 				if (text.Length == 0 || text.IndexOf(word, StringComparison.OrdinalIgnoreCase) < 0)
 					continue;
 
+				// find line words
 				match = regex.Match(text);
 				if (!match.Success)
 					continue;
 
+				// get original colors
 				if (hasColorer)
 					editor.GetColors(line.Index, colors);
 
+				// line word matches
 				for (; match.Success; match = match.NextMatch())
 				{
+					// skip different words
 					if (!match.Value.Equals(word, StringComparison.OrdinalIgnoreCase))
 						continue;
 
+					// the match position
 					var myStart = match.Index;
 					var myEnd = match.Index + match.Length;
+
+					// skip current word at the caret
+					if (sets.ExcludeCurrent && line.Index == caret.Y)
+					{
+						if (caret.X >= myStart && caret.X <= myEnd)
+							continue;
+					}
 
 					if (hasColorer)
 					{

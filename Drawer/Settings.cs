@@ -27,6 +27,8 @@ namespace FarNet.Drawer
 		{
 			public XmlCData WordRegex { get; set; } = @"\w[-\w]*";
 
+			public bool ExcludeCurrent { get; set; }
+
 			public ConsoleColor ColorForeground { get; set; } = ConsoleColor.Black;
 
 			public ConsoleColor ColorBackground { get; set; } = ConsoleColor.Gray;

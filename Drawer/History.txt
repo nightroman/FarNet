@@ -1,5 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet.Drawer
 
+= 1.2.3 =
+
+CurrentWordDrawer:
+- New setting ExcludeCurrent, to exclude the word at the caret.
+
 = 1.2.2 =
 
 Requires FarNet 5.7.1
