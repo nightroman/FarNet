@@ -341,7 +341,7 @@ namespace FarNet.Works
 			{
 				// char or paste
 				var append = string.Empty;
-				if (e.Key.Character > ' ')
+				if (e.Key.Character >= ' ')
 				{
 					append = e.Key.Character.ToString();
 				}

@@ -3,7 +3,8 @@ Far Manager 3.0.5505
 
 = 5.7.3 =
 
-Removed deprecated IEditor.GetColors().
+- Removed deprecated IEditor.GetColors().
+- Fixed ignored space in list menus.
 
 = 5.7.2 =
 
