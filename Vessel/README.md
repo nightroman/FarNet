@@ -1,4 +1,5 @@
 [Contents]: #vessel
+[List menu keys]: https://github.com/nightroman/FarNet/tree/master/FarNet#list-menu
 
 # Vessel
 
@@ -184,6 +185,8 @@ Keys and actions:
 
     Removes the current file from history.
 
+- [List menu keys]
+
 *********************************************************************
 ## Folder history
 
@@ -205,6 +208,8 @@ Keys and actions:
 - `[ShiftDel]` (Panels)
 
     Removes the current folder from history.
+
+- [List menu keys]
 
 *********************************************************************
 
@@ -232,5 +237,7 @@ Keys and actions:
 - `[ShiftDel]` (Panels)
 
     Removes the current command from history.
+
+- [List menu keys]
 
 *********************************************************************

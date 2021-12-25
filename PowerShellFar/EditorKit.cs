@@ -24,15 +24,13 @@ namespace PowerShellFar
 	{
 		const string CompletionText = "CompletionText";
 		const string ListItemText = "ListItemText";
-		/*
-		V3 completion. CompletionText is used in lists for:
-		Command - avoid two Get-History -> Get-History, Microsoft.PowerShell.Core\Get-History
-		ProviderItem - avoid two Test-Far.ps1 -> .\Test-Far.ps1, Test-Far.ps1
-		ProviderContainer - for consistency with ProviderItem
-
-		//! `@args` instead `param($inputScript, $cursorColumn)` to avoid visible variables.
-		*/
-		const string CallTabExpansionV3 = @"
+		// CompletionText is used for:
+		// - Command, to avoid two Get-History -> Get-History, Microsoft.PowerShell.Core\Get-History
+		// - ProviderItem, to avoid two Test-Far.ps1 -> .\Test-Far.ps1, Test-Far.ps1
+		// - ProviderContainer, for consistency with ProviderItem
+		//! Use @args to avoid noise variables in completion code.
+		//! Type char marks are tempting but noise for filtering.
+		const string CallTabExpansion = @"
 $r = TabExpansion2 @args
 @{
 	ReplacementIndex = $r.ReplacementIndex
@@ -50,7 +48,6 @@ $r = TabExpansion2 @args
 
 		static bool _doneTabExpansion;
 		static string _pathTabExpansion;
-		static string _callTabExpansion;
 
 		static void InitTabExpansion()
 		{
@@ -65,10 +62,7 @@ $r = TabExpansion2 @args
 		{
 			// init path and caller
 			if (_pathTabExpansion == null)
-			{
 				_pathTabExpansion = Path.Combine(A.Psf.AppHome, "TabExpansion2.ps1");
-				_callTabExpansion = CallTabExpansionV3;
-			}
 
 			// load TabExpansion
 			using (var ps = runspace == null ? A.Psf.NewPowerShell() : PowerShell.Create())
@@ -210,7 +204,7 @@ $r = TabExpansion2 @args
 					if (runspace != null)
 						ps.Runspace = runspace;
 
-					result = (Hashtable)ps.AddScript(_callTabExpansion, true).AddArgument(inputScript).AddArgument(cursorColumn).Invoke()[0].BaseObject;
+					result = (Hashtable)ps.AddScript(CallTabExpansion, true).AddArgument(inputScript).AddArgument(cursorColumn).Invoke()[0].BaseObject;
 				}
 
 				// results

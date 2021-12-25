@@ -14,7 +14,6 @@ namespace FarNet.RightWords
 
 		public static Settings Default { get; } = new Settings();
 
-		[Serializable]
 		public class Data : IValidate
 		{
 			public XmlCData WordRegex { get; set; } = @"[\p{Lu}\p{Ll}]\p{Ll}+";

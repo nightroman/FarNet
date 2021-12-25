@@ -1,5 +1,10 @@
-https://www.nuget.org/packages/FarNet
+﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
+
+= 5.7.4 =
+
+- List menus: [Ins] adds a new part (•), to filter in found.
+- Settings do not require [Serializable].
 
 = 5.7.3 =
 
@@ -3657,7 +3662,7 @@ for examples.
 - Most of dialog items properties are dynamic, i.e. when a dialog is started
 they reflect the current dialog state both for reading and writing. Example:
 Test-Dialog-.ps1 - button [Test] and related code.
-- IFar.Msg(): supported line delimiters are \r, \n � \r\n, Tabs are replaced
+- IFar.Msg(): supported line delimiters are \r, \n и \r\n, Tabs are replaced
 with spaces. Text is wrapped if required. Two new methods IFar.Msg() with more
 options.
 - Revision of old Key, Mouse and related events. New structs are KeyInfo and
@@ -3703,7 +3708,7 @@ IFar.SetUserScreen(), ICommandLine.Insert().
 
 = 3.2.5 =
 
-- Minor changes in IMenu � ISelection and fix of potential crash of a menu with
+- Minor changes in IMenu и ISelection and fix of potential crash of a menu with
 incorrect coordinates.
 
 = 3.2.4 =

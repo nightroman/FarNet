@@ -11,7 +11,6 @@ namespace FarNet.RightControl
 	{
 		public static Settings Default { get; } = new Settings();
 
-		[Serializable]
 		public class Data : IValidate
 		{
 			public XmlCData RegexLeft { get; set; } = @"(?x: ^ | $ | (?<=\b|\s)\S )";

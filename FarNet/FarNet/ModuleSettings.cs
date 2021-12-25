@@ -9,7 +9,6 @@ namespace FarNet
 	/// </summary>
 	/// <typeparam name="T">
 	/// The data type.
-	/// It must have the attribute <c>[Serializable]</c>.
 	/// It may implement <see cref="IValidate"/> for data validation and completion.
 	/// </typeparam>
 	/// <remarks>

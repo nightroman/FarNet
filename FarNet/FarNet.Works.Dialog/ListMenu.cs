@@ -50,38 +50,6 @@ namespace FarNet.Works
 			TypeId = new Guid("01a43865-b81d-4bca-b3a4-a9ae4f9f7b55");
 		}
 
-		// Simple wildcard (*)
-		static string Wildcard(string pattern)
-		{
-			pattern = Regex.Escape(pattern);
-			for (int i = 0; i < pattern.Length - 1; ++i)
-			{
-				if (pattern[i] != '\\')
-					continue;
-
-				if (pattern[i + 1] == '*')
-					pattern = pattern.Substring(0, i) + ".*?" + pattern.Substring(i + 2);
-				else
-					++i;
-			}
-			return pattern;
-		}
-
-		static Regex CreateRegex(string pattern, PatternOptions options)
-		{
-			if (string.IsNullOrEmpty(pattern) || options == 0)
-				return null;
-
-			// literal else wildcard
-			string re = (options & PatternOptions.Literal) != 0 ? Regex.Escape(pattern) : Wildcard(pattern);
-
-			// prefix?
-			if ((options & PatternOptions.Prefix) != 0)
-				re = "^" + re;
-
-			return new Regex(re, RegexOptions.IgnoreCase);
-		}
-
 		void MakeFilter()
 		{
 			// filter
@@ -96,7 +64,7 @@ namespace FarNet.Works
 
 			// create
 			if (_re == null)
-				_re = CreateRegex(_filter, IncrementalOptions);
+				_re = BulletFilter.ToRegex(_filter, IncrementalOptions);
 			if (_re == null)
 				return;
 
@@ -146,6 +114,13 @@ namespace FarNet.Works
 				else
 					head = Kit.JoinText("[" + _filter + "]", head);
 			}
+		}
+
+		void UpdateInfo(IDialog dialog)
+		{
+			GetInfo(out string t, out string b);
+			dialog[0].Text = t;
+			dialog[2].Text = b;
 		}
 
 		// Validates rect position and width by screen size so that rect is visible.
@@ -301,6 +276,13 @@ namespace FarNet.Works
 			if (IncrementalOptions == 0)
 				return;
 
+			if (key.Is(KeyCode.Insert))
+			{
+				_filter = BulletFilter.AddBullet(_filter);
+				UpdateInfo(dialog);
+				return;
+			}
+
 			if (key.Is(KeyCode.Backspace) || key.IsShift(KeyCode.Backspace))
 			{
 				if (_filter.Length == 0)
@@ -325,10 +307,7 @@ namespace FarNet.Works
 					// '*'
 					if (0 == (IncrementalOptions & PatternOptions.Literal) && c == '*')
 					{
-						// update title/bottom
-						GetInfo(out string t, out string b);
-						dialog[0].Text = t;
-						dialog[2].Text = b;
+						UpdateInfo(dialog);
 					}
 					else
 					{
@@ -361,9 +340,7 @@ namespace FarNet.Works
 					// append "*" -> do not close, just update title/bottom
 					if (0 == (IncrementalOptions & PatternOptions.Literal) && append == "*")
 					{
-						GetInfo(out string t, out string b);
-						dialog[0].Text = t;
-						dialog[2].Text = b;
+						UpdateInfo(dialog);
 						return;
 					}
 

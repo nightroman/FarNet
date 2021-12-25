@@ -31,11 +31,9 @@ namespace FarNet.Demo
 		/// This class defines the settings data.
 		/// </summary>
 		/// <remarks>
-		/// Use the required <c>[Serializable]</c>.
 		/// Optionally use <see cref="XmlRootAttribute"/> for the root name.
 		/// Optionally implement <see cref="IValidate"/> for data validation.
 		/// </remarks>
-		[Serializable]
 		[XmlRoot("Data")]
 		public class Data : IValidate
 		{

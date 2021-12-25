@@ -3,7 +3,6 @@ open FarNet
 open System
 open System.Xml.Serialization
 
-[<Serializable>]
 [<XmlRoot("Data")>]
 type SettingsData() =
     member val ErrorBackgroundColor = ConsoleColor.Red with get, set

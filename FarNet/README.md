@@ -1,4 +1,4 @@
-<!--HLF:
+﻿<!--HLF:
     PluginContents = FarNet;
 -->
 
@@ -478,9 +478,13 @@ By default * is wildcard.
 
     Removes the last character from the current filter.
 
+- `[Ins]`
+
+    Adds another filter part (•), to filter in found.
+
 - `[ShiftBS]`
 
-    Removes the incremental filter string completely.
+    Removes the current filter completely.
 
 - `[CtrlC]`, `[CtrlIns]`
 

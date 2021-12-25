@@ -15,14 +15,12 @@ namespace FarNet.Drawer
 
 		public static Settings Default { get; } = new Settings();
 
-		[Serializable]
 		public class Data
 		{
 			public CurrentWord CurrentWord { get; set; } = new CurrentWord();
 			public FixedColumn FixedColumn { get; set; } = new FixedColumn();
 		}
 
-		[Serializable]
 		public class CurrentWord
 		{
 			public XmlCData WordRegex { get; set; } = @"\w[-\w]*";
@@ -34,7 +32,6 @@ namespace FarNet.Drawer
 			public ConsoleColor ColorBackground { get; set; } = ConsoleColor.Gray;
 		}
 
-		[Serializable]
 		public class FixedColumn
 		{
 			public int[] ColumnNumbers { get; set; } = new int[] { 80, 120 };

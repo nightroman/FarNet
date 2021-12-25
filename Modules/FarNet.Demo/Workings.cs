@@ -25,7 +25,6 @@ namespace FarNet.Demo
 		public Workings() : base(new ModuleSettingsArgs { IsLocal = true })
 		{ }
 
-		[Serializable]
 		public class Data
 		{
 			/// <summary>

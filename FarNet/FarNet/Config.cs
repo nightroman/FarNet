@@ -21,7 +21,6 @@ namespace FarNet.Works
 		{ }
 
 		///
-		[Serializable]
 		public class Data
 		{
 			///
@@ -49,7 +48,6 @@ namespace FarNet.Works
 		}
 
 		///
-		[Serializable]
 		public class Module
 		{
 			///
@@ -143,7 +141,6 @@ namespace FarNet.Works
 		}
 
 		///
-		[Serializable]
 		public class Command
 		{
 			///
@@ -155,7 +152,6 @@ namespace FarNet.Works
 		}
 
 		///
-		[Serializable]
 		public class Drawer
 		{
 			///
@@ -170,7 +166,6 @@ namespace FarNet.Works
 		}
 
 		///
-		[Serializable]
 		public class Editor
 		{
 			///
@@ -182,7 +177,6 @@ namespace FarNet.Works
 		}
 
 		///
-		[Serializable]
 		public class Tool
 		{
 			///

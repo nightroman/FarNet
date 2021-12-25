@@ -2,15 +2,12 @@
 // FarNet module Vessel
 // Copyright (c) Roman Kuzmin
 
-using System;
-
 namespace FarNet.Vessel
 {
 	public sealed class Settings : ModuleSettings<Settings.Data>
 	{
 		public static Settings Default { get; } = new Settings();
 
-		[Serializable]
 		public class Data
 		{
 			public int MaximumDayCount { get; set; } = 42;

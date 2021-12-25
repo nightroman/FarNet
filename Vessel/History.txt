@@ -1,6 +1,10 @@
 https://www.nuget.org/packages/FarNet.Vessel
 FarNet 5.4.17
 
+= 2.6.1 =
+
+Tweaks in help and settings.
+
 = 2.6.0 =
 
 Requires FarNet 5.6.0.

@@ -14,7 +14,6 @@ namespace FarNet.Vessel
 		{
 		}
 
-		[Serializable]
 		public class Data
 		{
 			/// <summary>
