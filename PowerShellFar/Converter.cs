@@ -125,9 +125,7 @@ namespace PowerShellFar
 
 		public static string ValueToLine(object value)
 		{
-			// get the base object
-			if (value is PSObject asPSObject)
-				value = asPSObject.BaseObject;
+			value = PS2.BaseObject(value);
 
 			// skip null and not linear
 			if (value == null || !IsLinearType(value.GetType()))

@@ -49,14 +49,16 @@ macro 'Keys"CtrlA" -- open attributes dialog'
 
 job {
 	# test: the dialog and its control
-	Assert-Far -Dialog ($Far.Dialog[2].Text -eq 'far.exe.config')
+	Assert-Far -Dialog
+	Assert-Far $Far.Dialog[2].Text -eq 'Far.exe.config'
 }
 
 macro 'Keys"Esc" -- exit dialog'
 
 job {
 	# test: the window (panels) and item ('far.exe.config')
-	Assert-Far -Panels ((Get-FarFile).Name -eq 'far.exe.config')
+	Assert-Far -Panels
+	Assert-Far (Get-FarFile).Name -eq 'Far.exe.config'
 }
 
 ### HOW TO: start a modal dialog
@@ -67,14 +69,15 @@ run {
 
 	# NOTE This check is called after next jobs below when the above dialog
 	# exits. That is why the input text is known, the dialog is automated.
-	Assert-Far ($text -eq 'Another text')
+	Assert-Far $text -eq 'Another text'
 }
 
 macro 'Keys"S a m p l e Space t e x t" -- type some text'
 
 job {
 	# test: the dialog and its control
-	Assert-Far -Dialog ($Far.Dialog[1].Text -eq 'Sample text')
+	Assert-Far -Dialog
+	Assert-Far $Far.Dialog[1].Text -eq 'Sample text'
 }
 
 job {
@@ -84,7 +87,7 @@ job {
 
 job {
 	# test: editbox text
-	Assert-Far ($Far.Dialog[1].Text -eq 'Another text')
+	Assert-Far $Far.Dialog[1].Text -eq 'Another text'
 }
 
 macro 'Keys"Enter" -- enter typed text'
@@ -103,7 +106,7 @@ job {
 
 job {
 	# test: editor text
-	Assert-Far ($Far.Editor.GetText() -eq 'Modal Editor')
+	Assert-Far $Far.Editor.GetText() -eq 'Modal Editor'
 }
 
 macro 'Keys"Esc n" -- exit editor, do not save'
@@ -127,7 +130,7 @@ macro 'print("Modeless Editor") -- type some text'
 
 job {
 	# test: editor text
-	Assert-Far ($Far.Editor.GetText() -eq 'Modeless Editor')
+	Assert-Far $Far.Editor.GetText() -eq 'Modeless Editor'
 }
 
 job {

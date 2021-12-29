@@ -341,36 +341,33 @@ namespace PowerShellFar
 					return (int)value;
 			}
 		}
-		public static void InvokePipelineForEach(IEnumerable<PSObject> input)
+		public static void InvokePipelineForEach(IList<PSObject> input)
 		{
-			List<PSObject> items = new List<PSObject>(input);
-			if (items.Count == 0)
+			if (input.Count == 0)
 				return;
 
-			// keep $_
+			//_211231_6x keep and set $_ as a sample for TabExpansion
 			var dash = Psf.Engine.SessionState.PSVariable.GetValue("_");
-
-			// set $_ to a sample for TabExpansion
-			Psf.Engine.SessionState.PSVariable.Set("_", items[0]);
+			Psf.Engine.SessionState.PSVariable.Set("_", input[0]);
 
 			try
 			{
-				// show the dialog, get the code
-				UI.InputDialog ui = new UI.InputDialog()
+				// input code
+				var ui = new UI.InputDialog()
 				{
 					Title = Res.Me,
 					History = Res.HistoryApply,
 					UseLastHistory = true,
-					Prompt = new string[] { "For each $_ in " + items.Count + " selected:" }
+					Prompt = new string[] { "For each $_ in " + input.Count + " selected:" }
 				};
 
 				var code = ui.Show();
 				if (string.IsNullOrEmpty(code))
 					return;
 
-				// invoke the pipeline using the input
-				Psf.Engine.SessionState.PSVariable.Set("_", items);
-				Psf.Act("$_ | .{process{ " + code + " }}", null, false);
+				// invoke with the input
+				var args = new RunArgs("$args[0] | .{process{ " + code + " }}") { Arguments = new object[] { input } };
+				Psf.Run(args);
 			}
 			finally
 			{
@@ -387,23 +384,15 @@ namespace PowerShellFar
 		{
 			return ScriptBlock.Create(code).Invoke(args);
 		}
-		/// <summary>
-		/// Invokes the script with $_ = value and returns
-		/// </summary>
-		internal static Collection<PSObject> InvokeScriptWithValue(ScriptBlock script, object value, params object[] args)
-		{
-			var vars = new List<PSVariable>() { new PSVariable("_", value) };
-			return script.InvokeWithContext(null, vars, args);
-		}
 		internal static void SetPropertyFromTextUI(object target, PSPropertyInfo pi, string text)
 		{
 			bool isPSObject;
 			object value;
 			string type;
-			if (pi.Value is PSObject && (pi.Value as PSObject).BaseObject != null)
+			if (pi.Value is PSObject ps)
 			{
 				isPSObject = true;
-				type = (pi.Value as PSObject).BaseObject.GetType().FullName;
+				type = ps.BaseObject.GetType().FullName;
 			}
 			else
 			{
@@ -506,17 +495,6 @@ Out-String -Width $args[1]
 			{
 				return string.Format(null, "<ERROR: {0}>", e.Message);
 			}
-		}
-		internal static object[] UnwrapPSObject(IList<PSObject> source)
-		{
-			var target = new object[source.Count];
-			for (int i = target.Length; --i >= 0;)
-			{
-				var x = source[i];
-				if (x != null)
-					target[i] = x.BaseObject is PSCustomObject ? x : x.BaseObject;
-			}
-			return target;
 		}
 	}
 }

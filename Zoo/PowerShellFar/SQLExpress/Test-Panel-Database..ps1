@@ -20,7 +20,7 @@ $Data.SqlServerService2 = Start-Service2 'MSSQL$SQLEXPRESS'
 	Panel-Database-.ps1
 }
 {
-	Assert-Far ($Far.Panel.Title -eq 'Databases')
+	Assert-Far $Far.Panel.Title -eq 'Databases'
 	Find-FarFile master
 	Find-FarFile tempdb
 	Find-FarFile msdb
@@ -30,7 +30,7 @@ $Data.SqlServerService2 = Start-Service2 'MSSQL$SQLEXPRESS'
 
 'Keys"Enter" -- open msdb database tables'
 {
-	Assert-Far -Plugin ($Far.Panel.Title -eq 'msdb Tables')
+	Assert-Far $Far.Panel.Title -eq 'msdb Tables'
 }
 #! hack: if `backupfile` is missing use some other
 {
@@ -38,11 +38,12 @@ $Data.SqlServerService2 = Start-Service2 'MSSQL$SQLEXPRESS'
 }
 'Keys"Enter" -- open table records'
 {
-	Assert-Far -Dialog ($Far.Dialog[2].Text -eq 'SELECT * FROM dbo.backupfile')
+	Assert-Far -Dialog
+	Assert-Far $Far.Dialog[2].Text -eq 'SELECT * FROM dbo.backupfile'
 }
 'Keys"Enter" -- open table records'
 {
-	Assert-Far -Plugin ($Far.Panel.Title -eq 'backupfile')
+	Assert-Far $Far.Panel.Title -eq 'backupfile'
 }
 'Keys"Esc" -- exit records'
 {
@@ -67,7 +68,7 @@ $Data.SqlServerService2 = Start-Service2 'MSSQL$SQLEXPRESS'
 
 'Keys"Enter" -- open database'
 {
-	Assert-Far ($Far.Panel.Title -eq 'msdb Tables')
+	Assert-Far $Far.Panel.Title -eq 'msdb Tables'
 }
 
 'Keys"Esc" -- exit table panel'

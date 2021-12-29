@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Test panel with simple table TestCategories.
@@ -10,12 +9,11 @@
 	is also used for lookup by Test-Panel-DbNotes-.ps1.
 #>
 
-param
-(
+param(
 	$Lookup
 )
 
-Assert-Far ($DbConnection -and $DbProviderFactory) "No connection, run Initialize-Test-.ps1" "Assert"
+Assert-Far ($DbConnection -and $DbProviderFactory) -Message "No connection, run Initialize-Test-.ps1" -Title Assert
 
 Panel-DbData- `
 -Lookup $Lookup `

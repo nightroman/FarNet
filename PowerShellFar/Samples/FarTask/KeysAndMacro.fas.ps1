@@ -24,7 +24,8 @@ macro 'print"cls"'
 
 # test the typed text
 job {
-	Assert-Far -Dialog ($Far.Dialog[2].Text -eq 'cls')
+	Assert-Far -Dialog
+	Assert-Far $Far.Dialog[2].Text -eq 'cls'
 }
 
 # invoke the typed command

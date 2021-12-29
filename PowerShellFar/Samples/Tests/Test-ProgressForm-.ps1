@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Test progress tools.
@@ -101,7 +100,7 @@ function TestProgressForm
 			$args[0].Close()
 		}
 		$done = $Progress2.Show()
-		Assert-Far ($done -eq $false) # $false because of Close()
+		Assert-Far $done -eq $false # $false because of Close()
 	}
 
 	### 4) show the progress form

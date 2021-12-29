@@ -5,6 +5,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Management.Automation;
 using FarNet;
 
@@ -82,12 +83,11 @@ namespace PowerShellFar
 		/// <summary>
 		/// Gets selected items. See <see cref="AnyPanel"/> and <see cref="ShownItems"/> remarks.
 		/// </summary>
-		public IEnumerable<PSObject> SelectedItems
+		public IList<PSObject> SelectedItems
 		{
 			get
 			{
-				foreach (FarFile file in SelectedFiles)
-					yield return ConvertFileToItem(file);
+				return SelectedFiles.Select(x => ConvertFileToItem(x)).ToList();
 			}
 		}
 		/// <summary>

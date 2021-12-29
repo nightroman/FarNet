@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Test editor and related scripts.
@@ -37,7 +36,7 @@ $Editor.add_Saving({ $script:log += 'Editor:Saving' })
 $Editor.Open()
 $id = $Editor.Id
 $Editor = $Far.Editor
-Assert-Far ($Editor.Id -eq $id)
+Assert-Far $Editor.Id -eq $id
 
 ### Find Id in the editor list
 $found = $false
@@ -54,21 +53,21 @@ $Editor.Overtype = $true
 $Editor.SetText('1234')
 $Editor.GoTo(0, 0)
 $Editor.InsertText('56')
-Assert-Far ($Editor.GetText() -eq '5634')
+Assert-Far $Editor.GetText() -eq '5634'
 $Editor.Overtype = $false
 $Editor.InsertText('78')
-Assert-Far ($Editor.GetText() -eq '567834')
+Assert-Far $Editor.GetText() -eq '567834'
 $Editor.Overtype = $Overtype
 
 ### Fun with removing the last line
 $Editor.SetText("1`r2`r")
-Assert-Far ($Editor.Count -eq 3)
+Assert-Far $Editor.Count -eq 3
 $Editor.RemoveAt(2)
-Assert-Far ($Editor.GetText() -eq "1`r`n2")
+Assert-Far $Editor.GetText() -eq "1`r`n2"
 $Editor.RemoveAt(1)
-Assert-Far ($Editor.GetText() -eq '1')
+Assert-Far $Editor.GetText() -eq '1'
 $Editor.RemoveAt(0)
-Assert-Far ($Editor.GetText() -eq '')
+Assert-Far $Editor.GetText() -eq ''
 
 ### Line list and string list
 # clear 1: note: at least one line always exists
@@ -76,53 +75,53 @@ $Editor.Clear()
 Assert-Far ($Editor.GetText() -eq '' -and $Editor.Count -eq 1 -and $Editor[0].Text -eq '')
 # add lines when last line is empty
 $Editor.Add('Строка1')
-Assert-Far ($Editor.GetText() -eq "Строка1`r`n")
+Assert-Far $Editor.GetText() -eq "Строка1`r`n"
 $Editor.Add('Line2')
-Assert-Far ($Editor.GetText() -eq "Строка1`r`nLine2`r`n")
+Assert-Far $Editor.GetText() -eq "Строка1`r`nLine2`r`n"
 # get\set lines
 $Editor[0].Text += '.'
 $Editor[1].Text += '.'
 $Editor[2].Text = 'End.'
-Assert-Far ($Editor.GetText() -eq "Строка1.`r`nLine2.`r`nEnd.")
+Assert-Far $Editor.GetText() -eq "Строка1.`r`nLine2.`r`nEnd."
 # add lines when last line is not empty
 $Editor.Clear()
 $Editor[0].Text = 'Строка1'
 $Editor.Add('Line2')
-Assert-Far ($Editor.GetText() -eq "Строка1`r`nLine2")
+Assert-Far $Editor.GetText() -eq "Строка1`r`nLine2"
 $Editor.Add('Line3')
-Assert-Far ($Editor.GetText() -eq "Строка1`r`nLine2`r`nLine3")
+Assert-Far $Editor.GetText() -eq "Строка1`r`nLine2`r`nLine3"
 # insert lines
 $Editor.Insert(1, 'X')
-Assert-Far ($Editor.GetText() -eq "Строка1`r`nX`r`nLine2`r`nLine3")
+Assert-Far $Editor.GetText() -eq "Строка1`r`nX`r`nLine2`r`nLine3"
 $Editor.Insert(3, 'Y')
-Assert-Far ($Editor.GetText() -eq "Строка1`r`nX`r`nLine2`r`nY`r`nLine3")
+Assert-Far $Editor.GetText() -eq "Строка1`r`nX`r`nLine2`r`nY`r`nLine3"
 # remove lines
 $Editor.RemoveAt(3)
-Assert-Far ($Editor.GetText() -eq "Строка1`r`nX`r`nLine2`r`nLine3")
+Assert-Far $Editor.GetText() -eq "Строка1`r`nX`r`nLine2`r`nLine3"
 $Editor.RemoveAt(1)
-Assert-Far ($Editor.GetText() -eq "Строка1`r`nLine2`r`nLine3")
+Assert-Far $Editor.GetText() -eq "Строка1`r`nLine2`r`nLine3"
 $Editor.RemoveAt(2)
-Assert-Far ($Editor.GetText() -eq "Строка1`r`nLine2")
+Assert-Far $Editor.GetText() -eq "Строка1`r`nLine2"
 
 ### Set all text (note preserved EOF states)
 $Editor.SetText('')
-Assert-Far ($Editor.GetText() -eq '')
+Assert-Far $Editor.GetText() -eq ''
 $Editor.SetText("1`r`n2`n3`r")
-Assert-Far ($Editor.GetText() -eq "1`r`n2`r`n3`r`n")
+Assert-Far $Editor.GetText() -eq "1`r`n2`r`n3`r`n"
 $Editor.SetText(".`r`n2`n3`rEOF")
-Assert-Far ($Editor.GetText() -eq ".`r`n2`r`n3`r`nEOF")
+Assert-Far $Editor.GetText() -eq ".`r`n2`r`n3`r`nEOF"
 
 ### Editor and cursor methods
 $Editor.GoTo(0, 1)
 $Editor.DeleteLine()
-Assert-Far ($Editor.GetText() -eq ".`r`n3`r`nEOF")
+Assert-Far $Editor.GetText() -eq ".`r`n3`r`nEOF"
 $Editor.DeleteChar()
-Assert-Far ($Editor.GetText() -eq ".`r`n`r`nEOF")
+Assert-Far $Editor.GetText() -eq ".`r`n`r`nEOF"
 $Editor.DeleteChar()
-Assert-Far ($Editor.GetText() -eq ".`r`nEOF")
+Assert-Far $Editor.GetText() -eq ".`r`nEOF"
 if (!$Overtype) {
 	$Editor.InsertText("Конец`r`nтеста`rTest-Editor`n")
-	Assert-Far ($Editor.GetText() -eq ".`r`nКонец`r`nтеста`r`nTest-Editor`r`nEOF")
+	Assert-Far $Editor.GetText() -eq ".`r`nКонец`r`nтеста`r`nTest-Editor`r`nEOF"
 }
 
 ### Column selection
@@ -138,7 +137,7 @@ Assert-Far @(
 	$Editor.GetSelectedText("`n") -eq "L`nR"
 )
 $Select = $Editor.SelectedLines
-Assert-Far ($Select.Count -eq 2)
+Assert-Far $Select.Count -eq 2
 Assert-Far @(
 	$Select[0].Text -eq 'HELLO'
 	$Select[0].ActiveText -eq 'L'
@@ -169,10 +168,10 @@ $Editor.Close()
 ### Check logged events
 #! don't check Closed event
 $logged = $script:log -join "`r`n"
-Assert-Far ($logged -eq @'
+Assert-Far $logged -eq @'
 Editor:Opened
 Editor:Saving
-'@)
+'@
 
 ### Repeat the test with changed parameters
 if (!$Overtype) {

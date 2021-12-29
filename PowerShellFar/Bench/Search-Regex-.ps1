@@ -41,7 +41,7 @@ param(
 	[switch]$AllText
 )
 if ($args) {Write-Error -ErrorAction Stop "Invalid arguments: $args"}
-Assert-Far -Panels -Message "Run this script from panels." -Title "Search-Regex"
+Assert-Far -Panels -Message "Run this script from panels." -Title Search-Regex-.ps1
 
 Add-Type @'
 using System;

@@ -25,7 +25,7 @@ param(
 )
 
 $Editor = $Psf.Editor()
-Assert-Far (!$Editor.IsLocked) 'The editor is locked for changes.' 'Reformat selection'
+Assert-Far (!$Editor.IsLocked) -Message 'The editor is locked for changes.' -Title Reformat-Selection-.ps1
 
 # get the prefix pattern by file type
 $type = ''

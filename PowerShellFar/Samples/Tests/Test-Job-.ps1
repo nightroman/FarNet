@@ -168,9 +168,9 @@ Assert-Far @(
 )
 
 # Errors
-Assert-Far ($job.Error.Count -eq 2)
+Assert-Far $job.Error.Count -eq 2
 $4 = $job.Error[0].ToString()
-Assert-Far ($4 -eq 'Test of Write-Error 1') "Actual [[$4]]."
+Assert-Far $4 -eq 'Test of Write-Error 1'
 
 # Debug
 Assert-Far @(

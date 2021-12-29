@@ -229,20 +229,13 @@ namespace PowerShellFar
 		/// Gets a meta value.
 		/// </summary>
 		/// <param name="value">The input object.</param>
-		//
-		////! _100410_051915 Use module session state otherwise $_ is not visible, only $global:_ is visible
-		//var session = _Script.Module == null ? A.Psf.Engine.SessionState : _Script.Module.SessionState;
-		//session.PSVariable.Set("_", value);
-		////! finally: Null $_ to avoid a leak
-		//session.PSVariable.Set("_", null);
-		//
 		public object GetValue(object value)
 		{
 			if (_Script != null)
 			{
 				try
 				{
-					var result = A.InvokeScriptWithValue(_Script, value);
+					var result = PS2.InvokeWithContext(_Script, value);
 					switch (result.Count)
 					{
 						case 0:

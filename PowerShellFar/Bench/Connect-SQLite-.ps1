@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Connects SQLite database and optionally shows tables in a panel.
@@ -39,15 +38,14 @@
 		Tells to open the panel to browse the database tables.
 #>
 
-param
-(
+param(
 	[Parameter(Mandatory=$true)]
 	[string]$Path,
 	[string]$Options,
 	[switch]$Panel
 )
 
-Assert-Far $env:SystemDataSQLite 'Please, set the env variable SystemDataSQLite.'
+Assert-Far $env:SystemDataSQLite -Message 'Please set env:SystemDataSQLite'
 
 # get factory
 $null = [System.Reflection.Assembly]::LoadFile($env:SystemDataSQLite)

@@ -22,7 +22,7 @@ ps: {
 	$r1 = $Data.Var1.GetValue('z')
 	$r2 = $Data.Var2.GetValue('z')
 	"Values: $r0, $r1, $r2"
-	Assert-Far ($r0 -eq 'task')
-	Assert-Far ($r1 -eq 'job1')
-	Assert-Far ($r2 -eq 'job2')
+	Assert-Far $r0 -eq 'task'
+	Assert-Far $r1 -eq 'job1'
+	Assert-Far $r2 -eq 'job2'
 }

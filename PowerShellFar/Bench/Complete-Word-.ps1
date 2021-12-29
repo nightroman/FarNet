@@ -18,7 +18,7 @@
 
 # get edit line
 $Line = $Far.Line
-Assert-Far ($Line -and !$Line.IsReadOnly) 'Missing or read only edit line.' 'Complete word'
+Assert-Far ($Line -and !$Line.IsReadOnly) -Message 'Missing or read only edit line.' -Title 'Complete word'
 
 # current word
 $match = $Line.MatchCaret('\w[-\w]*')

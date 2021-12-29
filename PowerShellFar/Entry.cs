@@ -169,7 +169,7 @@ namespace PowerShellFar
 					return new Func<string, object[], object[]>((string script, object[] arguments) =>
 					{
 						var result = A.InvokeCode(script, arguments);
-						return A.UnwrapPSObject(result);
+						return PS2.UnwrapPSObject(result);
 					});
 
 				case "Runspace":

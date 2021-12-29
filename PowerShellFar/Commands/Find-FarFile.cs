@@ -55,7 +55,7 @@ namespace PowerShellFar.Commands
 				{
 					for (int index = beg[pass]; index != end[pass]; index += step)
 					{
-						var result = A.InvokeScriptWithValue(Where, files[index]);
+						var result = PS2.InvokeWithContext(Where, files[index]);
 						if (result.Count == 0)
 							continue;
 

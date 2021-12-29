@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Starts MSBuild with a helper input dialog for the project file.
@@ -22,19 +21,21 @@
 	In Commands \ File associations insert an entry and set:
 	-- Mask: *.*proj
 	-- Command: ps: Start-MSBuild- (Get-FarPath) #
+
+.Parameter FilePath
+		Project file. Default: the only *.*proj file in the current directory.
 #>
 
-param
-(
+[CmdletBinding()]
+param(
 	[string]
-	# Project file. Default: the only *.*proj file in the current directory.
 	$FilePath
 )
 
 ### resolve the project
 if (!$FilePath) {
 	$projs = @([IO.Directory]::GetFiles('.', '*.*proj'))
-	Assert-Far ($projs.Count -eq 1) "Found $($projs.Count) *.*proj files, use the -FilePath." "Start-MSBuild"
+	Assert-Far ($projs.Count -eq 1) -Message "Found $($projs.Count) *.*proj files, use the -FilePath." -Title Start-MSBuild-.ps1
 	$FilePath = $projs[0]
 }
 

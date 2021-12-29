@@ -12,45 +12,53 @@ Set-StrictMode -Version Latest
 Checks for the conditions and stops invocation if any of them is evaluated to false.
 '@
 	description = @'
-If the assertion fails then an error dialog is shown with several options.
+If the assertion fails, a dialog is shown with several options.
 A running macro, if any, is stopped before showing the dialog.
-'@,
-	@'
-If the parameter Title is provided then just a simple message is shown on
-failures, all the assertion details are omitted. This mode is suitable for
-production scripts.
+
+Use the parameter Title for simple messages without assertion details
+with only two options: Stop and Throw, without Edit and Debug.
 '@
 	parameters = @{
-		Conditions = @'
+		Value = @'
 One or more condition values to be checked. If any value is evaluated to false
-(null, 0, empty string or collection) then an assertion dialog is shown.
+by PowerShell (null, 0, empty string, etc.) then an assertion dialog is shown.
 
-If Conditions is a single script block then it is invoked in order to get at
-least one condition value. Consider to use script blocks if they should be
-invoked and checked after conditions defined by other parameters.
+If it is a collection then all items are checked as conditions.
 
-If Conditions is a collection then its every item is checked as a condition.
+With Eq, it is the value compared with Eq.
+'@
+		Eq = @'
+Specifies the value compared with Value by Object.Equals().
+
+`Assert-Far X -eq Y` is not the same as `Assert-Far (X -eq Y)`. The first
+uses Object.Equals(). The second uses the PowerShell operator -eq, which is
+case insensitive, converts types, has different meaning when X is collection.
 '@
 		Message = @'
-Specifies a user friendly message to be shown on failures or a script block to
-be invoked on failures in order to get a message.
+Specifies a user friendly message shown on failures or a script block invoked
+on failures in order to get a message.
 '@
 		Title = @'
 Specifies a message box title and tells to show a simplified message box with
-less options and diagnostics. Normally such a dialog box is used in order to
-tell a user some requirements, not report internal issues.
+less options and diagnostics. Such a dialog normally tells what to do instead
+of where the problem is.
 '@
 		FileDescription = 'Specifies the expected current panel file description.'
 		FileName = 'Specifies the expected current panel file name.'
 		FileOwner = 'Specifies the expected current file owner.'
 		Dialog = 'Checks the current window is dialog.'
 		Editor = 'Checks the current window is editor.'
+		EditorFileName = 'Checks the current editor file name wildcard.'
+		EditorTitle = 'Checks the current editor title wildcard.'
 		Panels = 'Checks the current window is panels.'
 		Viewer = 'Checks the current window is viewer.'
 		Plugin = 'Checks the active panel is plugin.'
 		Plugin2 = 'Checks the passive panel is plugin.'
-		Native = 'Checks the active panel is native (not plugin).'
-		Native2 = 'Checks the passive panel is native (not plugin).'
+		Native = 'Checks the active panel is not plugin.'
+		Native2 = 'Checks the passive panel is not plugin.'
+		DialogTypeId = 'Checks the current window is dialog with the specified type ID.'
+		ExplorerTypeId = 'Checks the active panel explorer with the specified type ID.'
+		ExplorerTypeId2 = 'Checks the passive panel explorer with the specified type ID.'
 	}
 
 	examples = @(
@@ -61,22 +69,20 @@ tell a user some requirements, not report internal issues.
 		@{code={
 	# Single checks
 	Assert-Far -Panels
-	Assert-Far -Plugin
 	Assert-Far ($Far.Window.Kind -eq 'Panels')
+	Assert-Far $Far.Window.Kind -eq ([FarNet.WindowKind]::Panels)
 		}}
 		@{code={
 	# Combined checks
 	Assert-Far -Panels -Plugin
-	Assert-Far -Panels ($Far.Panel.IsPlugin)
 	Assert-Far @(
 		$Far.Window.Kind -eq 'Panels'
 		$Far.Panel.IsPlugin
 	)
 		}}
 		@{code={
-	# User friendly error message. Mind use of -Message and -Title with switches:
-	Assert-Far -Panels -Message "Run this script from panels." -Title "Search-Regex"
-	Assert-Far ($Far.Window.Kind -eq 'Panels') "Run this script from panels." "Search-Regex"
+	# User friendly error message
+	Assert-Far -Panels -Message "Run this script from panels." -Title Search-Regex-.ps1
 		}}
 	)
 }

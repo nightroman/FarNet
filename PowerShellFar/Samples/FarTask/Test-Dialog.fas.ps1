@@ -25,7 +25,7 @@ if ($TestOpened) {
 else {
 	run {
 		# run the dialog
-		Assert-Far ($Far.Window.Kind -ne 'Dialog') 'Do not run this from a dialog'
+		Assert-Far ($Far.Window.Kind -ne 'Dialog') -Message 'Do not run this from a dialog'
 		. "$PSScriptRoot\..\Tests\Test-Dialog.far.ps1" -Locals $Data
 	}
 	job {
@@ -49,17 +49,17 @@ job {
 job {
 	# set and test text
 	$Data.e1.Text = 'волга'
-	Assert-Far ($Data.e1.Text -eq 'волга')
+	Assert-Far $Data.e1.Text -eq 'волга'
 }
 job {
 	# set and test text selection
 	$Data.e1.Line.SelectText(1, 4)
-	Assert-Far ($Data.e1.Line.SelectedText -eq 'олг')
+	Assert-Far $Data.e1.Line.SelectedText -eq 'олг'
 }
 job {
 	# disable and check
 	$Data.e1.Disabled = $true
-	Assert-Far ($Data.e1.Disabled)
+	Assert-Far $Data.e1.Disabled
 }
 job {
 	# enable and check
@@ -75,14 +75,14 @@ job {
 }
 job {
 	# test IsTouched and flip
-	Assert-Far ($Data.e1.IsTouched)
+	Assert-Far $Data.e1.IsTouched
 	$Data.e1.IsTouched = $false
 }
 job {
 	# test IsTouched and flip
 	Assert-Far (!$Data.e1.IsTouched)
 	$Data.e1.IsTouched = $true
-	Assert-Far ($Data.e1.IsTouched)
+	Assert-Far $Data.e1.IsTouched
 }
 
 ### CheckBox (standard)
@@ -90,7 +90,7 @@ job {
 job {
 	# go to checkbox
 	$Data.dialog.Focused = $Data.x1
-	Assert-Far ($Data.dialog.Focused -eq $Data.x1)
+	Assert-Far $Data.dialog.Focused -eq $Data.x1
 
 	# keep its state
 	$Data.Value = $Data.x1.Selected
@@ -122,14 +122,14 @@ job {
 keys Space
 job {
 	# test state
-	Assert-Far ($Data.x2.Selected -eq 1)
+	Assert-Far $Data.x2.Selected -eq 1
 }
 
 # switch
 keys Space
 job {
 	# test state
-	Assert-Far ($Data.x2.Selected -eq 2)
+	Assert-Far $Data.x2.Selected -eq 2
 }
 
 ### Edit (fixed)
@@ -215,14 +215,14 @@ job {
 }
 job {
 	# test IsTouched and flip
-	Assert-Far ($Data.ce.IsTouched)
+	Assert-Far $Data.ce.IsTouched
 	$Data.ce.IsTouched = $false
 	Assert-Far (!$Data.ce.IsTouched)
 }
 job {
 	# go to [List] button
 	$Data.dialog.Focused = $Data.list
-	Assert-Far ($Data.dialog.Focused -eq $Data.list)
+	Assert-Far $Data.dialog.Focused -eq $Data.list
 }
 
 # push the button 1st time

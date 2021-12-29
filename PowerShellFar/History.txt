@@ -1,5 +1,18 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 5.7.3 =
+
+** Potentially breaking change, review Assert-Far usage **
+
+Reworked Assert-Far to avoid misuse:
+- (1) Assert-Far value(s)
+- (2) Assert-Far value1 -eq value2 (new)
+- (3) Assert-Far <other check parameters>
+- Common -Message and -Title are named parameters
+- New checks: -DialogTypeId -EditorFileName -EditorTitle -ExplorerTypeId
+
+Fixed $_ value in Power panel "invoke for each" (CtrlG).
+
 = 5.7.2 =
 
 Requires FarNet 5.7.1

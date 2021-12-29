@@ -47,15 +47,16 @@ param(
 	[switch]$View
 )
 
-$Path = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($Path)
-Assert-Far ([System.IO.File]::Exists($Path)) "Missing file '$Path'." Invoke-Shortcut-.ps1
+$Path = (Resolve-Path -LiteralPath $Path).Path
 
 # WMI does not work well with names with spaces, use WScript.Shell.
 # Besides, WScript.Shell also works with .url, just in case
 $shell = New-Object -ComObject WScript.Shell
-$link = $shell.CreateShortcut([IO.Path]::GetFullPath($Path))
+$link = $shell.CreateShortcut($Path)
 $target = $link.TargetPath
-Assert-Far ([bool]$target) "Cannot get a target path from '$Path'.`nIs it a shortcut file?" Invoke-Shortcut-.ps1
+if (!$target) {
+	throw "Cannot get a target path from '$Path'. Is it a shortcut file?"
+}
 
 ### Panel properties
 if ($Panel) {

@@ -51,8 +51,7 @@ param($Script, $Data, $Arguments)
 		{
 			set
 			{
-				if (value is PSObject ps)
-					value = ps.BaseObject;
+				value = PS2.BaseObject(value);
 
 				if (value is ScriptBlock block)
 				{
@@ -60,7 +59,7 @@ param($Script, $Data, $Arguments)
 					return;
 				}
 
-				if (!(value is string text))
+				if (value is not string text)
 					throw new PSArgumentException("Invalid script type.");
 
 				//! used to `&& File.Exists` -- bad, on missing file it is treated as code -- not clear errors
@@ -196,55 +195,49 @@ param($Script, $Data, $Arguments)
 			protected override void BeginProcessing()
 			{
 				base.BeginProcessing();
-				try
+
+				// post the job as task
+				var task = Tasks.Job(() =>
 				{
-					// post the job as task
-					var task = Tasks.Job(() =>
+					if (Self.Confirm)
 					{
-						if (Self.Confirm)
-						{
-							if (!Self.ShowConfirm("job", $"{Path.GetFileName(Script.File)}\r\n{Script}"))
-								throw new PipelineStoppedException();
-						}
-
-						// invoke script block in the main session
-						var ps = A.Psf.NewPowerShell();
-						ps.AddScript(_codeJob, true).AddArgument(Script).AddArgument(Self._data).AddArgument(Arguments);
-						var output = ps.Invoke();
-
-						//! Assert-Far may stop by PipelineStoppedException
-						if (ps.InvocationStateInfo.Reason != null)
-							throw ps.InvocationStateInfo.Reason;
-
-						return output;
-					});
-
-					// await
-					var result = task.Result;
-					FarNet.Works.Far2.Api.WaitSteps().Wait();
-
-					//! if the job returns a task, await and return
-					if (result.Count == 1 && result[0] != null && result[0].BaseObject is Task task2)
-					{
-						task2.Wait();
-
-						var pi = task2.GetType().GetProperty("Result");
-						if (pi == null)
-							return;
-
-						var result2 = pi.GetValue(task2);
-						if (result2 != null)
-							WriteObject(result2);
+						if (!Self.ShowConfirm("job", $"{Path.GetFileName(Script.File)}\r\n{Script}"))
+							throw new PipelineStoppedException();
 					}
-					else
-					{
-						foreach (var it in result)
-							WriteObject(it);
-					}
+
+					// invoke script block in the main session
+					var ps = A.Psf.NewPowerShell();
+					ps.AddScript(_codeJob, true).AddArgument(Script).AddArgument(Self._data).AddArgument(Arguments);
+					var output = ps.Invoke();
+
+					//! Assert-Far may stop by PipelineStoppedException
+					if (ps.InvocationStateInfo.Reason != null)
+						throw ps.InvocationStateInfo.Reason;
+
+					return output;
+				});
+
+				// await
+				var result = task.GetAwaiter().GetResult();
+				FarNet.Works.Far2.Api.WaitSteps().GetAwaiter().GetResult();
+
+				//! if the job returns a task, await and return
+				if (result.Count == 1 && result[0] != null && result[0].BaseObject is Task task2)
+				{
+					task2.GetAwaiter().GetResult();
+
+					var pi = task2.GetType().GetProperty("Result");
+					if (pi == null)
+						return;
+
+					var result2 = pi.GetValue(task2);
+					if (result2 != null)
+						WriteObject(result2);
 				}
-				catch (Exception exn)
+				else
 				{
-					throw FarNet.Works.Kit.UnwrapAggregateException(exn);
+					foreach (var it in result)
+						WriteObject(it);
 				}
 			}
 		}
@@ -255,40 +248,34 @@ param($Script, $Data, $Arguments)
 			protected override void BeginProcessing()
 			{
 				base.BeginProcessing();
-				try
-				{
-					Exception reason = null;
 
-					// post the job as task
-					var task = Tasks.Job(() =>
+				Exception reason = null;
+
+				// post the job as task
+				var task = Tasks.Job(() =>
+				{
+					if (Self.Confirm)
 					{
-						if (Self.Confirm)
-						{
-							if (!Self.ShowConfirm("ps:", $"{Path.GetFileName(Script.File)}\r\n{Script}"))
-								throw new PipelineStoppedException();
-						}
+						if (!Self.ShowConfirm("ps:", $"{Path.GetFileName(Script.File)}\r\n{Script}"))
+							throw new PipelineStoppedException();
+					}
 
-						var args = new RunArgs(_codeJob)
-						{
-							Writer = new ConsoleOutputWriter(),
-							NoOutReason = true,
-							UseLocalScope = true,
-							Arguments = new object[] { Script, Self._data, Arguments }
-						};
-						A.Psf.Run(args);
-						reason = args.Reason;
-					});
+					var args = new RunArgs(_codeJob)
+					{
+						Writer = new ConsoleOutputWriter(),
+						NoOutReason = true,
+						UseLocalScope = true,
+						Arguments = new object[] { Script, Self._data, Arguments }
+					};
+					A.Psf.Run(args);
+					reason = args.Reason;
+				});
 
-					// await
-					task.Wait();
-					FarNet.Works.Far2.Api.WaitSteps().Wait();
-					if (reason != null)
-						throw reason;
-				}
-				catch (Exception exn)
-				{
-					throw FarNet.Works.Kit.UnwrapAggregateException(exn);
-				}
+				// await
+				task.GetAwaiter().GetResult();
+				FarNet.Works.Far2.Api.WaitSteps().GetAwaiter().GetResult();
+				if (reason != null)
+					throw reason;
 			}
 		}
 
@@ -303,32 +290,25 @@ param($Script, $Data, $Arguments)
 				if (Self.Confirm)
 				{
 					var confirm = Tasks.Job(() => Self.ShowConfirm("run", $"{Script.File}\r\n{Script}"));
-					if (!confirm.Result)
+					if (!confirm.GetAwaiter().GetResult())
 						throw new PipelineStoppedException();
 				}
 
-				try
+				// post the job as task
+				var task = Tasks.Run(() =>
 				{
-					// post the job as task
-					var task = Tasks.Run(() =>
-					{
-						var ps = A.Psf.NewPowerShell();
-						ps.AddScript(_codeJob, true).AddArgument(Script).AddArgument(Self._data).AddArgument(Arguments);
-						ps.Invoke();
+					var ps = A.Psf.NewPowerShell();
+					ps.AddScript(_codeJob, true).AddArgument(Script).AddArgument(Self._data).AddArgument(Arguments);
+					ps.Invoke();
 
 						//! Assert-Far may stop by PipelineStoppedException
 						if (ps.InvocationStateInfo.Reason != null)
-							throw ps.InvocationStateInfo.Reason;
-					});
+						throw ps.InvocationStateInfo.Reason;
+				});
 
-					// await
-					task.Wait();
-					FarNet.Works.Far2.Api.WaitSteps().Wait();
-				}
-				catch (Exception exn)
-				{
-					throw FarNet.Works.Kit.UnwrapAggregateException(exn);
-				}
+				// await
+				task.GetAwaiter().GetResult();
+				FarNet.Works.Far2.Api.WaitSteps().GetAwaiter().GetResult();
 			}
 		}
 
@@ -349,12 +329,12 @@ param($Script, $Data, $Arguments)
 				if (Self.Confirm)
 				{
 					var confirm = Tasks.Job(() => Self.ShowConfirm("keys", keys));
-					if (!confirm.Result)
+					if (!confirm.GetAwaiter().GetResult())
 						throw new PipelineStoppedException();
 				}
 
-				Tasks.Keys(keys).Wait();
-				FarNet.Works.Far2.Api.WaitSteps().Wait();
+				Tasks.Keys(keys).GetAwaiter().GetResult();
+				FarNet.Works.Far2.Api.WaitSteps().GetAwaiter().GetResult();
 			}
 		}
 
@@ -374,12 +354,12 @@ param($Script, $Data, $Arguments)
 				if (Self.Confirm)
 				{
 					var confirm = Tasks.Job(() => Self.ShowConfirm("macro", Macro));
-					if (!confirm.Result)
+					if (!confirm.GetAwaiter().GetResult())
 						throw new PipelineStoppedException();
 				}
 
-				Tasks.Macro(Macro).Wait();
-				FarNet.Works.Far2.Api.WaitSteps().Wait();
+				Tasks.Macro(Macro).GetAwaiter().GetResult();
+				FarNet.Works.Far2.Api.WaitSteps().GetAwaiter().GetResult();
 			}
 		}
 
@@ -469,7 +449,7 @@ param($Script, $Data, $Arguments)
 					{
 						var result = ps.EndInvoke(asyncResult);
 						if (AsTask)
-							task.SetResult(A.UnwrapPSObject(result));
+							task.SetResult(PS2.UnwrapPSObject(result));
 					}
 					catch (Exception exn)
 					{

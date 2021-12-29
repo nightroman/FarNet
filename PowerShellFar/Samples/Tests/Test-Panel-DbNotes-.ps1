@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Test panel with joined table TestNotes with lookup
@@ -23,12 +22,11 @@
 	lookup - that is why they are still selected.
 #>
 
-param
-(
+param(
 	[switch]$GenericLookup
 )
 
-Assert-Far ($DbConnection -and $DbProviderFactory) "No connection, run Initialize-Test-.ps1" "Assert"
+Assert-Far ($DbConnection -and $DbProviderFactory) -Message "No connection, run Initialize-Test-.ps1" -Title Assert
 
 # data adapter and command to select data
 $a = $DbProviderFactory.CreateDataAdapter()

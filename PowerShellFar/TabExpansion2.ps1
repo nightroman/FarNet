@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.0.4
+.VERSION 1.0.5
 .AUTHOR Roman Kuzmin
 .COPYRIGHT (c) Roman Kuzmin
 .GUID 550bc198-dd44-4bbc-8ad7-ccf4b8bd2aff
@@ -159,6 +159,9 @@ function global:TabExpansion2 {
 		[Parameter(ParameterSetName = 'AstInputSet', Position = 3)]
 		[Hashtable]$options
 	)
+
+	${private:%} = $null
+
 	${private:*} = @{
 		inputScript = $inputScript
 		cursorColumn = $cursorColumn
@@ -174,9 +177,9 @@ function global:TabExpansion2 {
 		${*}.options = $PSCmdlet.GetVariableValue('TabExpansionOptions')
 		if ($PSCmdlet.GetVariableValue('TabExpansionProfile')) {
 			Remove-Variable -Name TabExpansionProfile -Scope Global
-			foreach($_ in Get-Command -Name *ArgumentCompleters.ps1 -CommandType ExternalScript -All) {
-				if (& $_.Definition) {
-					Write-Error -ErrorAction 0 "TabExpansion2: Unexpected output. Profile: $($_.Definition)"
+			foreach(${%} in Get-Command -Name *ArgumentCompleters.ps1 -CommandType ExternalScript -All) {
+				if (& ${%}.Definition) {
+					Write-Error -ErrorAction 0 "TabExpansion2: Unexpected output. Profile: $(${%}.Definition)"
 				}
 			}
 		}
@@ -184,19 +187,19 @@ function global:TabExpansion2 {
 
 	# parse input
 	if ($PSCmdlet.ParameterSetName -eq 'ScriptInputSet') {
-		$_ = [System.Management.Automation.CommandCompletion]::MapStringInputToParsedInput(${*}.inputScript, ${*}.cursorColumn)
-		${*}.ast = $_.Item1
-		${*}.tokens = $_.Item2
-		${*}.positionOfCursor = $_.Item3
+		${%} = [System.Management.Automation.CommandCompletion]::MapStringInputToParsedInput(${*}.inputScript, ${*}.cursorColumn)
+		${*}.ast = ${%}.Item1
+		${*}.tokens = ${%}.Item2
+		${*}.positionOfCursor = ${%}.Item3
 	}
 
 	# input processors
-	foreach($_ in ${*}.options['InputProcessors']) {
-		if (${*}.result = & $_ ${*}.ast ${*}.tokens ${*}.positionOfCursor ${*}.options) {
+	foreach(${%} in ${*}.options['InputProcessors']) {
+		if (${*}.result = & ${%} ${*}.ast ${*}.tokens ${*}.positionOfCursor ${*}.options) {
 			if (${*}.result -is [System.Management.Automation.CommandCompletion]) {
 				return ${*}.result
 			}
-			Write-Error -ErrorAction 0 "TabExpansion2: Invalid result. Input processor: $_"
+			Write-Error -ErrorAction 0 "TabExpansion2: Invalid result. Input processor: ${%}"
 		}
 	}
 

@@ -4,7 +4,7 @@
 	Author: Roman Kuzmin
 #>
 
-Assert-Far -Editor -Message 'Invoke this script from the editor.' -Title 'Show-EditorColor-.ps1'
+Assert-Far -Editor -Message 'Run this script from editor.' -Title Show-EditorColor-.ps1
 
 $Editor = $Far.Editor
 $colors = [System.Collections.Generic.List[FarNet.EditorColorInfo]]::new()

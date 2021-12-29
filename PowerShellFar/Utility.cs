@@ -4,6 +4,7 @@
 
 using FarNet;
 using System;
+using System.Collections;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
