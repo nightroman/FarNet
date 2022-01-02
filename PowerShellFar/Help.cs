@@ -5,6 +5,7 @@
 using FarNet;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Management.Automation;
 
 namespace PowerShellFar
@@ -16,20 +17,30 @@ namespace PowerShellFar
 	{
 		internal static void ShowHelpForContext(string defaultTopic = null)
 		{
-			ILine line = Far.Api.Line;
+			var line = Far.Api.Line;
 			if (line == null)
 			{
 				ShowAreaHelp();
 				return;
 			}
 
-			// line text, replace prefixes with spaces to avoid parsing problems
+			// line text, mind prefixes to avoid parsing problems
 			string text = line.Text;
 			string prefix = string.Empty;
 			if (line.WindowKind == WindowKind.Panels)
 				Entry.SplitCommandWithPrefix(ref text, out prefix);
 
-			// trim end and process the empty case
+			int pos = line.Caret - prefix.Length;
+			ShowHelpForText(text, pos, defaultTopic);
+		}
+
+		internal static void ShowHelpForText(
+			string text,
+			int pos,
+			string defaultTopic,
+			OpenMode openMode = OpenMode.None)
+		{
+			// case: empty text
 			text = text.TrimEnd();
 			if (text.Length == 0)
 			{
@@ -40,94 +51,93 @@ namespace PowerShellFar
 				return;
 			}
 
-			int pos = line.Caret - prefix.Length;
-			string script = null;
-			string command = null;
-			object[] args = null;
+			// find the token
 			Collection<PSToken> tokens = PSParser.Tokenize(text, out _);
-			foreach (PSToken token in tokens)
+			var token = tokens.FirstOrDefault(token => pos >= (token.StartColumn - 1) && pos <= token.EndColumn);
+			if (token == null)
+				return;
+
+			string script;
+			object[] args = null;
+
+			if (token.Type == PSTokenType.Command)
 			{
-				if (token.Type == PSTokenType.Command)
-					command = token.Content;
-
-				if (pos >= (token.StartColumn - 1) && pos <= token.EndColumn)
+				script = "Get-Help $args[1] -Full > $args[0]";
+				args = new object[] { null, token.Content };
+			}
+			else if (token.Type == PSTokenType.CommandParameter)
+			{
+				string parameter = token.Content.TrimStart('-');
+				string upper = parameter.ToUpperInvariant();
+				if (upper == "CONFIRM" ||
+					upper == "DEBUG" ||
+					upper == "ERRORACTION" ||
+					upper == "ERRORVARIABLE" ||
+					upper == "INFORMATIONACTION" ||
+					upper == "INFORMATIONVARIABLE" ||
+					upper == "OUTBUFFER" ||
+					upper == "OUTVARIABLE" ||
+					upper == "PIPELINEVARIABLE" ||
+					upper == "VERBOSE" ||
+					upper == "WARNINGACTION" ||
+					upper == "WARNINGVARIABLE" ||
+					upper == "WHATIF")
 				{
-					if (token.Type == PSTokenType.Command)
-					{
-						//! Call the Help function, just in case it is redefined.
-						//! It used to call now retired Get-FarHelp.
-						script = "Help $args[1] -Full > $args[0]";
-						args = new object[] { null, command };
-					}
-					else if (token.Type == PSTokenType.CommandParameter)
-					{
-						string parameter = token.Content.TrimStart('-').ToUpperInvariant();
-						if (parameter == "VERBOSE" ||
-							parameter == "DEBUG" ||
-							parameter == "ERRORACTION" ||
-							parameter == "ERRORVARIABLE" ||
-							parameter == "WARNINGACTION" ||
-							parameter == "WARNINGVARIABLE" ||
-							parameter == "OUTVARIABLE" ||
-							parameter == "OUTBUFFER" ||
-							parameter == "WHATIF" ||
-							parameter == "CONFIRM")
-						{
-							script = "Get-Help about_CommonParameters > $args[0]";
-							args = new object[] { null };
-						}
-						else
-						{
-							script = "Get-Help $args[1] -Parameter $args[2] > $args[0]";
-							args = new object[] { null, command, parameter };
-						}
-					}
-					else if (token.Type == PSTokenType.Keyword)
-					{
-						script = string.Format(null, "Get-Help about_{0} > $args[0]", token.Content);
-						args = new object[] { null };
-					}
-					else if (token.Type == PSTokenType.Operator)
-					{
-						script = "Get-Help about_operators > $args[0]";
-						args = new object[] { null };
-					}
+					script = "Get-Help about_CommonParameters > $args[0]";
+					args = new object[] { null };
+				}
+				else
+				{
+					var command = tokens.LastOrDefault(token => token.Type == PSTokenType.Command && token.EndColumn <= pos);
+					if (command == null)
+						return;
 
-					break;
+					script = "Get-Help $args[1] -Parameter $args[2] > $args[0]";
+					args = new object[] { null, command.Content, parameter };
 				}
 			}
-
-			if (script == null)
+			else if (token.Type == PSTokenType.Keyword)
+			{
+				script = $"Get-Help about_{token.Content} > $args[0]";
+				args = new object[] { null };
+			}
+			else if (token.Type == PSTokenType.Operator)
+			{
+				script = "Get-Help about_operators > $args[0]";
+				args = new object[] { null };
+			}
+			else
 			{
 				Far.Api.Message("No help targets found at the editor caret position.", Res.Me);
 				return;
 			}
 
-			bool ok = false;
-			string file = Path.GetTempFileName();
+			var file = FarNet.Works.Kit.TempFileName("txt");
 			try
 			{
 				args[0] = file;
 				A.InvokeCode(script, args);
-				ok = true;
+				ShowHelpFile(file, openMode);
 			}
 			catch (RuntimeException)
-			{ }
-			finally
 			{
-				if (!ok && File.Exists(file))
+				if (File.Exists(file))
 					File.Delete(file);
 			}
+		}
 
-			if (ok)
-			{
-				IViewer viewer = Far.Api.CreateViewer();
-				viewer.FileName = file;
-				viewer.DeleteSource = DeleteSource.File;
-				viewer.DisableHistory = true;
-				viewer.Title = "Help";
-				viewer.Open();
-			}
+		// Why editor and .txt:
+		// - can copy all or parts
+		// - .txt is known to Colorer
+		static void ShowHelpFile(string fileName, OpenMode openMode)
+		{
+			var editor = Far.Api.CreateEditor();
+			editor.FileName = fileName;
+			editor.DeleteSource = DeleteSource.File;
+			editor.DisableHistory = true;
+			editor.IsLocked = true;
+			editor.Title = "Help";
+			editor.Open(openMode);
 		}
 
 		static void ShowAreaHelp()

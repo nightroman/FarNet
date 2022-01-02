@@ -31,6 +31,7 @@ task clean {
 }
 
 task install {
+	Stop-Process -Name Far -ErrorAction Ignore
 	foreach($_ in $Builds) { Invoke-Build install $_ }
 	Copy-Item Far.exe.config $FarHome
 	Copy-Item -Destination "$FarHome\FarNet" @(

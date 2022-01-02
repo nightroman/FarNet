@@ -1,5 +1,15 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 5.8.0 =
+
+Requires FarNet 5.8.0.
+
+Added the command console v2 (previously retired in 5.2.0).
+It is started in panels by F11 \ PowerShell \ Invoke commands.
+
+Added Start-Far.ps1, useful for starting with a command.
+In particular may be used for starting as command console.
+
 = 5.7.3 =
 
 ** Potentially breaking change, review Assert-Far usage **
@@ -548,7 +558,7 @@ Use FarNet 5.0.45
 Command console:
 - Fixed missing cursor on cls.
 - Fixed extra empty line on Read-Host.
-- Fixed a conflict between console app output and prompt. _140317_205620
+- Fixed a conflict between console app output and prompt.
 
 = 5.0.67 =
 

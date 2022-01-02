@@ -11,7 +11,6 @@ namespace PowerShellFar
 	{
 		public const string
 			// main menu
-			MenuCommandConsole /**/ = "&c. Command console ", //! end space for right margin
 			MenuInvokeCommands /**/ = "&1. Invoke commands",
 			MenuInvokeSelected /**/ = "&2. Invoke selected",
 			MenuBackgroundJobs /**/ = "&3. Background jobs",
@@ -72,6 +71,7 @@ namespace PowerShellFar
 	{
 		public const string
 			BreakpointDialog = "breakpoint-dialog",
+			CommandConsole = "command-console-dialog",
 			CommandHistory = "command-history",
 			CommandLine = "command-line",
 			BackgroundJobsMenu = "background-jobs-menu",

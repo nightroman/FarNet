@@ -1,6 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 5.8.0 =
+
+Added (experimental) SetUserScreen for new features in PSF.
+
 = 5.7.4 =
 
 - List menus: [Ins] adds a new part (•), to filter in found.

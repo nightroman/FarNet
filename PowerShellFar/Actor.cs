@@ -10,6 +10,7 @@ using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace PowerShellFar
 {
@@ -544,15 +545,28 @@ Continue with this current directory?
 				Act(code, null, Far.Api.MacroState == MacroState.None);
 		}
 		/// <summary>
-		/// Prompts to input code using the non-modal dialog and invokes the code.
+		/// Prompts to input PowerShell commands.
 		/// Called on "Invoke commands".
 		/// </summary>
 		public async void InvokeInputCodeAsync()
 		{
+			if (Far.Api.Window.Kind == WindowKind.Panels)
+			{
+				StartCommandConsole();
+				return;
+			}
+
 			var ui = CreateInputDialog();
 			var code = await ui.ShowAsync();
 			if (!string.IsNullOrEmpty(code))
 				await Tasks.Job(() => Act(code, null, Far.Api.MacroState == MacroState.None));
+		}
+		/// <summary>
+		/// Starts "Command console".
+		/// </summary>
+		public void StartCommandConsole()
+		{
+			_ = UI.ReadCommand.RunAsync();
 		}
 		/// <summary>
 		/// Invokes the selected text or the current line text in the editor or the command line.

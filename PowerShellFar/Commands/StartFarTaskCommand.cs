@@ -222,15 +222,11 @@ param($Script, $Data, $Arguments)
 				FarNet.Works.Far2.Api.WaitSteps().GetAwaiter().GetResult();
 
 				//! if the job returns a task, await and return
-				if (result.Count == 1 && result[0] != null && result[0].BaseObject is Task task2)
+				if (result.Count == 1 && result[0]?.BaseObject is Task task2)
 				{
 					task2.GetAwaiter().GetResult();
 
-					var pi = task2.GetType().GetProperty("Result");
-					if (pi == null)
-						return;
-
-					var result2 = pi.GetValue(task2);
+					var result2 = task2.GetType().GetProperty("Result")?.GetValue(task2);
 					if (result2 != null)
 						WriteObject(result2);
 				}
@@ -301,8 +297,8 @@ param($Script, $Data, $Arguments)
 					ps.AddScript(_codeJob, true).AddArgument(Script).AddArgument(Self._data).AddArgument(Arguments);
 					ps.Invoke();
 
-						//! Assert-Far may stop by PipelineStoppedException
-						if (ps.InvocationStateInfo.Reason != null)
+					//! Assert-Far may stop by PipelineStoppedException
+					if (ps.InvocationStateInfo.Reason != null)
 						throw ps.InvocationStateInfo.Reason;
 				});
 
@@ -363,6 +359,12 @@ param($Script, $Data, $Arguments)
 			}
 		}
 
+		const string NameInvokeTaskJob = "Invoke-TaskJob";
+		const string NameInvokeTaskCmd = "Invoke-TaskCmd";
+		const string NameInvokeTaskRun = "Invoke-TaskRun";
+		const string NameInvokeTaskKeys = "Invoke-TaskKeys";
+		const string NameInvokeTaskMacro = "Invoke-TaskMacro";
+
 		static StartFarTaskCommand()
 		{
 			_iss = InitialSessionState.CreateDefault();
@@ -375,16 +377,16 @@ param($Script, $Data, $Arguments)
 
 			// add commands
 			_iss.Commands.Add(new SessionStateCommandEntry[] {
-				new SessionStateAliasEntry("job", "Invoke-TaskJob"),
-				new SessionStateAliasEntry("ps:", "Invoke-TaskCmd"),
-				new SessionStateAliasEntry("run", "Invoke-TaskRun"),
-				new SessionStateAliasEntry("keys", "Invoke-TaskKeys"),
-				new SessionStateAliasEntry("macro", "Invoke-TaskMacro"),
-				new SessionStateCmdletEntry("Invoke-TaskJob", typeof(InvokeTaskJob), string.Empty),
-				new SessionStateCmdletEntry("Invoke-TaskCmd", typeof(InvokeTaskCmd), string.Empty),
-				new SessionStateCmdletEntry("Invoke-TaskRun", typeof(InvokeTaskRun), string.Empty),
-				new SessionStateCmdletEntry("Invoke-TaskKeys", typeof(InvokeTaskKeys), string.Empty),
-				new SessionStateCmdletEntry("Invoke-TaskMacro", typeof(InvokeTaskMacro), string.Empty),
+				new SessionStateAliasEntry("job", NameInvokeTaskJob),
+				new SessionStateAliasEntry("ps:", NameInvokeTaskCmd),
+				new SessionStateAliasEntry("run", NameInvokeTaskRun),
+				new SessionStateAliasEntry("keys", NameInvokeTaskKeys),
+				new SessionStateAliasEntry("macro", NameInvokeTaskMacro),
+				new SessionStateCmdletEntry(NameInvokeTaskJob, typeof(InvokeTaskJob), string.Empty),
+				new SessionStateCmdletEntry(NameInvokeTaskCmd, typeof(InvokeTaskCmd), string.Empty),
+				new SessionStateCmdletEntry(NameInvokeTaskRun, typeof(InvokeTaskRun), string.Empty),
+				new SessionStateCmdletEntry(NameInvokeTaskKeys, typeof(InvokeTaskKeys), string.Empty),
+				new SessionStateCmdletEntry(NameInvokeTaskMacro, typeof(InvokeTaskMacro), string.Empty),
 			});
 		}
 

@@ -81,6 +81,12 @@ namespace PowerShellFar
 		/// </summary>
 		public override void EnterNestedPrompt()
 		{
+			if (A.IsCommandMode)
+			{
+				PowerShellFar.UI.ReadCommand.Loop(true);
+				return;
+			}
+
 			// push the last
 			IEditor keepNested = _nested;
 
@@ -122,7 +128,11 @@ namespace PowerShellFar
 		/// </summary>
 		public override void ExitNestedPrompt()
 		{
-			if (_nested != null)
+			if (A.IsCommandMode)
+			{
+				PowerShellFar.UI.ReadCommand.Exit = true;
+			}
+			else if (_nested != null)
 			{
 				var nested = _nested;
 				_nested = null;

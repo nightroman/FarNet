@@ -652,25 +652,25 @@ INT_PTR FarDialog::DialogProc(intptr_t msg, intptr_t param1, void* param2)
 				ColoringEventArgs ea(fc);
 				FarDialogItemColors& arg = *(FarDialogItemColors*)param2;
 
-				ea.Foreground1 = ConsoleColor(arg.Colors[0].ForegroundColor);
-				ea.Background1 = ConsoleColor(arg.Colors[0].BackgroundColor);
-				ea.Foreground2 = ConsoleColor(arg.Colors[1].ForegroundColor);
-				ea.Background2 = ConsoleColor(arg.Colors[1].BackgroundColor);
-				ea.Foreground3 = ConsoleColor(arg.Colors[2].ForegroundColor);
-				ea.Background3 = ConsoleColor(arg.Colors[2].BackgroundColor);
-				ea.Foreground4 = ConsoleColor(arg.Colors[3].ForegroundColor);
-				ea.Background4 = ConsoleColor(arg.Colors[3].BackgroundColor);
+				ea.Foreground1 = ConsoleColor(arg.Colors[0].ForegroundColor & 0xFF);
+				ea.Background1 = ConsoleColor(arg.Colors[0].BackgroundColor & 0xFF);
+				ea.Foreground2 = ConsoleColor(arg.Colors[1].ForegroundColor & 0xFF);
+				ea.Background2 = ConsoleColor(arg.Colors[1].BackgroundColor & 0xFF);
+				ea.Foreground3 = ConsoleColor(arg.Colors[2].ForegroundColor & 0xFF);
+				ea.Background3 = ConsoleColor(arg.Colors[2].BackgroundColor & 0xFF);
+				ea.Foreground4 = ConsoleColor(arg.Colors[3].ForegroundColor & 0xFF);
+				ea.Background4 = ConsoleColor(arg.Colors[3].BackgroundColor & 0xFF);
 
 				fc->_Coloring(this, % ea);
 
-				arg.Colors[0].ForegroundColor = COLORREF(ea.Foreground1);
-				arg.Colors[0].BackgroundColor = COLORREF(ea.Background1);
-				arg.Colors[1].ForegroundColor = COLORREF(ea.Foreground2);
-				arg.Colors[1].BackgroundColor = COLORREF(ea.Background2);
-				arg.Colors[2].ForegroundColor = COLORREF(ea.Foreground3);
-				arg.Colors[2].BackgroundColor = COLORREF(ea.Background3);
-				arg.Colors[3].ForegroundColor = COLORREF(ea.Foreground4);
-				arg.Colors[3].BackgroundColor = COLORREF(ea.Background4);
+				arg.Colors[0].ForegroundColor = 0xFF000000 | COLORREF(ea.Foreground1);
+				arg.Colors[0].BackgroundColor = 0xFF000000 | COLORREF(ea.Background1);
+				arg.Colors[1].ForegroundColor = 0xFF000000 | COLORREF(ea.Foreground2);
+				arg.Colors[1].BackgroundColor = 0xFF000000 | COLORREF(ea.Background2);
+				arg.Colors[2].ForegroundColor = 0xFF000000 | COLORREF(ea.Foreground3);
+				arg.Colors[2].BackgroundColor = 0xFF000000 | COLORREF(ea.Background3);
+				arg.Colors[3].ForegroundColor = 0xFF000000 | COLORREF(ea.Foreground4);
+				arg.Colors[3].BackgroundColor = 0xFF000000 | COLORREF(ea.Background4);
 
 				return 1;
 			}

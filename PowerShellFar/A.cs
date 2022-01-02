@@ -18,6 +18,7 @@ namespace PowerShellFar
 	{
 		/// <summary>PowerShellFar actor.</summary>
 		public static Actor Psf => _Psf_;
+		public static bool IsCommandMode;
 		static Actor _Psf_;
 		public static void Connect(Actor psf)
 		{
@@ -36,14 +37,6 @@ namespace PowerShellFar
 		public static void Message(string message)
 		{
 			Far.Api.Message(message, Res.Me, MessageOptions.LeftAligned);
-		}
-		/// <summary>
-		/// Shows a stop pipeline message.
-		/// </summary>
-		public static void AskStopPipeline()
-		{
-			if (0 == Far.Api.Message("Stop running commands? (like Ctrl-C in console)", Res.Me, MessageOptions.YesNo))
-				throw new PipelineStoppedException();
 		}
 		/// <summary>
 		/// Creates standard Far viewer ready for opening (F3)

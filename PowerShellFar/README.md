@@ -123,8 +123,9 @@ Use the Far Manager command line to type and invoke commands with the prefixes
 
 **Invoke commands**
 
-The input box can be opened at any moment: `[F11] \ PowerShellFar \ Invoke
-commands`. See [Invoke commands dialog](#invoke-commands-dialog).
+Prompts for PowerShell commands: `[F11] \ PowerShellFar \ Invoke commands`.
+In panels: [Command console dialog](#command-console-dialog).
+In other areas: [Invoke commands dialog](#invoke-commands-dialog).
 
 **Selected code**
 
@@ -239,8 +240,16 @@ manually and should not pollute the history.
 
 **Invoke commands**
 
-You are prompted to enter a PowerShell command to invoke. Output is shown in
-the viewer. See [Invoke commands dialog](#invoke-commands-dialog) for details.
+You are prompted to enter PowerShell commands.
+
+In panels it works like console with the one line input box at the bottom. The
+prompt is shown repeatedly after each command. The output is written to the
+console.
+See [Command console dialog](#command-console-dialog).
+
+In other areas the enhanced input box is used.
+The output is shown in the viewer.
+See [Invoke commands dialog](#invoke-commands-dialog).
 
 **Invoke selected**
 
@@ -293,13 +302,75 @@ For scripts it is exposed as `$Psf.ShowHelp()`.
 
 
 *********************************************************************
+## Command console dialog
+
+[Contents]
+[Menu commands](#command-console-dialog)
+
+This dialog is started from panels by `[F11] \ PowerShellFar \ Invoke commands`.
+
+It is the genuine console with the prompt dialog at the bottom. The prompt is
+shown repeatedly after each command. Command output is written to the console.
+
+**Prompt**
+
+Like in the PowerShell console, the command prompt is defined by the function
+`prompt`, either default or custom in the profile. `prompt` normally returns
+text. It can use `Write-Host` for colors but this text is printed before the
+command line.
+
+**Keys and actions:**
+
+- `[Enter]`
+
+    Invokes the typed commands.
+
+- `[Tab]`
+
+    Invokes code completion (TabExpansion).
+
+- `[F1]`
+
+    If the input line is empty shows this topic.
+    Otherwise shows PowerShell help for the current command or parameters.
+
+- `[F2]`
+
+    Opens the Far Manager user menu.
+
+- `[F4]`
+
+    Opens the editor for the alternative code input.
+    Multiline commands are not added to the history.
+
+- `[F10]`
+
+    Exits the command console.
+
+- `[Esc]`
+
+    Clears the input line or exits the command console.
+
+- `[Up]`
+
+    Gets the previous command from history.
+
+- `[Down]`
+
+    Gets the next command from history.
+
+- `[F11] \ PowerShellFar \ Command history`
+
+    Shows the [command history](#command-history).
+
+
+*********************************************************************
 ## Invoke commands dialog
 
 [Contents]
 [Menu commands](#menu-commands)
 
-The input box can be opened at any moment:
-`[F11] \ PowerShellFar \ Invoke commands`.
+It is opened in all areas but panels by `[F11] \ PowerShellFar \ Invoke commands`.
 
 This dialog is used for typing and invoking PowerShell commands.
 The output is shown in the viewer.
@@ -382,18 +453,7 @@ The command history is shown by `[F11] \ PowerShellFar \ Command history`.
 
     Removes old and duplicated commands from the history.
 
-**Incremental filter**
-
-Typed characters are immediately applied as the filter. `*` and `?` are treated
-as wildcard characters.
-
-- `[BS]`
-
-    Removes the last character from the incremental filter.
-
-- `[ShiftBS]`
-
-    Removes the incremental filter string completely.
+- [List menu keys](https://github.com/nightroman/FarNet/tree/master/FarNet#list-menu)
 
 
 *********************************************************************

@@ -12,8 +12,6 @@ namespace PowerShellFar.UI
 {
 	class InputDialog
 	{
-		public static readonly Guid TypeId = new Guid("416ff960-9b6b-4f3f-8bda-0c9274c75e53");
-
 		public string Title { get; set; }
 		public IList<string> Prompt { get; set; }
 		public string Text { get; set; }
@@ -32,7 +30,7 @@ namespace PowerShellFar.UI
 			int h = 5 + Prompt.Count;
 
 			uiDialog = Far.Api.CreateDialog(-1, -1, w, h);
-			uiDialog.TypeId = TypeId;
+			uiDialog.TypeId = new Guid(Guids.InputDialog);
 			uiDialog.AddBox(3, 1, w - 4, h - 2, Title);
 
 			var uiPrompt = new List<IText>(Prompt.Count);

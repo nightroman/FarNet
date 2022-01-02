@@ -172,6 +172,12 @@ namespace FarNet
 		/// </remarks>
 		public abstract void ShowUserScreen();
 		/// <summary>
+		/// EXPERIMENTAL
+		/// </summary>
+		/// <returns>Old level.</returns>
+		/// <param name="level">New level.</param>
+		public abstract int SetUserScreen(int level);
+		/// <summary>
 		/// Writes text to the console with the current colors.
 		/// </summary>
 		/// <param name="text">The text to be written.</param>

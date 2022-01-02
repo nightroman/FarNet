@@ -580,19 +580,34 @@ bool isConsoleModal()
 	return (wi.Flags & WIF_MODAL) != 0;
 }
 
+
 const intptr_t UserScreenNoNewLine = 1;
+
+#pragma push_macro("FCTL_GETUSERSCREEN")
+#undef FCTL_GETUSERSCREEN
+void static GetUserScreen()
+{
+	ConsoleColor fc = Console::ForegroundColor;
+	ConsoleColor bc = Console::BackgroundColor;
+	Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETUSERSCREEN, UserScreenNoNewLine, 0);
+	Console::ForegroundColor = fc;
+	Console::BackgroundColor = bc;
+}
+#pragma pop_macro("FCTL_GETUSERSCREEN")
+
+#pragma push_macro("FCTL_SETUSERSCREEN")
+#undef FCTL_SETUSERSCREEN
+void static SetUserScreen()
+{
+	Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, UserScreenNoNewLine, 0);
+}
+#pragma pop_macro("FCTL_SETUSERSCREEN")
 
 void FarUI::ShowUserScreen()
 {
 	// only if not shown
 	if (_UserScreenCount == 0)
-	{
-		ConsoleColor fc = Console::ForegroundColor;
-		ConsoleColor bc = Console::BackgroundColor;
-		Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETUSERSCREEN, UserScreenNoNewLine, 0);
-		Console::ForegroundColor = fc;
-		Console::BackgroundColor = bc;
-	}
+		::GetUserScreen();
 
 	// update always, for stats
 	++_UserScreenCount;
@@ -602,18 +617,31 @@ void FarUI::SaveUserScreen()
 {
 	// only if done, assuming paired calls
 	if (_UserScreenCount == 1)
-		Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, UserScreenNoNewLine, 0);
+		::SetUserScreen();
 
 	// update but keep positive for reset
 	if (_UserScreenCount > 0)
 		--_UserScreenCount;
 }
 
+int FarUI::SetUserScreen(int level)
+{
+	int oldLevel = _UserScreenCount;
+	_UserScreenCount = level;
+
+	if (level == 0)
+		::SetUserScreen();
+	else
+		::GetUserScreen();
+
+	return oldLevel;
+}
+
 void FarUI::ResetUserScreen()
 {
 	// only if shown and not done
 	if (_UserScreenCount > 0)
-		Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, UserScreenNoNewLine, 0);
+		::SetUserScreen();
 
 	// reset
 	_UserScreenCount = 0;

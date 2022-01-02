@@ -4,6 +4,7 @@
 
 using FarNet;
 using FarNet.Tools;
+using System;
 
 namespace PowerShellFar
 {
@@ -11,6 +12,14 @@ namespace PowerShellFar
 	{
 		static readonly HistoryLog _log = new HistoryLog(Entry.LocalData + "\\PowerShellFarHistory.log", Settings.Default.MaximumHistoryCount);
 		internal static HistoryLog Log { get { return _log; } }
+		/// <summary>
+		/// History list used for getting commands by Up/Down.
+		/// </summary>
+		public static string[] Cache { get; set; }
+		/// <summary>
+		/// History list current index.
+		/// </summary>
+		public static int CacheIndex { get; set; }
 		/// <summary>
 		/// Gets history lines.
 		/// </summary>
@@ -52,7 +61,7 @@ namespace PowerShellFar
 				case WindowKind.Dialog:
 					var dialog = Far.Api.Dialog;
 					var typeId = dialog.TypeId;
-					if (typeId != UI.InputDialog.TypeId)
+					if (typeId != new Guid(Guids.ReadCommandDialog) && typeId != new Guid(Guids.InputDialog))
 						break;
 					var line = Far.Api.Line;
 					if (line == null || line.IsReadOnly)
@@ -71,6 +80,56 @@ namespace PowerShellFar
 			// invoke input
 			if (!string.IsNullOrEmpty(code))
 				await Tasks.Job(() => A.Psf.Act(code, null, true));
+		}
+		public static string GetNextCommand(bool up, string current)
+		{
+			string lastUsed = null;
+
+			if (History.Cache == null)
+			{
+				lastUsed = current;
+				History.Cache = History.ReadLines();
+				History.CacheIndex = History.Cache.Length;
+			}
+			else if (History.CacheIndex >= 0 && History.CacheIndex < History.Cache.Length)
+			{
+				lastUsed = History.Cache[History.CacheIndex];
+			}
+
+			if (up)
+			{
+				for (; ; )
+				{
+					if (--History.CacheIndex < 0)
+					{
+						History.CacheIndex = -1;
+						return string.Empty;
+					}
+					else
+					{
+						var command = History.Cache[History.CacheIndex];
+						if (command != lastUsed)
+							return command;
+					}
+				}
+			}
+			else
+			{
+				for (; ; )
+				{
+					if (++History.CacheIndex >= History.Cache.Length)
+					{
+						History.CacheIndex = History.Cache.Length;
+						return string.Empty;
+					}
+					else
+					{
+						var command = History.Cache[History.CacheIndex];
+						if (command != lastUsed)
+							return command;
+					}
+				}
+			}
 		}
 	}
 }

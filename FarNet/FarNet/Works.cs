@@ -47,6 +47,20 @@ namespace FarNet.Works
 	/// <summary>
 	/// INTERNAL
 	/// </summary>
+	public static class Tasks2
+	{
+		///
+		public static async Task<object> Wait(string message, Func<bool> job)
+		{
+			if (await Tasks.Wait(50, 5000, job))
+				return null;
+			else
+				throw new Exception(message);
+		}
+	}
+	/// <summary>
+	/// INTERNAL
+	/// </summary>
 	public sealed class DelegateToString
 	{
 		readonly Delegate _handler;
@@ -138,7 +152,7 @@ namespace FarNet.Works
 				name += extension;
 			else
 				name += "." + extension;
-			return Path.GetTempPath() +  name;
+			return Path.GetTempPath() + name;
 		}
 		/// <summary>
 		/// INTERNAL

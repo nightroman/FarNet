@@ -49,10 +49,7 @@ namespace PowerShellFar.UI
 
 				// [Esc]:
 				if (answer < 0)
-				{
-					A.AskStopPipeline();
-					continue;
-				}
+					return -1;
 
 				// choise:
 				if (answer < choices.Count)

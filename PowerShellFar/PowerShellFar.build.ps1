@@ -41,6 +41,7 @@ task help {
 }
 
 task installBin {
+	Stop-Process -Name Far -ErrorAction Ignore
 	exec { robocopy Bin\$Configuration\$TargetFramework $PsfHome PowerShellFar.dll PowerShellFar.xml /r:0 } (0..2)
 }
 
