@@ -1,0 +1,30 @@
+﻿<#
+.Synopsis
+	TabExpansion UI with file/command items.
+#>
+
+job {
+	$Data.Path0 = $Far.Panel.CurrentDirectory
+	$Far.Panel.CurrentDirectory = 'C:\ROM\APS'
+}
+
+job {
+	$Far.CommandLine.Text = 'Test-Fa'
+}
+
+macro 'Keys"F11 2 7" -- expand'
+
+job {
+	# items shown differently
+	Assert-Far -Dialog
+	$r = $Far.Dialog[1].Items
+	Assert-Far $r.Count -eq 2
+	Assert-Far $r[0].Text -eq '.\Test-Far.ps1'
+	Assert-Far $r[1].Text -eq 'Test-Far.ps1'
+}
+
+macro 'Keys"Esc Esc" -- exit list, drop command line'
+
+job {
+	$Far.Panel.CurrentDirectory = $Data.Path0
+}

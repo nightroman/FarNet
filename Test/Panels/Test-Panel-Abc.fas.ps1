@@ -1,0 +1,71 @@
+﻿<#
+.Synopsis
+	Test panel basics
+#>
+
+### test .GoToPath and then Get-FarPath
+job {
+	$Far.Panel.GoToPath('C:\ROM\Aps\About.ps1')
+	Assert-Far (Get-FarFile).Name -eq 'About.ps1'
+
+	$Far.Panel2.GoToPath('C:\TEMP\Missed-Missed-Missed')
+	Assert-Far @(
+		$Far.Panel2.CurrentDirectory -eq 'C:\TEMP'
+		(Get-FarFile -Passive).Name -eq '..'
+	)
+}
+job {
+	Assert-Far @(
+		(Get-FarPath -Mirror) -eq 'C:\TEMP\About.ps1'
+		(Get-FarPath -Mirror -Selected) -eq 'C:\TEMP\About.ps1'
+	)
+}
+
+### test .GoToName (dumb, test, fail) and (existing, missed)
+# assume C:\ROM\APS is active
+# mind test order
+job {
+	# dumb, existing
+	$Far.Panel.GoToName('AbOuT-AnY.Ps1')
+	Assert-Far ((Get-FarFile).Name -eq 'AbOuT-AnY.Ps1')
+
+	# test, existing
+	Assert-Far ($Far.Panel.GoToName('AbOuT.Ps1', $false))
+	Assert-Far ((Get-FarFile).Name -eq 'AbOuT.Ps1')
+
+	# dumb, missed
+	$Far.Panel.GoToName('missed-missed')
+	Assert-Far ((Get-FarFile).Name -eq 'About.ps1')
+
+	# test, missed
+	Assert-Far (!$Far.Panel.GoToName('missed-missed', $false))
+	Assert-Far ((Get-FarFile).Name -eq 'About.ps1')
+
+	# fail, existing
+	Assert-Far ($Far.Panel.GoToName('About-Any.ps1', $true))
+	Assert-Far ((Get-FarFile).Name -eq 'About-Any.ps1')
+
+	# fail, missed
+	$failed = $false
+	try {
+		$Far.Panel.GoToName('missed-missed', $true)
+	}
+	catch {
+		$failed = $true
+		$global:Error.RemoveAt(0)
+	}
+	Assert-Far $failed
+	Assert-Far ((Get-FarFile).Name -eq 'About-Any.ps1')
+}
+
+### tests Alt+Letter because Find-FarFile is to use in other places
+#! Alt+Letter: directory
+macro 'Keys"AltU s e d Esc"'
+job {
+	Assert-Far ((Get-FarFile).Name -eq 'Used')
+}
+#! Alt+Letter: with *
+macro 'Keys"Alt* A b o u t * A n * p s 1 Esc"'
+job {
+	Assert-Far ((Get-FarFile).Name -eq 'About-Any.ps1')
+}
