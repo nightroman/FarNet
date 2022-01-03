@@ -10,16 +10,23 @@ namespace PowerShellFar
 {
 	static class History
 	{
-		static readonly HistoryLog _log = new HistoryLog(Entry.LocalData + "\\PowerShellFarHistory.log", Settings.Default.MaximumHistoryCount);
+		static readonly HistoryLog _log = new(Entry.LocalData + "\\PowerShellFarHistory.log", Settings.Default.MaximumHistoryCount);
 		internal static HistoryLog Log { get { return _log; } }
 		/// <summary>
-		/// History list used for getting commands by Up/Down.
+		/// Up/Down cache.
 		/// </summary>
-		public static string[] Cache { get; set; }
+		static string[] navCache;
 		/// <summary>
-		/// History list current index.
+		/// Up/Down current index.
 		/// </summary>
-		public static int CacheIndex { get; set; }
+		static int navIndex { get; set; }
+		/// <summary>
+		/// Removes navigation data.
+		/// </summary>
+		public static void ResetNavigation()
+		{
+			navCache = null;
+		}
 		/// <summary>
 		/// Gets history lines.
 		/// </summary>
@@ -33,6 +40,7 @@ namespace PowerShellFar
 		public static void AddLine(string value)
 		{
 			_log.AddLine(value);
+			ResetNavigation();
 		}
 		/// <summary>
 		/// For Actor.
@@ -85,29 +93,29 @@ namespace PowerShellFar
 		{
 			string lastUsed = null;
 
-			if (History.Cache == null)
+			if (navCache == null)
 			{
 				lastUsed = current;
-				History.Cache = History.ReadLines();
-				History.CacheIndex = History.Cache.Length;
+				navCache = ReadLines();
+				navIndex = navCache.Length;
 			}
-			else if (History.CacheIndex >= 0 && History.CacheIndex < History.Cache.Length)
+			else if (navIndex >= 0 && navIndex < navCache.Length)
 			{
-				lastUsed = History.Cache[History.CacheIndex];
+				lastUsed = navCache[navIndex];
 			}
 
 			if (up)
 			{
 				for (; ; )
 				{
-					if (--History.CacheIndex < 0)
+					if (--navIndex < 0)
 					{
-						History.CacheIndex = -1;
+						navIndex = -1;
 						return string.Empty;
 					}
 					else
 					{
-						var command = History.Cache[History.CacheIndex];
+						var command = navCache[navIndex];
 						if (command != lastUsed)
 							return command;
 					}
@@ -117,14 +125,14 @@ namespace PowerShellFar
 			{
 				for (; ; )
 				{
-					if (++History.CacheIndex >= History.Cache.Length)
+					if (++navIndex >= navCache.Length)
 					{
-						History.CacheIndex = History.Cache.Length;
+						navIndex = navCache.Length;
 						return string.Empty;
 					}
 					else
 					{
-						var command = History.Cache[History.CacheIndex];
+						var command = navCache[navIndex];
 						if (command != lastUsed)
 							return command;
 					}

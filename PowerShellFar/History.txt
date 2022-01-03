@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 5.8.1 =
+
+Amended command console history navigation.
+
 = 5.8.0 =
 
 Requires FarNet 5.8.0.

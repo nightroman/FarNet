@@ -279,6 +279,9 @@ namespace PowerShellFar.UI
 
 			// reset the flag for other loops
 			Exit = false;
+
+			// clear
+			History.ResetNavigation();
 		}
 	}
 }

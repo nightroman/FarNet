@@ -44,7 +44,13 @@ namespace PowerShellFar
 		///
 		public static Task ExitCommandConsole()
 		{
+			var dialog = Far.Api.Dialog;
+			if (dialog == null || dialog.TypeId != new Guid(Guids.ReadCommandDialog))
+				throw new Exception("Expected read command dialog.");
+
+			dialog[0].Text = string.Empty;
 			Far.Api.PostMacro("Keys'Esc'");
+
 			return FarNet.Works.Tasks2.Wait(nameof(ExitCommandConsole), () =>
 				Far.Api.Window.Kind == WindowKind.Panels &&
 				Far.Api.Panel.IsVisible && Far.Api.Panel2.IsVisible);
