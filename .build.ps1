@@ -121,3 +121,32 @@ task nuget {
 	# Move result archives
 	Move-Item FarNet\FarNet.*.nupkg, PowerShellFar\FarNet.PowerShellFar.*.nupkg $Home -Force
 }
+
+# Synopsis: Build all modules.
+task modules {
+	assert (!(Get-Process [f]ar)) 'Exit Far.'
+
+	# used main
+	Invoke-Build Build, Clean CopyColor\.build.ps1
+	Invoke-Build Build, Clean Drawer\.build.ps1
+	Invoke-Build Build, Clean EditorKit\.build.ps1
+	Invoke-Build Build, Clean Explore\.build.ps1
+	Invoke-Build Build, Clean FolderChart\.build.ps1
+	Invoke-Build Build, Clean FSharpFar\.build.ps1
+	Invoke-Build Build, Clean RightControl\.build.ps1
+	Invoke-Build Build, Clean RightWords\.build.ps1
+	Invoke-Build Build, Clean Vessel\.build.ps1
+
+	# used demo
+	Invoke-Build Build, Clean Modules\FarNet.Demo\.build.ps1
+
+	# pure demo
+	Invoke-Build TestBuild Modules\Modules.build.ps1
+},
+buildFarDescription
+
+# Synopsis: Ensure Help, to test by Test-Help-.ps1
+task buildFarDescription {
+	#fix hardcoded path
+	Invoke-Build Build, Help, Clean ..\..\DEV\FarDescription\.build.ps1
+}

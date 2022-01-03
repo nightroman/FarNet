@@ -3,8 +3,8 @@
 	Tests TabExpansion2.
 #>
 
-$ErrorActionPreference = 1
-Assert-Far (!$Error) -Message 'Please clear $Errors.'
+$ErrorActionPreference=1
+Assert-Far (!$Error) -Message 'Please clear errors.'
 
 # Ensure TabExpansion2 is loaded in the FarHost
 if ($Host.Name -ceq 'FarHost') {
@@ -285,7 +285,7 @@ Assert-Far (!$Error)
 ### Invoke-Build, alias x
 
 # assume two build files
-Push-Location $env:FarDev
+Push-Location $env:FarNetCode\Zoo
 
 # Task
 Test "ib " { $_ -ccontains 'release' -and $_ -ccontains 'testNuGet' -and $_ -cnotcontains 'pushSource' }
@@ -294,21 +294,21 @@ Test "ib -File ReleaseFarNet.build.ps1 " { $_ -ccontains 'pushSource' -and $_ -c
 #_190903_023748 (see ReleaseFarNet.build.ps1)
 Test "ib -File ReleaseFarNet.build.ps1 p" { $_ -ccontains 'pushSource' -and $_ -cnotcontains 'commitSource' }
 
-# File - directories (assume ^\w+$) and .ps1 files
-Test "ib . " { $_.Count -ge 6 -and $_ -match '^\w+$|\.ps1$' }
+# File - directories .ps1 files
+Test "ib . " { $_ -eq 'PowerShellFar' -and $_ -like '*.ps1'  }
 
 # ** File - directories only
-Test "ib ** " { $_.Count -ge 5 -and $_[0] -eq 'Bugs' -and $_.Count -eq ($_ -match '^\w+$').Count }
+Test "ib ** " { $_.Count -ge 3 -and $_ -eq 'PowerShellFar' -and @($_ -like '*.ps1').Count -eq 0 }
 
 Pop-Location
 
 ### whole script
 
-#! use of $env:FarDev gives a silent error
-Test @'
+#! use of $env: gives a silent error
+Test (@'
 ib  `
--File C:\ROM\FarDev\.build.ps1
-'@ -caret 3 { $_ -ccontains 'zipFarDev' }
+-File {0}
+'@ -f "$env:FarNetCode\Zoo\.build.ps1") -caret 3 { $_ -ccontains 'zipFarDev' }
 
 ### Equals, GetType, ToString
 
