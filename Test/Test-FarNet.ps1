@@ -26,9 +26,9 @@
 [CmdletBinding()]
 param(
 	$Tests = -1,
-	$ExpectedTaskCount = 213,
-	$ExpectedBasicsCount = 15,
-	$ExpectedExtrasCount = 3,
+	$ExpectedTaskCount = 217,
+	$ExpectedBasicsCount = 16,
+	$ExpectedExtrasCount = 1,
 	[switch]$All,
 	[switch]$Quit
 )
@@ -57,7 +57,7 @@ else {
 }
 
 ### Initialize
-$null = & "$env:FarNetCode\Test\Initialize-Test.far.ps1"
+$null = & $PSScriptRoot\About\Initialize-Test.far.ps1
 
 ### Basic tests
 if (!$Tests) {
@@ -74,7 +74,6 @@ if (!$Tests) {
 if ($All) {
 	$extras = @(
 		Get-Item "$env:FarNetCode\Test\TabExpansion\Test-TabExpansion2-.ps1"
-		Get-Item "$env:FarNetCode\Test\Test-*.far.ps1"
 	)
 	Assert-Far $extras.Count -eq $ExpectedExtrasCount
 	foreach($test in $extras) {

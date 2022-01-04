@@ -184,16 +184,9 @@ namespace PowerShellFar.UI
 
 				if (_Dialog.Selected == _Console)
 				{
-					if (A.IsCommandMode)
-					{
-						ReadCommand.Loop(false);
-					}
-					else
-					{
-						var console = Interactive.Create(false);
-						console.Editor.Open(OpenMode.Modal);
-						continue;
-					}
+					var console = Interactive.Create(false);
+					console.Editor.Open(OpenMode.Modal);
+					continue;
 				}
 
 				if (_Dialog.Selected == _Edit)

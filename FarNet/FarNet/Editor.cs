@@ -740,11 +740,6 @@ namespace FarNet
 		/// If the editor has not been saved at least once then it is equal to <c>DateTime.MinValue</c>.
 		/// </remarks>
 		public abstract DateTime TimeOfSave { get; }
-		/// <summary>
-		/// Makes the instance window active.
-		/// </summary>
-		/// <remarks>It may throw if the window cannot be activated.</remarks>
-		public abstract void Activate();
 		/// <include file='doc.xml' path='doc/Data/*'/>
 		public Hashtable Data { get { return _Data ?? (_Data = new Hashtable()); } }
 		Hashtable _Data;
@@ -778,6 +773,21 @@ namespace FarNet
 		/// This method gets the result once for this editor, then returns the same value.
 		/// </remarks>
 		public abstract bool HasColorer();
+		/// <summary>
+		/// Makes the window current.
+		/// </summary>
+		public void Activate()
+		{
+			var myId = Id;
+			for (int i = Far.Api.Window.Count - 1; i >= 0; i--)
+			{
+				if (Far.Api.Window.GetIdAt(i) == myId && Far.Api.Window.GetKindAt(i) == WindowKind.Editor)
+				{
+					Far.Api.Window.SetCurrentAt(i);
+					return;
+				}
+			}
+		}
 	}
 
 	/// <summary>

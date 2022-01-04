@@ -16,9 +16,10 @@ namespace PowerShellFar
 {
 	static class A
 	{
-		/// <summary>PowerShellFar actor.</summary>
+		/// <summary>
+		/// PowerShellFar actor.
+		/// </summary>
 		public static Actor Psf => _Psf_;
-		public static bool IsCommandMode;
 		static Actor _Psf_;
 		public static void Connect(Actor psf)
 		{

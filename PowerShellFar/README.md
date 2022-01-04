@@ -308,16 +308,11 @@ For scripts it is exposed as `$Psf.ShowHelp()`.
 [Menu commands](#command-console-dialog)
 
 This dialog is started from panels by `[F11] \ PowerShellFar \ Invoke commands`.
+To start by scripts, call `$Psf.StartCommandConsole()`.
 
-It is the genuine console with the prompt dialog at the bottom. The prompt is
+It is a realistic console with the prompt dialog at the bottom. The prompt is
 shown repeatedly after each command. Command output is written to the console.
-
-**Prompt**
-
-Like in the PowerShell console, the command prompt is defined by the function
-`prompt`, either default or custom in the profile. `prompt` normally returns
-text. It can use `Write-Host` for colors but this text is printed before the
-command line.
+The prompt is not modal, you may switch to other windows.
 
 **Keys and actions:**
 
@@ -327,21 +322,8 @@ command line.
 
 - `[Tab]`
 
-    Invokes code completion (TabExpansion).
-
-- `[F1]`
-
-    If the input line is empty shows this topic.
-    Otherwise shows PowerShell help for the current command or parameters.
-
-- `[F2]`
-
-    Opens the Far Manager user menu.
-
-- `[F4]`
-
-    Opens the editor for the alternative code input.
-    Multiline commands are not added to the history.
+    If the input is empty changes the active panel.
+    Otherwise invokes code completion (TabExpansion).
 
 - `[F10]`
 
@@ -349,20 +331,51 @@ command line.
 
 - `[Esc]`
 
-    Clears the input line or exits the command console.
+    Clears the input or exits the command console.
 
-- `[Up]`
+- `[F1]`
+
+    If the input is empty shows this topic.
+    Otherwise shows PowerShell context help.
+
+- `[F5]`
+
+    Opens the editor for the alternative code input.
+    Multiline commands are not added to the history.
+    Use same `[F5]` in the editor to "try" the code.
+
+- `[CtrlE]`
 
     Gets the previous command from history.
 
-- `[Down]`
+- `[CtrlX]`
 
     Gets the next command from history.
+
+- `[CtrlEnter]`, `[CtrlF]`
+
+    Inserts the current file name or full path.
 
 - `[F11] \ PowerShellFar \ Command history`
 
     Shows the [command history](#command-history).
 
+- `[Up]`, `[Down]`, `[PgUp]`, `[PgDn]`, `[F2]`, `[F3]`, `[F4]`, `[CtrlO]`, `[CtrlF1]`, `[CtrlF2]`
+
+    These keys are sent to the active panel for navigation, edit/view, hide/show.
+
+**Custom command prompt**
+
+Like in the PowerShell console, the command prompt is defined by the function
+`prompt`, either default or custom in the profile. `prompt` normally returns
+text. It can use `Write-Host` for colors but this text is printed before the
+command line.
+
+**Commands opening panels**
+
+When a typed command opens a panel then the command prompt temporarily closes,
+so that you can conveniently work with the opened panel as usual. But when the
+panel closes the command prompt is restarted.
 
 *********************************************************************
 ## Invoke commands dialog

@@ -12,6 +12,11 @@ job {
 	$e = $d.AddEdit(1, -1, 50, '')
 	$e.History = 'ApplyCmd'
 
+	#! fixed, was not called
+	$d.add_Initialized({
+		$_.Control.Text = 'Initialized!'
+	})
+
 	# opening, fill the list
 	$e.add_DropDownOpening({
 		$Data.log += '+Opening'
@@ -27,7 +32,7 @@ job {
 }
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq '_170930_060119'
+	Assert-Far $Far.Dialog[1].Text -eq 'Initialized!'
 }
 macro 'Keys"CtrlDown Enter" -- open combo, pick first'
 job {

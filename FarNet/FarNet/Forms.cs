@@ -593,6 +593,10 @@ namespace FarNet.Forms
 		/// </summary>
 		public abstract Place Rect { get; set; }
 		/// <summary>
+		/// Gets the internal identifier.
+		/// </summary>
+		public abstract IntPtr Id { get; }
+		/// <summary>
 		/// Gets or sets the dialog type ID.
 		/// </summary>
 		/// <remarks>
@@ -719,7 +723,15 @@ namespace FarNet.Forms
 		/// <summary>
 		/// Closes the dialog.
 		/// </summary>
-		public abstract void Close();
+		public void Close() => Close(-1);
+		/// <summary>
+		/// Closes the dialog.
+		/// </summary>
+		/// <param name="id">
+		/// Specifies the selected item ID.
+		/// Use -1 for the focused item.
+		/// </param>
+		public abstract void Close(int id);
 		/// <summary>
 		/// Gets a control by its ID.
 		/// </summary>
@@ -775,5 +787,20 @@ namespace FarNet.Forms
 		/// <include file='doc.xml' path='doc/Data/*'/>
 		public Hashtable Data { get { return _Data ?? (_Data = new Hashtable()); } }
 		Hashtable _Data;
+		/// <summary>
+		/// Makes the window current.
+		/// </summary>
+		public void Activate()
+		{
+			var myId = Id;
+			for (int i = Far.Api.Window.Count - 1; i >= 0; i--)
+			{
+				if (Far.Api.Window.GetIdAt(i) == myId)
+				{
+					Far.Api.Window.SetCurrentAt(i);
+					return;
+				}
+			}
+		}
 	}
 }

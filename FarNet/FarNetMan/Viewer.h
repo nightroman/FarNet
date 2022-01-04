@@ -24,6 +24,7 @@ public: DEF_EVENT_IMP(LosingFocus, _LosingFocus);
 public: DEF_EVENT_IMP(Opened, _Opened);
 public:
 	virtual property bool DisableHistory { bool get() override; void set(bool value) override; }
+	virtual property bool IsOpened { bool get() override; }
 	virtual property ViewerViewMode ViewMode { ViewerViewMode get() override; void set(ViewerViewMode value) override; }
 	virtual property bool WrapMode { bool get() override; void set(bool value) override; }
 	virtual property bool WordWrapMode { bool get() override; void set(bool value) override; }
@@ -39,7 +40,6 @@ public:
 	virtual property FarNet::Switching Switching { FarNet::Switching get() override; void set(FarNet::Switching value) override; }
 	virtual property ViewFrame Frame { ViewFrame get() override; void set(ViewFrame value) override; }
 public:
-	virtual void Activate() override;
 	virtual void Open(OpenMode mode) override;
 	virtual Int64 SetFrame(Int64 pos, int left, ViewFrameOptions options) override;
 	virtual void Close() override;
@@ -52,7 +52,6 @@ internal:
 	String^ _FileName;
 	DateTime _TimeOfOpen;
 private:
-	property bool IsOpened { bool get(); }
 	void AssertClosed();
 private:
 	FarNet::DeleteSource _DeleteSource;

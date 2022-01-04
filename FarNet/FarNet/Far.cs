@@ -329,28 +329,28 @@ namespace FarNet
 		/// <returns>Entered text or null if canceled.</returns>
 		public abstract string Input(string prompt, string history, string title, string text);
 		/// <summary>
-		/// Posts the job to be called when the core gets control.
+		/// Posts the action called when the core gets control.
 		/// </summary>
 		/// <param name="job">The job action.</param>
 		/// <remarks>
-		/// It is mostly designed for background job calls. Normally other threads are not allowed to call the core.
-		/// Violation of this rule may lead to crashes and unpredictable results. This method is thread safe. It is
-		/// used to post a job that will be called from the main thread as soon as the core gets control.
-		/// The posted job can call the core as usual.
+		/// Parallel threads should not call the core directly.
+		/// They should use this method to post an action calling the core.
+		/// This action is called from the main thread when the core gets control.
 		/// </remarks>
+		/// <seealso cref="Tasks"/>
 		public abstract void PostJob(Action job);
 		/// <summary>
-		/// Posts the step, an actions called later from the plugin menu.
+		/// Posts the action called later from the plugin menu.
 		/// </summary>
 		/// <param name="step">The step action.</param>
 		/// <remarks>
 		/// This method uses macros to open the plugin menu which calls the
-		/// posted action. This step call may be needed for opening panels
-		/// in unusual scenarios.
+		/// posted action. This "step" call is needed for opening panels.
 		/// <para>
 		/// Unlike jobs, steps must not be posted from parallel threads.
 		/// </para>
 		/// </remarks>
+		/// <seealso cref="Tasks"/>
 		public abstract void PostStep(Action step);
 		/// <summary>
 		/// Gets the current macro area.

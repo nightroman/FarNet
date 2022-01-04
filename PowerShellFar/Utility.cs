@@ -33,28 +33,6 @@ namespace PowerShellFar
 		{
 			return Format.SetupColumns(columns);
 		}
-		///
-		public static Task StartCommandConsole()
-		{
-			_ = UI.ReadCommand.RunAsync();
-			return FarNet.Works.Tasks2.Wait(nameof(StartCommandConsole), () =>
-				Far.Api.Window.Kind == WindowKind.Dialog &&
-				Far.Api.Dialog.TypeId == new Guid(Guids.ReadCommandDialog));
-		}
-		///
-		public static Task ExitCommandConsole()
-		{
-			var dialog = Far.Api.Dialog;
-			if (dialog == null || dialog.TypeId != new Guid(Guids.ReadCommandDialog))
-				throw new Exception("Expected read command dialog.");
-
-			dialog[0].Text = string.Empty;
-			Far.Api.PostMacro("Keys'Esc'");
-
-			return FarNet.Works.Tasks2.Wait(nameof(ExitCommandConsole), () =>
-				Far.Api.Window.Kind == WindowKind.Panels &&
-				Far.Api.Panel.IsVisible && Far.Api.Panel2.IsVisible);
-		}
 		internal static Process StartExternalViewer(string fileName)
 		{
 			string externalViewerFileName = Settings.Default.ExternalViewerFileName;

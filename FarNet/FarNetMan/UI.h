@@ -43,7 +43,6 @@ public:
 	virtual void SetProgressFlash() override;
 	virtual void SetProgressState(TaskbarProgressBarState state) override;
 	virtual void SetProgressValue(int currentValue, int maximumValue) override;
-	virtual int SetUserScreen(int level) override;
 	virtual void ScrollBufferContents(Place source, Point destination, Place clip, Works::BufferCell fill) override;
 	virtual void SetBufferContents(Place rectangle, Works::BufferCell fill) override;
 	virtual void SetBufferContents(Point origin, array<Works::BufferCell, 2>^ contents) override;

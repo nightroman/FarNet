@@ -1,6 +1,25 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 5.8.1 =
+
+Dialog:
+- add Id, Close(int), Activate()
+- fix non-modal Initialized event
+
+Tasks:
+- add Command(Action)
+- Editor() and Viewer() support already opened
+
+UI:
+- removed experimental SetUserScreen
+
+Viewer:
+- add IsOpened
+
+Window:
+- add GetIdAt()
+
 = 5.8.0 =
 
 Added (experimental) SetUserScreen for new features in PSF.

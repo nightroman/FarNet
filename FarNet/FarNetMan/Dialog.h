@@ -38,6 +38,7 @@ public:
 	virtual property Place Rect { Place get() override; void set(Place value) override; }
 	virtual property String^ HelpTopic { String^ get() override { return _HelpTopic; } void set(String^ value) override { _HelpTopic = value; } }
 	virtual property int TimerInterval { int get() override { return _TimerInterval; } void set(int value) override { _TimerInterval = value; } }
+	virtual property IntPtr Id { IntPtr get() override; }
 public:
 	virtual IBox^ AddBox(int left, int top, int right, int bottom, String^ text) override;
 	virtual IButton^ AddButton(int left, int top, String^ text) override;
@@ -52,7 +53,7 @@ public:
 	virtual IText^ AddVerticalText(int left, int top, int bottom, String^ text) override;
 	virtual IUserControl^ AddUserControl(int left, int top, int right, int bottom) override;
 	virtual bool Show() override;
-	virtual void Close() override;
+	virtual void Close(int id) override;
 	virtual void DisableRedraw() override;
 	virtual void EnableRedraw() override;
 	virtual void Move(Point point, bool absolute) override;

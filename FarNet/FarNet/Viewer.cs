@@ -132,6 +132,10 @@ namespace FarNet
 		/// </remarks>
 		public abstract void Open(OpenMode mode);
 		/// <summary>
+		/// Gets true if the viewer is opened.
+		/// </summary>
+		public abstract bool IsOpened { get; }
+		/// <summary>
 		/// Gets the current file size, in symbols, not in bytes.
 		/// </summary>
 		public abstract long FileSize { get; }
@@ -178,10 +182,20 @@ namespace FarNet
 		/// </summary>
 		public abstract DateTime TimeOfOpen { get; }
 		/// <summary>
-		/// Makes the instance window active.
+		/// Makes the window current.
 		/// </summary>
-		/// <remarks>It may throw if the window cannot be activated.</remarks>
-		public abstract void Activate();
+		public void Activate()
+		{
+			var myId = Id;
+			for (int i = Far.Api.Window.Count - 1; i >= 0; i--)
+			{
+				if (Far.Api.Window.GetIdAt(i) == myId && Far.Api.Window.GetKindAt(i) == WindowKind.Viewer)
+				{
+					Far.Api.Window.SetCurrentAt(i);
+					return;
+				}
+			}
+		}
 	}
 
 	/// <summary>

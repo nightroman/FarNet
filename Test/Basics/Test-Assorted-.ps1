@@ -1,4 +1,4 @@
-<#
+п»ї<#
 .Synopsis
 	Test assorted features.
 #>
@@ -6,7 +6,7 @@
 # Test clipboard methods
 function Test-Clipboard
 {
-	$s1 = "йцукен"
+	$s1 = "Р№С†СѓРєРµРЅ"
 	$Far.CopyToClipboard($s1)
 	$s2 = $Far.PasteFromClipboard()
 	Assert-Far ($s1 -eq $s2)
@@ -31,12 +31,6 @@ function Test-ModulePath
 	# other path names depend on x86 x64 and v4.0 has extra path in Program Files
 }
 
-### Start
-
 Test-Clipboard
 Test-ModulePath
 Test-Version
-
-# Test external program
-# _120131_061639 Far 3.0.2426 - after this mouse and CtrlC does not work
-cmd /c echo All tests have passed.

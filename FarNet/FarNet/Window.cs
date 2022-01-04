@@ -2,6 +2,8 @@
 // FarNet plugin for Far Manager
 // Copyright (c) Roman Kuzmin
 
+using System;
+
 namespace FarNet
 {
 	/// <summary>
@@ -50,6 +52,14 @@ namespace FarNet
 		/// menu, dialog: header.
 		/// </remarks>
 		public abstract string GetNameAt(int index);
+		/// <summary>
+		/// Gets the internal identifier.
+		/// </summary>
+		/// <param name="index">
+		/// Window index or -1 for the current window.
+		/// See <see cref="Count"/>.
+		/// </param>
+		public abstract IntPtr GetIdAt(int index);
 		/// <summary>
 		/// Sets the current window by the specified index.
 		/// </summary>

@@ -624,19 +624,6 @@ void FarUI::SaveUserScreen()
 		--_UserScreenCount;
 }
 
-int FarUI::SetUserScreen(int level)
-{
-	int oldLevel = _UserScreenCount;
-	_UserScreenCount = level;
-
-	if (level == 0)
-		::SetUserScreen();
-	else
-		::GetUserScreen();
-
-	return oldLevel;
-}
-
 void FarUI::ResetUserScreen()
 {
 	// only if shown and not done

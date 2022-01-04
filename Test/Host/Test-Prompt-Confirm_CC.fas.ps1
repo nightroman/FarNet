@@ -3,7 +3,7 @@
 	PromptForChoice()
 #>
 
-job { [PowerShellFar.Zoo]::StartCommandConsole() }
+job { $Psf.RunCommandConsole() }
 
 ### Test Esc
 
@@ -43,4 +43,4 @@ job {
 	Assert-Far (!(Test-Path Variable:\090328194636))
 }
 
-job { [PowerShellFar.Zoo]::ExitCommandConsole() }
+job { $Psf.StopCommandConsole() }

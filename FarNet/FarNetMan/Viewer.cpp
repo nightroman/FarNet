@@ -65,7 +65,6 @@ void Viewer::Open(OpenMode mode)
 	PIN_ES(pinTitle, _Title);
 
 	// from modal? set modal
-	WindowKind preWindowKind = Far::Api->Window->Kind;
 	bool preIsModal = Far::Api->Window->IsModal;
 	if (preIsModal)
 		flags &= ~VF_NONMODAL;
@@ -82,10 +81,6 @@ void Viewer::Open(OpenMode mode)
 		_Window.Bottom,
 		flags,
 		_CodePage); //?? test window values
-
-	// redraw Far
-	if (preWindowKind == WindowKind::Dialog) //rk need?
-		Far::Api->UI->Redraw();
 
 	// errors: see editor
 	if (_id == -1)
@@ -330,25 +325,6 @@ void Viewer::CodePage::set(int value)
 DateTime Viewer::TimeOfOpen::get()
 {
 	return _TimeOfOpen;
-}
-
-void Viewer::Activate()
-{
-	int nWindow = Far::Api->Window->Count;
-	for(int i = 0; i < nWindow; ++i)
-	{
-		WindowKind kind = Far::Api->Window->GetKindAt(i);
-		if (kind != WindowKind::Viewer)
-			continue;
-
-		String^ name = Far::Api->Window->GetNameAt(i);
-		if (name == _FileName)
-		{
-			Far::Api->Window->SetCurrentAt(i);
-			return;
-		}
-	}
-	throw gcnew InvalidOperationException("Cannot find the window by name.");
 }
 
 }

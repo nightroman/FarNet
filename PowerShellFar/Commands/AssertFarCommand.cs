@@ -132,7 +132,7 @@ namespace PowerShellFar.Commands
 					Fail(Message ?? "The current window is not dialog.");
 
 				if (_isDialogTypeId && Far.Api.Dialog.TypeId != _DialogTypeId)
-					Fail(Message ?? "Unexpected dialog type ID.");
+					Fail(Message ?? $"Unexpected dialog type ID {Far.Api.Dialog.TypeId}");
 			}
 
 			// check editor
@@ -164,8 +164,13 @@ namespace PowerShellFar.Commands
 				if (!Far.Api.Panel.IsPlugin)
 					Fail(Message ?? "The active panel is not plugin.");
 
-				if (_isExplorerTypeId && (Far.Api.Panel is not Panel panel || panel.Explorer.TypeId != _ExplorerTypeId))
-					Fail(Message ?? "Unexpected active panel explorer type ID.");
+				if (_isExplorerTypeId)
+				{
+					if (Far.Api.Panel is not Panel panel)
+						Fail(Message ?? "Active panel is not module panel.");
+					else if (panel.Explorer.TypeId != _ExplorerTypeId)
+						Fail(Message ?? $"Unexpected active panel explorer type ID {panel.Explorer.TypeId}");
+				}
 			}
 
 			// check plugin 2
@@ -174,8 +179,13 @@ namespace PowerShellFar.Commands
 				if (!Far.Api.Panel2.IsPlugin)
 					Fail(Message ?? "The passive panel is not plugin.");
 
-				if (_isExplorerTypeId && (Far.Api.Panel2 is not Panel panel || panel.Explorer.TypeId != _ExplorerTypeId2))
-					Fail(Message ?? "Unexpected passive panel explorer type ID.");
+				if (_isExplorerTypeId)
+				{
+					if (Far.Api.Panel2 is not Panel panel)
+						Fail(Message ?? "Passive panel is not module panel.");
+					else if (panel.Explorer.TypeId != _ExplorerTypeId2)
+						Fail(Message ?? "Unexpected passive panel explorer type ID {panel.Explorer.TypeId}");
+				}
 			}
 
 			// check native

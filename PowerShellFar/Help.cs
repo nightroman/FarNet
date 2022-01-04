@@ -57,11 +57,13 @@ namespace PowerShellFar
 			if (token == null)
 				return;
 
+			string title;
 			string script;
 			object[] args = null;
 
 			if (token.Type == PSTokenType.Command)
 			{
+				title = $"Help {token.Content}";
 				script = "Get-Help $args[1] -Full > $args[0]";
 				args = new object[] { null, token.Content };
 			}
@@ -83,6 +85,7 @@ namespace PowerShellFar
 					upper == "WARNINGVARIABLE" ||
 					upper == "WHATIF")
 				{
+					title = "Help about_CommonParameters";
 					script = "Get-Help about_CommonParameters > $args[0]";
 					args = new object[] { null };
 				}
@@ -92,17 +95,20 @@ namespace PowerShellFar
 					if (command == null)
 						return;
 
+					title = $"Help {command.Content} -{parameter}";
 					script = "Get-Help $args[1] -Parameter $args[2] > $args[0]";
 					args = new object[] { null, command.Content, parameter };
 				}
 			}
 			else if (token.Type == PSTokenType.Keyword)
 			{
+				title = $"Help about_{token.Content}";
 				script = $"Get-Help about_{token.Content} > $args[0]";
 				args = new object[] { null };
 			}
 			else if (token.Type == PSTokenType.Operator)
 			{
+				title = "Help about_operators";
 				script = "Get-Help about_operators > $args[0]";
 				args = new object[] { null };
 			}
@@ -117,7 +123,7 @@ namespace PowerShellFar
 			{
 				args[0] = file;
 				A.InvokeCode(script, args);
-				ShowHelpFile(file, openMode);
+				ShowHelpFile(file, title, openMode);
 			}
 			catch (RuntimeException)
 			{
@@ -129,14 +135,14 @@ namespace PowerShellFar
 		// Why editor and .txt:
 		// - can copy all or parts
 		// - .txt is known to Colorer
-		static void ShowHelpFile(string fileName, OpenMode openMode)
+		static void ShowHelpFile(string fileName, string title, OpenMode openMode)
 		{
 			var editor = Far.Api.CreateEditor();
 			editor.FileName = fileName;
 			editor.DeleteSource = DeleteSource.File;
 			editor.DisableHistory = true;
 			editor.IsLocked = true;
-			editor.Title = "Help";
+			editor.Title = title;
 			editor.Open(openMode);
 		}
 

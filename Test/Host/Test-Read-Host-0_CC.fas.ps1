@@ -6,7 +6,7 @@
 	This scenario calls ReadLine(), not Prompt()
 #>
 
-job { [PowerShellFar.Zoo]::StartCommandConsole() }
+job { $Psf.RunCommandConsole() }
 
 ### Test Esc
 
@@ -32,9 +32,8 @@ run {
 }
 job {
 	Assert-Far -DialogTypeId ([PowerShellFar.Guids]::ReadLineDialog)
-	Assert-Far $Far.Dialog[1].Text -eq ''
 	$Far.Dialog[0].Text = '140302_142029'
 }
 keys Enter
 
-job { [PowerShellFar.Zoo]::ExitCommandConsole() }
+job { $Psf.StopCommandConsole() }

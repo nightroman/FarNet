@@ -50,7 +50,6 @@ void Editor::Open(OpenMode mode)
 	int nPos = _frameStart.CaretColumn >= 0 ? _frameStart.CaretColumn + 1 : -1;
 
 	// from modal? set modal
-	WindowKind preWindowKind = Far::Api->Window->Kind;
 	bool preIsModal = Far::Api->Window->IsModal;
 	if (preIsModal)
 		mode = OpenMode::Modal;
@@ -120,10 +119,6 @@ void Editor::Open(OpenMode mode)
 		nLine,
 		nPos,
 		_CodePage); //?? test window values, make window settable
-
-	// redraw Far
-	if (preWindowKind == WindowKind::Dialog) //rk need?
-		Far::Api->UI->Redraw();
 
 	//! Check errors: ID must not be -1 (even if it is already closed then ID = -2).
 	//! Using Far diagnostics fires false errors, e.g.:
@@ -1191,25 +1186,6 @@ DateTime Editor::TimeOfOpen::get()
 DateTime Editor::TimeOfSave::get()
 {
 	return _TimeOfSave;
-}
-
-void Editor::Activate()
-{
-	int nWindow = Far::Api->Window->Count;
-	for (int i = 0; i < nWindow; ++i)
-	{
-		WindowKind kind = Far::Api->Window->GetKindAt(i);
-		if (kind != WindowKind::Editor)
-			continue;
-
-		String^ name = Far::Api->Window->GetNameAt(i);
-		if (name == _FileName)
-		{
-			Far::Api->Window->SetCurrentAt(i);
-			return;
-		}
-	}
-	throw gcnew InvalidOperationException("Cannot find the window by name.");
 }
 
 // STOP: EF_LOCKED is not used, it is not flexible as our flag.

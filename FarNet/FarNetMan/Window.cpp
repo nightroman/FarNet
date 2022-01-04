@@ -8,6 +8,14 @@
 
 namespace FarNet
 {;
+IntPtr Window::GetIdAt(int index)
+{
+	WindowInfo wi;
+	Call_ACTL_GETWINDOWINFO(wi, index);
+
+	return (IntPtr)wi.Id;
+}
+
 WindowKind Window::GetKindAt(int index)
 {
 	WindowInfo wi;

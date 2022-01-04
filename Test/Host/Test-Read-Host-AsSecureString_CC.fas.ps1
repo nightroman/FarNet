@@ -3,7 +3,7 @@
 	SecureString input
 #>
 
-job { [PowerShellFar.Zoo]::StartCommandConsole() }
+job { $Psf.RunCommandConsole() }
 
 ### Empty prompt, calls ReadLineAsSecureString()
 
@@ -15,9 +15,11 @@ run {
 job {
 	Assert-Far -DialogTypeId ([PowerShellFar.Guids]::ReadLineDialog)
 	Assert-Far $Far.Dialog[0].IsPassword
-	Assert-Far $Far.Dialog[1].Text -eq ': '
 }
 keys p a s s Enter
+job {
+	Assert-Far $Far.UI.GetBufferLineText(-2) -eq '*'
+}
 
 ### Not empty prompt, calls Prompt()
 run {
@@ -27,9 +29,12 @@ run {
 }
 job {
 	Assert-Far -DialogTypeId ([PowerShellFar.Guids]::ReadLineDialog)
-	Assert-Far $Far.Dialog[0].IsPassword
-	Assert-Far $Far.Dialog[1].Text -eq ': '
+	Assert-Far $Far.Dialog[0].Text -eq 'Password: '
+	Assert-Far $Far.Dialog[1].IsPassword
 }
 keys p a s s Enter
+job {
+	Assert-Far $Far.UI.GetBufferLineText(-2) -eq 'Password: *'
+}
 
-job { [PowerShellFar.Zoo]::ExitCommandConsole() }
+job { $Psf.StopCommandConsole() }

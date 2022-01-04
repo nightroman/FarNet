@@ -1,5 +1,16 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 5.8.2 =
+
+Requires FarNet 5.8.1
+
+Command console:
+- The prompt is not modal, you may switch windows.
+- Panels are no longer hidden, this is up you.
+- Commands opening panels are now supported.
+- Changed keys, see help F1 in empty prompt.
+- Some keys are sent to the active panel.
+
 = 5.8.1 =
 
 Amended command console history navigation.

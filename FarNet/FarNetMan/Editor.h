@@ -99,7 +99,6 @@ namespace FarNet
 		virtual String^ GetSelectedText(String^ separator) override;
 		virtual String^ GetText(String^ separator) override;
 		virtual TextWriter^ OpenWriter() override;
-		virtual void Activate() override;
 		virtual void Add(String^ text) override;
 		virtual void AddDrawer(IModuleDrawer^ drawer) override;
 		virtual void BeginAsync() override;

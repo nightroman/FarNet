@@ -21,8 +21,9 @@ namespace PowerShellFar
 		const string TextDefaultChoiceForMultipleChoices = @"(default is ""{0}"")";
 		const string TextDefaultChoicePrompt = @"(default is ""{0}"")";
 		const string TextDefaultChoicesForMultipleChoices = "(default choices are {0})";
-		const string TextPrompt = ": ";
+		const string TextPromptSuffix = ": ";
 		const string TextPromptForChoiceHelp = "[?] Help ";
+		const int MaxReadLinePrompt = 50;
 
 		const ConsoleColor ForegroundColor = ConsoleColor.Gray;
 		const ConsoleColor BackgroundColor = ConsoleColor.Black;
@@ -59,9 +60,12 @@ namespace PowerShellFar
 			_writers.Push(writer);
 		}
 
-		bool IsConsole()
+		// Why test for ConsoleOutputWriter?
+		// -- open CC; -- F11 \ PSF \ Invoke commands (input box!); -- type `Read-Host`.
+		// It should not be ReadLine because this workflow is input box and viewer output.
+		bool IsReadCommand()
 		{
-			return A.IsCommandMode;
+			return UI.ReadCommand.Instance != null && Writer is ConsoleOutputWriter;
 		}
 
 		#region PSHostUserInterface
@@ -74,7 +78,7 @@ namespace PowerShellFar
 
 			var r = new Dictionary<string, PSObject>();
 
-			if (IsConsole())
+			if (IsReadCommand())
 			{
 				if (!string.IsNullOrEmpty(caption))
 					WriteLine(PromptColor, BackgroundColor, caption);
@@ -92,19 +96,21 @@ namespace PowerShellFar
 					var arrayList = new ArrayList();
 					for (; ; )
 					{
-						var prompt2 = string.Format(null, "{0}[{1}]", prompt, arrayList.Count);
+						var prompt2 = $"{prompt}[{arrayList.Count}]";
 						string text;
-						if (IsConsole())
+						if (IsReadCommand())
 						{
-							WriteLine(prompt2);
-
-							//TODO HelpMessage - is fine by [F1]?
-							var ui = new UI.ReadLine() { Prompt = TextPrompt, HelpMessage = current.HelpMessage, History = Res.HistoryPrompt };
+							var ui = new UI.ReadLine(new UI.ReadLine.Args
+							{
+								Prompt = prompt2 + TextPromptSuffix,
+								History = Res.HistoryPrompt,
+								HelpMessage = current.HelpMessage,
+							});
 							if (!ui.Show())
 								throw new PipelineStoppedException();
 
-							text = ui.Text;
-							WriteLine(TextPrompt + text);
+							text = ui.Out;
+							WriteLine(ui.In.Prompt + text);
 						}
 						else
 						{
@@ -134,17 +140,37 @@ namespace PowerShellFar
 					var safe = type == typeof(SecureString);
 
 					string text;
-					if (IsConsole())
+					if (IsReadCommand())
 					{
-						WriteLine(prompt);
+						string prompt2;
+						if (safe && safe && prompt == " ")
+						{
+							//: Read-Host -AsSecureString
+							prompt2 = string.Empty;
+						}
+						else if (prompt.Length > MaxReadLinePrompt || prompt.Contains("\n"))
+						{
+							//: Read-Host -Prompt {too long|many lines}
+							WriteLine(prompt);
+							prompt2 = TextPromptSuffix;
+						}
+						else
+						{
+							prompt2 = prompt + TextPromptSuffix;
+						}
 
-						//TODO HelpMessage - [F1] - really?
-						var ui = new UI.ReadLine() { Prompt = TextPrompt, HelpMessage = current.HelpMessage, History = Res.HistoryPrompt, Password = safe };
+						var ui = new UI.ReadLine(new UI.ReadLine.Args
+						{
+							Prompt = prompt2,
+							History = Res.HistoryPrompt,
+							HelpMessage = current.HelpMessage,
+							Password = safe,
+						});
 						if (!ui.Show())
 							throw new PipelineStoppedException();
 
-						text = ui.Text;
-						WriteLine(TextPrompt + (safe ? "*" : text));
+						text = ui.Out;
+						WriteLine(prompt2 + (safe ? "*" : text));
 					}
 					else
 					{
@@ -177,7 +203,7 @@ namespace PowerShellFar
 			if (choices == null || choices.Count == 0) throw new ArgumentOutOfRangeException("choices");
 			if (defaultChoice < -1 || defaultChoice >= choices.Count) throw new ArgumentOutOfRangeException("defaultChoice");
 
-			if (!IsConsole())
+			if (!IsReadCommand())
 			{
 				int choice = UI.ChoiceMsg.Show(caption, message, choices);
 				if (choice < 0)
@@ -203,14 +229,17 @@ namespace PowerShellFar
 			{
 				WriteChoicePrompt(hotkeysAndPlainLabels, dictionary, false);
 
-				var ui = new UI.ReadLine() { Prompt = TextPrompt };
+				var ui = new UI.ReadLine(new UI.ReadLine.Args
+				{
+					Prompt = TextPromptSuffix
+				});
 				if (!ui.Show())
 					throw new PipelineStoppedException();
 
-				var text = ui.Text;
+				var text = ui.Out;
 
 				// echo
-				WriteLine(TextPrompt + ui.Text);
+				WriteLine(TextPromptSuffix + ui.Out);
 
 				if (text.Length == 0)
 				{
@@ -370,13 +399,16 @@ namespace PowerShellFar
 		/// </summary>
 		public override string ReadLine()
 		{
-			if (IsConsole())
+			if (IsReadCommand())
 			{
-				var ui = new UI.ReadLine() { History = Res.HistoryPrompt };
+				var ui = new UI.ReadLine(new UI.ReadLine.Args
+				{
+					History = Res.HistoryPrompt
+				});
 				if (!ui.Show())
 					throw new PipelineStoppedException();
 
-				var text = ui.Text;
+				var text = ui.Out;
 				WriteLine(text);
 				return text;
 			}

@@ -44,6 +44,10 @@ namespace FarNet
 		/// </summary>
 		/// <param name="job">The action job.</param>
 		/// <returns>The task which completes when the action job completes.</returns>
+		/// <remarks>
+		/// If the job opens a panel, use <see cref="OpenPanel(Action)"/> instead.
+		/// If the job may open a panel, use <see cref="Command"/> instead.
+		/// </remarks>
 		public static Task Job(Action job)
 		{
 			var task = new TaskCompletionSource<object>();
@@ -136,7 +140,7 @@ namespace FarNet
 		}
 
 		/// <summary>
-		/// Starts a task which opens the editor and completes when it closes.
+		/// Starts a task which opens the editor if not yet and completes when it closes.
 		/// </summary>
 		/// <param name="editor">The editor to open.</param>
 		/// <returns>The task which completes when the editor closes.</returns>
@@ -155,7 +159,8 @@ namespace FarNet
 				try
 				{
 					editor.Closed += onClosed;
-					editor.Open();
+					if (!editor.IsOpened)
+						editor.Open();
 				}
 				catch (Exception exn)
 				{
@@ -168,7 +173,7 @@ namespace FarNet
 		}
 
 		/// <summary>
-		/// Starts a task which opens the viewer and completes when it closes.
+		/// Starts a task which opens the viewer if not yet and completes when it closes.
 		/// </summary>
 		/// <param name="viewer">The viewer to open.</param>
 		/// <returns>The task which completes when the viewer closes.</returns>
@@ -187,7 +192,8 @@ namespace FarNet
 				try
 				{
 					viewer.Closed += onClosed;
-					viewer.Open();
+					if (!viewer.IsOpened)
+						viewer.Open();
 				}
 				catch (Exception exn)
 				{
@@ -328,6 +334,39 @@ namespace FarNet
 					return newPanel;
 
 				throw new InvalidOperationException("Panel was not opened.");
+			});
+		}
+
+		/// <summary>
+		/// Starts a task with the command like job.
+		/// </summary>
+		/// <param name="job">The command like job.</param>
+		/// <returns>The task which awaits the job and some internal extras.</returns>
+		/// <remarks>
+		/// If the job does not open a panel, use <see cref="Job"/> instead.
+		/// If the job opens a panel, use <see cref="OpenPanel(Action)"/> instead.
+		/// This method is for uncertain jobs like invoking interactive commands (REPL).
+		/// </remarks>
+		public static async Task<object> Command(Action job)
+		{
+			// open
+			var oldPanel = await Job(() =>
+			{
+				var panel = Far.Api.Panel;
+				job();
+				return panel;
+			});
+
+			// wait
+			await Works.Far2.Api.WaitSteps();
+
+			// test and return
+			return await Job(() =>
+			{
+				if (Far.Api.Panel is Panel newPanel && newPanel != oldPanel)
+					return newPanel;
+
+				return null;
 			});
 		}
 

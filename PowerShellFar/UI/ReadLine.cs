@@ -10,124 +10,117 @@ namespace PowerShellFar.UI
 {
 	class ReadLine
 	{
-		public string HelpMessage { get; set; }
-		public string History { get; set; }
-		public string Prompt { get; set; }
-		public bool Password { get; set; }
+		public readonly Args In;
+		public string Out => Edit.Text;
 
-		public string Text => _Text2 ?? _Edit.Text;
+		readonly IDialog Dialog;
+		readonly IText Text;
+		readonly IEdit Edit;
 
-		IDialog _Dialog;
-		IEdit _Edit;
-		string _Text2;
-		Func<bool> _show;
-
-		public bool Show()
+		public class Args
 		{
-			string prompt = Prompt ?? "";
-			var size = Far.Api.UI.WindowSize;
+			public string Prompt;
+			public string History;
+			public string HelpMessage;
+			public bool Password;
+		}
 
-			_Dialog = Far.Api.CreateDialog(0, size.Y - 1, size.X - 1, size.Y - 1);
-			_Dialog.TypeId = new Guid(Guids.ReadLineDialog);
-			_Dialog.NoShadow = true;
-			_Dialog.KeepWindowTitle = true;
+		class Layout
+		{
+			public int DialogLeft, DialogTop, DialogRight, DialogBottom;
+			public int TextLeft, TextTop, TextRight;
+			public int EditLeft, EditTop, EditRight;
+		}
 
-			if (Password)
-			{
-				_Edit = _Dialog.AddEditPassword(prompt.Length, 0, size.X - 1, string.Empty);
-			}
-			else
-			{
-				//! make 1 wider with history, to hide the arrow
-				_Edit = _Dialog.AddEdit(prompt.Length, 0, size.X - 1, string.Empty);
-				_Edit.History = History;
-			}
-			_Edit.Coloring += Coloring.ColorEditAsConsole;
+		public ReadLine(Args args)
+		{
+			In = args;
+
+			var prompt = args.Prompt ?? string.Empty;
+			var pos = GetLayout();
+
+			Dialog = Far.Api.CreateDialog(pos.DialogLeft, pos.DialogTop, pos.DialogRight, pos.DialogBottom);
+			Dialog.TypeId = new Guid(Guids.ReadLineDialog);
+			Dialog.NoShadow = true;
+			Dialog.KeepWindowTitle = true;
+			Dialog.ConsoleSizeChanged += Dialog_ConsoleSizeChanged;
+			Dialog.MouseClicked += Events.MouseClicked_IgnoreOutside;
 
 			if (prompt.Length > 0)
 			{
-				var uiText = _Dialog.AddText(0, 0, prompt.Length - 1, prompt);
-				uiText.Coloring += Coloring.ColorTextAsConsole;
+				Text = Dialog.AddText(pos.TextLeft, pos.TextTop, pos.TextRight, prompt);
+				Text.Coloring += Events.Coloring_TextAsConsole;
 			}
 
-			var uiArea = _Dialog.AddText(0, 1, size.X - 1, string.Empty);
-			uiArea.Coloring += Coloring.ColorTextAsConsole;
-
-			// hotkeys
-			_Edit.KeyPressed += OnKey;
-
-			// ignore clicks outside
-			_Dialog.MouseClicked += (sender, e) =>
+			if (args.Password)
 			{
-				if (e.Control == null)
-					e.Ignore = true;
-			};
-
-			for (; ; )
-			{
-				bool isDesktop = Far.Api.Window.Kind == WindowKind.Desktop;
-
-				//! or edit box history clears console text
-				if (isDesktop)
-					Far.Api.UI.SetUserScreen(Far.Api.UI.SetUserScreen(0));
-
-				bool yes = _Dialog.Show();
-
-				if (!yes)
-					return false;
-
-				if (_show == null)
-					return true;
-
-				//! or editor makes noise, e.g. Colorer "Reloading..." message, [1]
-				int screen = 0;
-				if (isDesktop)
-					screen = Far.Api.UI.SetUserScreen(0);
-
-				yes = _show();
-
-				//! do after [1] or it shows panels
-				if (isDesktop)
-					Far.Api.UI.SetUserScreen(screen);
-
-				_show = null;
-				if (yes)
-					return true;
+				Edit = Dialog.AddEditPassword(pos.EditLeft, pos.EditTop, pos.EditRight, string.Empty);
 			}
+			else
+			{
+				Edit = Dialog.AddEdit(pos.EditLeft, pos.EditTop, pos.EditRight, string.Empty);
+				Edit.History = args.History;
+			}
+			Edit.Coloring += Events.Coloring_EditAsConsole;
+			Edit.KeyPressed += Edit_KeyPressed;
 		}
 
-		void OnKey(object sender, KeyPressedEventArgs e)
+		public bool Show()
+		{
+			return Dialog.Show();
+		}
+
+		Layout GetLayout()
+		{
+			var prompt = In.Prompt ?? string.Empty;
+			var size = Far.Api.UI.WindowSize;
+
+			//! make one cell wider to hide the arrow
+			return new()
+			{
+				DialogLeft = 0,
+				DialogTop = size.Y - 1,
+				DialogRight = size.X - 1,
+				DialogBottom = size.Y - 1,
+				TextLeft = 0,
+				TextTop = 0,
+				TextRight = prompt.Length - 1,
+				EditLeft = prompt.Length,
+				EditTop = 0,
+				EditRight = size.X - 1
+			};
+		}
+
+		void Dialog_ConsoleSizeChanged(object sender, SizeEventArgs e)
+		{
+			var pos = GetLayout();
+			Dialog.Rect = new Place(pos.DialogLeft, pos.DialogTop, pos.DialogRight, pos.DialogBottom);
+			Edit.Rect = new Place(pos.EditLeft, pos.EditTop, pos.EditRight, pos.EditTop);
+			if (Text != null)
+				Text.Rect = new Place(pos.TextLeft, pos.TextTop, pos.TextRight, pos.TextTop);
+		}
+
+		void Edit_KeyPressed(object sender, KeyPressedEventArgs e)
 		{
 			switch (e.Key.VirtualKeyCode)
 			{
 				case KeyCode.Escape:
 					// clear the text or exit
-					if (_Edit.Line.Length > 0)
+					if (e.Key.Is() && Edit.Line.Length > 0)
 					{
 						e.Ignore = true;
-						_Edit.Text = "";
+						Edit.Text = string.Empty;
 					}
-					break;
+					return;
 				case KeyCode.F1:
 					// show the help message
-					e.Ignore = true;
-					if (!string.IsNullOrEmpty(HelpMessage))
-						Far.Api.Message(HelpMessage);
-					break;
-				case KeyCode.F4:
-					_show = () =>
+					if (e.Key.Is())
 					{
-						var args = new EditTextArgs() { Text = _Edit.Text, Title = "Input text" };
-						var text = Far.Api.AnyEditor.EditText(args);
-						if (text == args.Text)
-							return false;
-
-						_Text2 = text;
-						return true;
-					};
-					e.Ignore = true;
-					_Dialog.Close();
-					break;
+						e.Ignore = true;
+						if (!string.IsNullOrEmpty(In.HelpMessage))
+							Far.Api.Message(In.HelpMessage);
+					}
+					return;
 			}
 		}
 	}

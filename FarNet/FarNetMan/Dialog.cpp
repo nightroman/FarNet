@@ -9,15 +9,21 @@
 
 namespace FarNet
 {
-;
 // Dialog callback dispatches the event to the specified dialog
 INT_PTR WINAPI FarDialogProc(HANDLE hDlg, intptr_t msg, intptr_t param1, void* param2)
 {
-	for each (FarDialog ^ dialog in FarDialog::_dialogs)
+	for (int i = FarDialog::_dialogs.Count; --i >= 0;)
 	{
+		auto dialog = FarDialog::_dialogs[i];
+		if (dialog->_hDlg == INVALID_HANDLE_VALUE)
+		{
+			dialog->_hDlg = hDlg;
+			return dialog->DialogProc(msg, param1, param2);
+		}
 		if (dialog->_hDlg == hDlg)
 			return dialog->DialogProc(msg, param1, param2);
 	}
+
 	return Info.DefDlgProc(hDlg, msg, param1, param2);
 }
 
@@ -63,6 +69,11 @@ IControl^ FarDialog::Default::get()
 void FarDialog::Default::set(IControl^ value)
 {
 	_default = (FarControl^)value;
+}
+
+IntPtr FarDialog::Id::get()
+{
+	return (IntPtr)_hDlg;
 }
 
 IControl^ FarDialog::Focused::get()
@@ -310,6 +321,9 @@ bool FarDialog::Show()
 		if (HelpTopic)
 			_helpTopic = NewChars(HelpTopic);
 
+		//! register before init
+		_dialogs.Add(this);
+
 		// init
 		GUID typeId = ToGUID(_typeId);
 		_hDlg = Info.DialogInit(
@@ -328,10 +342,11 @@ bool FarDialog::Show()
 			nullptr);
 
 		if (_hDlg == INVALID_HANDLE_VALUE)
+		{
+			//! unregister
+			_dialogs.Remove(this);
 			throw gcnew InvalidOperationException("Cannot create dialog.");
-
-		// register
-		_dialogs.Add(this);
+		}
 
 		if (_NoModal)
 			return false;
@@ -411,10 +426,10 @@ void FarDialog::Free()
 	_dialogs.Remove(this);
 }
 
-void FarDialog::Close()
+void FarDialog::Close(int id)
 {
 	if (_hDlg != INVALID_HANDLE_VALUE)
-		Info.SendDlgMessage(_hDlg, DM_CLOSE, -1, 0);
+		Info.SendDlgMessage(_hDlg, DM_CLOSE, id, 0);
 }
 
 void FarDialog::Redraw()

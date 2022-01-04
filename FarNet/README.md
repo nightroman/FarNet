@@ -91,46 +91,30 @@ How to install and update FarNet and modules:
 
 If a FarNet module provides commands invoked by prefixes then these commands
 can be called from macros by `Plugin.Call()`. The first argument is the FarNet
-GUID. The second argument consists of 0-2 colons, a command prefix, a colon,
-and a command. For asynchronous jobs and steps the argument should start with
-one and two colons respectively.
+GUID. The second argument is a command with prefix. For asynchronous jobs and
+steps the argument starts with one and two colons respectively.
 
 The FarNet GUID is `"10435532-9BB3-487B-A045-B0E6ECAAB6BC"`.
 
-**Syntax and details**
+**Syntax**
 
 Synchronous command:
 
     Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "Prefix:Command")
 
-        - It is called from all macro areas
-        - It should avoid calling modal UI
-        - It cannot open panels
-
 Asynchronous job (`IFar.PostJob()`)
 
     Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":Prefix:Command")
-
-        - It is called from all macro areas
-        - It can call modal UI as usual
-        - It cannot open panels
 
 Asynchronous step (`IFar.PostStep()`)
 
     Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "::Prefix:Command")
 
-        - It is called from areas with the plugin menu
-        - It can call modal UI as usual
-        - It can open panels
+**Notes**
 
-Conclusion:
-
-- Synchronous calls are for simple actions with no or tiny interaction;
-- Asynchronous command normally should be the last in a macro;
-- Asynchronous jobs are for opening any UI but panels;
-- Asynchronous steps are for opening panels.
-
----
+- Synchronous calls are for simple actions, usually with no UI.
+- Asynchronous commands normally should be the last in macros.
+- Asynchronous steps are used for opening module panels.
 
 **Examples**
 
@@ -138,7 +122,7 @@ Synchronous. *RightControl* changes the caret position:
 
     Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:step-left")
 
-Asynchronous job. *PowerShellFar* opens a dialog:
+Asynchronous job. *PowerShellFar* shows a dialog:
 
     Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":ps: $Psf.InvokeInputCode()")
 
