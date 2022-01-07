@@ -3,11 +3,32 @@
 // Copyright (c) Roman Kuzmin
 
 using System;
+using System.IO;
 
 namespace FarNet.Works
 {
 	public static class PanelTools
 	{
+		public static void GoToPath(IPanel panel, string path)
+		{
+			if (path == null)
+				throw new ArgumentNullException(nameof(path));
+
+			//! can be null, e.g. for '\'
+			var dir = Path.GetDirectoryName(path);
+			if (dir == null && (path.StartsWith("\\") || path.StartsWith("/")))
+				dir = "\\";
+
+			if (!string.IsNullOrEmpty(dir))
+			{
+				panel.CurrentDirectory = dir;
+				panel.Redraw();
+			}
+
+			var name = Path.GetFileName(path);
+			if (name.Length > 0)
+				panel.GoToName(name);
+		}
 		public static void ResizeColumn(Panel panel, bool right)
 		{
 			if (panel == null) throw new ArgumentNullException("panel");

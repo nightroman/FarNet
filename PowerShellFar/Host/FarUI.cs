@@ -30,42 +30,49 @@ namespace PowerShellFar
 		const ConsoleColor PromptColor = ConsoleColor.White;
 		const ConsoleColor DefaultPromptColor = ConsoleColor.Yellow;
 
-		readonly Stack<OutputWriter> _writers = new();
-		ConsoleOutputWriter _console;
+		OutputWriter _writer;
+		readonly ConsoleOutputWriter _console = new();
 
 		/// <summary>
-		/// Current writer or the fallback console writer.
+		/// Gets true for using the console UI for read line, choice, etc.
+		/// </summary>
+		bool IsConsole()
+		{
+			if (_writer is ConsoleOutputWriter)
+				return true;
+
+			if (UI.ReadCommand.Instance == null)
+				return false;
+
+			var from = Far.Api.Window.Kind;
+			if (from == WindowKind.Desktop)
+				return true;
+
+			return from == WindowKind.Dialog && Far.Api.Dialog.TypeId == new Guid(Guids.ReadCommandDialog);
+		}
+
+		/// <summary>
+		/// Gets the current explicit writer or the fallback console writer.
 		/// </summary>
 		internal override OutputWriter Writer
 		{
 			get
 			{
-				if (_writers.Count > 0)
-					return _writers.Peek();
-
-				if (_console == null)
-					_console = new ConsoleOutputWriter();
-
-				return _console;
+				return _writer ?? _console;
 			}
 		}
 
 		internal OutputWriter PopWriter()
 		{
-			return _writers.Pop();
+			var head = _writer;
+			_writer = head.Next;
+			return head;
 		}
 
 		internal void PushWriter(OutputWriter writer)
 		{
-			_writers.Push(writer);
-		}
-
-		// Why test for ConsoleOutputWriter?
-		// -- open CC; -- F11 \ PSF \ Invoke commands (input box!); -- type `Read-Host`.
-		// It should not be ReadLine because this workflow is input box and viewer output.
-		bool IsReadCommand()
-		{
-			return UI.ReadCommand.Instance != null && Writer is ConsoleOutputWriter;
+			writer.Next = _writer;
+			_writer = writer;
 		}
 
 		#region PSHostUserInterface
@@ -78,7 +85,7 @@ namespace PowerShellFar
 
 			var r = new Dictionary<string, PSObject>();
 
-			if (IsReadCommand())
+			if (IsConsole())
 			{
 				if (!string.IsNullOrEmpty(caption))
 					WriteLine(PromptColor, BackgroundColor, caption);
@@ -98,7 +105,7 @@ namespace PowerShellFar
 					{
 						var prompt2 = $"{prompt}[{arrayList.Count}]";
 						string text;
-						if (IsReadCommand())
+						if (IsConsole())
 						{
 							var ui = new UI.ReadLine(new UI.ReadLine.Args
 							{
@@ -140,7 +147,7 @@ namespace PowerShellFar
 					var safe = type == typeof(SecureString);
 
 					string text;
-					if (IsReadCommand())
+					if (IsConsole())
 					{
 						string prompt2;
 						if (safe && safe && prompt == " ")
@@ -203,7 +210,7 @@ namespace PowerShellFar
 			if (choices == null || choices.Count == 0) throw new ArgumentOutOfRangeException("choices");
 			if (defaultChoice < -1 || defaultChoice >= choices.Count) throw new ArgumentOutOfRangeException("defaultChoice");
 
-			if (!IsReadCommand())
+			if (!IsConsole())
 			{
 				int choice = UI.ChoiceMsg.Show(caption, message, choices);
 				if (choice < 0)
@@ -399,7 +406,7 @@ namespace PowerShellFar
 		/// </summary>
 		public override string ReadLine()
 		{
-			if (IsReadCommand())
+			if (IsConsole())
 			{
 				var ui = new UI.ReadLine(new UI.ReadLine.Args
 				{

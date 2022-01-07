@@ -65,9 +65,23 @@ namespace PowerShellFar.UI
 			Edit.KeyPressed += Edit_KeyPressed;
 		}
 
+		/// <summary>
+		/// Shows the console like read line UI, with ShowUserScreen and SaveUserScreen.
+		/// </summary>
+		// Why user screen. This is called by several methods of PSHostUserInterface,
+		// in console mode. But the window may be panels if writing has not started.
+		// If we do not hide panels the dialog is not prominent enough.
 		public bool Show()
 		{
-			return Dialog.Show();
+			Far.Api.UI.ShowUserScreen();
+			try
+			{
+				return Dialog.Show();
+			}
+			finally
+			{
+				Far.Api.UI.SaveUserScreen();
+			}
 		}
 
 		Layout GetLayout()

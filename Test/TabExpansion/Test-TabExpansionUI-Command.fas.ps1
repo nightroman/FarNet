@@ -7,7 +7,10 @@ job {
 	$Far.CommandLine.Text = 'Get-Hist'
 }
 
-macro 'Keys"F11 2 7" -- expand'
+macro @'
+Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "7DEF4106-570A-41AB-8ECB-40605339E6F7")
+Keys"7" -- expand
+'@
 
 job {
 	# two items shown differently

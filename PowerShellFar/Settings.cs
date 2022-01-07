@@ -19,8 +19,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// The settings object exposed as <c>$Psf.Settings</c>.
 		/// </summary>
-		public static Settings Default { get { return _Default; } }
-		static readonly Settings _Default = new Settings();
+		public static Settings Default { get; } = new Settings();
 		/// <summary>
 		/// Sets the popup list menu template.
 		/// </summary>

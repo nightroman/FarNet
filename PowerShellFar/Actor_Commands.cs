@@ -38,10 +38,16 @@ namespace PowerShellFar
 		/// </summary>
 		public void InvokeInputCode()
 		{
+			InvokeInputCodePrivate(null);
+		}
+
+		void InvokeInputCodePrivate(string input)
+		{
 			var ui = CreateCodeDialog();
+			ui.Text = input;
 			var code = ui.Show();
 			if (!string.IsNullOrEmpty(code))
-				Act(code, null, Far.Api.MacroState == MacroState.None);
+				Run(new RunArgs(code) { AddHistory = Far.Api.MacroState == MacroState.None });
 		}
 
 		/// <summary>
@@ -68,7 +74,7 @@ namespace PowerShellFar
 				var ui = CreateCodeDialog();
 				var code = await ui.ShowAsync();
 				if (!string.IsNullOrEmpty(code))
-					await Tasks.Job(() => Act(code, null, Far.Api.MacroState == MacroState.None));
+					await Tasks.Job(() => Run(new RunArgs(code) { AddHistory = Far.Api.MacroState == MacroState.None }));
 			}
 		}
 

@@ -555,25 +555,6 @@ Example: 'FullName' or {$_.FullName} tell to use a property FullName.
 	}
 }
 
-### Invoke-Far
-@{
-	command = 'Invoke-Far'
-	synopsis = 'Prompts to input a command and invokes it.'
-	description = @'
-	This cmdlet shows the usual input command dialog and then invokes commands.
-	Unlike the mode called from the menu, it is designed for macros and scripts.
-	And it provides some optional parameters.
-
-	- Output is shown in the console, this is suitable for output with colors.
-	- Commands are added to edit box histories but not to the command history.
-'@
-	parameters = @{
-		Prompt = 'Prompt text. Default: the result of the function `prompt`.'
-		History = 'Edit box history string.'
-		Title = 'Title of the box.'
-	}
-}
-
 ### Start-FarTask
 @{
 	command = 'Start-FarTask'

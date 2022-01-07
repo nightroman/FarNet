@@ -22,6 +22,7 @@ namespace PowerShellFar
 	/// </summary>
 	static class EditorKit
 	{
+		internal const string DataInvokeAction = "_220108_6q";
 		const string CompletionText = "CompletionText";
 		const string ListItemText = "ListItemText";
 		// CompletionText is used for:
@@ -182,7 +183,9 @@ $r = TabExpansion2 @args
 					cursorColumn = selectionSpan.Start;
 
 				// process prefix, used to be just for panels but it is needed in dialogs, too
-				Entry.SplitCommandWithPrefix(ref inputScript, out prefix);
+				var split = Zoo.SplitCommandWithPrefix(inputScript);
+				prefix = split.Key;
+				inputScript = split.Value;
 
 				// correct caret
 				cursorColumn -= prefix.Length;
@@ -472,108 +475,91 @@ $r = TabExpansion2 @args
 		/// </summary>
 		static void OnKeyDownPSFile(object sender, KeyEventArgs e)
 		{
-			// editor; skip if selected
-			IEditor editor = (IEditor)sender;
-
 			switch (e.Key.VirtualKeyCode)
 			{
 				case KeyCode.F1:
+					if (e.Key.IsShift())
 					{
-						if (e.Key.IsShift())
-						{
-							// [ShiftF1]
-							e.Ignore = true;
-							Help.ShowHelpForContext();
-						}
-						return;
+						// [ShiftF1]
+						e.Ignore = true;
+						Help.ShowHelpForContext();
 					}
+					return;
 				case KeyCode.F5:
+					if (e.Key.Is())
 					{
-						if (e.Key.Is())
-						{
-							// [F5]
-							e.Ignore = true;
-							InvokeScriptBeingEdited(editor);
-						}
-						return;
+						// [F5]
+						e.Ignore = true;
+						var editor = (IEditor)sender;
+						InvokeScriptFromEditor(editor);
 					}
+					return;
 				case KeyCode.Tab:
+					if (e.Key.Is())
 					{
-						if (e.Key.Is())
+						// [Tab]
+						var editor = (IEditor)sender;
+						if (!editor.SelectionExists && NeedsTabExpansion(editor))
 						{
-							// [Tab]
-							if (!editor.SelectionExists && NeedsTabExpansion(editor))
-							{
-								// TabExpansion
-								e.Ignore = true;
-								A.Psf.ExpandCode(editor.Line);
-								editor.Redraw();
-							}
+							// TabExpansion
+							e.Ignore = true;
+							A.Psf.ExpandCode(editor.Line);
+							editor.Redraw();
 						}
-						return;
 					}
+					return;
 			}
 		}
 		public static void InvokeSelectedCode()
 		{
 			string code;
-			bool toCleanCmdLine = false;
-			WindowKind wt = Far.Api.Window.Kind;
+			var from = Far.Api.Window.Kind;
 
-			if (wt == WindowKind.Editor)
+			if (from == WindowKind.Editor)
 			{
 				var editor = Far.Api.Editor;
 				code = editor.GetSelectedText();
 				if (string.IsNullOrEmpty(code))
 					code = editor[editor.Caret.Y].Text;
 			}
-			else if (wt == WindowKind.Dialog)
+			else if (from == WindowKind.Dialog)
 			{
-				IDialog dialog = Far.Api.Dialog;
-				if (!(dialog.Focused is IEdit edit))
-				{
-					Far.Api.Message("The current control must be an edit box.", Res.Me);
+				var dialog = Far.Api.Dialog;
+				if (dialog.Focused is not IEdit edit)
 					return;
-				}
 				code = edit.Line.SelectedText;
 				if (string.IsNullOrEmpty(code))
 					code = edit.Text;
 			}
 			else
 			{
-				ILine cl = Far.Api.CommandLine;
-				code = cl.SelectedText;
-
-				// if nothing is selected then get the whole text and tell to clean on success
+				var line = Far.Api.CommandLine;
+				code = line.SelectedText;
 				if (string.IsNullOrEmpty(code))
-				{
-					code = cl.Text;
-					toCleanCmdLine = true;
-				}
-
-				Entry.SplitCommandWithPrefix(ref code, out _);
+					code = line.Text;
 			}
-			if (code.Length == 0)
-				return;
 
-			// run
-			bool ok = A.Psf.Act(code, null, wt != WindowKind.Editor);
-
-			// clean the command line on success
-			if (toCleanCmdLine && ok)
-				Far.Api.CommandLine.Text = string.Empty;
+			var split = Zoo.SplitCommandWithPrefix(code);
+			A.Psf.Run(new RunArgs(split.Value));
 		}
 		// PSF sets the current directory and location to the script directory.
 		// This is often useful and consistent with invoking from panels.
 		// NOTE: ISE [F5] does not.
-		public static void InvokeScriptBeingEdited(IEditor editor)
+		public static void InvokeScriptFromEditor(IEditor editor)
 		{
 			// editor
 			if (editor == null)
-				editor = A.Psf.Editor();
+				editor = Far.Api.Editor ?? throw new ModuleException("No current editor.");
 
 			// commit
 			editor.Save();
+
+			// case: custom action
+			if (editor.Data[DataInvokeAction] is Action invoke)
+			{
+				invoke();
+				return;
+			}
 
 			// sync the directory and location to the script directory
 			// maybe it is questionable but it is very handy too often
@@ -608,7 +594,7 @@ $r = TabExpansion2 @args
 				}
 				else
 				{
-					A.Psf.Act($"& '{fileName.Replace("'", "''")}'", null, false);
+					A.Psf.Run(new RunArgs($"& '{fileName.Replace("'", "''")}'"));
 				}
 			}
 			finally

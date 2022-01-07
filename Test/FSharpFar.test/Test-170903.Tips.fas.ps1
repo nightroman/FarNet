@@ -12,7 +12,10 @@ far.CreateEditor
 '@)
 	$Far.Editor.GoToEnd($false)
 }
-macro "Keys[[F11 3 t]] -- tips"
+macro @'
+Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "65BD5625-769A-4253-8FDE-FFCC3F72489D")
+Keys't' -- tips
+'@
 job {
 	Assert-Far -Editor
 	Assert-Far $Far.Editor[0].Text -eq 'IFar.CreateEditor() : IEditor'
@@ -28,7 +31,10 @@ far.Message ""
 '@)
 	$Far.Editor.GoTo(4, 1)
 }
-macro "Keys[[F11 3 t]] -- tips"
+macro @'
+Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "65BD5625-769A-4253-8FDE-FFCC3F72489D")
+Keys't' -- tips
+'@
 job {
 	Assert-Far -Editor
 	Assert-Far @(
@@ -64,7 +70,10 @@ f1
 	$Far.Editor.GoToEnd($false)
 }
 
-macro "Keys[[F11 3 t]] -- tips"
+macro @'
+Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "65BD5625-769A-4253-8FDE-FFCC3F72489D")
+Keys't' -- tips
+'@
 job {
 	Assert-Far -Editor
 	Assert-Far @(

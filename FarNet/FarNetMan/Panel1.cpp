@@ -2,15 +2,15 @@
 // FarNet plugin for Far Manager
 // Copyright (c) Roman Kuzmin
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "Panel1.h"
 #include "Panel0.h"
 #include "PanelFileCollection.h"
 
 namespace FarNet
-{;
+{
 Panel1::Panel1(bool current)
-: _handle(current ? PANEL_ACTIVE : PANEL_PASSIVE)
+	: _handle(current ? PANEL_ACTIVE : PANEL_PASSIVE)
 {}
 
 HANDLE Panel1::Handle::get()
@@ -145,7 +145,7 @@ String^ Panel1::CurrentDirectory::get()
 	CBin bin;
 	FarPanelDirectory* arg = (FarPanelDirectory*)bin.Data();
 	arg->StructSize = sizeof(FarPanelDirectory);
-	for(;;)
+	for (;;)
 	{
 		//_120325_180317 build 2556 - 0 if OPIF_SHORTCUT is not set
 		size_t size = Info.PanelControl(_handle, FCTL_GETPANELDIRECTORY, bin.Size(), arg);
@@ -188,7 +188,7 @@ IList<FarFile^>^ Panel1::ShownFiles::get()
 	GetPanelInfo(_handle, pi);
 
 	List<FarFile^>^ r = gcnew List<FarFile^>((int)pi.ItemsNumber);
-	for(int i = 0; i < (int)pi.ItemsNumber; ++i)
+	for (int i = 0; i < (int)pi.ItemsNumber; ++i)
 	{
 		AutoPluginPanelItem item(_handle, i, ShownFile);
 		if (i == 0 && item.Get().FileName[0] == '.' && item.Get().FileName[1] == '.' && item.Get().FileName[2] == '\0')
@@ -205,7 +205,7 @@ IList<FarFile^>^ Panel1::SelectedFiles::get()
 	GetPanelInfo(_handle, pi);
 
 	List<FarFile^>^ r = gcnew List<FarFile^>((int)pi.SelectedItemsNumber);
-	for(int i = 0; i < (int)pi.SelectedItemsNumber; ++i)
+	for (int i = 0; i < (int)pi.SelectedItemsNumber; ++i)
 	{
 		AutoPluginPanelItem item(_handle, i, SelectedFile);
 		r->Add(ItemToFile(item.Get()));
@@ -256,7 +256,7 @@ SetFile^ Panel1::ItemToFile(const PluginPanelItem& item)
 	{
 		array<String^>^ columns = gcnew array<String^>((int)item.CustomColumnNumber);
 		file->Columns = columns;
-		for(int i = (int)item.CustomColumnNumber; --i >= 0;)
+		for (int i = (int)item.CustomColumnNumber; --i >= 0;)
 			columns[i] = gcnew String(item.CustomColumnData[i]);
 	}
 
@@ -355,6 +355,7 @@ void Panel1::GoToName(String^ name)
 {
 	GoToName(name, false);
 }
+
 bool Panel1::GoToName(String^ name, bool fail)
 {
 	if (!name)
@@ -364,7 +365,7 @@ bool Panel1::GoToName(String^ name, bool fail)
 	GetPanelInfo(_handle, pi);
 
 	PIN_NE(pin, name);
-	for(int i = 0; i < (int)pi.ItemsNumber; ++i)
+	for (int i = 0; i < (int)pi.ItemsNumber; ++i)
 	{
 		AutoPluginPanelItem item(_handle, i, ShownFile);
 		if (Info.FSF->LStricmp(pin, item.Get().FileName) == 0)
@@ -382,22 +383,7 @@ bool Panel1::GoToName(String^ name, bool fail)
 
 void Panel1::GoToPath(String^ path)
 {
-	if (!path)
-		throw gcnew ArgumentNullException("path");
-
-	//! can be nullptr, e.g. for '\'
-	String^ dir = Path::GetDirectoryName(path);
-	if (!dir && (path->StartsWith("\\") || path->StartsWith("/")))
-		dir = "\\";
-	if (dir && dir->Length)
-	{
-		CurrentDirectory = dir;
-		Redraw();
-	}
-
-	String^ name = Path::GetFileName(path);
-	if (name->Length > 0)
-		GoToName(name);
+	Works::PanelTools::GoToPath(this, path);
 }
 
 void Panel1::Redraw()
@@ -414,7 +400,7 @@ void Panel1::Redraw(int current, int top)
 		return;
 	}
 
-	PanelRedrawInfo pri = {sizeof(pri)};
+	PanelRedrawInfo pri = { sizeof(pri) };
 	pri.CurrentItem = current;
 	pri.TopPanelItem = top;
 	Info.PanelControl(_handle, FCTL_REDRAWPANEL, 0, &pri);
@@ -432,7 +418,7 @@ void Panel1::Select(array<int>^ indexes, bool select)
 	Info.PanelControl(_handle, FCTL_BEGINSELECTION, 0, nullptr);
 	try
 	{
-		for(int i = 0; i < indexes->Length; ++i)
+		for (int i = 0; i < indexes->Length; ++i)
 		{
 			int index = indexes[i];
 			if (index < 0 || index >= (int)pi.ItemsNumber)
@@ -463,7 +449,7 @@ void Panel1::SelectAll(bool select)
 
 	Info.PanelControl(_handle, FCTL_BEGINSELECTION, 0, nullptr);
 	{
-		for(int i = 0; i < (int)pi.ItemsNumber; ++i)
+		for (int i = 0; i < (int)pi.ItemsNumber; ++i)
 			Info.PanelControl(_handle, FCTL_SETSELECTION, i, (void*)select);
 	}
 	Info.PanelControl(_handle, FCTL_ENDSELECTION, 0, nullptr);
@@ -487,7 +473,7 @@ void Panel1::SelectNames(System::Collections::IEnumerable^ names, bool select)
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 	List<String^> namesNow((int)pi.ItemsNumber);
-	for(int i = 0; i < (int)pi.ItemsNumber; ++i)
+	for (int i = 0; i < (int)pi.ItemsNumber; ++i)
 	{
 		AutoPluginPanelItem item(_handle, i, ShownFile);
 		namesNow.Add(gcnew String(item.Get().FileName));
@@ -496,7 +482,7 @@ void Panel1::SelectNames(System::Collections::IEnumerable^ names, bool select)
 	Info.PanelControl(_handle, FCTL_BEGINSELECTION, 0, nullptr);
 	try
 	{
-		for each(Object^ it in names)
+		for each (Object ^ it in names)
 		{
 			if (it)
 			{
@@ -538,7 +524,7 @@ array<int>^ Panel1::SelectedIndexes()
 	GetPanelInfo(_handle, pi);
 
 	List<int> list((int)pi.SelectedItemsNumber);
-	for(int i = 0; i < (int)pi.ItemsNumber; ++i)
+	for (int i = 0; i < (int)pi.ItemsNumber; ++i)
 	{
 		AutoPluginPanelItem item(_handle, i, ShownFile);
 		if (0 != (item.Get().Flags & PPIF_SELECTED))
@@ -594,12 +580,12 @@ PanelPlan^ Panel1::ViewPlan::get()
 
 	String^ sColumnTypes;
 	{
-		while(box(Info.PanelControl(Handle, FCTL_GETCOLUMNTYPES, box.Size(), box))) {}
+		while (box(Info.PanelControl(Handle, FCTL_GETCOLUMNTYPES, box.Size(), box))) {}
 		sColumnTypes = gcnew String(box);
 	}
 	String^ sColumnWidths;
 	{
-		while(box(Info.PanelControl(Handle, FCTL_GETCOLUMNWIDTHS, box.Size(), box))) {}
+		while (box(Info.PanelControl(Handle, FCTL_GETCOLUMNWIDTHS, box.Size(), box))) {}
 		sColumnWidths = gcnew String(box);
 	}
 
@@ -610,14 +596,14 @@ PanelPlan^ Panel1::ViewPlan::get()
 
 	PanelPlan^ plan = gcnew PanelPlan;
 	plan->Columns = gcnew array<FarColumn^>(types->Length);
-	for(int iType = 0; iType < types->Length; ++iType)
+	for (int iType = 0; iType < types->Length; ++iType)
 	{
 		SetColumn^ column = gcnew SetColumn();
 		plan->Columns[iType] = column;
 		column->Kind = types[iType];
 
 		if (widths[iType]->EndsWith("%"))
-			column->Width = - ParseInt(widths[iType]->Substring(0, widths[iType]->Length - 1), 0);
+			column->Width = -ParseInt(widths[iType]->Substring(0, widths[iType]->Length - 1), 0);
 		else
 			column->Width = ParseInt(widths[iType], 0);
 	}

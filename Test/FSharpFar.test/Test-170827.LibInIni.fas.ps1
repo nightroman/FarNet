@@ -2,7 +2,10 @@
 job {
 	Open-FarEditor $PSScriptRoot\LibInIni\LibInIni.fsx -DisableHistory
 }
-macro 'Keys [[F11 3 c]] -- check'
+macro @'
+Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "65BD5625-769A-4253-8FDE-FFCC3F72489D")
+Keys'c' -- check
+'@
 job {
 	Assert-Far -Dialog
 	Assert-Far $Far.Dialog[1].Text -eq 'No errors'

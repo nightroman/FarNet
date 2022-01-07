@@ -20,9 +20,10 @@ namespace FarNet
 		public abstract int Count { get; }
 		/// <summary>
 		/// Gets the current window kind.
+		/// Any thread may call this.
 		/// </summary>
 		/// <remarks>
-		/// It is the same as the result of <see cref="GetKindAt"/> with the index -1.
+		/// The result is the same as <see cref="GetKindAt"/> with -1.
 		/// </remarks>
 		public abstract WindowKind Kind { get; }
 		/// <summary>

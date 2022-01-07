@@ -74,10 +74,6 @@ namespace PowerShellFar
 			// preload
 			OpenRunspace(false);
 
-			// subscribe
-			Far.Api.AnyEditor.FirstOpening += EditorKit.OnEditorFirstOpening;
-			Far.Api.AnyEditor.Opened += EditorKit.OnEditorOpened;
-
 			//! subscribe only _110301_164313
 			Console.CancelKeyPress += CancelKeyPress; //_110128_075844
 		}
@@ -617,7 +613,9 @@ Continue with this current directory?
 		/// <seealso cref="GetHistory"/>
 		public void ShowHistory()
 		{
-			History.ShowHistory();
+			var code = History.ShowHistory();
+			if (code != null)
+				InvokeInputCodePrivate(code);
 		}
 		/// <summary>
 		/// Shows PowerShell debugger tools menu.
@@ -689,36 +687,31 @@ Continue with this current directory?
 		// Current command being invoked (e.g. used as Out-FarPanel title)
 		internal string _myCommand;
 		/// <summary>
-		/// Invokes PowerShell command with pipeline.
+		/// Runs the PowerShell command pipeline.
+		/// Null or empty commands are ignored.
 		/// </summary>
-		/// <param name="code">PowerShell code.</param>
-		/// <param name="writer">Output writer or null.</param>
-		/// <param name="addHistory">Add command to history.</param>
 		/// <returns>False if the code fails.</returns>
-		internal bool Act(string code, OutputWriter writer, bool addHistory)
-		{
-			return Run(new RunArgs(code) { Writer = writer, AddHistory = addHistory });
-		}
 		internal bool Run(RunArgs args)
 		{
 			var code = args.Code;
+			if (string.IsNullOrEmpty(code))
+				return true;
 
 			// push writer
-			if (args.Writer != null)
+			if (args.Writer == null)
 			{
-				// predefined output
-				FarUI.PushWriter(args.Writer);
+				// use own lazy output
+				FarUI.PushWriter(new TranscriptOutputWriter());
 			}
 			else
 			{
-				// use own output to be shown later
-				FarUI.PushWriter(new TranscriptOutputWriter());
+				// specified output
+				FarUI.PushWriter(args.Writer);
 			}
 
-			// invoke
 			try
 			{
-				// win7 Indeterminate
+				// progress
 				FarUI.IsProgressStarted = false;
 				Far.Api.UI.SetProgressState(TaskbarProgressBarState.Indeterminate);
 
@@ -755,7 +748,7 @@ Continue with this current directory?
 				if (args.NoOutReason)
 					return false;
 
-				ConsoleColor color1 = ConsoleColor.Black;
+				var color1 = ConsoleColor.Black;
 				try
 				{
 					// push console color
@@ -781,25 +774,25 @@ Continue with this current directory?
 			}
 			finally
 			{
-				// win7 NoProgress
+				// progress
 				FarUI.IsProgressStarted = false;
 				Far.Api.UI.SetProgressState(TaskbarProgressBarState.NoProgress);
 
 				_myCommand = null;
 
 				// pop writer
-				OutputWriter usedWriter = FarUI.PopWriter();
+				var usedWriter = FarUI.PopWriter();
 				if (args.Writer == null)
 				{
-					// it is the writer created locally;
-					// view its file, if any
+					// it is the writer created here, view its file, if any
 					var myWriter = (TranscriptOutputWriter)usedWriter;
 					myWriter.Close();
 					if (myWriter.FileName != null)
 					{
 						var viewer = Far.Api.CreateViewer();
-						viewer.Title = code;
 						viewer.FileName = myWriter.FileName;
+						//! code with \n may come from ReadLine editors
+						viewer.Title = code.IndexOf('\n') < 0 ? code : "Command output";
 						viewer.DeleteSource = DeleteSource.File;
 						viewer.Switching = Switching.Enabled;
 						viewer.DisableHistory = true;
@@ -807,9 +800,6 @@ Continue with this current directory?
 						viewer.Open();
 					}
 				}
-
-				// notify host
-				FarHost.NotifyEndApplication();
 			}
 		}
 		/// <summary>
@@ -847,7 +837,7 @@ Continue with this current directory?
 		/// </remarks>
 		public void InvokeScriptFromEditor()
 		{
-			EditorKit.InvokeScriptBeingEdited(null);
+			EditorKit.InvokeScriptFromEditor(null);
 		}
 		HashSet<LineBreakpoint> _breakpoints_;
 		internal HashSet<LineBreakpoint> Breakpoints => _breakpoints_ ?? (_breakpoints_ = new HashSet<LineBreakpoint>());

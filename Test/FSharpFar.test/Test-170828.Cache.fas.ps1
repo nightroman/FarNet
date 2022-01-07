@@ -27,7 +27,10 @@ job {
 }
 
 ### check
-macro 'Keys [[F11 3 l]] -- load'
+macro @'
+Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "65BD5625-769A-4253-8FDE-FFCC3F72489D")
+Keys'l' -- load
+'@
 job {
 	Assert-Far -Editor
 	Assert-Far $Far.Editor[1].Text -eq '42'
@@ -50,7 +53,10 @@ job {
 }
 
 ### check
-macro 'Keys [[F11 3 l]] -- load'
+macro @'
+Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "65BD5625-769A-4253-8FDE-FFCC3F72489D")
+Keys'l' -- load
+'@
 job {
 	Assert-Far -Editor
 	Assert-Far ($Far.Editor[2].Text -like "*namespace or type 'z2' is not defined*")
@@ -68,7 +74,10 @@ job {
 	# open script to run
 	Open-FarEditor C:\tmp\z.Cache\Z.fsx -DisableHistory
 }
-macro 'Keys [[F11 3 l]] -- load'
+macro @'
+Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "65BD5625-769A-4253-8FDE-FFCC3F72489D")
+Keys'l' -- load
+'@
 job {
 	# now it works due to reset session
 	Assert-Far -Editor
@@ -77,7 +86,10 @@ job {
 macro 'Keys [[Esc Esc]] -- exit editors'
 
 ### end
-macro 'Keys [[F11 3 0 Del Esc]] -- kill session'
+macro @'
+Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "65BD5625-769A-4253-8FDE-FFCC3F72489D")
+Keys'0 Del Esc' -- kill session
+'@
 job {
 	Remove-Item C:\tmp\z.Cache -Force -Recurse
 }

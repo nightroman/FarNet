@@ -1,6 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 5.8.2 =
+
+Internal panel changes.
+
 = 5.8.1 =
 
 Dialog:

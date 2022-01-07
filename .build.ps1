@@ -16,6 +16,12 @@ $Builds = @(
 	'PowerShellFar\PowerShellFar.build.ps1'
 )
 
+# Synopsis: Uninstall and clean.
+# Use to build after Visual Studio.
+task reset {
+	Invoke-Build uninstall, clean
+}
+
 # Synopsis: Remove temp files.
 task clean {
 	foreach($_ in $Builds) { Invoke-Build clean $_ }
@@ -147,6 +153,6 @@ buildFarDescription
 
 # Synopsis: Ensure Help, to test by Test-Help-.ps1
 task buildFarDescription {
-	#fix hardcoded path
+	#TODO hardcoded path
 	Invoke-Build Build, Help, Clean ..\..\DEV\FarDescription\.build.ps1
 }

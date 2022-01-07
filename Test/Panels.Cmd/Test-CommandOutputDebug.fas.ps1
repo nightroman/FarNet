@@ -12,8 +12,8 @@ function Test-DebugDialog {
 }
 
 job {
-	Assert-Far @(Get-Process Far).Count -eq 1
-
+	Set-StrictMode -Version 3
+	$Data.FarIds = @(Get-Process Far | % Id)
 	$Data.Transcript = "$env:TEMP\transcript.txt"
 	$null = Start-Transcript -LiteralPath $Data.Transcript
 
@@ -33,9 +33,9 @@ job {
 	}
 
 	function global:Stop-OutputOnDebugging {
-		$fars = @(Get-Process Far)
-		Assert-Far ($fars.Count -ge 2)
-		$fars | ?{ $_.Id -ne $PID } | Stop-Process
+		$fars = @(Get-Process Far | ? Id -NotIn $Data.FarIds)
+		Assert-Far $fars.Count
+		$fars | Stop-Process
 	}
 }
 

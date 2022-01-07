@@ -1,39 +1,60 @@
---[=[
-    This file contains example macros which invoke PowerShellFar commands.
-    DO NOT USE THIS AS IT IS, USE YOUR OWN MACROS, THIS IS ONLY AN EXAMPLE
-]=]
-
-local FarNet=function(cmd) return Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", cmd) end
-local anyEditor="Editor Dialog DialogAutoCompletion Shell ShellAutoCompletion Info QView Tree"
-local isEditor=function() return not (Area.Shell or Area.ShellAutoCompletion or Area.Info or Area.QView or Area.Tree) or not CmdLine.Empty end
+--[[
+    Sample macros for some PowerShellFar commands.
+    *USE YOUR OWN MACROS, THIS IS JUST AN EXAMPLE*
+]]
 
 Macro {
-  area="Shell"; key="Space"; flags="EmptyCommandLine"; description="PSF: Easy prefix"; action=function()
-  Keys "p s : Space"
+  area="Shell"; key="Space"; description="PSF: Easy prefix";
+  flags="EmptyCommandLine";
+  action=function()
+    Keys "p s : Space"
   end;
 }
 
 Macro {
-  area="Shell"; key="Ctrl"; flags="EmptyCommandLine"; description="PSF: Command console"; action=function()
-  FarNet [[vps: $Psf.StartCommandConsole()]]
+  area="Shell"; key="Ctrl"; description="PSF: Command console";
+  flags="EmptyCommandLine";
+  action=function()
+    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", [[vps: $Psf.StartCommandConsole()]])
   end;
 }
 
 Macro {
-  area="Shell"; key="F10"; description="PSF: Quit Far"; action=function()
-  if not FarNet [[vps:$Far.Quit()]] then Keys "F10" end
+  area="Shell"; key="F10"; description="PSF: Quit Far";
+  action=function()
+    if not Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", [[vps:$Far.Quit()]]) then Keys "F10" end
   end;
 }
 
 Macro {
-  area="Common"; key="AltF10"; description="PSF: Command history"; action=function()
-  FarNet [[vps:$Psf.ShowHistory()]]
+  area="Common"; key="AltF10"; description="PSF: Command history";
+  action=function()
+    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", [[vps:$Psf.ShowHistory()]])
   end;
 }
 
 Macro {
-  area=anyEditor; condition=isEditor; key="CtrlSpace"; description="PSF: Complete-Word-.ps1"; action=function()
-  if Area.DialogAutoCompletion then Keys "Esc" end
-  FarNet [[vps:Complete-Word-.ps1]]
+  key="F9"; description="PSF: TabExpansion";
+  area="Dialog Editor Shell QView Tree Info DialogAutoCompletion ShellAutoCompletion";
+  condition=function()
+    return Area.Dialog or Area.Editor or Area.DialogAutoCompletion or Area.ShellAutoCompletion or not CmdLine.Empty
+  end;
+  action=function()
+    if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys "Esc" end
+    if Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "7DEF4106-570A-41AB-8ECB-40605339E6F7") then
+      Keys "7"
+    end
+  end;
+}
+
+Macro {
+  key="CtrlSpace"; description="PSF: Complete-Word-.ps1";
+  area="Dialog Editor Shell QView Tree Info DialogAutoCompletion ShellAutoCompletion";
+  condition=function()
+    return Area.Dialog or Area.Editor or Area.DialogAutoCompletion or Area.ShellAutoCompletion or not CmdLine.Empty
+  end;
+  action=function()
+    if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys "Esc" end
+    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", [[vps:Complete-Word-.ps1]])
   end;
 }

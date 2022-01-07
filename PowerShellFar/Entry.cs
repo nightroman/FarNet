@@ -4,8 +4,9 @@
 
 using FarNet;
 using System;
+using System.Diagnostics;
 using System.Management.Automation;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace PowerShellFar
 {
@@ -58,6 +59,10 @@ namespace PowerShellFar
 				new ModuleToolAttribute() { Name = Res.Me, Options = ModuleToolOptions.F11Menus },
 				OnOpen);
 
+			// subscribe to editors
+			Far.Api.AnyEditor.FirstOpening += EditorKit.OnEditorFirstOpening;
+			Far.Api.AnyEditor.Opened += EditorKit.OnEditorOpened;
+
 			// connect actor
 			A.Psf.Connect();
 		}
@@ -104,7 +109,7 @@ namespace PowerShellFar
 					echo = CommandInvoke1.Prefix + colon + e.Command;
 				}
 
-				var ok = A.Psf.Act(e.Command, new ConsoleOutputWriter(echo), addHistory);
+				var ok = A.Psf.Run(new RunArgs(e.Command) { Writer = new ConsoleOutputWriter(echo), AddHistory = addHistory });
 				e.Ignore = !ok;
 			}
 			finally
@@ -118,7 +123,7 @@ namespace PowerShellFar
 			string currentDirectory = A.Psf.SyncPaths();
 			try
 			{
-				var ok = A.Psf.Act(e.Command, null, !e.IsMacro);
+				var ok = A.Psf.Run(new RunArgs(e.Command) { AddHistory = !e.IsMacro });
 				e.Ignore = !ok;
 			}
 			finally
@@ -129,36 +134,6 @@ namespace PowerShellFar
 		internal void OnOpen(object sender, ModuleToolEventArgs e)
 		{
 			UI.ActorMenu.Show(sender, e);
-		}
-		// "\s*prefix:\s*line" -> "\s*prefix:\s*" and "line"
-		internal static void SplitCommandWithPrefix(ref string line, out string prefix)
-		{
-			string tmp = line.TrimStart();
-			int delta = line.Length - tmp.Length;
-			if (delta > 0)
-			{
-				prefix = line.Substring(0, delta);
-				line = tmp;
-			}
-			else
-			{
-				prefix = string.Empty;
-			}
-
-			if (line.StartsWith((tmp = CommandInvoke1.Prefix + ":"), StringComparison.OrdinalIgnoreCase) ||
-				line.StartsWith((tmp = CommandInvoke2.Prefix + ":"), StringComparison.OrdinalIgnoreCase))
-			{
-				prefix += line.Substring(0, tmp.Length);
-				line = line.Substring(tmp.Length);
-			}
-
-			tmp = line.TrimStart();
-			delta = line.Length - tmp.Length;
-			if (delta > 0)
-			{
-				prefix += line.Substring(0, delta);
-				line = tmp;
-			}
 		}
 		///
 		public override object Interop(string command, object args)

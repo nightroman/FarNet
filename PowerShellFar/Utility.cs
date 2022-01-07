@@ -4,6 +4,7 @@
 
 using FarNet;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
@@ -14,7 +15,6 @@ using System.Management.Automation.Provider;
 using System.Management.Automation.Runspaces;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace PowerShellFar
 {
@@ -28,11 +28,44 @@ namespace PowerShellFar
 		{
 			Commands.BaseCmdlet.AddCmdlets(state);
 		}
+
 		///
 		public static Meta[] TablePanelSetupColumns(object[] columns)
 		{
 			return Format.SetupColumns(columns);
 		}
+
+		/// <summary>
+		/// Key: prefix with spaces or spaces.
+		/// Value: command with no leading spaces.
+		/// Public for Test-SplitCommandWithPrefix-.ps1
+		/// </summary>
+		public static KeyValuePair<string, string> SplitCommandWithPrefix(string text)
+		{
+			var match = Regex.Match(text, @"(\s*)(?:(\w+):)?\s*");
+			Debug.Assert(match.Success);
+
+			int index;
+			var prefix = match.Groups[2].Value;
+			if (prefix.Length == 0 ||
+				prefix.Equals(Entry.CommandInvoke1.Prefix, StringComparison.OrdinalIgnoreCase) ||
+				prefix.Equals(Entry.CommandInvoke2.Prefix, StringComparison.OrdinalIgnoreCase))
+			{
+				//: no prefix | ps: | vps:
+				index = match.Length;
+			}
+			else
+			{
+				//: unknown prefix
+				index = match.Groups[1].Length;
+			}
+
+			if (index > 0)
+				return new(text.Substring(0, index), text.Substring(index));
+			else
+				return new(string.Empty, text);
+		}
+
 		internal static Process StartExternalViewer(string fileName)
 		{
 			string externalViewerFileName = Settings.Default.ExternalViewerFileName;
@@ -49,7 +82,7 @@ namespace PowerShellFar
 				catch (Win32Exception)
 				{
 					Far.Api.Message(
-						"Cannot start the specified external viewer, the default viewer will be used.",
+						"Cannot start the external viewer.",
 						Res.Me, MessageOptions.LeftAligned | MessageOptions.Warning);
 				}
 			}
@@ -59,6 +92,7 @@ namespace PowerShellFar
 			externalViewerArguments = "/w- /ro /m /p /v \"" + fileName + "\"";
 			return My.ProcessEx.Start(externalViewerFileName, externalViewerArguments);
 		}
+
 		#region Transcript
 		const string TextTranscriptFileExistsNoClobber = "File {0} already exists and {1} was specified.";
 		const string TextTranscriptFileReadOnly = "Transcription file is read only.";
@@ -67,6 +101,7 @@ namespace PowerShellFar
 		const string TranscriptNotInProgress = "Transcription has not been started. Use the Start-Transcript command to start transcription.";
 		const string TextTranscriptStarted = "Transcript started, output file is {0}";
 		const string TextTranscriptStopped = "Transcript stopped, output file is {0}";
+
 		///
 		public static void ShowTranscript(bool internalViewer)
 		{
@@ -89,6 +124,7 @@ namespace PowerShellFar
 				StartExternalViewer(TranscriptOutputWriter.LastFileName);
 			}
 		}
+
 		///
 		public static string StopTranscript(bool force)
 		{
@@ -105,6 +141,7 @@ namespace PowerShellFar
 
 			return string.Format(null, TextTranscriptStopped, TranscriptOutputWriter.LastFileName);
 		}
+
 		///
 		public static string StartTranscript(string path, bool append, bool force, bool noClobber)
 		{
@@ -150,18 +187,6 @@ namespace PowerShellFar
 	}
 
 	/// <summary>
-	/// Parameters. Use them to avoid typos.
-	/// </summary>
-	static class Prm
-	{
-		public const string
-			Confirm = "Confirm",
-			ErrorAction = "ErrorAction",
-			Force = "Force",
-			Recurse = "Recurse";
-	}
-
-	/// <summary>
 	/// Helper methods.
 	/// </summary>
 	static class Kit
@@ -173,6 +198,7 @@ namespace PowerShellFar
 		{
 			return value.ToString(CultureInfo.CurrentCulture);
 		}
+
 		/// <summary>
 		/// Converts with culture.
 		/// </summary>
@@ -180,23 +206,26 @@ namespace PowerShellFar
 		{
 			return value.ToString(format, CultureInfo.CurrentCulture);
 		}
+
 		// Compares strings OrdinalIgnoreCase.
 		public static bool Equals(string strA, string strB)
 		{
 			return string.Equals(strA, strB, StringComparison.OrdinalIgnoreCase);
 		}
+
 		// Escapes a literal string to be used as a wildcard.
 		//! It is a workaround:
 		// 1) Rename-Item has no -LiteralPath --> we have to escape wildcards (anyway it fails e.g. "name`$][").
 		// 2) BUG in [Management.Automation.WildcardPattern]::Escape(): e.g. `` is KO ==>.
 		// '``' -like [Management.Automation.WildcardPattern]::Escape('``') ==> False
+		static Regex _reEscapeWildcard;
 		public static string EscapeWildcard(string literal)
 		{
 			if (_reEscapeWildcard == null)
 				_reEscapeWildcard = new Regex(@"([`\[\]\*\?])");
 			return _reEscapeWildcard.Replace(literal, "`$1");
 		}
-		static Regex _reEscapeWildcard;
+
 		//?? _090901_055134 Check in V2 (bad for viewer and notepad)
 		/// <summary>
 		/// Formats a position message.
@@ -214,6 +243,7 @@ namespace PowerShellFar
 	{
 		readonly PathInfo _PathInfo;
 		string _Path;
+
 		///
 		public PathInfoEx(string path)
 		{
@@ -224,10 +254,12 @@ namespace PowerShellFar
 				// 3 times faster than push/set/pop location; NB: it is slow anyway
 				_PathInfo = core.GetResolvedPSPathFromPSPath(Kit.EscapeWildcard(path))[0];
 		}
+
 		internal PathInfoEx(PathInfo pathInfo)
 		{
 			_PathInfo = pathInfo;
 		}
+
 		/// <summary>
 		/// Gets the friendly path.
 		/// </summary>
@@ -248,6 +280,7 @@ namespace PowerShellFar
 				return _Path;
 			}
 		}
+
 		/// <summary>
 		/// Gets the provider info.
 		/// </summary>
@@ -255,6 +288,7 @@ namespace PowerShellFar
 		{
 			get { return _PathInfo.Provider; }
 		}
+
 		/// <summary>
 		/// Gets the drive name or null.
 		/// </summary>
@@ -270,10 +304,12 @@ namespace PowerShellFar
 	class DataLookup
 	{
 		readonly string[] _namePairs;
+
 		public DataLookup(string[] namePairs)
 		{
 			_namePairs = namePairs;
 		}
+
 		public void Invoke(object sender, OpenFileEventArgs e)
 		{
 			// lookup data panel (should be checked, user could use another)
@@ -341,21 +377,6 @@ namespace PowerShellFar
 
 namespace My
 {
-	static class FileEx
-	{
-		public static void DeleteIgnoreError(string fileName)
-		{
-			try
-			{
-				File.Delete(fileName);
-			}
-			// in use by another process, often opened by a user, it's fine
-			catch (IOException) { }
-			// virus scanner, indexing service, it's bad but what can we do?
-			catch (UnauthorizedAccessException) { }
-		}
-	}
-
 	/// <summary>
 	/// My System.IO.Path extensions.
 	/// </summary>
@@ -371,6 +392,7 @@ namespace My
 				fileName.EndsWith(".psm1", StringComparison.OrdinalIgnoreCase) ||
 				fileName.EndsWith(".psd1", StringComparison.OrdinalIgnoreCase);
 		}
+
 		/// <summary>
 		/// Does a string looks like a file system path?
 		/// </summary>
@@ -378,6 +400,7 @@ namespace My
 		{
 			return name.StartsWith("\\\\", StringComparison.Ordinal) || (name.Length > 3 && name[1] == ':');
 		}
+
 		public static string Combine(string path, string file)
 		{
 			if (path == null)
@@ -390,6 +413,7 @@ namespace My
 			else
 				return path + "\\" + file;
 		}
+
 		public static string GetFileName(string path)
 		{
 			int i = path.LastIndexOf('\\');
@@ -398,6 +422,7 @@ namespace My
 
 			return path.Substring(i + 1);
 		}
+
 		public static string GetDirectoryName(string path)
 		{
 			int i = path.LastIndexOf('\\');
@@ -406,6 +431,7 @@ namespace My
 
 			return path.Substring(0, i);
 		}
+
 		/// <summary>
 		/// Tries to recognize an existing file path by an object.
 		/// </summary>
@@ -440,14 +466,17 @@ namespace My
 		{
 			return provider.ImplementingType.GetInterface("IContentCmdletProvider") != null;
 		}
+
 		public static bool HasDynamicProperty(ProviderInfo provider)
 		{
 			return provider.ImplementingType.GetInterface("IDynamicPropertyCmdletProvider") != null;
 		}
+
 		public static bool HasProperty(ProviderInfo provider)
 		{
 			return provider.ImplementingType.GetInterface("IPropertyCmdletProvider") != null;
 		}
+
 		public static bool IsNavigation(ProviderInfo provider)
 		{
 			//! 'is' does not work, because we work just on a type, not an instance

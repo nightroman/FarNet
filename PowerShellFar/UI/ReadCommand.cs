@@ -284,19 +284,7 @@ namespace PowerShellFar.UI
 					{
 						// modal edit script
 						e.Ignore = true;
-						var args = new EditTextArgs
-						{
-							Text = Edit.Text,
-							Title = "Command",
-							Extension = "ps1",
-							EditorOpened = (editor, _) => ((IEditor)editor).GoTo(Edit.Line.Caret, 0)
-						};
-						var text = Far.Api.AnyEditor.EditText(args);
-						if (text != args.Text)
-						{
-							TextFromEditor = text;
-							Dialog.Close();
-						}
+						DoEditor();
 					}
 					return;
 				case KeyCode.F2:
@@ -312,6 +300,19 @@ namespace PowerShellFar.UI
 					}
 					return;
 			}
+		}
+
+		void DoEditor()
+		{
+			var args = new EditTextArgs
+			{
+				Text = Edit.Text,
+				Extension = "ps1",
+				Title = PromptOriginal,
+				EditorOpened = (editor, _) => ((IEditor)editor).GoTo(Edit.Line.Caret, 0)
+			};
+			TextFromEditor = Far.Api.AnyEditor.EditText(args);
+			Dialog.Close();
 		}
 
 		Task RunKeyInPanelsAsync(KeyInfo key, bool activate)

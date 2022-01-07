@@ -21,17 +21,13 @@ namespace PowerShellFar
 			if (line == null)
 			{
 				ShowAreaHelp();
-				return;
 			}
-
-			// line text, mind prefixes to avoid parsing problems
-			string text = line.Text;
-			string prefix = string.Empty;
-			if (line.WindowKind == WindowKind.Panels)
-				Entry.SplitCommandWithPrefix(ref text, out prefix);
-
-			int pos = line.Caret - prefix.Length;
-			ShowHelpForText(text, pos, defaultTopic);
+			else
+			{
+				// mind prefix to avoid parsing problems
+				var split = Zoo.SplitCommandWithPrefix(line.Text);
+				ShowHelpForText(split.Value, line.Caret - split.Key.Length, defaultTopic);
+			}
 		}
 
 		internal static void ShowHelpForText(

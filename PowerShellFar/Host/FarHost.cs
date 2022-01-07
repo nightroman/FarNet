@@ -137,42 +137,16 @@ namespace PowerShellFar
 		/// </summary>
 		public override void NotifyBeginApplication()
 		{
-			//_140311_185917
-			// Why ShowUserScreen/SaveUserScreen:
-			// ps: git log ;; [q] => without ShowUserScreen/SaveUserScreen results in not shown panels
-			// Why WriteLine:
-
-			// 2016-07-04: cannot repro both:
-			// cc: MarkdownToHtml.exe from=z => error output overrides prompt echo
-			// ps: 42; MarkdownToHtml.exe => error output overrides 42
-
-			// v5.2.2 - remove _BeginApplication and ShowUserScreen.
-
 			// write a line, it also calls ShowUserScreen and echo ps: ...
-			if (A.Psf.FarUI.Writer is ConsoleOutputWriter)
-				A.Psf.FarUI.Writer.WriteLine();
-
-			//rk _180127_151931
-			//if (A.Psf.FarUI.Writer is ConsoleOutputWriter)
-			//	Far.Api.UI.ShowUserScreen(true);
+			if (A.Psf.FarUI.Writer is ConsoleOutputWriter console)
+				console.WriteLine();
 		}
 		/// <summary>
 		/// Called after an external application process finishes.
 		/// It is used to restore state that the child process may have altered.
 		/// </summary>
 		public override void NotifyEndApplication()
-		{
-			//_140311_185917
-			// Why "if > 0"? NotifyEndApplication may be called without NotifyBeginApplication (no idea why).
-			// :: Panels, F11 PSF 1, PSF history, Enter
-
-			// v5.2.2 - remove _BeginApplication and SaveUserScreen.
-
-			//rk _180127_151931
-			// it is called twice but Begin is once...
-			//if (A.Psf.FarUI.Writer is ConsoleOutputWriter)
-			//	Far.Api.UI.SaveUserScreen(true);
-		}
+		{ }
 		/// <summary>
 		/// Indicates to the host that an exit has been requested.
 		/// It passes the exit code that the host should use when exiting the process.

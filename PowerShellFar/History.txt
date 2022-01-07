@@ -1,5 +1,22 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 5.8.3 =
+
+Console input in more cases, so that:
+- ps: console output and console input
+- vps: viewer output and input dialogs
+(swap some ps: <-> vps: to get desired)
+
+Invoke selected
+- Make it more consistent in different areas.
+
+Command console
+- Sync code runs in editor (F5) with the context.
+
+Other
+- Sample macros in PowerShellFar.macro.lua
+- Retire Invoke-Far, use cases are not clear.
+
 = 5.8.2 =
 
 Requires FarNet 5.8.1

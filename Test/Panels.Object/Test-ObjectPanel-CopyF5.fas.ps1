@@ -5,11 +5,11 @@
 
 job {
 	# open an object source panel
-	Get-Process Far | Out-FarPanel
+	42 | Out-FarPanel
 }
 job {
-	Assert-Far ($Far.Panel -is [PowerShellFar.ObjectPanel])
-	Find-FarFile Far
+	Assert-Far -ExplorerTypeId ([PowerShellFar.Guids]::ObjectExplorer)
+	Find-FarFile 42
 }
 
 # open another object target panel
@@ -18,7 +18,7 @@ job {
 	Out-FarPanel
 }
 job {
-	Assert-Far ($Far.Panel -is [PowerShellFar.ObjectPanel])
+	Assert-Far -ExplorerTypeId ([PowerShellFar.Guids]::ObjectExplorer)
 }
 
 # go back to the source
@@ -39,5 +39,5 @@ job {
 	)
 }
 
-# exit the target and source panels
-macro 'Keys"Tab Esc Tab Esc"'
+# exit both panels
+keys Tab Esc Tab Esc

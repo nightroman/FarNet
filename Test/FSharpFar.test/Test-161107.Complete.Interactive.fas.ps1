@@ -13,7 +13,10 @@ t1.``aa
 	But they work in F# source, so it's minor issue.
 #>
 
-macro "Keys 'F11 3 1' -- open F# Interactive"
+macro @'
+Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "65BD5625-769A-4253-8FDE-FFCC3F72489D")
+Keys '1' -- open F# Interactive
+'@
 macro @'
 print [[type T1 = { ``aa-1`` : string; ``aa-2`` : int }]]
 Keys "ShiftEnter"

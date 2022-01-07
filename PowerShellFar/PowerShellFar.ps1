@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	The internal profile.
@@ -47,12 +46,8 @@ function Show-FarTranscript(
 	[switch]$Internal
 )
 {
-	try {
-		[PowerShellFar.Zoo]::ShowTranscript($Internal)
-	}
-	catch {
-		Write-Error -ErrorAction Stop $_
-	}
+	trap { $PSCmdlet.ThrowTerminatingError($_) }
+	[PowerShellFar.Zoo]::ShowTranscript($Internal)
 }
 
 <#
@@ -61,13 +56,10 @@ function Show-FarTranscript(
 #>
 function Stop-FarTranscript {
 	[CmdletBinding()]
-	param()
-	try {
-		[PowerShellFar.Zoo]::StopTranscript($false)
-	}
-	catch {
-		Write-Error -ErrorAction Stop $_
-	}
+	param(
+	)
+	trap { $PSCmdlet.ThrowTerminatingError($_) }
+	[PowerShellFar.Zoo]::StopTranscript($false)
 }
 Set-Alias Stop-Transcript Stop-FarTranscript
 
@@ -91,27 +83,23 @@ function Start-FarTranscript {
 		[switch]
 		$NoClobber
 	)
-	try {
-		if (!$LiteralPath) {
-			if ($path = $PSCmdlet.GetVariableValue('global:Transcript')) {
-				if ($path -isnot [string]) {throw '$Transcript value is not a string.'}
-				$LiteralPath = $path
-			}
+	trap { $PSCmdlet.ThrowTerminatingError($_) }
+	if (!$LiteralPath) {
+		if ($path = $PSCmdlet.GetVariableValue('global:Transcript')) {
+			if ($path -isnot [string]) {throw '$Transcript value is not a string.'}
+			$LiteralPath = $path
 		}
-		if ($LiteralPath) {
-			if (Test-Path -LiteralPath $LiteralPath) {
-				$item = Get-Item -LiteralPath $LiteralPath -ErrorAction Stop
-				if ($item -isnot [System.IO.FileInfo]) {throw 'The specified path is not a file.'}
-				$LiteralPath = $item.FullName
-			}
-			else {
-				$LiteralPath = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($LiteralPath)
-			}
+	}
+	if ($LiteralPath) {
+		if (Test-Path -LiteralPath $LiteralPath) {
+			$item = Get-Item -LiteralPath $LiteralPath -ErrorAction Stop
+			if ($item -isnot [System.IO.FileInfo]) {throw 'The specified path is not a file.'}
+			$LiteralPath = $item.FullName
 		}
-		[PowerShellFar.Zoo]::StartTranscript($LiteralPath, $Append, $Force, $NoClobber)
+		else {
+			$LiteralPath = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($LiteralPath)
+		}
 	}
-	catch {
-		Write-Error -ErrorAction Stop $_
-	}
+	[PowerShellFar.Zoo]::StartTranscript($LiteralPath, $Append, $Force, $NoClobber)
 }
 Set-Alias Start-Transcript Start-FarTranscript

@@ -167,8 +167,8 @@ Various event handlers can be added using the profiles or scripts. See
 
 `[CtrlBreak]` stops synchronous commands invoked from:
 
-- Command line
-- Command input box
+- Invoke commands
+- Invoke selected
 - Main interactive
 - File associations
 - User menu (`[F2]`)
@@ -191,46 +191,43 @@ adding to handlers.
 
 [Contents]
 
-Commands with prefixes are used in the command line, the user menu (`[F2]`),
-and the file associations. By default command prefixes are: `ps:` (console
-output) and `vps:` (viewer output).
+Commands with prefixes are used in the command line, user menu, and file
+associations. Command prefixes are:
+
+- `ps:` console output and console input
+- `vps:` viewer output and input dialogs
 
 Console output may be transcribed to a file, use `Start-Transcript` and
 `Stop-Transcript` for starting and stopping and `Show-FarTranscript` for
 viewing the output.
 
-PowerShell scripts opened in the editor can be invoked by `[F5]`.
+PowerShell scripts opened in the editor may be invoked by `[F5]`.
 The key is hard-coded. The output is shown in the viewer.
 
-See [Examples].
+**Examples**
 
-Commands with console output, prefix `ps:`
+Commands with console output and console input use prefix `ps:`
 
-    ps: Get-Date
-    ps: 3.14 / 3
-    ps: [math]::pi / 3
+    ps: Get-Process Far
+    ps: Read-Host User
 
-Commands with viewer output, prefix `vps:`
+Commands with viewer output and input dialogs use prefix `vps:`
 
-    vps: Get-Process
-    vps: Get-ChildItem $env:TEMP -Recurse -Force
+    vps: Get-Process Far
+    vps: Read-Host User
 
-Commands starting UI or background jobs, normally prefix `ps:`
+Commands with no output and input may use any prefix:
 
-    ps: $Far.Message("Hello world")
-    ps: Get-Process | Out-FarList -Text Name | Open-FarPanel
-    ps: Start-FarJob { Remove-Item C:\TEMP\LargeFolder -Recurse -Force }
+    ps: Get-Process Far | Out-FarPanel
+    vps: Get-Process Far | Out-FarPanel
 
-**Accelerators**
-
-You can reduce typing by "Easy prefix" and "Easy invoke" macros, see [FAQ].
+See more [Examples].
 
 **Command history**
 
-Most of commands are added to the PowerShellFar command history automatically.
-A command is not added if it ends with "#". This may be useful for commands in
-the user menu (`[F2]`) and the file associations. Such commands are not typed
-manually and should not pollute the history.
+Commands are usually added to the PSF command history. A command is not added
+if it ends with "#". Use this for user menu and file association commands.
+They are not typed manually and should not pollute the history.
 
 
 *********************************************************************
@@ -242,9 +239,8 @@ manually and should not pollute the history.
 
 You are prompted to enter PowerShell commands.
 
-In panels it works like console with the one line input box at the bottom. The
-prompt is shown repeatedly after each command. The output is written to the
-console.
+In panels it works like console with the prompt at the bottom. The prompt is
+shown repeatedly after each command. The output is written to the console.
 See [Command console dialog](#command-console-dialog).
 
 In other areas the enhanced input box is used.
@@ -253,12 +249,11 @@ See [Invoke commands dialog](#invoke-commands-dialog).
 
 **Invoke selected**
 
-In the editor or dialog: invoke the selected or current line text. The code is
-invoked in the global scope. To invoke the whole editor script, use `[F5]`.
+In the editor, dialog, or command line: invoke the selected or the current line
+text. The code is invoked in the global scope with output shown in the viewer.
 
-In the command line: invoke the selected or whole text. The text is kept in the
-command line on errors or if there is a selection. The prefix is not needed but
-allowed. See also "Easy invoke macro": [FAQ].
+In the editor, to invoke the whole script, use `[F5]`.
+The script is invoked in its own new scope.
 
 **Background jobs**
 
@@ -342,7 +337,8 @@ The prompt is not modal, you may switch to other windows.
 
     Opens the editor for the alternative code input.
     Multiline commands are not added to the history.
-    Use same `[F5]` in the editor to "try" the code.
+    On closing the editor the code is always invoked.
+    You may use `[F5]` in the editor to run the code.
 
 - `[CtrlE]`
 
@@ -1760,49 +1756,66 @@ processing and panels for displaying results and further operations.
 
 **Q: How to make PowerShell code invocation from the command line easier?**
 
-A: There are several options
+**A**: There are several options.
 
-* Easy prefix macro
+**1:**
 
-    Use a macro which inserts `ps:` to empty command lines.
-    See *PowerShellFar.macro.lua*, `[Space]`.
+Use the "Easy prefix" macro which inserts `ps:` to empty command lines.
+See *PowerShellFar.macro.lua*, `[Space]`.
 
-* Easy invoke macro
+**2:**
 
-    Type and run commands with or without prefix using a macro associated with
-    the menu command "Invoke selected". See *PowerShellFar.macro.lua*, `[F5]`.
+Use the command console started from panels by the menu "Invoke commands".
+This mode needs no prefixes and provides rich code completion by `[Tab]`.
+Optionally, create a "Shell" macro for `ps: $Psf.StartCommandConsole()`.
+See *PowerShellFar.macro.lua*, `[Ctrl]`.
 
-    If a command fails then the command line text and caret are preserved.
-    This is useful for composing and trying lengthy commands.
+**3:**
 
+Type and run commands with or without prefixes using a macro associated with
+the menu command "Invoke selected". Specify the area "Common" for all areas.
+Alternatively, create a macro for `ps: $Psf.InvokeSelectedCode()`.
 
 *********************************************************************
 ## Command and macro examples
 
 [Contents]
 
+**Macro examples**
+
+FarNet commands are invoked by `Plugin.Call` with the FarNet GUID and command
+with prefix and optional leading colons. See FarNet manuals for the roles of
+leading colons.
+
+    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", [[ps: ...]])
+
+The PSF plugin menu is shown by:
+
+    Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "7DEF4106-570A-41AB-8ECB-40605339E6F7")
+
+See *PowerShellFar.macro.lua* for sample macros.
+
 **Command examples**
 
-Some examples are just demos but some of them may be practically useful as Far
-user menu commands (do not forget to add space and # to the end if you do not
-need them in PSF history). Examples with panels should be run from panels.
+Some examples are just demo but some may be practically useful as user menu
+commands (add ' #' to the end to avoid adding to the history).
 
 ---
-Show three versions: Far, FarNet, PowerShellFar:
+Show three useful versions: Far, FarNet, PowerShellFar
 
     ps: "Far $($Far.FarVersion)"; "FarNet $($Far.FarNetVersion)"; "PowerShellFar $($Host.Version)"
 
 ---
-Do some math, keep results in variables, use them later
+Assign variables, do some math later
 
-    ps: $x = [math]::sqrt([math]::pi)
-    ps: $y = [math]::sqrt(3.14)
-    ps: $x - $y
+    ps: $x = 3
+    ps: $y = 5
+    ps: [Math]::Sqrt($x * $x + $y * $y)
 
 ---
 Add the current panel directory to the system path for this session:
 
-    ps: $env:PATH = $env:PATH + ';' + $Far.Panel.CurrentDirectory
+    ps: $env:PATH = $Far.CurrentDirectory + ';' + $env:PATH
 
 ---
 Open selected files in editor at once
@@ -1819,7 +1832,6 @@ Find string "alias" in .ps1 files, show list of found lines and open editor at
 the selected line (guess why these commands are the same):
 
     ps: Get-Item *.ps1 | Select-String alias | Out-FarList | Start-FarEditor
-    ps: Get-Item *.ps1 | Select-String alias | Out-FarList | %{ Start-FarEditor $_.Path $_.LineNumber }
 
 ---
 Show PSF settings in the panel:
@@ -1827,47 +1839,15 @@ Show PSF settings in the panel:
     ps: Open-FarPanel $Psf.Settings
 
 ---
-Show list of names and command lines of running processes and then show the selected process member panel (WMI)
+Show list of names and command lines of running processes and then show the selected process member panel
 
-    ps: Get-WmiObject Win32_Process | Out-FarList -Text { $_.Name + ' ' + $_.CommandLine } | Open-FarPanel
+    ps: Get-CimInstance Win32_Process | Out-FarList -Text { $_.Name + ' ' + $_.CommandLine } | Open-FarPanel
+
+(type "far" in this list to see how filter works)
 
 ---
 Show available scripts and their help synopsis in description column
 
     ps: Get-Command -Type ExternalScript | Get-Help | Out-FarPanel -Columns Name, Synopsis
-
----
-**Macro examples**
-
-PowerShell commands can be invoked from macros using the `Plugin.Call`
-function. The first argument is the FarNet GUID, the second argument consists
-of 0-2 colons, a command prefix, a colon, and a command. See the FarNet manual
-for the roles of leading colons.
-
----
-`[F10]` in the *Panels* area: safe exit without killing running PowerShellFar
-background jobs. Standard PowerShell background jobs are not checked. If there
-are jobs then the job menu is shown.
-
-    if not Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "ps: $Far.Quit()") then Keys("F10") end
-
----
-This macro in the *Common* area calls the *Menu-Favorites-.ps1*. The leading
-colon tells to call it as async job, e.g. to make macros working in the menu.
-
-    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":ps: Menu-Favorites-.ps1")
-
----
-This macro invokes the *Clear-Session.ps1* script. The macro uses the prefix
-`vps:` in order to show command output in the viewer:
-
-    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "vps: Clear-Session.ps1 -Verbose")
-
----
-Scripts opened in the editor can be invoked in the current session by `[F5]`.
-The key is hardcoded but yet another key still can be used for the same job
-with this macro:
-
-    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "vps: $Psf.InvokeScriptFromEditor()")
 
 *********************************************************************

@@ -16,10 +16,9 @@ namespace PowerShellFar
 	/// </summary>
 	public sealed class ObjectExplorer : FormatExplorer
 	{
-		const string TypeIdString = "07e4dde7-e113-4622-b2e9-81cf3cda927a";
 		///
 		public ObjectExplorer()
-			: base(new Guid(TypeIdString))
+			: base(new Guid(Guids.ObjectExplorer))
 		{
 			FileComparer = new FileDataComparer();
 			Functions =

@@ -43,21 +43,20 @@ namespace PowerShellFar
 			ResetNavigation();
 		}
 		/// <summary>
-		/// For Actor.
+		/// For Actor. Inserts code to known targets and returns null or returns the code.
 		/// </summary>
-		public static void ShowHistory()
+		public static string ShowHistory()
 		{
 			var m = new UI.CommandHistoryMenu(string.Empty);
 			string code = m.Show();
 			if (code == null)
-				return;
+				return null;
 
-			// insert to command lines
 			switch (Far.Api.Window.Kind)
 			{
 				case WindowKind.Panels:
 					Far.Api.CommandLine.Text = Entry.CommandInvoke1.Prefix + ": " + code;
-					return;
+					return null;
 				case WindowKind.Editor:
 					var editor = Far.Api.Editor;
 					if (!(editor.Host is Interactive))
@@ -65,7 +64,7 @@ namespace PowerShellFar
 					editor.GoToEnd(true);
 					editor.InsertText(code);
 					editor.Redraw();
-					return;
+					return null;
 				case WindowKind.Dialog:
 					var dialog = Far.Api.Dialog;
 					var typeId = dialog.TypeId;
@@ -75,19 +74,10 @@ namespace PowerShellFar
 					if (line == null || line.IsReadOnly)
 						break;
 					line.Text = code;
-					return;
+					return null;
 			}
 
-			InvokeInputCode(code);
-		}
-		static async void InvokeInputCode(string code)
-		{
-			var ui = new UI.InputDialog() { Title = Res.Me, History = Res.History, Prompt = new string[] { Res.InvokeCommands }, Text = code };
-			code = await ui.ShowAsync();
-
-			// invoke input
-			if (!string.IsNullOrEmpty(code))
-				await Tasks.Job(() => A.Psf.Act(code, null, true));
+			return code;
 		}
 		public static string GetNextCommand(bool up, string current)
 		{

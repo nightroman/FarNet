@@ -2,36 +2,28 @@
 // FarNet plugin for Far Manager
 // Copyright (c) Roman Kuzmin
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "Panel2.h"
 #include "Panel0.h"
 #include "Shelve.h"
 
 namespace FarNet
-{;
-static void WINAPI FarPanelItemFreeCallback(void* userData, const struct FarPanelItemFreeInfo* /*info*/);
-
-ref struct ExplorerFilePair
 {
-public:
-	ExplorerFilePair(Explorer^ explorer, FarFile^ file) : Explorer(explorer), File(file) {}
-	Explorer^ Explorer;
-	FarFile^ File;
-};
+static void WINAPI FarPanelItemFreeCallback(void* userData, const struct FarPanelItemFreeInfo* /*info*/);
 
 ref class FileStore
 {
 internal:
 	static int _lastFileKey = -1;
-	static Dictionary<int, ExplorerFilePair^> _files;
+	static Dictionary<int, FarFile^> _files;
 	static FarFile^ GetFile(int key)
 	{
-		return _files[key]->File;
+		return _files[key];
 	}
-	static void AddFile(PluginPanelItem& panelItem, Explorer^ explorer, FarFile^ file)
+	static void AddFile(PluginPanelItem& panelItem, FarFile^ file)
 	{
 		--_lastFileKey;
-		_files.Add(_lastFileKey, gcnew ExplorerFilePair(explorer, file));
+		_files.Add(_lastFileKey, file);
 		panelItem.UserData.Data = (void*)(__int64)_lastFileKey;
 		panelItem.UserData.FreeData = FarPanelItemFreeCallback;
 	}
@@ -44,12 +36,12 @@ static void WINAPI FarPanelItemFreeCallback(void* userData, const struct FarPane
 }
 
 Panel2::Panel2(Panel^ panel, Explorer^ explorer)
-: Panel1(true)
-, Host(panel)
-, _MyExplorer(explorer)
-, _Files_(gcnew List<FarFile^>())
-, _StartViewMode(PanelViewMode::Undefined)
-, _ActiveInfo(ShelveInfoNative::CreateActiveInfo(false))
+	: Panel1(true)
+	, Host(panel)
+	, _MyExplorer(explorer)
+	, _Files_(gcnew List<FarFile^>())
+	, _StartViewMode(PanelViewMode::Undefined)
+	, _ActiveInfo(ShelveInfoNative::CreateActiveInfo(false))
 {}
 
 void Panel2::AssertOpen()
@@ -60,7 +52,7 @@ void Panel2::AssertOpen()
 
 bool Panel2::HasDots::get()
 {
-	switch(Host->DotsMode)
+	switch (Host->DotsMode)
 	{
 	case PanelDotsMode::Dots: return true;
 	case PanelDotsMode::Off: return false;
@@ -97,7 +89,7 @@ IList<FarFile^>^ Panel2::ShownFiles::get()
 	GetPanelInfo(Handle, pi);
 
 	List<FarFile^>^ r = gcnew List<FarFile^>((int)pi.ItemsNumber);
-	for(int i = 0; i < (int)pi.ItemsNumber; ++i)
+	for (int i = 0; i < (int)pi.ItemsNumber; ++i)
 	{
 		AutoPluginPanelItem item(Handle, i, ShownFile);
 		FarFile^ file = GetItemFile(item.Get());
@@ -119,7 +111,7 @@ IList<FarFile^>^ Panel2::SelectedFiles::get()
 	GetPanelInfo(Handle, pi);
 
 	List<FarFile^>^ r = gcnew List<FarFile^>((int)pi.SelectedItemsNumber);
-	for(int i = 0; i < (int)pi.SelectedItemsNumber; ++i)
+	for (int i = 0; i < (int)pi.SelectedItemsNumber; ++i)
 	{
 		AutoPluginPanelItem item(Handle, i, SelectedFile);
 		FarFile^ file = GetItemFile(item.Get());
@@ -310,7 +302,7 @@ int Panel2::Flags()
 	int r = 0; //??????OPIF_SHORTCUT;
 
 	// highlighting
-	switch(_Highlighting)
+	switch (_Highlighting)
 	{
 	case PanelHighlighting::Default: r |= OPIF_USEATTRHIGHLIGHTING; break;
 	case PanelHighlighting::Off: r |= OPIF_DISABLEHIGHLIGHTING; break;
@@ -356,7 +348,7 @@ void Panel2::CreateInfoLines()
 	if (!m->InfoLines)
 		m->InfoLines = new InfoPanelLine[_InfoItems->Length];
 
-	for(int i = _InfoItems->Length; --i >= 0;)
+	for (int i = _InfoItems->Length; --i >= 0;)
 	{
 		DataItem^ s = _InfoItems[i];
 		InfoPanelLine& d = (InfoPanelLine&)m->InfoLines[i];
@@ -378,7 +370,7 @@ void Panel2::DeleteInfoLines()
 {
 	if (m->InfoLines)
 	{
-		for(int i = (int)m->InfoLinesNumber; --i >= 0;)
+		for (int i = (int)m->InfoLinesNumber; --i >= 0;)
 		{
 			delete m->InfoLines[i].Text;
 			delete m->InfoLines[i].Data;
@@ -396,52 +388,52 @@ String^ GetColumnKinds(array<FarColumn^>^ columns)
 
 	// pass 1: pre-process specified default kinds, remove them from available
 	int iCustom = 0;
-	for each(FarColumn^ column in columns)
+	for each (FarColumn ^ column in columns)
 	{
 		// skip not specified
 		if (ES(column->Kind))
 			continue;
 
 		// pre-process only default kinds: N, O, Z, C
-		switch(column->Kind[0])
+		switch (column->Kind[0])
 		{
 		case 'N':
-			{
-				if (!availableColumnKinds.Remove("N"))
-					throw gcnew InvalidOperationException(String::Format(Res::Column0IsUsedTwice, "N"));
-			}
-			break;
+		{
+			if (!availableColumnKinds.Remove("N"))
+				throw gcnew InvalidOperationException(String::Format(Res::Column0IsUsedTwice, "N"));
+		}
+		break;
 		case 'O':
-			{
-				if (!availableColumnKinds.Remove("O"))
-					throw gcnew InvalidOperationException(String::Format(Res::Column0IsUsedTwice, "O"));
-			}
-			break;
+		{
+			if (!availableColumnKinds.Remove("O"))
+				throw gcnew InvalidOperationException(String::Format(Res::Column0IsUsedTwice, "O"));
+		}
+		break;
 		case 'Z':
-			{
-				if (!availableColumnKinds.Remove("Z"))
-					throw gcnew InvalidOperationException(String::Format(Res::Column0IsUsedTwice, "Z"));
-			}
-			break;
+		{
+			if (!availableColumnKinds.Remove("Z"))
+				throw gcnew InvalidOperationException(String::Format(Res::Column0IsUsedTwice, "Z"));
+		}
+		break;
 		case 'C':
-			{
-				if (column->Kind->Length < 2)
-					throw gcnew InvalidOperationException(Res::InvalidColumnKind + "C");
+		{
+			if (column->Kind->Length < 2)
+				throw gcnew InvalidOperationException(Res::InvalidColumnKind + "C");
 
-				if (iCustom != (int)(column->Kind[1] - '0'))
-					throw gcnew InvalidOperationException(Res::InvalidColumnKind + column->Kind + ". Expected: C" + iCustom);
+			if (iCustom != (int)(column->Kind[1] - '0'))
+				throw gcnew InvalidOperationException(Res::InvalidColumnKind + column->Kind + ". Expected: C" + iCustom);
 
-				availableColumnKinds.Remove(column->Kind->Substring(0, 2));
-				++iCustom;
-			}
-			break;
+			availableColumnKinds.Remove(column->Kind->Substring(0, 2));
+			++iCustom;
+		}
+		break;
 		}
 	}
 
 	// pass 2: get missed kinds from yet available
 	int iAvailable = 0;
 	StringBuilder sb(80);
-	for each(FarColumn^ column in columns)
+	for each (FarColumn ^ column in columns)
 	{
 		if (sb.Length)
 			sb.Append(",");
@@ -458,7 +450,7 @@ String^ GetColumnKinds(array<FarColumn^>^ columns)
 wchar_t* NewColumnWidths(IEnumerable<FarColumn^>^ columns)
 {
 	StringBuilder sb(80);
-	for each(FarColumn^ column in columns)
+	for each (FarColumn ^ column in columns)
 	{
 		if (sb.Length)
 			sb.Append(",");
@@ -468,7 +460,7 @@ wchar_t* NewColumnWidths(IEnumerable<FarColumn^>^ columns)
 		else if (column->Width > 0)
 			sb.Append(column->Width.ToString());
 		else
-			sb.AppendFormat("{0}%", - column->Width);
+			sb.AppendFormat("{0}%", -column->Width);
 	}
 	return NewChars(sb.ToString());
 }
@@ -477,7 +469,7 @@ wchar_t** NewColumnTitles(array<FarColumn^>^ columns)
 {
 	int i = -1;
 	wchar_t** r = nullptr;
-	for each(FarColumn^ column in columns)
+	for each (FarColumn ^ column in columns)
 	{
 		++i;
 		if (ES(column->Name))
@@ -486,7 +478,7 @@ wchar_t** NewColumnTitles(array<FarColumn^>^ columns)
 		if (r == nullptr)
 		{
 			int n = columns->Length + 1;
-			r = new wchar_t*[n];
+			r = new wchar_t* [n];
 			memset(r, 0, n * sizeof(wchar_t*));
 		}
 
@@ -547,7 +539,7 @@ void FreePanelMode(const ::PanelMode& d)
 
 	if (d.ColumnTitles)
 	{
-		for(int i = 0; d.ColumnTitles[i]; ++i)
+		for (int i = 0; d.ColumnTitles[i]; ++i)
 			delete d.ColumnTitles[i];
 		delete d.ColumnTitles;
 	}
@@ -619,7 +611,7 @@ void Panel2::CreateModes()
 	m->PanelModesArray = modes;
 	m->PanelModesNumber = 10;
 
-	for(int i = 10; --i >= 0;)
+	for (int i = 10; --i >= 0;)
 	{
 		PanelPlan^ s = _Plans[i];
 		if (s)
@@ -636,7 +628,7 @@ void Panel2::DeleteModes()
 
 	assert(_Plans && _Plans->Length == 10);
 
-	for(int i = 10; --i >= 0;)
+	for (int i = 10; --i >= 0;)
 	{
 		if (_Plans[i])
 			FreePanelMode(m->PanelModesArray[i]);
@@ -721,7 +713,7 @@ void Panel2::ReplaceExplorer(Explorer^ explorer)
 	ExplorerEnteredEventArgs args(_MyExplorer);
 	_MyExplorer = explorer;
 	explorer->EnterPanel(Host);
-	Host->UIExplorerEntered(%args);
+	Host->UIExplorerEntered(% args);
 }
 
 void Panel2::Navigate(Explorer^ explorer)
@@ -736,7 +728,7 @@ void Panel2::CreateKeyBars(KeyBarTitles& b)
 	b.CountLabels = _keyBars->Length;
 	b.Labels = new KeyBarLabel[_keyBars->Length];
 
-	for(int i = _keyBars->Length; --i >= 0;)
+	for (int i = _keyBars->Length; --i >= 0;)
 	{
 		KeyBarLabel& it = b.Labels[i];
 		KeyBar^ bar = _keyBars[i];
@@ -749,7 +741,7 @@ void Panel2::CreateKeyBars(KeyBarTitles& b)
 
 void Panel2::DeleteKeyBars(const KeyBarTitles& b)
 {
-	for(int i = (int)b.CountLabels; --i >= 0;)
+	for (int i = (int)b.CountLabels; --i >= 0;)
 	{
 		KeyBarLabel& it = b.Labels[i];
 		delete it.Text;
@@ -795,7 +787,7 @@ List<FarFile^>^ Panel2::ItemsToFiles(IList<String^>^ names, PluginPanelItem* pan
 	// pure case
 	if (Host->Explorer->CanExploreLocation)
 	{
-		for(int i = 0; i < itemsNumber; ++i)
+		for (int i = 0; i < itemsNumber; ++i)
 		{
 			r->Add(Panel1::ItemToFile(panelItem[i]));
 			if (names)
@@ -805,7 +797,7 @@ List<FarFile^>^ Panel2::ItemsToFiles(IList<String^>^ names, PluginPanelItem* pan
 	}
 
 	// data case
-	for(int i = 0; i < itemsNumber; ++i)
+	for (int i = 0; i < itemsNumber; ++i)
 	{
 		FarFile^ file = GetItemFile(panelItem[i]);
 		if (file)
@@ -907,7 +899,7 @@ int Panel2::AsGetFindData(GetFindDataInfo* info)
 			if (_Files_ == nullptr)
 			{
 				List<FarFile^>^ list = gcnew List<FarFile^>();
-				for each (FarFile^ file in files)
+				for each (FarFile ^ file in files)
 					list->Add(file);
 				_Files_ = list;
 			}
@@ -949,7 +941,7 @@ int Panel2::AsGetFindData(GetFindDataInfo* info)
 		}
 
 		// add files
-		for each(FarFile^ file in _Files_)
+		for each (FarFile ^ file in _Files_)
 		{
 			++itemIndex;
 			++fileIndex;
@@ -979,7 +971,7 @@ int Panel2::AsGetFindData(GetFindDataInfo* info)
 
 			// other
 			if (isSpecialFind) //???????
-				FileStore::AddFile(p, explorer, file);
+				FileStore::AddFile(p, file);
 			else
 				p.UserData.Data = (void*)(__int64)(canExploreLocation ? -1 : fileIndex + 1);
 			p.FileAttributes = (DWORD)file->Attributes;
@@ -995,11 +987,11 @@ int Panel2::AsGetFindData(GetFindDataInfo* info)
 				int nb = columns->Count;
 				if (nb)
 				{
-					wchar_t** custom = new wchar_t*[nb];
+					wchar_t** custom = new wchar_t* [nb];
 					p.CustomColumnNumber = nb;
 					p.CustomColumnData = custom;
 					int iColumn = 0;
-					for each(Object^ it in columns)
+					for each (Object ^ it in columns)
 					{
 						if (it)
 							custom[iColumn] = NewChars(it->ToString());
@@ -1017,7 +1009,7 @@ int Panel2::AsGetFindData(GetFindDataInfo* info)
 
 		return 1;
 	}
-	catch(Exception^ e)
+	catch (Exception^ e)
 	{
 		if ((info->OpMode & (OPM_FIND | OPM_SILENT)) == 0)
 			Far::Api->ShowError("Getting panel files", e);
@@ -1053,7 +1045,7 @@ int Panel2::AsSetDirectory(const SetDirectoryInfo* info)
 			if (!mp->Parent)
 				return 0;
 
-			while(mp->Parent)
+			while (mp->Parent)
 			{
 				Panel^ parent = mp->Parent;
 				mp->CloseChild();

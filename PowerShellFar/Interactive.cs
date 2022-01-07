@@ -239,7 +239,7 @@ namespace PowerShellFar
 			if (Runspace == null)
 			{
 				EditorOutputWriter2 writer = new EditorOutputWriter2(Editor);
-				A.Psf.Act(code, writer, false);
+				A.Psf.Run(new RunArgs(code) { Writer = writer });
 				return;
 			}
 
