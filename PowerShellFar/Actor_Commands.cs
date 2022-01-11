@@ -4,7 +4,6 @@
 
 using FarNet;
 using System;
-using System.Management.Automation;
 using System.Threading.Tasks;
 
 namespace PowerShellFar
@@ -78,25 +77,12 @@ namespace PowerShellFar
 			}
 		}
 
-		string GetCommandPrompt()
+		/// <summary>
+		/// Starts "Command console".
+		/// </summary>
+		public void StartCommandConsole()
 		{
-			try
-			{
-				SyncPaths();
-
-				using var ps = NewPowerShell();
-				var res = ps.AddCommand("prompt").Invoke();
-
-				//! as PS, use not empty res[0]
-				string prompt;
-				if (res.Count > 0 && res[0] != null && (prompt = res[0].ToString()).Length > 0)
-					return prompt;
-			}
-			catch (RuntimeException)
-			{
-			}
-
-			return "PS> ";
+			_ = UI.ReadCommand.StartAsync();
 		}
 
 		/// <summary>
@@ -104,8 +90,7 @@ namespace PowerShellFar
 		/// </summary>
 		public void StopCommandConsole()
 		{
-			if (UI.ReadCommand.Instance != null)
-				UI.ReadCommand.Instance.Stop();
+			UI.ReadCommand.Stop();
 		}
 
 		/// <summary>
@@ -120,67 +105,5 @@ namespace PowerShellFar
 				Far.Api.Dialog.TypeId == new Guid(Guids.ReadCommandDialog));
 		}
 
-		/// <summary>
-		/// Starts "Command console".
-		/// </summary>
-		public async void StartCommandConsole()
-		{
-			try
-			{
-				// already started? activate
-				if (UI.ReadCommand.Instance != null)
-				{
-					await UI.ReadCommand.Instance.ActivateAsync();
-					return;
-				}
-
-				// must be panels
-				if (Far.Api.Window.Kind != WindowKind.Panels)
-					throw new ModuleException("Command console should start from panels.");
-
-				// hide key bar (hack)
-				bool visibleKeyBar = Console.CursorTop - Console.WindowTop == Console.WindowHeight - 2;
-				if (visibleKeyBar)
-					await Tasks.Macro("Keys'CtrlB'");
-
-				try
-				{
-					// REPL
-					for (; ; )
-					{
-						// prompt
-						var args = new UI.ReadCommand.Args { GetPrompt = GetCommandPrompt };
-
-						// read
-						UI.ReadCommand.Instance = await Tasks.Job(() => new UI.ReadCommand(args));
-						var res = await UI.ReadCommand.Instance.ReadAsync();
-						if (res == null)
-							return;
-
-						// run
-						var obj = await Tasks.Command(() => Run(res));
-
-						// switch to opened panel, come back on exit
-						if (obj is Panel panel)
-						{
-							panel.Closed += (_, _) => StartCommandConsole();
-							return;
-						}
-					}
-				}
-				finally
-				{
-					UI.ReadCommand.Instance = null;
-
-					// restore key bar (may not work with jobs)
-					if (visibleKeyBar)
-						await Tasks.Macro("Keys'CtrlB'");
-				}
-			}
-			catch (Exception ex)
-			{
-				_ = Tasks.Job(() => Far.Api.ShowError(nameof(StartCommandConsole), ex));
-			}
-		}
 	}
 }

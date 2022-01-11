@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 5.8.4 =
+
+Command console
+- Fix CtrlX as Cut with selection.
+
 = 5.8.3 =
 
 Console input in more cases, so that:

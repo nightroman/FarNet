@@ -40,15 +40,8 @@ namespace PowerShellFar
 		{
 			if (_writer is ConsoleOutputWriter)
 				return true;
-
-			if (UI.ReadCommand.Instance == null)
-				return false;
-
-			var from = Far.Api.Window.Kind;
-			if (from == WindowKind.Desktop)
-				return true;
-
-			return from == WindowKind.Dialog && Far.Api.Dialog.TypeId == new Guid(Guids.ReadCommandDialog);
+			else
+				return UI.ReadCommand.IsActive();
 		}
 
 		/// <summary>

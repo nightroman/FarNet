@@ -6,13 +6,14 @@ using FarNet;
 using FarNet.Forms;
 using System;
 using System.IO;
+using System.Management.Automation;
 using System.Threading.Tasks;
 
 namespace PowerShellFar.UI
 {
 	class ReadCommand
 	{
-		public static ReadCommand Instance;
+		static ReadCommand Instance;
 
 		readonly IDialog Dialog;
 		readonly IText Text;
@@ -21,13 +22,7 @@ namespace PowerShellFar.UI
 		string PromptOriginal;
 		string TextFromEditor;
 
-		readonly Args In;
 		RunArgs Out;
-
-		public class Args
-		{
-			public Func<string> GetPrompt;
-		}
 
 		class Layout
 		{
@@ -36,11 +31,9 @@ namespace PowerShellFar.UI
 			public int EditLeft, EditTop, EditRight;
 		}
 
-		public ReadCommand(Args args)
+		public ReadCommand()
 		{
-			In = args;
-
-			PromptOriginal = args.GetPrompt();
+			PromptOriginal = GetPrompt();
 			Far.Api.UI.WindowTitle = PromptOriginal;
 			var pos = GetLayoutAndSetPromptTrimmed(PromptOriginal);
 
@@ -93,9 +86,41 @@ namespace PowerShellFar.UI
 			};
 		}
 
-		public void Stop()
+		static string GetPrompt()
 		{
-			Dialog.Close(-2);
+			try
+			{
+				A.Psf.SyncPaths();
+
+				using var ps = A.Psf.NewPowerShell();
+				var res = ps.AddCommand("prompt").Invoke();
+
+				//! as PS, use not empty res[0]
+				string prompt;
+				if (res.Count > 0 && res[0] != null && (prompt = res[0].ToString()).Length > 0)
+					return prompt;
+			}
+			catch (RuntimeException)
+			{
+			}
+			return "PS> ";
+		}
+
+		public static bool IsActive()
+		{
+			if (Instance == null)
+				return false;
+
+			var from = Far.Api.Window.Kind;
+			if (from == WindowKind.Desktop)
+				return true;
+
+			return from == WindowKind.Dialog && Far.Api.Dialog.TypeId == new Guid(Guids.ReadCommandDialog);
+		}
+
+		public static void Stop()
+		{
+			Instance?.Dialog.Close(-2);
 		}
 
 		void Dialog_Closing(object sender, ClosingEventArgs e)
@@ -136,7 +161,7 @@ namespace PowerShellFar.UI
 				Dialog.Activate();
 
 				// refresh prompt and layout
-				var prompt = In.GetPrompt();
+				var prompt = GetPrompt();
 				if (prompt != PromptOriginal)
 				{
 					PromptOriginal = prompt;
@@ -228,13 +253,19 @@ namespace PowerShellFar.UI
 					}
 					return;
 				case KeyCode.E:
-				case KeyCode.X:
-					// history navigation
+					// history navigation up
 					if (e.Key.IsCtrl())
 					{
 						e.Ignore = true;
-						Edit.Text = History.GetNextCommand(e.Key.VirtualKeyCode == KeyCode.E, Edit.Text);
-						Edit.Line.Caret = -1;
+						Edit.Text = History.GetNextCommand(true, Edit.Text);
+					}
+					return;
+				case KeyCode.X:
+					// history navigation down, mind selected ~ CtrlX Cut
+					if (e.Key.IsCtrl() && Edit.Line.SelectionSpan.Length < 0)
+					{
+						e.Ignore = true;
+						Edit.Text = History.GetNextCommand(false, Edit.Text);
 					}
 					return;
 				case KeyCode.F1:
@@ -342,6 +373,63 @@ namespace PowerShellFar.UI
 				History.ResetNavigation();
 				return Out;
 			});
+		}
+
+		public static async Task StartAsync()
+		{
+			try
+			{
+				// already started? activate
+				if (Instance != null)
+				{
+					await Instance.ActivateAsync();
+					return;
+				}
+
+				// must be panels
+				if (Far.Api.Window.Kind != WindowKind.Panels)
+					throw new ModuleException("Command console should start from panels.");
+
+				// hide key bar (hack)
+				bool visibleKeyBar = Console.CursorTop - Console.WindowTop == Console.WindowHeight - 2;
+				if (visibleKeyBar)
+					await Tasks.Macro("Keys'CtrlB'");
+
+				try
+				{
+					// REPL
+					for (; ; )
+					{
+						// read
+						Instance = await Tasks.Job(() => new ReadCommand());
+						var res = await Instance.ReadAsync();
+						if (res == null)
+							return;
+
+						// run
+						var obj = await Tasks.Command(() => A.Psf.Run(res));
+
+						// switch to opened panel, come back on exit
+						if (obj is Panel panel)
+						{
+							panel.Closed += (_, _) => _ = StartAsync();
+							return;
+						}
+					}
+				}
+				finally
+				{
+					Instance = null;
+
+					// restore key bar (may not work with jobs)
+					if (visibleKeyBar)
+						await Tasks.Macro("Keys'CtrlB'");
+				}
+			}
+			catch (Exception ex)
+			{
+				_ = Tasks.Job(() => Far.Api.ShowError("Command console", ex));
+			}
 		}
 	}
 }
