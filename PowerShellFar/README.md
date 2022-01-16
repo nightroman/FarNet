@@ -343,10 +343,12 @@ The prompt is not modal, you may switch to other windows.
 - `[CtrlE]`
 
     Gets the previous command from history.
+    Same as `[UpArrow]` when panels are off.
 
 - `[CtrlX]`
 
     Gets the next command from history.
+    Same as `[DownArrow]` when panels are off.
 
 - `[CtrlEnter]`, `[CtrlF]`
 
@@ -358,14 +360,13 @@ The prompt is not modal, you may switch to other windows.
 
 - `[Up]`, `[Down]`, `[PgUp]`, `[PgDn]`, `[F2]`, `[F3]`, `[F4]`, `[CtrlO]`, `[CtrlF1]`, `[CtrlF2]`
 
-    These keys are sent to the active panel for navigation, edit/view, hide/show.
+    These keys are sent to panels for navigation, edit/view, hide/show.
 
 **Custom command prompt**
 
 Like in the PowerShell console, the command prompt is defined by the function
 `prompt`, either default or custom in the profile. `prompt` normally returns
-text. It can use `Write-Host` for colors but this text is printed before the
-command line.
+one line text. It may also use `Write-Host` for multiline prompt, with colors.
 
 **Commands opening panels**
 

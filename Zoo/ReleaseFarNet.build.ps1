@@ -3,23 +3,28 @@
 	Release steps invoked by Invoke-Build *
 #>
 
-#_190903_023748 use PositionalBinding or TabEx test fails
-[CmdletBinding(PositionalBinding=0)]
+#_190903_023748 use PositionalBinding or TabExpansion test fails
+[CmdletBinding(PositionalBinding=$false)]
 param(
 	# persistent data
 	$Push,
 	$Tags
 )
 
-$IBRoot = Split-Path ((Get-Alias Invoke-Build).Definition)
-. $IBRoot\Tasks\Ask\Ask.tasks.ps1
+Set-Alias ask Confirm-Build
 
-ask setVersion {
-	Start-Process Far.exe /e, $env:FarNetCode\Get-Version.ps1 -Wait
-} -Prompt @'
+Exit-Build {
+	while (!(ask Exit?)) {}
+}
+
+task setVersion -If {
+	ask @'
 Edit Get-Version.ps1 to set versions.
 What you change is what you are about to push.
 '@
+} {
+	Start-Process Far.exe /e, $env:FarNetCode\Get-Version.ps1 -Wait
+}
 
 task chooseToPush {
 	while(($script:Push = Read-Host @'
@@ -39,42 +44,60 @@ Choose to push:
 	}
 }
 
-task build {
+task build buildFarNet, buildDocs, buildModules
+
+task buildFarNet -If {
+	ask 'Build FarNet projects'
+} {
 	while (Get-Process [F]ar) {Read-Host 'Exit Far and enter to build all'}
 	Build-FarNet.ps1
 }
 
-task buildDocs -If ($Push -ne 3) {
+task buildDocs -If {
+	($Push -ne 3) -and (ask 'Build FarNet CHM help')
+} {
 	Invoke-Build build, install, clean $env:FarNetCode\Docs\FarNetAPI.build.ps1
 }
 
-task buildModules {
+task buildModules -If {
+	ask 'Build FarNet modules'
+} {
 	Invoke-Build modules, clean $env:FarNetCode\.build.ps1
 }
 
-ask nugetAndTest {
-	Invoke-Build NuGet, TestNuGet
-} -Prompt @'
-Make last changes in About files, not in code.
+task nugetAndTest -If {
+	ask @'
+Make last changes in docs and notes.
 Create and test NuGet packages?
 '@
+} {
+	Invoke-Build NuGet, TestNuGet
+}
 
-ask testAll {
-	Test-Far.ps1 -All
-	Clear-Host
-} -Prompt @'
+task testAll -If {
+	ask @'
 Test all, mind x86, x64.
 Start default testing?
 '@
+} {
+	Test-Far.ps1 -All
+	Clear-Host
+}
 
-ask pushPackages -Prompt 'Push new packages to NuGet manually. Then continue.'
+task pushPackages -If {
+	ask 'Push new packages to NuGet manually. Then continue.'
+}
 
-ask commitSource -Prompt {"Start git gui to commit/amend changes for [$Tags]?"} {
+task commitSource -If {
+	ask "Start git gui to commit/amend changes for [$Tags]?"
+} {
 	Set-Location $env:FarNetCode
 	git gui
 }
 
-ask pushSource -Prompt {"Push commits and tags [$Tags]?"} {
+task pushSource -If {
+	ask "Push commits and tags [$Tags]?"
+} {
 	Set-Location $env:FarNetCode
 	exec { git push }
 	foreach($_ in $Tags) {
@@ -84,6 +107,8 @@ ask pushSource -Prompt {"Push commits and tags [$Tags]?"} {
 	exec { git gc --aggressive --prune=now }
 }
 
-ask zipFarDev -Prompt 'Zip FarDev (checkpoint all)?' {
+task zipFarDev -If {
+	ask 'Zip FarDev (checkpoint all)?'
+} {
 	Invoke-Build zipFarDev
 }

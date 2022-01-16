@@ -2,8 +2,7 @@
 # Synopsis: Interactive release steps.
 task release {
 	#! save outside or it gets to zip
-	$save = "$HOME\ReleaseFarNet.clixml"
-	Build-Checkpoint $save @{Task = '*'; File = 'ReleaseFarNet.build.ps1'} -Resume:(Test-Path $save)
+	Build-Checkpoint -Auto "$HOME\z.ReleaseFarNet.clixml" @{Task = '*'; File = 'ReleaseFarNet.build.ps1'}
 }
 
 # Synopsis: Pack FarNet assets.

@@ -252,6 +252,18 @@ namespace PowerShellFar.UI
 							RunKeyInPanelsAsync(e.Key, true);
 					}
 					return;
+				case KeyCode.UpArrow:
+				case KeyCode.DownArrow:
+					// panel or history navigation
+					if (e.Key.Is())
+					{
+						e.Ignore = true;
+						if (Far.Api.Panel.IsVisible || Far.Api.Panel2.IsVisible)
+							RunKeyInPanelsAsync(e.Key, true);
+						else
+							Edit.Text = History.GetNextCommand(e.Key.VirtualKeyCode == KeyCode.UpArrow, Edit.Text);
+					}
+					return;
 				case KeyCode.E:
 					// history navigation up
 					if (e.Key.IsCtrl())
@@ -319,8 +331,6 @@ namespace PowerShellFar.UI
 					}
 					return;
 				case KeyCode.F2:
-				case KeyCode.UpArrow:
-				case KeyCode.DownArrow:
 				case KeyCode.PageDown:
 				case KeyCode.PageUp:
 					// panel keys
