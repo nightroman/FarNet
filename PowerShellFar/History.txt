@@ -1,5 +1,22 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 5.8.6 =
+
+ReadLine dialog
+- [CtrlC] with no selection works as [Esc].
+
+Rename-FarFile-.ps1
+- Renamed to Rename-FarFile.ps1.
+- Allow to edit the new name.
+- New switch -Quiet.
+
+Open-TextLink-.ps1
+- Renamed to Open-TextLink.ps1
+- Amended parameter sets
+
+Get-TextLink-.ps1
+- Renamed to Get-TextLink.ps1
+
 = 5.8.5 =
 
 Command console

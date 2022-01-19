@@ -50,12 +50,15 @@
 		Tells to get the text from clipboard.
 
 .Link
-	Get-TextLink-.ps1
+	Get-TextLink.ps1
 #>
 
+[CmdletBinding(DefaultParameterSetName='Text')]
 param(
-	[Parameter()]
-	[string]$Text,
+	[Parameter(ParameterSetName='Text', Position=0)]
+	[string]$Text
+	,
+	[Parameter(ParameterSetName='Clip')]
 	[switch]$Clip
 )
 

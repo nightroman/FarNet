@@ -135,6 +135,13 @@ namespace PowerShellFar.UI
 							Far.Api.Message(In.HelpMessage);
 					}
 					return;
+				case KeyCode.C when e.Key.IsCtrl() && Edit.Line.SelectionSpan.Length < 0:
+					{
+						// exit
+						e.Ignore = true;
+						Dialog.Close(-2);
+					}
+					return;
 			}
 		}
 	}

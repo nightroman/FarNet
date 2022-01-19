@@ -9,14 +9,14 @@
 
 	$env:TextLinkEnv may specify comma separated environment variables used
 	for replacement of the matching paths with %variable% names. Links with
-	variables are supported by Open-TextLink-.ps1.
+	variables are supported by Open-TextLink.ps1.
 
 .Link
-	Open-TextLink-.ps1
+	Open-TextLink.ps1
 
 .Example
 	# Get and copy the current line link
-	$Far.CopyToClipboard((Get-TextLink-.ps1))
+	$Far.CopyToClipboard((Get-TextLink.ps1))
 #>
 
 $Editor = $Psf.Editor()
