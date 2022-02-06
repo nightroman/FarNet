@@ -7,7 +7,7 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="fsharp">
 <annotation><documentation>
 
-fsharp.hrc by Roman Kuzmin aka NightRoman 2021-02-06
+fsharp.hrc by Roman Kuzmin aka NightRoman 2022-01-27
 
 </documentation></annotation>
 
@@ -36,7 +36,7 @@ fsharp.hrc by Roman Kuzmin aka NightRoman 2021-02-06
 <region parent="def:TypeKeyword" name="AttrIdent"/>
 
 <entity name="hex" value="0-9a-fA-F"/>
-<entity name="ident" value="(?:[_a-zA-Z][.\w&apos;]*|``.+?``)"/>
+<entity name="ident" value="(?:\d?!\w[.\w&apos;]*|``.+?``)"/>
 <entity name="escape" value="\\(?:[\\ntbrafv&quot;&apos;]|$|u[%hex;]{4}|U[%hex;]{8}|\d\d\d)"/>
 
 <!-- Simple string and interpolated -->

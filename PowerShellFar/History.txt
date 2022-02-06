@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 5.8.7 =
+
+Open-TextLink.ps1
+- Also looks in the user screen text, e.g. printed errors.
+
 = 5.8.6 =
 
 ReadLine dialog

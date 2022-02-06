@@ -4,20 +4,26 @@
 	Author: Roman Kuzmin
 
 .Description
-	The script parses the passed text, the selected editor text, or the current
-	line for a text link to some object (file, URL) and opens it in the editor,
-	browser, etc. Recognised text link types: Visual Studio, PowerShell (error
-	messages or Select-String), full and relative file system paths, URLs. In
-	markdown files in the editor it jumps to the current internal link target.
+	The script searches for a link in:
+	- specified text, parameter or clipboard
+	- editor selected or current line text
+	- all editor URLs (call on empty line)
+	- user screen text (call in panels)
 
-	"Visual Studio" and "Select-String" links may include a hint, the original
-	line text after a column: <File>(<Line>):<Text> | <File>:<Line>:<Text>. In
-	this case after opening the editor the script compares the text with the
+	The found link is opened in the editor or browser.
+
+	Recognised text link types: Visual Studio, PowerShell (error messages or
+	Select-String output), file system paths, URLs, markdown file links.
+
+	Links may include a hint, the original line text after a column:
+	- <File>(<Line>):<Text>
+	- <File>:<Line>:<Text>
+	In this case after opening the editor the script compares the text with the
 	target line and, if it is different, tries to find the nearest line with
 	the same text. Thus, such links are corrected dynamically in many cases
 	when target lines are not changed.
 
-	"Visual Studio" link hint line can be the next line as well.
+	A "Visual Studio" link hint in the editor may be in the next line.
 
 	File system links may start with environment %variable%.
 
@@ -44,10 +50,10 @@
 		.\ReadMe.txt
 
 .Parameter Text
-		Text with text links. Default: editor active text.
+		Text with a text link.
 
 .Parameter Clip
-		Tells to get the text from clipboard.
+		Tells to get the clipboard text.
 
 .Link
 	Get-TextLink.ps1
@@ -62,31 +68,23 @@ param(
 	[switch]$Clip
 )
 
-### Get text
-if ($Clip) {
-	$Text = $Far.PasteFromClipboard()
-}
-elseif (!$Text) {
-	$Text = $Psf.ActiveText
-}
-
-$Editor = if ($Far.Window.Kind -eq 'Editor') {$Far.Editor}
-
-### Link with a position
-
+### Regex for text links
 #! Order:
 #1 Visual Studio
 #2 Select-String
+#  - use `\.\w+` (likely file extension) to exclude noise like `<date>:<time>`
 #3 PowerShell (file:2 char:3), F# (file:line 2)
-$type = 0
-switch -regex ($Text) {
-	'(?<File>(?:\b\w:|%\w+%)[\\\/].+?)\((?<Line>\d+),?(?<Char>\d+)?\)(?::\s*(?<Text>.*))?' {$type = 1; break}
-	#! use `\.\w+` to exclude times like `2021-02-20T05:45:42.8715715Z`
-	'^>?\s*(?<File>.+?\.\w+):(?<Line>\d+):(?<Text>.*)' {$type = 2; break}
-	'(?<File>(?:\b\w:|%\w+%)[\\\/][^:]+):(?:line )?(?<Line>\d+)(?:\s+\w+:(?<Char>\d+))?' {$type = 3; break}
-}
+$regexTextLink = [regex]@'
+(?x)
+(?<VS> (?<File>(?:\b\w:|%\w+%)[\\\/].+?)\((?<Line>\d+),?(?<Char>\d+)?\)(?::\s*(?<Text>.*))? )
+|
+(?<SS> ^>?\s*(?<File>.+?\.\w+):(?<Line>\d+):(?<Text>.*) )
+|
+(?<PS> (?<File>(?:\b\w:|%\w+%)[\\\/][^:]+):(?:line\s)?(?<Line>\d+)(?:\s+\w+:(?<Char>\d+))? )
+'@
 
-if ($type) {
+# Processes $matches of the text link regex
+function Open-Match {
 	$file = [System.Environment]::ExpandEnvironmentVariables($matches.File)
 	if (![IO.File]::Exists($file)) {
 		Show-FarMessage "File '$file' does not exist."
@@ -94,40 +92,45 @@ if ($type) {
 	}
 
 	$hintText = "$($matches.Text)".Trim()
-	if (!$hintText -and $type -eq 1 -and $Editor) {
+	if (!$hintText -and $Editor -and $matches['VS']) {
 		$findLine = $Editor.Caret.Y + 1
 		if ($findLine -lt $Editor.Count) {
 			$hintText = $Editor[$findLine].Text.Trim()
 		}
 	}
 
-	### Create editor
+	# new editor with set position
 	$Editor = $Far.CreateEditor()
 	$Editor.FileName = $file
-	$iLine = ([int]$matches.Line) - 1
+	$index = ([int]$matches.Line) - 1
 	if ($matches.Char) {
-		$Editor.GoTo((([int]$matches.Char) - 1), $iLine)
+		$Editor.GoTo((([int]$matches.Char) - 1), $index)
 	}
 	else {
-		$Editor.GoToLine($iLine)
+		$Editor.GoToLine($index)
 	}
+
+	# open editor without hint
 	if (!$hintText) {
 		$Editor.Open()
 		return
 	}
 
-	### 'Opened' handler checks the line or searches the nearest by text
+	# search for the nearest line with hint and open
 	$Editor.add_Opened({
-		if ($Editor.Line.Text.Trim() -eq $hintText) { return }
+		if ($Editor.Line.Text.Trim() -eq $hintText) {
+			return
+		}
 
 		$index1 = $Editor.Caret.Y - 1
 		$index2 = $index1 + 2
-		while(($index1 -ge 0) -or ($index2 -lt $Editor.Count)) {
+		$count = $Editor.Count
+		while(($index1 -ge 0) -or ($index2 -lt $count)) {
 			if (($index1 -ge 0) -and ($Editor[$index1].Text.Trim() -eq $hintText)) {
 				$Editor.GoToLine($index1)
 				return
 			}
-			if (($index2 -lt $Editor.Count) -and ($Editor[$index2].Text.Trim() -eq $hintText)) {
+			if (($index2 -lt $count) -and ($Editor[$index2].Text.Trim() -eq $hintText)) {
 				$Editor.GoToLine($index2)
 				return
 			}
@@ -136,6 +139,40 @@ if ($type) {
 		}
 	})
 	$Editor.Open()
+}
+
+### Get text
+
+$From = $Far.Window.Kind
+$Editor = if ($From -eq 'Editor') {$Far.Editor}
+
+if ($Clip) {
+	$Text = $Far.PasteFromClipboard()
+}
+elseif (!$Text) {
+	$Text = $Psf.ActiveText
+
+	### Find in user screen
+	if (!$Text -and $From -eq 'Panels') {
+		$place = $Far.UI.WindowPlace
+		$Far.UI.ShowUserScreen()
+		for($i = $place.Bottom; $i -ge $place.Top; --$i) {
+			if (($_ = $Far.UI.GetBufferLineText($i)) -match $regexTextLink) {
+				$Text = $_
+				break
+			}
+		}
+		$Far.UI.SaveUserScreen()
+		if ($Text) {
+			Open-Match
+			return
+		}
+	}
+}
+
+### Link with a position
+if ($Text -match $regexTextLink) {
+	Open-Match
 	return
 }
 
@@ -171,15 +208,14 @@ if ($Text -match '"(\.{1,2}[\\/][^"]+)"' -or $Text -match '(?:^|\s)(\.{1,2}[\\/]
 
 ### URL
 
-# From Colorer default.hrc NetURL scheme
-$url = [regex]@'
+# simplified from Colorer default.hrc NetURL
+$regexUrl = [regex]@'
 (?x)
-\b ((https?|file|ftp|news|nntp|wais|wysiwyg|gopher|javascript|castanet|about|evernote)
-\:\/\/  | (www|ftp|fido[0-9]*)\.)
-[\[\]\@\%\:\+\w\.\/\~\?\-\*=_#&;,]+\b\/?
+\b (?: \w+ :// | (www|ftp|fido[0-9]*) \. )
+[\w\[\]\@\%\:\+\.\/\~\?\-\*=_#&;,]+\b/?
 '@
 
-if ($Text -match $url) {
+if ($Text -match $regexUrl) {
 	Start-Process $matches[0]
 	return
 }
@@ -214,7 +250,7 @@ if ($Editor -and $Editor.FileName -match '\.(text|md|markdown)$') {
 if ($Editor) {
 	$items = @(
 		foreach($line in $Editor.Lines) {
-			if ($line.Text -match $url) {
+			if ($line.Text -match $regexUrl) {
 				New-FarItem $line.Text -Data ($matches[0])
 			}
 		}
