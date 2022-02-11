@@ -1,5 +1,13 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 5.8.8 =
+
+[F5] in the editor with *.build.ps1, *.test.ps1 (Invoke-Build scripts) invokes
+the current task. Output is shown in the console. Press [Esc] to return to the
+editor. If the invoked task fails, the caret moves to the error position.
+
+Renamed Invoke-Editor-.ps1 to Invoke-FromEditor.ps1, updated doc comments.
+
 = 5.8.7 =
 
 Open-TextLink.ps1

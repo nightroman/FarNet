@@ -8,7 +8,6 @@ Go-Selection-.ps1 Goes to the current selection start/end position
 Go-To-.ps1 Goes to the specified file system item or a provider container
 Import-Panel-.ps1 Imports objects from files and shows them in a panel.
 Indent-Selection-.ps1 Indents selected lines in the editor.
-Invoke-Editor-.ps1 Invokes a file from the current editor.
 Invoke-Shortcut-.ps1 Opens a shortcut file (.lnk).
 Job-RemoveItem-.ps1 Job: remove the specified provider items.
 Menu-Favorites-.ps1 Shows Windows Favorites as a menu and invokes items.
@@ -42,3 +41,4 @@ Start-Far.ps1 Starts Far with the command, panels, options.
 Rename-FarFile.ps1 Renames the current panel file or directory.
 Open-TextLink.ps1 Opens a text link contained in the text.
 Get-TextLink.ps1 Gets a text link with the current editor line or selection.
+Invoke-FromEditor.ps1 Invokes a file from the current editor.

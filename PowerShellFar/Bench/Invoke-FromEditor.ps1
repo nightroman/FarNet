@@ -8,6 +8,8 @@
 
 	*.build.ps1, *.test.ps1 ~ the current task is invoked by
 	Invoke-Build (https://github.com/nightroman/Invoke-Build)
+	in a separate console. Note that built-in [F5] invokes
+	the task in Far Manager PowerShell session and console.
 
 	*.ps1 is invoked by powershell in a separate console.
 
@@ -28,7 +30,7 @@ $path = [System.IO.Path]::GetFullPath($editor.FileName)
 # Extension
 $ext = [IO.Path]::GetExtension($path)
 
-### PowerShell.exe
+### powershell.exe
 if ($ext -eq '.ps1') {
 	# Invoke-Build?
 	if ($path -match '\.(?:build|test)\.ps1$') {
@@ -39,14 +41,14 @@ if ($ext -eq '.ps1') {
 			if ($t.InvocationInfo.ScriptLineNumber -gt $line) {break}
 			$task = $t.Name
 		}
-		$arg = "-NoExit -NoProfile -ExecutionPolicy Bypass Invoke-Build.ps1 '{0}' '{1}'" -f @(
+		$arg = "-NoExit -NoProfile -ExecutionPolicy Bypass -Command Invoke-Build '{0}' '{1}'" -f @(
 			$task.Replace("'", "''").Replace('"', '\"')
 			$path.Replace("'", "''")
 		)
 	}
 	# generic script
 	else {
-		$arg = "-NoExit -ExecutionPolicy Bypass . '$($path.Replace("'", "''"))'"
+		$arg = "-NoExit -ExecutionPolicy Bypass -Command . '$($path.Replace("'", "''"))'"
 	}
 	Start-Process powershell.exe $arg
 	return

@@ -8,7 +8,7 @@
 
 	The script opens the current topic from the editor as HLF in help viewer
 	(example: Profile-Editor.ps1) or as HTML in the default or custom browser
-	(example: Invoke-Editor-.ps1).
+	(example: Invoke-FromEditor.ps1).
 
 	Markdown format:
 	If $env:Markdown is set then it is used as the fixed pandoc format.

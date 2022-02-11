@@ -142,8 +142,10 @@ See [Interactive](#interactive).
 
 **Script editor**
 
-A script opened in the editor can be invoked by `[F5]`. It is the same as to
-invoke the script without parameters from the command line or the command box.
+A script in the editor is invoked by `[F5]`. For a normal script, this is the
+same as invoking without parameters from the command line or the command box.
+For `Invoke-Build` scripts (`*.build.ps1`, `*.test.ps1`) the current task is
+invoked by `Invoke-Build`.
 
 **Far Manager macros**
 
@@ -202,7 +204,8 @@ Console output may be transcribed to a file, use `Start-Transcript` and
 viewing the output.
 
 PowerShell scripts opened in the editor may be invoked by `[F5]`.
-The key is hard-coded. The output is shown in the viewer.
+Normal script output is shown in the viewer.
+`Invoke-Build` script output is shown in the console.
 
 **Examples**
 
@@ -252,8 +255,7 @@ See [Invoke commands dialog](#invoke-commands-dialog).
 In the editor, dialog, or command line: invoke the selected or the current line
 text. The code is invoked in the global scope with output shown in the viewer.
 
-In the editor, to invoke the whole script, use `[F5]`.
-The script is invoked in its own new scope.
+In the editor, to invoke the whole script or `Invoke-Build` task, use `[F5]`.
 
 **Background jobs**
 

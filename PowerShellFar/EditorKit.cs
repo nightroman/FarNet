@@ -8,6 +8,7 @@ using FarNet.Tools;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
@@ -58,6 +59,7 @@ $r = TabExpansion2 @args
 				InitTabExpansion(null);
 			}
 		}
+
 		//! It is called once in the main session and once per each local and remote session.
 		public static void InitTabExpansion(Runspace runspace)
 		{
@@ -74,6 +76,7 @@ $r = TabExpansion2 @args
 				ps.AddCommand(_pathTabExpansion, false).Invoke();
 			}
 		}
+
 		static string TECompletionText(object value)
 		{
 			var t = Cast<Hashtable>.From(value); //! remote gets PSObject
@@ -82,6 +85,7 @@ $r = TabExpansion2 @args
 
 			return t[CompletionText].ToString();
 		}
+
 		static string TEListItemText(object value)
 		{
 			var t = Cast<Hashtable>.From(value); //! remote gets PSObject
@@ -94,6 +98,7 @@ $r = TabExpansion2 @args
 
 			return t[CompletionText].ToString();
 		}
+
 		/// <summary>
 		/// Expands PowerShell code in an edit line.
 		/// </summary>
@@ -262,6 +267,7 @@ $r = TabExpansion2 @args
 			}
 			catch (RuntimeException) { }
 		}
+
 		public static void ExpandText(ILine editLine, int replacementIndex, int replacementLength, IList words)
 		{
 			bool isEmpty = words.Count == 0;
@@ -357,6 +363,7 @@ $r = TabExpansion2 @args
 			// set caret
 			editLine.Caret = caret;
 		}
+
 		public static string ActiveText
 		{
 			get
@@ -404,6 +411,7 @@ $r = TabExpansion2 @args
 					line.ActiveText = value;
 			}
 		}
+
 		public static void OnEditorFirstOpening(object sender, EventArgs e)
 		{
 			A.Psf.Invoking();
@@ -422,6 +430,7 @@ $r = TabExpansion2 @args
 				throw new RuntimeException("Error in Profile-Editor.ps1, see $Error for details.", ex);
 			}
 		}
+
 		public static void OnEditorOpened(object sender, EventArgs e)
 		{
 			var editor = (IEditor)sender;
@@ -438,6 +447,7 @@ $r = TabExpansion2 @args
 				editor.Changed += OnChangedPSFile;
 			}
 		}
+
 		static void OnChangedPSFile(object sender, EditorChangedEventArgs e)
 		{
 			if (e.Kind == EditorChangeKind.LineChanged)
@@ -470,6 +480,7 @@ $r = TabExpansion2 @args
 				A.SetBreakpoint(bp.Script, bp.Line + delta, bp.Action);
 			}
 		}
+
 		/// <summary>
 		/// Called on key in *.ps1.
 		/// </summary>
@@ -510,6 +521,7 @@ $r = TabExpansion2 @args
 					return;
 			}
 		}
+
 		public static void InvokeSelectedCode()
 		{
 			string code;
@@ -542,6 +554,7 @@ $r = TabExpansion2 @args
 			var split = Zoo.SplitCommandWithPrefix(code);
 			A.Psf.Run(new RunArgs(split.Value));
 		}
+
 		// PSF sets the current directory and location to the script directory.
 		// This is often useful and consistent with invoking from panels.
 		// NOTE: ISE [F5] does not.
@@ -561,13 +574,22 @@ $r = TabExpansion2 @args
 				return;
 			}
 
+			var fileName = editor.FileName;
+
+			// case: Invoke-Build
+			if (fileName.EndsWith(".build.ps1", StringComparison.OrdinalIgnoreCase) ||
+				fileName.EndsWith(".test.ps1", StringComparison.OrdinalIgnoreCase))
+			{
+				InvokeTaskFromEditor(editor);
+				return;
+			}
+
 			// sync the directory and location to the script directory
 			// maybe it is questionable but it is very handy too often
 			string dir0, dir1;
 
 			// save/set the directory, allow failures (e.g. a long path)
 			// note: GetDirectoryName fails on a long path, too
-			var fileName = editor.FileName;
 			try
 			{
 				dir1 = Path.GetDirectoryName(fileName);
@@ -606,6 +628,83 @@ $r = TabExpansion2 @args
 				A.Psf.Engine.SessionState.Path.PopLocation(null);
 			}
 		}
+
+		//! Use PowerShell for getting tasks, script block fails with weird NRE on exit.
+		public static void InvokeTaskFromEditor(IEditor editor)
+		{
+			var fileName = editor.FileName;
+			void GoToError(RuntimeException ex, bool redraw)
+			{
+				var ii = ex.ErrorRecord.InvocationInfo;
+				if (string.Equals(fileName, ii.ScriptName, StringComparison.OrdinalIgnoreCase))
+				{
+					editor.GoTo(ii.OffsetInLine - 1, ii.ScriptLineNumber - 1);
+					if (redraw)
+						editor.Redraw();
+				}
+			}
+
+			try
+			{
+				// get tasks
+				var ps = A.Psf.NewPowerShell();
+				ps.AddScript("Invoke-Build ?? $args[0]").AddArgument(fileName);
+				var tasks = (OrderedDictionary)ps.Invoke()[0].BaseObject;
+
+				// find the caret task
+				var taskName = ".";
+				var lineIndex = editor.Caret.Y;
+				foreach (PSObject pso in tasks.Values)
+				{
+					var ii = (InvocationInfo)pso.Properties["InvocationInfo"].Value;
+					if (!string.Equals(fileName, ii.ScriptName, StringComparison.OrdinalIgnoreCase))
+						continue;
+
+					if ((ii.ScriptLineNumber - 1) > lineIndex)
+						break;
+
+					taskName = (string)pso.Properties["Name"].Value;
+				}
+
+				Far.Api.UI.ShowUserScreen();
+				try
+				{
+					// invoke task
+					var args = new RunArgs("Invoke-Build $args[0] $args[1]")
+					{
+						Arguments = new object[] { taskName, fileName },
+						Writer = new ConsoleOutputWriter()
+					};
+					A.Psf.Run(args);
+
+					// on error in the editor script go to its position
+					//! do not redraw now or the editor is shown
+					if (args.Reason is RuntimeException ex)
+						GoToError(ex, false);
+
+					Far.Api.UI.SetProgressState(TaskbarProgressBarState.Paused);
+					Far.Api.UI.WindowTitle = "Press Esc to continue...";
+					while (true)
+					{
+						var key = Far.Api.UI.ReadKey(ReadKeyOptions.IncludeKeyDown | ReadKeyOptions.IncludeKeyUp);
+						if (key.VirtualKeyCode == KeyCode.Escape)
+							break;
+					}
+					Far.Api.UI.SetProgressState(TaskbarProgressBarState.NoProgress);
+				}
+				finally
+				{
+					Far.Api.UI.SaveUserScreen();
+				}
+			}
+			catch (RuntimeException ex)
+			{
+				// it is a build script issue more likely, go to its position and redraw, show the simple message
+				GoToError(ex, true);
+				Far.Api.Message(ex.Message, "Invoke-Build task", MessageOptions.Warning | MessageOptions.LeftAligned);
+			}
+		}
+
 		// true if there is a solid char anywhere before the caret
 		internal static bool NeedsTabExpansion(IEditor editor)
 		{
