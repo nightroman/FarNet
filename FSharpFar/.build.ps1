@@ -156,15 +156,15 @@ https://github.com/nightroman/FarNet#readme
 }
 
 task test_testing {
-	Start-Far "fs: //exec file=$env:FarDev\Code\FSharpFar\samples\Testing\App1.fsx" -ReadOnly -Title Testing -Environment @{QuitFarAfterTests=1}
+	Start-Far "fs: //exec file=$env:FarNetCode\FSharpFar\samples\Testing\App1.fsx" -ReadOnly -Title Testing -Environment @{QuitFarAfterTests=1}
 }
 
 task test_tests {
-	Start-Far "fs: //exec file=$env:FarDev\Code\FSharpFar\tests\App1.fsx" -ReadOnly -Title Tests -Environment @{QuitFarAfterTests=1}
+	Start-Far "fs: //exec file=$env:FarNetCode\FSharpFar\tests\App1.fsx" -ReadOnly -Title Tests -Environment @{QuitFarAfterTests=1}
 }
 
 task test_tasks {
-	Start-Far "ps: Test.far.ps1 * -Quit #" $env:FarDev\Test\FSharpFar.test -ReadOnly -Title Tasks
+	Start-Far "ps: Test.far.ps1 * -Quit #" $env:FarNetCode\Test\FSharpFar.test -ReadOnly -Title Tasks
 }
 
 task test_fsx {

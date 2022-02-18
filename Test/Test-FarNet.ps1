@@ -58,6 +58,7 @@ else {
 
 ### Initialize
 $null = & $PSScriptRoot\About\Initialize-Test.far.ps1
+[Diagnostics.Trace]::WriteLine("$(Get-Date) Begin tests")
 
 ### Basic tests
 if (!$Tests) {
@@ -142,6 +143,7 @@ Start-FarTask -Data Tests, ExpectedTaskCount, All, SavedPanelPaths {
 
 	### Finish
 	ps: {
+		[Diagnostics.Trace]::WriteLine("$(Get-Date) End tests")
 		$r = Clear-Session -KeepError -Verbose
 		$r | Format-List
 		if ($r.RemovedVariableCount) {

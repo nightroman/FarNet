@@ -183,8 +183,6 @@ see .\packages\FSharp.Compiler.Service\FSharp.Compiler.Service.nuspec
     <dependency id="System.Reflection.Metadata" version="1.6.0" exclude="Build,Analyzers" />
     <dependency id="System.ValueTuple" version="4.4.0" exclude="Build,Analyzers" />
 
-or see <https://github.com/fsharp/FSharp.Compiler.Service/blob/master/fcs/FSharp.Compiler.Service/FSharp.Compiler.Service.fsproj>
-
 DO:
 
     "System.Collections.Immutable" Version="1.5.0"
@@ -273,7 +271,7 @@ Interestingly, `fsi.CommandLineArgs` is settable.
 
 **The bad.**
 
-[This](https://fsharp.github.io/FSharp.Compiler.Service/interactive.html) tells how to enable `fsi` in a session.
+"FSharp.Compiler.Service/interactive" tells how to enable `fsi` in a session.
 It does not tell that *FSharp.Compiler.Interactive.Settings.dll* from *Microsoft SDKs* should be packaged for this.
 If this DLL is not discovered, an app fails with not clear info.
 
@@ -318,7 +316,7 @@ Do I need to include FSharp.Core.optdata and FSharp.Core.sigdata?
 
 -- No, unless you are doing something with very old FSharp.Core.dll.
 
-From <https://fsharp.github.io/FSharp.Compiler.Service/corelib.html>
+From "FSharp.Compiler.Service/corelib"
 
 ### 2020-05-24 Tempting Script.RelativePath()
 

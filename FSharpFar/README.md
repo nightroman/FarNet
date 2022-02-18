@@ -1,7 +1,4 @@
-﻿<!--
-https://github.com/fsharp/FSharp.Compiler.Service/blob/master/fcs/RELEASE_NOTES.md
--->
-
+﻿
 [/samples]: https://github.com/nightroman/FarNet/tree/master/FSharpFar/samples
 [TryPanelFSharp]: https://github.com/nightroman/FarNet/tree/master/FSharpFar/samples/TryPanelFSharp
 [F# Interactive Options]: https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/fsharp-interactive-options
@@ -27,7 +24,7 @@ F# scripting and interactive services in Far Manager
 
 **Credits**
 
-- FSharpFar is based on [F# Compiler Services](https://fsharp.github.io/FSharp.Compiler.Service/index.html).
+- FSharpFar is based on [F# Compiler Services](https://fsharp.github.io/fsharp-compiler-docs/).
 
 **Installation**
 
@@ -645,5 +642,5 @@ Each package has its `*.ini` file for use in other F# configuration files.
 
 * [FarNet.FSharp.Data](https://github.com/nightroman/FarNet.FSharp.Data)
 
-    [FSharp.Data](http://fsharp.github.io/FSharp.Data) package for FarNet.FSharpFar
+    [FSharp.Data](https://github.com/fsprojects/FSharp.Data) package for FarNet.FSharpFar
     see [/samples](https://github.com/nightroman/FarNet.FSharp.Data/tree/master/samples).
