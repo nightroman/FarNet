@@ -8,32 +8,31 @@
 
 	*.build.ps1, *.test.ps1 ~ the current task is invoked by
 	Invoke-Build (https://github.com/nightroman/Invoke-Build)
-	in a separate console. Note that built-in [F5] invokes
-	the task in Far Manager PowerShell session and console.
+	in a new console. Note that built-in [F5] invokes tasks
+	in the Far Manager console and PowerShellFar session.
 
-	*.ps1 is invoked by powershell in a separate console.
+	*.Rule.ps1 are invoked by Assert-PSRule (https://github.com/microsoft/PSRule).
+	The input is provided by your command Get-PSRuleInput, e.g. script in the path.
+
+	*.ps1 are invoked by powershell.exe
 
 	Markdown files are opened by Show-Markdown-.ps1
 
-	If the file is .bat, .cmd, .fsx, .pl, etc. then some typical action is
-	executed, mostly as demo, use your own invocation for practical tasks.
+	*.bat, *.cmd are invoked by cmd.exe
 
-	As for the other files, the script simply calls Invoke-Item for them, i.e.
-	starts a program associated with the file type.
+	Other files are invoked by Invoke-Item.
 #>
 
-# Save the file and get the normalized path
+# save, get normalized path and extension
 $editor = $Psf.Editor()
 $editor.Save()
 $path = [System.IO.Path]::GetFullPath($editor.FileName)
+$ext = [System.IO.Path]::GetExtension($path)
 
-# Extension
-$ext = [IO.Path]::GetExtension($path)
-
-### powershell.exe
+### PowerShell
 if ($ext -eq '.ps1') {
-	# Invoke-Build?
 	if ($path -match '\.(?:build|test)\.ps1$') {
+		# Invoke-Build
 		$task = '.'
 		$line = $editor.Caret.Y + 1
 		foreach($t in (Invoke-Build ?? $path).Values) {
@@ -46,37 +45,33 @@ if ($ext -eq '.ps1') {
 			$path.Replace("'", "''")
 		)
 	}
-	# generic script
+	elseif ($path -like '*.Rule.ps1') {
+		# PSRule
+		$arg = "-NoExit -NoProfile -ExecutionPolicy Bypass -Command `"Get-PSRuleInput | Assert-PSRule -Path '{0}'`"" -f (
+			$path.Replace("'", "''")
+		)
+	}
 	else {
-		$arg = "-NoExit -ExecutionPolicy Bypass -Command . '$($path.Replace("'", "''"))'"
+		# PS script
+		$arg = "-NoExit -NoProfile -ExecutionPolicy Bypass -Command . '{0}'" -f (
+			$path.Replace("'", "''")
+		)
 	}
 	Start-Process powershell.exe $arg
 	return
 }
 
-$arg = "`"$path`""
-
 ### Markdown
 if ('.text', '.md', '.markdown' -contains $ext) {
 	Show-Markdown-.ps1
+	return
 }
 
-### cmd
-elseif ('.bat', '.cmd' -contains $ext) {
-	cmd /c start cmd /k $arg
-}
-
-### fsx
-elseif ('.fsx' -eq $ext) {
-	Start-Process fsx.exe ('--nologo', "--use:$arg")
-}
-
-### Perl
-elseif ('.pl' -eq $ext) {
-	cmd /c start cmd /k perl $arg
+### Batch
+if ('.bat', '.cmd' -contains $ext) {
+	cmd.exe /c start cmd /k "`"$path`""
+	return
 }
 
 ### Others
-else {
-	Invoke-Item -LiteralPath $path
-}
+Invoke-Item -LiteralPath $path

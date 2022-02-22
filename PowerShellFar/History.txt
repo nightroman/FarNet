@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 5.8.9 =
+
+Start-Transcript and Stop-Transcript result has property Path, like in PS.
+
+Invoke-FromEditor.ps1 - support PSRule *.Rule.ps1 files.
+
 = 5.8.8 =
 
 [F5] in the editor with *.build.ps1, *.test.ps1 (Invoke-Build scripts) invokes

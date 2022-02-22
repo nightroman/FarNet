@@ -62,7 +62,7 @@ $null = & $PSScriptRoot\About\Initialize-Test.far.ps1
 
 ### Basic tests
 if (!$Tests) {
-	$basics = @(Get-ChildItem "$env:FarNetCode\Test\Basics" -Filter *-.ps1)
+	$basics = @(Get-ChildItem "$env:FarNetCode\Test\Basics" -Filter *.far.ps1)
 	Assert-Far $basics.Count -eq $ExpectedBasicsCount
 	foreach($test in $basics) {
 		[Diagnostics.Trace]::TraceInformation($test.FullName)

@@ -125,8 +125,16 @@ namespace PowerShellFar
 			}
 		}
 
+		//! Start-Transcript and Stop-Transcript get PSObject(string) with note property Path.
+		static PSObject GetTranscriptResult(string format, string path)
+		{
+			var res = PSObject.AsPSObject(string.Format(format, path));
+			res.Properties.Add(new PSNoteProperty("Path", path));
+			return res;
+		}
+
 		///
-		public static string StopTranscript(bool force)
+		public static PSObject StopTranscript(bool force)
 		{
 			if (A.Psf.Transcript == null)
 			{
@@ -139,11 +147,11 @@ namespace PowerShellFar
 			A.Psf.Transcript.Close();
 			A.Psf.Transcript = null;
 
-			return string.Format(null, TextTranscriptStopped, TranscriptOutputWriter.LastFileName);
+			return GetTranscriptResult(TextTranscriptStopped, TranscriptOutputWriter.LastFileName);
 		}
 
 		///
-		public static string StartTranscript(string path, bool append, bool force, bool noClobber)
+		public static PSObject StartTranscript(string path, bool append, bool force, bool noClobber)
 		{
 			if (A.Psf.Transcript != null)
 				throw new InvalidOperationException(TextTranscriptInProgress);
@@ -152,13 +160,13 @@ namespace PowerShellFar
 			{
 				path = Path.Combine(
 					Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-					string.Format(null, "PowerShell_transcript.{0:yyyyMMddHHmmss}.txt", DateTime.Now));
+					string.Format("PowerShell_transcript.{0:yyyyMMddHHmmss}.txt", DateTime.Now));
 			}
 
 			if (File.Exists(path))
 			{
 				if (noClobber && !append)
-					throw new InvalidOperationException(string.Format(null, TextTranscriptFileExistsNoClobber, path, "NoClobber"));
+					throw new InvalidOperationException(string.Format(TextTranscriptFileExistsNoClobber, path, "NoClobber"));
 
 				var fileInfo = new FileInfo(path);
 				if ((fileInfo.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
@@ -172,7 +180,7 @@ namespace PowerShellFar
 
 			A.Psf.Transcript = new TranscriptOutputWriter(path, append);
 
-			return string.Format(null, TextTranscriptStarted, path);
+			return GetTranscriptResult(TextTranscriptStarted, path);
 		}
 		#endregion
 	}

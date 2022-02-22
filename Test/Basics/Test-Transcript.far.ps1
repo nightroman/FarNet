@@ -27,8 +27,7 @@ else {
 
 ### Not a file
 
-Assert-Far ($env:MERGE)
-$e = try {Start-Transcript env:MERGE} catch {$_}
+$e = try {Start-Transcript $HOME} catch {$_}
 Assert-Far ($e -clike '*The specified path is not a file.*')
 
 ### Bad path
@@ -48,10 +47,9 @@ $log = "$env:TEMP\transcript.txt"
 [System.IO.File]::Delete($log)
 
 $r = Start-Transcript $log
-Assert-Far @(
-	Test-Path -LiteralPath $log
-	$r -ceq "Transcript started, output file is $log"
-)
+Assert-Far (Test-Path -LiteralPath $log)
+Assert-Far $r -eq "Transcript started, output file is $log"
+Assert-Far $r.Path -eq $log
 
 ### Already started
 
@@ -61,6 +59,7 @@ Assert-Far ($e -clike '*Transcription has already been started.*')
 ### Stop
 
 $r = Stop-Transcript
-Assert-Far ($r -ceq "Transcript stopped, output file is $log")
+Assert-Far $r -eq "Transcript stopped, output file is $log"
+Assert-Far $r.Path -eq $log
 Remove-Item -LiteralPath $log
 $Error.Clear()
