@@ -580,20 +580,19 @@ INT_PTR FarDialog::DialogProc(intptr_t msg, intptr_t param1, void* param2)
 			for each (FarControl ^ fc in _items)
 				fc->Started();
 
-			INT_PTR res = true;
 			if (_Initialized)
 			{
 				InitializedEventArgs ea(param1 < 0 ? nullptr : _items[(int)param1]);
 				_Initialized(this, % ea);
-				if (ea.Ignore)
-					res = false;
 			}
 
 			// start timer //_210630_i0
 			if (_TimerInterval > 0)
 				_timerInstance = gcnew System::Threading::Timer(gcnew TimerCallback(this, &FarDialog::OnTimer), this, _TimerInterval, _TimerInterval);
 
-			return res;
+			//! do not use .Ignore and just return default, @Shmuel
+			//! https://forum.farmanager.com/viewtopic.php?t=12755
+			break;
 		}
 		case DN_CLOSE:
 		{
