@@ -76,7 +76,7 @@
       <MyItem2 Include="..\..\packages\System.Memory\lib\net461\System.Memory.dll" />
       <MyItem2 Include="..\..\packages\System.Numerics.Vectors\lib\net46\System.Numerics.Vectors.dll" />
       <MyItem2 Include="..\..\packages\System.Reflection.Metadata\lib\net461\System.Reflection.Metadata.dll" />
-      <MyItem2 Include="..\..\packages\System.Runtime.CompilerServices.Unsafe\lib\net45\System.Runtime.CompilerServices.Unsafe.dll" />
+      <MyItem2 Include="..\..\packages\System.Runtime.CompilerServices.Unsafe\lib\net461\System.Runtime.CompilerServices.Unsafe.dll" />
     </ItemGroup>
     <Copy DestinationFolder="$(FarHome)" SourceFiles="@(MyItem1)" SkipUnchangedFiles="true" />
     <Copy DestinationFolder="$(MyOutDir)" SourceFiles="@(MyItem2)" SkipUnchangedFiles="true" />

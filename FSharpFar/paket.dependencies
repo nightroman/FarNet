@@ -5,3 +5,4 @@ references: strict
 source https://www.nuget.org/api/v2
 nuget FSharp.Compiler.Service
 nuget FSharp.Core
+nuget System.Collections.Immutable 5.0.0
