@@ -75,21 +75,23 @@ task package markdown, {
 	$fromModule = "$FarHome\FarNet\Modules\$ModuleName"
 
 	# assert module files, to copy all by *
-	$moduleFiles = (Get-ChildItem $fromModule -Name | Out-String).Trim()
-	equals $moduleFiles @'
-FSharp.Compiler.Service.dll
-FSharp.DependencyManager.Nuget.dll
-FSharpFar.dll
-Microsoft.Build.Framework.dll
-Microsoft.Build.Tasks.Core.dll
-Microsoft.Build.Utilities.Core.dll
-System.Buffers.dll
-System.Collections.Immutable.dll
-System.Memory.dll
-System.Numerics.Vectors.dll
-System.Reflection.Metadata.dll
-System.Runtime.CompilerServices.Unsafe.dll
-'@
+	$moduleFiles = Get-ChildItem $fromModule -Name
+	$expectedFiles = @(
+		'FSharp.Compiler.Service.dll'
+		'FSharp.DependencyManager.Nuget.dll'
+		'FSharpFar.dll'
+		'Microsoft.Build.Framework.dll'
+		'Microsoft.Build.Tasks.Core.dll'
+		'Microsoft.Build.Utilities.Core.dll'
+		'System.Buffers.dll'
+		'System.Collections.Immutable.dll'
+		'System.Memory.dll'
+		'System.Numerics.Vectors.dll'
+		'System.Reflection.Metadata.dll'
+		'System.Runtime.CompilerServices.Unsafe.dll'
+	)
+	$diff = Compare-Object $moduleFiles $expectedFiles -SyncWindow 0
+	if ($diff) {throw ($diff | Out-String)}
 
 	# package: logo
 	Copy-Item -Destination z ..\Zoo\FarNetLogo.png
