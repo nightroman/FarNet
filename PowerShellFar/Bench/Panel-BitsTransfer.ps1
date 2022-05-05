@@ -49,13 +49,13 @@
 	EXAMPLE
 
 	# Open file transfer jobs panel if not yet
-	Panel-BitsTransfer-.ps1
+	Panel-BitsTransfer.ps1
 
 	# Start MyJob to transfer selected files from the active panel to passive
-	Panel-BitsTransfer-.ps1 -DisplayName MyJob -Auto
+	Panel-BitsTransfer.ps1 -DisplayName MyJob -Auto
 
 	# Transfer File1 from Web server
-	Panel-BitsTransfer-.ps1 -Source http://server/File1 -Destination C:\File1
+	Panel-BitsTransfer.ps1 -Source http://server/File1 -Destination C:\File1
 
 .Parameter Source
 		Names of the files to transfer at the server. The names are paired with

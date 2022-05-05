@@ -96,7 +96,7 @@ Test @'
 ls
 pd
 '@ { $_ -ceq 'Panel-DbData-.ps1' }
-Test 'Panel-Bits' { $_ -ceq 'Panel-BitsTransfer-.ps1' }
+Test 'Panel-Bits' { $_ -ceq 'Panel-BitsTransfer.ps1' }
 Test 'pd -col' { $_ -ceq '-Columns' }
 Test 'Panel-DbData- -col' { $_ -ceq '-Columns' }
 

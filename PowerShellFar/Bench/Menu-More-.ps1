@@ -42,10 +42,10 @@ New-FarMenu 'More' -Show -AutoAssignHotkeys -ChangeConsoleTitle $(
 
 		# Start BITS transfer job or just open a panel (i.e. on dots)
 		if ($SelectedItems) {
-			New-FarItem "&b. BITS: Transfer $($SelectedItems.Count) selected item(s)" { Panel-BitsTransfer-.ps1 -Auto }
+			New-FarItem "&b. BITS: Transfer $($SelectedItems.Count) selected item(s)" { Panel-BitsTransfer.ps1 -Auto }
 		}
 		else {
-			New-FarItem '&b. BITS: Show jobs panel' { Panel-BitsTransfer-.ps1 }
+			New-FarItem '&b. BITS: Show jobs panel' { Panel-BitsTransfer.ps1 }
 		}
 
 		# Panel available performance counter set (use it to find out counter names and paths for Get-Counter)

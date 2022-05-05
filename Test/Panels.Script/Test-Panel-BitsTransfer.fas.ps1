@@ -19,7 +19,7 @@ $exit = job {
 if ($exit) {exit}
 run {
 	# start the panel with -Auto
-	Panel-BitsTransfer-.ps1 -Auto
+	Panel-BitsTransfer.ps1 -Auto
 }
 job {
 	# it promts to transfer the file from .. to ..
