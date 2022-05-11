@@ -6,7 +6,7 @@
 param(
 	$Platform = (property Platform x64),
 	$Configuration = (property Configuration Release),
-	$TargetFramework = (property TargetFramework net45)
+	$TargetFramework = (property TargetFramework net472)
 )
 $FarHome = "C:\Bin\Far\$Platform"
 

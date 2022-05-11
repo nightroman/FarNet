@@ -19,7 +19,7 @@
     <RootNamespace>FarNetAPI</RootNamespace>
     <Name>FarNetAPI</Name>
     <!-- SHFB properties -->
-    <FrameworkVersion>.NET Framework 4.5</FrameworkVersion>
+    <FrameworkVersion>.NET Framework 4.7.2</FrameworkVersion>
     <OutputPath>.\Help\</OutputPath>
     <HtmlHelpName>FarNetAPI</HtmlHelpName>
     <Language>en-US</Language>

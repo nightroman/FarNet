@@ -6,7 +6,7 @@
 param(
 	$FarHome = (property FarHome C:\Bin\Far\x64),
 	$Configuration = (property Configuration Release),
-	$TargetFramework = (property TargetFramework net45)
+	$TargetFramework = (property TargetFramework net472)
 )
 $PsfHome = "$FarHome\FarNet\Modules\PowerShellFar"
 

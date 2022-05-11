@@ -7,15 +7,14 @@ Far Manager platform for .NET modules, Windows PowerShell, and F#.\
 
 ## Prerequisites
 
-**.NET Framework 4.5 or above**
+**.NET Framework 4.7.2**
 
-The version of .NET Framework (4.5+) installed on a machine is listed in the
-registry at:
+The version of .NET Framework installed on a machine is listed in the registry:
 
     HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full
 
-If this key is missing, then install .NET Framework 4.5 or above.\
-Some modules may require specific minimum versions.
+If this key is missing or its `Release` value is less than 461808
+then install NET Framework 4.7.2 or later.
 
 **Visual C++ Redistributable**
 

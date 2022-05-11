@@ -1,5 +1,13 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 5.9.0 =
+
+Requires .NET Framework 4.7.2 or newer.
+
+Invoke-FromEditor.ps1 - run current rule from `.Rule.ps1`.
+
+Renamed Panel-BitsTransfer-.ps1 to Panel-BitsTransfer.ps1.
+
 = 5.8.9 =
 
 Start-Transcript and Stop-Transcript result has property Path, like in PS.

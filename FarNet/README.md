@@ -48,7 +48,7 @@ tiny pieces of boilerplate framework code.
 
 **Requirements**
 
-- .NET Framework 4.5 or newer
+- .NET Framework 4.7.2 or newer
 - Microsoft Visual C++ 2015-2022 Redistributable
 - Far Manager, see History.txt for the required version
 
