@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
-FarNet 5.8.4
+FarNet 5.9.0
+
+= 1.17.2 =
+
+Requires FarNet 5.9.0
+
+Updated FSharp.Compiler.Service (41.0.4) FSharp.Core (6.0.4)
 
 = 1.17.1 =
 

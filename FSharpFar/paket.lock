@@ -3,8 +3,8 @@ COPY-LOCAL: FALSE
 RESTRICTION: == net472
 NUGET
   remote: https://www.nuget.org/api/v2
-    FSharp.Compiler.Service (41.0.3)
-      FSharp.Core (6.0.3)
+    FSharp.Compiler.Service (41.0.4)
+      FSharp.Core (6.0.4)
       Microsoft.Build.Framework (>= 17.0)
       Microsoft.Build.Tasks.Core (>= 17.0)
       Microsoft.Build.Utilities.Core (>= 17.0)
@@ -30,7 +30,7 @@ NUGET
       System.Threading.Tasks.Parallel (>= 4.3)
       System.Threading.Thread (>= 4.3)
       System.Threading.ThreadPool (>= 4.3)
-    FSharp.Core (6.0.3)
+    FSharp.Core (6.0.4)
     Microsoft.Build.Framework (17.0)
     Microsoft.Build.Tasks.Core (17.0)
       Microsoft.Build.Framework (>= 17.0)
@@ -50,7 +50,7 @@ NUGET
     Microsoft.NET.StringTools (1.0)
       System.Memory (>= 4.5.4)
       System.Runtime.CompilerServices.Unsafe (>= 5.0)
-    Microsoft.VisualStudio.Setup.Configuration.Interop (3.1.2196)
+    Microsoft.VisualStudio.Setup.Configuration.Interop (3.2.2146)
     System.Buffers (4.5.1)
     System.Collections.Immutable (5.0)
       System.Memory (>= 4.5.4)

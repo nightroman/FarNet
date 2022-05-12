@@ -6,3 +6,6 @@ source https://www.nuget.org/api/v2
 nuget FSharp.Compiler.Service
 nuget FSharp.Core
 nuget System.Collections.Immutable 5.0.0
+nuget Microsoft.Build.Framework 17.0.0
+nuget Microsoft.Build.Tasks.Core 17.0.0
+nuget Microsoft.Build.Utilities.Core 17.0.0
