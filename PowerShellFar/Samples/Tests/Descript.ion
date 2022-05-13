@@ -19,3 +19,4 @@ Test-RegisterCommand-.ps1 Shows how to register commands dynamically.
 Test-RegisterDrawer-.ps1 Test editor drawer with all console colors.
 Test-RegisterTool-.ps1 Shows how to register tools dynamically.
 Test-Write.ps1 Test Write-* cmdlets output.
+Test-Zoo-.ps1 Creates, exports, imports and sends data to a panel.
