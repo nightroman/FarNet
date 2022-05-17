@@ -1,0 +1,68 @@
+﻿= SkipPattern works =
+
+zz words with digits: 8zz zz zz8zz zz zz8 zz
+zz "zz:\zz\zz zz" zz "zz:/zz/zz zz" zz
+zz "Z:\zz\zz zz" zz "Z:/zz/zz zz" zz
+zz ".\zz\zz zz" zz "./zz/zz zz" zz
+zz "\zz\zz zz" zz "/zz/zz zz" zz
+zz zz:\zz\zz zz zz:/zz/zz zz
+zz Z:\zz\zz zz Z:/zz/zz zz
+zz .\zz\zz zz ./zz/zz zz
+zz \zz\zz zz /zz/zz zz
+
+= SkipPattern does not work =
+
+_zz_zz_
+
+= Misc =
+
+12345 головомошка favorit
+!"£$% голmove favorit
+ежик ёжик
+
+	_rightRigth_ _rigthRight_ _правильноПравилно_ _правилноПравильно_
+	IRightRigth IRigthRight ПравильноПравилно ПравилноПравильно
+	rightRigth rigthRight правильноПравилно правилноПравильно
+
+= With ampersand =
+
+Ampe&rsand
+
+= Long line =
+
+										головомошка favorit 1										головомошка favorit 2						головомошка favorit 3						головомошка favorit 4						головомошка favorit 5
+
+= Уже в словарях =
+
+nightroman
+Кузьмин
+
+* plugin ~ pin
+* plugin   plugins     Plugin   Plugins
+
+* плагин ~ камин
+* ед.число мн.число    заглавные
+И плагин   плагины     Плагин   Плагины
+Р плагина  плагинов    Плагина  Плагинов
+Д плагину  плагинам    Плагину  Плагинам
+В плагин   плагины     Плагин   Плагины
+Т плагином плагинами   Плагином Плагинами
+П плагине  плагинах    Плагине  Плагинах
+
+опциональная
+
++ exabyte petabyte terabyte Exabytes Petabytes Terabytes
+
++ Artifact Artifacts | Artifacted (fact | act)
++ artifact artifacts | artifacted (fact | act)
+
++ Catalog Catalogs Catalogged
++ catalog catalogs catalogged
+
++ Discoverability Discoverabilities
++ discoverability discoverabilities
+
+- dialog dialogs | dialogged
+
+- Color Colors Colored? | Colorred?
+- color colors colored? | colorred?

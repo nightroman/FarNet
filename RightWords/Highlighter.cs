@@ -14,29 +14,103 @@ namespace FarNet.RightWords
 	{
 		readonly MultiSpell Spell = MultiSpell.Get();
 		readonly HashSet<string> CommonWords = Actor.GetCommonWords();
+
+		/// <summary>
+		/// Last checked line data cache.
+		/// </summary>
+		LineData[] LastData = Array.Empty<LineData>();
+
+		/// <summary>
+		/// Line text and color spans.
+		/// </summary>
+		class LineData
+		{
+			public string Text;
+			public ValueTuple<int, int>[] Spans;
+		}
+
+		/// <summary>
+		/// Finds the cached data by the line hint index and text.
+		/// </summary>
+		LineData FindLineData(int index, string text)
+		{
+			// if the frame is not changed (arrows without scrolling or typing in the same line)
+			// then many not changed lines are in the same positions, check the hint index first
+			if (index < LastData.Length)
+			{
+				if (LastData[index]?.Text == text)
+					return LastData[index];
+			}
+
+			// on scrolling or typing many lines shift positions, find from the hint index
+			for (int i = 1; ; ++i)
+			{
+				int j = index - i;
+				int k = index + i;
+				bool ok1 = j >= 0 && j < LastData.Length;
+				bool ok2 = k >= 0 && k < LastData.Length;
+				if (!ok1 && !ok2)
+					break;
+				if (ok1 && LastData[j]?.Text == text)
+					return LastData[j];
+				if (ok2 && LastData[k]?.Text == text)
+					return LastData[k];
+			}
+
+			return null;
+		}
+
 		public override void Invoke(IEditor editor, ModuleDrawerEventArgs e)
 		{
-			var sets = Settings.Default.GetData();
+			var settings = Settings.Default.GetData();
 
+			int topLineIndex = e.Lines[0].Index;
+			var newData = new LineData[e.Lines.Count];
+
+			int newDataIndex = -1;
+			var lineSpans = new List<ValueTuple<int, int>>();
 			foreach (var line in e.Lines)
 			{
+				++newDataIndex;
 				var text = line.Text;
 				if (text.Length == 0)
 					continue;
 
-				if (sets.MaximumLineLength > 0 && text.Length > sets.MaximumLineLength)
+				// rare case: too long line, color the whole line
+				if (settings.MaximumLineLength > 0 && text.Length > settings.MaximumLineLength)
 				{
 					e.Colors.Add(new EditorColor(
 						line.Index,
 						0,
 						text.Length,
-						sets.HighlightingForegroundColor,
-						sets.HighlightingBackgroundColor));
+						settings.HighlightingForegroundColor,
+						settings.HighlightingBackgroundColor));
 					continue;
 				}
 
+				// try get the cached line data
+				var data = FindLineData(line.Index - topLineIndex, text);
+				if (data != null)
+				{
+					// keep it as new and add colors
+					newData[newDataIndex] = data;
+					if (data.Spans != null)
+					{
+						foreach (var item in data.Spans)
+							e.Colors.Add(new EditorColor(
+								line.Index,
+								item.Item1,
+								item.Item2,
+								settings.HighlightingForegroundColor,
+								settings.HighlightingBackgroundColor));
+					}
+					continue;
+				}
+
+				// parse and check words, collect color spans
+				lineSpans.Clear();
 				MatchCollection skip = null;
-				for (var match = sets.WordRegex2.Match(text); match.Success; match = match.NextMatch())
+				for (var match = settings.WordRegex2.Match(text); match.Success; match = match.NextMatch())
 				{
 					// the target word
 					var word = Actor.MatchToWord(match);
@@ -50,18 +124,34 @@ namespace FarNet.RightWords
 						continue;
 
 					// expensive skip pattern
-					if (Actor.HasMatch(skip ?? (skip = Actor.GetMatches(sets.SkipRegex2, text)), match))
+					if (Actor.HasMatch(skip ?? (skip = Actor.GetMatches(settings.SkipRegex2, text)), match))
 						continue;
 
-					// add color
-					e.Colors.Add(new EditorColor(
-						line.Index,
-						match.Index,
-						match.Index + match.Length,
-						sets.HighlightingForegroundColor,
-						sets.HighlightingBackgroundColor));
+					// add the span
+					lineSpans.Add((match.Index, match.Index + match.Length));
+				}
+
+				// cache the data and add colors if any
+				if (lineSpans.Count == 0)
+				{
+					newData[newDataIndex] = new LineData { Text = text };
+				}
+				else
+				{
+					newData[newDataIndex] = new LineData { Text = text, Spans = lineSpans.ToArray() };
+
+					foreach (var span in lineSpans)
+						e.Colors.Add(new EditorColor(
+							line.Index,
+							span.Item1,
+							span.Item2,
+							settings.HighlightingForegroundColor,
+							settings.HighlightingBackgroundColor));
 				}
 			}
+
+			// update cache
+			LastData = newData;
 		}
 	}
 }

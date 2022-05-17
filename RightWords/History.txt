@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.RightWords
 
+= 2.5.0 =
+
+Requires net472.
+Use caching for much faster processing.
+
 = 2.4.0 =
 
 Requires FarNet 5.6.0.

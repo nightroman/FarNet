@@ -10,8 +10,6 @@ namespace FarNet.RightWords
 	{
 		public override void Invoke(object sender, ModuleToolEventArgs e)
 		{
-			if (e == null) return;
-
 			var menu = Far.Api.CreateMenu();
 			menu.Title = Settings.ModuleName;
 			menu.HelpTopic = Far.Api.GetHelpTopic("main-menu");
