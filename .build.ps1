@@ -25,9 +25,7 @@ task reset {
 # Synopsis: Remove temp files.
 task clean {
 	foreach($_ in $Builds) { Invoke-Build clean $_ }
-	Invoke-Build Clean FSharpFar\.build.ps1
-
-	remove debug, ipch, obj, FarNetAccord.sdf, FarNetAccord.VC.db
+	Invoke-Build clean .\FSharpFar\.build.ps1
 }
 
 # Synopsis: Generate or update meta files.
@@ -97,12 +95,12 @@ task build meta, {
 		"/p:Configuration=$Configuration"
 	)}
 
-	Invoke-Build -File PowerShellFar\PowerShellFar.build.ps1 -Task Help, BuildPowerShellFarHelp
+	Invoke-Build help, buildPowerShellFarHelp .\PowerShellFar\PowerShellFar.build.ps1
 }
 
 # Synopsis: Build and install API docs.
 task docs {
-	Invoke-Build Build, Install, Clean ./Docs/.build.ps1
+	Invoke-Build build, install, clean .\Docs\.build.ps1
 }
 
 # Synopsis: Copy files to FarHome.
@@ -119,7 +117,7 @@ task uninstall {
 # Synopsis: Make the NuGet packages at $Home.
 task nuget {
 	# Test build of the sample modules, make sure they are alive
-	Invoke-Build TestBuild Modules\Modules.build.ps1
+	Invoke-Build testBuild .\Modules\Modules.build.ps1
 
 	# Call
 	foreach($_ in $Builds) { Invoke-Build nuget, clean $_ }
@@ -133,26 +131,25 @@ task modules {
 	assert (!(Get-Process [f]ar)) 'Exit Far.'
 
 	# used main
-	Invoke-Build Build, Clean CopyColor\.build.ps1
-	Invoke-Build Build, Clean Drawer\.build.ps1
-	Invoke-Build Build, Clean EditorKit\.build.ps1
-	Invoke-Build Build, Clean Explore\.build.ps1
-	Invoke-Build Build, Clean FolderChart\.build.ps1
-	Invoke-Build Build, Clean FSharpFar\.build.ps1
-	Invoke-Build Build, Clean RightControl\.build.ps1
-	Invoke-Build Build, Clean RightWords\.build.ps1
-	Invoke-Build Build, Clean Vessel\.build.ps1
+	Invoke-Build build, clean .\CopyColor\.build.ps1
+	Invoke-Build build, clean .\Drawer\.build.ps1
+	Invoke-Build build, clean .\EditorKit\.build.ps1
+	Invoke-Build build, clean .\Explore\.build.ps1
+	Invoke-Build build, clean .\FolderChart\.build.ps1
+	Invoke-Build build, clean .\FSharpFar\.build.ps1
+	Invoke-Build build, clean .\RightControl\.build.ps1
+	Invoke-Build build, clean .\RightWords\.build.ps1
+	Invoke-Build build, clean .\Vessel\.build.ps1
 
 	# used demo
-	Invoke-Build Build, Clean Modules\FarNet.Demo\.build.ps1
+	Invoke-Build build, clean .\Modules\FarNet.Demo\.build.ps1
 
 	# pure demo
-	Invoke-Build TestBuild Modules\Modules.build.ps1
+	Invoke-Build testBuild .\Modules\Modules.build.ps1
 },
 buildFarDescription
 
 # Synopsis: Ensure Help, to test by Test-Help-.ps1
 task buildFarDescription {
-	#TODO hardcoded path
-	Invoke-Build Build, Help, Clean ..\..\DEV\FarDescription\.build.ps1
+	Invoke-Build build, help, clean ..\..\DEV\FarDescription\.build.ps1
 }
