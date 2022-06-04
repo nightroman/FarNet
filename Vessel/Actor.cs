@@ -17,7 +17,7 @@ namespace FarNet.Vessel
 		readonly int _limit0;
 		readonly string _store;
 		readonly StringComparer _comparer;
-		readonly StringComparison _comparisonType;
+		readonly StringComparison _comparison;
 		readonly List<Record> _records;
 		readonly Dictionary<string, Record> _latestRecords;
 		/// <summary>
@@ -27,34 +27,34 @@ namespace FarNet.Vessel
 		/// <summary>
 		/// Creates the instance with data ready for analyses.
 		/// </summary>
-		/// <param name="mode">History (0) or Folders (1).</param>
+		/// <param name="mode">Files/Folders/Commands mode.</param>
 		/// <param name="store">The store path. Empty/null is the default.</param>
-		/// <param name="noHistory">Tells to exclude Far folder history.</param>
+		/// <param name="noHistory">Tells to exclude Far history.</param>
 		public Actor(Mode mode, string store, bool noHistory = false)
 		{
 			switch (mode)
 			{
 				case Mode.File:
 					_comparer = StringComparer.OrdinalIgnoreCase;
-					_comparisonType = StringComparison.OrdinalIgnoreCase;
+					_comparison = StringComparison.OrdinalIgnoreCase;
 					break;
 				case Mode.Folder:
 					_comparer = StringComparer.OrdinalIgnoreCase;
-					_comparisonType = StringComparison.OrdinalIgnoreCase;
+					_comparison = StringComparison.OrdinalIgnoreCase;
 					break;
 				case Mode.Command:
 					_comparer = StringComparer.Ordinal;
-					_comparisonType = StringComparison.Ordinal;
+					_comparison = StringComparison.Ordinal;
 					break;
 				default:
 					throw new ArgumentException("Invalid mode.", nameof(mode));
 			}
 
-			var sets = Settings.Default.GetData();
+			var settings = Settings.Default.GetData();
 
 			_mode = mode;
 			_store = store ?? VesselHost.LogPath[(int)mode];
-			_limit0 = sets.Limit0;
+			_limit0 = settings.Limit0;
 			_records = Store.Read(_store).ToList();
 
 			if (noHistory)
@@ -68,7 +68,7 @@ namespace FarNet.Vessel
 				foreach (var record in _records)
 					_latestRecords[record.Path] = record;
 
-				var args = new GetHistoryArgs() { Last = sets.MaximumFileCountFromFar };
+				var args = new GetHistoryArgs() { Last = settings.MaximumFileCountFromFar };
 				switch (mode)
 				{
 					case Mode.File:
@@ -246,7 +246,7 @@ namespace FarNet.Vessel
 					continue;
 
 				// skip alien
-				if (!record.Path.Equals(info.Path, _comparisonType))
+				if (!record.Path.Equals(info.Path, _comparison))
 					continue;
 
 				// count cases, init if not yet
@@ -278,7 +278,7 @@ namespace FarNet.Vessel
 				var infos = CollectInfo(record.Time - new TimeSpan(1), true).OrderBy(x => x.Idle).ToList();
 
 				// get the plain rank (it is the same for all other ranks)
-				int rankPlain = infos.FindIndex(x => x.Path.Equals(record.Path, _comparisonType));
+				int rankPlain = infos.FindIndex(x => x.Path.Equals(record.Path, _comparison));
 
 				// not found means it is the first history record for the file, skip it
 				if (rankPlain < 0)
@@ -289,7 +289,7 @@ namespace FarNet.Vessel
 
 				// sort with factors, get smart rank
 				infos.Sort(new InfoComparer(_limit0));
-				int rankSmart = infos.FindIndex(x => x.Path.Equals(record.Path, _comparisonType));
+				int rankSmart = infos.FindIndex(x => x.Path.Equals(record.Path, _comparison));
 
 				int win = rankPlain - rankSmart;
 				if (win < 0)
@@ -312,16 +312,16 @@ namespace FarNet.Vessel
 		}
 		public string Update()
 		{
-			var sets = Settings.Default.GetData();
+			var settings = Settings.Default.GetData();
 
 			// get settings and check sanity
-			int maxDays = sets.MaximumDayCount;
+			int maxDays = settings.MaximumDayCount;
 			if (maxDays < 30)
 				throw new InvalidOperationException("Use at least 30 as the maximum day count.");
-			int maxFileCount = sets.MaximumFileCount;
+			int maxFileCount = settings.MaximumFileCount;
 			if (maxFileCount < 100)
 				throw new InvalidOperationException("Use at least 100 as the maximum file count.");
-			int maxFileAge = sets.MaximumFileAge;
+			int maxFileAge = settings.MaximumFileAge;
 			if (maxFileAge < maxDays)
 				maxFileAge = maxDays;
 
@@ -369,7 +369,7 @@ namespace FarNet.Vessel
 						}
 
 						infos.RemoveAll(x => x.Path == path);
-						int removed = _records.RemoveAll(x => x.Path.Equals(path, _comparisonType));
+						int removed = _records.RemoveAll(x => x.Path.Equals(path, _comparison));
 						Logger.Source.TraceInformation("Missing: {0}: {1}", removed, path);
 						++missingFiles;
 					}
@@ -386,7 +386,7 @@ namespace FarNet.Vessel
 			{
 				var info = infos[infos.Count - 1];
 				infos.RemoveAt(infos.Count - 1);
-				int removed = _records.RemoveAll(x => x.Path.Equals(info.Path, _comparisonType));
+				int removed = _records.RemoveAll(x => x.Path.Equals(info.Path, _comparison));
 				Logger.Source.TraceInformation("Extra: {0}: {1}", removed, info.Path);
 				++excessFiles;
 			}
@@ -409,7 +409,7 @@ namespace FarNet.Vessel
 
 					// remove all aged records but the tail
 					int removed = _records.RemoveAll(x =>
-						x.Time < zero && x.Time != info.Tail && x.Path.Equals(info.Path, _comparisonType));
+						x.Time < zero && x.Time != info.Tail && x.Path.Equals(info.Path, _comparison));
 
 					Logger.Source.TraceInformation("Aged records: {0}: {1}", removed, info.Path);
 					oldRecords += removed;

@@ -81,7 +81,7 @@ Gain/item  : {5,8:n2}
 
 		static void UpdatePeriodically(Mode mode)
 		{
-			var sets = Settings.Default.GetData();
+			var settings = Settings.Default.GetData();
 			var workings = new Workings();
 			var works = workings.GetData();
 			var now = DateTime.Now;
@@ -102,7 +102,7 @@ Gain/item  : {5,8:n2}
 				default:
 					throw new Exception();
 			}
-			if ((now - lastUpdateTime).TotalHours < sets.Limit0)
+			if ((now - lastUpdateTime).TotalHours < settings.Limit0)
 				return;
 
 			// save new last update time
@@ -135,11 +135,11 @@ Gain/item  : {5,8:n2}
 
 		static void ShowHistory()
 		{
-			var sets = Settings.Default.GetData();
+			var settings = Settings.Default.GetData();
 
 			var mode = Mode.File;
 			var store = VesselHost.LogPath[(int)mode];
-			var limit = sets.Limit0;
+			var limit = settings.Limit0;
 
 			var menu = CreateListMenu();
 			menu.HelpTopic = My.HelpTopic("file-history");
@@ -286,11 +286,11 @@ Gain/item  : {5,8:n2}
 
 		static void ShowFolders()
 		{
-			var sets = Settings.Default.GetData();
+			var settings = Settings.Default.GetData();
 
 			var mode = Mode.Folder;
 			var store = VesselHost.LogPath[(int)mode];
-			var limit = sets.Limit0;
+			var limit = settings.Limit0;
 
 			var menu = CreateListMenu();
 			menu.HelpTopic = My.HelpTopic("folder-history");
@@ -384,11 +384,11 @@ Gain/item  : {5,8:n2}
 
 		static void ShowCommands()
 		{
-			var sets = Settings.Default.GetData();
+			var settings = Settings.Default.GetData();
 
 			var mode = Mode.Command;
 			var store = VesselHost.LogPath[(int)mode];
-			var limit = sets.Limit0;
+			var limit = settings.Limit0;
 
 			var menu = CreateListMenu();
 			menu.HelpTopic = My.HelpTopic("command-history");

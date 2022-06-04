@@ -4,7 +4,7 @@
     <MyOutDir>$(FarHome)\FarNet\Modules\$(AssemblyName)</MyOutDir>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <RunPostBuildEvent>1</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
