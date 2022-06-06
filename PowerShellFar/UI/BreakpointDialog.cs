@@ -2,9 +2,9 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
-using System.Management.Automation;
 using FarNet;
 using FarNet.Forms;
+using System.Management.Automation;
 
 namespace PowerShellFar.UI
 {
@@ -37,7 +37,7 @@ namespace PowerShellFar.UI
 
 			UIDialog = Far.Api.CreateDialog(-1, -1, 77, h);
 			UIDialog.Closing += OnClosing;
-			UIDialog.HelpTopic = Far.Api.GetHelpTopic(HelpTopic.BreakpointDialog);
+			UIDialog.HelpTopic = HelpTopic.Get(HelpTopic.BreakpointDialog);
 
 			// title
 			UIDialog.AddBox(3, 1, 0, 0, typeName + " breakpoint");

@@ -2,7 +2,6 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
-using FarNet;
 using FarNet.Tools;
 
 namespace PowerShellFar.UI
@@ -12,7 +11,7 @@ namespace PowerShellFar.UI
 		public CommandHistoryMenu(string prefix) : base(History.Log)
 		{
 			Settings.Default.ListMenu(Menu);
-			Menu.HelpTopic = Far.Api.GetHelpTopic(HelpTopic.CommandHistory);
+			Menu.HelpTopic = HelpTopic.Get(HelpTopic.CommandHistory);
 			Menu.Title = "PowerShell history";
 			Menu.Incremental = prefix;
 		}

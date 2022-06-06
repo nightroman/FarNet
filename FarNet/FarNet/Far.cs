@@ -276,9 +276,8 @@ namespace FarNet
 		/// </summary>
 		/// <param name="topic">The help topic.</param>
 		/// <remarks>
-		/// If it is called from one of module <c>Invoke</c> methods then
-		/// specify <c>[MethodImpl(MethodImplOptions.NoInlining)]</c>
-		/// for <c>Invoke</c> to avoid calling assembly confusion.
+		/// Consider using <c>[MethodImpl(MethodImplOptions.NoInlining)]</c>
+		/// for the calling method to avoid unexpected calling assembly.
 		/// </remarks>
 		/// <seealso cref="ShowHelp(string, string, HelpOptions)"/>
 		public abstract void ShowHelpTopic(string topic);
@@ -293,6 +292,10 @@ namespace FarNet
 		/// <para>
 		/// This method is enough for typical use cases and <c>HelpTopic</c> strings are formatted internally.
 		/// In special cases see <see cref="ShowHelp"/> for help topic format details.
+		/// </para>
+		/// <para>
+		/// Consider using <c>[MethodImpl(MethodImplOptions.NoInlining)]</c>
+		/// for the calling method to avoid unexpected calling assembly.
 		/// </para>
 		/// </remarks>
 		public abstract string GetHelpTopic(string topic);

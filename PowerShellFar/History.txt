@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 5.9.1 =
+
+Fix potential issues with help topics resolution.
+
 = 5.9.0 =
 
 Requires .NET Framework 4.7.2 or newer.

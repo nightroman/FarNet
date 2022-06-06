@@ -2,10 +2,10 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
+using FarNet;
 using System;
 using System.Collections.ObjectModel;
 using System.Management.Automation;
-using FarNet;
 
 namespace PowerShellFar.UI
 {
@@ -19,7 +19,7 @@ namespace PowerShellFar.UI
 		{
 			_menu = Far.Api.CreateListMenu();
 			_menu.Title = "PowerShell debugger tools";
-			_menu.HelpTopic = Far.Api.GetHelpTopic(HelpTopic.DebuggerMenu);
+			_menu.HelpTopic = HelpTopic.Get(HelpTopic.DebuggerMenu);
 			_menu.NoInfo = true;
 			_menu.ScreenMargin = Settings.Default.ListMenuScreenMargin;
 			_menu.UsualMargins = Settings.Default.ListMenuUsualMargins;

@@ -43,7 +43,7 @@ namespace PowerShellFar
 				if (defaultTopic == null)
 					ShowAreaHelp();
 				else
-					Far.Api.ShowHelpTopic(defaultTopic);
+					HelpTopic.Show(defaultTopic);
 				return;
 			}
 
@@ -147,10 +147,10 @@ namespace PowerShellFar
 			switch (Far.Api.Window.Kind)
 			{
 				case WindowKind.Panels:
-					Far.Api.ShowHelpTopic(HelpTopic.CommandLine);
+					HelpTopic.Show(HelpTopic.CommandLine);
 					return;
 				default:
-					Far.Api.ShowHelpTopic(HelpTopic.Contents);
+					HelpTopic.Show(HelpTopic.Contents);
 					return;
 			}
 		}

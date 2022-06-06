@@ -56,7 +56,7 @@ namespace PowerShellFar
 		}
 		internal override void ShowHelpForPanel()
 		{
-			Far.Api.ShowHelpTopic(HelpTopic.TreePanel);
+			HelpTopic.Show(HelpTopic.TreePanel);
 		}
 		/// <summary>
 		/// Opens/closes the node.

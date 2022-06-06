@@ -2,12 +2,12 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
+using FarNet;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
-using FarNet;
 
 namespace PowerShellFar
 {
@@ -131,7 +131,7 @@ namespace PowerShellFar
 		/// </summary>
 		internal virtual void ShowHelpForPanel()
 		{
-			Far.Api.ShowHelpTopic(HelpTopic.PowerPanel);
+			HelpTopic.Show(HelpTopic.PowerPanel);
 		}
 		/// <summary>
 		/// Shows help menu (e.g. called on [F1]).

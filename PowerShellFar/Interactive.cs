@@ -43,7 +43,7 @@ namespace PowerShellFar
 				menu.Add("&1. Main session");
 				menu.Add("&2. New local session");
 				menu.Add("&3. New remote session");
-				menu.HelpTopic = Far.Api.GetHelpTopic(HelpTopic.InteractiveMenu);
+				menu.HelpTopic = HelpTopic.Get(HelpTopic.InteractiveMenu);
 
 				if (!menu.Show())
 					return null;

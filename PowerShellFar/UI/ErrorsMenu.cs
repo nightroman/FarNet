@@ -2,12 +2,12 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
+using FarNet;
 using System;
 using System.Collections;
 using System.IO;
 using System.Management.Automation;
 using System.Text.RegularExpressions;
-using FarNet;
 
 namespace PowerShellFar.UI
 {
@@ -20,7 +20,7 @@ namespace PowerShellFar.UI
 		{
 			_menu = Far.Api.CreateMenu();
 			_menu.Title = "PowerShell errors ($Error)";
-			_menu.HelpTopic = Far.Api.GetHelpTopic(HelpTopic.ErrorsMenu);
+			_menu.HelpTopic = HelpTopic.Get(HelpTopic.ErrorsMenu);
 			_menu.AddKey(KeyCode.Delete);
 			_menu.AddKey(KeyCode.F4);
 		}

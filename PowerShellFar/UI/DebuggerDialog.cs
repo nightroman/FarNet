@@ -2,12 +2,12 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
+using FarNet;
+using FarNet.Forms;
 using System;
 using System.IO;
 using System.Management.Automation;
 using System.Text;
-using FarNet;
-using FarNet.Forms;
 
 namespace PowerShellFar.UI
 {
@@ -64,7 +64,7 @@ namespace PowerShellFar.UI
 			}
 
 			_Dialog = Far.Api.CreateDialog(-1, -1, dw, dh);
-			_Dialog.HelpTopic = Far.Api.GetHelpTopic(HelpTopic.DebuggerDialog);
+			_Dialog.HelpTopic = HelpTopic.Get(HelpTopic.DebuggerDialog);
 			_Dialog.AddBox(3, 1, dw - 4, dh - 2, title);
 
 			_List1 = _Dialog.AddListBox(4, 2, dw - 5, h1 + 1, null);
