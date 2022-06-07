@@ -200,6 +200,11 @@ Keys and actions:
 
     Opens the folder in the current panel.
 
+- `[ShiftEnter]`
+
+    Opens the folder in the current panel in a new window.
+    The passive panel is set to the current active path.
+
 - `[CtrlR]`
 
     Updates the folders log.

@@ -3,6 +3,7 @@
 // Copyright (c) Roman Kuzmin
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 
@@ -298,6 +299,7 @@ Gain/item  : {5,8:n2}
 			menu.TypeId = new Guid("ee448906-ec7d-4ea7-bc2e-848f48cddd39");
 
 			menu.AddKey(KeyCode.R, ControlKeyStates.LeftCtrlPressed);
+			menu.AddKey(KeyCode.Enter, ControlKeyStates.ShiftPressed);
 			if (Far.Api.Window.Kind == WindowKind.Panels)
 				menu.AddKey(KeyCode.Delete, ControlKeyStates.ShiftPressed);
 
@@ -354,6 +356,33 @@ Gain/item  : {5,8:n2}
 					goto show;
 				}
 
+				// this function logs and periodically updates
+				void LogAndUpdate()
+				{
+					// if it is not logged yet, log the existing Far record
+					if (!actor.IsLoggedPath(path))
+					{
+						var info = menu.Items[indexSelected].Data as Info;
+						Store.Append(store, info.Head, Record.OPEN, path);
+					}
+					// then log the current record
+					Store.Append(store, DateTime.Now, Record.OPEN, path);
+
+					UpdatePeriodically(mode);
+				}
+
+				// open in new console: active panel = selected path, passive panel = current path
+				if (menu.Key.IsShift(KeyCode.Enter))
+				{
+					Process.Start(new ProcessStartInfo()
+					{
+						FileName = $"{Environment.GetEnvironmentVariable("FARHOME")}\\Far.exe",
+						Arguments = $"\"{path}\" \"{Far.Api.CurrentDirectory}\""
+					});
+					LogAndUpdate();
+					return;
+				}
+
 				// Enter:
 				if (Far.Api.Window.Kind != WindowKind.Panels && !Far.Api.Window.IsModal)
 					Far.Api.Window.SetCurrentAt(-1);
@@ -368,16 +397,7 @@ Gain/item  : {5,8:n2}
 					My.BadWindow();
 				}
 
-				// if it is not logged yet, log the existing Far record
-				if (!actor.IsLoggedPath(path))
-				{
-					var info = menu.Items[indexSelected].Data as Info;
-					Store.Append(store, info.Head, Record.OPEN, path);
-				}
-				// then log the current record
-				Store.Append(store, DateTime.Now, Record.OPEN, path);
-
-				UpdatePeriodically(mode);
+				LogAndUpdate();
 				return;
 			}
 		}

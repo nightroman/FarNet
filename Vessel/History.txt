@@ -1,6 +1,13 @@
 https://www.nuget.org/packages/FarNet.Vessel
 FarNet 5.4.17
 
+= 2.6.2 =
+
+Use net472, like FarNet.
+
+Folder history:
+- [ShiftEnter] opens the selected folder in a new window
+
 = 2.6.1 =
 
 Tweaks in help and settings.
