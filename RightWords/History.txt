@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.RightWords
 
+= 2.5.1 =
+
+Fix color updates on adding user words.
+
 = 2.5.0 =
 
 Requires net472.

@@ -12,13 +12,18 @@ namespace FarNet.RightWords
 	[System.Runtime.InteropServices.Guid("bbed2ef1-97d1-4ba2-ac56-9de56bc8030c")]
 	public class Highlighter : ModuleDrawer
 	{
-		readonly MultiSpell Spell = MultiSpell.Get();
-		readonly HashSet<string> CommonWords = Actor.GetCommonWords();
+		readonly MultiSpell _spell = MultiSpell.Get();
+		int _knownWordsVersion;
 
 		/// <summary>
 		/// Last checked line data cache.
 		/// </summary>
-		LineData[] LastData = Array.Empty<LineData>();
+		LineData[] _lastData = Array.Empty<LineData>();
+
+		public Highlighter()
+		{
+			_knownWordsVersion = KnownWords.Version;
+		}
 
 		/// <summary>
 		/// Line text and color spans.
@@ -36,10 +41,10 @@ namespace FarNet.RightWords
 		{
 			// if the frame is not changed (arrows without scrolling or typing in the same line)
 			// then many not changed lines are in the same positions, check the hint index first
-			if (index < LastData.Length)
+			if (index < _lastData.Length)
 			{
-				if (LastData[index]?.Text == text)
-					return LastData[index];
+				if (_lastData[index]?.Text == text)
+					return _lastData[index];
 			}
 
 			// on scrolling or typing many lines shift positions, find from the hint index
@@ -47,14 +52,14 @@ namespace FarNet.RightWords
 			{
 				int j = index - i;
 				int k = index + i;
-				bool ok1 = j >= 0 && j < LastData.Length;
-				bool ok2 = k >= 0 && k < LastData.Length;
+				bool ok1 = j >= 0 && j < _lastData.Length;
+				bool ok2 = k >= 0 && k < _lastData.Length;
 				if (!ok1 && !ok2)
 					break;
-				if (ok1 && LastData[j]?.Text == text)
-					return LastData[j];
-				if (ok2 && LastData[k]?.Text == text)
-					return LastData[k];
+				if (ok1 && _lastData[j]?.Text == text)
+					return _lastData[j];
+				if (ok2 && _lastData[k]?.Text == text)
+					return _lastData[k];
 			}
 
 			return null;
@@ -63,6 +68,13 @@ namespace FarNet.RightWords
 		public override void Invoke(IEditor editor, ModuleDrawerEventArgs e)
 		{
 			var settings = Settings.Default.GetData();
+
+			// if known words changed then drop the cache
+			if (_knownWordsVersion != KnownWords.Version)
+			{
+				_lastData = Array.Empty<LineData>();
+				_knownWordsVersion = KnownWords.Version;
+			}
 
 			int topLineIndex = e.Lines[0].Index;
 			var newData = new LineData[e.Lines.Count];
@@ -116,11 +128,11 @@ namespace FarNet.RightWords
 					var word = Actor.MatchToWord(match);
 
 					// check cheap skip lists
-					if (CommonWords.Contains(word) || Actor.IgnoreWords.Contains(word))
+					if (KnownWords.Contains(word))
 						continue;
 
 					// check spelling, expensive but better before the skip pattern
-					if (Spell.Spell(word))
+					if (_spell.Spell(word))
 						continue;
 
 					// expensive skip pattern
@@ -151,7 +163,7 @@ namespace FarNet.RightWords
 			}
 
 			// update cache
-			LastData = newData;
+			_lastData = newData;
 		}
 	}
 }

@@ -14,9 +14,7 @@ namespace FarNet.RightWords
 	static class Actor
 	{
 		public static readonly List<DictionaryInfo> Dictionaries = new List<DictionaryInfo>();
-		public static readonly HashSet<string> IgnoreWords = new HashSet<string>();
 		static readonly IModuleManager Manager = Far.Api.GetModuleManager(Settings.ModuleName);
-		static readonly WeakReference CommonWords = new WeakReference(null);
 		static Actor()
 		{
 			// home directory, for libraries and dictionaries
@@ -42,23 +40,6 @@ namespace FarNet.RightWords
 					}
 				}
 			}
-		}
-		public static HashSet<string> GetCommonWords()
-		{
-			var words = (HashSet<string>)CommonWords.Target;
-			if (words != null)
-				return words;
-
-			words = new HashSet<string>();
-			var path = Path.Combine(GetUserDictionaryDirectory(false), Settings.UserFile);
-			if (File.Exists(path))
-			{
-				foreach (string line in File.ReadAllLines(path))
-					words.Add(line);
-			}
-
-			CommonWords.Target = words;
-			return words;
 		}
 		public static Match MatchCaret(Regex regex, string input, int caret, bool next)
 		{
@@ -93,8 +74,8 @@ namespace FarNet.RightWords
 			}
 
 			// search for the current word
-			var sets = Settings.Default.GetData();
-			var match = MatchCaret(sets.WordRegex2, line.Text, line.Caret, false);
+			var settings = Settings.Default.GetData();
+			var match = MatchCaret(settings.WordRegex2, line.Text, line.Caret, false);
 			if (match == null)
 				return;
 
@@ -126,14 +107,14 @@ namespace FarNet.RightWords
 			// ignore all:
 			if (menu.IsIgnoreAll)
 			{
-				IgnoreWords.Add(word);
+				KnownWords.AddIgnoreWord(word);
 				return;
 			}
 
 			// add to dictionary:
 			if (menu.IsAddToDictionary)
 			{
-				AddRightWord(null, word);
+				AddRightWord(word);
 				return;
 			}
 
@@ -146,13 +127,13 @@ namespace FarNet.RightWords
 		}
 		public static void ShowThesaurus()
 		{
-			var sets = Settings.Default.GetData();
+			var settings = Settings.Default.GetData();
 
 			string word = string.Empty;
 			var line = Far.Api.Line;
 			if (line != null)
 			{
-				var match = MatchCaret(sets.WordRegex2, line.Text, line.Caret, false);
+				var match = MatchCaret(settings.WordRegex2, line.Text, line.Caret, false);
 				if (match != null)
 					word = match.Value;
 			}
@@ -219,10 +200,7 @@ namespace FarNet.RightWords
 		}
 		public static void CorrectText()
 		{
-			var sets = Settings.Default.GetData();
-
-			// right words
-			var rightWords = GetCommonWords();
+			var settings = Settings.Default.GetData();
 
 			// initial editor data
 			var editor = Far.Api.Editor;
@@ -257,7 +235,7 @@ namespace FarNet.RightWords
 					var text = line.Text;
 
 					// the first word
-					Match match = MatchCaret(sets.WordRegex2, text, line.Caret, true);
+					Match match = MatchCaret(settings.WordRegex2, text, line.Caret, true);
 					if (match == null)
 						goto NextLine;
 
@@ -269,7 +247,7 @@ namespace FarNet.RightWords
 						var word = MatchToWord(match);
 
 						// check cheap skip lists
-						if (rightWords.Contains(word) || IgnoreWords.Contains(word))
+						if (KnownWords.Contains(word))
 							continue;
 
 						// check spelling, expensive but better before the skip pattern
@@ -277,7 +255,7 @@ namespace FarNet.RightWords
 							continue;
 
 						// expensive skip pattern
-						if (HasMatch(skip ?? (skip = GetMatches(sets.SkipRegex2, text)), match))
+						if (HasMatch(skip ?? (skip = GetMatches(settings.SkipRegex2, text)), match))
 							continue;
 
 						// check spelling and get suggestions
@@ -317,14 +295,14 @@ namespace FarNet.RightWords
 						// ignore all:
 						if (menu.IsIgnoreAll)
 						{
-							IgnoreWords.Add(word);
+							KnownWords.AddIgnoreWord(word);
 							continue;
 						}
 
 						// add to dictionary:
 						if (menu.IsAddToDictionary)
 						{
-							AddRightWord(rightWords, word);
+							AddRightWord(word);
 							continue;
 						}
 
@@ -359,11 +337,11 @@ namespace FarNet.RightWords
 				editor.UnselectText();
 			}
 		}
-		static string GetUserDictionaryDirectory(bool create)
+		internal static string GetUserDictionaryDirectory(bool create)
 		{
-			var sets = Settings.Default.GetData();
+			var settings = Settings.Default.GetData();
 
-			var path = sets.UserDictionaryDirectory;
+			var path = settings.UserDictionaryDirectory;
 			if (string.IsNullOrEmpty(path))
 				return Manager.GetFolderPath(SpecialFolder.RoamingData, create);
 
@@ -399,7 +377,7 @@ namespace FarNet.RightWords
 
 			return menu.Selected == 0 ? new string[] { word } : new string[] { word, word2 };
 		}
-		static void AddRightWord(HashSet<string> words, string word)
+		static void AddRightWord(string word)
 		{
 			// language names, unique, sorted
 			var languages = new List<string>();
@@ -428,23 +406,8 @@ namespace FarNet.RightWords
 					if (newWords == null)
 						continue;
 
-					if (words == null)
-						words = GetCommonWords();
-
 					// write/add
-					var path = Path.Combine(GetUserDictionaryDirectory(true), Settings.UserFile);
-					using (var writer = File.AppendText(path))
-					{
-						foreach (var newWord in newWords)
-						{
-							if (words.Contains(newWord))
-								continue;
-
-							writer.WriteLine(newWord);
-							words.Add(newWord);
-						}
-					}
-
+					KnownWords.AddCommonWords(newWords);
 					return;
 				}
 
@@ -480,9 +443,11 @@ namespace FarNet.RightWords
 						continue;
 					}
 
+					// append to the language dictionary and bump known words version
 					var path = GetUserDictionaryPath(language, true);
 					using (var writer = File.AppendText(path))
 					{
+						KnownWords.BumpVersion();
 						if (stem2.Length == 0)
 							writer.WriteLine(stem1);
 						else
