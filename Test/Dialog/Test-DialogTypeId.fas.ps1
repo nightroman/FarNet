@@ -24,8 +24,8 @@ job {
 
 ### FarNet dialog
 run {
-	# open Search-Regex-.ps1 dialog
-	Search-Regex-.ps1
+	# open dialog
+	Search-Regex.ps1
 }
 job {
 	# test dialog type ID; _091126_135929

@@ -34,7 +34,7 @@ FarNet module for Far Manager
 * [Profile.ps1](#profileps1)
 * [Profile-Editor.ps1](#profile-editorps1)
 * [TabExpansion2.ps1](#tabexpansion2ps1)
-* [Search-Regex-.ps1](#search-regex-ps1)
+* [Search-Regex.ps1](#search-regexps1)
 
 *********************************************************************
 ## About
@@ -979,14 +979,14 @@ operations by default. For example:
 
 * Edit `[F4]`
 
-    works for objects based on FileInfo (from `Get-*Item` cmdlets),
-    `MatchInfo` (from `Select-String` cmdlet, found match is selected).
+    works for full path like strings, objects based on `FileInfo` (e.g. from
+    `Get-*Item` cmdlets), `MatchInfo` (from `Select-String`, with found match
+    selected).
 
 * Open `[Enter]`
 
-    works for `GroupInfo` (from `Group-Object`), it opens yet another child
-    object panel for the group, `[Esc]` returns you to the parent panel with
-    groups.
+    works for `GroupInfo` (from `Group-Object`), it opens another child panel
+    for the group, `[Esc]` returns you to the parent panel with groups.
 
 Example commands to play with `[Enter]` on groups and `[F4]` on items:
 
@@ -1631,7 +1631,7 @@ All you need is to call the script once, normally in a host profile.
 
 
 *********************************************************************
-## Search-Regex-.ps1
+## Search-Regex.ps1
 
 [Contents]
 
@@ -1739,11 +1739,11 @@ script block then it is invoked in the background for getting input items.
 
 Example:
 
-    ls *.ps1 | Search-Regex-.ps1 TODO 'IgnoreCase, WholeWord'
+    ls *.ps1 | Search-Regex.ps1 TODO 'IgnoreCase, WholeWord'
 
 Ditto but items are collected in the background:
 
-    Search-Regex-.ps1 TODO 'IgnoreCase, WholeWord' {ls *.ps1}
+    Search-Regex.ps1 TODO 'IgnoreCase, WholeWord' {ls *.ps1}
 
 ---
 **Notes**

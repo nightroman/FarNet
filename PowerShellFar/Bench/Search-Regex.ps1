@@ -41,7 +41,7 @@ param(
 	[switch]$AllText
 )
 if ($args) {Write-Error -ErrorAction Stop "Invalid arguments: $args"}
-Assert-Far -Panels -Message "Run this script from panels." -Title Search-Regex-.ps1
+Assert-Far -Panels -Message "Run this script from panels." -Title Search-Regex.ps1
 
 Add-Type @'
 using System;
@@ -87,7 +87,7 @@ $parameters = @{}
 if (!$Regex) {
 	$dialog = $Far.CreateDialog(-1, -1, 77, $(if ($InputObject) { 11 } else { 13 }))
 	$dialog.TypeId = 'DA462DD5-7767-471E-9FC8-64A227BEE2B1'
-	$dialog.HelpTopic = "<$($Psf.AppHome)\\>search-regex-ps1"
+	$dialog.HelpTopic = "<$($Psf.AppHome)\\>search-regexps1"
 	[void]$dialog.AddBox(3, 1, 0, 0, 'Search-Regex')
 	$x = 13
 
@@ -401,7 +401,7 @@ $Panel.add_KeyPressed({
 	}
 	### [F1] opens Search-Regex help topic
 	if ($_.Key.Is([FarNet.KeyCode]::F1)) {
-		$Far.ShowHelp($Psf.AppHome, 'search-regex-ps1', 'Path')
+		$Far.ShowHelp($Psf.AppHome, 'search-regexps1', 'Path')
 		$_.Ignore = $true
 		return
 	}

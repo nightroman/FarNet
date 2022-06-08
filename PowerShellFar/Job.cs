@@ -105,7 +105,7 @@ namespace PowerShellFar
 		/// Gets the wait handle that is signaled when job is finished.
 		/// </summary>
 		public WaitHandle Finished => InvokeResult?.AsyncWaitHandle;
-		//! Used by Search-Regex-.ps1
+		//! Used by Search-Regex.ps1
 		/// <summary>
 		/// Gets the job command parameters.
 		/// </summary>
@@ -118,7 +118,7 @@ namespace PowerShellFar
 		/// </para>
 		/// </remarks>
 		public object Parameters { get; private set; }
-		//! Used by Search-Regex-.ps1
+		//! Used by Search-Regex.ps1
 		/// <summary>
 		/// Gets the status of the job.
 		/// </summary>

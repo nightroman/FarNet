@@ -82,7 +82,7 @@ of where the problem is.
 		}}
 		@{code={
 	# User friendly error message
-	Assert-Far -Panels -Message "Run this script from panels." -Title Search-Regex-.ps1
+	Assert-Far -Panels -Message "Run this script from panels." -Title Search-Regex.ps1
 		}}
 	)
 }

@@ -43,16 +43,16 @@ job {
 job {
 	### Invalid input
 
-	$r = try {Search-Regex-.ps1 -miss miss} catch {$_}
+	$r = try {Search-Regex.ps1 -miss miss} catch {$_}
 	Assert-Far (($r | Out-String) -like '*Invalid arguments: -miss miss*Test-Search-Regex.fas.ps1*')
 
-	$r = try {Search-Regex-.ps1 it} catch {$_}
+	$r = try {Search-Regex.ps1 it} catch {$_}
 	Assert-Far (($r | Out-String) -like '*There is no input to search in.*Test-Search-Regex.fas.ps1*')
 
-	$r = try {Search-Regex-.ps1 42} catch {$_}
+	$r = try {Search-Regex.ps1 42} catch {$_}
 	Assert-Far (($r | Out-String) -like '*Parameter Regex must be `[string`] or `[regex`].*Test-Search-Regex.fas.ps1*')
 
-	$r = try {'Test-Search-Regex..ps1' | Search-Regex-.ps1 Assert miss} catch {$_}
+	$r = try {'bar' | Search-Regex.ps1 Assert miss} catch {$_}
 	Assert-Far (($r | Out-String) -like '*Cannot convert value "miss" to type "SearchRegexOptions"*IgnoreCase*SimpleMatch*WholeWord*Test-Search-Regex.fas.ps1*')
 
 	$global:Error.Clear()
