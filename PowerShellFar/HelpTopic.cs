@@ -1,9 +1,5 @@
-﻿
-// PowerShellFar module for Far Manager
+﻿// PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
-
-using FarNet;
-using System.Runtime.CompilerServices;
 
 namespace PowerShellFar
 {
@@ -12,21 +8,6 @@ namespace PowerShellFar
 	/// </summary>
 	static class HelpTopic
 	{
-		[MethodImpl(MethodImplOptions.NoInlining)]
-		internal static string Get(string topic)
-		{
-			return Far.Api.GetHelpTopic(topic);
-		}
-
-		[MethodImpl(MethodImplOptions.NoInlining)]
-		internal static void Show(string topic)
-		{
-			Far.Api.ShowHelpTopic(topic);
-		}
-
-		/// <summary>
-		/// CAUTION: Use with <see cref="Get"/> and <see cref="Show"/> to avoid inlining.
-		/// </summary>
 		public const string
 			BreakpointDialog = "breakpoint-dialog",
 			CommandConsole = "command-console-dialog",

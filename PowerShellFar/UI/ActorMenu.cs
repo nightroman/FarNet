@@ -30,7 +30,7 @@ namespace PowerShellFar.UI
 			_menuPanels.Title = Res.Me;
 			_menuViewer.Title = Res.Me;
 
-			string helpTopic = HelpTopic.Get(HelpTopic.MenuCommands);
+			string helpTopic = Entry.Instance.GetHelpTopic(HelpTopic.MenuCommands);
 			_menuDialog.HelpTopic = helpTopic;
 			_menuEditor.HelpTopic = helpTopic;
 			_menuPanels.HelpTopic = helpTopic;

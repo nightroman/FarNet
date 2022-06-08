@@ -1,6 +1,12 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 5.9.1 =
+
+Added BaseModuleItem.GetHelpTopic, ShowHelpTopic.
+Use them instead of IFar.GetHelpTopic, ShowHelpTopic.
+IFar methods are deprecated and will be removed soon.
+
 = 5.9.0 =
 
 Requires .NET Framework 4.7.2 or newer.

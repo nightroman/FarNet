@@ -269,35 +269,20 @@ namespace FarNet
 		/// </remarks>
 		public abstract IDialog CreateDialog(int left, int top, int right, int bottom);
 		/// <include file='doc.xml' path='doc/ShowHelp/*'/>
-		/// <seealso cref="ShowHelpTopic(string)"/>
+		/// <seealso cref="BaseModuleItem.GetHelpTopic"/>
+		/// <seealso cref="BaseModuleItem.ShowHelpTopic"/>
 		public abstract void ShowHelp(string path, string topic, HelpOptions options);
 		/// <summary>
-		/// Shows the help topic from a help file in the directory of the calling assembly.
+		/// OBSOLETE: Use <see cref="BaseModuleItem.ShowHelpTopic"/>.
 		/// </summary>
-		/// <param name="topic">The help topic.</param>
-		/// <remarks>
-		/// Consider using <c>[MethodImpl(MethodImplOptions.NoInlining)]</c>
-		/// for the calling method to avoid unexpected calling assembly.
-		/// </remarks>
-		/// <seealso cref="ShowHelp(string, string, HelpOptions)"/>
+		/// <param name="topic">.</param>
+		[Obsolete]
 		public abstract void ShowHelpTopic(string topic);
 		/// <summary>
-		/// Formats the help topic path for <c>HelpTopic</c> properties of various UI classes.
+		/// OBSOLETE: Use <see cref="BaseModuleItem.GetHelpTopic"/>.
 		/// </summary>
-		/// <param name="topic">Module help topic name.</param>
-		/// <returns>Help topic path formatted for the core.</returns>
-		/// <remarks>
-		/// The help topic path is formatted for a help file located in the directory of the calling assembly.
-		/// Normally it is a module assembly but it can be any other, e.g. a shared library or a sub-module.
-		/// <para>
-		/// This method is enough for typical use cases and <c>HelpTopic</c> strings are formatted internally.
-		/// In special cases see <see cref="ShowHelp"/> for help topic format details.
-		/// </para>
-		/// <para>
-		/// Consider using <c>[MethodImpl(MethodImplOptions.NoInlining)]</c>
-		/// for the calling method to avoid unexpected calling assembly.
-		/// </para>
-		/// </remarks>
+		/// <param name="topic">.</param>
+		[Obsolete]
 		public abstract string GetHelpTopic(string topic);
 		/// <summary>
 		/// Returns opened module panels having optionally specified type.
@@ -531,9 +516,8 @@ namespace FarNet
 	public enum HelpOptions
 	{
 		/// <summary>
-		/// Show the topic from the help file of the plugin.
-		/// In FarNet it is <c>Far.Api.GetType().Assembly.Location</c>.
-		/// If a topic begins with a colon the a topic from the main Far help file is shown.
+		/// Show the topic from the help file of a DLL, the path is the DLL path.
+		/// If a topic begins with a colon then the main Far help file is used and the path is ignored.
 		/// </summary>
 		None = 0x0,
 		/// <summary>

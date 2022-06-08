@@ -33,7 +33,7 @@ namespace FarNet.Demo
 			menu.Title = GetString("MenuTitle");
 
 			// set this menu help topic
-			menu.HelpTopic = Far.Api.GetHelpTopic("TracingMenu");
+			menu.HelpTopic = GetHelpTopic("TracingMenu");
 
 			// add the menu items
 

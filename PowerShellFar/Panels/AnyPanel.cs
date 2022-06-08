@@ -131,7 +131,7 @@ namespace PowerShellFar
 		/// </summary>
 		internal virtual void ShowHelpForPanel()
 		{
-			HelpTopic.Show(HelpTopic.PowerPanel);
+			Entry.Instance.ShowHelpTopic(HelpTopic.PowerPanel);
 		}
 		/// <summary>
 		/// Shows help menu (e.g. called on [F1]).

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace FarNet.Demo
@@ -52,21 +53,23 @@ Managed memory : {3,7:n0} kb
 		/// </summary>
 		void DoAssembly()
 		{
-			var list = new List<string>();
-			foreach (var it in AppDomain.CurrentDomain.GetAssemblies())
+			// write to the temp file
+			var fileName = Far.Api.TempName();
+			using (var stream = new StreamWriter(fileName))
 			{
-				try { list.Add(it.Location); }
-				catch { list.Add(it.FullName); }
+				foreach (var it in AppDomain.CurrentDomain.GetAssemblies().OrderBy(x => x.FullName))
+				{
+					if (!it.IsDynamic)
+						stream.WriteLine($"{it.FullName} - {it.Location}");
+				}
 			}
-			list.Sort();
 
+			// create, configure, and open viewer
 			var viewer = Far.Api.CreateViewer();
 			viewer.Title = "Assemblies";
-			viewer.FileName = Far.Api.TempName();
+			viewer.FileName = fileName;
 			viewer.Switching = Switching.Enabled;
 			viewer.DeleteSource = DeleteSource.File;
-
-			File.WriteAllLines(viewer.FileName, list.ToArray());
 			viewer.Open();
 		}
 		/// <summary>
@@ -89,7 +92,7 @@ Managed memory : {3,7:n0} kb
 		/// </summary>
 		void DoShowHelp()
 		{
-			Far.Api.ShowHelpTopic("DemoCommand");
+			ShowHelpTopic("DemoCommand");
 		}
 	}
 }

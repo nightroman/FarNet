@@ -513,7 +513,7 @@ namespace PowerShellFar
 		}
 		internal override void ShowHelpForPanel()
 		{
-			HelpTopic.Show(HelpTopic.DataPanel);
+			Entry.Instance.ShowHelpTopic(HelpTopic.DataPanel);
 		}
 		// Command builder
 		DbCommandBuilder _Builder;

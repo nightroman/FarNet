@@ -1,5 +1,17 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 5.9.2 =
+
+Requires FarNet 5.9.1 (for more reliable help methods).
+
+Renamed Search-Regex-.ps1 -> Search-Regex.ps1.
+
+Fixed getting paths from panels with fake directory `*`.
+
+Support `MatchInfo` (from `Select-String`) in object panel:
+- better choice of panel columns
+- [F4] opens the file at the match
+
 = 5.9.1 =
 
 Fix potential issues with help topics resolution.

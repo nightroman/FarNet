@@ -160,7 +160,7 @@ namespace PowerShellFar
 		/// </summary>
 		internal override void ShowHelpForPanel()
 		{
-			HelpTopic.Show(HelpTopic.FolderTree);
+			Entry.Instance.ShowHelpTopic(HelpTopic.FolderTree);
 		}
 	}
 }

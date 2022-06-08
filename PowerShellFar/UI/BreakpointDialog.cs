@@ -37,7 +37,7 @@ namespace PowerShellFar.UI
 
 			UIDialog = Far.Api.CreateDialog(-1, -1, 77, h);
 			UIDialog.Closing += OnClosing;
-			UIDialog.HelpTopic = HelpTopic.Get(HelpTopic.BreakpointDialog);
+			UIDialog.HelpTopic = Entry.Instance.GetHelpTopic(HelpTopic.BreakpointDialog);
 
 			// title
 			UIDialog.AddBox(3, 1, 0, 0, typeName + " breakpoint");

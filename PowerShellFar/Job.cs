@@ -391,7 +391,7 @@ namespace PowerShellFar
 			IMenu menu = Far.Api.CreateMenu();
 			menu.Title = Res.BackgroundJobs;
 			menu.ShowAmpersands = true;
-			menu.HelpTopic = HelpTopic.Get(HelpTopic.BackgroundJobsMenu);
+			menu.HelpTopic = Entry.Instance.GetHelpTopic(HelpTopic.BackgroundJobsMenu);
 			menu.AddKey(KeyCode.F3);
 			menu.AddKey(KeyCode.F5);
 			menu.AddKey(KeyCode.Delete);

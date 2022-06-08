@@ -147,7 +147,7 @@ namespace PowerShellFar
 		}
 		internal override void ShowHelpForPanel()
 		{
-			HelpTopic.Show(HelpTopic.ListPanel);
+			Entry.Instance.ShowHelpTopic(HelpTopic.ListPanel);
 		}
 		internal override void UIApply()
 		{

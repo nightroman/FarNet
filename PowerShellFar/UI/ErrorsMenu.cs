@@ -20,7 +20,7 @@ namespace PowerShellFar.UI
 		{
 			_menu = Far.Api.CreateMenu();
 			_menu.Title = "PowerShell errors ($Error)";
-			_menu.HelpTopic = HelpTopic.Get(HelpTopic.ErrorsMenu);
+			_menu.HelpTopic = Entry.Instance.GetHelpTopic(HelpTopic.ErrorsMenu);
 			_menu.AddKey(KeyCode.Delete);
 			_menu.AddKey(KeyCode.F4);
 		}

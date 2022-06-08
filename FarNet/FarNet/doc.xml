@@ -185,7 +185,7 @@
   </NoFocus>
   <HelpTopic>
     <summary>
-      Help topic. Use <see cref="IFar.GetHelpTopic"/>. (Format details: <see cref="IFar.ShowHelp"/>)
+      Help topic. Use <see cref="BaseModuleItem.GetHelpTopic"/>. (Format details: <see cref="IFar.ShowHelp"/>)
     </summary>
   </HelpTopic>
   <LT>
