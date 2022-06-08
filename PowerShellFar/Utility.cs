@@ -411,10 +411,13 @@ namespace My
 
 		public static string Combine(string path, string file)
 		{
-			if (path == null)
+			// no path or special fake path, e.g. in object panel
+			if (path == null || path == "*")
 				return file;
+
 			if (path.EndsWith("\\", StringComparison.Ordinal))
 				return path + file;
+
 			// 090824
 			if (path.EndsWith("::", StringComparison.Ordinal))
 				return path + file;
