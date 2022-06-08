@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Management.Automation;
+using System.Text.RegularExpressions;
 using FarNet;
 
 namespace PowerShellFar
@@ -37,15 +38,11 @@ namespace PowerShellFar
 		/// <inheritdoc/>
 		public override void DoAcceptFiles(AcceptFilesEventArgs args)
 		{
-			if (args == null) return;
-
 			AddObjects(args.FilesData);
 		}
 		/// <inheritdoc/>
 		public override void DoDeleteFiles(DeleteFilesEventArgs args)
 		{
-			if (args == null) return;
-
 			if (args.UI && 0 != (long)Far.Api.GetSetting(FarSetting.Confirmations, "Delete"))
 			{
 				if (Far.Api.Message("Remove object(s)?", Res.Remove, MessageOptions.None, new string[] { Res.Remove, Res.Cancel }) != 0)
@@ -61,14 +58,41 @@ namespace PowerShellFar
 		/// <inheritdoc/>
 		public override void DoGetContent(GetContentEventArgs args)
 		{
-			if (args == null) return;
+			var data = args.File.Data;
 
 			// use existing file
-			string filePath = My.PathEx.TryGetFilePath(args.File.Data);
+			string filePath = My.PathEx.TryGetFilePath(data);
 			if (filePath != null)
 			{
 				args.UseFileName = filePath;
 				args.CanSet = true;
+				return;
+			}
+
+			// MatchInfo of Select-String
+			var obj = PS2.BaseObject(data);
+			if (obj.GetType().FullName == Res.MatchInfoTypeName)
+			{
+				var dynamo = (dynamic)obj;
+				filePath = (string)dynamo.Path;
+				args.UseFileName = filePath;
+
+				var lineIndex = (int)dynamo.LineNumber - 1;
+				var match = ((Match[])dynamo.Matches)[0];
+				args.EditorOpened = (sender, e) =>
+				{
+					var editor = (IEditor)sender;
+					var frame = new TextFrame
+					{
+						VisibleLine = Math.Max(lineIndex - Far.Api.UI.WindowSize.Y / 3, 0),
+						CaretLine = lineIndex
+					};
+					editor.Frame = frame;
+					var line = editor.Line;
+					line.Caret = match.Index + match.Length;
+					line.SelectText(match.Index, match.Index + match.Length);
+					editor.Redraw();
+				};
 				return;
 			}
 
@@ -78,8 +102,6 @@ namespace PowerShellFar
 		/// <inheritdoc/>
 		public override void DoImportFiles(ImportFilesEventArgs args)
 		{
-			if (args == null) return;
-
 			//! Assume this is the passive panel, so call the active
 			AddObjects(A.InvokeCode("Get-FarItem -Selected")); //????? crap. but...
 		}
@@ -287,8 +309,6 @@ namespace PowerShellFar
 		/// <inheritdoc/>
 		public override void DoCreateFile(CreateFileEventArgs args)
 		{
-			if (args == null) return;
-
 			args.Result = JobResult.Ignore;
 
 			// prompt for a command

@@ -60,12 +60,15 @@ namespace PowerShellFar
 			// History of BP variable, variable names
 			HistoryVariable = "PowerShellFarVariable",
 
+			// Known type names
+			MatchInfoTypeName = "Microsoft.PowerShell.Commands.MatchInfo",
+
 			// Main name
 			Me = "PowerShellFar";
 	}
 
 	/// <summary>
-	/// Invariand words and strings.
+	/// Invariant words and strings.
 	/// </summary>
 	static class Word
 	{

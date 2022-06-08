@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\FarNet\FarNet.Tools\FarNet.Tools.csproj" />
     <ProjectReference Include="..\FarNet\FarNet\FarNet.csproj" />
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Management.Automation">
       <HintPath>$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\WindowsPowerShell\3.0\System.Management.Automation.dll</HintPath>
       <Private>false</Private>

@@ -128,9 +128,17 @@ namespace PowerShellFar
 
 				Meta[] metas = null;
 
-				// try to get format
-				if (theType != typeof(PSCustomObject))
-					metas = Format.TryFormatByTableControl(values[0], panel == null ? 80 : panel.Window.Width); //???? avoid formatting at all
+				// MatchInfo of Select-String
+				if (theType.FullName == Res.MatchInfoTypeName)
+				{
+					metas = new Meta[] { new Meta("Path"), new Meta("Line") };
+				}
+				else
+				{
+					// try to get format
+					if (theType != typeof(PSCustomObject))
+						metas = Format.TryFormatByTableControl(values[0], panel == null ? 80 : panel.Window.Width); //???? avoid formatting at all
+				}
 
 				// use members
 				if (metas == null)
