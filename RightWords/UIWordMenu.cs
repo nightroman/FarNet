@@ -20,7 +20,7 @@ namespace FarNet.RightWords
 			_menu.NoInfo = true;
 			_menu.X = column;
 			_menu.Y = line;
-			_menu.HelpTopic = Far.Api.GetHelpTopic("correction-list");
+			_menu.HelpTopic = TheHost.Instance.GetHelpTopic(HelpTopic.CorrectionList);
 
 			// menu keys
 			_menu.AddKey(KeyCode.D1);
@@ -33,9 +33,9 @@ namespace FarNet.RightWords
 
 			// menu commands
 			_menu.Add(string.Empty).IsSeparator = true;
-			_itemIgnore = _menu.Add(My.DoIgnore);
-			_itemIgnoreAll = _menu.Add(My.DoIgnoreAll);
-			_itemAddToDictionary = _menu.Add(My.DoAddToDictionary);
+			_itemIgnore = _menu.Add(Text.DoIgnore);
+			_itemIgnoreAll = _menu.Add(Text.DoIgnoreAll);
+			_itemAddToDictionary = _menu.Add(Text.DoAddToDictionary);
 		}
 		public bool Show()
 		{

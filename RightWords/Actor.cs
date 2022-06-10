@@ -138,18 +138,18 @@ namespace FarNet.RightWords
 					word = match.Value;
 			}
 
-			word = Far.Api.Input(My.Word, Settings.ModuleName, My.Thesaurus, word);
+			word = Far.Api.Input(Text.Word, Settings.ModuleName, Text.Thesaurus, word);
 			if (word == null || (word = word.Trim()).Length == 0)
 				return;
 
 			var menu = Far.Api.CreateMenu();
 			menu.Title = word;
-			menu.HelpTopic = Far.Api.GetHelpTopic("thesaurus-menu");
+			menu.HelpTopic = TheHost.Instance.GetHelpTopic(HelpTopic.ThesaurusMenu);
 			menu.AddKey(KeyCode.C, ControlKeyStates.LeftCtrlPressed);
 			menu.AddKey(KeyCode.Insert, ControlKeyStates.LeftCtrlPressed);
 
 			Far.Api.UI.SetProgressState(TaskbarProgressBarState.Indeterminate);
-			Far.Api.UI.WindowTitle = My.Searching;
+			Far.Api.UI.WindowTitle = Text.Searching;
 			try
 			{
 				using (var thesaurus = new MultiThesaurus(Dictionaries))
@@ -368,8 +368,8 @@ namespace FarNet.RightWords
 				return new string[] { word };
 
 			var menu = Far.Api.CreateMenu();
-			menu.Title = My.AddToDictionary;
-			menu.HelpTopic = My.AddToDictionaryHelp;
+			menu.Title = Text.AddToDictionary;
+			menu.HelpTopic = TheHost.Instance.GetHelpTopic(HelpTopic.AddToDictionary);
 			menu.Add(word);
 			menu.Add(word + ", " + word2);
 			if (!menu.Show())
@@ -388,10 +388,10 @@ namespace FarNet.RightWords
 
 			// dictionary menu
 			var menu = Far.Api.CreateMenu();
-			menu.Title = My.AddToDictionary;
-			menu.HelpTopic = My.AddToDictionaryHelp;
+			menu.Title = Text.AddToDictionary;
+			menu.HelpTopic = TheHost.Instance.GetHelpTopic(HelpTopic.AddToDictionary);
 			menu.AutoAssignHotkeys = true;
-			menu.Add(My.Common);
+			menu.Add(Text.Common);
 			foreach (string name in languages)
 				menu.Add(name);
 
@@ -433,7 +433,7 @@ namespace FarNet.RightWords
 							continue;
 
 						var menu2 = Far.Api.CreateMenu();
-						menu2.Title = My.ExampleStem;
+						menu2.Title = Text.ExampleStem;
 						foreach (var it in stems)
 							menu2.Add(it);
 

@@ -4,22 +4,22 @@
 
 namespace FarNet.RightWords
 {
-	[System.Runtime.InteropServices.Guid(My.GuidString)]
 	[ModuleTool(Name = Settings.ModuleName, Options = ModuleToolOptions.Dialog | ModuleToolOptions.Editor | ModuleToolOptions.Panels)]
+	[System.Runtime.InteropServices.Guid("ca7ecdc0-f446-4bff-a99d-06c90fe0a3a9")]
 	public class TheTool : ModuleTool
 	{
 		public override void Invoke(object sender, ModuleToolEventArgs e)
 		{
 			var menu = Far.Api.CreateMenu();
 			menu.Title = Settings.ModuleName;
-			menu.HelpTopic = Far.Api.GetHelpTopic("main-menu");
+			menu.HelpTopic = GetHelpTopic(HelpTopic.MainMenu);
 
-			menu.Add(My.DoCorrectWord).Click = delegate { Actor.CorrectWord(); };
+			menu.Add(Text.DoCorrectWord).Click = delegate { Actor.CorrectWord(); };
 
 			if (e.From == ModuleToolOptions.Editor)
-				menu.Add(My.DoCorrectText).Click = delegate { Actor.CorrectText(); };
+				menu.Add(Text.DoCorrectText).Click = delegate { Actor.CorrectText(); };
 
-			menu.Add(My.DoThesaurus).Click = delegate { Actor.ShowThesaurus(); };
+			menu.Add(Text.DoThesaurus).Click = delegate { Actor.ShowThesaurus(); };
 
 			menu.Show();
 		}

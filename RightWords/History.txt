@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.RightWords
 
+= 2.5.2 =
+
+Requires FarNet 5.9.1 for more reliable help methods.
+
 = 2.5.1 =
 
 Fix color updates on adding user words.
