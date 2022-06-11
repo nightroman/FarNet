@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Panel DataTable rows.
@@ -10,58 +9,71 @@
 	these operations should be configured manually through a data adapter).
 
 	See [PowerShellFar.DataPanel] for details.
+
+.Parameter SelectCommand
+		Command to select data; it is a command text or a command object.
+
+.Parameter TableName
+		Name of a database table. If empty -SelectCommand is used.
+
+.Parameter DbProviderFactory
+		Data provider factory instance. Default: variable $DbProviderFactory is expected.
+
+.Parameter DbConnection
+		Database connection. Default: variable $DbConnection is expected.
+
+.Parameter DbDataAdapter
+		Data adapter used for data manipulations (depends on connection).
+
+.Parameter CloseConnection
+		To close the connection when a panel exits.
+
+.Parameter AsChild
+		Show this panel as a child panel (can be omitted if -Lookup is used).
+
+.Parameter Title
+		Panel title.
+
+.Parameter Columns
+		Columns to be shown
+
+.Parameter ExcludeMemberPattern
+		Regex pattern to exclude fields in the child record panel.
+
+.Parameter Lookup
+		Handler triggered on Enter in the lookup table.
+
+.Parameter NoShow
+		Create and return a panel for later use.
 #>
 
-param
-(
-	# Command to select data; it is a command text or a command object.
-	$SelectCommand
+[CmdletBinding()]
+param(
+	[object]$SelectCommand
 	,
-	[string]
-	# Name of a database table. If empty -SelectCommand is used.
-	$TableName
+	[string]$TableName
 	,
-	[System.Data.Common.DbProviderFactory]
-	# Data provider factory instance. Default: variable $DbProviderFactory is expected.
-	$DbProviderFactory = $DbProviderFactory
+	[System.Data.Common.DbProviderFactory]$DbProviderFactory = $DbProviderFactory
 	,
-	[System.Data.Common.DbConnection]
-	# Database connection. Default: variable $DbConnection is expected.
-	$DbConnection = $DbConnection
+	[System.Data.Common.DbConnection]$DbConnection = $DbConnection
 	,
-	[System.Data.Common.DbDataAdapter]
-	# Data adapter used for data manipulations (depends on connection).
-	$DbDataAdapter
+	[System.Data.Common.DbDataAdapter]$DbDataAdapter
 	,
-	[switch]
-	# To close the connection when a panel exits.
-	$CloseConnection
+	[switch]$CloseConnection
 	,
-	[switch]
-	# Show this panel as a child panel (can be omitted if -Lookup is used).
-	$AsChild
+	[switch]$AsChild
 	,
-	[string]
-	# Panel title.
-	$Title
+	[string]$Title
 	,
-	[string[]]
-	# Columns to be shown
-	$Columns
+	[string[]]$Columns
 	,
-	[string]
-	# Regex pattern to exclude fields in the child record panel.
-	$ExcludeMemberPattern
+	[string]$ExcludeMemberPattern
 	,
-	# Handler triggered on Enter in the lookup table.
-	$Lookup
+	[object]$Lookup
 	,
-	[switch]
-	# Create and return a panel for later use.
-	$NoShow
+	[switch]$NoShow
 )
 
-if ($args) { throw "Unknown parameters: $args" }
 if (!$DbProviderFactory) { throw "Provider factory is not defined." }
 if (!$DbConnection) { throw "Connection is not defined." }
 
@@ -104,6 +116,12 @@ if ($CloseConnection) { $Panel.Garbage.Add($DbConnection) }
 # go!
 if ($NoShow) {
 	$Panel
-} else {
-	$Panel.Open($AsChild -or $Lookup)
+}
+else {
+	if ($AsChild -or $Lookup) {
+		$Panel.OpenChild($null)
+	}
+	else {
+		$Panel.Open()
+	}
 }

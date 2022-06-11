@@ -2,8 +2,11 @@
 
 # FarNet
 
-Far Manager platform for .NET modules, Windows PowerShell, and F#.\
-[FarNet/wiki](https://github.com/nightroman/FarNet/wiki) describes the framework, modules, and available packages.
+Far Manager platform for .NET modules, Windows PowerShell, and F#.
+
+- [FarNet/wiki](https://github.com/nightroman/FarNet/wiki) - all about framework, modules, and packages.
+- [FarNet/issues](https://github.com/nightroman/FarNet/issues) - for bug reports and problems
+- [FarNet/discussions](https://github.com/nightroman/FarNet/discussions) - for questions and ideas
 
 ## Prerequisites
 

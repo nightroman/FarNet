@@ -28,7 +28,10 @@ namespace PowerShellFar.Commands
 
 			// setup and show
 			ApplyParameters(_Panel);
-			_Panel.Open(AsChild);
+			if (AsChild)
+				_Panel.OpenChild(null);
+			else
+				_Panel.Open();
 		}
 	}
 }

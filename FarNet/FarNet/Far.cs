@@ -273,18 +273,6 @@ namespace FarNet
 		/// <seealso cref="BaseModuleItem.ShowHelpTopic"/>
 		public abstract void ShowHelp(string path, string topic, HelpOptions options);
 		/// <summary>
-		/// OBSOLETE: Use <see cref="BaseModuleItem.ShowHelpTopic"/>.
-		/// </summary>
-		/// <param name="topic">.</param>
-		[Obsolete]
-		public abstract void ShowHelpTopic(string topic);
-		/// <summary>
-		/// OBSOLETE: Use <see cref="BaseModuleItem.GetHelpTopic"/>.
-		/// </summary>
-		/// <param name="topic">.</param>
-		[Obsolete]
-		public abstract string GetHelpTopic(string topic);
-		/// <summary>
 		/// Returns opened module panels having optionally specified type.
 		/// </summary>
 		/// <param name="type">The panel class type. Use null for any module panel.</param>

@@ -42,3 +42,4 @@ Get-TextLink.ps1 Gets a text link with the current editor line or selection.
 Invoke-FromEditor.ps1 Invokes a file from the current editor.
 Panel-BitsTransfer.ps1 Starts or manages file transfer jobs in a panel.
 Search-Regex.ps1 Searches for a regex in files and work on results in a panel
+Merge-Selected.ps1 Invokes merge for two panels items.

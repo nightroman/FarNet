@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Panel database tables for the specified connection.
@@ -39,22 +38,26 @@
 .Parameter DbProviderFactory
 		Data provider factory.
 		Default: predefined variable $DbProviderFactory.
+
 .Parameter DbConnection
 		Database connection.
 		Default: predefined variable $DbConnection.
+
 .Parameter AsChild
 		Tells to open the panel as a child of the current panel.
+
 .Parameter CloseConnection
 		Tells to close the connection on the panel exit.
 #>
 
-param
-(
+[CmdletBinding()]
+param(
 	[System.Data.Common.DbProviderFactory]$DbProviderFactory = $DbProviderFactory,
 	[System.Data.Common.DbConnection]$DbConnection = $DbConnection,
 	[switch]$AsChild,
 	[switch]$CloseConnection
 )
+
 $ErrorActionPreference = 'Stop'
 if (!$DbProviderFactory) { Write-Error 'Provider factory is not defined.' }
 if (!$DbConnection) { Write-Error 'Connection is not defined.' }
@@ -108,7 +111,7 @@ if ($CloseConnection) { $Panel.Garbage.Add($DbConnection) }
 
 # go
 $Panel.AddObjects(($table.Rows | Sort-Object 'TABLE_NAME'))
-$Panel.Open($AsChild)
+if ($AsChild) { $Panel.OpenChild($null) } else { $Panel.Open() }
 
 ### [Enter] handler ([CtrlPgDn] is for members)
 $Panel.AsOpenFile = {

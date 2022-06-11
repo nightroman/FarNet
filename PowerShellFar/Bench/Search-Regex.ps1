@@ -1,6 +1,6 @@
 <#
 .Synopsis
-	Searches for a regex in files and work on results in a panel
+	Searches for a regex in files and opens the result panel.
 	Author: Roman Kuzmin
 
 .Description
@@ -8,13 +8,12 @@
 	controls and result panel keys.
 
 .Parameter Regex
-		Regular expression pattern or object. If it is not defined then a
+		Regular expression pattern or instance. If it is omitted then a
 		dialog is opened where you can define this and other parameters.
 
 .Parameter Options
-		Regular expression options and extra options. It is used if Regex is
-		defined as a string, i.e. not a ready Regex object. In this case two
-		more options are used: SimpleMatch (1024), WholeWord (2048).
+		Regular expression options and extra options. It is used when Regex is
+		not a regex instance. See SearchRegexOptions here for available values.
 
 .Parameter InputObject
 		Strings (file paths) and IO.FileInfo (from Get-*Item) as ready input or
@@ -27,7 +26,7 @@
 
 .Parameter Groups
 		Tells to panel found regex groups instead of full matches.
-		It is ignored if AllText is set.
+		It is ignored with AllText.
 
 .Parameter AllText
 		Tells to search in all text, i.e. file read as one string.
@@ -40,12 +39,11 @@ param(
 	[switch]$Groups,
 	[switch]$AllText
 )
+
 if ($args) {Write-Error -ErrorAction Stop "Invalid arguments: $args"}
-Assert-Far -Panels -Message "Run this script from panels." -Title Search-Regex.ps1
 
 Add-Type @'
-using System;
-[Flags]
+[System.Flags]
 public enum SearchRegexOptions {
 	None = 0,
 	IgnoreCase = 1, ic = 1,
@@ -214,7 +212,8 @@ elseif ($InputObject -is [scriptblock]) {
 
 ### Validate input and set job data
 try {
-	if ($Regex -is [string]) {
+	if ($Regex -isnot [regex]) {
+		$Regex = "$Regex"
 		$Options = if ($Options) {[SearchRegexOptions]$Options} else {0}
 		if ([int]$Options -band [SearchRegexOptions]::SimpleMatch) {
 			$Regex = [regex]::Escape($Regex)
@@ -225,9 +224,7 @@ try {
 		$RegexOptions = [Text.RegularExpressions.RegexOptions](([int]$Options) -band (-bnot (1024 + 2048)))
 		$Regex = New-Object Regex $Regex, $RegexOptions
 	}
-	elseif ($Regex -isnot [regex]) {
-		throw "Parameter Regex must be [string] or [regex]."
-	}
+
 	if (!$InputObject -and !$parameters.Script) {
 		throw "There is no input to search in."
 	}
@@ -413,14 +410,14 @@ $Panel.add_Escaping({
 	$_.Ignore = $true
 	# close if empty:
 	if (!$this.Explorer.Cache.Count) {
-		$this.Close()
+		$this.CloseChild()
 		return
 	}
 	# not empty; ask
 	$r = Show-FarMessage "How would you like to continue?" -Caption $this.Title -Choices '&Close', '&Push', 'Cancel'
 	# close
 	if ($r -eq 0) {
-		$this.Close()
+		$this.CloseChild()
 	}
 	# push
 	elseif ($r -eq 1) {
@@ -429,4 +426,4 @@ $Panel.add_Escaping({
 })
 
 ### Go!
-$Panel.Open()
+$Panel.OpenChild($null)

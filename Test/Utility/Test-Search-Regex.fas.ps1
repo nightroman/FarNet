@@ -1,4 +1,10 @@
-﻿
+﻿<#
+.Notes
+	New OK: if ($Regex -isnot [regex]) {$Regex = "$Regex"}
+	Old KO: if ($Regex -is [string]) {...} elseif ($Regex -isnot [regex]) {ERROR}
+	KO because `Search-Regex 12.9` ~ ERROR (neither string nor regex).
+#>
+
 job {
 	### Whole word option
 
@@ -48,9 +54,6 @@ job {
 
 	$r = try {Search-Regex.ps1 it} catch {$_}
 	Assert-Far (($r | Out-String) -like '*There is no input to search in.*Test-Search-Regex.fas.ps1*')
-
-	$r = try {Search-Regex.ps1 42} catch {$_}
-	Assert-Far (($r | Out-String) -like '*Parameter Regex must be `[string`] or `[regex`].*Test-Search-Regex.fas.ps1*')
 
 	$r = try {'bar' | Search-Regex.ps1 Assert miss} catch {$_}
 	Assert-Far (($r | Out-String) -like '*Cannot convert value "miss" to type "SearchRegexOptions"*IgnoreCase*SimpleMatch*WholeWord*Test-Search-Regex.fas.ps1*')

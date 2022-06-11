@@ -12,7 +12,7 @@ Macro {
 }
 
 Macro {
-  area="Shell"; key="Ctrl"; description="PSF: Command console";
+  area="Shell"; key="Alt"; description="PSF: Command console";
   flags="EmptyCommandLine";
   action=function()
     Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", [[vps: $Psf.StartCommandConsole()]])

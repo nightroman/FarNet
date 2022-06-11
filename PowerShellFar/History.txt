@@ -1,5 +1,17 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 5.9.3 =
+
+Requires FarNet 5.9.2.
+
+Search-Regex.ps1
+- opens the panel as child to restore the current panel on closing
+- amended Regex parameter, e.g. `10.2` used to be an error
+- allow starting not in panels
+
+Merge-Selected.ps1
+- new script to invoke merge of two panel items
+
 = 5.9.2 =
 
 Requires FarNet 5.9.1 (for more reliable help methods).

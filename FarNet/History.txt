@@ -1,6 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 5.9.2 =
+
+Retired unreliable IFar.GetHelpTopic, ShowHelpTopic.
+Retired not really needed Panel.Open(bool).
+
 = 5.9.1 =
 
 Added BaseModuleItem.GetHelpTopic, ShowHelpTopic.

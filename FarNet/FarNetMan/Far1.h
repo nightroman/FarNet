@@ -47,8 +47,6 @@ public:
 	virtual int Message(MessageArgs^ args) override;
 	virtual KeyInfo^ NameToKeyInfo(String^ key) override;
 	virtual Object^ GetSetting(FarSetting settingSet, String^ settingName) override;
-	[MethodImpl(MethodImplOptions::NoInlining)]
-	virtual String^ GetHelpTopic(String^ topic) override;
 	virtual String^ Input(String^ prompt, String^ history, String^ title, String^ text) override;
 	virtual String^ KeyInfoToName(KeyInfo^ key) override;
 	virtual String^ PasteFromClipboard() override;
@@ -60,8 +58,6 @@ public:
 	virtual void Quit() override;
 	virtual void ShowError(String^ title, Exception^ error) override;
 	virtual void ShowHelp(String^ path, String^ topic, HelpOptions options) override;
-	[MethodImpl(MethodImplOptions::NoInlining)]
-	virtual void ShowHelpTopic(String^ topic) override;
 internal:
 	static Far1 Instance;
 private:

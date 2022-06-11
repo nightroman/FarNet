@@ -1637,34 +1637,31 @@ All you need is to call the script once, normally in a host profile.
 
 The script searches for the specified regex or simple match in the input files
 and sends found matches to the panel, where you can open the editor at the
-found lines with the matched text selected.
+found matches selected.
 
-The search is performed in the background and results are dynamically sent to a
-panel. You may work with found results immediately even with the search still
-running.
+The search is performed in the background and results are sent to the panel.
+You may work with results immediately even with the search still running.
 
-If the parameter `Regex` is not defined you are prompted to enter it together
-with other data.
+If the parameter `Regex` is omitted you are prompted to enter it together
+with other options.
 
 **Input dialog controls**
 
 - Pattern
 
-    Specifies the regular expression pattern or simple text to search for. See
-    .NET documentation for regular expression details.
+    Specifies the regular expression pattern or simple text.
 
 - Options
 
     Comma delimited regular expression and extra options or their aliases.
 
-    Standard .NET regular expression options and aliases: `None`, `IgnoreCase`
-    (ic), `Multiline` (m), `ExplicitCapture`, `Compiled`, `Singleline` (s),
-    `IgnorePatternWhitespace` (ipw), `RightToLeft`, `ECMAScript`,
+    Standard .NET regular expression options and aliases:
+    `None`, `IgnoreCase/ic`, `Multiline/m`, `ExplicitCapture`, `Compiled`,
+    `Singleline/s`, `IgnorePatternWhitespace/ipw`, `RightToLeft`, `ECMAScript`,
     `CultureInvariant`.
 
-    Extra helper options: `SimpleMatch` (sm) tells that the pattern is a
-    literal string, `WholeWord` (ww) tells to search for word bounds at the
-    pattern start and end words.
+    Extra helper options: `SimpleMatch/sm` tells that the pattern is literal
+    string, `WholeWord/ww` tells to search for word bounds, i.e. `\b...\b`.
 
 - Input
 
@@ -1739,14 +1736,14 @@ script block then it is invoked in the background for getting input items.
 
 Example:
 
-    ls *.ps1 | Search-Regex.ps1 TODO 'IgnoreCase, WholeWord'
+    ls *.ps1 | Search-Regex.ps1 TODO IgnoreCase, WholeWord
 
 Ditto but items are collected in the background:
 
-    Search-Regex.ps1 TODO 'IgnoreCase, WholeWord' {ls *.ps1}
+    Search-Regex.ps1 TODO IgnoreCase, WholeWord {ls *.ps1}
 
 ---
-**Notes**
+**Developer notes**
 
 The script demonstrates useful techniques of using background jobs for
 processing and panels for displaying results and further operations.
@@ -1771,7 +1768,7 @@ See *PowerShellFar.macro.lua*, `[Space]`.
 Use the command console started from panels by the menu "Invoke commands".
 This mode needs no prefixes and provides rich code completion by `[Tab]`.
 Optionally, create a "Shell" macro for `ps: $Psf.StartCommandConsole()`.
-See *PowerShellFar.macro.lua*, `[Ctrl]`.
+See *PowerShellFar.macro.lua*, `[Alt]`.
 
 **3:**
 

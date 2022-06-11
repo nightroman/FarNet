@@ -444,21 +444,6 @@ void Far1::ShowHelp(String^ path, String^ topic, HelpOptions options)
 	Info.ShowHelp(pinPath, pinTopic, (int)options);
 }
 
-void Far1::ShowHelpTopic(String^ topic)
-{
-	String^ path = Path::GetDirectoryName(Assembly::GetCallingAssembly()->Location);
-
-	PIN_NE(pinPath, path);
-	PIN_NS(pinTopic, topic);
-
-	Info.ShowHelp(pinPath, pinTopic, FHELP_CUSTOMPATH);
-}
-
-String^ Far1::GetHelpTopic(String^ topic)
-{
-	return "<" + Path::GetDirectoryName(Assembly::GetCallingAssembly()->Location) + "\\>" + topic;
-}
-
 IHistory^ Far1::History::get()
 {
 	return %FarNet::History::Instance;

@@ -164,7 +164,6 @@ namespace FarNet
 		/// Early call and failure avoids jobs for nothing.
 		/// </para>
 		/// </remarks>
-		/// <seealso cref="Open(bool)"/>
 		/// <seealso cref="OpenChild"/>
 		public virtual void Open()
 		{
@@ -222,17 +221,6 @@ namespace FarNet
 					throw new ModuleException("Cannot open panel, panels cannot be set current.", ex);
 				}
 			});
-		}
-		/// <summary>
-		/// Calls <see cref="Open()"/> or <see cref="OpenChild"/> depending on the parameter.
-		/// </summary>
-		/// <param name="child">Tells to open the panel as a child of the active module panel, if any.</param>
-		public void Open(bool child)
-		{
-			if (child)
-				OpenChild(null);
-			else
-				Open();
 		}
 		/// <summary>
 		/// Opens this panel as a child of the parent panel.
@@ -310,16 +298,25 @@ namespace FarNet
 				PostFile(file);
 		}
 		/// <summary>
-		/// Closes this child panel and opens the parent panel if both panels are ready.
+		/// Closes this panel and opens the parent panel if any and both panels are ready.
 		/// </summary>
 		/// <remarks>
-		/// The method only tries to close the child panel.
-		/// The panel is not closed if <see cref="CanClose"/> or <see cref="CanCloseChild"/> gets false.
+		/// <para>
+		/// If the parent is null then this panel closes.
+		/// </para>
+		/// <para>
+		/// Otherwise, this method tries to close this child panel.
+		/// It is not closed if <see cref="CanClose"/> or <see cref="CanCloseChild"/> gets false.
+		/// </para>
 		/// </remarks>
 		public void CloseChild()
 		{
+			// parent may be null on opening with OpenChild, so just close
 			if (_Parent == null)
-				throw new InvalidOperationException("The panel is not child.");
+			{
+				Close();
+				return;
+			}
 
 			// ask child
 			if (!CanClose())
@@ -352,8 +349,11 @@ namespace FarNet
 		/// </remarks>
 		protected virtual bool CanClose() { return true; }
 		/// <summary>
-		/// Can the parent panel close its child?
+		/// Can this parent panel close its child?
 		/// </summary>
+		/// <remarks>
+		/// If the child panel is unknown this method should return true.
+		/// </remarks>
 		protected virtual bool CanCloseChild() { return true; }
 		/// <summary>
 		/// Gets the list of user objects to be disposed when the panel is closed.
