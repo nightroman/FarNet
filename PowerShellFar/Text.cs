@@ -9,6 +9,8 @@ namespace PowerShellFar
 	/// </summary>
 	static class Res
 	{
+		public const int ConfirmSampleCount = 10;
+
 		public const string
 			// main menu
 			MenuInvokeCommands /**/ = "&1. Invoke commands",
@@ -39,6 +41,7 @@ namespace PowerShellFar
 			Cancel = "Cancel",
 			CtrlC = "Cancel key is pressed.",
 			Delete = "Delete",
+			Stop = "Stop",
 			Empty = "Empty",
 			InvokeCommands = "Invoke commands",
 			Remove = "Remove",

@@ -1,7 +1,7 @@
 ﻿
 job {
 	# open Alias location
-	go Alias:
+	Go-To Alias:
 }
 
 # find op

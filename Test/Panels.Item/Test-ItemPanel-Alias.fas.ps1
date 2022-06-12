@@ -22,7 +22,7 @@ job {
 	Remove-Item 'alias:\%[12]'
 
 	# open panel
-	go Alias:\
+	Go-To Alias:\
 }
 job {
 	# It's questionable to have a path like this, but why not? But there was a bug, see below

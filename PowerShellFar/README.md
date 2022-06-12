@@ -972,51 +972,36 @@ You may collect objects of different types in the same panel and the panel may
 not know what columns to use. In such cases it shows just object strings.
 
 ---
-**Special objects**
+**Special known objects**
 
 Object panels may recognize some object types and be able to perform some
-operations by default. For example:
+special operations. For example:
 
 * Edit `[F4]`
 
-    works for full path like strings, objects based on `FileInfo` (e.g. from
+    Works for full path like strings and objects based on `FileInfo` (e.g. from
     `Get-*Item` cmdlets), `MatchInfo` (from `Select-String`, with found match
     selected).
 
 * Open `[Enter]`
 
-    works for `GroupInfo` (from `Group-Object`), it opens another child panel
+    Works for full path strings and objects based on `FileInfo` and `DirectoryInfo`.
+    Files are opened by associated programs depending on types.
+    Directories are opened in the passive panel.
+
+    Works for `GroupInfo` (from `Group-Object`) and opens another child panel
     for the group, `[Esc]` returns you to the parent panel with groups.
 
-Example commands to play with `[Enter]` on groups and `[F4]` on items:
+* Delete `[ShiftDel]`
 
-    # Group files by extensions:
-    ps: Get-ChildItem | Group-Object Extension | Out-FarPanel
+    Works for full path strings and objects based on `FileInfo`.
+    The selected files are deleted with a confirmation dialog.
 
-    # Find string "throw" in files, group results by files:
-    ps: Get-ChildItem | Select-String throw | Group-Object Path | Out-FarPanel
+    Works for objects based on `Process` (from `Get-Process`).
+    The selected processes are stopped with a confirmation dialog.
 
----
-**Some data for experiments**
-
-There are some data ready for tests and experiments. See the script
-*Test-Zoo-.ps1* and comments. When you run this script you get 4 objects in a
-panel: original .NET and PowerShell objects and their restored versions.
-
-Tip: you can associate files *.clixml* with a command which imports objects
-from to Object panel:
-
-    ps: Import-Clixml (Get-FarPath) | Out-FarPanel #
-
-or
-
-    ps: Import-Panel-.ps1 (Get-FarPath) #
-
-(`#` in the end tells not to add commands to history)
-
-Note that only primitive data (basic value types and `byte[]`) keep their types on
-importing from clixml (enough for many tasks). You can also export/import data
-to/from .csv files, in this case most of imported data are strings.
+    Note that `[Del]` simply and safely removes objects from the panel
+    without doing anything else.
 
 
 *********************************************************************
@@ -1074,7 +1059,7 @@ current panel item names without full paths.
 **How to open item or property panel at some location**
 
 If you want to open a panel at the specified location from a script you may use
-scripts *Go-To-.ps1* (not for *FileSystem*) and *Panel-Property-.ps1* (for any
+scripts *Go-To.ps1* (not for *FileSystem*) and *Panel-Property-.ps1* (for any
 provider). See comments and examples there.
 
 

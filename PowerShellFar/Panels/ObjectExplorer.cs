@@ -2,13 +2,17 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
+using FarNet;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Management.Automation;
+using System.Text;
 using System.Text.RegularExpressions;
-using FarNet;
 
 namespace PowerShellFar
 {
@@ -43,17 +47,76 @@ namespace PowerShellFar
 		/// <inheritdoc/>
 		public override void DoDeleteFiles(DeleteFilesEventArgs args)
 		{
-			if (args.UI && 0 != (long)Far.Api.GetSetting(FarSetting.Confirmations, "Delete"))
+			//: force delete in interactive mode
+			if (args.Force && args.UI)
 			{
-				if (Far.Api.Message("Remove object(s)?", Res.Remove, MessageOptions.None, new string[] { Res.Remove, Res.Cancel }) != 0)
+				// collect known items
+				var knownFiles = new List<(FarFile File, string Path)>();
+				var knownProcesses = new List<(FarFile File, Process Process)>();
+				foreach (FarFile file in args.Files)
+				{
+					string filePath = My.PathEx.TryGetFilePath(file.Data);
+					if (filePath != null)
+					{
+						knownFiles.Add((file, filePath));
+						continue;
+					}
+
+					var process = Cast<Process>.From(file.Data);
+					if (process != null)
+					{
+						knownProcesses.Add((file, process));
+						continue;
+					}
+
+					args.Result = JobResult.Incomplete;
+					args.FilesToStay.Add(file);
+				}
+
+				if (knownFiles.Count == 0 && knownProcesses.Count == 0)
 				{
 					args.Result = JobResult.Ignore;
+					Far.Api.Message("No known objects to process.");
 					return;
 				}
-			}
 
-			foreach (FarFile file in args.Files)
-				Cache.Remove(file);
+				void Done(FarFile file)
+				{
+					Cache.Remove(file);
+				}
+
+				void Skip(FarFile file)
+				{
+					args.Result = JobResult.Incomplete;
+					args.FilesToStay.Add(file);
+				}
+
+				AboutPanel.DeleteKnownFiles(knownFiles, Done, Skip);
+				AboutPanel.StopKnownProcesses(knownProcesses, Done, Skip);
+			}
+			//: normal delete or non interactive
+			else
+			{
+				//: interactive, confirm
+				if (args.UI && 0 != (long)Far.Api.GetSetting(FarSetting.Confirmations, "Delete"))
+				{
+					int choice = Far.Api.Message(
+						"Remove object(s)?",
+						Res.Remove,
+						MessageOptions.None,
+						new string[] { Res.Remove, Res.Cancel });
+
+					if (choice != 0)
+					{
+						args.Result = JobResult.Ignore;
+						return;
+					}
+				}
+
+				// remove objects from the panel
+				foreach (FarFile file in args.Files)
+					Cache.Remove(file);
+			}
 		}
 		/// <inheritdoc/>
 		public override void DoGetContent(GetContentEventArgs args)
@@ -179,14 +242,33 @@ namespace PowerShellFar
 		Collection<PSObject> _AddedValues;
 		internal Collection<PSObject> AddedValues
 		{
-			get { return _AddedValues ?? (_AddedValues = new Collection<PSObject>()); }
+			get { return _AddedValues ??= new Collection<PSObject>(); }
 		}
 		/// <inheritdoc/>
 		public override Explorer DoOpenFile(OpenFileEventArgs args)
 		{
-			if (args == null) return null;
-
 			object data = args.File.Data;
+
+			// open file-like
+			{
+				string filePath = My.PathEx.TryGetFilePath(data);
+				if (filePath != null)
+				{
+					Process.Start(filePath);
+					return null;
+				}
+			}
+
+			// open directory-like
+			{
+				string directoryPath = My.PathEx.TryGetDirectoryPath(data);
+				if (directoryPath != null)
+				{
+					Far.Api.Panel2.CurrentDirectory = directoryPath;
+					return null;
+				}
+			}
+
 			PSObject psData = PSObject.AsPSObject(data);
 			var type = psData.BaseObject.GetType();
 
@@ -231,7 +313,7 @@ namespace PowerShellFar
 
 			// case: group
 			PSPropertyInfo pi = psData.Properties["Group"];
-			if (pi != null && pi.Value is IEnumerable && !(pi.Value is string))
+			if (pi != null && pi.Value is IEnumerable && pi.Value is not string)
 			{
 				var explorer = new ObjectExplorer();
 				explorer.AddObjects(pi.Value);

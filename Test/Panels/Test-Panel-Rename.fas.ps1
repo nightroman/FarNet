@@ -8,7 +8,7 @@
 
 # open panel, find A:
 job {
-	go Function:\
+	Go-To Function:\
 }
 job {
 	Find-FarFile A:

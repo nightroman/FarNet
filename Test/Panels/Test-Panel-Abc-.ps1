@@ -6,23 +6,26 @@
 #! do not remove or reorder these tests
 function Test.GoToPath.Tools
 {
-	go 'c:/rom/'
+	Go-To 'c:/rom/'
 	Assert-Far ($Far.Panel.CurrentDirectory -eq 'c:\rom')
 
-	go '\'
+	Go-To '\'
 	Assert-Far ($Far.Panel.CurrentDirectory -eq 'c:\')
 
-	go '\rom/'
+	Go-To '\rom/'
 	Assert-Far ($Far.Panel.CurrentDirectory -eq 'c:\rom')
 
-	go '/'
+	Go-To '/'
 	Assert-Far ($Far.Panel.CurrentDirectory -eq 'c:\')
 
-	go '/rom\\aps//about.ps1'
-	Assert-Far ((Get-FarItem).Name -eq 'about.ps1')
+	Go-To '/rom\\aps//about.ps1'
+	Assert-Far -FileName about.ps1
 
-	go '\rom'
-	Assert-Far ((Get-FarItem).Name -eq 'rom')
+	Go-To '\rom'
+	Assert-Far -FileName rom
+
+	Go-To Go-To
+	Assert-Far -FileName Go-To.ps1
 }
 
 function _090116_085532 # Get-FarItem -Selected fails on dots if none is selected

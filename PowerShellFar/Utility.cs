@@ -450,9 +450,9 @@ namespace My
 		/// <returns>Existing file path or null.</returns>
 		public static string TryGetFilePath(object value) //_091202_073429
 		{
-			FileInfo fi = PowerShellFar.Cast<FileInfo>.From(value);
-			if (fi != null)
-				return fi.FullName;
+			var fileInfo = PowerShellFar.Cast<FileInfo>.From(value);
+			if (fileInfo != null)
+				return fileInfo.FullName;
 
 			if (LanguagePrimitives.TryConvertTo<string>(value, out string path))
 			{
@@ -460,6 +460,30 @@ namespace My
 				if (path.Length > 3 && path.Substring(1, 2) == ":\\" || path.StartsWith("\\\\", StringComparison.OrdinalIgnoreCase))
 				{
 					if (File.Exists(path))
+						return path;
+				}
+			}
+
+			return null;
+		}
+
+		/// <summary>
+		/// Tries to recognize an existing file path by an object.
+		/// </summary>
+		/// <param name="value">Any object, e.g. DirectoryInfo, String.</param>
+		/// <returns>Existing directory path or null.</returns>
+		public static string TryGetDirectoryPath(object value)
+		{
+			var directoryInfo = PowerShellFar.Cast<DirectoryInfo>.From(value);
+			if (directoryInfo != null)
+				return directoryInfo.FullName;
+
+			if (LanguagePrimitives.TryConvertTo<string>(value, out string path))
+			{
+				// looks like a full path
+				if (path.Length > 3 && path.Substring(1, 2) == ":\\" || path.StartsWith("\\\\", StringComparison.OrdinalIgnoreCase))
+				{
+					if (Directory.Exists(path))
 						return path;
 				}
 			}

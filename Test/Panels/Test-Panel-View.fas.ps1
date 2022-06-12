@@ -3,7 +3,7 @@ job {
 	if ($global:Error) {throw 'Please remove errors.'}
 
 	# open Alias location
-	go Alias:
+	Go-To Alias:
 }
 job {
 	Assert-Far ($Far.Panel -is [PowerShellFar.ItemPanel])

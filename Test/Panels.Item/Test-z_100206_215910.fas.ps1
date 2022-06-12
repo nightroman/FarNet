@@ -14,7 +14,7 @@ job {
 	# setup
 	if (Test-Path 'hkcu:\a1\a:|a') { Remove-Item 'hkcu:\a1\a:|a' }
 	elseif (!(Test-Path 'hkcu:\a1')) { $null = New-Item 'hkcu:\a1' }
-	go hkcu:\a1
+	Go-To hkcu:\a1
 }
 
 # new item with the funny name

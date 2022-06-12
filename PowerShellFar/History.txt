@@ -1,5 +1,19 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 5.9.4 =
+
+Object panel:
+- [Enter] opens file-like objects using associated programs
+- [Enter] opens directory-like objects in the passive panel
+- [ShiftDel] deletes files with a confirmation dialog
+- [ShiftDel] stops processes with a confirmation dialog
+
+Go-To.ps1
+- renamed from Go-To-.ps1
+- added the switch -Open to open directories
+- finds applications and scripts in the system path
+- accepts pipeline input, on 2+ shows selection list
+
 = 5.9.3 =
 
 Requires FarNet 5.9.2.

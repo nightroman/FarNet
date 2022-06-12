@@ -5,7 +5,6 @@ Connect-SQLite-.ps1 Connects SQLite database and optionally shows tables in a pa
 Generate-Dialog-.ps1 Generates template code for the current dialog.
 Go-Head-.ps1 Goes to the first panel file.
 Go-Selection-.ps1 Goes to the current selection start/end position
-Go-To-.ps1 Goes to the specified file system item or a provider container
 Import-Panel-.ps1 Imports objects from files and shows them in a panel.
 Indent-Selection-.ps1 Indents selected lines in the editor.
 Invoke-Shortcut-.ps1 Opens a shortcut file (.lnk).
@@ -43,3 +42,4 @@ Invoke-FromEditor.ps1 Invokes a file from the current editor.
 Panel-BitsTransfer.ps1 Starts or manages file transfer jobs in a panel.
 Search-Regex.ps1 Searches for a regex in files and work on results in a panel
 Merge-Selected.ps1 Invokes merge for two panels items.
+Go-To.ps1 Goes to the specified panel item.

@@ -10,7 +10,7 @@ job {
 }
 
 job {
-	go FarControlPanel:\Keyboard
+	Go-To FarControlPanel:\Keyboard
 }
 job {
 	Assert-Far -Plugin

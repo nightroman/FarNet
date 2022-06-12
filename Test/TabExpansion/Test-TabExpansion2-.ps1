@@ -94,10 +94,9 @@ Test '@{Name = Split-Path -l' { $_ -ccontains '-Leaf' -and $_ -ccontains '-Liter
 
 Test @'
 ls
-pd
-'@ { $_ -ceq 'Panel-DbData-.ps1' }
+pp
+'@ { $_ -ceq 'Get-FarPath' }
 Test 'Panel-Bits' { $_ -ceq 'Panel-BitsTransfer.ps1' }
-Test 'pd -col' { $_ -ceq '-Columns' }
 Test 'Panel-DbData- -col' { $_ -ceq '-Columns' }
 
 # advanced function

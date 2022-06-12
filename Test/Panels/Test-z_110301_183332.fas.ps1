@@ -14,7 +14,7 @@ $FixColumns = { ### 'Registry' columns
 
 job {
 	# open panel
-	go FarControlPanel:\
+	Go-To FarControlPanel:\
 }
 job {
 	Assert-Far -Plugin

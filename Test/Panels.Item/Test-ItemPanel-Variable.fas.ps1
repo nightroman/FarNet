@@ -4,7 +4,7 @@ job {
 	Remove-Variable 'a[12]' -Scope Global
 
 	# open panel
-	go Variable:\
+	Go-To Variable:\
 }
 job {
 	Assert-Far @(

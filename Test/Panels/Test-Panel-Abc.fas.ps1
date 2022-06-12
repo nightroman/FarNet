@@ -6,7 +6,7 @@
 ### test .GoToPath and then Get-FarPath
 job {
 	$Far.Panel.GoToPath('C:\ROM\Aps\About.ps1')
-	Assert-Far (Get-FarFile).Name -eq 'About.ps1'
+	Assert-Far -FileName About.ps1
 
 	$Far.Panel2.GoToPath('C:\TEMP\Missed-Missed-Missed')
 	Assert-Far @(
@@ -27,23 +27,23 @@ job {
 job {
 	# dumb, existing
 	$Far.Panel.GoToName('AbOuT-AnY.Ps1')
-	Assert-Far ((Get-FarFile).Name -eq 'AbOuT-AnY.Ps1')
+	Assert-Far -FileName About-Any.ps1
 
 	# test, existing
 	Assert-Far ($Far.Panel.GoToName('AbOuT.Ps1', $false))
-	Assert-Far ((Get-FarFile).Name -eq 'AbOuT.Ps1')
+	Assert-Far -FileName About.ps1
 
 	# dumb, missed
 	$Far.Panel.GoToName('missed-missed')
-	Assert-Far ((Get-FarFile).Name -eq 'About.ps1')
+	Assert-Far -FileName About.ps1
 
 	# test, missed
 	Assert-Far (!$Far.Panel.GoToName('missed-missed', $false))
-	Assert-Far ((Get-FarFile).Name -eq 'About.ps1')
+	Assert-Far -FileName About.ps1
 
 	# fail, existing
 	Assert-Far ($Far.Panel.GoToName('About-Any.ps1', $true))
-	Assert-Far ((Get-FarFile).Name -eq 'About-Any.ps1')
+	Assert-Far -FileName About-Any.ps1
 
 	# fail, missed
 	$failed = $false
@@ -55,17 +55,17 @@ job {
 		$global:Error.RemoveAt(0)
 	}
 	Assert-Far $failed
-	Assert-Far ((Get-FarFile).Name -eq 'About-Any.ps1')
+	Assert-Far -FileName About-Any.ps1
 }
 
 ### tests Alt+Letter because Find-FarFile is to use in other places
 #! Alt+Letter: directory
 macro 'Keys"AltU s e d Esc"'
 job {
-	Assert-Far ((Get-FarFile).Name -eq 'Used')
+	Assert-Far -FileName Used
 }
 #! Alt+Letter: with *
 macro 'Keys"Alt* A b o u t * A n * p s 1 Esc"'
 job {
-	Assert-Far ((Get-FarFile).Name -eq 'About-Any.ps1')
+	Assert-Far -FileName About-Any.ps1
 }

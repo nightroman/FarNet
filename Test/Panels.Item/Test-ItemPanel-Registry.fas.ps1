@@ -6,7 +6,7 @@
 job {
 	# remove hkcu:\a1, open registry panel
 	if (Test-Path hkcu:\a1) { Remove-Item hkcu:\a1 -Recurse }
-	go hkcu:\
+	Go-To hkcu:\
 }
 job {
 	Assert-Far @(
