@@ -992,7 +992,7 @@ special operations. For example:
     Works for `GroupInfo` (from `Group-Object`) and opens another child panel
     for the group, `[Esc]` returns you to the parent panel with groups.
 
-* Delete `[ShiftDel]`
+* Delete `[Del]`
 
     Works for full path strings and objects based on `FileInfo`.
     The selected files are deleted with a confirmation dialog.
@@ -1000,7 +1000,7 @@ special operations. For example:
     Works for objects based on `Process` (from `Get-Process`).
     The selected processes are stopped with a confirmation dialog.
 
-    Note that `[Del]` simply and safely removes objects from the panel
+    Note that `[ShiftDel]` simply and safely removes objects from the panel
     without doing anything else.
 
 

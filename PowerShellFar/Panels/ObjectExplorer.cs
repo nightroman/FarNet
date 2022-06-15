@@ -47,76 +47,40 @@ namespace PowerShellFar
 		/// <inheritdoc/>
 		public override void DoDeleteFiles(DeleteFilesEventArgs args)
 		{
-			//: force delete in interactive mode
-			if (args.Force && args.UI)
+			// [ShiftDel]: remove objects
+			if (args.Force)
 			{
-				// collect known items
-				var knownFiles = new List<(FarFile File, string Path)>();
-				var knownProcesses = new List<(FarFile File, Process Process)>();
-				foreach (FarFile file in args.Files)
-				{
-					string filePath = My.PathEx.TryGetFilePath(file.Data);
-					if (filePath != null)
-					{
-						knownFiles.Add((file, filePath));
-						continue;
-					}
-
-					var process = Cast<Process>.From(file.Data);
-					if (process != null)
-					{
-						knownProcesses.Add((file, process));
-						continue;
-					}
-
-					args.Result = JobResult.Incomplete;
-					args.FilesToStay.Add(file);
-				}
-
-				if (knownFiles.Count == 0 && knownProcesses.Count == 0)
-				{
-					args.Result = JobResult.Ignore;
-					Far.Api.Message("No known objects to process.");
-					return;
-				}
-
-				void Done(FarFile file)
-				{
-					Cache.Remove(file);
-				}
-
-				void Skip(FarFile file)
-				{
-					args.Result = JobResult.Incomplete;
-					args.FilesToStay.Add(file);
-				}
-
-				AboutPanel.DeleteKnownFiles(knownFiles, Done, Skip);
-				AboutPanel.StopKnownProcesses(knownProcesses, Done, Skip);
+				AboutPanel.RemoveObjects(args.Files, Cache, args);
+				return;
 			}
-			//: normal delete or non interactive
-			else
+
+			// [Del]: delete objects by known types
+			// collect items by known types
+			var knownFiles = new List<(FarFile File, string Path)>();
+			var knownProcesses = new List<(FarFile File, Process Process)>();
+			var unknown = new List<FarFile>();
+			foreach (FarFile file in args.Files)
 			{
-				//: interactive, confirm
-				if (args.UI && 0 != (long)Far.Api.GetSetting(FarSetting.Confirmations, "Delete"))
+				string filePath = My.PathEx.TryGetFilePath(file.Data);
+				if (filePath != null)
 				{
-					int choice = Far.Api.Message(
-						"Remove object(s)?",
-						Res.Remove,
-						MessageOptions.None,
-						new string[] { Res.Remove, Res.Cancel });
-
-					if (choice != 0)
-					{
-						args.Result = JobResult.Ignore;
-						return;
-					}
+					knownFiles.Add((file, filePath));
+					continue;
 				}
 
-				// remove objects from the panel
-				foreach (FarFile file in args.Files)
-					Cache.Remove(file);
+				var process = Cast<Process>.From(file.Data);
+				if (process != null)
+				{
+					knownProcesses.Add((file, process));
+					continue;
+				}
+
+				unknown.Add(file);
 			}
+
+			AboutPanel.DeleteKnownFiles(knownFiles, Cache, args);
+			AboutPanel.StopKnownProcesses(knownProcesses, Cache, args);
+			AboutPanel.RemoveObjects(unknown, Cache, args);
 		}
 		/// <inheritdoc/>
 		public override void DoGetContent(GetContentEventArgs args)

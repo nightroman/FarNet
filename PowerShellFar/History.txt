@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 5.9.5 =
+
+Object panel:
+- [Del] really deletes known files/objects (more like in temp panel)
+- [ShiftDel] simply removes objects
+
 = 5.9.4 =
 
 Object panel:

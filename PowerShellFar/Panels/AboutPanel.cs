@@ -18,98 +18,135 @@ namespace PowerShellFar;
 internal static class AboutPanel
 {
 	/// <summary>
-	/// Deletes files with confirmation. _220614_73
+	/// Removes objects with confirmation.
 	/// </summary>
-	internal static void DeleteKnownFiles(
-		List<(FarFile File, string Path)> knownFiles,
-		Action<FarFile> done,
-		Action<FarFile> skip)
+	internal static void RemoveObjects(ICollection<FarFile> files, ICollection<FarFile> cache, DeleteFilesEventArgs args)
 	{
-		if (knownFiles.Count == 0)
+		if (files.Count == 0)
 			return;
 
-		// make message
-		var sb = new StringBuilder();
-		sb.AppendLine($"Delete {knownFiles.Count} file(s)?");
-		foreach (var it in knownFiles.Take(Res.ConfirmSampleCount))
-			sb.AppendLine(it.Path);
-		if (knownFiles.Count > Res.ConfirmSampleCount)
-			sb.Append("...");
-
-		// ask user
-		int choice = Far.Api.Message(
-			sb.ToString(),
-			Res.Delete,
-			MessageOptions.LeftAligned | MessageOptions.Warning,
-			new string[] { Res.Delete, Res.Cancel });
-
-		if (choice == 0)
+		// confirm
+		if (args.UI)
 		{
-			foreach (var it in knownFiles)
+			int choice = Far.Api.Message(
+				$"Remove {files.Count} object(s)?",
+				Res.Remove,
+				MessageOptions.None,
+				new string[] { Res.Remove, Res.Cancel });
+
+			if (choice != 0)
 			{
-				try
-				{
-					File.Delete(it.Path);
-					done(it.File);
-				}
-				catch
-				{
-					skip(it.File);
-				}
+				args.Result = JobResult.Incomplete;
+				foreach (FarFile file in files)
+					args.FilesToStay.Add(file);
+				return;
 			}
 		}
-		else
+
+		// remove objects
+		foreach (FarFile file in files)
+			cache.Remove(file);
+	}
+
+	/// <summary>
+	/// Deletes files with confirmation. _220614_73
+	/// </summary>
+	internal static void DeleteKnownFiles(ICollection<(FarFile File, string Path)> files, ICollection<FarFile> cache, DeleteFilesEventArgs args)
+	{
+		if (files.Count == 0)
+			return;
+
+		// confirm
+		if (args.UI)
 		{
-			foreach (var it in knownFiles)
-				skip(it.File);
+			// make message
+			var sb = new StringBuilder();
+			sb.AppendLine($"Delete {files.Count} file(s)?");
+			foreach (var it in files.Take(Res.ConfirmSampleCount))
+				sb.AppendLine(it.Path);
+			if (files.Count > Res.ConfirmSampleCount)
+				sb.Append("...");
+
+			// confirm
+			int choice = Far.Api.Message(
+				sb.ToString(),
+				Res.Delete,
+				MessageOptions.LeftAligned | MessageOptions.Warning,
+				new string[] { Res.Delete, Res.Cancel });
+
+			if (choice != 0)
+			{
+				args.Result = JobResult.Incomplete;
+				foreach (var it in files)
+					args.FilesToStay.Add(it.File);
+				return;
+			}
+		}
+
+		// delete real files
+		foreach (var it in files)
+		{
+			try
+			{
+				File.Delete(it.Path);
+				cache.Remove(it.File);
+			}
+			catch
+			{
+				args.Result = JobResult.Incomplete;
+				args.FilesToStay.Add(it.File);
+			}
 		}
 	}
 
 	/// <summary>
 	/// Stops processes with confirmation. _220614_73
 	/// </summary>
-	internal static void StopKnownProcesses(
-		List<(FarFile File, Process Process)> knownProcesses,
-		Action<FarFile> done,
-		Action<FarFile> skip)
+	internal static void StopKnownProcesses(ICollection<(FarFile File, Process Process)> files, ICollection<FarFile> cache, DeleteFilesEventArgs args)
 	{
-		if (knownProcesses.Count == 0)
+		if (files.Count == 0)
 			return;
 
-		// make message
-		var sb = new StringBuilder();
-		sb.AppendLine($"Stop {knownProcesses.Count} process(es)?");
-		foreach (var it in knownProcesses.Take(Res.ConfirmSampleCount))
-			sb.AppendLine(it.Process.ProcessName);
-		if (knownProcesses.Count > Res.ConfirmSampleCount)
-			sb.Append("...");
-
-		// ask user
-		int choice = Far.Api.Message(
-			sb.ToString(),
-			Res.Stop,
-			MessageOptions.LeftAligned | MessageOptions.Warning,
-			new string[] { Res.Stop, Res.Cancel });
-
-		if (choice == 0)
+		// confirm
+		if (args.UI)
 		{
-			foreach (var it in knownProcesses)
+			// make message
+			var sb = new StringBuilder();
+			sb.AppendLine($"Stop {files.Count} process(es)?");
+			foreach (var it in files.Take(Res.ConfirmSampleCount))
+				sb.AppendLine(it.Process.ProcessName);
+			if (files.Count > Res.ConfirmSampleCount)
+				sb.Append("...");
+
+			// confirm
+			int choice = Far.Api.Message(
+				sb.ToString(),
+				Res.Stop,
+				MessageOptions.LeftAligned | MessageOptions.Warning,
+				new string[] { Res.Stop, Res.Cancel });
+
+			if (choice != 0)
 			{
-				try
-				{
-					it.Process.Kill();
-					done(it.File);
-				}
-				catch
-				{
-					skip(it.File);
-				}
+				args.Result = JobResult.Incomplete;
+				foreach (var it in files)
+					args.FilesToStay.Add(it.File);
+				return;
 			}
 		}
-		else
+
+		// stop processes
+		foreach (var it in files)
 		{
-			foreach (var it in knownProcesses)
-				skip(it.File);
+			try
+			{
+				it.Process.Kill();
+				cache.Remove(it.File);
+			}
+			catch
+			{
+				args.Result = JobResult.Incomplete;
+				args.FilesToStay.Add(it.File);
+			}
 		}
 	}
 }
