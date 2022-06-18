@@ -6,6 +6,8 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <RunPostBuildEvent>1</RunPostBuildEvent>
+    <LangVersion>10.0</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FarNet">

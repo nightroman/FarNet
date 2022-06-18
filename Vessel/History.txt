@@ -1,6 +1,12 @@
 https://www.nuget.org/packages/FarNet.Vessel
 FarNet 5.4.17
 
+= 2.7.0 =
+
+Simplified menu. Note the hotkey of "Smart commands" is 3.
+
+Slightly improved predictions and performance.
+
 = 2.6.2 =
 
 Use net472, like FarNet.

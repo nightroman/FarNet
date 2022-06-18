@@ -39,9 +39,9 @@ Wiki: <https://github.com/nightroman/FarNet/wiki/Vessel>
 
 Features
 
- * Smart history of files and folders
+ * Smart history of files, folders, commands
  * Ready for typing incremental filter
- * For other features see history lists help (F1)
+ * See also history lists help (F1)
 
 The history logs are updated on openings from the smart history lists.
 
@@ -54,8 +54,9 @@ items from smart lists. Manual updates from the menu are not necessary.
 
 History log files:
 
-- *%FARLOCALPROFILE%\FarNet\Vessel\VesselHistory.txt*
-- *%FARLOCALPROFILE%\FarNet\Vessel\VesselFolders.txt*
+- Commands: *%FARLOCALPROFILE%\FarNet\Vessel\VesselCommands.txt*
+- Folders: *%FARLOCALPROFILE%\FarNet\Vessel\VesselFolders.txt*
+- Files: *%FARLOCALPROFILE%\FarNet\Vessel\VesselHistory.txt*
 
 *********************************************************************
 ## Settings
@@ -98,7 +99,7 @@ Module settings: `[F11] \ FarNet \ Settings \ Vessel`
 
 The menu is opened from almost any area: `[F11] \ Vessel`
 
-**Smart history**
+**Smart files**
 
 Opens the smart file history list.
 See [File history](#file-history)
@@ -108,40 +109,15 @@ See [File history](#file-history)
 Opens the smart folders history list.
 See [Folder history](#folder-history)
 
-**Train history**
-
-Trains and compares file smart history with normal for all records.
-The results summary is shown in the dialog.
-
-**Train folders**
-
-Trains and compares folder smart history with normal for all records.
-The results summary is shown in the dialog.
-
-**Update history**
-
-Removes missing file and excessive records from the log.
-The results are shown in the dialog.
-
-**Update folders**
-
-Removes missing folder and excessive records from the log.
-The results are shown in the dialog.
-
 **Smart commands**
 
 Opens the smart command history list.
 See [Command history](#command-history)
 
-**Train commands**
+**Update records**
 
-Trains and compares command smart history with normal for all records.
-The results summary is shown in the dialog.
-
-**Update commands**
-
-Removes excessive command records from the log.
-The results are shown in the dialog.
+Removes missing and excessive records from the logs.
+The results are printed to the console.
 
 *********************************************************************
 ## File history
@@ -217,7 +193,6 @@ Keys and actions:
 - [List menu keys]
 
 *********************************************************************
-
 ## Command history
 
 [Contents]

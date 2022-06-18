@@ -4,49 +4,51 @@
 
 using System;
 
-namespace FarNet.Vessel
+namespace Vessel;
+
+/// <summary>
+/// Collected file information about its usage.
+/// </summary>
+public class Info
 {
+	public const int SpanCount = 10;
+	static readonly int[] s_spanHours = new int[SpanCount] { 2, 2, 4, 8, 16, 32, 64, 128, 256, 1024 };
+
 	/// <summary>
-	/// Collected file summary information.
+	/// File path.
 	/// </summary>
-	public class Info
+	public string Path { get; set; }
+
+	/// <summary>
+	/// The first recorded time.
+	/// </summary>
+	public DateTime Time1 { get; set; }
+
+	/// <summary>
+	/// The last recorded time.
+	/// </summary>
+	public DateTime TimeN { get; set; }
+
+	/// <summary>
+	/// Count of records.
+	/// </summary>
+	public int UseCount { get; set; }
+
+	/// <summary>
+	/// Time passed since the last use.
+	/// </summary>
+	public TimeSpan Idle { get; set; }
+
+	/// <summary>
+	/// Likelihood of using again based on evidences.
+	/// </summary>
+	public float Evidence { get; set; }
+
+	// TODO watch and choose the best CountPlus
+	public static int CountPlus { get; set; } = 1;
+
+	internal static float CalculateEvidence(int count, int span)
 	{
-		public const int SpanCount = 10;
-		static readonly int[] _spanLen = new int[SpanCount] { 2, 2, 4, 8, 16, 32, 64, 128, 256, 1024 };
-		/// <summary>
-		/// File path.
-		/// </summary>
-		public string Path { get; set; }
-		/// <summary>
-		/// The first recorded time.
-		/// </summary>
-		public DateTime Head { get; set; }
-		/// <summary>
-		/// The last recorded time.
-		/// </summary>
-		public DateTime Tail { get; set; }
-		/// <summary>
-		/// Count of records.
-		/// </summary>
-		public int UseCount { get; set; }
-		/// <summary>
-		/// Idle span since the last use.
-		/// </summary>
-		public TimeSpan Idle { get; set; }
-		/// <summary>
-		/// Kind of probability.
-		/// </summary>
-		public float Evidence { get; private set; }
-		/// <summary>
-		/// Recency group: 0 is the most recent to be sorted by time.
-		/// </summary>
-		public int Group(int group0)
-		{
-			return Idle.TotalHours < group0 ? 0 : 1;
-		}
-		public void SetEvidence(int count, int span)
-		{
-			Evidence = (float)count / _spanLen[span];
-		}
+		return count > 0 ? (float)(count + CountPlus) / s_spanHours[span] : 0;
 	}
 }
