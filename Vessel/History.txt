@@ -1,6 +1,11 @@
 https://www.nuget.org/packages/FarNet.Vessel
 FarNet 5.4.17
 
+= 2.7.1 =
+
+Avoid unnecessary copies and orderings.
+Use sliding span and age evidence ranking.
+
 = 2.7.0 =
 
 Simplified menu. Note the hotkey of "Smart commands" is 3.

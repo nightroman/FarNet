@@ -7,69 +7,75 @@ using System.Collections.Generic;
 using System.Linq;
 
 //_220619_ry Why use full evidences on testing, not partial calculated on getting partial infos?
-// Because this is the actual trained model. Applying it to partial lists is fair, not cheating.
+// Because this is the model used for actual ranking and we test its performance, not partial.
 
 namespace Vessel;
 
 public partial class Actor
 {
-	/// <summary>
-	/// Evidence spans used on model testing.
-	/// </summary>
-	public class SpanSet
+	public class TrainArgs
 	{
-		public int[] Spans { get; } = new int[Info.SpanCount];
-		internal DateTime NextRecordTime { get; set; }
 	}
 
 	/// <summary>
 	/// Evaluates the trained model.
 	/// </summary>
 	/// <returns>Training results.</returns>
-	public Result Train()
+	public Result Train(TrainArgs args = null)
 	{
 		var result = new Result();
+		if (_records.Count == 0)
+			return result;
 
-		// collect and compare evidences with existing, _220619_ry
-		var spanMap = CollectEvidences();
+		var now = _records[_records.Count - 1].Time + _limit0 + TimeSpan.FromSeconds(1);
+		args ??= new TrainArgs();
+
+		// collect spans and compare evidences to avoid bugs, _220619_ry
+		var spans = CollectSpans();
 		{
-			var infos = CollectInfo(DateTime.Now, false);
+			var infos = CollectInfo(now, true).Values;
 			foreach (var info in infos)
 			{
-				var span = Mat.Span(info.Idle);
-				if (span < Info.SpanCount)
-				{
-					var evidence = Info.CalculateEvidence(spanMap[info.Path].Spans[span], span);
-					if (evidence != info.Evidence)
-						throw new InvalidOperationException("Different evidences.");
-				}
+				var age = now - info.TimeN;
+				var (min, max) = Info.GetSpanMinMax(age);
+				double evidence = 0;
+				if (spans[info.Path].Exists(x => x > min && x < max))
+					evidence = info.CalculateEvidence(1, age);
+				if (evidence != info.Evidence)
+					throw new InvalidOperationException("Different evidences.");
 			}
 		}
 
-		// records from new to old
 		foreach (var record in _records)
 		{
-			//! skip noop records, do not tune against them, they were not open from smart lists
-			if (record.What == Record.NOOP)
+			// skip too old, not interesting
+			if (record.What == Record.AGED)
 				continue;
 
-			// collect infos (step back 1 second and tell to exclude not interesting), then sort by times
-			var infos = CollectInfo(record.Time - TimeSpan.FromSeconds(1), true).OrderBy(x => x.Idle).ToList();
+			// collect infos (step back 1 second and exclude not interesting), then sort by times
+			var timeTrain = record.Time - TimeSpan.FromSeconds(1);
+			var infos = CollectInfo(timeTrain, true, true).Values.OrderByDescending(x => x.TimeN).ToList();
 
 			// get the simple rank
 			int rankSimple = infos.FindIndex(x => x.Path.Equals(record.Path, _comparison));
 
-			// not found means it is the first history record for the file, skip it
+			// not found means stepping back in time has discarded the last record
 			if (rankSimple < 0)
 				continue;
 
+			// test stats
+			++result.Tests;
+			result.MaxSum += rankSimple;
+			result.MaxScore += rankSimple > 0 ? 1 : 0;
+
 			// inject evidences, _220619_ry
-			SetEvidences(infos, spanMap);
+			SetEvidences(infos, spans, timeTrain);
 
 			// sort smart, get rank
-			infos.Sort(new InfoComparer(_limit0));
+			infos.Sort(new InfoComparer(timeTrain - _limit0));
 			int rankSmart = infos.FindIndex(x => x.Path.Equals(record.Path, _comparison));
 
+			// score and gain stats
 			int win = rankSimple - rankSmart;
 			if (win < 0)
 			{
@@ -81,59 +87,57 @@ public partial class Actor
 				++result.UpCount;
 				result.UpSum += win;
 			}
-			else
-			{
-				++result.SameCount;
-			}
 		}
 
 		return result;
 	}
 
 	/// <summary>
-	/// Counts uses by items and time spans.
+	/// Collects spans between uses by paths.
 	/// </summary>
-	/// <returns>Dictionary of paths to time spans with counts.</returns>
-	public Dictionary<string, SpanSet> CollectEvidences()
+	/// <returns>Dictionary of paths to idles.</returns>
+	public Dictionary<string, List<TimeSpan>> CollectSpans()
 	{
-		var result = new Dictionary<string, SpanSet>(_comparer);
+		var map = new Dictionary<string, List<TimeSpan>>(_comparer);
 
 		// from new to old
-		foreach (var record in _records)
+		for (int iRecord1 = _records.Count - 1; iRecord1 >= 0; --iRecord1)
 		{
-			// add new span set with the record time as the next
-			if (!result.TryGetValue(record.Path, out SpanSet spans))
-			{
-				spans = new SpanSet { NextRecordTime = record.Time };
-				result.Add(record.Path, spans);
+			var record = _records[iRecord1];
+			if (map.ContainsKey(record.Path))
 				continue;
+
+			var thisPath = record.Path;
+			var lastTime = record.Time;
+			var spans = new List<TimeSpan>();
+			map.Add(thisPath, spans);
+
+			for (int iRecord2 = iRecord1 - 1; iRecord2 >= 0; --iRecord2)
+			{
+				record = _records[iRecord2];
+				if (record.Path.Equals(thisPath, _comparison))
+				{
+					spans.Add(lastTime - record.Time);
+					lastTime = record.Time;
+				}
 			}
-
-			// time passed from this record to the next
-			var idle = spans.NextRecordTime - record.Time;
-
-			// update next record time
-			spans.NextRecordTime = record.Time;
-
-			int span = Mat.Span(idle);
-			if (span < Info.SpanCount)
-				++spans.Spans[span];
 		}
 
-		return result;
+		return map;
 	}
 
 	/// <summary>
 	/// Sets info evidences from collected data.
 	/// </summary>
-	private static void SetEvidences(IEnumerable<Info> infos, Dictionary<string, SpanSet> spanMap)
+	private static void SetEvidences(IEnumerable<Info> infos, Dictionary<string, List<TimeSpan>> spans, DateTime now)
 	{
-		// calculate evidences for idle times
 		foreach (var info in infos)
 		{
-			int span = Mat.Span(info.Idle);
-			if (span < Info.SpanCount)
-				info.Evidence = Info.CalculateEvidence(spanMap[info.Path].Spans[span], span);
+			var (min, max) = Info.GetSpanMinMax(now - info.TimeN);
+			if (spans[info.Path].Exists(x => x > min && x < max))
+				info.Evidence = info.CalculateEvidence(1, max - min);
+			else
+				info.Evidence = 0;
 		}
 	}
 }

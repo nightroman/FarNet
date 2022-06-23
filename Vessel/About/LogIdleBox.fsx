@@ -36,5 +36,6 @@ fun () ->
     }
     |> Chart.Combine
     |> Chart.WithXAxis(Min=0)
+    |> Chart.WithYAxis(MajorGrid=ChartTypes.Grid(Interval=1))
 
 |> Chart.Show

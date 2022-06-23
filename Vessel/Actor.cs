@@ -14,31 +14,23 @@ public partial class Actor
 {
 	readonly static TimeSpan _smallSpan = TimeSpan.FromSeconds(3);
 	readonly Mode _mode;
-	readonly TimeSpan _limit0;
 	readonly string _store;
+	readonly TimeSpan _limit0;
 	readonly StringComparer _comparer;
 	readonly StringComparison _comparison;
-	readonly Dictionary<string, Record> _latestRecords;
 
 	/// <summary>
-	/// File records from new to old.
+	/// File records from old to new.
+	/// Mostly read only but pruned in place by updates before saving.
 	/// </summary>
 	readonly List<Record> _records;
-
-	/// <summary>
-	/// Creates the instance with data from the default storage.
-	/// </summary>
-	public Actor(Mode mode) : this(mode, null)
-	{
-	}
 
 	/// <summary>
 	/// Creates the instance with data ready for analyses.
 	/// </summary>
 	/// <param name="mode">Files/Folders/Commands mode.</param>
 	/// <param name="store">The store path. Empty/null is the default.</param>
-	/// <param name="noHistory">Tells to exclude Far history.</param>
-	public Actor(Mode mode, string store, bool noHistory = false)
+	public Actor(Mode mode, string store = null)
 	{
 		switch (mode)
 		{
@@ -64,65 +56,24 @@ public partial class Actor
 		_store = string.IsNullOrEmpty(store) ? VesselHost.LogPath[(int)mode] : store;
 		_limit0 = TimeSpan.FromHours(settings.Limit0);
 		_records = Store.Read(_store).ToList();
-
-		if (noHistory)
-		{
-			_records.Reverse();
-		}
-		else
-		{
-			// original latest records by paths (assuming ascending order in the log)
-			_latestRecords = new Dictionary<string, Record>(_comparer);
-			foreach (var record in _records)
-				_latestRecords[record.Path] = record;
-
-			var args = new GetHistoryArgs() { Last = settings.MaximumFileCountFromFar };
-			switch (mode)
-			{
-				case Mode.File:
-					// add missing and later records from Far editor history
-					args.Kind = HistoryKind.Editor;
-					AddFarHistory(args);
-
-					// add missing and later records from Far viewer history
-					args.Kind = HistoryKind.Viewer;
-					AddFarHistory(args);
-					break;
-				case Mode.Folder:
-					// add missing and later records from Far folder history
-					args.Kind = HistoryKind.Folder;
-					AddFarHistory(args);
-					break;
-				case Mode.Command:
-					// add missing and later records from Far command history
-					args.Kind = HistoryKind.Command;
-					AddFarHistory(args);
-					break;
-			}
-		}
-
-		// get sorted
-		_records = new List<Record>(_records.OrderByDescending(x => x.Time));
 	}
 
-	void AddFarHistory(GetHistoryArgs args)
+	static void AddFarHistory(Dictionary<string, Info> infos, DateTime old, HistoryKind historyKind)
 	{
-		var items = Far.Api.History.GetHistory(args);
+		var items = Far.Api.History.GetHistory(new GetHistoryArgs { Kind = historyKind });
 		foreach (var item in items)
 		{
-			if (!_latestRecords.TryGetValue(item.Name, out Record record) || item.Time - record.Time > _smallSpan)
-				_records.Add(new Record(item.Time, Record.NOOP, item.Name));
+			if (infos.TryGetValue(item.Name, out Info info))
+			{
+				// override if recent
+				if (item.Time > old && item.Time - info.TimeN > _smallSpan)
+					infos[item.Name] = new Info { Path = item.Name, TimeN = item.Time };
+			}
+			else
+			{
+				infos.Add(item.Name, new Info { Path = item.Name, TimeN = item.Time });
+			}
 		}
-	}
-
-	/// <summary>
-	/// Gets true if the path exists in the log.
-	/// </summary>
-	public bool IsLoggedPath(string path)
-	{
-		// If _latestRecords is null then Actor is created without
-		// Far history and this method is not supposed to be used.
-		return _latestRecords.ContainsKey(path);
 	}
 
 	/// <summary>
@@ -132,85 +83,110 @@ public partial class Actor
 	public IEnumerable<Info> GetHistory(DateTime now)
 	{
 		var infos = CollectInfo(now, false);
-		return infos.OrderByDescending(x => x, new InfoComparer(_limit0));
+		var old = now - _limit0;
+
+		// add missing and tweak later records
+		switch (_mode)
+		{
+			case Mode.File:
+				// Far editor history
+				AddFarHistory(infos, old, HistoryKind.Editor);
+
+				// Far viewer history
+				AddFarHistory(infos, old, HistoryKind.Viewer);
+				break;
+
+			case Mode.Folder:
+				// Far folder history
+				AddFarHistory(infos, old, HistoryKind.Folder);
+				break;
+
+			case Mode.Command:
+				// Far command history
+				AddFarHistory(infos, old, HistoryKind.Command);
+				break;
+		}
+
+		return infos.Values.OrderByDescending(x => x, new InfoComparer(old));
 	}
 
 	/// <summary>
 	/// Collects the unordered history info.
 	/// </summary>
-	public IList<Info> CollectInfo(DateTime now, bool reduced)
+	public Dictionary<string, Info> CollectInfo(DateTime now, bool skipNewAndAged, bool skipEvidences = false)
 	{
-		var result = new List<Info>();
-		var set = new HashSet<string>(_comparer);
+		var old = now - _limit0;
+		var map = new Dictionary<string, Info>(_comparer);
 
-		for (int iRecord = 0; iRecord < _records.Count; ++iRecord)
+		for (int iRecord = _records.Count - 1; iRecord >= 0; --iRecord)
 		{
 			// skip data from the future
 			var record = _records[iRecord];
 			if (record.Time > now)
 				continue;
 
-			// add path, skip existing
-			if (!set.Add(record.Path))
+			// skip added and processed path
+			if (map.ContainsKey(record.Path))
 				continue;
 
 			// skip recent and aged
-			var idle = now - record.Time;
-			if (reduced && (idle < _limit0 || record.What == Record.AGED))
+			if (skipNewAndAged && (record.Time > old || record.What == Record.AGED))
 				continue;
 
 			// init info with the newest record
 			var info = new Info
 			{
 				Path = record.Path,
-				Idle = idle,
-				Time1 = record.Time,
 				TimeN = record.Time,
-				UseCount = 1,
 			};
 
-			// collect the info for this file
-			CollectFileInfo(info, iRecord + 1);
+			// add now before skips
+			map.Add(record.Path, info);
 
-			result.Add(info);
+			// skip evidences, note that aged items have no more records
+			if (skipEvidences || record.What == Record.AGED)
+				continue;
+
+			// collect the info for this file
+			CollectEvidence(info, _records, iRecord - 1, now, _comparison);
 		}
 
-		return result;
+		return map;
 	}
 
 	/// <summary>
 	/// Collects info for a file.
 	/// </summary>
-	void CollectFileInfo(Info info, int start)
+	static void CollectEvidence(Info info, IList<Record> records, int start, DateTime now, StringComparison comparison)
 	{
-		int evidenceCount = 0;
-		var thisSpan = Mat.Span(info.Idle);
+		var lastTime = info.TimeN;
+		var age = now - lastTime;
+		var (min, max) = Info.GetSpanMinMax(age);
 
 		// from new to old
-		for (int iRecord = start; iRecord < _records.Count; ++iRecord)
+		for (int iRecord = start; iRecord >= 0; --iRecord)
 		{
 			// skip different files
-			var record = _records[iRecord];
-			if (!record.Path.Equals(info.Path, _comparison))
+			var record = records[iRecord];
+			if (!record.Path.Equals(info.Path, comparison))
 				continue;
 
-			// 1. count evidence
-			int span = Mat.Span(info.Time1 - record.Time);
-			if (span == thisSpan && span < Info.SpanCount)
-				++evidenceCount;
+			// test for evidence
+			var idle = lastTime - record.Time;
+			if (idle > min && idle < max)
+			{
+				info.Evidence = info.CalculateEvidence(1, age);
+				return;
+			}
 
-			// 2. update the first use and count
-			info.Time1 = record.Time;
-			++info.UseCount;
+			// update the last time
+			lastTime = record.Time;
 		}
-
-		// finally
-		if (thisSpan < Info.SpanCount)
-			info.Evidence = Info.CalculateEvidence(evidenceCount, thisSpan);
 	}
 
 	public string Update()
 	{
+		var today = DateTime.Today;
 		var settings = Settings.Default.GetData();
 
 		// get settings and check sanity
@@ -244,8 +220,11 @@ public partial class Actor
 
 		int recordCount = _records.Count;
 
-		// collect and sort by idle
-		var infos = CollectInfo(DateTime.Now, false).OrderBy(x => x.Idle).ToList();
+		// ensure records sorted by time, just in case the log was edited manually
+		_records.Sort(new Record.Comparer());
+
+		// collect and sort by time from new to old
+		var infos = CollectInfo(DateTime.Now, false, true).Values.OrderByDescending(x => x.TimeN).ToList();
 
 		// step: remove missing files from infos and records
 		int missingFiles = 0;
@@ -266,8 +245,8 @@ public partial class Actor
 							continue;
 					}
 
-					infos.RemoveAll(x => x.Path == path);
-					int removed = _records.RemoveAll(x => x.Path.Equals(path, _comparison));
+					infos.RemoveAll(x => x.Path.Equals(path, _comparison));
+					_records.RemoveAll(x => x.Path.Equals(path, _comparison));
 					++missingFiles;
 				}
 				catch (Exception ex)
@@ -279,44 +258,45 @@ public partial class Actor
 
 		// step: remove the most idle excess files
 		int excessFiles = 0;
-		while (infos.Count > maxFileCount || (infos.Count > 0 && infos[infos.Count - 1].Idle.TotalDays > maxFileAge))
+		while (infos.Count > maxFileCount || (infos.Count > 0 && (today - infos[infos.Count - 1].TimeN).TotalDays > maxFileAge))
 		{
 			var info = infos[infos.Count - 1];
 			infos.RemoveAt(infos.Count - 1);
-			int removed = _records.RemoveAll(x => x.Path.Equals(info.Path, _comparison));
+			_records.RemoveAll(x => x.Path.Equals(info.Path, _comparison));
 			++excessFiles;
 		}
 
-		// step: cound days excluding today and remove aged records
+		// cound recorded days excluding today
+		var days = _records
+			.Select(x => x.Time.Date)
+			.Where(x => x != today)
+			.Distinct()
+			.OrderByDescending(x => x)
+			.ToArray();
+
+		// step: remove old records
 		int agedFiles = 0;
 		int oldRecords = 0;
-		var today = DateTime.Today;
-		var days = _records.Select(x => x.Time.Date).Where(x => x != today).Distinct().OrderByDescending(x => x).ToArray();
 		if (days.Length > maxDays)
 		{
-			var zero = days[maxDays - 1];
+			var aged = days[maxDays - 1];
 
+			// remove old records keeping the last
 			foreach (var info in infos)
 			{
-				// skip single or positive
-				if (info.UseCount < 2 || info.Time1 >= zero)
-					continue;
-
-				// remove all aged records but the tail
-				int removed = _records.RemoveAll(x =>
-					x.Time < zero && x.Time != info.TimeN && x.Path.Equals(info.Path, _comparison));
+				int removed = _records.RemoveAll(
+					x => x.Time < aged && x.Time != info.TimeN && x.Path.Equals(info.Path, _comparison));
 
 				oldRecords += removed;
 			}
 
-			// set negative records to zero
+			// mark old records aged
 			foreach (var record in _records)
 			{
-				if (record.Time < zero)
+				if (record.Time < aged)
 				{
 					++agedFiles;
-					if (record.What != Record.AGED)
-						record.SetAged();
+					record.SetAged();
 				}
 			}
 		}

@@ -34,7 +34,7 @@ public class VesselTool : ModuleTool
 	static void Update(Mode mode)
 	{
 		// update
-		var actor = new Actor(mode, VesselHost.LogPath[(int)mode], true);
+		var actor = new Actor(mode, VesselHost.LogPath[(int)mode]);
 		var text = actor.Update();
 
 		// show
@@ -47,7 +47,7 @@ public class VesselTool : ModuleTool
 		var mode = (Mode)state;
 
 		// update
-		var algo = new Actor(mode, VesselHost.LogPath[(int)mode], true);
+		var algo = new Actor(mode, VesselHost.LogPath[(int)mode]);
 		algo.Update();
 	}
 
@@ -133,10 +133,12 @@ public class VesselTool : ModuleTool
 		{
 			var actor = new Actor(mode, store);
 			bool needSeparator = true;
-			foreach (var it in actor.GetHistory(DateTime.Now))
+			var now = DateTime.Now;
+			var timeN = now - limit;
+			foreach (var it in actor.GetHistory(now))
 			{
 				// separator
-				if (needSeparator && it.Idle < limit)
+				if (needSeparator && it.TimeN > timeN)
 				{
 					menu.Add(string.Empty).IsSeparator = true;
 					needSeparator = false;
@@ -159,7 +161,7 @@ public class VesselTool : ModuleTool
 			// update:
 			if (menu.Key.IsCtrl(KeyCode.R))
 			{
-				var algo = new Actor(mode, store, true);
+				var algo = new Actor(mode, store);
 				algo.Update();
 				continue;
 			}
@@ -189,15 +191,6 @@ public class VesselTool : ModuleTool
 			{
 				Far.Api.Message("File does not exist.");
 				goto show;
-			}
-
-			// if it is not logged yet, log the existing Far record(s)
-			if (!actor.IsLoggedPath(path))
-			{
-				var info = menu.Items[indexSelected].Data as Info;
-				Store.Append(store, info.Time1, Record.GOTO, path);
-				if (info.Time1 != info.TimeN)
-					Store.Append(store, info.TimeN, Record.GOTO, path);
 			}
 
 			// go to:
@@ -275,10 +268,12 @@ public class VesselTool : ModuleTool
 		{
 			var actor = new Actor(mode, store);
 			bool needSeparator = true;
-			foreach (var it in actor.GetHistory(DateTime.Now))
+			var now = DateTime.Now;
+			var timeN = now - limit;
+			foreach (var it in actor.GetHistory(now))
 			{
 				// separator
-				if (needSeparator && it.Idle < limit)
+				if (needSeparator && it.TimeN > timeN)
 				{
 					menu.Add(string.Empty).IsSeparator = true;
 					needSeparator = false;
@@ -301,7 +296,7 @@ public class VesselTool : ModuleTool
 			// update:
 			if (menu.Key.IsCtrl(KeyCode.R))
 			{
-				var algo = new Actor(mode, store, true);
+				var algo = new Actor(mode, store);
 				algo.Update();
 				continue;
 			}
@@ -325,15 +320,7 @@ public class VesselTool : ModuleTool
 			// this function logs and periodically updates
 			void LogAndUpdate()
 			{
-				// if it is not logged yet, log the existing Far record
-				if (!actor.IsLoggedPath(path))
-				{
-					var info = menu.Items[indexSelected].Data as Info;
-					Store.Append(store, info.Time1, Record.OPEN, path);
-				}
-				// then log the current record
 				Store.Append(store, DateTime.Now, Record.OPEN, path);
-
 				UpdatePeriodically(mode);
 			}
 
@@ -390,10 +377,12 @@ public class VesselTool : ModuleTool
 		{
 			var actor = new Actor(mode, store);
 			bool needSeparator = true;
-			foreach (var it in actor.GetHistory(DateTime.Now))
+			var now = DateTime.Now;
+			var timeN = now - limit;
+			foreach (var it in actor.GetHistory(now))
 			{
 				// separator
-				if (needSeparator && it.Idle < limit)
+				if (needSeparator && it.TimeN > timeN)
 				{
 					menu.Add(string.Empty).IsSeparator = true;
 					needSeparator = false;
@@ -416,7 +405,7 @@ public class VesselTool : ModuleTool
 			// update:
 			if (menu.Key.IsCtrl(KeyCode.R))
 			{
-				var algo = new Actor(mode, store, true);
+				var algo = new Actor(mode, store);
 				algo.Update();
 				continue;
 			}
@@ -453,15 +442,7 @@ public class VesselTool : ModuleTool
 				My.BadWindow();
 			}
 
-			// if it is not logged yet, log the existing Far record
-			if (!actor.IsLoggedPath(path))
-			{
-				var info = menu.Items[indexSelected].Data as Info;
-				Store.Append(store, info.Time1, Record.OPEN, path);
-			}
-			// then log the current record
 			Store.Append(store, DateTime.Now, Record.OPEN, path);
-
 			UpdatePeriodically(mode);
 			return;
 		}

@@ -9,22 +9,24 @@ namespace Vessel;
 
 class InfoComparer : IComparer<Info>
 {
-	readonly TimeSpan _limit0;
-	public InfoComparer(TimeSpan limit0)
+	readonly DateTime _old;
+
+	public InfoComparer(DateTime old)
 	{
-		_limit0 = limit0;
+		_old = old;
 	}
+
 	public int Compare(Info left, Info right)
 	{
 		// recently used
-		var recent1 = left.Idle < _limit0;
-		var recent2 = right.Idle < _limit0;
+		var recent1 = left.TimeN > _old;
+		var recent2 = right.TimeN > _old;
 		if (recent1 && !recent2)
 			return -1;
 		if (!recent1 && recent2)
 			return 1;
 		if (recent1)
-			return left.Idle.CompareTo(right.Idle);
+			return right.TimeN.CompareTo(left.TimeN);
 
 		// evidence
 		var evidence1 = left.Evidence;
@@ -35,6 +37,6 @@ class InfoComparer : IComparer<Info>
 			return 1;
 
 		// times
-		return left.Idle.CompareTo(right.Idle);
+		return right.TimeN.CompareTo(left.TimeN);
 	}
 }

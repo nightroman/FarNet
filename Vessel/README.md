@@ -90,7 +90,7 @@ Module settings: `[F11] \ FarNet \ Settings \ Vessel`
 
     The first group span in hours. It defines the most recently used items.
     Items are sorted by last used times, like in the usual history.
-    The default and recommended value is 2 hours.
+    The default is 2 hours.
 
 *********************************************************************
 ## Menu commands
