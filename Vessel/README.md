@@ -4,7 +4,7 @@
 # Vessel
 
 Vessel is the FarNet module for Far Manager.\
-It provides smart history of files, folders, commands.
+It provides enhanced history of files, folders, commands.
 
 **Module**
 
@@ -39,20 +39,22 @@ Wiki: <https://github.com/nightroman/FarNet/wiki/Vessel>
 
 Features
 
- * Smart history of files, folders, commands
+ * Enhanced history of files, folders, commands
  * Ready for typing incremental filter
  * See also history lists help (F1)
 
-The history logs are updated on openings from the smart history lists.
+Vessel history lists are Far Manager histories enhanced by the tracked items.
+Tracked items are usually created automatically on picking not recent items.
+Tracked items are stored in automatically maintained log files.
 
-The smart history lists show items in heuristically improved order. Recently
-used items are sorted by last times, as usual. Items not used for a while are
-sorted by ranks. Ranks are based on various item patterns found in the history.
+Vessel lists order items by groups and times. Group 0 includes recently used
+items, tracked and history. Group 1 includes only tracked used items.
+Group 2 includes tracked aged and not recently used history items.
 
-Background history update and cleaning starts periodically after selecting
-items from smart lists. Manual updates from the menu are not necessary.
+Background maintenance of logs starts periodically after picking items from
+lists. Manual updating from menu or lists is available but not necessary.
 
-History log files:
+Tracked items log files:
 
 - Commands: *%FARLOCALPROFILE%\FarNet\Vessel\VesselCommands.txt*
 - Folders: *%FARLOCALPROFILE%\FarNet\Vessel\VesselFolders.txt*
@@ -67,13 +69,13 @@ Module settings: `[F11] \ FarNet \ Settings \ Vessel`
 
 - `MaximumDayCount`
 
-    Maximum number of days for keeping all item usage events.
-    On exceeding aged items keep their last events only.
+    Maximum number of days for keeping idle tracked items as used.
+    Older items remain tracked but become aged.
     The default is 42 days.
 
 - `MaximumFileAge`
 
-    Maximum age of tracked items.
+    Maximum age of tracked aged items.
     The default is 365 days.
 
 - `MaximumFileCount`
@@ -83,14 +85,26 @@ Module settings: `[F11] \ FarNet \ Settings \ Vessel`
 
 - `MaximumFileCountFromFar`
 
-    Maximum number of last items taken from far history.
+    Maximum number of items taken from far history.
     The default is 1000 items.
 
 - `Limit0`
 
-    The first group span in hours. It defines the most recently used items.
-    Items are sorted by last used times, like in the usual history.
+    The time span in hours which defines recently used items.
+    Items are sorted by times, like in the usual history.
     The default is 2 hours.
+
+- `ChoiceLog`
+
+    Specifies the optional log file of choices in TSV format.
+    Only choices of not recent items are logged.
+    Recent items have the same `Time` as `Rank`.
+    Use this log to see how Vessel works.
+
+    - `Time` ~ index in the time sorted list
+    - `Rank` ~ index in the rank sorted list
+    - `Mode` ~ File, Folder, Command
+    - `Path` ~ item path or text
 
 *********************************************************************
 ## Menu commands
@@ -99,24 +113,25 @@ Module settings: `[F11] \ FarNet \ Settings \ Vessel`
 
 The menu is opened from almost any area: `[F11] \ Vessel`
 
-**Smart files**
+**Files**
 
-Opens the smart file history list.
+Opens the file history list.
 See [File history](#file-history)
 
-**Smart folders**
+**Folders**
 
-Opens the smart folders history list.
+Opens the folders history list.
 See [Folder history](#folder-history)
 
-**Smart commands**
+**Commands**
 
-Opens the smart command history list.
+Opens the command history list.
 See [Command history](#command-history)
 
-**Update records**
+**Update logs**
 
-Removes missing and excessive records from the logs.
+Removes missing paths and excessive records from logs.
+Marks used tracked items as aged when they get old.
 The results are printed to the console.
 
 *********************************************************************
@@ -124,7 +139,8 @@ The results are printed to the console.
 
 [Contents]
 
-The file history list is opened by the menu command *Smart history*.
+The file history list is opened by the menu *Files*.
+Tracked items are shown with ticks.
 
 Keys and actions:
 
@@ -157,9 +173,13 @@ Keys and actions:
     Updates the history log.
     It removes missing paths and excessive records.
 
+- `[Del]`
+
+    Stops or starts the current item tracking.
+
 - `[ShiftDel]` (Panels, Editor, Viewer)
 
-    Removes the current file from history.
+    Removes the current item from log and history.
 
 - [List menu keys]
 
@@ -168,7 +188,8 @@ Keys and actions:
 
 [Contents]
 
-The folder list is opened by the menu command *Smart folders*.
+The folder list is opened by the menu *Folders*.
+Tracked items are shown with ticks.
 
 Keys and actions:
 
@@ -186,9 +207,13 @@ Keys and actions:
     Updates the folders log.
     It removes missing paths and excessive records.
 
+- `[Del]`
+
+    Stops or starts the current item tracking.
+
 - `[ShiftDel]` (Panels)
 
-    Removes the current folder from history.
+    Removes the current item from log and history.
 
 - [List menu keys]
 
@@ -197,7 +222,8 @@ Keys and actions:
 
 [Contents]
 
-The command list is opened by the menu command *Smart commands*.
+The command list is opened by the menu *Commands*.
+Tracked items are shown with ticks.
 
 Keys and actions:
 
@@ -214,9 +240,13 @@ Keys and actions:
     Updates the command log.
     It removes excessive records.
 
+- `[Del]`
+
+    Stops or starts the current item tracking.
+
 - `[ShiftDel]` (Panels)
 
-    Removes the current command from history.
+    Removes the current item from log and history.
 
 - [List menu keys]
 

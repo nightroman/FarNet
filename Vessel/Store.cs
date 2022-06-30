@@ -46,7 +46,6 @@ public static class Store
 			string line;
 			int index = -1;
 			var sep = new char[] { '\t' };
-			var trim = new char[] { '"', ' ' };
 			while (null != (line = reader.ReadLine()))
 			{
 				// skip header
@@ -58,9 +57,9 @@ public static class Store
 					// read and parse the record
 					var values = line.Split(sep);
 					res.Add(new Record(
-						DateTime.Parse(values[0].Trim(trim)),
-						values[1].Trim(trim),
-						values[2].Trim(trim)));
+						DateTime.Parse(values[0]),
+						values[1],
+						values[2]));
 				}
 				catch (Exception ex)
 				{

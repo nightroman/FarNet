@@ -7,15 +7,17 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Vessel;
 
 public partial class Actor
 {
-	readonly static TimeSpan _smallSpan = TimeSpan.FromSeconds(3);
 	readonly Mode _mode;
 	readonly string _store;
+	readonly string _choiceLog;
 	readonly TimeSpan _limit0;
+	readonly int _MaximumFileCountFromFar;
 	readonly StringComparer _comparer;
 	readonly StringComparison _comparison;
 
@@ -55,136 +57,113 @@ public partial class Actor
 		_mode = mode;
 		_store = string.IsNullOrEmpty(store) ? VesselHost.LogPath[(int)mode] : store;
 		_limit0 = TimeSpan.FromHours(settings.Limit0);
+		_MaximumFileCountFromFar = settings.MaximumFileCountFromFar;
+
 		_records = Store.Read(_store).ToList();
+
+		_choiceLog = Environment.ExpandEnvironmentVariables(settings.ChoiceLog ?? string.Empty);
 	}
 
-	static void AddFarHistory(Dictionary<string, Info> infos, DateTime old, HistoryKind historyKind)
+	public Mode Mode => _mode;
+
+	public void RemoveRecordFromStore(string path)
 	{
-		var items = Far.Api.History.GetHistory(new GetHistoryArgs { Kind = historyKind });
-		foreach (var item in items)
-		{
-			if (infos.TryGetValue(item.Name, out Info info))
-			{
-				// override if recent
-				if (item.Time > old && item.Time - info.TimeN > _smallSpan)
-					infos[item.Name] = new Info { Path = item.Name, TimeN = item.Time };
-			}
-			else
-			{
-				infos.Add(item.Name, new Info { Path = item.Name, TimeN = item.Time });
-			}
-		}
+		Store.Remove(_store, path, _comparison);
 	}
 
-	/// <summary>
-	/// Gets the ordered history info list.
-	/// </summary>
-	/// <param name="now">The time to generate the list for, normally the current.</param>
-	public IEnumerable<Info> GetHistory(DateTime now)
+	public void AppendRecordToStore(string what, string path)
 	{
-		var infos = CollectInfo(now, false);
-		var old = now - _limit0;
+		Store.Append(_store, DateTime.Now, what, path);
+	}
 
-		// add missing and tweak later records
+	HistoryInfo[] GetFarHistory()
+	{
 		switch (_mode)
 		{
 			case Mode.File:
-				// Far editor history
-				AddFarHistory(infos, old, HistoryKind.Editor);
-
-				// Far viewer history
-				AddFarHistory(infos, old, HistoryKind.Viewer);
-				break;
+				// ignore viewer (little value, not nice merge) -> feature: viewer does not affect our lists
+				return Far.Api.History.GetHistory(new GetHistoryArgs { Kind = HistoryKind.Editor, Last = _MaximumFileCountFromFar });
 
 			case Mode.Folder:
-				// Far folder history
-				AddFarHistory(infos, old, HistoryKind.Folder);
-				break;
+				return Far.Api.History.GetHistory(new GetHistoryArgs { Kind = HistoryKind.Folder, Last = _MaximumFileCountFromFar });
 
 			case Mode.Command:
-				// Far command history
-				AddFarHistory(infos, old, HistoryKind.Command);
-				break;
+				return Far.Api.History.GetHistory(new GetHistoryArgs { Kind = HistoryKind.Command, Last = _MaximumFileCountFromFar });
 		}
-
-		return infos.Values.OrderByDescending(x => x, new InfoComparer(old));
+		throw null;
 	}
 
 	/// <summary>
-	/// Collects the unordered history info.
+	/// Adds missing and tweaks existing by later records from history.
 	/// </summary>
-	public Dictionary<string, Info> CollectInfo(DateTime now, bool skipNewAndAged, bool skipEvidences = false)
+	void MergeFarHistory(Dictionary<string, Record> map)
 	{
-		var old = now - _limit0;
-		var map = new Dictionary<string, Info>(_comparer);
+		var farHistory = GetFarHistory();
+		foreach (var item in farHistory)
+		{
+			if (map.TryGetValue(item.Name, out Record info))
+			{
+				if (item.Time > info.Time)
+					info.Time = item.Time;
+			}
+			else
+			{
+				map.Add(item.Name, new Record(item.Time, string.Empty, item.Name));
+			}
+		}
+	}
 
+	/// <summary>
+	/// Gets the ordered history list.
+	/// </summary>
+	public IEnumerable<Record> GetHistory(DateTime old)
+	{
+		var map = CollectLatestRecords();
+		MergeFarHistory(map);
+		return map.Values.OrderBy(x => x, new Record.RankComparer(old));
+	}
+
+	/// <summary>
+	/// Collects the latest records map by paths.
+	/// </summary>
+	public Dictionary<string, Record> CollectLatestRecords()
+	{
+		var map = new Dictionary<string, Record>(_comparer);
+
+		// from new to old (normally should be)
 		for (int iRecord = _records.Count - 1; iRecord >= 0; --iRecord)
 		{
-			// skip data from the future
 			var record = _records[iRecord];
-			if (record.Time > now)
-				continue;
-
-			// skip added and processed path
-			if (map.ContainsKey(record.Path))
-				continue;
-
-			// skip recent and aged
-			if (skipNewAndAged && (record.Time > old || record.What == Record.AGED))
-				continue;
-
-			// init info with the newest record
-			var info = new Info
-			{
-				Path = record.Path,
-				TimeN = record.Time,
-			};
-
-			// add now before skips
-			map.Add(record.Path, info);
-
-			// skip evidences, note that aged items have no more records
-			if (skipEvidences || record.What == Record.AGED)
-				continue;
-
-			// collect the info for this file
-			CollectEvidence(info, _records, iRecord - 1, now, _comparison);
+			if (!map.ContainsKey(record.Path))
+				map.Add(record.Path, record);
 		}
 
 		return map;
 	}
 
-	/// <summary>
-	/// Collects info for a file.
-	/// </summary>
-	static void CollectEvidence(Info info, IList<Record> records, int start, DateTime now, StringComparison comparison)
+	// It returns if the log is not set. Otherwise it simply starts a task.
+	// Requires: the selected index is ready to use as the choice by rank.
+	internal void LogChoice(IEnumerable<Record> records, int indexSelected, string path)
 	{
-		var lastTime = info.TimeN;
-		var age = now - lastTime;
-		var (min, max) = Info.GetSpanMinMax(age);
+		if (string.IsNullOrWhiteSpace(_choiceLog))
+			return;
 
-		// from new to old
-		for (int iRecord = start; iRecord >= 0; --iRecord)
+		Task.Run(() =>
 		{
-			// skip different files
-			var record = records[iRecord];
-			if (!record.Path.Equals(info.Path, comparison))
-				continue;
+			if (!File.Exists(_choiceLog))
+				File.AppendAllText(_choiceLog, "Time\tRank\tMode\tPath\r\n");
 
-			// test for evidence
-			var idle = lastTime - record.Time;
-			if (idle > min && idle < max)
-			{
-				info.Evidence = info.CalculateEvidence(1, age);
-				return;
-			}
+			var list = records.ToList();
+			var choiceByRank = list.Count - 1 - indexSelected;
 
-			// update the last time
-			lastTime = record.Time;
-		}
+			list.Sort(new Record.TimeComparer());
+			var choiceByTime = list.Count - 1 - list.FindLastIndex(x => x.Path.Equals(path, _comparison));
+
+			File.AppendAllText(_choiceLog, $"{choiceByTime}\t{choiceByRank}\t{_mode}\t{path}\r\n");
+		});
 	}
 
-	public string Update()
+	internal string Update()
 	{
 		var today = DateTime.Today;
 		var settings = Settings.Default.GetData();
@@ -200,8 +179,8 @@ public partial class Actor
 		if (maxFileAge < maxDays)
 			maxFileAge = maxDays;
 
+		// save last update time
 		var now = DateTime.Now;
-
 		var workings = new Workings();
 		var works = workings.GetData();
 		switch (_mode)
@@ -218,20 +197,29 @@ public partial class Actor
 		}
 		workings.Save();
 
-		int recordCount = _records.Count;
+		// collect and set latest records sorted by time
+		{
+			var map = CollectLatestRecords();
+			_records.Clear();
+			_records.AddRange(map.Values.OrderBy(x => x.Time));
+		}
 
-		// ensure records sorted by time, just in case the log was edited manually
-		_records.Sort(new Record.Comparer());
+		// step: remove untracked records
+		{
+			for (int iRecord = _records.Count - 1; iRecord >= 0; --iRecord)
+			{
+				if (!_records[iRecord].IsTracked && (now - _records[iRecord].Time) > _limit0)
+					_records.RemoveAt(iRecord);
+			}
+		}
 
-		// collect and sort by time from new to old
-		var infos = CollectInfo(DateTime.Now, false, true).Values.OrderByDescending(x => x.TimeN).ToList();
-
-		// step: remove missing files from infos and records
+		// step: remove missing file records
 		int missingFiles = 0;
 		if (_mode == Mode.File || _mode == Mode.Folder)
 		{
-			foreach (var path in infos.Select(x => x.Path).ToArray())
+			for (int iRecord = _records.Count - 1; iRecord >= 0; --iRecord)
 			{
+				var path = _records[iRecord].Path;
 				try
 				{
 					if (_mode == Mode.File)
@@ -245,9 +233,8 @@ public partial class Actor
 							continue;
 					}
 
-					infos.RemoveAll(x => x.Path.Equals(path, _comparison));
-					_records.RemoveAll(x => x.Path.Equals(path, _comparison));
 					++missingFiles;
+					_records.RemoveAt(iRecord);
 				}
 				catch (Exception ex)
 				{
@@ -256,64 +243,49 @@ public partial class Actor
 			}
 		}
 
-		// step: remove the most idle excess files
+		// step: remove the oldest excess files
 		int excessFiles = 0;
-		while (infos.Count > maxFileCount || (infos.Count > 0 && (today - infos[infos.Count - 1].TimeN).TotalDays > maxFileAge))
+		while (_records.Count > maxFileCount || (_records.Count > 0 && (today - _records[0].Time).TotalDays > maxFileAge))
 		{
-			var info = infos[infos.Count - 1];
-			infos.RemoveAt(infos.Count - 1);
-			_records.RemoveAll(x => x.Path.Equals(info.Path, _comparison));
 			++excessFiles;
+			_records.RemoveAt(0);
 		}
 
-		// cound recorded days excluding today
-		var days = _records
-			.Select(x => x.Time.Date)
-			.Where(x => x != today)
-			.Distinct()
-			.OrderByDescending(x => x)
-			.ToArray();
-
-		// step: remove old records
+		// step: mark aged records
 		int agedFiles = 0;
-		int oldRecords = 0;
-		if (days.Length > maxDays)
+		int newAgedFiles = 0;
+		var timeAged = today.AddDays(- maxDays);
+		foreach (var record in _records)
 		{
-			var aged = days[maxDays - 1];
-
-			// remove old records keeping the last
-			foreach (var info in infos)
+			if (record.Time < timeAged)
 			{
-				int removed = _records.RemoveAll(
-					x => x.Time < aged && x.Time != info.TimeN && x.Path.Equals(info.Path, _comparison));
-
-				oldRecords += removed;
-			}
-
-			// mark old records aged
-			foreach (var record in _records)
-			{
-				if (record.Time < aged)
+				++agedFiles;
+				if (record.What != Record.AGED)
 				{
-					++agedFiles;
-					record.SetAged();
+					++newAgedFiles;
+					record.What = Record.AGED;
 				}
 			}
+			else
+			{
+				if (record.What == Record.AGED)
+					record.What = Record.USED;
+			}
 		}
 
-		// save sorted by time
-		Store.Write(_store, _records.OrderBy(x => x.Time));
+		// save updated records
+		Store.Write(_store, _records);
 
 		return string.Format(@"
-Missing items : {0,4}    Aged items    : {3,4}
-Excess items  : {1,4}    Used items    : {4,4}
-Aged records  : {2,4}    Records       : {5,4}
+Removed missing : {0,4}    Aged items    : {3,4}
+Removed excess  : {1,4}    Used items    : {4,4}
+Marked aged     : {2,4}    All items     : {5,4}
 ",
 		missingFiles,
 		excessFiles,
-		oldRecords,
+		newAgedFiles,
 		agedFiles,
-		infos.Count - agedFiles,
+		_records.Count - agedFiles,
 		_records.Count);
 	}
 }

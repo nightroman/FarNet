@@ -4,9 +4,10 @@
 
 using FarNet;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Threading;
+using System.Threading.Tasks;
 
 namespace Vessel;
 
@@ -19,36 +20,28 @@ public class VesselTool : ModuleTool
 		IMenu menu = Far.Api.CreateMenu();
 		menu.Title = My.Name;
 		menu.HelpTopic = My.HelpTopic("menu-commands");
-		menu.Add("&1. Smart files").Click += delegate { ShowFiles(); };
-		menu.Add("&2. Smart folders").Click += delegate { ShowFolders(); };
-		menu.Add("&3. Smart commands").Click += delegate { ShowCommands(); };
-		menu.Add("&0. Update records").Click += delegate
+		menu.Add("&1. Files").Click += delegate { ShowFiles(); };
+		menu.Add("&2. Folders").Click += delegate { ShowFolders(); };
+		menu.Add("&3. Commands").Click += delegate { ShowCommands(); };
+		menu.Add("&0. Update logs").Click += delegate
 		{
-			Update(Mode.File);
-			Update(Mode.Folder);
-			Update(Mode.Command);
+			UpdateInteractively(Mode.File);
+			UpdateInteractively(Mode.Folder);
+			UpdateInteractively(Mode.Command);
 		};
 		menu.Show();
 	}
 
-	static void Update(Mode mode)
+	static void BadWindow() => Far.Api.Message("Unexpected window.", My.Name);
+
+	static void UpdateInteractively(Mode mode)
 	{
 		// update
-		var actor = new Actor(mode, VesselHost.LogPath[(int)mode]);
-		var text = actor.Update();
+		var text = new Actor(mode).Update();
 
 		// show
 		Far.Api.UI.WriteLine($"Update {mode}", ConsoleColor.Cyan);
 		Far.Api.UI.WriteLine(text);
-	}
-
-	static void UpdateWork(object state)
-	{
-		var mode = (Mode)state;
-
-		// update
-		var algo = new Actor(mode, VesselHost.LogPath[(int)mode]);
-		algo.Update();
 	}
 
 	static void UpdatePeriodically(Mode mode)
@@ -92,8 +85,8 @@ public class VesselTool : ModuleTool
 		}
 		workings.Save();
 
-		// start work
-		ThreadPool.QueueUserWorkItem(UpdateWork, mode);
+		// start
+		Task.Run(() => new Actor(mode).Update());
 	}
 
 	static IListMenu CreateListMenu()
@@ -105,19 +98,117 @@ public class VesselTool : ModuleTool
 		return menu;
 	}
 
+	class Context
+	{
+		public Actor Actor { get; }
+		public Record SelectedRecord { get; private set; }
+		public string SelectedPath => SelectedRecord.Path;
+
+		readonly IEnumerable<Record> _records;
+		readonly IListMenu _menu;
+		int _indexSeparator;
+		int _indexSelected;
+
+		public Context(IListMenu menu, Mode mode, DateTime old)
+		{
+			Actor = new Actor(mode);
+			_menu = menu;
+			_records = Actor.GetHistory(old);
+
+			PopulateMenu(old);
+		}
+
+		void PopulateMenu(DateTime old)
+		{
+			_menu.Items.Clear();
+			_indexSeparator = int.MaxValue;
+			foreach (var record in _records)
+			{
+				// separator
+				if (_indexSeparator == int.MaxValue && record.Time > old)
+				{
+					_indexSeparator = _menu.Items.Count;
+					_menu.Add(string.Empty).IsSeparator = true;
+				}
+
+				// item
+				var item = _menu.Add(record.Path);
+				item.Data = record;
+				if (record.What.Length > 0)
+					item.Checked = true;
+			}
+		}
+
+		public bool Show()
+		{
+			if (!_menu.Show() || _menu.Selected < 0)
+				return false;
+
+			_indexSelected = _menu.Selected;
+			SelectedRecord = (Record)_menu.SelectedData;
+			return true;
+		}
+
+		public void StartUpdate()
+		{
+			// capture
+			var path = SelectedRecord.Path;
+			var what = _indexSelected < _indexSeparator || SelectedRecord.IsTracked ? Record.USED : string.Empty;
+
+			// we are interested only in older cases, so the selected index is valid and used as is
+			if (_indexSelected < _indexSeparator)
+				Actor.LogChoice(_records, _indexSelected, path);
+
+			Tasks.Job(() =>
+			{
+				Actor.AppendRecordToStore(what, path);
+
+				UpdatePeriodically(Actor.Mode);
+			});
+		}
+
+		public void ToggleTracking()
+		{
+			if (SelectedRecord.IsTracked)
+			{
+				if (0 == Far.Api.Message(SelectedRecord.Path, "Stop tracking?", MessageOptions.OkCancel))
+				{
+					Actor.RemoveRecordFromStore(SelectedRecord.Path);
+				}
+			}
+			else
+			{
+				if (0 == Far.Api.Message(SelectedRecord.Path, "Start tracking?", MessageOptions.OkCancel))
+				{
+					Actor.AppendRecordToStore(Record.USED, SelectedRecord.Path);
+				}
+			}
+		}
+
+		public bool DiscardRecordAndHistory(string macro)
+		{
+			if (0 != Far.Api.Message(SelectedRecord.Path, "Remove from log and history?", MessageOptions.OkCancel))
+				return false;
+
+			Actor.RemoveRecordFromStore(SelectedRecord.Path);
+			Far.Api.PostMacro(macro);
+			return true;
+		}
+	}
+
 	static void ShowFiles()
 	{
 		var settings = Settings.Default.GetData();
 
 		var mode = Mode.File;
-		var store = VesselHost.LogPath[(int)mode];
 		var limit = TimeSpan.FromHours(settings.Limit0);
 
 		var menu = CreateListMenu();
 		menu.HelpTopic = My.HelpTopic("file-history");
-		menu.Title = $"Smart files";
+		menu.Title = $"Files";
 		menu.TypeId = new Guid("23b390e8-d91d-4ff1-a9ab-de0ceffdc0ac");
 
+		menu.AddKey(KeyCode.Delete, ControlKeyStates.None);
 		menu.AddKey(KeyCode.Enter, ControlKeyStates.LeftCtrlPressed);
 		menu.AddKey(KeyCode.Enter, ControlKeyStates.ShiftPressed);
 		menu.AddKey(KeyCode.F3);
@@ -129,86 +220,62 @@ public class VesselTool : ModuleTool
 		if (area == WindowKind.Panels || area == WindowKind.Editor || area == WindowKind.Viewer)
 			menu.AddKey(KeyCode.Delete, ControlKeyStates.ShiftPressed);
 
-		for (; ; menu.Items.Clear())
+		for (; ; )
 		{
-			var actor = new Actor(mode, store);
-			bool needSeparator = true;
-			var now = DateTime.Now;
-			var timeN = now - limit;
-			foreach (var it in actor.GetHistory(now))
-			{
-				// separator
-				if (needSeparator && it.TimeN > timeN)
-				{
-					menu.Add(string.Empty).IsSeparator = true;
-					needSeparator = false;
-				}
-
-				// item
-				var item = menu.Add(it.Path);
-				item.Data = it;
-				if (it.Evidence > 0)
-					item.Checked = true;
-			}
+			var old = DateTime.Now - limit;
+			var context = new Context(menu, mode, old);
 
 		show:
 
-			//! show and check the result or after Esc index may be > 0
-			//! e.g. ShiftDel the last record + Esc == index out of range
-			if (!menu.Show() || menu.Selected < 0)
+			if (!context.Show())
 				return;
 
 			// update:
 			if (menu.Key.IsCtrl(KeyCode.R))
 			{
-				var algo = new Actor(mode, store);
-				algo.Update();
+				context.Actor.Update();
 				continue;
 			}
 
-			// the file
-			int indexSelected = menu.Selected;
-			string path = menu.Items[indexSelected].Text;
+			// toggle tracking:
+			if (menu.Key.Is(KeyCode.Delete))
+			{
+				context.ToggleTracking();
+				continue;
+			}
 
-			// delete:
+			// discard:
 			if (menu.Key.IsShift(KeyCode.Delete))
 			{
-				if (My.AskDiscard(path))
-				{
-					Store.Remove(store, path, StringComparison.OrdinalIgnoreCase);
-
-					// Known far history items: Edit: PATH | Edit:-PATH | View: PATH | Ext.: ...
-					// Remove 1-3 and 4 if 4 ends with PATH (note, proper commands use "PATH", i.e. do not end with PATH)
-					Far.Api.PostMacro($"Keys 'AltF11'; while Menu.Select({Lua.StringLiteral(path)}, 2) > 0 do Keys 'ShiftDel' end; if Area.Menu then Keys 'Esc' end");
-					return; //!
-				}
-
-				goto show;
+				// Known far history items: Edit: PATH | Edit:-PATH | View: PATH | Ext.: ...
+				// Remove 1-3 and 4 if 4 ends with PATH (note, proper commands use "PATH", i.e. do not end with PATH)
+				if (context.DiscardRecordAndHistory(
+					$"Keys 'AltF11'; while Menu.Select({Lua.StringLiteral(context.SelectedPath)}, 2) > 0 do Keys 'ShiftDel' end; if Area.Menu then Keys 'Esc' end"))
+					return;
+				else
+					goto show;
 			}
 
 			// missing?
-			if (!File.Exists(path))
+			if (!File.Exists(context.SelectedPath))
 			{
 				Far.Api.Message("File does not exist.");
 				goto show;
 			}
 
+			// selected!
+			context.StartUpdate();
+
 			// go to:
 			if (menu.Key.IsCtrl(KeyCode.Enter))
 			{
-				Far.Api.Panel.GoToPath(path);
-				Store.Append(store, DateTime.Now, Record.GOTO, path);
+				Far.Api.Panel.GoToPath(context.SelectedPath);
 			}
 			// view:
 			else if (menu.Key.VirtualKeyCode == KeyCode.F3)
 			{
 				IViewer viewer = Far.Api.CreateViewer();
-				viewer.FileName = path;
-
-				viewer.Closed += delegate
-				{
-					Store.Append(store, DateTime.Now, Record.VIEW, path);
-				};
+				viewer.FileName = context.SelectedPath;
 
 				if (menu.Key.IsCtrl())
 				{
@@ -222,12 +289,7 @@ public class VesselTool : ModuleTool
 			else
 			{
 				IEditor editor = Far.Api.CreateEditor();
-				editor.FileName = path;
-
-				editor.Closed += delegate
-				{
-					Store.Append(store, DateTime.Now, Record.EDIT, path);
-				};
+				editor.FileName = context.SelectedPath;
 
 				if (menu.Key.IsCtrl(KeyCode.F4))
 				{
@@ -241,7 +303,6 @@ public class VesselTool : ModuleTool
 					goto show;
 			}
 
-			UpdatePeriodically(mode);
 			return;
 		}
 	}
@@ -251,78 +312,54 @@ public class VesselTool : ModuleTool
 		var settings = Settings.Default.GetData();
 
 		var mode = Mode.Folder;
-		var store = VesselHost.LogPath[(int)mode];
 		var limit = TimeSpan.FromHours(settings.Limit0);
 
 		var menu = CreateListMenu();
 		menu.HelpTopic = My.HelpTopic("folder-history");
-		menu.Title = $"Smart folders";
+		menu.Title = $"Folders";
 		menu.TypeId = new Guid("ee448906-ec7d-4ea7-bc2e-848f48cddd39");
 
-		menu.AddKey(KeyCode.R, ControlKeyStates.LeftCtrlPressed);
+		menu.AddKey(KeyCode.Delete, ControlKeyStates.None);
 		menu.AddKey(KeyCode.Enter, ControlKeyStates.ShiftPressed);
+		menu.AddKey(KeyCode.R, ControlKeyStates.LeftCtrlPressed);
 		if (Far.Api.Window.Kind == WindowKind.Panels)
 			menu.AddKey(KeyCode.Delete, ControlKeyStates.ShiftPressed);
 
-		for (; ; menu.Items.Clear())
+		for (; ; )
 		{
-			var actor = new Actor(mode, store);
-			bool needSeparator = true;
-			var now = DateTime.Now;
-			var timeN = now - limit;
-			foreach (var it in actor.GetHistory(now))
-			{
-				// separator
-				if (needSeparator && it.TimeN > timeN)
-				{
-					menu.Add(string.Empty).IsSeparator = true;
-					needSeparator = false;
-				}
-
-				// item
-				var item = menu.Add(it.Path);
-				item.Data = it;
-				if (it.Evidence > 0)
-					item.Checked = true;
-			}
+			var context = new Context(menu, mode, DateTime.Now - limit);
 
 		show:
 
-			//! show and check the result or after Esc index may be > 0
-			//! e.g. ShiftDel the last record + Esc == index out of range
-			if (!menu.Show() || menu.Selected < 0)
+			if (!context.Show())
 				return;
 
 			// update:
 			if (menu.Key.IsCtrl(KeyCode.R))
 			{
-				var algo = new Actor(mode, store);
-				algo.Update();
+				context.Actor.Update();
 				continue;
 			}
 
-			// the folder
-			int indexSelected = menu.Selected;
-			string path = menu.Items[indexSelected].Text;
+			// toggle tracking:
+			if (menu.Key.Is(KeyCode.Delete))
+			{
+				context.ToggleTracking();
+				continue;
+			}
 
-			// delete:
+			// discard:
 			if (menu.Key.IsShift(KeyCode.Delete))
 			{
-				if (My.AskDiscard(path))
-				{
-					Store.Remove(store, path, StringComparison.OrdinalIgnoreCase);
-					Far.Api.PostMacro($"Keys 'AltF12'; if Menu.Select({Lua.StringLiteral(path)}) > 0 then Keys 'ShiftDel' end; if Area.Menu then Keys 'Esc' end");
-					return; //!
-				}
-				goto show;
+				if (context.DiscardRecordAndHistory(
+					$"Keys 'AltF12'; if Menu.Select({Lua.StringLiteral(context.SelectedPath)}) > 0 then Keys 'ShiftDel' end; if Area.Menu then Keys 'Esc' end"))
+					return;
+				else
+					goto show;
 			}
 
-			// this function logs and periodically updates
-			void LogAndUpdate()
-			{
-				Store.Append(store, DateTime.Now, Record.OPEN, path);
-				UpdatePeriodically(mode);
-			}
+			// selected!
+			context.StartUpdate();
 
 			// open in new console: active panel = selected path, passive panel = current path
 			if (menu.Key.IsShift(KeyCode.Enter))
@@ -330,9 +367,8 @@ public class VesselTool : ModuleTool
 				Process.Start(new ProcessStartInfo()
 				{
 					FileName = $"{Environment.GetEnvironmentVariable("FARHOME")}\\Far.exe",
-					Arguments = $"\"{path}\" \"{Far.Api.CurrentDirectory}\""
+					Arguments = $"\"{context.SelectedPath}\" \"{Far.Api.CurrentDirectory}\""
 				});
-				LogAndUpdate();
 				return;
 			}
 
@@ -343,14 +379,13 @@ public class VesselTool : ModuleTool
 			// set selected path
 			if (Far.Api.Window.Kind == WindowKind.Panels)
 			{
-				Far.Api.Panel.CurrentDirectory = path;
+				Far.Api.Panel.CurrentDirectory = context.SelectedPath;
 			}
 			else
 			{
-				My.BadWindow();
+				BadWindow();
 			}
 
-			LogAndUpdate();
 			return;
 		}
 	}
@@ -360,71 +395,54 @@ public class VesselTool : ModuleTool
 		var settings = Settings.Default.GetData();
 
 		var mode = Mode.Command;
-		var store = VesselHost.LogPath[(int)mode];
 		var limit = TimeSpan.FromHours(settings.Limit0);
 
 		var menu = CreateListMenu();
 		menu.HelpTopic = My.HelpTopic("command-history");
-		menu.Title = $"Smart commands";
+		menu.Title = $"Commands";
 		menu.TypeId = new Guid("1baa6870-4d49-40e5-8d20-19ff4b8ac5e6");
 
-		menu.AddKey(KeyCode.R, ControlKeyStates.LeftCtrlPressed);
+		menu.AddKey(KeyCode.Delete, ControlKeyStates.None);
 		menu.AddKey(KeyCode.Enter, ControlKeyStates.LeftCtrlPressed);
+		menu.AddKey(KeyCode.R, ControlKeyStates.LeftCtrlPressed);
 		if (Far.Api.Window.Kind == WindowKind.Panels)
 			menu.AddKey(KeyCode.Delete, ControlKeyStates.ShiftPressed);
 
-		for (; ; menu.Items.Clear())
+		for (; ; )
 		{
-			var actor = new Actor(mode, store);
-			bool needSeparator = true;
-			var now = DateTime.Now;
-			var timeN = now - limit;
-			foreach (var it in actor.GetHistory(now))
-			{
-				// separator
-				if (needSeparator && it.TimeN > timeN)
-				{
-					menu.Add(string.Empty).IsSeparator = true;
-					needSeparator = false;
-				}
-
-				// item
-				var item = menu.Add(it.Path);
-				item.Data = it;
-				if (it.Evidence > 0)
-					item.Checked = true;
-			}
+			var context = new Context(menu, mode, DateTime.Now - limit);
 
 		show:
 
-			//! show and check the result or after Esc index may be > 0
-			//! e.g. ShiftDel the last record + Esc == index out of range
-			if (!menu.Show() || menu.Selected < 0)
+			if (!context.Show())
 				return;
 
 			// update:
 			if (menu.Key.IsCtrl(KeyCode.R))
 			{
-				var algo = new Actor(mode, store);
-				algo.Update();
+				context.Actor.Update();
 				continue;
 			}
 
-			// the command
-			int indexSelected = menu.Selected;
-			string path = menu.Items[indexSelected].Text;
+			// toggle tracking:
+			if (menu.Key.Is(KeyCode.Delete))
+			{
+				context.ToggleTracking();
+				continue;
+			}
 
-			// delete:
+			// discard:
 			if (menu.Key.IsShift(KeyCode.Delete))
 			{
-				if (My.AskDiscard(path))
-				{
-					Store.Remove(store, path, StringComparison.Ordinal);
-					Far.Api.PostMacro($"Keys 'AltF8'; if Menu.Select({Lua.StringLiteral(path)}) > 0 then Keys 'ShiftDel' end; if Area.Menu then Keys 'Esc' end");
-					return; //!
-				}
-				goto show;
+				if (context.DiscardRecordAndHistory(
+					$"Keys 'AltF8'; if Menu.Select({Lua.StringLiteral(context.SelectedPath)}) > 0 then Keys 'ShiftDel' end; if Area.Menu then Keys 'Esc' end"))
+					return;
+				else
+					goto show;
 			}
+
+			// selected!
+			context.StartUpdate();
 
 			// Enter | CtrlEnter:
 			if (Far.Api.Window.Kind != WindowKind.Panels && !Far.Api.Window.IsModal)
@@ -433,17 +451,15 @@ public class VesselTool : ModuleTool
 			// put/post command
 			if (Far.Api.Window.Kind == WindowKind.Panels)
 			{
-				Far.Api.CommandLine.Text = path;
+				Far.Api.CommandLine.Text = context.SelectedPath;
 				if (!menu.Key.IsCtrl())
 					Far.Api.PostMacro("Keys'Enter'");
 			}
 			else
 			{
-				My.BadWindow();
+				BadWindow();
 			}
 
-			Store.Append(store, DateTime.Now, Record.OPEN, path);
-			UpdatePeriodically(mode);
 			return;
 		}
 	}

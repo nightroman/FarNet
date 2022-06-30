@@ -25,5 +25,7 @@ public sealed class Settings : ModuleSettings<Settings.Data>
 		/// The default and recommended value is 2.
 		/// </summary>
 		public int Limit0 { get; set; } = 2;
+
+		public string ChoiceLog { get; set; } = string.Empty;
 	}
 }

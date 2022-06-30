@@ -17,7 +17,7 @@ task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props version
     <Copyright>Copyright (c) Roman Kuzmin</Copyright>
     <Product>FarNet.Vessel</Product>
     <Version>$Version</Version>
-    <Description>Far Manager smart history of files, folders, commands</Description>
+    <Description>Far Manager enhanced history of files, folders, commands</Description>
   </PropertyGroup>
 </Project>
 "@
@@ -77,7 +77,7 @@ task package help, {
 task nuget package, version, {
 	$description = @'
 Vessel is the FarNet module for Far Manager.
-It provides smart history of files, folders, commands.
+It provides enhanced history of files, folders, commands.
 
 ---
 

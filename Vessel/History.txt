@@ -1,6 +1,18 @@
 https://www.nuget.org/packages/FarNet.Vessel
 FarNet 5.4.17
 
+= 3.0.0 =
+
+New history concept, more on tracked items and far history than on AI.
+Not necessarily better (may be) but comparable and more practical.
+
+Log format is the same but on the first update logs will be reduced.
+New Vessel does not have to keep so many tracking records as before.
+
+[Del] in history lists stops or starts the current item tracking.
+
+Settings `ChoiceLog` specifies the optional log file of choices.
+
 = 2.7.1 =
 
 Avoid unnecessary copies and orderings.
