@@ -21,7 +21,7 @@ namespace FarNet.Works
 
 			while (menu.Show())
 			{
-				var drawer = (IModuleDrawer)menu.Items[menu.Selected].Data;
+				var drawer = (IModuleDrawer)menu.SelectedData;
 
 				var dialog = new ConfigDrawerDialog(drawer);
 				while (dialog.Dialog.Show())

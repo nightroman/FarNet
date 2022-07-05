@@ -245,7 +245,7 @@ namespace FarNet.Works
 					if (_ii != null && Selected >= 0)
 						Selected = _ii[Selected];
 
-					var a = new MenuEventArgs((Selected >= 0 ? myItems[Selected] : null));
+					var a = new MenuEventArgs(Selected >= 0 ? myItems[Selected] : null);
 					myHandlers[myKeyIndex](Sender ?? this, a);
 					if (a.Ignore)
 					{

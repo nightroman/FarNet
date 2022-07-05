@@ -20,7 +20,7 @@ namespace FarNet.Works
 
 			while (menu.Show())
 			{
-				var editor = (IModuleEditor)menu.Items[menu.Selected].Data;
+				var editor = (IModuleEditor)menu.SelectedData;
 
 				var ib = Far.Api.CreateInputBox();
 				ib.EmptyEnabled = true;
