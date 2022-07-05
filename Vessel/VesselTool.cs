@@ -320,6 +320,7 @@ public class VesselTool : ModuleTool
 		menu.TypeId = new Guid("ee448906-ec7d-4ea7-bc2e-848f48cddd39");
 
 		menu.AddKey(KeyCode.Delete, ControlKeyStates.None);
+		menu.AddKey(KeyCode.Enter, ControlKeyStates.LeftCtrlPressed);
 		menu.AddKey(KeyCode.Enter, ControlKeyStates.ShiftPressed);
 		menu.AddKey(KeyCode.R, ControlKeyStates.LeftCtrlPressed);
 		if (Far.Api.Window.Kind == WindowKind.Panels)
@@ -360,6 +361,13 @@ public class VesselTool : ModuleTool
 
 			// selected!
 			context.StartUpdate();
+
+			// go to:
+			if (menu.Key.IsCtrl(KeyCode.Enter))
+			{
+				Far.Api.Panel.GoToPath(context.SelectedPath);
+				return;
+			}
 
 			// open in new console: active panel = selected path, passive panel = current path
 			if (menu.Key.IsShift(KeyCode.Enter))

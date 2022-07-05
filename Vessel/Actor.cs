@@ -13,13 +13,16 @@ namespace Vessel;
 
 public partial class Actor
 {
+	// mode based
 	readonly Mode _mode;
 	readonly string _store;
-	readonly string _choiceLog;
-	readonly TimeSpan _limit0;
-	readonly int _MaximumFileCountFromFar;
 	readonly StringComparer _comparer;
 	readonly StringComparison _comparison;
+
+	// settings based
+	readonly TimeSpan _limit0;
+	readonly string _choiceLog;
+	readonly int _MaximumFileCountFromFar;
 
 	/// <summary>
 	/// File records from old to new.
@@ -49,19 +52,18 @@ public partial class Actor
 				_comparison = StringComparison.Ordinal;
 				break;
 			default:
-				throw new ArgumentException("Invalid mode.", nameof(mode));
+				throw new ArgumentException("Invalid mode.");
 		}
-
-		var settings = Settings.Default.GetData();
 
 		_mode = mode;
 		_store = string.IsNullOrEmpty(store) ? VesselHost.LogPath[(int)mode] : store;
+
+		var settings = Settings.Default.GetData();
 		_limit0 = TimeSpan.FromHours(settings.Limit0);
 		_MaximumFileCountFromFar = settings.MaximumFileCountFromFar;
+		_choiceLog = Environment.ExpandEnvironmentVariables(settings.ChoiceLog ?? string.Empty);
 
 		_records = Store.Read(_store).ToList();
-
-		_choiceLog = Environment.ExpandEnvironmentVariables(settings.ChoiceLog ?? string.Empty);
 	}
 
 	public Mode Mode => _mode;
@@ -151,15 +153,15 @@ public partial class Actor
 		Task.Run(() =>
 		{
 			if (!File.Exists(_choiceLog))
-				File.AppendAllText(_choiceLog, "Time\tRank\tMode\tPath\r\n");
+				File.AppendAllText(_choiceLog, "Gain\tRank\tMode\tPath\r\n");
 
 			var list = records.ToList();
-			var choiceByRank = list.Count - 1 - indexSelected;
+			var rank = list.Count - 1 - indexSelected;
 
 			list.Sort(new Record.TimeComparer());
-			var choiceByTime = list.Count - 1 - list.FindLastIndex(x => x.Path.Equals(path, _comparison));
+			var index = list.Count - 1 - list.FindLastIndex(x => x.Path.Equals(path, _comparison));
 
-			File.AppendAllText(_choiceLog, $"{choiceByTime}\t{choiceByRank}\t{_mode}\t{path}\r\n");
+			File.AppendAllText(_choiceLog, $"{index - rank}\t{rank}\t{_mode}\t{path}\r\n");
 		});
 	}
 

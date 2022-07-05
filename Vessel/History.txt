@@ -1,6 +1,14 @@
 https://www.nuget.org/packages/FarNet.Vessel
 FarNet 5.4.17
 
+= 3.0.1 =
+
+Folders:
+- [CtrlEnter] navigates to the folder.
+
+New format of the choice log.
+Fields: Gain, Rank, Mode, Path.
+
 = 3.0.0 =
 
 New history concept, more on tracked items and far history than on AI.

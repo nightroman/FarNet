@@ -96,12 +96,12 @@ Module settings: `[F11] \ FarNet \ Settings \ Vessel`
 
 - `ChoiceLog`
 
-    Specifies the optional log file of choices in TSV format.
+    The optional log file of choices in TSV format.
     Only choices of not recent items are logged.
-    Recent items have the same `Time` as `Rank`.
+    Recent items always have zero gain.
     Use this log to see how Vessel works.
 
-    - `Time` ~ index in the time sorted list
+    - `Gain` ~ time sorted index minus rank sorted index
     - `Rank` ~ index in the rank sorted list
     - `Mode` ~ File, Folder, Command
     - `Path` ~ item path or text
@@ -196,6 +196,10 @@ Keys and actions:
 - `[Enter]`
 
     Opens the folder in the current panel.
+
+- `[CtrlEnter]`
+
+    Navigates to the folder in the panel.
 
 - `[ShiftEnter]`
 
