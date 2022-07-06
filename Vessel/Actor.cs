@@ -23,6 +23,7 @@ public partial class Actor
 	readonly TimeSpan _limit0;
 	readonly string _choiceLog;
 	readonly int _MaximumFileCountFromFar;
+	readonly int _MinimumRecentFileCount;
 
 	/// <summary>
 	/// File records from old to new.
@@ -61,6 +62,7 @@ public partial class Actor
 		var settings = Settings.Default.GetData();
 		_limit0 = TimeSpan.FromHours(settings.Limit0);
 		_MaximumFileCountFromFar = settings.MaximumFileCountFromFar;
+		_MinimumRecentFileCount = settings.MinimumRecentFileCount;
 		_choiceLog = Environment.ExpandEnvironmentVariables(settings.ChoiceLog ?? string.Empty);
 
 		_records = Store.Read(_store).ToList();
@@ -118,11 +120,27 @@ public partial class Actor
 	/// <summary>
 	/// Gets the ordered history list.
 	/// </summary>
-	public IEnumerable<Record> GetHistory(DateTime old)
+	public List<Record> GetHistory(DateTime old)
 	{
 		var map = CollectLatestRecords();
 		MergeFarHistory(map);
-		return map.Values.OrderBy(x => x, new Record.RankComparer(old));
+
+		// first sort by time
+		var records = map.Values.ToList();
+		records.Sort(new Record.TimeComparer());
+
+		// and mark recent
+		for (int iRecord = records.Count - 1; iRecord >= 0; --iRecord)
+		{
+			if (records[iRecord].Time > old || records.Count - iRecord <= _MinimumRecentFileCount)
+				records[iRecord].IsRecent = true;
+			else
+				break;
+		}
+
+		// the sort by rank and return for show
+		records.Sort(new Record.RankComparer());
+		return records;
 	}
 
 	/// <summary>
@@ -153,15 +171,16 @@ public partial class Actor
 		Task.Run(() =>
 		{
 			if (!File.Exists(_choiceLog))
-				File.AppendAllText(_choiceLog, "Gain\tRank\tMode\tPath\r\n");
+				File.AppendAllText(_choiceLog, "Gain\tRank\tAge\tMode\tPath\r\n");
 
 			var list = records.ToList();
 			var rank = list.Count - 1 - indexSelected;
+			var age = (int)(DateTime.Now - list[indexSelected].Time).TotalHours;
 
 			list.Sort(new Record.TimeComparer());
 			var index = list.Count - 1 - list.FindLastIndex(x => x.Path.Equals(path, _comparison));
 
-			File.AppendAllText(_choiceLog, $"{index - rank}\t{rank}\t{_mode}\t{path}\r\n");
+			File.AppendAllText(_choiceLog, $"{index - rank}\t{rank}\t{age}\t{_mode}\t{path}\r\n");
 		});
 	}
 

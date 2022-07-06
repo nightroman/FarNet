@@ -88,6 +88,12 @@ Module settings: `[F11] \ FarNet \ Settings \ Vessel`
     Maximum number of items taken from far history.
     The default is 1000 items.
 
+- `MinimumRecentFileCount`
+
+    Tells to treat the specified number of items as recent even if they are
+    older than `Limit0` hours. This avoids disappearance of all recent items
+    after long breaks. The default is 10.
+
 - `Limit0`
 
     The time span in hours which defines recently used items.
@@ -101,8 +107,9 @@ Module settings: `[F11] \ FarNet \ Settings \ Vessel`
     Recent items always have zero gain.
     Use this log to see how Vessel works.
 
-    - `Gain` ~ time sorted index minus rank sorted index
-    - `Rank` ~ index in the rank sorted list
+    - `Gain` ~ time sorted index minus choice index
+    - `Rank` ~ choice index in the ranked list
+    - `Age`  ~ hours since the last use
     - `Mode` ~ File, Folder, Command
     - `Path` ~ item path or text
 

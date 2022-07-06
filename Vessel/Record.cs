@@ -30,6 +30,8 @@ public class Record
 	/// </summary>
 	public string Path { get; }
 
+	internal bool IsRecent { get; set; }
+
 	internal Record(DateTime time, string what, string path)
 	{
 		Time = time;
@@ -55,18 +57,11 @@ public class Record
 	/// </summary>
 	public class RankComparer : IComparer<Record>
 	{
-		readonly DateTime _old;
-
-		public RankComparer(DateTime old)
-		{
-			_old = old;
-		}
-
 		public int Compare(Record left, Record right)
 		{
 			// recent
-			var recent1 = left.Time > _old;
-			var recent2 = right.Time > _old;
+			var recent1 = left.IsRecent;
+			var recent2 = right.IsRecent;
 			if (recent1 && !recent2)
 				return 1;
 			if (!recent1 && recent2)

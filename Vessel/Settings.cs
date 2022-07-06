@@ -20,10 +20,8 @@ public sealed class Settings : ModuleSettings<Settings.Data>
 
 		public int MaximumFileCountFromFar { get; set; } = 1000;
 
-		/// <summary>
-		/// Limit in hours for the first sort group.
-		/// The default and recommended value is 2.
-		/// </summary>
+		public int MinimumRecentFileCount { get; set; } = 10;
+
 		public int Limit0 { get; set; } = 2;
 
 		public string ChoiceLog { get; set; } = string.Empty;

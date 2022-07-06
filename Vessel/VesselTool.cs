@@ -115,17 +115,17 @@ public class VesselTool : ModuleTool
 			_menu = menu;
 			_records = Actor.GetHistory(old);
 
-			PopulateMenu(old);
+			PopulateMenu();
 		}
 
-		void PopulateMenu(DateTime old)
+		void PopulateMenu()
 		{
 			_menu.Items.Clear();
 			_indexSeparator = int.MaxValue;
 			foreach (var record in _records)
 			{
 				// separator
-				if (_indexSeparator == int.MaxValue && record.Time > old)
+				if (record.IsRecent && _indexSeparator == int.MaxValue)
 				{
 					_indexSeparator = _menu.Items.Count;
 					_menu.Add(string.Empty).IsSeparator = true;
@@ -181,6 +181,7 @@ public class VesselTool : ModuleTool
 				if (0 == Far.Api.Message(SelectedRecord.Path, "Start tracking?", MessageOptions.OkCancel))
 				{
 					Actor.AppendRecordToStore(Record.USED, SelectedRecord.Path);
+					_menu.Selected = -1;
 				}
 			}
 		}
