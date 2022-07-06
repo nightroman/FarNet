@@ -1,7 +1,7 @@
 https://www.nuget.org/packages/FarNet.Vessel
 FarNet 5.4.17
 
-= 3.0.1 =
+= 3.0.2 =
 
 Folders:
 - [CtrlEnter] navigates to the folder.

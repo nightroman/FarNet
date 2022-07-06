@@ -362,13 +362,6 @@ public class VesselTool : ModuleTool
 			// selected!
 			context.StartUpdate();
 
-			// go to:
-			if (menu.Key.IsCtrl(KeyCode.Enter))
-			{
-				Far.Api.Panel.GoToPath(context.SelectedPath);
-				return;
-			}
-
 			// open in new console: active panel = selected path, passive panel = current path
 			if (menu.Key.IsShift(KeyCode.Enter))
 			{
@@ -380,14 +373,23 @@ public class VesselTool : ModuleTool
 				return;
 			}
 
-			// Enter:
+			// change to panels
 			if (Far.Api.Window.Kind != WindowKind.Panels && !Far.Api.Window.IsModal)
 				Far.Api.Window.SetCurrentAt(-1);
 
-			// set selected path
+			// go to or open
 			if (Far.Api.Window.Kind == WindowKind.Panels)
 			{
-				Far.Api.Panel.CurrentDirectory = context.SelectedPath;
+				if (menu.Key.IsCtrl(KeyCode.Enter))
+				{
+					// go to:
+					Far.Api.Panel.GoToPath(context.SelectedPath);
+				}
+				else
+				{
+					// open:
+					Far.Api.Panel.CurrentDirectory = context.SelectedPath;
+				}
 			}
 			else
 			{
