@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using FarNet.Forms;
 
 namespace FarNet.Tools
@@ -13,29 +14,24 @@ namespace FarNet.Tools
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// This form should be created and shown in the main thread.
-	/// Some members are designed for use in other threads, for example:
+	/// This form should be created and shown once in the main thread.
+	/// Some members are designed for other threads:
 	/// normal cases: <see cref="Activity"/>, <see cref="SetProgressValue"/>, <see cref="Complete"/>;
-	/// cancellation cases: <see cref="Close"/>, <see cref="IsClosed"/>, <see cref="Canceled"/>.
+	/// cancel cases: <see cref="Close"/>, <see cref="IsClosed"/>, <see cref="CancellationToken"/>.
 	/// </para>
 	/// <para>
-	/// The form must be shown once. It cannot be reused after closing.
-	/// </para>
-	/// <para>
-	/// The standard scenario:
+	/// Typical 4-step scenario:
 	/// <ul>
-	/// <li>create a progress form but do not show yet;</li>
-	/// <li>start a job in another thread and give it this form;</li>
-	/// <li>let the main thread to sleep a little, a fast job may complete;</li>
-	/// <li>show the form; the progress form is shown if a job is not complete.</li>
+	/// <li>Create a progress form, do not show yet.</li>
+	/// <li>Start a job in another thread using this form for progress.</li>
+	/// <li>Sleep the main thread a little to let the fast job complete.</li>
+	/// <li>Show the form. The form is shown if the job is not complete.</li>
 	/// </ul>
 	/// </para>
-	/// There is another simpler scenario using the <see cref="Invoke"/>, see remarks there.
 	/// </remarks>
 	public sealed class ProgressForm : Form, IProgress
 	{
-		const int DeafultShowDelay = 500;
-		const int DeaufltTimerInterval = 200;
+		const int DefaultTimerInterval = 200;
 
 		readonly object _lock = new object();
 		int _LineCount = 1;
@@ -44,10 +40,8 @@ namespace FarNet.Tools
 		bool _isClosed;
 
 		readonly Progress _progress = new Progress();
-		readonly Thread _mainThread;
-
-		Thread _jobThread;
-		Exception _jobError;
+		readonly Thread _mainThread = Thread.CurrentThread;
+		readonly CancellationTokenSource _tokenSource = new CancellationTokenSource();
 
 		IText[] _textActivity;
 		IText _textProgress;
@@ -56,18 +50,27 @@ namespace FarNet.Tools
 		/// New progress form.
 		/// </summary>
 		/// <remarks>
-		/// It should be created and then shown in the main thread.
+		/// It should be created and shown in the main thread.
 		/// </remarks>
 		public ProgressForm()
 		{
-			_mainThread = Thread.CurrentThread;
+			CancellationToken = _tokenSource.Token;
 		}
 
 		/// <summary>
-		/// Gets or sets text line count.
+		/// Gets the cancellation token.
 		/// </summary>
 		/// <remarks>
-		/// It should be set before the show.
+		/// Instead of checking <see cref="IsClosed"/> jobs may check this token and exit if canceled.
+		/// The token may be also used for registering actions called when canceled.
+		/// </remarks>
+		public CancellationToken CancellationToken { get; }
+
+		/// <summary>
+		/// Gets or sets the text line count.
+		/// </summary>
+		/// <remarks>
+		/// It is set before the show.
 		/// The default is 1.
 		/// </remarks>
 		public int LineCount
@@ -84,71 +87,51 @@ namespace FarNet.Tools
 		/// Tells to show the <b>Cancel</b> button.
 		/// </summary>
 		/// <remarks>
-		/// False: a user cannot cancel the progress form and jobs in progress.
-		/// The form is opened until <see cref="Complete"/> or <see cref="Close"/> is called.
 		/// <para>
-		/// True: a user can cancel the progress form.
-		/// A job has to support this: it should check the <see cref="IsClosed"/> periodically
-		/// or listen to the <see cref="Canceled"/> event; if any of these happens the job
-		/// has to exit as soon as possible.
+		/// True: users can cancel the form and job.
+		/// The job should check <see cref="IsClosed"/> or <see cref="CancellationToken"/> and stop as soon as needed.
+		/// </para>
+		/// <para>
+		/// False: users cannot cancel the form and job.
+		/// The form is opened until <see cref="Complete"/> or <see cref="Close"/> is called.
 		/// </para>
 		/// </remarks>
 		public bool CanCancel { get; set; }
 
 		/// <summary>
-		/// Called when the form is about to be canceled. It can abort canceling by <see cref="ClosingEventArgs.Ignore"/>.
-		/// </summary>
-		public event EventHandler<ClosingEventArgs> Canceling;
-
-		/// <summary>
-		/// Called when the form is canceled by a user or closed by the <see cref="Close"/>.
-		/// </summary>
-		public event EventHandler Canceled;
-
-		/// <summary>
-		/// Called periodically from the main thread.
+		/// Called when the form is about to be canceled.
 		/// </summary>
 		/// <remarks>
-		/// This event may be used in advanced scenarios with job interruption and resuming
-		/// and user interaction with dialogs. A handler is called from the main thread and
-		/// may use the API as usual.
+		/// It may be used in order to confirm canceling.
+		/// Set <see cref="ClosingEventArgs.Ignore"/> to stop canceling.
 		/// </remarks>
-		public event EventHandler Timer;
+		public event EventHandler<ClosingEventArgs> Canceling;
 
 		/// <summary>
 		/// Gets true if a closing method has been called or a user has canceled the form.
 		/// </summary>
 		/// <remarks>
-		/// Jobs may check this property periodically and exit as soon as it is true.
-		/// Alternatively, they may listen to the <see cref="Canceled"/> event.
+		/// Jobs should check this property periodically and exit as soon as it is true.
+		/// Alternatively, jobs may use more common <see cref="CancellationToken"/>.
 		/// </remarks>
-		public bool IsClosed
-		{
-			get { return _isClosed || _isCanceled; }
-		}
+		public bool IsClosed => _isClosed || _isCanceled;
 
 		/// <summary>
-		/// Gets true if the <see cref="Complete"/> has been called.
+		/// Gets true if the form and job completed normally.
 		/// </summary>
 		/// <remarks>
 		/// If it is true then <see cref="IsClosed"/> is also true.
 		/// </remarks>
-		public bool IsCompleted
-		{
-			get { return _isCompleted; }
-		}
+		public bool IsCompleted => _isCompleted;
 
 		/// <summary>
-		/// Closes the form and triggers the <see cref="Canceled"/> event.
+		/// Closes the form and cancels the token.
 		/// </summary>
 		/// <remarks>
-		/// This method is thread safe and can be called from jobs in order to cancel.
-		/// But normally jobs should call <see cref="Complete"/> when they are done.
+		/// This method may be called by jobs in order to cancel the form.
+		/// But normally they call <see cref="Complete"/> when they are done.
 		/// <para>
-		/// The method <see cref="Show"/> returns false if the form is closed by this method.
-		/// </para>
-		/// <para>
-		/// Note that closing by this method does not trigger canceling events.
+		/// <see cref="Show()"/> and <see cref="Show(Task)"/> return false if the form is closed by this method.
 		/// </para>
 		/// </remarks>
 		public override void Close()
@@ -159,9 +142,7 @@ namespace FarNet.Tools
 					return;
 
 				_isClosed = true;
-
-				if (_jobThread != null)
-					_jobThread.Abort();
+				_tokenSource.Cancel();
 
 				//! mind another thread
 				if (Thread.CurrentThread == _mainThread)
@@ -170,7 +151,7 @@ namespace FarNet.Tools
 				}
 				else
 				{
-					Far.Api.PostJob(delegate { base.Close(); });
+					Far.Api.PostJob(base.Close);
 				}
 			}
 		}
@@ -179,9 +160,9 @@ namespace FarNet.Tools
 		/// Closes the form when the job is complete.
 		/// </summary>
 		/// <remarks>
-		/// This method is thread safe and designed for jobs.
-		/// Normally when a job is done it calls this method.
-		/// The <see cref="Show"/> returns true if the form is closed by this method.
+		/// This method is called by jobs when they are done.
+		/// With <see cref="Show()"/> this method must be called.
+		/// With <see cref="Show(Task)"/> this method is optional.
 		/// </remarks>
 		public void Complete()
 		{
@@ -199,16 +180,13 @@ namespace FarNet.Tools
 		/// <summary>
 		/// Shows the progress form or returns the result if the job is already done.
 		/// </summary>
-		/// <returns>True if the <see cref="Complete"/> has been called and false in all other cases.</returns>
+		/// <returns>True if the <see cref="Complete"/> has been called and false in other cases.</returns>
 		/// <remarks>
 		/// This method should be called in the main thread after starting a job in another thread.
 		/// Normally it shows the modal dialog and blocks the main thread.
 		/// <para>
 		/// The form is closed when a job calls the <see cref="Complete"/> or <see cref="Close"/> or
 		/// a user cancels the form when <see cref="CanCancel"/> is true.
-		/// </para>
-		/// <para>
-		/// If a job is fast and has already closed the form this methods returns immediately without showing a dialog.
 		/// </para>
 		/// </remarks>
 		public override bool Show()
@@ -230,6 +208,53 @@ namespace FarNet.Tools
 				Far.Api.UI.SetProgressState(TaskbarProgressBarState.NoProgress);
 				Far.Api.UI.SetProgressFlash();
 			}
+		}
+
+		/// <summary>
+		/// Shows the progress form or returns the result if the job is already done.
+		/// </summary>
+		/// <returns>True if the job completes and false in other cases.</returns>
+		/// <param name="job">The potentially long job.</param>
+		/// <remarks>
+		/// <para>
+		/// With this method the job does not have to call <see cref="Complete"/>.
+		/// </para>
+		/// <para>
+		/// The job may throw <c>OperationCanceledException</c> in order to cancel the form.
+		/// Other exceptions are treated as errors and thrown.
+		/// Calling this method may need exception handling.
+		/// </para>
+		/// </remarks>
+		public bool Show(Task job)
+		{
+			// start watching the task
+			Exception error = null;
+			Task.Run(async () =>
+			{
+				try
+				{
+					await job;
+					Complete();
+				}
+				catch (Exception ex)
+				{
+					error = ex;
+					Close();
+				}
+			},
+			CancellationToken);
+
+			// then show the form
+			bool res = Show();
+			if (error == null)
+				return res;
+
+			// treat some exceptions as cancel, mind wrappers, e.g. RuntimeException in PowerShell
+			if (error is OperationCanceledException || error.InnerException is OperationCanceledException)
+				return false;
+
+			// throw other exceptions
+			throw error;
 		}
 
 		void OnInitialized(object sender, InitializedEventArgs e)
@@ -266,13 +291,7 @@ namespace FarNet.Tools
 
 				// flag
 				_isCanceled = true;
-
-				// abort
-				if (_jobThread != null)
-					Pfz.Threading.SafeAbort.Abort(_jobThread, 4000, 2000, 1000, true);
-
-				// notify
-				Canceled?.Invoke(this, null);
+				_tokenSource.Cancel();
 			}
 		}
 
@@ -285,9 +304,6 @@ namespace FarNet.Tools
 				return;
 			}
 
-			// event
-			Timer?.Invoke(this, null);
-
 			// show
 			var lines = _progress.Build(out string progress, _textActivity.Length);
 			for (int iLine = 0; iLine < _LineCount && iLine < lines.Length; ++iLine)
@@ -297,7 +313,7 @@ namespace FarNet.Tools
 
 		void Init()
 		{
-			Dialog.TimerInterval = DeaufltTimerInterval;
+			Dialog.TimerInterval = DefaultTimerInterval;
 			Dialog.KeepWindowTitle = true;
 
 			SetSize(Progress.FORM_WIDTH, (CanCancel ? 7 : 5) + _LineCount);
@@ -311,7 +327,7 @@ namespace FarNet.Tools
 			{
 				Dialog.AddText(5, -1, 0, string.Empty).Separator = 1;
 
-				IButton button = Dialog.AddButton(0, -1, _jobThread == null ? "Cancel" : "Abort");
+				IButton button = Dialog.AddButton(0, -1, "Cancel");
 				button.CenterGroup = true;
 				Dialog.Default = button;
 			}
@@ -321,72 +337,15 @@ namespace FarNet.Tools
 			Dialog.Timer += OnTimer;
 		}
 
-		/// <summary>
-		/// Invokes the job in a new thread (simplified scenario with optional job thread abortion by a user).
-		/// </summary>
-		/// <param name="job">The job action delegate to be invoked in a new thread. It should either complete or throw any exception.</param>
-		/// <returns>Null if the job has completed or an exception thrown by the job or the <see cref="OperationCanceledException"/>.</returns>
-		/// <remarks>
-		/// This way is much simpler than the standard 4-steps scenario and it is recommended for not abortable jobs.
-		/// <para>
-		/// If the <see cref="CanCancel"/> is true then on user cancellation the job thread is aborted.
-		/// It many cases this seems to be fine but the job has to be carefully designed for that.
-		/// In particular the <see cref="ThreadAbortException"/> can be thrown at any moment.
-		/// If there are potential unwanted effects of job abortion then do not use this way.
-		/// </para>
-		/// <para>
-		/// This way is not suitable for PowerShell scripts in any case.
-		/// Scripts should use the standard 4-steps scenario with standard PowerShell or simple PowerShellFar background jobs.
-		/// </para>
-		/// </remarks>
-		public Exception Invoke(ThreadStart job)
-		{
-			// share the new thread and start it
-			_jobThread = new Thread(() => Job(job));
-			_jobThread.Start();
-
-			// wait a little bit
-			Thread.Sleep(DeafultShowDelay);
-
-			// show the form and return null if it is completed
-			if (Show())
-				return null;
-
-			// get the error
-			return _jobError ?? new OperationCanceledException();
-		}
-
-		void Job(ThreadStart job)
-		{
-			try
-			{
-				// do the job in this thread
-				job();
-
-				// done, complete and return
-				Complete();
-				return;
-			}
-			catch (ThreadAbortException)
-			{
-				// convert to canceled
-				_jobError = new OperationCanceledException();
-			}
-			catch (Exception ex)
-			{
-				// to be returned by Invoke()
-				_jobError = ex;
-			}
-
-			// close on errors
-			Close();
-		}
-
 		#region IProgress
 
 		/// <summary>
 		/// Gets or sets the current activity description.
 		/// </summary>
+		/// <remarks>
+		/// This property is used by jobs.
+		/// It is fine to change it frequently.
+		/// </remarks>
 		public string Activity
 		{
 			get { return _progress.Activity; }
@@ -399,7 +358,8 @@ namespace FarNet.Tools
 		/// <param name="currentValue">Progress current value, from 0 to the maximum.</param>
 		/// <param name="maximumValue">Progress maximum value, positive or 0.</param>
 		/// <remarks>
-		/// This method is thread safe and designed for jobs.
+		/// This method is used by jobs.
+		/// It is fine to call it frequently.
 		/// </remarks>
 		public void SetProgressValue(double currentValue, double maximumValue)
 		{

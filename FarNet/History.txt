@@ -1,6 +1,15 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 5.9.4 =
+
+ProgressForm
+- Add Show(Task).
+- Add CancellationToken.
+- Retire ability to abort jobs, not supported in newer .NET.
+- Remove Canceled event, use CancellationToken.Register().
+- Remove timer events as not really needed.
+
 = 5.9.3 =
 
 On editing module settings exclude files from history.

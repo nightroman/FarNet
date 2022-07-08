@@ -94,7 +94,7 @@ namespace FarNet
 				{
 					//! try because the task may complete on UI and the job may fail after
 					if (!task.TrySetException(exn))
-						throw exn;
+						throw;
 				}
 			});
 			return task.Task;

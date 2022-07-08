@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.FolderChart
 
+= 2.4.2 =
+
+Requires FarNet 5.9.4.
+Uses net472.
+
 = 2.4.1 =
 
 Minor tweaks.

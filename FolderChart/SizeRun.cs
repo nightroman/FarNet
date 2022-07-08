@@ -28,11 +28,10 @@ class SizeRun
 	ConcurrentBag<Exception> _Errors = new ConcurrentBag<Exception>();
 
 	ProgressForm _progress = new ProgressForm();
-	CancellationToken _cancel;
 
 	void Check()
 	{
-		_cancel.ThrowIfCancellationRequested();
+		_progress.CancellationToken.ThrowIfCancellationRequested();
 	}
 
 	long CalculateFolderSize(string folder)
@@ -67,16 +66,13 @@ class SizeRun
 
 	public bool Run(IList<string> folders, IList<string> files)
 	{
-		var cancellation = new CancellationTokenSource();
-		_cancel = cancellation.Token;
-
-		using (var task = Task.Factory.StartNew(() =>
+		var task = Task.Factory.StartNew(() =>
 		{
 			// do folders (parallel)
 			if (folders.Count > 0)
 			{
 				//! do not use aggregation, see file remarks
-				Parallel.ForEach(folders, new ParallelOptions() { CancellationToken = _cancel }, folder =>
+				Parallel.ForEach(folders, new ParallelOptions() { CancellationToken = _progress.CancellationToken }, folder =>
 				{
 					Check();
 					_Result.Add(new FolderItem() { Name = Path.GetFileName(folder), Size = CalculateFolderSize(folder) });
@@ -108,27 +104,23 @@ class SizeRun
 
 			// done
 			_progress.Complete();
-		}, _cancel))
+		},
+		_progress.CancellationToken);
+
+		if (!task.Wait(750))
 		{
-			if (!task.Wait(750))
-			{
-				_progress.Title = "Computing sizes";
-				_progress.Canceled += delegate
-				{
-					cancellation.Cancel(true);
-				};
-				_progress.CanCancel = true;
-				_progress.Show();
-			}
-
-			try
-			{
-				task.Wait();
-			}
-			catch (AggregateException)
-			{ }
-
-			return task.Status == TaskStatus.RanToCompletion;
+			_progress.Title = "Computing sizes";
+			_progress.CanCancel = true;
+			_progress.Show();
 		}
+
+		try
+		{
+			task.Wait();
+		}
+		catch (AggregateException)
+		{ }
+
+		return task.Status == TaskStatus.RanToCompletion;
 	}
 }
