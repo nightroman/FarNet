@@ -133,6 +133,7 @@ namespace FarNet
 			var editor = Far.Api.CreateEditor();
 			editor.FileName = FileName;
 			editor.Title = $"{GetType().FullName} - {FileName}";
+			editor.DisableHistory = true;
 
 			editor.Saving += (sender, args) =>
 			{
