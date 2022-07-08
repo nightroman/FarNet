@@ -33,7 +33,9 @@ namespace FarNet
 			return Value;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// .
+		/// </summary>
 		public XmlSchema GetSchema()
 		{
 			return null;

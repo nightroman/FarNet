@@ -15,7 +15,7 @@ open FarNet.FSharp
 open System
 open System.Diagnostics
 
-/// Non-modal dialog with some periodically updated data.
+// Non-modal dialog with some periodically updated data.
 let dialog x y seconds = async {
     // open the dialog showing some number
     let dialog = far.CreateDialog(x, y, x + 51, y + 2)
@@ -37,7 +37,7 @@ let dialog x y seconds = async {
     }
 }
 
-/// Demo with 3 "parallel dialogs".
+// Demo with 3 "parallel dialogs".
 let demo seconds = async {
     // start parallel dialogs and get results
     let! results =

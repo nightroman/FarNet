@@ -1,6 +1,10 @@
 https://www.nuget.org/packages/FarNet.Vessel
 FarNet 5.4.17
 
+= 4.0.0 =
+
+Requires FarNet 6, uses .NET 6.
+
 = 3.0.3 =
 
 New setting MinimumRecentFileCount.

@@ -1,8 +1,6 @@
-
 <#
 .Synopsis
 	Test panel lookup actions
-	Author: Roman Kuzmin
 
 .Description
 	Lookup panels are used by ListPanel when an object or a value has to be
@@ -26,7 +24,7 @@ param
 $myObject = 1 | Select-Object Any, Item, Process
 
 # create a panel to show and change the object properties
-$Panel = New-Object PowerShellFar.MemberPanel $myObject
+$Panel = [PowerShellFar.MemberPanel]::new($myObject)
 $Panel.Title = 'Press [Enter] on properties'
 
 # Lookup

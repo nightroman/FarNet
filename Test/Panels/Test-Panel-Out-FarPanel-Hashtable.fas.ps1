@@ -39,7 +39,10 @@ job {
 
 # send a dictionary
 job {
-	$Data.Dictionary = (Get-Command Get-WmiObject).Parameters['Class'].ParameterSets
+	$dic = [System.Collections.Generic.Dictionary[string, object]]::new()
+	$dic.Name = 'Joe'
+	$dic.Age = 42
+	$Data.Dictionary = $dic
 	$Data.Dictionary | Out-FarPanel
 }
 job {

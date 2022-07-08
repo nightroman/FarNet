@@ -49,9 +49,7 @@ task Install {
 
 	assert (Test-Path FarNet)
 	assert (Test-Path Plugins)
-	assert (Test-Path Far.exe.config)
 	assert (Test-Path FarNet\Modules)
-	assert (Test-Path FarNet\NHunspell)
 }
 #! fixed: "Cannot validate -Platform" (because '' is passed in nested calls)
 task UpdateUpToDate {
@@ -64,12 +62,10 @@ task Reinstall.FarNet {
 	Uninstall-FarPackage FarNet
 	assert (Test-Path FarNet)
 	assert (!(Test-Path Plugins))
-	assert (!(Test-Path Far.exe.config))
 	assert (!(Test-Path Update.FarNet.info))
 
 	Install-FarPackage FarNet -Platform x64
 	assert (Test-Path Plugins)
-	assert (Test-Path Far.exe.config)
 	assert (Test-Path Update.FarNet.info)
 }
 

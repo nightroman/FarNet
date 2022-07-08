@@ -366,11 +366,10 @@ public class VesselTool : ModuleTool
 			// open in new console: active panel = selected path, passive panel = current path
 			if (menu.Key.IsShift(KeyCode.Enter))
 			{
-				Process.Start(new ProcessStartInfo()
-				{
-					FileName = $"{Environment.GetEnvironmentVariable("FARHOME")}\\Far.exe",
-					Arguments = $"\"{context.SelectedPath}\" \"{Far.Api.CurrentDirectory}\""
-				});
+				var info = new ProcessStartInfo($"{Environment.GetEnvironmentVariable("FARHOME")}\\Far.exe") { UseShellExecute = true };
+				info.ArgumentList.Add(context.SelectedPath);
+				info.ArgumentList.Add(Far.Api.CurrentDirectory);
+				Process.Start(info);
 				return;
 			}
 

@@ -39,7 +39,7 @@
 		Specifies the environment variables dictionary.
 
 .Example
-	> ps: Start-Far.ps1 'ps:$Psf.StartCommandConsole()' $Far.Panel.CurrentDirectory $Far.Panel2.CurrentDirectory
+	> ps: Start-Far 'ps:$Psf.StartCommandConsole()' $Far.Panel.CurrentDirectory $Far.Panel2.CurrentDirectory
 #>
 
 [CmdletBinding()]
@@ -82,7 +82,7 @@ if ($Command) {
 		$exe = if ($env:FARHOME) {"$env:FARHOME\Far.exe"} else {'Far.exe'}
 		$arg = $(
 			'"ps: Start-FarTask \"{0}\" #"' -f $MyInvocation.MyCommand.Path
-			if ($Title) {"/title:$Title"}
+			if ($Title) {"/title:`"$Title`""}
 			if ($ReadOnly) {'/ro'}
 		)
 		$p = Start-Process $exe $arg -PassThru

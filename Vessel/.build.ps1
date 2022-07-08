@@ -4,10 +4,12 @@
 #>
 
 param(
+	$Configuration = (property Configuration Release),
 	$FarHome = (property FarHome C:\Bin\Far\x64)
 )
 
-$ModuleHome = "$FarHome\FarNet\Modules\Vessel"
+$ModuleName = 'Vessel'
+$ModuleHome = "$FarHome\FarNet\Modules\$ModuleName"
 
 task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props version, {
 	Set-Content Directory.Build.props @"
@@ -15,7 +17,7 @@ task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props version
   <PropertyGroup>
     <Company>https://github.com/nightroman/FarNet</Company>
     <Copyright>Copyright (c) Roman Kuzmin</Copyright>
-    <Product>FarNet.Vessel</Product>
+    <Product>FarNet.$ModuleName</Product>
     <Version>$Version</Version>
     <Description>Far Manager enhanced history of files, folders, commands</Description>
   </PropertyGroup>
@@ -24,7 +26,15 @@ task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props version
 }
 
 task build meta, {
-	exec { dotnet build -c Release "/p:FarHome=$FarHome" }
+	exec { dotnet build -c $Configuration /p:FarHome=$FarHome }
+}
+
+task publish {
+	'zzzzzzzzzzzzzzzzz'
+	Copy-Item -Destination $ModuleHome @(
+		"bin\$Configuration\net6.0\$ModuleName.dll"
+		"bin\$Configuration\net6.0\$ModuleName.pdb"
+	)
 }
 
 task help {
@@ -41,13 +51,13 @@ task help {
 			'--from=gfm'
 			'--self-contained'
 			"--css=$env:MarkdownCss"
-			'--metadata=pagetitle:Vessel'
+			"--metadata=pagetitle:$ModuleName"
 		)
 	}
 }
 
 task clean {
-	remove z, bin, obj, README.htm, FarNet.Vessel.*.nupkg
+	remove z, bin, obj, README.htm, FarNet.$ModuleName.*.nupkg
 }
 
 task version {
@@ -56,7 +66,7 @@ task version {
 }
 
 task package help, {
-	$toModule = 'z\tools\FarHome\FarNet\Modules\Vessel'
+	$toModule = "z\tools\FarHome\FarNet\Modules\$ModuleName"
 
 	remove z
 	$null = mkdir $toModule
@@ -90,7 +100,7 @@ https://github.com/nightroman/FarNet#readme
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
-		<id>FarNet.Vessel</id>
+		<id>FarNet.$ModuleName</id>
 		<version>$Version</version>
 		<owners>Roman Kuzmin</owners>
 		<authors>Roman Kuzmin</authors>
@@ -99,7 +109,7 @@ https://github.com/nightroman/FarNet#readme
 		<license type="expression">BSD-3-Clause</license>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>$description</description>
-		<releaseNotes>https://github.com/nightroman/FarNet/blob/master/Vessel/History.txt</releaseNotes>
+		<releaseNotes>https://github.com/nightroman/FarNet/blob/master/$ModuleName/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module</tags>
 	</metadata>
 </package>

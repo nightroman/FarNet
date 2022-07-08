@@ -1,5 +1,5 @@
 
-// FarNet.Tools for Far Manager
+// FarNet plugin for Far Manager
 // Copyright (c) Roman Kuzmin
 
 using System;

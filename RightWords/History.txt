@@ -1,5 +1,18 @@
 https://www.nuget.org/packages/FarNet.RightWords
 
+= 3.0.0 =
+
+Requires FarNet 6, uses .NET 6.
+
+Uses WeCantSpell.Hunspell instead of NHunspell.
+Thesaurus and its files are no longer used.
+Custom user dictionaries are not changed.
+
+Upgrade your language dictionaries:
+
+- Move dictionary folders from %FARHOME%\FarNet\NHunspell to %FARPROFILE%\FarNet\RightWords
+- Convert dictionaries to UTF8 (recommended, see README for steps, e.g. KOI8-R is not supported)
+
 = 2.5.2 =
 
 Requires FarNet 5.9.1 for more reliable help methods.

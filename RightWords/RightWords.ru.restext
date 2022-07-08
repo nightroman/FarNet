@@ -1,14 +1,9 @@
-﻿
-AddToDictionary=Добавить в словарь
+﻿AddToDictionary=Добавить в словарь
 DoIgnore=&1. Пропустить
 DoIgnoreAll=&2. Пропустить все
 DoAddToDictionary=&3. Добавить в словарь
-Word=Слово
-Thesaurus=Тезаурус
 DoCorrectWord=&1. Исправить слово
 DoCorrectText=&2. Исправить текст
-DoThesaurus=&0. Тезаурус...
 Common=Общий
-Searching=Поиск...
 NewWord=Новое слово
-ExampleStem=Образец слова
+SampleStem=Образец слова

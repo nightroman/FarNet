@@ -10,14 +10,15 @@ Far Manager platform for .NET modules, Windows PowerShell, and F#.
 
 ## Prerequisites
 
-**.NET Framework 4.7.2**
+**.NET 6**
 
-The version of .NET Framework installed on a machine is listed in the registry:
+Download and install [.NET 6 SDK or runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0).
+SDK is needed for developing FarNet modules but recommended in any case, FarNet is tested with it.
 
-    HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full
+Check for existing installations by these commands:
 
-If this key is missing or its `Release` value is less than 461808
-then install NET Framework 4.7.2 or later.
+    dotnet --version
+    dotnet --info
 
 **Visual C++ Redistributable**
 
@@ -27,6 +28,7 @@ Look at the installed programs and find entries like:
 - Microsoft Visual C++ 2015-2022 Redistributable (x86)
 
 If they are missing, then install the required.
+Links are not provided, they keep changing.
 
 **Far Manager**
 

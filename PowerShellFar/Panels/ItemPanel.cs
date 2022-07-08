@@ -132,7 +132,14 @@ namespace PowerShellFar
 			}
 
 			// Set-Location, the core remembers it for the drive, this is handy
-			A.Psf.Engine.SessionState.Path.SetLocation(Kit.EscapeWildcard(Explorer.Location));
+			try
+			{
+				A.Psf.Engine.SessionState.Path.SetLocation(Kit.EscapeWildcard(Explorer.Location));
+			}
+			catch (Exception ex)
+			{
+				Log.TraceException(ex);
+			}
 
 			//! path is used for Set-Location on Invoking()
 			Title = "Items: " + Explorer.Location;

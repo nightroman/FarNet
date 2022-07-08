@@ -1,11 +1,11 @@
-/// Common test helpers.
+// Common test helpers.
 [<AutoOpen>]
 module AutoTest
 open FarNet
 open FarNet.FSharp
 
-let test work =
-    Jobs.Start work
+let test name =
+    Test.Run(name)
 
 let isWizard () =
     Window.IsDialog() && far.Dialog[0].Text = "Wizard"

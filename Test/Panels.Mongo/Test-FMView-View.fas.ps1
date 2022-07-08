@@ -7,8 +7,8 @@ if ([System.Environment]::OSVersion.Version.Major -lt 10) {return}
 
 job {
 	$null = Start-Mongo
-	Import-Module FarMongo
 
+	Import-Module Mdbc
 	Connect-Mdbc -NewCollection
 	$Data.Collection = $Collection
 	[ordered]@{_id = 1; x = 1; y = 1}, [ordered]@{_id = 2; x = 2; y = 2} | Add-MdbcData
@@ -24,6 +24,7 @@ job {
 '@
 
 	# open view
+	Import-Module FarMongo
 	Open-MongoPanel . test test_view
 }
 job {
@@ -33,5 +34,6 @@ job {
 # common steps
 . $PSScriptRoot\FMView.ps1
 job {
+	Import-Module Mdbc
 	Remove-MdbcCollection test_view -Database $Data.Collection.Database
 }

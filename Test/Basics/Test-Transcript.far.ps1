@@ -33,7 +33,7 @@ Assert-Far ($e -clike '*The specified path is not a file.*')
 ### Bad path
 
 $e = try {Start-Transcript C:\TEMP\z*} catch {$_}
-Assert-Far ($e -clike '*Illegal characters in path.*')
+Assert-Far ($e -clike 'The filename, directory name, or volume label syntax is incorrect.*')
 
 ### Not started
 

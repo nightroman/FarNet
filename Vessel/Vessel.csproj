@@ -1,12 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <FarHome Condition="'$(FarHome)' == ''">C:\Bin\Far\x64</FarHome>
-    <MyOutDir>$(FarHome)\FarNet\Modules\$(AssemblyName)</MyOutDir>
-  </PropertyGroup>
-  <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
-    <RunPostBuildEvent>1</RunPostBuildEvent>
-    <LangVersion>10.0</LangVersion>
+    <TargetFramework>net6.0</TargetFramework>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
@@ -14,17 +10,8 @@
       <HintPath>$(FarHome)\FarNet\FarNet.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="FarNet.Tools">
-      <HintPath>$(FarHome)\FarNet\FarNet.Tools.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <MyItem Include="$(OutDir)\$(AssemblyName).dll" />
-    <MyItem Include="$(OutDir)\$(AssemblyName).pdb" Condition="'$(Configuration)' == 'Debug'" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Copy DestinationFolder="$(MyOutDir)" SourceFiles="@(MyItem)" SkipUnchangedFiles="true" />
-    <Delete Files="$(MyOutDir)\$(AssemblyName).pdb" Condition="'$(Configuration)' == 'Release'" />
+    <Exec Command="ib publish -Configuration $(Configuration) -FarHome $(FarHome)" />
   </Target>
 </Project>

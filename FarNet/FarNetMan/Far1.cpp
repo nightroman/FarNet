@@ -253,7 +253,7 @@ void Far1::ShowError(String^ title, Exception^ error)
 	Log::TraceException(error);
 
 	// case: loaded
-	if (Works::Host::State == Works::HostState::Loaded)
+	if (g_AppState == AppState::Loaded)
 	{
 		Works::ErrorDialog::Show(title, error, msgMacro);
 		return;
@@ -270,7 +270,8 @@ void Far1::ShowError(String^ title, Exception^ error)
 	Log::FormatException(text, error);
 	text->WriteLine(title);
 
-	if (Works::Host::State == Works::HostState::Loading)
+	// on loading print errors
+	if (g_AppState == AppState::Loading)
 	{
 		Far::Api->UI->Write(text->ToString(), ConsoleColor::Red);
 	}

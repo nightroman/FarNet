@@ -28,7 +28,7 @@ F# scripting and interactive services in Far Manager
 
 **Installation**
 
-FSharpFar requires Far Manager, FarNet, .NET 4.7.2 \
+FSharpFar requires Far Manager, FarNet, .NET 6 \
 F# or anything else does not have to be installed.
 
 [Get, install, update FarNet and FarNet.FSharpFar.](https://github.com/nightroman/FarNet#readme)
@@ -302,6 +302,7 @@ tips and checks in `#if DEBUG` code blocks.
 The specified paths are preprocessed as follows:
 
 - Environment variables specified as `%VARIABLE%` are expanded to their values.
+- The variable `%$Version%` is replaced with common language runtime version.
 - `__SOURCE_DIRECTORY__` is replaced with the configuration file directory.
 - Not rooted paths are treated as relative to the configuration directory.
 
@@ -310,7 +311,7 @@ The specified paths are preprocessed as follows:
 Some F# compiler settings are predefined:
 
 - `--lib` : *%FARHOME%*
-- `--reference` : *FarNet.dll*, *FarNet.Tools.dll*, *FarNet.FSharp.dll*, *FSharpFar.dll*
+- `--reference` : *FarNet.dll*, *FarNet.FSharp.dll*, *FSharpFar.dll*
 
 The compiler symbol `FARNET` is defined on using with FSharpFar.
 It is not defined in other cases, for example with fsx.exe.
@@ -392,8 +393,8 @@ Generated projects include:
 - Other `*.fs` files in the current panel.
 - `*.fsx` scripts in the current panel.
 
-Generated projects are `%TEMP%\_Project-X\Y.fsproj` where X and Y are
-based on configuration file name and directory and X includes some hash.
+Generated projects are `%TEMP%\_Project_X\Y.fsproj` where X and Y are based on
+the configuration file and its parent directory names.
 
 **Associate .fsproj with Visual Studio 2022**
 

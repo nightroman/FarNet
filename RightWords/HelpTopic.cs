@@ -2,14 +2,12 @@
 // FarNet module RightWords
 // Copyright (c) Roman Kuzmin
 
-namespace FarNet.RightWords
+namespace FarNet.RightWords;
+
+static class HelpTopic
 {
-	static class HelpTopic
-	{
-		public const string
-			AddToDictionary = "add-to-dictionary",
-			CorrectionList = "correction-list",
-			MainMenu = "main-menu",
-			ThesaurusMenu = "thesaurus-menu";
-	}
+	public const string
+		AddToDictionary = "add-to-dictionary",
+		CorrectionList = "correction-list",
+		MainMenu = "main-menu";
 }

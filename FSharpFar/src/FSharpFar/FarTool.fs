@@ -16,7 +16,9 @@ type FarTool() =
         let directoryPath = farCurrentDirectory ()
         Watcher.add directoryPath
 
-        Config.generateProject (Config.defaultFileForDirectory directoryPath)
+        let projectPath = Config.generateProject (Config.defaultFileForDirectory directoryPath)
+
+        ProcessStartInfo(projectPath, UseShellExecute = true)
         |> Process.Start |> ignore
 
     let openProjectVSCode () =
@@ -26,7 +28,7 @@ type FarTool() =
         let dir = Config.generateProject (Config.defaultFileForDirectory directoryPath) |> Path.GetDirectoryName
         Config.writeVSCodeSettings dir
         try
-            ProcessStartInfo("code.cmd", "\"" + dir + "\"", WindowStyle = ProcessWindowStyle.Hidden)
+            ProcessStartInfo("code.cmd", "\"" + dir + "\"", UseShellExecute = true, WindowStyle = ProcessWindowStyle.Hidden)
             |> Process.Start |> ignore
         with exn ->
             showText exn.Message "Cannot start code.cmd"

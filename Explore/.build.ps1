@@ -4,13 +4,22 @@
 #>
 
 param(
-	$Platform = (property Platform x64)
+	$Configuration = (property Configuration Release),
+	$FarHome = (property FarHome C:\Bin\Far\x64)
 )
-$FarHome = "C:\Bin\Far\$Platform"
-$ModuleHome = "$FarHome\FarNet\Modules\Explore"
+
+$ModuleName = 'Explore'
+$ModuleHome = "$FarHome\FarNet\Modules\$ModuleName"
 
 task build {
-	exec { dotnet build -c Release /p:FarHome=$FarHome }
+	exec { dotnet build -c $Configuration /p:FarHome=$FarHome }
+}
+
+task publish {
+	Copy-Item -Destination $ModuleHome @(
+		"bin\$Configuration\net6.0\$ModuleName.dll"
+		"bin\$Configuration\net6.0\$ModuleName.pdb"
+	)
 }
 
 task help {
@@ -28,16 +37,17 @@ task help {
 }
 
 task clean {
-	remove z, bin, obj, README.htm, FarNet.Explore.*.nupkg
+	remove z, bin, obj, README.htm, FarNet.$ModuleName.*.nupkg
 }
 
-task Version {
+task version {
 	($script:Version = switch -regex -file History.txt {'^= (\d+\.\d+\.\d+) =$' {$matches[1]; break}})
+	assert $script:Version
 }
 
 task package help, version, {
-	equals "$Version.0" (Get-Item $ModuleHome\Explore.dll).VersionInfo.FileVersion
-	$toModule = 'z\tools\FarHome\FarNet\Modules\Explore'
+	equals "$Version.0" (Get-Item $ModuleHome\$ModuleName.dll).VersionInfo.FileVersion
+	$toModule = "z\tools\FarHome\FarNet\Modules\$ModuleName"
 
 	remove z
 	$null = mkdir $toModule
@@ -46,15 +56,16 @@ task package help, version, {
 	Copy-Item -Destination z ..\Zoo\FarNetLogo.png
 
 	# module
-	Copy-Item -Destination $toModule `
-	README.htm,
-	History.txt,
-	LICENSE,
-	$ModuleHome\Explore.dll
+	Copy-Item -Destination $toModule @(
+		'README.htm'
+		'History.txt'
+		'LICENSE'
+		"$ModuleHome\$ModuleName.dll"
+	)
 }
 
 task nuget package, version, {
-	$text = @'
+	$description = @'
 Explore is the FarNet module for Far Manager.
 
 It searches in FarNet module panels and opens the result panel.
@@ -71,7 +82,7 @@ https://github.com/nightroman/FarNet#readme
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
-		<id>FarNet.Explore</id>
+		<id>FarNet.$ModuleName</id>
 		<version>$Version</version>
 		<owners>Roman Kuzmin</owners>
 		<authors>Roman Kuzmin</authors>
@@ -79,8 +90,8 @@ https://github.com/nightroman/FarNet#readme
 		<icon>FarNetLogo.png</icon>
 		<license type="expression">BSD-3-Clause</license>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<description>$text</description>
-		<releaseNotes>https://github.com/nightroman/FarNet/blob/master/Explore/History.txt</releaseNotes>
+		<description>$description</description>
+		<releaseNotes>https://github.com/nightroman/FarNet/blob/master/$ModuleName/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module</tags>
 	</metadata>
 </package>

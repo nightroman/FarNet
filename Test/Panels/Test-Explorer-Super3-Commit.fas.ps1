@@ -3,8 +3,6 @@
 	Commit: incomplete move. Also covers _110313_054719.
 #>
 
-Add-Type -Path $env:FARHOME\FarNet\FarNet.Tools.dll
-
 ### source super panel with several explorers
 job {
 	. $PSScriptRoot\_Explorer.ps1

@@ -13,10 +13,6 @@ param(
 
 Set-Alias ask Confirm-Build
 
-Exit-Build {
-	while (!(ask Exit?)) {}
-}
-
 task setVersion -If {
 	ask @'
 Edit Get-Version.ps1 to set versions.
@@ -44,13 +40,19 @@ Choose to push:
 	}
 }
 
-task build buildFarNet, buildDocs, buildModules
+task build buildFarNet, buildPsfHelp, buildDocs, buildModules
 
 task buildFarNet -If {
 	ask 'Build FarNet projects'
 } {
 	while (Get-Process [F]ar) {Read-Host 'Exit Far and enter to build all'}
-	Build-FarNet.ps1
+	Build-FarNet.ps1 -Reset
+}
+
+task buildPsfHelp -If {
+	($Push -in (1, 3)) -and $env:FarNetToBuildPowerShellFarHelp -and (ask 'Build PowerShellFar help')
+} {
+	Start-Far 'ps: Invoke-Build help; $Far.Quit() #' -Panel1 $env:FarNetCode\PowerShellFar -Title buildPsfHelp -ReadOnly
 }
 
 task buildDocs -If {

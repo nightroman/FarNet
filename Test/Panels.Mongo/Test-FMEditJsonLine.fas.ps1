@@ -9,6 +9,7 @@ job {
 	$null = Start-Mongo
 	Import-Module FarMongo
 
+	Import-Module Mdbc
 	Connect-Mdbc -NewCollection
 	$Data.Collection = $Collection
 	[ordered]@{_id = 1; line1 = "value1"; line2 = "value2"} | Add-MdbcData
@@ -52,6 +53,7 @@ job {
 }
 macro 'Keys"Esc Enter" -- exit editor, save'
 job {
+	Import-Module Mdbc
 	$r = Get-MdbcData -Collection $Data.Collection
 	Assert-Far -Panels
 	Assert-Far $(

@@ -2,7 +2,7 @@
 open FarNet
 open System
 
-/// Demo explorer with files which can be edited.
+// Demo explorer with files which can be edited.
 type MyExplorer() =
     inherit Explorer(Guid "d89eb9e3-807d-4190-bcad-b2acc53d202f")
     let files = [
@@ -23,7 +23,7 @@ type MyExplorer() =
     override x.SetText args =
         args.File.Description <- args.Text |> float |> string
 
-/// Demo panel.
+// Demo panel.
 type MyPanel(explorer) =
     inherit Panel(explorer)
     do
@@ -34,5 +34,5 @@ type MyPanel(explorer) =
         base.UISetText(args)
         x.Update(true)
 
-/// Opens the panel.
+// Opens the panel.
 let run () = MyPanel(MyExplorer()).Open()

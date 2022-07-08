@@ -12,6 +12,7 @@ else {
 }
 
 $null = Start-Mongo
+Import-Module Mdbc
 Connect-Mdbc -NewCollection; @{_id=1} | Add-MdbcData
 
 Test 'Connect-Mdbc . ' { $_ -ccontains 'test' -and $_ -ccontains 'local' }

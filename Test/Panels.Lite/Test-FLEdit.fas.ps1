@@ -40,6 +40,7 @@ job {
 		$Far.Panel.CurrentFile.Name -ceq 'id1'
 		$Far.Panel.CurrentFile.Description -ceq '1'
 	)
+	Import-Module Ldbc
 	Use-LiteDatabase $Data.FileName {
 		$test = Get-LiteCollection test
 		$r = Get-LiteData $test
@@ -64,6 +65,7 @@ job {
 		$Far.Panel.CurrentFile.Name -ceq 'id1'
 		$Far.Panel.CurrentFile.Description -ceq '2'
 	)
+	Import-Module Ldbc
 	Use-LiteDatabase $Data.FileName {
 		$test = Get-LiteCollection test
 		$r = Get-LiteData $test

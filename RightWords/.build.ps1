@@ -4,17 +4,24 @@
 #>
 
 param(
-	$FarHome = (property FarHome "C:\Bin\Far\x64")
+	$Configuration = (property Configuration Release),
+	$FarHome = (property FarHome C:\Bin\Far\x64)
 )
 
-Set-StrictMode -Version 2
-$ModuleHome = "$FarHome\FarNet\Modules\RightWords"
-$NHunspellHome = "$FarHome\FarNet\NHunspell"
+Set-StrictMode -Version 3
+$ModuleName = 'RightWords'
+$ModuleHome = "$FarHome\FarNet\Modules\$ModuleName"
 
 task build meta, {
-	exec { dotnet restore }
-	exec { dotnet msbuild RightWords.csproj /p:FarHome=$FarHome /p:Configuration=Release }
+	exec { dotnet build -c $Configuration /p:FarHome=$FarHome }
 }
+
+task publish {
+	exec { dotnet publish "$ModuleName.csproj" -c $Configuration -o $ModuleHome --no-build }
+	Remove-Item -LiteralPath "$ModuleHome\$ModuleName.deps.json"
+},
+help,
+resgen
 
 task help @{
 	Inputs = 'README.md'
@@ -42,8 +49,6 @@ task resgen @{
 	}
 }
 
-task publish help, resgen
-
 task clean {
 	remove z, bin, obj, README.htm, *.nupkg
 }
@@ -65,28 +70,18 @@ task version {
 }
 
 task package markdown, version, {
-	$toModule = 'z\tools\FarHome\FarNet\Modules\RightWords'
-	$toNHunspell = 'z\tools\FarHome\FarNet\NHunspell'
-
 	$dll = Get-Item "$ModuleHome\RightWords.dll"
 	assert ($dll.VersionInfo.FileVersion -match '^(\d+\.\d+\.\d+)\.0$')
 	equals ($matches[1]) $script:Version
 
 	remove z
-	$null = mkdir $toModule, $toNHunspell
+	$toModule = mkdir "z\tools\FarHome\FarNet\Modules\$ModuleName"
 
-	# package: logo
+	# logo
 	Copy-Item -Destination z ..\Zoo\FarNetLogo.png
 
-	# FarNet\NHunspell
-	Copy-Item -Destination $toNHunspell $(
-		"$NHunspellHome\Hunspellx64.dll"
-		"$NHunspellHome\Hunspellx86.dll"
-		"$NHunspellHome\NHunspell.dll"
-	)
-
-	# FarNet\Modules\RightWords
-	Copy-Item -Destination $toModule $(
+	# module
+	Copy-Item -Destination $toModule @(
 		"README.htm"
 		"History.txt"
 		"LICENSE"
@@ -95,16 +90,15 @@ task package markdown, version, {
 		"$ModuleHome\RightWords.hlf"
 		"$ModuleHome\RightWords.resources"
 		"$ModuleHome\RightWords.ru.resources"
+		"$ModuleHome\WeCantSpell.Hunspell.dll"
 	)
 }
 
 task nuget package, version, {
 	$text = @'
-FarNet module for Far Manager, spell-checker and thesaurus.
+FarNet module for Far Manager, spell-checker.
 
-It provides the spell-checker and thesaurus based on NHunspell. The core
-Hunspell is used in OpenOffice and it works with dictionaries published
-on OpenOffice.org.
+The spell-checker is based on Hunspell used in OpenOffice.
 
 ---
 
@@ -142,7 +136,7 @@ task meta -Inputs .build.ps1, History.txt -Outputs AssemblyInfo.cs -Jobs version
 using System.Reflection;
 [assembly: AssemblyCompany("https://github.com/nightroman/FarNet")]
 [assembly: AssemblyCopyright("Copyright (c) Roman Kuzmin")]
-[assembly: AssemblyDescription("Spell-checker and thesaurus")]
+[assembly: AssemblyDescription("Spell-checker")]
 [assembly: AssemblyProduct("FarNet.RightWords")]
 [assembly: AssemblyTitle("FarNet module RightWords for Far Manager")]
 [assembly: AssemblyVersion("$script:Version")]

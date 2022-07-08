@@ -28,6 +28,7 @@ job {
 macro 'Keys"F2 Esc" -- save and exit'
 job {
 	# y changed in the collection
+	Import-Module Mdbc
 	$r = Get-MdbcData @{_id = 2} -Collection $Data.Collection
 	Assert-Far $r.y -eq 3
 }
@@ -42,6 +43,8 @@ job {
 macro 'Keys"Enter" -- confirm delete'
 job {
 	Assert-Far -Panels
+
+	Import-Module Mdbc
 	Assert-Far @(
 		$Far.Panel.CurrentFile.Name -eq 1
 		$r = Get-MdbcData -Collection $Data.Collection

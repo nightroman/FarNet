@@ -10,6 +10,7 @@ job {
 	$Data.FileName = "$env:TEMP\z.LiteDB"
 	if (Test-Path $Data.FileName) {Remove-Item $Data.FileName}
 
+	Import-Module Ldbc
 	Use-LiteDatabase $Data.FileName {
 		$test = Get-LiteCollection a
 		@{_id = 3} | Add-LiteData $test
@@ -32,6 +33,8 @@ job {
 macro 'Keys"Del Enter" -- try delete 2'
 job {
 	Assert-Far -FileName 1
+
+	Import-Module Ldbc
 	Use-LiteDatabase $Data.FileName {
 		$test = Get-LiteCollection x
 		Assert-Far 1 -eq $test.Count()

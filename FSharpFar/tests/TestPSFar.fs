@@ -7,8 +7,7 @@ let getFarTask name =
 
 // PowerShellFar unwraps PSObject unless its BaseObject is PSCustomObject.
 // In this case the original PSObject is returned.
-[<Test>]
-let PSCustomObject() =
+Test.Add("PSCustomObject", fun () ->
     let r = PSFar.Invoke """ $Host; [PSCustomObject]@{name='foo'; version='bar'} """
     Assert.Equal(2, r.Length)
 
@@ -17,18 +16,18 @@ let PSCustomObject() =
 
     let r2 = r[1]
     Assert.Equal("System.Management.Automation.PSObject", r2.GetType().FullName)
+)
 
 // PowerShellFar runspace is designed for advanced uses, for example with
 // System.Management.Automation or FarNet.FSharp.PowerShell NuGet library.
-[<Test>]
-let Runspace() =
+Test.Add("Runspace", fun () ->
     let r1 = PSFar.Runspace
     let r2 = (PSFar.Invoke "[runspace]::DefaultRunspace")[0]
     Assert.True(obj.ReferenceEquals(r1, r2))
+)
 
 // Error in async code, ensure it points to the script file.
-[<Test>]
-let FarTaskError1 = async {
+Test.Add("FarTaskError1", async {
     let! _ = job { return PSFar.Invoke(getFarTask "Case/FarTaskError1.far.ps1") }
     do! Assert.Wait Window.IsDialog
     do! job {
@@ -42,11 +41,10 @@ let FarTaskError1 = async {
         Assert.True(far.Editor[3].Text.Contains("throw 'oops-async'"))
     }
     do! Jobs.Keys "Esc"
-}
+})
 
 // Error in job code, ensure it points to the script file.
-[<Test>]
-let FarTaskError2 = async {
+Test.Add("FarTaskError2", async {
     let! _ = job { return PSFar.Invoke(getFarTask "Case/FarTaskError2.far.ps1") }
     do! Assert.Wait Window.IsDialog
     do! job {
@@ -60,11 +58,10 @@ let FarTaskError2 = async {
         Assert.True(far.Editor[3].Text.Contains("throw 'oops-job'"))
     }
     do! Jobs.Keys "Esc"
-}
+})
 
 // Error in run code, ensure it points to the script file.
-[<Test>]
-let FarTaskError3 = async {
+Test.Add("FarTaskError3", async {
     let! _ = job { return PSFar.Invoke(getFarTask "Case/FarTaskError3.far.ps1") }
     do! Assert.Wait Window.IsDialog
     do! job {
@@ -78,11 +75,10 @@ let FarTaskError3 = async {
         Assert.True(far.Editor[3].Text.Contains("throw 'oops-ps:'"))
     }
     do! Jobs.Keys "Esc"
-}
+})
 
 //! used to fail
-[<Test>]
-let FarTaskError4 = async {
+Test.Add("FarTaskError4", async {
     let! _ = job { return PSFar.Invoke(getFarTask "Case/FarTaskError4.far.ps1") }
     do! Assert.Wait Window.IsDialog
     do! job {
@@ -96,11 +92,10 @@ let FarTaskError4 = async {
         Assert.True(far.Editor[3].Text.Contains("throw 'oops-run-before'"))
     }
     do! Jobs.Keys "Esc"
-}
+})
 
 //! used to fail
-[<Test>]
-let FarTaskError5 = async {
+Test.Add("FarTaskError5", async {
     let! _ = job { return PSFar.Invoke(getFarTask "Case/FarTaskError5.far.ps1") }
     do! Assert.Wait(fun () -> Window.IsDialog() && far.Dialog[1].Text = "working")
     do! Jobs.Keys "Esc"
@@ -116,37 +111,33 @@ let FarTaskError5 = async {
         Assert.True(far.Editor[3].Text.Contains("throw 'oops-run-after'"))
     }
     do! Jobs.Keys "Esc"
-}
+})
 
 // Ensure result objects are unwrapped and null is preserved.
-[<Test>]
-let StartTaskCode = async {
+Test.Add("StartTaskCode", async {
     let! res = PSFar.StartTask("1; $null")
     Assert.Equal(2, res.Length)
     Assert.Equal(1, res[0] :?> int)
     Assert.Null(res[1])
-}
+})
 
 // This job calls [FarNet.Tasks]::Job<Action>, i.e. by default it's Action for
 // PowerShell, even with script block returning something. The output is lost
 // in Job<Action> because it always SetResult(null).
-[<Test>]
-let TaskJobActionNull = async {
+Test.Add("TaskJobActionNull", async {
     let! res = PSFar.StartTask("job { [FarNet.Tasks]::Job({42}) }")
     Assert.Equal(0, res.Length)
-}
+})
 
 // In order to call [FarNet.Tasks]::Job<Func<T>> we must cast explicitly.
-[<Test>]
-let TaskJobFuncInt = async {
+Test.Add("TaskJobFuncInt", async {
     let! res = PSFar.StartTask("job { [FarNet.Tasks]::Job(([System.Func[int]]{42})) }")
     Assert.Equal(1, res.Length)
     Assert.Equal(42, res[0] :?> int)
-}
+})
 
 // Scenario: cancel -> result is null
-[<Test>]
-let DialogNonModalInput1 = async {
+Test.Add("DialogNonModalInput1", async {
     // run input dialog and cancel it
     let! complete = PSFar.StartTask(getFarTask "DialogNonModalInput.fas.ps1") |> Async.StartChild
     do! Assert.Wait Window.IsDialog
@@ -158,11 +149,10 @@ let DialogNonModalInput1 = async {
     // result is null
     let! r = complete
     Assert.Null(r[0])
-}
+})
 
 // Scenario: enter "bar" -> result is "bar"
-[<Test>]
-let DialogNonModalInput2 = async {
+Test.Add("DialogNonModalInput2", async {
     // run input dialog and enter "bar"
     let! complete = PSFar.StartTask(getFarTask "DialogNonModalInput.fas.ps1") |> Async.StartChild
     do! Assert.Wait Window.IsDialog
@@ -178,11 +168,10 @@ let DialogNonModalInput2 = async {
     // result is "bar"
     let! r = complete
     Assert.Equal("bar", r[0] :?> string)
-}
+})
 
 // Scenario: input box -> non-modal editor -> message box -> task result
-[<Test>]
-let InputEditorMessage = async {
+Test.Add("InputEditorMessage", async {
     let! complete = PSFar.StartTask(getFarTask "InputEditorMessage.fas.ps1") |> Async.StartChild
     do! Assert.Wait Window.IsDialog
     do! job {
@@ -199,20 +188,18 @@ let InputEditorMessage = async {
     // result is "bar"
     let! r = complete
     Assert.Equal("bar", r[0] :?> string)
-}
+})
 
-[<Test>]
-let ParametersScriptBlock = async {
+Test.Add("ParametersScriptBlock", async {
     do! job { PSFar.Invoke(getFarTask "Parameters.far.ps1") |> ignore }
     do! Assert.Wait Window.IsDialog
     do! job {
         Assert.Equal("hello world", far.Dialog[1].Text)
     }
     do! Jobs.Keys "Esc"
-}
+})
 
-[<Test>]
-let ParametersScriptFile = async {
+Test.Add("ParametersScriptFile", async {
     let! _ =
         PSFar.StartTask(
             getFarTask "Parameters.fas.ps1",
@@ -224,11 +211,10 @@ let ParametersScriptFile = async {
         Assert.Equal("hi there", far.Dialog[1].Text)
     }
     do! Jobs.Keys "Esc"
-}
+})
 
 // Handling of special PipelineStoppedException, e.g. in Assert-Far.
-[<Test>]
-let AssertFar = async {
+Test.Add("AssertFar", async {
     // run
     let! _ = PSFar.StartTask("job {Assert-Far 0}; job {throw}") |> Async.StartChild
 
@@ -246,10 +232,9 @@ let AssertFar = async {
     do! job {
         Assert.True(Window.IsNativePanel())
     }
-}
+})
 
-[<Test>]
-let PanelSelectItem = async {
+Test.Add("PanelSelectItem", async {
     let! _ = PSFar.StartTask(getFarTask "PanelSelectItem.fas.ps1") |> Async.StartChild
     do! Assert.Wait Window.IsModulePanel
 
@@ -267,11 +252,10 @@ let PanelSelectItem = async {
 
     do! Jobs.Keys "Esc"
     do! Assert.Wait Window.IsNativePanel
-}
+})
 
 // Test -Confirm flow. Other tests are done by the script.
-[<Test>]
-let KeysAndMacro = async {
+Test.Add("KeysAndMacro", async {
     do! PSFar.StartTask(getFarTask "KeysAndMacro.fas.ps1", ["Confirm", box true]) |> Async.StartChild |> Async.Ignore
 
     // assert panels
@@ -302,4 +286,4 @@ let KeysAndMacro = async {
     do! Assert.Wait(fun () -> Window.IsDialog() && far.Dialog[0].Text = "Apply command")
     do! Jobs.Keys "Esc"
     do! Assert.Wait Window.IsNativePanel
-}
+})

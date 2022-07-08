@@ -9,6 +9,7 @@ job {
 	$null = Start-Mongo
 	Import-Module FarMongo
 
+	Import-Module Mdbc
 	Connect-Mdbc -NewCollection
 	$Data.Collection = $Collection
 	[ordered]@{_id = 1; x = 1; y = 1}, [ordered]@{_id = 2; x = 2; y = 2} | Add-MdbcData

@@ -218,7 +218,7 @@ namespace PowerShellFar
 				string filePath = My.PathEx.TryGetFilePath(data);
 				if (filePath != null)
 				{
-					Process.Start(filePath);
+					Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
 					return null;
 				}
 			}

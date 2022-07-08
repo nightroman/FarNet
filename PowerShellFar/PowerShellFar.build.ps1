@@ -4,27 +4,29 @@
 #>
 
 param(
-	$FarHome = (property FarHome C:\Bin\Far\x64),
 	$Configuration = (property Configuration Release),
-	$TargetFramework = (property TargetFramework net472)
+	$FarHome = (property FarHome C:\Bin\Far\x64)
 )
-$PsfHome = "$FarHome\FarNet\Modules\PowerShellFar"
+
+Set-StrictMode -Version 3
+$ModuleName = "PowerShellFar"
+$ModuleHome = "$FarHome\FarNet\Modules\$ModuleName"
 
 task clean {
 	remove z, bin, obj, About-PowerShellFar.htm
 }
 
 # Install all. Run after Build.
-task install installBin, installRes
+task publish installBin, installRes
 
 task uninstall {
-	if (Test-Path $PsfHome) { Remove-Item $PsfHome -Recurse -Force }
+	if (Test-Path $ModuleHome) { Remove-Item $ModuleHome -Recurse -Force }
 }
 
-task help {
+task markdown {
 	# HLF
 	exec { pandoc.exe README.md --output=About-PowerShellFar.htm --from=gfm }
-	exec { HtmlToFarHelp from=About-PowerShellFar.htm to=$PsfHome\PowerShellFar.hlf }
+	exec { HtmlToFarHelp from=About-PowerShellFar.htm to=$ModuleHome\PowerShellFar.hlf }
 
 	# HTM
 	assert (Test-Path $env:MarkdownCss)
@@ -41,43 +43,60 @@ task help {
 }
 
 task installBin {
-	Stop-Process -Name Far -ErrorAction Ignore
-	exec { robocopy Bin\$Configuration\$TargetFramework $PsfHome PowerShellFar.dll PowerShellFar.xml /r:0 } (0..2)
+	exec { dotnet publish "$ModuleName.csproj" -c $Configuration -o $ModuleHome --no-build }
+	Remove-Item "$ModuleHome\PowerShellFar.deps.json"
+
+	#rk-0 or cannot compile C# in PS ~ cannot find '...\PowerShellFar\runtimes\win\lib\net6.0\ref'.
+	#?? is it PS issue? use my plugin repo and report
+	# move `ref` folder to "expected" location
+	exec { robocopy "$ModuleHome\ref" "$ModuleHome\runtimes\win\lib\net6.0\ref" /s } (0..2)
+	Remove-Item -LiteralPath "$ModuleHome\ref" -Force -Recurse
+
+	Set-Location $ModuleHome
+	remove cs, de, es, fr, it, ja, ko, pl, pt-BR, ru, tr, zh-Hans, zh-Hant
+
+	#! keep unix
+	Set-Location runtimes
+	remove freebsd, illumos, ios, linux*, osx*, solaris, tvos, win-arm*
 }
 
 task installRes {
-	exec { robocopy . $PsfHome PowerShellFar.ps1 TabExpansion2.ps1 TabExpansion.txt } (0..2)
-	exec { robocopy Modules\FarInventory $PsfHome\Modules\FarInventory about_FarInventory.help.txt FarInventory.psm1 } (0..2)
+	exec { robocopy . $ModuleHome PowerShellFar.ps1 TabExpansion2.ps1 TabExpansion.txt } (0..2)
+	exec { robocopy Modules\FarInventory $ModuleHome\Modules\FarInventory about_FarInventory.help.txt FarInventory.psm1 } (0..2)
 }
 
-# Run when FarNet and PowerShellFar are installed.
-task buildPowerShellFarHelp -Inputs {Get-Item Commands\*} -Outputs "$PsfHome\PowerShellFar.dll-Help.xml" {
-	Add-Type -Path $FarHome\FarNet\FarNet.dll
-	Add-Type -Path $FarHome\FarNet\FarNet.Tools.dll
-	Add-Type -Path $PsfHome\PowerShellFar.dll
-	$ps = [Management.Automation.PowerShell]::Create()
-	$state = [Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
-	[PowerShellFar.Zoo]::Initialize($state)
-	$ps.Runspace = [Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace($state)
-	$ps.Runspace.Open()
-	#! $ErrorActionPreference = 1 in Convert-Helps does not help to catch errors
-	$null = $ps.AddScript(@"
-`$ErrorActionPreference = 1
-. Helps.ps1
-Convert-Helps "$BuildRoot\Commands\PowerShellFar.dll-Help.ps1" "$Outputs"
-"@)
-	$ps.Invoke()
+# Build PowerShell help if FarHost else Write-Warning.
+task help -Inputs {Get-Item Commands\*} -Outputs "$ModuleHome\PowerShellFar.dll-Help.xml" {
+	if ($Host.Name -eq 'FarHost') {
+		. Helps.ps1
+		Convert-Helps "$BuildRoot\Commands\PowerShellFar.dll-Help.ps1" "$Outputs"
+	}
+	else {
+		# let the caller know
+		$env:FarNetToBuildPowerShellFarHelp = 1
+		Write-Warning "Run task 'help' with PowerShellFar."
+	}
 }
 
 # Make package files
-task package help, {
+task package markdown, {
 	remove z
-	$dirMain = mkdir 'z\tools\FarHome\FarNet\Modules\PowerShellFar'
+	$toModule = mkdir 'z\tools\FarHome\FarNet\Modules\PowerShellFar'
 
-	Copy-Item -Destination $dirMain About-PowerShellFar.htm, History.txt, ..\LICENSE, PowerShellFar.macro.lua
-	Copy-Item -Destination $dirMain $FarHome\FarNet\Modules\PowerShellFar\* -Recurse
-	Copy-Item -Destination $dirMain Bench -Recurse -Force
-	Copy-Item ..\Zoo\FarNetLogo.png z
+	# module
+	exec { robocopy $ModuleHome $toModule /s /xf *.pdb } (0..2)
+	equals 320 (Get-ChildItem $toModule -Recurse -File).Count
+
+	# logo
+	Copy-Item -Destination z ..\Zoo\FarNetLogo.png
+
+	Copy-Item -Destination $toModule -Recurse -Force @(
+		"Bench"
+		"About-PowerShellFar.htm"
+		"History.txt"
+		"..\LICENSE"
+		"PowerShellFar.macro.lua"
+	)
 }
 
 # Set version

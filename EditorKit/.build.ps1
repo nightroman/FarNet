@@ -9,9 +9,18 @@ param(
 )
 
 $ModuleName = 'EditorKit'
+$ModuleHome = "$FarHome\FarNet\Modules\$ModuleName"
 
 task build meta, {
 	exec {dotnet build "$ModuleName.csproj" "/p:FarHome=$FarHome" "/p:Configuration=$Configuration"}
+}
+
+task publish {
+	Copy-Item -Destination $ModuleHome @(
+		"bin\$Configuration\net6.0\$ModuleName.dll"
+		"bin\$Configuration\net6.0\$ModuleName.pdb"
+		"bin\$Configuration\net6.0\EditorConfig.Core.dll"
+	)
 }
 
 task clean {

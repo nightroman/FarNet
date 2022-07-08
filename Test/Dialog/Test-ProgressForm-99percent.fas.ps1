@@ -6,8 +6,6 @@
 	Used to be a problem, works now.
 #>
 
-Add-Type -Path $env:FARHOME\FarNet\FarNet.Tools.dll
-
 run {
 	$Data.progress = $progress = New-Object FarNet.Tools.ProgressForm
 	$progress.Title = "the title"

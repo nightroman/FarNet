@@ -8,6 +8,7 @@
 
 #include "stdafx.h"
 #include "Far0.h"
+#include "Far1.h"
 #include "Dialog.h"
 #include "Editor.h"
 #include "Panel0.h"
@@ -24,6 +25,7 @@ static PluginMenuItem _Editor;
 static PluginMenuItem _Panels;
 static PluginMenuItem _Viewer;
 
+// Works::Host::Instance instance.
 ref class Host : Works::Host
 {
 public:
@@ -55,12 +57,9 @@ public:
 	{
 		Far0::InvalidateProxyCommand();
 	}
-internal:
-	static Host Instance;
-private:
-	Host() {}
 };
 
+// Works::Far2::Api instance.
 ref class Far2 : Works::Far2
 {
 public:
@@ -76,10 +75,6 @@ public:
 	{
 		return Far0::PostMacroWait(macro);
 	}
-internal:
-	static Far2 Instance;
-private:
-	Far2() {}
 };
 
 void Far0::FreePluginMenuItem(PluginMenuItem& p)
@@ -100,18 +95,26 @@ void Far0::FreePluginMenuItem(PluginMenuItem& p)
 
 void Far0::Start()
 {
-	// inject
-	Works::Host::Instance = % Host::Instance;
-	Works::Far2::Api = % Far2::Instance;
+	try
+	{
+		// inject
+		Far::Api = gcnew Far1();
+		Works::Far2::Api = gcnew Far2();
+		Works::Host::Instance = gcnew Host();
 
-	// module path
-	String^ path = Configuration::GetString(Configuration::Modules);
-	if (!path)
-		path = Environment::ExpandEnvironmentVariables("%FARHOME%\\FarNet\\Modules");
+		// module folder
+		auto path = Configuration::GetString(Configuration::Modules);
+		if (!path)
+			path = Environment::ExpandEnvironmentVariables("%FARHOME%\\FarNet\\Modules");
 
-	// load
-	Works::ModuleLoader loader;
-	loader.LoadModules(path);
+		// load modules
+		Works::ModuleLoader().LoadModules(path);
+	}
+	catch (Exception^ ex)
+	{
+		if (Far::Api && Far::Api->UI)
+			Far::Api->UI->WriteLine(ex->Message, ConsoleColor::Red);
+	}
 }
 
 //! Don't use Far UI

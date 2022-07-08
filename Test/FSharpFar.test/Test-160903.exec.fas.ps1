@@ -1,4 +1,5 @@
 ﻿
+#! `#r "FarNet/FarNet.dll"` is not needed but it covers --lib:%FARHOME%
 Remove-Item c:/tmp/missing.*
 Set-Content c:/tmp/missing.fsx @'
 #r "FarNet/FarNet.dll"

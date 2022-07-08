@@ -305,18 +305,18 @@ namespace PowerShellFar
 			{
 				return Psf.Engine.InvokeProvider.ChildItem.Get(new string[] { literalPath }, false, true, true);
 			}
-			catch (RuntimeException e)
+			catch (Exception ex)
 			{
-				FarNet.Log.TraceException(e);
+				Log.TraceException(ex);
 			}
 
 			try
 			{
 				return InvokeCode("Get-ChildItem -LiteralPath $args[0] -Force -ErrorAction 0", literalPath);
 			}
-			catch (RuntimeException e)
+			catch (Exception ex)
 			{
-				FarNet.Log.TraceException(e);
+				Log.TraceException(ex);
 			}
 
 			return new Collection<PSObject>();

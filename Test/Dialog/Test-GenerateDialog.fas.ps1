@@ -17,7 +17,7 @@ run {
 job {
 	# file must exist, get hash
 	$md5 = [guid][System.Security.Cryptography.MD5]::Create().ComputeHash([System.IO.File]::ReadAllBytes($Data.FileName))
-	Assert-Far $md5 -eq ([guid]'be07ff1b-0256-07a3-cf96-29c400df3de2')
+	Assert-Far $md5 -eq ([guid]'5dd810c3-1c68-1213-e03a-6117f4f73495')
 }
 
 job {

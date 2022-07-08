@@ -1,7 +1,7 @@
 module internal FSharpFar.Main
 
 open System
-open System.Reflection
+open System.IO
 open FSharp.Compiler.Interactive.Shell
 
 [<assembly: System.Runtime.InteropServices.ComVisible(false)>]
@@ -12,9 +12,12 @@ do ()
 [<STAThread()>]
 [<LoaderOptimization(LoaderOptimization.MultiDomainHost)>]
 let main _ =
+    Environment.SetEnvironmentVariable("$Version", Environment.Version.ToString());
+
     // FARHOME may be missing if we start from cmd.
     let home = AppDomain.CurrentDomain.BaseDirectory
-    Environment.SetEnvironmentVariable("FARHOME", home)
+    let farHome = Path.GetFullPath(home + @"\..\..\..")
+    Environment.SetEnvironmentVariable("FARHOME", farHome)
 
     // parse
     let exe, ini, fsx, args = CommandLine.parseCommandLineArgs (System.Environment.GetCommandLineArgs())
@@ -25,8 +28,10 @@ let main _ =
         exe
 
         // references for `fsi`
-        $@"-r:{home}\fsx.exe"
-        $@"-r:{home}\FarNet\Modules\FSharpFar\FSharp.Compiler.Service.dll"
+        $@"-I:{farHome}"
+        $@"-r:{home}\fsx.dll"
+        $@"-r:{home}\FSharp.Core.dll"
+        $@"-r:{home}\FSharp.Compiler.Service.dll"
 
         // configuration, use just [fsc], maybe later use [fsx] in addition
         match ini with
@@ -40,14 +45,6 @@ let main _ =
         // command line parameters
         yield! args
     |]
-
-    //? dirty, needs checks for `fsx|--|*shadowcopyreferences-`;; but same as fsi (ILSpy)
-    let isShadowCopy x = (x = "/shadowcopyreferences" || x = "--shadowcopyreferences" || x = "/shadowcopyreferences+" || x = "--shadowcopyreferences+")
-    if AppDomain.CurrentDomain.IsDefaultAppDomain() && argv |> Array.exists isShadowCopy then
-        let setupInformation = AppDomain.CurrentDomain.SetupInformation
-        setupInformation.ShadowCopyFiles <- "true"
-        let helper = AppDomain.CreateDomain("FSI_Domain", null, setupInformation)
-        helper.ExecuteAssemblyByName(Assembly.GetExecutingAssembly().GetName()) |> ignore
 
     try
         let console = InteractiveConsole.ReadLineConsole()

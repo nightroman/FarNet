@@ -117,8 +117,9 @@ job {
 keys CtrlPgDn
 job {
 	#_120602_122636
-	Assert-Far $global:Error.Count -eq 1
-	$global:Error.Clear()
+	# was 1, now 0 in net6
+	Assert-Far $global:Error.Count -eq 0
+	#$global:Error.Clear()
 
 	# to Definition
 	Find-FarFile 'Definition'
@@ -142,8 +143,9 @@ job {
 	Assert-Far -FileDescription 'NewDescription'
 
 	#_120602_122636
-	Assert-Far $global:Error.Count -eq 3
-	$global:Error.Clear()
+	# was 3, now 0 in net6
+	Assert-Far $global:Error.Count -eq 0
+	#$global:Error.Clear()
 }
 
 # exit members

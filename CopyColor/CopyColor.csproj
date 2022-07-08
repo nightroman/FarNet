@@ -1,22 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <FarHome Condition="'$(FarHome)' == ''">C:\Bin\Far\x64</FarHome>
-    <MyOutDir>$(FarHome)\FarNet\Modules\$(AssemblyName)</MyOutDir>
-  </PropertyGroup>
-  <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
-    <RunPostBuildEvent>1</RunPostBuildEvent>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FarNet">
       <HintPath>$(FarHome)\FarNet\FarNet.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Copy DestinationFolder="$(MyOutDir)" SourceFiles="$(OutDir)\$(AssemblyName).dll" />
-    <Copy DestinationFolder="$(MyOutDir)" SourceFiles="$(OutDir)\$(AssemblyName).pdb" Condition="'$(Configuration)' == 'Debug'" />
-    <Delete Files="$(MyOutDir)\$(AssemblyName).pdb" Condition="'$(Configuration)' == 'Release'" />
+    <Exec Command="ib publish -Configuration $(Configuration) -FarHome $(FarHome)" />
   </Target>
 </Project>

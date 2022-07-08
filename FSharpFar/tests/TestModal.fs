@@ -2,8 +2,7 @@ module TestModal
 open FarNet
 open FarNet.FSharp
 
-[<Test>]
-let testDialogOverDialog = async {
+Test.Add("testDialogOverDialog", async {
     // dialog 1
     do! run { far.Message "testDialogOverDialog_1" }
     do! job { Assert.Equal("testDialogOverDialog_1", far.Dialog[1].Text) }
@@ -19,10 +18,9 @@ let testDialogOverDialog = async {
     // exit 1
     do! Jobs.Keys "Esc"
     do! job { Assert.NativePanel() }
-}
+})
 
-[<Test>]
-let testEditorOverDialog = async {
+Test.Add("testEditorOverDialog", async {
     // dialog
     do! run { far.Message "testEditorOverDialog" }
     do! job { Assert.Equal("testEditorOverDialog", far.Dialog[1].Text) }
@@ -42,10 +40,9 @@ let testEditorOverDialog = async {
     // exit dialog
     do! Jobs.Keys "Esc"
     do! job { Assert.NativePanel() }
-}
+})
 
-[<Test>]
-let testModalEditorIssue = async {
+Test.Add("testModalEditorIssue", async {
     // dialog
     do! Jobs.Run showWideDialog
 
@@ -74,4 +71,4 @@ let testModalEditorIssue = async {
     do! Jobs.Keys "Esc"
 
     do! job { Assert.NativePanel() }
-}
+})

@@ -4,7 +4,7 @@
 
 # PowerShellFar
 
-FarNet module for Far Manager
+PowerShell FarNet module for Far Manager
 
 * [About](#about)
 * [Installation](#installation)
@@ -41,12 +41,15 @@ FarNet module for Far Manager
 
 [Contents]
 
-PowerShellFar is the FarNet module for Far Manager. It is the Windows
-PowerShell host in the genuine console environment with rich UI.
+PowerShellFar is the FarNet module for Far Manager. It is the PowerShell Core
+host in the genuine console environment with powerful user interface and tools.
 
 PowerShellFar exposes the FarNet API and provides various ways of invoking
 commands and viewing the results. It includes cmdlets, modules, and scripts
 designed for Far Manager. Colorer takes care of editor syntax highlighting.
+
+PowerShell Core comes with PowerShellFar and runs scripts in Far Manager.
+Windows PowerShell runs scripts from Far Manager as the external app.
 
 **Project FarNet**
 
@@ -59,45 +62,23 @@ designed for Far Manager. Colorer takes care of editor syntax highlighting.
 
 [Contents]
 
-**Requirements**
+**Prerequisites**
 
-- Windows PowerShell v3+ (1)
-- Far Manager plugin FarNet
-
-(1) PowerShell v5.1 is tested, report issues in older versions.
-
-**Instructions**
+The Far Manager plugin FarNet should be installed first.
 
 How to install and update FarNet and modules:\
 <https://github.com/nightroman/FarNet#readme>
 
----
-**PowerShell execution policy**
-
-The module does not require this, it invokes scripts with any policy.
-This step is recommended for invoking scripts by *powershell.exe*.
-
-Start `powershell.exe` elevated, and type `Get-ExecutionPolicy`. If it is not
-*Bypass*, *Unrestricted*, or *RemoteSigned* invoke `Set-ExecutionPolicy` with
-the required value. *Bypass* is the least secure but it may work faster.
-
-On x64 machines `Set-ExecutionPolicy` should be set for x86 and x64. Use the
-Windows start menu in order to open x86 and x64 consoles and set the policy.
-
-If you are not administrator use the parameter `-Scope CurrentUser`.
-
----
 **Documentation**
 
 - *About-PowerShellFar.htm* - this documentation
 - *History.txt* - the change log
 
----
 **Bench scripts**
 
-Included Bench scripts are ready to use tools for various tasks. In order to to
-use these scripts directly from Bench include the directory Bench in the path.
-See also sample scripts in the repository.
+Included Bench scripts are ready to use tools for various tasks. In order to
+use scripts directly from Bench include the directory in the path. See also
+sample scripts in the repository.
 
 New users may want to configure the module with [Profile.ps1](#profileps1) in
 *%FARPROFILE%\FarNet\PowerShellFar*.

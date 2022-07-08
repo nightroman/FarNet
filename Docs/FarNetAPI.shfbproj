@@ -19,7 +19,7 @@
     <RootNamespace>FarNetAPI</RootNamespace>
     <Name>FarNetAPI</Name>
     <!-- SHFB properties -->
-    <FrameworkVersion>.NET Framework 4.7.2</FrameworkVersion>
+    <FrameworkVersion>.NET Core/.NET Standard/.NET 5.0+</FrameworkVersion>
     <OutputPath>.\Help\</OutputPath>
     <HtmlHelpName>FarNetAPI</HtmlHelpName>
     <Language>en-US</Language>
@@ -41,8 +41,6 @@
     <VisibleItems>InheritedMembers, Protected</VisibleItems>
     <DocumentationSources>
       <DocumentationSource sourceFile="$(FarHome)\FarNet\FarNet.dll" xmlns="" />
-      <DocumentationSource sourceFile="$(FarHome)\FarNet\FarNet.Tools.dll" xmlns="" />
-      <DocumentationSource sourceFile="$(FarHome)\FarNet\FarNet.Tools.xml" xmlns="" />
       <DocumentationSource sourceFile="$(FarHome)\FarNet\FarNet.xml" xmlns="" />
       <DocumentationSource sourceFile="$(FarHome)\FarNet\Modules\PowerShellFar\PowerShellFar.dll" xmlns="" />
       <DocumentationSource sourceFile="$(FarHome)\FarNet\Modules\PowerShellFar\PowerShellFar.xml" xmlns="" />
@@ -112,6 +110,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="About.aml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Management.Automation">
+      <HintPath>$(FarHome)\FarNet\Modules\PowerShellFar\runtimes\win\lib\net6.0\System.Management.Automation.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <!-- Import the SHFB build targets -->
   <Import Project="$(SHFBROOT)\SandcastleHelpFileBuilder.targets" />

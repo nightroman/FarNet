@@ -1,29 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <FarHome Condition="'$(FarHome)' == ''">C:\Bin\Far\x64</FarHome>
-    <MyOutDir>$(FarHome)\FarNet\Modules\$(AssemblyName)</MyOutDir>
-  </PropertyGroup>
-  <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <RunPostBuildEvent>1</RunPostBuildEvent>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="WeCantSpell.Hunspell" Version="4.0.0" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="FarNet">
       <HintPath>$(FarHome)\FarNet\FarNet.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="NHunspell">
-      <HintPath>$(FarHome)\FarNet\NHunspell\NHunspell.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Copy DestinationFolder="$(MyOutDir)" SourceFiles="$(OutDir)\$(AssemblyName).dll" />
-    <Copy DestinationFolder="$(MyOutDir)" SourceFiles="$(OutDir)\$(AssemblyName).pdb" Condition="'$(Configuration)' == 'Debug'" />
-    <Delete Files="$(MyOutDir)\$(AssemblyName).pdb" Condition="'$(Configuration)' == 'Release'" />
-    <!--publish last, assume output folder exists-->
-    <Exec Command="ib publish -FarHome $(FarHome)" />
+    <Exec Command="ib publish -Configuration $(Configuration) -FarHome $(FarHome)" />
   </Target>
 </Project>

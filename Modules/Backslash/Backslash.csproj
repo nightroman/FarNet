@@ -5,7 +5,7 @@
     <MyOutDir>$(FarNetModules)\$(AssemblyName)</MyOutDir>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <RunPostBuildEvent>1</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>

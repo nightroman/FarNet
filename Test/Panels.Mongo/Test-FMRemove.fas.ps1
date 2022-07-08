@@ -11,6 +11,7 @@ job {
 	$null = Start-Mongo
 	Import-Module FarMongo
 
+	Import-Module Mdbc
 	Connect-Mdbc .
 	Remove-MdbcDatabase z
 	$Database = Get-MdbcDatabase z
@@ -49,6 +50,8 @@ job {
 macro 'Keys"Del Enter" -- try delete 2'
 job {
 	Assert-Far -FileName 1
+
+	Import-Module Mdbc
 	Assert-Far 1L -eq (Get-MdbcData -Count -Collection $Data.x)
 }
 macro 'Keys"CtrlPgUp" -- back to collections'

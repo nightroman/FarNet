@@ -10,13 +10,12 @@ let workNormal = async {
     do! Jobs.Viewer viewer
 }
 
-[<Test>]
-let testNormal = async {
+Test.Add("testNormal", async {
     Jobs.StartImmediate workNormal
     do! job { Assert.Viewer() }
     do! Jobs.Keys "Esc"
     do! job { Assert.NativePanel() }
-}
+})
 
 let workModal = async {
     // dialog
@@ -31,8 +30,7 @@ let workModal = async {
     do! job { far.Message "OK" }
 }
 
-[<Test>]
-let testModal = async {
+Test.Add("testModal", async {
     Jobs.StartImmediate workModal
     do! job { Assert.Viewer() }
     do! Jobs.Keys "Esc"
@@ -47,4 +45,4 @@ let testModal = async {
     do! Jobs.Keys "Esc"
 
     do! job { Assert.NativePanel() }
-}
+})

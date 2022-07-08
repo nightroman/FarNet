@@ -12,7 +12,6 @@ using System.Globalization;
 using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Provider;
-using System.Management.Automation.Runspaces;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 
@@ -23,12 +22,6 @@ namespace PowerShellFar
 	/// </summary>
 	public static class Zoo
 	{
-		///
-		public static void Initialize(InitialSessionState state)
-		{
-			Commands.BaseCmdlet.AddCmdlets(state);
-		}
-
 		///
 		public static Meta[] TablePanelSetupColumns(object[] columns)
 		{
@@ -526,7 +519,7 @@ namespace My
 		/// </summary>
 		public static Process Start(string fileName, string arguments)
 		{
-			return Process.Start(new ProcessStartInfo() { FileName = fileName, Arguments = arguments });
+			return Process.Start(new ProcessStartInfo() { FileName = fileName, Arguments = arguments, UseShellExecute = true });
 		}
 	}
 }

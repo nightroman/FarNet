@@ -6,6 +6,5 @@
 *)
 
 open FarNet.FSharp
-open System.Reflection
 
-Test.Run(Assembly.GetExecutingAssembly())
+Test.Run()

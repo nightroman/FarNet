@@ -72,6 +72,8 @@ job {
 macro 'Keys"Esc Enter" -- repeat and exit'
 job {
 	Assert-Far -Native
+
+	Import-Module Mdbc
 	$r = Import-MdbcData $Data.File
 	Assert-Far $(
 		$r.Count -eq 3
@@ -99,6 +101,8 @@ job {
 macro 'Keys"Enter" -- yes'
 job {
 	Assert-Far -Native
+
+	Import-Module Mdbc
 	$r = Import-MdbcData $Data.File
 	Assert-Far $(
 		$r.Count -eq 2
@@ -130,6 +134,8 @@ job {
 macro 'Keys"Enter" -- yes'
 job {
 	Assert-Far -Native
+
+	Import-Module Mdbc
 	$r = Import-MdbcData $Data.File
 	Assert-Far $(
 		$r.Count -eq 2
@@ -157,6 +163,7 @@ job {
 macro 'Keys"F1 e" -- menu export to file'
 job {
 	# file saved
+	Import-Module Mdbc
 	$r = Import-MdbcData $Data.File
 	Assert-Far $(
 		$r.Count -eq 2

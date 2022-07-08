@@ -4,9 +4,9 @@
 
 using FarNet;
 using System;
-using System.Diagnostics;
+using System.IO;
 using System.Management.Automation;
-using System.Text.RegularExpressions;
+using System.Reflection;
 
 namespace PowerShellFar
 {
@@ -18,6 +18,7 @@ namespace PowerShellFar
 	{
 		internal static string LocalData { get; private set; }
 		internal static string RoamingData { get; private set; }
+
 		/// <summary>
 		/// INTERNAL
 		/// </summary>
@@ -27,6 +28,11 @@ namespace PowerShellFar
 		{
 			if (Instance != null)
 				throw new InvalidOperationException();
+
+			// ANSI off, not helping... //rk-0
+			//Environment.SetEnvironmentVariable("NO_COLOR", "1");
+			//Environment.SetEnvironmentVariable("TERM", "xtermm");
+			PSStyle.Instance.OutputRendering = OutputRendering.PlainText;
 
 			Instance = this;
 			LocalData = Manager.GetFolderPath(SpecialFolder.LocalData, true);

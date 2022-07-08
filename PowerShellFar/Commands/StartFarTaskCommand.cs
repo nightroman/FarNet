@@ -369,12 +369,6 @@ param($Script, $Data, $Arguments)
 		{
 			_iss = InitialSessionState.CreateDefault();
 
-			// add variables
-			_iss.Variables.Add(new SessionStateVariableEntry[] {
-				new SessionStateVariableEntry("LogEngineLifeCycleEvent", false, string.Empty),
-				new SessionStateVariableEntry("LogProviderLifeCycleEvent", false, string.Empty),
-			});
-
 			// add commands
 			_iss.Commands.Add(new SessionStateCommandEntry[] {
 				new SessionStateAliasEntry("job", NameInvokeTaskJob),

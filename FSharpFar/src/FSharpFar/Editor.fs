@@ -194,7 +194,7 @@ let toggleAutoCheck (editor: IEditor) =
     if not isAutoCheck then
         editor.MyErrors <- None
 
-let fixComplete word words (ident: PartialLongName) =
+let fixComplete (word: string) words (ident: PartialLongName) =
     if Array.isEmpty words && ident.LastDotPos.IsNone && "__SOURCE_DIRECTORY__".StartsWith word && word.Length > 0 then
         [| "__SOURCE_DIRECTORY__" |]
     else

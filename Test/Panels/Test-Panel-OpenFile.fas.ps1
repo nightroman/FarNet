@@ -9,7 +9,7 @@
 	_091202_073429
 #>
 
-$Data.File = "$env:FARHOME\Far.exe.config"
+$Data.File = "$env:FARHOME\Far.exe.example.ini"
 
 ### Open viewer and editor
 $F3F4 = {
@@ -51,7 +51,7 @@ job {
 ### Test FileInfo
 keys Down
 job {
-	Assert-Far (Get-FarFile).Name -eq "Far.exe.config"
+	Assert-Far (Get-FarFile).Name -eq "Far.exe.example.ini"
 }
 & $F3F4
 

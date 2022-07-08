@@ -1,62 +1,45 @@
 module Tests
 open FarNet.FSharp
-open System
 
-/// This is a typical synchronous test, `unit -> unit` module function.
-[<Test>]
-let testSync () =
+// This is a typical synchronous test, `unit -> unit` module function.
+Test.Add("testSync", fun () ->
     printfn "in testSync"
-    let tests = Test.GetTests()
-    Assert.Equal(6, tests.Count)
-    Assert.True(tests.ContainsKey("Tests.testSync"))
-    Assert.True(tests.ContainsKey("Tests.testAsync"))
-    Assert.True(tests.ContainsKey("Tests.testWithParameter1"))
-    Assert.True(tests.ContainsKey("Tests.testWithParameter2"))
-    Assert.True(tests.ContainsKey("Tests+Type1.TestSync"))
-    Assert.True(tests.ContainsKey("Tests+Type1.TestAsync"))
 
-/// This is a typical asynchronous test, `Async<unit>` module value.
-[<Test>]
-let testAsync = async {
+    let tests1 = Test.SyncTests
+    Assert.Equal(3, tests1.Count)
+    Assert.True(tests1.ContainsKey("testSync"))
+    Assert.True(tests1.ContainsKey("syncWithParameter1"))
+    Assert.True(tests1.ContainsKey("syncWithParameter2"))
+
+    let tests2 = Test.AsyncTests
+    Assert.Equal(3, tests2.Count)
+    Assert.True(tests2.ContainsKey("testAsync"))
+    Assert.True(tests2.ContainsKey("asyncWithParameter1"))
+    Assert.True(tests2.ContainsKey("asyncWithParameter2"))
+)
+
+// Body of a test with parameters.
+let syncWithParameter x () =
+    printfn "in syncWithParameter x=%i" x
+
+// Test with parameter 1.
+Test.Add("syncWithParameter1", syncWithParameter 1)
+
+// Test with parameter 2.
+Test.Add("syncWithParameter2", syncWithParameter 2)
+
+// This is a typical asynchronous test, `Async<unit>` module value.
+Test.Add("testAsync", async {
     do! job { printfn "in testAsync" }
+})
+
+// Body of a test with parameters.
+let asyncWithParameter x = async {
+    printfn "in asyncWithParameter x=%i" x
 }
 
-/// Body of the test with parameters.
-let testWithParameter x () =
-    printfn "in testWithParameter x=%i" x
+// Test with parameter 1.
+Test.Add("asyncWithParameter1", asyncWithParameter 1)
 
-/// Test with parameter 1.
-[<Test>]
-let testWithParameter1 = testWithParameter 1
-
-/// Test with parameter 2.
-[<Test>]
-let testWithParameter2 = testWithParameter 2
-
-/// Use types for groups of tests with common initialization and disposal.
-type Type1() =
-    // To test initialization (increment) and disposal (decrement).
-    // In each test x must be equal to 1.
-    static let mutable x = 0
-
-    // This is the common initialization.
-    do
-        // increment
-        x <- x + 1
-
-    // This is the common disposal.
-    interface IDisposable with
-        member __.Dispose() =
-            // decrement
-            x <- x - 1
-
-    [<Test>]
-    member __.TestSync() =
-        Assert.Equal(1, x)
-        printfn "in Type1.TestSync x=%i" x
-
-    [<Test>]
-    member __.TestAsync = async {
-        Assert.Equal(1, x)
-        do! job { printfn "in Type1.TestAsync x=%i" x }
-    }
+// Test with parameter 2.
+Test.Add("asyncWithParameter2", asyncWithParameter 2)

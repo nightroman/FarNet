@@ -84,8 +84,9 @@ namespace FarNet
 
 			// serialize
 			using var writer = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None);
+			using var xmlWriter = XmlWriter.Create(writer, new() { Indent = true });
 			var serializer = new XmlSerializer(data.GetType());
-			serializer.Serialize(writer, data);
+			serializer.Serialize(xmlWriter, data);
 		}
 
 		void ValidateData(object data)
@@ -155,7 +156,8 @@ namespace FarNet
 
 				var serializer = new XmlSerializer(_type);
 				using var writer = new StringWriter();
-				serializer.Serialize(writer, _data);
+				using var xmlWriter = XmlWriter.Create(writer, new() { Indent = true });
+				serializer.Serialize(xmlWriter, _data);
 				var docNew = new XmlDocument { PreserveWhitespace = false };
 				docNew.LoadXml(writer.ToString());
 				var xmlNew = docNew.DocumentElement.OuterXml;

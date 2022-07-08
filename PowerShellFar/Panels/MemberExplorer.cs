@@ -19,6 +19,7 @@ namespace PowerShellFar
 	public sealed class MemberExplorer : Explorer
 	{
 		const string TypeIdString = "be8984d6-fc4d-466d-9e5b-dede881f2232";
+
 		/// <summary>
 		/// Regular expression pattern of members to be excluded.
 		/// </summary>
@@ -28,6 +29,7 @@ namespace PowerShellFar
 			set { _ExcludeMemberRegex = new Regex(value, RegexOptions.IgnoreCase); }
 		}
 		Regex _ExcludeMemberRegex;
+
 		/// <summary>
 		/// Regular expression pattern of members to be hidden.
 		/// </summary>
@@ -39,6 +41,7 @@ namespace PowerShellFar
 		Regex _HideMemberRegex;
 		internal readonly PSObject Value;
 		internal int MemberMode { get; set; }
+
 		/// <summary>
 		/// New member explorer with an object.
 		/// </summary>
@@ -58,16 +61,16 @@ namespace PowerShellFar
 				ExplorerFunctions.GetContent |
 				ExplorerFunctions.SetText;
 		}
+
 		/// <inheritdoc/>
 		public override Panel CreatePanel()
 		{
 			return new MemberPanel(this);
 		}
+
 		/// <inheritdoc/>
 		public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 		{
-			if (args == null) return null;
-
 			var result = new List<FarFile>();
 			try
 			{
@@ -172,6 +175,7 @@ namespace PowerShellFar
 
 			return result;
 		}
+
 		/// <inheritdoc/>
 		public override void GetContent(GetContentEventArgs args)
 		{
@@ -195,6 +199,7 @@ namespace PowerShellFar
 
 			args.CanSet = pi.IsSettable;
 		}
+
 		/// <inheritdoc/>
 		public override void SetText(SetTextEventArgs args)
 		{
@@ -206,6 +211,7 @@ namespace PowerShellFar
 			else
 				A.SetPropertyFromTextUI(Value, pi, args.Text.TrimEnd());
 		}
+
 		/// <inheritdoc/>
 		public override void DeleteFiles(DeleteFilesEventArgs args)
 		{
@@ -250,6 +256,7 @@ namespace PowerShellFar
 				MemberPanel.WhenMemberChanged(Value); //????? will it be 2 times for THIS panel?
 			}
 		}
+
 		/// <inheritdoc/>
 		public override void CreateFile(CreateFileEventArgs args)
 		{

@@ -1,9 +1,9 @@
-/// Demo Jobs functions for panels.
+// Demo Jobs functions for panels.
 module TestPanel02
 open FarNet
 open FarNet.FSharp
 
-/// Opens a panel with 3 items. After closing shows a message with selected items.
+// Opens a panel with 3 items. After closing shows a message with selected items.
 let workWaitPanelClosing = async {
     // open the panel with 3 items
     let! panel = Jobs.OpenPanel(fun () ->
@@ -17,8 +17,7 @@ let workWaitPanelClosing = async {
     do! job { far.Message(sprintf "%A" r) }
 }
 
-[<Test>]
-let testWaitPanelClosing = async {
+Test.Add("testWaitPanelClosing", async {
     Jobs.Start workWaitPanelClosing
     do! Assert.Wait Window.IsModulePanel
     do! Jobs.Keys "Down Down Esc"
@@ -28,9 +27,9 @@ let testWaitPanelClosing = async {
     }
     do! Jobs.Keys "Esc"
     do! job { Assert.NativePanel() }
-}
+})
 
-/// Opens a panel with 3 items. After closing shows a message "OK".
+// Opens a panel with 3 items. After closing shows a message "OK".
 let workWaitPanelClosed = async {
     // open the panel with 3 items
     let! panel = Jobs.OpenPanel(fun () ->
@@ -42,8 +41,7 @@ let workWaitPanelClosed = async {
     do! job { far.Message "OK" }
 }
 
-[<Test>]
-let testWaitPanelClosed = async {
+Test.Add("testWaitPanelClosed", async {
     Jobs.Start workWaitPanelClosed
     do! Assert.Wait Window.IsModulePanel
     do! Jobs.Keys "Esc"
@@ -53,16 +51,15 @@ let testWaitPanelClosed = async {
     }
     do! Jobs.Keys "Esc"
     do! job { Assert.NativePanel() }
-}
+})
 
-/// Fails to open a panel, for testing.
+// Fails to open a panel, for testing.
 let workOpenPanelFails = async {
     // call OpenPanel with a function not opening a panel
     do! Jobs.OpenPanel ignore |> Async.Ignore
 }
 
-[<Test>]
-let testOpenPanelFails = async {
+Test.Add("testOpenPanelFails", async {
     Jobs.Start workOpenPanelFails
     do! Assert.Wait Window.IsDialog
     do! job {
@@ -71,4 +68,4 @@ let testOpenPanelFails = async {
     }
     do! Jobs.Keys "Esc"
     do! job { Assert.NativePanel() }
-}
+})

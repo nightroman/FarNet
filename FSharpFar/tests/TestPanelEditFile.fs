@@ -2,7 +2,7 @@
 open FarNet
 open FarNet.FSharp
 
-/// Common test code
+// Common test code
 let testErrorsOnSaving keys1 (delay: int) keys2 = async {
     // open panel
     do! Jobs.Job PanelEditFile.run
@@ -56,12 +56,8 @@ let testErrorsOnSaving keys1 (delay: int) keys2 = async {
     do! Jobs.Keys "Esc"
 }
 
-/// Errors on saving without closing the editor
-[<Test>]
-let test1 =
-    testErrorsOnSaving "F2" 1111 "F2 Esc"
+// Errors on saving without closing the editor
+Test.Add("testErrorsOnSaving1", testErrorsOnSaving "F2" 1111 "F2 Esc")
 
-/// Errors on saving on closing the editor
-[<Test>]
-let test2 =
-    testErrorsOnSaving "Esc Enter" 0 "Esc Enter"
+// Errors on saving on closing the editor
+Test.Add("testErrorsOnSaving2", testErrorsOnSaving "Esc Enter" 0 "Esc Enter")

@@ -42,7 +42,7 @@ job {
 
 job {
 	# find file
-	Find-FarFile 'far.exe.config'
+	Find-FarFile 'Far.exe.example.ini'
 }
 
 macro 'Keys"CtrlA" -- open attributes dialog'
@@ -50,15 +50,15 @@ macro 'Keys"CtrlA" -- open attributes dialog'
 job {
 	# test: the dialog and its control
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[2].Text -eq 'Far.exe.config'
+	Assert-Far $Far.Dialog[2].Text -eq 'Far.exe.example.ini'
 }
 
 macro 'Keys"Esc" -- exit dialog'
 
 job {
-	# test: the window (panels) and item ('far.exe.config')
+	# test: the window (panels) and item ('Far.exe.example.ini')
 	Assert-Far -Panels
-	Assert-Far (Get-FarFile).Name -eq 'Far.exe.config'
+	Assert-Far (Get-FarFile).Name -eq 'Far.exe.example.ini'
 }
 
 ### HOW TO: start a modal dialog

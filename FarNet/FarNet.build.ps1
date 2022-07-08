@@ -6,13 +6,12 @@
 param(
 	$Platform = (property Platform x64),
 	$Configuration = (property Configuration Release),
-	$TargetFramework = (property TargetFramework net472)
+	$TargetFramework = (property TargetFramework net6.0)
 )
 $FarHome = "C:\Bin\Far\$Platform"
 
 $script:Builds = @(
 	'FarNet\.build.ps1'
-	'FarNet.Tools\.build.ps1'
 	'FarNet.Works.Config\.build.ps1'
 	'FarNet.Works.Dialog\.build.ps1'
 	'FarNet.Works.Editor\.build.ps1'
@@ -31,18 +30,14 @@ task clean {
 }
 
 task install {
-	Stop-Process -Name Far -ErrorAction Ignore
-	foreach($_ in $Builds) { Invoke-Build install $_ }
-	Copy-Item Far.exe.config $FarHome
-	Copy-Item -Destination "$FarHome\FarNet" @(
-		"FarNet.Tools\bin\$Configuration\$TargetFramework\FarNet.Tools.xml"
-	)
+	foreach($_ in $Builds) {
+		Invoke-Build install $_
+	}
 },
 helpHLF
 
 task uninstall {
 	foreach($_ in $Builds) { Invoke-Build uninstall $_ }
-	remove $FarHome\Far.exe.config
 }
 
 # Make HLF, called by Build (Install), depends on x64/x86
@@ -69,21 +64,12 @@ task helpHTM {
 
 # Test config and make another platform before packaging
 task beginPackage {
-	# check Far.exe.config
-	$xml = [xml](Get-Content $FarHome\Far.exe.config)
-	$nodes = @($xml.SelectNodes('configuration/appSettings/add'))
-	assert ($nodes.Count -eq 0)
-	$nodes = @($xml.SelectNodes('configuration/system.diagnostics/switches/add'))
-	assert ($nodes.Count -eq 1)
-	assert ($nodes[0].name -ceq 'FarNet.Trace')
-	assert ($nodes[0].value -ceq 'Warning')
-
 	# make another platform
 	$bit = if ($Platform -eq 'Win32') {'x64'} else {'Win32'}
 
 	#! build just FarNetMan, PowerShellFar is not needed and causes locked files...
 	exec { & (Resolve-MSBuild) @(
-		"..\FarNetAccord.sln"
+		"..\FarNet6.sln"
 		"/t:restore,FarNetMan"
 		"/p:Platform=$bit"
 		"/p:Configuration=Release"
@@ -102,15 +88,12 @@ task package beginPackage, helpHTM, {
 
 	# copy
 	[System.IO.File]::Delete("$FarHome\FarNet\FarNetAPI.chw")
-	Copy-Item -Destination z\tools\FarHome $FarHome\Far.exe.config
 	Copy-Item -Destination z\tools\FarHome\FarNet $(
 		'About-FarNet.htm'
 		'History.txt'
 		'..\LICENSE'
 		"$FarHome\FarNet\FarNet.dll"
 		"$FarHome\FarNet\FarNet.xml"
-		"$FarHome\FarNet\FarNet.Tools.dll"
-		"$FarHome\FarNet\FarNet.Tools.xml"
 		"$FarHome\FarNet\FarNet.Works.Config.dll"
 		"$FarHome\FarNet\FarNet.Works.Dialog.dll"
 		"$FarHome\FarNet\FarNet.Works.Editor.dll"
@@ -118,14 +101,29 @@ task package beginPackage, helpHTM, {
 		"$FarHome\FarNet\FarNet.Works.Panels.dll"
 		"$FarHome\FarNet\FarNetAPI.chm"
 	)
-	Copy-Item -Destination z\tools\FarHome\Plugins\FarNet $FarHome\Plugins\FarNet\FarNetMan.hlf
+	Copy-Item -Destination z\tools\FarHome\Plugins\FarNet @(
+		"$FarHome\Plugins\FarNet\FarNetMan.hlf"
+		"$FarHome\Plugins\FarNet\FarNetMan.runtimeconfig.json"
+	)
 	if ($Platform -eq 'Win32') {
-		Copy-Item -Destination z\tools\FarHome.x64\Plugins\FarNet FarNetMan\Release\x64\FarNetMan.dll
-		Copy-Item -Destination z\tools\FarHome.x86\Plugins\FarNet $FarHome\Plugins\FarNet\FarNetMan.dll
+		Copy-Item -Destination z\tools\FarHome.x64\Plugins\FarNet @(
+			"FarNetMan\Release\x64\FarNetMan.dll"
+			"FarNetMan\Release\x64\Ijwhost.dll"
+		)
+		Copy-Item -Destination z\tools\FarHome.x86\Plugins\FarNet @(
+			"$FarHome\Plugins\FarNet\FarNetMan.dll"
+			"$FarHome\Plugins\FarNet\Ijwhost.dll"
+		)
 	}
 	else {
-		Copy-Item -Destination z\tools\FarHome.x64\Plugins\FarNet $FarHome\Plugins\FarNet\FarNetMan.dll
-		Copy-Item -Destination z\tools\FarHome.x86\Plugins\FarNet FarNetMan\Release\Win32\FarNetMan.dll
+		Copy-Item -Destination z\tools\FarHome.x64\Plugins\FarNet @(
+			"$FarHome\Plugins\FarNet\FarNetMan.dll"
+			"$FarHome\Plugins\FarNet\Ijwhost.dll"
+		)
+		Copy-Item -Destination z\tools\FarHome.x86\Plugins\FarNet @(
+			"FarNetMan\Release\Win32\FarNetMan.dll"
+			"FarNetMan\Release\Win32\Ijwhost.dll"
+		)
 	}
 
 	# icon

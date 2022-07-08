@@ -334,7 +334,10 @@ namespace PowerShellFar.Commands
 						IEditor editor = Far.Api.CreateEditor();
 						editor.FileName = MyInvocation.ScriptName;
 						editor.GoToLine(MyInvocation.ScriptLineNumber - 1);
-						editor.Open();
+
+						//! post opening or editor may be half rendered
+						Far.Api.PostJob(editor.Open);
+
 						throw new PipelineStoppedException();
 					}
 			}
