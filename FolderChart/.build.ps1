@@ -52,7 +52,7 @@ task package version, markdown, {
 	Copy-Item -Destination $dir @(
 		"README.htm"
 		"History.txt"
-		"LICENSE.txt"
+		"LICENSE"
 		"$ModuleHome\$ModuleName.dll"
 	)
 }
