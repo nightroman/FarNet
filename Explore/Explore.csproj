@@ -3,7 +3,7 @@
     <Company>https://github.com/nightroman/FarNet</Company>
     <Copyright>Copyright (c) Roman Kuzmin</Copyright>
     <Product>FarNet.Explore</Product>
-    <Version>2.1.3</Version>
+    <Version>2.1.4</Version>
     <Description>Search in FarNet panels</Description>
   </PropertyGroup>
   <PropertyGroup>
@@ -11,7 +11,7 @@
     <MyOutDir>$(FarHome)\FarNet\Modules\$(AssemblyName)</MyOutDir>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <RunPostBuildEvent>1</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>

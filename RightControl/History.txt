@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.RightControl
 
+= 2.4.1 =
+
+Use netstandard2.0
+
 = 2.4.0 =
 
 Requires FarNet 5.6.0.

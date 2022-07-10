@@ -5,17 +5,13 @@
     <MyOutDir>$(FarNetModules)\$(AssemblyName)</MyOutDir>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <RunPostBuildEvent>1</RunPostBuildEvent>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FarNet">
       <HintPath>$(FarHome)\FarNet\FarNet.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="NHunspell">
-      <HintPath>$(FarHome)\FarNet\NHunspell\NHunspell.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

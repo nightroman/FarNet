@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.Drawer
 
+= 1.2.4 =
+
+Use netstandard2.0
+
 = 1.2.3 =
 
 CurrentWordDrawer:

@@ -1,5 +1,9 @@
 FarNet.EditorKit
 
+= 0.0.4 =
+
+Use netstandard2.0
+
 = 0.0.3 =
 
 Temporary work around https://github.com/editorconfig/editorconfig-core-net/issues/15

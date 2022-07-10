@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.CopyColor
 
+= 2.1.4 =
+
+Use net472.
+
 = 2.1.3 =
 
 Requires FarNet 5.7.1

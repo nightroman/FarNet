@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.Explore
 
+= 2.1.4 =
+
+Use netstandard2.0
+
 = 2.1.3 =
 
 Maintenance.
