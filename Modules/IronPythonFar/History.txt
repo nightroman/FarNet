@@ -1,0 +1,5 @@
+https://www.nuget.org/packages/FarNet.IronPythonFar
+
+= 0.0.1 =
+
+First preview.

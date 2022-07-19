@@ -7,11 +7,7 @@ param(
 	$FarHome = (property FarHome)
 )
 
-$Builds = @(
-	'Backslash\.build.ps1'
-	'FarNet.Demo\.build.ps1'
-	'TryPanelCSharp\.build.ps1'
-)
+$Builds = Get-Item *\*.build.ps1
 
 task testBuild {
 	# build
@@ -21,10 +17,11 @@ task testBuild {
 	# test
 	assert (Test-Path $FarNetModules\Backslash\Backslash.dll)
 	assert ((Get-Item $FarNetModules\FarNet.Demo\*).Count -eq 5)
+	assert (Test-Path $FarNetModules\IronPythonFar\IronPythonFar.dll)
 	assert (Test-Path $FarNetModules\TryPanelCSharp\TryPanelCSharp.dll)
 
 	# clean
-	Remove-Item $FarNetModules -Recurse -Force
+	remove $FarNetModules
 },
 clean
 
