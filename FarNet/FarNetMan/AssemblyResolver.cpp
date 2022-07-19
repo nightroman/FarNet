@@ -17,6 +17,9 @@ void AssemblyResolver::Init()
 	auto root = Environment::GetEnvironmentVariable("FARHOME") + "\\FarNet";
 	for each (auto path in Directory::EnumerateFiles(root, "*.dll", SearchOption::AllDirectories))
 	{
+		if (path->Contains("\\native\\"))
+			continue;
+
 		auto key = Path::GetFileNameWithoutExtension(path);
 
 		// add, if 2+ null it

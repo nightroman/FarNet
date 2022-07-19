@@ -287,7 +287,6 @@
     <ClInclude Include="History.h" />
     <ClInclude Include="InputBox.h" />
     <ClInclude Include="ListItemCollection.h" />
-    <ClInclude Include="Log.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="Message.h" />
     <ClInclude Include="Panel0.h" />

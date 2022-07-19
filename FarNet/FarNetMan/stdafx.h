@@ -60,5 +60,4 @@ extern PluginStartupInfo Info;
 extern const GUID MainGuid;
 extern const GUID ColorerGuid;
 
-#include "Log.h"
 #include "Utils.h"

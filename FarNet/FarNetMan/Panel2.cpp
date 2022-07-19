@@ -489,8 +489,6 @@ wchar_t** NewColumnTitles(array<FarColumn^>^ columns)
 
 void InitPanelMode(::PanelMode& d, PanelPlan^ s)
 {
-	assert(s != nullptr);
-
 	// options
 	if (s->IsAlignedExtensions)
 		d.Flags |= PMFLAGS_ALIGNEXTENSIONS;
@@ -601,10 +599,6 @@ void Panel2::SetPlan(PanelViewMode mode, PanelPlan^ plan)
 
 void Panel2::CreateModes()
 {
-	assert(m != nullptr);
-	assert(_Plans != nullptr);
-	assert(!m->PanelModesArray);
-
 	::PanelMode* modes = new PanelMode[10];
 	memset(modes, 0, 10 * sizeof(::PanelMode));
 
@@ -621,12 +615,8 @@ void Panel2::CreateModes()
 
 void Panel2::DeleteModes()
 {
-	assert(m != nullptr);
-
 	if (!m->PanelModesArray)
 		return;
-
-	assert(_Plans && _Plans->Length == 10);
 
 	for (int i = 10; --i >= 0;)
 	{

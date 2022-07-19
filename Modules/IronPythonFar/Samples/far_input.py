@@ -1,4 +1,4 @@
-﻿# Th variable `far` is predefined.
+﻿# The variable `far` is predefined.
 
 res = far.Input('Enter your name')
 if res:
