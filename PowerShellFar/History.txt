@@ -2,7 +2,9 @@ https://www.nuget.org/packages/FarNet.PowerShellFar
 
 = 6.0.0 =
 
-Requires FarNet 6, uses .NET 6 and Microsoft.PowerShell.SDK 7.2.5
+Requires FarNet 6 and uses .NET 6
+
+FarNet 6 announcement -- https://github.com/nightroman/FarNet/pull/25
 
 Main changes in PowerShell (module not changed much):
 - It's PowerShell 7.2.5, not 5.1, some things are slightly different, mostly better.
