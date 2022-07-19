@@ -4,10 +4,12 @@
 #>
 
 param(
-	$Platform = (property Platform x64)
+	$Configuration = (property Configuration Release),
+	$FarHome = (property FarHome C:\Bin\Far\x64)
 )
-$FarHome = "C:\Bin\Far\$Platform"
-$ModuleHome = "$FarHome\FarNet\Modules\Drawer"
+
+$ModuleName = 'Drawer'
+$ModuleHome = "$FarHome\FarNet\Modules\$ModuleName"
 
 task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props version, {
 	Set-Content Directory.Build.props @"
@@ -15,7 +17,7 @@ task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props version
   <PropertyGroup>
     <Company>https://github.com/nightroman/FarNet</Company>
     <Copyright>Copyright (c) Roman Kuzmin</Copyright>
-    <Product>FarNet.Drawer</Product>
+    <Product>FarNet.$ModuleName</Product>
     <Version>$Version</Version>
     <Description>Editor color tools</Description>
   </PropertyGroup>
@@ -23,8 +25,15 @@ task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props version
 "@
 }
 
-task build {
-	exec { dotnet build -c Release /p:FarHome=$FarHome }
+task build meta, {
+	exec { dotnet build -c $Configuration /p:FarHome=$FarHome }
+}
+
+task publish {
+	Copy-Item -Destination $ModuleHome @(
+		"bin\$Configuration\net6.0\$ModuleName.dll"
+		"bin\$Configuration\net6.0\$ModuleName.pdb"
+	)
 }
 
 task help {
@@ -42,7 +51,7 @@ task help {
 }
 
 task clean {
-	remove z, bin, obj, README.htm, FarNet.Drawer.*.nupkg
+	remove z, bin, obj, README.htm, FarNet.$ModuleName.*.nupkg
 }
 
 task version {
@@ -51,8 +60,8 @@ task version {
 }
 
 task package help, version, {
-	equals "$Version.0" (Get-Item $ModuleHome\Drawer.dll).VersionInfo.FileVersion
-	$toModule = 'z\tools\FarHome\FarNet\Modules\Drawer'
+	equals "$Version.0" (Get-Item $ModuleHome\$ModuleName.dll).VersionInfo.FileVersion
+	$toModule = "z\tools\FarHome\FarNet\Modules\$ModuleName"
 
 	remove z
 	$null = mkdir $toModule
@@ -65,7 +74,7 @@ task package help, version, {
 		'README.htm'
 		'History.txt'
 		'LICENSE'
-		"$ModuleHome\Drawer.dll"
+		"$ModuleHome\$ModuleName.dll"
 	)
 }
 
@@ -86,7 +95,7 @@ https://github.com/nightroman/FarNet#readme
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
-		<id>FarNet.Drawer</id>
+		<id>FarNet.$ModuleName</id>
 		<version>$Version</version>
 		<owners>Roman Kuzmin</owners>
 		<authors>Roman Kuzmin</authors>
@@ -95,7 +104,7 @@ https://github.com/nightroman/FarNet#readme
 		<license type="expression">BSD-3-Clause</license>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>$description</description>
-		<releaseNotes>https://github.com/nightroman/FarNet/blob/master/Drawer/History.txt</releaseNotes>
+		<releaseNotes>https://github.com/nightroman/FarNet/blob/master/$ModuleName/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module</tags>
 	</metadata>
 </package>

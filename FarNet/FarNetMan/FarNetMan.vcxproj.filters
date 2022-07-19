@@ -98,11 +98,15 @@
     <ClCompile Include="History.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AssemblyResolver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Export.def">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="FarNetMan.runtimeconfig.json" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CommandLine.h">
@@ -202,6 +206,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Active.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AssemblyResolver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

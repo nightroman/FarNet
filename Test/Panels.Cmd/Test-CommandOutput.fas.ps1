@@ -54,7 +54,7 @@ job {
 	$buff = $Host.UI.RawUI.GetBufferContents($rect)
 	$buff | Select-Object Character, ForegroundColor | Export-Csv -NoTypeInformation c:\temp\buffer.csv
 	$md5 = [guid][System.Security.Cryptography.MD5]::Create().ComputeHash([System.IO.File]::ReadAllBytes('C:\TEMP\buffer.csv'))
-	Assert-Far $md5 -eq ([guid]'2892b82f-bde7-3ff6-c90d-eaf91ad5038f')
+	Assert-Far $md5 -eq ([guid]'e55f1fbd-bd5d-14da-8b5b-5736a8a41244')
 	Remove-Item C:\TEMP\buffer.csv
 	Assert-Far $Data.errorCount -eq ($global:Error.Count - 1)
 	$global:Error.RemoveAt(0)
@@ -121,7 +121,7 @@ job {
 	$buff | Select-Object Character, ForegroundColor | Export-Csv -NoTypeInformation c:\temp\buffer.csv
 	#! used to get different MD5 in different PS versions
 	$result = [guid][System.Security.Cryptography.MD5]::Create().ComputeHash([System.IO.File]::ReadAllBytes('C:\TEMP\buffer.csv'))
-	$sample = [guid]'170f2c3d-1d3f-19f5-5010-26ed8fe8c89e'
+	$sample = [guid]'49b63993-7e6b-3257-5923-4ccfb8f1bf2a'
 	Assert-Far $sample -eq $result
 	Remove-Item C:\TEMP\buffer.csv
 }

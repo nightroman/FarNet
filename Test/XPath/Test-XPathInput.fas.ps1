@@ -1,6 +1,4 @@
 ﻿
-Add-Type -Path $env:FARHOME\FarNet\FarNet.Tools.dll
-
 $Data.XPathInput = "$PSScriptRoot\Demo-XFile.xq"
 
 ### Test 1: *) from file; *) enter a number

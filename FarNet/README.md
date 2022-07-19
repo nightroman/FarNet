@@ -48,7 +48,7 @@ tiny pieces of boilerplate framework code.
 
 **Requirements**
 
-- .NET Framework 4.7.2 or newer
+- .NET 6 SDK (recommended) or runtime
 - Microsoft Visual C++ 2015-2022 Redistributable
 - Far Manager, see History.txt for the required version
 
@@ -62,11 +62,6 @@ How to install and update FarNet and modules:
 
 **Installed files**
 
-*%FARHOME%*
-
-- *Far.exe.config* - the configuration file. If it is missing or invalid then
-  Far Manager fails to load FarNet.
-
 *%FARHOME%\Plugins\FarNet*
 
 - *FarNetMan.dll* - Far Manager plugin and module manager
@@ -76,7 +71,6 @@ How to install and update FarNet and modules:
 *%FARHOME%\FarNet*
 
 - *FarNet.dll*, *FarNet.xml* - FarNet API for .NET modules (and XML API comments).
-- *FarNet.Tools.dll*, *FarNet.Tools.xml* - FarNet module tools library.
 - *FarNet...dll* - other FarNet libraries used internally by the core.
 
 *%FARHOME%\FarNet\Modules*
@@ -187,8 +181,7 @@ The following environment variables are used in special cases:
 its modules.
 
 Read [Installation](#Installation) steps for FarNet and modules and ensure all
-is done correctly. Often mistake: *Far.exe.config* is not copied to the Far
-home directory.
+is done correctly.
 
 ---
 

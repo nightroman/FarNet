@@ -3,8 +3,8 @@
 # RightWords
 
 RightWords is the FarNet module for Far Manager. It provides the spell-checker
-and thesaurus based on NHunspell. The core Hunspell is used in OpenOffice and
-it works with dictionaries published on OpenOffice.org.
+based on `WeCantSpell.Hunspell`. Hunspell dictionaries are used by OpenOffice
+and may be found on OpenOffice.org.
 
 * [Installation](#installation)
 * [Options](#options)
@@ -13,7 +13,6 @@ it works with dictionaries published on OpenOffice.org.
 Interface
 
 * [Main menu](#main-menu)
-* [Thesaurus menu](#thesaurus-menu)
 * [Correction list](#correction-list)
 * [Add to Dictionary](#add-to-dictionary)
 
@@ -24,64 +23,48 @@ Project
 
 Credits
 
-NHunspell - Hunspell Spell Checking for .NET
-<https://www.nuget.org/packages/NHunspell/>
+WeCantSpell.Hunspell - A port of Hunspell for .NET
+<https://github.com/aarondandy/WeCantSpell.Hunspell>
 
 *********************************************************************
 ## Installation
 
 [Contents]
 
-**FarNet and RightWords**
-
 How to install and update FarNet and modules:
 <https://github.com/nightroman/FarNet#readme>
-
-**Dictionaries**
-
-The *NHunspell* library is included to the package but dictionaries are not.
 
 OpenOffice dictionaries:
 <http://wiki.services.openoffice.org/wiki/Dictionaries>
 
-Copy dictionaries to new subdirectories of the directory *NHunspell*,
-e.g. to directories *English* and *Russian*.
+**Dictionary structure (example):**
 
----
+    %FARPROFILE%\FarNet\RightWords\
 
-The installed file structure (dictionaries may be different):
+        English\
+            en_GB.aff  (Hunspell affix file)
+            en_GB.dic  (Hunspell words file)
 
-    %FARHOME%\FarNet\Modules\RightWords
+        Russian\
+            ru_RU.aff  (Hunspell affix file)
+            ru_RU.dic  (Hunspell words file)
 
-        README.htm - documentation
-        History.txt - the change log
-        RightWords.macro.lua - sample macros
+        RightWords.dic          (user common words)
+        RightWords.English.dic  (user words for English)
+        RightWords.Russian.dic  (user words for Russian)
 
-        LICENSE.txt - the license
-        RightWords.dll - module assembly
-        RightWords.hlf - module help file
-        RightWords.resources - English UI strings
-        RightWords.ru.resources - Russian UI strings
+Language dictionaries are up to a user. Directories may have any names, e.g.
+above `English`, `Russian`. These names are used in the dictionary menu and
+as suffixes in user dictionary names (`English` ~ `RightWords.English.dic`).
 
-    %FARHOME%\FarNet\NHunspell
+**Encoding (UTF-8 is recommended)**
 
-        NHunspell.dll, Hunspellx86.dll, Hunspellx64.dll
+FarNet 6 and .NET Core do not support so much encodings as .NET Framework.
+UTF-8 is recommended for all dictionaries. How to convert dictionaries in
+Far Manager editor:
 
-        English
-            en_GB.aff, en_GB.dic - spelling dictionaries
-            th_en_US_v2.dat - thesaurus (optional)
-
-        Russian
-            ru_RU.aff, ru_RU.dic - spelling dictionaries
-            th_ru_RU_v2.dat - thesaurus (optional)
-
-NOTES
-
-- Dictionaries are up to a user.
-- Thesaurus files are optional.
-- Dictionary directories may have any names. The names are used in the
-  dictionary menu and in the user dictionary file names (e.g. English ->
-  RightWords.English.dic).
+- `.aff` - open, find and change `SET ...` to `SET UTF-8`, save as UTF-8
+- `.dic` - open and save as UTF-8
 
 *********************************************************************
 ## Options
@@ -177,29 +160,7 @@ Commands:
     Checks spelling and shows suggestions in the selected text or starting from the caret position.
     See [Correction list](#correction-list).
 
-- *Thesaurus...*
-
-    Prompts for a word and shows the list of its meanings and synonyms.
-    See [Thesaurus menu](#thesaurus-menu).
-
 See also [Options](#options).
-
-*********************************************************************
-## Thesaurus menu
-
-[Contents]
-
-This menu shows words in groups of synonyms and related concepts.
-
-Keys and actions:
-
-- `[Esc]`, `[Enter]`
-
-    Close the menu.
-
-- `[CtrlC]`, `[CtrlIns]`
-
-    Copy the word to clipboard.
 
 *********************************************************************
 ## Correction list
@@ -231,18 +192,17 @@ Additional commands:
 
 On adding a word to the common dictionary, choose one of the suggested variants.
 
-On adding a word to a language dictionary, provide two stems: the new word stem
-and its example stem. If the example stem is empty then the word is added as it
-is (not very different from adding to the common dictionary).
+On adding to a language dictionary, provide two stems: the new word and sample
+existing in the dictionary. If the sample stem is empty the word is added as is.
 
 Examples:
 
-English stems: plugin + pin
+English stems: "plugin" and "pin".
 These forms become correct:
 
     plugin   plugins   Plugin   Plugins
 
-Russian stems: плагин + камин
+Russian stems: "плагин" and "камин".
 These forms become correct:
 
     плагин   плагины   Плагин   Плагины
@@ -251,9 +211,9 @@ These forms become correct:
     плагином плагинами Плагином Плагинами
     плагине  плагинах  Плагине  Плагинах
 
-CAUTION: Mind word capitalization, e.g. add "plugin", not "Plugin".
+CAUTION: Mind capitalization, e.g. "plugin", not "Plugin".
 
 User dictionaries are UTF-8 text files in the module roaming directory:
-*RightWords.dic* (common) and files like *RightWords.XYZ.dic* (languages).
+*RightWords.dic* (common) and files like *RightWords.English.dic* (languages).
 
 *********************************************************************

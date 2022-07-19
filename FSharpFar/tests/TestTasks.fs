@@ -3,7 +3,7 @@ open FarNet
 open FarNet.FSharp
 open System
 
-/// Use Tasks.Job, Tasks.Job<T>, Tasks.Editor, Tasks.Keys
+// Use Tasks.Job, Tasks.Job<T>, Tasks.Editor, Tasks.Keys
 let workTasks = async {
     // task with action
     do! Tasks.Job(fun () -> far.Message("Action")) |> Async.AwaitTask
@@ -22,8 +22,7 @@ let workTasks = async {
     do! Tasks.Keys("CtrlG") |> Async.AwaitTask
 }
 
-[<Test>]
-let testTasks = async {
+Test.Add("testTasks", async {
     Jobs.StartImmediate workTasks
 
     // message box
@@ -45,9 +44,9 @@ let testTasks = async {
     do! Assert.Wait Window.IsDialog
     do! job { Assert.Equal(Guid("044ef83e-8146-41b2-97f0-404c2f4c7b69"), far.Dialog.TypeId) }
     do! Jobs.Keys "Esc"
-}
+})
 
-/// Call EditTextAsync twice, expected text 1: $x=1; 2: $x=3
+// Call EditTextAsync twice, expected text 1: $x=1; 2: $x=3
 let workEditText = async {
     let args = EditTextArgs()
     args.Text <- ""
@@ -61,8 +60,7 @@ let workEditText = async {
     Assert.Equal("$x=3", text)
 }
 
-[<Test>]
-let testEditText = async {
+Test.Add("testEditText", async {
     Jobs.StartImmediate workEditText
 
     // type $x=1, save, exit
@@ -72,4 +70,4 @@ let testEditText = async {
     // select all, type $x=2, save, exit
     do! Assert.Wait(fun () -> Window.IsEditor() && far.Editor[0].Text = "$x=2")
     do! Jobs.Keys "CtrlA $ x = 3 F2 Esc"
-}
+})

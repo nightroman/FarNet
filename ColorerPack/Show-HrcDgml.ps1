@@ -34,7 +34,11 @@ if ($Output) {
 	$Output = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($Output)
 }
 else {
-	$Output = "$env:TEMP\Colorer-$([System.IO.Path]::GetFileNameWithoutExtension($File))-$($File.GetHashCode()).dgml"
+	$Output = '{0}\Colorer-{1}-{2}.dgml' -f @(
+		$env:TEMP
+		[IO.Path]::GetFileNameWithoutExtension($File)
+		[IO.Path]::GetFileName([IO.Path]::GetDirectoryName($File))
+	)
 }
 
 # get schemes

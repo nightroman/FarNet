@@ -12,7 +12,7 @@ task nuget {
 
 # Synopsis: Test FarNet assets.
 task testNuGet {
-	.\Test-Update-FarNet.ps1
+	.\Test-NuGet.ps1
 }
 
 # Synopsis: Zip FarDev sources on release.

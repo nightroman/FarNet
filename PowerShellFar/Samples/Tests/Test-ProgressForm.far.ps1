@@ -17,8 +17,6 @@ param(
 	[switch]$NoCancel
 )
 
-Add-Type -Path $env:FARHOME\FarNet\FarNet.Tools.dll
-
 ### 1) create the progress form, do not show yet
 $Progress = New-Object FarNet.Tools.ProgressForm
 $Progress.Title = "ProgressForm: CanCancel=$(!$NoCancel)"

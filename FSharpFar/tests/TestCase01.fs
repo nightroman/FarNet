@@ -3,7 +3,7 @@ open Wizard
 open FarNet
 open FarNet.FSharp
 
-/// Similar to demo wizard but simpler + cancel + error.
+// Similar to demo wizard but simpler + cancel + error.
 let work = async {
     let mutable text = "Hello,\nWorld!"
     let mutable answer = 1
@@ -28,9 +28,8 @@ let work = async {
     do! job { far.Message(text, "Done") }
 }
 
-/// The full demo with one return to the editor.
-[<Test>]
-let testNo = async {
+// The full demo with one return to the editor.
+Test.Add("testNo", async {
     Jobs.StartImmediate work
     do! job { Assert.Editor() }
 
@@ -60,11 +59,10 @@ let testNo = async {
     // exit dialog
     do! Jobs.Keys "Esc"
     do! job { Assert.NativePanel() }
-}
+})
 
-/// The job is stopped by exception.
-[<Test>]
-let testError = async {
+// The job is stopped by exception.
+Test.Add("testError", async {
     Jobs.StartImmediate work
     do! job { Assert.Editor() }
 
@@ -79,11 +77,10 @@ let testError = async {
     // exit dialog
     do! Jobs.Keys "Esc"
     do! job { Assert.NativePanel() }
-}
+})
 
-/// The job is stopped by cancel.
-[<Test>]
-let testCancel = async {
+// The job is stopped by cancel.
+Test.Add("testCancel", async {
     Jobs.StartImmediate work
     do! job { Assert.Editor() }
 
@@ -94,4 +91,4 @@ let testCancel = async {
     // Cancel -> panels
     do! Jobs.Keys "C"
     do! job { Assert.NativePanel() }
-}
+})

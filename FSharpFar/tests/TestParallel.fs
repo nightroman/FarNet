@@ -4,8 +4,7 @@ open FarNet
 open FarNet.FSharp
 open System.Text.RegularExpressions
 
-[<Test>]
-let test = async {
+Test.Add("TestParallel", async {
     Async.Start(demo 1.)
     do! Assert.Wait(fun () -> Window.IsDialog() && far.Dialog[0].Text = "done")
 
@@ -17,4 +16,4 @@ let test = async {
 
     do! Jobs.Keys "Esc"
     do! job { Assert.NativePanel() }
-}
+})

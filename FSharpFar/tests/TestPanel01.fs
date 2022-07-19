@@ -2,9 +2,8 @@ module TestPanel01
 open FarNet
 open FarNet.FSharp
 
-/// Not a panel test but related to panels.
-[<Test>]
-let testSkipModal = async {
+// Not a panel test but related to panels.
+Test.Add("testSkipModal", async {
     async {
         // dialog
         Jobs.StartImmediate(Jobs.Job showWideDialog)
@@ -23,10 +22,9 @@ let testSkipModal = async {
     // exit dialog
     do! Jobs.Keys "Esc"
     do! job { Assert.NativePanel() }
-}
+})
 
-[<Test>]
-let testCannotOpenOnModal = async {
+Test.Add("testCannotOpenOnModal", async {
     // dialog
     Jobs.StartImmediate(Jobs.Job showWideDialog)
     do! job { Assert.Dialog() }
@@ -42,10 +40,9 @@ let testCannotOpenOnModal = async {
     // exit two dialogs
     do! Jobs.Keys "Esc Esc"
     do! job { Assert.NativePanel() }
-}
+})
 
-[<Test>]
-let testCanOpenFromEditor = async {
+Test.Add("testCanOpenFromEditor", async {
     // editor
     do! job {
         let editor = far.CreateEditor(FileName = far.TempName())
@@ -68,4 +65,4 @@ let testCanOpenFromEditor = async {
         Assert.NativePanel()
         Assert.Equal(2, far.Window.Count)
     }
-}
+})

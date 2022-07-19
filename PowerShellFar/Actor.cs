@@ -3,6 +3,7 @@
 // Copyright (c) Roman Kuzmin
 
 using FarNet;
+using Microsoft.PowerShell;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -147,12 +148,10 @@ namespace PowerShellFar
 			state.Variables.Add(new SessionStateVariableEntry[] {
 				new SessionStateVariableEntry("Far", Far.Api, "Exposes FarNet.", ScopedItemOptions.AllScope | ScopedItemOptions.Constant),
 				new SessionStateVariableEntry("Psf", this, "Exposes PowerShellFar.", ScopedItemOptions.AllScope | ScopedItemOptions.Constant),
-				new SessionStateVariableEntry("LogEngineLifeCycleEvent", false, string.Empty),
-				new SessionStateVariableEntry("LogProviderLifeCycleEvent", false, string.Empty),
 			});
 
-			// can run scripts regadless of execution policy
-			state.AuthorizationManager = new AuthorizationManager(Res.Me);
+			// can run scripts
+			state.ExecutionPolicy = ExecutionPolicy.Bypass;
 
 			// cmdlets
 			Commands.BaseCmdlet.AddCmdlets(state);

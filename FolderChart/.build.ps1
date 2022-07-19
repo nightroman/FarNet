@@ -4,15 +4,23 @@
 #>
 
 param(
-	$Platform = (property Platform x64)
+	$Configuration = (property Configuration Release),
+	$FarHome = (property FarHome C:\Bin\Far\x64)
 )
-$FarHome = "C:\Bin\Far\$Platform"
+
 $ModuleName = 'FolderChart'
 $ModuleHome = "$FarHome\FarNet\Modules\$ModuleName"
 
 task build meta, {
 	exec { dotnet restore }
-	exec { dotnet msbuild $ModuleName.csproj /p:FarHome=$FarHome /p:Configuration=Release }
+	exec { dotnet msbuild $ModuleName.csproj /p:FarHome=$FarHome /p:Configuration=$Configuration }
+}
+
+task publish {
+	exec { dotnet publish "$ModuleName.csproj" -c $Configuration -o $ModuleHome --no-build }
+
+	Set-Location $ModuleHome
+	remove FolderChart.deps.json, runtimes\unix, runtimes\win-arm64
 }
 
 task clean {
@@ -36,24 +44,22 @@ task markdown {
 }
 
 task package version, markdown, {
-	# test files
-	assert (!(Test-Path "$ModuleHome\$ModuleName.pdb")) 'Is it Debug build? .pdb exists.'
-
 	$dll = Get-Item "$ModuleHome\$ModuleName.dll"
 	assert ($dll.VersionInfo.FileVersion -match '^(\d+\.\d+\.\d+)\.0$')
 	equals ($matches[1]) $script:Version
 
-	# package files
 	remove z
-	$dir = mkdir "z\tools\FarHome\FarNet\Modules\$ModuleName"
+	$toModule = mkdir "z\tools\FarHome\FarNet\Modules\$ModuleName"
+
+	exec { robocopy $ModuleHome $toModule /s /xf *.pdb } (0..2)
+	equals 8 (Get-ChildItem $toModule -Recurse -File).Count
 
 	Copy-Item -Destination z ..\Zoo\FarNetLogo.png
 
-	Copy-Item -Destination $dir @(
+	Copy-Item -Destination $toModule @(
 		"README.htm"
 		"History.txt"
 		"LICENSE"
-		"$ModuleHome\$ModuleName.dll"
 	)
 }
 

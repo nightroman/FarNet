@@ -23,6 +23,8 @@ namespace PowerShellFar
 		protected abstract void AppendLine(string value);
 		public sealed override void Write(string value)
 		{
+			value = RemoveAnsi(value);
+
 			_mode = WriteMode.None;
 			Append(value);
 		}
@@ -33,6 +35,8 @@ namespace PowerShellFar
 		}
 		public sealed override void WriteLine(string value)
 		{
+			value = RemoveAnsi(value);
+
 			_mode = WriteMode.None;
 			AppendLine(value);
 		}

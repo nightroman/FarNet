@@ -2,36 +2,36 @@ module TestAssert
 open FarNet.FSharp
 open System
 
-[<Test>]
-let True() =
+Test.Add("True", fun () ->
     Assert.Throws<AssertException>(fun () -> Assert.True(false)) |> ignore
+)
 
-[<Test>]
-let False() =
+Test.Add("False", fun () ->
     Assert.Throws<AssertException>(fun () -> Assert.False(true)) |> ignore
+)
 
-[<Test>]
-let Equal() =
+Test.Add("Equal", fun () ->
     Assert.Throws<AssertException>(fun () -> Assert.Equal(1, 2)) |> ignore
+)
 
-[<Test>]
-let NotEqual() =
+Test.Add("NotEqual", fun () ->
     Assert.Throws<AssertException>(fun () -> Assert.NotEqual(null, null)) |> ignore
+)
 
-[<Test>]
-let Null() =
+Test.Add("Null", fun () ->
     Assert.Throws<AssertException>(fun () -> Assert.Null(obj ())) |> ignore
+)
 
-[<Test>]
-let NotNull() =
+Test.Add("NotNull", fun () ->
     Assert.Throws<AssertException>(fun () -> Assert.NotNull(null)) |> ignore
+)
 
-[<Test>]
-let ThrowsNothing() =
+Test.Add("ThrowsNothing", fun () ->
     let exn = Assert.Throws<AssertException>(fun () -> Assert.Throws<exn>(ignore) |> ignore)
     Assert.True(exn.Message.StartsWith("No exception was thrown."))
+)
 
-[<Test>]
-let ThrowsUnexpected() =
+Test.Add("ThrowsUnexpected", fun () ->
     let exn = Assert.Throws<AssertException>(fun () -> Assert.Throws<ArgumentException>(fun () -> failwith "oops") |> ignore)
     Assert.True(exn.Message.StartsWith("Expected exception 'System.ArgumentException', actual 'System.Exception'"))
+)

@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.Drawer
 
+= 2.0.0 =
+
+Requires FarNet 6, uses .NET 6.
+
 = 1.2.4 =
 
 Use netstandard2.0

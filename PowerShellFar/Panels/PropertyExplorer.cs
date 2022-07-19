@@ -190,11 +190,11 @@ namespace PowerShellFar
 			List<string> names = A.FileNameList(args.Files);
 
 			//! Registry: workaround: (default)
-			if (Provider.ImplementingType == typeof(RegistryProvider))
+			if (Provider.Name == "Registry")
 			{
-				for (int i = names.Count; --i >= 0; )
+				for (int i = names.Count; --i >= 0;)
 				{
-					if (Kit.Equals(names[i], "(default)"))
+					if (names[i] == "(default)")
 					{
 						// remove or not
 						if (!confirm || 0 == Far.Api.Message("Delete the (default) property", Res.Delete, MessageOptions.YesNo))
@@ -277,7 +277,7 @@ namespace PowerShellFar
 				throw new InvalidOperationException(Res.ParameterString);
 
 			//! Registry: workaround: (default)
-			if (Kit.Equals(args.File.Name, "(default)") && Provider.ImplementingType == typeof(RegistryProvider))
+			if (Provider.Name == "Registry" && args.File.Name == "(default)")
 			{
 				args.Result = JobResult.Ignore;
 				if (args.UI)

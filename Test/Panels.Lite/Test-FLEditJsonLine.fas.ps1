@@ -8,6 +8,7 @@ job {
 	$Data.FileName = "$env:TEMP\z.LiteDB"
 	if (Test-Path $Data.FileName) {Remove-Item $Data.FileName}
 
+	Import-Module Ldbc
 	Use-LiteDatabase $Data.FileName {
 		$test = Get-LiteCollection test
 		[ordered]@{_id = 1; line1 = "value1"; line2 = "value2"} | Add-LiteData $test
@@ -52,6 +53,7 @@ job {
 }
 macro 'Keys"Esc Enter" -- exit editor, save'
 job {
+	Import-Module Ldbc
 	$r = Use-LiteDatabase $Data.FileName {
 		$test = Get-LiteCollection test
 		Get-LiteData $test

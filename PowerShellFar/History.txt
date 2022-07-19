@@ -1,5 +1,17 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 6.0.0 =
+
+Requires FarNet 6 and uses .NET 6
+
+FarNet 6 announcement -- https://github.com/nightroman/FarNet/pull/25
+
+Main changes in PowerShell (module not changed much):
+- It's PowerShell 7.2.5, not 5.1, some things are slightly different, mostly better.
+- Module auto-import is no more, use Import-Module before calling its commands.
+- WMI cmdlets are no more. CIM cmdlets replace them but they do not work yet.
+- PowerShell jobs do not work yet, use Start-FarTask, better in many ways.
+
 = 5.9.5 =
 
 Object panel:

@@ -87,7 +87,7 @@ task meta -Inputs .build.ps1, Get-Version.ps1 -Outputs @(
 task build meta, {
 	#! build the whole solution, i.e. FarNet, FarNetMan, PowerShellFar
 	exec { & (Resolve-MSBuild) @(
-		'FarNetAccord.sln'
+		'FarNet6.sln'
 		'/t:restore,build'
 		'/verbosity:minimal'
 		"/p:FarHome=$FarHome"
@@ -95,7 +95,7 @@ task build meta, {
 		"/p:Configuration=$Configuration"
 	)}
 
-	Invoke-Build help, buildPowerShellFarHelp .\PowerShellFar\PowerShellFar.build.ps1
+	Invoke-Build help, markdown .\PowerShellFar\PowerShellFar.build.ps1
 }
 
 # Synopsis: Build and install API docs.

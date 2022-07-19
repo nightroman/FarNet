@@ -1,6 +1,17 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 6.0.0 =
+
+Requires .NET 6 SDK or runtime, see https://github.com/nightroman/FarNet#readme
+
+FarNet 6 announcement -- https://github.com/nightroman/FarNet/pull/25
+
+Main changes (plugin and API did not change much):
+- FarNet.Tools.dll is removed, types moved to FarNet.dll not changed.
+- All published FarNet.* modules are updated.
+- Modules are now developed with net6.0+.
+
 = 5.9.4 =
 
 ProgressForm

@@ -26,8 +26,7 @@ let work = async {
         do! job { far.Message "cancel" }
 }
 
-[<Test>]
-let testEmpty = async {
+Test.Add("testEmpty", async {
     Jobs.StartImmediate work
     do! job { Assert.Dialog() }
 
@@ -47,10 +46,9 @@ let testEmpty = async {
 
     do! Jobs.Keys "Esc"
     do! job { Assert.NativePanel() }
-}
+})
 
-[<Test>]
-let testItem1 = async {
+Test.Add("testItem1", async {
     Jobs.StartImmediate work
     do! job { Assert.Dialog() }
 
@@ -63,4 +61,4 @@ let testItem1 = async {
 
     do! Jobs.Keys "Esc"
     do! job { Assert.NativePanel() }
-}
+})

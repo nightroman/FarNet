@@ -11,7 +11,6 @@ namespace FarNet.Works
 	{
 		public static Dictionary<Guid, IModuleAction> Actions { get; } = new();
 		public static Host Instance { get; set; }
-		public static HostState State { get; set; }
 
 		public abstract void RegisterProxyCommand(IModuleCommand info);
 		public abstract void RegisterProxyDrawer(IModuleDrawer info);
@@ -44,14 +43,5 @@ namespace FarNet.Works
 			}
 			return tools.ToArray();
 		}
-	}
-
-	public enum HostState
-	{
-		None,
-		Loading,
-		Loaded,
-		Unloading,
-		Unloaded
 	}
 }

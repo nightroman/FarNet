@@ -4,18 +4,18 @@
 #>
 
 param(
-	$Platform = (property Platform x64)
+	$Configuration = (property Configuration Release),
+	$FarHome = (property FarHome C:\Bin\Far\x64)
 )
 
-$FarHome = "C:\Bin\Far\$Platform"
-$ModuleHome = "$FarHome\FarNet\Modules\RightControl"
+$ModuleName = 'RightControl'
+$ModuleHome = "$FarHome\FarNet\Modules\$ModuleName"
 
 # Get version from history.
 function Get-Version {
 	switch -Regex -File History.txt {'=\s*(\d+\.\d+\.\d+)\s*=' {return $Matches[1]} }
 }
 
-# Generate or update meta files.
 task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props {
 	$Version = Get-Version
 
@@ -24,7 +24,7 @@ task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props {
   <PropertyGroup>
     <Company>https://github.com/nightroman/FarNet</Company>
     <Copyright>Copyright (c) Roman Kuzmin</Copyright>
-    <Product>FarNet.RightControl</Product>
+    <Product>FarNet.$ModuleName</Product>
     <Version>$Version</Version>
     <Description>Far Manager editor and line editor tweaks</Description>
   </PropertyGroup>
@@ -32,12 +32,17 @@ task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props {
 "@
 }
 
-# Build and install
 task build meta, {
-	exec { dotnet build -c Release "/p:FarHome=$FarHome" }
+	exec { dotnet build -c $Configuration /p:FarHome=$FarHome }
 }
 
-# New README.htm
+task publish {
+	Copy-Item -Destination $ModuleHome @(
+		"bin\$Configuration\net6.0\$ModuleName.dll"
+		"bin\$Configuration\net6.0\$ModuleName.pdb"
+	)
+}
+
 task help {
 	assert (Test-Path $env:MarkdownCss)
 	exec {
@@ -52,20 +57,17 @@ task help {
 	}
 }
 
-# Remove temp files.
 task clean {
-	remove z, bin, obj, README.htm, FarNet.RightControl.*.nupkg
+	remove z, bin, obj, README.htm, FarNet.$ModuleName.*.nupkg
 }
 
-# Set $script:Version
 task version {
 	($script:Version = Get-Version)
 }
 
-# Copy package files to z\tools
 task package help, version, {
-	equals "$Version.0" (Get-Item $ModuleHome\RightControl.dll).VersionInfo.FileVersion
-	$toModule = 'z\tools\FarHome\FarNet\Modules\RightControl'
+	equals "$Version.0" (Get-Item $ModuleHome\$ModuleName.dll).VersionInfo.FileVersion
+	$toModule = "z\tools\FarHome\FarNet\Modules\$ModuleName"
 
 	remove z
 	$null = mkdir $toModule
@@ -74,15 +76,15 @@ task package help, version, {
 	Copy-Item -Destination z ..\Zoo\FarNetLogo.png
 
 	# module
-	Copy-Item -Destination $toModule `
-	README.htm,
-	History.txt,
-	LICENSE,
-	RightControl.macro.lua,
-	$ModuleHome\RightControl.dll
+	Copy-Item -Destination $toModule @(
+		'README.htm'
+		'History.txt'
+		'LICENSE'
+		"$ModuleHome\$ModuleName.dll"
+		'RightControl.macro.lua'
+	)
 }
 
-# New NuGet package
 task nuget package, version, {
 	$description = @'
 RightControl is the FarNet module for Far Manager.
@@ -102,7 +104,7 @@ https://github.com/nightroman/FarNet#readme
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
-		<id>FarNet.RightControl</id>
+		<id>FarNet.$ModuleName</id>
 		<version>$Version</version>
 		<owners>Roman Kuzmin</owners>
 		<authors>Roman Kuzmin</authors>
@@ -111,7 +113,7 @@ https://github.com/nightroman/FarNet#readme
 		<license type="expression">BSD-3-Clause</license>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>$description</description>
-		<releaseNotes>https://github.com/nightroman/FarNet/blob/master/RightControl/History.txt</releaseNotes>
+		<releaseNotes>https://github.com/nightroman/FarNet/blob/master/$ModuleName/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module</tags>
 	</metadata>
 </package>

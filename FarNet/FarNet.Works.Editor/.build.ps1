@@ -1,3 +1,3 @@
 
-$Assembly = 'FarNet.Works.Editor.dll'
+$Assembly = 'FarNet.Works.Editor'
 ..\FarNet.tasks.ps1

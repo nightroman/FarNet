@@ -2,14 +2,16 @@
 // FarNet module RightWords
 // Copyright (c) Roman Kuzmin
 
-namespace FarNet.RightWords
+using WeCantSpell.Hunspell;
+
+namespace FarNet.RightWords;
+
+class DictionaryInfo
 {
-	class DictionaryInfo
-	{
-		public string Language;
-		public string HunspellAffFile;
-		public string HunspellDictFile;
-		public string MyThesDatFile;
-		public int HitCount;
-	}
+	public string Language;
+	public string HunspellAffFile;
+	public string HunspellDictFile;
+	public int HitCount;
+	public WordList WordList;
+	public WordList UserList;
 }

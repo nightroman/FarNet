@@ -1,3 +1,3 @@
 
-$Assembly = 'FarNet.Works.Dialog.dll'
+$Assembly = 'FarNet.Works.Dialog'
 ..\FarNet.tasks.ps1

@@ -1,33 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
+    <FarHome Condition=" '$(FarHome)' == '' ">C:\Bin\Far\x64</FarHome>
     <Description>PowerShell scripting for FarNet</Description>
-    <TargetFramework>net472</TargetFramework>
-    <LangVersion>10.0</LangVersion>
+    <TargetFramework>net6.0</TargetFramework>
     <WarningLevel>5</WarningLevel>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <FarHome Condition=" '$(FarHome)' == '' ">C:\Bin\Far\x64</FarHome>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Remove="Bench\**" />
     <Compile Remove="Modules\**" />
     <Compile Remove="Samples\**" />
   </ItemGroup>
-
   <ItemGroup>
-    <ProjectReference Include="..\FarNet\FarNet.Tools\FarNet.Tools.csproj" />
-    <ProjectReference Include="..\FarNet\FarNet\FarNet.csproj" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Management.Automation">
-      <HintPath>$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\WindowsPowerShell\3.0\System.Management.Automation.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
+    <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.5" />
   </ItemGroup>
-
+  <ItemGroup>
+    <ProjectReference Include="..\FarNet\FarNet\FarNet.csproj">
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="ib install $(MSBuildProjectDirectory)\PowerShellFar.build.ps1 -FarHome $(FarHome) -Configuration $(Configuration) -TargetFramework $(TargetFramework)" />
+    <Exec Command="ib publish -Configuration $(Configuration) -FarHome $(FarHome)" />
   </Target>
-
 </Project>

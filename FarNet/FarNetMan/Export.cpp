@@ -4,15 +4,16 @@
 
 #include "stdafx.h"
 #include <initguid.h>
+#include "AssemblyResolver.h"
 #include "Active.h"
 #include "Dialog.h"
 #include "Editor0.h"
 #include "Far0.h"
-#include "Far1.h"
 #include "Panel0.h"
 #include "Viewer0.h"
 #include "UI.h"
 
+AppState g_AppState;
 PluginStartupInfo Info;
 static FarStandardFunctions FSF;
 
@@ -32,7 +33,7 @@ void WINAPI GetGlobalInfoW(struct GlobalInfo* info)
 	info->Guid = MainGuid;
 	info->Title = L"FarNet";
 	info->Author = L"Roman Kuzmin";
-	info->Description = L"FarNet module manager.";
+	info->Description = L"FarNet module manager";
 }
 
 /*
@@ -41,41 +42,26 @@ But more calls are possible, we have to ignore them.
 */
 void WINAPI SetStartupInfoW(const PluginStartupInfo* psi)
 {
-	Log::Source->TraceInformation(__FUNCTION__ "{");
-	try
-	{
-		// deny 2+ load
-		if (Works::Host::State != Works::HostState::None)
-		{
-			Far::Api->Message("FarNet cannot be loaded twice.", "FarNet", MessageOptions::Warning);
-			return;
-		}
+	// deny 2+ load
+	if (g_AppState != AppState::None)
+		return;
 
-		// loading
-		Works::Host::State = Works::HostState::Loading;
-
-		// inject
-		Far::Api = % Far1::Instance;
+	// loading
+	g_AppState = AppState::Loading;
+	AssemblyResolver::Init();
+	AppDomain::CurrentDomain->AssemblyResolve += gcnew ResolveEventHandler(AssemblyResolver::AssemblyResolve);
 
 #ifdef TRACE_MEMORY
-		StartTraceMemory();
+	StartTraceMemory();
 #endif
 
-		Info = *psi;
-		FSF = *psi->FSF;
-		Info.FSF = &FSF;
+	Info = *psi;
+	FSF = *psi->FSF;
+	Info.FSF = &FSF;
 
-		__START;
-		Far0::Start();
-		__END;
-
-		// loaded
-		Works::Host::State = Works::HostState::Loaded;
-	}
-	finally
-	{
-		Log::Source->TraceInformation(__FUNCTION__ "}");
-	}
+	// load
+	Far0::Start();
+	g_AppState = AppState::Loaded;
 }
 
 /*
@@ -84,28 +70,21 @@ STOP: ensure it is "loaded".
 */
 void WINAPI ExitFARW(const ExitInfo*)
 {
-	Log::Source->TraceInformation(__FUNCTION__ "{");
+	if (g_AppState != AppState::Loaded)
+		return;
+
 	try
 	{
-		if (Works::Host::State == Works::HostState::Loaded)
-		{
-			// unloading
-			Works::Host::State = Works::HostState::Unloading;
-
-			// don't try/catch, Far can't help
-			Far0::Stop();
-
-			// unloaded
-			Works::Host::State = Works::HostState::Unloaded;
+		// don't try/catch, Far can't help
+		Far0::Stop();
 
 #ifdef TRACE_MEMORY
-			StopTraceMemory();
+		StopTraceMemory();
 #endif
-		}
 	}
 	finally
 	{
-		Log::Source->TraceInformation(__FUNCTION__ "}");
+		g_AppState = AppState::Unloaded;
 	}
 }
 
@@ -120,7 +99,7 @@ void WINAPI GetPluginInfoW(PluginInfo* pi)
 {
 	pi->Flags = PF_DIALOG | PF_EDITOR | PF_VIEWER | PF_FULLCMDLINE | PF_PRELOAD;
 
-	if (Works::Host::State != Works::HostState::Loaded)
+	if (g_AppState != AppState::Loaded)
 		return;
 
 	__START;

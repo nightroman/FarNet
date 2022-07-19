@@ -3,8 +3,8 @@
 	Tests TabExpansion2.
 #>
 
-$ErrorActionPreference=1
-Assert-Far (!$Error) -Message 'Please clear errors.'
+$ErrorActionPreference = 1
+$Error.Clear()
 
 # Ensure TabExpansion2 is loaded in the FarHost
 if ($Host.Name -ceq 'FarHost') {
@@ -68,8 +68,8 @@ Test '$xml.tes' { $_ -ceq 'tests'}
 
 Test @'
 ls
-$*var
-'@ { $_ -ccontains '$MaximumVariableCount' }
+$*my
+'@ { $_ -ccontains '$MyInvocation' }
 
 ### members of a static object
 
@@ -170,15 +170,15 @@ ls
 '@ { [string]$_ -ceq '[System. [SystemException]' }
 Test '[mi' { $_ -ccontains '[Microsoft.' }
 Test '[system.da' { $_ -ccontains '[System.Data.' }
-Test '[system.data.sq' { $_ -ccontains '[System.Data.Sql.' }
-Test '[system.data.sqlclient.sqle' { $_ -ccontains '[System.Data.SqlClient.SqlError]' }
+Test '[system.data.sq' { $_ -ccontains '[System.Data.SqlClient.' }
+Test '[system.data.sqlclient.sql' { $_ -ccontains '[System.Data.SqlClient.SqlClientPermission]' }
 
 # order: namespaces then classes
 Test '[System.Management.aut' { ($_ -join '=') -match '\[System\.Management\.Automation\.=.*\[System\.Management\.AuthenticationLevel\]' }
 
 # wildcard namespace and type names
 Test '[*commandty*' { $_ -ccontains '[System.Data.CommandType]' }
-Test '[*sqlcom*' { $_ -ccontains '[System.Data.SqlClient.SqlCommand]' }
+Test '[*sqlcom*' { $_ -ccontains '[System.Data.SqlTypes.SqlCompareOptions]' }
 
 # Generics
 Test '[Collections.Generic.h' { $_ -ccontains '[Collections.Generic.HashSet[]]' }
@@ -349,4 +349,5 @@ Test '$hosZ' -caret 4 {$_ -contains '$Host'}
 Test '$hos$' -caret 4 {$_ -contains '$Host'}
 
 # OK
+Assert-Far $Error.Count -eq 0
 "Done TabExpansion test, $($sw.Elapsed)"

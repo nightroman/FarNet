@@ -13,8 +13,6 @@ param(
 	[int]$JobSteps = 10
 )
 
-Add-Type -Path $env:FARHOME\FarNet\FarNet.Tools.dll
-
 ### 1) progress box showing activity description
 $Progress = [FarNet.Tools.ProgressBox]'ProgressBox: activity text only'
 try {

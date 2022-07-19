@@ -1,13 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <FarHome Condition="'$(FarHome)' == ''">C:\Bin\Far\x64</FarHome>
-    <MyOutDir>$(FarHome)</MyOutDir>
+    <MyOutDir>$(FarHome)\FarNet\Modules\FSharpFar</MyOutDir>
     <!-- https://github.com/Microsoft/visualfsharp/issues/3656 -->
     <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
-    <DisableImplicitSystemValueTupleReference>true</DisableImplicitSystemValueTupleReference>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <RunPostBuildEvent>1</RunPostBuildEvent>
     <WarningLevel>5</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -25,17 +24,12 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="FSharp.Core">
-      <HintPath>..\..\packages\FSharp.Core\lib\netstandard2.0\FSharp.Core.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="FSharp.Compiler.Service">
-      <HintPath>..\..\packages\FSharp.Compiler.Service\lib\netstandard2.0\FSharp.Compiler.Service.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
+    <PackageReference Include="FSharp.Compiler.Service" Version="41.0.5" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Copy DestinationFolder="$(MyOutDir)" SourceFiles="$(OutDir)\fsx.exe" />
-    <Copy DestinationFolder="$(MyOutDir)" SourceFiles="fsx.exe.config" SkipUnchangedFiles="true" />
+    <ItemGroup>
+      <MyItem1 Include="$(OutDir)\fsx.*" />
+    </ItemGroup>
+    <Copy DestinationFolder="$(MyOutDir)" SourceFiles="@(MyItem1)" SkipUnchangedFiles="true" />
   </Target>
 </Project>

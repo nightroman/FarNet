@@ -9,17 +9,19 @@
 	* $FarHome
 	* $Configuration
 	* $TargetFramework
-	* $Assembly - assembly file name
+	* $Assembly - assembly base name
 #>
 
-task Clean {
+task clean {
 	Remove-Item bin, obj -Recurse -Force -ErrorAction 0
 }
 
-task Install -Partial -Inputs "bin\$Configuration\$TargetFramework\$Assembly" -Outputs "$FarHome\FarNet\$Assembly" {process{
-	Copy-Item -LiteralPath $_ $2
-}}
+task install {
+	Copy-Item -Destination "$FarHome\FarNet" @(
+		"bin\$Configuration\$TargetFramework\$Assembly.dll"
+	)
+}
 
-task Uninstall {
-	Remove-Item -LiteralPath "$FarHome\FarNet\$Assembly" -ErrorAction 0
+task uninstall {
+	Remove-Item "$FarHome\FarNet\$Assembly.dll" -ErrorAction 0
 }

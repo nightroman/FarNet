@@ -1,10 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <FarHome Condition="'$(FarHome)' == ''">C:\Bin\Far\x64</FarHome>
-    <MyOutDir>$(FarHome)\FarNet\Modules\$(AssemblyName)</MyOutDir>
-  </PropertyGroup>
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <RunPostBuildEvent>1</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
@@ -15,16 +12,11 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="EditorConfig.Core.dll">
-      <HintPath>C:\-\GIT\editorconfig-core-net\src\EditorConfig.Core\bin\release\net45\EditorConfig.Core.dll</HintPath>
+      <!--TODO use nuget when they push my fix - https://github.com/editorconfig/editorconfig-core-net/pull/16 -->
+      <HintPath>C:\-\GIT\editorconfig-core-net\src\EditorConfig.Core\bin\release\netstandard2.0\EditorConfig.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <MyItem Include="$(OutDir)\$(AssemblyName).dll" />
-    <MyItem Include="$(OutDir)\$(AssemblyName).pdb" Condition="'$(Configuration)' == 'Debug'" />
-    <MyItem Include="$(OutDir)\EditorConfig.Core.dll" />
-  </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Copy DestinationFolder="$(MyOutDir)" SourceFiles="@(MyItem)" SkipUnchangedFiles="true" />
-    <Delete Files="$(MyOutDir)\$(AssemblyName).pdb" Condition="'$(Configuration)' == 'Release'" />
+    <Exec Command="ib publish -Configuration $(Configuration) -FarHome $(FarHome)" />
   </Target>
 </Project>

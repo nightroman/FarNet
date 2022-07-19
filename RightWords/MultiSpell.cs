@@ -2,118 +2,131 @@
 // FarNet module RightWords
 // Copyright (c) Roman Kuzmin
 
-using NHunspell;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using WeCantSpell.Hunspell;
 
-namespace FarNet.RightWords
+namespace FarNet.RightWords;
+
+sealed class MultiSpell
 {
-	sealed class MultiSpell
+	static MultiSpell _instance;
+	readonly List<DictionaryInfo> _dictionaries;
+
+	public static MultiSpell Get()
 	{
-		static readonly WeakReference _instance = new WeakReference(null);
-		readonly List<DictionaryInfo> _dictionaries;
-		readonly List<Hunspell> _spells;
-		public static MultiSpell Get()
+		return _instance ??= new MultiSpell(Actor.Dictionaries);
+	}
+
+	MultiSpell(List<DictionaryInfo> dictionaries)
+	{
+		// system dictionaries and spellers
+		_dictionaries = dictionaries;
+
+		// reset hit counters
+		foreach (var dictionary in dictionaries)
+			dictionary.HitCount = 0;
+
+		// user dictionaries
+		foreach (var dic in dictionaries)
 		{
-			var spell = (MultiSpell)_instance.Target;
-			if (spell == null)
-			{
-				spell = new MultiSpell(Actor.Dictionaries);
-				_instance.Target = spell;
-			}
-			return spell;
+			var spell = WordList.CreateFromFiles(dic.HunspellDictFile, dic.HunspellAffFile);
+			dic.WordList = spell;
+
+			var userWordsPath = Actor.GetUserDictionaryPath(dic.Language, false);
+			if (File.Exists(userWordsPath))
+				dic.UserList = ReadUserWords(userWordsPath, dic.WordList, null);
 		}
-		MultiSpell(List<DictionaryInfo> dictionaries)
+	}
+
+	public static WordList ReadUserWords(string filePath, WordList wordList, Action<string> writeWarning)
+	{
+		var builder = new WordList.Builder(wordList.Affix);
+		using (var reader = File.OpenText(filePath))
 		{
-			Log.Source.TraceInformation("Loading RightWords data");
-
-			// system dictionaries and spellers
-			_dictionaries = dictionaries;
-			_spells = new List<Hunspell>(dictionaries.Count);
-
-			// reset hit counters
-			foreach (var dictionary in dictionaries)
-				dictionary.HitCount = 0;
-
-			// user dictionaries
-			foreach (var dic in dictionaries)
+			string line;
+			while ((line = reader.ReadLine()) != null)
 			{
-				var spell = new Hunspell(dic.HunspellAffFile, dic.HunspellDictFile);
-				_spells.Add(spell);
-
-				var userWordsPath = Actor.GetUserDictionaryPath(dic.Language, false);
-				if (File.Exists(userWordsPath))
+				var words = line.Split(' ');
+				if (words.Length == 1)
 				{
-					using (var reader = File.OpenText(userWordsPath))
+					builder.Add(words[0]);
+				}
+				else if (words.Length == 2)
+				{
+					var details = wordList[words[1]];
+					if (details.Length == 0)
 					{
-						string line;
-						while ((line = reader.ReadLine()) != null)
-						{
-							var words = line.Split(' ');
-							if (words.Length == 1)
-								spell.Add(words[0]);
-							else if (words.Length == 2)
-								spell.AddWithAffix(words[0], words[1]);
-						}
+						builder.Add(words[0]);
+						if (writeWarning is not null)
+							writeWarning($"No forms of {words[1]} in '{line}' at '{filePath}'.");
+					}
+					else
+					{
+						foreach (var detail in details)
+							builder.Add(words[0], detail);
 					}
 				}
-			}
-		}
-		~MultiSpell()
-		{
-			Log.Source.TraceInformation("Disposing RightWords data");
-
-			foreach (var spell in _spells)
-				spell.Dispose();
-		}
-		public List<string> Suggest(string word)
-		{
-			var result = new List<string>();
-
-			foreach (var spell in _spells)
-				foreach (var suggestion in spell.Suggest(word))
-					if (!result.Contains(suggestion))
-						result.Add(suggestion);
-
-			return result;
-		}
-		static void MoveItem<T>(List<T> list, int index)
-		{
-			var tmp = list[index];
-			list[index] = list[index - 1];
-			list[index - 1] = tmp;
-		}
-		public bool Spell(string word)
-		{
-			for (int i = 0; i < _spells.Count; ++i)
-			{
-				// wrong word or dictionary
-				if (!_spells[i].Spell(word))
-					continue;
-
-				// update the hit count and move the winner
-				++_dictionaries[i].HitCount;
-				while (i > 0 && _dictionaries[i].HitCount > _dictionaries[i - 1].HitCount)
+				else
 				{
-					MoveItem(_dictionaries, i);
-					MoveItem(_spells, i);
-					--i;
+					throw new Exception($"Unexpected line '{line}' in '{filePath}'.");
 				}
+			}
+		}
+		return builder.ToImmutable();
+	}
 
-				// correct
-				return true;
+	public List<string> Suggest(string word)
+	{
+		var result = new List<string>();
+
+		foreach (var dic in _dictionaries)
+			foreach (var suggestion in dic.WordList.Suggest(word))
+				if (!result.Contains(suggestion))
+					result.Add(suggestion);
+
+		return result;
+	}
+
+	static void MoveItem<T>(List<T> list, int index)
+	{
+		var tmp = list[index];
+		list[index] = list[index - 1];
+		list[index - 1] = tmp;
+	}
+
+	public bool Check(string word)
+	{
+		for (int i = 0; i < _dictionaries.Count; ++i)
+		{
+			var dic = _dictionaries[i];
+
+			// wrong word or dictionary
+			if (!dic.WordList.Check(word) && (dic.UserList is null || !dic.UserList.Check(word)))
+				continue;
+
+			// update the hit count and move the winner
+			++dic.HitCount;
+			while (i > 0 && dic.HitCount > _dictionaries[i - 1].HitCount)
+			{
+				MoveItem(_dictionaries, i);
+				--i;
 			}
 
-			return false;
+			// correct
+			return true;
 		}
-		public Hunspell GetSpell(string language)
-		{
-			for (int i = 0; i < _spells.Count; ++i)
-				if (_dictionaries[i].Language == language)
-					return _spells[i];
 
-			throw new InvalidOperationException();
-		}
+		return false;
+	}
+
+	public DictionaryInfo GetSpell(string language)
+	{
+		for (int i = 0; i < _dictionaries.Count; ++i)
+			if (_dictionaries[i].Language == language)
+				return _dictionaries[i];
+
+		throw new InvalidOperationException();
 	}
 }

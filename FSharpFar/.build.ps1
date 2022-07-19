@@ -4,30 +4,23 @@
 #>
 
 param(
-	$FarHome = (property FarHome C:\Bin\Far\x64),
-	$Configuration = (property Configuration Release)
+	$Configuration = (property Configuration Release),
+	$FarHome = (property FarHome C:\Bin\Far\x64)
 )
 
 $ModuleName = 'FSharpFar'
 $ProjectName = "$ModuleName.fsproj"
-
-task init meta, {
-	exec {dotnet tool restore}
-	exec {dotnet paket install}
-}
-
-task kill clean, {
-	remove @(
-		'packages'
-		'paket-files'
-		'src\.vs'
-		'src\Directory.Build.props'
-	)
-}
+$ModuleHome = "$FarHome\FarNet\Modules\$ModuleName"
 
 task build {
-	assert (Test-Path packages) 'Please, ib init'
-	exec {dotnet build "src\$ModuleName.sln" "/p:FarHome=$FarHome" "/p:Configuration=$Configuration"}
+	exec {dotnet build "src\$ModuleName.sln" -c $Configuration "/p:FarHome=$FarHome"}
+}
+
+task publish {
+	exec { dotnet publish "src\$ModuleName\$ModuleName.fsproj" -c $Configuration -o $ModuleHome --no-build }
+
+	Set-Location $ModuleHome
+	remove *.deps.json, cs, de, es, fr, it, ja, ko, pl, pt-BR, ru, tr, zh-Hans, zh-Hant, runtimes\unix
 }
 
 task clean {
@@ -72,50 +65,19 @@ task meta -Inputs .build.ps1, History.txt -Outputs src/Directory.Build.props -Jo
 task package markdown, {
 	remove z
 	$toModule = mkdir "z\tools\FarHome\FarNet\Modules\$ModuleName"
-	$fromModule = "$FarHome\FarNet\Modules\$ModuleName"
-
-	# assert module files, to copy all by *
-	$moduleFiles = Get-ChildItem $fromModule -Name
-	$expectedFiles = @(
-		'FSharp.Compiler.Service.dll'
-		'FSharp.DependencyManager.Nuget.dll'
-		'FSharpFar.dll'
-		'Microsoft.Build.Framework.dll'
-		'Microsoft.Build.Tasks.Core.dll'
-		'Microsoft.Build.Utilities.Core.dll'
-		'System.Buffers.dll'
-		'System.Collections.Immutable.dll'
-		'System.Memory.dll'
-		'System.Numerics.Vectors.dll'
-		'System.Reflection.Metadata.dll'
-		'System.Runtime.CompilerServices.Unsafe.dll'
-	)
-	$diff = Compare-Object $moduleFiles $expectedFiles -SyncWindow 0
-	if ($diff) {throw ($diff | Out-String)}
-
-	# package: logo
-	Copy-Item -Destination z ..\Zoo\FarNetLogo.png
-
-	# FarHome: FSharp.Core.* required here by FCS, available for F# modules
-	Copy-Item -Destination "z\tools\FarHome" @(
-		"$FarHome\FSharp.Core.dll"
-		"$FarHome\FSharp.Core.xml"
-		"$FarHome\fsx.exe"
-		"$FarHome\fsx.exe.config"
-	)
-
-	# FarNet: available for F# modules
-	Copy-Item -Destination "z\tools\FarHome\FarNet" @(
-		"$FarHome\FarNet\FarNet.FSharp.dll"
-		"$FarHome\FarNet\FarNet.FSharp.xml"
-	)
 
 	# module
+	exec { robocopy $ModuleHome $toModule /s /xf *.pdb } (0..2)
+	equals 34 (Get-ChildItem $toModule -Recurse -File).Count
+
+	# logo
+	Copy-Item -Destination z ..\Zoo\FarNetLogo.png
+
+	# repo
 	Copy-Item -Destination $toModule @(
 		'README.htm'
 		'History.txt'
 		'..\LICENSE'
-		"$fromModule\*"
 	)
 }
 

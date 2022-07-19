@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.FolderChart
 
+= 3.0.0 =
+
+Requires FarNet 6, uses .NET 6.
+
 = 2.4.2 =
 
 Requires FarNet 5.9.4.

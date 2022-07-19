@@ -30,6 +30,8 @@ namespace PowerShellFar
 		}
 		public override void Write(string value)
 		{
+			value = RemoveAnsi(value);
+
 			Writing();
 			Far.Api.UI.Write(value);
 			if (A.Psf.Transcript != null)
@@ -44,6 +46,8 @@ namespace PowerShellFar
 		}
 		public override void WriteLine(string value)
 		{
+			value = RemoveAnsi(value);
+
 			Writing();
 			Far.Api.UI.WriteLine(value);
 			if (A.Psf.Transcript != null)

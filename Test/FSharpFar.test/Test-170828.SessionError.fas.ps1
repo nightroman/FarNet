@@ -20,7 +20,6 @@ job {
 		$Far.Editor[1].Text -eq 'FSharp.Compiler.Interactive.Shell+FsiCompilationException: Operation could not be completed due to earlier error'
 		$Far.Editor[2].Text.StartsWith('   at ')
 		$Far.Editor[3].Text.StartsWith('   at ')
-		$Far.Editor[4].Text.StartsWith('   at ')
 	)
 }
 macro 'Keys [[Esc]] -- exit output'

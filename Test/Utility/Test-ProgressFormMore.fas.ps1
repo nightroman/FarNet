@@ -33,8 +33,6 @@ job {
 
 ### Task throws generic exception.
 job {
-	Add-Type -Path $env:FARHOME\FarNet\FarNet.Tools.dll
-
 	$progress = New-Object FarNet.Tools.ProgressForm
 	$progress.Title = "Show(Task) other exception"
 

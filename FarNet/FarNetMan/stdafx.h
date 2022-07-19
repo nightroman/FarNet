@@ -5,6 +5,16 @@
 #include <vcclr.h>
 #include "plugin.hpp"
 
+enum AppState
+{
+	None,
+	Loading,
+	Loaded,
+	Unloaded
+};
+
+extern AppState g_AppState;
+
 // Deny .NET
 #define Console stop_Console
 

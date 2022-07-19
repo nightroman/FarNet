@@ -1,6 +1,4 @@
 ﻿
-Add-Type -Path $env:FARHOME\FarNet\FarNet.Tools.dll
-
 job {
 	### Test the 'equals' function and a custom variable
 	$explorer = [PowerShellFar.ItemExplorer]$env:FarNetCode

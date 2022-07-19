@@ -3,9 +3,8 @@ open Wizard
 open FarNet
 open FarNet.FSharp
 
-/// Test the demo wizard job.
-[<Test>]
-let testWizard = async {
+// Test the demo wizard job.
+Test.Add("testWizard", async {
     Jobs.StartImmediate jobWizard
     do! job { Assert.True(isWizard ()) }
 
@@ -51,4 +50,4 @@ let testWizard = async {
     // done
     do! Jobs.Keys "Esc"
     do! job { Assert.NativePanel() }
-}
+})

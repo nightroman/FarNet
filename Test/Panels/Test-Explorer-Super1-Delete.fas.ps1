@@ -3,8 +3,6 @@
 	Delete: incomplete.
 #>
 
-Add-Type -Path $env:FARHOME\FarNet\FarNet.Tools.dll
-
 job {
 	. $PSScriptRoot\_Explorer.ps1
 	$TypeId = '07353148-33f7-424e-9280-554d0b991cae'

@@ -26,7 +26,7 @@ function Test-ModulePath
 	Assert-Far @(
 		$paths.Count -ge 3
 		$paths[0] -eq "$($Psf.AppHome)\Modules"
-		$paths -contains "$HOME\Documents\WindowsPowerShell\Modules"
+		$paths -contains "$HOME\Documents\PowerShell\Modules"
 	)
 	# other path names depend on x86 x64 and v4.0 has extra path in Program Files
 }

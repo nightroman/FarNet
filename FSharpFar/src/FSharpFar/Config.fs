@@ -20,7 +20,7 @@ module Config =
         defaultFileForDirectory (farCurrentDirectory ())
 
     /// Gets the local or main config path for the file.
-    let defaultFileForFile path =
+    let defaultFileForFile (path: string) =
         defaultFileForDirectory (Path.GetDirectoryName path)
 
     /// Reads the config for the file.
@@ -68,15 +68,28 @@ module Config =
         File.WriteAllText(Path.Combine(dir2.FullName, "settings.json"), textVSCodeSettings ())
 
     /// Makes the temp project for the specified config file.
-    let generateProject configPath =
-        let configRoot = Path.GetDirectoryName configPath
-        let projectName =
-            let name = Path.GetFileNameWithoutExtension configPath
-            if String.equalsIgnoreCase name ".fs" then (Path.GetFileName configRoot) + ".fs" else name
-        let nameInTemp = sprintf "_Project-%s-%08x" projectName ((configPath.ToUpper()).GetHashCode())
-        let projectRoot = Path.Combine(Path.GetTempPath(), nameInTemp)
-        let projectPath = Path.Combine(projectRoot, projectName + ".fsproj")
-        Directory.CreateDirectory projectRoot |> ignore
+    let generateProject (configPath: string) =
+        // get .fsproj path and make its folder
+        let projectPath =
+            let projectName, folderName =
+                let projectName = configPath |> Path.GetFileNameWithoutExtension |> Path.GetFileNameWithoutExtension
+                let projectName, folderPath =
+                    let folderPath = configPath |> Path.GetDirectoryName
+                    if projectName.Length = 0 then
+                        (folderPath |> Path.GetFileName, folderPath)
+                    else
+                        (projectName, folderPath |> Path.GetDirectoryName)
+                let folderName =
+                    let folderName = folderPath |> Path.GetFileName
+                    if String.equalsIgnoreCase folderName projectName then
+                        folderPath |> Path.GetDirectoryName |> Path.GetFileName
+                    else
+                        folderName
+                (projectName, folderName)
+            let nameInTemp = "_Project_" + projectName + "_" + folderName
+            let projectRoot = Path.Combine(Path.GetTempPath(), nameInTemp)
+            Directory.CreateDirectory projectRoot |> ignore
+            projectRoot + "\\" + projectName + ".fsproj"
 
         // read config
         let config = Config.readFromFile configPath
@@ -94,6 +107,8 @@ module Config =
             (nodeProperties.AppendChild(xml.CreateElement name)).InnerText <- value
 
         let addReference reference =
+            if reference = "System.Windows.Forms" then ()
+            else
             let node = xml.CreateElement "Reference"
             nodeItems.AppendChild node |> ignore
             if File.Exists reference then
@@ -111,9 +126,12 @@ module Config =
 
         addProperty "StartAction" "Program"
         addProperty "StartProgram" (getFarExePath ())
-        addProperty "TargetFramework" "net472"
+
+        //! use `windows` or charting is not happy
+        addProperty "TargetFramework" "net6.0-windows"
+        addProperty "UseWindowsForms" "true"
         addProperty "DisableImplicitFSharpCoreReference" "true"
-        addProperty "DisableImplicitSystemValueTupleReference" "true"
+
         // https://github.com/dotnet/sdk/issues/987
         // Works just for VS and MSBuild. Well, at least VS is happy.
         addProperty "AssemblySearchPaths" "$(AssemblySearchPaths);{GAC}"
@@ -152,6 +170,8 @@ module Config =
 
         for file in config.FscFiles do
             addFile file
+
+        let configRoot = Path.GetDirectoryName configPath
 
         for file in Directory.EnumerateFiles(configRoot, "*.fs") do
             if not (Seq.containsIgnoreCase file config.FscFiles) then

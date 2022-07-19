@@ -28,12 +28,12 @@ let defaultCompilerArgs =
     let dir = Environment.GetEnvironmentVariable "FARHOME"
     [|
         "--define:FARNET"
-        "-r:" + dir + @"\FSharp.Core.dll"
+        "--lib:" + dir
         "-r:" + dir + @"\FarNet\FarNet.dll"
-        "-r:" + dir + @"\FarNet\FarNet.FSharp.dll"
-        "-r:" + dir + @"\FarNet\FarNet.Tools.dll"
-        "-r:" + dir + @"\FarNet\Modules\FSharpFar\FSharpFar.dll"
+        "-r:" + dir + @"\FarNet\Modules\FSharpFar\FSharp.Core.dll"
         "-r:" + dir + @"\FarNet\Modules\FSharpFar\FSharp.Compiler.Service.dll"
+        "-r:" + dir + @"\FarNet\Modules\FSharpFar\FarNet.FSharp.dll"
+        "-r:" + dir + @"\FarNet\Modules\FSharpFar\FSharpFar.dll"
     |]
 
 /// Expands environment variables and makes the full path based on the active panel.

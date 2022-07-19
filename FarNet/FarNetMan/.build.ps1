@@ -1,27 +1,30 @@
-
 <#
 .Synopsis
 	Build script (https://github.com/nightroman/Invoke-Build)
 #>
 
 param(
+	$Configuration = (property Configuration Release),
 	$Platform = (property Platform x64),
-	$Configuration = (property Configuration Release)
+	$FarHome = (property FarHome "C:\Bin\Far\$Platform")
 )
-$FarHome = "C:\Bin\Far\$Platform"
 
-$CopyFile = "$Configuration\$Platform\FarNetMan.dll"
+$ModuleHome = "$FarHome\Plugins\FarNet"
 
-task Clean {
+task clean {
 	remove Debug, Release, FarNetMan.vcxproj.user
 }
 
-task Install {
-	$dir = "$FarHome\Plugins\FarNet"
-	$null = mkdir $dir -Force
-	Copy-Item -LiteralPath $CopyFile $dir
+task install {
+	$null = mkdir $ModuleHome -Force
+	Copy-Item -Destination $ModuleHome @(
+		"$Configuration\$Platform\FarNetMan.dll"
+		"$Configuration\$Platform\FarNetMan.pdb"
+		"$Configuration\$Platform\FarNetMan.runtimeconfig.json"
+		"$Configuration\$Platform\Ijwhost.dll"
+	)
 }
 
-task Uninstall {
+task uninstall {
 	remove $FarHome\Plugins\FarNet
 }
