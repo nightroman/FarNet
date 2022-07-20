@@ -18,6 +18,7 @@ task testBuild {
 	assert (Test-Path $FarNetModules\Backslash\Backslash.dll)
 	assert ((Get-Item $FarNetModules\FarNet.Demo\*).Count -eq 5)
 	assert (Test-Path $FarNetModules\IronPythonFar\IronPythonFar.dll)
+	assert (Test-Path $FarNetModules\JavaScriptFar\JavaScriptFar.dll)
 	assert (Test-Path $FarNetModules\TryPanelCSharp\TryPanelCSharp.dll)
 
 	# clean
