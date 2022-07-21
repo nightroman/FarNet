@@ -12,8 +12,9 @@ static class Actor
 
 	static ScriptEngine CreateScriptEngine(bool isDebug)
 	{
-		// see ClearScriptConsole.cs
 		var engine = ScriptEngines.V8ScriptEngine(isDebug);
+
+		// see ClearScriptConsole.cs
 		engine.AddHostObject("host", new ExtendedHostFunctions());
 		engine.AddHostObject("lib", HostItemFlags.GlobalMembers, new HostTypeCollection(
 			"mscorlib",
