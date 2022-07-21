@@ -31,12 +31,30 @@ Create the file association for `*.js` scripts and run current scripts from pane
     *.js
     js:@!\!.!
 
+## How to debug
+
+Prerequisites:
+
+- Install VSCode and ensure its `code.cmd` is in the path.
+- Set up ClearScript V8 debug launch, see [VII. Debugging with ClearScript and V8](https://microsoft.github.io/ClearScript/Details/Build.html).
+
+How to start debugging of a JavaScript file:
+
+- In the editor press `[ShiftF5]`
+- In the command line use `js: @debug: ...\script.js`
+
+The confirmation dialog is shown, you may cancel. If you click OK then VSCode
+is opened, existing or new. You should start the ClearScript V8 debugger there.
+If you do not then you will have to stop Far Manager waiting for the debugger.
+
+When the debugger is connected it breaks either at the first JavaScript
+statement or at one of the previously set breakpoints in the running code.
+
 ## Sample scripts
 
 See [Samples](Samples) for some demo scripts.
 
 ## Roadmap
 
-- Support script debugging using VSCode.
 - Publish the module as NuGet package.
 - Support JScript engine? Think why.

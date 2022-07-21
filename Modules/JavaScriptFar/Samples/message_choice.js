@@ -1,6 +1,6 @@
-﻿// When it runs by from the editor by F5 it shows the `res` value.
+﻿// When it runs from the editor by F5 it shows the `res` value.
 // Points of interest:
-// - how to create FarNet types
+// - how to create FarNet objects
 // - how to create .NET arrays
 
 args = new lib.FarNet.MessageArgs
