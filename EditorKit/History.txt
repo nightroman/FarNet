@@ -1,5 +1,11 @@
 FarNet.EditorKit
 
+= 0.1.1 =
+
+editorconfig 0.13.0
+
+The optional profile config (see README) should use `root = true`.
+
 = 0.1.0 =
 
 Requires FarNet 6, uses .NET 6.

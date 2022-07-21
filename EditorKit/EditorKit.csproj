@@ -5,15 +5,12 @@
     <RunPostBuildEvent>1</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="editorconfig" Version="0.13.0" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="FarNet">
       <HintPath>$(FarHome)\FarNet\FarNet.dll</HintPath>
       <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="EditorConfig.Core.dll">
-      <!--TODO use nuget when they push my fix - https://github.com/editorconfig/editorconfig-core-net/pull/16 -->
-      <HintPath>C:\-\GIT\editorconfig-core-net\src\EditorConfig.Core\bin\release\netstandard2.0\EditorConfig.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

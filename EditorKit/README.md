@@ -44,4 +44,6 @@ Profile settings may be specified in this configuration file:
 
     %FARPROFILE%\FarNet\EditorKit\.editorconfig
 
-They are used if the usual `.editorconfig` files are not found.
+It is used when the usual `.editorconfig` files are not found.
+
+The profile should set `root = true` to ensure that just this file is used.

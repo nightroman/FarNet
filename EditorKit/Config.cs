@@ -8,6 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
+namespace EditorKit;
+
 [System.Runtime.InteropServices.Guid("961AC212-9A24-44B4-9E61-24818971457D")]
 [ModuleEditor(Name = "EditorConfig", Mask = "*")]
 public class Config : ModuleEditor
@@ -28,7 +30,7 @@ public class Config : ModuleEditor
 		var fileName = editor.FileName;
 
 		// ?NewFile?
-		if (fileName.Contains("?"))
+		if (fileName.Contains('?'))
 			return;
 
 		// get the usual configurations
@@ -133,7 +135,7 @@ public class Config : ModuleEditor
 
 		if (do_insert_final_newline)
 		{
-			var line = editor[editor.Count - 1];
+			var line = editor[^1];
 			if (line.Length > 0)
 			{
 				var frame = editor.Frame;
@@ -153,7 +155,7 @@ public class Config : ModuleEditor
 
 		fileName = Path.Combine(root, Path.GetFileName(fileName));
 
-		var configFile = new EditorConfigFile(path);
-		return new EditorConfigFile[] { configFile };
+		var parser = new EditorConfigParser();
+		return parser.GetConfigurationFilesTillRoot(fileName);
 	}
 }
