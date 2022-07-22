@@ -6,5 +6,6 @@ static class Res
 	public const string
 		Prefix = "js",
 		DebugTitle = "Debug JavaScript",
-		MyName = "JavaScriptFar";
+		MyName = "JavaScriptFar",
+		Result = "JavaScript result";
 }

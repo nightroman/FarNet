@@ -4,7 +4,7 @@ JavaScriptFar runs JavaScript scripts in .NET with FarNet API for Far Manager sc
 
 The module is built with [Microsoft ClearScript](https://github.com/Microsoft/ClearScript) and [Google V8 JavaScript engine](https://developers.google.com/v8/).
 
-How to install FarNet and FarNet.JavaScriptFar:\
+How to install FarNet and FarNet.JavaScriptFar\
 <https://github.com/nightroman/FarNet#readme>
 
 ## How to run commands
@@ -18,7 +18,7 @@ command line with the prefix `js:` in the main session:
 ## How to run scripts
 
 You can open scripts in the editor and run by pressing `[F5]`.
-The last expression value, if any, is shown in a new editor.
+The result value, if any, is shown in the title or a new editor.
 
 Or you can run scripts from the command line using `js:@` and a script path.
 Paths may be absolute or relative to the current panel folder. Environment
@@ -32,21 +32,32 @@ Create the file association for `*.js` scripts and run current scripts from pane
     *.js
     js:@!\!.!
 
+## Global variables
+
+- `host` - extended JavaScript functions provided by ClearScript
+- `far` - FarNet main methods provided by `FarNet.Far.Api`
+- `clr` - .NET types of the following assemblies:
+    - mscorlib
+    - System
+    - System.Core
+    - System.Numerics
+    - FarNet
+
 ## How to debug
 
 Prerequisites:
 
-- Install VSCode and ensure its `code.cmd` is in the path.
+- Install VSCode (this should make `code.cmd` available in the path).
 - Set up ClearScript V8 debug launch, see [VII. Debugging with ClearScript and V8](https://microsoft.github.io/ClearScript/Details/Build.html).
 
-How to start debugging of a JavaScript file:
+Start debugging of a JavaScript file:
 
 - In the editor use `[ShiftF5]`
 - In the command line use `js: @debug: ...\script.js`
 
 The confirmation dialog is shown. If you click OK then VSCode is opened,
-existing or new. Start the ClearScript V8 debugger there. Otherwise you
-will have to terminate Far Manager forever waiting for the debugger.
+existing or new. Start the ClearScript V8 debugger there. Otherwise Far
+Manager waits for the debugger forever and has to be terminated.
 
 When the debugger starts it breaks either at the first JavaScript statement or
 at one of the previously set breakpoints in the running code.
@@ -57,4 +68,4 @@ completion and provides rich output with expandable complex objects.
 
 ## Sample scripts
 
-See [Samples](Samples) for some demo scripts.
+See [Samples](Samples) for demo scripts presenting main features and techniques.

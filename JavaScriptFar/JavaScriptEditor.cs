@@ -42,9 +42,24 @@ public class JavaScriptEditor : ModuleEditor
 		{
 			if (print.Length > 0)
 			{
-				var temp = Kit.TempFileName("txt");
-				File.WriteAllText(temp, print);
-				ShowTempFile(temp, "JavaScript");
+				if (print.Contains('\n'))
+				{
+					//! now set the title, or a new editor shows this title until redraw
+					_editor.Title = _editor.FileName;
+
+					//! then open a new editor
+					var temp = Kit.TempFileName("txt");
+					File.WriteAllText(temp, print);
+					ShowTempFile(temp, Res.Result);
+				}
+				else
+				{
+					_editor.Title = print + " -- " + _editor.FileName;
+				}
+			}
+			else
+			{
+				_editor.Title = _editor.FileName;
 			}
 		}
 	}

@@ -82,13 +82,12 @@ You may start Far Manager after this. Modules are installed in `%FARHOME%\FarNet
 
 FarNet and modules installed by `Install-FarPackage` may be updated in the same way.
 
-Close Far Manager and start the PowerShell console
+Close Far Manager, open PowerShell console, and invoke
 
-    powershell
     cd "C:\Program Files\Far Manager"
     Invoke-Expression (Invoke-WebRequest https://raw.githubusercontent.com/nightroman/FarNet/master/web.ps1)
 
-To update all packages, invoke
+To update all packages, use
 
     Update-FarPackage
 

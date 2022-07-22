@@ -1,5 +1,5 @@
 ﻿
-$Data.FileName = [IO.Path]::GetFullPath("$PSScriptRoot\..\Samples\message_choice.js")
+$Data.FileName = "$env:FarNetCode\JavaScriptFar\Samples\message-choice.js"
 job {
 	Open-FarEditor $Data.FileName -DisableHistory
 }
@@ -15,7 +15,6 @@ job {
 keys g
 job {
 	Assert-Far -Editor
-	Assert-Far $Far.Editor.Title -eq JavaScript
-	Assert-Far $Far.Editor[0].Text -eq '2'
+	Assert-Far $Far.Editor.Title -eq "2 -- $($Data.FileName)"
 }
-keys Esc Esc
+keys Esc

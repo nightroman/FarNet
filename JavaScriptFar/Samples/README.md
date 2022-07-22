@@ -1,5 +1,8 @@
 ﻿# JavaScript samples
 
-See also:
+Scripts in this folder show main features.
 
-- [FAQtorial](https://microsoft.github.io/ClearScript/Tutorial/FAQtorial.html)
+Other folders:
+
+- [extras](extras) - special cases and techniques
+- [modules](modules) - demo script module files

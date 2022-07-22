@@ -1,5 +1,5 @@
 ﻿
-macro "print [[js:@ $PSScriptRoot\..\Samples\input_and_output.js]] Keys'Enter'"
+macro "print [[js:@ $env:FarNetCode\JavaScriptFar\Samples\input-output.js]] Keys'Enter'"
 job {
 	Assert-Far -Dialog
 	Assert-Far $Far.Dialog[1].Text -eq 'Enter your name'

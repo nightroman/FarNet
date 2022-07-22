@@ -5,9 +5,9 @@ The following schemes included to Colorer are maintained:
 - fsharp.hrc
 - graphql.hrc
 - markdown.hrc
-- [powershell.hrc](#powershell-hrc)
-- [r.hrc](#r-hrc)
-- [visual.hrd](#visual-hrd)
+- [powershell.hrc](#powershellhrc)
+- [r.hrc](#rhrc)
+- [visual.hrd](#visualhrd)
 
 *********************************************************************
 ## powershell.hrc

@@ -1,5 +1,6 @@
 ﻿using FarNet;
 using Microsoft.ClearScript;
+using Microsoft.ClearScript.JavaScript;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -8,21 +9,20 @@ namespace JavaScriptFar;
 
 static class Actor
 {
-	static ScriptEngine _session;
+	static ScriptEngine s_engine;
 
 	static ScriptEngine CreateScriptEngine(bool isDebug)
 	{
 		var engine = ScriptEngines.V8ScriptEngine(isDebug);
+		engine.DocumentSettings.AccessFlags = DocumentAccessFlags.EnableFileLoading;
 
 		// see ClearScriptConsole.cs
 		engine.AddHostObject("host", new ExtendedHostFunctions());
-		engine.AddHostObject("lib", HostItemFlags.GlobalMembers, new HostTypeCollection(
+		engine.AddHostObject("clr", HostItemFlags.GlobalMembers, new HostTypeCollection(
 			"mscorlib",
 			"System",
 			"System.Core",
 			"System.Numerics",
-			"ClearScript.Core",
-			"ClearScript.V8",
 			"FarNet"
 		));
 
@@ -47,10 +47,10 @@ static class Actor
 
 	internal static void Execute(ExecuteArgs args)
 	{
-		string windowTitle = null;
+		string debugWindowTitle = null;
 		if (args.IsDebug)
 		{
-			if (0 != Far.Api.Message("After clicking OK start the debugger in the opened VSCode.", Res.DebugTitle, MessageOptions.OkCancel))
+			if (0 != Far.Api.Message("Click OK to open VSCode and manually start ClearScript V8 debugger.", Res.DebugTitle, MessageOptions.OkCancel))
 				return;
 
 			try
@@ -63,7 +63,7 @@ static class Actor
 			}
 
 			// set title and progress
-			windowTitle = Far.Api.UI.WindowTitle;
+			debugWindowTitle = Far.Api.UI.WindowTitle;
 			Far.Api.UI.WindowTitle = Res.DebugTitle;
 			Far.Api.UI.SetProgressState(TaskbarProgressBarState.Paused);
 		}
@@ -75,17 +75,17 @@ static class Actor
 		}
 		else
 		{
-			if (_session is null)
-				_session = CreateScriptEngine(false);
+			if (s_engine is null)
+				s_engine = CreateScriptEngine(false);
 
-			engine = _session;
+			engine = s_engine;
 		}
 
 		try
 		{
 			if (args.IsDocument)
 			{
-				var doc = new DocumentInfo(new Uri(args.Command));
+				var doc = new DocumentInfo(new Uri(args.Command)) { Category = ModuleCategory.Standard };
 				var code = File.ReadAllText(args.Command);
 
 				if (args.Print is null)
@@ -96,13 +96,7 @@ static class Actor
 				{
 					var res = engine.Evaluate(doc, code);
 					if (res is not null)
-					{
-						var text = res.ToString(); //rk-0 can res be not string? we might use own formatter
-
-						// skip [void] in V8, [undefined] in JScript
-						if (text != "[void]")
-							args.Print(text);
-					}
+						args.Print(res.ToString());
 				}
 			}
 			else
@@ -123,7 +117,7 @@ static class Actor
 				}
 			}
 		}
-		catch (ScriptEngineException ex) //rk-0 think dialog with goto
+		catch (ScriptEngineException ex)
 		{
 			var message = ex.Message;
 			if (ex.ErrorDetails != null && ex.ErrorDetails.StartsWith(message))
@@ -134,9 +128,9 @@ static class Actor
 		finally
 		{
 			// restore title and progress
-			if (args.IsDebug && windowTitle is not null)
+			if (args.IsDebug && debugWindowTitle is not null)
 			{
-				Far.Api.UI.WindowTitle = windowTitle;
+				Far.Api.UI.WindowTitle = debugWindowTitle;
 				Far.Api.UI.SetProgressState(TaskbarProgressBarState.NoProgress);
 			}
 

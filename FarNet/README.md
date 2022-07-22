@@ -180,7 +180,7 @@ The following environment variables are used in special cases:
 **Problem:** After installation Far cannot load FarNet or FarNet cannot load
 its modules.
 
-Read [Installation](#Installation) steps for FarNet and modules and ensure all
+Read [Installation](#installation) steps for FarNet and modules and ensure all
 is done correctly.
 
 ---
