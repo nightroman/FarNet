@@ -2,7 +2,7 @@
 
 # FarNet
 
-Far Manager platform for .NET modules, Windows PowerShell, and F#.
+Far Manager platform for .NET modules and scripts in PowerShell, F#, JavaScript.
 
 - [FarNet/wiki](https://github.com/nightroman/FarNet/wiki) - all about framework, modules, and packages.
 - [FarNet/issues](https://github.com/nightroman/FarNet/issues) - for bug reports and problems
@@ -36,10 +36,9 @@ Choose the required from [downloads](https://www.farmanager.com/download.php?l=e
 Normally the stable build is recommended.
 
 
-## Install using PowerShell
+## Install FarNet and modules using PowerShell
 
-This way avoids several manual steps and possible mistakes.
-And it allows automated updates later.
+This way avoids manual steps and allows updates later.
 
 Close Far Manager and start the PowerShell console
 
@@ -49,27 +48,34 @@ Change to the Far Manager directory
 
     cd "C:\Program Files\Far Manager"
 
-Invoke the preliminary command
+Import Far package functions
 
-    iex (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/nightroman/FarNet/master/web.ps1')
+    Invoke-Expression (Invoke-WebRequest https://raw.githubusercontent.com/nightroman/FarNet/master/web.ps1)
 
-If it fails on older systems, run this first
+If it fails on older systems, try
 
     [Net.ServicePointManager]::SecurityProtocol = "Tls11,Tls12,$([Net.ServicePointManager]::SecurityProtocol)"
+    Invoke-Expression (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/nightroman/FarNet/master/web.ps1')
 
 Install FarNet
 
     Install-FarPackage FarNet
 
-Install modules, for example
+Install modules
 
+    Install-FarPackage FarNet.CopyColor
+    Install-FarPackage FarNet.Drawer
+    Install-FarPackage FarNet.EditorKit
+    Install-FarPackage FarNet.Explore
+    Install-FarPackage FarNet.FolderChart
+    Install-FarPackage FarNet.FSharpFar
+    Install-FarPackage FarNet.JavaScriptFar
     Install-FarPackage FarNet.PowerShellFar
+    Install-FarPackage FarNet.RightControl
+    Install-FarPackage FarNet.RightWords
+    Install-FarPackage FarNet.Vessel
 
-You may start Far Manager after this.
-
-Take a look at the installed files, there may be manuals, samples, and etc. The
-folder FarNet contains `About-FarNet.htm` и `FarNetApi.chm`. Modules normally have
-their files in folders like `FarNet\Modules\ModuleName`.
+You may start Far Manager after this. Modules are installed in `%FARHOME%\FarNet\Modules`.
 
 
 ## Update using PowerShell
@@ -79,24 +85,18 @@ FarNet and modules installed by `Install-FarPackage` may be updated in the same 
 Close Far Manager and start the PowerShell console
 
     powershell
-
-Change to the Far Manager directory
-
     cd "C:\Program Files\Far Manager"
-
-Invoke the preliminary command
-
-    iex (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/nightroman/FarNet/master/web.ps1')
+    Invoke-Expression (Invoke-WebRequest https://raw.githubusercontent.com/nightroman/FarNet/master/web.ps1)
 
 To update all packages, invoke
 
     Update-FarPackage
 
-To update one package, use `Install-FarPackage`, for example
+To update one package, use `Install-FarPackage`
 
     Install-FarPackage FarNet.PowerShellFar
 
-To remove one package, use `Uninstall-FarPackage`, for example
+To remove one package, use `Uninstall-FarPackage`
 
     Uninstall-FarPackage FarNet.PowerShellFar
 
@@ -121,7 +121,7 @@ Depending on Far Manager, x64 or x86, copy items of "FarHome.x64" or
 ## Install modules manually
 
 Steps may depend on a module. But the common rule for any module `Bar` is: in
-`Far Manager\FarNet\Modules` there is a folder `Bar` which contains the module
+`%FARHOME%\FarNet\Modules` there is a folder `Bar` which contains the module
 files. One of these files is the assembly `Bar.dll`.
 
 Download the NuGet package `Bar` as

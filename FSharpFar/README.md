@@ -36,19 +36,6 @@ F# or anything else does not have to be installed.
 As a result, you get the complete F# scripting portable with Far Manager. \
 Use it with Far Manager by FSharpFar or without Far Manager by fsx.exe.
 
-**Improve performance**
-
-You may reduce loading times of FarNet assemblies, especially FSharpFar and fsx.exe,
-by these PowerShell commands using [Invoke-Ngen.ps1](https://www.powershellgallery.com/packages/Invoke-Ngen)
-
-```powershell
-# get the script once
-Install-Script Invoke-Ngen
-
-# run after updates
-Invoke-Ngen -Directory $env:FARHOME -Recurse
-```
-
 ***
 ## Menus
 

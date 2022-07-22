@@ -49,7 +49,6 @@ commands and viewing the results. It includes cmdlets, modules, and scripts
 designed for Far Manager. Colorer takes care of editor syntax highlighting.
 
 PowerShell Core comes with PowerShellFar and runs scripts in Far Manager.
-Windows PowerShell runs scripts from Far Manager as the external app.
 
 **Project FarNet**
 

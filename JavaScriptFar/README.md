@@ -1,8 +1,11 @@
-# FarNet module JavaScriptFar
+# FarNet.JavaScriptFar
 
-`JavaScriptFar` runs JavaScript scripts in .NET with FarNet API for Far Manager scripting.
+JavaScriptFar runs JavaScript scripts in .NET with FarNet API for Far Manager scripting.
 
 The module is built with [Microsoft ClearScript](https://github.com/Microsoft/ClearScript) and [Google V8 JavaScript engine](https://developers.google.com/v8/).
+
+How to install FarNet and FarNet.JavaScriptFar:\
+<https://github.com/nightroman/FarNet#readme>
 
 ## How to run commands
 
