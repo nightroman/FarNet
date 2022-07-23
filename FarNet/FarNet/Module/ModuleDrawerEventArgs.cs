@@ -23,20 +23,24 @@ public class ModuleDrawerEventArgs : EventArgs
 		StartChar = startChar;
 		EndChar = endChar;
 	}
+
 	/// <summary>
 	/// Gets the result color collection. A drawer adds colors to it.
 	/// </summary>
-	public ICollection<EditorColor> Colors { get; private set; }
+	public ICollection<EditorColor> Colors { get; }
+
 	/// <summary>
 	/// Gets the lines to get colors for. A drawer should not change this collection.
 	/// </summary>
-	public IList<ILine> Lines { get; private set; }
+	public IList<ILine> Lines { get; }
+
 	/// <summary>
 	/// Gets the index of the first character.
 	/// </summary>
-	public int StartChar { get; private set; }
+	public int StartChar { get; }
+
 	/// <summary>
 	/// Gets the index of the character after the last.
 	/// </summary>
-	public int EndChar { get; private set; }
+	public int EndChar { get; }
 }

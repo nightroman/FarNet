@@ -1,3 +1,7 @@
+
+// FarNet plugin for Far Manager
+// Copyright (c) Roman Kuzmin
+
 namespace FarNet.Tools;
 
 static class Res

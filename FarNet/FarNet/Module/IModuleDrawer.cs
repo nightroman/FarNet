@@ -18,10 +18,12 @@ public interface IModuleDrawer : IModuleAction
 	/// Returns the drawer handler.
 	/// </summary>
 	Action<IEditor, ModuleDrawerEventArgs> CreateHandler();
+
 	/// <summary>
 	/// Gets the file mask. Setting is for internal use.
 	/// </summary>
 	string Mask { get; set; }
+
 	/// <summary>
 	/// Gets the priority. Setting is for internal use.
 	/// </summary>

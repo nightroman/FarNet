@@ -18,6 +18,7 @@ public interface IModuleEditor : IModuleAction
 	/// <param name="editor">The editor.</param>
 	/// <param name="e">The arguments.</param>
 	void Invoke(IEditor editor, ModuleEditorEventArgs e);
+
 	/// <summary>
 	/// Gets the file mask. Setting is for internal use.
 	/// </summary>

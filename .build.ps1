@@ -137,6 +137,7 @@ task modules {
 	Invoke-Build build, clean .\Explore\.build.ps1
 	Invoke-Build build, clean .\FolderChart\.build.ps1
 	Invoke-Build build, clean .\FSharpFar\.build.ps1
+	Invoke-Build build, clean .\JavaScriptFar\.build.ps1
 	Invoke-Build build, clean .\RightControl\.build.ps1
 	Invoke-Build build, clean .\RightWords\.build.ps1
 	Invoke-Build build, clean .\Vessel\.build.ps1

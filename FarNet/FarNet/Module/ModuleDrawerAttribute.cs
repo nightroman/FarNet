@@ -14,6 +14,7 @@ public sealed class ModuleDrawerAttribute : ModuleActionAttribute
 {
 	/// <include file='doc.xml' path='doc/FileMask/*'/>
 	public string Mask { get; set; }
+
 	/// <summary>
 	/// Color priority.
 	/// </summary>

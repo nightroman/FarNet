@@ -22,18 +22,22 @@ public interface IModuleAction
 	/// Gets the action ID.
 	/// </summary>
 	Guid Id { get; }
+
 	/// <summary>
 	/// Gets the action name.
 	/// </summary>
 	string Name { get; }
+
 	/// <summary>
 	/// Gets the action kind.
 	/// </summary>
 	ModuleItemKind Kind { get; }
+
 	/// <summary>
 	/// Gets the module manager.
 	/// </summary>
 	IModuleManager Manager { get; }
+
 	/// <summary>
 	/// Unregisters the module action dynamically.
 	/// </summary>

@@ -25,14 +25,18 @@ public class ModuleException : Exception
 	///
 	public ModuleException()
 	{ }
+
 	/// <inheritdoc/>
 	public ModuleException(string message) : base(message)
 	{ }
+
 	/// <inheritdoc/>
 	public ModuleException(string message, Exception innerException) : base(message, innerException)
 	{ }
+
 	/// <inheritdoc/>
 	protected ModuleException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+
 	/// <summary>
 	/// This text is used as the error dialog title.
 	/// By default it is the exception type name.

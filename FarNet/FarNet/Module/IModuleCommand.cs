@@ -19,6 +19,7 @@ public interface IModuleCommand : IModuleAction
 	/// <param name="sender">The sender.</param>
 	/// <param name="e">The arguments.</param>
 	void Invoke(object sender, ModuleCommandEventArgs e);
+
 	/// <summary>
 	/// Gets the command prefix. Setting is for internal use.
 	/// </summary>

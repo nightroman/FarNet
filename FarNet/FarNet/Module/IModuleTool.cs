@@ -19,10 +19,12 @@ public interface IModuleTool : IModuleAction
 	/// <param name="sender">The sender.</param>
 	/// <param name="e">The arguments.</param>
 	void Invoke(object sender, ModuleToolEventArgs e);
+
 	/// <summary>
 	/// Gets the tool options. Setting is for internal use.
 	/// </summary>
 	ModuleToolOptions Options { get; set; }
+
 	/// <summary>
 	/// Gets the default tool options.
 	/// </summary>

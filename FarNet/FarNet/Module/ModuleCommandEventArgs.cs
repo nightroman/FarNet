@@ -16,14 +16,17 @@ public class ModuleCommandEventArgs : EventArgs
 	{
 		Command = command;
 	}
+
 	/// <summary>
 	/// Gets the command text.
 	/// </summary>
-	public string Command { get; private set; }
+	public string Command { get; }
+
 	/// <summary>
 	/// Tells that command is called by <c>Plugin.Call()</c>.
 	/// </summary>
 	public bool IsMacro { get; set; }
+
 	/// <summary>
 	/// Tells to ignore the call and allows alternative actions.
 	/// </summary>

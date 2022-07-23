@@ -76,6 +76,7 @@ public abstract class BaseModuleItem
 	{
 		return Manager.GetString(name);
 	}
+
 	/// <summary>
 	/// Gets the module manager.
 	/// </summary>
@@ -84,6 +85,7 @@ public abstract class BaseModuleItem
 		get { return _Manager ?? (_Manager = Far.Api.GetModuleManager(GetType())); }
 	}
 	IModuleManager _Manager;
+
 	/// <summary>
 	/// Formats the module help topic for <c>HelpTopic</c> properties of various UI classes.
 	/// </summary>
@@ -100,6 +102,7 @@ public abstract class BaseModuleItem
 		var path = Path.GetDirectoryName(GetType().Assembly.Location);
 		return "<" + path + "\\>" + topic;
 	}
+
 	/// <summary>
 	/// Shows the module help topic.
 	/// </summary>

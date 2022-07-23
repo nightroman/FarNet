@@ -21,6 +21,7 @@ public abstract class ModuleActionAttribute : Attribute, ICloneable
 	/// </para>
 	/// </remarks>
 	public string Name { get; set; }
+
 	/// <summary>
 	/// Tells to use the <see cref="Name"/> as the resource name of the localized string.
 	/// </summary>
@@ -29,8 +30,9 @@ public abstract class ModuleActionAttribute : Attribute, ICloneable
 	/// to make sure that this and other action names are updated from resources.
 	/// </remarks>
 	public bool Resources { get; set; }
+
 	/// <summary>
 	/// Calls <see cref="object.MemberwiseClone"/>.
 	/// </summary>
-	public object Clone() { return MemberwiseClone(); }
+	public object Clone() => MemberwiseClone();
 }

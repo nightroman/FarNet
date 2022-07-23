@@ -18,10 +18,12 @@ public sealed class ModuleToolEventArgs : EventArgs
 	/// Where it is called from.
 	/// </summary>
 	public ModuleToolOptions From { get; set; }
+
 	/// <summary>
 	/// Tells to ignore results, for example when a configuration dialog is canceled.
 	/// </summary>
 	public bool Ignore { get; set; }
+
 	/// <summary>
 	/// Gets true if the event is called from the left disk menu.
 	/// </summary>

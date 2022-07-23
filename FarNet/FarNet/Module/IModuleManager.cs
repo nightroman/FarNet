@@ -28,11 +28,13 @@ public abstract class IModuleManager
 	/// </ul>
 	/// </remarks>
 	public abstract CultureInfo CurrentUICulture { get; set; }
+
 	/// <summary>
 	/// The <see cref="BaseModuleItem.GetString"/> worker.
 	/// </summary>
 	/// <param name="name">The string name.</param>
 	public abstract string GetString(string name);
+
 	/// <summary>
 	/// Gets the path to the system special folder that is identified by the specified enumeration.
 	/// </summary>
@@ -49,6 +51,7 @@ public abstract class IModuleManager
 	/// </para>
 	/// </remarks>
 	public abstract string GetFolderPath(SpecialFolder folder, bool create);
+
 	/// <summary>
 	/// Unregisters the module in critical cases.
 	/// </summary>
@@ -56,6 +59,7 @@ public abstract class IModuleManager
 	/// This method should be called only on fatal errors and similar cases.
 	/// </remarks>
 	public abstract void Unregister();
+
 	/// <summary>
 	/// Registers the command handler invoked from the command line by its prefix.
 	/// </summary>
@@ -68,6 +72,7 @@ public abstract class IModuleManager
 	/// <include file='doc.xml' path='doc/RegisterModule/*'/>
 	/// </remarks>
 	public abstract IModuleCommand RegisterModuleCommand(Guid id, ModuleCommandAttribute attribute, EventHandler<ModuleCommandEventArgs> handler);
+
 	/// <summary>
 	/// Registers the editor drawer handler.
 	/// </summary>
@@ -80,6 +85,7 @@ public abstract class IModuleManager
 	/// <include file='doc.xml' path='doc/RegisterModule/*'/>
 	/// </remarks>
 	public abstract IModuleDrawer RegisterModuleDrawer(Guid id, ModuleDrawerAttribute attribute, Action<IEditor, ModuleDrawerEventArgs> handler);
+
 	/// <summary>
 	/// Registers the tool handler invoked from one of Far menus.
 	/// </summary>
@@ -92,27 +98,33 @@ public abstract class IModuleManager
 	/// <include file='doc.xml' path='doc/RegisterModule/*'/>
 	/// </remarks>
 	public abstract IModuleTool RegisterModuleTool(Guid id, ModuleToolAttribute attribute, EventHandler<ModuleToolEventArgs> handler);
+
 	/// <summary>
 	/// Gets the module name.
 	/// </summary>
 	public abstract string ModuleName { get; }
+
 	/// <summary>
 	/// INTERNAL
 	/// </summary>
 	public abstract string StoredUICulture { get; set; }
+
 	/// <summary>
 	/// INTERNAL
 	/// </summary>
 	/// <param name="connect">INTERNAL</param>
 	public abstract Assembly LoadAssembly(bool connect);
+
 	/// <summary>
 	/// INTERNAL
 	/// </summary>
 	public abstract void SaveConfig();
+
 	/// <summary>
 	/// INTERNAL
 	/// </summary>
 	public abstract IReadOnlyList<string> SettingsTypeNames { get; }
+
 	/// <summary>
 	/// Calls <see cref="ModuleHost.Interop"/>.
 	/// </summary>

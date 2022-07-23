@@ -35,7 +35,9 @@ public abstract class ModuleHost : BaseModuleItem
 	/// registration of its actions.
 	/// </remarks>
 	public virtual void Connect()
-	{ }
+	{
+	}
+
 	/// <summary>
 	/// Override this method to process the module disconnection.
 	/// </summary>
@@ -49,7 +51,9 @@ public abstract class ModuleHost : BaseModuleItem
 	/// </para>
 	/// </remarks>
 	public virtual void Disconnect()
-	{ }
+	{
+	}
+
 	/// <summary>
 	/// Called before invocation of any module action.
 	/// </summary>
@@ -70,7 +74,9 @@ public abstract class ModuleHost : BaseModuleItem
 	/// </para>
 	/// </remarks>
 	public virtual void Invoking()
-	{ }
+	{
+	}
+
 	/// <summary>
 	/// Can the module exit now?
 	/// </summary>
@@ -89,6 +95,7 @@ public abstract class ModuleHost : BaseModuleItem
 	{
 		return true;
 	}
+
 	/// <summary>
 	/// Provides cross-module operations without strongly typed interfaces.
 	/// </summary>
