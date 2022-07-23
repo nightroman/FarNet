@@ -24,18 +24,35 @@ Or you can run scripts from the command line using `js:@` and a script path.
 Paths may be absolute or relative to the current panel folder. Environment
 variables are expanded.
 
-    js: @ hello_world.js
-    js: @ %scripts%\hello_world.js
+    js: @ hello-world.js
+    js: @ %scripts%\hello-world.js
 
 Create the file association for `*.js` scripts and run current scripts from panels by `[Enter]`:
 
     *.js
     js:@!\!.!
 
+The following extra prefixes may be specified before the file name:
+
+- `task:` tells to start the script as a task
+- `debug:` tells to start the script debugging
+
+Note that scripts running as tasks should not use FarNet API unless it is
+designed for multi-threaded scenarios and documented accordingly.
+
+Examples:
+
+    js: @ task: too-slow.js
+    js: @ debug: some-bugs.js
+    js: @ task: debug: debug-console.js
+
+The last command is the interesting use case. When the debugger breaks in the
+script you may use Far as usual and use the debugger as long as Far stays live.
+
 ## Global variables
 
-- `host` - extended JavaScript functions provided by ClearScript
-- `far` - FarNet main methods provided by `FarNet.Far.Api`
+- `host` - extended JavaScript functions provided by ClearScript, see [here](https://microsoft.github.io/ClearScript/Reference/html/Methods_T_Microsoft_ClearScript_ExtendedHostFunctions.htm)
+- `far` - FarNet main methods, shortcut to `clr.FarNet.Far.Api` see [here](https://github.com/nightroman/FarNet/blob/master/FarNet/FarNet/Far.cs)
 - `clr` - .NET types of the following assemblies:
     - mscorlib
     - System
@@ -59,8 +76,8 @@ The confirmation dialog is shown. If you click OK then VSCode is opened,
 existing or new. Start the ClearScript V8 debugger there. Otherwise Far
 Manager waits for the debugger forever and has to be terminated.
 
-When the debugger starts it breaks either at the first JavaScript statement or
-at one of the previously set breakpoints in the running code.
+When the debugger starts it breaks either at the first JavaScript line or at
+one of the previously set breakpoints in the running code.
 
 VSCode debugger is useful for examining variable values, object properties and
 methods, typing commands in the debug console. The debug console supports code

@@ -1,19 +1,25 @@
-﻿using FarNet;
+﻿
+// JavaScriptFar module for Far Manager
+// Copyright (c) Roman Kuzmin
+
+using FarNet;
 using Microsoft.ClearScript;
 using Microsoft.ClearScript.JavaScript;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace JavaScriptFar;
 
-static class Actor
+static partial class Actor
 {
 	static ScriptEngine s_engine;
+	static bool s_isTaskDebug;
 
-	static ScriptEngine CreateScriptEngine(bool isDebug)
+	static ScriptEngine CreateScriptEngine(ExecuteArgs args)
 	{
-		var engine = ScriptEngines.V8ScriptEngine(isDebug);
+		var engine = ScriptEngines.V8ScriptEngine(args.IsDebug);
 		engine.DocumentSettings.AccessFlags = DocumentAccessFlags.EnableFileLoading;
 
 		// see ClearScriptConsole.cs
@@ -32,24 +38,52 @@ static class Actor
 		return engine;
 	}
 
-	internal class ExecuteArgs
+	static ModuleException ModuleExceptionFromScriptEngineException(Exception ex)
 	{
-		public ExecuteArgs(string command)
-		{
-			Command = command;
-		}
+		var message = ex.Message;
 
-		public string Command { get; }
-		public bool IsDebug { get; set; }
-		public bool IsDocument { get; set; }
-		public Action<string> Print { get; set; }
+		if (ex is ScriptEngineException seex)
+		if (seex.ErrorDetails != null && seex.ErrorDetails.StartsWith(message))
+			message = seex.ErrorDetails;
+
+		return new ModuleException(message, ex);
+	}
+
+	static void StartExecuteTask(ScriptEngine engine, DocumentInfo doc, string code, ExecuteArgs args)
+	{
+		Task.Run(() =>
+		{
+			if (args.IsDebug)
+				s_isTaskDebug = true;
+
+			try
+			{
+				engine.Execute(doc, code);
+			}
+			catch (Exception ex)
+			{
+				Tasks.Job(() => Far.Api.ShowError(
+					"JavaScript task error",
+					ModuleExceptionFromScriptEngineException(ex)));
+			}
+			finally
+			{
+				if (args.IsDebug)
+					s_isTaskDebug = false;
+
+				engine.Dispose();
+			}
+		});
 	}
 
 	internal static void Execute(ExecuteArgs args)
 	{
-		string debugWindowTitle = null;
+		string windowTitle = null;
 		if (args.IsDebug)
 		{
+			if (args.IsTask && s_isTaskDebug)
+				throw new ModuleException("Cannot debug two tasks.");
+
 			if (0 != Far.Api.Message("Click OK to open VSCode and manually start ClearScript V8 debugger.", Res.DebugTitle, MessageOptions.OkCancel))
 				return;
 
@@ -63,20 +97,23 @@ static class Actor
 			}
 
 			// set title and progress
-			debugWindowTitle = Far.Api.UI.WindowTitle;
-			Far.Api.UI.WindowTitle = Res.DebugTitle;
-			Far.Api.UI.SetProgressState(TaskbarProgressBarState.Paused);
+			if (!args.IsTask)
+			{
+				windowTitle = Far.Api.UI.WindowTitle;
+				Far.Api.UI.WindowTitle = Res.DebugTitle;
+				Far.Api.UI.SetProgressState(TaskbarProgressBarState.Paused);
+			}
 		}
 
 		ScriptEngine engine;
 		if (args.IsDocument)
 		{
-			engine = CreateScriptEngine(args.IsDebug);
+			engine = CreateScriptEngine(args);
 		}
 		else
 		{
 			if (s_engine is null)
-				s_engine = CreateScriptEngine(false);
+				s_engine = CreateScriptEngine(args);
 
 			engine = s_engine;
 		}
@@ -88,7 +125,12 @@ static class Actor
 				var doc = new DocumentInfo(new Uri(args.Command)) { Category = ModuleCategory.Standard };
 				var code = File.ReadAllText(args.Command);
 
-				if (args.Print is null)
+				if (args.IsTask)
+				{
+					StartExecuteTask(engine, doc, code, args);
+					engine = null;
+				}
+				else if (args.Print is null)
 				{
 					engine.Execute(doc, code);
 				}
@@ -119,22 +161,19 @@ static class Actor
 		}
 		catch (ScriptEngineException ex)
 		{
-			var message = ex.Message;
-			if (ex.ErrorDetails != null && ex.ErrorDetails.StartsWith(message))
-				message = ex.ErrorDetails;
-
-			throw new ModuleException(message, ex);
+			throw ModuleExceptionFromScriptEngineException(ex);
 		}
 		finally
 		{
 			// restore title and progress
-			if (args.IsDebug && debugWindowTitle is not null)
+			if (windowTitle is not null)
 			{
-				Far.Api.UI.WindowTitle = debugWindowTitle;
+				Far.Api.UI.WindowTitle = windowTitle;
 				Far.Api.UI.SetProgressState(TaskbarProgressBarState.NoProgress);
 			}
 
-			if (args.IsDocument)
+			// dispose temp engine
+			if (engine is not null && engine != s_engine)
 				engine.Dispose();
 		}
 	}

@@ -1,4 +1,7 @@
 ﻿
+// JavaScriptFar module for Far Manager
+// Copyright (c) Roman Kuzmin
+
 namespace JavaScriptFar;
 
 static class Res

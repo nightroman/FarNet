@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.JavaScriptFar
 
+= 0.1.0 =
+
+New script running option `task:`, see README.
+
 = 0.0.2 =
 
 Support modules, enable strict mode, variables must be declared.

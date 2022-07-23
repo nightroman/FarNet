@@ -1,4 +1,8 @@
-﻿using FarNet;
+﻿
+// JavaScriptFar module for Far Manager
+// Copyright (c) Roman Kuzmin
+
+using FarNet;
 using FarNet.Works;
 using System.IO;
 

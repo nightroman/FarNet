@@ -1,4 +1,8 @@
-﻿using System;
+﻿
+// JavaScriptFar module for Far Manager
+// Copyright (c) Roman Kuzmin
+
+using System;
 using System.IO;
 using FarNet;
 
@@ -14,24 +18,35 @@ public class JavaScriptCommand : ModuleCommand
 
 		bool isDocument = command.StartsWith('@');
 		bool isDebug = false;
+		bool isTask = false;
 		if (isDocument)
 		{
-			if (command.StartsWith("@debug:"))
+			command = command[1..].TrimStart();
+			while (true)
 			{
-				isDebug = true;
-				command = command[7..];
-			}
-			else
-			{
-				command = command[1..];
+				if (command.StartsWith("debug:"))
+				{
+					isDebug = true;
+					command = command[6..].TrimStart();
+					continue;
+				}
+
+				if (command.StartsWith("task:"))
+				{
+					isTask = true;
+					command = command[5..].TrimStart();
+					continue;
+				}
+
+				break;
 			}
 
-			command = Environment.ExpandEnvironmentVariables(command.TrimStart());
+			command = Environment.ExpandEnvironmentVariables(command);
 
 			if (!Path.IsPathRooted(command))
 				command = Path.GetFullPath(Path.Combine(Far.Api.CurrentDirectory, command));
 		}
 
-		Actor.Execute(new Actor.ExecuteArgs(command) { IsDocument = isDocument, IsDebug = isDebug });
+		Actor.Execute(new Actor.ExecuteArgs(command) { IsDocument = isDocument, IsDebug = isDebug, IsTask = isTask });
 	}
 }

@@ -1,4 +1,8 @@
-﻿using Microsoft.ClearScript;
+﻿
+// JavaScriptFar module for Far Manager
+// Copyright (c) Roman Kuzmin
+
+using Microsoft.ClearScript;
 using Microsoft.ClearScript.V8;
 
 namespace JavaScriptFar;
