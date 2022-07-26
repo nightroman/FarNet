@@ -61,7 +61,7 @@ Install FarNet
 
     Install-FarPackage FarNet
 
-Install modules
+Install modules / libraries
 
     Install-FarPackage FarNet.CopyColor
     Install-FarPackage FarNet.Drawer
@@ -74,6 +74,9 @@ Install modules
     Install-FarPackage FarNet.RightControl
     Install-FarPackage FarNet.RightWords
     Install-FarPackage FarNet.Vessel
+
+    Install-FarPackage FarNet.FSharp.Charting
+    Install-FarPackage FarNet.ScottPlot
 
 You may start Far Manager after this. Modules are installed in `%FARHOME%\FarNet\Modules`.
 
