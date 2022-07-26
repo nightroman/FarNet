@@ -1,6 +1,11 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 FarNet 5.9.0
 
+= 2.0.1 =
+
+fsx.exe supports WinForms.
+E.g. fsx may run scripts using FarNet.FSharp.Charting.
+
 = 2.0.0 =
 
 FarNet 6 announcement -- https://github.com/nightroman/FarNet/pull/25
