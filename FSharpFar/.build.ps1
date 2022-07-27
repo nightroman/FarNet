@@ -8,16 +8,20 @@ param(
 	$FarHome = (property FarHome C:\Bin\Far\x64)
 )
 
+Set-StrictMode -Version 3
 $ModuleName = 'FSharpFar'
-$ProjectName = "$ModuleName.fsproj"
 $ModuleHome = "$FarHome\FarNet\Modules\$ModuleName"
 
-task build {
-	exec {dotnet build "src\$ModuleName.sln" -c $Configuration "/p:FarHome=$FarHome"}
+task build meta, {
+	exec { dotnet build "src\$ModuleName.sln" -c $Configuration "/p:FarHome=$FarHome" }
 }
 
 task publish {
 	exec { dotnet publish "src\$ModuleName\$ModuleName.fsproj" -c $Configuration -o $ModuleHome --no-build }
+
+	$xml = [xml](Get-Content "src\$ModuleName\$ModuleName.fsproj")
+	$node = $xml.SelectSingleNode('Project/ItemGroup/PackageReference[@Include="FSharp.Core"]')
+	Copy-Item "$HOME\.nuget\packages\FSharp.Core\$($node.Version)\lib\netstandard2.1\FSharp.Core.xml" $ModuleHome
 
 	Set-Location $ModuleHome
 	remove *.deps.json, cs, de, es, fr, it, ja, ko, pl, pt-BR, ru, tr, zh-Hans, zh-Hant, runtimes\unix
@@ -31,17 +35,6 @@ task clean {
 		"src\*\bin"
 		"src\*\obj"
 	)
-}
-
-task markdown {
-	assert (Test-Path $env:MarkdownCss)
-	exec { pandoc.exe @(
-		'README.md'
-		'--output=README.htm'
-		'--from=gfm'
-		'--self-contained', "--css=$env:MarkdownCss"
-		'--standalone', "--metadata=pagetitle=$ModuleName"
-	)}
 }
 
 task version {
@@ -62,13 +55,24 @@ task meta -Inputs .build.ps1, History.txt -Outputs src/Directory.Build.props -Jo
 "@
 }
 
+task markdown {
+	assert (Test-Path $env:MarkdownCss)
+	exec { pandoc.exe @(
+		'README.md'
+		'--output=README.htm'
+		'--from=gfm'
+		'--self-contained', "--css=$env:MarkdownCss"
+		'--standalone', "--metadata=pagetitle=$ModuleName"
+	)}
+}
+
 task package markdown, {
 	remove z
 	$toModule = mkdir "z\tools\FarHome\FarNet\Modules\$ModuleName"
 
 	# module
 	exec { robocopy $ModuleHome $toModule /s /xf *.pdb } (0..2)
-	equals 34 (Get-ChildItem $toModule -Recurse -File).Count
+	equals 35 (Get-ChildItem $toModule -Recurse -File).Count
 
 	# logo
 	Copy-Item -Destination z ..\Zoo\FarNetLogo.png

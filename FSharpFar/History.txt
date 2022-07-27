@@ -1,6 +1,10 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 FarNet 5.9.0
 
+= 2.0.2 =
+
+Include missing FSharp.Core.xml
+
 = 2.0.1 =
 
 fsx.exe supports WinForms.
