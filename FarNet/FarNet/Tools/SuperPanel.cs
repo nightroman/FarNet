@@ -65,8 +65,8 @@ public class SuperPanel : Panel
 			return;
 
 		// files
-		var files = this.SelectedFiles;
-		if (files.Count == 0)
+		var files = GetSelectedFiles();
+		if (files.Length == 0)
 			return;
 
 		// call
@@ -124,8 +124,8 @@ public class SuperPanel : Panel
 
 				if (key.Is())
 				{
-					var files = SelectedFiles;
-					if (files.Count > 0)
+					var files = GetSelectedFiles();
+					if (files.Length > 0)
 					{
 						Explorer.RemoveFiles(files);
 						Update(false);

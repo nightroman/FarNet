@@ -232,7 +232,7 @@ Test '$Line.' { $_ -ccontains 'ActiveText' }
 
 ### Find-FarFile
 
-Test 'Find-FarFile ' { "$_" -ceq "$($Far.Panel.ShownFiles)" }
+Test 'Find-FarFile ' { "$_" -ceq "$($Far.Panel.GetFiles())" }
 
 Test 'Find-FarFile zzz' { !$_ -and !$Error }
 

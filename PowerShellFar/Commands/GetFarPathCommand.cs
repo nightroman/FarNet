@@ -26,11 +26,11 @@ namespace PowerShellFar.Commands
 			IEnumerator<string> it;
 			if (All)
 			{
-				it = new PathEnumerator(panel1.ShownFiles, panel2.CurrentDirectory, panel1.RealNames, panel1 != panel2);
+				it = new PathEnumerator(panel1.GetFiles(), panel2.CurrentDirectory, panel1.RealNames, panel1 != panel2);
 			}
 			else if (Selected)
 			{
-				it = new PathEnumerator(panel1.SelectedFiles, panel2.CurrentDirectory, panel1.RealNames, panel1 != panel2);
+				it = new PathEnumerator(panel1.GetSelectedFiles(), panel2.CurrentDirectory, panel1.RealNames, panel1 != panel2);
 			}
 			else
 			{
@@ -38,8 +38,10 @@ namespace PowerShellFar.Commands
 				return;
 			}
 			using (it)
+			{
 				while (it.MoveNext())
 					WriteObject(it.Current);
+			}
 		}
 	}
 }

@@ -16,7 +16,7 @@ job {
 	$cmd.Invoke($null, $arg)
 }
 job {
-	$list = $Far.Panel.ShownList
+	$list = $Far.Panel.Files
 	Assert-Far @(
 		$Far.Panel.Explorer.TypeId -eq '7d503b37-23a0-4ebd-878b-226e972b0b9d'
 		$list[0].Name -eq '..'

@@ -194,7 +194,7 @@ job {
 # select 2 properties and delete
 macro 'Keys"Down ShiftDown ShiftDown"'
 job {
-	$1 = $Far.Panel.SelectedFiles
+	$1 = $Far.Panel.GetSelectedFiles()
 	Assert-Far @(
 		$1.Count -eq 2
 		$1[0].Name -eq 'dword`$][*?'
@@ -215,8 +215,8 @@ job {
 		@(Get-FarItem -All -Passive).Count -eq 3
 		@(Get-FarPath -All).Count -eq 1
 		@(Get-FarPath -All -Passive).Count -eq 3
-		@($Far.Panel.ShownFiles).Count -eq 1
-		@($Far.Panel2.ShownFiles).Count -eq 3
+		@($Far.Panel.GetFiles()).Count -eq 1
+		@($Far.Panel2.GetFiles()).Count -eq 3
 		@($Far.Panel.ShownItems).Count -eq 1
 		@($Far.Panel2.ShownItems).Count -eq 3
 	)
@@ -225,7 +225,7 @@ job {
 # select all, move and step out
 keys Multiply
 job {
-	$1 = $Far.Panel.SelectedFiles
+	$1 = $Far.Panel.GetSelectedFiles()
 	Assert-Far @(
 		$1.Count -eq 1
 		$1[0].Name -eq 'string'
@@ -236,7 +236,7 @@ job {
 	# 'string' has been copied
 	Assert-Far @(
 		@(Get-FarItem -All).Count -eq 0
-		$Far.Panel2.ShownFiles[2].Name -eq 'string'
+		$Far.Panel2.GetFiles()[2].Name -eq 'string'
 	)
 }
 # go up on dots
@@ -267,7 +267,7 @@ job {
 keys Enter
 job {
 	# issue: must be no files
-	Assert-Far $Far.Panel.ShownFiles.Count -eq 0
+	Assert-Far $Far.Panel.GetFiles().Count -eq 0
 }
 
 # tab to key2 and copy it to a1\key1
@@ -290,14 +290,14 @@ job {
 	Assert-Far -Panels
 	Assert-Far @(
 		Test-Path 'hkcu:\a1\key1\key2'
-		$Far.Panel2.ShownFiles[0].Name -eq 'key2'
+		$Far.Panel2.GetFiles()[0].Name -eq 'key2'
 	)
 }
 
 # enter key2
 keys Enter
 job {
-	Assert-Far $Far.Panel.ShownFiles.Count -eq 0
+	Assert-Far $Far.Panel.GetFiles().Count -eq 0
 }
 
 # tab, enter dots

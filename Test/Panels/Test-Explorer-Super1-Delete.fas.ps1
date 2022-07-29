@@ -48,7 +48,7 @@ job {
 	# test shown and recovered selection
 	Assert-Far -Panels
 	Assert-Far @(
-		'12 13 14 22 23 24 32 33 34' -eq ($Far.Panel.ShownList -join ' ')
+		'12 13 14 22 23 24 32 33 34' -eq ($Far.Panel.Files -join ' ')
 		'13 23 33' -eq ($Far.Panel.SelectedList -join ' ')
 	)
 }

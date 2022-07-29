@@ -16,7 +16,7 @@ job {
 	Assert-Far -Plugin
 	Assert-Far $(
 		$Far.Panel.CurrentIndex -eq 0
-		$Far.Panel.ShownList[0].Name -eq '..'
+		$Far.Panel.Files[0].Name -eq '..'
 	)
 }
 keys Esc

@@ -17,7 +17,7 @@ macro 'Keys"Enter"'# [Abort]
 
 job {
 	Assert-Far -Panels
-	$1 = $Far.Panel.ShownList
+	$1 = $Far.Panel.Files
 	Assert-Far @(
 		$1.Count -eq 1001
 		$1[0].Name -eq '..'
@@ -48,7 +48,7 @@ job {
 macro 'Keys"Right Right Enter"'# [Ignore]
 job {
 	Assert-Far -Panels
-	$1 = $Far.Panel.ShownList
+	$1 = $Far.Panel.Files
 	Assert-Far @(
 		$1.Count -eq 3001
 		$1[0].Name -eq '..'
@@ -78,7 +78,7 @@ job {
 }
 job {
 	Assert-Far -Panels -Plugin -Plugin2
-	$1 = $Far.Panel.ShownList
+	$1 = $Far.Panel.Files
 	Assert-Far @(
 		$1.Count -eq 1001
 		$1[0].Name -eq '..'
@@ -117,7 +117,7 @@ job {
 }
 job {
 	Assert-Far -Panels -Plugin -Plugin2
-	$1 = $Far.Panel.ShownList
+	$1 = $Far.Panel.Files
 	Assert-Far @(
 		$1.Count -eq 3001
 		$1[0].Name -eq '..'

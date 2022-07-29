@@ -18,7 +18,7 @@ if ($Host.Name -ceq 'FarHost') {
 	### Find-FarFile:Name - names from the active panel
 	Register-ArgumentCompleter -CommandName Find-FarFile -ParameterName Name -ScriptBlock {
 		param($commandName, $parameterName, $wordToComplete, $commandAst, $boundParameters)
-		@(foreach($_ in $Far.Panel.ShownFiles) {$_.Name}) -like "$wordToComplete*"
+		@(foreach($_ in $Far.Panel.GetFiles()) {$_.Name}) -like "$wordToComplete*"
 	}
 
 	### Out-FarPanel:Columns - evaluated properties and column info template

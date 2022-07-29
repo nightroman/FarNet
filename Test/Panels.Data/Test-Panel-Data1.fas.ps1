@@ -46,7 +46,7 @@ job {
 	# exactly 3 items? fixed unwanted DataRow extras
 	Assert-Far @(
 		$Far.Panel.Title -eq 'Members: DataRow'
-		$Far.Panel.ShownFiles.Count -eq 3
+		$Far.Panel.GetFiles().Count -eq 3
 	)
 }
 # go to Category, enter a new value
@@ -96,7 +96,7 @@ job { Find-FarFile 2 }
 keys Enter
 job {
 	# fixed unwanted extras and order
-	$files = $Far.Panel.ShownFiles
+	$files = $Far.Panel.GetFiles()
 	Assert-Far @(
 		$files.Count -eq 4
 		$files[0].Name -eq 'NoteId'

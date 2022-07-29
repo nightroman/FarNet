@@ -26,7 +26,7 @@ job {
 keys Enter
 job {
 	Assert-Far -Plugin
-	Assert-Far ($Far.Panel.ShownFiles[0].Name -eq "$env:FarNetCode\Test\Panels\Test-Panel-OverNative.fas.ps1")
+	Assert-Far ($Far.Panel.GetFiles()[0].Name -eq "$env:FarNetCode\Test\Panels\Test-Panel-OverNative.fas.ps1")
 }
 
 job {

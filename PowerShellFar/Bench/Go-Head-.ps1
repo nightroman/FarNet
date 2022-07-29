@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Goes to the first panel file.
@@ -9,7 +8,7 @@
 #>
 
 $panel = $Far.Panel
-$items = $panel.ShownList
+$items = $panel.Files
 for($i = 0; $i -lt $items.Count; ++$i) {
 	$item = $items[$i]
 	if ($item -and !$item.IsDirectory) {

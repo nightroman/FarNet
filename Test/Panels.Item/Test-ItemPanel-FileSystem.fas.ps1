@@ -100,8 +100,8 @@ job {
 keys a
 job {
 	Assert-Far @(
-		$Far.Panel.ShownFiles.Count -eq 2
-		$Far.Panel2.ShownFiles.Count -eq 4
+		$Far.Panel.GetFiles().Count -eq 2
+		$Far.Panel2.GetFiles().Count -eq 4
 	)
 }
 

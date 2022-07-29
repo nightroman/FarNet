@@ -33,7 +33,7 @@ job {
 	Assert-Far @(
 		$Columns.Count -eq 1
 		$Columns[0].Name -eq 'PropertyName1'
-		$Far.Panel.ShownFiles.Count -eq 1
+		$Far.Panel.GetFiles().Count -eq 1
 	)
 }
 
@@ -96,7 +96,7 @@ job {
 		$Columns.Count -eq 2
 		$Columns[0].Name -eq 'PropertyName1'
 		$Columns[1].Name -eq 'OtherName'
-		$Far.Panel.ShownFiles.Count -eq 0
+		$Far.Panel.GetFiles().Count -eq 0
 	)
 }
 

@@ -19,7 +19,7 @@ Add-Type -AssemblyName System.Windows.Forms.DataVisualization
 
 # Far job 1: get panel files
 $files = job {
-	$Far.Panel.ShownFiles | Where-Object {$_.Length} | Sort-Object Length | Select-Object -Last 20
+	$Far.Panel.GetFiles() | Where-Object {$_.Length} | Sort-Object Length | Select-Object -Last 20
 }
 
 # make chart

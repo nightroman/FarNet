@@ -25,8 +25,8 @@ job {
 keys Tab
 job {
 	Assert-Far @(
-		$Far.Panel.ShownFiles.Count -eq 1
-		$Far.Panel2.ShownFiles.Count -eq 0
+		$Far.Panel.GetFiles().Count -eq 1
+		$Far.Panel2.GetFiles().Count -eq 0
 	)
 }
 
@@ -34,8 +34,8 @@ job {
 keys F5
 job {
 	Assert-Far @(
-		$Far.Panel.ShownFiles.Count -eq 1
-		$Far.Panel2.ShownFiles.Count -eq 1
+		$Far.Panel.GetFiles().Count -eq 1
+		$Far.Panel2.GetFiles().Count -eq 1
 	)
 }
 

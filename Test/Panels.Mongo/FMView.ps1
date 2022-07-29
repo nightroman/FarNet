@@ -7,7 +7,7 @@ macro 'Keys"Enter" -- file 2 properties'
 job {
 	Assert-Far -Panels
 	Assert-Far $(
-		$files = $Far.Panel.ShownFiles
+		$files = $Far.Panel.GetFiles()
 		$files.Count -eq 2
 		$files[0].Name -eq '_id'
 		$files[1].Name -eq 'x'

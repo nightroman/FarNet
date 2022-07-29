@@ -23,11 +23,11 @@ job {
 macro 'Keys"F5 Enter"'
 job {
 	# 1 file
-	Assert-Far $Far.Panel2.ShownFiles.Count -eq 1
+	Assert-Far $Far.Panel2.GetFiles().Count -eq 1
 
 	# select it, mind case
 	$Far.Panel2.SelectNames(@('Far.exe.example.ini'))
-	Assert-Far $Far.Panel2.SelectedFiles.Count -eq 1
+	Assert-Far $Far.Panel2.GetSelectedFiles().Count -eq 1
 }
 
 job {
@@ -45,7 +45,7 @@ keys F5
 job {
 	# 2 files, both selected
 	Assert-Far @(
-		$Far.Panel2.ShownFiles.Count -eq 2
+		$Far.Panel2.GetFiles().Count -eq 2
 		$Far.Panel2.SelectedList.Count -eq 1 #_200703_80
 	)
 }
@@ -58,7 +58,7 @@ keys F5
 job {
 	# 3 files, 2 selected
 	Assert-Far @(
-		$Far.Panel2.ShownFiles.Count -eq 3
+		$Far.Panel2.GetFiles().Count -eq 3
 		$Far.Panel2.SelectedList.Count -eq 1 #_200703_80
 	)
 }

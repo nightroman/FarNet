@@ -1,5 +1,17 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 6.0.1 =
+
+Requires FarNet 6.0.1
+
+Retired FarNet obsolete panel members:
+- ShownList -> Files
+- ShownFiles -> GetFiles()
+- SelectedFiles -> GetSelectedFiles()
+
+Obsolete members will be removed soon.
+Adjust scripts working with panel files.
+
 = 6.0.0 =
 
 Requires FarNet 6 and uses .NET 6

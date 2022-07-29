@@ -47,11 +47,11 @@ namespace PowerShellFar.Commands
 			IList<FarFile> filesToProcess;
 			if (All)
 			{
-				filesToProcess = panel.ShownFiles;
+				filesToProcess = panel.GetFiles();
 			}
 			else if (Selected)
 			{
-				filesToProcess = panel.SelectedFiles;
+				filesToProcess = panel.GetSelectedFiles();
 			}
 			else
 			{
@@ -60,8 +60,8 @@ namespace PowerShellFar.Commands
 			}
 
 			//! Bug [_090116_085532]
-			// Count is 0, e.g. for SelectedFiles when nothing is selected and the current item is dots;
-			// in this case Get-Item -LiteralPath fails: cannot bind an empty array to LiteralPath.
+			// Count is 0, e.g. when nothing is selected and the current item is dots;
+			// then Get-Item -LiteralPath fails: cannot bind an empty array to LiteralPath.
 			if (filesToProcess.Count > 0)
 			{
 				//! @($args[0])

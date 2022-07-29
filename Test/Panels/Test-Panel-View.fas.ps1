@@ -9,7 +9,7 @@ job {
 	Assert-Far ($Far.Panel -is [PowerShellFar.ItemPanel])
 
 	#! 090823 used to return null istead of dots
-	Assert-Far $Far.Panel.ShownList[0].Name -eq '..'
+	Assert-Far $Far.Panel.Files[0].Name -eq '..'
 }
 
 # view all

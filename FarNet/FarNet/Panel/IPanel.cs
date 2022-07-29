@@ -61,12 +61,8 @@ public interface IPanel //! think twice when convert to abstract class (see Pane
 	FarFile CurrentFile { get; }
 
 	/// <summary>
-	/// Gets the current file index in the <see cref="ShownList"/> files.
+	/// Gets the current file index in <see cref="Files"/>.
 	/// </summary>
-	/// <remarks>
-	/// This is the index of the current file in the <see cref="ShownList"/> files.
-	/// It is not directly related to other panel file collections.
-	/// </remarks>
 	int CurrentIndex { get; }
 
 	/// <summary>
@@ -112,39 +108,34 @@ public interface IPanel //! think twice when convert to abstract class (see Pane
 	/// </summary>
 	PanelKind Kind { get; }
 
+	/// <include file='doc.xml' path='doc/Files/*'/>
+	IList<FarFile> Files { get; }
+
+	/// <include file='doc.xml' path='doc/GetFiles/*'/>
+	FarFile[] GetFiles();
+
+	/// <include file='doc.xml' path='doc/SelectedList/*'/>
+	IList<FarFile> SelectedList { get; }
+
+	/// <include file='doc.xml' path='doc/GetSelectedFiles/*'/>
+	FarFile[] GetSelectedFiles();
+
 	/// <summary>
-	/// Gets all selected panel files at once or the current file if none is selected.
+	/// Obsolete, use GetSelectedFiles.
 	/// </summary>
-	/// <remarks>
-	/// In contrast to <see cref="SelectedList"/> this list is a snapshot of files,
-	/// it can be used even after changes in the panel.
-	/// </remarks>
+	[Obsolete("use GetSelectedFiles")]
 	IList<FarFile> SelectedFiles { get; }
 
 	/// <summary>
-	/// Gets all selected panel files or the current file if none is selected.
+	/// Obsolete, use GetFiles.
 	/// </summary>
-	/// <remarks>
-	/// In contrast to <see cref="SelectedFiles"/> you must not change panel items while using this list.
-	/// </remarks>
-	IList<FarFile> SelectedList { get; }
-
-	/// <summary>
-	/// Gets all shown panel files at once. File ".." is excluded.
-	/// </summary>
-	/// <remarks>
-	/// In contrast to <see cref="ShownList"/> this list is a snapshot of all files,
-	/// it can be used even after changes in the panel.
-	/// </remarks>
+	[Obsolete("use GetFiles")]
 	IList<FarFile> ShownFiles { get; }
 
 	/// <summary>
-	/// Gets all shown panel files including "..".
+	/// Obsolete, use Files.
 	/// </summary>
-	/// <remarks>
-	/// In contrast to <see cref="ShownFiles"/> you must not change panel items while using this list.
-	/// The current file index in this list is <see cref="CurrentIndex"/>.
-	/// </remarks>
+	[Obsolete("use Files")]
 	IList<FarFile> ShownList { get; }
 
 	/// <summary>
@@ -297,13 +288,7 @@ public interface IPanel //! think twice when convert to abstract class (see Pane
 	/// </summary>
 	void Push();
 
-	/// <summary>
-	/// Gets indexes of selected items.
-	/// </summary>
-	/// <remarks>
-	/// The indexes are valid only for the <see cref="ShownList"/> items.
-	/// Unlike the <see cref="SelectedFiles"/> or <see cref="SelectedList"/> this list is empty if none is selected.
-	/// </remarks>
+	/// <include file='doc.xml' path='doc/SelectedIndexes/*'/>
 	int[] SelectedIndexes();
 
 	/// <summary>

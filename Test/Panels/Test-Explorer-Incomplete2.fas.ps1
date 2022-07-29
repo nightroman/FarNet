@@ -29,7 +29,7 @@ job {
 # back to 1st
 keys Tab
 job {
-	Assert-Far 'FarNet FarEng.hlf' -eq ($Far.Panel.ShownList -join ' ')
+	Assert-Far 'FarNet FarEng.hlf' -eq ($Far.Panel.Files -join ' ')
 }
 
 # exit

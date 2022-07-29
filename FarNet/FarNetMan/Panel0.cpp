@@ -392,7 +392,7 @@ int Panel0::AsProcessPanelEvent(const ProcessPanelEventInfo* info)
 				pp->_postFile = nullptr;
 				pp->_postName = nullptr;
 
-				IList<FarFile^>^ files = pp->ShownList;
+				auto files = pp->Files;
 				for(int n = files->Count, i = pp->HasDots ? 1 : 0; i < n; ++i)
 				{
 					if (data->Equals(files[i]->Data))
@@ -414,7 +414,7 @@ int Panel0::AsProcessPanelEvent(const ProcessPanelEventInfo* info)
 				pp->_postFile = nullptr;
 				pp->_postName = nullptr;
 
-				IList<FarFile^>^ files = pp->ShownList;
+				auto files = pp->Files;
 				for(int n = files->Count, i = pp->HasDots ? 1 : 0; i < n; ++i)
 				{
 					if (name == files[i]->Name)
@@ -436,7 +436,7 @@ int Panel0::AsProcessPanelEvent(const ProcessPanelEventInfo* info)
 			FarFile^ file = pp->_postFile;
 			pp->_postFile = nullptr;
 
-			IList<FarFile^>^ files = pp->ShownList;
+			auto files = pp->Files;
 			for(int n = files->Count, i = pp->HasDots ? 1 : 0; i < n; ++i)
 			{
 				if (comparer->Equals(file, files[i]))

@@ -35,7 +35,7 @@ job {
 # next data page
 keys PgDn
 job {
-	Assert-Far $Far.Panel.CurrentIndex -eq ($Far.Panel.ShownList.Count - 1)
+	Assert-Far $Far.Panel.CurrentIndex -eq ($Far.Panel.Files.Count - 1)
 }
 # prev data page, go to end
 macro 'Keys"Home PgUp End"'

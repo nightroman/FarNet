@@ -24,7 +24,7 @@ keys Del
 job {
 	# check
 	Assert-Far @(
-		$Far.Panel.ShownList.Count -eq 7
+		$Far.Panel.Files.Count -eq 7
 		$Far.Panel.SelectedList.Count -eq 2
 		$Far.Panel.SelectedList[0].Name -eq '3'
 		$Far.Panel.SelectedList[1].Name -eq '7'
@@ -53,7 +53,7 @@ job {
 	# this panel (2nd)
 	$selected = $Far.Panel.SelectedList
 	Assert-Far @(
-		$Far.Panel.ShownFiles.Count -eq 6
+		$Far.Panel.GetFiles().Count -eq 6
 		$selected.Count -eq 3
 		$selected[0].Name -eq '12'
 		$selected[1].Name -eq '14'
@@ -62,7 +62,7 @@ job {
 
 	# that panel (1st)
 	$selected = $Far.Panel2.SelectedList
-	$shown = $Far.Panel2.ShownList
+	$shown = $Far.Panel2.Files
 	Assert-Far @(
 		# selection is not changed
 		$selected.Count -eq 2
@@ -84,7 +84,7 @@ job {
 	# this panel (2nd)
 	$selected = $Far.Panel.SelectedList
 	Assert-Far @(
-		$Far.Panel.ShownFiles.Count -eq 5
+		$Far.Panel.GetFiles().Count -eq 5
 		$selected.Count -eq 2
 		$selected[0].Name -eq '14'
 		$selected[1].Name -eq '16'
@@ -92,7 +92,7 @@ job {
 
 	# that panel (1st)
 	$selected = $Far.Panel2.SelectedList
-	$shown = $Far.Panel2.ShownList
+	$shown = $Far.Panel2.Files
 	Assert-Far @(
 		# selection is not changed
 		$selected.Count -eq 2

@@ -512,12 +512,8 @@ public partial class Panel : IPanel
 	public FarFile CurrentFile { get { return _Panel.CurrentFile; } }
 
 	/// <summary>
-	/// Gets the current file index in the <see cref="ShownList"/> files.
+	/// Gets the current file index in <see cref="Files"/>.
 	/// </summary>
-	/// <remarks>
-	/// This is the index of the current file in the <see cref="ShownList"/> files.
-	/// It is not directly related to other panel file collections.
-	/// </remarks>
 	public int CurrentIndex { get { return _Panel.CurrentIndex; } }
 
 	/// <summary>
@@ -571,40 +567,35 @@ public partial class Panel : IPanel
 	/// </remarks>
 	public string CurrentLocation { get { return _Panel.CurrentLocation; } set { _Panel.CurrentLocation = value; } }
 
-	/// <summary>
-	/// Gets all selected panel files at once or the current file if none is selected.
-	/// </summary>
-	/// <remarks>
-	/// In contrast to <see cref="SelectedList"/> this list is a snapshot of files,
-	/// it can be used even after changes in the panel.
-	/// </remarks>
-	public IList<FarFile> SelectedFiles { get { return _Panel.SelectedFiles; } }
+	/// <include file='doc.xml' path='doc/Files/*'/>
+	public IList<FarFile> Files => _Panel.Files;
+
+	/// <include file='doc.xml' path='doc/GetFiles/*'/>
+	public FarFile[] GetFiles() => _Panel.GetFiles();
+
+	/// <include file='doc.xml' path='doc/SelectedList/*'/>
+	public IList<FarFile> SelectedList => _Panel.SelectedList;
+
+	/// <include file='doc.xml' path='doc/GetSelectedFiles/*'/>
+	public FarFile[] GetSelectedFiles() => _Panel.GetSelectedFiles();
 
 	/// <summary>
-	/// Gets all selected panel files or the current file if none is selected.
+	/// Obsolete, use GetSelectedFiles.
 	/// </summary>
-	/// <remarks>
-	/// In contrast to <see cref="SelectedFiles"/> you must not change panel items while using this list.
-	/// </remarks>
-	public IList<FarFile> SelectedList { get { return _Panel.SelectedList; } }
+	[Obsolete("use GetSelectedFiles")]
+	public IList<FarFile> SelectedFiles => _Panel.GetSelectedFiles();
 
 	/// <summary>
-	/// Gets all shown panel files at once. File ".." is excluded.
+	/// Obsolete, use GetFiles.
 	/// </summary>
-	/// <remarks>
-	/// In contrast to <see cref="ShownList"/> this list is a snapshot of all files,
-	/// it can be used even after changes in the panel.
-	/// </remarks>
-	public IList<FarFile> ShownFiles { get { return _Panel.ShownFiles; } }
+	[Obsolete("use GetFiles")]
+	public IList<FarFile> ShownFiles => _Panel.GetFiles();
 
 	/// <summary>
-	/// Gets all shown panel files including "..".
+	/// Obsolete, use Files.
 	/// </summary>
-	/// <remarks>
-	/// In contrast to <see cref="ShownFiles"/> you must not change panel items while using this list.
-	/// The current file index in this list is <see cref="CurrentIndex"/>.
-	/// </remarks>
-	public IList<FarFile> ShownList { get { return _Panel.ShownList; } }
+	[Obsolete("use Files")]
+	public IList<FarFile> ShownList => _Panel.Files;
 
 	/// <summary>
 	/// Gets the first visible file index.
@@ -812,13 +803,7 @@ public partial class Panel : IPanel
 	/// </summary>
 	public void Push() { _Panel.Push(); }
 
-	/// <summary>
-	/// Gets indexes of selected items.
-	/// </summary>
-	/// <remarks>
-	/// The indexes are valid only for the <see cref="ShownList"/> items.
-	/// Unlike the <see cref="SelectedFiles"/> or <see cref="SelectedList"/> this list is empty if none is selected.
-	/// </remarks>
+	/// <include file='doc.xml' path='doc/SelectedIndexes/*'/>
 	public int[] SelectedIndexes() { return _Panel.SelectedIndexes(); }
 
 	/// <summary>
@@ -1085,7 +1070,7 @@ public partial class Panel : IPanel
 		// indexes of files found in the hash
 		int index = -1;
 		var indexes = new List<int>();
-		foreach (var file in ShownList)
+		foreach (var file in Files)
 		{
 			++index;
 			if (hash.ContainsKey(file))

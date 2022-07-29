@@ -47,7 +47,7 @@ keys Enter
 job {
 	# empty panel
 	Assert-Far -Panels -Plugin
-	Assert-Far $Far.Panel.ShownFiles.Count -eq 0
+	Assert-Far $Far.Panel.GetFiles().Count -eq 0
 }
 # exit
 keys Esc

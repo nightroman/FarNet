@@ -32,7 +32,7 @@ keys PgDn
 job {
 	Assert-Far $(
 		$data.LastId -ne $Far.Panel.CurrentFile.Data._id
-		$Far.Panel.CurrentIndex -eq $Far.Panel.ShownList.Count - 1
+		$Far.Panel.CurrentIndex -eq $Far.Panel.Files.Count - 1
 	)
 }
 # prev data page, go to end

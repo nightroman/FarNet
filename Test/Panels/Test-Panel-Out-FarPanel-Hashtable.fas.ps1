@@ -9,7 +9,7 @@ job {
 }
 job {
 	Assert-Far -Plugin
-	Assert-Far $Far.Panel.ShownFiles.Count -eq 1
+	Assert-Far $Far.Panel.GetFiles().Count -eq 1
 }
 
 # go to the first item - hashtable
@@ -27,7 +27,7 @@ keys Enter
 job {
 	Assert-Far @(
 		$Far.Panel.Title -eq 'Objects'
-		$Far.Panel.ShownFiles.Count -eq 2
+		$Far.Panel.GetFiles().Count -eq 2
 	)
 }
 
@@ -47,7 +47,7 @@ job {
 }
 job {
 	Assert-Far -Plugin
-	Assert-Far $Far.Panel.ShownFiles.Count -eq 1
+	Assert-Far $Far.Panel.GetFiles().Count -eq 1
 }
 
 # go to the first item - dictionary
@@ -65,7 +65,7 @@ keys Enter
 job {
 	Assert-Far @(
 		$Far.Panel.Title -eq 'Objects'
-		$Far.Panel.ShownFiles.Count -eq $Data.Dictionary.Count
+		$Far.Panel.GetFiles().Count -eq $Data.Dictionary.Count
 	)
 }
 

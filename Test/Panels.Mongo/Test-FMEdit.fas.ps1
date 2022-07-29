@@ -18,7 +18,7 @@ job {
 }
 job {
 	Assert-Far -Panels
-	Assert-Far $Far.Panel.ShownFiles.Count -eq 0
+	Assert-Far $Far.Panel.GetFiles().Count -eq 0
 }
 
 ### new and cancel
@@ -29,7 +29,7 @@ job {
 macro 'Keys"Esc" -- cancel new document'
 job {
 	Assert-Far -Panels
-	Assert-Far $Far.Panel.ShownFiles.Count -eq 0
+	Assert-Far $Far.Panel.GetFiles().Count -eq 0
 }
 
 ### new and save
@@ -82,7 +82,7 @@ macro 'Keys"Esc Enter" -- exit, save'
 job {
 	Assert-Far -Panels
 	Assert-Far $(
-		$Far.Panel.ShownFiles.Count -eq 2
+		$Far.Panel.GetFiles().Count -eq 2
 
 		$data = $Far.Panel.CurrentFile.Data
 		$data._id.GetType() -eq ([MongoDB.Bson.ObjectId])

@@ -22,7 +22,7 @@ job {
 	Assert-Far (Get-FarFile).Name -eq 'Item4'
 
 	# 5 items with dots, nothing is selected
-	Assert-Far $Far.Panel.ShownList.Count -eq 5
+	Assert-Far $Far.Panel.Files.Count -eq 5
 	Assert-Far $Far.Panel.SelectedList.Count -eq 1
 }
 
@@ -37,7 +37,7 @@ job {
 	$Far.Panel.SelectNames(@('Item4', 'Item1', 'Item2'))
 }
 job {
-	$files = $Far.Panel.SelectedFiles
+	$files = $Far.Panel.GetSelectedFiles()
 	Assert-Far $files.Count -eq 3
 	Assert-Far @(
 		$files[0].Name -eq 'Item1'
@@ -50,7 +50,7 @@ job {
 	$Far.Panel.UnselectNames(@('Item4', 'Item1'))
 }
 job {
-	$files = $Far.Panel.SelectedFiles
+	$files = $Far.Panel.GetSelectedFiles()
 	Assert-Far $files.Count -eq 1
 	Assert-Far $files[0].Name -eq 'Item2'
 }
@@ -59,7 +59,7 @@ job {
 	$Far.Panel.UnselectNames(@('Item2'))
 }
 job {
-	Assert-Far $Far.Panel.SelectedFiles.Count -eq 0
+	Assert-Far $Far.Panel.GetSelectedFiles().Count -eq 0
 }
 
 ### SelectAt

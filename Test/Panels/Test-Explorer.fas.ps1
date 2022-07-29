@@ -20,9 +20,9 @@ job {
 	Assert-Far -Plugin
 	Assert-Far @(
 		$Panel.Title -eq 'Root'
-		$Panel.ShownList[0].Name -eq 'Flat'
-		$Panel.ShownList[1].Name -eq 'Tree'
-		$Panel.ShownList[2].Name -eq 'Path'
+		$Panel.Files[0].Name -eq 'Flat'
+		$Panel.Files[1].Name -eq 'Tree'
+		$Panel.Files[2].Name -eq 'Path'
 	)
 }
 ### "Flat" explorer
@@ -33,7 +33,7 @@ job {
 	Assert-Far -Plugin
 	Assert-Far @(
 		$Panel.Title -eq 'Flat: Functions'
-		$Panel.ShownList[0].Name -eq '..'
+		$Panel.Files[0].Name -eq '..'
 	)
 }
 
@@ -107,7 +107,7 @@ job {
 	Assert-Far -Plugin
 	Assert-Far @(
 		$Panel.Title -eq 'Tree: HKCU:\Control Panel'
-		$Panel.ShownList[0].Name -eq '..'
+		$Panel.Files[0].Name -eq '..'
 	)
 	Find-FarFile Desktop
 }
@@ -119,8 +119,8 @@ job {
 	Assert-Far -Plugin
 	Assert-Far @(
 		$Panel.Title -like "Tree: *\Control Panel\Desktop"
-		$Panel.ShownList[0].Name -eq '..'
-		$Panel.ShownList[1].Name -eq 'Colors'
+		$Panel.Files[0].Name -eq '..'
+		$Panel.Files[1].Name -eq 'Colors'
 	)
 	Find-FarFile Colors
 }
@@ -160,7 +160,7 @@ function Test-PathOrLocation {
 		# title, dots, different panel (just created)
 		Assert-Far @(
 			$Far.Panel.Title -eq "$($Data.Name): $env:FARHOME\FarNet"
-			$Far.Panel.ShownList[0].Name -eq '..'
+			$Far.Panel.Files[0].Name -eq '..'
 			$Data.Panel -ne $Far.Panel
 		)
 	}
@@ -176,7 +176,7 @@ function Test-PathOrLocation {
 		Assert-Far -Panels
 		Assert-Far @(
 			$Far.Panel.Title -eq "$($Data.Name): $env:FARHOME\FarNet\Modules"
-			$Far.Panel.ShownList[0].Name -eq '..'
+			$Far.Panel.Files[0].Name -eq '..'
 			$Data.Panel -eq $Far.Panel
 		)
 	}
@@ -194,7 +194,7 @@ function Test-PathOrLocation {
 		Assert-Far -Panels
 		Assert-Far @(
 			$Far.Panel.Title -eq "$($Data.Name): C:\"
-			$Far.Panel.ShownList[0].Name -eq '..'
+			$Far.Panel.Files[0].Name -eq '..'
 		)
 	}
 	# goto root again, nothing changes
@@ -204,7 +204,7 @@ function Test-PathOrLocation {
 		Assert-Far -Panels
 		Assert-Far @(
 			$Far.Panel.Title -eq "$($Data.Name): C:\"
-			$Far.Panel.ShownList[0].Name -eq '..'
+			$Far.Panel.Files[0].Name -eq '..'
 		)
 	}
 	# escape the explorer
@@ -221,7 +221,7 @@ function Test-PathOrLocation {
 		Assert-Far -Panels
 		Assert-Far @(
 			$Far.Panel.Title -eq "$($Data.Name): C:\"
-			$Far.Panel.ShownList[0].Name -eq '..'
+			$Far.Panel.Files[0].Name -eq '..'
 		)
 	}
 	# now go up
@@ -264,7 +264,7 @@ job {
 }
 keys Enter
 job {
-	Assert-Far $Far.Panel.ShownList[1].Name -eq 'Colors'
+	Assert-Far $Far.Panel.Files[1].Name -eq 'Colors'
 }
 keys ShiftEsc
 job {

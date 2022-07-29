@@ -13,7 +13,7 @@ Keys"6 Enter"
 job {
 	Assert-Far -Plugin
 	Assert-Far $Far.Panel.Title -eq 'Tree'
-	$1, $2 = $Far.Panel.ShownFiles
+	$1, $2 = $Far.Panel.GetFiles()
 	Assert-Far $(
 		$1.Owner -match '^- \w:\\.*\\Panels\.Item$'
 		$2.Owner -eq '  + z.1'
@@ -25,11 +25,11 @@ job {
 macro 'Keys"Right" -- expand'
 job {
 	Assert-Far -FileOwner '  - z.1'
-	Assert-Far $Far.Panel.ShownFiles.Count -eq 2
+	Assert-Far $Far.Panel.GetFiles().Count -eq 2
 }
 macro 'Keys"CtrlH" -- show hidden'
 job {
-	$1, $2, $3 = $Far.Panel.ShownFiles
+	$1, $2, $3 = $Far.Panel.GetFiles()
 	Assert-Far $(
 		$1.Owner -match '^- \w:\\.*\\Panels\.Item$'
 		$2.Owner -eq '  - z.1'
@@ -39,7 +39,7 @@ job {
 macro 'Keys"Left" -- collaps'
 job {
 	Assert-Far -FileOwner '  + z.1'
-	Assert-Far $Far.Panel.ShownFiles.Count -eq 2
+	Assert-Far $Far.Panel.GetFiles().Count -eq 2
 }
 macro 'Keys"CtrlH" -- show hidden'
 keys Esc

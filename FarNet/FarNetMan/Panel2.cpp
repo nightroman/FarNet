@@ -78,45 +78,62 @@ FarFile^ Panel2::CurrentFile::get()
 	return GetItemFile(item.Get());
 }
 
-IList<FarFile^>^ Panel2::ShownFiles::get()
+array<FarFile^>^ Panel2::GetFiles()
 {
 	AssertOpen();
 
 	if (Host->Explorer->CanExploreLocation)
-		return Panel1::ShownFiles;
+		return Panel1::GetFiles();
 
 	PanelInfo pi;
 	GetPanelInfo(Handle, pi);
 
-	List<FarFile^>^ r = gcnew List<FarFile^>((int)pi.ItemsNumber);
-	for (int i = 0; i < (int)pi.ItemsNumber; ++i)
+	int size = int(pi.ItemsNumber);
+	int first = 0;
+
+	// exclude dots
+	if (size > 0)
 	{
-		AutoPluginPanelItem item(Handle, i, ShownFile);
+		AutoPluginPanelItem item(Handle, 0, ShownFile);
+		if (item.Get().FileName[0] == '.' && item.Get().FileName[1] == '.' && item.Get().FileName[2] == '\0')
+		{
+			--size;
+			first = 1;
+		}
+	}
+
+	auto r = gcnew array<FarFile^>(size);
+	for (int i = 0; i < size; ++i)
+	{
+		AutoPluginPanelItem item(Handle, i + first, ShownFile);
 		FarFile^ file = GetItemFile(item.Get());
-		if (file)
-			r->Add(file);
+		if (!file)
+			throw gcnew Exception("null file"); //rk-0
+		r[i] = file;
 	}
 
 	return r;
 }
 
-IList<FarFile^>^ Panel2::SelectedFiles::get()
+array<FarFile^>^ Panel2::GetSelectedFiles()
 {
 	AssertOpen();
 
 	if (Host->Explorer->CanExploreLocation)
-		return Panel1::SelectedFiles;
+		return Panel1::GetSelectedFiles();
 
 	PanelInfo pi;
 	GetPanelInfo(Handle, pi);
 
-	List<FarFile^>^ r = gcnew List<FarFile^>((int)pi.SelectedItemsNumber);
-	for (int i = 0; i < (int)pi.SelectedItemsNumber; ++i)
+	int size = int(pi.SelectedItemsNumber);
+	auto r = gcnew array<FarFile^>(size);
+	for (int i = 0; i < size; ++i)
 	{
 		AutoPluginPanelItem item(Handle, i, SelectedFile);
 		FarFile^ file = GetItemFile(item.Get());
-		if (file)
-			r->Add(file);
+		if (!file)
+			throw gcnew Exception("null file"); //rk-0
+		r[i] = file;
 	}
 
 	return r;

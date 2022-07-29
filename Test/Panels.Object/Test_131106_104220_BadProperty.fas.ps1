@@ -24,7 +24,7 @@ job {
 	'text', (New-Object Test_131106_104220) | Out-FarPanel
 }
 job {
-	$r = $Far.Panel.ShownFiles
+	$r = $Far.Panel.GetFiles()
 	Assert-Far -Plugin
 	Assert-Far @(
 		$r.Count -eq 2

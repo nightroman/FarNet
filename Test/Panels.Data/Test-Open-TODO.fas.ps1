@@ -84,7 +84,7 @@ macro 'Keys"Esc"'# used to ask to save
 job {
 	Assert-Far @(
 		$Far.Panel -is [PowerShellFar.DataPanel]
-		$Far.Panel.ShownFiles.Count -eq 1 # used to be 2
+		$Far.Panel.GetFiles().Count -eq 1 # used to be 2
 	)
 }
 
@@ -102,7 +102,7 @@ job {
 	Assert-Far -Plugin
 	Assert-Far @(
 		$Far.Panel.Title -eq 'Table TODO'
-		$Far.Panel.ShownFiles.Count -eq 1
+		$Far.Panel.GetFiles().Count -eq 1
 	)
 }
 
@@ -126,12 +126,12 @@ macro 'Keys"= 2 0 1 1 - 0 4 - 0 2 Enter"'# +1 day
 macro 'Keys"Esc Enter"'
 job {
 	# sort is not yet applied
-	Assert-Far ($Far.Panel.ShownFiles -join ' ') -eq "Task1 Task2"
+	Assert-Far ($Far.Panel.GetFiles() -join ' ') -eq "Task1 Task2"
 }
 keys CtrlR
 job {
 	# now sort is applied
-	Assert-Far ($Far.Panel.ShownFiles -join ' ') -eq "Task2 Task1"
+	Assert-Far ($Far.Panel.GetFiles() -join ' ') -eq "Task2 Task1"
 }
 
 ### edit no save
@@ -152,7 +152,7 @@ job {
 macro 'Keys"CtrlA Del F2 Esc"'
 job {
 	Assert-Far -Panels -FileName Task1
-	Assert-Far $Far.Panel.ShownFiles.Count -eq 1
+	Assert-Far $Far.Panel.GetFiles().Count -eq 1
 }
 
 ### conflict

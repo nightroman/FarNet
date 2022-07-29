@@ -49,11 +49,11 @@ public: // IPanel
 	virtual property bool RealNames { bool get() override; void set(bool value) override; }
 	virtual property bool UseSortGroups { bool get() override; void set(bool value) override; }
 	virtual property FarFile^ CurrentFile { FarFile^ get() override; }
-	virtual property IList<FarFile^>^ SelectedFiles { IList<FarFile^>^ get() override; }
-	virtual property IList<FarFile^>^ ShownFiles { IList<FarFile^>^ get() override; }
 	virtual property PanelSortMode SortMode { PanelSortMode get() override; void set(PanelSortMode value) override; }
 	virtual property PanelViewMode ViewMode { PanelViewMode get() override; void set(PanelViewMode value) override; }
 	virtual property String^ StartDirectory { String^ get(); }
+	virtual array<FarFile^>^ GetFiles() override;
+	virtual array<FarFile^>^ GetSelectedFiles() override;
 	virtual void Close() override;
 	virtual void Push() override;
 public: // IPanelWorks

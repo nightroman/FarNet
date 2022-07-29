@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Selects panel files by the specified filter.
@@ -9,6 +8,12 @@
 	active or passive panel and selects them. Filter operates on FarNet.FarFile
 	represented by $_ and returns $true or $false. Basically it works similar
 	to Find-FarFile -Where but all found files get selected.
+
+.Parameter Where
+		Selection filter: $_ is [FarNet.FarFile] item.
+
+.Parameter Passive
+		Tells to work on the passive panel.
 
 .Link
 	Find-FarFile
@@ -21,15 +26,10 @@
 	Select-FarFile- { $_.Description -match '^TODO|^DONE' }
 #>
 
-param
-(
-	[scriptblock]
-	# Selection filter: $_ is [FarNet.FarFile] item.
-	$Where = { $true }
+param(
+	[scriptblock]$Where = {$true}
 	,
-	[switch]
-	# Tells to work on the passive panel.
-	$Passive
+	[switch]$Passive
 )
 
 # target panel: active or passive
@@ -37,7 +37,7 @@ $panel = if ($Passive) { $Far.Panel2 } else { $Far.Panel }
 
 ### collect indexes to select at
 $private:index = -1
-$indexes = foreach($_ in $panel.ShownList) {
+$indexes = foreach($_ in $panel.Files) {
 	++$index
 	if (& $Where) {
 		$index

@@ -125,7 +125,7 @@ public partial class Panel
 				return;
 
 			// args
-			var argsExport = new ExportFilesEventArgs(ExplorerModes.None, SelectedFiles, move, native.CurrentDirectory);
+			var argsExport = new ExportFilesEventArgs(ExplorerModes.None, GetSelectedFiles(), move, native.CurrentDirectory);
 			if (argsExport.Files.Count == 0)
 				return;
 
@@ -148,7 +148,7 @@ public partial class Panel
 			return;
 
 		// args
-		var argsAccept = new AcceptFilesEventArgs(ExplorerModes.None, this.SelectedFiles, move, this.Explorer);
+		var argsAccept = new AcceptFilesEventArgs(ExplorerModes.None, GetSelectedFiles(), move, Explorer);
 		if (argsAccept.Files.Count == 0)
 			return;
 
@@ -274,7 +274,7 @@ public partial class Panel
 			return;
 
 		// args
-		var args = new DeleteFilesEventArgs(ExplorerModes.None, SelectedFiles, force);
+		var args = new DeleteFilesEventArgs(ExplorerModes.None, GetSelectedFiles(), force);
 		if (args.Files.Count == 0)
 			return;
 
@@ -821,7 +821,7 @@ public partial class Panel
 				{
 					int currentIndex;
 					FarFile currentFile;
-					if (PageLimit > 0 && (currentIndex = CurrentIndex) >= ShownList.Count - 1 && null != (currentFile = CurrentFile) && currentFile.Name != "..")
+					if (PageLimit > 0 && (currentIndex = CurrentIndex) >= Files.Count - 1 && null != (currentFile = CurrentFile) && currentFile.Name != "..")
 					{
 						int topIndex = TopIndex;
 						PageOffset += PageLimit;

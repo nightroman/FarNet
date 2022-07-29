@@ -13,7 +13,7 @@ job {
 
 job {
 	# try items
-	$files = $Far.Panel.ShownFiles
+	$files = $Far.Panel.GetFiles()
 	Assert-Far @(
 		$files[0].Owner -eq '+ Services'
 		$files[1].Owner -eq '+ Processes'
@@ -57,7 +57,7 @@ macro 'Keys"Home AltP r o v i d e r s Esc Left"'
 job {
 	# try items
 	Assert-Far -FileOwner '+ Providers'
-	Assert-Far $Far.Panel.ShownFiles.Count -eq 3
+	Assert-Far $Far.Panel.GetFiles().Count -eq 3
 }
 
 # expand, find

@@ -20,7 +20,7 @@ job {
 }
 job {
 	Assert-Far ($Far.Panel -is [PowerShellFar.ObjectPanel])
-	Assert-Far $Far.Panel.ShownFiles.Count -eq 1
+	Assert-Far $Far.Panel.GetFiles().Count -eq 1
 }
 macro 'Keys"Down Enter" -- Enter the only item'
 job {
@@ -30,7 +30,7 @@ macro 'Keys"Enter" -- Open Data in *object* panel'
 job {
 	Assert-Far @(
 		$Far.Panel -is [PowerShellFar.ObjectPanel]
-		$Far.Panel.ShownFiles.Count -eq 2
+		$Far.Panel.GetFiles().Count -eq 2
 	)
 }
 keys Esc
@@ -39,7 +39,7 @@ job {
 }
 macro 'Keys"CtrlPgDn" -- Open Data in member panel'
 job {
-	$files = $Far.Panel.ShownFiles
+	$files = $Far.Panel.GetFiles()
 	Assert-Far @(
 		$Far.Panel -is [PowerShellFar.MemberPanel]
 		$Far.Panel.Title -eq 'Members: KeyValuePair`2'

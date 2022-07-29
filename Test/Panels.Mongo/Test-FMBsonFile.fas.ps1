@@ -27,7 +27,7 @@ job {
 		$Far.Panel.CurrentIndex -eq 0
 		$Far.Panel.Title -eq ([IO.Path]::GetFileName($Data.File))
 	)
-	$r = $Far.Panel.ShownFiles
+	$r = $Far.Panel.GetFiles()
 	Assert-Far $(
 		$r.Count -eq 2
 		$r[0].Name -eq 'name1'

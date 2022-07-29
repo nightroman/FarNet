@@ -171,9 +171,9 @@ namespace PowerShellFar
 		/// </summary>
 		internal void UISetNulls()
 		{
-			foreach (FarFile file in SelectedFiles)
+			foreach (FarFile file in GetSelectedFiles())
 			{
-				if (!(file.Data is PSPropertyInfo pi))
+				if (file.Data is not PSPropertyInfo pi)
 					continue;
 
 				try

@@ -3,7 +3,7 @@ macro "print [[fs: //exec file=$env:FarNetCode\FSharpFar\samples\PowerShellFar\P
 job {
 	Assert-Far -Plugin
 	Assert-Far $Far.Panel.Title -eq 'Objects'
-	$files = $Far.Panel.ShownFiles
+	$files = $Far.Panel.GetFiles()
 	Assert-Far @(
 		$files.Count -eq 3
 		$files[0].Name -eq 'John Doe'

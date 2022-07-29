@@ -51,9 +51,9 @@ job {
 macro 'Keys"Tab F5"'
 job {
 	Assert-Far @(
-		$Far.Panel.ShownFiles.Count -eq 15
+		$Far.Panel.GetFiles().Count -eq 15
 		'12 14 22 24 32 34' -eq ($Far.Panel.SelectedList -join ' ')
-		'11 13 15 21 23 25 31 33 35' -eq ($Far.Panel2.ShownList -join ' ')
+		'11 13 15 21 23 25 31 33 35' -eq ($Far.Panel2.Files -join ' ')
 	)
 }
 

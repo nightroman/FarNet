@@ -5,12 +5,12 @@ job {
 }
 job {
 	Assert-Far ($Far.Panel -is [PowerShellFar.ObjectPanel])
-	Assert-Far $Far.Panel.ShownFiles.Count -eq 1
+	Assert-Far $Far.Panel.GetFiles().Count -eq 1
 }
 keys CtrlR
 job {
 	# still 1 file
-	Assert-Far $Far.Panel.ShownFiles.Count -eq 1
+	Assert-Far $Far.Panel.GetFiles().Count -eq 1
 }
 keys Esc
 job {
@@ -23,11 +23,11 @@ job {
 }
 job {
 	Assert-Far ($Far.Panel -is [PowerShellFar.ObjectPanel])
-	Assert-Far $Far.Panel.ShownFiles.Count -eq 1
+	Assert-Far $Far.Panel.GetFiles().Count -eq 1
 }
 keys CtrlR
 job {
 	# still 1 file; used to fail
-	Assert-Far $Far.Panel.ShownFiles.Count -eq 1
+	Assert-Far $Far.Panel.GetFiles().Count -eq 1
 }
 keys Esc

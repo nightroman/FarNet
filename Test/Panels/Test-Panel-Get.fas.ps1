@@ -22,7 +22,7 @@ job {
 	#! fixed
 	$nItem = @(Get-FarItem -All).Count
 	$nPath = @(Get-FarPath -All).Count
-	$nFile = $Far.Panel.ShownList.Count
+	$nFile = $Far.Panel.Files.Count
 	Assert-Far @(
 		$nItem -ge 2
 		$nItem -eq $nPath

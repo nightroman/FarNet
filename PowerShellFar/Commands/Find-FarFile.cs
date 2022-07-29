@@ -31,7 +31,7 @@ namespace PowerShellFar.Commands
 			}
 			else
 			{
-				IList<FarFile> files = Far.Api.Panel.ShownList;
+				var files = Far.Api.Panel.Files;
 				int current = Far.Api.Panel.CurrentIndex;
 				int count = files.Count;
 

@@ -61,9 +61,9 @@ macro 'Keys"Tab F6"'
 job {
 	Assert-Far @(
 		# odd have been copied
-		'11 13 15 21 23 25 31 33 35' -eq ($Far.Panel2.ShownList -join ' ')
+		'11 13 15 21 23 25 31 33 35' -eq ($Far.Panel2.Files -join ' ')
 		# 11 15 21 25 31 35 have been deleted, so we have
-		'12 13 14 22 23 24 32 33 34' -eq ($Far.Panel.ShownList -join ' ')
+		'12 13 14 22 23 24 32 33 34' -eq ($Far.Panel.Files -join ' ')
 		# and all of them are selected
 		'12 13 14 22 23 24 32 33 34' -eq ($Far.Panel.SelectedList -join ' ')
 	)

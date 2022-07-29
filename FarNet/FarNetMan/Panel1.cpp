@@ -182,39 +182,52 @@ String^ Panel1::ToString()
 	return CurrentDirectory;
 }
 
-IList<FarFile^>^ Panel1::ShownFiles::get()
+array<FarFile^>^ Panel1::GetFiles()
 {
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
-	List<FarFile^>^ r = gcnew List<FarFile^>((int)pi.ItemsNumber);
-	for (int i = 0; i < (int)pi.ItemsNumber; ++i)
+	int size = int(pi.ItemsNumber);
+	int first = 0;
+
+	// exclude dots
+	if (size > 0)
 	{
-		AutoPluginPanelItem item(_handle, i, ShownFile);
-		if (i == 0 && item.Get().FileName[0] == '.' && item.Get().FileName[1] == '.' && item.Get().FileName[2] == '\0')
-			continue;
-		r->Add(ItemToFile(item.Get()));
+		AutoPluginPanelItem item(_handle, 0, ShownFile);
+		if (item.Get().FileName[0] == '.' && item.Get().FileName[1] == '.' && item.Get().FileName[2] == '\0')
+		{
+			--size;
+			first = 1;
+		}
+	}
+
+	auto r = gcnew array<FarFile^>(size);
+	for (int i = 0; i < size; ++i)
+	{
+		AutoPluginPanelItem item(_handle, i + first, ShownFile);
+		r[i] = ItemToFile(item.Get());
 	}
 
 	return r;
 }
 
-IList<FarFile^>^ Panel1::SelectedFiles::get()
+array<FarFile^>^ Panel1::GetSelectedFiles()
 {
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
-	List<FarFile^>^ r = gcnew List<FarFile^>((int)pi.SelectedItemsNumber);
-	for (int i = 0; i < (int)pi.SelectedItemsNumber; ++i)
+	int size = int(pi.SelectedItemsNumber);
+	auto r = gcnew array<FarFile^>(size);
+	for (int i = 0; i < size; ++i)
 	{
 		AutoPluginPanelItem item(_handle, i, SelectedFile);
-		r->Add(ItemToFile(item.Get()));
+		r[i] = ItemToFile(item.Get());
 	}
 
 	return r;
 }
 
-IList<FarFile^>^ Panel1::ShownList::get()
+IList<FarFile^>^ Panel1::Files::get()
 {
 	return gcnew PanelFileCollection(this, ShownFile);
 }

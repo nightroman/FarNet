@@ -76,7 +76,7 @@ namespace PowerShellFar
 		{
 			get
 			{
-				foreach (FarFile file in ShownFiles)
+				foreach (FarFile file in GetFiles())
 					yield return ConvertFileToItem(file);
 			}
 		}
@@ -87,7 +87,7 @@ namespace PowerShellFar
 		{
 			get
 			{
-				return SelectedFiles.Select(x => ConvertFileToItem(x)).ToList();
+				return GetSelectedFiles().Select(x => ConvertFileToItem(x)).ToList();
 			}
 		}
 		/// <summary>

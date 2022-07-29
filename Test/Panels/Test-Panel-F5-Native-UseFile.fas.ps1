@@ -45,7 +45,7 @@ job {
 }
 keys F5
 job {
-	$files = $Far.Panel.ShownFiles
+	$files = $Far.Panel.GetFiles()
 	Assert-Far @(
 		$files.Count -eq 9
 		$files[0].Name -eq 'file1'
@@ -67,7 +67,7 @@ job {
 }
 keys F6
 job {
-	$files = $Far.Panel.ShownFiles
+	$files = $Far.Panel.GetFiles()
 	Assert-Far @(
 		$files.Count -eq 7
 		!(Test-Path 'c:\temp\z\files\file3')

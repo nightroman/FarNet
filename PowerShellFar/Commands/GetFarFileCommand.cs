@@ -23,11 +23,11 @@ namespace PowerShellFar.Commands
 			IList<FarFile> files;
 			if (All)
 			{
-				files = panel.ShownFiles;
+				files = panel.GetFiles();
 			}
 			else if (Selected)
 			{
-				files = panel.SelectedFiles;
+				files = panel.GetSelectedFiles();
 			}
 			else
 			{
