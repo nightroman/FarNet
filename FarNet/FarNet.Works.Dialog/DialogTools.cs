@@ -5,20 +5,19 @@
 using FarNet.Forms;
 using System.Collections.Generic;
 
-namespace FarNet.Works
-{
-	public static class DialogTools
-	{
-		public static IEnumerable<IControl> GetControls(IDialog dialog)
-		{
-			for (int i = 0; ; ++i)
-			{
-				IControl control = dialog[i];
-				if (control == null)
-					break;
+namespace FarNet.Works;
 
-				yield return control;
-			}
+public static class DialogTools
+{
+	public static IEnumerable<IControl> GetControls(IDialog dialog)
+	{
+		for (int i = 0; ; ++i)
+		{
+			IControl control = dialog[i];
+			if (control == null)
+				break;
+
+			yield return control;
 		}
 	}
 }

@@ -4,41 +4,40 @@
 
 using System.Collections.Generic;
 
-namespace FarNet.Works
+namespace FarNet.Works;
+
+public static class ConfigEditor
 {
-	public static class ConfigEditor
+	const string HelpTopic = "configure-editors";
+
+	public static void Show(List<IModuleEditor> editors)
 	{
-		const string HelpTopic = "configure-editors";
+		var menu = Far.Api.CreateMenu();
+		menu.AutoAssignHotkeys = true;
+		menu.HelpTopic = HelpTopic;
+		menu.Title = "Editors";
+		menu.AddSimpleConfigItems(editors);
 
-		public static void Show(List<IModuleEditor> editors)
+		while (menu.Show())
 		{
-			var menu = Far.Api.CreateMenu();
-			menu.AutoAssignHotkeys = true;
-			menu.HelpTopic = HelpTopic;
-			menu.Title = "Editors";
-			menu.AddSimpleConfigItems(editors);
+			var editor = (IModuleEditor)menu.SelectedData;
 
-			while (menu.Show())
-			{
-				var editor = (IModuleEditor)menu.SelectedData;
+			var ib = Far.Api.CreateInputBox();
+			ib.EmptyEnabled = true;
+			ib.HelpTopic = HelpTopic;
+			ib.History = "Masks";
+			ib.Prompt = "Mask";
+			ib.Text = editor.Mask;
+			ib.Title = editor.Name;
+			if (!ib.Show())
+				continue;
 
-				var ib = Far.Api.CreateInputBox();
-				ib.EmptyEnabled = true;
-				ib.HelpTopic = HelpTopic;
-				ib.History = "Masks";
-				ib.Prompt = "Mask";
-				ib.Text = editor.Mask;
-				ib.Title = editor.Name;
-				if (!ib.Show())
-					continue;
+			var mask = ConfigTool.ValidateMask(ib.Text);
+			if (mask == null)
+				continue;
 
-				var mask = ConfigTool.ValidateMask(ib.Text);
-				if (mask == null)
-					continue;
-
-				editor.Mask = mask;
-				editor.Manager.SaveConfig();
-			}
+			editor.Mask = mask;
+			editor.Manager.SaveConfig();
 		}
 	}
 }

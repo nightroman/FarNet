@@ -72,7 +72,7 @@ job {
 	Assert-Far $Far.Editor.GetText() -eq ''
 	$Far.Editor.SetText(@'
 {
-	p1: "new value 1"
+  p1: "new value 1"
 }
 '@
 	)
@@ -88,7 +88,7 @@ job {
 macro 'Keys"Esc Enter" -- exit, save'
 job {
 	# changed
-	Assert-Far $Far.Editor.Line.Text -eq '	"p1": "new value 2"'
+	Assert-Far $Far.Editor.Line.Text -eq '  "p1": "new value 2"'
 }
 macro 'Keys"Esc n" -- exit, no save'
 macro 'Keys"Esc" -- exit panel'

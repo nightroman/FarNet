@@ -5,94 +5,93 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace FarNet.Works
+namespace FarNet.Works;
+
+public partial class ModuleManager
 {
-	public partial class ModuleManager
+	/// <summary>
+	/// Stored in cache.
+	/// </summary>
+	internal long Timestamp;
+
+	/// <summary>
+	/// Stored in cache.
+	/// </summary>
+	internal string CachedUICulture { get; private set; }
+
+	/// <summary>
+	/// Actions from cache or reflection for caching.
+	/// </summary>
+	internal List<ProxyAction> ProxyActions = new();
+
+	/// <summary>
+	/// Called after loading.
+	/// </summary>
+	internal void DropCache()
 	{
-		/// <summary>
-		/// Stored in cache.
-		/// </summary>
-		internal long Timestamp;
+		ProxyActions = null;
+		CachedUICulture = null;
+	}
 
-		/// <summary>
-		/// Stored in cache.
-		/// </summary>
-		internal string CachedUICulture { get; private set; }
+	internal void WriteCache(BinaryWriter writer)
+	{
+		// [1]
+		writer.Write(Timestamp);
 
-		/// <summary>
-		/// Actions from cache or reflection for caching.
-		/// </summary>
-		internal List<ProxyAction> ProxyActions = new();
+		// [2]
+		writer.Write(CurrentUICultureName());
 
-		/// <summary>
-		/// Called after loading.
-		/// </summary>
-		internal void DropCache()
+		// [3]
+		writer.Write(_SettingsTypeNames.Count);
+		foreach (var typeName in _SettingsTypeNames)
+			writer.Write(typeName);
+
+		// [4]
+		var hostClassName = GetModuleHostClassName();
+		writer.Write(hostClassName ?? string.Empty);
+
+		// [5]
+		writer.Write(ProxyActions.Count);
+		foreach (var proxy in ProxyActions)
 		{
-			ProxyActions = null;
-			CachedUICulture = null;
+			writer.Write((int)proxy.Kind);
+			proxy.WriteCache(writer);
 		}
+	}
 
-		internal void WriteCache(BinaryWriter writer)
+	internal void ReadCache(BinaryReader reader)
+	{
+		// [1]
+		Timestamp = reader.ReadInt64();
+
+		// [2]
+		CachedUICulture = reader.ReadString();
+
+		// [3]
+		var settingsCount = reader.ReadInt32();
+		_SettingsTypeNames.Capacity = settingsCount;
+		for (int i = 0; i < settingsCount; i++)
+			_SettingsTypeNames.Add(reader.ReadString());
+
+		// [4]
+		var hostTypeName = reader.ReadString();
+		if (hostTypeName.Length > 0)
+			SetModuleHostTypeName(hostTypeName);
+
+		// [5]
+		var actionCount = reader.ReadInt32();
+		for (int i = 0; i < actionCount; i++)
 		{
-			// [1]
-			writer.Write(Timestamp);
-
-			// [2]
-			writer.Write(CurrentUICultureName());
-
-			// [3]
-			writer.Write(_SettingsTypeNames.Count);
-			foreach (var typeName in _SettingsTypeNames)
-				writer.Write(typeName);
-
-			// [4]
-			var hostClassName = GetModuleHostClassName();
-			writer.Write(hostClassName ?? string.Empty);
-
-			// [5]
-			writer.Write(ProxyActions.Count);
-			foreach (var proxy in ProxyActions)
+			var kind = (ModuleItemKind)reader.ReadInt32();
+			ProxyAction action = kind switch
 			{
-				writer.Write((int)proxy.Kind);
-				proxy.WriteCache(writer);
-			}
-		}
-
-		internal void ReadCache(BinaryReader reader)
-		{
-			// [1]
-			Timestamp = reader.ReadInt64();
-
-			// [2]
-			CachedUICulture = reader.ReadString();
-
-			// [3]
-			var settingsCount = reader.ReadInt32();
-			_SettingsTypeNames.Capacity = settingsCount;
-			for (int i = 0; i < settingsCount; i++)
-				_SettingsTypeNames.Add(reader.ReadString());
-
-			// [4]
-			var hostTypeName = reader.ReadString();
-			if (hostTypeName.Length > 0)
-				SetModuleHostTypeName(hostTypeName);
-
-			// [5]
-			var actionCount = reader.ReadInt32();
-			for (int i = 0; i < actionCount; i++)
-			{
-				var kind = (ModuleItemKind)reader.ReadInt32();
-				ProxyAction action = kind switch
-				{
-					ModuleItemKind.Command => new ProxyCommand(this, reader),
-					ModuleItemKind.Editor => new ProxyEditor(this, reader),
-					ModuleItemKind.Drawer => new ProxyDrawer(this, reader),
-					ModuleItemKind.Tool => new ProxyTool(this, reader),
-					_ => throw new ModuleException(),
-				};
-				ProxyActions.Add(action);
-			}
+				ModuleItemKind.Command => new ProxyCommand(this, reader),
+				ModuleItemKind.Editor => new ProxyEditor(this, reader),
+				ModuleItemKind.Drawer => new ProxyDrawer(this, reader),
+				ModuleItemKind.Tool => new ProxyTool(this, reader),
+				_ => throw new ModuleException(),
+			};
+			ProxyActions.Add(action);
 		}
 	}
 }

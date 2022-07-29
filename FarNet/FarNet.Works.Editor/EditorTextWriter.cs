@@ -14,47 +14,50 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 
-namespace FarNet.Works
+namespace FarNet.Works;
+
+public sealed class EditorTextWriter : TextWriter
 {
-	public sealed class EditorTextWriter : TextWriter
+	bool _RCharWritten;
+	readonly IEditor _Editor;
+
+	public EditorTextWriter(IEditor editor)
+		: base(CultureInfo.CurrentCulture)
 	{
-		bool _RCharWritten;
-		readonly IEditor _Editor;
-		public EditorTextWriter(IEditor editor)
-			: base(CultureInfo.CurrentCulture)
+		_Editor = editor;
+		NewLine = "\r";
+	}
+
+	public override void Write(char value)
+	{
+		//! [1]
+		if (value == '\r')
 		{
-			_Editor = editor;
-			NewLine = "\r";
+			_RCharWritten = true;
 		}
-		public override void Write(char value)
+		else if (value == '\n')
 		{
-			//! [1]
-			if (value == '\r')
-			{
-				_RCharWritten = true;
-			}
-			else if (value == '\n')
-			{
-				if (_RCharWritten)
-				{
-					_RCharWritten = false;
-					return;
-				}
-			}
-			else
+			if (_RCharWritten)
 			{
 				_RCharWritten = false;
+				return;
 			}
+		}
+		else
+		{
+			_RCharWritten = false;
+		}
 
-			_Editor.InsertChar(value);
-		}
-		public override void Write(string value)
-		{
-			_Editor.InsertText(value);
-		}
-		public override Encoding Encoding
-		{
-			get { return Encoding.Unicode; }
-		}
+		_Editor.InsertChar(value);
+	}
+
+	public override void Write(string value)
+	{
+		_Editor.InsertText(value);
+	}
+
+	public override Encoding Encoding
+	{
+		get { return Encoding.Unicode; }
 	}
 }

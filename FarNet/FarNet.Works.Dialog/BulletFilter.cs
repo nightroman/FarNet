@@ -4,67 +4,66 @@
 
 using System.Text.RegularExpressions;
 
-namespace FarNet.Works
+namespace FarNet.Works;
+
+/// <summary>
+/// Methods for incremental filter with "and" parts separated by bullets.
+/// </summary>
+public static class BulletFilter
 {
+	// Bullet
+	const char Separator = '\x2022';
+
 	/// <summary>
-	/// Methods for incremental filter with "and" parts separated by bullets.
+	/// Adds a bullet as a new filter part, if not yet.
 	/// </summary>
-	public static class BulletFilter
+	public static string AddBullet(string filter)
 	{
-		// Bullet
-		const char Separator = '\x2022';
+		if (filter.Length == 0 || filter[^1] == Separator)
+			return filter;
+		else
+			return filter + Separator;
+	}
 
-		/// <summary>
-		/// Adds a bullet as a new filter part, if not yet.
-		/// </summary>
-		public static string AddBullet(string filter)
+	/// <summary>
+	/// Converts the filter to regex.
+	/// </summary>
+	public static Regex ToRegex(string filter, PatternOptions options)
+	{
+		if (options == 0 || string.IsNullOrEmpty(filter))
+			return null;
+
+		var sum = string.Empty;
+		var parts = filter.Split(Separator);
+
+		for (int i = 0; i < parts.Length; i++)
 		{
-			if (filter.Length == 0 || filter[filter.Length - 1] == Separator)
-				return filter;
-			else
-				return filter + Separator;
+			var part = parts[i];
+			if (part.Length == 0)
+				continue;
+
+			// literal or wildcard pattern
+			var pattern = (options & PatternOptions.Literal) != 0 ? Regex.Escape(part) : WildcardToRegex(part);
+
+			// prefix? add start anchor
+			if (i == 0 && (options & PatternOptions.Prefix) != 0)
+				pattern = "^" + pattern;
+
+			// parts? make look-ahead
+			if (parts.Length > 1)
+				pattern = $"(?=.*?{pattern})";
+
+			sum += pattern;
 		}
 
-		/// <summary>
-		/// Converts the filter to regex.
-		/// </summary>
-		public static Regex ToRegex(string filter, PatternOptions options)
-		{
-			if (options == 0 || string.IsNullOrEmpty(filter))
-				return null;
+		return new Regex(sum, RegexOptions.IgnoreCase);
+	}
 
-			var sum = string.Empty;
-			var parts = filter.Split(Separator);
-
-			for (int i = 0; i < parts.Length; i++)
-			{
-				var part = parts[i];
-				if (part.Length == 0)
-					continue;
-
-				// literal or wildcard pattern
-				var pattern = (options & PatternOptions.Literal) != 0 ? Regex.Escape(part) : WildcardToRegex(part);
-
-				// prefix? add start anchor
-				if (i == 0 && (options & PatternOptions.Prefix) != 0)
-					pattern = "^" + pattern;
-
-				// parts? make look-ahead
-				if (parts.Length > 1)
-					pattern = $"(?=.*?{pattern})";
-
-				sum += pattern;
-			}
-
-			return new Regex(sum, RegexOptions.IgnoreCase);
-		}
-
-		/// <summary>
-		/// Converts the simple wildcard (*) to its regex pattern.
-		/// </summary>
-		static string WildcardToRegex(string wildcard)
-		{
-			return Regex.Escape(wildcard).Replace(@"\*", ".*?");
-		}
+	/// <summary>
+	/// Converts the simple wildcard (*) to its regex pattern.
+	/// </summary>
+	static string WildcardToRegex(string wildcard)
+	{
+		return Regex.Escape(wildcard).Replace(@"\*", ".*?");
 	}
 }
