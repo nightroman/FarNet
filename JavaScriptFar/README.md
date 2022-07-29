@@ -85,4 +85,5 @@ completion and provides rich output with expandable complex objects.
 
 ## Sample scripts
 
-See [Samples](Samples) for demo scripts presenting main features and techniques.
+- [Samples](Samples) - demo scripts presenting features and techniques.
+- [FarNet.ScottPlot](https://github.com/nightroman/FarNet.ScottPlot/tree/main/samples-JavaScript) - interactive plots, JavaScript samples.
