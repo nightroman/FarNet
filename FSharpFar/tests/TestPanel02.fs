@@ -11,7 +11,7 @@ let workWaitPanelClosing = async {
     )
     // wait for closing with the function returning selected files
     let! r = Jobs.WaitPanelClosing(panel, fun _ ->
-        panel.SelectedFiles
+        panel.GetSelectedFiles()
     )
     // show the returned files
     do! job { far.Message(sprintf "%A" r) }
@@ -23,7 +23,7 @@ Test.Add("testWaitPanelClosing", async {
     do! Jobs.Keys "Down Down Esc"
     do! job {
         Assert.Dialog()
-        Assert.Equal("seq [12]", far.Dialog[1].Text)
+        Assert.Equal("[|12|]", far.Dialog[1].Text)
     }
     do! Jobs.Keys "Esc"
     do! job { Assert.NativePanel() }

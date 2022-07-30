@@ -30,7 +30,6 @@ and press `[ShiftEnter]`. As a result, you can see that
 - All 200 items are printed instead of the default 100.
 - Output is formatted with the editor width instead of the default 78.
 
-(3) In the interactive editor type `far.Panel.ShownFiles` (current panel files)
-and press `[ShiftEnter]`. As a result, you can see that files are printed in
-the compact form `{File=...; Length=...}` instead of the default lengthy
-property sets. Which form is "better" is another story, it's just a demo.
+(3) In the interactive editor type `far.Panel.Files` (panel files) and press
+`[ShiftEnter]`. As a result, files are printed in the compact form `{File=...;
+Length=...}` instead of the default lengthy property sets.

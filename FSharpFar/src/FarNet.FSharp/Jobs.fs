@@ -94,11 +94,18 @@ type Jobs =
     /// Posts a job which shows the exception dialog.
     /// The title is exception `Name` instead of `FullName`,
     /// in order to be slightly different from the core dialog.
-    // _201221_2o This helps to reveal bugs. When our catch is not called
-    // unexpectedly then the core error dialog is shown, a bit different.
     static member PostShowError(exn: exn) =
+        // _201221_2o This helps to reveal bugs. When our catch is not called unexpectedly then
+        // FarNet error dialog is shown with the full exception name. We show short names here.
+
         let exn = Works.Kit.UnwrapAggregateException exn
-        far.PostJob(fun () -> far.ShowError(exn.GetType().Name, exn))
+        if exn :? OperationCanceledException then
+            // _220730 ignore canceled noise
+            // FarNet.ScottPlot / PanelFilesLive.fsx / async {..} |> Jobs.StartImmediate / .. do! plot.ShowAsync(3000) |> Async.AwaitTask
+            ()
+        else
+            //_201221_2o use short name
+            far.PostJob(fun () -> far.ShowError(exn.GetType().Name, exn))
 
     static member private CatchShowError job = async {
         match! Async.Catch job with

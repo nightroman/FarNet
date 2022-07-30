@@ -1,6 +1,13 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 FarNet 5.9.0
 
+= 2.0.3 =
+
+- Avoid duplicated checker errors.
+- Do not show operation canceled errors.
+- Add `AutoCheck` (false) to the module settings.
+F# checker is confused in net6.0, work in progress.
+
 = 2.0.2 =
 
 Include missing FSharp.Core.xml

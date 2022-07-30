@@ -34,7 +34,7 @@ let private joinPaths (files: FarFile seq) =
 
 /// Gets shown file paths. ".." is excluded.
 let panelShownFilePaths () =
-    joinPaths far.Panel.ShownList
+    joinPaths far.Panel.Files
 
 /// Gets selected file paths or the current file path or an empty array. ".." is excluded.
 let panelSelectedFilePaths () =

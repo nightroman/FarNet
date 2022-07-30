@@ -31,14 +31,19 @@ type IEditor with
         with get () = x.GetOpt<FSharpDiagnostic []> Key.errors
         and set (value: FSharpDiagnostic [] option) =
             x.MyChecking <- false
-            x.SetOpt(Key.errors, value)
+            match value with
+            | Some value ->
+                //! avoid useless and sometimes numerous dupes
+                x.Data[Key.errors] <- value |> Array.distinctBy (fun x -> x.StartLine, x.ErrorNumber, x.FileName, x.Message)
+            | None ->
+                x.Data.Remove Key.errors
 
     member x.MyAutoTips
         with get () = defaultArg (x.GetOpt<bool> Key.autoTips) true
         and set (value: bool) = x.SetOpt(Key.autoTips, Some value)
 
     member x.MyAutoCheck
-        with get () = defaultArg (x.GetOpt<bool> Key.autoCheck) true
+        with get () = defaultArg (x.GetOpt<bool> Key.autoCheck) (Settings.Default.GetData().AutoCheck)
         and set (value: bool) = x.SetOpt(Key.autoCheck, Some value)
 
     member x.MyChecking
