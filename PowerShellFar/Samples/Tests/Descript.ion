@@ -10,7 +10,6 @@ Test-Panel-.ps1 Test simple panels.
 Test-Panel-DbCategories-.ps1 Test panel with simple table TestCategories.
 Test-Panel-DbNotes-.ps1 Test panel with joined table TestNotes with lookup
 Test-Panel-DbText-.ps1 Test panel with data from .CSV files
-Test-Panel-Job-.ps1 Test panel with PowerShell core jobs.
 Test-Panel-Lookup-.ps1 Test panel lookup actions
 Test-Panel-Menu-.ps1 Test panel with demo menu called on [ShiftF3]
 Test-Panel-Tree-.ps1 Test panel mixed items on TreePanel

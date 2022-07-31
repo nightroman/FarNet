@@ -933,7 +933,7 @@ commands. You can send objects to the panel using `Out-FarPanel` cmdlet.
 
 shows all processes in the panel. You can view (`[F3]`) or quick view
 (`[CtrlQ]`) process properties or open its property panel (`[Enter]`).
-See also *Panel-Process-.ps1*.
+See also *Panel-Process.ps1*.
 
     ps: ps | sort WS -Descending | Out-FarPanel
 

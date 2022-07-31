@@ -14,8 +14,6 @@ Menu-More-.ps1 Example command menu created by a script.
 Open-TODO-.ps1 TODO notes in XML files.
 Panel-DbData-.ps1 Panel DataTable rows.
 Panel-DbTable-.ps1 Panel database tables for the specified connection.
-Panel-Job-.ps1 Shows PowerShell jobs in a panel.
-Panel-Process-.ps1 Panel current processes.
 Panel-Property-.ps1 Panel PowerShell provider item properties.
 Profile-Editor.ps1 Editor profile (example).
 Profile.ps1 Main profile (example).
@@ -43,3 +41,4 @@ Panel-BitsTransfer.ps1 Starts or manages file transfer jobs in a panel.
 Search-Regex.ps1 Searches for a regex in files and work on results in a panel
 Merge-Selected.ps1 Invokes merge for two panels items.
 Go-To.ps1 Goes to the specified panel item.
+Panel-Process.ps1 Panel current processes.

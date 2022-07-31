@@ -28,8 +28,7 @@ FarHome\FarNet\Modules\PowerShellFar\Bench\Open-TODO-.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-BitsTransfer.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-DbData-.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-DbTable-.ps1
-FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-Job-.ps1
-FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-Process-.ps1
+FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-Process.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-Property-.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Profile.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Profile-Editor.ps1

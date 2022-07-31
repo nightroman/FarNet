@@ -209,10 +209,9 @@ choice buttons and just shows a message.
 	description = @'
 It starts a new background job with the specified arguments or parameters.
 
-Far jobs are not native PowerShell jobs (started by Start-Job). They run in
-separated workspaces but in the same process, unlike PowerShell jobs. They
-accept live arguments and may return live output. PowerShell jobs deal with
-serialized arguments and output.
+Far jobs run in separated workspaces in the same process. They take live input
+objects and may return live output. (Compare with PowerShell jobs: they run in
+separate processes and deal with serialized input and output.)
 '@
 	parameters = @{
 		Command = 'A command name or a script block.'

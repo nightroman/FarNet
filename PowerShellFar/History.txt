@@ -1,5 +1,13 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 6.0.2 =
+
+Panel-Process.ps1
+- Renamed Panel-Process-.ps1 to Panel-Process.ps1
+- Fixed WMI properties lost in 6.0.0 (workaround)
+
+Removed Panel-Job-.ps1, not working in PS Core Host.
+
 = 6.0.1 =
 
 Requires FarNet 6.0.1
