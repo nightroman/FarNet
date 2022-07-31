@@ -114,29 +114,11 @@ public interface IPanel //! think twice when convert to abstract class (see Pane
 	/// <include file='doc.xml' path='doc/GetFiles/*'/>
 	FarFile[] GetFiles();
 
-	/// <include file='doc.xml' path='doc/SelectedList/*'/>
-	IList<FarFile> SelectedList { get; }
+	/// <include file='doc.xml' path='doc/SelectedFiles/*'/>
+	IList<FarFile> SelectedFiles { get; }
 
 	/// <include file='doc.xml' path='doc/GetSelectedFiles/*'/>
 	FarFile[] GetSelectedFiles();
-
-	/// <summary>
-	/// Obsolete, use GetSelectedFiles.
-	/// </summary>
-	[Obsolete("use GetSelectedFiles")]
-	IList<FarFile> SelectedFiles { get; }
-
-	/// <summary>
-	/// Obsolete, use GetFiles.
-	/// </summary>
-	[Obsolete("use GetFiles")]
-	IList<FarFile> ShownFiles { get; }
-
-	/// <summary>
-	/// Obsolete, use Files.
-	/// </summary>
-	[Obsolete("use Files")]
-	IList<FarFile> ShownList { get; }
 
 	/// <summary>
 	/// Gets true if selection exists.

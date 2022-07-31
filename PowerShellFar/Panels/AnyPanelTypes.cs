@@ -37,31 +37,31 @@ namespace PowerShellFar
 	/// <remarks>
 	/// Handlers should add their menu items to the panel menu.
 	/// If needed, e.g. to decide to set items disabled or not include them at all,
-	/// they should use ready <see cref="CurrentFile"/> and <see cref="SelectedList"/>
+	/// they should use ready <see cref="CurrentFile"/> and <see cref="SelectedFiles"/>
 	/// instead of requesting them from the panel.
 	/// </remarks>
 	public class PanelMenuEventArgs : EventArgs
 	{
-		internal PanelMenuEventArgs(IMenu menu, FarFile currentFile, IList<FarFile> selectedList)
+		internal PanelMenuEventArgs(IMenu menu, FarFile currentFile, IList<FarFile> selectedFiles)
 		{
 			Menu = menu;
 			CurrentFile = currentFile;
-			SelectedList = selectedList;
+			SelectedFiles = selectedFiles;
 		}
 
 		/// <summary>
 		/// Menu for adding items.
 		/// </summary>
-		public IMenu Menu { get; private set; }
+		public IMenu Menu { get; }
 
 		/// <summary>
-		/// Facility: the current file.
+		/// Helper: the current file.
 		/// </summary>
-		public FarFile CurrentFile { get; private set; }
+		public FarFile CurrentFile { get; }
 
 		/// <summary>
-		/// Facility: the selected file list.
+		/// Helper: the selected file list.
 		/// </summary>
-		public IList<FarFile> SelectedList { get; private set; }
+		public IList<FarFile> SelectedFiles { get; }
 	}
 }

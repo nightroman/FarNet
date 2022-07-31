@@ -268,7 +268,7 @@ namespace PowerShellFar
 			r.AddKey(KeyCode.F1);
 
 			// args
-			PanelMenuEventArgs e = new PanelMenuEventArgs(r, CurrentFile, SelectedList);
+			PanelMenuEventArgs e = new PanelMenuEventArgs(r, CurrentFile, SelectedFiles);
 
 			// event
 			MenuCreating?.Invoke(this, e);

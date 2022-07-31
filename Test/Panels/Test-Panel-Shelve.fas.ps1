@@ -32,7 +32,7 @@ $Test = { job {
 	# current == Far.exe, selected == Far.exe
 	$Panel = $Far.Panel
 	Assert-Far $Panel.CurrentFile.Name -eq 'Far.exe'
-	$selected = $Panel.SelectedList
+	$selected = $Panel.SelectedFiles
 	Assert-Far (($selected.Count -eq 1) -and ($selected[0].Name -eq 'Far.exe'))
 }}
 & $Test
@@ -61,7 +61,7 @@ $Test = { job {
 	# current != Far.exe, selected == Far.exe
 	$Panel = $Far.Panel
 	Assert-Far ($Panel.CurrentFile.Name -ne 'Far.exe')
-	$selected = $Panel.SelectedList
+	$selected = $Panel.SelectedFiles
 	Assert-Far (($selected.Count -eq 1) -and ($selected[0].Name -eq 'Far.exe'))
 }}
 & $Test
@@ -89,7 +89,7 @@ $Test = { job {
 	# current == Far.exe and 3 selected items with Far.exe
 	$Panel = $Far.Panel
 	Assert-Far $Panel.CurrentFile.Name -eq 'Far.exe'
-	$selected = $Panel.SelectedList
+	$selected = $Panel.SelectedFiles
 	Assert-Far (($selected.Count -eq 3) -and ($selected[0].Name -eq 'Far.exe'))
 }}
 & $Test

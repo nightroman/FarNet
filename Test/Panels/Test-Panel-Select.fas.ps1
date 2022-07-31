@@ -23,12 +23,12 @@ job {
 
 	# 5 items with dots, nothing is selected
 	Assert-Far $Far.Panel.Files.Count -eq 5
-	Assert-Far $Far.Panel.SelectedList.Count -eq 1
+	Assert-Far $Far.Panel.SelectedFiles.Count -eq 1
 }
 
 keys Home
 job {
-	Assert-Far $Far.Panel.SelectedList.Count -eq 0
+	Assert-Far $Far.Panel.SelectedFiles.Count -eq 0
 }
 
 ### SelectNames\UnselectNames
@@ -73,7 +73,7 @@ $Test = { job {
 	$1 = $Far.Panel
 	Assert-Far @(
 		!$1.CurrentFile
-		($1.SelectedList.Count -eq 1) -and ($1.SelectedList[0].Name -eq "Item2")
+		($1.SelectedFiles.Count -eq 1) -and ($1.SelectedFiles[0].Name -eq "Item2")
 	)
 }}
 & $Test
@@ -99,9 +99,9 @@ job {
 $Test = { job {
 	$1 = $Far.Panel
 	Assert-Far $1.CurrentFile.Name -eq 'Item2'
-	Assert-Far $1.SelectedList.Count -eq 2
-	Assert-Far $1.SelectedList[0].Name -eq "Item2"
-	Assert-Far $1.SelectedList[1].Name -eq "Item4"
+	Assert-Far $1.SelectedFiles.Count -eq 2
+	Assert-Far $1.SelectedFiles[0].Name -eq "Item2"
+	Assert-Far $1.SelectedFiles[1].Name -eq "Item4"
 }}
 & $Test
 
@@ -124,27 +124,27 @@ job {
 job {
 	# select all items
 	$Far.Panel.SelectAll()
-	Assert-Far $Far.Panel.SelectedList.Count -eq 4
+	Assert-Far $Far.Panel.SelectedFiles.Count -eq 4
 }
 
 job {
 	# unselect 1 item
 	$Far.Panel.UnselectAt(@(1))
-	Assert-Far $Far.Panel.SelectedList.Count -eq 3
-	Assert-Far $Far.Panel.SelectedList[0].Name -eq "Item2"
+	Assert-Far $Far.Panel.SelectedFiles.Count -eq 3
+	Assert-Far $Far.Panel.SelectedFiles[0].Name -eq "Item2"
 }
 
 job {
 	# unselect 2 items
 	$Far.Panel.UnselectAt(@(2, 1))
-	Assert-Far $Far.Panel.SelectedList.Count -eq 2
-	Assert-Far $Far.Panel.SelectedList[0].Name -eq "Item3"
+	Assert-Far $Far.Panel.SelectedFiles.Count -eq 2
+	Assert-Far $Far.Panel.SelectedFiles[0].Name -eq "Item3"
 }
 
 job {
 	# unselect all items
 	$Far.Panel.UnselectAll()
-	Assert-Far $Far.Panel.SelectedList.Count -eq 0
+	Assert-Far $Far.Panel.SelectedFiles.Count -eq 0
 }
 
 # exit

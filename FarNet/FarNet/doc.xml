@@ -15,12 +15,12 @@
       Gets an array of panel files excluding "..".
     </summary>
   </GetFiles>
-  <SelectedList>
+  <SelectedFiles>
     <summary>
       Lists selected panel files dynamically by index.
       If none is selected then the list contains the current file, if any.
     </summary>
-  </SelectedList>
+  </SelectedFiles>
   <GetSelectedFiles>
     <summary>
       Gets an array of selected panel files.
@@ -33,7 +33,7 @@
     </summary>
     <remarks>
       This array is empty if none is selected,
-      unlike <see cref="SelectedList"/> and <see cref="GetSelectedFiles"/>, include the current file.
+      unlike <see cref="SelectedFiles"/> and <see cref="GetSelectedFiles"/>, include the current file.
     </remarks>
   </SelectedIndexes>
   <Timer>

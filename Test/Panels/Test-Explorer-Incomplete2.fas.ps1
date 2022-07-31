@@ -22,7 +22,7 @@ job {
 macro 'Keys"F5 Enter"'
 job {
 	# files "to stay" are selected
-	Assert-Far 'Plugins FarRus.hlf' -eq ($Far.Panel.SelectedList -join ' ')
+	Assert-Far 'Plugins FarRus.hlf' -eq ($Far.Panel.SelectedFiles -join ' ')
 	$Far.Panel.UnselectAll()
 }
 

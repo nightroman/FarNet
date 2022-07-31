@@ -31,7 +31,7 @@ job {
 	# select source files
 	Assert-Far -ExplorerTypeId ([FarNet.Tools.SuperExplorer]::TypeIdString)
 	$Far.Panel.SelectAll()
-	Assert-Far $Far.Panel.SelectedList.Count -eq 15
+	Assert-Far $Far.Panel.SelectedFiles.Count -eq 15
 }
 
 ### target panel
@@ -52,7 +52,7 @@ macro 'Keys"Tab F5"'
 job {
 	Assert-Far @(
 		$Far.Panel.GetFiles().Count -eq 15
-		'12 14 22 24 32 34' -eq ($Far.Panel.SelectedList -join ' ')
+		'12 14 22 24 32 34' -eq ($Far.Panel.SelectedFiles -join ' ')
 		'11 13 15 21 23 25 31 33 35' -eq ($Far.Panel2.Files -join ' ')
 	)
 }

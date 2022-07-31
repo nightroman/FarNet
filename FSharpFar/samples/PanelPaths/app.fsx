@@ -8,8 +8,8 @@ panelCurrentDirectory ()
 panelTryCurrentFilePath ()
 |> printfn "Current path: %A"
 
-panelShownFilePaths ()
-|> printfn "Shown paths: %A"
+panelFilePaths ()
+|> printfn "File paths: %A"
 
 panelSelectedFilePaths ()
-|> printfn "Selected paths: %A"
+|> printfn "Selected file paths: %A"

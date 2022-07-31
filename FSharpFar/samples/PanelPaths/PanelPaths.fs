@@ -32,10 +32,10 @@ let private joinPaths (files: FarFile seq) =
             | name -> yield sprintf @"%s\%s" dir name
     |]
 
-/// Gets shown file paths. ".." is excluded.
-let panelShownFilePaths () =
+/// Gets file paths. ".." is excluded.
+let panelFilePaths () =
     joinPaths far.Panel.Files
 
 /// Gets selected file paths or the current file path or an empty array. ".." is excluded.
 let panelSelectedFilePaths () =
-    joinPaths far.Panel.SelectedList
+    joinPaths far.Panel.SelectedFiles

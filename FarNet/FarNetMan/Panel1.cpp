@@ -232,7 +232,7 @@ IList<FarFile^>^ Panel1::Files::get()
 	return gcnew PanelFileCollection(this, ShownFile);
 }
 
-IList<FarFile^>^ Panel1::SelectedList::get()
+IList<FarFile^>^ Panel1::SelectedFiles::get()
 {
 	return gcnew PanelFileCollection(this, SelectedFile);
 }

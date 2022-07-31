@@ -25,9 +25,9 @@ job {
 	# check
 	Assert-Far @(
 		$Far.Panel.Files.Count -eq 7
-		$Far.Panel.SelectedList.Count -eq 2
-		$Far.Panel.SelectedList[0].Name -eq '3'
-		$Far.Panel.SelectedList[1].Name -eq '7'
+		$Far.Panel.SelectedFiles.Count -eq 2
+		$Far.Panel.SelectedFiles[0].Name -eq '3'
+		$Far.Panel.SelectedFiles[1].Name -eq '7'
 	)
 }
 
@@ -45,13 +45,13 @@ job {
 	Assert-Far -Plugin
 	Assert-Far @(
 		$Far.Panel.Explorer.TypeId -eq 'c33db20e-7477-4301-ba5d-4c6b3b81f66b'
-		$Far.Panel.SelectedList.Count -eq 6
+		$Far.Panel.SelectedFiles.Count -eq 6
 	)
 }
 keys F5
 job {
 	# this panel (2nd)
-	$selected = $Far.Panel.SelectedList
+	$selected = $Far.Panel.SelectedFiles
 	Assert-Far @(
 		$Far.Panel.GetFiles().Count -eq 6
 		$selected.Count -eq 3
@@ -61,7 +61,7 @@ job {
 	)
 
 	# that panel (1st)
-	$selected = $Far.Panel2.SelectedList
+	$selected = $Far.Panel2.SelectedFiles
 	$shown = $Far.Panel2.Files
 	Assert-Far @(
 		# selection is not changed
@@ -82,7 +82,7 @@ job {
 keys F6
 job {
 	# this panel (2nd)
-	$selected = $Far.Panel.SelectedList
+	$selected = $Far.Panel.SelectedFiles
 	Assert-Far @(
 		$Far.Panel.GetFiles().Count -eq 5
 		$selected.Count -eq 2
@@ -91,7 +91,7 @@ job {
 	)
 
 	# that panel (1st)
-	$selected = $Far.Panel2.SelectedList
+	$selected = $Far.Panel2.SelectedFiles
 	$shown = $Far.Panel2.Files
 	Assert-Far @(
 		# selection is not changed

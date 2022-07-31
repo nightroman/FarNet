@@ -42,7 +42,7 @@ public abstract class ShelveInfo
 			return;
 
 		// copy selected names
-		var files = panel.SelectedList;
+		var files = panel.SelectedFiles;
 		_SelectedNames = new string[files.Count];
 		for (int i = files.Count; --i >= 0;)
 			_SelectedNames[i] = files[i].Name;

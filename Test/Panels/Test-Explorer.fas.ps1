@@ -75,9 +75,9 @@ job {
 job {
 	$Far.Panel.SelectNames(('aaa2', 'aaa3'))
 	Assert-Far @(
-		$Far.Panel.SelectedList.Count -eq 2
-		$Far.Panel.SelectedList[0].Name -eq 'aaa2'
-		$Far.Panel.SelectedList[1].Name -eq 'aaa3'
+		$Far.Panel.SelectedFiles.Count -eq 2
+		$Far.Panel.SelectedFiles[0].Name -eq 'aaa2'
+		$Far.Panel.SelectedFiles[1].Name -eq 'aaa3'
 	)
 }
 keys Del

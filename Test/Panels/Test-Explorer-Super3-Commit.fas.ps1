@@ -40,7 +40,7 @@ job {
 	# select source files
 	Assert-Far -ExplorerTypeId ([FarNet.Tools.SuperExplorer]::TypeIdString)
 	$Far.Panel.SelectAll()
-	Assert-Far $Far.Panel.SelectedList.Count -eq 15
+	Assert-Far $Far.Panel.SelectedFiles.Count -eq 15
 }
 
 ### target panel
@@ -65,7 +65,7 @@ job {
 		# 11 15 21 25 31 35 have been deleted, so we have
 		'12 13 14 22 23 24 32 33 34' -eq ($Far.Panel.Files -join ' ')
 		# and all of them are selected
-		'12 13 14 22 23 24 32 33 34' -eq ($Far.Panel.SelectedList -join ' ')
+		'12 13 14 22 23 24 32 33 34' -eq ($Far.Panel.SelectedFiles -join ' ')
 	)
 }
 

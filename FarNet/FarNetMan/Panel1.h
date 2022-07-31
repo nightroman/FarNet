@@ -24,10 +24,7 @@ public:
 	virtual property bool UseSortGroups { bool get(); void set(bool value); }
 	virtual property FarFile^ CurrentFile { FarFile^ get(); }
 	virtual property IList<FarFile^>^ Files { IList<FarFile^>^ get(); }
-	virtual property IList<FarFile^>^ ShownFiles { IList<FarFile^>^ get() { return safe_cast<IList<FarFile^>^>(GetFiles()); } }
-	virtual property IList<FarFile^>^ SelectedFiles { IList<FarFile^>^ get() { return safe_cast<IList<FarFile^>^>(GetSelectedFiles()); } }
-	virtual property IList<FarFile^>^ ShownList { IList<FarFile^>^ get() { return Files; } }
-	virtual property IList<FarFile^>^ SelectedList { IList<FarFile^>^ get(); }
+	virtual property IList<FarFile^>^ SelectedFiles { IList<FarFile^>^ get(); }
 	virtual property int CurrentIndex { int get(); }
 	virtual property int TopIndex { int get(); }
 	virtual property PanelSortMode SortMode { PanelSortMode get(); void set(PanelSortMode value); }
