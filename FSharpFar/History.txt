@@ -1,6 +1,16 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 FarNet 5.9.0
 
+= 2.0.4 =
+
+Removed not useful "No errors" message.
+AutoTips and AutoCheck are saved in local settings.
+
+Fixed checker issues by --targetprofile:netcore.
+Added --nowarn:FS3511, top level tasks are good.
+
+Generated VSCode use "coreclr" instead of "clr".
+
 = 2.0.3 =
 
 - Avoid duplicated checker errors.

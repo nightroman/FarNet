@@ -61,7 +61,7 @@ type FarEditor() =
                 do! Async.Sleep 400
                 if inbox.CurrentQueueLength > 0 then () else
 
-                let mutable autoTips = editor.MyAutoTips
+                let mutable autoTips = Workings.Default.GetData().AutoTips
                 match editor.MyFileErrors() with
                 | None -> ()
                 | Some errors ->
@@ -118,7 +118,7 @@ type FarEditor() =
                 | _ -> ()
 
             editor.Changed.Add <| fun e ->
-                let isAutoCheck = editor.MyAutoCheck
+                let isAutoCheck = Workings.Default.GetData().AutoCheck
 
                 // We want to keep errors visible, so that on typing fixes we see how errors go.
                 // This does not work well on massive changes like copy/paste, delete lines.

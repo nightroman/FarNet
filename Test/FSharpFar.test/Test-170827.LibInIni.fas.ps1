@@ -7,7 +7,6 @@ Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "65BD5625-769A-4253-8FDE-FFC
 Keys'c' -- check
 '@
 job {
-	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[1].Text -eq 'No errors'
+	Assert-Far -Editor
+	$Far.Editor.Close()
 }
-macro 'Keys [[Esc Esc]] -- exit dialog and editor'

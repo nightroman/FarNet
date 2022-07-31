@@ -38,14 +38,6 @@ type IEditor with
             | None ->
                 x.Data.Remove Key.errors
 
-    member x.MyAutoTips
-        with get () = defaultArg (x.GetOpt<bool> Key.autoTips) true
-        and set (value: bool) = x.SetOpt(Key.autoTips, Some value)
-
-    member x.MyAutoCheck
-        with get () = defaultArg (x.GetOpt<bool> Key.autoCheck) (Settings.Default.GetData().AutoCheck)
-        and set (value: bool) = x.SetOpt(Key.autoCheck, Some value)
-
     member x.MyChecking
         with get () = defaultArg (x.GetOpt<bool> Key.checking) false
         and set (value: bool) = x.SetOpt(Key.checking, Some value)

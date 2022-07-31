@@ -62,7 +62,6 @@ let check (editor: IEditor) =
 
     if errors.Length = 0 then
         editor.MyErrors <- None
-        far.Message("No errors", "F#")
     else
         editor.MyErrors <- Some errors
         showErrors editor
@@ -183,15 +182,21 @@ let usesInProject (editor: IEditor) =
     showTempText (writer.ToString()) ("F# Uses " + sym.Symbol.FullName)
 
 let toggleAutoTips (editor: IEditor) =
-    editor.MyAutoTips <- not editor.MyAutoTips
+    let workings = Workings.Default.GetData()
+    workings.AutoTips <- not workings.AutoTips
+    Workings.Default.Save()
 
 let toggleAutoCheck (editor: IEditor) =
     // toggle flag
-    let isAutoCheck = not editor.MyAutoCheck
-    editor.MyAutoCheck <- isAutoCheck
+    let workings = Workings.Default.GetData()
+    let isAutoCheck = not workings.AutoCheck
+    workings.AutoCheck <- isAutoCheck
+    Workings.Default.Save()
 
-    // drop errors
-    if not isAutoCheck then
+    // check or drop errors
+    if isAutoCheck then
+        check editor
+    else
         editor.MyErrors <- None
 
 let fixComplete (word: string) words (ident: PartialLongName) =

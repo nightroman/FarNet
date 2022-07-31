@@ -37,20 +37,20 @@ module Config =
     "configurations": [
       {
         "name": "Start Far",
-        "type": "clr",
+        "type": "coreclr",
         "request": "launch",
         "externalConsole": true,
         "program": "$FAR"
       },
       {
         "name": "Attach Far",
-        "type": "clr",
+        "type": "coreclr",
         "request": "attach",
         "processName": "Far"
       },
       {
         "name": "Attach process",
-        "type": "clr",
+        "type": "coreclr",
         "request": "attach",
         "processId": "${command:pickProcess}"
       }

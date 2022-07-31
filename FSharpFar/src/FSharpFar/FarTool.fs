@@ -80,6 +80,6 @@ type FarTool() =
                         "&E. Errors", (fun _ -> Editor.showErrors editor)
                     "&F. Uses in file", (fun _ -> Editor.usesInFile editor)
                     "&P. Uses in project", (fun _ -> Editor.usesInProject editor)
-                    (if editor.MyAutoTips then "&I. Disable auto tips" else "&I. Enable auto tips"), (fun _ -> Editor.toggleAutoTips editor)
-                    (if editor.MyAutoCheck then "&K. Disable auto check" else "&K. Enable auto check"), (fun _ -> Editor.toggleAutoCheck editor)
+                    (if Workings.Default.GetData().AutoTips then "&I. Disable auto tips" else "&I. Enable auto tips"), (fun _ -> Editor.toggleAutoTips editor)
+                    (if Workings.Default.GetData().AutoCheck then "&K. Disable auto check" else "&K. Enable auto check"), (fun _ -> Editor.toggleAutoCheck editor)
         ]

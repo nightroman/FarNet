@@ -25,8 +25,14 @@ let farCurrentDirectory () =
 
 /// Default flags for checkers and sessions
 let defaultCompilerArgs =
+    //! On building F# projects set verbose Normal and see/use FSC options.
     let dir = Environment.GetEnvironmentVariable "FARHOME"
     [|
+        // _220731_1452 common
+        "--targetprofile:netcore"
+        "--nowarn:FS3511" // top level `task {}` -- https://github.com/dotnet/fsharp/issues/12038
+
+        // FarNet
         "--define:FARNET"
         "--lib:" + dir
         "-r:" + dir + @"\FarNet\FarNet.dll"

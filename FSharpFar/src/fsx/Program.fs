@@ -27,7 +27,11 @@ let main _ =
         // this app
         exe
 
-        // references for `fsi`
+        // _220731_1452 common
+        "--targetprofile:netcore"
+        "--nowarn:FS3511" // top level `task {}` -- https://github.com/dotnet/fsharp/issues/12038
+
+        // fsx
         $@"-I:{farHome}"
         $@"-r:{home}\fsx.dll"
         $@"-r:{home}\FSharp.Core.dll"

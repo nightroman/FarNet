@@ -461,7 +461,6 @@ Use `[F11]` \ `FSharpFar` \ `Check` in order to check the file for syntax and ty
 Use `[F11]` \ `FSharpFar` \ `Errors` in order to show the menu with the last check errors.
 
 Use `[F11]` \ `FSharpFar` \ `Enable|Disable auto checks` in order to toggle auto checks on typing.
-The default is `AutoCheck` in the module settings.
 
 Found errors and warnings are highlighted in the editor and kept until the editor text changes.
 Error messages are automatically shown when the mouse hovers over highlighted error areas.
