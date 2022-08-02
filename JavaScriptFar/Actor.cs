@@ -12,78 +12,30 @@ using System.Threading.Tasks;
 
 namespace JavaScriptFar;
 
-static partial class Actor
+static class Actor
 {
-	static ScriptEngine s_engine;
-	static bool s_isTaskDebug;
-
-	static ScriptEngine CreateScriptEngine(ExecuteArgs args)
-	{
-		var engine = ScriptEngines.V8ScriptEngine(args.IsDebug);
-		engine.DocumentSettings.AccessFlags = DocumentAccessFlags.EnableFileLoading;
-
-		// see ClearScriptConsole.cs
-		engine.AddHostObject("host", new ExtendedHostFunctions());
-		engine.AddHostObject("clr", HostItemFlags.GlobalMembers, new HostTypeCollection(
-			"mscorlib",
-			"System",
-			"System.Core",
-			"System.Numerics",
-			"FarNet"
-		));
-
-		// far object
-		engine.AddHostObject("far", Far.Api);
-
-		return engine;
-	}
-
-	static ModuleException ModuleExceptionFromScriptEngineException(Exception ex)
-	{
-		var message = ex.Message;
-
-		if (ex is ScriptEngineException seex)
-		if (seex.ErrorDetails != null && seex.ErrorDetails.StartsWith(message))
-			message = seex.ErrorDetails;
-
-		return new ModuleException(message, ex);
-	}
-
-	static void StartExecuteTask(ScriptEngine engine, DocumentInfo doc, string code, ExecuteArgs args)
+	static void StartExecuteTask(Session session, DocumentInfo doc, string code, ExecuteArgs args)
 	{
 		Task.Run(() =>
 		{
-			if (args.IsDebug)
-				s_isTaskDebug = true;
-
 			try
 			{
-				engine.Execute(doc, code);
+				session.Execute(doc, code);
 			}
 			catch (Exception ex)
 			{
 				Tasks.Job(() => Far.Api.ShowError(
 					"JavaScript task error",
-					ModuleExceptionFromScriptEngineException(ex)));
-			}
-			finally
-			{
-				if (args.IsDebug)
-					s_isTaskDebug = false;
-
-				engine.Dispose();
+					Session.ModuleExceptionFromScriptEngineException(ex)));
 			}
 		});
 	}
 
-	internal static void Execute(ExecuteArgs args)
+	public static void Execute(ExecuteArgs args)
 	{
 		string windowTitle = null;
 		if (args.IsDebug)
 		{
-			if (args.IsTask && s_isTaskDebug)
-				throw new ModuleException("Cannot debug two tasks.");
-
 			if (0 != Far.Api.Message("Click OK to open VSCode and manually start ClearScript V8 debugger.", Res.DebugTitle, MessageOptions.OkCancel))
 				return;
 
@@ -105,19 +57,7 @@ static partial class Actor
 			}
 		}
 
-		ScriptEngine engine;
-		if (args.IsDocument)
-		{
-			engine = CreateScriptEngine(args);
-		}
-		else
-		{
-			if (s_engine is null)
-				s_engine = CreateScriptEngine(args);
-
-			engine = s_engine;
-		}
-
+		var session = Session.GetOrCreateSession(args);
 		try
 		{
 			if (args.IsDocument)
@@ -127,16 +67,15 @@ static partial class Actor
 
 				if (args.IsTask)
 				{
-					StartExecuteTask(engine, doc, code, args);
-					engine = null;
+					StartExecuteTask(session, doc, code, args);
 				}
 				else if (args.Print is null)
 				{
-					engine.Execute(doc, code);
+					session.Execute(doc, code);
 				}
 				else
 				{
-					var res = engine.Evaluate(doc, code);
+					var res = session.Evaluate(doc, code);
 					if (res is not null)
 						args.Print(res.ToString());
 				}
@@ -145,7 +84,7 @@ static partial class Actor
 			{
 				var code = args.Command;
 
-				var res = engine.ExecuteCommand(code);
+				var res = session.ExecuteCommand(code);
 				if (args.Print is not null)
 				{
 					args.Print(res);
@@ -161,7 +100,7 @@ static partial class Actor
 		}
 		catch (ScriptEngineException ex)
 		{
-			throw ModuleExceptionFromScriptEngineException(ex);
+			throw Session.ModuleExceptionFromScriptEngineException(ex);
 		}
 		finally
 		{
@@ -171,10 +110,6 @@ static partial class Actor
 				Far.Api.UI.WindowTitle = windowTitle;
 				Far.Api.UI.SetProgressState(TaskbarProgressBarState.NoProgress);
 			}
-
-			// dispose temp engine
-			if (engine is not null && engine != s_engine)
-				engine.Dispose();
 		}
 	}
 }

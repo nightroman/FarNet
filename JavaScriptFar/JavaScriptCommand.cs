@@ -47,6 +47,6 @@ public class JavaScriptCommand : ModuleCommand
 				command = Path.GetFullPath(Path.Combine(Far.Api.CurrentDirectory, command));
 		}
 
-		Actor.Execute(new Actor.ExecuteArgs(command) { IsDocument = isDocument, IsDebug = isDebug, IsTask = isTask });
+		Actor.Execute(new ExecuteArgs(command) { IsDocument = isDocument, IsDebug = isDebug, IsTask = isTask });
 	}
 }

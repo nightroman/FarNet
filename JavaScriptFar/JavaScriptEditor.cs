@@ -40,7 +40,7 @@ public class JavaScriptEditor : ModuleEditor
 		string print = string.Empty;
 		try
 		{
-			Actor.Execute(new Actor.ExecuteArgs(_editor.FileName) { IsDocument = true, IsDebug = isDebug, Print = s => print = s });
+			Actor.Execute(new ExecuteArgs(_editor.FileName) { IsDocument = true, IsDebug = isDebug, Print = s => print = s });
 		}
 		finally
 		{

@@ -32,7 +32,7 @@ Create the file association for `*.js` scripts and run current scripts from pane
     *.js
     js:@!\!.!
 
-The following extra prefixes may be specified before the file name:
+The following extra prefixes may be specified before the file name (and used in associations):
 
 - `task:` tells to start the script as a task
 - `debug:` tells to start the script debugging
@@ -57,7 +57,9 @@ script you may use Far as usual and use the debugger as long as Far stays live.
     - mscorlib
     - System
     - System.Core
+    - System.Diagnostics.Process
     - System.Numerics
+    - System.Runtime
     - FarNet
 
 ## How to debug
@@ -82,6 +84,31 @@ one of the previously set breakpoints in the running code.
 VSCode debugger is useful for examining variable values, object properties and
 methods, typing commands in the debug console. The debug console supports code
 completion and provides rich output with expandable complex objects.
+
+Just one session is debugged at a time. Starting the debugger terminates other
+sessions being debugged and restarts the target session if it is not debugged.
+
+## Folder sessions
+
+JavaScript files and commands are run in "folder sessions". The script folder
+or the current panel folder is used if it contains the file `_session.js`. In
+other cases the main folder `%FARPROFILE%\FarNet\JavaScriptFar` is used. Its
+`_session.js` works for all other scripts and commands.
+
+If the script `_session.js` is found it is executed once for the folder session
+before running other scripts. Other scripts in this folder, or others for the
+main session, may use the assets defined in the session script.
+
+You may view created sessions by `F11` \ `JavaScriptFar` \ `Sessions`.
+Keys and actions:
+
+- `[Enter]` - go to the session folder.
+- `[Del]` - close the session.
+
+Normally you do not have to care of closing sessions, they do not consume much
+resources, unless you store a lot of data in session variables. But closing
+may be useful on development, e.g. on changes in `_session.js` scripts, for
+terminating debugged session marked with a tick, and etc.
 
 ## Sample scripts
 

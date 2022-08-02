@@ -1,5 +1,15 @@
 ﻿https://www.nuget.org/packages/FarNet.JavaScriptFar
 
+= 0.2.0 =
+
+Use "folder sessions", see README. This enables many useful features:
+- common code in "_session.js"
+- more useful debugging
+- connecting to events
+- using async jobs
+
+Add `System.Diagnostics.Process` and `System.Runtime` to the pre-imported `clr` types.
+
 = 0.1.0 =
 
 New script running option `task:`, see README.

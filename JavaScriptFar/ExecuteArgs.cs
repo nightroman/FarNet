@@ -6,19 +6,16 @@ using System;
 
 namespace JavaScriptFar;
 
-static partial class Actor
+class ExecuteArgs
 {
-	internal class ExecuteArgs
+	public ExecuteArgs(string command)
 	{
-		public ExecuteArgs(string command)
-		{
-			Command = command;
-		}
-
-		public string Command { get; }
-		public bool IsTask { get; set; }
-		public bool IsDebug { get; set; }
-		public bool IsDocument { get; set; }
-		public Action<string> Print { get; set; }
+		Command = command;
 	}
+
+	public string Command { get; }
+	public bool IsTask { get; set; }
+	public bool IsDebug { get; set; }
+	public bool IsDocument { get; set; }
+	public Action<string> Print { get; set; }
 }
