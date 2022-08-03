@@ -79,6 +79,7 @@ sealed class Session : IDisposable
 			"System.Diagnostics.Process",
 			"System.Numerics",
 			"System.Runtime",
+			"ClearScript.Core",
 			"FarNet"
 		));
 

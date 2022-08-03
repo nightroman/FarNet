@@ -1,5 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet.JavaScriptFar
 
+= 0.2.1 =
+
+Add ClearScript.Core for Task.ToPromise() and Promise.ToTask()
+See samples: async\flow.js and live plots in FarNet.ScottPlot
+
 = 0.2.0 =
 
 Use "folder sessions", see README. This enables many useful features:
