@@ -51,20 +51,20 @@ namespace FarNet;
 /// It is called when the data are deserialized or default created.
 /// </para>
 /// </remarks>
-public abstract class ModuleSettings<T> : ModuleSettingsBase where T : new()
+public class ModuleSettings<T> : ModuleSettingsBase where T : new()
 {
 	/// <summary>
-	/// Creates roaming settings.
+	/// Creates settings with the specified file.
 	/// </summary>
-	protected ModuleSettings() : base(typeof(T), new ModuleSettingsArgs())
+	/// <param name="fileName">Settings file path.</param>
+	public ModuleSettings(string fileName) : base(typeof(T), new ModuleSettingsArgs { FileName = fileName })
 	{
 	}
 
 	/// <summary>
-	/// Creates settings with the file.
+	/// Creates roaming settings.
 	/// </summary>
-	/// <param name="fileName">Settings file path.</param>
-	protected ModuleSettings(string fileName) : base(typeof(T), new ModuleSettingsArgs { FileName = fileName })
+	protected ModuleSettings() : base(typeof(T), new ModuleSettingsArgs())
 	{
 	}
 
