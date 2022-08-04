@@ -14,20 +14,30 @@ namespace JavaScriptFar;
 
 sealed class Session : IDisposable
 {
-	const string SessionScriptName = "_session.js";
+	public const string
+		SessionFileMask = "_session.js*",
+		SessionConfigFile = "_session.js.xml",
+		SessionScriptFile = "_session.js";
 
 	static readonly LinkedList<Session> s_sessions = new();
 
 	public static IEnumerable<Session> Sessions => s_sessions;
 	public string Root { get; }
 	public bool IsDebug { get; }
-	ScriptEngine _engine { get; }
+	readonly ScriptEngine _engine;
 
-	private Session(string root, string script, bool isDebug)
+	private Session(string root, string config, string script, bool isDebug)
 	{
 		Root = root;
 		IsDebug = isDebug;
-		_engine = V8ScriptEngine(isDebug);
+
+		SessionConfiguration settings;
+		if (config is null)
+			settings = new();
+		else
+			settings = new ModuleSettings<SessionConfiguration>(config).GetData();
+
+		_engine = V8ScriptEngine(settings, isDebug);
 
 		if (script is not null)
 		{
@@ -60,16 +70,22 @@ sealed class Session : IDisposable
 	}
 
 	// see ClearScriptConsole.cs
-	static ScriptEngine V8ScriptEngine(bool isDebug)
+	static ScriptEngine V8ScriptEngine(SessionConfiguration settings, bool isDebug)
 	{
-		var flags = isDebug ? V8ScriptEngineFlags.EnableDebugging | V8ScriptEngineFlags.AwaitDebuggerAndPauseOnStart : V8ScriptEngineFlags.None;
+		var flags = settings.V8ScriptEngineFlags;
+		if (isDebug)
+			flags |= V8ScriptEngineFlags.EnableDebugging | V8ScriptEngineFlags.AwaitDebuggerAndPauseOnStart;
+
 		var engine = new V8ScriptEngine(Res.MyName, flags)
 		{
 			AllowReflection = true,
 			SuppressExtensionMethodEnumeration = true
 		};
 
-		engine.DocumentSettings.AccessFlags = DocumentAccessFlags.EnableFileLoading;
+		engine.DocumentSettings.AccessFlags = settings.DocumentAccessFlags;
+
+		if (!string.IsNullOrEmpty(settings.DocumentSearchPath))
+			engine.DocumentSettings.SearchPath = Environment.ExpandEnvironmentVariables(settings.DocumentSearchPath);
 
 		engine.AddHostObject("host", new ExtendedHostFunctions());
 		engine.AddHostObject("clr", HostItemFlags.GlobalMembers, new HostTypeCollection(
@@ -92,13 +108,11 @@ sealed class Session : IDisposable
 	public static Session GetOrCreateSession(ExecuteArgs args)
 	{
 		var root = args.IsDocument ? Path.GetDirectoryName(args.Command) : Far.Api.CurrentDirectory;
-		var script = Path.Combine(root, SessionScriptName);
-		if (!File.Exists(script))
+		var files = Directory.GetFiles(root, SessionFileMask);
+		if (files.Length == 0)
 		{
 			root = JavaScriptModule.Root;
-			script = Path.Combine(root, SessionScriptName);
-			if (!File.Exists(script))
-				script = null;
+			files = Directory.GetFiles(root, SessionFileMask);
 		}
 
 		var session = s_sessions.FirstOrDefault(x => string.Equals(x.Root, root, StringComparison.OrdinalIgnoreCase));
@@ -120,7 +134,10 @@ sealed class Session : IDisposable
 			}
 		}
 
-		session = new Session(root, script, args.IsDebug);
+		var config = files.FirstOrDefault(x => x.EndsWith(SessionConfigFile, StringComparison.OrdinalIgnoreCase));
+		var script = files.FirstOrDefault(x => x.EndsWith(SessionScriptFile, StringComparison.OrdinalIgnoreCase));
+
+		session = new Session(root, config, script, args.IsDebug);
 		s_sessions.AddFirst(session);
 		return session;
 	}

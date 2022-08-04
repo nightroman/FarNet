@@ -3,6 +3,7 @@
 // Copyright (c) Roman Kuzmin
 
 using FarNet;
+using System.IO;
 
 namespace JavaScriptFar;
 
@@ -14,11 +15,24 @@ public class JavaScriptTool : ModuleTool
 	{
 		var menu = Far.Api.CreateMenu();
 		menu.Title = Res.MyName;
-		menu.Add("&0. Sessions...", (s, e) => ShowSessions());
+		menu.Add("&1. Configuration", (s, e) => Configuration());
+		menu.Add("&0. Sessions...", (s, e) => Sessions());
 		menu.Show();
 	}
 
-	static void ShowSessions()
+	static void Configuration()
+	{
+		var file = Path.Combine(Far.Api.CurrentDirectory, Session.SessionConfigFile);
+		if (!File.Exists(file))
+		{
+			if (0 != Far.Api.Message($"Create configuration {file}?", Res.MyName, MessageOptions.YesNo))
+				return;
+		}
+
+		new ModuleSettings<SessionConfiguration>(file).Edit();
+	}
+
+	static void Sessions()
 	{
 		var menu = Far.Api.CreateListMenu();
 		menu.Title = "JavaScript sessions";

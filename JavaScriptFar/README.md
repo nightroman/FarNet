@@ -46,9 +46,6 @@ Examples:
     js: @ debug: some-bugs.js
     js: @ task: debug: debug-console.js
 
-The last command is the interesting use case. When the debugger breaks in the
-script you may use Far as usual and use the debugger as long as Far stays live.
-
 ## Global variables
 
 - `host` - extended JavaScript functions provided by ClearScript, see [here](https://microsoft.github.io/ClearScript/Reference/html/Methods_T_Microsoft_ClearScript_ExtendedHostFunctions.htm)
@@ -91,26 +88,40 @@ sessions being debugged and restarts the target session if it is not debugged.
 ## Folder sessions
 
 JavaScript files and commands are run in "folder sessions". The script folder
-or the current panel folder is used if it contains the file `_session.js`. In
-other cases the main folder `%FARPROFILE%\FarNet\JavaScriptFar` is used. Its
-`_session.js` works for all other scripts and commands.
+or the current panel folder is used if it contains a file like `_session.js*`.
+Otherwise the main folder `%FARPROFILE%\FarNet\JavaScriptFar` is used. Its
+session files, if any, work for all scripts and commands with no own session.
 
-If the script `_session.js` is found it is executed once for the folder session
-before running other scripts. Other scripts in this folder, or others for the
-main session, may use the assets defined in the session script.
+> Any file `_session.js*` engages its folder session on running scripts and
+commands, even if the file is not used by the module, e.g. `_session.js.txt`.
 
-You may view created sessions by `F11` \ `JavaScriptFar` \ `Sessions`.
+Used session files:
+
+- Configuration file `_session.js.xml`
+
+    These files configure JavaScript engines used in sessions.
+    A new file may be created or the existing edited by `F11` / `JavaScriptFar` / `Configuration`.
+    This is the recommended way of editing configurations, it validates the schema and some data.
+
+- Auto-loaded session script `_session.js`
+
+    This file is executed once for the session before running other scripts.
+    Other scripts in this folder or others in the main session may use the
+    assets defined in this file.
+
+You may view created sessions by `F11` / `JavaScriptFar` / `Sessions`.
 Keys and actions:
 
 - `[Enter]` - go to the session folder.
 - `[Del]` - close the session.
 
-Normally you do not have to care of closing sessions, they do not consume much
-resources, unless you store a lot of data in session variables. But closing
-may be useful on development, e.g. on changes in `_session.js` scripts, for
-terminating debugged session marked with a tick, and etc.
+Normally you do not have to close sessions, they do not consume much resources
+unless you store a lot of data in session variables. But closing may be useful
+on development, e.g. on changes in sessions files, for terminating debugged
+session (marked with a tick), and etc.
 
-## Sample scripts
+## See also
 
 - [Samples](Samples) - demo scripts presenting features and techniques.
 - [FarNet.ScottPlot](https://github.com/nightroman/FarNet.ScottPlot/tree/main/samples-JavaScript) - interactive plots, JavaScript samples.
+- [JavaScript in Visual Studio Code](https://code.visualstudio.com/docs/languages/javascript)

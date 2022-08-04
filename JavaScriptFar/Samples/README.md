@@ -2,9 +2,10 @@
 
 Scripts in this folder show main features.
 
-Other folders:
+See other folders for advanced features:
 
 - [async](async) - async, task, promise, etc. samples
+- [config](config) - what configuration files can do
 - [events](events) - editor events and folder session
 - [extras](extras) - special cases and techniques
-- [modules](modules) - demo script modules
+- [modules](modules) - script modules
