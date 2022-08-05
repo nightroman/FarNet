@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 6.0.3 =
+
+Adjust help tools for PS Core changes.
+Show available online help for cmdlets.
+
 = 6.0.2 =
 
 Panel-Process.ps1

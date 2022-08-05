@@ -30,6 +30,21 @@ namespace PowerShellFar
 			}
 		}
 
+		static bool ShowOnlineHelp(string command)
+		{
+			var po = (PSObject)ScriptBlock.Create("Get-Command $args[0] -ErrorAction 0 | Select-Object HelpUri, CommandType -First 1").InvokeReturnAsIs(command);
+			if (po.Properties["CommandType"].Value?.ToString() == "Cmdlet")
+			{
+				var uri = po.Properties["HelpUri"].Value?.ToString();
+				if (!string.IsNullOrEmpty(uri))
+				{
+					My.ProcessEx.OpenBrowser(uri);
+					return true;
+				}
+			}
+			return false;
+		}
+
 		internal static void ShowHelpForText(
 			string text,
 			int pos,
@@ -53,72 +68,22 @@ namespace PowerShellFar
 			if (token == null)
 				return;
 
-			string title;
-			string script;
-			object[] args = null;
+			if (token.Type != PSTokenType.Command)
+			{
+				token = tokens.LastOrDefault(token => token.Type == PSTokenType.Command && token.EndColumn <= pos);
+				if (token == null)
+					return;
+			}
 
-			if (token.Type == PSTokenType.Command)
-			{
-				title = $"Help {token.Content}";
-				script = "Get-Help $args[1] -Full > $args[0]";
-				args = new object[] { null, token.Content };
-			}
-			else if (token.Type == PSTokenType.CommandParameter)
-			{
-				string parameter = token.Content.TrimStart('-');
-				string upper = parameter.ToUpperInvariant();
-				if (upper == "CONFIRM" ||
-					upper == "DEBUG" ||
-					upper == "ERRORACTION" ||
-					upper == "ERRORVARIABLE" ||
-					upper == "INFORMATIONACTION" ||
-					upper == "INFORMATIONVARIABLE" ||
-					upper == "OUTBUFFER" ||
-					upper == "OUTVARIABLE" ||
-					upper == "PIPELINEVARIABLE" ||
-					upper == "VERBOSE" ||
-					upper == "WARNINGACTION" ||
-					upper == "WARNINGVARIABLE" ||
-					upper == "WHATIF")
-				{
-					title = "Help about_CommonParameters";
-					script = "Get-Help about_CommonParameters > $args[0]";
-					args = new object[] { null };
-				}
-				else
-				{
-					var command = tokens.LastOrDefault(token => token.Type == PSTokenType.Command && token.EndColumn <= pos);
-					if (command == null)
-						return;
-
-					title = $"Help {command.Content} -{parameter}";
-					script = "Get-Help $args[1] -Parameter $args[2] > $args[0]";
-					args = new object[] { null, command.Content, parameter };
-				}
-			}
-			else if (token.Type == PSTokenType.Keyword)
-			{
-				title = $"Help about_{token.Content}";
-				script = $"Get-Help about_{token.Content} > $args[0]";
-				args = new object[] { null };
-			}
-			else if (token.Type == PSTokenType.Operator)
-			{
-				title = "Help about_operators";
-				script = "Get-Help about_operators > $args[0]";
-				args = new object[] { null };
-			}
-			else
-			{
-				Far.Api.Message("No help targets found at the editor caret position.", Res.Me);
+			if (ShowOnlineHelp(token.Content))
 				return;
-			}
 
+			var title = $"Help {token.Content}";
+			var script = "Get-Help $args[0] -Full > $args[1]";
 			var file = FarNet.Works.Kit.TempFileName("txt");
 			try
 			{
-				args[0] = file;
-				A.InvokeCode(script, args);
+				A.InvokeCode(script, token.Content, file);
 				ShowHelpFile(file, title, openMode);
 			}
 			catch (RuntimeException)
