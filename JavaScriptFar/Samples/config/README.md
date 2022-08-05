@@ -1,6 +1,6 @@
 ﻿# Configuration file sample
 
-[_session.js.xml](_session.js.xml) is the session configuration file with some settings explained below.
+[_session.xml](_session.xml) is the session configuration file with some settings explained below.
 If you remove/rename this file, sample scripts do not work for various reasons.
 
 ## DocumentAccessFlags
@@ -22,11 +22,12 @@ module `const.js` from the GitHub repository.
 [DocumentSearchPath](https://microsoft.github.io/ClearScript/Reference/html/P_Microsoft_ClearScript_DocumentSettings_SearchPath.htm)
 
 ```xml
-  <DocumentSearchPath>https://raw.githubusercontent.com/nightroman/FarNet/master/JavaScriptFar/Samples/modules/</DocumentSearchPath>
+  <DocumentSearchPath>https://raw.githubusercontent.com/nightroman/FarNet/848c23db70fb401982b08e8f5dee3888ce14c629/JavaScriptFar/Samples/modules/</DocumentSearchPath>
 ```
 
-This line tells the engine where to search for referenced files,
-a GitHub repository folder is this case.
+This line tells the engine where to search for referenced files.
+In this case it is a GitHub repository folder.
+The fixed commit ensures a particular version.
 
 As a result, [WebLoadingAndSearchPath.js](WebLoadingAndSearchPath.js) may specify the imported
 module `const.js` just by name instead of the exact URL.

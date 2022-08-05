@@ -9,9 +9,9 @@ function job(proc) {
     return clr.FarNet.Tasks.Job(host.proc(0, proc))
 }
 
-async function main(seconds) {
-    await sleep(seconds * 1000)
-    await job(() => far.Message(`done in ${seconds} seconds`))
+async function test(milliseconds) {
+    await sleep(milliseconds)
+    await job(() => far.Message(`done in ${milliseconds} milliseconds`))
 }
 
-main(5)
+test(parseInt(args.milliseconds ?? 5000))

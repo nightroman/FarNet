@@ -4,8 +4,10 @@
 
 using FarNet;
 using Microsoft.ClearScript;
+using Microsoft.ClearScript.JavaScript;
 using Microsoft.ClearScript.V8;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,77 +17,69 @@ namespace JavaScriptFar;
 sealed class Session : IDisposable
 {
 	public const string
-		SessionFileMask = "_session.js*",
-		SessionConfigFile = "_session.js.xml",
-		SessionScriptFile = "_session.js";
+		SessionFileMask = "_session.*",
+		SessionConfigFile = "_session.xml",
+		SessionParameterName = "_session";
 
 	static readonly LinkedList<Session> s_sessions = new();
 
 	public static IEnumerable<Session> Sessions => s_sessions;
 	public string Root { get; }
-	public bool IsDebug { get; }
 	readonly ScriptEngine _engine;
+	readonly SessionConfiguration _config;
+	readonly DocumentCategory _documentCategory;
 
-	private Session(string root, string config, string script, bool isDebug)
+	public bool IsDebug => _config.V8ScriptEngineFlags.HasFlag(V8ScriptEngineFlags.EnableDebugging);
+
+	private Session(string root, string xml, IEnumerable<string> scripts, bool isDebug)
 	{
 		Root = root;
-		IsDebug = isDebug;
 
-		SessionConfiguration settings;
-		if (config is null)
-			settings = new();
-		else
-			settings = new ModuleSettings<SessionConfiguration>(config).GetData();
+		_config = xml is null ? new() : new ModuleSettings<SessionConfiguration>(xml).GetData();
+		if (isDebug)
+			_config.V8ScriptEngineFlags |= V8ScriptEngineFlags.EnableDebugging;
 
-		_engine = V8ScriptEngine(settings, isDebug);
+		if (_config.V8ScriptEngineFlags.HasFlag(V8ScriptEngineFlags.EnableDebugging))
+			EnsureNoDebugging();
 
-		if (script is not null)
+		_documentCategory = _config.DocumentCategory switch
+		{
+			DefaultDocumentCategory.Script => DocumentCategory.Script,
+			DefaultDocumentCategory.Standard => ModuleCategory.Standard,
+			DefaultDocumentCategory.CommonJS => ModuleCategory.CommonJS,
+			_ => throw null
+		};
+
+		_engine = V8ScriptEngine(root, _config);
+
+		if (scripts is not null)
 		{
 			try
 			{
-				_engine.Execute(new DocumentInfo(new Uri(script)), File.ReadAllText(script));
+				foreach(var script in scripts)
+					_engine.Execute(new DocumentInfo(new Uri(script)), File.ReadAllText(script));
 			}
 			catch (ScriptEngineException ex)
 			{
+				_engine.Dispose();
 				throw ModuleExceptionFromScriptEngineException(ex);
 			}
 		}
 	}
 
-	public void Dispose()
-	{
-		s_sessions.Remove(this);
-		_engine.Dispose();
-	}
-
-	public static ModuleException ModuleExceptionFromScriptEngineException(Exception ex)
-	{
-		var message = ex.Message;
-
-		if (ex is ScriptEngineException seex)
-			if (seex.ErrorDetails != null && seex.ErrorDetails.StartsWith(message))
-				message = seex.ErrorDetails;
-
-		return new ModuleException(message, ex);
-	}
-
 	// see ClearScriptConsole.cs
-	static ScriptEngine V8ScriptEngine(SessionConfiguration settings, bool isDebug)
+	static ScriptEngine V8ScriptEngine(string root, SessionConfiguration config)
 	{
-		var flags = settings.V8ScriptEngineFlags;
-		if (isDebug)
-			flags |= V8ScriptEngineFlags.EnableDebugging | V8ScriptEngineFlags.AwaitDebuggerAndPauseOnStart;
-
-		var engine = new V8ScriptEngine(Res.MyName, flags)
+		var engine = new V8ScriptEngine(root, config.V8ScriptEngineFlags)
 		{
 			AllowReflection = true,
 			SuppressExtensionMethodEnumeration = true
 		};
 
-		engine.DocumentSettings.AccessFlags = settings.DocumentAccessFlags;
+		engine.DocumentSettings.AccessFlags = config.DocumentAccessFlags;
 
-		if (!string.IsNullOrEmpty(settings.DocumentSearchPath))
-			engine.DocumentSettings.SearchPath = Environment.ExpandEnvironmentVariables(settings.DocumentSearchPath);
+		if (!string.IsNullOrEmpty(config.DocumentSearchPath))
+			engine.DocumentSettings.SearchPath = Environment.ExpandEnvironmentVariables(config.DocumentSearchPath);
 
 		engine.AddHostObject("host", new ExtendedHostFunctions());
 		engine.AddHostObject("clr", HostItemFlags.GlobalMembers, new HostTypeCollection(
@@ -105,25 +99,93 @@ sealed class Session : IDisposable
 		return engine;
 	}
 
-	public static Session GetOrCreateSession(ExecuteArgs args)
+	public void Dispose()
 	{
-		var root = args.IsDocument ? Path.GetDirectoryName(args.Command) : Far.Api.CurrentDirectory;
+		s_sessions.Remove(this);
+		_engine.Dispose();
+	}
+
+	public static ModuleException ModuleExceptionFromScriptEngineException(Exception ex)
+	{
+		var message = ex.Message;
+
+		if (ex is ScriptEngineException seex)
+			if (seex.ErrorDetails != null && seex.ErrorDetails.StartsWith(message))
+				message = seex.ErrorDetails;
+
+		return new ModuleException(message, ex);
+	}
+
+	static void EnsureNoDebugging()
+	{
+		while(s_sessions.FirstOrDefault(x => x.IsDebug) is Session session)
+			session.Dispose();
+	}
+
+	void SetHostArgs(IDictionary parameters)
+	{
+		var bag = new PropertyBag();
+		if (parameters is not null)
+		{
+			foreach (DictionaryEntry kv in parameters)
+			{
+				//! pass the original Value, with Interop it may be any
+				bag.Add(kv.Key.ToString(), kv.Value);
+			}
+		}
+		_engine.AddHostObject("args", bag);
+	}
+
+	static (string, string[]) GetSessionRootAndFiles(ExecuteArgs args)
+	{
+		bool isRootFromParameter = args.Parameters is not null && args.Parameters.Contains(SessionParameterName);
+
+		string root;
+		if (isRootFromParameter)
+		{
+			root = args.Parameters[SessionParameterName] as string ?? throw new ModuleException("Parameter _session must be string.");
+
+			if (!Path.IsPathRooted(root))
+				root = Path.Join(Far.Api.CurrentDirectory, root);
+
+			root = Path.GetFullPath(root);
+		}
+		else
+		{
+			root = args.Document is not null ? Path.GetDirectoryName(args.Document) : Far.Api.CurrentDirectory;
+		}
+
 		var files = Directory.GetFiles(root, SessionFileMask);
-		if (files.Length == 0)
+		if (files.Length == 0 && !isRootFromParameter)
 		{
 			root = JavaScriptModule.Root;
 			files = Directory.GetFiles(root, SessionFileMask);
 		}
 
+		Array.Sort(files, StringComparer.OrdinalIgnoreCase);
+		return (root, files);
+	}
+
+	public static Session GetOrCreateSession(ExecuteArgs args)
+	{
+		var (root, files) = GetSessionRootAndFiles(args);
+
 		var session = s_sessions.FirstOrDefault(x => string.Equals(x.Root, root, StringComparison.OrdinalIgnoreCase));
 		if (session is not null)
 		{
-			if (args.IsDebug && !session.IsDebug)
+			// the session exists
+			if (args.IsDebug)
 			{
+				// on debug restart the session, this is good on changing session files
 				session.Dispose();
+				session = null;
 			}
 			else
 			{
+				// update parameters
+				session.SetHostArgs(args.Parameters);
+
+				// and make it first in the list
 				if (s_sessions.First.Value != session)
 				{
 					s_sessions.Remove(session);
@@ -134,22 +196,38 @@ sealed class Session : IDisposable
 			}
 		}
 
-		var config = files.FirstOrDefault(x => x.EndsWith(SessionConfigFile, StringComparison.OrdinalIgnoreCase));
-		var script = files.FirstOrDefault(x => x.EndsWith(SessionScriptFile, StringComparison.OrdinalIgnoreCase));
+		var xml = files.FirstOrDefault(x => x.EndsWith(SessionConfigFile, StringComparison.OrdinalIgnoreCase));
+		var scripts = files.Where(x => x.EndsWith(".js", StringComparison.OrdinalIgnoreCase));
 
-		session = new Session(root, config, script, args.IsDebug);
+		session = new Session(root, xml, scripts, args.IsDebug);
+		session.SetHostArgs(args.Parameters);
 		s_sessions.AddFirst(session);
+
 		return session;
 	}
 
-	public object Evaluate(DocumentInfo documentInfo, string code)
+	(DocumentInfo, string) GetDocumentAndCode(string document)
 	{
-		return _engine.Evaluate(documentInfo, code);
+		var doc = new DocumentInfo(new Uri(document)) { Category = _documentCategory };
+		var code = File.ReadAllText(document);
+		return (doc, code);
 	}
 
-	public void Execute(DocumentInfo documentInfo, string code)
+	public object EvaluateDocument(string document)
 	{
-		_engine.Execute(documentInfo, code);
+		var (doc, code) = GetDocumentAndCode(document);
+		return _engine.Evaluate(doc, code);
+	}
+
+	public void ExecuteDocument(string document)
+	{
+		var (doc, code) = GetDocumentAndCode(document);
+		_engine.Execute(doc, code);
+	}
+
+	public object EvaluateCommand(string code)
+	{
+		return _engine.Evaluate(code);
 	}
 
 	public string ExecuteCommand(string code)

@@ -1,0 +1,2 @@
+﻿
+far.Input('user')

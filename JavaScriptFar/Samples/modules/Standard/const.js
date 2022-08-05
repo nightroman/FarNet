@@ -1,6 +1,6 @@
 ﻿// Demo module for tests.
 
 /**
- * Some exported constant value.
+ * Some exported variable.
  */
 export const myName = 'JavaScriptFar'

@@ -1,4 +1,6 @@
 ﻿// Example of async flow with non modal intermediate steps.
+// When dialogs are shown you can switch to other windows,
+// do something else, then switch back and continue.
 
 // Shows a non modal dialog and gets the user input or null.
 async function showDialog(title) {

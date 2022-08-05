@@ -1,5 +1,28 @@
 ﻿https://www.nuget.org/packages/FarNet.JavaScriptFar
 
+= 0.4.0 =
+
+Session files:
+- use `_session.xml` instead of `_session.js.xml`
+- support 2+ session scripts, any .js in `_session.*`
+
+New configuration DocumentCategory defines how to run JS files.
+The default is Script (scripts).
+Other values: Standard and CommonJS (modules).
+* This enables many useful cases but may break existing code.
+* Use DocumentCategory Standard to restore previous behaviour.
+
+Reworked debugging, no more blocking Far Manager on starting.
+Sub-prefix `debug:` is no longer used in commands.
+
+Sub-prefix `task:` is specified immediately after `js:`.
+You can run commands as tasks as well as scripts.
+
+New variable `args`, command line script parameters after `::`
+js: @ script.js :: name = John Doe; age = 42
+
+Added interop, see samples.
+
 = 0.3.0 =
 
 Requires FarNet 6.0.3

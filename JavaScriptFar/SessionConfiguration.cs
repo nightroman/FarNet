@@ -21,6 +21,12 @@ public class SessionConfiguration
 	[XmlElement(nameof(DocumentAccessFlags))] public string DocumentAccessFlagsAsString { get => DocumentAccessFlags.ToString(); set => DocumentAccessFlags = Enum.Parse<DocumentAccessFlags>(value); }
 
 	/// <summary>
+	/// Defines how to run .js files.
+	/// Values: Script, Standard (module), CommonJS (module).
+	/// </summary>
+	public DefaultDocumentCategory DocumentCategory { get; set; } = DefaultDocumentCategory.Script;
+
+	/// <summary>
 	/// Semicolon-delimited list of directory URLs or paths to search for documents.
 	/// Environment variables are expanded.
 	/// </summary>
@@ -37,4 +43,11 @@ public class SessionConfiguration
 	/// </remarks>
 	[XmlIgnore] public V8ScriptEngineFlags V8ScriptEngineFlags { get; set; }
 	[XmlElement(nameof(V8ScriptEngineFlags))] public string V8ScriptEngineFlagsAsString { get => V8ScriptEngineFlags.ToString(); set => V8ScriptEngineFlags = Enum.Parse<V8ScriptEngineFlags>(value); }
+}
+
+public enum DefaultDocumentCategory
+{
+	Script,
+	Standard,
+	CommonJS,
 }

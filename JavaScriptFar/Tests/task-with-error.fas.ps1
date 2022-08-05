@@ -1,10 +1,7 @@
 ﻿#! mind possible race, do not use stepper
 
-# tell how long to sleep
-[FarNet.User]::Data['_220723_1411_sleep'] = 600
-
 # start
-macro "print [[js:@task: $env:FarNetCode\JavaScriptFar\Samples\task-with-error.js]] Keys'Enter'"
+macro "print [[js:task:@ $env:FarNetCode\JavaScriptFar\Samples\task-with-error.js :: milliseconds=600]] Keys'Enter'"
 
 # wait for it started
 while([FarNet.User]::Data['_220723_1411_state'] -ne 'start') {
@@ -25,7 +22,8 @@ job {
 	# it ends with an error dialog
 	Assert-Far -Dialog
 	Assert-Far $Far.Dialog[1].Text -eq 'Error: OK'
-	Assert-Far ($Far.Dialog[2].Text -match '^    at .+?\\task-with-error\.js:\d+:\d+$')
+	Assert-Far ($Far.Dialog[2].Text -match '^    at test \(.+?\\task-with-error\.js:\d+:\d+\) ->     throw Error')
+	Assert-Far ($Far.Dialog[3].Text -match '^    at .+?\\task-with-error\.js:\d+:\d+$')
 
 	$Far.Dialog.Close()
 }

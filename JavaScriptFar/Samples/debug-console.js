@@ -1,17 +1,12 @@
 ﻿/*
-Use debugger to see debug console output (JavaScriptFar/README ~ setup VSCode debugger)
+Use debugger to watch console output (JavaScriptFar/README ~ setup VSCode debugger)
+See also: console -- https://developer.mozilla.org/en-US/docs/Web/API/console
 
-- open this script in Far Manager editor
-- [ShiftF5] to start debugging, click OK, wait for VSCode, start debugger there
-- debugger breaks into this script
-- step through the script or just [F5] to continue
-- watch the output in debug console
-- note that debugger stays connected
-- [F5] in Far Manager editor to repeat
-- or modify the script and then [F5]
-- see new output in debug console
-
-https://developer.mozilla.org/en-US/docs/Web/API/console
+- go to this script panel
+- F11 / JavaScriptFar / Start debugging
+- in the opened VSCode start the debugger
+- run the script, see the output in debug console
+- modify the script, run (F5), see the changed output
 */
 
 // clear console and start timer
@@ -19,7 +14,7 @@ console.clear()
 console.time("time1")
 
 // messages
-console.log('my log')
+console.log(Date())
 console.info('my info')
 console.warn('my warn')
 console.debug('my debug')

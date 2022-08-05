@@ -1,5 +1,5 @@
 ﻿// This script imports a module.
 
-import * as Tools from './modules/tools.js'
+const Tools = require('./tools.js')
 
 Tools.hello()

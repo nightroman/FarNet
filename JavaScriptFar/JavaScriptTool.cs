@@ -3,6 +3,7 @@
 // Copyright (c) Roman Kuzmin
 
 using FarNet;
+using System;
 using System.IO;
 
 namespace JavaScriptFar;
@@ -15,9 +16,45 @@ public class JavaScriptTool : ModuleTool
 	{
 		var menu = Far.Api.CreateMenu();
 		menu.Title = Res.MyName;
-		menu.Add("&1. Configuration", (s, e) => Configuration());
-		menu.Add("&0. Sessions...", (s, e) => Sessions());
+		menu.Add("&1. Start debugging", (_, _) => StartDebugging(e.From));
+		menu.Add("&2. Configuration", (_, _) => Configuration());
+		menu.Add("&0. Sessions...", (_, _) => Sessions());
 		menu.Show();
+	}
+
+	static void StartDebugging(ModuleToolOptions from)
+	{
+		switch (from)
+		{
+			case ModuleToolOptions.Editor:
+				{
+					var editor = Far.Api.Editor;
+					var file = editor.FileName;
+					if (file.EndsWith(".js", StringComparison.OrdinalIgnoreCase))
+					{
+						editor.Save();
+						var caret = editor.Caret;
+						Actor.StartDebugging(file, caret.Y + 1, caret.X + 1);
+						return;
+					}
+				}
+				break;
+			case ModuleToolOptions.Panels:
+				{
+					var file = Far.Api.Panel.CurrentFile;
+					if (file is not null && file.Name.EndsWith(".js", StringComparison.OrdinalIgnoreCase))
+					{
+						var path = Path.Join(Far.Api.CurrentDirectory, file.Name);
+						if (File.Exists(path))
+						{
+							Actor.StartDebugging(path);
+							return;
+						}
+					}
+				}
+				break;
+		}
+		Actor.StartDebugging();
 	}
 
 	static void Configuration()
@@ -41,29 +78,33 @@ public class JavaScriptTool : ModuleTool
 
 		menu.AddKey(KeyCode.Delete);
 
-		foreach (var session in Session.Sessions)
+		for (; ; menu.Items.Clear())
 		{
-			var item = menu.Add(session.Root);
-			item.Data = session;
-			item.Checked = session.IsDebug;
+			foreach (var session in Session.Sessions)
+			{
+				var item = menu.Add(session.Root);
+				item.Data = session;
+				item.Checked = session.IsDebug;
+			}
+
+			if (!menu.Show())
+				return;
+
+			var selectedSession = (Session)menu.SelectedData;
+			if (selectedSession is null)
+				return;
+
+			// Del
+			if (menu.Key.Is(KeyCode.Delete))
+			{
+				selectedSession.Dispose();
+				continue;
+			}
+
+			// Enter
+			try { Far.Api.Window.SetCurrentAt(-1); } catch { }
+			try { Far.Api.Panel.CurrentDirectory = selectedSession.Root; } catch { }
+			return;
 		}
-
-		if (!menu.Show())
-			return;
-
-		var selectedSession = (Session)menu.SelectedData;
-		if (selectedSession is null)
-			return;
-
-		// Del
-		if (menu.Key.Is(KeyCode.Delete))
-		{
-			selectedSession.Dispose();
-			return;
-		}
-
-		// Enter
-		try { Far.Api.Window.SetCurrentAt(-1); } catch { }
-		try { Far.Api.Panel.CurrentDirectory = selectedSession.Root; } catch { }
 	}
 }

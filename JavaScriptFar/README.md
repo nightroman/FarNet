@@ -10,7 +10,7 @@ How to install FarNet and FarNet.JavaScriptFar\
 ## How to run commands
 
 JavaScript statements and expressions are run from the
-command line with the prefix `js:` in the main session:
+command line with the prefix `js:`
 
     js: pi = Math.PI
     js: Math.sqrt(pi)
@@ -32,22 +32,37 @@ Create the file association for `*.js` scripts and run current scripts from pane
     *.js
     js:@!\!.!
 
-The following extra prefixes may be specified before the file name (and used in associations):
+The following extra prefixes may be specified before @:
 
-- `task:` tells to start the script as a task
-- `debug:` tells to start the script debugging
+- `task:` tells to start the script or command as a task
 
-Note that scripts running as tasks should not use FarNet API unless it is
-designed for multi-threaded scenarios and documented accordingly.
+Example:
 
-Examples:
+    js: task: @ too-slow.js
 
-    js: @ task: too-slow.js
-    js: @ debug: some-bugs.js
-    js: @ task: debug: debug-console.js
+> Scripts running as tasks should not call Far API unless it is designed for
+multi-threaded scenarios and documented accordingly.
+
+## Parameters
+
+In order to pass parameters to scripts, use `::` after the file name followed
+by semicolon separated `key=value` pairs (connection string format):
+
+    js: @ user.js :: name = John Doe; age = 42
+
+These parameters are available in JavaScript as the property bag variable `args`.
+
+The special parameter `_session` may define the target folder session path.
+
+Parameters apply to commands as well. This example calls `test` defined in a
+particular session (e.g. auto loaded by session scripts) and sends the `file`
+parameter:
+
+    js: test(args.file) :: _session=C:\Test; file=C:\Test\test1.json
 
 ## Global variables
 
+- `args` - property bag of named parameters from command line or interop
 - `host` - extended JavaScript functions provided by ClearScript, see [here](https://microsoft.github.io/ClearScript/Reference/html/Methods_T_Microsoft_ClearScript_ExtendedHostFunctions.htm)
 - `far` - FarNet main methods, shortcut to `clr.FarNet.Far.Api` see [here](https://github.com/nightroman/FarNet/blob/master/FarNet/FarNet/Far.cs)
 - `clr` - .NET types of the following assemblies:
@@ -57,57 +72,34 @@ Examples:
     - System.Diagnostics.Process
     - System.Numerics
     - System.Runtime
+    - ClearScript.Core
     - FarNet
-
-## How to debug
-
-Prerequisites:
-
-- Install VSCode (this should make `code.cmd` available in the path).
-- Set up ClearScript V8 debug launch, see [VII. Debugging with ClearScript and V8](https://microsoft.github.io/ClearScript/Details/Build.html).
-
-Start debugging of a JavaScript file:
-
-- In the editor use `[ShiftF5]`
-- In the command line use `js: @debug: ...\script.js`
-
-The confirmation dialog is shown. If you click OK then VSCode is opened,
-existing or new. Start the ClearScript V8 debugger there. Otherwise Far
-Manager waits for the debugger forever and has to be terminated.
-
-When the debugger starts it breaks either at the first JavaScript line or at
-one of the previously set breakpoints in the running code.
-
-VSCode debugger is useful for examining variable values, object properties and
-methods, typing commands in the debug console. The debug console supports code
-completion and provides rich output with expandable complex objects.
-
-Just one session is debugged at a time. Starting the debugger terminates other
-sessions being debugged and restarts the target session if it is not debugged.
 
 ## Folder sessions
 
 JavaScript files and commands are run in "folder sessions". The script folder
-or the current panel folder is used if it contains a file like `_session.js*`.
+or the current panel folder is used if it contains a file like `_session.*`.
 Otherwise the main folder `%FARPROFILE%\FarNet\JavaScriptFar` is used. Its
 session files, if any, work for all scripts and commands with no own session.
 
-> Any file `_session.js*` engages its folder session on running scripts and
-commands, even if the file is not used by the module, e.g. `_session.js.txt`.
+> Any file `_session.*` engages its folder session on running scripts and
+commands, even if the file is not used by the module, e.g. `_session.txt`.
 
 Used session files:
 
-- Configuration file `_session.js.xml`
+- Configuration file `_session.xml`
 
-    These files configure JavaScript engines used in sessions.
-    A new file may be created or the existing edited by `F11` / `JavaScriptFar` / `Configuration`.
+    This file configures the session JavaScript engine.
+    The existing file is edited or a new is created by `F11` / `JavaScriptFar` / `Configuration`.
     This is the recommended way of editing configurations, it validates the schema and some data.
 
-- Auto-loaded session script `_session.js`
+    For configuration values and doc comments, see `SessionConfiguration.cs`.
 
-    This file is executed once for the session before running other scripts.
-    Other scripts in this folder or others in the main session may use the
-    assets defined in this file.
+- Session scripts, any .js in `_session.*`
+
+    These session scripts are loaded once in alphabetical order, case ignored.
+    Other scripts in this folder or others for the main session may use the
+    assets defined in session scripts.
 
 You may view created sessions by `F11` / `JavaScriptFar` / `Sessions`.
 Keys and actions:
@@ -117,8 +109,30 @@ Keys and actions:
 
 Normally you do not have to close sessions, they do not consume much resources
 unless you store a lot of data in session variables. But closing may be useful
-on development, e.g. on changes in sessions files, for terminating debugged
-session (marked with a tick), and etc.
+on development, on changes in sessions files, for terminating debugged session
+(marked with a tick), and etc.
+
+## Debugging
+
+Prerequisites:
+
+- Install VSCode (this should make `code.cmd` available in the path).
+- Set up ClearScript V8 debug launch, see [VII. Debugging with ClearScript and V8](https://microsoft.github.io/ClearScript/Details/Build.html).
+
+To start debugging of the current folder session, use `F11` / `JavaScriptFar` / `Start debugging`.
+Then VSCode is opened, existing or new. Start the ClearScript V8 debugger
+there, now or later. Open target scripts in VSCode and set breakpoints.
+Optionally enable breaks on caught / uncaught exceptions.
+
+Then run scripts in the prepared session. The debugger breaks on breakpoints,
+selected exceptions, and explicit `debugger` statements in the JavaScript code.
+
+VSCode debugger is useful for examining variable values, object properties and
+methods, typing commands in the debug console, watching the output of `console`
+functions.
+
+`Start debugging` terminates other debugged sessions and restarts the target
+session if it is running. Just one session may be debugged at a time.
 
 ## See also
 

@@ -1,8 +1,8 @@
 ﻿if (connection) {
     connection.disconnect()
     connection = null
-    far.Message('Disconnected.')
+    message('Disconnected.')
 }
 else {
-    far.Message('Not connected.')
+    message('Not connected.')
 }

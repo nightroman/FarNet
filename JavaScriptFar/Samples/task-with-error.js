@@ -5,37 +5,37 @@ Normal scripts just finish normally.
 
 js: @ task-with-error.js
 
-	Far is blocked for 10 seconds while the script works.
-	Then the script error shows.
+    Far is blocked for 5 seconds while the script works.
+    Then the script error shows.
 
-js: @ task: task-with-error.js
+js: task: @ task-with-error.js
 
-	Use Far as usual, the script works in the background.
-	In 10 seconds the script error shows.
+    Use Far as usual, the script works in the background.
+    In 5 seconds the script error shows.
 
-js: @ task: debug: task-with-error.js
-
-	This is useful in many ways. When the debugger breaks in the script you may
-	use Far as usual and also use the debugger as long as Far stays opened.
+One debugging scenario. Start debugging, start VSCode debugger, tick caught /
+uncaught exceptions in the breakpoint panel. Run the script. The debugger
+breaks on the script error.
 */
 
-// concurrent dictionary for tasks
-const data = clr.FarNet.User.Data
+function test() {
+    // argument
+    let sleep = parseInt(args.milliseconds ?? 5000)
 
-// try get the setting or use the default
-let sleep = host.newVar(System.Object)
-if (!data.TryGetValue('_220723_1411_sleep', sleep.out)) {
-	sleep = 10000
+    // concurrent dictionary for tasks
+    const data = clr.FarNet.User.Data
+
+    // tell the testing script we start
+    data.Item.set('_220723_1411_state', 'start')
+
+    // simulate some job
+    clr.System.Threading.Thread.Sleep(sleep)
+
+    // tell the testing script we end
+    data.Item.set('_220723_1411_state', 'end')
+
+    // end
+    throw Error('OK')
 }
 
-// tell the testing script we start
-data.Item.set('_220723_1411_state', 'start')
-
-// simulate some long-ish job
-clr.System.Threading.Thread.Sleep(host.cast(System.Int32, sleep))
-
-// tell the testing script we end
-data.Item.set('_220723_1411_state', 'end')
-
-// end
-throw Error('OK')
+test()

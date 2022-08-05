@@ -2,51 +2,63 @@
 // JavaScriptFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
-using System;
-using System.IO;
 using FarNet;
+using System;
+using System.Data.Common;
+using System.IO;
 
 namespace JavaScriptFar;
 
 [System.Runtime.InteropServices.Guid("ce853894-1ff2-4713-96d1-64cd97bc9f89")]
-[ModuleCommand(Name = "Execute file", Prefix = Res.Prefix)]
+[ModuleCommand(Name = "Run JavaScript", Prefix = Res.Prefix)]
 public class JavaScriptCommand : ModuleCommand
 {
 	public override void Invoke(object sender, ModuleCommandEventArgs e)
 	{
-		var command = e.Command.Trim();
+		var text = e.Command.Trim();
+		var args = new ExecuteArgs();
 
-		bool isDocument = command.StartsWith('@');
-		bool isDebug = false;
-		bool isTask = false;
-		if (isDocument)
+		// task?
+		if (text.StartsWith("task:"))
 		{
-			command = command[1..].TrimStart();
-			while (true)
-			{
-				if (command.StartsWith("debug:"))
-				{
-					isDebug = true;
-					command = command[6..].TrimStart();
-					continue;
-				}
-
-				if (command.StartsWith("task:"))
-				{
-					isTask = true;
-					command = command[5..].TrimStart();
-					continue;
-				}
-
-				break;
-			}
-
-			command = Environment.ExpandEnvironmentVariables(command);
-
-			if (!Path.IsPathRooted(command))
-				command = Path.GetFullPath(Path.Combine(Far.Api.CurrentDirectory, command));
+			args.IsTask = true;
+			text = text[5..].TrimStart();
 		}
 
-		Actor.Execute(new ExecuteArgs(command) { IsDocument = isDocument, IsDebug = isDebug, IsTask = isTask });
+		// args?
+		int index = text.IndexOf("::");
+		if (index >= 0)
+		{
+			var connectionString = text[(index + 2)..].TrimStart();
+			try
+			{
+				args.Parameters = new DbConnectionStringBuilder() { ConnectionString = connectionString };
+			}
+			catch (Exception ex)
+			{
+				throw new ModuleException($"Error in parameters:\n{connectionString}\n{ex.Message}");
+			}
+
+			text = text[0..index].TrimEnd();
+		}
+
+		// document?
+		if (text.StartsWith('@'))
+		{
+			text = text[1..].TrimStart();
+
+			text = Environment.ExpandEnvironmentVariables(text);
+
+			if (!Path.IsPathRooted(text))
+				text = Path.GetFullPath(Path.Combine(Far.Api.CurrentDirectory, text));
+
+			args.Document = text;
+		}
+		else
+		{
+			args.Command = text;
+		}
+
+		Actor.Execute(args);
 	}
 }

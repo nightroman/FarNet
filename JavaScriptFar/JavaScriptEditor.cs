@@ -25,22 +25,19 @@ public class JavaScriptEditor : ModuleEditor
 		switch (e.Key.VirtualKeyCode)
 		{
 			case KeyCode.F5 when e.Key.Is():
-				Execute(false);
-				break;
-			case KeyCode.F5 when e.Key.IsShift():
-				Execute(true);
+				Execute();
 				break;
 		}
 	}
 
-	private void Execute(bool isDebug)
+	private void Execute()
 	{
 		_editor.Save();
 
 		string print = string.Empty;
 		try
 		{
-			Actor.Execute(new ExecuteArgs(_editor.FileName) { IsDocument = true, IsDebug = isDebug, Print = s => print = s });
+			Actor.Execute(new ExecuteArgs { Document = _editor.FileName, Print = s => print = s });
 		}
 		finally
 		{

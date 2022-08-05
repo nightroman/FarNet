@@ -1,5 +1,5 @@
-﻿// Without EnableAllLoading and DocumentSearchPath this script fails:
-// Error: Could not load file or assembly 'const.js'. The system cannot find the file specified.
+﻿// Without DocumentSearchPath or EnableAllLoading this script fails:
+// 'const.js' is either not found or cannot be loaded.
 
 import * as Const from 'const.js'
 
