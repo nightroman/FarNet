@@ -1,5 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet.JavaScriptFar
 
+= 0.4.1 =
+
+Files *.cjs and *.mjs are treated as CommonJS and Standard modules regardless
+of session DocumentCategory. As a result, sessions may have mixed script types.
+
 = 0.4.0 =
 
 Session files:

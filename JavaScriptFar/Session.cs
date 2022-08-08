@@ -52,18 +52,27 @@ sealed class Session : IDisposable
 
 		_engine = V8ScriptEngine(root, _config);
 
-		if (scripts is not null)
+		try
 		{
-			try
+			foreach (var document in scripts)
 			{
-				foreach(var script in scripts)
-					_engine.Execute(new DocumentInfo(new Uri(script)), File.ReadAllText(script));
+				DocumentCategory category;
+				if (IsFileScript(document))
+					category = DocumentCategory.Script;
+				else if (IsFileCommonJS(document))
+					category = ModuleCategory.CommonJS;
+				else if (IsFileStandard(document))
+					category = ModuleCategory.Standard;
+				else
+					continue;
+
+				_engine.Execute(new DocumentInfo(new Uri(document)) { Category = category }, File.ReadAllText(document));
 			}
-			catch (ScriptEngineException ex)
-			{
-				_engine.Dispose();
-				throw ModuleExceptionFromScriptEngineException(ex);
-			}
+		}
+		catch (ScriptEngineException ex)
+		{
+			_engine.Dispose();
+			throw ModuleExceptionFromScriptEngineException(ex);
 		}
 	}
 
@@ -105,6 +114,11 @@ sealed class Session : IDisposable
 		_engine.Dispose();
 	}
 
+	public static bool IsFileScript(string path) => path.EndsWith(".js", StringComparison.OrdinalIgnoreCase);
+	public static bool IsFileCommonJS(string path) => path.EndsWith(".cjs", StringComparison.OrdinalIgnoreCase);
+	public static bool IsFileStandard(string path) => path.EndsWith(".mjs", StringComparison.OrdinalIgnoreCase);
+	public static bool IsFileDocument(string path) => IsFileScript(path) || IsFileCommonJS(path) || IsFileStandard(path);
+
 	public static ModuleException ModuleExceptionFromScriptEngineException(Exception ex)
 	{
 		var message = ex.Message;
@@ -118,7 +132,7 @@ sealed class Session : IDisposable
 
 	static void EnsureNoDebugging()
 	{
-		while(s_sessions.FirstOrDefault(x => x.IsDebug) is Session session)
+		while (s_sessions.FirstOrDefault(x => x.IsDebug) is Session session)
 			session.Dispose();
 	}
 
@@ -197,9 +211,8 @@ sealed class Session : IDisposable
 		}
 
 		var xml = files.FirstOrDefault(x => x.EndsWith(SessionConfigFile, StringComparison.OrdinalIgnoreCase));
-		var scripts = files.Where(x => x.EndsWith(".js", StringComparison.OrdinalIgnoreCase));
 
-		session = new Session(root, xml, scripts, args.IsDebug);
+		session = new Session(root, xml, files, args.IsDebug);
 		session.SetHostArgs(args.Parameters);
 		s_sessions.AddFirst(session);
 
@@ -208,7 +221,15 @@ sealed class Session : IDisposable
 
 	(DocumentInfo, string) GetDocumentAndCode(string document)
 	{
-		var doc = new DocumentInfo(new Uri(document)) { Category = _documentCategory };
+		DocumentCategory category;
+		if (IsFileCommonJS(document))
+			category = ModuleCategory.CommonJS;
+		else if (IsFileStandard(document))
+			category = ModuleCategory.Standard;
+		else
+			category = _documentCategory;
+
+		var doc = new DocumentInfo(new Uri(document)) { Category = category };
 		var code = File.ReadAllText(document);
 		return (doc, code);
 	}

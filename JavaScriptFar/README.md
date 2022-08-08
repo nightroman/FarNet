@@ -29,7 +29,7 @@ variables are expanded.
 
 Create the file association for `*.js` scripts and run current scripts from panels by `[Enter]`:
 
-    *.js
+    *.js;*.cjs;*.mjs
     js:@!\!.!
 
 The following extra prefixes may be specified before @:
@@ -95,11 +95,11 @@ Used session files:
 
     For configuration values and doc comments, see `SessionConfiguration.cs`.
 
-- Session scripts, any .js in `_session.*`
+- Session scripts, `*.js`, `*.cjs`, `*.mjs` in `_session.*`
 
-    These session scripts are loaded once in alphabetical order, case ignored.
+    All session scripts are loaded once, in alphabetical order, case ignored.
     Other scripts in this folder or others for the main session may use the
-    assets defined in session scripts.
+    assets defined by session scripts.
 
 You may view created sessions by `F11` / `JavaScriptFar` / `Sessions`.
 Keys and actions:

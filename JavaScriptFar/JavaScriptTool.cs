@@ -30,7 +30,7 @@ public class JavaScriptTool : ModuleTool
 				{
 					var editor = Far.Api.Editor;
 					var file = editor.FileName;
-					if (file.EndsWith(".js", StringComparison.OrdinalIgnoreCase))
+					if (Session.IsFileDocument(file))
 					{
 						editor.Save();
 						var caret = editor.Caret;
@@ -42,7 +42,7 @@ public class JavaScriptTool : ModuleTool
 			case ModuleToolOptions.Panels:
 				{
 					var file = Far.Api.Panel.CurrentFile;
-					if (file is not null && file.Name.EndsWith(".js", StringComparison.OrdinalIgnoreCase))
+					if (file is not null && Session.IsFileDocument(file.Name))
 					{
 						var path = Path.Join(Far.Api.CurrentDirectory, file.Name);
 						if (File.Exists(path))

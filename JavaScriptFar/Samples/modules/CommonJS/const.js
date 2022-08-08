@@ -3,6 +3,6 @@
 /**
  * Some exported variable.
  */
-const myName = 'JavaScriptFar'
+const myName = 'JavaScriptFar/CommonJS'
 
 module.exports = { myName }
