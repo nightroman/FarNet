@@ -2,12 +2,20 @@
 
 JavaScriptFar runs JavaScript scripts in .NET with FarNet API for Far Manager scripting.
 
+- [Run commands](#run-commands)
+- [Run scripts](#run-scripts)
+- [Parameters](#parameters)
+- [Global variables](#global-variables)
+- [Folder sessions](#folder-sessions)
+- [Debugging](#debugging)
+- [See also](#see-also)
+
 The module is built with [Microsoft ClearScript](https://github.com/Microsoft/ClearScript) and [Google V8 JavaScript engine](https://developers.google.com/v8/).
 
 How to install FarNet and FarNet.JavaScriptFar\
 <https://github.com/nightroman/FarNet#readme>
 
-## How to run commands
+## Run commands
 
 JavaScript statements and expressions are run from the
 command line with the prefix `js:`
@@ -15,7 +23,7 @@ command line with the prefix `js:`
     js: pi = Math.PI
     js: Math.sqrt(pi)
 
-## How to run scripts
+## Run scripts
 
 You can open scripts in the editor and run by pressing `[F5]`.
 The result value, if any, is shown in the title or a new editor.
@@ -29,7 +37,7 @@ variables are expanded.
 
 Create the file association for `*.js` scripts and run current scripts from panels by `[Enter]`:
 
-    *.js
+    *.js;*.cjs;*.mjs
     js:@!\!.!
 
 The following extra prefixes may be specified before @:
@@ -95,11 +103,11 @@ Used session files:
 
     For configuration values and doc comments, see `SessionConfiguration.cs`.
 
-- Session scripts, any .js in `_session.*`
+- Session scripts, `*.js`, `*.cjs`, `*.mjs` in `_session.*`
 
-    These session scripts are loaded once in alphabetical order, case ignored.
+    All session scripts are loaded once, in alphabetical order, case ignored.
     Other scripts in this folder or others for the main session may use the
-    assets defined in session scripts.
+    assets defined by session scripts.
 
 You may view created sessions by `F11` / `JavaScriptFar` / `Sessions`.
 Keys and actions:
@@ -120,19 +128,20 @@ Prerequisites:
 - Set up ClearScript V8 debug launch, see [VII. Debugging with ClearScript and V8](https://microsoft.github.io/ClearScript/Details/Build.html).
 
 To start debugging of the current folder session, use `F11` / `JavaScriptFar` / `Start debugging`.
-Then VSCode is opened, existing or new. Start the ClearScript V8 debugger
-there, now or later. Open target scripts in VSCode and set breakpoints.
-Optionally enable breaks on caught / uncaught exceptions.
+This terminates other debugged sessions, if any. Just one session may be debugged at a time.
 
-Then run scripts in the prepared session. The debugger breaks on breakpoints,
-selected exceptions, and explicit `debugger` statements in the JavaScript code.
+VSCode is opened. Prepare the session for debugging in VSCode. Open scripts and
+set breakpoints. Optionally enable breaks on caught / uncaught exceptions.
+
+Then start the ClearScript V8 debugger in VSCode, ensure it is selected as the
+current and press `[F5]`.
+
+Switch to Far Manager and run a script or command. The debugger breaks on hit
+breakpoints, some exceptions, and `debugger` statements in the JavaScript code.
 
 VSCode debugger is useful for examining variable values, object properties and
 methods, typing commands in the debug console, watching the output of `console`
 functions.
-
-`Start debugging` terminates other debugged sessions and restarts the target
-session if it is running. Just one session may be debugged at a time.
 
 ## See also
 

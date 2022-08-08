@@ -3,4 +3,4 @@
 /**
  * Some exported variable.
  */
-export const myName = 'JavaScriptFar'
+export const myName = 'JavaScriptFar/Standard'

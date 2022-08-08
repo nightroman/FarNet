@@ -9,7 +9,7 @@ using System.IO;
 namespace JavaScriptFar;
 
 [System.Runtime.InteropServices.Guid("895b09e1-b286-4ee7-8121-14c6825a2223")]
-[ModuleEditor(Name = "Editor", Mask = "*.js")]
+[ModuleEditor(Name = "Editor", Mask = "*.js;*.cjs;*.mjs")]
 public class JavaScriptEditor : ModuleEditor
 {
 	IEditor _editor;
