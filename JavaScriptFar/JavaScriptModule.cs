@@ -35,6 +35,11 @@ public class JavaScriptModule : ModuleHost
 				var session = Session.GetOrCreateSession(args);
 				return session.EvaluateDocument(document);
 			}),
+			"StartDebugging" => new Action<string>((string root) =>
+			{
+				var args = new ExecuteArgs { IsDebug = true, Parameters = new Hashtable() { { "_session", root } } };
+				Session.GetOrCreateSession(args);
+			}),
 			_ => throw new ArgumentException("Unknown command.", nameof(command)),
 		};
 	}

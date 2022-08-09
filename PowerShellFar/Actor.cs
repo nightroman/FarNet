@@ -856,6 +856,12 @@ Continue with this current directory?
 		// Show debug dialog
 		void OnDebuggerStop(object sender, DebuggerStopEventArgs e)
 		{
+			if (Debugging.CanDebug)
+			{
+				Debugging.OnDebuggerStop(e);
+				return;
+			}
+
 			var ui = new UI.DebuggerDialog(e);
 
 			// viewer writer?
@@ -870,11 +876,11 @@ Continue with this current directory?
 			{
 				ui.OnView = delegate
 				{
-					// ensure file
+						// ensure file
 					if (writer.FileName == null)
 						writer.Write(string.Empty);
 
-					// view file
+						// view file
 					Zoo.StartExternalViewer(writer.FileName);
 				};
 			}

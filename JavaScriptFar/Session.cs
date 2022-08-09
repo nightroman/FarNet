@@ -187,10 +187,9 @@ sealed class Session : IDisposable
 		var session = s_sessions.FirstOrDefault(x => string.Equals(x.Root, root, StringComparison.OrdinalIgnoreCase));
 		if (session is not null)
 		{
-			// the session exists
-			if (args.IsDebug)
+			// the session exists but not debugged
+			if (args.IsDebug && !session.IsDebug)
 			{
-				// on debug restart the session, this is good on changing session files
 				session.Dispose();
 				session = null;
 			}
