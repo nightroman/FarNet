@@ -272,33 +272,42 @@ namespace PowerShellFar
 		{
 			// see Microsoft.PowerShell.Commands.Internal.Format.PSObjectHelper.SmartToString()
 			// we use much simpler version
-
-			var it = value.GetEnumerator();
-			string result = "{";
-			int count = 0;
-			while (count < limit)
+			try
 			{
-				if (!it.MoveNext())
-					break;
-
-				if (++count > 1)
-					result += ", ";
-
-				if (it.Current != null)
+				var it = value.GetEnumerator();
+				string result = "{";
+				int count = 0;
+				while (count < limit)
 				{
-					if (it.Current.GetType() == typeof(DictionaryEntry))
-						result += ((DictionaryEntry)it.Current).Key.ToString();
-					else
-						result += it.Current.ToString();
+					if (!it.MoveNext())
+						break;
+
+					if (++count > 1)
+						result += ", ";
+
+					if (it.Current != null)
+					{
+						if (it.Current.GetType() == typeof(DictionaryEntry))
+							result += ((DictionaryEntry)it.Current).Key.ToString();
+						else
+							result += it.Current.ToString();
+					}
 				}
+
+				if (count >= limit && it.MoveNext())
+					result += "...}";
+				else
+					result += "}";
+
+				return result;
 			}
+			catch (Exception ex)
+			{
+				// (ConvertFrom-Markdown -Path $env:FarNetCode\PowerShellFar\README.md).Tokens.foreach{$_.Lines}
+				// "Object reference not set to an instance of an object."
 
-			if (count >= limit && it.MoveNext())
-				result += "...}";
-			else
-				result += "}";
-
-			return result;
+				return $"<{ex.Message}>";
+			}
 		}
 
 		/// <summary>

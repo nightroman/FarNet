@@ -87,23 +87,7 @@ job {
 }
 
 ### debugger assert
-run {
-	try { Assert-Far $false }
-	catch {}
-}
-job {
-	Assert-Far -Dialog
-}
-macro 'Keys"d" -- Debug'
-job {
-	Assert-Far -Dialog
-	Assert-Far ($Far.Dialog[0].Text -like "DEBUG:*")
-}
-keys Esc
-job {
-	Assert-Far -Panels
-	if ($global:Error) {$global:Error.RemoveAt(0)}
-}
+# used to be, now _220809_2057
 
 ### Plugin/Native
 job {

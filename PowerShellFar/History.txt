@@ -1,5 +1,14 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 6.0.4 =
+
+VSCode PowerShell debugger works with PowerShellFar in Far Manager.
+It's a game changer! See README for details. Removed old debugger.
+
+If VSCode is not an option use this script with a log watching:
+https://www.powershellgallery.com/packages/Add-Debugger
+ps: Add-Debugger $env:TEMP\debug.log
+
 = 6.0.3 =
 
 Adjust help tools for PS Core changes.

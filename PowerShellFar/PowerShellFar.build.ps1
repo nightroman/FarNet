@@ -25,7 +25,7 @@ task uninstall {
 
 task markdown {
 	# HLF
-	exec { pandoc.exe README.md --output=About-PowerShellFar.htm --from=gfm }
+	exec { pandoc.exe README.md --output=About-PowerShellFar.htm --from=gfm --no-highlight }
 	exec { HtmlToFarHelp from=About-PowerShellFar.htm to=$ModuleHome\PowerShellFar.hlf }
 
 	# HTM

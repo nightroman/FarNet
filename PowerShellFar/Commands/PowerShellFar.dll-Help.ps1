@@ -624,6 +624,6 @@ Notes: (1) specify variable names, not values; (2) variables must exist.
 	}
 
 	links = @(
-		@{ text = 'Samples'; URI = 'https://github.com/nightroman/FarNet/tree/master/PowerShellFar/Samples/FarTask' }
+		@{ text = 'Samples -- https://github.com/nightroman/FarNet/tree/master/PowerShellFar/Samples/FarTask' }
 	)
 }

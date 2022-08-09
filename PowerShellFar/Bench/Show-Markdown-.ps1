@@ -150,8 +150,8 @@ function Find-EditorTopic([string[]]$Topics) {
 ### show
 if ($Help) {
 	$hlf = "$env:TEMP\HtmlToFarHelp.hlf"
-	$out = HtmlToFarHelp.exe from=$htm to=$hlf verbose=true
-	if ($LastExitCode) {throw 'HtmlToFarHelp failed.'}
+	$out = HtmlToFarHelp.exe from=$htm to=$hlf 2>&1
+	if ($LastExitCode) {throw "HtmlToFarHelp failed: $out"}
 	if ($Editor) {
 		$topics = Convert-HelpTopic $out
 		$Topic = Find-EditorTopic $topics

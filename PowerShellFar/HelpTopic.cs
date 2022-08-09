@@ -15,7 +15,6 @@ namespace PowerShellFar
 			CommandLine = "command-line",
 			BackgroundJobsMenu = "background-jobs-menu",
 			DataPanel = "data-panel",
-			DebuggerDialog = "debugger-dialog",
 			DebuggerMenu = "debugger-menu",
 			ErrorsMenu = "errors-menu",
 			FolderTree = "folder-tree",

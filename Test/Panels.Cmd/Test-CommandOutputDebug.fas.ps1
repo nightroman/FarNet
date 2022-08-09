@@ -1,14 +1,12 @@
 ﻿
+# it used to be a debugger dialog where we could view the output, now it is fake
 function Test-DebugDialog {
 	job {
-		Assert-Far -Dialog
-		Assert-Far $Far.Dialog[0].Text.StartsWith('DEBUG:')
+		$null = [PowerShellFar.Zoo]::StartExternalViewer($Data.Transcript)
 	}
-	keys AltW
 	job {
 		Stop-OutputOnDebugging
 	}
-	keys Esc
 }
 
 job {

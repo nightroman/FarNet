@@ -1,7 +1,6 @@
 <#
 .Synopsis
 	Test background jobs.
-	Author: Roman Kuzmin
 
 .Description
 	This script shows how to use various background jobs, techniques and tests
@@ -10,14 +9,8 @@
 
 ###############################################################################
 ### TEST: PARALLEL JOBS: TWO BACKGROUNG THREADS
-<#
-*) how to start Far jobs with output and wait/get results
-*) how to start PowerShell jobs and wait/get results
-
-There are 3 tests: sequential, Far jobs, PowerShell jobs. In PS v2 the fastest
-is "Far jobs", the slowest is "PowerShell jobs". In PS v3 "Far jobs" is still
-faster than "PowerShell jobs" but the sequential test actually wins.
-#>
+# How to start Far jobs with output and wait/get results.
+# There are 2 tests: sequential, Far jobs.
 
 # loop count
 $count = 50000
@@ -60,27 +53,14 @@ $job1.Dispose()
 $job2.Dispose()
 $stopwatch2.Stop()
 
-# invoke scripts as parallel PowerShell jobs
-$stopwatch3 = [Diagnostics.Stopwatch]::StartNew()
-$job1 = Start-Job $script1 -ArgumentList $count
-$job2 = Start-Job $script2 -ArgumentList $count
-# wait for both jobs, receive the results,
-$res31, $res32 = $job1, $job2 | Wait-Job | Receive-Job
-$res3 = $res31 + $res32
-# and remove the jobs!
-Remove-Job -Job $job1, $job2
-$stopwatch3.Stop()
-
 # output results and elapsed times
 @"
 Results (the same)
 result1 : $res1
 result2 : $res2
-result3 : $res3
 Times (normally different)
 time1 : $('{0,4} ms' -f $stopwatch1.ElapsedMilliseconds)
 time2 : $('{0,4} ms = {1,5:p0}' -f $stopwatch2.ElapsedMilliseconds, ($stopwatch2.ElapsedMilliseconds / $stopwatch1.ElapsedMilliseconds))
-time3 : $('{0,4} ms = {1,5:p0}' -f $stopwatch3.ElapsedMilliseconds, ($stopwatch3.ElapsedMilliseconds / $stopwatch1.ElapsedMilliseconds))
 "@
 
 ###############################################################################

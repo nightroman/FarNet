@@ -22,9 +22,9 @@ PowerShell FarNet module for Far Manager
 
 **Details**
 
+* [Debugging](#debugging)
 * [Commands output](#commands-output)
 * [Background jobs](#background-jobs)
-* [Debugger dialog](#debugger-dialog)
 * [Frequently asked questions][FAQ]
 * [Command and macro examples][Examples]
 
@@ -566,79 +566,56 @@ breakpoints, too; in this case breakpoint scope is limited to the script. If
 you open a breakpoint dialog from the editor then the path of the file being
 edited is inserted by default.
 
-If you do not provide actions then breakpoints break into debugger. Otherwise
-actions depend on their code. It may be logging, diagnostics, adding extra or
-altering original features without changing the source code.
+If you do not provide actions then breakpoints break into a connected debugger.
+Otherwise actions depend on their code. It may be logging, diagnostics, adding
+extra or altering original features without changing the source code.
 
 
 *********************************************************************
-## Debugger dialog
+## Debugging
 
 [Contents]
 
-This dialog is shown when one or more breakpoints are hit or you step through
-the code in the debugger. You may step through the code, open interactive,
-take a look at the source code, or stop the pipeline and debugging.
+The best debugging tool is VSCode with PowerShell extension. Configure its
+debugger: in global or local `settings.json` add the following entry to
+`launch` / `configurations`:
 
-**Keys, buttons, and actions**
+```json
+  {
+    "type": "PowerShell",
+    "request": "attach",
+    "name": "PowerShell attach",
+    "processId": "${command:PickPSHostProcess}",
+    "runspaceId": 1
+  }
+```
 
-- `[Esc]`, `[F10]`
+Select this debugger as active and start (F5). In the shown list of processes
+hosting PowerShell select Far Manager. Assuming you have set some breakpoints
+(in Far Manager, not VSCode), run your PowerShellFar code. If breakpoints are
+hit then VSCode debugger opens the source code at the active breakpoint.
 
-    (Continue) Continues execution.
+**Tips**
 
-- `{Step}`
+(1) Consider running VSCode as admin, especially if Far runs as admin.
+Otherwise F5 may results in cryptic errors about `OmniSharp` issues.
 
-    (Step Into) Executes the next statement. It steps through the script one
-    line at a time.
+(2) On starting the debugger you may see the below message. PowerShell is not
+loaded yet, e.g. due to no .ps1 files in the workspace or loading in progress.
+Then try starting again in a few seconds. Or consider opening VSCode in
+workspaces / folders with some .ps1 files, e.g. subjects to debug.
 
-- `{Over}`
+> Cannot debug or run a PowerShell script until the PowerShell session has
+started. Wait for the PowerShell session to finish starting and try again.
 
-    (Step Over) Executes the next statement, but skips over statements in
-    functions or other scripts. The functions and scripts are executed, but it
-    does not stop at each statement.
+(3) If VSCode is not an option or working at all then use the script
+[Add-Debugger](https://www.powershellgallery.com/packages/Add-Debugger)
+and call it with a temp file for watching in a separate console:
 
-- `{Out}`
+    ps: Add-Debugger $env:TEMP\debug.log
 
-    (Step Out) Runs the script until completion or the next breakpoint. If used
-    while stepping through a function, it exits the function and steps to the
-    next statement.
-
-- `{Interactive}`
-
-    Opens the interactive. There you can examine or change variables, invoke
-    commands, and etc. On exit the debugger dialog is repeated.
-
-- `{Edit}`
-
-    Opens the source in the editor at the debugger line. The editor is locked
-    because changes during debugging are not recommended. You may unlock and
-    change the script but debugging may be difficult after that. On exit the
-    debugger dialog is repeated.
-
-- `{View}`
-
-    Opens an external viewer to view commands output. This action is available
-    for: 1) commands with viewer output; 2) commands with console output if
-    `Start-Transcript` was called. It is not available for interactive.
-
-- `{Line}`
-
-    Sets the current list line to the current debugger line.
-
-- `{Quit}`
-
-    Stops execution and exits the debugger.
-
-**Notes**
-
-It is possible that the debugger or your actions there may affect execution
-flow in unusual way, especially if the code deals with Far UI and may clash
-with the debugger UI. Think when you are about to debug such scenarios.
-
-On debugging commands with console output it is useful to `Start-Transcript`
-before debugging. In this case the output can be shown by the button `{View}`
-or by the command `Show-FarTranscript`.
-
+This way looks unusual but debugging is surprisingly robust.
+And it works in many cases when debugging is rather tricky.
 
 *********************************************************************
 ## Interactive
@@ -652,8 +629,8 @@ PowerShell commands with their output appended to the end of editor text.
 A new interactive is normally opened from the *Interactive* menu with three
 choices: *Main session*, *New local session*, and *New remote session*.
 
-An interactive is also opened from the debugger dialog and on entering a
-nested prompt, for example when PowerShell execution is suspended.
+An interactive is also opened on entering a nested prompt, for example when
+PowerShell execution is suspended.
 
 An interactive works similar to a traditional command console but it is
 still an editor window with some rules and special hotkeys.

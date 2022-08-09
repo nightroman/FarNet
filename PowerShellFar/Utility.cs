@@ -59,7 +59,8 @@ namespace PowerShellFar
 				return new(string.Empty, text);
 		}
 
-		internal static Process StartExternalViewer(string fileName)
+		///
+		public static Process StartExternalViewer(string fileName)
 		{
 			string externalViewerFileName = Settings.Default.ExternalViewerFileName;
 			string externalViewerArguments;
