@@ -9,6 +9,7 @@
     <WarningLevel>5</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);NU1504;NU1505</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\FarNet.Common\Abc.fs" />
