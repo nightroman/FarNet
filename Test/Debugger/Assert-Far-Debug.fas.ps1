@@ -16,7 +16,7 @@ keys d
 Start-Sleep 1
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[1].Text -eq 'Enter PowerShell and debug commands.'
+	Assert-Far $Far.Dialog[1].Text -eq 'Command (h or ? for help)'
 	$Far.Dialog[1].Text = 'q'
 	$Far.Dialog.Close()
 }

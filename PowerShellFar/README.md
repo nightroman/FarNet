@@ -608,14 +608,15 @@ workspaces / folders with some .ps1 files, e.g. subjects to debug.
 > Cannot debug or run a PowerShell script until the PowerShell session has
 started. Wait for the PowerShell session to finish starting and try again.
 
-(3) If VSCode is not an option or working at all then use the script
+(3) If VSCode is not an option for various reasons then use the script
 [Add-Debugger](https://www.powershellgallery.com/packages/Add-Debugger)
 and call it with a temp file for watching in a separate console:
 
     ps: Add-Debugger $env:TEMP\debug.log
 
 This way looks unusual but debugging is surprisingly robust.
-And it works in many cases when debugging is rather tricky.
+Also, it works in some cases when usual debugging is tricky.
+For example top level task code in `Start-FarTask` tasks.
 
 *********************************************************************
 ## Interactive

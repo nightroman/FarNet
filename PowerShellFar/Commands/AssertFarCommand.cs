@@ -285,28 +285,32 @@ sealed class AssertFarCommand : BaseCmdlet
 			Message = message;
 		}
 
-		// body
-		//! use "\n" as the separator, not "\r": PositionMessage starts with "\n".
-		string body = Message == null ? "Assertion failed" : Message.ToString();
+		// message body
+		string body = Message is null ? "Assertion failed." : Message.ToString();
 		if (IsError)
 		{
 			if (conditionIndex > 0)
-				body = string.Concat(body, body.Length > 0 ? "\n" : string.Empty, "Condition #", conditionIndex + 1);
+				body = string.Concat(body, "\n", "Condition #", conditionIndex + 1);
 
-			//! Trim() for PowerShell 2.0
-			body = string.Concat(body, body.Length > 0 ? "\n" : string.Empty, MyInvocation.PositionMessage.Trim());
+			body = string.Concat(body, "\n", MyInvocation.PositionMessage.Trim());
 		}
 
 		// buttons
 		string[] buttons;
 		if (!IsError)
+		{
 			buttons = new string[] { BtnStop, BtnThrow };
+		}
 		else if (string.IsNullOrEmpty(MyInvocation.ScriptName))
+		{
 			buttons = new string[] { BtnStop, BtnThrow, BtnDebug };
+		}
 		else
-			buttons = new string[] { BtnStop, BtnEdit, BtnDebug, BtnThrow };
+		{
+			buttons = new string[] { BtnStop, BtnThrow, BtnDebug, BtnEdit };
+		}
 
-		repeat_dialog:
+	repeat_dialog:
 
 		int result = Far.Api.Message(
 			body,
@@ -327,29 +331,16 @@ sealed class AssertFarCommand : BaseCmdlet
 			case BtnDebug:
 				{
 					// ask to attach a debugger
-					for (; ; )
+					while (typeof(Debugger).GetField("DebuggerStop", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(A.Psf.Runspace.Debugger) is not Delegate)
 					{
-						var handler = typeof(Debugger).GetField("DebuggerStop", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(A.Psf.Runspace.Debugger) as Delegate;
-						if (handler is not null)
-							break;
-
 						if (0 != Far.Api.Message("Attach a debugger and continue.", "Debug", MessageOptions.OkCancel))
 							goto repeat_dialog;
 					}
 
-					// add variable breakpoint
-					var bp = A.InvokeCode("Get-PSBreakpoint -Variable _psf_debug");
-					if (bp.Count == 0)
-						bp = A.InvokeCode("Set-PSBreakpoint -Variable _psf_debug -Mode Read");
+					// debugger
+					A.InvokeCode("Wait-Debugger");
 
-					// set variable and get to trigger debugger
-					SessionState.PSVariable.Set("_psf_debug", null);
-					GetVariableValue("_psf_debug");
-
-					// remove variable and breakpoint
-					SessionState.PSVariable.Remove("_psf_debug");
-					A.InvokeCode("Remove-PSBreakpoint -Breakpoint $args[0]", bp);
-
+					// repeat, do not continue after assert
 					goto repeat_dialog;
 				}
 			case BtnEdit:

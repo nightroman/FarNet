@@ -92,6 +92,7 @@ job {
 	Assert-Far (Get-TextLink.ps1) -eq "$($Data.File)(11): Text2"
 }
 keys Esc
+
 ### Select-String links
 
 job {
@@ -118,6 +119,7 @@ job {
 	Assert-Far (Get-TextLink.ps1) -eq "$($Data.File)(10): Text1"
 }
 keys Esc
+
 ### F# exception messages
 
 job {
@@ -128,6 +130,7 @@ job {
 	Assert-Far (Get-TextLink.ps1) -eq "$($Data.File)(12): F# error"
 }
 keys Esc
+
 ### Modal mode with text link search
 
 keys CtrlG
@@ -148,3 +151,18 @@ job {
 }
 # exit dialog
 keys Esc
+
+### ClearScript
+
+job {
+	# expected 9:10
+	Open-TextLink.ps1 "  at  %FarNetCode%\Test\Utility\Test-TextLink.fas.ps1:8:10  ->  *** TEST DATA"
+}
+job {
+	Assert-Far -Editor
+	Assert-Far ($Far.Editor.FileName -like '*\Test-TextLink.fas.ps1')
+	$caret = $Far.Editor.Caret
+	Assert-Far ($caret.X + 1) -eq 10
+	Assert-Far ($caret.Y + 1) -eq 9
+	$Far.Editor.Close()
+}

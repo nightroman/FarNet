@@ -40,7 +40,7 @@ run {
 }
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[1].Text -eq 'Assertion failed'
+	Assert-Far $Far.Dialog[1].Text -eq 'Assertion failed.'
 	Assert-Far $Far.Dialog[2].Text -eq 'Condition #3'
 }
 macro 'Keys"t" -- Throw'

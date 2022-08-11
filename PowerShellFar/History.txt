@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 6.0.5 =
+
+- Use Wait-Debugger in Assert-Far and tweak
+- Open-TextLink.ps1 - support ClearScript links
+
 = 6.0.4 =
 
 VSCode PowerShell debugger works with PowerShellFar in Far Manager.

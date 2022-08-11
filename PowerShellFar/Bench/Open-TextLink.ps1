@@ -70,13 +70,16 @@ param(
 
 ### Regex for text links
 #! Order:
-#1 Visual Studio
-#2 Select-String
+# Visual Studio
+# ClearScript (at file:2:3 -> text)
+# Select-String
 #  - use `\.\w+` (likely file extension) to exclude noise like `<date>:<time>`
-#3 PowerShell (file:2 char:3), F# (file:line 2)
+# PowerShell (file:2 char:3), F# (file:line 2)
 $regexTextLink = [regex]@'
 (?x)
 (?<VS> (?<File>(?:\b\w:|%\w+%)[\\\/].+?)\((?<Line>\d+),?(?<Char>\d+)?\)(?::\s*(?<Text>.*))? )
+|
+(?<CS> ^ \s* at \s+ (?<File>.+?\.\w+) : (?<Line>\d+) : (?<Char>\d+) \s*->\s* (?<Text>.*) )
 |
 (?<SS> ^>?\s*(?<File>.+?\.\w+):(?<Line>\d+):(?<Text>.*) )
 |
@@ -103,12 +106,8 @@ function Open-Match {
 	$Editor = $Far.CreateEditor()
 	$Editor.FileName = $file
 	$index = ([int]$matches.Line) - 1
-	if ($matches.Char) {
-		$Editor.GoTo((([int]$matches.Char) - 1), $index)
-	}
-	else {
-		$Editor.GoToLine($index)
-	}
+	$char = if ($matches.Char) {([int]$matches.Char) - 1} else {0}
+	$Editor.GoTo($char, $index)
 
 	# open editor without hint
 	if (!$hintText) {
@@ -127,11 +126,11 @@ function Open-Match {
 		$count = $Editor.Count
 		while(($index1 -ge 0) -or ($index2 -lt $count)) {
 			if (($index1 -ge 0) -and ($Editor[$index1].Text.Trim() -eq $hintText)) {
-				$Editor.GoToLine($index1)
+				$Editor.GoTo($char, $index1)
 				return
 			}
 			if (($index2 -lt $count) -and ($Editor[$index2].Text.Trim() -eq $hintText)) {
-				$Editor.GoToLine($index2)
+				$Editor.GoTo($char, $index2)
 				return
 			}
 			--$index1
