@@ -4,87 +4,98 @@
 
 using System;
 
-namespace PowerShellFar
+namespace PowerShellFar;
+
+abstract class TextOutputWriter : OutputWriter
 {
-	abstract class TextOutputWriter : OutputWriter
+	WriteMode _mode;
+
+	/// <summary>
+	/// 1 of 3 actual writers.
+	/// </summary>
+	protected abstract void Append(string value);
+
+	/// <summary>
+	/// 2 of 3 actual writers.
+	/// </summary>
+	protected abstract void AppendLine();
+
+	/// <summary>
+	/// 3 of 3 actual writers.
+	/// </summary>
+	protected abstract void AppendLine(string value);
+
+	public sealed override void Write(string value)
 	{
-		WriteMode _mode;
-		/// <summary>
-		/// 1 of 3 actual writers.
-		/// </summary>
-		protected abstract void Append(string value);
-		/// <summary>
-		/// 2 of 3 actual writers.
-		/// </summary>
-		protected abstract void AppendLine();
-		/// <summary>
-		/// 3 of 3 actual writers.
-		/// </summary>
-		protected abstract void AppendLine(string value);
-		public sealed override void Write(string value)
-		{
-			value = RemoveAnsi(value);
+		value = RemoveOutputRendering(value);
 
-			_mode = WriteMode.None;
-			Append(value);
-		}
-		public sealed override void WriteLine()
-		{
-			_mode = WriteMode.None;
-			AppendLine();
-		}
-		public sealed override void WriteLine(string value)
-		{
-			value = RemoveAnsi(value);
+		_mode = WriteMode.None;
+		Append(value);
+	}
 
-			_mode = WriteMode.None;
-			AppendLine(value);
-		}
-		public sealed override void Write(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
+	public sealed override void WriteLine()
+	{
+		_mode = WriteMode.None;
+		AppendLine();
+	}
+
+	public sealed override void WriteLine(string value)
+	{
+		value = RemoveOutputRendering(value);
+
+		_mode = WriteMode.None;
+		AppendLine(value);
+	}
+
+	public sealed override void Write(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
+	{
+		_mode = WriteMode.None;
+		Append(value);
+	}
+
+	public sealed override void WriteLine(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
+	{
+		_mode = WriteMode.None;
+		AppendLine(value);
+	}
+
+	public sealed override void WriteDebugLine(string message)
+	{
+		if (_mode != WriteMode.Debug)
 		{
-			_mode = WriteMode.None;
-			Append(value);
+			_mode = WriteMode.Debug;
+			AppendLine("DEBUG:");
 		}
-		public sealed override void WriteLine(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
+		AppendLine(message);
+	}
+
+	public sealed override void WriteErrorLine(string value)
+	{
+		if (_mode != WriteMode.Error)
 		{
-			_mode = WriteMode.None;
-			AppendLine(value);
+			_mode = WriteMode.Error;
+			AppendLine("ERROR:");
 		}
-		public sealed override void WriteDebugLine(string message)
+		AppendLine(value);
+	}
+
+	public sealed override void WriteVerboseLine(string message)
+	{
+		if (_mode != WriteMode.Verbose)
 		{
-			if (_mode != WriteMode.Debug)
-			{
-				_mode = WriteMode.Debug;
-				AppendLine("DEBUG:");
-			}
-			AppendLine(message);
+			_mode = WriteMode.Verbose;
+			AppendLine("VERBOSE:");
 		}
-		public sealed override void WriteErrorLine(string value)
+		AppendLine(message);
+	}
+
+	public sealed override void WriteWarningLine(string message)
+	{
+		if (_mode != WriteMode.Warning)
 		{
-			if (_mode != WriteMode.Error)
-			{
-				_mode = WriteMode.Error;
-				AppendLine("ERROR:");
-			}
-			AppendLine(value);
+			_mode = WriteMode.Warning;
+			AppendLine("WARNING:");
 		}
-		public sealed override void WriteVerboseLine(string message)
-		{
-			if (_mode != WriteMode.Verbose)
-			{
-				_mode = WriteMode.Verbose;
-				AppendLine("VERBOSE:");
-			}
-			AppendLine(message);
-		}
-		public sealed override void WriteWarningLine(string message)
-		{
-			if (_mode != WriteMode.Warning)
-			{
-				_mode = WriteMode.Warning;
-				AppendLine("WARNING:");
-			}
-			AppendLine(message);
-		}
+		AppendLine(message);
 	}
 }

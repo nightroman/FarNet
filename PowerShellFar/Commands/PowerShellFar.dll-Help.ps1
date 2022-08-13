@@ -608,13 +608,20 @@ Example: 'FullName' or {$_.FullName} tell to use a property FullName.
 	parameters = @{
 		Script = 'Specifies the task as script file, block, or code.'
 		AsTask = 'Tells to return the started task.'
-		Confirm = @'
-Tells to confirm steps before invoking using dialogs.
-Use it for troubleshooting, demonstrations, and etc.
-'@
 		Data = @'
 Specifies variables to import from the current session to the task $Data.
 Notes: (1) specify variable names, not values; (2) variables must exist.
+'@
+		Break = @'
+Tells to use Add-Debugger.ps1 and available breakpoints.
+
+Get the required script from PSGallery -- https://www.powershellgallery.com/packages/Add-Debugger
+'@
+		Step = @'
+Tells to use Add-Debugger.ps1, available breakpoints, and auto breakpoints for
+stopping at each step: `job`, `ps:`, `run`, `keys`, `macro`.
+
+Get the required script from PSGallery -- https://www.powershellgallery.com/packages/Add-Debugger
 '@
 	}
 

@@ -32,16 +32,26 @@ namespace PowerShellFar.Commands
 			"Verbose", "Debug", "ErrorAction", "WarningAction", "ErrorVariable", "WarningVariable",
 			"OutVariable", "OutBuffer", "PipelineVariable", "InformationAction", "InformationVariable" };
 		static readonly string[] _paramInvalid = new string[] {
-			nameof(Script), nameof(Data), nameof(AsTask), nameof(Confirm) };
+			nameof(Script), nameof(Data), nameof(AsTask), nameof(Break) };
+
+		// just adds the debugger
+		const string CodeBreak = @"
+Add-Debugger.ps1 $env:TEMP\DebugFarTask.log -Context 10
+";
+		// adds debugger and step breaks
+		const string CodeStep = @"
+Add-Debugger.ps1 $env:TEMP\DebugFarTask.log -Context 10
+Set-PSBreakpoint -Command job, ps:, run, keys, macro
+";
 
 		// invokes task scripts in the new session
-		const string _codeTask = @"
+		const string CodeTask = @"
 param($Script, $Data, $Parameters)
 . $Script.GetNewClosure() @Parameters
 ";
 
 		// invokes job scripts in the main session
-		const string _codeJob = @"
+		const string CodeJob = @"
 param($Script, $Data, $Arguments)
 . $Script.GetNewClosure() @Arguments
 ";
@@ -109,29 +119,10 @@ param($Script, $Data, $Arguments)
 		public SwitchParameter AsTask { get; set; }
 
 		[Parameter]
-		public SwitchParameter Confirm { get; set; }
+		public SwitchParameter Break { get; set; }
 
-		bool ShowConfirm(string title, string text)
-		{
-			var args = new MessageArgs()
-			{
-				Text = text,
-				Caption = title,
-				Options = MessageOptions.LeftAligned,
-				Buttons = new string[] { "Step", "Continue", "Cancel" },
-				Position = new Point(int.MaxValue, 1)
-			};
-			switch (Far.Api.Message(args))
-			{
-				case 0:
-					return true;
-				case 1:
-					Confirm = false;
-					return true;
-				default:
-					return false;
-			}
-		}
+		[Parameter]
+		public SwitchParameter Step { get; set; }
 
 		static void ShowError(Exception exn)
 		{
@@ -199,15 +190,10 @@ param($Script, $Data, $Arguments)
 				// post the job as task
 				var task = Tasks.Job(() =>
 				{
-					if (Self.Confirm)
-					{
-						if (!Self.ShowConfirm("job", $"{Path.GetFileName(Script.File)}\r\n{Script}"))
-							throw new PipelineStoppedException();
-					}
-
 					// invoke script block in the main session
 					var ps = A.Psf.NewPowerShell();
-					ps.AddScript(_codeJob, true).AddArgument(Script).AddArgument(Self._data).AddArgument(Arguments);
+
+					ps.AddScript(CodeJob, true).AddArgument(Script).AddArgument(Self._data).AddArgument(Arguments);
 					var output = ps.Invoke();
 
 					//! Assert-Far may stop by PipelineStoppedException
@@ -250,13 +236,7 @@ param($Script, $Data, $Arguments)
 				// post the job as task
 				var task = Tasks.Job(() =>
 				{
-					if (Self.Confirm)
-					{
-						if (!Self.ShowConfirm("ps:", $"{Path.GetFileName(Script.File)}\r\n{Script}"))
-							throw new PipelineStoppedException();
-					}
-
-					var args = new RunArgs(_codeJob)
+					var args = new RunArgs(CodeJob)
 					{
 						Writer = new ConsoleOutputWriter(),
 						NoOutReason = true,
@@ -282,19 +262,11 @@ param($Script, $Data, $Arguments)
 			{
 				base.BeginProcessing();
 
-				//! show before Tasks.Run or it completes on this dialog
-				if (Self.Confirm)
-				{
-					var confirm = Tasks.Job(() => Self.ShowConfirm("run", $"{Script.File}\r\n{Script}"));
-					if (!confirm.GetAwaiter().GetResult())
-						throw new PipelineStoppedException();
-				}
-
 				// post the job as task
 				var task = Tasks.Run(() =>
 				{
 					var ps = A.Psf.NewPowerShell();
-					ps.AddScript(_codeJob, true).AddArgument(Script).AddArgument(Self._data).AddArgument(Arguments);
+					ps.AddScript(CodeJob, true).AddArgument(Script).AddArgument(Self._data).AddArgument(Arguments);
 					ps.Invoke();
 
 					//! Assert-Far may stop by PipelineStoppedException
@@ -322,12 +294,6 @@ param($Script, $Data, $Arguments)
 					throw new PSArgumentNullException(nameof(Keys));
 
 				var keys = string.Join(" ", Keys);
-				if (Self.Confirm)
-				{
-					var confirm = Tasks.Job(() => Self.ShowConfirm("keys", keys));
-					if (!confirm.GetAwaiter().GetResult())
-						throw new PipelineStoppedException();
-				}
 
 				Tasks.Keys(keys).GetAwaiter().GetResult();
 				FarNet.Works.Far2.Api.WaitSteps().GetAwaiter().GetResult();
@@ -346,13 +312,6 @@ param($Script, $Data, $Arguments)
 
 				if (Macro == null)
 					throw new PSArgumentNullException(nameof(Macro));
-
-				if (Self.Confirm)
-				{
-					var confirm = Tasks.Job(() => Self.ShowConfirm("macro", Macro));
-					if (!confirm.GetAwaiter().GetResult())
-						throw new PipelineStoppedException();
-				}
 
 				Tasks.Macro(Macro).GetAwaiter().GetResult();
 				FarNet.Works.Far2.Api.WaitSteps().GetAwaiter().GetResult();
@@ -404,7 +363,49 @@ param($Script, $Data, $Arguments)
 			// make live script block to invoke asyncronously in the new session
 			var ps = PowerShell.Create();
 			ps.Runspace = rs;
-			ps.AddScript(_codeTask).AddArgument(_script).AddArgument(_data).AddArgument(parameters);
+
+			// debugging
+			if (Break || Step)
+			{
+				var some = A.InvokeCode("Get-Command Add-Debugger.ps1 -Type ExternalScript -ErrorAction 0");
+				if (some.Count == 0)
+					throw new ModuleException(
+						"Cannot find the required script Add-Debugger.ps1.\nInstall from PSGallery -- https://www.powershellgallery.com/packages/Add-Debugger");
+
+				// import breakpoints
+				foreach (var bp in A.Psf.Runspace.Debugger.GetBreakpoints())
+				{
+					if (bp is CommandBreakpoint cbp)
+					{
+						rs.Debugger.SetCommandBreakpoint(cbp.Command, cbp.Action, cbp.Script);
+						continue;
+					}
+
+					if (bp is LineBreakpoint lbp)
+					{
+						rs.Debugger.SetLineBreakpoint(lbp.Script, lbp.Line, lbp.Column, lbp.Action);
+						continue;
+					}
+
+					if (bp is VariableBreakpoint vbp)
+					{
+						rs.Debugger.SetVariableBreakpoint(vbp.Variable, vbp.AccessMode, vbp.Action, vbp.Script);
+						continue;
+					}
+				}
+
+				File.Delete(Path.Combine(Path.GetTempPath(), "DebugFarTask.log"));
+
+				if (Step)
+					ps.AddScript(CodeStep).Invoke();
+				else
+					ps.AddScript(CodeBreak).Invoke();
+
+				ps.Commands.Clear();
+			}
+
+			// add task script
+			ps.AddScript(CodeTask).AddArgument(_script).AddArgument(_data).AddArgument(parameters);
 
 			// start
 			var task = AsTask ? new TaskCompletionSource<object[]>() : null;

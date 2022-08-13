@@ -1,5 +1,31 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 6.0.6 =
+
+Uses PowerShell SDK 7.2.6
+
+Support ANSI colored console output. By default, enabled on Windows 10+.
+Set $Psf.Settings.RemoveOutputRendering=$true/$false to disable/enable.
+
+	Not just core commands output ANSI colors.
+	You may craft some cool rendering, too, e.g.
+	ps: $PSStyle.Background.BrightRed+'Power'+$PSStyle.Underline+$PSStyle.Bold+'Shell'+$PSStyle.Reset
+
+Start-FarTask scripts debugging
+
+	New switch Break tells to use Add-Debugger.ps1 and available breakpoints.
+	Get from PSGallery https://www.powershellgallery.com/packages/Add-Debugger
+	(use the latest)
+
+	New switch Step implies Break and adds auto breakpoints for stopping at
+	`job`, `ps:`, `run`, `keys`, `macro`.
+
+	You may use two debuggers at the same time:
+	- Add-Debugger for the task code (auto started on -Break / -Step).
+	- VSCode debugger for code in `job`, `ps:`, `run` (attach manually).
+	- Note, all breakpoints set in PowerShellFar work for both debuggers.
+	  But each breakpoint usually works and makes sense for one of them.
+
 = 6.0.5 =
 
 - Use Wait-Debugger in Assert-Far and tweak
