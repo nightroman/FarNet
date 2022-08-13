@@ -49,12 +49,13 @@ job {
 }
 macro 'Keys"c l s Enter P S : Space t h r o w Space 4 2 Enter"'
 job {
+	# from ps: to end
 	$y = $Host.UI.RawUI.CursorPosition.Y
-	$rect = New-Object System.Management.Automation.Host.Rectangle 0, ($y - 9), 30, ($y - 6)
+	$rect = [System.Management.Automation.Host.Rectangle]::new(0, $y - 3, 30, $y - 1)
 	$buff = $Host.UI.RawUI.GetBufferContents($rect)
-	$buff | Select-Object Character, ForegroundColor | Export-Csv -NoTypeInformation c:\temp\buffer.csv
-	$md5 = [guid][System.Security.Cryptography.MD5]::Create().ComputeHash([System.IO.File]::ReadAllBytes('C:\TEMP\buffer.csv'))
-	Assert-Far $md5 -eq ([guid]'e55f1fbd-bd5d-14da-8b5b-5736a8a41244')
+	$buff | Select-Object Character, ForegroundColor | Export-Csv C:\TEMP\buffer.csv
+	$hash = (Get-FileHash C:\TEMP\buffer.csv).Hash
+	Assert-Far $hash -eq BDAE383787901CACBA61E782B586AC0DF239E4986CBB2073497D89057E3BE303
 	Remove-Item C:\TEMP\buffer.csv
 	Assert-Far $Data.errorCount -eq ($global:Error.Count - 1)
 	$global:Error.RemoveAt(0)
@@ -115,14 +116,13 @@ job {
 	$global:Error.RemoveAt(0)
 }
 job {
+	# from ps: to end
 	$y = $Host.UI.RawUI.CursorPosition.Y
-	$rect = New-Object System.Management.Automation.Host.Rectangle 0, ($y - 22), 32, ($y - 1)
+	$rect = [System.Management.Automation.Host.Rectangle]::new(0, $y - 13, 34, $y - 1)
 	$buff = $Host.UI.RawUI.GetBufferContents($rect)
-	$buff | Select-Object Character, ForegroundColor | Export-Csv -NoTypeInformation c:\temp\buffer.csv
-	#! used to get different MD5 in different PS versions
-	$result = [guid][System.Security.Cryptography.MD5]::Create().ComputeHash([System.IO.File]::ReadAllBytes('C:\TEMP\buffer.csv'))
-	$sample = [guid]'49b63993-7e6b-3257-5923-4ccfb8f1bf2a'
-	Assert-Far $sample -eq $result
+	$buff | Select-Object Character, ForegroundColor | Export-Csv C:\TEMP\buffer.csv
+	$hash = (Get-FileHash C:\TEMP\buffer.csv).Hash
+	Assert-Far $hash -eq D8E684B135D372D77F4F9C5C5CB7251042FD60337DF4F7B62A228695790CB8AB
 	Remove-Item C:\TEMP\buffer.csv
 }
 

@@ -21,7 +21,7 @@ namespace PowerShellFar.Commands
 		static readonly InitialSessionState _iss;
 
 		// $Data for scripts
-		readonly Hashtable _data = new Hashtable(StringComparer.OrdinalIgnoreCase);
+		readonly Hashtable _data = new(StringComparer.OrdinalIgnoreCase);
 
 		// task script
 		ScriptBlock _script;
@@ -32,15 +32,17 @@ namespace PowerShellFar.Commands
 			"Verbose", "Debug", "ErrorAction", "WarningAction", "ErrorVariable", "WarningVariable",
 			"OutVariable", "OutBuffer", "PipelineVariable", "InformationAction", "InformationVariable" };
 		static readonly string[] _paramInvalid = new string[] {
-			nameof(Script), nameof(Data), nameof(AsTask), nameof(Break) };
+			nameof(Script), nameof(Data), nameof(AsTask), nameof(AddDebugger), nameof(Step) };
 
 		// just adds the debugger
 		const string CodeBreak = @"
-Add-Debugger.ps1 $env:TEMP\DebugFarTask.log -Context 10
+param($Parameters)
+Add-Debugger.ps1 @Parameters
 ";
 		// adds debugger and step breaks
 		const string CodeStep = @"
-Add-Debugger.ps1 $env:TEMP\DebugFarTask.log -Context 10
+param($Parameters)
+Add-Debugger.ps1 @Parameters
 Set-PSBreakpoint -Command job, ps:, run, keys, macro
 ";
 
@@ -118,10 +120,11 @@ param($Script, $Data, $Arguments)
 		[Parameter]
 		public SwitchParameter AsTask { get; set; }
 
-		[Parameter]
-		public SwitchParameter Break { get; set; }
+		[Parameter(ParameterSetName = "AddDebugger", Mandatory = true)]
+		[ValidateNotNull]
+		public IDictionary AddDebugger { get; set; }
 
-		[Parameter]
+		[Parameter(ParameterSetName = "AddDebugger")]
 		public SwitchParameter Step { get; set; }
 
 		static void ShowError(Exception exn)
@@ -343,6 +346,19 @@ param($Script, $Data, $Arguments)
 			});
 		}
 
+		void ValidateAddDebugger()
+		{
+			if (0 == A.InvokeCode("Get-Command Add-Debugger.ps1 -Type ExternalScript -ErrorAction 0").Count)
+				throw new PSArgumentException(
+					"Cannot find the required script Add-Debugger.ps1.\nInstall from PSGallery -- https://www.powershellgallery.com/packages/Add-Debugger");
+
+			foreach (DictionaryEntry kv in AddDebugger)
+				if (string.Equals("Path", kv.Key?.ToString(), StringComparison.OrdinalIgnoreCase))
+					return;
+
+			throw new PSArgumentException("AddDebugger parameters dictionary must contain 'Path'.");
+		}
+
 		protected override void BeginProcessing()
 		{
 			if (_scriptError != null)
@@ -365,12 +381,9 @@ param($Script, $Data, $Arguments)
 			ps.Runspace = rs;
 
 			// debugging
-			if (Break || Step)
+			if (AddDebugger is not null)
 			{
-				var some = A.InvokeCode("Get-Command Add-Debugger.ps1 -Type ExternalScript -ErrorAction 0");
-				if (some.Count == 0)
-					throw new ModuleException(
-						"Cannot find the required script Add-Debugger.ps1.\nInstall from PSGallery -- https://www.powershellgallery.com/packages/Add-Debugger");
+				ValidateAddDebugger();
 
 				// import breakpoints
 				foreach (var bp in A.Psf.Runspace.Debugger.GetBreakpoints())
@@ -394,12 +407,10 @@ param($Script, $Data, $Arguments)
 					}
 				}
 
-				File.Delete(Path.Combine(Path.GetTempPath(), "DebugFarTask.log"));
-
-				if (Step)
-					ps.AddScript(CodeStep).Invoke();
-				else
-					ps.AddScript(CodeBreak).Invoke();
+				ps
+					.AddScript(Step ? CodeStep : CodeBreak)
+					.AddArgument(AddDebugger)
+					.Invoke();
 
 				ps.Commands.Clear();
 			}

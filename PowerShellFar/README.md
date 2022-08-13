@@ -616,12 +616,10 @@ and call it with a temp file for watching in a separate console:
 
 This way looks unusual but debugging is surprisingly robust.
 Also, it works in some cases when usual debugging is tricky.
-For example in top level code in Far tasks started by
-
-    ps: Start-FarTask ... -Break [-Step]
+For example Far task code started by `Start-FarTask`.
 
 With `Start-FarTask` you may use two debuggers at the same time:
-- Add-Debugger for the task code (auto started on -Break/-Step).
+- Add-Debugger for task code (auto started on `-AddDebugger [-Step]`).
 - VSCode debugger for code in `job`, `ps:`, `run` (attach it manually).
 - Note, all breakpoints set in PowerShellFar work for both debuggers.
   But each breakpoint usually works and makes sense for one of them.

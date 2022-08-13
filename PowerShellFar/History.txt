@@ -1,5 +1,24 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 6.0.7 =
+
+Omit not so useful details in printed PowerShell errors,
+better with default PowerShell $ErrorView='ConciseView'.
+Full info is still available in many ways, when needed.
+
+Start-FarTask debugging
+- Requires Add-Debugger 2.0.0.
+- New parameter AddDebugger replaces Break and specifies Add-Debugger's
+parameters. It's verbose but flexible and works well when Add-Debugger
+is used for different tasks. Use with wrappers and file associations:
+
+	*.fas.ps1
+	@ps: Start-FarTask -Script '!\!.!' -Step -AddDebugger @{Path="$env:TEMP\debug.log"; Environment='AddDebuggerFarTask'} #
+
+Assert-Far
+- Fixed [Debug], now debugger should stop at the line with Assert-Far
+- Added [Ignore], not very safe (after assert) but may be very useful
+
 = 6.0.6 =
 
 Uses PowerShell SDK 7.2.6

@@ -49,14 +49,17 @@ job {
 job {
 	### Invalid input
 
-	$r = try {Search-Regex.ps1 -miss miss} catch {$_}
-	Assert-Far (($r | Out-String) -like '*Invalid arguments: -miss miss*Test-Search-Regex.fas.ps1*')
+	$r = try {<##> Search-Regex.ps1 -miss miss} catch {$_}
+	Assert-Far "$r" -eq 'Invalid arguments: -miss miss'
+	Assert-Far $r.InvocationInfo.Line.Contains('<##>')
 
-	$r = try {Search-Regex.ps1 it} catch {$_}
-	Assert-Far (($r | Out-String) -like '*There is no input to search in.*Test-Search-Regex.fas.ps1*')
+	$r = try {<##> Search-Regex.ps1 it} catch {$_}
+	Assert-Far "$r" -eq 'There is no input to search in.'
+	Assert-Far $r.InvocationInfo.Line.Contains('<##>')
 
-	$r = try {'bar' | Search-Regex.ps1 Assert miss} catch {$_}
-	Assert-Far (($r | Out-String) -like '*Cannot convert value "miss" to type "SearchRegexOptions"*IgnoreCase*SimpleMatch*WholeWord*Test-Search-Regex.fas.ps1*')
+	$r = try {'bar' | <##> Search-Regex.ps1 Assert miss} catch {$_}
+	Assert-Far ("$r" -like 'Cannot convert value "miss" to type "SearchRegexOptions"*IgnoreCase*SimpleMatch*WholeWord*')
+	Assert-Far $r.InvocationInfo.Line.Contains('<##>')
 
 	$global:Error.Clear()
 }

@@ -18,6 +18,7 @@ sealed class AssertFarCommand : BaseCmdlet
 	const string NSConditions = "Conditions";
 	const string NSParameters = "Parameters";
 	internal const string MyName = "Assert-Far";
+	const string DebugVariableName = "Assert-Far";
 
 	[Parameter(ParameterSetName = NSEq, Position = 0)]
 	[Parameter(ParameterSetName = NSConditions, Position = 0)]
@@ -303,11 +304,11 @@ sealed class AssertFarCommand : BaseCmdlet
 		}
 		else if (string.IsNullOrEmpty(MyInvocation.ScriptName))
 		{
-			buttons = new string[] { BtnStop, BtnThrow, BtnDebug };
+			buttons = new string[] { BtnStop, BtnThrow, BtnIgnore, BtnDebug };
 		}
 		else
 		{
-			buttons = new string[] { BtnStop, BtnThrow, BtnDebug, BtnEdit };
+			buttons = new string[] { BtnStop, BtnThrow, BtnIgnore, BtnDebug, BtnEdit };
 		}
 
 	repeat_dialog:
@@ -328,19 +329,35 @@ sealed class AssertFarCommand : BaseCmdlet
 				{
 					throw new PSInvalidOperationException(body);
 				}
+			case BtnIgnore:
+				{
+					return;
+				}
 			case BtnDebug:
 				{
 					// ask to attach a debugger
-					while (typeof(Debugger).GetField("DebuggerStop", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(A.Psf.Runspace.Debugger) is not Delegate)
+					var debugger = A.Psf.Runspace.Debugger;
+					while (typeof(Debugger).GetField("DebuggerStop", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(debugger) is not Delegate)
 					{
 						if (0 != Far.Api.Message("Attach a debugger and continue.", "Debug", MessageOptions.OkCancel))
 							goto repeat_dialog;
 					}
 
-					// debugger
-					A.InvokeCode("Wait-Debugger");
+					// trigger debugger (do not Wait-Debugger, it shows with no source)
+					{
+						// ensure variable and its breakpoint
+						SessionState.PSVariable.Set(DebugVariableName, null);
+						var bp = debugger.SetVariableBreakpoint(DebugVariableName, VariableAccessMode.Write, null, null);
 
-					// repeat, do not continue after assert
+						// set variable to stop debugger
+						SessionState.PSVariable.Set(DebugVariableName, null);
+
+						// remove variable and breakpoint
+						debugger.RemoveBreakpoint(bp);
+						SessionState.PSVariable.Remove(DebugVariableName);
+					}
+
+					// let user to decide how to continue
 					goto repeat_dialog;
 				}
 			case BtnEdit:
@@ -359,6 +376,7 @@ sealed class AssertFarCommand : BaseCmdlet
 	const string
 		BtnStop = "&Stop",
 		BtnThrow = "&Throw",
+		BtnIgnore = "&Ignore",
 		BtnDebug = "&Debug",
 		BtnEdit = "&Edit";
 }

@@ -16,8 +16,6 @@ job {
 
 keys d
 
-Start-Sleep 1
-
 job {
 	Assert-Far -Dialog
 	Assert-Far $Far.Dialog[1].Text -eq 'Step (h or ? for help)'

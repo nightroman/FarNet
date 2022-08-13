@@ -16,7 +16,26 @@ If the assertion fails, a dialog is shown with several options.
 A running macro, if any, is stopped before showing the dialog.
 
 Use the parameter Title for simple messages without assertion details
-with only two options: Stop and Throw, without Edit and Debug.
+with only two options Stop and Throw without Ignore, Debug, Edit.
+
+ACTIONS
+
+	[Stop], [Esc]
+		Stop running PowerShell commands.
+
+	[Throw]
+		Throw 'Assertion failed.' error.
+
+	[Ignore]
+		Continue running commands.
+
+	[Debug]
+		Break into an attached debugger, if any.
+		Otherwise ask to attach a debugger and repeat.
+
+	[Edit]
+		Stop commands and open the editor at the assert.
+		(when the source script is available)
 '@
 	parameters = @{
 		Value = @'
@@ -612,16 +631,23 @@ Example: 'FullName' or {$_.FullName} tell to use a property FullName.
 Specifies variables to import from the current session to the task $Data.
 Notes: (1) specify variable names, not values; (2) variables must exist.
 '@
-		Break = @'
-Tells to use Add-Debugger.ps1 and available breakpoints.
+		AddDebugger = @'
+Tells to use Add-Debugger.ps1 and specifies its parameters as dictionary.
+The parameter Path is required. Example:
 
-Get the required script from PSGallery -- https://www.powershellgallery.com/packages/Add-Debugger
+	Start-FarTask ... -AddDebugger @{
+		Path = "$env:TEMP\debug.log"
+		Environment = 'AddDebugger'
+		Context = 10
+	}
+
+Use Step in addition or set some breakpoints.
+Otherwise, the debugger is not going to stop.
+
+Get Add-Debugger.ps1 from PSGallery -- https://www.powershellgallery.com/packages/Add-Debugger
 '@
 		Step = @'
-Tells to use Add-Debugger.ps1, available breakpoints, and auto breakpoints for
-stopping at each step: `job`, `ps:`, `run`, `keys`, `macro`.
-
-Get the required script from PSGallery -- https://www.powershellgallery.com/packages/Add-Debugger
+Tells to set breakpoints for stopping at each step: `job`, `ps:`, `run`, `keys`, `macro`.
 '@
 	}
 
