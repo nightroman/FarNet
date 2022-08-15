@@ -20,3 +20,4 @@ Test-Write.ps1 Test Write-* cmdlets output.
 Test-Zoo-.ps1 Creates, exports, imports and sends data to a panel.
 Test-ProgressBox.far.ps1 How to use ProgressBox.
 Test-ProgressForm.far.ps1 How to use ProgressForm.
+Test-Assert-Far.far.ps1 How Assert-Far works.

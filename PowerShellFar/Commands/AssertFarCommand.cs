@@ -290,25 +290,40 @@ sealed class AssertFarCommand : BaseCmdlet
 		string body = Message is null ? "Assertion failed." : Message.ToString();
 		if (IsError)
 		{
+			var sb = new StringBuilder(body);
 			if (conditionIndex > 0)
-				body = string.Concat(body, "\n", "Condition #", conditionIndex + 1);
-
-			body = string.Concat(body, "\n", MyInvocation.PositionMessage.Trim());
+			{
+				sb.AppendLine();
+				sb.Append("Condition #");
+				sb.Append(conditionIndex + 1);
+			}
+			if (MyInvocation.ScriptName != null)
+			{
+				sb.AppendLine();
+				sb.Append(MyInvocation.ScriptName);
+				sb.Append('(');
+				sb.Append(MyInvocation.ScriptLineNumber);
+				sb.Append(',');
+				sb.Append(MyInvocation.OffsetInLine);
+				sb.AppendLine("):");
+				sb.Append(MyInvocation.Line.Trim());
+			}
+			body = sb.ToString();
 		}
 
 		// buttons
 		string[] buttons;
 		if (!IsError)
 		{
-			buttons = new string[] { BtnStop, BtnThrow };
+			buttons = new[] { BtnStop, BtnThrow };
 		}
 		else if (string.IsNullOrEmpty(MyInvocation.ScriptName))
 		{
-			buttons = new string[] { BtnStop, BtnThrow, BtnIgnore, BtnDebug };
+			buttons = new[] { BtnStop, BtnThrow, BtnIgnore, BtnDebug };
 		}
 		else
 		{
-			buttons = new string[] { BtnStop, BtnThrow, BtnIgnore, BtnDebug, BtnEdit };
+			buttons = new[] { BtnStop, BtnThrow, BtnIgnore, BtnDebug, BtnEdit };
 		}
 
 	repeat_dialog:
@@ -336,25 +351,62 @@ sealed class AssertFarCommand : BaseCmdlet
 			case BtnDebug:
 				{
 					// ask to attach a debugger
+					bool isAddDebugger = false;
 					var debugger = A.Psf.Runspace.Debugger;
 					while (typeof(Debugger).GetField("DebuggerStop", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(debugger) is not Delegate)
 					{
-						if (0 != Far.Api.Message("Attach a debugger and continue.", "Debug", MessageOptions.OkCancel))
-							goto repeat_dialog;
+						var buttonsAttachDebugger = new[] { BtnOK, BtnAddDebugger, BtnCancel };
+						var res = Far.Api.Message("Attach a debugger and continue.", "Debug", 0, buttonsAttachDebugger);
+						if (res == 0)
+							continue;
+
+						if (res == 1)
+						{
+							try
+							{
+								AddDebuggerKit.ValidateAvailable();
+								A.InvokeCode(@"Add-Debugger.ps1 $env:TEMP\Add-Debugger.log -Context 10");
+								isAddDebugger = true;
+								break;
+							}
+							catch (Exception ex)
+							{
+								Far.Api.ShowError("Add-Debugger", ex);
+								continue;
+							}
+						}
+
+						goto repeat_dialog;
 					}
 
 					// trigger debugger (do not Wait-Debugger, it shows with no source)
+					try
 					{
 						// ensure variable and its breakpoint
 						SessionState.PSVariable.Set(DebugVariableName, null);
 						var bp = debugger.SetVariableBreakpoint(DebugVariableName, VariableAccessMode.Write, null, null);
 
 						// set variable to stop debugger
-						SessionState.PSVariable.Set(DebugVariableName, null);
-
-						// remove variable and breakpoint
-						debugger.RemoveBreakpoint(bp);
-						SessionState.PSVariable.Remove(DebugVariableName);
+						try
+						{
+							// this starts the debugger and blocks
+							SessionState.PSVariable.Set(DebugVariableName, null);
+						}
+						catch (TerminateException) // Quit in debugger
+						{
+						}
+						finally
+						{
+							// remove variable and breakpoint
+							debugger.RemoveBreakpoint(bp);
+							SessionState.PSVariable.Remove(DebugVariableName);
+						}
+					}
+					finally
+					{
+						// If Add-Debugger has been added, restore.
+						if (isAddDebugger)
+							A.InvokeCode(@"Restore-Debugger");
 					}
 
 					// let user to decide how to continue
@@ -364,7 +416,7 @@ sealed class AssertFarCommand : BaseCmdlet
 				{
 					IEditor editor = Far.Api.CreateEditor();
 					editor.FileName = MyInvocation.ScriptName;
-					editor.GoToLine(MyInvocation.ScriptLineNumber - 1);
+					editor.GoTo(MyInvocation.OffsetInLine - 1, MyInvocation.ScriptLineNumber - 1);
 
 					//! post opening or editor may be half rendered
 					Far.Api.PostJob(editor.Open);
@@ -378,5 +430,9 @@ sealed class AssertFarCommand : BaseCmdlet
 		BtnThrow = "&Throw",
 		BtnIgnore = "&Ignore",
 		BtnDebug = "&Debug",
-		BtnEdit = "&Edit";
+		BtnEdit = "&Edit",
+		//
+		BtnOK = "OK",
+		BtnAddDebugger = "Add-&Debugger",
+		BtnCancel = "Cancel";
 }

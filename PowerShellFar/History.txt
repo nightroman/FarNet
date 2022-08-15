@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 6.0.8 =
+
+Assert-Far [Debug] in addition to manually attached debugger (usually VSCode)
+offers quick [Add-Debugger] session. Add-Debugger 2.1.0 is recommended.
+
 = 6.0.7 =
 
 Omit not so useful details in printed PowerShell errors,
