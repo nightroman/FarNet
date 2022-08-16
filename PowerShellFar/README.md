@@ -2,7 +2,7 @@
 [FAQ]: #frequently-asked-questions
 [Examples]: #command-and-macro-examples
 
-# PowerShellFar
+# FarNet.PowerShellFar
 
 PowerShell FarNet module for Far Manager
 

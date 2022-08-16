@@ -253,37 +253,3 @@ Test.Add("PanelSelectItem", async {
     do! Jobs.Keys "Esc"
     do! Assert.Wait Window.IsNativePanel
 })
-
-// Test -Confirm flow. Other tests are done by the script.
-Test.Add("KeysAndMacro", async {
-    do! PSFar.StartTask(getFarTask "KeysAndMacro.fas.ps1", ["Confirm", box true]) |> Async.StartChild |> Async.Ignore
-
-    // assert panels
-    do! Assert.Wait(fun () -> Window.IsDialog() && far.Dialog[0].Text = "job")
-    do! Jobs.Keys "Enter"
-
-    // keys CtrlG
-    do! Assert.Wait(fun () -> Window.IsDialog() && far.Dialog[0].Text = "keys")
-    do! Jobs.Keys "Enter"
-
-    // assert dialog
-    do! Assert.Wait(fun () -> Window.IsDialog() && far.Dialog[0].Text = "job")
-    do! Jobs.Keys "Enter"
-
-    // macro cls
-    do! Assert.Wait(fun () -> Window.IsDialog() && far.Dialog[0].Text = "macro")
-    do! Jobs.Keys "Enter"
-
-    // assert text
-    do! Assert.Wait(fun () -> Window.IsDialog() && far.Dialog[0].Text = "job")
-    do! Jobs.Keys "Enter"
-
-    //! keys Enter, cancel ~ avoid `cls`
-    do! Assert.Wait(fun () -> Window.IsDialog() && far.Dialog[0].Text = "keys")
-    do! Jobs.Keys "Esc"
-
-    // Apply command
-    do! Assert.Wait(fun () -> Window.IsDialog() && far.Dialog[0].Text = "Apply command")
-    do! Jobs.Keys "Esc"
-    do! Assert.Wait Window.IsNativePanel
-})

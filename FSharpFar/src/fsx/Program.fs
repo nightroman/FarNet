@@ -3,6 +3,8 @@ module internal FSharpFar.Main
 open System
 open System.IO
 open FSharp.Compiler.Interactive.Shell
+open System.Text.RegularExpressions
+open System.Collections.Generic
 
 [<assembly: System.Runtime.InteropServices.ComVisible(false)>]
 [<assembly: System.CLSCompliant(true)>]
@@ -23,6 +25,7 @@ let main _ =
     let exe, ini, fsx, args = CommandLine.parseCommandLineArgs (System.Environment.GetCommandLineArgs())
     let ini = CommandLine.tryResolveIni ini fsx
 
+    let mutable iniArgs = null
     let argv = [|
         // this app
         exe
@@ -41,6 +44,7 @@ let main _ =
         match ini with
         | Some ini ->
             let config = Config.readFromFile ini
+            iniArgs <- config.FscArgs
             yield! config.FscArgs
             yield! config.FscFiles
         | None ->
@@ -49,6 +53,20 @@ let main _ =
         // command line parameters
         yield! args
     |]
+
+    // prepare resolver
+    if not (isNull iniArgs) then
+        let re = Regex(@"^-r:(.*?[/\\]+FarNet[/\\]+(?:Lib|Modules)[/\\]+[^/\\]+)", RegexOptions.IgnoreCase)
+        let roots = HashSet(StringComparer.OrdinalIgnoreCase)
+        for arg in iniArgs do
+            let m = re.Match(arg)
+            if m.Success then
+                let root = Path.GetFullPath(m.Groups[1].Value)
+                if roots.Add(root) then
+                    AssemblyResolver.prepare root
+
+    // add resolver
+    AppDomain.CurrentDomain.add_AssemblyResolve(ResolveEventHandler(AssemblyResolver.assemblyResolve))
 
     try
         let console = InteractiveConsole.ReadLineConsole()

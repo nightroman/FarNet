@@ -1,6 +1,11 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 FarNet 5.9.0
 
+= 2.0.5 =
+
+Add assembly resolver to fsx, similar to used in FarNet.
+E.g. fsx can run scripts using FarNet.FSharp.PowerShell.
+
 = 2.0.4 =
 
 Removed not useful "No errors" message.

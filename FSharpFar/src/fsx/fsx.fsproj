@@ -21,6 +21,7 @@
     <Compile Include="..\FarNet.Common\BlockBuilder.fs" />
     <Compile Include="..\FarNet.Common\TraceBuilder.fs" />
     <Compile Include="AbcCommandLine.fs" />
+    <Compile Include="AssemblyResolver.fs" />
     <Compile Include="Console.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
@@ -29,7 +30,7 @@
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <ItemGroup>
-      <MyItem1 Include="$(OutDir)\fsx.*" />
+      <MyItem1 Include="$(OutDir)\fsx.*" Exclude="*.deps.json" />
     </ItemGroup>
     <Copy DestinationFolder="$(MyOutDir)" SourceFiles="@(MyItem1)" SkipUnchangedFiles="true" />
   </Target>
