@@ -2,18 +2,18 @@
 
 # FarNet
 
-Far Manager platform for .NET modules and scripts in PowerShell, F#, JavaScript.
+Far Manager platform for .NET modules and scripts in PowerShell, F#, JavaScript
 
-- [FarNet/wiki](https://github.com/nightroman/FarNet/wiki) - all about framework, modules, and packages.
-- [FarNet/issues](https://github.com/nightroman/FarNet/issues) - for bug reports and problems
-- [FarNet/discussions](https://github.com/nightroman/FarNet/discussions) - for questions and ideas
+- [Wiki](https://github.com/nightroman/FarNet/wiki) - framework, modules, libraries
+- [Issues](https://github.com/nightroman/FarNet/issues) - bug reports and problems
+- [Discussions](https://github.com/nightroman/FarNet/discussions) - questions and ideas
 
 ## Prerequisites
 
 **.NET 6**
 
 Download and install [.NET 6 SDK or runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0).
-SDK is needed for developing FarNet modules but recommended in any case, FarNet is tested with it.
+SDK is needed for developing FarNet modules but recommended in any case.
 
 Check for existing installations by these commands:
 
@@ -36,7 +36,7 @@ Choose the required from [downloads](https://www.farmanager.com/download.php?l=e
 Normally the stable build is recommended.
 
 
-## Install FarNet and modules using PowerShell
+## Install using PowerShell
 
 This way avoids manual steps and allows updates later.
 
@@ -61,7 +61,7 @@ Install FarNet
 
     Install-FarPackage FarNet
 
-Install modules / libraries
+Install modules
 
     Install-FarPackage FarNet.CopyColor
     Install-FarPackage FarNet.Drawer
@@ -75,15 +75,21 @@ Install modules / libraries
     Install-FarPackage FarNet.RightWords
     Install-FarPackage FarNet.Vessel
 
+Install libraries
+
     Install-FarPackage FarNet.FSharp.Charting
+    Install-FarPackage FarNet.FSharp.Data
+    Install-FarPackage FarNet.FSharp.PowerShell
     Install-FarPackage FarNet.ScottPlot
 
-You may start Far Manager after this. Modules are installed in `%FARHOME%\FarNet\Modules`.
+You may start Far Manager after this.
+Modules are installed in `%FARHOME%\FarNet\Modules`.
+Libraries are installed in `%FARHOME%\FarNet\Lib`.
 
 
 ## Update using PowerShell
 
-FarNet and modules installed by `Install-FarPackage` may be updated in the same way.
+FarNet packages installed by `Install-FarPackage` may be updated in the same way.
 
 Close Far Manager, open PowerShell console, and invoke
 
@@ -103,35 +109,25 @@ To remove one package, use `Uninstall-FarPackage`
     Uninstall-FarPackage FarNet.PowerShellFar
 
 
-## Install FarNet manually
+## Install packages manually
 
-Download the FarNet package as
-
-    https://nuget.org/api/v2/package/FarNet
-
-The file is called `FarNet.<version>.nupkg`. This is a zip archive, you can
-save it with the zip extension for easier unpacking.
-
-All needed files are in the folder "tools". This folder contains "FarHome",
-"FarHome.x64" and "FarHome.x86" folders.
-
-Copy items of "FarHome" to Far Manager preserving the folder structure.
-Depending on Far Manager, x64 or x86, copy items of "FarHome.x64" or
-"FarHome.x86" to Far Manager as well.
-
-
-## Install modules manually
-
-Steps may depend on a module. But the common rule for any module `Bar` is: in
-`%FARHOME%\FarNet\Modules` there is a folder `Bar` which contains the module
-files. One of these files is the assembly `Bar.dll`.
-
-Download the NuGet package `Bar` as
+Given a package `Bar`, download it as:
 
     https://nuget.org/api/v2/package/Bar
 
-The file is called `Bar.<version>.nupkg`. This is a zip archive, you can save
-it with the zip extension for easier unpacking. All needed files are in the
-folder "tools". In order to install the module, copy items of the folder
-"FarHome" to Far Manager preserving the folder structure. If there are
-"FarHome.x64" and "FarHome.x86" folders, copy required items as well.
+The downloaded file name is `Bar.<version>.nupkg`. This is a zip archive, you
+may save it with the zip extension for easier unpacking.
+
+All needed files are in the folder `tools`. This folder contains `FarHome` and
+may contain `FarHome.x64` and `FarHome.x86` folders.
+
+Copy `FarHome` items to the Far Manager home directory preserving the folder
+structure. For example, by this command in Far Manager:
+
+    robocopy FarHome "%FARHOME%" /s
+
+If `FarHome.x64` and `FarHome.x86` exist then, depending on x64 or x86, copy
+items of `FarHome.x64` or `FarHome.x86` to Far Manager:
+
+    robocopy FarHome.x64 "%FARHOME%" /s
+    robocopy FarHome.x86 "%FARHOME%" /s
