@@ -10,6 +10,7 @@
 #>
 
 ### Aliases
+Set-Alias edit Open-FarEditor -Description 'Opens the editor'
 Set-Alias ff Find-FarFile -Description 'Find the panel file'
 Set-Alias goto Go-To.ps1 -Description 'Go to file or directory'
 Set-Alias op Out-FarPanel -Description 'Send objects to panel'

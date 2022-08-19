@@ -1,6 +1,8 @@
 // FarNet plugin for Far Manager
 // Copyright (c) Roman Kuzmin
 
+using System;
+
 namespace FarNet;
 
 /// <summary>
@@ -38,4 +40,9 @@ public class MessageArgs
 	/// Message position.
 	/// </summary>
 	public Point? Position { get; set; }
+
+	/// <summary>
+	/// Dialog type ID.
+	/// </summary>
+	public Guid TypeId { get; set; }
 }

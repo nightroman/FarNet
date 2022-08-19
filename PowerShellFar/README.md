@@ -1,4 +1,4 @@
-[Contents]: #powershellfar
+[Contents]: #farnetpowershellfar
 [FAQ]: #frequently-asked-questions
 [Examples]: #command-and-macro-examples
 

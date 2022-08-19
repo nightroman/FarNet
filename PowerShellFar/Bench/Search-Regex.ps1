@@ -24,10 +24,6 @@
 		Built-in utility commands:
 		* Get-EditorHistory - files from editor history excluding network paths
 
-.Parameter Groups
-		Tells to panel found regex groups instead of full matches.
-		It is ignored with AllText.
-
 .Parameter AllText
 		Tells to search in all text, i.e. file read as one string.
 #>
@@ -36,7 +32,6 @@ param(
 	$Regex,
 	$Options,
 	$InputObject,
-	[switch]$Groups,
 	[switch]$AllText
 )
 
@@ -83,7 +78,7 @@ $parameters = @{}
 
 ### Create and show a dialog
 if (!$Regex) {
-	$dialog = $Far.CreateDialog(-1, -1, 77, $(if ($InputObject) { 11 } else { 13 }))
+	$dialog = $Far.CreateDialog(-1, -1, 77, $(if ($InputObject) { 10 } else { 12 }))
 	$dialog.TypeId = 'DA462DD5-7767-471E-9FC8-64A227BEE2B1'
 	$dialog.HelpTopic = "<$($Psf.AppHome)\\>search-regexps1"
 	[void]$dialog.AddBox(3, 1, 0, 0, 'Search-Regex')
@@ -107,9 +102,6 @@ if (!$Regex) {
 	}
 
 	$dialog.AddText(5, -1, 0, '').Separator = 1
-
-	$xGroups = $dialog.AddCheckBox($x, -1, '&Groups')
-	$xGroups.Selected = [bool]$Groups
 
 	$xAllText = $dialog.AddCheckBox($x, -1, '&All text')
 	$xAllText.Selected = [bool]$AllText
@@ -203,7 +195,6 @@ if (!$Regex) {
 	}
 
 	# other options
-	$Groups = [bool]$xGroups.Selected
 	$AllText = [bool]$xAllText.Selected
 }
 elseif ($InputObject -is [scriptblock]) {
@@ -236,7 +227,6 @@ catch {
 # Other parameters
 $parameters.Items = $InputObject
 $parameters.Regex = $Regex
-$parameters.Groups = $Groups
 $parameters.AllText = $AllText
 $parameters.Out = $parameters
 if ($parameters.Script) {
@@ -250,7 +240,6 @@ $job = Start-FarJob -Output -Parameters:$parameters {
 		$Items,
 		$Regex,
 		$Path,
-		[switch]$Groups,
 		[switch]$AllText,
 		$Out
 	)
@@ -293,7 +282,7 @@ $job = Start-FarJob -Output -Parameters:$parameters {
 						++$no
 						if ($line -match $re) {
 							for($m = $re.Match($line); $m.Success; $m = $m.NextMatch()) {
-								if ($Groups -and $m.Groups.Count -gt 1) {
+								if ($m.Groups.Count -gt 1) {
 									for($gi = 1; $gi -lt $m.Groups.Count; ++$gi) {
 										$g = $m.Groups[$gi]
 										New-Object FarNet.SetFile $item, $true -Property @{

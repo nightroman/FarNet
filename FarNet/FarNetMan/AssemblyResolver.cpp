@@ -133,7 +133,7 @@ Assembly^ AssemblyResolver::AssemblyResolve(Object^ /*sender*/, ResolveEventArgs
 		// case: PowerShellFar
 		int index = callerFile->LastIndexOf("\\PowerShellFar\\");
 		if (index > 0)
-			return ResolvePowerShellFar(callerFile->Substring(0, index + 15), args);
+			return ResolvePowerShellFar(callerFile->Substring(0, index + 14), args);
 
 		// case: same folder as the caller
 		auto callerRoot = Path::GetDirectoryName(callerFile);

@@ -21,11 +21,12 @@ bool Message::Show()
 	}
 
 	auto items = CreateBlock();
+	GUID typeId = ToGUID(_args->TypeId);
 
-	PIN_NS(pinHelpTopic, _helpTopic);
+	PIN_NS(pinHelpTopic, _args->HelpTopic);
 	_selected = (int)Info.Message(
 		&MainGuid,
-		nullptr,
+		&typeId,
 		flags,
 		pinHelpTopic,
 		(wchar_t**)items.data(),
@@ -102,9 +103,8 @@ int Message::Show(MessageArgs^ args)
 
 	// standard message box
 	Message m;
+	m._args = args;
 	m._flags = (int)options;
-	m._helpTopic = args->HelpTopic;
-	m._position = args->Position;
 
 	// text width
 	int maxTextWidth = Far::Api->UI->WindowSize.X - 16;
@@ -131,7 +131,7 @@ int Message::Show(MessageArgs^ args)
 	}
 
 	// dialog box?
-	if (m._position.HasValue || needButtonList)
+	if (m._args->Position.HasValue || needButtonList)
 		return m.ShowDialog(maxTextWidth, needButtonList);
 
 	// message box
@@ -199,7 +199,7 @@ int Message::ShowDialog(int maxTextWidth, bool needButtonList)
 	}
 
 	// dialog place
-	Point position = _position.HasValue ? _position.Value : Point(-1, -1);
+	Point position = _args->Position.HasValue ? _args->Position.Value : Point(-1, -1);
 	int x1 = position.X;
 	if (x1 >= size.X)
 		x1 = size.X - w - 1;
@@ -210,8 +210,9 @@ int Message::ShowDialog(int maxTextWidth, bool needButtonList)
 	int y2 = y1 < 0 ? h : y1 + h - 1;
 
 	// dialog
-	IDialog^ dialog = Far::Api->CreateDialog(x1, y1, x2, y2);
-	dialog->HelpTopic = _helpTopic;
+	auto dialog = Far::Api->CreateDialog(x1, y1, x2, y2);
+	dialog->TypeId = _args->TypeId;
+	dialog->HelpTopic = _args->HelpTopic;
 	dialog->IsWarning = (_flags & FMSG_WARNING);
 	dialog->AddBox(3, 1, w - 4, h - 2, _header);
 

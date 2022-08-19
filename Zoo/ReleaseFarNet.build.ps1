@@ -40,7 +40,7 @@ Choose to push:
 	}
 }
 
-task build buildFarNet, buildPsfHelp, buildDocs, buildModules
+task build buildFarNet, buildPsfHelp, buildDocs
 
 task buildFarNet -If {
 	ask 'Build FarNet projects'
@@ -59,12 +59,6 @@ task buildDocs -If {
 	($Push -ne 3) -and (ask 'Build FarNet CHM help')
 } {
 	Invoke-Build build, install, clean $env:FarNetCode\Docs\FarNetAPI.build.ps1
-}
-
-task buildModules -If {
-	ask 'Build FarNet modules'
-} {
-	Invoke-Build modules, clean $env:FarNetCode\.build.ps1
 }
 
 task nugetAndTest -If {

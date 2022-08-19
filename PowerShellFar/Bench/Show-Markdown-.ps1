@@ -101,12 +101,9 @@ $param = $(
 pandoc.exe $param
 if ($LastExitCode) {throw 'pandoc.exe failed.'}
 
+# Gets help topic ids from verbose output.
 function Convert-HelpTopic($Lines) {
-	foreach($_ in $Lines) {
-		if ($_ -match '^HeadingId=(.*)$') {
-			$matches[1]
-		}
-	}
+	switch -Regex ($Lines) {'^HeadingId=(.*)$' {$Matches[1]}}
 }
 
 function Find-EditorTopic([string[]]$Topics) {
@@ -150,10 +147,15 @@ function Find-EditorTopic([string[]]$Topics) {
 ### show
 if ($Help) {
 	$hlf = "$env:TEMP\HtmlToFarHelp.hlf"
-	$out = HtmlToFarHelp.exe from=$htm to=$hlf 2>&1
-	if ($LastExitCode) {throw "HtmlToFarHelp failed: $out"}
+
+	# `verbose=true` gets topics + maybe error
+	$topicIdsAndError = HtmlToFarHelp.exe from=$htm to=$hlf verbose=true 2>&1
+	if ($LastExitCode) {
+		throw "HtmlToFarHelp failed: $topicIdsAndError"
+	}
+
 	if ($Editor) {
-		$topics = Convert-HelpTopic $out
+		$topics = Convert-HelpTopic $topicIdsAndError
 		$Topic = Find-EditorTopic $topics
 	}
 	$Far.ShowHelp($hlf, $Topic, 'File')

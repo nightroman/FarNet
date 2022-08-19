@@ -1,5 +1,12 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 6.0.9 =
+
+Requires FarNet 6.0.4
+Assert-Far - set dialog TypeId.
+Show-Markdown-.ps1 - fix regression.
+Search-Regex.ps1 - remove Groups, use regex groups automatically.
+
 = 6.0.8 =
 
 Assert-Far [Debug] in addition to manually attached debugger (usually VSCode)

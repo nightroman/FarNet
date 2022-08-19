@@ -1,6 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 6.0.4 =
+
+MessageArgs - new property TypeId.
+
 = 6.0.3 =
 
 Make ModuleSettings<T>(string) public and explicit file settings easier.

@@ -328,11 +328,14 @@ sealed class AssertFarCommand : BaseCmdlet
 
 	repeat_dialog:
 
-		int result = Far.Api.Message(
-			body,
-			Title ?? MyName,
-			IsError ? (MessageOptions.Warning | MessageOptions.LeftAligned) : MessageOptions.None,
-			buttons);
+		int result = Far.Api.Message(new MessageArgs
+		{
+			TypeId = new Guid(Guids.AssertDialog),
+			Text = body,
+			Buttons = buttons,
+			Caption = Title ?? MyName,
+			Options = IsError ? (MessageOptions.Warning | MessageOptions.LeftAligned) : MessageOptions.None,
+		});
 
 		switch (result < 0 ? BtnStop : buttons[result])
 		{

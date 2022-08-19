@@ -23,8 +23,7 @@ try {
 	}
 
 	job {
-		Assert-Far -Dialog
-		Assert-Far $Far.Dialog[0].Text -eq Assert-Far
+		Assert-Far -DialogTypeId ([PowerShellFar.Guids]::AssertDialog)
 	}
 
 	keys i ### Ignore

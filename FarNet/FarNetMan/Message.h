@@ -18,13 +18,12 @@ private:
 	std::vector<CStr> CreateBlock();
 	static int GetButtonLineLength(array<String^>^ buttons);
 private:
+	MessageArgs^ _args;
 	int _flags;
 	int _selected;
 	String^ _header;
-	String^ _helpTopic;
 	List<String^> _body;
 	array<String^>^ _buttons;
 	int _buttonLineLength;
-	Nullable<Point> _position;
 };
 }
