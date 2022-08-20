@@ -25,11 +25,11 @@ keys Enter
 job { Find-FarFile 'Far.exe' }
 keys Enter
 job {
-	Assert-Far -FileName 'Item' -FileDescription "$env:FARHOME\Far.exe"
+	Assert-Far -FileName 'Item'
 }
 # lookup 2nd time, check posted
 keys Enter
-#job { Assert-Far -FileName 'Far.exe' } #rk-0 _220716_0703
+job { Assert-Far -FileName 'Far.exe' }
 keys Esc
 # 'Process'
 job { Find-FarFile 'Process' }

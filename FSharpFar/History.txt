@@ -1,6 +1,10 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 FarNet 5.9.0
 
+= 2.0.6 =
+
+fsx - Tweak assembly resolver.
+
 = 2.0.5 =
 
 Add assembly resolver to fsx, similar to used in FarNet.

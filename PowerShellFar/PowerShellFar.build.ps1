@@ -46,12 +46,12 @@ task installBin {
 	exec { dotnet publish "$ModuleName.csproj" -c $Configuration -o $ModuleHome --no-build }
 	Remove-Item "$ModuleHome\PowerShellFar.deps.json"
 
-	#rk-0 or cannot compile C# in PS ~ cannot find '...\PowerShellFar\runtimes\win\lib\net6.0\ref'.
-	#?? is it PS issue? use my plugin repo and report
-	# move `ref` folder to "expected" location
+	# move `ref` folder to "expected" location or cannot compile C# in PS
+	# ~ cannot find '...\PowerShellFar\runtimes\win\lib\net6.0\ref'.
 	exec { robocopy "$ModuleHome\ref" "$ModuleHome\runtimes\win\lib\net6.0\ref" /s } (0..2)
 	Remove-Item -LiteralPath "$ModuleHome\ref" -Force -Recurse
 
+	# prune resources, to keep our dll cache cleaner
 	Set-Location $ModuleHome
 	remove cs, de, es, fr, it, ja, ko, pl, pt-BR, ru, tr, zh-Hans, zh-Hant
 

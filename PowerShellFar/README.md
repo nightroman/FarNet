@@ -1600,12 +1600,15 @@ with other options.
 
     Specifies the regular expression pattern or simple text.
 
+    If the regex defines capturing groups then each group is treated as a match
+    and gets selected on opening. Groups are ignored on "All text".
+
 - Options
 
     Comma delimited regular expression and extra options or their aliases.
 
     Standard .NET regular expression options and aliases:
-    `None`, `IgnoreCase/ic`, `Multiline/m`, `ExplicitCapture`, `Compiled`,
+    `None`, `IgnoreCase/ic`, `Multiline/m`, `ExplicitCapture/ec`, `Compiled`,
     `Singleline/s`, `IgnorePatternWhitespace/ipw`, `RightToLeft`, `ECMAScript`,
     `CultureInvariant`.
 
@@ -1616,11 +1619,6 @@ with other options.
 
     Any command returning file paths or file system items.
     Missing paths and directory paths or items are ignored.
-
-- Groups
-
-    Tells to panel found regex groups instead of full matches.
-    It is ignored if "All text" is set.
 
 - All text
 

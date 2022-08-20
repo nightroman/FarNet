@@ -51,10 +51,6 @@ void AssemblyResolver::AddRoot(String^ name)
 
 Assembly^ AssemblyResolver::ResolvePowerShellFar(String^ root, ResolveEventArgs^ args)
 {
-	// frequently called and missing
-	if (args->Name->StartsWith("System.Management.Automation.resources"))
-		return nullptr;
-
 	auto caller = args->RequestingAssembly->FullName;
 	auto dllName = AssemblyNameToDllName(args->Name);
 
@@ -101,7 +97,12 @@ Assembly^ AssemblyResolver::AssemblyResolve(Object^ /*sender*/, ResolveEventArgs
 	if (!args->RequestingAssembly)
 		return nullptr;
 
+	// skip .resources
+	// some exist, usually several files in different folders, so not useful for us
+	// some do not, e.g. frequently called System.Management.Automation.resources
 	auto name = args->Name->Substring(0, args->Name->IndexOf(","));
+	if (name->EndsWith(".resources"))
+		return nullptr;
 
 	// skip missing in FarNet
 	Object^ value;

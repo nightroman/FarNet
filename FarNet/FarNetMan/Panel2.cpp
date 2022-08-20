@@ -106,10 +106,7 @@ array<FarFile^>^ Panel2::GetFiles()
 	for (int i = 0; i < size; ++i)
 	{
 		AutoPluginPanelItem item(Handle, i + first, ShownFile);
-		FarFile^ file = GetItemFile(item.Get());
-		if (!file)
-			throw gcnew Exception("null file"); //rk-0
-		r[i] = file;
+		r[i] = GetItemFile(item.Get());
 	}
 
 	return r;
@@ -130,10 +127,7 @@ array<FarFile^>^ Panel2::GetSelectedFiles()
 	for (int i = 0; i < size; ++i)
 	{
 		AutoPluginPanelItem item(Handle, i, SelectedFile);
-		FarFile^ file = GetItemFile(item.Get());
-		if (!file)
-			throw gcnew Exception("null file"); //rk-0
-		r[i] = file;
+		r[i] = GetItemFile(item.Get());
 	}
 
 	return r;

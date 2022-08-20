@@ -3,22 +3,15 @@
 	Test Panel-Process.ps1
 #>
 
-if (Get-Process [n]otepad) {throw 'Please exit Notepad'}
-
 # start notepad and process panel
 job {
-	#! Use Start() because:
-	#! V2 CTP2: command 'Notepad' waits for exit
-	#! V2 CTP3: command Start-Process fails if provider is not FileSystem
-	$null = [Diagnostics.Process]::Start('Notepad')
+	$Data.Notepad = [System.Diagnostics.Process]::Start('Notepad')
 	Panel-Process.ps1
-	# test this '[n]otepad' - I have some doubts
-	Assert-Far @(Get-Process [n]otepad).Count -eq 1
 }
 
-# go to Notepad, check it
+# navigate to this notepad
 job {
-	Find-FarFile 'Notepad'
+	Find-FarFile -Where {$_.Data.Id -eq $Data.Notepad.Id}
 	$ff = @(Get-FarItem -Selected)
 	Assert-Far @(
 		$ff.Count -eq 1
@@ -62,7 +55,7 @@ job {
 }
 keys Enter
 job {
-	Get-Process [n]otepad | .{process{ Assert-Far $_.HasExited }}
+	Assert-Far $Data.Notepad.HasExited
 }
 
 # exit

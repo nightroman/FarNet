@@ -11,6 +11,9 @@
 		Regular expression pattern or instance. If it is omitted then a
 		dialog is opened where you can define this and other parameters.
 
+		If the regex defines capturing groups then each group is treated as a
+		match and gets selected on opening. Groups are ignored on "All text".
+
 .Parameter Options
 		Regular expression options and extra options. It is used when Regex is
 		not a regex instance. See SearchRegexOptions here for available values.
@@ -25,7 +28,7 @@
 		* Get-EditorHistory - files from editor history excluding network paths
 
 .Parameter AllText
-		Tells to search in all text, i.e. file read as one string.
+		Tells to search in all text, not in separate lines.
 #>
 
 param(
@@ -35,6 +38,7 @@ param(
 	[switch]$AllText
 )
 
+$ErrorActionPreference = 1
 if ($args) {Write-Error -ErrorAction Stop "Invalid arguments: $args"}
 
 Add-Type @'
@@ -43,7 +47,7 @@ public enum SearchRegexOptions {
 	None = 0,
 	IgnoreCase = 1, ic = 1,
 	Multiline = 2, m = 2,
-	ExplicitCapture = 4,
+	ExplicitCapture = 4, ec = 4,
 	Compiled = 8,
 	Singleline = 16, s = 16,
 	IgnorePatternWhitespace = 32, ipw = 32,
@@ -152,7 +156,7 @@ if (!$Regex) {
 		# regex after options and pattern
 		try {
 			$RegexOptions = [Text.RegularExpressions.RegexOptions](([int]$Options) -band (-bnot (1024 + 2048)))
-			$Regex = New-Object Regex $pattern, $RegexOptions
+			$Regex = [regex]::new($pattern, $RegexOptions)
 		}
 		catch {
 			$Far.Message($_, 'Invalid pattern')
@@ -213,7 +217,7 @@ try {
 			$Regex = WholeWord $Regex
 		}
 		$RegexOptions = [Text.RegularExpressions.RegexOptions](([int]$Options) -band (-bnot (1024 + 2048)))
-		$Regex = New-Object Regex $Regex, $RegexOptions
+		$Regex = [regex]::new($Regex, $RegexOptions)
 	}
 
 	if (!$InputObject -and !$parameters.Script) {
@@ -307,34 +311,31 @@ $job = Start-FarJob -Output -Parameters:$parameters {
 }
 
 ### Explorer with the job for search results
-$Explorer = New-Object PowerShellFar.PowerExplorer '7ef0bbec-9509-4223-a452-ea928ac9846c' -Property @{
-	Data = $job
-	### GetFiles: read found items
-	AsGetFiles = {param($this, $_)
-		$job = $this.Data
-		foreach($e in $job.Output.ReadAll()) {
-			$this.Cache.Add($e)
-		}
+$Explorer = [PowerShellFar.PowerExplorer]::new('7ef0bbec-9509-4223-a452-ea928ac9846c')
+$Explorer.Data = $job
+$Explorer.AsGetFiles = {param($this, $_)
+	$job = $this.Data
+	foreach($e in $job.Output.ReadAll()) {
+		$this.Cache.Add($e)
 	}
 }
 
 ### Panel with the explorer
-$Panel = New-Object FarNet.Panel $Explorer -Property @{
-	Highlighting = 'Full'
-	RealNames = $true
-	RightAligned = $true
-	SortMode = 'Unsorted'
-	Title = 'Searching...'
-	ViewMode = 'Descriptions'
-}
+$Panel = [FarNet.Panel]::new($Explorer)
+$Panel.Highlighting = 'Full'
+$Panel.RealNames = $true
+$Panel.RightAligned = $true
+$Panel.SortMode = 'Unsorted'
+$Panel.Title = 'Searching...'
+$Panel.ViewMode = 'Descriptions'
 $Panel.Garbage.Add($job)
 
 ### Plan
 
 # 'Descriptions'
-$col1 = New-Object FarNet.SetColumn -Property @{ Kind = 'NR'; Name = 'File' }
-$col2 = New-Object FarNet.SetColumn -Property @{ Kind = 'Z'; Name = 'Match' }
-$plan = New-Object FarNet.PanelPlan -Property @{ Columns = $col1, $col2; StatusColumns = $col2 }
+$col1 = [FarNet.SetColumn]@{ Kind = 'NR'; Name = 'File' }
+$col2 = [FarNet.SetColumn]@{ Kind = 'Z'; Name = 'Match' }
+$plan = [FarNet.PanelPlan]@{ Columns = $col1, $col2; StatusColumns = $col2 }
 $Panel.SetPlan('Descriptions', $plan)
 
 # 'LongDescriptions'

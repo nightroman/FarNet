@@ -86,13 +86,18 @@ let resolvePowerShellFar (root: string) (args: ResolveEventArgs) =
         null
 
 let assemblyResolve _ (args: ResolveEventArgs) =
-    // e.g. FarNet.XmlSerializers
+    // e.g. .XmlSerializers
     if isNull args.RequestingAssembly then null
     else
 
+    // skip .resources
+    // some exist, usually several files in different folders, so not useful for us
+    // some do not, e.g. frequently called System.Management.Automation.resources
     let name = args.Name.Substring(0, args.Name.IndexOf(','))
+    if name.EndsWith(".resources") then null
+    else
 
-    // skip missing in FarNet
+    // skip missing in cache
     match _cache.TryGetValue(name) with
     | false, _ -> null
     | _, value ->

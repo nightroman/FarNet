@@ -34,7 +34,6 @@ param(
 )
 
 Assert-Far $env:FarNetCode -Message 'Please set env:FarNetCode'
-Assert-Far (!(Get-Process Notepad*)) -Message 'Please stop Notepad processes.'
 Assert-Far ($Far.Window.Count -eq 2) -Message 'Please exit editors, viewers, dialogs.'
 
 $global:Error.Clear()

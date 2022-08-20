@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 6.0.10 =
+
+Search-Regex.ps1 - follow up.
+
 = 6.0.9 =
 
 Requires FarNet 6.0.4

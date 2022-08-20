@@ -55,7 +55,7 @@ $Panel.AddLookup(@{
 			Title = 'Press [Enter] on an item'
 			Lookup = {
 				param($0, $_)
-				$0.Parent.Value.Item = $_.File.Data
+				$0.Parent.Value.Item = $_.File.Data.Name
 			}
 		}
 		$Panel.AddObjects((Get-ChildItem $env:FARHOME))
