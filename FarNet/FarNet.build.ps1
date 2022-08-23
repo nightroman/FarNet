@@ -15,7 +15,6 @@ $script:Builds = @(
 	'FarNet.Works.Config\.build.ps1'
 	'FarNet.Works.Dialog\.build.ps1'
 	'FarNet.Works.Editor\.build.ps1'
-	'FarNet.Works.Loader\.build.ps1'
 	'FarNet.Works.Panels\.build.ps1'
 	'FarNetMan\.build.ps1'
 )
@@ -97,7 +96,6 @@ task package beginPackage, helpHTM, {
 		"$FarHome\FarNet\FarNet.Works.Config.dll"
 		"$FarHome\FarNet\FarNet.Works.Dialog.dll"
 		"$FarHome\FarNet\FarNet.Works.Editor.dll"
-		"$FarHome\FarNet\FarNet.Works.Loader.dll"
 		"$FarHome\FarNet\FarNet.Works.Panels.dll"
 		"$FarHome\FarNet\FarNetAPI.chm"
 	)

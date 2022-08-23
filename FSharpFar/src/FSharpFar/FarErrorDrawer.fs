@@ -2,8 +2,7 @@
 open FarNet
 open FSharp.Compiler.Diagnostics
 
-[<ModuleDrawer(Name = "F# errors", Mask = "*.fs;*.fsx;*.fsscript")>]
-[<Guid "D122FBB8-26FA-4873-8245-A617CE200BCF">]
+[<ModuleDrawer(Name = "F# errors", Mask = "*.fs;*.fsx;*.fsscript", Id = "D122FBB8-26FA-4873-8245-A617CE200BCF")>]
 type FarErrorDrawer() =
     inherit ModuleDrawer()
 

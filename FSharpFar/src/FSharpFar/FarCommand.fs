@@ -4,8 +4,7 @@ open System
 open System.IO
 open FarInteractive
 
-[<ModuleCommand(Name = "FSharpFar", Prefix = "fs")>]
-[<Guid "2b52615b-ea79-46e4-ac9d-78f33599db62">]
+[<ModuleCommand(Name = "FSharpFar", Prefix = "fs", Id = "2b52615b-ea79-46e4-ac9d-78f33599db62")>]
 type FarCommand() =
     inherit ModuleCommand()
 

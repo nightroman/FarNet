@@ -15,11 +15,10 @@ namespace FarNet;
 /// Its goal is to fill the color collection, it should not change anything.
 /// </para>
 /// <para>
-/// Use <see cref="ModuleDrawerAttribute"/> and specify the <see cref="ModuleActionAttribute.Name"/>.
+/// Use <see cref="ModuleDrawerAttribute"/> and specify <see cref="ModuleActionAttribute.Id"/> and <see cref="ModuleActionAttribute.Name"/>.
 /// The optional default file mask is defined as <see cref="ModuleDrawerAttribute.Mask"/>
-/// and the default color priority <see cref="ModuleDrawerAttribute.Priority"/>.
+/// and the default color priority as <see cref="ModuleDrawerAttribute.Priority"/>.
 /// </para>
-/// <include file='doc.xml' path='doc/ActionGuid/*'/>
 /// </remarks>
 public abstract class ModuleDrawer : ModuleAction
 {

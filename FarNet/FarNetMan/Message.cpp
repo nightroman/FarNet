@@ -97,7 +97,8 @@ int Message::Show(MessageArgs^ args)
 		if (args->Buttons)
 			throw gcnew ArgumentException("Custom buttons cannot be used in GUI messages.");
 
-		if (!Configuration::GetBool(Configuration::DisableGui))
+		auto disableGui = Environment::GetEnvironmentVariable("FarNet:DisableGui");
+		if (!disableGui)
 			return ShowGui(args->Text, args->Caption, options);
 	}
 

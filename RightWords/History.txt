@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.RightWords
 
+= 3.0.1 =
+
+Requires FarNet 6.0.6
+- Use new module item ids.
+- Build as ALC module (see FarNet 6.0.6).
+
 = 3.0.0 =
 
 Requires FarNet 6, uses .NET 6.

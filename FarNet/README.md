@@ -66,17 +66,20 @@ How to install and update FarNet and modules:
 
 - *FarNetMan.dll* - Far Manager plugin and module manager
 - *FarNetMan.hlf* - FarNet UI help
-- *LICENSE* - the license
+- *Ijwhost.dll* - .NET Core host
 
 *%FARHOME%\FarNet*
 
-- *FarNet.dll*, *FarNet.xml* - FarNet API for .NET modules (and XML API comments).
-- *FarNet...dll* - other FarNet libraries used internally by the core.
+- *FarNet.dll*, *FarNet.xml* - FarNet API for .NET modules with XML docs.
+- *FarNet...dll* - FarNet libraries used internally by the core.
 
 *%FARHOME%\FarNet\Modules*
 
-- Module root directory. Each child directory is a module directory.
+- FarNet modules.
 
+*%FARHOME%\FarNet\Lib*
+
+- FarNet shared libraries.
 
 *********************************************************************
 ## Commands in macros
@@ -159,18 +162,18 @@ The module cache file is `%FARLOCALPROFILE%\FarNet\Cache*.bin`
 
 **Configuration**
 
-The following environment variables are used in special cases:
+The following environment variables are used:
 
-* `FarNet:FarManager:Modules`
+* `FarNet:DisableGui`
 
-    The root module directory path.
-    Default: *%FARHOME%\FarNet\Modules*
+    Tells to disable GUI features.
+    Value: any.
 
-* `FarNet:FarManager:DisableGui`
+* `FarNet:TraceLevel`
 
-    Tells to disable special GUI features.
-    Values: `true` or `false`.
-    Default: `false`.
+    Tracing level.
+    Default: `Warning`.
+    Values: see `System.Diagnostics.SourceLevels` enum.
 
 *********************************************************************
 ## Problems and solutions

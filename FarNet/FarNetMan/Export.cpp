@@ -42,15 +42,12 @@ But more calls are possible, we have to ignore them.
 */
 void WINAPI SetStartupInfoW(const PluginStartupInfo* psi)
 {
-	auto sw = Stopwatch::StartNew();
-
 	// deny 2+ load
 	if (g_AppState != AppState::None)
 		return;
 
 	// loading
 	g_AppState = AppState::Loading;
-	AssemblyResolver::Init();
 	AppDomain::CurrentDomain->AssemblyResolve += gcnew ResolveEventHandler(AssemblyResolver::AssemblyResolve);
 
 #ifdef TRACE_MEMORY
@@ -64,8 +61,6 @@ void WINAPI SetStartupInfoW(const PluginStartupInfo* psi)
 	// load
 	Far0::Start();
 	g_AppState = AppState::Loaded;
-
-	Trace::WriteLine("FarNet load " + sw->Elapsed.ToString());
 }
 
 /*

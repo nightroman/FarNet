@@ -12,7 +12,7 @@ using System.Resources;
 
 namespace FarNet.Works;
 
-public sealed partial class ModuleManager : IModuleManager
+sealed partial class ModuleManager : IModuleManager
 {
 	Assembly _AssemblyInstance;
 	CultureInfo _CurrentUICulture;
@@ -37,9 +37,7 @@ public sealed partial class ModuleManager : IModuleManager
 		AssemblyPath = assemblyPath;
 	}
 
-	/// <summary>
-	/// Sets properties from data, if not null.
-	/// </summary>
+	// Sets properties from data, if not null.
 	internal void LoadConfig(Config.Module config)
 	{
 		if (config is not null)
@@ -213,8 +211,21 @@ public sealed partial class ModuleManager : IModuleManager
 
 	public Assembly LoadAssembly()
 	{
-		if (_AssemblyInstance is null)
+		if (_AssemblyInstance is not null)
+			return _AssemblyInstance;
+
+		var deps = Path.ChangeExtension(AssemblyPath, "deps.json");
+		if (File.Exists(deps))
+		{
+			Log.Source.TraceInformation("Module modern {0}", AssemblyPath);
+			var loadContext = new ModuleLoadContext(AssemblyPath);
+			_AssemblyInstance = loadContext.LoadFromAssemblyPath(AssemblyPath);
+		}
+		else
+		{
+			Log.Source.TraceInformation("Module simple {0}", AssemblyPath);
 			_AssemblyInstance = Assembly.LoadFrom(AssemblyPath);
+		}
 
 		return _AssemblyInstance;
 	}
@@ -280,8 +291,7 @@ public sealed partial class ModuleManager : IModuleManager
 				}
 
 				// not yet? use current
-				if (_CurrentUICulture is null)
-					_CurrentUICulture = Far.Api.GetCurrentUICulture(false);
+				_CurrentUICulture ??= Far.Api.GetCurrentUICulture(false);
 			}
 			return _CurrentUICulture;
 		}
@@ -291,14 +301,10 @@ public sealed partial class ModuleManager : IModuleManager
 		}
 	}
 
-	/// <summary>
-	/// Valur from config (null ~ default).
-	/// </summary>
+	// Value from config (null ~ default).
 	string _StoredUICulture;
 
-	/// <summary>
-	/// Wraps internal value: get: null to empty; set: empty to null.
-	/// </summary>
+	// Wraps internal value: get: null to empty; set: empty to null.
 	public override string StoredUICulture
 	{
 		get => _StoredUICulture ?? string.Empty;

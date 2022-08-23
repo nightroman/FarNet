@@ -153,13 +153,6 @@
       Instead of keeping the reference you can get it by its ID by the <see cref="IFar"/>.<c>GetModule*()</c> methods.
     </para>
   </RegisterModule>
-  <ActionGuid>
-    <para>
-      Use <c>System.Runtime.InteropServices.GuidAttribute</c> for the action ID.
-      The ID must be unique and it should never change.
-      It is used for storing data and interoperability.
-    </para>
-  </ActionGuid>
   <UseLastHistory>
     <summary>
       Tells to use the last history as the initial text if it is not set.

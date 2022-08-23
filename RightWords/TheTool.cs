@@ -4,8 +4,7 @@
 
 namespace FarNet.RightWords;
 
-[ModuleTool(Name = Settings.ModuleName, Options = ModuleToolOptions.Dialog | ModuleToolOptions.Editor | ModuleToolOptions.Panels)]
-[System.Runtime.InteropServices.Guid("ca7ecdc0-f446-4bff-a99d-06c90fe0a3a9")]
+[ModuleTool(Name = Settings.ModuleName, Options = ModuleToolOptions.Dialog | ModuleToolOptions.Editor | ModuleToolOptions.Panels, Id = "ca7ecdc0-f446-4bff-a99d-06c90fe0a3a9")]
 public class TheTool : ModuleTool
 {
 	public override void Invoke(object sender, ModuleToolEventArgs e)

@@ -522,12 +522,6 @@ public static class Far
 	public static IFar Api
 	{
 		get => _Host;
-		set
-		{
-			if (_Host != null)
-				throw new InvalidOperationException();
-
-			_Host = value;
-		}
+		set => _Host = _Host == null ? value : throw new InvalidOperationException();
 	}
 }

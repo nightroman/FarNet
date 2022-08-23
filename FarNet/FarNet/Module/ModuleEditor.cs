@@ -14,10 +14,9 @@ namespace FarNet;
 /// The <see cref="Invoke"/> method has to be implemented.
 /// </para>
 /// <para>
-/// Use <see cref="ModuleEditorAttribute"/> and specify the <see cref="ModuleActionAttribute.Name"/>.
+/// Use <see cref="ModuleEditorAttribute"/> and specify <see cref="ModuleActionAttribute.Id"/> and <see cref="ModuleActionAttribute.Name"/>.
 /// The optional default file mask is defined as <see cref="ModuleEditorAttribute.Mask"/>.
 /// </para>
-/// <include file='doc.xml' path='doc/ActionGuid/*'/>
 /// </remarks>
 public abstract class ModuleEditor : ModuleAction
 {

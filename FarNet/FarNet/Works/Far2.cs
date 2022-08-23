@@ -20,12 +20,8 @@ public abstract class Far2
 	/// </summary>
 	public static Far2 Api
 	{
-		get { return _Host; }
-		set
-		{
-			if (_Host != null) throw new InvalidOperationException();
-			_Host = value;
-		}
+		get => _Host;
+		set => _Host = _Host == null ? value : throw new InvalidOperationException();
 	}
 
 	/// <summary>

@@ -17,7 +17,12 @@ public static class Log
 	/// <summary>
 	/// INTERNAL
 	/// </summary>
-	public static TraceSource Source { get; } = new TraceSource("FarNet");
+	public static TraceSource Source { get; } = new("FarNet", DefaultSourceLevels());
+	static SourceLevels DefaultSourceLevels()
+	{
+		var str = Environment.GetEnvironmentVariable("FarNet:TraceLevel");
+		return str is not null && Enum.TryParse(str, out SourceLevels value) ? value : SourceLevels.Warning;
+	}
 
 	/// <summary>
 	/// INTERNAL, consider using variant with writer
@@ -38,7 +43,7 @@ public static class Log
 	public static void FormatException(TextWriter writer, Exception error)
 	{
 		if (error == null)
-			throw new ArgumentNullException("error");
+			throw new ArgumentNullException(nameof(error));
 
 		//?? _090901_055134 Regex is used to fix bad PS V1 strings; check V2
 		var re = new Regex("[\r\n]+");

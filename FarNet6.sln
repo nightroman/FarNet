@@ -9,8 +9,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FarNetMan", "FarNet\FarNetM
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FarNet", "FarNet\FarNet\FarNet.csproj", "{264744C1-B6FF-4B75-8AD0-0920BCCFF3D3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FarNet.Works.Loader", "FarNet\FarNet.Works.Loader\FarNet.Works.Loader.csproj", "{516A2D89-4E77-4F24-89C2-A6D9E1C36998}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FarNet.Works.Config", "FarNet\FarNet.Works.Config\FarNet.Works.Config.csproj", "{752846B8-08B9-4D22-97B5-0F2C8020FB51}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FarNet.Works.Dialog", "FarNet\FarNet.Works.Dialog\FarNet.Works.Dialog.csproj", "{0BE8F8D1-F15A-4C53-BD71-4BC6E5005EF7}"
@@ -48,14 +46,6 @@ Global
 		{264744C1-B6FF-4B75-8AD0-0920BCCFF3D3}.Release|Win32.Build.0 = Release|Any CPU
 		{264744C1-B6FF-4B75-8AD0-0920BCCFF3D3}.Release|x64.ActiveCfg = Release|Any CPU
 		{264744C1-B6FF-4B75-8AD0-0920BCCFF3D3}.Release|x64.Build.0 = Release|Any CPU
-		{516A2D89-4E77-4F24-89C2-A6D9E1C36998}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{516A2D89-4E77-4F24-89C2-A6D9E1C36998}.Debug|Win32.Build.0 = Debug|Any CPU
-		{516A2D89-4E77-4F24-89C2-A6D9E1C36998}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{516A2D89-4E77-4F24-89C2-A6D9E1C36998}.Debug|x64.Build.0 = Debug|Any CPU
-		{516A2D89-4E77-4F24-89C2-A6D9E1C36998}.Release|Win32.ActiveCfg = Release|Any CPU
-		{516A2D89-4E77-4F24-89C2-A6D9E1C36998}.Release|Win32.Build.0 = Release|Any CPU
-		{516A2D89-4E77-4F24-89C2-A6D9E1C36998}.Release|x64.ActiveCfg = Release|Any CPU
-		{516A2D89-4E77-4F24-89C2-A6D9E1C36998}.Release|x64.Build.0 = Release|Any CPU
 		{752846B8-08B9-4D22-97B5-0F2C8020FB51}.Debug|Win32.ActiveCfg = Debug|Any CPU
 		{752846B8-08B9-4D22-97B5-0F2C8020FB51}.Debug|Win32.Build.0 = Debug|Any CPU
 		{752846B8-08B9-4D22-97B5-0F2C8020FB51}.Debug|x64.ActiveCfg = Debug|Any CPU

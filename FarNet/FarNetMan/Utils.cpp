@@ -5,28 +5,6 @@
 #include "StdAfx.h"
 #include "Wrappers.h"
 
-namespace FarNet
-{;
-bool Configuration::GetBool(String^ key)
-{
-	String^ value = Environment::GetEnvironmentVariable(key);
-	if (!value)
-		return false;
-
-	bool result;
-	if (!Boolean::TryParse(value->ToString(), result))
-		return false;
-
-	return result;
-}
-
-String^ Configuration::GetString(String^ key)
-{
-	return Environment::GetEnvironmentVariable(key);
-}
-
-}
-
 // empty string
 wchar_t CStr::s_empty[1] = {0};
 

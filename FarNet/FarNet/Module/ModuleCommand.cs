@@ -15,10 +15,9 @@ namespace FarNet;
 /// commands by <c>Plugin.Call()</c> (see the FarNet manual).
 /// </para>
 /// <para>
-/// Use <see cref="ModuleCommandAttribute"/> and specify the <see cref="ModuleActionAttribute.Name"/>
-/// and the default command prefix <see cref="ModuleCommandAttribute.Prefix"/>.
+/// Use <see cref="ModuleCommandAttribute"/> and specify <see cref="ModuleActionAttribute.Id"/>,
+/// <see cref="ModuleActionAttribute.Name"/>, and the default command prefix <see cref="ModuleCommandAttribute.Prefix"/>.
 /// </para>
-/// <include file='doc.xml' path='doc/ActionGuid/*'/>
 /// </remarks>
 public abstract class ModuleCommand : ModuleAction
 {

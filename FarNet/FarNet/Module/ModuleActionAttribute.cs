@@ -12,6 +12,11 @@ namespace FarNet;
 public abstract class ModuleActionAttribute : Attribute, ICloneable
 {
 	/// <summary>
+	/// Specifies the module action GUID.
+	/// </summary>
+	public string Id { get; set; }
+
+	/// <summary>
 	/// The mandatory action name shown in menus.
 	/// </summary>
 	/// <remarks>

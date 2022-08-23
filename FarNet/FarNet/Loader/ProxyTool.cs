@@ -7,7 +7,7 @@ using System.IO;
 
 namespace FarNet.Works;
 
-public sealed class ProxyTool : ProxyAction, IModuleTool
+sealed class ProxyTool : ProxyAction, IModuleTool
 {
 	ModuleToolOptions _Options;
 	readonly EventHandler<ModuleToolEventArgs> _Handler;

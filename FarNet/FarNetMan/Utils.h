@@ -258,18 +258,6 @@ internal:
 		EditorNoSelection = "There is no selection.",
 		EditorBadSelection = "This kind of selection is not supported.";
 };
-
-ref class Configuration
-{
-public:
-	static ConstString
-		Modules = "FarNet:FarManager:Modules",
-		DisableGui = "FarNet:FarManager:DisableGui";
-public:
-	static bool GetBool(String^ key);
-	static String^ GetString(String^ key);
-};
-
 }
 
 // Helpers

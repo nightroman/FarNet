@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
-FarNet 5.9.0
+
+= 2.0.7 =
+
+Requires FarNet 6.0.6
+- Use new module item ids.
+- Build as ALC module (see FarNet 6.0.6).
 
 = 2.0.6 =
 

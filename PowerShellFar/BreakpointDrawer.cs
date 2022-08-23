@@ -13,8 +13,7 @@ namespace PowerShellFar
 	/// <summary>
 	/// PowerShell breakpoint drawer.
 	/// </summary>
-	[ModuleDrawer(Name = "PowerShell breakpoints", Mask = "*.ps1;*.psm1", Priority = 1)]
-	[System.Runtime.InteropServices.Guid("67db13c5-6b7b-4936-b984-e59db08e23c7")]
+	[ModuleDrawer(Name = "PowerShell breakpoints", Mask = "*.ps1;*.psm1", Priority = 1, Id = "67db13c5-6b7b-4936-b984-e59db08e23c7")]
 	public class BreakpointDrawer : ModuleDrawer
 	{
 		/// <inheritdoc/>

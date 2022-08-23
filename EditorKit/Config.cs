@@ -10,8 +10,7 @@ using System.IO;
 
 namespace EditorKit;
 
-[System.Runtime.InteropServices.Guid("961AC212-9A24-44B4-9E61-24818971457D")]
-[ModuleEditor(Name = "EditorConfig", Mask = "*")]
+[ModuleEditor(Name = "EditorConfig", Mask = "*", Id = "961AC212-9A24-44B4-9E61-24818971457D")]
 public class Config : ModuleEditor
 {
 	const string key_trim_trailing_whitespace = "trim_trailing_whitespace";

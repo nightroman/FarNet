@@ -10,17 +10,14 @@ param(
 
 Set-StrictMode -Version 3
 $ModuleName = 'EditorKit'
-$ModuleHome = "$FarHome\FarNet\Modules\$ModuleName"
+$ModuleRoot = "$FarHome\FarNet\Modules\$ModuleName"
 
 task build meta, {
 	exec { dotnet build "$ModuleName.csproj" "/p:FarHome=$FarHome" "/p:Configuration=$Configuration" }
 }
 
 task publish {
-	exec { dotnet publish "$ModuleName.csproj" -c $Configuration -o $ModuleHome --no-build }
-
-	Set-Location $ModuleHome
-	Remove-Item "$ModuleName.deps.json"
+	exec { dotnet publish "$ModuleName.csproj" -c $Configuration -o $ModuleRoot --no-build }
 }
 
 task clean {
@@ -61,7 +58,10 @@ task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props -Jobs v
 task package markdown, {
 	remove z
 	$toModule = mkdir "z\tools\FarHome\FarNet\Modules\$ModuleName"
-	$fromModule = "$FarHome\FarNet\Modules\$ModuleName"
+
+	# module
+	exec { robocopy $ModuleRoot $toModule /s /xf *.pdb } (0..2)
+	equals 4 (Get-ChildItem $toModule -Recurse -File).Count
 
 	# logo
 	Copy-Item -Destination z ..\Zoo\FarNetLogo.png
@@ -71,8 +71,6 @@ task package markdown, {
 		'README.htm'
 		'History.txt'
 		'..\LICENSE'
-		"$fromModule\$ModuleName.dll"
-		"$fromModule\EditorConfig.core.dll"
 	)
 }
 

@@ -97,24 +97,32 @@ void Far0::Start()
 {
 	try
 	{
+		Log::Source->TraceInformation("Start..");
+		auto sw = Stopwatch::StartNew();
+
 		// inject
 		Far::Api = gcnew Far1();
 		Works::Far2::Api = gcnew Far2();
 		Works::Host::Instance = gcnew Host();
 
 		// module folder
-		auto path = Configuration::GetString(Configuration::Modules);
-		if (!path)
-			path = Environment::ExpandEnvironmentVariables("%FARHOME%\\FarNet\\Modules");
+		auto path = Environment::ExpandEnvironmentVariables("%FARHOME%\\FarNet\\Modules");
 
 		// load modules
 		Works::ModuleLoader().LoadModules(path);
+
+		Log::Source->TraceInformation("Started {0}", sw->Elapsed);
 	}
 	catch (Exception^ ex)
 	{
-		if (Far::Api && Far::Api->UI)
-			Far::Api->UI->WriteLine(ex->Message, ConsoleColor::Red);
+		Console::WriteLine(ex->ToString());
+		Console::ReadLine();
 	}
+}
+
+Assembly^ Far0::ResolveAssembly(String^ name, ResolveEventArgs^ args)
+{
+	return Works::AssemblyResolver::ResolveAssembly(name, args);
 }
 
 //! Don't use Far UI

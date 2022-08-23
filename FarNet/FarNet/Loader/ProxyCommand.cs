@@ -7,7 +7,7 @@ using System.IO;
 
 namespace FarNet.Works;
 
-public sealed class ProxyCommand : ProxyAction, IModuleCommand
+sealed class ProxyCommand : ProxyAction, IModuleCommand
 {
 	string _Prefix;
 	readonly EventHandler<ModuleCommandEventArgs> _Handler;

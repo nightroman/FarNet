@@ -7,7 +7,7 @@ using System.IO;
 
 namespace FarNet.Works;
 
-public sealed class ProxyEditor : ProxyAction, IModuleEditor
+sealed class ProxyEditor : ProxyAction, IModuleEditor
 {
 	string _Mask;
 

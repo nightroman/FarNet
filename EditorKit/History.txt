@@ -1,5 +1,11 @@
 FarNet.EditorKit
 
+= 0.1.2 =
+
+Requires FarNet 6.0.6
+- Use new module item ids.
+- Build as ALC module (see FarNet 6.0.6).
+
 = 0.1.1 =
 
 editorconfig 0.13.0

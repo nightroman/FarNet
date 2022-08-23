@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 
 namespace FarNet.Works;
 
-public abstract class ProxyAction : IModuleAction
+abstract class ProxyAction : IModuleAction
 {
 	string _ClassName;
 	Type _ClassType;
@@ -68,19 +68,27 @@ public abstract class ProxyAction : IModuleAction
 
 		object[] attrs;
 
-		// Guid attribute. Do not Type.GUID, make sure Guid is used.
-		attrs = _ClassType.GetCustomAttributes(typeof(GuidAttribute), false);
-		if (attrs.Length == 0)
-			throw new ModuleException($"Use '{typeof(GuidAttribute).FullName}' attribute for '{_ClassType.Name}'.");
-
-		_Id = new Guid(((GuidAttribute)attrs[0]).Value);
-
 		// Module* attribure
 		attrs = _ClassType.GetCustomAttributes(attributeType, false);
 		if (attrs.Length == 0)
-			throw new ModuleException($"Use '{attributeType.FullName}' attribute for '{_ClassType.Name}' class.");
+			throw new ModuleException($"{_ClassType.FullName} must use {attributeType.FullName}.");
 
 		Attribute = (ModuleActionAttribute)attrs[0];
+
+		if (Attribute.Id is null)
+		{
+			// Legacy Guid attribute.
+			attrs = _ClassType.GetCustomAttributes(typeof(GuidAttribute), false);
+			if (attrs.Length == 0)
+				throw new ModuleException($"{_ClassType.FullName} must specify {attributeType.FullName} Id.");
+
+			_Id = new Guid(((GuidAttribute)attrs[0]).Value);
+		}
+		else
+		{
+			if (!Guid.TryParse(Attribute.Id, out _Id))
+				throw new ModuleException($"{_ClassType.FullName}: {attributeType.FullName} uses invalid GUID as Id.");
+		}
 
 		Initialize();
 
@@ -104,10 +112,7 @@ public abstract class ProxyAction : IModuleAction
 		// compile its default constructor
 		// Faster than Activator.CreateInstance for 2+ calls.
 		// For singletons still use Activator.CreateInstance.
-		if (_Constructor is null)
-		{
-			_Constructor = Expression.Lambda<Func<object>>(Expression.New(_ClassType)).Compile();
-		}
+		_Constructor ??= Expression.Lambda<Func<object>>(Expression.New(_ClassType)).Compile();
 
 		// get new instance
 		return _Constructor();
@@ -116,7 +121,7 @@ public abstract class ProxyAction : IModuleAction
 	void Initialize()
 	{
 		if (string.IsNullOrEmpty(Attribute.Name))
-			throw new ModuleException("Module action name cannot be empty.");
+			throw new ModuleException($"{_ClassType.FullName} must set action Name.");
 	}
 
 	internal void Invoking()

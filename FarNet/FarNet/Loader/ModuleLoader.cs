@@ -11,21 +11,21 @@ using System.Reflection;
 
 namespace FarNet.Works;
 
+///
 public class ModuleLoader
 {
 	static readonly SortedList<string, ModuleManager> _Managers = new(StringComparer.OrdinalIgnoreCase);
 	ModuleCache _Cache;
 
+	///
 	public ModuleLoader()
 	{
 		// read the cache
 		_Cache = new ModuleCache();
 	}
 
-	/// <summary>
-	/// Loads modules from the root directory.
-	/// </summary>
-	/// <param name="rootPath">The root module directory path.</param>
+	///
+	// Loads modules from the root directory.
 	public void LoadModules(string rootPath)
 	{
 		// config
@@ -54,10 +54,7 @@ public class ModuleLoader
 		Config.Default.Reset();
 	}
 
-	/// <summary>
-	/// Loads the module assembly.
-	/// </summary>
-	/// <param name="assemblyPath">The assembly path to load a module from.</param>
+	// Loads the module assembly.
 	void LoadModule(string assemblyPath, Config.Data config)
 	{
 		// use the file info to reduce file access
@@ -109,11 +106,8 @@ public class ModuleLoader
 		}
 	}
 
-	/// <summary>
-	/// Loads the module from cache.
-	/// </summary>
-	/// <param name="assemblyFileInfo">Module file information.</param>
-	/// <returns>True if the module has been loaded from the cache.</returns>
+	// Loads the module from cache.
+	// True if the module has been loaded from the cache.
 	bool LoadModuleFromCache(FileInfo assemblyFileInfo, Config.Data config)
 	{
 		var assemblyPath = assemblyFileInfo.FullName;
@@ -202,9 +196,7 @@ public class ModuleLoader
 		}
 	}
 
-	/// <summary>
-	/// Loads one of <see cref="BaseModuleItem"/> types.
-	/// </summary>
+	// Loads one of <see cref="BaseModuleItem"/> types.
 	static void LoadModuleItemType(ModuleManager manager, Type type, Config.Module config)
 	{
 		// command
@@ -261,6 +253,7 @@ public class ModuleLoader
 		_Cache.Set(manager.AssemblyPath, manager);
 	}
 
+	///
 	public static bool CanExit()
 	{
 		foreach (ModuleManager manager in _Managers.Values)
@@ -272,6 +265,7 @@ public class ModuleLoader
 		return true;
 	}
 
+	///
 	public static List<IModuleManager> GatherModuleManagers()
 	{
 		var result = new List<IModuleManager>(_Managers.Count);
@@ -288,15 +282,16 @@ public class ModuleLoader
 
 		// 1) gather its actions
 		var actions = new List<ProxyAction>();
-		foreach (ProxyAction action in Host.Actions.Values)
-			if (action.Manager == manager)
-				actions.Add(action);
+		foreach (IModuleAction action in Host.Actions.Values)
+			if (ReferenceEquals(action.Manager, manager))
+				actions.Add((ProxyAction)action);
 
 		// 2) unregister its actions
 		foreach (ProxyAction action in actions)
 			action.Unregister();
 	}
 
+	///
 	//! Don't use Far UI
 	public static void UnloadModules()
 	{
@@ -308,6 +303,7 @@ public class ModuleLoader
 		Debug.Assert(Host.Actions.Count == 0);
 	}
 
+	///
 	public static IModuleManager GetModuleManager(string name)
 	{
 		if (_Managers.TryGetValue(name, out ModuleManager manager))

@@ -10,25 +10,24 @@ param(
 
 Set-StrictMode -Version 3
 $ModuleName = 'RightWords'
-$ModuleHome = "$FarHome\FarNet\Modules\$ModuleName"
+$ModuleRoot = "$FarHome\FarNet\Modules\$ModuleName"
 
 task build meta, {
 	exec { dotnet build -c $Configuration /p:FarHome=$FarHome }
 }
 
 task publish {
-	exec { dotnet publish "$ModuleName.csproj" -c $Configuration -o $ModuleHome --no-build }
-	Remove-Item -LiteralPath "$ModuleHome\$ModuleName.deps.json"
+	exec { dotnet publish "$ModuleName.csproj" -c $Configuration -o $ModuleRoot --no-build }
 },
 help,
 resgen
 
 task help @{
 	Inputs = 'README.md'
-	Outputs = "$ModuleHome\RightWords.hlf"
+	Outputs = "$ModuleRoot\RightWords.hlf"
 	Jobs = {
 		exec { pandoc.exe README.md --output=z.htm --from=gfm }
-		exec { HtmlToFarHelp from=z.htm to=$ModuleHome\RightWords.hlf }
+		exec { HtmlToFarHelp from=z.htm to=$ModuleRoot\RightWords.hlf }
 		remove z.htm
 	}
 }
@@ -36,7 +35,7 @@ task help @{
 # https://github.com/nightroman/PowerShelf/blob/master/Invoke-Environment.ps1
 task resgen @{
 	Inputs = 'RightWords.restext', 'RightWords.ru.restext'
-	Outputs = "$ModuleHome\RightWords.resources", "$ModuleHome\RightWords.ru.resources"
+	Outputs = "$ModuleRoot\RightWords.resources", "$ModuleRoot\RightWords.ru.resources"
 	Partial = $true
 	Jobs = {
 		begin {
@@ -70,12 +69,16 @@ task version {
 }
 
 task package markdown, version, {
-	$dll = Get-Item "$ModuleHome\RightWords.dll"
+	$dll = Get-Item "$ModuleRoot\RightWords.dll"
 	assert ($dll.VersionInfo.FileVersion -match '^(\d+\.\d+\.\d+)\.0$')
 	equals ($matches[1]) $script:Version
 
 	remove z
 	$toModule = mkdir "z\tools\FarHome\FarNet\Modules\$ModuleName"
+
+	# module
+	exec { robocopy $ModuleRoot $toModule /s /xf *.pdb } (0..2)
+	equals 7 (Get-ChildItem $toModule -Recurse -File).Count
 
 	# logo
 	Copy-Item -Destination z ..\Zoo\FarNetLogo.png
@@ -84,13 +87,8 @@ task package markdown, version, {
 	Copy-Item -Destination $toModule @(
 		"README.htm"
 		"History.txt"
-		"LICENSE"
+		"..\LICENSE"
 		"RightWords.macro.lua"
-		"$ModuleHome\RightWords.dll"
-		"$ModuleHome\RightWords.hlf"
-		"$ModuleHome\RightWords.resources"
-		"$ModuleHome\RightWords.ru.resources"
-		"$ModuleHome\WeCantSpell.Hunspell.dll"
 	)
 }
 

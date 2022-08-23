@@ -7,7 +7,7 @@ using System.IO;
 
 namespace FarNet.Works;
 
-public sealed class ProxyDrawer : ProxyAction, IModuleDrawer
+sealed class ProxyDrawer : ProxyAction, IModuleDrawer
 {
 	readonly Action<IEditor, ModuleDrawerEventArgs> _Handler;
 	string _Mask;

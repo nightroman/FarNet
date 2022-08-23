@@ -15,7 +15,6 @@ FarHome\FarNet\FarNet.dll
 FarHome\FarNet\FarNet.Works.Config.dll
 FarHome\FarNet\FarNet.Works.Dialog.dll
 FarHome\FarNet\FarNet.Works.Editor.dll
-FarHome\FarNet\FarNet.Works.Loader.dll
 FarHome\FarNet\FarNet.Works.Panels.dll
 FarHome\FarNet\FarNet.xml
 FarHome\FarNet\FarNetAPI.chm

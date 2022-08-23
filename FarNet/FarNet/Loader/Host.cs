@@ -7,25 +7,43 @@ using System.Collections.Generic;
 
 namespace FarNet.Works;
 
+///
 public abstract class Host
 {
-	public static Dictionary<Guid, IModuleAction> Actions { get; } = new();
-	public static Host Instance { get; set; }
+	static Host _Host;
 
+	///
+	public static Host Instance
+	{
+		get => _Host;
+		set => _Host = _Host == null ? value : throw new InvalidOperationException();
+	}
+
+	///
+	public static Dictionary<Guid, IModuleAction> Actions { get; } = new();
+
+	///
 	public abstract void RegisterProxyCommand(IModuleCommand info);
 
+	///
 	public abstract void RegisterProxyDrawer(IModuleDrawer info);
 
+	///
 	public abstract void RegisterProxyEditor(IModuleEditor info);
 
+	///
 	public abstract void RegisterProxyTool(IModuleTool info);
 
+	///
 	public abstract void UnregisterProxyAction(IModuleAction action);
 
+	///
 	public abstract void UnregisterProxyTool(IModuleTool tool);
 
+	///
 	public abstract void InvalidateProxyCommand();
 
+	///
 	public static List<IModuleTool> ListTools()
 	{
 		var tools = new List<IModuleTool>(Actions.Count);
@@ -35,6 +53,7 @@ public abstract class Host
 		return tools;
 	}
 
+	///
 	public static IModuleTool[] GetTools(ModuleToolOptions option)
 	{
 		var tools = new List<IModuleTool>(Actions.Count);

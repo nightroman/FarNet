@@ -7,7 +7,7 @@ using System.IO;
 
 namespace FarNet.Works;
 
-public partial class ModuleManager
+partial class ModuleManager
 {
 	/// <summary>
 	/// Stored in cache.

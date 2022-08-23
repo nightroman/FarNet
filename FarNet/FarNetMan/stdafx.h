@@ -15,9 +15,6 @@ enum AppState
 
 extern AppState g_AppState;
 
-// Deny .NET
-#define Console stop_Console
-
 // Deny Far
 #define ACTL_GETWINDOWINFO stop_ACTL_GETWINDOWINFO
 #define DM_GETDLGITEM stop_DM_GETDLGITEM

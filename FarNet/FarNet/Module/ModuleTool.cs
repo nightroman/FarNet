@@ -10,10 +10,9 @@ namespace FarNet;
 /// <remarks>
 /// The <see cref="Invoke"/> method has to be implemented.
 /// <para>
-/// Use <see cref="ModuleToolAttribute"/> and specify the <see cref="ModuleActionAttribute.Name"/>
-/// and the menu areas <see cref="ModuleToolAttribute.Options"/>.
+/// Use <see cref="ModuleToolAttribute"/> and specify <see cref="ModuleActionAttribute.Id"/>,
+/// <see cref="ModuleActionAttribute.Name"/> and the menu areas as <see cref="ModuleToolAttribute.Options"/>.
 /// </para>
-/// <include file='doc.xml' path='doc/ActionGuid/*'/>
 /// </remarks>
 public abstract class ModuleTool : ModuleAction
 {

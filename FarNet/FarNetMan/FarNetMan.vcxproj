@@ -198,12 +198,6 @@
       <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\FarNet.Works.Loader\FarNet.Works.Loader.csproj">
-      <Project>{516a2d89-4e77-4f24-89c2-a6d9e1c36998}</Project>
-      <Private>false</Private>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-    </ProjectReference>
     <ProjectReference Include="..\FarNet.Works.Dialog\FarNet.Works.Dialog.csproj">
       <Project>{0be8f8d1-f15a-4c53-bd71-4bc6e5005ef7}</Project>
       <Private>false</Private>
