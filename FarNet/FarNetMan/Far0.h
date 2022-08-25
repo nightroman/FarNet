@@ -14,7 +14,6 @@ public:
 	static void AsGetPluginInfo(PluginInfo* pi);
 	static void AsProcessSynchroEvent(const ProcessSynchroEventInfo* info);
 public:
-	static Assembly^ ResolveAssembly(String^ name, ResolveEventArgs^ args);
 	static void InvokeModuleEditors(IEditor^ editor, const wchar_t* fileName);
 	static void RegisterProxyCommand(IModuleCommand^ info);
 	static void RegisterProxyDrawer(IModuleDrawer^ info);

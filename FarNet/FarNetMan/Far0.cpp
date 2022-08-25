@@ -120,10 +120,6 @@ void Far0::Start()
 	}
 }
 
-Assembly^ Far0::ResolveAssembly(String^ name, ResolveEventArgs^ args)
-{
-	return Works::AssemblyResolver::ResolveAssembly(name, args);
-}
 
 //! Don't use Far UI
 void Far0::Stop()

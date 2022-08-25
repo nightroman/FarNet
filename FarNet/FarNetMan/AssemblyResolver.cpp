@@ -4,10 +4,15 @@
 
 #include "stdafx.h"
 #include "AssemblyResolver.h"
-#include "Far0.h"
 
 namespace FarNet
 {
+void AssemblyResolver::Init()
+{
+	_FarNet = Assembly::LoadFrom(Environment::ExpandEnvironmentVariables("%FARHOME%\\FarNet\\FarNet.dll"));
+	AppDomain::CurrentDomain->AssemblyResolve += gcnew ResolveEventHandler(AssemblyResolve);
+}
+
 Assembly^ AssemblyResolver::AssemblyResolve(Object^ /*sender*/, ResolveEventArgs^ args)
 {
 	// skip no caller, e.g. XmlSerializers
@@ -19,18 +24,44 @@ Assembly^ AssemblyResolver::AssemblyResolve(Object^ /*sender*/, ResolveEventArgs
 	if (name->EndsWith(".resources"))
 		return nullptr;
 
-	// load known FarNet explicitly
-	if (name == "FarNet" ||
-		name == "FarNet.Works.Config" ||
-		name == "FarNet.Works.Dialog" ||
-		name == "FarNet.Works.Editor" ||
-		name == "FarNet.Works.Panels")
+	// load FarNet assemblies explicitly
+
+	if (name == "FarNet")
+		return _FarNet;
+
+	if (name == "FarNet.Works.Config")
 	{
-		Trace::WriteLine("farnet " + name);
-		return Assembly::LoadFrom(Environment::GetEnvironmentVariable("FARHOME") + "\\FarNet\\" + name + ".dll");
+		Trace::WriteLine("farnet FarNet.Works.Config");
+		if (!_FarNetConfig)
+			_FarNetConfig = Assembly::LoadFrom(Environment::ExpandEnvironmentVariables("%FARHOME%\\FarNet\\FarNet.Works.Config.dll"));
+		return _FarNetConfig;
 	}
 
-	//! cannot reference anything from FarNet directly, use this "delayed" method
-	return Far0::ResolveAssembly(name, args);
+	if (name == "FarNet.Works.Dialog")
+	{
+		Trace::WriteLine("farnet FarNet.Works.Dialog");
+		if (!_FarNetDialog)
+			_FarNetDialog = Assembly::LoadFrom(Environment::ExpandEnvironmentVariables("%FARHOME%\\FarNet\\FarNet.Works.Dialog.dll"));
+		return _FarNetDialog;
+	}
+
+	if (name == "FarNet.Works.Editor")
+	{
+		Trace::WriteLine("farnet FarNet.Works.Editor");
+		if (!_FarNetEditor)
+			_FarNetEditor = Assembly::LoadFrom(Environment::ExpandEnvironmentVariables("%FARHOME%\\FarNet\\FarNet.Works.Editor.dll"));
+		return _FarNetEditor;
+	}
+
+	if (name == "FarNet.Works.Panels")
+	{
+		Trace::WriteLine("farnet FarNet.Works.Panels");
+		if (!_FarNetPanels)
+			_FarNetPanels = Assembly::LoadFrom(Environment::ExpandEnvironmentVariables("%FARHOME%\\FarNet\\FarNet.Works.Panels.dll"));
+		return _FarNetPanels;
+	}
+
+	// resolve other assemblies
+	return Works::AssemblyResolver::ResolveAssembly(name, args);
 }
 }

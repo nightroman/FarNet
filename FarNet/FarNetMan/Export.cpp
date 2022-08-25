@@ -48,7 +48,7 @@ void WINAPI SetStartupInfoW(const PluginStartupInfo* psi)
 
 	// loading
 	g_AppState = AppState::Loading;
-	AppDomain::CurrentDomain->AssemblyResolve += gcnew ResolveEventHandler(AssemblyResolver::AssemblyResolve);
+	AssemblyResolver::Init();
 
 #ifdef TRACE_MEMORY
 	StartTraceMemory();

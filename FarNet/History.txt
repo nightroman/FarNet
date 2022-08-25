@@ -1,6 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 6.0.8 =
+
+Amend assembly resolver, fix module debugging.
+
 = 6.0.7 =
 
 - Use code page 65001 for editing XML settings.
