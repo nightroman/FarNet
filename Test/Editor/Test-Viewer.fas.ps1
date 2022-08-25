@@ -8,8 +8,8 @@
 #>
 
 $Data.Log = ''
-$Data.File1 = "$env:FarHome\FarNet\FarNet.Works.Config.dll"
-$Data.File2 = "$env:FarHome\FarNet\FarNet.Works.Dialog.dll"
+$Data.File1 = "$env:FarHome\FarNet\FarNet.dll"
+$Data.File2 = "$env:FarHome\FarNet\FarNet.pdb"
 $Data.Opened = [EventHandler]{ $Data.Log += 'Opened:{0};' -f $this.FileName }
 $Data.Closed = [EventHandler]{ $Data.Log += 'Closed:{0};' -f $this.FileName }
 

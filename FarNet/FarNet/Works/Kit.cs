@@ -9,15 +9,10 @@ using System.IO;
 using System.Text.RegularExpressions;
 
 namespace FarNet.Works;
+#pragma warning disable 1591
 
-/// <summary>
-/// INTERNAL
-/// </summary>
 public static class Kit
 {
-	/// <summary>
-	/// INTERNAL
-	/// </summary>
 	// Joins two strings with a space. Either string may be null or empty.
 	public static string JoinText(string head, string tail)
 	{
@@ -28,9 +23,6 @@ public static class Kit
 		return head + " " + tail;
 	}
 
-	/// <summary>
-	/// INTERNAL
-	/// </summary>
 	public static Exception UnwrapAggregateException(Exception exn)
 	{
 		if (exn is AggregateException aggregate && aggregate.InnerExceptions.Count == 1)
@@ -39,9 +31,7 @@ public static class Kit
 			return exn;
 	}
 
-	/// <summary>
-	/// %TEMP%\GUID.tmp or GUID.extension
-	/// </summary>
+	// %TEMP%\GUID.tmp or GUID.extension
 	public static string TempFileName(string extension)
 	{
 		var name = Guid.NewGuid().ToString("N");
@@ -54,9 +44,6 @@ public static class Kit
 		return Path.GetTempPath() + name;
 	}
 
-	/// <summary>
-	/// INTERNAL
-	/// </summary>
 	public static string[] SplitLines(string value)
 	{
 		if (value == null)
@@ -66,17 +53,12 @@ public static class Kit
 		return value.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
 	}
 
-	/// <summary>
-	/// INTERNAL
-	/// </summary>
-	/// <param name="lines">Output lines.</param>
-	/// <param name="message">Input string.</param>
-	/// <param name="width">Maximum line width.</param>
-	/// <param name="height">Maximum line count (message text area height).</param>
-	/// <param name="mode">Formatting mode.</param>
-	/// <remarks>
-	/// Formats the string as a limited number of lines of limited width.
-	/// </remarks>
+	// Formats the string as a limited number of lines of limited width.
+	// lines Output lines.
+	// message Input string.
+	// width Maximum line width.
+	// height Maximum line count (message text area height).
+	// mode Formatting mode.
 	public static void FormatMessage(IList<string> lines, string message, int width, int height, FormatMessageMode mode)
 	{
 		if (lines == null) throw new ArgumentNullException("lines");
@@ -113,9 +95,7 @@ public static class Kit
 		}
 	}
 
-	/// <summary>
-	/// INTERNAL Hashes the files using the comparer, counts dupes.
-	/// </summary>
+	// Hashes the files using the comparer, counts dupes.
 	public static Dictionary<FarFile, int> HashFiles(IEnumerable files, IEqualityComparer<FarFile> comparer)
 	{
 		if (files == null) throw new ArgumentNullException("files");
@@ -135,9 +115,7 @@ public static class Kit
 		return hash;
 	}
 
-	/// <summary>
-	/// Gets true if a string is not a valid file system file name.
-	/// </summary>
+	// Gets true if a string is not a valid file system file name.
 	public static bool IsInvalidFileName(string name)
 	{
 		if (string.IsNullOrEmpty(name))
@@ -150,11 +128,9 @@ public static class Kit
 	}
 	static Regex _invalidName;
 
-	/// <summary>
-	/// Interactively fixes an invalid file name.
-	/// </summary>
-	/// <param name="name">An invalid file name.</param>
-	/// <returns>A valid file name or null if canceled.</returns>
+	// Interactively fixes an invalid file name.
+	// name An invalid file name.
+	// returns A valid file name or null if canceled.
 	public static string FixInvalidFileName(string name)
 	{
 		for (; ; )
@@ -170,8 +146,6 @@ public static class Kit
 		}
 	}
 
-	/// <summary>
-	/// Gets or sets the default macro output mode.
-	/// </summary>
+	// Gets or sets the default macro output mode.
 	public static bool MacroOutput { get; set; }
 }

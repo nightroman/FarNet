@@ -12,10 +12,6 @@ $FarHome = "C:\Bin\Far\$Platform"
 
 $script:Builds = @(
 	'FarNet\.build.ps1'
-	'FarNet.Works.Config\.build.ps1'
-	'FarNet.Works.Dialog\.build.ps1'
-	'FarNet.Works.Editor\.build.ps1'
-	'FarNet.Works.Panels\.build.ps1'
 	'FarNetMan\.build.ps1'
 )
 
@@ -93,10 +89,6 @@ task package beginPackage, helpHTM, {
 		'..\LICENSE'
 		"$FarHome\FarNet\FarNet.dll"
 		"$FarHome\FarNet\FarNet.xml"
-		"$FarHome\FarNet\FarNet.Works.Config.dll"
-		"$FarHome\FarNet\FarNet.Works.Dialog.dll"
-		"$FarHome\FarNet\FarNet.Works.Editor.dll"
-		"$FarHome\FarNet\FarNet.Works.Panels.dll"
 		"$FarHome\FarNet\FarNetAPI.chm"
 	)
 	Copy-Item -Destination z\tools\FarHome\Plugins\FarNet @(

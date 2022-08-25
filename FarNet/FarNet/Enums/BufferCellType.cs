@@ -3,18 +3,13 @@
 // Copyright (c) Roman Kuzmin
 
 namespace FarNet.Works;
+#pragma warning disable 1591
 
-/// <summary>
-/// INTERNAL
-/// </summary>
 public enum BufferCellType
 {
-	///
 	Complete = 0,
 
-	///
 	Leading = 1,
 
-	///
 	Trailing = 2,
 }

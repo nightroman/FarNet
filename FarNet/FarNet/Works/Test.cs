@@ -5,10 +5,8 @@
 using System;
 
 namespace FarNet.Works;
+#pragma warning disable 1591
 
-/// <summary>
-/// INTERNAL
-/// </summary>
 public static class Test
 {
 	static void AssertNormalPanel(IPanel panel, string active)
@@ -27,9 +25,6 @@ public static class Test
 		}
 	}
 
-	/// <summary>
-	/// INTERNAL
-	/// </summary>
 	public static void AssertNormalState()
 	{
 		//! test kind first

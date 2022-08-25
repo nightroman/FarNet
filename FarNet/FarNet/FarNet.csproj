@@ -11,6 +11,7 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <ItemGroup>
       <MyItem1 Include="$(OutDir)\$(AssemblyName).dll" />
+      <MyItem1 Include="$(OutDir)\$(AssemblyName).pdb" />
       <MyItem1 Include="$(OutDir)\$(AssemblyName).xml" />
     </ItemGroup>
     <Copy DestinationFolder="$(MyOutDir)" SourceFiles="@(MyItem1)" SkipUnchangedFiles="true" />

@@ -5,14 +5,10 @@
 using System;
 
 namespace FarNet.Works;
+#pragma warning disable 1591
 
-/// <summary>
-/// INTERNAL
-/// </summary>
 public struct BufferCell
 {
-
-	///
 	public BufferCell(char character, ConsoleColor foreground, ConsoleColor background, BufferCellType bufferCellType)
 	{
 		Character = character;
@@ -21,25 +17,18 @@ public struct BufferCell
 		BufferCellType = bufferCellType;
 	}
 
-	///
 	public char Character { get; set; }
 
-	///
 	public ConsoleColor ForegroundColor { get; set; }
 
-	///
 	public ConsoleColor BackgroundColor { get; set; }
 
-	///
 	public BufferCellType BufferCellType { get; set; }
 
-	///
 	public static bool operator ==(BufferCell first, BufferCell second) => (first.Character == second.Character) && (first.BackgroundColor == second.BackgroundColor) && (first.ForegroundColor == second.ForegroundColor) && (first.BufferCellType == second.BufferCellType);
 
-	///
 	public static bool operator !=(BufferCell first, BufferCell second) => !(first == second);
 
-	/// <inheritdoc/>
 	public override bool Equals(object obj)
 	{
 		bool flag = false;
@@ -48,7 +37,6 @@ public struct BufferCell
 		return flag;
 	}
 
-	/// <inheritdoc/>
 	public override int GetHashCode()
 	{
 		uint num = ((uint)(ForegroundColor ^ BackgroundColor)) << 0x10;
@@ -56,7 +44,6 @@ public struct BufferCell
 		return num.GetHashCode();
 	}
 
-	///
 	public override string ToString()
 	{
 		return string.Format(null, "'{0}' {1} {2} {3}", new object[] { Character, ForegroundColor, BackgroundColor, BufferCellType });

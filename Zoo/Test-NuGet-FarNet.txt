@@ -12,10 +12,6 @@ FarHome.x86\Plugins\FarNet\Ijwhost.dll
 FarHome\FarNet
 FarHome\FarNet\About-FarNet.htm
 FarHome\FarNet\FarNet.dll
-FarHome\FarNet\FarNet.Works.Config.dll
-FarHome\FarNet\FarNet.Works.Dialog.dll
-FarHome\FarNet\FarNet.Works.Editor.dll
-FarHome\FarNet\FarNet.Works.Panels.dll
 FarHome\FarNet\FarNet.xml
 FarHome\FarNet\FarNetAPI.chm
 FarHome\FarNet\History.txt

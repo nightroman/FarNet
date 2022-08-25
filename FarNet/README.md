@@ -60,26 +60,27 @@ How to install and update FarNet and modules:
 
 ---
 
-**Installed files**
+**Files and folders**
 
-*%FARHOME%\Plugins\FarNet*
+`%FARHOME%\Plugins\FarNet`
 
-- *FarNetMan.dll* - Far Manager plugin and module manager
-- *FarNetMan.hlf* - FarNet UI help
-- *Ijwhost.dll* - .NET Core host
+- `FarNetMan.dll` - FarNet manager
+- `FarNetMan.hlf` - plugin help
+- `Ijwhost.dll` - .NET Core
 
-*%FARHOME%\FarNet*
+`%FARHOME%\FarNet`
 
-- *FarNet.dll*, *FarNet.xml* - FarNet API for .NET modules with XML docs.
-- *FarNet...dll* - FarNet libraries used internally by the core.
+- `FarNet.dll` - FarNet API and runtime
+- `FarNet.xml` - FarNet API comments
+- `FarNetAPI.chm` - FarNet API help
 
-*%FARHOME%\FarNet\Modules*
+`%FARHOME%\FarNet\Modules`
 
-- FarNet modules.
+- FarNet modules, each folder is a module
 
-*%FARHOME%\FarNet\Lib*
+`%FARHOME%\FarNet\Lib`
 
-- FarNet shared libraries.
+- FarNet packages for common use
 
 *********************************************************************
 ## Commands in macros

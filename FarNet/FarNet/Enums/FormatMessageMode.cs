@@ -3,19 +3,13 @@
 // Copyright (c) Roman Kuzmin
 
 namespace FarNet.Works;
+#pragma warning disable 1591
 
-/// <summary>
-/// INTERNAL
-/// </summary>
 public enum FormatMessageMode
 {
-	/// <summary>
-	/// Cut wide lines.
-	/// </summary>
+	// Cut wide lines.
 	Cut,
 
-	/// <summary>
-	/// Wrap lines by words.
-	/// </summary>
+	// Wrap lines by words.
 	Word
 }

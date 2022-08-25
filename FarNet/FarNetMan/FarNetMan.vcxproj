@@ -192,30 +192,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FarNet.Works.Config\FarNet.Works.Config.csproj">
-      <Project>{752846b8-08b9-4d22-97b5-0f2c8020fb51}</Project>
-      <Private>false</Private>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-    </ProjectReference>
-    <ProjectReference Include="..\FarNet.Works.Dialog\FarNet.Works.Dialog.csproj">
-      <Project>{0be8f8d1-f15a-4c53-bd71-4bc6e5005ef7}</Project>
-      <Private>false</Private>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-    </ProjectReference>
-    <ProjectReference Include="..\FarNet.Works.Editor\FarNet.Works.Editor.csproj">
-      <Project>{e95736ad-a80b-42d0-be74-095f7a558bc0}</Project>
-      <Private>false</Private>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-    </ProjectReference>
-    <ProjectReference Include="..\FarNet.Works.Panels\FarNet.Works.Panels.csproj">
-      <Project>{054f6ff3-f3f6-41ca-b2af-d791411261d1}</Project>
-      <Private>false</Private>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-    </ProjectReference>
     <ProjectReference Include="..\FarNet\FarNet.csproj">
       <Project>{264744c1-b6ff-4b75-8ad0-0920bccff3d3}</Project>
       <Private>false</Private>
