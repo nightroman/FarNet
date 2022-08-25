@@ -16,10 +16,9 @@
   </ItemGroup>
   <ItemGroup>
     <MyItem Include="$(OutDir)\$(AssemblyName).dll" />
-    <MyItem Include="$(OutDir)\$(AssemblyName).pdb" Condition="'$(Configuration)' == 'Debug'" />
+    <MyItem Include="$(OutDir)\$(AssemblyName).pdb" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Copy DestinationFolder="$(MyOutDir)" SourceFiles="@(MyItem)" SkipUnchangedFiles="true" />
-    <Delete Files="$(MyOutDir)\$(AssemblyName).pdb" Condition="'$(Configuration)' == 'Release'" />
   </Target>
 </Project>

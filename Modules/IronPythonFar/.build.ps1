@@ -11,16 +11,16 @@ param(
 
 Set-StrictMode -Version 3
 $ModuleName = 'IronPythonFar'
-$ModuleHome = "$FarNetModules\$ModuleName"
+$ModuleRoot = "$FarNetModules\$ModuleName"
 
 task build {
-	exec { dotnet build -c $Configuration /p:FarHome=$FarHome /p:FarNetModules=$FarNetModules }
+	exec { dotnet build -c $Configuration -p:FarHome=$FarHome -p:FarNetModules=$FarNetModules }
 }
 
 task publish {
-	exec { dotnet publish "$ModuleName.csproj" -c $Configuration -o $ModuleHome --no-build }
+	exec { dotnet publish "$ModuleName.csproj" -c $Configuration -o $ModuleRoot --no-build }
 
-	Set-Location $ModuleHome
+	Set-Location $ModuleRoot
 	Remove-Item "$ModuleName.deps.json"
 
 	Set-Location runtimes

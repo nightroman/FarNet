@@ -49,8 +49,9 @@ task buildFarNet -If {
 	Build-FarNet.ps1 -Reset
 }
 
+#! run when push=2 as well, or help file is missing -> assert
 task buildPsfHelp -If {
-	($Push -in (1, 3)) -and $env:FarNetToBuildPowerShellFarHelp -and (ask 'Build PowerShellFar help')
+	$env:FarNetToBuildPowerShellFarHelp -and (ask 'Build PowerShellFar help')
 } {
 	Start-Far 'ps: Invoke-Build help; $Far.Quit() #' -Panel1 $env:FarNetCode\PowerShellFar -Title buildPsfHelp -ReadOnly
 }

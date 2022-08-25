@@ -16,14 +16,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Help.en.hlf" />
-    <Content Include="Help.ru.hlf" />
+    <MyItem Include="Help.en.hlf" />
+    <MyItem Include="Help.ru.hlf" />
+    <MyItem Include="$(OutDir)\$(AssemblyName).dll" />
+    <MyItem Include="$(OutDir)\$(AssemblyName).pdb" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Copy DestinationFolder="$(MyOutDir)" SourceFiles="$(OutDir)\$(AssemblyName).dll" />
-    <Copy DestinationFolder="$(MyOutDir)" SourceFiles="$(OutDir)\$(AssemblyName).pdb" Condition="'$(Configuration)' == 'Debug'" />
-    <Delete Files="$(MyOutDir)\$(AssemblyName).pdb" Condition="'$(Configuration)' == 'Release'" />
-    <Copy DestinationFolder="$(MyOutDir)" SourceFiles="@(Content)" SkipUnchangedFiles="true" />
+    <Copy DestinationFolder="$(MyOutDir)" SourceFiles="@(MyItem)" SkipUnchangedFiles="true" />
     <!--publish last, assume output folder exists-->
     <Exec Command="ib publish -FarHome $(FarHome) -FarNetModules $(FarNetModules)" />
   </Target>

@@ -1,13 +1,11 @@
-﻿using FarNet;
+﻿
+using FarNet;
 using FarNet.Works;
-using System;
 using System.IO;
-using System.Text;
 
 namespace IronPythonFar;
 
-[System.Runtime.InteropServices.Guid("7221f8a0-6917-4264-a2fc-ea3eb7545e3c")]
-[ModuleEditor(Name = "Editor", Mask = "*.py")]
+[ModuleEditor(Name = "Editor", Mask = "*.py", Id = "7221f8a0-6917-4264-a2fc-ea3eb7545e3c")]
 public class Editor : ModuleEditor
 {
     IEditor _editor;

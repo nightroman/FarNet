@@ -3,15 +3,11 @@
 // This module implements two items shown in the editor plugin menu.
 
 using FarNet;
-using System;
 using System.Text.RegularExpressions;
 
-[System.Runtime.InteropServices.Guid("e3b6663c-d6de-4494-9991-eafb4385fba5")]
-[ModuleTool(Name = Escape.Name, Options = ModuleToolOptions.Editor)]
+[ModuleTool(Name = "Escape selected text", Options = ModuleToolOptions.Editor, Id = "e3b6663c-d6de-4494-9991-eafb4385fba5")]
 public class Escape : ModuleTool
 {
-	public const string Name = "Escape selected text";
-
 	public override void Invoke(object sender, ModuleToolEventArgs e)
 	{
 		IEditor editor = Far.Api.Editor;
@@ -20,12 +16,9 @@ public class Escape : ModuleTool
 	}
 }
 
-[System.Runtime.InteropServices.Guid("3857bfda-96fc-4e98-8203-e8d2f4c934f5")]
-[ModuleTool(Name = Unescape.Name, Options = ModuleToolOptions.Editor)]
+[ModuleTool(Name = "Unescape selected text", Options = ModuleToolOptions.Editor, Id = "3857bfda-96fc-4e98-8203-e8d2f4c934f5")]
 public class Unescape : ModuleTool
 {
-	public const string Name = "Unescape selected text";
-
 	public override void Invoke(object sender, ModuleToolEventArgs e)
 	{
 		IEditor editor = Far.Api.Editor;

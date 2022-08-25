@@ -1,6 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 6.0.7 =
+
+- Use code page 65001 for editing XML settings.
+- Use new module ids in demo modules.
+
 = 6.0.6 =
 
 New property Id (GUID string) in module item attributes. This GUID replaces

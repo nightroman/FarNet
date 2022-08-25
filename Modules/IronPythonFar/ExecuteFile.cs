@@ -1,11 +1,11 @@
-﻿using System;
+﻿
+using System;
 using System.IO;
 using FarNet;
 
 namespace IronPythonFar;
 
-[System.Runtime.InteropServices.Guid("3b8af2c8-91ac-4e4a-a89e-6dfad756397c")]
-[ModuleCommand(Name = "Execute file", Prefix = Prefix)]
+[ModuleCommand(Name = "Execute file", Prefix = Prefix, Id = "3b8af2c8-91ac-4e4a-a89e-6dfad756397c")]
 public class ExecuteFile : ModuleCommand
 {
     const string Prefix = "ip";

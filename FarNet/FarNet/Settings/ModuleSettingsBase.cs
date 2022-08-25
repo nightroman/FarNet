@@ -132,10 +132,12 @@ public abstract class ModuleSettingsBase
 		if (!File.Exists(FileName))
 			Save(FileName, _data);
 
+		//! use CodePage, we get XML from editor and possible BOM garbage on wrong CodePage is an issue
 		var editor = Far.Api.CreateEditor();
 		editor.FileName = FileName;
 		editor.Title = $"{GetType().FullName} - {FileName}";
 		editor.DisableHistory = true;
+		editor.CodePage = 65001;
 
 		editor.Saving += (sender, args) =>
 		{

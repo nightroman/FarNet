@@ -16,7 +16,7 @@ task testBuild {
 
 	# test
 	assert (Test-Path $FarNetModules\Backslash\Backslash.dll)
-	assert ((Get-Item $FarNetModules\FarNet.Demo\*).Count -eq 5)
+	equals (Get-Item $FarNetModules\FarNet.Demo\*).Count 6
 	assert (Test-Path $FarNetModules\IronPythonFar\IronPythonFar.dll)
 	assert (Test-Path $FarNetModules\TryPanelCSharp\TryPanelCSharp.dll)
 
@@ -28,3 +28,5 @@ clean
 task clean {
 	foreach($_ in $Builds) { Invoke-Build clean $_ }
 }
+
+task . testBuild
