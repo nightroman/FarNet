@@ -6,6 +6,8 @@ using System;
 using System.Globalization;
 using System.Windows.Forms;
 
+namespace FolderChart;
+
 class FolderItem
 {
 	public string Name { get; set; }

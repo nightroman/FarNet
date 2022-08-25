@@ -1,5 +1,12 @@
 https://www.nuget.org/packages/FarNet.FolderChart
 
+= 3.0.1 =
+
+Requires FarNet 6.0.7
+- Use new module ids.
+- Build as ALC module.
+- Use net6 LinkTarget.
+
 = 3.0.0 =
 
 Requires FarNet 6, uses .NET 6.

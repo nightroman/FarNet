@@ -2,13 +2,14 @@
 // FarNet module FolderChart
 // Copyright (c) Roman Kuzmin
 
+using FarNet.Tools;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
-using FarNet.Tools;
+
+namespace FolderChart;
 
 // CONCURRENT COLLECTORS INSTEAD OF PARALLEL AGGREGATION
 // With no progress we would use aggregation of the results. It was tried and
@@ -24,37 +25,35 @@ class SizeRun
 	public IEnumerable<FolderItem> Result { get { return _Result; } }
 	public Exception[] GetErrors() { return _Errors.ToArray(); }
 
-	ConcurrentBag<FolderItem> _Result = new ConcurrentBag<FolderItem>();
-	ConcurrentBag<Exception> _Errors = new ConcurrentBag<Exception>();
-
-	ProgressForm _progress = new ProgressForm();
+	readonly ConcurrentBag<FolderItem> _Result = new();
+	readonly ConcurrentBag<Exception> _Errors = new();
+	readonly ProgressForm _progress = new();
 
 	void Check()
 	{
 		_progress.CancellationToken.ThrowIfCancellationRequested();
 	}
 
-	long CalculateFolderSize(string folder)
+	long CalculateFolderSize(DirectoryInfo folder)
 	{
 		long size = 0;
 		try
 		{
-			if (Monitor.Core.Utilities.JunctionPoint.Exists(folder))
+			if (folder.LinkTarget is not null)
 				return 0;
 
-			_progress.Activity = folder;
+			_progress.Activity = folder.FullName;
 
-			foreach (var dir in Directory.EnumerateDirectories(folder))
+			foreach (var dir in folder.EnumerateDirectories())
 			{
 				Check();
 				size += CalculateFolderSize(dir);
 			}
 
-			foreach (var file in Directory.EnumerateFiles(folder))
+			foreach (var file in folder.EnumerateFiles())
 			{
-				var info = new FileInfo(file);
-				if ((info.Attributes & FileAttributes.SparseFile) == 0)
-					size += info.Length;
+				if ((file.Attributes & FileAttributes.SparseFile) == 0)
+					size += file.Length;
 			}
 		}
 		catch (Exception ex)
@@ -75,7 +74,8 @@ class SizeRun
 				Parallel.ForEach(folders, new ParallelOptions() { CancellationToken = _progress.CancellationToken }, folder =>
 				{
 					Check();
-					_Result.Add(new FolderItem() { Name = Path.GetFileName(folder), Size = CalculateFolderSize(folder) });
+					var info = new DirectoryInfo(folder);
+					_Result.Add(new FolderItem() { Name = info.Name, Size = CalculateFolderSize(info) });
 					_progress.SetProgressValue(_Result.Count, folders.Count);
 				});
 			}
