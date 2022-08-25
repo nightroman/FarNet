@@ -5,23 +5,19 @@
 
 param(
 	$FarHome = (property FarHome C:\Bin\Far\x64),
-	$Configuration = (property Configuration Release),
-	$FarNetModules = (property FarNetModules $FarHome\FarNet\Modules)
+	$Configuration = (property Configuration Release)
 )
 
 Set-StrictMode -Version 3
 $ModuleName = 'JavaScriptFar'
-$ModuleHome = "$FarNetModules\$ModuleName"
+$ModuleRoot = "$FarHome\FarNet\Modules\$ModuleName"
 
 task build meta, {
-	exec { dotnet build -c $Configuration /p:FarHome=$FarHome /p:FarNetModules=$FarNetModules }
+	exec { dotnet build -c $Configuration -p:FarHome=$FarHome }
 }
 
 task publish {
-	exec { dotnet publish "$ModuleName.csproj" -c $Configuration -o $ModuleHome --no-build }
-
-	Set-Location $ModuleHome
-	Remove-Item "$ModuleName.deps.json"
+	exec { dotnet publish -c $Configuration -o $ModuleRoot --no-build }
 }
 
 task clean {
@@ -48,8 +44,8 @@ task package markdown, {
 	$toModule = mkdir "z\tools\FarHome\FarNet\Modules\$ModuleName"
 
 	# module
-	exec { robocopy $ModuleHome $toModule /s /xf *.pdb } (0..2)
-	equals 9 (Get-ChildItem $toModule -Recurse -File).Count
+	exec { robocopy $ModuleRoot $toModule /s /xf *.pdb } (0..2)
+	equals 11 (Get-ChildItem $toModule -Recurse -File).Count
 
 	# logo
 	Copy-Item -Destination z ..\Zoo\FarNetLogo.png

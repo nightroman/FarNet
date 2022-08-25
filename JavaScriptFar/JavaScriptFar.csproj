@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <FarHome Condition="'$(FarHome)' == ''">C:\Bin\Far\x64</FarHome>
-    <FarNetModules Condition="'$(FarNetModules)' == ''">$(FarHome)\FarNet\Modules</FarNetModules>
     <TargetFramework>net6.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
     <RunPostBuildEvent>1</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
@@ -15,6 +15,6 @@
     </Reference>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="ib publish -Configuration $(Configuration) -FarHome $(FarHome) -FarNetModules $(FarNetModules)" />
+    <Exec Command="ib publish -Configuration $(Configuration) -FarHome $(FarHome)" />
   </Target>
 </Project>

@@ -3,13 +3,11 @@
 // Copyright (c) Roman Kuzmin
 
 using FarNet;
-using System;
 using System.IO;
 
 namespace JavaScriptFar;
 
-[System.Runtime.InteropServices.Guid("e3780723-862e-4880-868c-66fc577f6fe2")]
-[ModuleTool(Name = Res.MyName, Options = ModuleToolOptions.AllMenus)]
+[ModuleTool(Name = Res.MyName, Options = ModuleToolOptions.AllMenus, Id = "e3780723-862e-4880-868c-66fc577f6fe2")]
 public class JavaScriptTool : ModuleTool
 {
 	public override void Invoke(object sender, ModuleToolEventArgs e)

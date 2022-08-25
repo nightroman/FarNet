@@ -1,5 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet.JavaScriptFar
 
+= 0.4.2 =
+
+Requires FarNet 6.0.7
+- Use new module ids.
+- Build as ALC module.
+
 = 0.4.1 =
 
 Files *.cjs and *.mjs are treated as CommonJS and Standard modules regardless

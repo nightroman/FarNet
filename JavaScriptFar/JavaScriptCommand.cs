@@ -9,8 +9,7 @@ using System.IO;
 
 namespace JavaScriptFar;
 
-[System.Runtime.InteropServices.Guid("ce853894-1ff2-4713-96d1-64cd97bc9f89")]
-[ModuleCommand(Name = "Run JavaScript", Prefix = Res.Prefix)]
+[ModuleCommand(Name = "Run JavaScript", Prefix = Res.Prefix, Id = "ce853894-1ff2-4713-96d1-64cd97bc9f89")]
 public class JavaScriptCommand : ModuleCommand
 {
 	public override void Invoke(object sender, ModuleCommandEventArgs e)

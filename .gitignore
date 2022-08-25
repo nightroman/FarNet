@@ -6,6 +6,7 @@ ipch
 Debug
 Release
 Properties
+z
 *.opendb
 *.opensdf
 *.sdf
