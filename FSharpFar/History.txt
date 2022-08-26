@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 
+= 2.0.8 =
+
+fsx: Assembly resolver: use LoadFrom, not LoadFile.
+
 = 2.0.7 =
 
 Requires FarNet 6.0.6

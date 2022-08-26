@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 6.0.12 =
+
+Make runspace opening completely background.
+As a result, Far with FarNet starts faster.
+
 = 6.0.11 =
 
 Requires FarNet 6.0.6

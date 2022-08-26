@@ -11,6 +11,7 @@ using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace PowerShellFar;
 
@@ -65,6 +66,7 @@ public sealed partial class Actor
 	}
 
 	#region Life
+	static Task OpenRunspaceTask;
 	/// <summary>
 	/// Called on connection internally.
 	/// </summary>
@@ -76,7 +78,7 @@ public sealed partial class Actor
 	internal void Connect()
 	{
 		// preload
-		OpenRunspace(false);
+		OpenRunspaceTask = Task.Run(OpenRunspace);
 
 		//! subscribe only _110301_164313
 		Console.CancelKeyPress += CancelKeyPress; //_110128_075844
@@ -124,23 +126,7 @@ public sealed partial class Actor
 		}
 	}
 
-	static ApartmentState DefaultApartmentState()
-	{
-		var envApartmentState = Environment.GetEnvironmentVariable("PSF.ApartmentState");
-		if (envApartmentState == null)
-			return ApartmentState.STA;
-
-		try
-		{
-			return (ApartmentState)Enum.Parse(typeof(ApartmentState), envApartmentState);
-		}
-		catch
-		{
-			throw new InvalidOperationException($"{Res.Me}: Invalid environment PSF.ApartmentState={envApartmentState}");
-		}
-	}
-
-	void OpenRunspace(bool sync)
+	void OpenRunspace()
 	{
 		// host and UI
 		FarUI = new FarUI();
@@ -148,155 +134,83 @@ public sealed partial class Actor
 
 		// initial state
 		var state = InitialSessionState.CreateDefault();
+		state.ApartmentState = ApartmentState.STA;
+		state.ExecutionPolicy = ExecutionPolicy.Bypass;
+
+		// add cmdlets
+		Commands.BaseCmdlet.AddCmdlets(state);
+
+		// add variables
 		state.Variables.Add(new SessionStateVariableEntry[] {
 			new SessionStateVariableEntry("Far", Far.Api, "Exposes FarNet.", ScopedItemOptions.AllScope | ScopedItemOptions.Constant),
 			new SessionStateVariableEntry("Psf", this, "Exposes PowerShellFar.", ScopedItemOptions.AllScope | ScopedItemOptions.Constant),
 		});
 
-		// can run scripts
-		state.ExecutionPolicy = ExecutionPolicy.Bypass;
-
-		// cmdlets
-		Commands.BaseCmdlet.AddCmdlets(state);
-
-		// apartment
-		//! cannot set different with PSThreadOptions.UseCurrentThread
-		var myApartmentState = DefaultApartmentState();
-		if (myApartmentState != ApartmentState.Unknown)
-			state.ApartmentState = myApartmentState;
-
-		// open/start runspace
+		// open runspace
 		Runspace = RunspaceFactory.CreateRunspace(FarHost, state);
-		Runspace.StateChanged += OnRunspaceStateEvent;
-		if (myApartmentState == ApartmentState.Unknown)
-			Runspace.ThreadOptions = PSThreadOptions.UseCurrentThread;
-		if (sync)
-			Runspace.Open();
-		else
-			Runspace.OpenAsync();
-	}
-
-	// Tells that loading is over
-	bool _isRunspaceOpenedOrBroken;
-
-	//! Fatal error for posponed action.
-	Exception _errorFatal;
-
-	//!STOP!
-	// With 'Opened' state it is called from another thread.
-	// Also, it can be broken, e.g. x86 build may fail on x64 machine.
-	void OnRunspaceStateEvent(object sender, RunspaceStateEventArgs e)
-	{
-		//! Carefully process events other than 'Opened'.
-		if (e.RunspaceStateInfo.State != RunspaceState.Opened)
-		{
-			// alive? do nothing, wait for other events
-			if (e.RunspaceStateInfo.State != RunspaceState.Broken)
-				return;
-
-			// broken; keep an error silently
-			_errorFatal = e.RunspaceStateInfo.Reason;
-
-			//! Set the broken flag, waiting threads may continue.
-			//! The last code, Invoking() may be waiting for this.
-			_isRunspaceOpenedOrBroken = true;
-			return;
-		}
+		Runspace.Open();
 
 		// Add the module path.
 		// STOP: [_100127_182335 test]
 		// *) Add before the profile, so that it can load modules.
-		// *) Add after the core loading so that standard paths are added.
+		// *) Add after the opening so that standard paths are added.
 		// *) Check for already added, e.g. when starting from another Far.
-		var modulePathAdd = string.Concat(AppHome, "\\Modules;");
+		var modulePathAdd = $"{AppHome}\\Modules;";
 		var modulePathNow = Environment.GetEnvironmentVariable(Word.PSModulePath);
 		if (!modulePathNow.Contains(modulePathAdd))
 			Environment.SetEnvironmentVariable(Word.PSModulePath, modulePathAdd + modulePathNow);
 
-		//! If it is async then PS catches all and adds errors to $Error.
-		//! Thus, we don't catch anything, because this is normally async.
-		string message = null;
-		try
+		//_090315_091325
+		// Get engine once to avoid this: "A pipeline is already executing. Concurrent SessionStateProxy method call is not allowed."
+		// Looks like a hack, but it works fine. Problem case: run Test-CallStack-.ps1, Esc -> the error above.
+		_engine_ = Runspace.SessionStateProxy.PSVariable.GetValue(Word.ExecutionContext) as EngineIntrinsics;
+
+		//? set instead of adding to initial state
+		_engine_.SessionState.PSVariable.Set("ErrorActionPreference", ActionPreference.Stop);
+
+		// invoke profiles
+		using var ps = NewPowerShell();
+
+		// internal profile
+		ps.AddCommand($"{A.Psf.AppHome}\\PowerShellFar.ps1", false).Invoke();
+
+		// user profile, run separately for better errors
+		var profile = Entry.RoamingData + "\\Profile.ps1";
+		if (File.Exists(profile))
 		{
-			//_090315_091325
-			// Get engine once to avoid this: "A pipeline is already executing. Concurrent SessionStateProxy method call is not allowed."
-			// Looks like a hack, but it works fine. Problem case: run Test-CallStack-.ps1, Esc -> the error above.
-			_engine_ = Runspace.SessionStateProxy.PSVariable.GetValue(Word.ExecutionContext) as EngineIntrinsics;
-
-			//? set instead of adding to initial state
-			_engine_.SessionState.PSVariable.Set("ErrorActionPreference", ActionPreference.Stop);
-
-			// invoke profiles
-			using (var ps = NewPowerShell())
+			ps.Commands.Clear();
+			try
 			{
-				// internal profile (NB: there is trap in there)
-				ps.AddCommand(Path.Combine(A.Psf.AppHome, "PowerShellFar.ps1"), false).Invoke();
-
-				// user profile, separately for better diagnostics
-				var profile = Entry.RoamingData + "\\Profile.ps1";
-				if (File.Exists(profile))
-				{
-					ps.Commands.Clear();
-					try
-					{
-						ps.AddCommand(profile, false).Invoke();
-					}
-					catch (RuntimeException ex)
-					{
-						message = string.Format(null, @"
-Error in the profile:
-{0}
-
-Error message:
-{1}
-
-See $Error for details.
-", profile, ex.Message);
-					}
-				}
+				ps.AddCommand(profile, false).Invoke();
 			}
-		}
-		finally
-		{
-			// GUI message
-			if (message != null)
-				Far.Api.Message(message, Res.Me, MessageOptions.Warning | MessageOptions.Gui | MessageOptions.Ok);
-
-			//! The last code, Invoking() may be waiting for this.
-			_isRunspaceOpenedOrBroken = true;
+			catch (RuntimeException ex)
+			{
+				throw new ModuleException($"Profile.ps1 error: {ex.Message}", ex);
+			}
 		}
 	}
 
 	/// <summary>
+	/// Completes the runspace opening.
 	/// Called by FarNet on command line and by PowerShellFar on its actions.
 	/// </summary>
-	/// <remarks>
-	/// *) No Far (!) interaction is allowed, a macro can be in progress.
-	/// *) It opens a runspace if not yet and waits for it.
-	/// </remarks>
 	internal void Invoking()
 	{
-		if (FarHost == null)
-			OpenRunspace(true);
+		// done?
+		if (OpenRunspaceTask is null)
+			return;
 
-		//! If something went wrong, perhaps async, unregister and throw; hopefully we are detached completely after that.
-		if (_errorFatal != null)
+		// null the task
+		var task = OpenRunspaceTask;
+		OpenRunspaceTask = null;
+
+		try
 		{
-			//! emergency
-			Entry.Unregister();
-			throw new ErrorException(@"
-The engine was not successfully initialized and will be unloaded.
-For known issues see 'Problems and solutions' in the FarNet manual.
-", _errorFatal);
+			// complete the task
+			task.GetAwaiter().GetResult();
 		}
-
-		// complete opening
-		if (Runspace.DefaultRunspace == null)
+		finally
 		{
-			//! wait while loading
-			while (!_isRunspaceOpenedOrBroken)
-				Thread.Sleep(100);
-
 			//! set default runspace for handlers
 			//! it has to be done in main thread
 			Runspace.DefaultRunspace = Runspace;

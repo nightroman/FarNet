@@ -4,9 +4,6 @@
 	Author: Roman Kuzmin
 #>
 
-# Ignore errors
-trap { continue }
-
 <#
 .Synopsis
 	PSF Clear-Host.
