@@ -8,11 +8,11 @@ using System.Runtime.Loader;
 
 namespace FarNet.Works;
 
-class ModuleLoadContext : AssemblyLoadContext
+class AssemblyLoadContext2 : AssemblyLoadContext
 {
 	readonly AssemblyDependencyResolver _resolver;
 
-	public ModuleLoadContext(string pluginPath)
+	public AssemblyLoadContext2(string pluginPath)
 	{
 		_resolver = new AssemblyDependencyResolver(pluginPath);
 	}
@@ -20,24 +20,20 @@ class ModuleLoadContext : AssemblyLoadContext
 	protected override Assembly Load(AssemblyName assemblyName)
 	{
 		string assemblyPath = _resolver.ResolveAssemblyToPath(assemblyName);
-		if (assemblyPath != null)
-		{
-			Log.Source.TraceInformation("Load managed {0}", assemblyPath);
-			return LoadFromAssemblyPath(assemblyPath);
-		}
+		if (assemblyPath is null)
+			return null;
 
-		return null;
+		Log.Source.TraceInformation("Load managed {0}", assemblyPath);
+		return LoadFromAssemblyPath(assemblyPath);
 	}
 
 	protected override IntPtr LoadUnmanagedDll(string unmanagedDllName)
 	{
 		string libraryPath = _resolver.ResolveUnmanagedDllToPath(unmanagedDllName);
-		if (libraryPath != null)
-		{
-			Log.Source.TraceInformation("Load native {0}", libraryPath);
-			return LoadUnmanagedDllFromPath(libraryPath);
-		}
+		if (libraryPath is null)
+			return IntPtr.Zero;
 
-		return IntPtr.Zero;
+		//! do not trace, not so useful, too many (same), e.g. JavaScriptFar
+		return LoadUnmanagedDllFromPath(libraryPath);
 	}
 }

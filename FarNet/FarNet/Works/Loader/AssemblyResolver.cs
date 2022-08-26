@@ -118,12 +118,13 @@ public static class AssemblyResolver
 		if (!s_cache.TryGetValue(name, out object value))
 			return null;
 
-		// single in FarNet, load once
+		// unique in FarNet, load once
 		if (value is not null)
 		{
+			// not yet loaded assembly path?
 			if (value is not Assembly assembly)
 			{
-				assembly = Assembly.LoadFile((string)value);
+				assembly = Assembly.LoadFrom((string)value);
 				s_cache[name] = assembly;
 			}
 

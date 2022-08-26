@@ -104,11 +104,11 @@ let assemblyResolve _ (args: ResolveEventArgs) =
 
     System.Diagnostics.Debug.WriteLine($"fsx: {name}")
 
-    // single in FarNet, load once
+    // unique in FarNet, load once
     if not (isNull value) then
         match value with
         | :? string as path ->
-            let assembly = Assembly.LoadFile(path)
+            let assembly = Assembly.LoadFrom(path)
             _cache[name] <- assembly
             assembly
         | _ ->

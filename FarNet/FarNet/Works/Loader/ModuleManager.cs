@@ -218,7 +218,7 @@ sealed partial class ModuleManager : IModuleManager
 		if (File.Exists(deps))
 		{
 			Log.Source.TraceInformation("Module modern {0}", AssemblyPath);
-			var loadContext = new ModuleLoadContext(AssemblyPath);
+			var loadContext = new AssemblyLoadContext2(AssemblyPath);
 			_AssemblyInstance = loadContext.LoadFromAssemblyPath(AssemblyPath);
 		}
 		else
