@@ -7,16 +7,16 @@ using FarNet;
 namespace PowerShellFar;
 
 /// <summary>
-/// Synchronous editor writer.
+/// Asynchronous editor writer with the async mode editor.
 /// </summary>
-sealed class EditorOutputWriter2 : EditorOutputWriter1
+sealed class EditorOutputWriter3 : EditorOutputWriter1
 {
-	public EditorOutputWriter2(IEditor editor) : base(editor)
+	public EditorOutputWriter3(IEditor editor) : base(editor)
 	{
 	}
 
 	protected override void Redraw()
 	{
-		Editor.Redraw();
+		Far.Api.PostJob(Editor.Sync);
 	}
 }

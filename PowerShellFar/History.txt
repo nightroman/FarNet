@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 6.0.13 =
+
+Fix issues in async interactive editors.
+
 = 6.0.12 =
 
 Make runspace opening completely background.

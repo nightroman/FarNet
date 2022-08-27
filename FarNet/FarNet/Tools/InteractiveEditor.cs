@@ -46,7 +46,7 @@ public abstract class InteractiveEditor
 	/// <summary>
 	/// Gets true if the editor is async.
 	/// </summary>
-	protected virtual bool IsAsync { get { return false; } }
+	protected virtual bool IsAsync => false;
 
 	/// <summary>
 	/// Gets the current interactive area where the caret is.
@@ -172,13 +172,13 @@ public abstract class InteractiveEditor
 
 			Invoke(code, area);
 		}
-		catch (ModuleException e)
+		catch (ModuleException ex)
 		{
-			Editor.InsertText($"{e.Source}: {e.Message}");
+			Editor.InsertText($"{ex.Source}: {ex.Message}");
 		}
-		catch (Exception e)
+		catch (Exception ex)
 		{
-			Editor.InsertText(e.ToString());
+			Editor.InsertText(ex.ToString());
 		}
 		finally
 		{
@@ -196,9 +196,12 @@ public abstract class InteractiveEditor
 
 	void EndOutput()
 	{
-		if (Editor.Line.Length > 0)
-			Editor.InsertLine();
-		Editor.InsertText(OutputMark2 + "\r\r");
+		if (Editor.IsOpened)
+		{
+			if (Editor.Line.Length > 0)
+				Editor.InsertLine();
+			Editor.InsertText(OutputMark2 + "\r\r");
+		}
 	}
 
 	/// <summary>
@@ -209,13 +212,12 @@ public abstract class InteractiveEditor
 		EndOutput();
 		Editor.EndAsync();
 
-		Far.Api.PostJob(delegate
+		Far.Api.PostJob(() =>
 		{
 			Editor.Sync();
 			Editor.EndUndo();
 			Editor.Redraw();
-		}
-		);
+		});
 	}
 
 	void DoDelete()

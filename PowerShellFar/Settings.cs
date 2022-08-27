@@ -188,19 +188,6 @@ public sealed class Settings
 	public ConsoleColor WarningForegroundColor { get; set; } = ConsoleColor.Yellow;
 
 	/// <summary>
-	/// The script invoked after interactive commands.
-	/// </summary>
-	/// <remarks>
-	/// The script is invoked after each interactive command, its output
-	/// is converted to strings and written to the interactive editor.
-	/// </remarks>
-	/// <example><code>
-	/// # In the StartupCode
-	/// $Psf.Settings.InteractiveEndOutputScript = 'Get-Date'
-	/// </code></example>
-	public string InteractiveEndOutputScript { get; set; }
-
-	/// <summary>
 	/// Tells to remove console output ANSI rendering.
 	/// Default: false for Windows 10+, true otherwise.
 	/// </summary>

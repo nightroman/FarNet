@@ -22,9 +22,6 @@ $Psf.Settings.PopupAutoSelect = $false
 $Psf.Settings.PopupMaxHeight = 0
 $Psf.Settings.PopupNoShadow = $false
 
-### The script invoked after interactive commands.
-#$Psf.Settings.InteractiveEndOutputScript = 'Get-Date'
-
 ### Provider settings (ItemPanel)
 $Psf.Providers = @{
 	Registry = @{

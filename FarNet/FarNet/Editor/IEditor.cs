@@ -532,41 +532,38 @@ public abstract class IEditor : IEditorBase
 	/// Begins asynchronous mode.
 	/// </summary>
 	/// <remarks>
-	/// This mode is designed for writing text to a not current editor or from background jobs.
-	/// The editor is partially blocked until the mode is not closed by <see cref="EndAsync"/>.
-	/// Actual writing happens when the editor has or gets focus, otherwise data are queued.
+	/// This mode is designed for writing to a not current editor or from background jobs.
+	/// The editor is partially blocked until the mode is ended by <see cref="EndAsync"/>.
+	/// Actual writing happens when the editor has focus, otherwise data are queued.
+	/// Use <see cref="Sync"/> in order to write queued data.
 	/// <para>
-	/// In this mode data are always appended to the end of the current text, so that the
-	/// output procedure is similar to console output.
+	/// The asynchronous mode appends text to the end, it works like console.
 	/// </para>
 	/// <para>
-	/// Only <c>Insert*</c> methods should be called during asynchronous mode even if you can
-	/// call something else technically without problems.
+	/// Only <c>Insert*</c> methods should be called in the asynchronous mode.
 	/// </para>
 	/// <para>
-	/// Input events (keys, mouse, idle) are disabled in asynchronous mode.
-	/// There is only a special event <see cref="IEditorBase.CtrlCPressed"/>
-	/// that can be used for example for stopping the mode by a user.
+	/// Input events (keys, mouse) are disabled in the asynchronous mode.
+	/// There only special event is <see cref="IEditorBase.CtrlCPressed"/>.
 	/// </para>
 	/// <ul>
-	/// <li>Nested calls of are not allowed.</li>
-	/// <li>Use this mode only when it is absolutely needed.</li>
-	/// <li>Module <b>PowerShellFar</b> uses this mode for asynchronous interactives.</li>
+	/// <li>Nested calls are not allowed.</li>
+	/// <li><b>PowerShellFar</b> uses this mode for asynchronous interactives.</li>
 	/// </ul>
 	/// </remarks>
 	public abstract void BeginAsync();
 
 	/// <summary>
-	/// Ends asynchronous mode.
+	/// Ends the asynchronous mode.
 	/// </summary>
 	/// <remarks>
 	/// It must be called after <see cref="BeginAsync"/> when asynchronous operations complete.
-	/// Note: it is OK to call it when asynchronous mode is already stopped or even was not started.
+	/// It may be called with no effect when the asynchronous mode is stopped or not started.
 	/// </remarks>
 	public abstract void EndAsync();
 
 	/// <summary>
-	/// Syncs pending data in the async mode.
+	/// Writes queued data in the asynchronous mode and redraws if needed.
 	/// </summary>
 	public abstract void Sync();
 
