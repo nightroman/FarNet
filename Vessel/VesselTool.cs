@@ -11,8 +11,7 @@ using System.Threading.Tasks;
 
 namespace Vessel;
 
-[System.Runtime.InteropServices.Guid("58ad5e13-d2ba-4f4c-82cd-f53a66e9e8c0")]
-[ModuleTool(Name = My.Name, Options = ModuleToolOptions.F11Menus)]
+[ModuleTool(Name = My.Name, Options = ModuleToolOptions.F11Menus, Id = "58ad5e13-d2ba-4f4c-82cd-f53a66e9e8c0")]
 public class VesselTool : ModuleTool
 {
 	public override void Invoke(object sender, ModuleToolEventArgs e)

@@ -5,39 +5,38 @@
 using System;
 using System.Text.RegularExpressions;
 
-namespace FarNet.RightControl
+namespace FarNet.RightControl;
+
+public sealed class Settings : ModuleSettings<Settings.Data>
 {
-	public sealed class Settings : ModuleSettings<Settings.Data>
+	public static Settings Default { get; } = new Settings();
+
+	public class Data : IValidate
 	{
-		public static Settings Default { get; } = new Settings();
+		public XmlCData RegexLeft { get; set; } = @"(?x: ^ | $ | (?<=\b|\s)\S )";
 
-		public class Data : IValidate
+		public XmlCData RegexRight { get; set; } = @"(?x: ^ | $ | (?<=\b|\s)\S )";
+
+		internal Regex RegexLeft2 { get; private set; }
+		internal Regex RegexRight2 { get; private set; }
+		public void Validate()
 		{
-			public XmlCData RegexLeft { get; set; } = @"(?x: ^ | $ | (?<=\b|\s)\S )";
-
-			public XmlCData RegexRight { get; set; } = @"(?x: ^ | $ | (?<=\b|\s)\S )";
-
-			internal Regex RegexLeft2 { get; private set; }
-			internal Regex RegexRight2 { get; private set; }
-			public void Validate()
+			try
 			{
-				try
-				{
-					RegexLeft2 = new Regex(RegexLeft);
-				}
-				catch (Exception ex)
-				{
-					throw new ModuleException($"RegexLeft: {ex.Message}", ex);
-				}
+				RegexLeft2 = new Regex(RegexLeft);
+			}
+			catch (Exception ex)
+			{
+				throw new ModuleException($"RegexLeft: {ex.Message}", ex);
+			}
 
-				try
-				{
-					RegexRight2 = new Regex(RegexRight);
-				}
-				catch (Exception ex)
-				{
-					throw new ModuleException($"RegexRight: {ex.Message}", ex);
-				}
+			try
+			{
+				RegexRight2 = new Regex(RegexRight);
+			}
+			catch (Exception ex)
+			{
+				throw new ModuleException($"RegexRight: {ex.Message}", ex);
 			}
 		}
 	}

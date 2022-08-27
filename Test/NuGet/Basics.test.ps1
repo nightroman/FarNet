@@ -37,7 +37,6 @@ About the package.
 		<owners>Roman Kuzmin</owners>
 		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
 		<licenseUrl>http://opensource.org/licenses/BSD-3-Clause</licenseUrl>
-		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$text</summary>
 		<description>$text</description>
 		<releaseNotes>Some release notes.</releaseNotes>

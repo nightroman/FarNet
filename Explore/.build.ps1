@@ -8,21 +8,31 @@ param(
 	$FarHome = (property FarHome C:\Bin\Far\x64)
 )
 
+Set-StrictMode -Version 3
 $ModuleName = 'Explore'
-$ModuleHome = "$FarHome\FarNet\Modules\$ModuleName"
+$ModuleRoot = "$FarHome\FarNet\Modules\$ModuleName"
 
 task build {
 	exec { dotnet build -c $Configuration /p:FarHome=$FarHome }
 }
 
 task publish {
-	Copy-Item -Destination $ModuleHome @(
+	Copy-Item -Destination $ModuleRoot @(
 		"bin\$Configuration\net6.0\$ModuleName.dll"
 		"bin\$Configuration\net6.0\$ModuleName.pdb"
 	)
 }
 
-task help {
+task clean {
+	remove z, bin, obj, README.htm, FarNet.$ModuleName.*.nupkg
+}
+
+task version {
+	($script:Version = switch -regex -file History.txt {'^= (\d+\.\d+\.\d+) =$' {$matches[1]; break}})
+	assert $script:Version
+}
+
+task markdown {
 	assert (Test-Path $env:MarkdownCss)
 	exec {
 		pandoc.exe @(
@@ -36,17 +46,8 @@ task help {
 	}
 }
 
-task clean {
-	remove z, bin, obj, README.htm, FarNet.$ModuleName.*.nupkg
-}
-
-task version {
-	($script:Version = switch -regex -file History.txt {'^= (\d+\.\d+\.\d+) =$' {$matches[1]; break}})
-	assert $script:Version
-}
-
-task package help, version, {
-	equals "$Version.0" (Get-Item $ModuleHome\$ModuleName.dll).VersionInfo.FileVersion
+task package markdown, version, {
+	equals "$Version.0" (Get-Item $ModuleRoot\$ModuleName.dll).VersionInfo.FileVersion
 	$toModule = "z\tools\FarHome\FarNet\Modules\$ModuleName"
 
 	remove z
@@ -59,8 +60,8 @@ task package help, version, {
 	Copy-Item -Destination $toModule @(
 		'README.htm'
 		'History.txt'
-		'LICENSE'
-		"$ModuleHome\$ModuleName.dll"
+		'..\LICENSE'
+		"$ModuleRoot\$ModuleName.dll"
 	)
 }
 
@@ -89,7 +90,6 @@ https://github.com/nightroman/FarNet#readme
 		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
 		<icon>FarNetLogo.png</icon>
 		<license type="expression">BSD-3-Clause</license>
-		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>$description</description>
 		<releaseNotes>https://github.com/nightroman/FarNet/blob/master/$ModuleName/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module</tags>

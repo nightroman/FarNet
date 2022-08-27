@@ -8,8 +8,29 @@ param(
 	$FarHome = (property FarHome C:\Bin\Far\x64)
 )
 
+Set-StrictMode -Version 3
 $ModuleName = 'Vessel'
-$ModuleHome = "$FarHome\FarNet\Modules\$ModuleName"
+$ModuleRoot = "$FarHome\FarNet\Modules\$ModuleName"
+
+task build meta, {
+	exec { dotnet build -c $Configuration /p:FarHome=$FarHome }
+}
+
+task publish {
+	Copy-Item -Destination $ModuleRoot @(
+		"bin\$Configuration\net6.0\$ModuleName.dll"
+		"bin\$Configuration\net6.0\$ModuleName.pdb"
+	)
+}
+
+task clean {
+	remove z, bin, obj, README.htm, FarNet.$ModuleName.*.nupkg
+}
+
+task version {
+	($script:Version = switch -regex -file History.txt {'^= (\d+\.\d+\.\d+) =$' {$matches[1]; break}})
+	assert $script:Version
+}
 
 task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props version, {
 	Set-Content Directory.Build.props @"
@@ -25,22 +46,10 @@ task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props version
 "@
 }
 
-task build meta, {
-	exec { dotnet build -c $Configuration /p:FarHome=$FarHome }
-}
-
-task publish {
-	'zzzzzzzzzzzzzzzzz'
-	Copy-Item -Destination $ModuleHome @(
-		"bin\$Configuration\net6.0\$ModuleName.dll"
-		"bin\$Configuration\net6.0\$ModuleName.pdb"
-	)
-}
-
-task help {
+task markdown {
 	# HLF
 	exec { pandoc.exe README.md --output=README.htm --from=gfm }
-	exec { HtmlToFarHelp "from=README.htm" "to=$ModuleHome\Vessel.hlf" }
+	exec { HtmlToFarHelp "from=README.htm" "to=$ModuleRoot\Vessel.hlf" }
 
 	# HTM
 	assert (Test-Path $env:MarkdownCss)
@@ -56,16 +65,7 @@ task help {
 	}
 }
 
-task clean {
-	remove z, bin, obj, README.htm, FarNet.$ModuleName.*.nupkg
-}
-
-task version {
-	($script:Version = switch -regex -file History.txt {'^= (\d+\.\d+\.\d+) =$' {$matches[1]; break}})
-	assert $script:Version
-}
-
-task package help, {
+task package markdown, {
 	$toModule = "z\tools\FarHome\FarNet\Modules\$ModuleName"
 
 	remove z
@@ -75,10 +75,10 @@ task package help, {
 	Copy-Item -Destination $toModule `
 	README.htm,
 	History.txt,
-	LICENSE,
+	..\LICENSE,
 	Vessel.macro.lua,
-	$ModuleHome\Vessel.dll,
-	$ModuleHome\Vessel.hlf
+	$ModuleRoot\Vessel.dll,
+	$ModuleRoot\Vessel.hlf
 
 	# icon
 	Copy-Item ..\Zoo\FarNetLogo.png z
@@ -107,7 +107,6 @@ https://github.com/nightroman/FarNet#readme
 		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
 		<icon>FarNetLogo.png</icon>
 		<license type="expression">BSD-3-Clause</license>
-		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>$description</description>
 		<releaseNotes>https://github.com/nightroman/FarNet/blob/master/$ModuleName/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module</tags>
@@ -118,4 +117,4 @@ https://github.com/nightroman/FarNet#readme
 	exec { NuGet.exe pack z\Package.nuspec }
 }
 
-task . build, help, clean
+task . build, markdown, clean

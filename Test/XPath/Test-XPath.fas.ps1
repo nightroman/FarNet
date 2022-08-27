@@ -3,13 +3,13 @@ job {
 	### Test the 'equals' function and a custom variable
 	$explorer = [PowerShellFar.ItemExplorer]$env:FarNetCode
 	$search = [FarNet.Tools.SearchFileCommand]$explorer
-	$search.XVariables.Add('Name', 'license')
+	$search.XVariables.Add('Name', 'history.txt')
 	# find 'license' in 1 level folders
 	$search.XPath = @'
 /*/File[equals(@Name, $Name)]
 '@
 	$res = $search.Invoke()
-	Assert-Far 5 -eq @($res).Count
+	Assert-Far 12 -eq @($res).Count
 }
 
 job {

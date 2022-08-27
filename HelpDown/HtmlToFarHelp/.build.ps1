@@ -104,7 +104,6 @@ The tool requires .NET Framework 4.0.
 		<projectUrl>https://github.com/nightroman/FarNet/tree/master/HelpDown/HtmlToFarHelp</projectUrl>
 		<icon>images\HtmlToFarHelp.png</icon>
 		<license type="expression">Apache-2.0</license>
-		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>$description</description>
 		<tags>FarManager Markdown HTML HLF</tags>
 	</metadata>

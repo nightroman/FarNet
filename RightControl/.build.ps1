@@ -8,12 +8,31 @@ param(
 	$FarHome = (property FarHome C:\Bin\Far\x64)
 )
 
+Set-StrictMode -Version 3
 $ModuleName = 'RightControl'
-$ModuleHome = "$FarHome\FarNet\Modules\$ModuleName"
+$ModuleRoot = "$FarHome\FarNet\Modules\$ModuleName"
 
-# Get version from history.
+task build meta, {
+	exec { dotnet build -c $Configuration /p:FarHome=$FarHome }
+}
+
+task publish {
+	Copy-Item -Destination $ModuleRoot @(
+		"bin\$Configuration\net6.0\$ModuleName.dll"
+		"bin\$Configuration\net6.0\$ModuleName.pdb"
+	)
+}
+
+task clean {
+	remove z, bin, obj, README.htm, FarNet.$ModuleName.*.nupkg
+}
+
 function Get-Version {
 	switch -Regex -File History.txt {'=\s*(\d+\.\d+\.\d+)\s*=' {return $Matches[1]} }
+}
+
+task version {
+	($script:Version = Get-Version)
 }
 
 task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props {
@@ -32,18 +51,7 @@ task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props {
 "@
 }
 
-task build meta, {
-	exec { dotnet build -c $Configuration /p:FarHome=$FarHome }
-}
-
-task publish {
-	Copy-Item -Destination $ModuleHome @(
-		"bin\$Configuration\net6.0\$ModuleName.dll"
-		"bin\$Configuration\net6.0\$ModuleName.pdb"
-	)
-}
-
-task help {
+task markdown {
 	assert (Test-Path $env:MarkdownCss)
 	exec {
 		pandoc.exe @(
@@ -57,16 +65,8 @@ task help {
 	}
 }
 
-task clean {
-	remove z, bin, obj, README.htm, FarNet.$ModuleName.*.nupkg
-}
-
-task version {
-	($script:Version = Get-Version)
-}
-
-task package help, version, {
-	equals "$Version.0" (Get-Item $ModuleHome\$ModuleName.dll).VersionInfo.FileVersion
+task package markdown, version, {
+	equals "$Version.0" (Get-Item $ModuleRoot\$ModuleName.dll).VersionInfo.FileVersion
 	$toModule = "z\tools\FarHome\FarNet\Modules\$ModuleName"
 
 	remove z
@@ -79,8 +79,8 @@ task package help, version, {
 	Copy-Item -Destination $toModule @(
 		'README.htm'
 		'History.txt'
-		'LICENSE'
-		"$ModuleHome\$ModuleName.dll"
+		'..\LICENSE'
+		"$ModuleRoot\$ModuleName.dll"
 		'RightControl.macro.lua'
 	)
 }
@@ -111,7 +111,6 @@ https://github.com/nightroman/FarNet#readme
 		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
 		<icon>FarNetLogo.png</icon>
 		<license type="expression">BSD-3-Clause</license>
-		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>$description</description>
 		<releaseNotes>https://github.com/nightroman/FarNet/blob/master/$ModuleName/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module</tags>
