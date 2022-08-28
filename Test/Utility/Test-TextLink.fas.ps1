@@ -11,6 +11,8 @@ Text1
 Text2
 F# error
 ***
+
+See mock tests -- Basics\Test-TextLink.far.ps1
 #>
 
 $Data.File = "$PSScriptRoot\Test-TextLink.fas.ps1"
@@ -151,18 +153,3 @@ job {
 }
 # exit dialog
 keys Esc
-
-### ClearScript
-
-job {
-	# expected 9:10
-	Open-TextLink.ps1 "  at  %FarNetCode%\Test\Utility\Test-TextLink.fas.ps1:8:10  ->  *** TEST DATA"
-}
-job {
-	Assert-Far -Editor
-	Assert-Far ($Far.Editor.FileName -like '*\Test-TextLink.fas.ps1')
-	$caret = $Far.Editor.Caret
-	Assert-Far ($caret.X + 1) -eq 10
-	Assert-Far ($caret.Y + 1) -eq 9
-	$Far.Editor.Close()
-}

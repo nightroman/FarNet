@@ -1,5 +1,13 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 6.0.14 =
+
+FarInventory module works again. Replaced CIM cmdlets with System.Management tools.
+
+Internal profile - redefined `help`. Core `help` is not user screen friendly.
+
+Open-TextLink recognizes some more ClearScript style links.
+
 = 6.0.13 =
 
 Fix issues in async interactive editors.

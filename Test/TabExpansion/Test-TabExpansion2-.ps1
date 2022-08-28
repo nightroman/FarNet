@@ -108,7 +108,7 @@ Test 'test-me -' { $_ -ccontains '-prm1' }
 # function or filter
 Test 'TabExpansion2 -' { $_[0] -ceq '-inputScript' }
 # unnamed cmdlet
-Test 'man -' { $_ -ccontains '-Name' }
+Test 'rv -' { $_ -ccontains '-Name' }
 # advanced function
 function test-me { param ([Parameter(Position = 0, Mandatory = $true)]$prm1, $prm2) {} }
 Test 'test-me -' { $_ -ccontains '-prm1' }

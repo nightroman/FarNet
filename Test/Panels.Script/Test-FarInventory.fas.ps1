@@ -16,5 +16,5 @@ job {
 		$CurrentFile.Owner -eq 'NTFS'
 		@($CurrentFile.Columns)[0] -eq 'Local Disk' # _100410_051915 fixed $_ in modules
 	)
+	$Far.Panel.Close()
 }
-keys Esc

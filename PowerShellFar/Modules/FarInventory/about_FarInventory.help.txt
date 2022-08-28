@@ -6,16 +6,12 @@ SHORT DESCRIPTION
     Author: Roman Kuzmin
 
 LONG DESCRIPTION
-    This module tools get and show various information about a computer. Some
+    This module tools get and show various information about the computer. Some
     types of returned objects are only for viewing. Some others allow changing
     their state permanently by their members.
 
-    By default all commands operate on the current computer. Some commands can
-    specify other computer names as well.
-
 FUNCTIONS
-    Import the module and use Get-Help to get more details about the functions.
-    The module includes the following functions:
+    Import the module and use Get-Help to get more details about the functions:
 
         Open-EnvironmentPanel
         Open-InventoryPanel
@@ -24,5 +20,4 @@ FUNCTIONS
         Open-StartupCommandPanel
 
         Get-Uninstall
-        Open-UninstallGridView
         Open-UninstallPanel

@@ -79,7 +79,7 @@ $regexTextLink = [regex]@'
 (?x)
 (?<VS> (?<File>(?:\b\w:|%\w+%)[\\\/].+?)\((?<Line>\d+),?(?<Char>\d+)?\)(?::\s*(?<Text>.*))? )
 |
-(?<CS> ^ \s* at \s+ (?<File>.+?\.\w+) : (?<Line>\d+) : (?<Char>\d+) \s*->\s* (?<Text>.*) )
+(?<CS> ^ \s* at \s+ (?:\w+ \s+)? \(? (?<File>.+?\.\w+) : (?<Line>\d+) : (?<Char>\d+) \)? (?:\s*->\s* (?<Text>.*))? )
 |
 (?<SS> ^>?\s*(?<File>.+?\.\w+):(?<Line>\d+):(?<Text>.*) )
 |

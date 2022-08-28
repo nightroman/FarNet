@@ -57,7 +57,7 @@ run {
 
 	$task = Start-FarTask -AsTask -Data progress, Data {
 		while(!$Data.progress.CancellationToken.IsCancellationRequested) {
-			Start-Sleep -Milliseconds 100
+			Start-Sleep -Milliseconds 30
 		}
 		$Data.Data._220709_1006 = 'Exiting canceled task'
 	}

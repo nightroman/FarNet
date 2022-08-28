@@ -23,6 +23,10 @@ public static class Test
 		{
 			throw new InvalidOperationException($"Expected {active} panel state: Visible, actial: Hidden.");
 		}
+		if (panel.SelectedFirst)
+		{
+			throw new InvalidOperationException($"Expected {active} panel SelectedFirst: Off, actial: On.");
+		}
 	}
 
 	public static void AssertNormalState()

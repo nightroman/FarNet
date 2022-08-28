@@ -1,7 +1,6 @@
 <#
 .Synopsis
 	The internal profile.
-	Author: Roman Kuzmin
 #>
 
 <#
@@ -10,6 +9,16 @@
 #>
 function Clear-Host {
 	$Far.UI.Clear()
+}
+
+<#
+.Synopsis
+	PSF Get-Help | more.
+#>
+function help {
+	$Far.UI.ShowUserScreen()
+	Get-Help @args | more
+	$Far.UI.SaveUserScreen()
 }
 
 <#

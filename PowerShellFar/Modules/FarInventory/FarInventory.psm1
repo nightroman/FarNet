@@ -41,15 +41,6 @@ function Get-Uninstall
 
 <#
 .Synopsis
-	Shows results of Get-Uninstall in a grid view.
-#>
-function Open-UninstallGridView
-{
-	Get-Uninstall | Out-GridView
-}
-
-<#
-.Synopsis
 	Shows results of Get-Uninstall in a panel.
 #>
 function Open-UninstallPanel
@@ -65,18 +56,10 @@ function Open-UninstallPanel
 <#
 .Synopsis
 	Shows services in a panel.
-
-.Description
-	This panel can be really useful, in particular it shows some information
-	not returned by the standard command Get-Service, for example service
-	startup types.
 #>
 function Open-ServicePanel
-(
-	$ComputerName = '.'
-)
 {
-	Get-CimInstance Win32_Service -ComputerName $ComputerName |
+	[System.Management.ManagementObjectSearcher]::new("SELECT * FROM Win32_Service").Get() |
 	Out-FarPanel @(
 		'Name'
 		'DisplayName'
@@ -95,11 +78,8 @@ function Open-ServicePanel
 	various locations: startup folders, registry run keys, and etc.
 #>
 function Open-StartupCommandPanel
-(
-	$ComputerName = '.'
-)
 {
-	Get-CimInstance Win32_StartupCommand -ComputerName $ComputerName |
+	[System.Management.ManagementObjectSearcher]::new("SELECT * FROM Win32_StartupCommand").Get() |
 	Out-FarPanel @(
 		'Name'
 		'Command'
@@ -116,9 +96,6 @@ function Open-StartupCommandPanel
 	The panel shows local disks and their information.
 #>
 function Open-LogicalDiskPanel
-(
-	$ComputerName = '.'
-)
 {
 	$GetDriveType = {
 		switch($_.DriveType) {
@@ -132,7 +109,7 @@ function Open-LogicalDiskPanel
 		}
 	}
 
-	Get-CimInstance Win32_LogicalDisk -ComputerName $ComputerName |
+	[System.Management.ManagementObjectSearcher]::new("SELECT * FROM Win32_LogicalDisk").Get() |
 	Out-FarPanel @(
 		@{ Expression = 'Name'; Width = 8 }
 		'Description'
@@ -154,19 +131,16 @@ function Open-LogicalDiskPanel
 		Win32_OperatingSystem
 #>
 function Open-InventoryPanel
-(
-	$ComputerName = '.'
-)
 {
 	.{
-		Get-CimInstance Win32_ComputerSystem -ComputerName $ComputerName
-		Get-CimInstance Win32_Baseboard -ComputerName $ComputerName
-		Get-CimInstance Win32_BIOS -ComputerName $ComputerName
-		Get-CimInstance Win32_OperatingSystem -ComputerName $ComputerName
+		[System.Management.ManagementObjectSearcher]::new("SELECT * FROM Win32_ComputerSystem").Get()
+		[System.Management.ManagementObjectSearcher]::new("SELECT * FROM Win32_Baseboard").Get()
+		[System.Management.ManagementObjectSearcher]::new("SELECT * FROM Win32_BIOS").Get()
+		[System.Management.ManagementObjectSearcher]::new("SELECT * FROM Win32_OperatingSystem").Get()
 	} |
 	Out-FarPanel @(
 		'Name'
-		@{ Name = 'Class'; Expression = 'CreationClassName' }
+		@{ Name = 'Class'; Expression = '__CLASS' }
 	)
 }
 
@@ -177,12 +151,11 @@ function Open-InventoryPanel
 function Open-EnvironmentPanel {
 	[CmdletBinding()]
 	param(
-		$ComputerName = '.',
 		[switch]$System,
 		[switch]$User
 	)
 
-	$r = Get-CimInstance Win32_Environment -ComputerName $ComputerName
+	$r = [System.Management.ManagementObjectSearcher]::new("SELECT * FROM Win32_Environment").Get()
 	if ($System) {
 		$r = $r | .{process{ if ($_.SystemVariable) {$_} }}
 	}
