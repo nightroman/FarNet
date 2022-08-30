@@ -3,10 +3,10 @@
 	Main profile (example).
 
 .Description
-	The profile should be in %FARPROFILE%\FarNet\PowerShellFar
+	The profile should be in "%FARPROFILE%\FarNet\PowerShellFar"
 
-	See API: Action [PowerShellFar.Actor]
-	See help: Profile.ps1, Global objects
+	See PowerShellFar.Actor in FarNetAPI.chm about $Psf
+	See Profile.ps1, Global objects in About-PowerShellFar.htm
 #>
 
 ### Aliases
@@ -28,14 +28,11 @@ $Psf.Providers = @{
 		Columns = @(
 			@{ Kind = 'Z'; Name = 'SKC'; Width = 8; Expression = 'SubKeyCount'; FormatString = '{0,8:n0}' }
 			@{ Kind = 'O'; Name = 'VC'; Width = 8; Expression = 'ValueCount'; FormatString = '{0,8:n0}' }
-			@{ Kind = 'N'; Name = 'Name'; Expression = '' } # note: data source is ignored
+			@{ Kind = 'N'; Name = 'Name' }
 		)
 	}
 	Alias = @{
 		Columns = 'Name', 'Definition', 'Description', 'Options'
-	}
-	Environment = @{
-		Columns = 'Name', 'Value'
 	}
 	Function = @{
 		Columns = @(

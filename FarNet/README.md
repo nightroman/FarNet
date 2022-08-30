@@ -476,6 +476,26 @@ By default * is wildcard.
     Appends the clipboard text to the filter.
 
 *********************************************************************
+## History list
+
+[Contents]
+
+This list shows the history of used items, for example commands.
+
+**Keys and actions**
+
+- `[Enter]`
+
+    Depends on where it is used. In the command histories usually inserts the
+    selected command in editors, command line or dialog edit controls.
+
+- `[CtrlC]`
+
+    Copies the selected item text to the clipboard.
+
+- [List menu keys](#list-menu)
+
+*********************************************************************
 ## Module settings
 
 [Contents]

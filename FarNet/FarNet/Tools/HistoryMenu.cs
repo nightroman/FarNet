@@ -11,7 +11,7 @@ namespace FarNet.Tools;
 /// </summary>
 public class HistoryMenu
 {
-	readonly HistoryLog _history;
+	readonly HistoryStore _history;
 
 	/// <summary>
 	/// The connected list menu.
@@ -22,7 +22,7 @@ public class HistoryMenu
 	/// New history UI.
 	/// </summary>
 	/// <param name="history">The connected history log.</param>
-	public HistoryMenu(HistoryLog history)
+	public HistoryMenu(HistoryStore history)
 	{
 		_history = history;
 
@@ -33,9 +33,13 @@ public class HistoryMenu
 		Menu.SelectLast = true;
 		Menu.Title = "History";
 		Menu.UsualMargins = true;
+		Menu.HelpTopic = "history-list";
 
-		Menu.AddKey(KeyCode.R, ControlKeyStates.LeftCtrlPressed, OnDelete);
-		Menu.AddKey(KeyCode.Delete, ControlKeyStates.None, OnDelete);
+		if (history.CanAdd)
+		{
+			Menu.AddKey(KeyCode.R, ControlKeyStates.LeftCtrlPressed, OnDelete);
+			Menu.AddKey(KeyCode.Delete, ControlKeyStates.None, OnDelete);
+		}
 	}
 
 	/// <summary>

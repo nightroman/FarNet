@@ -1,19 +1,27 @@
 ﻿ArgumentCompleters.ps1 TabExpansion2 argument completers.
 Clear-Session.ps1 Clears PowerShell session resources.
-Complete-Word-.ps1 Completes the current word in editors.
+Complete-Word.ps1 Completes the current word in editors.
 Connect-SQLite-.ps1 Connects SQLite database and optionally shows tables in a panel.
+Edit-FarDescription.ps1 Edits multiline Far descriptions in the editor.
 Generate-Dialog-.ps1 Generates template code for the current dialog.
+Get-TextLink.ps1 Gets a text link with the current editor line or selection.
 Go-Head-.ps1 Goes to the first panel file.
 Go-Selection-.ps1 Goes to the current selection start/end position
+Go-To.ps1 Goes to the specified panel item.
 Import-Panel-.ps1 Imports objects from files and shows them in a panel.
 Indent-Selection-.ps1 Indents selected lines in the editor.
+Invoke-FromEditor.ps1 Invokes a file from the current editor.
 Invoke-Shortcut-.ps1 Opens a shortcut file (.lnk).
 Job-RemoveItem-.ps1 Job: remove the specified provider items.
 Menu-Favorites-.ps1 Shows Windows Favorites as a menu and invokes items.
 Menu-More-.ps1 Example command menu created by a script.
+Merge-Selected.ps1 Invokes merge for two panels items.
+Open-TextLink.ps1 Opens a text link contained in the text.
 Open-TODO-.ps1 TODO notes in XML files.
+Panel-BitsTransfer.ps1 Starts or manages file transfer jobs in a panel.
 Panel-DbData-.ps1 Panel DataTable rows.
 Panel-DbTable-.ps1 Panel database tables for the specified connection.
+Panel-Process.ps1 Panel current processes.
 Panel-Property-.ps1 Panel PowerShell provider item properties.
 Profile-Editor.ps1 Editor profile (example).
 Profile.ps1 Main profile (example).
@@ -21,6 +29,8 @@ Reformat-Selection-.ps1 Reformats selected lines or the current line in the edit
 Reindent-Selection-.ps1 Reindents selected lines or the current line.
 Remove-EmptyString-.ps1 Removes empty strings from a list.
 Remove-EndSpace-.ps1 Removes end spaces from the input objects property Text
+Rename-FarFile.ps1 Renames the current panel file or directory.
+Search-Regex.ps1 Searches for a regex in files and opens the result panel.
 Select-Bookmark-.ps1 Shows current editor bookmarks and goes to a selected one
 Select-FarFile-.ps1 Selects panel files by the specified filter.
 Set-Selection-.ps1 Sets selected text in the editor, command line or dialog editbox.
@@ -30,15 +40,5 @@ Show-Hlf-.ps1 Shows .hlf help file.
 Show-Image.ps1 Shows one or more images in a GUI window.
 Show-KeyName-.ps1 Shows internal names of pressed keys.
 Show-Markdown-.ps1 Shows markdown as HTML or Far help file.
-Update-FarManager.ps1 Updates Far Manager and standard plugins.
-Edit-FarDescription.ps1 Edits multiline Far descriptions in the editor.
 Start-Far.ps1 Starts Far with the command, panels, options.
-Rename-FarFile.ps1 Renames the current panel file or directory.
-Open-TextLink.ps1 Opens a text link contained in the text.
-Get-TextLink.ps1 Gets a text link with the current editor line or selection.
-Invoke-FromEditor.ps1 Invokes a file from the current editor.
-Panel-BitsTransfer.ps1 Starts or manages file transfer jobs in a panel.
-Search-Regex.ps1 Searches for a regex in files and work on results in a panel
-Merge-Selected.ps1 Invokes merge for two panels items.
-Go-To.ps1 Goes to the specified panel item.
-Panel-Process.ps1 Panel current processes.
+Update-FarManager.ps1 Updates Far Manager and standard plugins.

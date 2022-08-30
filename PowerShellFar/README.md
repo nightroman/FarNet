@@ -82,11 +82,10 @@ sample scripts in the repository.
 New users may want to configure the module with [Profile.ps1](#profileps1) in
 *%FARPROFILE%\FarNet\PowerShellFar*.
 
-**Colorer support**
+**Syntax highlighting**
 
-The syntax scheme *powershell.hrc* and the optional color scheme *visual.hrd*
-come with the official Colorer plugin. They provide editor syntax highlighting.
-
+The official plugin FarColorer includes and uses the syntax scheme *powershell.hrc*.
+The white background color scheme *visual.hrd* was designed with PowerShell in mind.
 
 *********************************************************************
 ## Run commands
@@ -163,10 +162,7 @@ Various event handlers can be added using the profiles or scripts. See
 
 `[Del]` in the background job list stops running background jobs.
 
-It is not normally possible to stop commands started from event handlers like
-editor and panel events. Design such code carefully and test it well before
-adding to handlers.
-
+It is not normally possible to stop commands started from event handlers.
 
 *********************************************************************
 ## Command line
@@ -206,12 +202,11 @@ Commands with no output and input may use any prefix:
 
 See more [Examples].
 
-**Command history**
+**Command echo**
 
-Commands are usually added to the PSF command history. A command is not added
-if it ends with "#". Use this for user menu and file association commands.
-They are not typed manually and should not pollute the history.
-
+Commands with screen output are printed to the screen before output (echo). But
+if a command ends with "#" then it is not printed. Use this trick in user menu
+and file association commands when echo is not needed.
 
 *********************************************************************
 ## Menu commands
@@ -277,7 +272,6 @@ available help information in the viewer. In code editors (*.ps1*, *.psm1*,
 *.psd1*, input code boxes) this action is associated with `[ShiftF1]`.
 For scripts it is exposed as `$Psf.ShowHelp()`.
 
-
 *********************************************************************
 ## Command console dialog
 
@@ -318,7 +312,6 @@ The prompt is not modal, you may switch to other windows.
 - `[F5]`
 
     Opens the editor for the alternative code input.
-    Multiline commands are not added to the history.
     On closing the editor the code is always invoked.
     You may use `[F5]` in the editor to run the code.
 
@@ -379,9 +372,8 @@ The output is shown in the viewer.
 
 - `[F1]`
 
-    If the input line is empty shows this topic. Otherwise shows PowerShell
-    help for the current command or its parameter.
-
+    Shows this topic if the input line is empty.
+    Otherwise shows the current command help.
 
 *********************************************************************
 ## Background jobs menu
@@ -422,31 +414,30 @@ Other information: output data size and a job name or its command text (shortene
 
     Invokes `[Del]` action for each job in the list.
 
-
 *********************************************************************
 ## Command history
 
 [Contents]
 
-The command history is shown by `[F11] \ PowerShellFar \ Command history`.
+The PowerShell command history is shown by `[F11] \ PowerShellFar \ Command history`.
+
+The history includes Far Manager command and PowerShellFar input dialog histories.
 
 **Keys and actions**
 
 - `[Enter]`
 
-    Inserts a command to the command input line (panels, interactive, command
-    box) or shows a new dialog *Invoke commands* with this command inserted.
+    Inserts the command to the input line (panels, interactive, command box) or
+    shows a new dialog *Invoke commands* dialog with the command text inserted.
+
+    On inserting to the command line, existing prefixes are preserved.
+    On missing prefixes, the main prefix `ps:` is added automatically.
 
 - `[CtrlC]`
 
     Copies the command text to the clipboard.
 
-- `[CtrlR]`, `[Del]`
-
-    Removes old and duplicated commands from the history.
-
 - [List menu keys](https://github.com/nightroman/FarNet/tree/master/FarNet#list-menu)
-
 
 *********************************************************************
 ## Power panel menu
@@ -456,7 +447,6 @@ The command history is shown by `[F11] \ PowerShellFar \ Command history`.
 
 This menu shows available special panels and PowerShell provider drives for
 opening provider panels. `[Enter]` opens the selected panel.
-
 
 *********************************************************************
 ## Errors menu
@@ -480,7 +470,6 @@ global variable `$Error`. Errors with source info are shown checked.
 - `[Del]`
 
     Removes all error records and closes the menu.
-
 
 *********************************************************************
 ## Debugger menu
@@ -569,7 +558,6 @@ edited is inserted by default.
 If you do not provide actions then breakpoints break into a connected debugger.
 Otherwise actions depend on their code. It may be logging, diagnostics, adding
 extra or altering original features without changing the source code.
-
 
 *********************************************************************
 ## Debugging
@@ -714,18 +702,7 @@ Limitations of asynchronous consoles:
 
 - Objects `$Far` and `$Psf` are not exposed.
 - Cmdlets `*-Far*` are exposed but normally should not be used.
-- PowerShell UI should be avoided: `Read-Host`, `Write-Progress`, confirmations, ...
-
----
-**Notes**
-
-The Colorer scheme *powershell.hrc* (optionally with *visual.hrd*) takes care
-of syntax highlighting. In addition to PowerShell syntax, console output is
-colored as well: numbers, dates, times, paths, errors, warnings, and etc.
-
-Use word completion (e.g. *Complete-Word-.ps1*). Words from output of previous
-commands often may be effectively completed in a new command being composed.
-
+- UI should be avoided: `Read-Host`, `Write-Progress`, confirmations, ...
 
 *********************************************************************
 ## Interactive menu
@@ -755,7 +732,6 @@ session.
     asynchronously in a new remote runspace. You are prompted to enter a
     computer name and a user domain\name. If a user is specified then a
     password is also requested.
-
 
 *********************************************************************
 ## Power panel
@@ -901,7 +877,6 @@ types, providers and etc.
 
     Search, not really implemented at the moment.
 
-
 *********************************************************************
 ## Object panel
 
@@ -967,7 +942,6 @@ special operations. For example:
     Note that `[ShiftDel]` simply and safely removes objects from the panel
     without doing anything else.
 
-
 *********************************************************************
 ## Item panel
 
@@ -1026,7 +1000,6 @@ If you want to open a panel at the specified location from a script you may use
 scripts *Go-To.ps1* (not for *FileSystem*) and *Panel-Property-.ps1* (for any
 provider). See comments and examples there.
 
-
 *********************************************************************
 ## Folder tree
 
@@ -1063,7 +1036,6 @@ imported modules.
 
     See [Tree panel](#tree-panel) for other tree panels keys used for navigation
     (expanding, collapsing nodes and etc.).
-
 
 *********************************************************************
 ## Data panel
@@ -1148,7 +1120,6 @@ record then at first you have to re-read the table data explicitly by `[CtrlR]`
 (otherwise you can get concurrency error or record data can be incomplete and
 etc.).
 
-
 *********************************************************************
 ## List panel
 
@@ -1211,7 +1182,6 @@ An object shown in the panel is exposed as `$Far.Panel.Value`.
 
 See [Power panel](#power-panel) for other keys.
 
-
 *********************************************************************
 ## Tree panel
 
@@ -1254,7 +1224,6 @@ expandable nodes.
 * `[Ctrl0]` - just the tree, descriptions are in the status line.
 * `[Ctrl1]` - two columns, the tree nodes and their descriptions.
 
-
 *********************************************************************
 ## Global objects
 
@@ -1277,7 +1246,6 @@ There are three main objects defined as global variables.
 
     The PowerShell host. In PowerShellFar its `$Host.Name` is "FarHost".
     Scripts may choose how to work depending on a host.
-
 
 *********************************************************************
 ## Profiles
@@ -1307,9 +1275,9 @@ This introduces some limitations, actually easy to deal with:
   not for doing any work.
 * Do not add editor event handlers in the main profile, use the editor profile
   *Profile-Editor.ps1*.
-* Non terminating profile errors are not shown. A terminating error is shown in
-  a GUI message box with a bare error message. Examine the variable `$Error`
-  after loading.
+* Profile errors are not shown on loading (background). Terminating error are
+  shown on the first command. For non-terminating errors examine the variable
+  `$Error` after loading.
 
 Example: [Profile.ps1](#profileps1)
 
@@ -1348,7 +1316,6 @@ Not everything is configured via `$Psf.Settings`. There are other exposed
 objects designed for configuration in the profile, e.g. `$Psf.Providers`.
 
 See example [Profile.ps1](#profileps1).
-
 
 *********************************************************************
 ## Commands output
@@ -1399,7 +1366,6 @@ no shown output. Terminating errors are shown in message boxes. Non terminating
 errors are ignored but collected in the global variable `$Error`. Warnings are
 ignored.
 
-
 *********************************************************************
 ## Background jobs
 
@@ -1432,13 +1398,12 @@ available.
 If it is not enough then there is another way to choose how to proceed with
 jobs. The macro `[F10]` can get control of exit in panels: see [Examples].
 
-
 *********************************************************************
 ## Suffixes
 
 [Contents]
 
-Some scripts names end with ".far.ps1", "-.ps1", ".fas.ps1", "..ps1".
+Some sample scripts names end with ".far.ps1", "-.ps1", ".fas.ps1".
 
 The suffixes mean that scripts are not standard PowerShell scripts.
 
@@ -1480,7 +1445,6 @@ With these associations `[Enter]` (or another assigned key) in the panel
 invokes standard scripts by powershell.exe and PowerShellFar scripts by
 one of the associated commands.
 
-
 *********************************************************************
 ## Profile.ps1
 
@@ -1495,10 +1459,18 @@ The main session profile: *%FARPROFILE%\FarNet\PowerShellFar\Profile.ps1*
 ---
 
     # Aliases
-    Set-Alias fff Find-FarFile -Description 'Finds the panel file'
+    Set-Alias pp Get-FarPath -Description 'Get panel paths'
     ...
 
-The profile is used to define aliases. Some sample aliases are predefined.
+Define some convenient command aliases.
+
+---
+
+    # Preferences
+    $Psf.Settings.PopupAutoSelect = $false
+    ...
+
+Change `$Psf.Settings`, mostly UI preferences, see API help.
 
 ---
 
@@ -1507,15 +1479,6 @@ The profile is used to define aliases. Some sample aliases are predefined.
 
 Define how provider data look in panels; see API help for more details:
 properties `Providers` (class `Actor`), `Columns` (class `ItemPanel`).
-
----
-
-    # Preferences
-    $Psf.Settings.PopupAutoSelect = $false
-    ...
-
-Change some `$Psf.Settings`, mostly UI preferences, see API help.
-
 
 *********************************************************************
 ## Profile-Editor.ps1
@@ -1560,24 +1523,22 @@ Mouse events:
 - `RightClick` - shows a menu with some commands like Cut, Copy, and Paste.
 - `Shift+LeftClick` - select from the last LeftClick position or from the cursor.
 
-
 *********************************************************************
 ## TabExpansion2.ps1
 
 [Contents]
 
 This script replaces the built-in PowerShell function.
-It comes with the module and loaded on the first call.
+It comes with the module and loads on the first call.
 
 *TabExpansion2.ps1* reuses built-in completions and supports
-extensions added by one or more `*ArgumentCompleters.ps1` profiles.
+extensions added by profiles named like `*ArgumentCompleters.ps1`.
 
 The script *Bench\ArgumentCompleters.ps1* is a sample profile.
 Use it as the base for your completers. See the script code and comments.
 
 *TabExpansion2.ps1* works with other PowerShell hosts as well.
 All you need is to call the script once, normally in a host profile.
-
 
 *********************************************************************
 ## Search-Regex.ps1
@@ -1664,7 +1625,7 @@ To search in all or selected panel items, especially useful in the temp panel:
 
 To search in the editor history files:
 
-    $Far.History.Editor() | %{$_.Name}
+    $Far.History.Editor() | % Name
 
 The above command is just an example. Its improved version is provided by the
 script built-in utility `Get-EditorHistory` which returns recent files first
@@ -1695,7 +1656,6 @@ Ditto but items are collected in the background:
 The script demonstrates useful techniques of using background jobs for
 processing and panels for displaying results and further operations.
 
-
 *********************************************************************
 ## Frequently asked questions
 
@@ -1715,7 +1675,6 @@ See *PowerShellFar.macro.lua*, `[Space]`.
 Use the command console started from panels by the menu "Invoke commands".
 This mode needs no prefixes and provides rich code completion by `[Tab]`.
 Optionally, create a "Shell" macro for `ps: $Psf.StartCommandConsole()`.
-See *PowerShellFar.macro.lua*, `[Alt]`.
 
 **3:**
 
@@ -1744,8 +1703,8 @@ See *PowerShellFar.macro.lua* for sample macros.
 
 **Command examples**
 
-Some examples are just demo but some may be practically useful as user menu
-commands (add ' #' to the end to avoid adding to the history).
+Examples are demo but some may be useful as user menu commands
+(add "#" to the end to avoid printing commands to the screen).
 
 ---
 Show three useful versions: Far, FarNet, PowerShellFar
@@ -1775,22 +1734,15 @@ View *.log* files one by one, do not add to history
     ps: Get-Item *.log | Start-FarViewer -Modal -DisableHistory
 
 ---
-Find string "alias" in .ps1 files, show list of found lines and open editor at
-the selected line (guess why these commands are the same):
+Find string "alias" in .ps1 files, show list of found lines and open the editor
+at the selected line:
 
     ps: Get-Item *.ps1 | Select-String alias | Out-FarList | Start-FarEditor
 
 ---
-Show PSF settings in the panel:
+Show settings in the panel:
 
     ps: Open-FarPanel $Psf.Settings
-
----
-Show list of names and command lines of running processes and then show the selected process member panel
-
-    ps: Get-CimInstance Win32_Process | Out-FarList -Text { $_.Name + ' ' + $_.CommandLine } | Open-FarPanel
-
-(type "far" in this list to see how filter works)
 
 ---
 Show available scripts and their help synopsis in description column

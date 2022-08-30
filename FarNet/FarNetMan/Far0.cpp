@@ -953,6 +953,7 @@ bool Far0::InvokeCommand(const wchar_t* command, bool isMacro)
 			continue;
 
 		ModuleCommandEventArgs^ e = gcnew ModuleCommandEventArgs(gcnew String(colon + 1));
+		e->Prefix = prefix;
 		e->IsMacro = isMacro;
 
 		// invoke later

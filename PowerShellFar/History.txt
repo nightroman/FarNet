@@ -1,5 +1,16 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 6.0.15 =
+
+Requires FarNet 6.0.12
+
+The module does not write command history anymore. You may remove
+"%FARLOCALPROFILE%\FarNet\PowerShellFar\PowerShellFarHistory.log".
+The command history is created from Far Manager histories.
+See https://github.com/nightroman/FarNet/discussions/31
+
+Renamed and updated Complete-Word-.ps1 -> Complete-Word.ps1
+
 = 6.0.14 =
 
 FarInventory module works again. Replaced CIM cmdlets with System.Management tools.

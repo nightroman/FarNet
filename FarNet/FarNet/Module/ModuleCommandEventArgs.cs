@@ -23,6 +23,11 @@ public class ModuleCommandEventArgs : EventArgs
 	public string Command { get; }
 
 	/// <summary>
+	/// Gets or sets the command prefix.
+	/// </summary>
+	public string Prefix { get; set; }
+
+	/// <summary>
 	/// Tells that command is called by <c>Plugin.Call()</c>.
 	/// </summary>
 	public bool IsMacro { get; set; }

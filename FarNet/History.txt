@@ -1,8 +1,12 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
-**Deprecated** System.Runtime.InteropServices.Guid as module item ID.
-Use the property Id of module item attributes instead.
+= 6.0.12 =
+
+Stopped using deprecated System.Runtime.InteropServices.Guid as module item id.
+Modules should use the property Id of module item attributes.
+
+Added Prefix to ModuleCommandEventArgs.
 
 = 6.0.11 =
 

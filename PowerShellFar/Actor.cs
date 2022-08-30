@@ -14,6 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace PowerShellFar;
+#pragma warning disable CA1822
 
 /// <summary>
 /// PowerShellFar tools exposed by the global variable <c>$Psf</c>.
@@ -261,8 +262,7 @@ public sealed partial class Actor
 		}
 
 		// to set yet unknown location to the directory
-		if (location == null)
-			location = directory;
+		location ??= directory;
 
 		// set the current provider location; let's do it first, in case of failure
 		// we can skip directory setting/restoring in cases when they are the same.
@@ -629,14 +629,6 @@ Continue with this current directory?
 			FarUI.IsProgressStarted = false;
 			Far.Api.UI.SetProgressState(TaskbarProgressBarState.Indeterminate);
 
-			// add history
-			if (args.AddHistory)
-			{
-				code = code.Trim();
-				if (!code.EndsWith("#"))
-					History.AddLine(code);
-			}
-
 			// invoke command
 			using (var ps = NewPowerShell())
 			{
@@ -706,7 +698,7 @@ Continue with this current directory?
 					var viewer = Far.Api.CreateViewer();
 					viewer.FileName = myWriter.FileName;
 					//! code with \n may come from ReadLine editors
-					viewer.Title = code.IndexOf('\n') < 0 ? code : "Command output";
+					viewer.Title = code.IndexOf('\n') < 0 ? code.Trim() : "Command output";
 					viewer.DeleteSource = DeleteSource.File;
 					viewer.Switching = Switching.Enabled;
 					viewer.DisableHistory = true;

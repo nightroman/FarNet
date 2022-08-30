@@ -35,14 +35,14 @@ run {
 job {
 	# last command
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog.Focused.Text -eq '1+1'
+	Assert-Far $Far.Dialog.Focused.Text -eq 'ps:1+1'
 }
 
 # insert into the cmdline
 keys Enter
 job {
 	Assert-Far -Panels
-	Assert-Far $Far.CommandLine.Text -eq 'ps: 1+1'
+	Assert-Far $Far.CommandLine.Text -eq 'ps:1+1'
 
 	# clear cmdline
 	$Far.CommandLine.Text = ''

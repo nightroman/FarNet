@@ -12,14 +12,6 @@ Macro {
 }
 
 Macro {
-  area="Shell"; key="Alt"; description="PSF: Command console";
-  flags="EmptyCommandLine";
-  action=function()
-    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", [[vps: $Psf.StartCommandConsole()]])
-  end;
-}
-
-Macro {
   area="Shell"; key="F10"; description="PSF: Quit Far";
   action=function()
     if not Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", [[vps:$Far.Quit()]]) then Keys "F10" end
@@ -48,13 +40,13 @@ Macro {
 }
 
 Macro {
-  key="CtrlSpace"; description="PSF: Complete-Word-.ps1";
+  key="CtrlSpace"; description="PSF: Complete-Word.ps1";
   area="Dialog Editor Shell QView Tree Info DialogAutoCompletion ShellAutoCompletion";
   condition=function()
     return Area.Dialog or Area.Editor or Area.DialogAutoCompletion or Area.ShellAutoCompletion or not CmdLine.Empty
   end;
   action=function()
     if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys "Esc" end
-    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", [[vps:Complete-Word-.ps1]])
+    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", [[vps:Complete-Word.ps1]])
   end;
 }

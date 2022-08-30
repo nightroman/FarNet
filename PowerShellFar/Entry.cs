@@ -7,6 +7,7 @@ using System;
 using System.Management.Automation;
 
 namespace PowerShellFar;
+#pragma warning disable 1591
 
 /// <summary>
 /// INTERNAL
@@ -17,8 +18,9 @@ public sealed class Entry : ModuleHost
 	internal static Entry Instance { get; private set; }
 	internal static string LocalData { get; private set; }
 	internal static string RoamingData { get; private set; }
+	internal static IModuleCommand CommandInvoke1 { get; private set; }
+	internal static IModuleCommand CommandInvoke2 { get; private set; }
 
-	///
 	public Entry()
 	{
 		if (Instance != null)
@@ -35,26 +37,27 @@ public sealed class Entry : ModuleHost
 			Instance.Manager.Unregister();
 	}
 
-	///
 	public override void Connect()
 	{
 		// create an actor and expose main instances
 		A.Connect(new Actor());
 
-		// register commands with prefixes
+		// register main command
 		CommandInvoke1 = Manager.RegisterModuleCommand(
 			new Guid("60353ab6-52cb-413e-8e11-e4917099b80b"),
-			new ModuleCommandAttribute() { Name = "PowerShell command (console output)", Prefix = "ps" },
+			new ModuleCommandAttribute { Name = "PowerShell command, screen output", Prefix = "ps" },
 			OnCommandInvoke1);
+
+		// register view command
 		CommandInvoke2 = Manager.RegisterModuleCommand(
 			new Guid("03760876-d154-467c-bc5d-8ec39efb637d"),
-			new ModuleCommandAttribute() { Name = "PowerShell command (viewer output)", Prefix = "vps" },
+			new ModuleCommandAttribute { Name = "PowerShell command, viewer output", Prefix = "vps" },
 			OnCommandInvoke2);
 
 		// register menu
 		Manager.RegisterModuleTool(
 			new Guid("7def4106-570a-41ab-8ecb-40605339e6f7"),
-			new ModuleToolAttribute() { Name = Res.Me, Options = ModuleToolOptions.F11Menus },
+			new ModuleToolAttribute { Name = Res.Me, Options = ModuleToolOptions.F11Menus },
 			OnOpen);
 
 		// subscribe to editors
@@ -65,7 +68,6 @@ public sealed class Entry : ModuleHost
 		A.Psf.Connect();
 	}
 
-	///
 	public override void Disconnect()
 	{
 		// disconnect instances
@@ -74,13 +76,11 @@ public sealed class Entry : ModuleHost
 		Instance = null;
 	}
 
-	///
 	public override bool CanExit()
 	{
 		return A.Psf.CanExit();
 	}
 
-	///
 	public override void Invoking()
 	{
 		if (!IsInvokingCalled)
@@ -91,19 +91,15 @@ public sealed class Entry : ModuleHost
 	}
 	bool IsInvokingCalled;
 
-	internal static IModuleCommand CommandInvoke1 { get; private set; }
-
 	void OnCommandInvoke1(object sender, ModuleCommandEventArgs e)
 	{
 		string currentDirectory = A.Psf.SyncPaths();
 		try
 		{
-			// if command ends with `#` then omit history and echo else make echo with prefix
+			// if ends with `#` then omit echo else make echo with prefix
 			var echo = e.Command.TrimEnd();
-			var addHistory = !e.IsMacro;
 			if (echo.EndsWith("#"))
 			{
-				addHistory = false;
 				echo = null;
 			}
 			else
@@ -112,7 +108,7 @@ public sealed class Entry : ModuleHost
 				echo = CommandInvoke1.Prefix + colon + e.Command;
 			}
 
-			var ok = A.Psf.Run(new RunArgs(e.Command) { Writer = new ConsoleOutputWriter(echo), AddHistory = addHistory });
+			var ok = A.Psf.Run(new RunArgs(e.Command) { Writer = new ConsoleOutputWriter(echo) });
 			e.Ignore = !ok;
 		}
 		finally
@@ -121,14 +117,12 @@ public sealed class Entry : ModuleHost
 		}
 	}
 
-	internal static IModuleCommand CommandInvoke2 { get; private set; }
-
 	void OnCommandInvoke2(object sender, ModuleCommandEventArgs e)
 	{
 		string currentDirectory = A.Psf.SyncPaths();
 		try
 		{
-			var ok = A.Psf.Run(new RunArgs(e.Command) { AddHistory = !e.IsMacro });
+			var ok = A.Psf.Run(new RunArgs(e.Command));
 			e.Ignore = !ok;
 		}
 		finally
@@ -142,7 +136,6 @@ public sealed class Entry : ModuleHost
 		UI.ActorMenu.Show(sender, e);
 	}
 
-	///
 	public override object Interop(string command, object args)
 	{
 		return command switch

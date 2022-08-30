@@ -81,7 +81,7 @@ if ($Command) {
 	try {
 		$exe = if ($env:FARHOME) {"$env:FARHOME\Far.exe"} else {'Far.exe'}
 		$arg = $(
-			'"ps: Start-FarTask \"{0}\" #"' -f $MyInvocation.MyCommand.Path
+			'"ps: Start-FarTask \"{0}\""' -f $MyInvocation.MyCommand.Path
 			if ($Title) {"/title:`"$Title`""}
 			if ($ReadOnly) {'/ro'}
 		)

@@ -3,129 +3,132 @@
 // Copyright (c) Roman Kuzmin
 
 using FarNet;
-using FarNet.Tools;
 using System;
 
-namespace PowerShellFar
+namespace PowerShellFar;
+
+static class History
 {
-	static class History
+	static readonly HistoryCommands _history = new();
+
+	/// <summary>
+	/// Up/Down cache.
+	/// </summary>
+	static string[] _navCache;
+
+	/// <summary>
+	/// Up/Down current index.
+	/// </summary>
+	static int _navIndex;
+
+	/// <summary>
+	/// Removes navigation data.
+	/// </summary>
+	public static void ResetNavigation()
 	{
-		static readonly HistoryLog _log = new(Entry.LocalData + "\\PowerShellFarHistory.log", Settings.Default.MaximumHistoryCount);
-		internal static HistoryLog Log { get { return _log; } }
-		/// <summary>
-		/// Up/Down cache.
-		/// </summary>
-		static string[] navCache;
-		/// <summary>
-		/// Up/Down current index.
-		/// </summary>
-		static int navIndex { get; set; }
-		/// <summary>
-		/// Removes navigation data.
-		/// </summary>
-		public static void ResetNavigation()
+		_navCache = null;
+	}
+
+	/// <summary>
+	/// Gets history lines.
+	/// </summary>
+	public static string[] ReadLines()
+	{
+		return _history.ReadLines();
+	}
+
+	/// <summary>
+	/// For Actor. Inserts code to known targets and returns null or returns the code.
+	/// </summary>
+	public static string ShowHistory()
+	{
+		var ui = new UI.CommandHistoryMenu(_history, string.Empty);
+		string code = ui.Show();
+		if (code == null)
+			return null;
+
+		// case: panels, preserve the prefix
+		if (Far.Api.Window.Kind == WindowKind.Panels)
 		{
-			navCache = null;
+			if (!_history.HasPrefix(code))
+				code = Entry.CommandInvoke1.Prefix + ": " + code;
+
+			Far.Api.CommandLine.Text = code;
+			return null;
 		}
-		/// <summary>
-		/// Gets history lines.
-		/// </summary>
-		public static string[] ReadLines()
+
+		code = _history.RemovePrefix(code);
+		switch (Far.Api.Window.Kind)
 		{
-			return _log.ReadLines();
-		}
-		/// <summary>
-		/// Add a new history line.
-		/// </summary>
-		public static void AddLine(string value)
-		{
-			_log.AddLine(value);
-			ResetNavigation();
-		}
-		/// <summary>
-		/// For Actor. Inserts code to known targets and returns null or returns the code.
-		/// </summary>
-		public static string ShowHistory()
-		{
-			var m = new UI.CommandHistoryMenu(string.Empty);
-			string code = m.Show();
-			if (code == null)
+			case WindowKind.Editor:
+				var editor = Far.Api.Editor;
+				if (editor.Host is not Interactive)
+					break;
+				editor.GoToEnd(true);
+				editor.InsertText(code);
+				editor.Redraw();
 				return null;
-
-			switch (Far.Api.Window.Kind)
-			{
-				case WindowKind.Panels:
-					Far.Api.CommandLine.Text = Entry.CommandInvoke1.Prefix + ": " + code;
-					return null;
-				case WindowKind.Editor:
-					var editor = Far.Api.Editor;
-					if (!(editor.Host is Interactive))
-						break;
-					editor.GoToEnd(true);
-					editor.InsertText(code);
-					editor.Redraw();
-					return null;
-				case WindowKind.Dialog:
-					var dialog = Far.Api.Dialog;
-					var typeId = dialog.TypeId;
-					if (typeId != new Guid(Guids.ReadCommandDialog) && typeId != new Guid(Guids.InputDialog))
-						break;
-					var line = Far.Api.Line;
-					if (line == null || line.IsReadOnly)
-						break;
-					line.Text = code;
-					return null;
-			}
-
-			return code;
+			case WindowKind.Dialog:
+				var dialog = Far.Api.Dialog;
+				var typeId = dialog.TypeId;
+				if (typeId != new Guid(Guids.ReadCommandDialog) && typeId != new Guid(Guids.InputDialog))
+					break;
+				var line = Far.Api.Line;
+				if (line == null || line.IsReadOnly)
+					break;
+				line.Text = code;
+				return null;
 		}
-		public static string GetNextCommand(bool up, string current)
+
+		return code;
+	}
+
+	public static string GetNextCommand(bool up, string current)
+	{
+		string lastUsed = null;
+
+		if (_navCache == null)
 		{
-			string lastUsed = null;
+			lastUsed = current;
+			_navCache = ReadLines();
+			_navIndex = _navCache.Length;
+		}
+		else if (_navIndex >= 0 && _navIndex < _navCache.Length)
+		{
+			lastUsed = _navCache[_navIndex];
+		}
 
-			if (navCache == null)
+		if (up)
+		{
+			for (; ; )
 			{
-				lastUsed = current;
-				navCache = ReadLines();
-				navIndex = navCache.Length;
-			}
-			else if (navIndex >= 0 && navIndex < navCache.Length)
-			{
-				lastUsed = navCache[navIndex];
-			}
-
-			if (up)
-			{
-				for (; ; )
+				if (--_navIndex < 0)
 				{
-					if (--navIndex < 0)
-					{
-						navIndex = -1;
-						return string.Empty;
-					}
-					else
-					{
-						var command = navCache[navIndex];
-						if (command != lastUsed)
-							return command;
-					}
+					_navIndex = -1;
+					return string.Empty;
+				}
+				else
+				{
+					var command = _navCache[_navIndex];
+					if (command != lastUsed)
+						return command;
 				}
 			}
-			else
+		}
+		else
+		{
+			for (; ; )
 			{
-				for (; ; )
+				if (++_navIndex >= _navCache.Length)
 				{
-					if (++navIndex >= navCache.Length)
-					{
-						navIndex = navCache.Length;
-						return string.Empty;
-					}
-					else
-					{
-						var command = navCache[navIndex];
-						if (command != lastUsed)
-							return command;
-					}
+					_navIndex = _navCache.Length;
+					return string.Empty;
+				}
+				else
+				{
+					var command = _navCache[_navIndex];
+					if (command != lastUsed)
+						return command;
 				}
 			}
 		}

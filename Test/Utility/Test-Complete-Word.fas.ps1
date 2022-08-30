@@ -13,7 +13,7 @@ macro 'Keys"w i n d o w s Space p o w e r s h e l l Enter"'
 keys p
 job {
 	Assert-Far $Far.Line.Text -eq 'p'
-	Complete-Word-.ps1
+	Complete-Word.ps1
 }
 job {
 	Assert-Far $Far.Line.Text -eq 'powershell'
@@ -26,7 +26,7 @@ macro 'Keys"2 Enter"'
 keys p
 run {
 	# 2 items are expected => dialog
-	Complete-Word-.ps1
+	Complete-Word.ps1
 }
 job {
 	Assert-Far -Dialog
@@ -59,7 +59,7 @@ job {
 macro 'Keys"Enter . p z Enter . p"'
 run {
 	# 3 items are expected => dialog
-	Complete-Word-.ps1
+	Complete-Word.ps1
 }
 job {
 	Assert-Far -Dialog

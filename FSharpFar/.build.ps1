@@ -131,7 +131,7 @@ task test_tests {
 }
 
 task test_tasks {
-	Start-Far "ps: Test.far.ps1 * -Quit #" $env:FarNetCode\Test\FSharpFar.test -ReadOnly -Title Tasks
+	Start-Far "ps: Test.far.ps1 * -Quit" $env:FarNetCode\Test\FSharpFar.test -ReadOnly -Title Tasks
 }
 
 task test_fsx {

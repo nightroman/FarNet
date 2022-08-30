@@ -74,7 +74,7 @@ public sealed class Settings
 	public bool ListMenuUsualMargins { get; set; } = true;
 
 	/// <summary>
-	/// The maximum number of history commands kept in a file. In fact, 10% more is allowed.
+	/// The maximum number of history commands to show.
 	/// </summary>
 	public int MaximumHistoryCount { get; set; } = 1000;
 

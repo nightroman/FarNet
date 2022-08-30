@@ -6,16 +6,17 @@
 // Text line history files are rather logs, not text files for an editor.
 // IO.File methods by default work in this way.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 
 namespace FarNet.Tools;
 
 /// <summary>
-/// The tool for reading, writing, and cleaning history logs.
+/// Reads, writes, and cleans file history logs.
 /// </summary>
 /// <seealso cref="HistoryMenu"/>.
-public sealed class HistoryLog
+public sealed class HistoryLog : HistoryStore
 {
 	readonly string _fileName;
 	readonly int _maximumCount;
@@ -38,9 +39,12 @@ public sealed class HistoryLog
 	}
 
 	/// <summary>
-	/// Gets history lines.
+	/// Gets true.
 	/// </summary>
-	public string[] ReadLines()
+	public override bool CanAdd => true;
+
+	/// <inheritdoc/>
+	public override string[] ReadLines()
 	{
 		// get lines
 		try
@@ -53,20 +57,31 @@ public sealed class HistoryLog
 		}
 		catch (FileNotFoundException)
 		{
-			return new string[0];
+			return Array.Empty<string>();
 		}
 	}
 
+	/// <inheritdoc/>
+	public override void AddLine(string line)
+	{
+		if (line == _lastLine)
+			return;
+
+		_lastLine = line;
+
+		using var writer = File.AppendText(_fileName);
+		writer.WriteLine(line);
+	}
+
 	/// <summary>
-	/// Removes duplicated lines, then lines above the maximum.
+	/// Removes duplicated lines, then lines above the limit.
 	/// </summary>
 	/// <param name="lines">Input lines.</param>
 	/// <returns>Output lines.</returns>
-	public string[] Update(string[] lines)
+	public override string[] Update(string[] lines)
 	{
 		// ensure lines
-		if (lines == null)
-			lines = ReadLines();
+		lines ??= ReadLines();
 
 		// copy lines
 		var list = new List<string>(lines);
@@ -93,19 +108,5 @@ public sealed class HistoryLog
 		lines = list.ToArray();
 		WriteLines(lines);
 		return lines;
-	}
-
-	/// <summary>
-	/// Adds a new history line.
-	/// </summary>
-	/// <param name="value">History line.</param>
-	public void AddLine(string value)
-	{
-		if (value == _lastLine)
-			return;
-
-		_lastLine = value;
-		using (var writer = File.AppendText(_fileName))
-			writer.WriteLine(value);
 	}
 }
