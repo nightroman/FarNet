@@ -12,7 +12,7 @@ sealed class ProxyCommand : ProxyAction, IModuleCommand
 	string _Prefix;
 	readonly EventHandler<ModuleCommandEventArgs> _Handler;
 
-	new ModuleCommandAttribute Attribute => (ModuleCommandAttribute)base.Attribute;
+	ModuleCommandAttribute Attribute => (ModuleCommandAttribute)ActionAttribute;
 	public override ModuleItemKind Kind => ModuleItemKind.Command;
 
 	internal ProxyCommand(ModuleManager manager, BinaryReader reader)

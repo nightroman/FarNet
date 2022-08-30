@@ -13,7 +13,7 @@ sealed class ProxyDrawer : ProxyAction, IModuleDrawer
 	string _Mask;
 	int _Priority;
 
-	new ModuleDrawerAttribute Attribute => (ModuleDrawerAttribute)base.Attribute;
+	ModuleDrawerAttribute Attribute => (ModuleDrawerAttribute)ActionAttribute;
 	public override ModuleItemKind Kind => ModuleItemKind.Drawer;
 
 	internal ProxyDrawer(ModuleManager manager, BinaryReader reader)

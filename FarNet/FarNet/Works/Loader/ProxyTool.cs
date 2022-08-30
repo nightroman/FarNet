@@ -12,7 +12,7 @@ sealed class ProxyTool : ProxyAction, IModuleTool
 	ModuleToolOptions _Options;
 	readonly EventHandler<ModuleToolEventArgs> _Handler;
 
-	new ModuleToolAttribute Attribute => (ModuleToolAttribute)base.Attribute;
+	ModuleToolAttribute Attribute => (ModuleToolAttribute)ActionAttribute;
 	public ModuleToolOptions DefaultOptions => Attribute.Options;
 	public override ModuleItemKind Kind => ModuleItemKind.Tool;
 

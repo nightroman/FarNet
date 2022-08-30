@@ -11,7 +11,7 @@ sealed class ProxyEditor : ProxyAction, IModuleEditor
 {
 	string _Mask;
 
-	new ModuleEditorAttribute Attribute => (ModuleEditorAttribute)base.Attribute;
+	ModuleEditorAttribute Attribute => (ModuleEditorAttribute)ActionAttribute;
 	public override ModuleItemKind Kind => ModuleItemKind.Editor;
 
 	internal ProxyEditor(ModuleManager manager, BinaryReader reader)

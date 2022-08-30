@@ -5,7 +5,6 @@
 using System;
 using System.IO;
 using System.Linq.Expressions;
-using System.Runtime.InteropServices;
 
 namespace FarNet.Works;
 
@@ -16,11 +15,11 @@ abstract class ProxyAction : IModuleAction
 	readonly Guid _Id;
 	Func<object> _Constructor;
 	readonly ModuleManager _Manager;
-	protected ModuleActionAttribute Attribute { get; }
+	protected ModuleActionAttribute ActionAttribute { get; }
 
 	// Properties
 	public virtual Guid Id => _Id;
-	public virtual string Name => Attribute.Name;
+	public virtual string Name => ActionAttribute.Name;
 	public IModuleManager Manager => _Manager;
 	internal string ClassName => _ClassType == null ? _ClassName : _ClassType.FullName;
 
@@ -30,12 +29,12 @@ abstract class ProxyAction : IModuleAction
 	internal ProxyAction(ModuleManager manager, BinaryReader reader, ModuleActionAttribute attribute)
 	{
 		_Manager = manager;
-		Attribute = attribute;
+		ActionAttribute = attribute;
 
 		// [1]
 		_ClassName = reader.ReadString();
 		// [2]
-		Attribute.Name = reader.ReadString();
+		ActionAttribute.Name = reader.ReadString();
 		// [3]
 		_Id = new Guid(reader.ReadBytes(16));
 	}
@@ -54,7 +53,7 @@ abstract class ProxyAction : IModuleAction
 	{
 		_Manager = manager;
 		_Id = id;
-		Attribute = attribute;
+		ActionAttribute = attribute;
 
 		Initialize();
 	}
@@ -62,40 +61,26 @@ abstract class ProxyAction : IModuleAction
 	protected ProxyAction(ModuleManager manager, Type classType, Type attributeType)
 	{
 		_Manager = manager;
-		_ClassType = classType ?? throw new ArgumentNullException(nameof(classType));
-		if (attributeType == null) throw new ArgumentNullException(nameof(attributeType));
+		_ClassType = classType;
 
-		object[] attrs;
-
-		// Module* attribure
-		attrs = _ClassType.GetCustomAttributes(attributeType, false);
-		if (attrs.Length == 0)
+		// module action attribure
+		ActionAttribute = (ModuleActionAttribute)Attribute.GetCustomAttribute(_ClassType, attributeType);
+		if (ActionAttribute is null)
 			throw new ModuleException($"{_ClassType.FullName} must use {attributeType.FullName}.");
 
-		Attribute = (ModuleActionAttribute)attrs[0];
+		if (ActionAttribute.Id is null)
+			throw new ModuleException($"{_ClassType.FullName} must specify {attributeType.FullName} Id.");
 
-		if (Attribute.Id is null)
-		{
-			// Legacy Guid attribute.
-			attrs = _ClassType.GetCustomAttributes(typeof(GuidAttribute), false);
-			if (attrs.Length == 0)
-				throw new ModuleException($"{_ClassType.FullName} must specify {attributeType.FullName} Id.");
-
-			_Id = new Guid(((GuidAttribute)attrs[0]).Value);
-		}
-		else
-		{
-			if (!Guid.TryParse(Attribute.Id, out _Id))
-				throw new ModuleException($"{_ClassType.FullName}: {attributeType.FullName} uses invalid GUID as Id.");
-		}
+		if (!Guid.TryParse(ActionAttribute.Id, out _Id))
+			throw new ModuleException($"{_ClassType.FullName}: {attributeType.FullName} uses invalid GUID as Id.");
 
 		Initialize();
 
-		if (Attribute.Resources)
+		if (ActionAttribute.Resources)
 		{
-			string name = _Manager.GetString(Attribute.Name);
+			string name = _Manager.GetString(ActionAttribute.Name);
 			if (!string.IsNullOrEmpty(name))
-				Attribute.Name = name;
+				ActionAttribute.Name = name;
 		}
 	}
 
@@ -119,7 +104,7 @@ abstract class ProxyAction : IModuleAction
 
 	void Initialize()
 	{
-		if (string.IsNullOrEmpty(Attribute.Name))
+		if (string.IsNullOrEmpty(ActionAttribute.Name))
 			throw new ModuleException($"{_ClassType.FullName} must set action Name.");
 	}
 
