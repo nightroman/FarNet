@@ -61,9 +61,21 @@ public abstract class IModuleManager
 	public abstract void Unregister();
 
 	/// <summary>
+	/// OBSOLETE
+	/// </summary>
+	/// <param name="id">.</param>
+	/// <param name="handler">.</param>
+	/// <param name="attribute">.</param>
+	[Obsolete("Use RegisterCommand")]
+	public IModuleCommand RegisterModuleCommand(Guid id, ModuleCommandAttribute attribute, EventHandler<ModuleCommandEventArgs> handler)
+	{
+		attribute.Id = id.ToString();
+		return RegisterCommand(attribute, handler);
+	}
+
+	/// <summary>
 	/// Registers the command handler invoked from the command line by its prefix.
 	/// </summary>
-	/// <param name="id">Unique ID.</param>
 	/// <param name="handler">Command handler.</param>
 	/// <param name="attribute">Command attribute.</param>
 	/// <remarks>
@@ -71,12 +83,24 @@ public abstract class IModuleManager
 	/// Dynamic registration is not recommended for standard scenarios.
 	/// <include file='doc.xml' path='doc/RegisterModule/*'/>
 	/// </remarks>
-	public abstract IModuleCommand RegisterModuleCommand(Guid id, ModuleCommandAttribute attribute, EventHandler<ModuleCommandEventArgs> handler);
+	public abstract IModuleCommand RegisterCommand(ModuleCommandAttribute attribute, EventHandler<ModuleCommandEventArgs> handler);
+
+	/// <summary>
+	/// OBSOLETE
+	/// </summary>
+	/// <param name="id">.</param>
+	/// <param name="handler">.</param>
+	/// <param name="attribute">.</param>
+	[Obsolete("Use RegisterDrawer")]
+	public IModuleDrawer RegisterModuleDrawer(Guid id, ModuleDrawerAttribute attribute, Action<IEditor, ModuleDrawerEventArgs> handler)
+	{
+		attribute.Id = id.ToString();
+		return RegisterDrawer(attribute, handler);
+	}
 
 	/// <summary>
 	/// Registers the editor drawer handler.
 	/// </summary>
-	/// <param name="id">Unique ID.</param>
 	/// <param name="handler">Drawer handler.</param>
 	/// <param name="attribute">Drawer attribute.</param>
 	/// <remarks>
@@ -84,12 +108,24 @@ public abstract class IModuleManager
 	/// Dynamic registration is not recommended for standard scenarios.
 	/// <include file='doc.xml' path='doc/RegisterModule/*'/>
 	/// </remarks>
-	public abstract IModuleDrawer RegisterModuleDrawer(Guid id, ModuleDrawerAttribute attribute, Action<IEditor, ModuleDrawerEventArgs> handler);
+	public abstract IModuleDrawer RegisterDrawer(ModuleDrawerAttribute attribute, Action<IEditor, ModuleDrawerEventArgs> handler);
+
+	/// <summary>
+	/// OBSOLETE
+	/// </summary>
+	/// <param name="id">.</param>
+	/// <param name="handler">.</param>
+	/// <param name="attribute">.</param>
+	[Obsolete("Use RegisterTool")]
+	public IModuleTool RegisterModuleTool(Guid id, ModuleToolAttribute attribute, EventHandler<ModuleToolEventArgs> handler)
+	{
+		attribute.Id = id.ToString();
+		return RegisterTool(attribute, handler);
+	}
 
 	/// <summary>
 	/// Registers the tool handler invoked from one of Far menus.
 	/// </summary>
-	/// <param name="id">Unique ID.</param>
 	/// <param name="handler">Tool handler.</param>
 	/// <param name="attribute">Tool attribute.</param>
 	/// <remarks>
@@ -97,7 +133,7 @@ public abstract class IModuleManager
 	/// Dynamic registration is not recommended for standard scenarios.
 	/// <include file='doc.xml' path='doc/RegisterModule/*'/>
 	/// </remarks>
-	public abstract IModuleTool RegisterModuleTool(Guid id, ModuleToolAttribute attribute, EventHandler<ModuleToolEventArgs> handler);
+	public abstract IModuleTool RegisterTool(ModuleToolAttribute attribute, EventHandler<ModuleToolEventArgs> handler);
 
 	/// <summary>
 	/// Gets the module name.

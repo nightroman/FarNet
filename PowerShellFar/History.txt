@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 6.0.16 =
+
+Requires FarNet 6.0.13
+Updates and maintenance.
+
 = 6.0.15 =
 
 Requires FarNet 6.0.12

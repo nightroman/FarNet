@@ -10,7 +10,7 @@ namespace FarNet;
 /// Module drawer runtime representation.
 /// </summary>
 /// <remarks>
-/// It represents an auto registered <see cref="ModuleDrawer"/> or a drawer registered by <see cref="IModuleManager.RegisterModuleDrawer"/>.
+/// It represents an auto registered <see cref="ModuleDrawer"/> or a drawer registered by <see cref="IModuleManager.RegisterDrawer"/>.
 /// </remarks>
 public interface IModuleDrawer : IModuleAction
 {

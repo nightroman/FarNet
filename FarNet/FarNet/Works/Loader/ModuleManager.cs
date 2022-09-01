@@ -119,7 +119,7 @@ sealed partial class ModuleManager : IModuleManager
 		return true;
 	}
 
-	public override IModuleCommand RegisterModuleCommand(Guid id, ModuleCommandAttribute attribute, EventHandler<ModuleCommandEventArgs> handler)
+	public override IModuleCommand RegisterCommand(ModuleCommandAttribute attribute, EventHandler<ModuleCommandEventArgs> handler)
 	{
 		if (handler is null)
 			throw new ArgumentNullException(nameof(handler));
@@ -127,6 +127,8 @@ sealed partial class ModuleManager : IModuleManager
 			throw new ArgumentNullException(nameof(attribute));
 		if (string.IsNullOrEmpty(attribute.Name))
 			throw new ArgumentException("'attribute.Name' must not be empty.");
+		if (!Guid.TryParse(attribute.Id, out Guid id))
+			throw new ArgumentException("'attribute.Id' has invalid GUID.");
 
 		var it = new ProxyCommand(this, id, attribute, handler);
 		var config = Config.Default.GetData();
@@ -136,7 +138,7 @@ sealed partial class ModuleManager : IModuleManager
 		return it;
 	}
 
-	public override IModuleDrawer RegisterModuleDrawer(Guid id, ModuleDrawerAttribute attribute, Action<IEditor, ModuleDrawerEventArgs> handler)
+	public override IModuleDrawer RegisterDrawer(ModuleDrawerAttribute attribute, Action<IEditor, ModuleDrawerEventArgs> handler)
 	{
 		if (handler is null)
 			throw new ArgumentNullException(nameof(handler));
@@ -144,6 +146,8 @@ sealed partial class ModuleManager : IModuleManager
 			throw new ArgumentNullException(nameof(attribute));
 		if (string.IsNullOrEmpty(attribute.Name))
 			throw new ArgumentException("'attribute.Name' must not be empty.");
+		if (!Guid.TryParse(attribute.Id, out Guid id))
+			throw new ArgumentException("'attribute.Id' has invalid GUID.");
 
 		var it = new ProxyDrawer(this, id, attribute, handler);
 		var config = Config.Default.GetData();
@@ -153,7 +157,7 @@ sealed partial class ModuleManager : IModuleManager
 		return it;
 	}
 
-	public override IModuleTool RegisterModuleTool(Guid id, ModuleToolAttribute attribute, EventHandler<ModuleToolEventArgs> handler)
+	public override IModuleTool RegisterTool(ModuleToolAttribute attribute, EventHandler<ModuleToolEventArgs> handler)
 	{
 		if (handler is null)
 			throw new ArgumentNullException(nameof(handler));
@@ -161,6 +165,8 @@ sealed partial class ModuleManager : IModuleManager
 			throw new ArgumentNullException(nameof(attribute));
 		if (string.IsNullOrEmpty(attribute.Name))
 			throw new ArgumentException("'attribute.Name' must not be empty.");
+		if (!Guid.TryParse(attribute.Id, out Guid id))
+			throw new ArgumentException("'attribute.Id' has invalid GUID.");
 
 		var it = new ProxyTool(this, id, attribute, handler);
 		var config = Config.Default.GetData();

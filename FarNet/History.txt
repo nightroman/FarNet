@@ -1,6 +1,16 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 6.0.13 =
+
+**Deprecated** IModuleManager methods: shorter names and GUID moved to attribute Id
+- RegisterModuleCommand -> RegisterCommand
+- RegisterModuleDrawer -> RegisterDrawer
+- RegisterModuleTool -> RegisterTool
+
+This unlikely affects many modules (PowerShellFar is the only known).
+So the deprecated methods will be removed in the next version.
+
 = 6.0.12 =
 
 Stopped using deprecated System.Runtime.InteropServices.Guid as module item id.

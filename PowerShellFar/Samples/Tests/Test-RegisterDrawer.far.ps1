@@ -7,7 +7,7 @@
 	named "Colors". Then it creates one such file and opens it in the editor.
 	The second call of the same script removes the drawer.
 
-	RegisterModuleDrawer() provides an id, attributes (name, mask, priority)
+	RegisterDrawer() provides attributes (name, mask, priority, id)
 	and a script that uses two automatic variables:
 	* $this - [FarNet.IEditor] - current editor
 	* $_ - [FarNet.ModuleDrawerEventArgs]:
@@ -26,9 +26,8 @@ if ($drawer) {
 }
 
 # Register the drawer (id, attributes, and script)
-$drawer = $Psf.Manager.RegisterModuleDrawer(
-	'4ddb64b8-7954-41f0-a93f-d5f6a09cc752',
-	(New-Object FarNet.ModuleDrawerAttribute -Property @{Name = 'Fixed colors'; Mask = 'Colors'; Priority = 1}),
+$drawer = $Psf.Manager.RegisterDrawer(
+	[FarNet.ModuleDrawerAttribute]@{Name='Fixed colors'; Mask='Colors'; Priority=1; Id='4ddb64b8-7954-41f0-a93f-d5f6a09cc752'},
 	{
 		foreach($back in 0..15) {
 			foreach($fore in 0..15) {

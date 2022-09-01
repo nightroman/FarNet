@@ -7,7 +7,7 @@ $Data.MacroOutput = [FarNet.Works.Kit]::MacroOutput
 [FarNet.Works.Kit]::MacroOutput = $true
 
 job {
-	& "$env:PSF\Samples\Tests\Test-RegisterDrawer-.ps1"
+	& "$env:PSF\Samples\Tests\Test-RegisterDrawer.far.ps1"
 }
 job {
 	Assert-Far -Editor

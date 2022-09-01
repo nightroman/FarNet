@@ -1,12 +1,10 @@
-
+﻿
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Management.Automation;
-using System.Management.Automation.Provider;
 
 namespace My;
 
@@ -114,63 +112,5 @@ static class PathEx
 		}
 
 		return null;
-	}
-}
-
-/// <summary>
-/// My System.Management.Automation.ProviderInfo extensions.
-/// </summary>
-static class ProviderInfoEx
-{
-	public static bool HasContent(ProviderInfo provider)
-	{
-		return provider.ImplementingType.GetInterface("IContentCmdletProvider") != null;
-	}
-
-	public static bool HasDynamicProperty(ProviderInfo provider)
-	{
-		return provider.ImplementingType.GetInterface("IDynamicPropertyCmdletProvider") != null;
-	}
-
-	public static bool HasProperty(ProviderInfo provider)
-	{
-		return provider.ImplementingType.GetInterface("IPropertyCmdletProvider") != null;
-	}
-
-	public static bool IsNavigation(ProviderInfo provider)
-	{
-		//! 'is' does not work, because we work just on a type, not an instance
-		return provider.ImplementingType.IsSubclassOf(typeof(NavigationCmdletProvider));
-	}
-}
-
-static class ProcessEx
-{
-	/// <summary>
-	/// Just a wrapper and helper to watch calls.
-	/// </summary>
-	public static Process Start(string fileName, string arguments)
-	{
-		return Process.Start(new ProcessStartInfo() { FileName = fileName, Arguments = arguments, UseShellExecute = true });
-	}
-
-	/// <summary>
-	/// Opens the default browser.
-	/// </summary>
-	/// <remarks>
-	/// https://brockallen.com/2016/09/24/process-start-for-urls-on-net-core/
-	/// </remarks>
-	public static void OpenBrowser(string url)
-	{
-		try
-		{
-			Process.Start(url);
-		}
-		catch
-		{
-			// hack because of this: https://github.com/dotnet/corefx/issues/10361
-			url = url.Replace("&", "^&");
-			Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
-		}
 	}
 }

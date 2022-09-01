@@ -1,7 +1,7 @@
 ﻿
 run {
 	# register command
-	& "$env:PSF\Samples\Tests\Test-RegisterCommand-.ps1"
+	& "$env:PSF\Samples\Tests\Test-RegisterCommand.far.ps1"
 }
 
 job {
@@ -29,7 +29,7 @@ job {
 
 run {
 	# unregister command
-	& "$env:PSF\Samples\Tests\Test-RegisterCommand-.ps1"
+	& "$env:PSF\Samples\Tests\Test-RegisterCommand.far.ps1"
 }
 
 job {

@@ -1,7 +1,7 @@
 ﻿
 run {
 	# register tool
-	& "$env:PSF\Samples\Tests\Test-RegisterTool-.ps1"
+	& "$env:PSF\Samples\Tests\Test-RegisterTool.far.ps1"
 }
 
 job {
@@ -25,7 +25,7 @@ job {
 
 run {
 	# unregister tool
-	& "$env:PSF\Samples\Tests\Test-RegisterTool-.ps1"
+	& "$env:PSF\Samples\Tests\Test-RegisterTool.far.ps1"
 }
 
 job {

@@ -68,9 +68,6 @@ abstract class ProxyAction : IModuleAction
 		if (ActionAttribute is null)
 			throw new ModuleException($"{_ClassType.FullName} must use {attributeType.FullName}.");
 
-		if (ActionAttribute.Id is null)
-			throw new ModuleException($"{_ClassType.FullName} must specify {attributeType.FullName} Id.");
-
 		if (!Guid.TryParse(ActionAttribute.Id, out _Id))
 			throw new ModuleException($"{_ClassType.FullName}: {attributeType.FullName} uses invalid GUID as Id.");
 

@@ -13,11 +13,11 @@ Test-Panel-DbText-.ps1 Test panel with data from .CSV files
 Test-Panel-Lookup-.ps1 Test panel lookup actions
 Test-Panel-Menu-.ps1 Test panel with demo menu called on [ShiftF3]
 Test-Panel-Tree-.ps1 Test panel mixed items on TreePanel
-Test-RegisterCommand-.ps1 Shows how to register commands dynamically.
-Test-RegisterDrawer-.ps1 Test editor drawer with all console colors.
-Test-RegisterTool-.ps1 Shows how to register tools dynamically.
 Test-Write.ps1 Test Write-* cmdlets output.
 Test-Zoo-.ps1 Creates, exports, imports and sends data to a panel.
 Test-ProgressBox.far.ps1 How to use ProgressBox.
 Test-ProgressForm.far.ps1 How to use ProgressForm.
 Test-Assert-Far.far.ps1 How Assert-Far works.
+Test-RegisterCommand.far.ps1 Shows how to register commands dynamically.
+Test-RegisterDrawer.far.ps1 Test editor drawer with all console colors.
+Test-RegisterTool.far.ps1 Shows how to register tools dynamically.

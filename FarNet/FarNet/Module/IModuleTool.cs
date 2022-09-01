@@ -8,7 +8,7 @@ namespace FarNet;
 /// Module tool runtime representation.
 /// </summary>
 /// <remarks>
-/// It represents an auto registered <see cref="ModuleTool"/> or a tool registered by <see cref="IModuleManager.RegisterModuleTool"/>.
+/// It represents an auto registered <see cref="ModuleTool"/> or a tool registered by <see cref="IModuleManager.RegisterTool"/>.
 /// It can be accessed by <see cref="IFar.GetModuleAction"/> from any module.
 /// </remarks>
 public interface IModuleTool : IModuleAction

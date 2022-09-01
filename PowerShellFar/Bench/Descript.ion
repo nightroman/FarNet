@@ -14,7 +14,6 @@ Invoke-FromEditor.ps1 Invokes a file from the current editor.
 Invoke-Shortcut-.ps1 Opens a shortcut file (.lnk).
 Job-RemoveItem-.ps1 Job: remove the specified provider items.
 Menu-Favorites-.ps1 Shows Windows Favorites as a menu and invokes items.
-Menu-More-.ps1 Example command menu created by a script.
 Merge-Selected.ps1 Invokes merge for two panels items.
 Open-TextLink.ps1 Opens a text link contained in the text.
 Open-TODO-.ps1 TODO notes in XML files.
@@ -42,3 +41,4 @@ Show-KeyName-.ps1 Shows internal names of pressed keys.
 Show-Markdown-.ps1 Shows markdown as HTML or Far help file.
 Start-Far.ps1 Starts Far with the command, panels, options.
 Update-FarManager.ps1 Updates Far Manager and standard plugins.
+Menu-More.ps1 Example command menu created by a script.

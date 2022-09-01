@@ -521,9 +521,13 @@ Continue with this current directory?
 	public void ShowJobs() => Job.ShowJobs();
 
 	/// <summary>
-	/// Shows PowerShellFar command history and invokes or insert the selected command or text.
+	/// Shows PowerShell command history.
 	/// Called on "Command history".
 	/// </summary>
+	/// <remarks>
+	/// The selected command is inserted to available known editors.
+	/// Otherwise a new command input box is shown with this command.
+	/// </remarks>
 	/// <seealso cref="GetHistory"/>
 	public void ShowHistory()
 	{
@@ -534,6 +538,7 @@ Continue with this current directory?
 
 	/// <summary>
 	/// Shows PowerShell debugger tools menu.
+	/// Called on "Debugger".
 	/// </summary>
 	public void ShowDebugger()
 	{

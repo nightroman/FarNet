@@ -8,7 +8,7 @@ namespace FarNet;
 /// Module command runtime representation.
 /// </summary>
 /// <remarks>
-/// It represents an auto registered <see cref="ModuleCommand"/> or a command registered by <see cref="IModuleManager.RegisterModuleCommand"/>.
+/// It represents an auto registered <see cref="ModuleCommand"/> or a command registered by <see cref="IModuleManager.RegisterCommand"/>.
 /// It can be accessed by <see cref="IFar.GetModuleAction"/> from any module.
 /// </remarks>
 public interface IModuleCommand : IModuleAction

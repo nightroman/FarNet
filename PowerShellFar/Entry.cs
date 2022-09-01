@@ -43,21 +43,18 @@ public sealed class Entry : ModuleHost
 		A.Connect(new Actor());
 
 		// register main command
-		CommandInvoke1 = Manager.RegisterModuleCommand(
-			new Guid("60353ab6-52cb-413e-8e11-e4917099b80b"),
-			new ModuleCommandAttribute { Name = "PowerShell command, screen output", Prefix = "ps" },
+		CommandInvoke1 = Manager.RegisterCommand(
+			new ModuleCommandAttribute { Name = "PowerShell command, screen output", Prefix = "ps", Id = "60353ab6-52cb-413e-8e11-e4917099b80b" },
 			OnCommandInvoke1);
 
 		// register view command
-		CommandInvoke2 = Manager.RegisterModuleCommand(
-			new Guid("03760876-d154-467c-bc5d-8ec39efb637d"),
-			new ModuleCommandAttribute { Name = "PowerShell command, viewer output", Prefix = "vps" },
+		CommandInvoke2 = Manager.RegisterCommand(
+			new ModuleCommandAttribute { Name = "PowerShell command, viewer output", Prefix = "vps", Id = "03760876-d154-467c-bc5d-8ec39efb637d" },
 			OnCommandInvoke2);
 
 		// register menu
-		Manager.RegisterModuleTool(
-			new Guid("7def4106-570a-41ab-8ecb-40605339e6f7"),
-			new ModuleToolAttribute { Name = Res.Me, Options = ModuleToolOptions.F11Menus },
+		Manager.RegisterTool(
+			new ModuleToolAttribute { Name = Res.Me, Options = ModuleToolOptions.F11Menus, Id = "7def4106-570a-41ab-8ecb-40605339e6f7" },
 			OnOpen);
 
 		// subscribe to editors

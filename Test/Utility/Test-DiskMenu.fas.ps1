@@ -5,9 +5,8 @@
 
 $macro = job {
 	# register
-	$null = $Psf.Manager.RegisterModuleTool(
-		"e3caaf07-e63d-42cf-a31c-c35b91fbdc49",
-		(New-Object FarNet.ModuleToolAttribute -Property @{ Name = "Test FarNet disk menu"; Options = "Disk" }),
+	$null = $Psf.Manager.RegisterTool(
+		[FarNet.ModuleToolAttribute]@{Name="Test FarNet disk menu"; Options = "Disk"; Id="e3caaf07-e63d-42cf-a31c-c35b91fbdc49"},
 		{ $Psf.ShowPanel() }
 	)
 
