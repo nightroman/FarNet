@@ -61,19 +61,6 @@ public abstract class IModuleManager
 	public abstract void Unregister();
 
 	/// <summary>
-	/// OBSOLETE
-	/// </summary>
-	/// <param name="id">.</param>
-	/// <param name="handler">.</param>
-	/// <param name="attribute">.</param>
-	[Obsolete("Use RegisterCommand")]
-	public IModuleCommand RegisterModuleCommand(Guid id, ModuleCommandAttribute attribute, EventHandler<ModuleCommandEventArgs> handler)
-	{
-		attribute.Id = id.ToString();
-		return RegisterCommand(attribute, handler);
-	}
-
-	/// <summary>
 	/// Registers the command handler invoked from the command line by its prefix.
 	/// </summary>
 	/// <param name="handler">Command handler.</param>
@@ -86,19 +73,6 @@ public abstract class IModuleManager
 	public abstract IModuleCommand RegisterCommand(ModuleCommandAttribute attribute, EventHandler<ModuleCommandEventArgs> handler);
 
 	/// <summary>
-	/// OBSOLETE
-	/// </summary>
-	/// <param name="id">.</param>
-	/// <param name="handler">.</param>
-	/// <param name="attribute">.</param>
-	[Obsolete("Use RegisterDrawer")]
-	public IModuleDrawer RegisterModuleDrawer(Guid id, ModuleDrawerAttribute attribute, Action<IEditor, ModuleDrawerEventArgs> handler)
-	{
-		attribute.Id = id.ToString();
-		return RegisterDrawer(attribute, handler);
-	}
-
-	/// <summary>
 	/// Registers the editor drawer handler.
 	/// </summary>
 	/// <param name="handler">Drawer handler.</param>
@@ -109,19 +83,6 @@ public abstract class IModuleManager
 	/// <include file='doc.xml' path='doc/RegisterModule/*'/>
 	/// </remarks>
 	public abstract IModuleDrawer RegisterDrawer(ModuleDrawerAttribute attribute, Action<IEditor, ModuleDrawerEventArgs> handler);
-
-	/// <summary>
-	/// OBSOLETE
-	/// </summary>
-	/// <param name="id">.</param>
-	/// <param name="handler">.</param>
-	/// <param name="attribute">.</param>
-	[Obsolete("Use RegisterTool")]
-	public IModuleTool RegisterModuleTool(Guid id, ModuleToolAttribute attribute, EventHandler<ModuleToolEventArgs> handler)
-	{
-		attribute.Id = id.ToString();
-		return RegisterTool(attribute, handler);
-	}
 
 	/// <summary>
 	/// Registers the tool handler invoked from one of Far menus.
