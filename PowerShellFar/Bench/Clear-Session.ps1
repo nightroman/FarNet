@@ -5,7 +5,7 @@
 
 .Description
 	It removes global variables with empty Description and Option values but
-	keeps variables listed in this script $keepVariables.
+	keeps variables $keepVariables.
 
 	In addition, the script clears $Error (unless -KeepError), calls garbage
 	collection and gets some statistics.
@@ -14,12 +14,12 @@
 		Tells to keep errors in $Error.
 
 .Outputs
-	An object with properties:
-	-- WorkingSet - the current process working set (KB)
-	-- ManagedBefore - before garbage collection (KB)
-	-- ManagedAfter - after garbage collection (KB)
-	-- ErrorCount - current or removed, see -KeepError
-	-- RemovedVariableCount
+	An object with:
+	- WorkingSet - process working set (MB)
+	- PrivateMemory - private memory (MB)
+	- ManagedMemory - managed memory (MB)
+	- ErrorCount - current or removed
+	- RemovedVariableCount
 #>
 
 [CmdletBinding()]
@@ -96,8 +96,7 @@ $keepVariables = @(
 )
 
 # result
-$r = 1 | Select-Object WorkingSet, PrivateMemory, ManagedAfter, ManagedBefore, ErrorCount, RemovedVariableCount
-$r.ManagedBefore = [long]([System.GC]::GetTotalMemory($false) / 1kb)
+$r = 1 | Select-Object WorkingSet, PrivateMemory, ManagedMemory, ErrorCount, RemovedVariableCount
 
 # remove variables
 $r.RemovedVariableCount = 0
@@ -109,16 +108,16 @@ foreach($_ in Get-Variable * -Scope Global) {
 }
 
 # clear errors
-$r.ErrorCount = $Error.Count
+$r.ErrorCount = $global:Error.Count
 if (!$KeepError) {
-	$Error.Clear()
+	$global:Error.Clear()
 }
 
 # collect garbage
-$r.ManagedAfter = [long]([System.GC]::GetTotalMemory($true) / 1kb)
+$r.ManagedMemory = [long]([System.GC]::GetTotalMemory($true) / 1mb)
 
-# this process info
+# process info
 $process = Get-Process -Id $PID
-$r.WorkingSet = $process.WorkingSet64 / 1kb
-$r.PrivateMemory = $process.PrivateMemorySize64 / 1kb
+$r.WorkingSet = [long]($process.WorkingSet64 / 1mb)
+$r.PrivateMemory = [long]($process.PrivateMemorySize64 / 1mb)
 $r
