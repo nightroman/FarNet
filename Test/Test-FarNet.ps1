@@ -26,9 +26,9 @@
 [CmdletBinding()]
 param(
 	$Tests = -1,
-	$ExpectedTaskCount = 220,
+	$ExpectedTaskCount = 193,
 	$ExpectedBasicsCount = 18,
-	$ExpectedExtrasCount = 1,
+	$ExpectedExtrasCount = 3,
 	[switch]$All,
 	[switch]$Quit
 )
@@ -74,12 +74,14 @@ if (!$Tests) {
 if ($All) {
 	$extras = @(
 		Get-Item "$env:FarNetCode\Test\TabExpansion\Test-TabExpansion2-.ps1"
+		{ Invoke-Build test "$env:FarNetCode\FSharpFar\.build.ps1" }
+		{ Invoke-Build test "$env:FarNetCode\JavaScriptFar\.build.ps1" }
 	)
 	Assert-Far $extras.Count -eq $ExpectedExtrasCount
 	foreach($test in $extras) {
-		[Diagnostics.Trace]::TraceInformation($test.FullName)
-		& $test.FullName
-		if ($global:Error) {throw "Errors after $($test.FullName)" }
+		[Diagnostics.Trace]::TraceInformation($test)
+		& $test
+		if ($global:Error) {throw "Errors after extra test: $test" }
 	}
 }
 

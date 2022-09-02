@@ -111,7 +111,7 @@ https://github.com/nightroman/FarNet#readme
 }
 
 task test {
-	Start-Far "ps: Test.far.ps1 *" $env:FarNetCode\$ModuleName\Tests -ReadOnly -Title 'JavaScriptFar'
+	Start-Far "ps: Test.far.ps1 * -Quit" $env:FarNetCode\$ModuleName\Tests -ReadOnly -Title JavaScriptFar\test
 }
 
 task . build, clean
