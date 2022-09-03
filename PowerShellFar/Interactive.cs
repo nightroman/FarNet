@@ -24,9 +24,10 @@ class Interactive : InteractiveEditor
 	bool _doneTabExpansion;
 
 	static readonly HistoryLog _history = new(Entry.LocalData + "\\InteractiveHistory.log", Settings.Default.MaximumHistoryCount);
+
 	static string GetFilePath()
 	{
-		return Entry.LocalData + "\\" + Kit.ToString(DateTime.Now, "_yyMMdd_HHmmss") + Word.InteractiveSuffix;
+		return Path.Join(Path.GetTempPath(), DateTime.Now.ToString("_yyMMdd_HHmmss") + Word.InteractiveSuffix);
 	}
 
 	/// <summary>
@@ -54,15 +55,17 @@ class Interactive : InteractiveEditor
 		}
 
 		// editor
-		IEditor editor = Far.Api.CreateEditor();
+		var editor = Far.Api.CreateEditor();
 		editor.FileName = GetFilePath();
 		editor.CodePage = 65001;
 		editor.DisableHistory = true;
+		editor.Switching = Switching.Disabled;
+		editor.DeleteSource = DeleteSource.File;
 
-		// create the console and attach it as the host to avoid conflicts
-		Interactive r = new(editor, mode);
-		editor.Host = r;
-		return r;
+		// create interactive and attach it as the host to avoid conflicts
+		Interactive interactive = new(editor, mode) { AutoSave = true };
+		editor.Host = interactive;
+		return interactive;
 	}
 
 	public Interactive(IEditor editor) : this(editor, 0) { }

@@ -3,6 +3,7 @@
 // Copyright (c) Roman Kuzmin
 
 using FarNet;
+using FarNet.Tools;
 using System;
 
 namespace PowerShellFar;
@@ -10,24 +11,7 @@ namespace PowerShellFar;
 static class History
 {
 	static readonly HistoryCommands _history = new();
-
-	/// <summary>
-	/// Up/Down cache.
-	/// </summary>
-	static string[] _navCache;
-
-	/// <summary>
-	/// Up/Down current index.
-	/// </summary>
-	static int _navIndex;
-
-	/// <summary>
-	/// Removes navigation data.
-	/// </summary>
-	public static void ResetNavigation()
-	{
-		_navCache = null;
-	}
+	static HistoryNext _next;
 
 	/// <summary>
 	/// Gets history lines.
@@ -35,6 +19,20 @@ static class History
 	public static string[] ReadLines()
 	{
 		return _history.ReadLines();
+	}
+
+	/// <summary>
+	/// Removes navigation data.
+	/// </summary>
+	public static void ResetNavigation()
+	{
+		_next = null;
+	}
+
+	public static string GetNextCommand(bool up, string current)
+	{
+		_next ??= new(_history.ReadLines(), current);
+		return _next.GetNext(up, current);
 	}
 
 	/// <summary>
@@ -81,56 +79,5 @@ static class History
 		}
 
 		return code;
-	}
-
-	public static string GetNextCommand(bool up, string current)
-	{
-		string lastUsed = null;
-
-		if (_navCache == null)
-		{
-			lastUsed = current;
-			_navCache = ReadLines();
-			_navIndex = _navCache.Length;
-		}
-		else if (_navIndex >= 0 && _navIndex < _navCache.Length)
-		{
-			lastUsed = _navCache[_navIndex];
-		}
-
-		if (up)
-		{
-			for (; ; )
-			{
-				if (--_navIndex < 0)
-				{
-					_navIndex = -1;
-					return string.Empty;
-				}
-				else
-				{
-					var command = _navCache[_navIndex];
-					if (command != lastUsed)
-						return command;
-				}
-			}
-		}
-		else
-		{
-			for (; ; )
-			{
-				if (++_navIndex >= _navCache.Length)
-				{
-					_navIndex = _navCache.Length;
-					return string.Empty;
-				}
-				else
-				{
-					var command = _navCache[_navIndex];
-					if (command != lastUsed)
-						return command;
-				}
-			}
-		}
 	}
 }

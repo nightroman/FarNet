@@ -657,7 +657,12 @@ Without selection some editor events are special:
     Invokes PowerShell TabExpansion.
     See [TabExpansion2.ps1](#tabexpansion2ps1)
 
-* `[F6]`
+* `[Up]`, `[Down]`
+
+    In the last editor line of the simple command area navigates through
+    commands in the interactive history and inserts them.
+
+* `[F5]`
 
     Opens the interactive history list menu.
     The selected text is appended to the end.
@@ -676,8 +681,8 @@ Without selection some editor events are special:
 
 ---
 
-Interactive editors may be more convenient than consoles. But they have
-limitations. Some of them are described below.
+Interactives may be more convenient than consoles.
+They have some features and limitations:
 
 **Any interactive**
 
@@ -685,8 +690,8 @@ Native console applications with user interaction should not be called.
 
 **Main sessions (synchronous)**
 
-Do not invoke commands with `$Far.Editor` (i.e. this editor) because during the
-operation this object is already used for the command output.
+Avoid using `$Far.Editor`, i.e. the interactive.
+This editor is already used for commands output.
 
 **Local and remote sessions (asynchronous)**
 
@@ -698,11 +703,11 @@ editors and Far itself are not blocked: you can switch to panels or another
 editors while a command is running. Moreover, you can open several async
 consoles, invoke parallel commands and still continue other work in Far.
 
-Limitations of asynchronous consoles:
+Limitations of asynchronous interactives:
 
 - Objects `$Far` and `$Psf` are not exposed.
 - Cmdlets `*-Far*` are exposed but normally should not be used.
-- UI should be avoided: `Read-Host`, `Write-Progress`, confirmations, ...
+- UI should be avoided: `Read-Host`, `Write-Progress`, confirmations.
 
 *********************************************************************
 ## Interactive menu

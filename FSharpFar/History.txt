@@ -1,5 +1,15 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 
+= 2.0.9 =
+
+Requires FarNet 6.0.14
+
+Interactive:
+- history navigation by up/down arrows in the last line
+- the key for show history changed from F6 to F5
+- uses temp files deleted after use
+- saves automatically on output
+
 = 2.0.8 =
 
 fsx: Assembly resolver: use LoadFrom, not LoadFile.

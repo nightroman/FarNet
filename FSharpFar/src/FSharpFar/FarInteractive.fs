@@ -12,6 +12,9 @@ module private My =
 
 type FarInteractive(session: Session) =
     inherit InteractiveEditor(far.CreateEditor(), My.history, My.outputMark1, My.outputMark2, My.outputMark3)
+    do
+        base.AutoSave <- true
+
     let session = session
 
     let isQuit code =
@@ -39,13 +42,15 @@ type FarInteractive(session: Session) =
 
     member x.Open() =
         let now = DateTime.Now
-        let path = Path.Combine(farLocalData, (now.ToString "_yyMMdd_HHmmss") + ".interactive.fsx")
+        let path = Path.Combine(Path.GetTempPath(), now.ToString("_yyMMdd_HHmmss") + ".interactive.fsx")
         let editor = x.Editor
 
         editor.FileName <- path
         editor.CodePage <- 65001
         editor.DisableHistory <- true
         editor.Title <- $"F# {Path.GetFileName session.ConfigFile} {Path.GetFileName path}"
+        editor.Switching <- Switching.Disabled
+        editor.DeleteSource <- DeleteSource.File
 
         // connect session
         editor.MySession <- Some session

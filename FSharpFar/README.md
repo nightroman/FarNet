@@ -417,7 +417,7 @@ The structure of interactive text in the editor:
 < end of file, next (*( output )*) >
 ```
 
-Use `[F6]` in order to show the interactive history.
+Use `[F5]` to show the interactive history.
 The history list keys:
 
 - `[Enter]` - append code to the interactive.

@@ -1,5 +1,19 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 6.0.17 =
+
+Requires FarNet 6.0.14
+
+Interactive editors:
+- support history navigation by up/down arrows in the last line
+- the key for show history changed from F6 to F5
+
+Interactive editors opened from the menu:
+- use temp files deleted after use
+- save automatically on output
+
+Clear-Session.ps1 - MB as memory unit.
+
 = 6.0.16 =
 
 Requires FarNet 6.0.13

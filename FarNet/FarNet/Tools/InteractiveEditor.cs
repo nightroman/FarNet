@@ -3,13 +3,13 @@
 // Copyright (c) Roman Kuzmin
 
 using System;
+using System.IO;
 using System.Text;
 
 namespace FarNet.Tools;
 
 /// <summary>
-/// Base interactive editor used by PowerShellFar and FSharpFar interactive.
-/// NOTE: It can be used for something else but the API may change.
+/// Base interactive editor used by PowerShellFar and FSharpFar interactives.
 /// </summary>
 public abstract class InteractiveEditor
 {
@@ -22,6 +22,7 @@ public abstract class InteractiveEditor
 	readonly string OutputMark1;
 	readonly string OutputMark2;
 	readonly string OutputMark3;
+	HistoryNext Next;
 
 	/// <summary>
 	/// New instance.
@@ -36,12 +37,18 @@ public abstract class InteractiveEditor
 		Editor = editor;
 		History = history;
 
-		Editor.KeyDown += OnKeyDown;
-
 		OutputMark1 = outputMark1;
 		OutputMark2 = outputMark2;
 		OutputMark3 = outputMark3;
+
+		Editor.KeyDown += Editor_KeyDown;
+		Editor.Changed += Editor_Changed;
 	}
+
+	/// <summary>
+	/// Tells to save after output.
+	/// </summary>
+	public bool AutoSave { get; set; }
 
 	/// <summary>
 	/// Gets true if the editor is async.
@@ -194,13 +201,48 @@ public abstract class InteractiveEditor
 		return true;
 	}
 
+	bool DoNext(bool up)
+	{
+		// for navigation it should be a single line command area with the caret at the last editor line
+		var area = CommandArea();
+		if (area == null || area.FirstLineIndex != area.LastLineIndex || area.Caret.Y != Editor.Count - 1)
+		{
+			Next = null;
+			return false;
+		}
+
+		// start or continue navigation
+		Next ??= new(History.ReadLines(), Editor.Line.Text);
+		while (true)
+		{
+			// find the next simple line
+			var line = Next.GetNext(up, Editor.Line.Text);
+			if (line.Contains(OutputMark3))
+				continue;
+
+			// set the current line (keep/restore Next, it is nulled on changes)
+			var next = Next;
+			Editor.Line.Text = line;
+			Editor.Line.Caret = -1;
+			Editor.Redraw();
+			Next = next;
+			break;
+		}
+
+		return true;
+	}
+
 	void EndOutput()
 	{
 		if (Editor.IsOpened)
 		{
 			if (Editor.Line.Length > 0)
 				Editor.InsertLine();
+
 			Editor.InsertText(OutputMark2 + "\r\r");
+
+			if (AutoSave)
+				Editor.Save();
 		}
 	}
 
@@ -262,48 +304,53 @@ public abstract class InteractiveEditor
 
 	/// <summary>
 	/// Handles keys.
-	/// The default method handles ShiftEnter, ShiftDel, F6.
+	/// The default processes ShiftEnter, ShiftDel, F5, Up/Down (last line).
 	/// </summary>
 	/// <param name="key">Key info.</param>
+	/// <returns>True if the key was processed and will be ignored.</returns>
+	/// <remarks>
+	/// This method is not called when any selection exists.
+	/// In this case the interactive works as normal editor.
+	/// </remarks>
 	protected virtual bool KeyPressed(KeyInfo key)
 	{
-		if (key == null) return false;
 		switch (key.VirtualKeyCode)
 		{
-			case KeyCode.Enter:
-				{
-					if (key.IsShift())
-						return DoInvoke();
-					break;
-				}
-			case KeyCode.Delete:
-				{
-					if (key.IsShift())
-					{
-						DoDelete();
-						return true;
-					}
-					break;
-				}
-			case KeyCode.F6:
-				{
-					if (key.Is())
-					{
-						DoHistory();
-						return true;
-					}
-					break;
-				}
+			case KeyCode.Enter when key.IsShift():
+				Next = null;
+				return DoInvoke();
+
+			case KeyCode.Delete when key.IsShift():
+				Next = null;
+				DoDelete();
+				return true;
+
+			case KeyCode.F5 when key.Is():
+				Next = null;
+				DoHistory();
+				return true;
+
+			case KeyCode.UpArrow when key.Is():
+				return DoNext(true);
+
+			case KeyCode.DownArrow when key.Is():
+				return DoNext(false);
 		}
+
 		return false;
 	}
 
-	void OnKeyDown(object sender, KeyEventArgs e)
+	// see KeyPressed remarks about selection
+	void Editor_KeyDown(object sender, KeyEventArgs e)
 	{
-		// skip selected
-		if (Editor.SelectionExists)
-			return;
+		if (!Editor.SelectionExists)
+			e.Ignore = KeyPressed(e.Key);
+	}
 
-		e.Ignore = KeyPressed(e.Key);
+	// Reset history navigation on changes. If we have started editing the
+	// command and accidentally hit [Up] then [Down] restores the changes.
+	void Editor_Changed(object sender, EditorChangedEventArgs e)
+	{
+		Next = null;
 	}
 }

@@ -71,10 +71,14 @@ Far.Api
 </code>
 <code language="f#">
 open FarNet
-far
+Far.Api // any code
+far     // scripts
 </code>
 <code language="powershell">
 $Far
+</code>
+<code language="javascript">
+far
 </code>
       </content>
     </section>
