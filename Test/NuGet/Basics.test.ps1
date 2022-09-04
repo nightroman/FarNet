@@ -1,6 +1,6 @@
 ﻿
 Enter-Build {
-	Import-Module FarPackage
+	Import-Module $env:FarNetCode\PowerShellFar\Modules\FarPackage
 	Set-StrictMode -Version Latest
 
 	$Id = 'NR.Try'
@@ -55,7 +55,7 @@ task Errors {
 	assert (Test-Path $FileName) "Do task NuGet first."
 
 	$$ = try { Install-FarPackage z.missing } catch {$_}
-	assert ($$ -like "*Cannot get the latest version of 'z.missing'.")
+	assert ("$$" -like "*The specified blob does not exist.*")
 
 	$$ = try { Restore-FarPackage missing } catch {$_}
 	assert ($$ -like "*Missing package '$BuildRoot\missing'.*")
@@ -82,21 +82,7 @@ task InvalidPackage {
 	$1 = [System.IO.Packaging.Package]::Open('z.nupkg', 'Create', 'ReadWrite')
 	$1.Close()
 	$$ = try { Restore-FarPackage z.nupkg } catch {$_}
-	assert ($$ -like "*Invalid package '$BuildRoot\z.nupkg'.")
-
-	# just Id
-	$1 = [System.IO.Packaging.Package]::Open('z.nupkg', 'Create', 'ReadWrite')
-	$1.PackageProperties.Identifier = 'z'
-	$1.Close()
-	$$ = try { Restore-FarPackage z.nupkg } catch {$_}
-	assert ($$ -like "*Invalid package '$BuildRoot\z.nupkg'.")
-
-	# just Version
-	$1 = [System.IO.Packaging.Package]::Open('z.nupkg', 'Create', 'ReadWrite')
-	$1.PackageProperties.Version = 'z'
-	$1.Close()
-	$$ = try { Restore-FarPackage z.nupkg } catch {$_}
-	assert ($$ -like "*Invalid package '$BuildRoot\z.nupkg'.")
+	assert ("$$" -like "Package must have one*")
 }
 
 task InstallIdVersion64 {
@@ -119,7 +105,7 @@ Plugins\FarNetMan\DLL64.txt
 	Install-FarPackage $Id -Version $Version -FarHome z -Platform x64
 	$r = Get-ChildItem z -Recurse -Force -Name | Out-String
 	$r
-	assert ($r -ceq $sample)
+	equals $r $sample
 
 	# remove some
 	Remove-Item z\app.exe.config

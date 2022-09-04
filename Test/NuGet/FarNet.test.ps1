@@ -6,8 +6,10 @@
 	** Order of some tests is important **
 #>
 
+$ProgressPreference=0
+
 Enter-Build {
-	Import-Module FarPackage
+	Import-Module $env:FarNetCode\PowerShellFar\Modules\FarPackage
 	Set-StrictMode -Version Latest
 
 	$FarHome = "C:\TEMP\FarHome"
@@ -39,7 +41,7 @@ task Install {
 		# info file
 		assert ([System.IO.File]::Exists("$FarHome\Update.$_.info"))
 		$s, $v, $f = [System.IO.File]::ReadAllLines("$FarHome\Update.$_.info")
-		assert ($s -eq 'https://www.nuget.org/api/v2')
+		assert ($s -eq 'NuGet')
 		assert ($v -eq $Version[$_])
 		assert ($f.Count -ge 2)
 	}
@@ -87,12 +89,10 @@ task Reinstall.RightWords {
 
 	Uninstall-FarPackage FarNet.RightWords
 	assert (Test-Path FarNet)
-	assert (!(Test-Path FarNet\NHunspell))
 	assert (!(Test-Path FarNet\Modules\RightWords))
 	assert (!(Test-Path Update.FarNet.RightWords.info))
 
 	Install-FarPackage FarNet.RightWords
-	assert (Test-Path FarNet\NHunspell)
 	assert (Test-Path FarNet\Modules\RightWords)
 	assert (Test-Path Update.FarNet.RightWords.info)
 }
@@ -133,5 +133,5 @@ task PreserveSource {
 
 	# Source preserved?
 	$Source, $null = Get-Content Update.FarNet.RightWords.info
-	assert ($Source -eq 'https://www.nuget.org/api/v2')
+	assert ($Source -eq 'NuGet')
 }

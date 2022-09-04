@@ -110,13 +110,17 @@ function Restore-FarPackage(
 	$ErrorActionPreference = 1
 
 	$Path = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($Path)
-	if (![System.IO.File]::Exists($Path)) {throw "Missing package '$Path'."}
+	if (![System.IO.File]::Exists($Path)) {
+		throw "Missing package '$Path'."
+	}
 
 	$FarHome = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($FarHome)
 	$exe = [System.IO.FileInfo]"$FarHome\Far.exe"
 	if ($exe.Exists) {
-		foreach($_ in Get-Process [F]ar) {
-			if ($_.Path -eq $exe.FullName) {throw "Close Far Manager and repeat."}
+		foreach($_ in Get-Process Far -ErrorAction Ignore) {
+			if ($_.Path -eq $exe.FullName) {
+				throw "Close Far Manager and repeat."
+			}
 		}
 		if ($exe.VersionInfo.FileVersion -notmatch '\b(x86|x64)\b') {
 			throw "Cannot get info from 'Far.exe'."
@@ -124,21 +128,36 @@ function Restore-FarPackage(
 		$Platform = $Matches[1]
 	}
 
-	Add-Type -AssemblyName WindowsBase
-	$package = [System.IO.Packaging.Package]::Open($Path, 'Open', 'Read')
+	Add-Type -AssemblyName System.IO.Compression.FileSystem
+	$package = [System.IO.Compression.ZipFile]::OpenRead($Path)
 	try {
+		$parts = @($package.Entries)
+
 		# Id and Version from package
-		$Id = $package.PackageProperties.Identifier
-		$Version = $package.PackageProperties.Version
-		if (!$Id -or !$Version) {throw "Invalid package '$Path'."}
+		$meta = @($parts.where{ $_.Name -like '*.nuspec' })
+		if ($meta.Length -ne 1) {
+			throw "Package must have one *.nuspec: '$Path'."
+		}
+		$xml = [xml]([System.IO.StreamReader]$meta[0].Open()).ReadToEnd()
+		$Id = $xml.package.metadata.id
+		$Version = $xml.package.metadata.version
+		if (!$Id -or !$Version) {
+			throw "Invalid package '$Path'."
+		}
 
 		# collect parts and check x86, x64
 		if ($Platform -eq 'Win32') {$Platform = 'x86'}
-		$parts = foreach($part in $package.GetParts()) {
-			if ($part.Uri -notmatch '^/tools/FarHome\.?(x..)?/') {continue}
+		$parts = foreach($part in $parts) {
+			if ($part.FullName -notmatch '^tools/FarHome\.?(x..)?/') {
+				continue
+			}
 			if ($Matches[1]) {
-				if (!$Platform) {throw "Please, specify the Platform."}
-				if ($Matches[1] -ne $Platform) {continue}
+				if (!$Platform) {
+					throw "Please, specify the Platform."
+				}
+				if ($Matches[1] -ne $Platform) {
+					continue
+				}
 			}
 			$part
 		}
@@ -158,15 +177,17 @@ function Restore-FarPackage(
 
 		# unpack, install
 		foreach($part in $parts) {
-			if ($part.Uri -notmatch '^/tools/FarHome[^/]*/(.*)') {continue}
-			$it = [System.Uri]::UnescapeDataString($Matches[1])
+			if ($part.FullName -notmatch '^tools/FarHome[^/]*/(.*)') {
+				continue
+			}
+			$it = $Matches[1]
 			$to = "$FarHome/$it"
 
 			$null = [System.IO.Directory]::CreateDirectory([System.IO.Path]::GetDirectoryName($to))
-			$stream2 = New-Object System.IO.FileStream $to, Create
+			$stream2 = [System.IO.FileStream]::new($to, 'Create')
 			try {
 				[System.IO.File]::AppendAllText($info, "$it`r`n")
-				$stream1 = $part.GetStream('Open', 'Read')
+				$stream1 = $part.Open()
 				$stream1.CopyTo($stream2)
 			}
 			finally {
@@ -175,7 +196,7 @@ function Restore-FarPackage(
 		}
 	}
 	finally {
-		$package.Close()
+		$package.Dispose()
 	}
 }
 
