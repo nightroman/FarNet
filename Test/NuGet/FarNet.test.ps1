@@ -16,7 +16,7 @@ Enter-Build {
 	$Packages = @(
 		'FarNet'
 		'FarNet.PowerShellFar'
-		'FarNet.RightWords'
+		'FarNet.ScottPlot'
 	)
 	$Version = @{}
 }
@@ -41,18 +41,19 @@ task Install {
 		# info file
 		assert ([System.IO.File]::Exists("$FarHome\Update.$_.info"))
 		$s, $v, $f = [System.IO.File]::ReadAllLines("$FarHome\Update.$_.info")
-		assert ($s -eq 'NuGet')
-		assert ($v -eq $Version[$_])
+		equals $s NuGet
+		equals $v ($Version[$_])
 		assert ($f.Count -ge 2)
 	}
 
 	# test particular items
 	Set-Location $FarHome
 
-	assert (Test-Path FarNet)
-	assert (Test-Path Plugins)
-	assert (Test-Path FarNet\Modules)
+	requires -Path FarNet
+	requires -Path Plugins
+	requires -Path FarNet\Modules
 }
+
 #! fixed: "Cannot validate -Platform" (because '' is passed in nested calls)
 task UpdateUpToDate {
 	Update-FarPackage -FarHome $FarHome
@@ -62,39 +63,39 @@ task Reinstall.FarNet {
 	Set-Location $FarHome
 
 	Uninstall-FarPackage FarNet
-	assert (Test-Path FarNet)
+	requires -Path FarNet
 	assert (!(Test-Path Plugins))
 	assert (!(Test-Path Update.FarNet.info))
 
 	Install-FarPackage FarNet -Platform x64
-	assert (Test-Path Plugins)
-	assert (Test-Path Update.FarNet.info)
+	requires -Path Plugins
+	requires -Path Update.FarNet.info
 }
 
 task Reinstall.PowerShellFar {
 	Set-Location $FarHome
 
 	Uninstall-FarPackage FarNet.PowerShellFar
-	assert (Test-Path FarNet)
+	requires -Path FarNet
 	assert (!(Test-Path FarNet\Modules\PowerShellFar))
 	assert (!(Test-Path Update.FarNet.PowerShellFar.info))
 
 	Install-FarPackage FarNet.PowerShellFar
-	assert (Test-Path FarNet\Modules\PowerShellFar)
-	assert (Test-Path Update.FarNet.PowerShellFar.info)
+	requires -Path FarNet\Modules\PowerShellFar
+	requires -Path Update.FarNet.PowerShellFar.info
 }
 
-task Reinstall.RightWords {
+task Reinstall.ScottPlot {
 	Set-Location $FarHome
 
-	Uninstall-FarPackage FarNet.RightWords
-	assert (Test-Path FarNet)
-	assert (!(Test-Path FarNet\Modules\RightWords))
-	assert (!(Test-Path Update.FarNet.RightWords.info))
+	Uninstall-FarPackage FarNet.ScottPlot
+	requires -Path FarNet
+	assert (!(Test-Path FarNet\Lib\ScottPlot))
+	assert (!(Test-Path Update.FarNet.ScottPlot.info))
 
-	Install-FarPackage FarNet.RightWords
-	assert (Test-Path FarNet\Modules\RightWords)
-	assert (Test-Path Update.FarNet.RightWords.info)
+	Install-FarPackage FarNet.ScottPlot
+	requires -Path FarNet\Lib\FarNet.ScottPlot
+	requires -Path Update.FarNet.ScottPlot.info
 }
 
 task FakeOldAndUpdate {
@@ -112,7 +113,7 @@ task FakeOldAndUpdate {
 
 		# updated info
 		$s, $v, $f = [System.IO.File]::ReadAllLines($info)
-		assert ($v -eq $Version[$_])
+		equals $v ($Version[$_])
 	}
 }
 
@@ -120,18 +121,18 @@ task PreserveSource {
 	Set-Location $FarHome
 
 	# to test updated
-	Remove-Item FarNet\Modules\RightWords\RightWords.dll
+	Remove-Item FarNet\Lib\FarNet.ScottPlot\ScottPlot.dll
 
 	# get any nupkg
-	$nupkg = @(Get-Item "$env:LOCALAPPDATA\NuGet\Cache\FarNet.RightWords.*.nupkg")[0]
+	$nupkg = @(Get-Item "$env:LOCALAPPDATA\NuGet\Cache\FarNet.ScottPlot.*.nupkg")[0]
 
 	# update from file
 	Restore-FarPackage $nupkg.FullName -FarHome .
 
 	# updated?
-	assert (Test-Path FarNet\Modules\RightWords\RightWords.dll)
+	requires -Path FarNet\Lib\FarNet.ScottPlot\ScottPlot.dll
 
 	# Source preserved?
-	$Source, $null = Get-Content Update.FarNet.RightWords.info
-	assert ($Source -eq 'NuGet')
+	$Source, $null = Get-Content Update.FarNet.ScottPlot.info
+	equals $Source NuGet
 }

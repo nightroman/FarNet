@@ -310,5 +310,6 @@ function Save-FarPackage([string]$Id, [string]$Version, [string]$Path) {
 	$endpoint = Get-FarPackageBaseAddress
 	$Id = $Id.ToLowerInvariant()
 	$Version = $Version.ToLowerInvariant()
+	$ProgressPreference = 0
 	Invoke-WebRequest "$endpoint/$Id/$Version/$Id.$Version.nupkg" -OutFile $Path
 }

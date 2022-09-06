@@ -48,11 +48,11 @@ About the package.
 	exec { NuGet pack z\Package.nuspec -NoPackageAnalysis }
 	Copy-Item "$Id.$Version.nupkg" $CacheDirectory
 
-	assert (Test-Path $FileName)
+	requires -Path $FileName
 }
 
 task Errors {
-	assert (Test-Path $FileName) "Do task NuGet first."
+	requires -Path $FileName # run task NuGet first
 
 	$$ = try { Install-FarPackage z.missing } catch {$_}
 	assert ("$$" -like "*The specified blob does not exist.*")
@@ -154,7 +154,7 @@ Plugins\FarNetMan\DLL86.txt
 
 	# 4. remove
 	Uninstall-FarPackage -Id $Id -FarHome z
-	assert (Test-Path z) 'Home must not be deleted'
+	requires -Path z # Home must not be deleted
 	assert (!(Get-ChildItem z)) 'Home items must be deleted'
 }
 
