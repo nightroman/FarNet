@@ -56,7 +56,7 @@ public static class Tasks
 			try
 			{
 				job();
-				task.SetResult(null);
+				task.SetResult(null!);
 			}
 			catch (Exception exn)
 			{
@@ -87,7 +87,7 @@ public static class Tasks
 			try
 			{
 				//! try because the job may fail before UI
-				Far.Api.PostJob(() => task.TrySetResult(null));
+				Far.Api.PostJob(() => task.TrySetResult(null!));
 				job();
 			}
 			catch (Exception exn)
@@ -127,7 +127,7 @@ public static class Tasks
 				{
 					wait.WaitOne();
 					wait.Dispose();
-					task.SetResult(null);
+					task.SetResult(null!);
 				});
 			}
 			catch (Exception exn)
@@ -148,10 +148,10 @@ public static class Tasks
 	{
 		var task = new TaskCompletionSource<object>();
 
-		void onClosed(object sender, EventArgs e)
+		void onClosed(object? sender, EventArgs e)
 		{
 			editor.Closed -= onClosed;
-			task.SetResult(null);
+			task.SetResult(null!);
 		}
 
 		Far.Api.PostJob(() =>
@@ -181,10 +181,10 @@ public static class Tasks
 	{
 		var task = new TaskCompletionSource<object>();
 
-		void onClosed(object sender, EventArgs e)
+		void onClosed(object? sender, EventArgs e)
 		{
 			viewer.Closed -= onClosed;
-			task.SetResult(null);
+			task.SetResult(null!);
 		}
 
 		Far.Api.PostJob(() =>
@@ -214,10 +214,10 @@ public static class Tasks
 	{
 		var task = new TaskCompletionSource<object>();
 
-		void onClosed(object sender, AnyEventArgs e)
+		void onClosed(object? sender, AnyEventArgs e)
 		{
 			dialog.Closed -= onClosed;
-			task.SetResult(null);
+			task.SetResult(null!);
 		}
 
 		Far.Api.PostJob(() =>
@@ -253,7 +253,7 @@ public static class Tasks
 	{
 		var task = new TaskCompletionSource<T>();
 
-		void onClosing(object sender, ClosingEventArgs e)
+		void onClosing(object? sender, ClosingEventArgs e)
 		{
 			try
 			{
@@ -347,7 +347,7 @@ public static class Tasks
 	/// If the job opens a panel, use <see cref="OpenPanel(Action)"/> instead.
 	/// This method is for uncertain jobs like invoking interactive commands (REPL).
 	/// </remarks>
-	public static async Task<object> Command(Action job)
+	public static async Task<object?> Command(Action job)
 	{
 		// open
 		var oldPanel = await Job(() =>
@@ -383,14 +383,14 @@ public static class Tasks
 		{
 			if (!panel.IsOpened)
 			{
-				task.SetResult(null);
+				task.SetResult(null!);
 				return;
 			}
 
-			void onClosed(object sender, EventArgs e)
+			void onClosed(object? sender, EventArgs e)
 			{
 				panel.Closed -= onClosed;
-				task.SetResult(null);
+				task.SetResult(null!);
 			}
 
 			panel.Closed += onClosed;
@@ -415,11 +415,11 @@ public static class Tasks
 
 			if (!panel.IsOpened)
 			{
-				task.SetResult(result);
+				task.SetResult(result!);
 				return;
 			}
 
-			void onClosing(object sender, PanelEventArgs e)
+			void onClosing(object? sender, PanelEventArgs e)
 			{
 				try
 				{
@@ -433,11 +433,11 @@ public static class Tasks
 				}
 			}
 
-			void onClosed(object sender, EventArgs e)
+			void onClosed(object? sender, EventArgs e)
 			{
 				panel.Closing -= onClosing;
 				panel.Closed -= onClosed;
-				task.TrySetResult(result);
+				task.TrySetResult(result!);
 			}
 
 			panel.Closing += onClosing;

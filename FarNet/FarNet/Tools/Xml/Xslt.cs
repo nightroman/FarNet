@@ -20,6 +20,6 @@ static class Xslt
 		if (!iter.MoveNext())
 			return string.Empty;
 
-		return iter.Current.Value;
+		return iter.Current!.Value;
 	}
 }

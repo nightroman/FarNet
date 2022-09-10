@@ -25,7 +25,7 @@ public class FarColumn
 	/// <remarks>
 	/// Title of a standard panel column. It is ignored for a status column.
 	/// </remarks>
-	public virtual string Name
+	public virtual string? Name
 	{
 		get => null;
 		set => throw new NotImplementedException();
@@ -34,7 +34,7 @@ public class FarColumn
 	/// <summary>
 	/// Column kind. See <see cref="PanelPlan.Columns"/>.
 	/// </summary>
-	public virtual string Kind
+	public virtual string? Kind
 	{
 		get => null;
 		set => throw new NotImplementedException();

@@ -9,7 +9,7 @@ namespace FarNet.Works;
 
 sealed class ProxyEditor : ProxyAction, IModuleEditor
 {
-	string _Mask;
+	string _Mask = string.Empty;
 
 	ModuleEditorAttribute Attribute => (ModuleEditorAttribute)ActionAttribute;
 	public override ModuleItemKind Kind => ModuleItemKind.Editor;
@@ -19,8 +19,6 @@ sealed class ProxyEditor : ProxyAction, IModuleEditor
 	{
 		// [1]
 		Attribute.Mask = reader.ReadString();
-
-		Init();
 	}
 
 	internal sealed override void WriteCache(BinaryWriter writer)
@@ -34,7 +32,6 @@ sealed class ProxyEditor : ProxyAction, IModuleEditor
 	internal ProxyEditor(ModuleManager manager, Type classType)
 		: base(manager, classType, typeof(ModuleEditorAttribute))
 	{
-		Init();
 	}
 
 	public void Invoke(IEditor editor, ModuleEditorEventArgs e)
@@ -56,13 +53,7 @@ sealed class ProxyEditor : ProxyAction, IModuleEditor
 		set => _Mask = value ?? throw new ArgumentNullException(nameof(value));
 	}
 
-	void Init()
-	{
-		if (Attribute.Mask == null)
-			Attribute.Mask = string.Empty;
-	}
-
-	internal Config.Editor SaveConfig()
+	internal Config.Editor? SaveConfig()
 	{
 		if (_Mask == Attribute.Mask)
 			return null;
@@ -70,16 +61,16 @@ sealed class ProxyEditor : ProxyAction, IModuleEditor
 		return new Config.Editor { Id = Id, Mask = _Mask };
 	}
 
-	internal void LoadConfig(Config.Module config)
+	internal void LoadConfig(Config.Module? config)
 	{
-		Config.Editor data;
-		if (config != null && (data = config.GetEditor(Id)) != null)
+		Config.Editor? data;
+		if (config is null || (data = config.GetEditor(Id)) is null)
 		{
-			_Mask = data.Mask ?? Attribute.Mask;
+			_Mask = Attribute.Mask;
 		}
 		else
 		{
-			_Mask = Attribute.Mask;
+			_Mask = data.Mask ?? Attribute.Mask;
 		}
 	}
 }

@@ -42,7 +42,7 @@ public abstract class IFar
 	/// <param name="text">Message text.</param>
 	/// <param name="caption">Message caption.</param>
 	/// <seealso cref="Message(MessageArgs)"/>
-	public void Message(string text, string caption)
+	public void Message(string text, string? caption)
 	{ Message(new MessageArgs() { Text = text, Caption = caption, Options = MessageOptions.Ok }); }
 
 	/// <summary>
@@ -53,7 +53,7 @@ public abstract class IFar
 	/// <param name="options">Message options.</param>
 	/// <returns>The selected button index, or -1 on cancel, or 0 on drawn message.</returns>
 	/// <seealso cref="Message(MessageArgs)"/>
-	public int Message(string text, string caption, MessageOptions options)
+	public int Message(string text, string? caption, MessageOptions options)
 	{ return Message(new MessageArgs() { Text = text, Caption = caption, Options = options }); }
 
 	/// <summary>
@@ -65,7 +65,7 @@ public abstract class IFar
 	/// <param name="buttons">Message buttons. Not supported with <c>Gui*</c> options.</param>
 	/// <returns>The selected button index, or -1 on cancel, or 0 on drawn message.</returns>
 	/// <seealso cref="Message(MessageArgs)"/>
-	public int Message(string text, string caption, MessageOptions options, string[] buttons)
+	public int Message(string text, string? caption, MessageOptions options, string[]? buttons)
 	{ return Message(new MessageArgs() { Text = text, Caption = caption, Options = options, Buttons = buttons }); }
 
 	/// <summary>
@@ -81,7 +81,7 @@ public abstract class IFar
 	/// </param>
 	/// <returns>The selected button index, or -1 on cancel, or 0 on drawn message.</returns>
 	/// <seealso cref="Message(MessageArgs)"/>
-	public int Message(string text, string caption, MessageOptions options, string[] buttons, string helpTopic)
+	public int Message(string text, string? caption, MessageOptions options, string[]? buttons, string? helpTopic)
 	{ return Message(new MessageArgs() { Text = text, Caption = caption, Options = options, Buttons = buttons, HelpTopic = helpTopic }); }
 
 	/// <summary>
@@ -320,23 +320,23 @@ public abstract class IFar
 	/// <include file='doc.xml' path='doc/Include/*'/>
 	/// <param name="prompt">Prompt text.</param>
 	/// <returns>Entered text or null if canceled.</returns>
-	public string Input(string prompt)
-	{ return Input(prompt, null, null, string.Empty); }
+	public string Input(string? prompt)
+	{ return Input(prompt, null, null, null); }
 
 	/// <include file='doc.xml' path='doc/Include/*'/>
 	/// <param name="prompt">Prompt text.</param>
 	/// <param name="history">History string.</param>
 	/// <returns>Entered text or null if canceled.</returns>
-	public string Input(string prompt, string history)
-	{ return Input(prompt, history, null, string.Empty); }
+	public string Input(string? prompt, string? history)
+	{ return Input(prompt, history, null, null); }
 
 	/// <include file='doc.xml' path='doc/Include/*'/>
 	/// <param name="prompt">Prompt text.</param>
 	/// <param name="history">History string.</param>
 	/// <param name="title">Title of the box.</param>
 	/// <returns>Entered text or null if canceled.</returns>
-	public string Input(string prompt, string history, string title)
-	{ return Input(prompt, history, title, string.Empty); }
+	public string Input(string? prompt, string? history, string? title)
+	{ return Input(prompt, history, title, null); }
 
 	/// <include file='doc.xml' path='doc/Include/*'/>
 	/// <param name="prompt">Prompt text.</param>
@@ -344,7 +344,7 @@ public abstract class IFar
 	/// <param name="title">Title of the box.</param>
 	/// <param name="text">Text to be edited.</param>
 	/// <returns>Entered text or null if canceled.</returns>
-	public abstract string Input(string prompt, string history, string title, string text);
+	public abstract string Input(string? prompt, string? history, string? title, string? text);
 
 	/// <summary>
 	/// Posts the action called when the core gets control.
@@ -387,13 +387,12 @@ public abstract class IFar
 	/// </summary>
 	/// <param name="prefix">If it is null or empty then "FAR" is used.</param>
 	/// <returns>Generated path.</returns>
-	public abstract string TempName(string prefix);
+	public abstract string TempName(string? prefix);
 
 	/// <summary>
 	/// See <see cref="TempName(string)"/>
 	/// </summary>
-	public string TempName()
-	{ return TempName(null); }
+	public string TempName() => TempName(null);
 
 	/// <summary>
 	/// Gets the most recent opened dialog or null.
@@ -490,8 +489,9 @@ public abstract class IFar
 	public IModuleManager GetModuleManager(Type type)
 	{
 		//! Assembly.GetName().Name: 1) slower; 2) does not guarantee the same name.
-		if (type == null) throw new ArgumentNullException("type");
-		return GetModuleManager(Path.GetFileNameWithoutExtension(type.Assembly.Location));
+		return type == null
+			? throw new ArgumentNullException(nameof(type))
+			: GetModuleManager(Path.GetFileNameWithoutExtension(type.Assembly.Location));
 	}
 
 	/// <summary>
@@ -514,14 +514,14 @@ public abstract class IFar
 /// </summary>
 public static class Far
 {
-	static IFar _Host;
+	static IFar? _Host;
 
 	/// <summary>
 	/// The global <see cref="IFar"/> instance.
 	/// </summary>
 	public static IFar Api
 	{
-		get => _Host;
+		get => _Host!;
 		set => _Host = _Host == null ? value : throw new InvalidOperationException();
 	}
 }

@@ -41,7 +41,7 @@ public class ModuleException : Exception
 	/// This text is used as the error dialog title.
 	/// By default it is the exception type name.
 	/// </summary>
-	public override string Source
+	public override string? Source
 	{
 		get => base.Source ?? GetType().FullName;
 		set => base.Source = value;

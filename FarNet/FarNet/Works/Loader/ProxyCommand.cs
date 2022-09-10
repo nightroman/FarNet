@@ -9,8 +9,8 @@ namespace FarNet.Works;
 
 sealed class ProxyCommand : ProxyAction, IModuleCommand
 {
-	string _Prefix;
-	readonly EventHandler<ModuleCommandEventArgs> _Handler;
+	readonly EventHandler<ModuleCommandEventArgs>? _Handler;
+	string _Prefix = string.Empty;
 
 	ModuleCommandAttribute Attribute => (ModuleCommandAttribute)ActionAttribute;
 	public override ModuleItemKind Kind => ModuleItemKind.Command;
@@ -20,8 +20,6 @@ sealed class ProxyCommand : ProxyAction, IModuleCommand
 	{
 		// [1]
 		Attribute.Prefix = reader.ReadString();
-
-		Init();
 	}
 
 	internal sealed override void WriteCache(BinaryWriter writer)
@@ -35,32 +33,29 @@ sealed class ProxyCommand : ProxyAction, IModuleCommand
 	internal ProxyCommand(ModuleManager manager, Type classType)
 		: base(manager, classType, typeof(ModuleCommandAttribute))
 	{
-		Init();
 	}
 
 	public ProxyCommand(ModuleManager manager, Guid id, ModuleCommandAttribute attribute, EventHandler<ModuleCommandEventArgs> handler)
-		: base(manager, id, (attribute == null ? null : (ModuleCommandAttribute)attribute.Clone()))
+		: base(manager, id, (ModuleCommandAttribute)attribute.Clone())
 	{
 		_Handler = handler;
-
-		Init();
 	}
 
 	public void Invoke(object sender, ModuleCommandEventArgs e)
 	{
-		if (e == null)
+		if (e is null)
 			throw new ArgumentNullException(nameof(e));
 
 		Invoking();
 
-		if (_Handler != null)
+		if (_Handler is null)
 		{
-			_Handler(sender, e);
+			var instance = (ModuleCommand)GetInstance();
+			instance.Invoke(sender, e);
 		}
 		else
 		{
-			ModuleCommand instance = (ModuleCommand)GetInstance();
-			instance.Invoke(sender, e);
+			_Handler(sender, e);
 		}
 	}
 
@@ -74,20 +69,15 @@ sealed class ProxyCommand : ProxyAction, IModuleCommand
 		get => _Prefix;
 		set
 		{
-			if (string.IsNullOrEmpty(value)) value = Attribute.Prefix;
+			if (string.IsNullOrEmpty(value))
+				value = Attribute.Prefix;
+
 			Host.Instance.InvalidateProxyCommand();
 			_Prefix = value;
 		}
 	}
 
-	void Init()
-	{
-		// solid prefix!
-		if (string.IsNullOrEmpty(Attribute.Prefix))
-			throw new ModuleException("Empty command prefix is not valid.");
-	}
-
-	internal Config.Command SaveConfig()
+	internal Config.Command? SaveConfig()
 	{
 		if (_Prefix == Attribute.Prefix)
 			return null;
@@ -95,16 +85,16 @@ sealed class ProxyCommand : ProxyAction, IModuleCommand
 		return new Config.Command { Id = Id, Prefix = _Prefix };
 	}
 
-	internal void LoadConfig(Config.Module config)
+	internal void LoadConfig(Config.Module? config)
 	{
-		Config.Command data;
-		if (config != null && (data = config.GetCommand(Id)) != null)
+		Config.Command? data;
+		if (config is null || (data = config.GetCommand(Id)) is null)
 		{
-			_Prefix = data.Prefix ?? Attribute.Prefix;
+			_Prefix = Attribute.Prefix;
 		}
 		else
 		{
-			_Prefix = Attribute.Prefix;
+			_Prefix = data.Prefix ?? Attribute.Prefix;
 		}
 	}
 }

@@ -12,27 +12,21 @@ namespace FarNet;
 public abstract class ModuleActionAttribute : Attribute, ICloneable
 {
 	/// <summary>
-	/// Specifies the module action GUID.
+	/// The mandatory module action GUID.
 	/// </summary>
-	public string Id { get; set; }
+	public string Id { get; set; } = null!;
 
 	/// <summary>
-	/// The mandatory action name shown in menus.
+	/// The mandatory user interface name.
 	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// If the module uses this name itself, for example as message boxes titles, then define this text
-	/// as a public const string in a class, then use its name as the value of this attribute parameter.
-	/// </para>
-	/// </remarks>
-	public string Name { get; set; }
+	public string Name { get; set; } = null!;
 
 	/// <summary>
-	/// Tells to use the <see cref="Name"/> as the resource name of the localized string.
+	/// Tells to use <see cref="Name"/> as the resource string name.
 	/// </summary>
 	/// <remarks>
-	/// Restart Far after changing the current Far language or the module culture
-	/// to make sure that this and other action names are updated from resources.
+	/// Restart after changing the current language or module culture
+	/// in order to update module action names from resources.
 	/// </remarks>
 	public bool Resources { get; set; }
 

@@ -14,20 +14,22 @@ namespace FarNet.Works;
 
 sealed partial class ModuleManager : IModuleManager
 {
-	Assembly _AssemblyInstance;
-	CultureInfo _CurrentUICulture;
-	ResourceManager _ResourceManager;
+	Assembly? _AssemblyInstance;
+	CultureInfo? _CurrentUICulture;
+	ResourceManager? _ResourceManager;
 	internal string AssemblyPath { get; }
 
 	// Module host
-	string _ModuleHostTypeName;
-	Type _ModuleHostType;
-	ModuleHost _ModuleHost;
+	string? _ModuleHostTypeName;
+	Type? _ModuleHostType;
+	ModuleHost? _ModuleHost;
 
 	// from cache or reflection
 	readonly List<string> _SettingsTypeNames = new();
+
 	// used by loader on reflection
 	public void AddSettingsTypeName(string name) => _SettingsTypeNames.Add(name);
+
 	// used for the settings menu and caching
 	public override IReadOnlyList<string> SettingsTypeNames => _SettingsTypeNames;
 
@@ -38,7 +40,7 @@ sealed partial class ModuleManager : IModuleManager
 	}
 
 	// Sets properties from data, if not null.
-	internal void LoadConfig(Config.Module config)
+	internal void LoadConfig(Config.Module? config)
 	{
 		if (config is not null)
 			_StoredUICulture = config.Culture;
@@ -51,17 +53,17 @@ sealed partial class ModuleManager : IModuleManager
 
 	void ConnectModuleHost()
 	{
-		_ModuleHost = (ModuleHost)Activator.CreateInstance(_ModuleHostType, false);
+		_ModuleHost = (ModuleHost?)Activator.CreateInstance(_ModuleHostType!, false);
 		_ModuleHostType = null;
-		_ModuleHost.Connect();
+		_ModuleHost!.Connect();
 	}
 
 	internal ModuleHost GetLoadedModuleHost()
 	{
-		return _ModuleHost;
+		return _ModuleHost!;
 	}
 
-	internal string GetModuleHostClassName()
+	internal string? GetModuleHostClassName()
 	{
 		if (_ModuleHostTypeName is not null)
 			return _ModuleHostTypeName;
@@ -129,6 +131,8 @@ sealed partial class ModuleManager : IModuleManager
 			throw new ArgumentException("'attribute.Name' must not be empty.");
 		if (!Guid.TryParse(attribute.Id, out Guid id))
 			throw new ArgumentException("'attribute.Id' has invalid GUID.");
+		if (string.IsNullOrEmpty(attribute.Prefix))
+			throw new ArgumentException("'attribute.Prefix' must not be empty.");
 
 		var it = new ProxyCommand(this, id, attribute, handler);
 		var config = Config.Default.GetData();
@@ -243,13 +247,10 @@ sealed partial class ModuleManager : IModuleManager
 		else
 			LoadAssembly();
 
-		return _AssemblyInstance;
+		return _AssemblyInstance!;
 	}
 
-	public override string ModuleName
-	{
-		get { return Path.GetFileNameWithoutExtension(AssemblyPath); }
-	}
+	public override string ModuleName => Path.GetFileNameWithoutExtension(AssemblyPath);
 
 	// faster than `CurrentUICulture.Name`
 	internal string CurrentUICultureName()
@@ -308,7 +309,7 @@ sealed partial class ModuleManager : IModuleManager
 	}
 
 	// Value from config (null ~ default).
-	string _StoredUICulture;
+	string? _StoredUICulture;
 
 	// Wraps internal value: get: null to empty; set: empty to null.
 	public override string StoredUICulture
@@ -317,12 +318,12 @@ sealed partial class ModuleManager : IModuleManager
 		set => _StoredUICulture = string.IsNullOrEmpty(value) ? null : value;
 	}
 
-	public override string GetString(string name)
+	public override string? GetString(string name)
 	{
 		if (_ResourceManager is null)
 		{
 			string baseName = Path.GetFileNameWithoutExtension(AssemblyPath);
-			string resourceDir = Path.GetDirectoryName(AssemblyPath);
+			string resourceDir = Path.GetDirectoryName(AssemblyPath)!;
 			_ResourceManager = ResourceManager.CreateFileBasedResourceManager(baseName, resourceDir, null);
 		}
 

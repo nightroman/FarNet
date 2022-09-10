@@ -44,7 +44,7 @@ public class ModuleLoader
 
 		// write and free the cache
 		_Cache.Update();
-		_Cache = null;
+		_Cache = null!;
 		foreach (var manager in _Managers.Values)
 			manager.DropCache();
 
@@ -88,7 +88,7 @@ public class ModuleLoader
 				{
 					var browsable = type.GetCustomAttribute<BrowsableAttribute>();
 					if (browsable is null || browsable.Browsable)
-						manager.AddSettingsTypeName(type.FullName);
+						manager.AddSettingsTypeName(type.FullName!);
 					continue;
 				}
 			}
@@ -195,7 +195,7 @@ public class ModuleLoader
 	}
 
 	// Loads one of <see cref="BaseModuleItem"/> types.
-	static void LoadModuleItemType(ModuleManager manager, Type type, Config.Module config)
+	static void LoadModuleItemType(ModuleManager manager, Type type, Config.Module? config)
 	{
 		// command
 		ProxyAction action;
@@ -300,7 +300,7 @@ public class ModuleLoader
 
 	public static IModuleManager GetModuleManager(string name)
 	{
-		if (_Managers.TryGetValue(name, out ModuleManager manager))
+		if (_Managers.TryGetValue(name, out ModuleManager? manager))
 			return manager;
 
 		throw new ArgumentException("Cannot find the module name.");

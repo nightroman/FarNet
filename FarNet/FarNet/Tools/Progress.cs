@@ -18,7 +18,7 @@ class Progress
 	const int PROGRESS_WIDTH = TEXT_WIDTH - 4;
 
 	string _Activity = string.Empty;
-	string[] _Lines;
+	string[]? _Lines;
 	int _percentage = -1;
 	readonly Stopwatch _stopwatch = Stopwatch.StartNew();
 	internal TimeSpan Elapsed { get { return _stopwatch.Elapsed; } }

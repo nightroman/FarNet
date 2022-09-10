@@ -29,7 +29,7 @@ public struct BufferCell
 
 	public static bool operator !=(BufferCell first, BufferCell second) => !(first == second);
 
-	public override bool Equals(object obj)
+	public override bool Equals(object? obj)
 	{
 		bool flag = false;
 		if (obj is BufferCell cell)

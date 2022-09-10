@@ -32,14 +32,14 @@ public abstract class FarFile : IXmlInfo
 	/// </summary>
 	public virtual string Name
 	{
-		get => null;
+		get => string.Empty;
 		set => throw new NotImplementedException();
 	}
 
 	/// <summary>
 	/// Description.
 	/// </summary>
-	public virtual string Description
+	public virtual string? Description
 	{
 		get => null;
 		set => throw new NotImplementedException();
@@ -48,7 +48,7 @@ public abstract class FarFile : IXmlInfo
 	/// <summary>
 	/// Owner.
 	/// </summary>
-	public virtual string Owner
+	public virtual string? Owner
 	{
 		get => null;
 		set => throw new NotImplementedException();
@@ -57,7 +57,7 @@ public abstract class FarFile : IXmlInfo
 	/// <summary>
 	/// User data. Only for <see cref="Panel"/>.
 	/// </summary>
-	public virtual object Data
+	public virtual object? Data
 	{
 		get => null;  //??? _090610_071700
 		set => throw new NotImplementedException();
@@ -102,7 +102,7 @@ public abstract class FarFile : IXmlInfo
 	/// <summary>
 	/// Custom columns. See <see cref="PanelPlan"/>.
 	/// </summary>
-	public virtual ICollection Columns
+	public virtual ICollection? Columns
 	{
 		get => null;
 		set => throw new NotImplementedException();
@@ -217,7 +217,7 @@ public abstract class FarFile : IXmlInfo
 		return IsDirectory ? "Directory" : "File";
 	}
 
-	static ReadOnlyCollection<XmlAttributeInfo> _attrs;
+	static ReadOnlyCollection<XmlAttributeInfo>? _attrs;
 	static ReadOnlyCollection<XmlAttributeInfo> XmlAttr()
 	{
 		if (_attrs != null)

@@ -33,7 +33,7 @@ public abstract class IModuleManager
 	/// The <see cref="BaseModuleItem.GetString"/> worker.
 	/// </summary>
 	/// <param name="name">The string name.</param>
-	public abstract string GetString(string name);
+	public abstract string? GetString(string name);
 
 	/// <summary>
 	/// Gets the path to the system special folder that is identified by the specified enumeration.

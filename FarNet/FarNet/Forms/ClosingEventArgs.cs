@@ -10,7 +10,7 @@ namespace FarNet.Forms;
 public sealed class ClosingEventArgs : AnyEventArgs
 {
 	/// <param name="selected">Control that had the keyboard focus when [CtrlEnter] was pressed or the default control.</param>
-	public ClosingEventArgs(IControl selected) : base(selected)
+	public ClosingEventArgs(IControl? selected) : base(selected)
 	{
 	}
 

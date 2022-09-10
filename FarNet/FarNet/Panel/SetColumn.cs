@@ -14,10 +14,10 @@ namespace FarNet;
 public sealed class SetColumn : FarColumn
 {
 	/// <inheritdoc/>
-	public override string Name { get; set; }
+	public override string? Name { get; set; }
 
 	/// <inheritdoc/>
-	public override string Kind { get; set; }
+	public override string? Kind { get; set; }
 
 	/// <inheritdoc/>
 	public override int Width { get; set; }

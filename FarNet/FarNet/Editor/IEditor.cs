@@ -308,7 +308,7 @@ public abstract class IEditor : IEditorBase
 	/// <remarks>
 	/// For the current editor setting the title to null or empty restores the original title.
 	/// </remarks>
-	public abstract string Title { get; set; }
+	public abstract string? Title { get; set; }
 
 	/// <summary>
 	/// Gets or sets overtype mode.
@@ -436,18 +436,12 @@ public abstract class IEditor : IEditorBase
 	/// (if they also follow this technique of attaching a host).
 	/// </para>
 	/// </remarks>
-	public object Host
+	public object? Host
 	{
-		get { return _Host; }
-		set
-		{
-			if (_Host != null)
-				throw new InvalidOperationException();
-
-			_Host = value;
-		}
+		get => _Host;
+		set => _Host = _Host == null ? value : throw new InvalidOperationException();
 	}
-	object _Host;
+	object? _Host;
 
 	/// <summary>
 	/// Gets text with the default line separator.
@@ -697,8 +691,8 @@ public abstract class IEditor : IEditorBase
 	public abstract DateTime TimeOfSave { get; }
 
 	/// <include file='doc.xml' path='doc/Data/*'/>
-	public Hashtable Data { get { return _Data ?? (_Data = new Hashtable()); } }
-	Hashtable _Data;
+	public Hashtable Data => _Data ??= new Hashtable();
+	Hashtable? _Data;
 
 	/// <summary>
 	/// Collects color spans of the specified line.

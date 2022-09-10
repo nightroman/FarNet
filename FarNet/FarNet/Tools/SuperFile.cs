@@ -53,7 +53,7 @@ public class SuperFile : WrapFile
 			foreach (var file in efiles)
 			{
 				//! try: if a module incorrectly gets alien files to stay then they are not hashed
-				if (xhash.TryGetValue(file, out SuperFile xfile))
+				if (xhash.TryGetValue(file, out SuperFile? xfile))
 					yield return xfile;
 			}
 		}

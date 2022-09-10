@@ -6,18 +6,12 @@ using System.Collections.Generic;
 
 namespace FarNet;
 
-/// <summary>
-/// INTERNAL
-/// </summary>
+/// <summary>.</summary>
 public interface IXmlInfo
 {
-	/// <summary>
-	/// INTERNAL
-	/// </summary>
+	/// <summary>.</summary>
 	string XmlNodeName();
 
-	/// <summary>
-	/// INTERNAL
-	/// </summary>
+	/// <summary>.</summary>
 	IList<XmlAttributeInfo> XmlAttributes();
 }

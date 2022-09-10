@@ -45,7 +45,7 @@ public class SuperExplorer : Explorer
 		_Cache = new List<FarFile>();
 	}
 
-	internal static Explorer ExploreSuperDirectory(Explorer explorer, ExplorerModes mode, FarFile file)
+	internal static Explorer? ExploreSuperDirectory(Explorer explorer, ExplorerModes mode, FarFile file)
 	{
 		try
 		{
@@ -56,7 +56,7 @@ public class SuperExplorer : Explorer
 		}
 		catch (Exception ex)
 		{
-			FarNet.Log.TraceException(ex);
+			Log.TraceException(ex);
 			return null;
 		}
 	}
@@ -88,19 +88,15 @@ public class SuperExplorer : Explorer
 	}
 
 	/// <inheritdoc/>
-	public override Explorer ExploreDirectory(ExploreDirectoryEventArgs args)
+	public override Explorer? ExploreDirectory(ExploreDirectoryEventArgs args)
 	{
-		if (args == null) return null;
-
 		var xfile = (SuperFile)args.File;
 		return ExploreSuperDirectory(xfile.Explorer, args.Mode, xfile.File);
 	}
 
 	/// <inheritdoc/>
-	public override Explorer OpenFile(OpenFileEventArgs args)
+	public override Explorer? OpenFile(OpenFileEventArgs args)
 	{
-		if (args == null) return null;
-
 		// can?
 		var xfile = (SuperFile)args.File;
 		if (!xfile.Explorer.CanOpenFile)
@@ -201,13 +197,13 @@ public class SuperExplorer : Explorer
 			if (function != ExplorerFunctions.None && 0 == (file.Explorer.Functions & function))
 				continue;
 
-			if (!result.TryGetValue(file.Explorer.TypeId, out Dictionary<Explorer, List<SuperFile>> dicExplorer))
+			if (!result.TryGetValue(file.Explorer.TypeId, out Dictionary<Explorer, List<SuperFile>>? dicExplorer))
 			{
 				dicExplorer = new Dictionary<Explorer, List<SuperFile>>();
 				result.Add(file.Explorer.TypeId, dicExplorer);
 			}
 
-			if (!dicExplorer.TryGetValue(file.Explorer, out List<SuperFile> efiles))
+			if (!dicExplorer.TryGetValue(file.Explorer, out List<SuperFile>? efiles))
 			{
 				efiles = new List<SuperFile>();
 				dicExplorer.Add(file.Explorer, efiles);
@@ -235,7 +231,7 @@ public class SuperExplorer : Explorer
 		foreach (var xTypeId in dicTypeId)
 		{
 			Log.Source.TraceInformation("AcceptFiles TypeId='{0}'", xTypeId.Key);
-			object codata = null;
+			object? codata = null;
 			foreach (var kv in xTypeId.Value)
 			{
 				// explorer and its files
@@ -307,7 +303,7 @@ public class SuperExplorer : Explorer
 				}
 
 				// call delete on remaining files
-				object codata2 = null;
+				object? codata2 = null;
 				var result = DeleteFilesOfExplorer(explorer, xfiles, xfilesToStay, ExplorerModes.Silent, false, ref codata2);
 				if (result == JobResult.Done || result == JobResult.Incomplete)
 					toUpdate = true;
@@ -331,7 +327,7 @@ public class SuperExplorer : Explorer
 		source.Redraw();
 	}
 
-	JobResult DeleteFilesOfExplorer(Explorer explorer, List<SuperFile> xfilesToDelete, IList<FarFile> xfilesToStay, ExplorerModes mode, bool force, ref object codata)
+	JobResult DeleteFilesOfExplorer(Explorer explorer, List<SuperFile> xfilesToDelete, IList<FarFile> xfilesToStay, ExplorerModes mode, bool force, ref object? codata)
 	{
 		// explorer files
 		var efilesToDelete = new List<FarFile>(xfilesToDelete.Count);
@@ -397,7 +393,7 @@ public class SuperExplorer : Explorer
 		foreach (var xTypeId in dicTypeId)
 		{
 			Log.Source.TraceInformation("DeleteFiles TypeId='{0}'", xTypeId.Key);
-			object codata = null;
+			object? codata = null;
 			foreach (var kv in xTypeId.Value)
 			{
 				var result = DeleteFilesOfExplorer(kv.Key, kv.Value, args.FilesToStay, args.Mode, args.Force, ref codata);
@@ -425,7 +421,7 @@ public class SuperExplorer : Explorer
 		foreach (var xTypeId in dicTypeId)
 		{
 			Log.Source.TraceInformation("ExportFiles TypeId='{0}'", xTypeId.Key);
-			object codata = null;
+			object? codata = null;
 			foreach (var kv in xTypeId.Value)
 			{
 				// explorer and its files
@@ -496,7 +492,7 @@ public class SuperExplorer : Explorer
 				}
 
 				// call delete on remaining files
-				object codata2 = null;
+				object? codata2 = null;
 				var result = DeleteFilesOfExplorer(explorer, xfiles, args.FilesToStay, ExplorerModes.Silent, false, ref codata2);
 				if (result == JobResult.Incomplete)
 					args.Result = JobResult.Incomplete;

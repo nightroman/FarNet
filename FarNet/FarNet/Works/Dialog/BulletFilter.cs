@@ -23,7 +23,7 @@ public static class BulletFilter
 	}
 
 	// Converts the filter to regex.
-	public static Regex ToRegex(string filter, PatternOptions options)
+	public static Regex? ToRegex(string filter, PatternOptions options)
 	{
 		if (options == 0 || string.IsNullOrEmpty(filter))
 			return null;

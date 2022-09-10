@@ -14,7 +14,7 @@ public static class ConfigTool
 {
 	const string HelpTopic = "configure-tools";
 
-	public static string ValidateMask(string mask)
+	public static string? ValidateMask(string mask)
 	{
 		mask = mask.Trim();
 		if (mask.Length == 0 || Far.Api.IsMaskValid(mask))
@@ -46,7 +46,7 @@ public static class ConfigTool
 			if (!menu.Show())
 				return;
 
-			var tool = (IModuleTool)menu.SelectedData;
+			var tool = (IModuleTool)menu.SelectedData!;
 
 			var dialog = Far.Api.CreateDialog(-1, -1, 77, 12);
 			dialog.HelpTopic = HelpTopic;

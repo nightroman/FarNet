@@ -31,7 +31,7 @@ public static class ConfigUICulture
 			if (!menu.Show())
 				return;
 
-			var manager = (IModuleManager)menu.SelectedData;
+			var manager = (IModuleManager)menu.SelectedData!;
 
 			// show the input box
 			var ib = Far.Api.CreateInputBox();

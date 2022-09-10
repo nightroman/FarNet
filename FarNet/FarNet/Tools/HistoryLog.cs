@@ -20,7 +20,7 @@ public sealed class HistoryLog : HistoryStore
 {
 	readonly string _fileName;
 	readonly int _maximumCount;
-	string _lastLine;
+	string? _lastLine;
 
 	/// <summary>
 	/// New history log.
@@ -78,7 +78,7 @@ public sealed class HistoryLog : HistoryStore
 	/// </summary>
 	/// <param name="lines">Input lines.</param>
 	/// <returns>Output lines.</returns>
-	public override string[] Update(string[] lines)
+	public override string[] Update(string[]? lines)
 	{
 		// ensure lines
 		lines ??= ReadLines();

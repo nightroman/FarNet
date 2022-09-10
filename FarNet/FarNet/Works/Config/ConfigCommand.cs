@@ -32,7 +32,7 @@ public static class ConfigCommand
 			if (!menu.Show())
 				return;
 
-			var command = (IModuleCommand)menu.SelectedData;
+			var command = (IModuleCommand)menu.SelectedData!;
 
 			var ib = Far.Api.CreateInputBox();
 			ib.EmptyEnabled = true;
@@ -41,7 +41,7 @@ public static class ConfigCommand
 			ib.Text = command.Prefix;
 			ib.Title = command.Name;
 
-			string prefix = null;
+			string? prefix = null;
 			while (ib.Show())
 			{
 				prefix = ib.Text;

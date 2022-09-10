@@ -4,6 +4,7 @@
     <MyOutDir>$(FarHome)\FarNet</MyOutDir>
     <Description>FarNet API</Description>
     <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
     <WarningLevel>5</WarningLevel>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>

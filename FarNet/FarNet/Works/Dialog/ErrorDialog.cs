@@ -10,7 +10,7 @@ namespace FarNet.Works;
 
 public static class ErrorDialog
 {
-	public static void Show(string title, Exception error, string more)
+	public static void Show(string? title, Exception error, string more)
 	{
 		// unwrap
 		error = Kit.UnwrapAggregateException(error);

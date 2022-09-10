@@ -50,7 +50,7 @@ public sealed class MouseInfo : KeyBase
 	public int Value { get; }
 
 	/// <inheritdoc/>
-	public override bool Equals(object obj)
+	public override bool Equals(object? obj)
 	{
 		return obj is MouseInfo that &&
 			Action == that.Action &&

@@ -17,9 +17,9 @@ class AssemblyLoadContext2 : AssemblyLoadContext
 		_resolver = new AssemblyDependencyResolver(pluginPath);
 	}
 
-	protected override Assembly Load(AssemblyName assemblyName)
+	protected override Assembly? Load(AssemblyName assemblyName)
 	{
-		string assemblyPath = _resolver.ResolveAssemblyToPath(assemblyName);
+		var assemblyPath = _resolver.ResolveAssemblyToPath(assemblyName);
 		if (assemblyPath is null)
 			return null;
 
@@ -29,7 +29,7 @@ class AssemblyLoadContext2 : AssemblyLoadContext
 
 	protected override IntPtr LoadUnmanagedDll(string unmanagedDllName)
 	{
-		string libraryPath = _resolver.ResolveUnmanagedDllToPath(unmanagedDllName);
+		var libraryPath = _resolver.ResolveUnmanagedDllToPath(unmanagedDllName);
 		if (libraryPath is null)
 			return IntPtr.Zero;
 

@@ -13,7 +13,7 @@ partial class ModuleManager
 	internal long Timestamp;
 
 	// Stored in cache.
-	internal string CachedUICulture { get; private set; }
+	internal string? CachedUICulture { get; private set; }
 
 	// Actions from cache or reflection for caching.
 	internal List<ProxyAction> ProxyActions = new();
@@ -21,7 +21,7 @@ partial class ModuleManager
 	// Called after loading.
 	internal void DropCache()
 	{
-		ProxyActions = null;
+		ProxyActions = null!;
 		CachedUICulture = null;
 	}
 

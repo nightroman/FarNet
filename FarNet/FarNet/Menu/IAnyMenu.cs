@@ -31,12 +31,12 @@ public interface IAnyMenu
 	/// <summary>
 	/// Gets or sets the title line text.
 	/// </summary>
-	string Title { get; set; }
+	string? Title { get; set; }
 
 	/// <summary>
 	/// Gets or sets the bottom line text.
 	/// </summary>
-	string Bottom { get; set; }
+	string? Bottom { get; set; }
 
 	/// <summary>
 	/// Gets the menu item list.
@@ -58,9 +58,10 @@ public interface IAnyMenu
 	int Selected { get; set; }
 
 	/// <summary>
-	/// Gets user data attached to the <see cref="Selected"/> item or null on cancel.
+	/// Gets user data attached to the <see cref="Selected"/> item.
+	/// It is null on cancel or no selected item.
 	/// </summary>
-	object SelectedData { get; }
+	object? SelectedData { get; }
 
 	/// <summary>
 	/// Shows the menu.
@@ -79,7 +80,7 @@ public interface IAnyMenu
 	bool Show();
 
 	/// <include file='doc.xml' path='doc/HelpTopic/*'/>
-	string HelpTopic { get; set; }
+	string? HelpTopic { get; set; }
 
 	/// <summary>
 	/// Tells to select the last item on <see cref="Show()"/> if <see cref="Selected"/> is not set.
@@ -92,7 +93,7 @@ public interface IAnyMenu
 	/// <remarks>
 	/// By default <see cref="FarItem"/> is a sender. You can provide another sender passed in.
 	/// </remarks>
-	object Sender { get; set; }
+	object? Sender { get; set; }
 
 	/// <summary>
 	/// Tells to show ampersands in items instead of using them as hotkey marks.

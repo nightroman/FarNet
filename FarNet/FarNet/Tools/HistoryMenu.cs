@@ -45,7 +45,7 @@ public class HistoryMenu
 	/// <summary>
 	/// Shows the modal history list.
 	/// </summary>
-	public string Show()
+	public string? Show()
 	{
 		// fill
 		ResetItems(_history.ReadLines());
@@ -68,7 +68,7 @@ public class HistoryMenu
 		}
 	}
 
-	void OnDelete(object sender, MenuEventArgs e)
+	void OnDelete(object? sender, MenuEventArgs e)
 	{
 		var lines = _history.Update(null);
 		if (lines.Length == Menu.Items.Count)

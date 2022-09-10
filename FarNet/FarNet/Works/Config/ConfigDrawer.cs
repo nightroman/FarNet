@@ -21,7 +21,7 @@ public static class ConfigDrawer
 
 		while (menu.Show())
 		{
-			var drawer = (IModuleDrawer)menu.SelectedData;
+			var drawer = (IModuleDrawer)menu.SelectedData!;
 
 			var dialog = new ConfigDrawerDialog(drawer);
 			while (dialog.Dialog.Show())

@@ -66,8 +66,8 @@ public partial class Panel : IPanel
 	/// </summary>
 	public int PageOffset { get; set; }
 	readonly Works.IPanelWorks _Panel;
-	Panel _Parent;
-	Panel _Child;
+	Panel? _Parent;
+	Panel? _Child;
 
 	/// <summary>
 	/// New module panel with its file explorer.
@@ -75,7 +75,9 @@ public partial class Panel : IPanel
 	/// <param name="explorer">The panel explorer.</param>
 	public Panel(Explorer explorer)
 	{
-		if (explorer == null) throw new ArgumentNullException("explorer");
+		if (explorer is null)
+			throw new ArgumentNullException(nameof(explorer));
+
 		_Panel = Works.Far2.Api.CreatePanel(this, explorer);
 	}
 
@@ -99,8 +101,11 @@ public partial class Panel : IPanel
 	/// </remarks>
 	public virtual void Navigate(Explorer explorer)
 	{
-		if (explorer == null) throw new ArgumentNullException("explorer");
-		if (explorer.TypeId != Explorer.TypeId) throw new ArgumentException("New explorer is not compatible with the current.");
+		if (explorer is null)
+			throw new ArgumentNullException(nameof(explorer));
+
+		if (explorer.TypeId != Explorer.TypeId)
+			throw new ArgumentException("New explorer is not compatible with the current.");
 
 		_Panel.Navigate(explorer);
 	}
@@ -109,13 +114,13 @@ public partial class Panel : IPanel
 	public Works.IPanelWorks WorksPanel => _Panel;
 
 	/// <include file='doc.xml' path='doc/Data/*'/>
-	public Hashtable Data { get { return _Data ??= new Hashtable(); } }
-	Hashtable _Data;
+	public Hashtable Data => _Data ??= new Hashtable();
+	Hashtable? _Data;
 
 	/// <summary>
 	/// Gets the child panel.
 	/// </summary>
-	public Panel Child => _Child;
+	public Panel? Child => _Child;
 
 	/// <summary>
 	/// Gets the parent panel.
@@ -123,7 +128,7 @@ public partial class Panel : IPanel
 	/// <remarks>
 	/// The parent panel is null if this panel is not a child panel.
 	/// </remarks>
-	public Panel Parent => _Parent;
+	public Panel? Parent => _Parent;
 
 	/// <summary>
 	/// Gets the default panel title to be set on show.
@@ -140,7 +145,7 @@ public partial class Panel : IPanel
 	}
 
 	// Opening worker, including a posted step
-	void Open(object sender, EventArgs e)
+	void Open2()
 	{
 		//_171024_175829 inherit explorer location if there is no custom (#13)
 		if (_Panel.CurrentLocation == null)
@@ -200,7 +205,7 @@ public partial class Panel : IPanel
 		// | open as child
 		if (_Parent != null) //_201216_d3 do not PostStep, it's just replacing panels ??
 		{
-			Open(null, null);
+			Open2();
 			return;
 		}
 
@@ -208,7 +213,7 @@ public partial class Panel : IPanel
 		{
 			Far.Api.PostStep(() => //_201216_d3
 			{
-				Open(null, null);
+				Open2();
 			});
 			return;
 		}
@@ -229,7 +234,7 @@ public partial class Panel : IPanel
 				Far.Api.Window.SetCurrentAt(-1);
 				Far.Api.PostStep(() => //_201216_d3
 				{
-					Open(null, null);
+					Open2();
 				});
 			}
 			catch (InvalidOperationException ex)
@@ -247,7 +252,7 @@ public partial class Panel : IPanel
 	/// When this panel is opened as a child of the parent panel, the parent is hidden, not closed.
 	/// When the child closes itself later then the parent is shown again and its state is restored.
 	/// </remarks>
-	public void OpenChild(Panel parent)
+	public void OpenChild(Panel? parent)
 	{
 		// resolve 'null' parent
 		if (parent == null)
@@ -387,7 +392,7 @@ public partial class Panel : IPanel
 	/// </remarks>
 	[Obsolete("PowerShell scripts helper.")]
 	public IList<IDisposable> Garbage => _Garbage ??= new List<IDisposable>();
-	List<IDisposable> _Garbage;
+	List<IDisposable>? _Garbage;
 
 	/// <summary>
 	/// Saves the panel data.
@@ -412,7 +417,7 @@ public partial class Panel : IPanel
 	/// <remarks>
 	/// This text is used and shown only if the dots item is added, see <see cref="DotsMode"/>.
 	/// </remarks>
-	public string DotsDescription { get; set; }
+	public string? DotsDescription { get; set; }
 
 	/// <summary>
 	/// Gets true if the panel is opened.
@@ -879,7 +884,7 @@ public partial class Panel : IPanel
 	/// <summary>
 	/// Called by <see cref="UIClosed"/>.
 	/// </summary>
-	public event EventHandler Closed;
+	public event EventHandler? Closed;
 
 	/// <summary>
 	/// Called when the panel has been closed.
@@ -897,7 +902,7 @@ public partial class Panel : IPanel
 	{
 		try
 		{
-			Closed?.Invoke(this, null);
+			Closed?.Invoke(this, EventArgs.Empty);
 		}
 		finally
 		{
@@ -914,7 +919,7 @@ public partial class Panel : IPanel
 	/// <summary>
 	/// Called by <see cref="UIClosing"/>.
 	/// </summary>
-	public event EventHandler<PanelEventArgs> Closing;
+	public event EventHandler<PanelEventArgs>? Closing;
 
 	/// <summary>
 	/// Called when the panel is about to be closed.
@@ -937,7 +942,7 @@ public partial class Panel : IPanel
 	/// If the command is supported then set <see cref="PanelEventArgs.Ignore"/> = true
 	/// as soon as possible before potential exceptions.
 	/// </remarks>
-	public event EventHandler<CommandLineEventArgs> InvokingCommand;
+	public event EventHandler<CommandLineEventArgs>? InvokingCommand;
 
 	///
 	public bool WorksInvokingCommand(CommandLineEventArgs e)
@@ -952,7 +957,7 @@ public partial class Panel : IPanel
 	/// <summary>
 	/// Called by <see cref="UIUpdateInfo"/>.
 	/// </summary>
-	public event EventHandler UpdateInfo;
+	public event EventHandler? UpdateInfo;
 
 	/// <summary>
 	/// Called by the core to get the panel info. Use it only when it is absolutely needed.
@@ -966,12 +971,12 @@ public partial class Panel : IPanel
 	/// As the last resort use <see cref="UIRedrawing"/>.
 	/// </para>
 	/// </remarks>
-	public virtual void UIUpdateInfo() => UpdateInfo?.Invoke(this, null);
+	public virtual void UIUpdateInfo() => UpdateInfo?.Invoke(this, EventArgs.Empty);
 
 	/// <summary>
 	/// Called by <see cref="UICtrlBreak"/>.
 	/// </summary>
-	public event EventHandler CtrlBreak;
+	public event EventHandler? CtrlBreak;
 
 	/// <summary>
 	/// Called when [CtrlBreak] is pressed, normally from a separate thread.
@@ -982,12 +987,12 @@ public partial class Panel : IPanel
 	/// The base method triggers the <see cref="CtrlBreak"/> event.
 	/// </para>
 	/// </remarks>
-	public virtual void UICtrlBreak() => CtrlBreak?.Invoke(this, null);
+	public virtual void UICtrlBreak() => CtrlBreak?.Invoke(this, EventArgs.Empty);
 
 	/// <summary>
 	/// Called by <see cref="UIRedrawing"/>.
 	/// </summary>
-	public event EventHandler<PanelEventArgs> Redrawing;
+	public event EventHandler<PanelEventArgs>? Redrawing;
 
 	/// <summary>
 	/// Called when the panel is about to redraw.
@@ -1004,7 +1009,7 @@ public partial class Panel : IPanel
 	/// <summary>
 	/// Called by <see cref="UIViewChanged"/>.
 	/// </summary>
-	public event EventHandler<ViewChangedEventArgs> ViewChanged;
+	public event EventHandler<ViewChangedEventArgs>? ViewChanged;
 
 	/// <summary>
 	/// Called when panel view mode is changed.
@@ -1018,7 +1023,7 @@ public partial class Panel : IPanel
 	/// <summary>
 	/// Called by <see cref="UIGotFocus"/>.
 	/// </summary>
-	public event EventHandler GotFocus;
+	public event EventHandler? GotFocus;
 
 	/// <summary>
 	/// Called when the panel has got focus.
@@ -1026,12 +1031,12 @@ public partial class Panel : IPanel
 	/// <remarks>
 	/// The base method triggers the <see cref="GotFocus"/> event.
 	/// </remarks>
-	public virtual void UIGotFocus() => GotFocus?.Invoke(this, null);
+	public virtual void UIGotFocus() => GotFocus?.Invoke(this, EventArgs.Empty);
 
 	/// <summary>
 	/// Called by <see cref="UILosingFocus"/>.
 	/// </summary>
-	public event EventHandler LosingFocus;
+	public event EventHandler? LosingFocus;
 
 	/// <summary>
 	/// Called when the panel is losing focus.
@@ -1039,7 +1044,7 @@ public partial class Panel : IPanel
 	/// <remarks>
 	/// The base method triggers the <see cref="LosingFocus"/> event.
 	/// </remarks>
-	public virtual void UILosingFocus() => LosingFocus?.Invoke(this, null);
+	public virtual void UILosingFocus() => LosingFocus?.Invoke(this, EventArgs.Empty);
 	#endregion
 
 	#region Other Info
@@ -1108,7 +1113,7 @@ public partial class Panel : IPanel
 	/// <remarks>
 	/// Call <see cref="Redraw()"/> after that.
 	/// </remarks>
-	public void SelectFiles(IEnumerable files, IEqualityComparer<FarFile> comparer)
+	public void SelectFiles(IEnumerable files, IEqualityComparer<FarFile>? comparer)
 	{
 		// no job?
 		if (files == null)

@@ -2,8 +2,6 @@
 // FarNet plugin for Far Manager
 // Copyright (c) Roman Kuzmin
 
-using System;
-
 namespace FarNet;
 
 /// <summary>
@@ -65,7 +63,7 @@ public struct TextFrame
 	}
 
 	/// <inheritdoc/>
-	public override bool Equals(Object obj)
+	public override bool Equals(object? obj)
 	{
 		return obj != null && obj.GetType() == typeof(TextFrame) && this == (TextFrame)obj;
 	}

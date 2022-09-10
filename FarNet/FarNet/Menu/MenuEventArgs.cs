@@ -7,22 +7,22 @@ using System;
 namespace FarNet;
 
 /// <summary>
-/// Arguments of a menu key handler.
-/// By default the key closes the menu and it is stored in <see cref="IAnyMenu.Key"/>.
-/// Use <see cref="Ignore"/> or <see cref="Restart"/> to perform different actions.
+/// Arguments of menu item handlers, e.g. menu key handlers.
+/// A menu key closes the menu and gets stored as <see cref="IAnyMenu.Key"/>.
+/// Use <see cref="Ignore"/> or <see cref="Restart"/> for different actions.
 /// </summary>
 public class MenuEventArgs : EventArgs
 {
 	/// <param name="item">Current item.</param>
-	public MenuEventArgs(FarItem item)
+	public MenuEventArgs(FarItem? item)
 	{
 		Item = item;
 	}
 
 	/// <summary>
-	/// Current item.
+	/// Gets the current menu item if any.
 	/// </summary>
-	public FarItem Item { get; }
+	public FarItem? Item { get; }
 
 	/// <summary>
 	/// Tells to do nothing, a handler has processed everything.
@@ -30,9 +30,9 @@ public class MenuEventArgs : EventArgs
 	public bool Ignore { get; set; }
 
 	/// <summary>
-	/// Tells to restart the menu, normally when items or properties are changed.
-	/// In some cases you may want to set proper <see cref="IAnyMenu.Selected"/> or -1
-	/// (e.g. you recreated all items and want the first or the last to be current after that).
+	/// Tells to restart the menu, normally when menu items have changed.
+	/// In some cases you may set <see cref="IAnyMenu.Selected"/> to a new value or -1.
+	/// E.g. you have recreated all items and tell the first or last to be the current.
 	/// </summary>
 	public bool Restart { get; set; }
 }

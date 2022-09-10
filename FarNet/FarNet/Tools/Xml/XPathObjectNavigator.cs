@@ -4,7 +4,6 @@
 
 // http://msdn.microsoft.com/en-us/library/ms950764.aspx
 
-using System;
 using System.Xml;
 using System.Xml.XPath;
 
@@ -22,21 +21,22 @@ public class XPathObjectNavigator : XPathNavigator
 	///
 	internal XPathObjectNavigator(object root, XPathObjectContext context)
 	{
-		if (root == null) throw new ArgumentNullException(nameof(root));
-
-		_context = context ?? throw new ArgumentNullException(nameof(context));
+		_context = context;
 		_root = new XPathObjectNode(context, root);
+		_node = _root;
 
 		//???? fails without it
 		var type = root.GetType();
-		var name = type.FullName;
+		var name = type.FullName!;
 		if (type.IsGenericType)
 			name = name.Remove(name.IndexOf('`'));
 		_root.AddSpecialName("type", name);
 	}
 
 	///
-	public XPathObjectNavigator(object root) : this(root, new XPathObjectContext()) { }
+	public XPathObjectNavigator(object root) : this(root, new XPathObjectContext())
+	{
+	}
 
 	XPathObjectNavigator(XPathObjectNavigator that)
 	{
@@ -55,64 +55,42 @@ public class XPathObjectNavigator : XPathNavigator
 	}
 
 	///
-	public override object UnderlyingObject { get { return _node.Target; } }
+	public override object UnderlyingObject => _node.Target;
 
 	///
-	public override string BaseURI
-	{
-		// don't expose a namespace
-		get { return string.Empty; }
-	}
+	// don't expose a namespace
+	public override string BaseURI => string.Empty;
 
 	///
-	public override bool HasAttributes
-	{
-		get
-		{
-			// nothing has attributes except elements
-			return _type == XPathNodeType.Element && _node.HasAttributes;
-		}
-	}
+	// nothing has attributes except elements
+	public override bool HasAttributes => _type == XPathNodeType.Element && _node.HasAttributes;
 
 	///
 	public override bool HasChildren
 	{
 		get
 		{
-			switch (_type)
+			return _type switch
 			{
-				case XPathNodeType.Element:
-					// does the element have children?
-					return _node.HasChildren;
+				// does the element have children?
+				XPathNodeType.Element => _node.HasChildren,
 
-				case XPathNodeType.Root:
-					// the root always has at least one child
-					// (the object the navigator is built from)
-					return true;
+				// root always has a child, the object the navigator is built from
+				XPathNodeType.Root => true,
 
-				default:
-					// nothing else has children
-					return false;
-			}
+				// nothing else has children
+				_ => false,
+			};
 		}
 	}
 
 	///
-	public override bool IsEmptyElement
-	{
-		get
-		{
-			// empty if we don't have children
-			return !HasChildren;
-		}
-	}
+	// empty if no children
+	public override bool IsEmptyElement => !HasChildren;
 
 	///
-	public override string LocalName
-	{
-		// we don't use namespaces, so our Name and LocalName are the same
-		get { return Name; }
-	}
+	// we don't use namespaces, so Name == LocalName
+	public override string LocalName => Name;
 
 	///
 	public override string Name
@@ -164,16 +142,10 @@ public class XPathObjectNavigator : XPathNavigator
 	}
 
 	///
-	public override XPathNodeType NodeType
-	{
-		get { return _type; }
-	}
+	public override XPathNodeType NodeType => _type;
 
 	///
-	public override XmlNameTable NameTable
-	{
-		get { return _context.NameTable; }
-	}
+	public override XmlNameTable NameTable => _context.NameTable;
 
 	///
 	public override string Prefix
@@ -214,7 +186,7 @@ public class XPathObjectNavigator : XPathNavigator
 					break;
 
 				case XPathNodeType.Element:
-					return _node.Value;
+					return _node.Value ?? string.Empty;
 
 				case XPathNodeType.Text:
 					goto case XPathNodeType.Element;
@@ -225,16 +197,10 @@ public class XPathObjectNavigator : XPathNavigator
 	}
 
 	///
-	public override string XmlLang
-	{
-		get { return string.Empty; }
-	}
+	public override string XmlLang => string.Empty;
 
 	///
-	public override XPathNavigator Clone()
-	{
-		return new XPathObjectNavigator(this);
-	}
+	public override XPathNavigator Clone() => new XPathObjectNavigator(this);
 
 	///
 	public override string GetAttribute(string localName, string namespaceURI)
@@ -249,13 +215,10 @@ public class XPathObjectNavigator : XPathNavigator
 	}
 
 	///
-	public override string GetNamespace(string name)
-	{
-		return string.Empty;
-	}
+	public override string GetNamespace(string name) => string.Empty;
 
 	///
-	public override bool IsDescendant(XPathNavigator nav)
+	public override bool IsDescendant(XPathNavigator? nav)
 	{
 		if (nav is not XPathObjectNavigator that)
 			return false;
@@ -409,22 +372,13 @@ public class XPathObjectNavigator : XPathNavigator
 	}
 
 	///
-	public override bool MoveToFirstNamespace(XPathNamespaceScope namespaceScope)
-	{
-		return false;
-	}
+	public override bool MoveToFirstNamespace(XPathNamespaceScope namespaceScope) => false;
 
 	///
-	public override bool MoveToId(string id)
-	{
-		return false;
-	}
+	public override bool MoveToId(string id) => false;
 
 	///
-	public override bool MoveToNamespace(string name)
-	{
-		return false;
-	}
+	public override bool MoveToNamespace(string name) => false;
 
 	///
 	public override bool MoveToNext()
@@ -432,7 +386,7 @@ public class XPathObjectNavigator : XPathNavigator
 		if (_type != XPathNodeType.Element)
 			return false;
 
-		XPathObjectNode parent = _node.Parent;
+		var parent = _node.Parent;
 		if (parent == null)
 			return false;
 
@@ -460,10 +414,7 @@ public class XPathObjectNavigator : XPathNavigator
 	}
 
 	///
-	public override bool MoveToNextNamespace(XPathNamespaceScope namespaceScope)
-	{
-		return false;
-	}
+	public override bool MoveToNextNamespace(XPathNamespaceScope namespaceScope) => false;
 
 	///
 	public override bool MoveToParent()
@@ -477,7 +428,7 @@ public class XPathObjectNavigator : XPathNavigator
 			return true;
 		}
 
-		XPathObjectNode parent = _node.Parent;
+		var parent = _node.Parent;
 		if (parent == null)
 			return false;
 
@@ -494,7 +445,7 @@ public class XPathObjectNavigator : XPathNavigator
 		if (_type != XPathNodeType.Element)
 			return false;
 
-		XPathObjectNode parent = _node.Parent;
+		var parent = _node.Parent;
 
 		if (parent == null)
 			return false;
@@ -512,7 +463,7 @@ public class XPathObjectNavigator : XPathNavigator
 	public override void MoveToRoot()
 	{
 		_type = XPathNodeType.Root;
-		_node = null;
+		_node = _root;
 		_index = -1;
 	}
 }

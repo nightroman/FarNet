@@ -51,7 +51,11 @@ public sealed class EditorTextWriter : TextWriter
 		_Editor.InsertChar(value);
 	}
 
-	public override void Write(string value) => _Editor.InsertText(value);
+	public override void Write(string? value)
+	{
+		if (value is not null)
+			_Editor.InsertText(value);
+	}
 
 	public override Encoding Encoding => Encoding.Unicode;
 }

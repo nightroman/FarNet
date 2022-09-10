@@ -68,16 +68,16 @@ public abstract class FarItem
 	/// <summary>
 	/// Any user data attached to the item.
 	/// </summary>
-	public virtual object Data
+	public virtual object? Data
 	{
 		get => null;
 		set => throw new NotImplementedException();
 	}
 
 	/// <summary>
-	/// Called when a menu item is selected.
+	/// Called when the menu item is selected.
 	/// </summary>
-	public virtual EventHandler<MenuEventArgs> Click
+	public virtual EventHandler<MenuEventArgs>? Click
 	{
 		get => null;
 		set => throw new NotImplementedException();

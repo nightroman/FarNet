@@ -10,11 +10,11 @@ namespace FarNet.Works;
 
 public abstract class Host
 {
-	static Host _Host;
+	static Host? _Host;
 
 	public static Host Instance
 	{
-		get => _Host;
+		get => _Host!;
 		set => _Host = _Host == null ? value : throw new InvalidOperationException();
 	}
 

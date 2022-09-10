@@ -12,19 +12,23 @@ namespace FarNet.Works;
 
 public sealed class ListMenu : AnyMenu, IListMenu
 {
-	IListBox _box;
+	IListBox _box = null!;
+
 	// Original user defined filter
 	string _Incremental_;
 
 	// Currently used filter
 	string _filter;
+
 	// To update the filter
 	bool _toFilter;
+
 	// Key handler was invoked
 	bool _isKeyHandled;
+
 	// Filtered
-	List<int> _ii;
-	Regex _re;
+	List<int>? _ii;
+	Regex? _re;
 
 	public bool AutoSelect { get; set; }
 
@@ -69,8 +73,7 @@ public sealed class ListMenu : AnyMenu, IListMenu
 			return;
 
 		// create
-		if (_re == null)
-			_re = BulletFilter.ToRegex(_filter, IncrementalOptions);
+		_re ??= BulletFilter.ToRegex(_filter, IncrementalOptions);
 		if (_re == null)
 			return;
 
@@ -217,30 +220,31 @@ public sealed class ListMenu : AnyMenu, IListMenu
 		}
 	}
 
-	void OnConsoleSizeChanged(object sender, SizeEventArgs e)
+	void OnConsoleSizeChanged(object? sender, SizeEventArgs e)
 	{
-		MakeSizes((IDialog)sender, e.Size);
+		MakeSizes((IDialog)sender!, e.Size);
 	}
 
-	void OnKeyPressed(object sender, KeyPressedEventArgs e)
+	void OnKeyPressed(object? sender, KeyPressedEventArgs e)
 	{
 		// Tab: go to next
 		if (e.Key.VirtualKeyCode == KeyCode.Tab)
 		{
-			var box = (IListBox)e.Control;
+			var box = (IListBox)e.Control!;
 			++box.Selected;
 			e.Ignore = true;
 			return;
 		}
 
-		var dialog = (IDialog)sender;
+		var dialog = (IDialog)sender!;
 
 		//! break keys first
 		var key = new KeyData(e.Key.VirtualKeyCode, e.Key.CtrlAltShift());
 		myKeyIndex = myKeys.IndexOf(key);
 		if (myKeyIndex >= 0)
 		{
-			if (myHandlers[myKeyIndex] == null)
+			var handler = myHandlers[myKeyIndex];
+			if (handler is null)
 			{
 				dialog.Close();
 			}
@@ -252,7 +256,7 @@ public sealed class ListMenu : AnyMenu, IListMenu
 					Selected = _ii[Selected];
 
 				var a = new MenuEventArgs(Selected >= 0 ? myItems[Selected] : null);
-				myHandlers[myKeyIndex](Sender ?? this, a);
+				handler(Sender ?? this, a);
 				if (a.Ignore)
 				{
 					e.Ignore = true;
@@ -272,7 +276,7 @@ public sealed class ListMenu : AnyMenu, IListMenu
 		// CtrlC: copy to clipboard
 		if (e.Key.IsCtrl(KeyCode.C) || e.Key.IsCtrl(KeyCode.Insert))
 		{
-			var box = (IListBox)e.Control;
+			var box = (IListBox)e.Control!;
 			Far.Api.CopyToClipboard(box.Text);
 			e.Ignore = true;
 			return;
@@ -427,7 +431,7 @@ public sealed class ListMenu : AnyMenu, IListMenu
 				dialog.AddText(1, 1, 1, info);
 
 			// items and filter
-			_box.ReplaceItems(myItems, _ii);
+			_box.ReplaceItems(myItems, _ii!);
 
 			// now we are ready to make sizes
 			MakeSizes(dialog, Far.Api.UI.WindowSize);

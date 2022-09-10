@@ -10,10 +10,10 @@ namespace FarNet.Works;
 
 abstract class ProxyAction : IModuleAction
 {
-	string _ClassName;
-	Type _ClassType;
+	string? _ClassName;
+	Type? _ClassType;
 	readonly Guid _Id;
-	Func<object> _Constructor;
+	Func<object>? _Constructor;
 	readonly ModuleManager _Manager;
 	protected ModuleActionAttribute ActionAttribute { get; }
 
@@ -21,7 +21,7 @@ abstract class ProxyAction : IModuleAction
 	public virtual Guid Id => _Id;
 	public virtual string Name => ActionAttribute.Name;
 	public IModuleManager Manager => _Manager;
-	internal string ClassName => _ClassType == null ? _ClassName : _ClassType.FullName;
+	internal string ClassName => _ClassType == null ? _ClassName! : _ClassType.FullName!;
 
 	// Abstract
 	public abstract ModuleItemKind Kind { get; }
@@ -63,11 +63,11 @@ abstract class ProxyAction : IModuleAction
 		_Manager = manager;
 		_ClassType = classType;
 
-		// module action attribure
-		ActionAttribute = (ModuleActionAttribute)Attribute.GetCustomAttribute(_ClassType, attributeType);
-		if (ActionAttribute is null)
+		var attr = Attribute.GetCustomAttribute(classType, attributeType);
+		if (attr is null)
 			throw new ModuleException($"{_ClassType.FullName} must use {attributeType.FullName}.");
 
+		ActionAttribute = (ModuleActionAttribute)attr;
 		if (!Guid.TryParse(ActionAttribute.Id, out _Id))
 			throw new ModuleException($"{_ClassType.FullName}: {attributeType.FullName} uses invalid GUID as Id.");
 
@@ -75,7 +75,7 @@ abstract class ProxyAction : IModuleAction
 
 		if (ActionAttribute.Resources)
 		{
-			string name = _Manager.GetString(ActionAttribute.Name);
+			var name = _Manager.GetString(ActionAttribute.Name);
 			if (!string.IsNullOrEmpty(name))
 				ActionAttribute.Name = name;
 		}
@@ -86,14 +86,14 @@ abstract class ProxyAction : IModuleAction
 		// resolve class name to its type
 		if (_ClassType is null)
 		{
-			_ClassType = _Manager.LoadAssembly().GetType(_ClassName, true, false);
+			_ClassType = _Manager.LoadAssembly().GetType(_ClassName!, true, false);
 			_ClassName = null;
 		}
 
 		// compile its default constructor
 		// Faster than Activator.CreateInstance for 2+ calls.
 		// For singletons still use Activator.CreateInstance.
-		_Constructor ??= Expression.Lambda<Func<object>>(Expression.New(_ClassType)).Compile();
+		_Constructor ??= Expression.Lambda<Func<object>>(Expression.New(_ClassType!)).Compile();
 
 		// get new instance
 		return _Constructor();
@@ -102,7 +102,7 @@ abstract class ProxyAction : IModuleAction
 	void Initialize()
 	{
 		if (string.IsNullOrEmpty(ActionAttribute.Name))
-			throw new ModuleException($"{_ClassType.FullName} must set action Name.");
+			throw new ModuleException($"{_ClassType!.FullName} must set action Name.");
 	}
 
 	internal void Invoking()

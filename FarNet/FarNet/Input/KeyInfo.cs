@@ -31,7 +31,7 @@ public sealed class KeyInfo : KeyData
 	public bool KeyDown { get; }
 
 	/// <inheritdoc/>
-	public override bool Equals(object obj)
+	public override bool Equals(object? obj)
 	{
 		return obj is KeyInfo that &&
 			VirtualKeyCode == that.VirtualKeyCode &&

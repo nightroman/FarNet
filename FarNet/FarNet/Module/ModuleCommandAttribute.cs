@@ -16,7 +16,7 @@ public sealed class ModuleCommandAttribute : ModuleActionAttribute
 	/// The mandatory not empty command prefix.
 	/// </summary>
 	/// <remarks>
-	/// This prefix is only a suggestion, the actual prefix is configured by a user.
+	/// This is the default prefix, the actual prefix may be configured by a user.
 	/// </remarks>
-	public string Prefix { get; set; }
+	public string Prefix { get; set; } = null!;
 }

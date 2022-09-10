@@ -128,7 +128,7 @@ public abstract class ILine
 	/// In the editor it should be called on the current line only.
 	/// "Words" to look for are defined by a regular expression.
 	/// </remarks>
-	public Match MatchCaret(Regex regex)
+	public Match? MatchCaret(Regex regex)
 	{
 		if (regex == null) throw new ArgumentNullException("regex");
 

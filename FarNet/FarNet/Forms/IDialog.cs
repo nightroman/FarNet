@@ -390,7 +390,7 @@ public abstract class IDialog
 
 	/// <include file='doc.xml' path='doc/Data/*'/>
 	public Hashtable Data { get => _Data ??= new Hashtable(); }
-	Hashtable _Data;
+	Hashtable? _Data;
 
 	/// <summary>
 	/// Makes the window current.
@@ -398,7 +398,7 @@ public abstract class IDialog
 	public void Activate()
 	{
 		var myId = Id;
-		for (int i = Far.Api.Window.Count - 1; i >= 0; i--)
+		for (int i = Far.Api.Window.Count; --i >= 0;)
 		{
 			if (Far.Api.Window.GetIdAt(i) == myId)
 			{

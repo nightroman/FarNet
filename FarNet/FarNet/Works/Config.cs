@@ -24,14 +24,14 @@ public class Config : ModuleSettings<Config.Data>
 		[XmlElement(ElementName = "Module")]
 		public List<Module> Modules { get; set; } = new();
 
-		public Module GetModule(string name)
+		public Module? GetModule(string name)
 		{
 			return Modules.Find(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
 		}
 
 		public void SetModule(Module value)
 		{
-			RemoveModule(value.Name);
+			RemoveModule(value.Name!);
 			Modules.Add(value);
 		}
 
@@ -44,10 +44,10 @@ public class Config : ModuleSettings<Config.Data>
 	public class Module
 	{
 		[XmlAttribute]
-		public string Name { get; set; }
+		public string? Name { get; set; }
 
 		[XmlAttribute]
-		public string Culture { get; set; }
+		public string? Culture { get; set; }
 
 		[XmlElement(ElementName = "Command")]
 		public List<Command> Commands { get; set; } = new();
@@ -71,48 +71,48 @@ public class Config : ModuleSettings<Config.Data>
 				Culture is null;
 		}
 
-		public Command GetCommand(Guid id)
+		public Command? GetCommand(Guid id)
 		{
 			return Commands.Find(x => x.Id == id);
 		}
 
-		public void SetCommand(Guid id, Command value)
+		public void SetCommand(Guid id, Command? value)
 		{
 			Commands.RemoveAll(x => x.Id == id);
 			if (value != null)
 				Commands.Add(value);
 		}
 
-		public Drawer GetDrawer(Guid id)
+		public Drawer? GetDrawer(Guid id)
 		{
 			return Drawers.Find(x => x.Id == id);
 		}
 
-		public void SetDrawer(Guid id, Drawer value)
+		public void SetDrawer(Guid id, Drawer? value)
 		{
 			Drawers.RemoveAll(x => x.Id == id);
 			if (value != null)
 				Drawers.Add(value);
 		}
 
-		public Editor GetEditor(Guid id)
+		public Editor? GetEditor(Guid id)
 		{
 			return Editors.Find(x => x.Id == id);
 		}
 
-		public void SetEditor(Guid id, Editor value)
+		public void SetEditor(Guid id, Editor? value)
 		{
 			Editors.RemoveAll(x => x.Id == id);
 			if (value != null)
 				Editors.Add(value);
 		}
 
-		public Tool GetTool(Guid id)
+		public Tool? GetTool(Guid id)
 		{
 			return Tools.Find(x => x.Id == id);
 		}
 
-		public void SetTool(Guid id, Tool value)
+		public void SetTool(Guid id, Tool? value)
 		{
 			Tools.RemoveAll(x => x.Id == id);
 			if (value != null)
@@ -126,7 +126,7 @@ public class Config : ModuleSettings<Config.Data>
 		public Guid Id { get; set; }
 
 		[XmlAttribute]
-		public string Prefix { get; set; }
+		public string? Prefix { get; set; }
 	}
 
 	public class Drawer
@@ -135,10 +135,10 @@ public class Config : ModuleSettings<Config.Data>
 		public Guid Id { get; set; }
 
 		[XmlAttribute]
-		public string Mask { get; set; }
+		public string? Mask { get; set; }
 
 		[XmlAttribute]
-		public string Priority { get; set; }
+		public string? Priority { get; set; }
 	}
 
 	public class Editor
@@ -147,7 +147,7 @@ public class Config : ModuleSettings<Config.Data>
 		public Guid Id { get; set; }
 
 		[XmlAttribute]
-		public string Mask { get; set; }
+		public string? Mask { get; set; }
 	}
 
 	public class Tool
@@ -156,6 +156,6 @@ public class Config : ModuleSettings<Config.Data>
 		public Guid Id { get; set; }
 
 		[XmlAttribute]
-		public string Options { get; set; }
+		public string? Options { get; set; }
 	}
 }

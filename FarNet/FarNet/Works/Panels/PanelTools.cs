@@ -37,7 +37,7 @@ public static class PanelTools
 
 		var view = panel.ViewMode;
 		var plan = panel.GetPlan(view) ?? panel.ViewPlan;
-		if (plan.Columns.Length != 2)
+		if (plan.Columns!.Length != 2)
 			return;
 
 		int width = panel.Window.Width - 2;
@@ -73,7 +73,7 @@ public static class PanelTools
 		var plan = panel.GetPlan(iViewMode) ?? panel.ViewPlan;
 
 		// drop widths of text columns
-		foreach (var c in plan.Columns)
+		foreach (var c in plan.Columns!)
 			if (c.Kind == "N" || c.Kind == "Z" || c.Kind == "O")
 				c.Width = 0;
 
@@ -106,7 +106,7 @@ public static class PanelTools
 		for (; ; menu.Items.Clear())
 		{
 			IPanel panel = Far.Api.Panel;
-			Panel module = null;
+			Panel? module = null;
 
 			// Push/Shelve
 			if (panel.IsPlugin)
@@ -145,8 +145,8 @@ public static class PanelTools
 			if (menu.Key.VirtualKeyCode == KeyCode.Delete)
 			{
 				// remove the shelved panel; do not remove module panels because of their shutdown bypassed
-				var si = (ShelveInfo)mi.Data;
-				if (si.CanRemove)
+				var si = (ShelveInfo?)mi.Data;
+				if (si!.CanRemove)
 					ShelveInfo.Stack.Remove(si);
 
 				continue;
@@ -164,7 +164,7 @@ public static class PanelTools
 			// Decrease/Increase column
 			if (mi.Text == sResizeColum1 || mi.Text == sResizeColum2)
 			{
-				ResizeColumn(module, mi.Text == sResizeColum2);
+				ResizeColumn(module!, mi.Text == sResizeColum2);
 				if (repeat)
 					continue;
 				else
@@ -174,7 +174,7 @@ public static class PanelTools
 			// Full screen
 			if (mi.Text == sSwitchFullScreen)
 			{
-				SwitchFullScreen(module);
+				SwitchFullScreen(module!);
 				if (repeat)
 					continue;
 				else
@@ -199,8 +199,8 @@ public static class PanelTools
 			}
 
 			// Pop/Unshelve
-			var shelve = (ShelveInfo)mi.Data;
-			shelve.Pop();
+			var shelve = (ShelveInfo?)mi.Data;
+			shelve!.Pop();
 			return;
 		}
 	}

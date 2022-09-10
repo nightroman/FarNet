@@ -1,6 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 6.0.15 =
+
+FarNet API uses nullable reference types, see
+https://github.com/nightroman/FarNet/discussions/33
+
 = 6.0.14 =
 
 Removed deprecated methods, see 6.0.13

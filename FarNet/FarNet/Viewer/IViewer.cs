@@ -67,7 +67,7 @@ public abstract class IViewer : IViewerBase
 	/// Gets or sets the window title.
 	/// Set it before opening.
 	/// </summary>
-	public abstract string Title { get; set; }
+	public abstract string? Title { get; set; }
 
 	/// <summary>
 	/// Opens the viewer.

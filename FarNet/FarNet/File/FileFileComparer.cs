@@ -12,7 +12,7 @@ namespace FarNet;
 public sealed class FileFileComparer : EqualityComparer<FarFile>
 {
 	/// <inheritdoc/>
-	public override bool Equals(FarFile x, FarFile y)
+	public override bool Equals(FarFile? x, FarFile? y)
 	{
 		return object.Equals(x, y);
 	}

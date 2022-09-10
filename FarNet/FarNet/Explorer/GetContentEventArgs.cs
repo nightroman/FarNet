@@ -40,12 +40,12 @@ public class GetContentEventArgs : ExplorerFileEventArgs
 	/// It can be a string or an object to be converted by <c>ToString</c>
 	/// or a collection of objects to be converted to lines by <c>ToString</c>.
 	/// </remarks>
-	public object UseText { get; set; }
+	public object? UseText { get; set; }
 
 	/// <summary>
 	/// Gets or set the actual source file name to be used instead.
 	/// </summary>
-	public string UseFileName { get; set; }
+	public string? UseFileName { get; set; }
 
 	/// <summary>
 	/// Gets or sets the file extension to use.
@@ -54,7 +54,7 @@ public class GetContentEventArgs : ExplorerFileEventArgs
 	/// It is used on opening the file in the editor.
 	/// The extension may be useful in order to get proper syntax highlighting with the <i>Colorer</i> plugin.
 	/// </remarks>
-	public string UseFileExtension { get; set; }
+	public string? UseFileExtension { get; set; }
 
 	/// <summary>
 	/// Gets or sets the code page to use in the editor.
@@ -68,5 +68,5 @@ public class GetContentEventArgs : ExplorerFileEventArgs
 	/// <summary>
 	/// Called when the editor is opened.
 	/// </summary>
-	public EventHandler EditorOpened { get; set; }
+	public EventHandler? EditorOpened { get; set; }
 }

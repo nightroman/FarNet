@@ -65,7 +65,7 @@ class ModuleCache
 	void Write()
 	{
 		// ensure the directory
-		Directory.CreateDirectory(Path.GetDirectoryName(_FileName));
+		Directory.CreateDirectory(Path.GetDirectoryName(_FileName)!);
 
 		// write the cache
 		using var stream = new FileStream(_FileName, FileMode.Create, FileAccess.Write, FileShare.None);
@@ -111,7 +111,7 @@ class ModuleCache
 			Write();
 	}
 
-	public ModuleManager Find(string assemblyPath)
+	public ModuleManager? Find(string assemblyPath)
 	{
 		return _Cache.TryGetValue(assemblyPath, out var manager) ? manager : null;
 	}

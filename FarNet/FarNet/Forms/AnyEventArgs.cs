@@ -11,14 +11,14 @@ namespace FarNet.Forms;
 /// </summary>
 public class AnyEventArgs : EventArgs
 {
-	/// <param name="control">Control involved into this event or null.</param>
-	public AnyEventArgs(IControl control)
+	/// <param name="control">The control related to this event.</param>
+	public AnyEventArgs(IControl? control)
 	{
 		Control = control;
 	}
 
 	/// <summary>
-	/// Event's control or null. See the constructor for details.
+	/// Gets the event control. See the constructor for details.
 	/// </summary>
-	public IControl Control { get; }
+	public IControl? Control { get; }
 }

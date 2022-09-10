@@ -15,43 +15,32 @@ namespace FarNet;
 /// <seealso cref="Forms.IComboBox"/>
 public sealed class SetItem : FarItem
 {
-	/// <summary>
-	/// Item text.
-	/// </summary>
-	public override string Text { get; set; }
+	/// <inheritdoc/>
+	public override string Text
+	{
+		get => _text ?? string.Empty;
+		set => _text = value;
+	}
+	string? _text;
 
-	/// <summary>
-	/// Item is checked.
-	/// </summary>
+	/// <inheritdoc/>
 	public override bool Checked { get; set; }
 
-	/// <summary>
-	/// Item is disabled. It cannot be selected.
-	/// </summary>
+	/// <inheritdoc/>
 	public override bool Disabled { get; set; }
 
-	/// <summary>
-	/// Item is shown, but cannot be selected.
-	/// </summary>
+	/// <inheritdoc/>
 	public override bool Grayed { get; set; }
 
-	/// <summary>
-	/// Item is hidden. It cannot be selected.
-	/// </summary>
+	/// <inheritdoc/>
 	public override bool Hidden { get; set; }
 
-	/// <summary>
-	/// Item is a separator. <see cref="Text"/>, if any, is shown center aligned.
-	/// </summary>
+	/// <inheritdoc/>
 	public override bool IsSeparator { get; set; }
 
-	/// <summary>
-	/// Any user data attached to the item.
-	/// </summary>
-	public override object Data { get; set; }
+	/// <inheritdoc/>
+	public override object? Data { get; set; }
 
-	/// <summary>
-	/// Called when a menu item is clicked.
-	/// </summary>
-	public override EventHandler<MenuEventArgs> Click { get; set; }
+	/// <inheritdoc/>
+	public override EventHandler<MenuEventArgs>? Click { get; set; }
 }

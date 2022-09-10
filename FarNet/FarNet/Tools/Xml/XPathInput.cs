@@ -18,12 +18,12 @@ public class XPathInput
 	/// <summary>
 	/// Gets the XPath expression.
 	/// </summary>
-	public string Expression { get; private set; }
+	public string Expression { get; }
 
 	/// <summary>
 	/// Gets the XPath variables.
 	/// </summary>
-	public Dictionary<string, object> Variables { get; private set; }
+	public Dictionary<string, object> Variables { get; }
 
 	/// <summary>
 	/// Parses the XPath file.
@@ -41,12 +41,15 @@ public class XPathInput
 		return Parse(Works.Kit.SplitLines(text));
 	}
 
+	XPathInput(string expression, Dictionary<string, object> variables)
+	{
+		Expression = expression;
+		Variables = variables;
+	}
+
 	static XPathInput Parse(string[] lines)
 	{
-		var result = new XPathInput
-		{
-			Variables = new Dictionary<string, object>()
-		};
+		var variables = new Dictionary<string, object>();
 
 		var regex1 = new Regex(@"^declare\s+variable\s+\$(\w+)\s+(.*)");
 		var regex2 = new Regex(@"^external[;\s]*$");
@@ -94,14 +97,14 @@ public class XPathInput
 				text = Far.Api.Input("Variable: " + name, "XPathVariable", "Input variable");
 				if (text == null)
 				{
-					result.Variables.Add(name, string.Empty);
+					variables.Add(name, string.Empty);
 					continue;
 				}
 
 				if (double.TryParse(text, out double adouble))
-					result.Variables.Add(name, adouble);
+					variables.Add(name, adouble);
 				else
-					result.Variables.Add(name, text);
+					variables.Add(name, text);
 				continue;
 			}
 
@@ -113,17 +116,17 @@ public class XPathInput
 			if (text.StartsWith("'", StringComparison.Ordinal) && text.EndsWith("'", StringComparison.Ordinal) ||
 				text.StartsWith("\"", StringComparison.Ordinal) && text.EndsWith("\"", StringComparison.Ordinal))
 			{
-				result.Variables.Add(name, text[1..^1]);
+				variables.Add(name, text[1..^1]);
 			}
 			else
 			{
 				if (!double.TryParse(text, out double adouble))
 					throw new InvalidOperationException("Not supported variable value.");
-				result.Variables.Add(name, adouble);
+				variables.Add(name, adouble);
 			}
 		}
 
-		result.Expression = string.Join(Environment.NewLine, lines, i, lines.Length - i);
-		return result;
+		var expression = string.Join(Environment.NewLine, lines, i, lines.Length - i);
+		return new XPathInput(expression, variables);
 	}
 }

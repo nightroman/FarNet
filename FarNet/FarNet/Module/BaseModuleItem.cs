@@ -72,7 +72,7 @@ public abstract class BaseModuleItem
 	/// either excluded from the project or not compiled and embedded into the output assembly.
 	/// </para>
 	/// </remarks>
-	public string GetString(string name)
+	public string? GetString(string name)
 	{
 		return Manager.GetString(name);
 	}
@@ -80,11 +80,8 @@ public abstract class BaseModuleItem
 	/// <summary>
 	/// Gets the module manager.
 	/// </summary>
-	public IModuleManager Manager
-	{
-		get { return _Manager ?? (_Manager = Far.Api.GetModuleManager(GetType())); }
-	}
-	IModuleManager _Manager;
+	public IModuleManager Manager => _Manager ??= Far.Api.GetModuleManager(GetType());
+	IModuleManager? _Manager;
 
 	/// <summary>
 	/// Formats the module help topic for <c>HelpTopic</c> properties of various UI classes.
@@ -115,7 +112,7 @@ public abstract class BaseModuleItem
 	/// </remarks>
 	public void ShowHelpTopic(string topic) //_220609_gf
 	{
-		var path = Path.GetDirectoryName(GetType().Assembly.Location);
+		var path = Path.GetDirectoryName(GetType().Assembly.Location)!;
 		Far.Api.ShowHelp(path, topic, HelpOptions.Path);
 	}
 }

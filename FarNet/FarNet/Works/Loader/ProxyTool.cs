@@ -9,8 +9,8 @@ namespace FarNet.Works;
 
 sealed class ProxyTool : ProxyAction, IModuleTool
 {
+	readonly EventHandler<ModuleToolEventArgs>? _Handler;
 	ModuleToolOptions _Options;
-	readonly EventHandler<ModuleToolEventArgs> _Handler;
 
 	ModuleToolAttribute Attribute => (ModuleToolAttribute)ActionAttribute;
 	public ModuleToolOptions DefaultOptions => Attribute.Options;
@@ -33,7 +33,8 @@ sealed class ProxyTool : ProxyAction, IModuleTool
 
 	internal ProxyTool(ModuleManager manager, Type classType)
 		: base(manager, classType, typeof(ModuleToolAttribute))
-	{ }
+	{
+	}
 
 	internal ProxyTool(ModuleManager manager, Guid id, ModuleToolAttribute attribute, EventHandler<ModuleToolEventArgs> handler)
 		: base(manager, id, (ModuleToolAttribute)attribute.Clone())
@@ -79,7 +80,7 @@ sealed class ProxyTool : ProxyAction, IModuleTool
 		}
 	}
 
-	internal Config.Tool SaveConfig()
+	internal Config.Tool? SaveConfig()
 	{
 		if (_Options == DefaultOptions)
 			return null;
@@ -87,20 +88,20 @@ sealed class ProxyTool : ProxyAction, IModuleTool
 		return new Config.Tool { Id = Id, Options = ((int)_Options).ToString() };
 	}
 
-	internal void LoadConfig(Config.Module config)
+	internal void LoadConfig(Config.Module? config)
 	{
-		Config.Tool data;
-		if (config != null && (data = config.GetTool(Id)) != null)
+		Config.Tool? data;
+		if (config is null || (data = config.GetTool(Id)) is null)
+		{
+			_Options = DefaultOptions;
+		}
+		else
 		{
 			var options = data.Options;
 			if (options is null)
 				_Options = DefaultOptions;
 			else
 				_Options = DefaultOptions & (ModuleToolOptions)int.Parse(options);
-		}
-		else
-		{
-			_Options = DefaultOptions;
 		}
 	}
 }

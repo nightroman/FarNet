@@ -11,11 +11,11 @@ namespace FarNet.Works;
 
 public abstract class Far2
 {
-	static Far2 _Host;
+	static Far2? _Host;
 
 	public static Far2 Api
 	{
-		get => _Host;
+		get => _Host!;
 		set => _Host = _Host == null ? value : throw new InvalidOperationException();
 	}
 

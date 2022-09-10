@@ -36,7 +36,7 @@ public struct XmlCData : IXmlSerializable
 	/// <summary>
 	/// .
 	/// </summary>
-	public XmlSchema GetSchema()
+	public XmlSchema? GetSchema()
 	{
 		return null;
 	}

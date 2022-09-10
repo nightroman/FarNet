@@ -2,6 +2,7 @@
 // FarNet plugin for Far Manager
 // Copyright (c) Roman Kuzmin
 
+using System;
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.XPath;
@@ -11,7 +12,7 @@ namespace FarNet.Tools;
 
 class XPathXsltContext : XsltContext
 {
-	Dictionary<string, XsltContextVariable> _variables;
+	Dictionary<string, XsltContextVariable>? _variables;
 
 	public XPathXsltContext(NameTable nt) : base(nt)
 	{
@@ -25,33 +26,29 @@ class XPathXsltContext : XsltContext
 
 	public override IXsltContextFunction ResolveFunction(string prefix, string name, XPathResultType[] ArgTypes)
 	{
-		switch (name)
+		return name switch
 		{
-			case "compare": return new XsltFunctionCompare();
-			case "equals": return new XsltFunctionEquals();
-			case "is-match": return new XsltFunctionIsMatch();
-#if DEBUG
-			case "to-upper": return new XsltFunctionToUpper();
-#endif
-		}
-		return null;
+			"compare" => new XsltFunctionCompare(),
+			"equals" => new XsltFunctionEquals(),
+			"is-match" => new XsltFunctionIsMatch(),
+			_ => throw new ArgumentException($"Unknown function '{name}'."),
+		};
 	}
 
 	public override IXsltContextVariable ResolveVariable(string prefix, string name)
 	{
 		if (!string.IsNullOrEmpty(prefix))
-			return null;
-		else if (_variables.TryGetValue(name, out XsltContextVariable variable))
+			throw new ArgumentException("Prefix is not supported");
+
+		if (_variables is not null && _variables.TryGetValue(name, out XsltContextVariable? variable))
 			return variable;
-		else
-			return null;
+
+		throw new ArgumentException($"Unknown variable '{name}'.");
 	}
 
 	public void AddVariable(string name, object value)
 	{
-		if (_variables == null)
-			_variables = new Dictionary<string, XsltContextVariable>();
-
+		_variables ??= new Dictionary<string, XsltContextVariable>();
 		_variables.Add(name, new XsltContextVariable(value));
 	}
 }

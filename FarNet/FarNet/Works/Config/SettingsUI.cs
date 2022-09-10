@@ -37,23 +37,25 @@ public static class SettingsUI
 		if (!menu.Show())
 			return;
 
-		var data = (KeyValuePair<IModuleManager, string>)menu.SelectedData;
+		var data = (KeyValuePair<IModuleManager, string>)menu.SelectedData!;
 
 		// obtain settings
 		var assembly = data.Key.LoadAssembly(false);
 		var settingsType = assembly.GetType(data.Value);
+		if (settingsType is null)
+			throw new Exception();
 		var info = settingsType.GetProperty("Default", BindingFlags.Static | BindingFlags.Public);
 
-		ModuleSettingsBase instance;
+		ModuleSettingsBase? instance;
 		if (info is null)
 		{
 			//! no `Default` is fine, use new
-			instance = (ModuleSettingsBase)Activator.CreateInstance(settingsType);
+			instance = (ModuleSettingsBase)Activator.CreateInstance(settingsType)!;
 		}
 		else
 		{
 			//! assert `Default`
-			instance = (ModuleSettingsBase)info.GetValue(null, null);
+			instance = info.GetValue(null, null) as ModuleSettingsBase;
 			if (instance is null || instance.GetType() != settingsType)
 				throw new ModuleException($"{settingsType.FullName}.Default must be assigned to the same type instance.");
 		}

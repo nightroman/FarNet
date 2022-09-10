@@ -22,7 +22,7 @@ public abstract class InteractiveEditor
 	readonly string OutputMark1;
 	readonly string OutputMark2;
 	readonly string OutputMark3;
-	HistoryNext Next;
+	HistoryNext? Next;
 
 	/// <summary>
 	/// New instance.
@@ -58,7 +58,7 @@ public abstract class InteractiveEditor
 	/// <summary>
 	/// Gets the current interactive area where the caret is.
 	/// </summary>
-	public InteractiveArea CommandArea()
+	public InteractiveArea? CommandArea()
 	{
 		var r = new InteractiveArea
 		{
@@ -341,7 +341,7 @@ public abstract class InteractiveEditor
 	}
 
 	// see KeyPressed remarks about selection
-	void Editor_KeyDown(object sender, KeyEventArgs e)
+	void Editor_KeyDown(object? sender, KeyEventArgs e)
 	{
 		if (!Editor.SelectionExists)
 			e.Ignore = KeyPressed(e.Key);
@@ -349,7 +349,7 @@ public abstract class InteractiveEditor
 
 	// Reset history navigation on changes. If we have started editing the
 	// command and accidentally hit [Up] then [Down] restores the changes.
-	void Editor_Changed(object sender, EditorChangedEventArgs e)
+	void Editor_Changed(object? sender, EditorChangedEventArgs e)
 	{
 		Next = null;
 	}

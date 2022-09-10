@@ -16,7 +16,7 @@ namespace FarNet;
 public abstract class ModuleSettingsBase
 {
 	readonly Type _type;
-	object _data;
+	object? _data;
 
 	/// <summary>
 	/// Gets the stored settings file path.
@@ -75,13 +75,13 @@ public abstract class ModuleSettingsBase
 	{
 		using var reader = File.OpenRead(FileName);
 		var serializer = new XmlSerializer(_type);
-		return serializer.Deserialize(reader);
+		return serializer.Deserialize(reader)!;
 	}
 
 	static void Save(string fileName, object data)
 	{
 		//! ensure the directory, e.g. FarNet\FarNet.xml in vanilla FarNet
-		Directory.CreateDirectory(Path.GetDirectoryName(fileName));
+		Directory.CreateDirectory(Path.GetDirectoryName(fileName)!);
 
 		// serialize
 		using var writer = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None);
@@ -130,7 +130,7 @@ public abstract class ModuleSettingsBase
 		GetOrReadData();
 
 		if (!File.Exists(FileName))
-			Save(FileName, _data);
+			Save(FileName, _data!);
 
 		//! use CodePage, we get XML from editor and possible BOM garbage on wrong CodePage is an issue
 		var editor = Far.Api.CreateEditor();
@@ -144,7 +144,7 @@ public abstract class ModuleSettingsBase
 			var xml = editor.GetText();
 			using var reader = new StringReader(xml);
 			var serializer = new XmlSerializer(_type);
-			var data = serializer.Deserialize(reader);
+			var data = serializer.Deserialize(reader)!;
 			ValidateData(data);
 			_data = data;
 		};
@@ -155,7 +155,7 @@ public abstract class ModuleSettingsBase
 			using var reader = XmlReader.Create(new StringReader(editor.GetText()), xmlSettings);
 			var docOld = new XmlDocument { PreserveWhitespace = false };
 			docOld.Load(reader);
-			var xmlOld = docOld.DocumentElement.OuterXml;
+			var xmlOld = docOld.DocumentElement!.OuterXml;
 
 			var serializer = new XmlSerializer(_type);
 			using var writer = new StringWriter();
@@ -163,14 +163,14 @@ public abstract class ModuleSettingsBase
 			serializer.Serialize(xmlWriter, _data);
 			var docNew = new XmlDocument { PreserveWhitespace = false };
 			docNew.LoadXml(writer.ToString());
-			var xmlNew = docNew.DocumentElement.OuterXml;
+			var xmlNew = docNew.DocumentElement!.OuterXml;
 
 			if (xmlOld == xmlNew)
 				return;
 
 			var answer = Far.Api.Message(
 				DifferentXml,
-				GetType().FullName,
+				GetType().FullName!,
 				MessageOptions.YesNo | MessageOptions.LeftAligned);
 
 			if (answer != 0)
@@ -180,7 +180,7 @@ public abstract class ModuleSettingsBase
 			var temp = Kit.TempFileName(null);
 			try
 			{
-				Save(temp, _data);
+				Save(temp, _data!);
 				var newText = File.ReadAllText(temp);
 				editor.SetText(newText);
 			}

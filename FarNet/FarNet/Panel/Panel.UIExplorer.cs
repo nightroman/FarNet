@@ -21,7 +21,7 @@ public partial class Panel
 	/// Calls <see cref="FarNet.Explorer.ExploreDirectory"/>.
 	/// </summary>
 	/// <param name="args">.</param>
-	public virtual Explorer UIExploreDirectory(ExploreDirectoryEventArgs args)
+	public virtual Explorer? UIExploreDirectory(ExploreDirectoryEventArgs args)
 	{
 		return Explorer.ExploreDirectory(args);
 	}
@@ -30,7 +30,7 @@ public partial class Panel
 	/// Calls <see cref="FarNet.Explorer.ExploreLocation"/>.
 	/// </summary>
 	/// <param name="args">.</param>
-	public virtual Explorer UIExploreLocation(ExploreLocationEventArgs args)
+	public virtual Explorer? UIExploreLocation(ExploreLocationEventArgs args)
 	{
 		return Explorer.ExploreLocation(args);
 	}
@@ -39,7 +39,7 @@ public partial class Panel
 	/// Calls <see cref="FarNet.Explorer.ExploreParent"/>.
 	/// </summary>
 	/// <param name="args">.</param>
-	public virtual Explorer UIExploreParent(ExploreParentEventArgs args)
+	public virtual Explorer? UIExploreParent(ExploreParentEventArgs args)
 	{
 		return Explorer.ExploreParent(args);
 	}
@@ -48,7 +48,7 @@ public partial class Panel
 	/// Calls <see cref="FarNet.Explorer.ExploreRoot"/>.
 	/// </summary>
 	/// <param name="args">.</param>
-	public virtual Explorer UIExploreRoot(ExploreRootEventArgs args)
+	public virtual Explorer? UIExploreRoot(ExploreRootEventArgs args)
 	{
 		return Explorer.ExploreRoot(args);
 	}
@@ -178,7 +178,7 @@ public partial class Panel
 	/// Calls <see cref="FarNet.Explorer.OpenFile"/>.
 	/// </summary>
 	/// <param name="args">.</param>
-	public virtual Explorer UIOpenFile(OpenFileEventArgs args)
+	public virtual Explorer? UIOpenFile(OpenFileEventArgs args)
 	{
 		return Explorer.OpenFile(args);
 	}

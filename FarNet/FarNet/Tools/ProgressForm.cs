@@ -33,18 +33,18 @@ public sealed class ProgressForm : Form, IProgress
 {
 	const int DefaultTimerInterval = 200;
 
-	readonly object _lock = new object();
+	readonly object _lock = new();
 	int _LineCount = 1;
 	bool _isCompleted;
 	bool _isCanceled;
 	bool _isClosed;
 
-	readonly Progress _progress = new Progress();
+	readonly Progress _progress = new();
 	readonly Thread _mainThread = Thread.CurrentThread;
-	readonly CancellationTokenSource _tokenSource = new CancellationTokenSource();
+	readonly CancellationTokenSource _tokenSource = new();
 
-	IText[] _textActivity;
-	IText _textProgress;
+	IText[]? _textActivity;
+	IText? _textProgress;
 
 	/// <summary>
 	/// New progress form.
@@ -75,10 +75,12 @@ public sealed class ProgressForm : Form, IProgress
 	/// </remarks>
 	public int LineCount
 	{
-		get { return _LineCount; }
+		get => _LineCount;
 		set
 		{
-			if (value < 1 || value > Progress.TEXT_HEIGHT) throw new ArgumentOutOfRangeException("value");
+			if (value < 1 || value > Progress.TEXT_HEIGHT)
+				throw new ArgumentOutOfRangeException(nameof(value));
+
 			_LineCount = value;
 		}
 	}
@@ -105,7 +107,7 @@ public sealed class ProgressForm : Form, IProgress
 	/// It may be used in order to confirm canceling.
 	/// Set <see cref="ClosingEventArgs.Ignore"/> to stop canceling.
 	/// </remarks>
-	public event EventHandler<ClosingEventArgs> Canceling;
+	public event EventHandler<ClosingEventArgs>? Canceling;
 
 	/// <summary>
 	/// Gets true if a closing method has been called or a user has canceled the form.
@@ -228,7 +230,7 @@ public sealed class ProgressForm : Form, IProgress
 	public bool Show(Task job)
 	{
 		// start watching the task
-		Exception error = null;
+		Exception? error = null;
 		Task.Run(async () =>
 		{
 			try
@@ -257,7 +259,7 @@ public sealed class ProgressForm : Form, IProgress
 		throw error;
 	}
 
-	void OnInitialized(object sender, InitializedEventArgs e)
+	void OnInitialized(object? sender, InitializedEventArgs e)
 	{
 		// do not show the form if it is already closed
 		if (_isClosed)
@@ -274,7 +276,7 @@ public sealed class ProgressForm : Form, IProgress
 		return args.Ignore;
 	}
 
-	void OnClosing(object sender, ClosingEventArgs e)
+	void OnClosing(object? sender, ClosingEventArgs e)
 	{
 		lock (_lock)
 		{
@@ -295,7 +297,7 @@ public sealed class ProgressForm : Form, IProgress
 		}
 	}
 
-	void OnTimer(object sender, EventArgs e)
+	void OnTimer(object? sender, EventArgs e)
 	{
 		// if the form is closed and the dialog is still alive then close the dialog directly
 		if (_isClosed)
@@ -305,10 +307,10 @@ public sealed class ProgressForm : Form, IProgress
 		}
 
 		// show
-		var lines = _progress.Build(out string progress, _textActivity.Length);
+		var lines = _progress.Build(out string progress, _textActivity!.Length);
 		for (int iLine = 0; iLine < _LineCount && iLine < lines.Length; ++iLine)
 			_textActivity[iLine].Text = lines[iLine];
-		_textProgress.Text = progress;
+		_textProgress!.Text = progress;
 	}
 
 	void Init()

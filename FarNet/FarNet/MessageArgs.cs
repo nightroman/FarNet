@@ -13,12 +13,12 @@ public class MessageArgs
 	/// <summary>
 	/// Message text.
 	/// </summary>
-	public string Text { get; set; }
+	public string? Text { get; set; }
 
 	/// <summary>
 	/// Message caption.
 	/// </summary>
-	public string Caption { get; set; }
+	public string? Caption { get; set; }
 
 	/// <summary>
 	/// Message options.
@@ -28,13 +28,13 @@ public class MessageArgs
 	/// <summary>
 	/// Message buttons. Not supported with <c>Gui*</c> options.
 	/// </summary>
-	public string[] Buttons { get; set; }
+	public string[]? Buttons { get; set; }
 
 	/// <summary>
 	/// <include file='doc.xml' path='doc/HelpTopic/*'/>
 	/// It is ignored in GUI and drawn messages.
 	/// </summary>
-	public string HelpTopic { get; set; }
+	public string? HelpTopic { get; set; }
 
 	/// <summary>
 	/// Message position.

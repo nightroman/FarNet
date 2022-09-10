@@ -53,19 +53,19 @@ public static class Log
 		writer.WriteLine(re.Replace(error.Message, Environment.NewLine));
 
 		// get an error record
-		if (error.GetType().FullName.StartsWith("System.Management.Automation.", StringComparison.Ordinal))
+		if (error.GetType().FullName!.StartsWith("System.Management.Automation.", StringComparison.Ordinal))
 		{
-			object errorRecord = GetPropertyValue(error, "ErrorRecord");
+			var errorRecord = GetPropertyValue(error, "ErrorRecord");
 			if (errorRecord != null)
 			{
 				// process the error record
-				object ii = GetPropertyValue(errorRecord, "InvocationInfo");
+				var ii = GetPropertyValue(errorRecord, "InvocationInfo");
 				if (ii != null)
 				{
-					object pm = GetPropertyValue(ii, "PositionMessage");
+					var pm = GetPropertyValue(ii, "PositionMessage");
 					if (pm != null)
 						//?? 090517 Added Trim(), because a position message starts with an empty line
-						writer.WriteLine(re.Replace(pm.ToString().Trim(), Environment.NewLine));
+						writer.WriteLine(re.Replace(pm.ToString()!.Trim(), Environment.NewLine));
 				}
 			}
 		}
@@ -97,7 +97,7 @@ public static class Log
 			return;
 
 		// find the last dot
-		string type = error.GetType().FullName;
+		string type = error.GetType().FullName!;
 		int i = type.LastIndexOf('.');
 
 		// system error: trace as error
@@ -113,7 +113,7 @@ public static class Log
 	}
 
 	// gets property value or null
-	static object GetPropertyValue(object obj, string name)
+	static object? GetPropertyValue(object obj, string name)
 	{
 		try
 		{

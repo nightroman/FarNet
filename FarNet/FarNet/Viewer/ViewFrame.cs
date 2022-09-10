@@ -43,7 +43,7 @@ public struct ViewFrame
 	}
 
 	/// <inheritdoc/>
-	public override bool Equals(object obj)
+	public override bool Equals(object? obj)
 	{
 		return obj != null && obj.GetType() == typeof(ViewFrame) && this == (ViewFrame)obj;
 	}

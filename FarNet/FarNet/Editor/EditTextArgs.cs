@@ -14,17 +14,17 @@ public class EditTextArgs
 	/// <summary>
 	/// Input text to be edited.
 	/// </summary>
-	public string Text { get; set; }
+	public string? Text { get; set; }
 
 	/// <summary>
 	/// Editor window title.
 	/// </summary>
-	public string Title { get; set; }
+	public string? Title { get; set; }
 
 	/// <summary>
 	/// File extension (for Colorer).
 	/// </summary>
-	public string Extension { get; set; }
+	public string? Extension { get; set; }
 
 	/// <summary>
 	/// Tells to open text locked for changes.
@@ -34,5 +34,5 @@ public class EditTextArgs
 	/// <summary>
 	/// Called when the editor is opened.
 	/// </summary>
-	public EventHandler EditorOpened { get; set; }
+	public EventHandler? EditorOpened { get; set; }
 }

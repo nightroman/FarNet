@@ -99,7 +99,7 @@ public class KeyData : KeyBase
 	}
 
 	/// <inheritdoc/>
-	public override bool Equals(object obj)
+	public override bool Equals(object? obj)
 	{
 		return obj is KeyData that && VirtualKeyCode == that.VirtualKeyCode && ControlKeyState == that.ControlKeyState;
 	}

@@ -44,23 +44,23 @@ public class SearchFileCommand
 	/// <summary>
 	/// Gets or sets the search filter.
 	/// </summary>
-	public ExplorerFilePredicate Filter { get; set; }
+	public ExplorerFilePredicate? Filter { get; set; }
 
 	/// <summary>
 	/// XPath expression file.
 	/// </summary>
-	public string XFile { get; set; }
+	public string? XFile { get; set; }
 
 	/// <summary>
 	/// XPath expression text.
 	/// </summary>
-	public string XPath { get; set; }
+	public string? XPath { get; set; }
 
 	/// <summary>
 	/// XPath variables.
 	/// </summary>
 	public Dictionary<string, object> XVariables => _XVariables ??= new Dictionary<string, object>();
-	Dictionary<string, object> _XVariables;
+	Dictionary<string, object>? _XVariables;
 
 	/// <summary>
 	/// New command with the search root.
@@ -120,19 +120,19 @@ public class SearchFileCommand
 
 	int ProcessedDirectoryCount { get; set; }
 
-	List<FarFile> _filesAsync;
+	List<FarFile>? _filesAsync;
 	readonly object _lock = new();
 
 	// Just turns stopping on.
-	void OnPanelClosed(object sender, EventArgs e)
+	void OnPanelClosed(object? sender, EventArgs e)
 	{
 		Stopping = true;
 	}
 
 	// Progress and state in the title.
-	void OnPanelIdled(object sender, EventArgs e)
+	void OnPanelIdled(object? sender, EventArgs e)
 	{
-		var panel = sender as SuperPanel;
+		var panel = (SuperPanel)sender!;
 
 		var files = ReadOutput();
 		if (files.Count > 0)
@@ -154,12 +154,12 @@ public class SearchFileCommand
 	}
 
 	// Asks a user to Close/Push/Stop/Cancel.
-	void OnPanelEscaping(object sender, KeyEventArgs e)
+	void OnPanelEscaping(object? sender, KeyEventArgs e)
 	{
 		if (!e.Key.Is())
 			return;
 
-		var panel = sender as SuperPanel;
+		var panel = (SuperPanel)sender!;
 
 		// empty
 		if (panel.Explorer.Cache.Count == 0)
@@ -270,7 +270,7 @@ public class SearchFileCommand
 	}
 
 	//! It returns immediately and then only iterates, do not try/catch in here.
-	IEnumerable<FarFile> DoInvoke(ProgressBox progress)
+	IEnumerable<FarFile> DoInvoke(ProgressBox? progress)
 	{
 		FoundFileCount = 0;
 		ProcessedDirectoryCount = 0;
@@ -283,7 +283,7 @@ public class SearchFileCommand
 			return DoInvokeDeep(progress, _RootExplorer, 0);
 	}
 
-	IEnumerable<FarFile> DoInvokeWide(ProgressBox progress)
+	IEnumerable<FarFile> DoInvokeWide(ProgressBox? progress)
 	{
 		var queue = new Queue<Explorer>();
 		queue.Enqueue(_RootExplorer);
@@ -328,14 +328,14 @@ public class SearchFileCommand
 				if (!Recurse || !file.IsDirectory)
 					continue;
 
-				Explorer explorer2 = SuperExplorer.ExploreSuperDirectory(explorer, ExplorerModes.Find, file);
+				var explorer2 = SuperExplorer.ExploreSuperDirectory(explorer, ExplorerModes.Find, file);
 				if (explorer2 != null)
 					queue.Enqueue(explorer2);
 			}
 		}
 	}
 
-	IEnumerable<FarFile> DoInvokeDeep(ProgressBox progress, Explorer explorer, int depth)
+	IEnumerable<FarFile> DoInvokeDeep(ProgressBox? progress, Explorer explorer, int depth)
 	{
 		// stop?
 		if (Stopping || progress != null && UIUserStop())
@@ -373,7 +373,7 @@ public class SearchFileCommand
 			if (Depth > 0 && depth >= Depth || !file.IsDirectory)
 				continue;
 
-			Explorer explorer2 = SuperExplorer.ExploreSuperDirectory(explorer, ExplorerModes.Find, file);
+			var explorer2 = SuperExplorer.ExploreSuperDirectory(explorer, ExplorerModes.Find, file);
 			if (explorer2 == null)
 				continue;
 
@@ -382,12 +382,12 @@ public class SearchFileCommand
 		}
 	}
 
-	IEnumerable<FarFile> DoInvokeXPath(ProgressBox progress)
+	IEnumerable<FarFile> DoInvokeXPath(ProgressBox? progress)
 	{
 		// object context
-		var objectContext = new XPathObjectContext()
+		var objectContext = new XPathObjectContext
 		{
-			Filter = this.Filter,
+			Filter = Filter,
 			IncrementDirectoryCount = delegate(int count)
 			{
 				ProcessedDirectoryCount += count;
@@ -413,7 +413,7 @@ public class SearchFileCommand
 		}
 
 		// XPath text
-		string xpath;
+		string? xpath;
 		if (string.IsNullOrEmpty(XFile))
 		{
 			xpath = XPath;
@@ -426,7 +426,7 @@ public class SearchFileCommand
 				xsltContext.AddVariable(kv.Key, kv.Value);
 		}
 
-		var expression = XPathExpression.Compile(xpath);
+		var expression = XPathExpression.Compile(xpath!);
 		if (expression.ReturnType != XPathResultType.NodeSet)
 			throw new InvalidOperationException("Invalid expression return type.");
 		expression.SetContext(xsltContext);
@@ -453,7 +453,7 @@ public class SearchFileCommand
 					break;
 
 				// found file or directory, ignore anything else
-				if (iterator.Current.UnderlyingObject is not SuperFile currentFile)
+				if (iterator.Current!.UnderlyingObject is not SuperFile currentFile)
 					continue;
 
 				// filter out directory, it is already done for files

@@ -20,7 +20,7 @@ public class SuperPanel : Panel
 {
 	const string Name = "Super Panel";
 	readonly object _lock = new();
-	List<FarFile> _idleFiles;
+	List<FarFile>? _idleFiles;
 
 	/// <summary>
 	/// Gets the super explorer of this panel.

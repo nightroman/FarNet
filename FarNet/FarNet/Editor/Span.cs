@@ -37,7 +37,7 @@ public struct Span
 	}
 
 	/// <inheritdoc/>
-	public override bool Equals(object obj)
+	public override bool Equals(object? obj)
 	{
 		return obj != null && obj.GetType() == typeof(Span) && this == (Span)obj;
 	}

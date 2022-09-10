@@ -55,7 +55,7 @@ public struct Point
 	}
 
 	/// <inheritdoc/>
-	public override bool Equals(object obj)
+	public override bool Equals(object? obj)
 	{
 		return obj != null && obj.GetType() == typeof(Point) && this == (Point)obj;
 	}

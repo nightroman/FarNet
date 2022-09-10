@@ -14,7 +14,7 @@ public abstract class AnyMenu : IAnyMenu
 
 	protected readonly List<KeyData> myKeys = new();
 
-	protected readonly List<EventHandler<MenuEventArgs>> myHandlers = new();
+	protected readonly List<EventHandler<MenuEventArgs>?> myHandlers = new();
 
 	protected int myKeyIndex = -1;
 
@@ -38,15 +38,15 @@ public abstract class AnyMenu : IAnyMenu
 
 	public IList<FarItem> Items { get { return myItems; } }
 
-	public object SelectedData { get { return Selected < 0 || Selected >= myItems.Count ? null : myItems[Selected].Data; } }
+	public object? SelectedData { get { return Selected < 0 || Selected >= myItems.Count ? null : myItems[Selected].Data; } }
 
-	public object Sender { get; set; }
+	public object? Sender { get; set; }
 
-	public string Bottom { get; set; }
+	public string? Bottom { get; set; }
 
-	public string HelpTopic { get; set; }
+	public string? HelpTopic { get; set; }
 
-	public string Title { get; set; }
+	public string? Title { get; set; }
 
 	public abstract bool Show();
 
@@ -63,7 +63,7 @@ public abstract class AnyMenu : IAnyMenu
 		return Add(text, null);
 	}
 
-	public FarItem Add(string text, EventHandler<MenuEventArgs> click)
+	public FarItem Add(string text, EventHandler<MenuEventArgs>? click)
 	{
 		var r = new SetItem()
 		{
@@ -92,7 +92,7 @@ public abstract class AnyMenu : IAnyMenu
 		AddKey(virtualKeyCode, controlKeyState, null);
 	}
 
-	public void AddKey(int virtualKeyCode, ControlKeyStates controlKeyState, EventHandler<MenuEventArgs> handler)
+	public void AddKey(int virtualKeyCode, ControlKeyStates controlKeyState, EventHandler<MenuEventArgs>? handler)
 	{
 		myKeys.Add(new KeyData(virtualKeyCode, controlKeyState));
 		myHandlers.Add(handler);

@@ -17,7 +17,7 @@ public class GetHistoryArgs
 	/// <summary>
 	/// Specifies the dialog history name.
 	/// </summary>
-	public string Name { get; set; }
+	public string? Name { get; set; }
 
 	/// <summary>
 	/// Tells to take the specified number of last items.

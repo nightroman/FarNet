@@ -17,5 +17,5 @@ public class ModuleSettingsArgs
 	/// <summary>
 	/// Tells to use the spefified file path.
 	/// </summary>
-	public string FileName { get; set; }
+	public string? FileName { get; set; }
 }

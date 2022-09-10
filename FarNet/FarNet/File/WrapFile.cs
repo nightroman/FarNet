@@ -31,13 +31,13 @@ public class WrapFile : FarFile
 	public override string Name => File.Name;
 
 	/// <inheritdoc/>
-	public override string Description => File.Description;
+	public override string? Description => File.Description;
 
 	/// <inheritdoc/>
-	public override string Owner => File.Owner;
+	public override string? Owner => File.Owner;
 
 	/// <inheritdoc/>
-	public override object Data => File.Data;
+	public override object? Data => File.Data;
 
 	/// <inheritdoc/>
 	public override DateTime CreationTime => File.CreationTime;
@@ -52,7 +52,7 @@ public class WrapFile : FarFile
 	public override long Length => File.Length;
 
 	/// <inheritdoc/>
-	public override ICollection Columns => File.Columns;
+	public override ICollection? Columns => File.Columns;
 
 	/// <inheritdoc/>
 	public override FileAttributes Attributes => File.Attributes;

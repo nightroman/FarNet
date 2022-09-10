@@ -41,7 +41,7 @@ public partial class Panel
 	/// <summary>
 	/// Called by <see cref="UIExplorerEntered"/>.
 	/// </summary>
-	public event EventHandler<ExplorerEnteredEventArgs> ExplorerEntered;
+	public event EventHandler<ExplorerEnteredEventArgs>? ExplorerEntered;
 
 	/// <summary>
 	/// It is called when a new explorer has been attached after one of the explore methods.
@@ -56,11 +56,8 @@ public partial class Panel
 	}
 
 	///
-	public static GetContentEventArgs WorksExportExplorerFile(Explorer explorer, Panel panel, ExplorerModes mode, FarFile file, string fileName)
+	public static GetContentEventArgs? WorksExportExplorerFile(Explorer explorer, Panel panel, ExplorerModes mode, FarFile file, string fileName)
 	{
-		if (explorer == null) throw new ArgumentNullException("explorer");
-		if (panel == null) throw new ArgumentNullException("panel");
-
 		if (!explorer.CanGetContent)
 			return null;
 
@@ -76,7 +73,7 @@ public partial class Panel
 			return args;
 
 		// export text
-		string text = args.UseText as string;
+		var text = args.UseText as string;
 		if (text == null)
 		{
 			if (args.UseText is IEnumerable collection)
@@ -319,7 +316,7 @@ public partial class Panel
 	/// If <see cref="PanelEventArgs.Ignore"/> = true then the core does nothing.
 	/// Otherwise it calls <see cref="UIEscape"/> to close the panel.
 	/// </remarks>
-	public event EventHandler<KeyEventArgs> Escaping;
+	public event EventHandler<KeyEventArgs>? Escaping;
 
 	///
 	public void WorksEscaping(KeyEventArgs e)
@@ -649,7 +646,7 @@ public partial class Panel
 
 	/// <include file='doc.xml' path='doc/Timer/*'/>
 	/// <seealso cref="IsTimerUpdate"/>
-	public event EventHandler Timer;
+	public event EventHandler? Timer;
 
 	/// <include file='doc.xml' path='doc/TimerInterval/*'/>
 	/// <seealso cref="IsTimerUpdate"/>
@@ -664,7 +661,7 @@ public partial class Panel
 	/// </remarks>
 	public virtual void UITimer()
 	{
-		Timer?.Invoke(this, null);
+		Timer?.Invoke(this, EventArgs.Empty);
 	}
 
 	/// <summary>
@@ -673,7 +670,7 @@ public partial class Panel
 	/// <remarks>
 	/// Set <see cref="PanelEventArgs.Ignore"/> = true if the module processes the key itself.
 	/// </remarks>
-	public event EventHandler<KeyEventArgs> KeyPressed;
+	public event EventHandler<KeyEventArgs>? KeyPressed;
 
 	///
 	public void WorksKeyPressed(KeyEventArgs e)
@@ -688,7 +685,6 @@ public partial class Panel
 	/// <returns>True if the key has been processed.</returns>
 	public virtual bool UIKeyPressed(KeyInfo key)
 	{
-		if (key == null) throw new ArgumentNullException("key");
 		switch (key.VirtualKeyCode)
 		{
 			case KeyCode.Enter:

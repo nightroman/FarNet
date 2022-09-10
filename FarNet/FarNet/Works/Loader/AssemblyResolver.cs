@@ -20,11 +20,11 @@ public static class AssemblyResolver
 {
 	const int MaxLastRoots = 4;
 	static readonly LinkedList<string> s_lastRoots = new();
-	static readonly Dictionary<string, object> s_cache = new(StringComparer.OrdinalIgnoreCase);
+	static readonly Dictionary<string, object?> s_cache = new(StringComparer.OrdinalIgnoreCase);
 
 	static AssemblyResolver()
 	{
-		var root = Path.GetDirectoryName(typeof(AssemblyResolver).Assembly.Location);
+		var root = Path.GetDirectoryName(typeof(AssemblyResolver).Assembly.Location)!;
 		AddAssemblyCache(root);
 		Log.Source.TraceInformation("Assembly cache {0}", s_cache.Count);
 	}
@@ -56,7 +56,7 @@ public static class AssemblyResolver
 
 	static void AddRoot(string name)
 	{
-		if (s_lastRoots.Count > 0 && s_lastRoots.First.Value == name)
+		if (s_lastRoots.First?.Value == name)
 			return;
 
 		s_lastRoots.Remove(name);
@@ -65,9 +65,9 @@ public static class AssemblyResolver
 			s_lastRoots.RemoveLast();
 	}
 
-	static Assembly ResolvePowerShellFar(string root, ResolveEventArgs args)
+	static Assembly? ResolvePowerShellFar(string root, ResolveEventArgs args)
 	{
-		var caller = args.RequestingAssembly.FullName;
+		var caller = args.RequestingAssembly!.FullName!;
 		var dllName = AssemblyNameToDllName(args.Name);
 
 		if (caller.StartsWith("System.Management.Automation") || caller.StartsWith("PowerShellFar"))
@@ -110,12 +110,12 @@ public static class AssemblyResolver
 	// examples used to have issues:
 	// 1) Microsoft.Bcl.AsyncInterfaces in Lib\FarNet.CsvHelper, Modules\PowerShellFar
 	// 2) System.Data.OleDb.dll in Lib\FarNet.FSharp.Charting (2) Modules\FolderChart (2) Modules\PowerShellFar (2)
-	public static Assembly ResolveAssembly(string name, ResolveEventArgs args)
+	public static Assembly? ResolveAssembly(string name, ResolveEventArgs args)
 	{
 		Log.Source.TraceInformation("LoadFrom {0}", name);
 
 		// skip missing in FarNet
-		if (!s_cache.TryGetValue(name, out object value))
+		if (!s_cache.TryGetValue(name, out object? value))
 			return null;
 
 		// unique in FarNet, load once
@@ -130,13 +130,13 @@ public static class AssemblyResolver
 
 			var location = assembly.Location;
 			if (IsRoot(location))
-				AddRoot(Path.GetDirectoryName(location));
+				AddRoot(Path.GetDirectoryName(location)!);
 
 			return assembly;
 		}
 
-		string dllName = null;
-		if (!args.RequestingAssembly.IsDynamic)
+		string? dllName = null;
+		if (!args.RequestingAssembly!.IsDynamic)
 		{
 			var callerFile = args.RequestingAssembly.Location;
 
@@ -146,7 +146,7 @@ public static class AssemblyResolver
 				return ResolvePowerShellFar(callerFile[..(index + 14)], args);
 
 			// case: same folder as the caller
-			var callerRoot = Path.GetDirectoryName(callerFile);
+			var callerRoot = Path.GetDirectoryName(callerFile)!;
 			dllName = AssemblyNameToDllName(args.Name);
 			var path = callerRoot + "\\" + dllName;
 			if (File.Exists(path))

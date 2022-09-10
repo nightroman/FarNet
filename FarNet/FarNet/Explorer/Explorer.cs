@@ -55,14 +55,10 @@ public abstract class Explorer
 	/// </summary>
 	public string Location
 	{
-		get { return _Location ?? string.Empty; }
-		set
-		{
-			if (_Location != null) throw new InvalidOperationException("It is set once on creation.");
-			_Location = value;
-		}
+		get => _Location ?? string.Empty;
+		set => _Location = _Location == null ? value : throw new InvalidOperationException("It is set once on creation.");
 	}
-	string _Location;
+	string? _Location;
 
 	/// <summary>
 	/// Gets or sets the explorer function flags.
@@ -206,7 +202,7 @@ public abstract class Explorer
 	/// </para>
 	/// <include file='doc.xml' path='doc/ExplorerModes/*'/>
 	/// </remarks>
-	public virtual Explorer ExploreDirectory(ExploreDirectoryEventArgs args) { return null; }
+	public virtual Explorer? ExploreDirectory(ExploreDirectoryEventArgs args) { return null; }
 
 	/// <summary>
 	/// Returns a new location explorer or null. It must not return itself.
@@ -217,7 +213,7 @@ public abstract class Explorer
 	/// Note that this method works with pure paths, i.e. files without attached <see cref="FarFile.Data"/>.
 	/// <include file='doc.xml' path='doc/ExplorerModes/*'/>
 	/// </remarks>
-	public virtual Explorer ExploreLocation(ExploreLocationEventArgs args) { return null; }
+	public virtual Explorer? ExploreLocation(ExploreLocationEventArgs args) { return null; }
 
 	/// <summary>
 	/// Returns a new parent explorer or null. It must not return itself.
@@ -226,7 +222,7 @@ public abstract class Explorer
 	/// <remarks>
 	/// <include file='doc.xml' path='doc/ExplorerModes/*'/>
 	/// </remarks>
-	public virtual Explorer ExploreParent(ExploreParentEventArgs args) { return null; }
+	public virtual Explorer? ExploreParent(ExploreParentEventArgs args) { return null; }
 
 	/// <summary>
 	/// Returns a new root explorer or null. It must not return itself.
@@ -235,7 +231,7 @@ public abstract class Explorer
 	/// <remarks>
 	/// <include file='doc.xml' path='doc/ExplorerModes/*'/>
 	/// </remarks>
-	public virtual Explorer ExploreRoot(ExploreRootEventArgs args) { return null; }
+	public virtual Explorer? ExploreRoot(ExploreRootEventArgs args) { return null; }
 
 	/// <summary>
 	/// Exports the file content to a file or returns it as text.
@@ -356,7 +352,7 @@ public abstract class Explorer
 	/// The core does nothing after the call if it returns null.
 	/// Otherwise it opens the returned explorer.
 	/// </remarks>
-	public virtual Explorer OpenFile(OpenFileEventArgs args) { return null; }
+	public virtual Explorer? OpenFile(OpenFileEventArgs args) { return null; }
 
 	/// <summary>
 	/// Renames the file.
@@ -410,10 +406,10 @@ public abstract class Explorer
 	/// </remarks>
 	public IEqualityComparer<FarFile> FileComparer
 	{
-		get { return _FileComparer ?? (_FileComparer = new FileNameComparer()); }
-		set { _FileComparer = value ?? throw new ArgumentNullException("value"); }
+		get => _FileComparer ??= new FileNameComparer();
+		set => _FileComparer = value ?? throw new ArgumentNullException(nameof(value));
 	}
-	IEqualityComparer<FarFile> _FileComparer;
+	IEqualityComparer<FarFile>? _FileComparer;
 
 	/// <summary>
 	/// Opens the explorer in a panel.

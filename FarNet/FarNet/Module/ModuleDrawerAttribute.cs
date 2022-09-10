@@ -13,7 +13,12 @@ namespace FarNet;
 public sealed class ModuleDrawerAttribute : ModuleActionAttribute
 {
 	/// <include file='doc.xml' path='doc/FileMask/*'/>
-	public string Mask { get; set; }
+	public string Mask
+	{
+		get => _mask ?? string.Empty;
+		set => _mask = value;
+	}
+	string? _mask;
 
 	/// <summary>
 	/// Color priority.

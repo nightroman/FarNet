@@ -32,7 +32,7 @@ public sealed class FileNameComparer : EqualityComparer<FarFile>
 	}
 
 	/// <inheritdoc/>
-	public override bool Equals(FarFile x, FarFile y)
+	public override bool Equals(FarFile? x, FarFile? y)
 	{
 		if (x == null || y == null)
 			return x == null && y == null;

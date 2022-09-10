@@ -9,8 +9,8 @@ namespace FarNet.Works;
 
 sealed class ProxyDrawer : ProxyAction, IModuleDrawer
 {
-	readonly Action<IEditor, ModuleDrawerEventArgs> _Handler;
-	string _Mask;
+	readonly Action<IEditor, ModuleDrawerEventArgs>? _Handler;
+	string _Mask = string.Empty;
 	int _Priority;
 
 	ModuleDrawerAttribute Attribute => (ModuleDrawerAttribute)ActionAttribute;
@@ -23,8 +23,6 @@ sealed class ProxyDrawer : ProxyAction, IModuleDrawer
 		Attribute.Mask = reader.ReadString();
 		// [2]
 		Attribute.Priority = reader.ReadInt32();
-
-		Init();
 	}
 
 	internal sealed override void WriteCache(BinaryWriter writer)
@@ -40,15 +38,12 @@ sealed class ProxyDrawer : ProxyAction, IModuleDrawer
 	internal ProxyDrawer(ModuleManager manager, Type classType)
 		: base(manager, classType, typeof(ModuleDrawerAttribute))
 	{
-		Init();
 	}
 
 	public ProxyDrawer(ModuleManager manager, Guid id, ModuleDrawerAttribute attribute, Action<IEditor, ModuleDrawerEventArgs> handler)
-		: base(manager, id, (attribute == null ? null : (ModuleDrawerAttribute)attribute.Clone()))
+		: base(manager, id, (ModuleDrawerAttribute)attribute.Clone())
 	{
 		_Handler = handler;
-
-		Init();
 	}
 
 	public Action<IEditor, ModuleDrawerEventArgs> CreateHandler()
@@ -78,20 +73,14 @@ sealed class ProxyDrawer : ProxyAction, IModuleDrawer
 		set => _Priority = value;
 	}
 
-	void Init()
-	{
-		if (Attribute.Mask == null)
-			Attribute.Mask = string.Empty;
-	}
-
-	internal Config.Drawer SaveConfig()
+	internal Config.Drawer? SaveConfig()
 	{
 		var data = new Config.Drawer();
 		bool save = false;
 
 		if (_Mask != Attribute.Mask)
 		{
-			data.Mask = _Mask;
+			data.Mask = _Mask!;
 			save = true;
 		}
 
@@ -110,18 +99,18 @@ sealed class ProxyDrawer : ProxyAction, IModuleDrawer
 		return null;
 	}
 
-	internal void LoadConfig(Config.Module config)
+	internal void LoadConfig(Config.Module? config)
 	{
-		Config.Drawer data;
-		if (config != null && (data = config.GetDrawer(Id)) != null)
-		{
-			_Mask = data.Mask ?? Attribute.Mask;
-			_Priority = data.Priority is null ? Attribute.Priority : int.Parse(data.Priority);
-		}
-		else
+		Config.Drawer? data;
+		if (config is null || (data = config.GetDrawer(Id)) is null)
 		{
 			_Mask = Attribute.Mask;
 			_Priority = Attribute.Priority;
+		}
+		else
+		{
+			_Mask = data.Mask ?? Attribute.Mask;
+			_Priority = data.Priority is null ? Attribute.Priority : int.Parse(data.Priority);
 		}
 	}
 }

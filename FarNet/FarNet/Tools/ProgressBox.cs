@@ -23,13 +23,13 @@ namespace FarNet.Tools;
 public sealed class ProgressBox : IProgress, IDisposable
 {
 	IntPtr _savedScreen;
-	readonly Progress _progress = new Progress();
+	readonly Progress _progress = new();
 	readonly string _title = Far.Api.UI.WindowTitle;
 
 	/// <summary>
 	/// Gets or sets the progress box title.
 	/// </summary>
-	public string Title { get; set; }
+	public string? Title { get; set; }
 
 	/// <summary>
 	/// New progress box.

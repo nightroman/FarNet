@@ -16,11 +16,11 @@ class XPathObjectContext
 	public NameTable NameTable => _nameTable;
 
 	///
-	public ExplorerFilePredicate Filter { get; set; }
+	public ExplorerFilePredicate? Filter { get; set; }
 
 	///
-	public Predicate<object> Stopping { get; set; }
+	public Predicate<object>? Stopping { get; set; }
 
 	///
-	public Action<int> IncrementDirectoryCount { get; set; }
+	public Action<int>? IncrementDirectoryCount { get; set; }
 }

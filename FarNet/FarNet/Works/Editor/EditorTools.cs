@@ -51,7 +51,7 @@ public static class EditorTools
 	}
 
 	// Gets the edit text result. May throw.
-	static string EditTextResult(IEditor editor, EditTextArgs args)
+	static string? EditTextResult(IEditor editor, EditTextArgs args)
 	{
 		try
 		{
@@ -82,7 +82,7 @@ public static class EditorTools
 		}
 	}
 
-	public static string EditText(EditTextArgs args)
+	public static string? EditText(EditTextArgs args)
 	{
 		if (args == null) throw new ArgumentNullException(nameof(args));
 
@@ -91,7 +91,7 @@ public static class EditorTools
 		return EditTextResult(editor, args);
 	}
 
-	public static async Task<string> EditTextAsync(EditTextArgs args)
+	public static async Task<string?> EditTextAsync(EditTextArgs args)
 	{
 		if (args == null) throw new ArgumentNullException(nameof(args));
 
@@ -140,7 +140,7 @@ public static class EditorTools
 		}
 
 		if (menu.Show())
-			((IEditor)menu.SelectedData).Activate();
+			((IEditor)menu.SelectedData!).Activate();
 	}
 
 	public static void ShowViewersMenu()
@@ -161,6 +161,6 @@ public static class EditorTools
 		}
 
 		if (menu.Show())
-			((IViewer)menu.SelectedData).Activate();
+			((IViewer)menu.SelectedData!).Activate();
 	}
 }

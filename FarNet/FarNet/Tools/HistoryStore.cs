@@ -34,7 +34,7 @@ public abstract class HistoryStore
 	/// Updates the input lines and returns updated.
 	/// </summary>
 	/// <param name="lines">The text lines to update.</param>
-	public virtual string[] Update(string[] lines)
+	public virtual string[] Update(string[]? lines)
 	{
 		throw new NotImplementedException();
 	}

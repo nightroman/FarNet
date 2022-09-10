@@ -8,6 +8,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 
 namespace FarNet.Tools;
@@ -19,20 +20,20 @@ class XPathObjectNode
 	readonly XPathObjectContext _context;
 	readonly object _target;
 	readonly string _name;
-	readonly XPathObjectNode _parent;
+	readonly XPathObjectNode? _parent;
 	// Sibling list, elements of the parent (it keeps the weak reference alive).
-	readonly IList<XPathObjectNode> _siblings;
+	readonly IList<XPathObjectNode>? _siblings;
 
 	// Index of this node in the sibling list, needed for MoveToNext, MoveToPrevious.
 	readonly int _index;
-	IList<XmlAttributeInfo> _attributes;
+	IList<XmlAttributeInfo>? _attributes;
 	readonly WeakReference _elements = new(null);
 
 	public XPathObjectNode(XPathObjectContext context, object target) : this(context, target, null, null, null, -1)
 	{
 	}
 
-	XPathObjectNode(XPathObjectContext context, object target, string name, XPathObjectNode parent, IList<XPathObjectNode> siblings, int index)
+	XPathObjectNode(XPathObjectContext context, object target, string? name, XPathObjectNode? parent, IList<XPathObjectNode>? siblings, int index)
 	{
 		_context = context ?? throw new ArgumentNullException(nameof(context));
 		_target = target ?? throw new ArgumentNullException(nameof(target));
@@ -63,9 +64,9 @@ class XPathObjectNode
 
 	public string Name => _name;
 
-	public XPathObjectNode Parent => _parent;
+	public XPathObjectNode? Parent => _parent;
 
-	public string Value
+	public string? Value
 	{
 		get
 		{
@@ -83,7 +84,7 @@ class XPathObjectNode
 			if (_attributes == null)
 				ActivateAttributes();
 
-			return _attributes.Count > 0;
+			return _attributes!.Count > 0;
 		}
 	}
 
@@ -91,7 +92,7 @@ class XPathObjectNode
 	{
 		get
 		{
-			var elements = ((IList<XPathObjectNode>)_elements.Target) ?? ActivateElements();
+			var elements = (_elements.Target as IList<XPathObjectNode>) ?? ActivateElements();
 			return elements.Count > 0 || HasText;
 		}
 	}
@@ -113,7 +114,7 @@ class XPathObjectNode
 			if (_attributes == null)
 				ActivateAttributes();
 
-			return _attributes;
+			return _attributes!;
 		}
 	}
 
@@ -122,7 +123,7 @@ class XPathObjectNode
 		if (_attributes == null)
 			ActivateAttributes();
 
-		foreach (var it in _attributes)
+		foreach (var it in _attributes!)
 			if (it.Name == name)
 				return CultureSafeToString(it.Getter(_target)) ?? string.Empty;
 
@@ -133,17 +134,17 @@ class XPathObjectNode
 	{
 		get
 		{
-			return ((IList<XPathObjectNode>)_elements.Target) ?? ActivateElements();
+			return (_elements.Target as IList<XPathObjectNode>) ?? ActivateElements();
 		}
 	}
 
-	public void AddSpecialName(string key, string value)
+	public void AddSpecialName(string key, string? value)
 	{
 		if (_attributes == null)
 			ActivateAttributes();
 
 		// clone if read only
-		if (_attributes.IsReadOnly)
+		if (_attributes!.IsReadOnly)
 			_attributes = new List<XmlAttributeInfo>(_attributes);
 
 		_attributes.Add(new XmlAttributeInfo("*" + key, (object v) => value));
@@ -151,7 +152,7 @@ class XPathObjectNode
 
 	void ActivateAttributes() //?? lock was used, why?
 	{
-		if (_context.Stopping != null && _context.Stopping(null))
+		if (_context.Stopping != null && _context.Stopping(EventArgs.Empty))
 		{
 			//! ensure at least dummy, a caller expects not null
 			_attributes = _emptyAttributes;
@@ -187,12 +188,11 @@ class XPathObjectNode
 
 	IList<XPathObjectNode> ActivateElements() //?? lock was used, why?
 	{
-		if (_context.Stopping != null && _context.Stopping(null))
+		if (_context.Stopping != null && _context.Stopping(EventArgs.Empty))
 			return _emptyElements;
 
 		{
-			var elements = (IList<XPathObjectNode>)_elements.Target;
-			if (elements != null)
+			if (_elements.Target is IList<XPathObjectNode> elements)
 				return elements;
 		}
 
@@ -289,7 +289,7 @@ class XPathObjectNode
 		foreach (PropertyInfo pi in _target.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
 		{
 			// get the value
-			object value = pi.GetValue(_target, null);
+			var value = pi.GetValue(_target, null);
 			if (value == null)
 				continue;
 
@@ -300,7 +300,7 @@ class XPathObjectNode
 
 			if (attrs != null)
 			{
-				foreach (Attribute a in attrs)
+				foreach (var a in attrs.Cast<Attribute>())
 				{
 					if (a is System.Xml.Serialization.XmlIgnoreAttribute)
 					{
@@ -314,7 +314,7 @@ class XPathObjectNode
 				continue; //rvk: It was break == bug?
 
 			// now handle the values
-			string str = CultureSafeToString(value);
+			var str = CultureSafeToString(value);
 
 			if (str != null)
 				_attributes.Add(new XmlAttributeInfo(GetAtomicString(pi.Name), (object v) => str));
@@ -351,7 +351,7 @@ class XPathObjectNode
 
 		var elements = new List<XPathObjectNode>();
 
-		Explorer explorer;
+		Explorer? explorer;
 		if (file.Explorer.CanExploreLocation)
 		{
 			var argsExplore = new ExploreLocationEventArgs(ExplorerModes.Find, file.File.Name);
@@ -390,7 +390,7 @@ class XPathObjectNode
 		return _context.NameTable.Get(array) ?? _context.NameTable.Add(array);
 	}
 
-	internal static string CultureSafeToString(object value)
+	internal static string? CultureSafeToString(object? value)
 	{
 		// string
 		if (value is string asString)

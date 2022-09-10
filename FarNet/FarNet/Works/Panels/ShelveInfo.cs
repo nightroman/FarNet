@@ -16,12 +16,12 @@ public abstract class ShelveInfo
 	static readonly List<ShelveInfo> _Stack = new();
 
 	//! PSF test.
-	public string[] GetSelectedNames() => _SelectedNames;
-	string[] _SelectedNames;
+	public string[]? GetSelectedNames() => _SelectedNames;
+	string[]? _SelectedNames;
 
 	//! PSF test.
-	public int[] GetSelectedIndexes() => _SelectedIndexes;
-	int[] _SelectedIndexes;
+	public int[]? GetSelectedIndexes() => _SelectedIndexes;
+	int[]? _SelectedIndexes;
 
 	public abstract bool CanRemove { get; }
 

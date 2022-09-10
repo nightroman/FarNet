@@ -14,7 +14,7 @@ namespace FarNet.Works;
 public static class Kit
 {
 	// Joins two strings with a space. Either string may be null or empty.
-	public static string JoinText(string head, string tail)
+	public static string JoinText(string? head, string? tail)
 	{
 		if (string.IsNullOrEmpty(head))
 			return tail ?? string.Empty;
@@ -32,7 +32,7 @@ public static class Kit
 	}
 
 	// %TEMP%\GUID.tmp or GUID.extension
-	public static string TempFileName(string extension)
+	public static string TempFileName(string? extension)
 	{
 		var name = Guid.NewGuid().ToString("N");
 		if (string.IsNullOrEmpty(extension))
@@ -64,7 +64,7 @@ public static class Kit
 		if (lines == null) throw new ArgumentNullException("lines");
 		if (message == null) throw new ArgumentNullException("message");
 
-		Regex format = null;
+		Regex? format = null;
 		foreach (var line in Kit.SplitLines(message.Replace('\t', ' ')))
 		{
 			if (line.Length <= width)
@@ -121,17 +121,16 @@ public static class Kit
 		if (string.IsNullOrEmpty(name))
 			return true;
 
-		if (_invalidName == null)
-			_invalidName = new Regex("[" + Regex.Escape(new string(Path.GetInvalidFileNameChars())) + @"]|[\s.]$|^(?:CON|PRN|AUX|NUL|(?:COM|LPT)[1-9])$", RegexOptions.IgnoreCase);
+		_invalidName ??= new Regex("[" + Regex.Escape(new string(Path.GetInvalidFileNameChars())) + @"]|[\s.]$|^(?:CON|PRN|AUX|NUL|(?:COM|LPT)[1-9])$", RegexOptions.IgnoreCase);
 
 		return _invalidName.IsMatch(name);
 	}
-	static Regex _invalidName;
+	static Regex? _invalidName;
 
 	// Interactively fixes an invalid file name.
 	// name An invalid file name.
 	// returns A valid file name or null if canceled.
-	public static string FixInvalidFileName(string name)
+	public static string? FixInvalidFileName(string name)
 	{
 		for (; ; )
 		{

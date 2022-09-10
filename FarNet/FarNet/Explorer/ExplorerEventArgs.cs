@@ -25,7 +25,7 @@ public abstract class ExplorerEventArgs : EventArgs
 	/// <summary>
 	/// Gets or sets the parameter to be used by the explorer.
 	/// </summary>
-	public object Parameter { get; set; }
+	public object? Parameter { get; set; }
 
 	/// <summary>
 	/// Gets or sets the job result.
@@ -40,22 +40,22 @@ public abstract class ExplorerEventArgs : EventArgs
 	/// On the first call an explorer may ask a user for extra options and keep this information in here.
 	/// On the next calls this or another co-explorer uses this information.
 	/// </remarks>
-	public object Data { get; set; }
+	public object? Data { get; set; }
 
 	/// <summary>
 	/// To be set current.
 	/// </summary>
-	public object PostData { get; set; }
+	public object? PostData { get; set; }
 
 	/// <summary>
 	/// To be set current.
 	/// </summary>
-	public FarFile PostFile { get; set; }
+	public FarFile? PostFile { get; set; }
 
 	/// <summary>
 	/// To be set current.
 	/// </summary>
-	public string PostName { get; set; }
+	public string? PostName { get; set; }
 
 	/// <summary>
 	/// Tells whether user interaction is allowed.
