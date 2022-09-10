@@ -86,8 +86,8 @@ class InputBoxEx
 
 		// line and last word
 		string text = editLine.Text;
-		string head = text.Substring(0, editLine.Caret);
-		string tail = text.Substring(head.Length);
+		string head = text[..editLine.Caret];
+		string tail = text[head.Length..];
 
 		Match match = Regex.Match(head, @"(?:^|\s)(\S+)$");
 		string lastWord = match.Success ? match.Groups[1].Value : string.Empty;
@@ -148,7 +148,7 @@ class InputBoxEx
 		// expand last word
 
 		// head before the last word
-		line = line.Substring(0, line.Length - lastWord.Length);
+		line = line[..^lastWord.Length];
 
 		// new caret
 		int caret = line.Length + word.Length;

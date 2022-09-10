@@ -586,7 +586,7 @@ hit then VSCode debugger opens the source code at the active breakpoint.
 **Tips**
 
 (1) Consider running VSCode as admin, especially if Far runs as admin.
-Otherwise F5 may results in cryptic errors about `OmniSharp` issues.
+Otherwise F5 may result in cryptic errors about `OmniSharp` issues.
 
 (2) On starting the debugger you may see the below message. PowerShell is not
 loaded yet, e.g. due to no .ps1 files in the workspace or loading in progress.

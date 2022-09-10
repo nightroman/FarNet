@@ -132,7 +132,10 @@ public static class EditorTools
 		foreach (var it in Far.Api.Editors())
 		{
 			++index;
-			var name = string.Format(null, MenuItemFormat, (index < MenuHotkeys.Length ? MenuHotkeys.Substring(index, 1) : " "), it.Title);
+			var name = string.Format(
+				MenuItemFormat,
+				index < MenuHotkeys.Length ? MenuHotkeys.Substring(index, 1) : " ",
+				it.Title);
 			menu.Add(name).Data = it;
 		}
 
@@ -150,7 +153,10 @@ public static class EditorTools
 		foreach (var it in Far.Api.Viewers())
 		{
 			++index;
-			var name = string.Format(null, MenuItemFormat, (index < MenuHotkeys.Length ? MenuHotkeys.Substring(index, 1) : " "), it.FileName);
+			var name = string.Format(
+				MenuItemFormat,
+				index < MenuHotkeys.Length ? MenuHotkeys.Substring(index, 1) : " ",
+				it.FileName);
 			menu.Add(name).Data = it;
 		}
 

@@ -101,7 +101,7 @@ public static class Log
 		int i = type.LastIndexOf('.');
 
 		// system error: trace as error
-		if (i >= 0 && type.Substring(0, i) == "System")
+		if (i >= 0 && type[..i] == "System")
 		{
 			Source.TraceEvent(TraceEventType.Error, 0, FormatException(error));
 		}

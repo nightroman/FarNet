@@ -73,7 +73,7 @@ public static class Kit
 			}
 			else if (mode == FormatMessageMode.Cut)
 			{
-				lines.Add(line.Substring(0, width));
+				lines.Add(line[..width]);
 			}
 			else
 			{
