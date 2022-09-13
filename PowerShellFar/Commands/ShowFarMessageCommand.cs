@@ -2,8 +2,8 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
-using System.Management.Automation;
 using FarNet;
+using System.Management.Automation;
 
 namespace PowerShellFar.Commands;
 
@@ -12,19 +12,19 @@ sealed class ShowFarMessageCommand : BaseCmdlet
 	[Parameter(Position = 0, Mandatory = true)]
 	[AllowEmptyString]
 	[AllowNull]
-	public string Text { get; set; }
+	public string Text { get; set; } = null!;
 
 	[Parameter(Position = 1)]
-	public string Caption { get; set; }
+	public string? Caption { get; set; }
 
 	[Parameter(Position = 2)]
 	public ButtonSet Buttons { get; set; }
 
 	[Parameter]
-	public string[] Choices { get; set; }
+	public string[]? Choices { get; set; }
 
 	[Parameter]
-	public string HelpTopic { get; set; }
+	public string? HelpTopic { get; set; }
 
 	[Parameter]
 	public SwitchParameter Draw { get; set; }

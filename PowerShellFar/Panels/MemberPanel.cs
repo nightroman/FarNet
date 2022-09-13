@@ -2,10 +2,10 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
+using FarNet;
 using System;
 using System.Data;
 using System.Management.Automation;
-using FarNet;
 
 namespace PowerShellFar;
 
@@ -23,8 +23,7 @@ public sealed class MemberPanel : ListPanel
 	/// New member panel with the member explorer.
 	/// </summary>
 	/// <param name="explorer">The panel explorer.</param>
-	public MemberPanel(MemberExplorer explorer)
-		: base(explorer)
+	public MemberPanel(MemberExplorer explorer) : base(explorer)
 	{
 		// panel info
 		CurrentLocation = "*";
@@ -52,20 +51,21 @@ public sealed class MemberPanel : ListPanel
 	/// </summary>
 	public PSObject Value => Target;
 
-	internal override MemberPanel OpenFileMembers(FarFile file)
+	internal override MemberPanel? OpenFileMembers(FarFile file)
 	{
 		PSObject o = PSObject.AsPSObject(file.Data);
-		string memberType = o.Properties["MemberType"].Value.ToString();
+		var memberType = o.Properties["MemberType"].Value.ToString()!;
 		if (!memberType.EndsWith("Property", StringComparison.Ordinal)) //??
 			return null;
 
-		string name = o.Properties[Word.Name].Value.ToString();
+		var name = o.Properties[Word.Name].Value.ToString()!;
 		object instance = Target.Properties[name].Value;
-		if (instance == null)
+		if (instance is null)
 			return null;
 
-		MemberPanel r = new MemberPanel(new MemberExplorer(instance));
+		var r = new MemberPanel(new MemberExplorer(instance));
 		r.OpenChild(this);
+
 		return r;
 	}
 
@@ -74,12 +74,12 @@ public sealed class MemberPanel : ListPanel
 	/// </summary>
 	internal static void WhenMemberChanged(object instance)
 	{
-		foreach (MemberPanel p in Far.Api.Panels(typeof(MemberPanel)))
+		foreach (MemberPanel panel in Far.Api.Panels(typeof(MemberPanel)))
 		{
-			if (p.Target == instance)
+			if (panel.Target == instance)
 			{
-				p.Modified = true;
-				p.UpdateRedraw(true);
+				panel.Modified = true;
+				panel.UpdateRedraw(true);
 			}
 		}
 	}
@@ -120,7 +120,7 @@ public sealed class MemberPanel : ListPanel
 		if (namePairs.Length % 2 != 0)
 			throw new ArgumentException("'namePairs' must contain even number of items.");
 
-		return (new DataLookup(namePairs)).Invoke;
+		return new DataLookup(namePairs).Invoke;
 	}
 
 	/// <summary>
@@ -142,12 +142,12 @@ public sealed class MemberPanel : ListPanel
 		return true;
 	}
 
-	internal override void SetUserValue(PSPropertyInfo info, string value)
+	internal override void SetUserValue(PSPropertyInfo info, string? value)
 	{
 		try
 		{
 			// assign
-			if (value == null)
+			if (value is null)
 				info.Value = null;
 			else
 				//! it is tempting to avoid our parsing, but it is not that good..
@@ -166,13 +166,13 @@ public sealed class MemberPanel : ListPanel
 	/// Gets or sets the script called to save modified data.
 	/// It has to save data and set <see cref="Modified"/> to false.
 	/// </summary>
-	public ScriptBlock AsSaveData { get; set; }
+	public ScriptBlock? AsSaveData { get; set; }
 
 	///??
 	protected override bool CanClose()
 	{
 		// can?
-		bool r = !Modified || AsSaveData == null;
+		bool r = !Modified || AsSaveData is null;
 
 		// ask
 		if (!r)
@@ -180,7 +180,7 @@ public sealed class MemberPanel : ListPanel
 			switch (Far.Api.Message(Res.AskSaveModified, "Save", MessageOptions.YesNoCancel))
 			{
 				case 0:
-					AsSaveData.InvokeReturnAsIs(this);
+					AsSaveData!.InvokeReturnAsIs(this);
 					break;
 				case 1:
 					Modified = false;
@@ -211,7 +211,8 @@ public sealed class MemberPanel : ListPanel
 	/// <inheritdoc/>
 	public override void UICreateFile(CreateFileEventArgs args)
 	{
-		if (args == null) return;
+		if (args is null)
+			throw new ArgumentNullException(nameof(args));
 
 		// skip data panel
 		if (Parent is DataPanel)

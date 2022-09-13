@@ -2,165 +2,170 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
+using FarNet;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Management.Automation;
-using System.Text.RegularExpressions;
-using FarNet;
 
-namespace PowerShellFar
+namespace PowerShellFar;
+
+public partial class AnyPanel
 {
-	public partial class AnyPanel
+	#region OpenFile
+	/// <summary>
+	/// Gets or sets the script to open a file (e.g. on [Enter]).
+	/// Arguments: 0: this panel, 1: <see cref="OpenFileEventArgs"/>.
+	/// </summary>
+	public ScriptBlock? AsOpenFile { get; set; }
+
+	/// <summary>
+	/// Opens the file using <see cref="AsOpenFile"/> or the default method.
+	/// </summary>
+	/// <param name="file">The file to be opened.</param>
+	public sealed override void UIOpenFile(FarFile file)
 	{
-		#region OpenFile
-		/// <summary>
-		/// Gets or sets the script to open a file (e.g. on [Enter]).
-		/// Arguments: 0: this panel, 1: <see cref="OpenFileEventArgs"/>.
-		/// </summary>
-		public ScriptBlock AsOpenFile { get; set; }
-		/// <summary>
-		/// Opens the file using <see cref="AsOpenFile"/> or the default method.
-		/// </summary>
-		/// <param name="file">The file to be opened.</param>
-		public sealed override void UIOpenFile(FarFile file)
+		if (file is null)
+			throw new ArgumentNullException(nameof(file));
+
+		// lookup closer?
+		if (UserWants == UserAction.Enter && Lookup != null)
 		{
-			if (file == null)
-				return;
-
-			// lookup closer?
-			if (UserWants == UserAction.Enter && Lookup != null)
-			{
-				Lookup.Invoke(this, new OpenFileEventArgs(file));
-				UIEscape(false);
-				return;
-			}
-
-			// script
-			if (AsOpenFile != null)
-			{
-				AsOpenFile.InvokeReturnAsIs(this, new OpenFileEventArgs(file));
-				return;
-			}
-
-			// base
-			if (Explorer.CanOpenFile)
-			{
-				base.UIOpenFile(file);
-				return;
-			}
-
-			// PSF
-			OpenFile(file);
+			Lookup.Invoke(this, new OpenFileEventArgs(file));
+			UIEscape(false);
+			return;
 		}
-		/// <summary>
-		/// Opens a file.
-		/// </summary>
-		/// <param name="file">The file to open.</param>
-		/// <remarks>
-		/// The base method calls Invoke-Item for <see cref="FileSystemInfo"/> files.
-		/// </remarks>
-		public virtual void OpenFile(FarFile file)
+
+		// script
+		if (AsOpenFile != null)
 		{
-			if (file == null)
-				throw new ArgumentNullException("file");
-
-			if (file.Data == null)
-				return;
-
-			//! use try, e.g. Invoke-Item throws exception with any error action (PS bug?)
-			try
-			{
-				// case: file system
-				FileSystemInfo fi = Cast<FileSystemInfo>.From(file.Data);
-				if (fi != null)
-				{
-					A.InvokeCode("Invoke-Item -LiteralPath $args[0] -ErrorAction Stop", fi.FullName);
-					return;
-				}
-			}
-			catch (RuntimeException ex)
-			{
-				A.Msg(ex);
-			}
+			AsOpenFile.InvokeReturnAsIs(this, new OpenFileEventArgs(file));
+			return;
 		}
-		#endregion
-		#region EditFile
-		/// <summary>
-		/// <see cref="UIEditFile"/> worker.
-		/// Arguments: 0: this panel, 1: <see cref="FarFile"/>.
-		/// </summary>
-		public ScriptBlock AsEditFile { get; set; }
-		/// <summary>
-		/// <see cref="UIEditFile"/> worker.
-		/// </summary>
-		/// <param name="file">The file to edit.</param>
-		public void DoEditFile(FarFile file) { base.UIEditFile(file); }
-		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
-		/// <param name="file">The file to edit.</param>
-		public sealed override void UIEditFile(FarFile file) //_091202_073429 NB: Data can be wrapped by PSObject.
+
+		// base
+		if (Explorer.CanOpenFile)
 		{
-			if (AsEditFile != null)
-				AsEditFile.InvokeReturnAsIs(this, file);
-			else
-				DoEditFile(file);
+			base.UIOpenFile(file);
+			return;
 		}
-		#endregion
-		#region ViewFile
-		/// <summary>
-		/// <see cref="UIViewFile"/> worker.
-		/// Arguments: 0: this panel, 1: <see cref="FarFile"/>.
-		/// </summary>
-		public ScriptBlock AsViewFile { get; set; }
-		/// <summary>
-		/// <see cref="UIViewFile"/> worker.
-		/// </summary>
-		/// <param name="file">The file to view.</param>
-		public void DoViewFile(FarFile file) { base.UIViewFile(file); }
-		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
-		/// <param name="file">The file to view.</param>
-		public sealed override void UIViewFile(FarFile file) //_091202_073429
-		{
-			if (AsViewFile != null)
-				AsViewFile.InvokeReturnAsIs(this, file);
-			else
-				DoViewFile(file);
-		}
-		#endregion
-		#region ViewAll
-		/// <summary>
-		/// Gets or sets the script to show all files information (e.g. on [F3] on the dots).
-		/// Arguments: 0: this panel.
-		/// </summary>
-		public ScriptBlock AsViewAll { get; set; }
-		/// <summary>
-		/// Shows all files information using <see cref="AsViewAll"/> or the default method.
-		/// </summary>
-		void UIViewAll()
-		{
-			if (AsViewAll != null)
-			{
-				AsViewAll.InvokeReturnAsIs(this, null);
-				return;
-			}
 
-			string tmp = Far.Api.TempName();
-			try
-			{
-				A.InvokeCode("$args[0] | Format-Table -AutoSize -ea 0 | Out-File -FilePath $args[1]", ShownItems, tmp);
-
-				IViewer v = A.CreateViewer(tmp);
-				v.DisableHistory = true;
-				v.Title = CurrentDirectory;
-				v.Open(OpenMode.None);
-			}
-			finally
-			{
-				File.Delete(tmp);
-			}
-		}
-		#endregion
+		// PSF
+		OpenFile(file);
 	}
+
+	/// <summary>
+	/// Opens a file.
+	/// </summary>
+	/// <param name="file">The file to open.</param>
+	/// <remarks>
+	/// The base method calls Invoke-Item for <see cref="FileSystemInfo"/> files.
+	/// </remarks>
+	public virtual void OpenFile(FarFile file)
+	{
+		if (file is null)
+			throw new ArgumentNullException(nameof(file));
+
+		if (file.Data is null)
+			return;
+
+		//! use try, e.g. Invoke-Item throws exception with any error action (PS bug?)
+		try
+		{
+			// case: file system
+			var fi = Cast<FileSystemInfo>.From(file.Data);
+			if (fi != null)
+			{
+				A.InvokeCode("Invoke-Item -LiteralPath $args[0] -ErrorAction Stop", fi.FullName);
+				return;
+			}
+		}
+		catch (RuntimeException ex)
+		{
+			A.Msg(ex);
+		}
+	}
+	#endregion
+
+	#region EditFile
+	/// <summary>
+	/// <see cref="UIEditFile"/> worker.
+	/// Arguments: 0: this panel, 1: <see cref="FarFile"/>.
+	/// </summary>
+	public ScriptBlock? AsEditFile { get; set; }
+
+	/// <summary>
+	/// <see cref="UIEditFile"/> worker.
+	/// </summary>
+	/// <param name="file">The file to edit.</param>
+	public void DoEditFile(FarFile file) => base.UIEditFile(file);
+
+	/// <include file='doc.xml' path='doc/ScriptFork/*'/>
+	/// <param name="file">The file to edit.</param>
+	public sealed override void UIEditFile(FarFile file) //_091202_073429 NB: Data can be wrapped by PSObject.
+	{
+		if (AsEditFile != null)
+			AsEditFile.InvokeReturnAsIs(this, file);
+		else
+			DoEditFile(file);
+	}
+	#endregion
+
+	#region ViewFile
+	/// <summary>
+	/// <see cref="UIViewFile"/> worker.
+	/// Arguments: 0: this panel, 1: <see cref="FarFile"/>.
+	/// </summary>
+	public ScriptBlock? AsViewFile { get; set; }
+
+	/// <summary>
+	/// <see cref="UIViewFile"/> worker.
+	/// </summary>
+	/// <param name="file">The file to view.</param>
+	public void DoViewFile(FarFile file) => base.UIViewFile(file);
+
+	/// <include file='doc.xml' path='doc/ScriptFork/*'/>
+	/// <param name="file">The file to view.</param>
+	public sealed override void UIViewFile(FarFile file) //_091202_073429
+	{
+		if (AsViewFile != null)
+			AsViewFile.InvokeReturnAsIs(this, file);
+		else
+			DoViewFile(file);
+	}
+	#endregion
+
+	#region ViewAll
+	/// <summary>
+	/// Gets or sets the script to show all files information (e.g. on [F3] on the dots).
+	/// Arguments: 0: this panel.
+	/// </summary>
+	public ScriptBlock? AsViewAll { get; set; }
+
+	/// <summary>
+	/// Shows all files information using <see cref="AsViewAll"/> or the default method.
+	/// </summary>
+	void UIViewAll()
+	{
+		if (AsViewAll != null)
+		{
+			AsViewAll.InvokeReturnAsIs(this, null);
+			return;
+		}
+
+		string tmp = Far.Api.TempName();
+		try
+		{
+			A.InvokeCode("$args[0] | Format-Table -AutoSize -ea 0 | Out-File -FilePath $args[1]", ShownItems, tmp);
+
+			IViewer v = A.CreateViewer(tmp);
+			v.DisableHistory = true;
+			v.Title = CurrentDirectory;
+			v.Open(OpenMode.None);
+		}
+		finally
+		{
+			File.Delete(tmp);
+		}
+	}
+	#endregion
 }

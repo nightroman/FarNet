@@ -8,17 +8,17 @@ namespace PowerShellFar;
 
 class RunArgs
 {
-	public string Code { get; private set; }
+	public string Code { get; }
 
-	public OutputWriter Writer { get; set; }
+	public OutputWriter? Writer { get; set; }
 
 	public bool NoOutReason { get; set; }
 
 	public bool UseLocalScope { get; set; }
 
-	public object[] Arguments { get; set; }
+	public object[]? Arguments { get; set; }
 
-	public Exception Reason { get; set; }
+	public Exception? Reason { get; set; }
 
 	public RunArgs(string code)
 	{

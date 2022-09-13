@@ -209,7 +209,7 @@ public abstract class IFar
 	/// Normally you use this object instantly and do not keep it for later use.
 	/// Next time when you work on the current editor request this object again.
 	/// </remarks>
-	public abstract IEditor Editor { get; }
+	public abstract IEditor? Editor { get; }
 
 	/// <summary>
 	/// Gets the current viewer or null if none.
@@ -218,7 +218,7 @@ public abstract class IFar
 	/// Normally you use this object instantly and do not keep it for later use.
 	/// Next time when you work on the current viewer request this object again.
 	/// </remarks>
-	public abstract IViewer Viewer { get; }
+	public abstract IViewer? Viewer { get; }
 
 	/// <summary>
 	/// Gets the list of all editors. Use it sparingly.
@@ -287,7 +287,7 @@ public abstract class IFar
 	/// </para>
 	/// <seealso cref="ModuleException"/>
 	/// </remarks>
-	public abstract void ShowError(string title, Exception exception);
+	public abstract void ShowError(string? title, Exception exception);
 
 	/// <summary>
 	/// Creates a new dialog.
@@ -320,14 +320,14 @@ public abstract class IFar
 	/// <include file='doc.xml' path='doc/Include/*'/>
 	/// <param name="prompt">Prompt text.</param>
 	/// <returns>Entered text or null if canceled.</returns>
-	public string Input(string? prompt)
+	public string? Input(string? prompt)
 	{ return Input(prompt, null, null, null); }
 
 	/// <include file='doc.xml' path='doc/Include/*'/>
 	/// <param name="prompt">Prompt text.</param>
 	/// <param name="history">History string.</param>
 	/// <returns>Entered text or null if canceled.</returns>
-	public string Input(string? prompt, string? history)
+	public string? Input(string? prompt, string? history)
 	{ return Input(prompt, history, null, null); }
 
 	/// <include file='doc.xml' path='doc/Include/*'/>
@@ -335,7 +335,7 @@ public abstract class IFar
 	/// <param name="history">History string.</param>
 	/// <param name="title">Title of the box.</param>
 	/// <returns>Entered text or null if canceled.</returns>
-	public string Input(string? prompt, string? history, string? title)
+	public string? Input(string? prompt, string? history, string? title)
 	{ return Input(prompt, history, title, null); }
 
 	/// <include file='doc.xml' path='doc/Include/*'/>
@@ -344,7 +344,7 @@ public abstract class IFar
 	/// <param name="title">Title of the box.</param>
 	/// <param name="text">Text to be edited.</param>
 	/// <returns>Entered text or null if canceled.</returns>
-	public abstract string Input(string? prompt, string? history, string? title, string? text);
+	public abstract string? Input(string? prompt, string? history, string? title, string? text);
 
 	/// <summary>
 	/// Posts the action called when the core gets control.

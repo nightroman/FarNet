@@ -56,9 +56,9 @@ public interface IPanel //! think twice when convert to abstract class (see Pane
 	string CurrentDirectory { get; set; }
 
 	/// <summary>
-	/// Gets the current file.
+	/// Gets the current file or null.
 	/// </summary>
-	FarFile CurrentFile { get; }
+	FarFile? CurrentFile { get; }
 
 	/// <summary>
 	/// Gets the current file index in <see cref="Files"/>.

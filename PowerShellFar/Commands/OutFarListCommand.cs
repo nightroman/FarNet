@@ -2,36 +2,41 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
-using System.Management.Automation;
 using FarNet;
+using System.Management.Automation;
 
-namespace PowerShellFar.Commands
+namespace PowerShellFar.Commands;
+
+sealed class OutFarListCommand : NewFarListCommand
 {
-	sealed class OutFarListCommand : NewFarListCommand
+	IListMenu _menu = null!;
+
+	[Parameter(ValueFromPipeline = true)]
+	public object? InputObject { get; set; }
+
+	[Parameter]
+	public Meta? Text { get; set; }
+
+	protected override void BeginProcessing()
 	{
-		IListMenu _menu;
-		[Parameter(ValueFromPipeline = true)]
-		public object InputObject { get; set; }
-		[Parameter]
-		public Meta Text { get; set; }
-		protected override void BeginProcessing()
-		{
-			_menu = Create();
+		_menu = Create();
 
-			if (IncrementalOptions == PatternOptions.None)
-				_menu.IncrementalOptions = PatternOptions.Substring;
-		}
-		protected override void EndProcessing()
-		{
-			if (_menu.Show())
-				WriteObject(_menu.SelectedData);
-		}
-		protected override void ProcessRecord()
-		{
-			if (InputObject == null)
-				return;
+		if (!_IncrementalOptions.HasValue)
+			_menu.IncrementalOptions = PatternOptions.Substring;
+	}
 
-			_menu.Add(Text == null ? InputObject.ToString() : Text.GetString(InputObject)).Data = InputObject;
-		}
+	protected override void EndProcessing()
+	{
+		if (_menu.Show())
+			WriteObject(_menu.SelectedData);
+	}
+
+	protected override void ProcessRecord()
+	{
+		if (InputObject is null)
+			return;
+
+		var text = Text is null ? InputObject.ToString() : Text.GetString(InputObject);
+		_menu.Add(text!).Data = InputObject;
 	}
 }

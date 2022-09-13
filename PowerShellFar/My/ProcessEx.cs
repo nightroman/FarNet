@@ -13,7 +13,7 @@ static class ProcessEx
 	/// </summary>
 	public static Process Start(string fileName, string arguments)
 	{
-		return Process.Start(new ProcessStartInfo() { FileName = fileName, Arguments = arguments, UseShellExecute = true });
+		return Process.Start(new ProcessStartInfo { FileName = fileName, Arguments = arguments, UseShellExecute = true })!;
 	}
 
 	/// <summary>

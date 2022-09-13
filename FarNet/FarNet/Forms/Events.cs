@@ -16,7 +16,7 @@ public static class Events
 	/// </summary>
 	/// <param name="sender">.</param>
 	/// <param name="e">.</param>
-	public static void Coloring_EditAsConsole(object sender, ColoringEventArgs e)
+	public static void Coloring_EditAsConsole(object? sender, ColoringEventArgs e)
 	{
 		// normal text
 		e.Background1 = ConsoleColor.Black;
@@ -37,7 +37,7 @@ public static class Events
 	/// </summary>
 	/// <param name="sender">.</param>
 	/// <param name="e">.</param>
-	public static void Coloring_TextAsConsole(object sender, ColoringEventArgs e)
+	public static void Coloring_TextAsConsole(object? sender, ColoringEventArgs e)
 	{
 		// normal text
 		e.Background1 = ConsoleColor.Black;
@@ -49,9 +49,9 @@ public static class Events
 	/// </summary>
 	/// <param name="sender">.</param>
 	/// <param name="e">.</param>
-	public static void MouseClicked_IgnoreOutside(object sender, MouseClickedEventArgs e)
+	public static void MouseClicked_IgnoreOutside(object? sender, MouseClickedEventArgs e)
 	{
-		if (e.Control == null)
+		if (e.Control is null)
 			e.Ignore = true;
 	}
 }

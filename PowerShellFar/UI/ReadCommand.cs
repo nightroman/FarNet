@@ -13,16 +13,16 @@ namespace PowerShellFar.UI;
 
 class ReadCommand
 {
-	static ReadCommand Instance;
+	static ReadCommand? Instance;
 
 	readonly IDialog Dialog;
 	readonly IText Text;
 	readonly IEdit Edit;
-	string PromptTrimmed;
+	string? PromptTrimmed;
 	string PromptOriginal;
-	string TextFromEditor;
+	string? TextFromEditor;
 
-	RunArgs Out;
+	RunArgs? Out;
 
 	class Layout
 	{
@@ -108,7 +108,7 @@ class ReadCommand
 
 	public static bool IsActive()
 	{
-		if (Instance == null)
+		if (Instance is null)
 			return false;
 
 		var from = Far.Api.Window.Kind;
@@ -123,15 +123,15 @@ class ReadCommand
 		Instance?.Dialog.Close(-2);
 	}
 
-	void Dialog_Closing(object sender, ClosingEventArgs e)
+	void Dialog_Closing(object? sender, ClosingEventArgs e)
 	{
 		// cancel
-		if (e.Control == null)
+		if (e.Control is null)
 			return;
 
 		// get code, allow empty to refresh prompt
 		bool fromEditor = TextFromEditor != null;
-		var code = (fromEditor ? TextFromEditor : Edit.Text).TrimEnd();
+		var code = (fromEditor ? TextFromEditor! : Edit.Text).TrimEnd();
 		bool toEcho = !fromEditor || code.IndexOf('\n') < 0;
 
 		//! use original prompt (transcript, analysis, etc.)
@@ -142,7 +142,7 @@ class ReadCommand
 	}
 
 	bool _Dialog_GotFocus;
-	void Dialog_GotFocus(object sender, EventArgs e)
+	void Dialog_GotFocus(object? sender, EventArgs e)
 	{
 		if (_Dialog_GotFocus)
 			return;
@@ -162,7 +162,7 @@ class ReadCommand
 				Far.Api.UI.WindowTitle = prompt;
 
 				var pos = GetLayoutAndSetPromptTrimmed(prompt);
-				Text.Text = PromptTrimmed;
+				Text.Text = PromptTrimmed!;
 				Text.Rect = new Place(pos.TextLeft, pos.TextTop, pos.TextRight, pos.TextTop);
 				Edit.Rect = new Place(pos.EditLeft, pos.EditTop, pos.EditRight, pos.EditTop);
 			}
@@ -173,13 +173,13 @@ class ReadCommand
 		}
 	}
 
-	void Dialog_ConsoleSizeChanged(object sender, SizeEventArgs e)
+	void Dialog_ConsoleSizeChanged(object? sender, SizeEventArgs e)
 	{
 		var pos = GetLayoutAndSetPromptTrimmed(PromptOriginal);
 		Dialog.Rect = new Place(pos.DialogLeft, pos.DialogTop, pos.DialogRight, pos.DialogBottom);
 		Text.Rect = new Place(pos.TextLeft, pos.TextTop, pos.TextRight, pos.TextTop);
 		Edit.Rect = new Place(pos.EditLeft, pos.EditTop, pos.EditRight, pos.EditTop);
-		Text.Text = PromptTrimmed;
+		Text.Text = PromptTrimmed!;
 	}
 
 	void Edit_KeyPressedCtrl(KeyPressedEventArgs e)
@@ -216,7 +216,7 @@ class ReadCommand
 		}
 	}
 
-	void Edit_KeyPressed(object sender, KeyPressedEventArgs e)
+	void Edit_KeyPressed(object? sender, KeyPressedEventArgs e)
 	{
 		if (e.Key.IsCtrl())
 		{
@@ -344,7 +344,7 @@ class ReadCommand
 			Text = Edit.Text,
 			Extension = "ps1",
 			Title = PromptOriginal,
-			EditorOpened = (editor, _) => ((IEditor)editor).GoTo(Edit.Line.Caret, 0)
+			EditorOpened = (editor, _) => ((IEditor)editor!).GoTo(Edit.Line.Caret, 0)
 		};
 		TextFromEditor = Far.Api.AnyEditor.EditText(args);
 		Dialog.Close();
@@ -369,7 +369,7 @@ class ReadCommand
 		return Tasks.Job(Dialog.Activate);
 	}
 
-	public Task<RunArgs> ReadAsync()
+	public Task<RunArgs?> ReadAsync()
 	{
 		return Task.Run(async () =>
 		{
@@ -407,7 +407,7 @@ class ReadCommand
 					// read
 					Instance = await Tasks.Job(() => new ReadCommand());
 					var res = await Instance.ReadAsync();
-					if (res == null)
+					if (res is null)
 						return;
 
 					// run

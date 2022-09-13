@@ -69,17 +69,17 @@ public partial class Panel
 			return null;
 
 		// no text or an actual file exists?
-		if (args.UseText == null || !string.IsNullOrEmpty(args.UseFileName))
+		if (args.UseText is null || !string.IsNullOrEmpty(args.UseFileName))
 			return args;
 
 		// export text
 		var text = args.UseText as string;
-		if (text == null)
+		if (text is null)
 		{
 			if (args.UseText is IEnumerable collection)
 			{
 				// write collection
-				using (StreamWriter writer = new StreamWriter(fileName, false, Encoding.Unicode))
+				using (var writer = new StreamWriter(fileName, false, Encoding.Unicode))
 					foreach (var it in collection)
 						writer.WriteLine(it);
 				return args;
@@ -110,7 +110,7 @@ public partial class Panel
 		var that = TargetPanel;
 
 		// commit
-		if (that == null)
+		if (that is null)
 		{
 			// can?
 			if (!Explorer.CanExportFiles)
@@ -177,22 +177,22 @@ public partial class Panel
 				return;
 
 			// drop selection
-			this.UnselectAll();
+			UnselectAll();
 
 			// recover
 			if (isIncomplete)
 				SelectFiles(args.FilesToStay, null);
 
 			// show
-			this.Redraw();
+			Redraw();
 			return;
 		}
 
 		// Move: no need to delete or all to stay or cannot delete
-		if (!args.ToDeleteFiles || isAllToStay || !this.Explorer.CanDeleteFiles)
+		if (!args.ToDeleteFiles || isAllToStay || !Explorer.CanDeleteFiles)
 		{
 			// the source may have some files deleted, update, drop selection
-			this.Update(false);
+			Update(false);
 
 			// recover selection
 			if (isIncomplete)
@@ -204,7 +204,7 @@ public partial class Panel
 			}
 
 			// show
-			this.Redraw();
+			Redraw();
 			return;
 		}
 
@@ -222,7 +222,7 @@ public partial class Panel
 
 		// call
 		var argsDelete = new DeleteFilesEventArgs(ExplorerModes.Silent, filesToDelete, false);
-		this.UIDeleteWithRecover(argsDelete, false);
+		UIDeleteWithRecover(argsDelete, false);
 		if (isIncomplete)
 			SelectFiles(args.FilesToStay, null);
 
@@ -337,7 +337,7 @@ public partial class Panel
 		if (!CanClose())
 			return;
 
-		if (force || _Parent == null)
+		if (force || _Parent is null)
 		{
 			// _090321_210416 We do not call Redraw(0, 0) to reset cursor to 0 any more.
 			// See Mantis 1114: why it was needed. Now FarNet panels restore original state.
@@ -370,8 +370,8 @@ public partial class Panel
 	/// </remarks>
 	public virtual void UIEditFile(FarFile file)
 	{
-		if (file == null)
-			return;
+		if (file is null)
+			throw new ArgumentNullException(nameof(file));
 
 		// target file path
 		// _201223_vc Avoid Far.Api.TempName(). I think it reuses names if files do not exist. But file history may exist unexpectedly.
@@ -379,7 +379,7 @@ public partial class Panel
 
 		// export
 		var xExportArgs = WorksExportExplorerFile(Explorer, this, ExplorerModes.Edit, file, temp);
-		if (xExportArgs == null)
+		if (xExportArgs is null)
 			return;
 
 		// case: actual file exists
@@ -506,15 +506,15 @@ public partial class Panel
 	/// </remarks>
 	public virtual void UIViewFile(FarFile file)
 	{
-		if (file == null)
-			return;
+		if (file is null)
+			throw new ArgumentNullException(nameof(file));
 
 		// target
 		var temp = Far.Api.TempName();
 
 		// export
 		var xExportArgs = WorksExportExplorerFile(Explorer, this, ExplorerModes.View, file, temp);
-		if (xExportArgs == null)
+		if (xExportArgs is null)
 			return;
 
 		// case: actual file exists
@@ -551,8 +551,8 @@ public partial class Panel
 	/// <param name="file">The file to be opened.</param>
 	public virtual void UIOpenFile(FarFile file)
 	{
-		if (file == null)
-			return;
+		if (file is null)
+			throw new ArgumentNullException(nameof(file));
 
 		if (!Explorer.CanOpenFile)
 			return;
@@ -581,7 +581,7 @@ public partial class Panel
 
 		// file
 		var file = CurrentFile;
-		if (file == null)
+		if (file is null)
 			return;
 
 		// call
@@ -616,7 +616,7 @@ public partial class Panel
 
 		// file
 		var file = CurrentFile;
-		if (file == null)
+		if (file is null)
 			return;
 
 		// call
@@ -695,7 +695,7 @@ public partial class Panel
 						break;
 
 					var file = CurrentFile;
-					if (file == null || file.IsDirectory)
+					if (file is null || file.IsDirectory)
 						break;
 
 					UIOpenFile(file);
@@ -712,7 +712,7 @@ public partial class Panel
 						break;
 
 					var file = CurrentFile;
-					if (file == null || file.IsDirectory)
+					if (file is null || file.IsDirectory)
 						break;
 
 					UIViewFile(file);
@@ -729,7 +729,7 @@ public partial class Panel
 						break;
 
 					var file = CurrentFile;
-					if (file == null || file.IsDirectory)
+					if (file is null || file.IsDirectory)
 						break;
 
 					UIEditFile(file);
@@ -816,7 +816,7 @@ public partial class Panel
 				if (key.Is())
 				{
 					int currentIndex;
-					FarFile currentFile;
+					FarFile? currentFile;
 					if (PageLimit > 0 && (currentIndex = CurrentIndex) >= Files.Count - 1 && null != (currentFile = CurrentFile) && currentFile.Name != "..")
 					{
 						int topIndex = TopIndex;

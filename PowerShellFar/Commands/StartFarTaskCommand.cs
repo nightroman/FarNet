@@ -24,10 +24,10 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 	readonly Hashtable _data = new(StringComparer.OrdinalIgnoreCase);
 
 	// task script
-	ScriptBlock _script;
-	Exception _scriptError;
-	Dictionary<string, ParameterMetadata> _scriptParameters;
-	RuntimeDefinedParameterDictionary _paramDynamic;
+	ScriptBlock _script = null!;
+	Exception? _scriptError;
+	Dictionary<string, ParameterMetadata>? _scriptParameters;
+	readonly RuntimeDefinedParameterDictionary _paramDynamic = new();
 	static readonly string[] _paramExclude = new string[] {
 		"Verbose", "Debug", "ErrorAction", "WarningAction", "ErrorVariable", "WarningVariable",
 		"OutVariable", "OutBuffer", "PipelineVariable", "InformationAction", "InformationVariable" };
@@ -56,7 +56,7 @@ param($Script, $Data, $Arguments)
 	{
 		set
 		{
-			value = PS2.BaseObject(value);
+			value = PS2.BaseObject(value)!;
 
 			if (value is ScriptBlock block)
 			{
@@ -115,7 +115,7 @@ param($Script, $Data, $Arguments)
 
 	[Parameter(ParameterSetName = "AddDebugger", Mandatory = true)]
 	[ValidateNotNull]
-	public IDictionary AddDebugger { get; set; }
+	public IDictionary? AddDebugger { get; set; }
 
 	[Parameter(ParameterSetName = "AddDebugger")]
 	public SwitchParameter Step { get; set; }
@@ -125,14 +125,13 @@ param($Script, $Data, $Arguments)
 		Far.Api.ShowError("FarTask error", exn);
 	}
 
-	public object GetDynamicParameters()
+	public object? GetDynamicParameters()
 	{
 		//! throw later, avoid bad error info
 		if (_scriptError != null)
 			return null;
 
-		_paramDynamic = new RuntimeDefinedParameterDictionary();
-		if (_scriptParameters == null)
+		if (_scriptParameters is null)
 			return _paramDynamic;
 
 		foreach (var p in _scriptParameters.Values)
@@ -151,7 +150,7 @@ param($Script, $Data, $Arguments)
 	// jobs and macros base
 	public class BaseCommand : PSCmdlet
 	{
-		protected StartFarTaskCommand Self { get; private set; }
+		protected StartFarTaskCommand Self { get; private set; } = null!;
 
 		protected override void BeginProcessing()
 		{
@@ -163,10 +162,10 @@ param($Script, $Data, $Arguments)
 	public class BaseJob : BaseCommand
 	{
 		[Parameter(Position = 0)]
-		public ScriptBlock Script { get; set; }
+		public ScriptBlock Script { get; set; } = null!;
 
 		[Parameter(Position = 1)]
-		public object[] Arguments { get; set; }
+		public object[] Arguments { get; set; } = null!;
 
 		protected override void BeginProcessing()
 		{
@@ -227,7 +226,7 @@ param($Script, $Data, $Arguments)
 		{
 			base.BeginProcessing();
 
-			Exception reason = null;
+			Exception? reason = null;
 
 			// post the job as task
 			var task = Tasks.Job(() =>
@@ -280,13 +279,13 @@ param($Script, $Data, $Arguments)
 	public class InvokeTaskKeys : BaseCommand
 	{
 		[Parameter(ValueFromRemainingArguments = true)]
-		public string[] Keys { get; set; }
+		public string[] Keys { get; set; } = null!;
 
 		protected override void BeginProcessing()
 		{
 			base.BeginProcessing();
 
-			if (Keys == null || Keys.Length == 0)
+			if (Keys is null || Keys.Length == 0)
 				throw new PSArgumentNullException(nameof(Keys));
 
 			var keys = string.Join(" ", Keys);
@@ -300,7 +299,7 @@ param($Script, $Data, $Arguments)
 	public class InvokeTaskMacro : BaseCommand
 	{
 		[Parameter(Position = 0)]
-		public string Macro { get; set; }
+		public string Macro { get; set; } = null!;
 
 		protected override void BeginProcessing()
 		{
@@ -343,7 +342,7 @@ param($Script, $Data, $Arguments)
 	{
 		AddDebuggerKit.ValidateAvailable();
 
-		foreach (DictionaryEntry kv in AddDebugger)
+		foreach (DictionaryEntry kv in AddDebugger!)
 			if (string.Equals("Path", kv.Key?.ToString(), StringComparison.OrdinalIgnoreCase))
 				return;
 
@@ -414,7 +413,7 @@ param($Script, $Data, $Arguments)
 		var task = AsTask ? new TaskCompletionSource<object[]>() : null;
 		ps.BeginInvoke<object>(null, null, asyncCallback, null);
 		if (AsTask)
-			WriteObject(task.Task);
+			WriteObject(task!.Task);
 
 		void done()
 		{
@@ -429,7 +428,7 @@ param($Script, $Data, $Arguments)
 			{
 				if (AsTask)
 				{
-					task.SetException(FarNet.Works.Kit.UnwrapAggregateException(reason));
+					task!.SetException(FarNet.Works.Kit.UnwrapAggregateException(reason));
 				}
 				else
 				{
@@ -449,12 +448,12 @@ param($Script, $Data, $Arguments)
 				{
 					var result = ps.EndInvoke(asyncResult);
 					if (AsTask)
-						task.SetResult(PS2.UnwrapPSObject(result));
+						task!.SetResult(PS2.UnwrapPSObject(result));
 				}
 				catch (Exception exn)
 				{
 					if (AsTask)
-						task.SetException(FarNet.Works.Kit.UnwrapAggregateException(exn));
+						task!.SetException(FarNet.Works.Kit.UnwrapAggregateException(exn));
 					else
 						ShowError(exn);
 				}

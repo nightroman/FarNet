@@ -46,7 +46,7 @@ public sealed partial class Actor
 	/// <summary>
 	/// Stops the running pipeline.
 	/// </summary>
-	void CancelKeyPress(object sender, ConsoleCancelEventArgs e) //_110128_075844
+	void CancelKeyPress(object? sender, ConsoleCancelEventArgs e) //_110128_075844
 	{
 		// ControlBreak?
 		if (e.SpecialKey != ConsoleSpecialKey.ControlBreak)
@@ -54,7 +54,7 @@ public sealed partial class Actor
 
 		//! use copy
 		var pipe = Pipeline;
-		if (pipe == null || pipe.InvocationStateInfo.State != PSInvocationState.Running)
+		if (pipe is null || pipe.InvocationStateInfo.State != PSInvocationState.Running)
 			return;
 
 		// stop; it still can be bad but chances are low after the above checks
@@ -63,11 +63,12 @@ public sealed partial class Actor
 
 	void AsyncStop(IAsyncResult ar) //_110128_075844
 	{
-		(ar.AsyncState as PowerShell).EndStop(ar);
+		(ar.AsyncState as PowerShell)!.EndStop(ar);
 	}
 
 	#region Life
-	static Task OpenRunspaceTask;
+	static Task? OpenRunspaceTask;
+
 	/// <summary>
 	/// Called on connection internally.
 	/// </summary>
@@ -98,8 +99,8 @@ public sealed partial class Actor
 		Far.Api.AnyEditor.Opened -= EditorKit.OnEditorOpened;
 		Far.Api.AnyEditor.Opened -= EditorKit.OnEditorFirstOpening;
 
-		// kill menu
-		UI.ActorMenu.Destroy();
+		// release menu
+		UI.ActorMenu.Close();
 
 		// kill remaining jobs
 		//! after menus, before PS
@@ -118,11 +119,11 @@ public sealed partial class Actor
 			finally
 			{
 				// detach all
-				FarUI = null;
-				FarHost = null;
+				FarUI = null!;
+				FarHost = null!;
+				Runspace = null!;
 				_engine_ = null;
 				Pipeline = null;
-				Runspace = null;
 			}
 		}
 	}
@@ -157,7 +158,7 @@ public sealed partial class Actor
 		// *) Add after the opening so that standard paths are added.
 		// *) Check for already added, e.g. when starting from another Far.
 		var modulePathAdd = $"{AppHome}\\Modules;";
-		var modulePathNow = Environment.GetEnvironmentVariable(Word.PSModulePath);
+		var modulePathNow = Environment.GetEnvironmentVariable(Word.PSModulePath) ?? string.Empty;
 		if (!modulePathNow.Contains(modulePathAdd))
 			Environment.SetEnvironmentVariable(Word.PSModulePath, modulePathAdd + modulePathNow);
 
@@ -167,7 +168,7 @@ public sealed partial class Actor
 		_engine_ = Runspace.SessionStateProxy.PSVariable.GetValue(Word.ExecutionContext) as EngineIntrinsics;
 
 		//? set instead of adding to initial state
-		_engine_.SessionState.PSVariable.Set("ErrorActionPreference", ActionPreference.Stop);
+		Engine.SessionState.PSVariable.Set("ErrorActionPreference", ActionPreference.Stop);
 
 		// invoke profiles
 		using var ps = NewPowerShell();
@@ -227,7 +228,7 @@ public sealed partial class Actor
 	/// <remarks>
 	/// Returned system path (if not null) must be restored by a called.
 	/// </remarks>
-	internal string SyncPaths()
+	internal string? SyncPaths()
 	{
 		// don't on running
 		if (IsRunning)
@@ -235,12 +236,12 @@ public sealed partial class Actor
 
 		// don't on no panels mode
 		IPanel panel = Far.Api.Panel;
-		if (panel == null)
+		if (panel is null)
 			return null;
 
 		// at first get both paths: for the current system directory and provider location
 		string directory = Far.Api.CurrentDirectory;
-		string location = null;
+		string? location = null;
 		if (panel.IsPlugin)
 		{
 			if (panel is Panel plugin)
@@ -315,7 +316,7 @@ Continue with this current location?
 			return null;
 
 		// get the current directory to be restored by a caller
-		string currentDirectory = Directory.GetCurrentDirectory();
+		string? currentDirectory = Directory.GetCurrentDirectory();
 
 		// set the current directory to the active path to avoid confusions [_090929_061740]
 		try
@@ -362,10 +363,10 @@ Continue with this current directory?
 		return currentDirectory;
 	}
 
-	string _failedInvokingDirectoryNew;
-	string _failedInvokingDirectoryOld;
-	string _failedInvokingLocationNew;
-	string _failedInvokingLocationOld;
+	string? _failedInvokingDirectoryNew;
+	string? _failedInvokingDirectoryOld;
+	string? _failedInvokingLocationNew;
+	string? _failedInvokingLocationOld;
 
 	#endregion
 	/// <summary>
@@ -415,13 +416,13 @@ Continue with this current directory?
 		if (Far.Api.Window.Kind != WindowKind.Editor)
 			throw new InvalidOperationException(Res.NeedsEditor);
 
-		return Far.Api.Editor;
+		return Far.Api.Editor!;
 	}
 
 	/// <summary>
 	/// Returns PowerShellFar home path. Designed for internal use.
 	/// </summary>
-	public string AppHome => Path.GetDirectoryName(typeof(Actor).Assembly.Location);
+	public string AppHome => Path.GetDirectoryName(typeof(Actor).Assembly.Location)!;
 
 	/// <summary>
 	/// Checks whether it is possible to exit the session safely (may require user interaction).
@@ -462,26 +463,16 @@ Continue with this current directory?
 	}
 
 	/// <summary>
-	/// Shows a new modal interactive.
+	/// Shows a new main session interactive in the specified mode.
 	/// </summary>
+	/// <param name="mode">The editor open mode. Default: <see cref="OpenMode.Modal"/>.</param>
 	/// <remarks>
-	/// This method opens a modal interactive. It can be called in the middle of something to perform actions manually
-	/// and then to continue interrupted execution on exit. It is similar to PowerShell nested prompt.
+	/// The modal interactive may be called in the middle of something to perform actions manually
+	/// and then continue interrupted execution on exit. It is similar to PowerShell nested prompt.
 	/// </remarks>
-	public void ShowInteractive()
+	public void ShowInteractive(OpenMode mode = OpenMode.Modal)
 	{
-		var inter = Interactive.Create(true);
-		if (inter != null)
-			inter.Editor.Open(OpenMode.Modal);
-	}
-
-	/// <summary>
-	/// Shows a new interactive in the specified mode.
-	/// </summary>
-	/// <param name="mode">The editor open mode.</param>
-	public void ShowInteractive(OpenMode mode)
-	{
-		var inter = Interactive.Create(true);
+		var inter = Interactive.Create(false);
 		if (inter != null)
 			inter.Editor.Open(mode);
 	}
@@ -492,11 +483,11 @@ Continue with this current directory?
 	/// </summary>
 	public void ShowPanel()
 	{
-		string currentDirectory = A.Psf.SyncPaths();
+		var currentDirectory = A.Psf.SyncPaths();
 		try
 		{
-			string drive = UI.SelectMenu.SelectPowerPanel();
-			if (drive == null)
+			var drive = UI.SelectMenu.SelectPowerPanel();
+			if (drive is null)
 				return;
 
 			AnyPanel ap;
@@ -569,19 +560,19 @@ Continue with this current directory?
 	/// Expands PowerShell code in the specified edit line.
 	/// </summary>
 	/// <param name="editLine">Editor line, command line or dialog edit box line; if null then <see cref="IFar.Line"/> is used.</param>
-	public void ExpandCode(ILine editLine) => EditorKit.ExpandCode(editLine, null);
+	public void ExpandCode(ILine? editLine) => EditorKit.ExpandCode(editLine, null);
 
 	// PS host
-	FarHost FarHost;
+	FarHost FarHost = null!;
 	// PS UI
-	internal FarUI FarUI;
+	internal FarUI FarUI = null!;
 	// PS runspace
-	internal Runspace Runspace { get; private set; }
+	internal Runspace Runspace { get; private set; } = null!;
 	// Main pipeline
-	PowerShell Pipeline;
+	PowerShell? Pipeline;
 	// PS engine
-	EngineIntrinsics _engine_;
-	internal EngineIntrinsics Engine { get { return _engine_; } }
+	EngineIntrinsics? _engine_;
+	internal EngineIntrinsics Engine => _engine_!;
 
 	/// <summary>
 	/// Gets a new pipeline or nested one.
@@ -590,7 +581,7 @@ Continue with this current directory?
 	internal PowerShell NewPowerShell()
 	{
 		if (IsRunning)
-			return Pipeline.CreateNestedPowerShell();
+			return Pipeline!.CreateNestedPowerShell();
 
 		Pipeline = PowerShell.Create();
 		Pipeline.Runspace = Runspace;
@@ -603,7 +594,7 @@ Continue with this current directory?
 	internal bool IsRunning => Pipeline != null && Pipeline.InvocationStateInfo.State == PSInvocationState.Running;
 
 	// Current command being invoked (e.g. used as Out-FarPanel title)
-	internal string _myCommand;
+	internal string? _myCommand;
 
 	/// <summary>
 	/// Runs the PowerShell command pipeline.
@@ -617,7 +608,7 @@ Continue with this current directory?
 			return true;
 
 		// push writer
-		if (args.Writer == null)
+		if (args.Writer is null)
 		{
 			// use own lazy output
 			FarUI.PushWriter(new TranscriptOutputWriter());
@@ -671,8 +662,8 @@ Continue with this current directory?
 				}
 
 				// write the reason
-				using (var ps = NewPowerShell())
-					A.OutReason(ps, reason);
+				using var ps = NewPowerShell();
+				A.OutReason(ps, reason);
 			}
 			finally
 			{
@@ -693,7 +684,7 @@ Continue with this current directory?
 
 			// pop writer
 			var usedWriter = FarUI.PopWriter();
-			if (args.Writer == null)
+			if (args.Writer is null)
 			{
 				// it is the writer created here, view its file, if any
 				var myWriter = (TranscriptOutputWriter)usedWriter;
@@ -753,10 +744,10 @@ Continue with this current directory?
 		EditorKit.InvokeScriptFromEditor(null);
 	}
 
-	HashSet<LineBreakpoint> _breakpoints_;
+	HashSet<LineBreakpoint>? _breakpoints_;
 	internal HashSet<LineBreakpoint> Breakpoints => _breakpoints_ ??= new HashSet<LineBreakpoint>();
 
-	void OnBreakpointUpdated(object sender, BreakpointUpdatedEventArgs e)
+	void OnBreakpointUpdated(object? sender, BreakpointUpdatedEventArgs e)
 	{
 		if (!string.IsNullOrEmpty(e.Breakpoint.Script))
 		{
@@ -785,5 +776,5 @@ Continue with this current directory?
 	/// <summary>
 	/// Transcript writer, may be null.
 	/// </summary>
-	internal TranscriptOutputWriter Transcript { get; set; }
+	internal TranscriptOutputWriter? Transcript { get; set; }
 }

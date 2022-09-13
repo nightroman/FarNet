@@ -17,17 +17,17 @@ class DataLookup
 		_namePairs = namePairs;
 	}
 
-	public void Invoke(object sender, OpenFileEventArgs e)
+	public void Invoke(object? sender, OpenFileEventArgs e)
 	{
 		// lookup data panel (should be checked, user could use another)
 		if (sender is not DataPanel dp)
 			throw new InvalidOperationException("Event sender is not a data panel object.");
 
 		// destination row (should be valid, checked on creation by us)
-		DataRow drSet = (DataRow)((MemberPanel)dp.Parent).Value.BaseObject;
+		DataRow drSet = (DataRow)((MemberPanel)dp.Parent!).Value.BaseObject;
 
 		// the source row
-		DataRow drGet = (DataRow)e.File.Data;
+		DataRow drGet = (DataRow)e.File.Data!;
 
 		// copy data using name pairs
 		for (int i = 0; i < _namePairs.Length; i += 2)

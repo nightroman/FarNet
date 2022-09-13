@@ -2,101 +2,90 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
+using FarNet;
 using System.Collections.Generic;
 using System.Management.Automation;
-using FarNet;
 
-namespace PowerShellFar
+namespace PowerShellFar;
+
+/// <summary>
+/// .NET objects panel.
+/// </summary>
+public class ObjectPanel : FormatPanel
 {
 	/// <summary>
-	/// .NET objects panel.
+	/// Gets the panel explorer.
 	/// </summary>
-	public class ObjectPanel : FormatPanel
+	public new ObjectExplorer Explorer => (ObjectExplorer)base.Explorer;
+
+	/// <summary>
+	/// New object panel with the object explorer.
+	/// </summary>
+	/// <param name="explorer">The panel explorer.</param>
+	public ObjectPanel(ObjectExplorer explorer) : base(explorer)
 	{
-		/// <summary>
-		/// Gets the panel explorer.
-		/// </summary>
-		public new ObjectExplorer Explorer { get { return (ObjectExplorer)base.Explorer; } }
-		/// <summary>
-		/// New object panel with the object explorer.
-		/// </summary>
-		/// <param name="explorer">The panel explorer.</param>
-		public ObjectPanel(ObjectExplorer explorer)
-			: base(explorer)
-		{
-			CurrentLocation = "*";
-			SortMode = PanelSortMode.Unsorted;
-		}
-		///
-		public ObjectPanel() : this(new ObjectExplorer()) { }
-		/// <inheritdoc/>
-		protected override string DefaultTitle { get { return "Objects"; } }
-		/// <summary>
-		/// Adds a single objects to the panel as it is.
-		/// </summary>
-		/// <param name="value">The object to add.</param>
-		public void AddObject(object value)
-		{
-			if (value != null)
-				Explorer.AddedValues.Add(PSObject.AsPSObject(value));
-		}
-		/// <summary>
-		/// Adds objects to the panel.
-		/// </summary>
-		/// <param name="values">Objects represented by enumerable or a single object.</param>
-		public void AddObjects(object values) { Explorer.AddObjects(values); }
-		/// <summary>
-		/// Exports objects to Clixml file.
-		/// </summary>
-		public override bool SaveData()
-		{
-			UI.ExportDialog.ExportClixml(CollectData(), StartDirectory);
-			return true;
-		}
-		/// <summary>
-		/// Sets file name if any suitable exists.
-		/// </summary>
-		static void SetFileName(FarFile file)
-		{
-			// case: try to get display name
-			PSObject data = PSObject.AsPSObject(file.Data);
-			PSPropertyInfo pi = A.FindDisplayProperty(data);
-			if (pi != null)
-			{
-				file.Name = pi.Value == null ? Res.NullText : pi.Value.ToString();
-				return;
-			}
+		CurrentLocation = "*";
+		SortMode = PanelSortMode.Unsorted;
+	}
 
-			// other: use ToString(), but skip too verbose PSCustomObject
-			if (!(data.BaseObject is PSCustomObject))
-				file.Name = data.ToString();
-		}
-		///
-		internal override void HelpMenuInitItems(HelpMenuItems items, PanelMenuEventArgs e)
-		{
-			if (items.Save == null)
-				items.Save = new SetItem()
-				{
-					Text = "Export .clixml...",
-					Click = delegate { SaveData(); }
-				};
+	///
+	public ObjectPanel() : this(new ObjectExplorer())
+	{
+	}
 
-			base.HelpMenuInitItems(items, e);
-		}
-		/// <summary>
-		/// Files data.
-		/// </summary>
-		IList<object> CollectData()
+	/// <inheritdoc/>
+	protected override string DefaultTitle => "Objects";
+
+	/// <summary>
+	/// Adds a single objects to the panel as it is.
+	/// </summary>
+	/// <param name="value">The object to add.</param>
+	public void AddObject(object value)
+	{
+		if (value != null)
+			Explorer.AddedValues.Add(PSObject.AsPSObject(value));
+	}
+
+	/// <summary>
+	/// Adds objects to the panel.
+	/// </summary>
+	/// <param name="values">Objects represented by enumerable or a single object.</param>
+	public void AddObjects(object values) { Explorer.AddObjects(values); }
+
+	/// <summary>
+	/// Exports objects to Clixml file.
+	/// </summary>
+	public override bool SaveData()
+	{
+		UI.ExportDialog.ExportClixml(CollectData(), StartDirectory);
+		return true;
+	}
+
+	///
+	internal override void HelpMenuInitItems(HelpMenuItems items, PanelMenuEventArgs e)
+	{
+		items.Save ??= new SetItem()
 		{
-			var Files = Explorer.Cache;
-			var r = new List<object>
-			{
-				Capacity = Files.Count
-			};
-			foreach (FarFile f in Files)
-				if (f.Data != null)
-					r.Add(f.Data);
-			return r;
-		}
+			Text = "Export .clixml...",
+			Click = delegate { SaveData(); }
+		};
+
+		base.HelpMenuInitItems(items, e);
+	}
+
+	/// <summary>
+	/// Files data.
+	/// </summary>
+	IList<object> CollectData()
+	{
+		var Files = Explorer.Cache;
+		var r = new List<object>
+		{
+			Capacity = Files.Count
+		};
+		foreach (FarFile f in Files)
+			if (f.Data != null)
+				r.Add(f.Data);
+		return r;
 	}
 }

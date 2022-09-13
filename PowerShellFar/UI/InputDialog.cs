@@ -8,76 +8,74 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace PowerShellFar.UI
+namespace PowerShellFar.UI;
+
+class InputDialog
 {
-	class InputDialog
+	public string? Title { get; set; }
+	public IList<string>? Prompt { get; set; }
+	public string? Text { get; set; }
+	public string? History { get; set; }
+	public bool UseLastHistory { get; set; }
+
+	IDialog? uiDialog;
+	IEdit? uiEdit;
+
+	void Create()
 	{
-		public string Title { get; set; }
-		public IList<string> Prompt { get; set; }
-		public string Text { get; set; }
-		public string History { get; set; }
-		public bool UseLastHistory { get; set; }
+		Prompt ??= Array.Empty<string>();
 
-		IDialog uiDialog;
-		IEdit uiEdit;
+		int w = Far.Api.UI.WindowSize.X - 7;
+		int h = 5 + Prompt.Count;
 
-		void Create()
+		uiDialog = Far.Api.CreateDialog(-1, -1, w, h);
+		uiDialog.TypeId = new Guid(Guids.InputDialog);
+		uiDialog.AddBox(3, 1, w - 4, h - 2, Title);
+
+		var uiPrompt = new List<IText>(Prompt.Count);
+		foreach (var s in Prompt)
+			uiPrompt.Add(uiDialog.AddText(5, -1, w - 6, s));
+
+		uiEdit = uiDialog.AddEdit(5, -1, w - 6, string.Empty);
+		uiEdit.IsPath = true;
+		uiEdit.Text = Text ?? string.Empty;
+		uiEdit.History = History ?? string.Empty;
+		uiEdit.UseLastHistory = UseLastHistory;
+
+		// hotkeys
+		uiEdit.KeyPressed += (sender, e) =>
 		{
-			if (Prompt == null)
-				Prompt = new string[] { };
-
-			int w = Far.Api.UI.WindowSize.X - 7;
-			int h = 5 + Prompt.Count;
-
-			uiDialog = Far.Api.CreateDialog(-1, -1, w, h);
-			uiDialog.TypeId = new Guid(Guids.InputDialog);
-			uiDialog.AddBox(3, 1, w - 4, h - 2, Title);
-
-			var uiPrompt = new List<IText>(Prompt.Count);
-			foreach (var s in Prompt)
-				uiPrompt.Add(uiDialog.AddText(5, -1, w - 6, s));
-
-			uiEdit = uiDialog.AddEdit(5, -1, w - 6, string.Empty);
-			uiEdit.IsPath = true;
-			uiEdit.Text = Text ?? string.Empty;
-			uiEdit.History = History;
-			uiEdit.UseLastHistory = UseLastHistory;
-
-			// hotkeys
-			uiEdit.KeyPressed += (sender, e) =>
+			switch (e.Key.VirtualKeyCode)
 			{
-				switch (e.Key.VirtualKeyCode)
-				{
-					case KeyCode.Tab:
-						e.Ignore = true;
-						EditorKit.ExpandCode(uiEdit.Line, null);
-						break;
-					case KeyCode.F1:
-						e.Ignore = true;
-						Help.ShowHelpForContext(HelpTopic.InvokeCommandsDialog);
-						break;
-				}
-			};
-		}
+				case KeyCode.Tab:
+					e.Ignore = true;
+					EditorKit.ExpandCode(uiEdit.Line, null);
+					break;
+				case KeyCode.F1:
+					e.Ignore = true;
+					Help.ShowHelpForContext(HelpTopic.InvokeCommandsDialog);
+					break;
+			}
+		};
+	}
 
-		public string Show()
-		{
-			Create();
-			if (uiDialog.Show())
-				return uiEdit.Text;
-			else
+	public string? Show()
+	{
+		Create();
+		if (uiDialog!.Show())
+			return uiEdit!.Text;
+		else
+			return null;
+	}
+
+	public Task<string?> ShowAsync()
+	{
+		Create();
+		return Tasks.Dialog(uiDialog!, (e) => {
+			if (e.Control is null)
 				return null;
-		}
-
-		public Task<string> ShowAsync()
-		{
-			Create();
-			return Tasks.Dialog(uiDialog, (e) => {
-				if (e.Control == null)
-					return null;
-				else
-					return uiEdit.Text;
-			});
-		}
+			else
+				return uiEdit!.Text;
+		});
 	}
 }

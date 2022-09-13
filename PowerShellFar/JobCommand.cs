@@ -5,60 +5,60 @@
 using System;
 using System.Management.Automation;
 
-namespace PowerShellFar
+namespace PowerShellFar;
+
+/// <summary>
+/// Job command (a command name or a script block).
+/// </summary>
+/// <remarks>
+/// Normally you should not create instances directly.
+/// When needed they are created internally from strings or script blocks.
+/// </remarks>
+public sealed class JobCommand
 {
+	readonly bool IsScript;
+
 	/// <summary>
-	/// Job command (a command name or a script block).
+	/// Command name or code.
 	/// </summary>
-	/// <remarks>
-	/// Normally you should not create instances directly.
-	/// When needed they are created internally from strings or script blocks.
-	/// </remarks>
-	public sealed class JobCommand
+	public string Command { get; }
+
+	/// <summary>
+	/// Creates a command from a command name.
+	/// </summary>
+	/// <param name="commandName">Command name or script file name/path.</param>
+	public JobCommand(string commandName)
 	{
-		readonly bool IsScript;
+		Command = commandName ?? throw new ArgumentNullException(nameof(commandName));
+	}
 
-		/// <summary>
-		/// Command name or code.
-		/// </summary>
-		public string Command { get; private set; }
+	/// <summary>
+	/// Creates a command from a script block.
+	/// </summary>
+	/// <param name="scriptBlock">Job script block.</param>
+	public JobCommand(ScriptBlock scriptBlock)
+	{
+		if (scriptBlock == null)
+			throw new ArgumentNullException(nameof(scriptBlock));
 
-		/// <summary>
-		/// Creates a command from a command name.
-		/// </summary>
-		/// <param name="commandName">Command name or script file name/path.</param>
-		public JobCommand(string commandName)
-		{
-			Command = commandName ?? throw new ArgumentNullException("commandName");
-		}
+		Command = scriptBlock.ToString();
+		IsScript = true;
+	}
 
-		/// <summary>
-		/// Creates a command from a script block.
-		/// </summary>
-		/// <param name="scriptBlock">Job script block.</param>
-		public JobCommand(ScriptBlock scriptBlock)
-		{
-			if (scriptBlock == null)
-				throw new ArgumentNullException("scriptBlock");
+	/// <summary>
+	/// Creates a command from text.
+	/// </summary>
+	/// <param name="commandText">Cmdlet/script name or script code.</param>
+	/// <param name="isScript">Command text is script code.</param>
+	public JobCommand(string commandText, bool isScript)
+	{
+		Command = commandText ?? throw new ArgumentNullException(nameof(commandText));
 
-			Command = scriptBlock.ToString();
-			IsScript = true;
-		}
+		IsScript = isScript;
+	}
 
-		/// <summary>
-		/// Creates a command from text.
-		/// </summary>
-		/// <param name="commandText">Cmdlet/script name or script code.</param>
-		/// <param name="isScript">Command text is script code.</param>
-		public JobCommand(string commandText, bool isScript)
-		{
-			Command = commandText ?? throw new ArgumentNullException("commandText");
-			IsScript = isScript;
-		}
-
-		internal PowerShell Add(PowerShell shell)
-		{
-			return IsScript ? shell.AddScript(Command) : shell.AddCommand(Command);
-		}
+	internal PowerShell Add(PowerShell shell)
+	{
+		return IsScript ? shell.AddScript(Command) : shell.AddCommand(Command);
 	}
 }

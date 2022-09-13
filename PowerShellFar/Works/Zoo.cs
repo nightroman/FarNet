@@ -32,7 +32,6 @@ public static class Zoo
 	public static KeyValuePair<string, string> SplitCommandWithPrefix(string text)
 	{
 		var match = Regex.Match(text, @"(\s*)(?:(\w+):)?\s*");
-		Debug.Assert(match.Success);
 
 		int index;
 		var prefix = match.Groups[2].Value;
@@ -78,7 +77,7 @@ public static class Zoo
 		}
 
 		// use default external viewer
-		externalViewerFileName = Environment.ProcessPath;
+		externalViewerFileName = Environment.ProcessPath!;
 		externalViewerArguments = "/w- /ro /m /p /v \"" + fileName + "\"";
 		return My.ProcessEx.Start(externalViewerFileName, externalViewerArguments);
 	}
@@ -116,7 +115,7 @@ public static class Zoo
 	}
 
 	//! Start-Transcript and Stop-Transcript get PSObject(string) with note property Path.
-	static PSObject GetTranscriptResult(string format, string path)
+	static PSObject GetTranscriptResult(string format, string? path)
 	{
 		var res = PSObject.AsPSObject(string.Format(format, path));
 		res.Properties.Add(new PSNoteProperty("Path", path));
@@ -124,9 +123,9 @@ public static class Zoo
 	}
 
 	///
-	public static PSObject StopTranscript(bool force)
+	public static PSObject? StopTranscript(bool force)
 	{
-		if (A.Psf.Transcript == null)
+		if (A.Psf.Transcript is null)
 		{
 			if (force)
 				return null;

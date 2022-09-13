@@ -25,7 +25,7 @@ abstract class OutputWriter
 		return AnsiRegex.Replace(s, string.Empty);
 	}
 
-	public OutputWriter Next { get; set; }
+	public OutputWriter? Next { get; set; }
 	public abstract void Write(string value);
 	public abstract void WriteLine();
 	public abstract void WriteLine(string value);

@@ -35,7 +35,7 @@ static class PathEx
 	public static string Combine(string path, string file)
 	{
 		// no path or special fake path, e.g. in object panel
-		if (path == null || path == "*")
+		if (path is null || path == "*")
 			return file;
 
 		if (path.EndsWith("\\", StringComparison.Ordinal))
@@ -71,13 +71,13 @@ static class PathEx
 	/// </summary>
 	/// <param name="value">Any object, e.g. FileInfo, String.</param>
 	/// <returns>Existing file path or null.</returns>
-	public static string TryGetFilePath(object value) //_091202_073429
+	public static string? TryGetFilePath(object? value) //_091202_073429
 	{
 		var fileInfo = PowerShellFar.Cast<FileInfo>.From(value);
 		if (fileInfo != null)
 			return fileInfo.FullName;
 
-		if (LanguagePrimitives.TryConvertTo<string>(value, out string path))
+		if (LanguagePrimitives.TryConvertTo(value, out string path))
 		{
 			// looks like a full path
 			if (path.Length > 3 && path.Substring(1, 2) == ":\\" || path.StartsWith("\\\\", StringComparison.OrdinalIgnoreCase))
@@ -95,13 +95,13 @@ static class PathEx
 	/// </summary>
 	/// <param name="value">Any object, e.g. DirectoryInfo, String.</param>
 	/// <returns>Existing directory path or null.</returns>
-	public static string TryGetDirectoryPath(object value)
+	public static string? TryGetDirectoryPath(object value)
 	{
 		var directoryInfo = PowerShellFar.Cast<DirectoryInfo>.From(value);
 		if (directoryInfo != null)
 			return directoryInfo.FullName;
 
-		if (LanguagePrimitives.TryConvertTo<string>(value, out string path))
+		if (LanguagePrimitives.TryConvertTo(value, out string path))
 		{
 			// looks like a full path
 			if (path.Length > 3 && path.Substring(1, 2) == ":\\" || path.StartsWith("\\\\", StringComparison.OrdinalIgnoreCase))

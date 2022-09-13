@@ -30,7 +30,7 @@ class FarUI : UniformUI
 	const ConsoleColor PromptColor = ConsoleColor.White;
 	const ConsoleColor DefaultPromptColor = ConsoleColor.Yellow;
 
-	OutputWriter _writer;
+	OutputWriter? _writer;
 	readonly ConsoleOutputWriter _console = new();
 
 	/// <summary>
@@ -51,7 +51,7 @@ class FarUI : UniformUI
 
 	internal OutputWriter PopWriter()
 	{
-		var head = _writer;
+		var head = _writer!;
 		_writer = head.Next;
 		return head;
 	}
@@ -68,7 +68,8 @@ class FarUI : UniformUI
 	/// </summary>
 	public override Dictionary<string, PSObject> Prompt(string caption, string message, Collection<FieldDescription> descriptions)
 	{
-		if (descriptions == null) throw new ArgumentNullException(nameof(descriptions));
+		if (descriptions == null)
+			throw new ArgumentNullException(nameof(descriptions));
 
 		var r = new Dictionary<string, PSObject>();
 
@@ -84,8 +85,8 @@ class FarUI : UniformUI
 		{
 			var prompt = current.Name;
 
-			var type = Type.GetType(current.ParameterAssemblyFullName);
-			if (type.GetInterface(typeof(IList).FullName) != null)
+			var type = Type.GetType(current.ParameterAssemblyFullName)!;
+			if (type.GetInterface(typeof(IList).FullName!) != null)
 			{
 				var arrayList = new ArrayList();
 				for (; ; )
@@ -120,7 +121,7 @@ class FarUI : UniformUI
 						if (!ui.Show())
 							throw new PipelineStoppedException();
 
-						text = ui.Text;
+						text = ui.Text!;
 					}
 
 					if (text.Length == 0)
@@ -182,7 +183,7 @@ class FarUI : UniformUI
 					if (!ui.Show())
 						throw new PipelineStoppedException();
 
-					text = ui.Text;
+					text = ui.Text!;
 				}
 				r.Add(prompt, ValueToResult(text, safe));
 			}

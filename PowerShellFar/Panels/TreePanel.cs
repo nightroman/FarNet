@@ -6,163 +6,168 @@ using System;
 using System.Collections.Generic;
 using FarNet;
 
-namespace PowerShellFar
+namespace PowerShellFar;
+
+/// <summary>
+/// Panel with <see cref="TreeFile"/> items.
+/// </summary>
+/// <remarks>
+/// Available view modes:
+/// <ul>
+/// <li>[Ctrl0] - tree and description columns</li>
+/// <li>[Ctrl1] - tree column and description status</li>
+/// </ul>
+/// </remarks>
+public class TreePanel : AnyPanel
 {
 	/// <summary>
-	/// Panel with <see cref="TreeFile"/> items.
+	/// Gets the panel explorer.
 	/// </summary>
-	/// <remarks>
-	/// Available view modes:
-	/// <ul>
-	/// <li>[Ctrl0] - tree and description columns</li>
-	/// <li>[Ctrl1] - tree column and description status</li>
-	/// </ul>
-	/// </remarks>
-	public class TreePanel : AnyPanel
+	public new TreeExplorer Explorer => (TreeExplorer)base.Explorer;
+
+	/// <summary>
+	/// New tree panel with the explorer.
+	/// </summary>
+	/// <param name="explorer">The panel explorer.</param>
+	public TreePanel(TreeExplorer explorer) : base(explorer)
 	{
-		/// <summary>
-		/// Gets the panel explorer.
-		/// </summary>
-		public new TreeExplorer Explorer { get { return (TreeExplorer)base.Explorer; } }
-		/// <summary>
-		/// New tree panel with the explorer.
-		/// </summary>
-		/// <param name="explorer">The panel explorer.</param>
-		public TreePanel(TreeExplorer explorer)
-			: base(explorer)
+		IgnoreDirectoryFlag = true; // _090810_180151
+
+		SortMode = PanelSortMode.Unsorted;
+
+		// columns
+		var cO = new SetColumn { Kind = "O", Name = "Name" };
+		var cZ = new SetColumn { Kind = "Z", Name = "Description" };
+
+		// mode: tree column and description status
+		var plan0 = new PanelPlan
 		{
-			IgnoreDirectoryFlag = true; // _090810_180151
+			Columns = new FarColumn[] { cO },
+			StatusColumns = new FarColumn[] { cZ }
+		};
+		SetPlan(0, plan0);
 
-			SortMode = PanelSortMode.Unsorted;
+		// mode: tree and description columns
+		var plan1 = new PanelPlan
+		{
+			Columns = new FarColumn[] { cO, cZ }
+		};
+		SetPlan((PanelViewMode)1, plan1);
+	}
 
-			// columns
-			SetColumn cO = new SetColumn() { Kind = "O", Name = "Name" };
-			SetColumn cZ = new SetColumn() { Kind = "Z", Name = "Description" };
+	internal override void ShowHelpForPanel()
+	{
+		Entry.Instance.ShowHelpTopic(HelpTopic.TreePanel);
+	}
 
-			// mode: tree column and description status
-			PanelPlan plan0 = new PanelPlan
-			{
-				Columns = new FarColumn[] { cO },
-				StatusColumns = new FarColumn[] { cZ }
-			};
-			SetPlan((PanelViewMode)0, plan0);
+	/// <summary>
+	/// Opens/closes the node.
+	/// </summary>
+	/// <param name="file">The node to open/close.</param>
+	public override void OpenFile(FarFile file)
+	{
+		if (file is null)
+			throw new ArgumentNullException(nameof(file));
 
-			// mode: tree and description columns
-			PanelPlan plan1 = new PanelPlan
-			{
-				Columns = new FarColumn[] { cO, cZ }
-			};
-			SetPlan((PanelViewMode)1, plan1);
+		var node = (TreeFile)file;
+		if (node._State == 0)
+		{
+			if (!node.IsNode)
+				return;
+			node.FillNode();
+			node._State = 1;
 		}
-		internal override void ShowHelpForPanel()
+		else
 		{
-			Entry.Instance.ShowHelpTopic(HelpTopic.TreePanel);
+			node._State = -node._State;
 		}
-		/// <summary>
-		/// Opens/closes the node.
-		/// </summary>
-		/// <param name="file">The node to open/close.</param>
-		public override void OpenFile(FarFile file)
-		{
-			if (file == null)
-				throw new ArgumentNullException("file");
+		UpdateRedraw(false);
+	}
 
-			TreeFile node = (TreeFile)file;
-			if (node._State == 0)
-			{
-				if (!node.IsNode)
-					return;
-				node.FillNode();
-				node._State = 1;
-			}
-			else
-			{
-				node._State = -node._State;
-			}
-			UpdateRedraw(false);
-		}
-		/// <inheritdoc/>
-		public override bool UIKeyPressed(KeyInfo key)
-		{
-			if (key == null) throw new ArgumentNullException("key");
+	/// <inheritdoc/>
+	public override bool UIKeyPressed(KeyInfo key)
+	{
+		if (key is null)
+			throw new ArgumentNullException(nameof(key));
 
-			switch (key.VirtualKeyCode)
-			{
-				case KeyCode.LeftArrow:
+		switch (key.VirtualKeyCode)
+		{
+			case KeyCode.LeftArrow:
+				{
+					if (!key.Is() && !key.IsAlt() || Far.Api.CommandLine.Length > 0)
+						break;
+
+					var file = CurrentFile;
+					if (file is null)
+						break;
+
+					TreeFile node = (TreeFile)file;
+					if (node._State == 1)
 					{
-						if (!key.Is() && !key.IsAlt() || Far.Api.CommandLine.Length > 0)
-							break;
-
-						FarFile file = CurrentFile;
-						if (file == null)
-							break;
-
-						TreeFile node = (TreeFile)file;
-						if (node._State == 1)
+						// reset
+						if (key.IsAlt())
 						{
-							// reset
-							if (key.IsAlt())
-							{
-								node.ChildFiles.Clear();
-								node._State = 0;
-								UpdateRedraw(false);
-								return true;
-							}
-
-							// collapse
-							OpenFile(file);
-						}
-						else if (node.Parent != null)
-						{
-							PostFile(node.Parent);
-							Redraw();
+							node.ChildFiles.Clear();
+							node._State = 0;
+							UpdateRedraw(false);
+							return true;
 						}
 
-						return true;
+						// collapse
+						OpenFile(file);
 					}
-				case KeyCode.RightArrow:
+					else if (node.Parent != null)
 					{
-						if (!key.Is() && !key.IsAlt() || Far.Api.CommandLine.Length > 0)
-							break;
-
-						FarFile file = CurrentFile;
-						if (file == null)
-							break;
-
-						TreeFile node = (TreeFile)file;
-						if (node != null && node._State != 1 && node.IsNode)
-						{
-							// reset
-							if (key.IsAlt())
-							{
-								node.ChildFiles.Clear();
-								node._State = 0;
-							}
-
-							// open
-							OpenFile(file);
-						}
-						else
-						{
-							// go to next
-							Redraw(CurrentIndex + 1, -1);
-						}
-
-						return true;
+						PostFile(node.Parent);
+						Redraw();
 					}
-			}
 
-			// base
-			return base.UIKeyPressed(key);
+					return true;
+				}
+			case KeyCode.RightArrow:
+				{
+					if (!key.Is() && !key.IsAlt() || Far.Api.CommandLine.Length > 0)
+						break;
+
+					var file = CurrentFile;
+					if (file is null)
+						break;
+
+					TreeFile node = (TreeFile)file;
+					if (node != null && node._State != 1 && node.IsNode)
+					{
+						// reset
+						if (key.IsAlt())
+						{
+							node.ChildFiles.Clear();
+							node._State = 0;
+						}
+
+						// open
+						OpenFile(file);
+					}
+					else
+					{
+						// go to next
+						Redraw(CurrentIndex + 1, -1);
+					}
+
+					return true;
+				}
 		}
-		/// <inheritdoc/>
-		public override IEnumerable<FarFile> UIGetFiles(GetFilesEventArgs args)
-		{
-			if (args == null) return null;
 
-			args.Parameter = new TreeExplorerGetFilesParameter() { ShowHidden = ShowHidden };
+		// base
+		return base.UIKeyPressed(key);
+	}
 
-			return base.UIGetFiles(args);
-		}
+	/// <inheritdoc/>
+	public override IEnumerable<FarFile> UIGetFiles(GetFilesEventArgs args)
+	{
+		if (args is null)
+			throw new ArgumentNullException(nameof(args));
+
+		args.Parameter = new TreeExplorerGetFilesParameter() { ShowHidden = ShowHidden };
+
+		return base.UIGetFiles(args);
 	}
 }

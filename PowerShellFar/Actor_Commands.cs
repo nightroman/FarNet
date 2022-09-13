@@ -27,7 +27,7 @@ public sealed partial class Actor
 	/// The code is simply returned, if you want to execute it then call <see cref="InvokeInputCode"/>.
 	/// </para>
 	/// </remarks>
-	public string InputCode()
+	public string? InputCode()
 	{
 		var ui = CreateCodeDialog();
 		return ui.Show();
@@ -41,7 +41,7 @@ public sealed partial class Actor
 		InvokeInputCodePrivate(null);
 	}
 
-	void InvokeInputCodePrivate(string input)
+	void InvokeInputCodePrivate(string? input)
 	{
 		var ui = CreateCodeDialog();
 		ui.Text = input;

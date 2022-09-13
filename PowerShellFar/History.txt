@@ -1,5 +1,16 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 6.0.18 =
+
+Enables nullable reference types (NRT) in the API.
+This does not change much for scripts.
+
+Minor tweaks:
+- Rework legacy code in menu
+- Amend Assert-Far dialog Ignore
+- Amend Find-FarFile parameter sets
+- One $Psf.ShowInteractive with default parameter instead of two
+
 = 6.0.17 =
 
 Requires FarNet 6.0.14

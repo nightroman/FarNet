@@ -25,14 +25,13 @@ public class SuperPanel : Panel
 	/// <summary>
 	/// Gets the super explorer of this panel.
 	/// </summary>
-	public new SuperExplorer Explorer { get { return (SuperExplorer)base.Explorer; } }
+	public new SuperExplorer Explorer => (SuperExplorer)base.Explorer;
 
 	/// <summary>
 	/// New super panel with a super explorer.
 	/// </summary>
 	/// <param name="explorer">The panel explorer.</param>
-	public SuperPanel(SuperExplorer explorer)
-		: base(explorer)
+	public SuperPanel(SuperExplorer explorer) : base(explorer)
 	{
 		CurrentLocation = Name;
 		Title = Name;
@@ -47,14 +46,16 @@ public class SuperPanel : Panel
 	}
 
 	///
-	public SuperPanel() : this(new SuperExplorer()) { }
+	public SuperPanel() : this(new SuperExplorer())
+	{
+	}
 
 	/// <inheritdoc/>
 	public override void UICopyMove(bool move)
 	{
 		// target
 		var that = TargetPanel;
-		if (that == null)
+		if (that is null)
 		{
 			base.UICopyMove(move);
 			return;
@@ -70,7 +71,7 @@ public class SuperPanel : Panel
 			return;
 
 		// call
-		this.Explorer.CommitFiles(this, that, files, move);
+		Explorer.CommitFiles(this, that, files, move);
 	}
 
 	/// <inheritdoc/>
@@ -80,7 +81,7 @@ public class SuperPanel : Panel
 		base.UITimer();
 
 		// no job
-		if (_idleFiles == null)
+		if (_idleFiles is null)
 			return;
 
 		// add files
@@ -107,7 +108,7 @@ public class SuperPanel : Panel
 	{
 		lock (_lock)
 		{
-			if (_idleFiles == null)
+			if (_idleFiles is null)
 				_idleFiles = new List<FarFile>();
 
 			_idleFiles.AddRange(files);
@@ -117,7 +118,9 @@ public class SuperPanel : Panel
 	/// <inheritdoc/>
 	public override bool UIKeyPressed(KeyInfo key)
 	{
-		if (key == null) throw new ArgumentNullException(nameof(key));
+		if (key is null)
+			throw new ArgumentNullException(nameof(key));
+
 		switch (key.VirtualKeyCode)
 		{
 			case KeyCode.F7:
@@ -140,8 +143,8 @@ public class SuperPanel : Panel
 
 				if (key.IsCtrl())
 				{
-					var efile = (SuperFile)CurrentFile;
-					if (efile == null)
+					var efile = (SuperFile?)CurrentFile;
+					if (efile is null)
 						break;
 
 					var panel = efile.Explorer.CreatePanel();

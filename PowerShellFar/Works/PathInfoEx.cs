@@ -13,10 +13,10 @@ namespace PowerShellFar;
 class PathInfoEx
 {
 	readonly PathInfo _PathInfo;
-	string _Path;
+	string? _Path;
 
 	///
-	public PathInfoEx(string path)
+	public PathInfoEx(string? path)
 	{
 		var core = A.Psf.Engine.SessionState.Path;
 		if (string.IsNullOrEmpty(path) || path == ".")
@@ -55,19 +55,11 @@ class PathInfoEx
 	/// <summary>
 	/// Gets the provider info.
 	/// </summary>
-	public ProviderInfo Provider
-	{
-		get { return _PathInfo.Provider; }
-	}
+	public ProviderInfo Provider => _PathInfo.Provider;
 
 	/// <summary>
 	/// Gets the drive name or null.
 	/// </summary>
-	internal string DriveName //! 110227 PathInfo.Drive can be null even if a drive exists
-	{
-		get
-		{
-			return _PathInfo.Drive?.Name;
-		}
-	}
+	//! 110227 PathInfo.Drive can be null even if a drive exists
+	internal string? DriveName => _PathInfo.Drive?.Name;
 }

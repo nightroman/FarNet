@@ -180,7 +180,7 @@ String^ FarControl::Text::get()
 	if (_dialog->_hDlg != INVALID_HANDLE_VALUE)
 		return gcnew String((const wchar_t*)Info.SendDlgMessage(_dialog->_hDlg, DM_GETCONSTTEXTPTR, Id, 0));
 	else
-		return _text;
+		return _text ? _text : String::Empty;
 }
 
 void FarControl::Text::set(String^ value)

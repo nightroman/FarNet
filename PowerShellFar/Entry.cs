@@ -15,11 +15,11 @@ namespace PowerShellFar;
 [ModuleHost(Load = true)]
 public sealed class Entry : ModuleHost
 {
-	internal static Entry Instance { get; private set; }
-	internal static string LocalData { get; private set; }
-	internal static string RoamingData { get; private set; }
-	internal static IModuleCommand CommandInvoke1 { get; private set; }
-	internal static IModuleCommand CommandInvoke2 { get; private set; }
+	internal static Entry Instance { get; private set; } = null!;
+	internal static string LocalData { get; private set; } = null!;
+	internal static string RoamingData { get; private set; } = null!; 
+	internal static IModuleCommand CommandInvoke1 { get; private set; } = null!; 
+	internal static IModuleCommand CommandInvoke2 { get; private set; } = null!;
 
 	public Entry()
 	{
@@ -55,7 +55,7 @@ public sealed class Entry : ModuleHost
 		// register menu
 		Manager.RegisterTool(
 			new ModuleToolAttribute { Name = Res.Me, Options = ModuleToolOptions.F11Menus, Id = "7def4106-570a-41ab-8ecb-40605339e6f7" },
-			OnOpen);
+			(s, e) => UI.ActorMenu.Show(e));
 
 		// subscribe to editors
 		Far.Api.AnyEditor.FirstOpening += EditorKit.OnEditorFirstOpening;
@@ -70,7 +70,7 @@ public sealed class Entry : ModuleHost
 		// disconnect instances
 		A.Psf.Disconnect();
 		A.Connect(null);
-		Instance = null;
+		Instance = null!;
 	}
 
 	public override bool CanExit()
@@ -88,9 +88,9 @@ public sealed class Entry : ModuleHost
 	}
 	bool IsInvokingCalled;
 
-	void OnCommandInvoke1(object sender, ModuleCommandEventArgs e)
+	void OnCommandInvoke1(object? sender, ModuleCommandEventArgs e)
 	{
-		string currentDirectory = A.Psf.SyncPaths();
+		var currentDirectory = A.Psf.SyncPaths();
 		try
 		{
 			// if ends with `#` then omit echo else make echo with prefix
@@ -114,9 +114,9 @@ public sealed class Entry : ModuleHost
 		}
 	}
 
-	void OnCommandInvoke2(object sender, ModuleCommandEventArgs e)
+	void OnCommandInvoke2(object? sender, ModuleCommandEventArgs e)
 	{
-		string currentDirectory = A.Psf.SyncPaths();
+		var currentDirectory = A.Psf.SyncPaths();
 		try
 		{
 			var ok = A.Psf.Run(new RunArgs(e.Command));
@@ -126,11 +126,6 @@ public sealed class Entry : ModuleHost
 		{
 			A.SetCurrentDirectoryFinally(currentDirectory);
 		}
-	}
-
-	internal void OnOpen(object sender, ModuleToolEventArgs e)
-	{
-		UI.ActorMenu.Show(sender, e);
 	}
 
 	public override object Interop(string command, object args)

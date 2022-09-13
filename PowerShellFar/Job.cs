@@ -61,31 +61,28 @@ public sealed class Job : IDisposable
 	/// <summary>
 	/// Gets available jobs.
 	/// </summary>
-	public static IList<Job> Jobs
-	{
-		get { return JobList.ToArray(); }
-	}
+	public static IList<Job> Jobs => JobList.ToArray();
 
 	// UI job list controlled by a user
-	static readonly List<Job> JobList = new List<Job>();
+	static readonly List<Job> JobList = new();
 
 	// Last notification target
-	static Job JobLastNotified;
+	static Job? JobLastNotified;
 
 	// Timer started for notifications
-	static Timer Timer;
+	static Timer? Timer;
 
 	// Job UI: the job is visible
-	JobUI JobUI;
+	JobUI? JobUI;
 
 	// For UI job: keep succeeded job for this time
 	readonly int KeepSeconds;
 
 	// Stopwatch counting job keeping time
-	Stopwatch KeepStopwatch;
+	Stopwatch? KeepStopwatch;
 
 	// Engine
-	IAsyncResult InvokeResult;
+	IAsyncResult? InvokeResult;
 	readonly Runspace Runspace;
 	readonly PowerShell PowerShell;
 
@@ -93,18 +90,18 @@ public sealed class Job : IDisposable
 	/// <summary>
 	/// Gets the command that is invoked by this job.
 	/// </summary>
-	public string Command
-	{
-		get { return JobCommand.Command; }
-	}
+	public string Command => JobCommand.Command;
+
 	/// <summary>
 	/// Gets the friendly name to identify the job.
 	/// </summary>
-	public string Name { get; private set; }
+	public string? Name { get; }
+
 	/// <summary>
 	/// Gets the wait handle that is signaled when job is finished.
 	/// </summary>
-	public WaitHandle Finished => InvokeResult?.AsyncWaitHandle;
+	public WaitHandle? Finished => InvokeResult?.AsyncWaitHandle;
+
 	//! Used by Search-Regex.ps1
 	/// <summary>
 	/// Gets the job command parameters.
@@ -117,7 +114,8 @@ public sealed class Job : IDisposable
 	/// Mind thread safety issues when a job works with not thread safe instances.
 	/// </para>
 	/// </remarks>
-	public object Parameters { get; private set; }
+	public object? Parameters { get; private set; }
+
 	//! Used by Search-Regex.ps1
 	/// <summary>
 	/// Gets the status of the job.
@@ -131,49 +129,37 @@ public sealed class Job : IDisposable
 	/// <c>Reason</c>: Gets the reason for the last state change if the state changed because of an error.
 	/// </para>
 	/// </remarks>
-	public PSInvocationStateInfo JobStateInfo
-	{
-		get { return PowerShell.InvocationStateInfo; }
-	}
+	public PSInvocationStateInfo JobStateInfo => PowerShell.InvocationStateInfo;
+
 	/// <summary>
 	/// Output of the job started for output. It is null for other jobs.
 	/// </summary>
-	public PSDataCollection<PSObject> Output { get; private set; }
+	public PSDataCollection<PSObject>? Output { get; }
+
 	/// <summary>
 	/// Gets the buffer where debug information is stored.
 	/// </summary>
-	public PSDataCollection<DebugRecord> Debug
-	{
-		get { return PowerShell.Streams.Debug; }
-	}
+	public PSDataCollection<DebugRecord> Debug => PowerShell.Streams.Debug;
+
 	/// <summary>
 	/// Gets the buffer where error information is stored.
 	/// </summary>
-	public PSDataCollection<ErrorRecord> Error
-	{
-		get { return PowerShell.Streams.Error; }
-	}
+	public PSDataCollection<ErrorRecord> Error => PowerShell.Streams.Error;
+
 	/// <summary>
 	/// Gets the buffer where progress information is stored.
 	/// </summary>
-	public PSDataCollection<ProgressRecord> Progress
-	{
-		get { return PowerShell.Streams.Progress; }
-	}
+	public PSDataCollection<ProgressRecord> Progress => PowerShell.Streams.Progress;
+
 	/// <summary>
 	/// Gets the buffer where verbose information is stored.
 	/// </summary>
-	public PSDataCollection<VerboseRecord> Verbose
-	{
-		get { return PowerShell.Streams.Verbose; }
-	}
+	public PSDataCollection<VerboseRecord> Verbose => PowerShell.Streams.Verbose;
+
 	/// <summary>
 	/// Gets the buffer where warning information is stored.
 	/// </summary>
-	public PSDataCollection<WarningRecord> Warning
-	{
-		get { return PowerShell.Streams.Warning; }
-	}
+	public PSDataCollection<WarningRecord> Warning => PowerShell.Streams.Warning;
 	#endregion
 
 	/// <summary>
@@ -183,7 +169,7 @@ public sealed class Job : IDisposable
 	/// Keep seconds for UI-less jobs: 0 ~ hidden mode, in this case a job creates UI on errors, as it is not attended.
 	/// Other UI-less jobs are completely owned creators.
 	/// </remarks>
-	internal Job(JobCommand command, object parameters, string name, bool ui, int keepSeconds)
+	internal Job(JobCommand command, object? parameters, string? name, bool ui, int keepSeconds)
 	{
 		JobCommand = command;
 		Parameters = parameters;
@@ -263,34 +249,22 @@ public sealed class Job : IDisposable
 	/// <summary>
 	/// Output data stream length.
 	/// </summary>
-	long Length
-	{
-		get { return JobUI == null ? 0 : JobUI.Length; }
-	}
+	long Length => JobUI is null ? 0 : JobUI.Length;
 
 	/// <summary>
 	/// Is the job 'hidden' ~ no UI, no output?
 	/// </summary>
-	bool IsHidden
-	{
-		get { return JobUI == null && KeepSeconds <= 0; }
-	}
+	bool IsHidden => JobUI is null && KeepSeconds <= 0;
 
 	/// <summary>
 	/// Is there any error?
 	/// </summary>
-	bool IsError
-	{
-		get { return JobUI != null && JobUI.HasError; }
-	}
+	bool IsError => JobUI != null && JobUI.HasError;
 
 	/// <summary>
 	/// Is the job running?
 	/// </summary>
-	bool IsRunning
-	{
-		get { return PowerShell.InvocationStateInfo.State == PSInvocationState.Running; }
-	}
+	bool IsRunning => PowerShell.InvocationStateInfo.State == PSInvocationState.Running;
 
 	/// <summary>
 	/// Is the job finished?
@@ -309,18 +283,15 @@ public sealed class Job : IDisposable
 	/// <summary>
 	/// Is the job succeeded, i.e. completed with no errors?
 	/// </summary>
-	bool IsSucceeded
-	{
-		get { return JobStateInfo.State == PSInvocationState.Completed && !IsError; }
-	}
+	bool IsSucceeded => JobStateInfo.State == PSInvocationState.Completed && !IsError;
 
 	/// <summary>
 	/// Output file name or null if output is not started.
 	/// </summary>
-	string FileName => JobUI?.FileName;
+	string? FileName => JobUI?.FileName;
 
 	/// <summary>
-	/// Is <see cref="Job.Dispose"/> called?
+	/// Is <see cref="Dispose"/> called?
 	/// </summary>
 	bool Disposed;
 
@@ -421,8 +392,8 @@ public sealed class Job : IDisposable
 					break;
 				}
 
-				Job job = (Job)menu.SelectedData;
-				if (job == null)
+				var job = (Job?)menu.SelectedData;
+				if (job is null)
 					break;
 
 				// delete
@@ -487,10 +458,7 @@ public sealed class Job : IDisposable
 	/// <summary>
 	/// Called by the timer thread, must only post the call for Far
 	/// </summary>
-	static void AsyncTimerCallback(object state)
-	{
-		Far.Api.PostJob(WatchJobs);
-	}
+	static void AsyncTimerCallback(object state) => Far.Api.PostJob(WatchJobs);
 
 	/// <summary>
 	/// Watch the jobs, notifies about finished, removes discardable and disposed.
@@ -541,13 +509,13 @@ public sealed class Job : IDisposable
 		else
 		{
 			// find 'next' finished to notify
-			int index = finished.IndexOf(JobLastNotified);
+			int index = finished.IndexOf(JobLastNotified!);
 			if (++index >= finished.Count)
 				index = 0;
 
 			// notified job, start its stopwatch now
 			JobLastNotified = finished[index];
-			if (JobLastNotified.KeepSeconds > 0 && JobLastNotified.KeepStopwatch == null)
+			if (JobLastNotified.KeepSeconds > 0 && JobLastNotified.KeepStopwatch is null)
 				JobLastNotified.KeepStopwatch = Stopwatch.StartNew();
 
 			// notify
@@ -558,8 +526,7 @@ public sealed class Job : IDisposable
 			Far.Api.UI.SetProgressState(JobLastNotified.IsSucceeded ? TaskbarProgressBarState.Normal : TaskbarProgressBarState.Error);
 
 			// install the timer
-			if (Timer == null)
-				Timer = new Timer(AsyncTimerCallback, null, NotifyPeriod, NotifyPeriod);
+			Timer ??= new Timer(AsyncTimerCallback!, null, NotifyPeriod, NotifyPeriod);
 		}
 	}
 
@@ -573,7 +540,7 @@ public sealed class Job : IDisposable
 			JobList.Add(this);
 
 		// invoke async
-		if (Output == null)
+		if (Output is null)
 			InvokeResult = PowerShell.BeginInvoke<PSObject>(null, null, AsyncInvoke, null);
 		else
 			InvokeResult = PowerShell.BeginInvoke<PSObject, PSObject>(null, Output, null, AsyncInvoke, null);
@@ -689,12 +656,12 @@ Ignore: discard all jobs and output
 					if (job.IsRunning)
 					{
 						Far.Api.UI.WindowTitle = "Waiting for a background job...";
-						job.Finished.WaitOne();
+						job.Finished!.WaitOne();
 					}
 					else
 					{
-						if (job.JobUI.Length > 0)
-							Zoo.StartExternalViewer(job.FileName).WaitForExit();
+						if (job.JobUI!.Length > 0)
+							Zoo.StartExternalViewer(job.FileName!).WaitForExit();
 
 						job.Dispose();
 					}

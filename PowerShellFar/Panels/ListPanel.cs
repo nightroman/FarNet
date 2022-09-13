@@ -15,19 +15,19 @@ namespace PowerShellFar;
 /// </summary>
 public abstract class ListPanel : AnyPanel
 {
-	static string _lastCurrentName;
+	static string? _lastCurrentName;
 
 	internal ListPanel(Explorer explorer) : base(explorer)
 	{
 		PostName(_lastCurrentName);
 
 		// 090411 Use custom Descriptions mode
-		PanelPlan plan = new PanelPlan
+		var plan = new PanelPlan
 		{
 			Columns = new FarColumn[]
 			{
-				new SetColumn() { Kind = "N", Name = "Name" },
-				new SetColumn() { Kind = "Z", Name = "Value" }
+				new SetColumn { Kind = "N", Name = "Name" },
+				new SetColumn { Kind = "Z", Name = "Value" }
 			}
 		};
 		SetPlan(PanelViewMode.AlternativeFull, plan);
@@ -46,17 +46,17 @@ public abstract class ListPanel : AnyPanel
 	/// <param name="file">The file to process.</param>
 	public override void OpenFile(FarFile file)
 	{
-		if (file == null)
-			throw new ArgumentNullException("file");
+		if (file is null)
+			throw new ArgumentNullException(nameof(file));
 
 		// e.g. visible mode: sender is MemberDefinition
-		if (!(file.Data is PSPropertyInfo pi))
+		if (file.Data is not PSPropertyInfo pi)
 			return;
 
 		// lookup opener?
 		if (_LookupOpeners != null)
 		{
-			if (_LookupOpeners.TryGetValue(file.Name, out ScriptHandler<OpenFileEventArgs> handler))
+			if (_LookupOpeners.TryGetValue(file.Name, out ScriptHandler<OpenFileEventArgs>? handler))
 			{
 				handler.Invoke(this, new OpenFileEventArgs(file));
 				return;
@@ -64,7 +64,7 @@ public abstract class ListPanel : AnyPanel
 		}
 
 		// case: can show value in the command line
-		string s = Converter.InfoToLine(pi);
+		var s = Converter.InfoToLine(pi);
 		if (s != null)
 		{
 			// set command line
@@ -75,10 +75,10 @@ public abstract class ListPanel : AnyPanel
 		}
 
 		// case: enumerable
-		IEnumerable ie = Cast<IEnumerable>.From(pi.Value);
+		var ie = Cast<IEnumerable>.From(pi.Value);
 		if (ie != null)
 		{
-			ObjectPanel op = new ObjectPanel();
+			var op = new ObjectPanel();
 			op.AddObjects(ie);
 			op.OpenChild(this);
 			return;
@@ -88,14 +88,17 @@ public abstract class ListPanel : AnyPanel
 		OpenFileMembers(file);
 	}
 
-	internal override MemberPanel OpenFileMembers(FarFile file)
+	internal override MemberPanel? OpenFileMembers(FarFile file)
 	{
-		if (!(file.Data is PSPropertyInfo pi))
+		if (file.Data is not PSPropertyInfo pi)
 			return null;
-		if (pi.Value == null)
+
+		if (pi.Value is null)
 			return null;
-		MemberPanel r = new MemberPanel(new MemberExplorer(pi.Value));
+
+		var r = new MemberPanel(new MemberExplorer(pi.Value));
 		r.OpenChild(this);
+
 		return r;
 	}
 
@@ -104,12 +107,12 @@ public abstract class ListPanel : AnyPanel
 	/// </summary>
 	/// <param name="info">Property info.</param>
 	/// <param name="value">New value.</param>
-	internal abstract void SetUserValue(PSPropertyInfo info, string value);
+	internal abstract void SetUserValue(PSPropertyInfo info, string? value);
 
 	/// <summary>
 	/// Calls base or assigns a value to the current property.
 	/// </summary>
-	void OnInvokingCommand(object sender, CommandLineEventArgs e)
+	void OnInvokingCommand(object? sender, CommandLineEventArgs e)
 	{
 		// base
 		string code = e.Command.TrimStart();
@@ -120,10 +123,11 @@ public abstract class ListPanel : AnyPanel
 		e.Ignore = true;
 
 		// skip empty
-		FarFile f = CurrentFile;
-		if (f == null)
+		var file = CurrentFile;
+		if (file is null)
 			return;
-		if (!(f.Data is PSPropertyInfo pi))
+
+		if (file.Data is not PSPropertyInfo pi)
 			return;
 
 		try
@@ -143,11 +147,11 @@ public abstract class ListPanel : AnyPanel
 		if (Child != null)
 			return true;
 
-		FarFile f = CurrentFile;
-		if (f == null)
+		var file = CurrentFile;
+		if (file is null)
 			_lastCurrentName = null;
 		else
-			_lastCurrentName = f.Name;
+			_lastCurrentName = file.Name;
 
 		return true;
 	}
@@ -164,14 +168,11 @@ public abstract class ListPanel : AnyPanel
 
 	internal override void HelpMenuInitItems(HelpMenuItems items, PanelMenuEventArgs e)
 	{
-		if (items.ApplyCommand == null)
+		items.ApplyCommand ??= new SetItem()
 		{
-			items.ApplyCommand = new SetItem()
-			{
-				Text = Res.UIApply,
-				Click = delegate { UIApply(); }
-			};
-		}
+			Text = Res.UIApply,
+			Click = delegate { UIApply(); }
+		};
 
 		base.HelpMenuInitItems(items, e);
 	}
@@ -206,7 +207,8 @@ public abstract class ListPanel : AnyPanel
 	/// <inheritdoc/>
 	public override bool UIKeyPressed(KeyInfo key)
 	{
-		if (key == null) throw new ArgumentNullException("key");
+		if (key is null)
+			throw new ArgumentNullException(nameof(key));
 
 		switch (key.VirtualKeyCode)
 		{

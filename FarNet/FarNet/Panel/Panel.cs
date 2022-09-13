@@ -148,7 +148,7 @@ public partial class Panel : IPanel
 	void Open2()
 	{
 		//_171024_175829 inherit explorer location if there is no custom (#13)
-		if (_Panel.CurrentLocation == null)
+		if (_Panel.CurrentLocation is null)
 		{
 			var location = Explorer.Location;
 			if (location.Length > 0)
@@ -161,7 +161,7 @@ public partial class Panel : IPanel
 		Explorer.EnterPanel(this);
 
 		// go
-		if (_Parent == null)
+		if (_Parent is null)
 			_Panel.Open();
 		else
 			_Panel.OpenReplace(_Parent); //???? is it correct to close the parent? should I better deny tricky openings?
@@ -255,11 +255,11 @@ public partial class Panel : IPanel
 	public void OpenChild(Panel? parent)
 	{
 		// resolve 'null' parent
-		if (parent == null)
+		if (parent is null)
 		{
 			// try to use the active as parent; do not use the passive, show as normal
 			parent = Far.Api.Panel as Panel;
-			if (parent == null)
+			if (parent is null)
 			{
 				// go
 				Open();
@@ -318,7 +318,7 @@ public partial class Panel : IPanel
 	/// </remarks>
 	protected virtual void SaveState()
 	{
-		FarFile file = CurrentFile;
+		var file = CurrentFile;
 		if (file != null)
 			PostFile(file);
 	}
@@ -338,7 +338,7 @@ public partial class Panel : IPanel
 	public void CloseChild()
 	{
 		// parent may be null on opening with OpenChild, so just close
-		if (_Parent == null)
+		if (_Parent is null)
 		{
 			Close();
 			return;
@@ -473,7 +473,7 @@ public partial class Panel : IPanel
 	/// Posts the file name to be used to find a file and set it current on redrawing.
 	/// </summary>
 	/// <param name="name">The file name to found on redrawing.</param>
-	public void PostName(string name) => _Panel.PostName(name);
+	public void PostName(string? name) => _Panel.PostName(name);
 	#endregion
 
 	#region Settable modes
@@ -529,9 +529,9 @@ public partial class Panel : IPanel
 
 	#region Properties
 	/// <summary>
-	/// Gets the current file.
+	/// Gets the current file or null.
 	/// </summary>
-	public FarFile CurrentFile => _Panel.CurrentFile;
+	public FarFile? CurrentFile => _Panel.CurrentFile;
 
 	/// <summary>
 	/// Gets the current file index in <see cref="Files"/>.
@@ -947,7 +947,7 @@ public partial class Panel : IPanel
 	///
 	public bool WorksInvokingCommand(CommandLineEventArgs e)
 	{
-		if (InvokingCommand == null)
+		if (InvokingCommand is null)
 			return false;
 		if (e != null)
 			InvokingCommand(this, e);
@@ -1116,7 +1116,7 @@ public partial class Panel : IPanel
 	public void SelectFiles(IEnumerable files, IEqualityComparer<FarFile>? comparer)
 	{
 		// no job?
-		if (files == null)
+		if (files is null)
 			return;
 
 		// hash the files using the proper comparer, ignore dupes

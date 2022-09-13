@@ -56,7 +56,7 @@ public interface IPanelWorks : IPanel
 
 	void PostFile(FarFile file);
 
-	void PostName(string name);
+	void PostName(string? name);
 	#endregion
 
 	#region Other Info

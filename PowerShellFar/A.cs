@@ -19,35 +19,27 @@ static class A
 	/// <summary>
 	/// PowerShellFar actor.
 	/// </summary>
-	public static Actor Psf => _Psf_;
+	public static Actor Psf => _Psf_!;
+	static Actor? _Psf_;
 
-	static Actor _Psf_;
-
-	public static void Connect(Actor psf)
+	public static void Connect(Actor? psf)
 	{
 		_Psf_ = psf;
 	}
 
-	/// <summary>
-	/// Shows an error.
-	/// </summary>
+	// Shows an error.
 	public static void Msg(Exception error)
 	{
 		Far.Api.Message(error.Message, "PowerShellFar error", MessageOptions.LeftAligned);
 	}
 
-	/// <summary>
-	/// Shows a message.
-	/// </summary>
+	// Shows a message.
 	public static void Message(string message)
 	{
 		Far.Api.Message(message, Res.Me, MessageOptions.LeftAligned);
 	}
 
-	/// <summary>
-	/// Creates standard Far viewer ready for opening (F3)
-	/// </summary>
-	/// <param name="filePath">Existing file to view.</param>
+	// Creates standard Far viewer ready for opening (F3)
 	public static IViewer CreateViewer(string filePath)
 	{
 		IViewer view = Far.Api.CreateViewer();
@@ -55,9 +47,7 @@ static class A
 		return view;
 	}
 
-	/// <summary>
-	/// Sets an item property value as it is.
-	/// </summary>
+	// Sets an item property value as it is.
 	public static void SetPropertyValue(string itemPath, string propertyName, object value)
 	{
 		//! setting PSPropertyInfo.Value is not working, so do use Set-ItemProperty
@@ -66,12 +56,10 @@ static class A
 			itemPath, propertyName, value);
 	}
 
-	/// <summary>
-	/// Writes invocation errors.
-	/// </summary>
+	// Writes invocation errors.
 	public static void WriteErrors(TextWriter writer, IEnumerable errors)
 	{
-		if (errors == null)
+		if (errors is null)
 			return;
 
 		foreach (object error in errors)
@@ -79,18 +67,16 @@ static class A
 			writer.WriteLine("ERROR:");
 			writer.WriteLine(error.ToString());
 
-			ErrorRecord asErrorRecord = Cast<ErrorRecord>.From(error);
+			var asErrorRecord = Cast<ErrorRecord>.From(error);
 			if (asErrorRecord != null && asErrorRecord.InvocationInfo != null)
 				writer.WriteLine(Kit.PositionMessage(asErrorRecord.InvocationInfo.PositionMessage));
 		}
 	}
 
-	/// <summary>
-	/// Writes invocation exception.
-	/// </summary>
+	// Writes invocation exception.
 	public static void WriteException(TextWriter writer, Exception ex)
 	{
-		if (ex == null)
+		if (ex is null)
 			return;
 
 		writer.WriteLine("ERROR:");
@@ -101,9 +87,7 @@ static class A
 			writer.WriteLine(Kit.PositionMessage(asRuntimeException.ErrorRecord.InvocationInfo.PositionMessage));
 	}
 
-	/// <summary>
-	/// Sets an item content, shows errors.
-	/// </summary>
+	// Sets an item content, shows errors.
 	public static bool SetContentUI(string itemPath, string text)
 	{
 		//! PSF only, can do in console:
@@ -126,22 +110,14 @@ static class A
 		return true;
 	}
 
-	/// <summary>
-	/// Outputs to the default formatter.
-	/// </summary>
-	/// <param name="ps">Pipeline.</param>
-	/// <param name="input">Input objects.</param>
+	// Outputs to the default formatter.
 	public static void Out(PowerShell ps, IEnumerable input)
 	{
 		ps.Commands.AddCommand(OutHostCommand);
 		ps.Invoke(input);
 	}
 
-	/// <summary>
-	/// Outputs an exception or its error record.
-	/// </summary>
-	/// <param name="ps">Pipeline.</param>
-	/// <param name="ex">Exception.</param>
+	// Outputs an exception or its error record.
 	public static void OutReason(PowerShell ps, Exception ex)
 	{
 		object error;
@@ -153,9 +129,7 @@ static class A
 		Out(ps, new[] { error });
 	}
 
-	/// <summary>
-	/// Shows errors, if any, in a message box and returns true, else just returns false.
-	/// </summary>
+	// Shows errors, if any, in a message box and returns true, else just returns false.
 	public static bool ShowError(PowerShell ps)
 	{
 		if (ps.Streams.Error.Count == 0)
@@ -169,11 +143,8 @@ static class A
 		return true;
 	}
 
-	/// <summary>
-	/// Sets current directory, shows errors but does not throw.
-	/// </summary>
-	/// <param name="currentDirectory">null or a path.</param>
-	public static void SetCurrentDirectoryFinally(string currentDirectory)
+	// Sets current directory, shows errors but does not throw.
+	public static void SetCurrentDirectoryFinally(string? currentDirectory)
 	{
 		if (currentDirectory != null)
 		{
@@ -188,32 +159,22 @@ static class A
 		}
 	}
 
-	/// <summary>
-	/// Command for formatted output friendly for apps with interaction and colors.
-	/// </summary>
-	/// <remarks>
-	/// "Out-Host" is not suitable for apps with interaction, e.g. more.com, git.exe.
-	/// </remarks>
+	// Command for formatted output friendly for apps with interaction and colors.
+	// "Out-Host" is not suitable for apps with interaction, e.g. more.com, git.exe.
 	public static Command OutDefaultCommand => new("Out-Default")
 	{
 		MergeUnclaimedPreviousCommandResults = PipelineResultTypes.Output | PipelineResultTypes.Error
 	};
 
-	/// <summary>
-	/// Command for formatted output of everything.
-	/// </summary>
-	/// <remarks>
-	/// "Out-Default" is not suitable for external apps, output goes to console.
-	/// </remarks>
+	// Command for formatted output of everything.
+	// "Out-Default" is not suitable for external apps, output goes to console.
 	public static Command OutHostCommand => new("Out-Host")
 	{
 		MergeUnclaimedPreviousCommandResults = PipelineResultTypes.Output | PipelineResultTypes.Error
 	};
 
-	/// <summary>
-	/// Finds heuristically a property to be used to display the object.
-	/// </summary>
-	public static PSPropertyInfo FindDisplayProperty(PSObject value)
+	// Finds heuristically a property to be used to display the object.
+	public static PSPropertyInfo? FindDisplayProperty(PSObject value)
 	{
 		//! Microsoft.PowerShell.Commands.Internal.Format.PSObjectHelper.GetDisplayNameExpression()
 
@@ -242,21 +203,19 @@ static class A
 		return null;
 	}
 
-	/// <summary>
-	/// Gets the type common for all values or null.
-	/// </summary>
+	// Gets the type common for all values or null.
 	// Why check for MarshalByRefObject:
 	// System.IO.DirectoryInfo, System.Diagnostics.Process in ps: (Get-Item .), (Get-Process -PID $PID) | op
-	public static Type FindCommonType(Collection<PSObject> values)
+	public static Type? FindCommonType(Collection<PSObject> values)
 	{
-		Type result = null;
+		Type? result = null;
 		foreach (PSObject value in values)
 		{
-			if (value == null)
+			if (value is null)
 				continue;
 
 			var sample = value.BaseObject.GetType();
-			if (result == null)
+			if (result is null)
 			{
 				result = sample;
 				continue;
@@ -265,7 +224,7 @@ static class A
 			while (!result.IsAssignableFrom(sample))
 			{
 				result = result.BaseType;
-				if (result == null || result == typeof(object) || result == typeof(MarshalByRefObject))
+				if (result is null || result == typeof(object) || result == typeof(MarshalByRefObject))
 					return null;
 			}
 		}
@@ -273,21 +232,17 @@ static class A
 	}
 
 	//! Get-FormatData is very expensive (~50% on search), use cache.
-	static Dictionary<string, TableControl> _CacheTableControl;
+	static Dictionary<string, TableControl?>? _CacheTableControl;
 
-	/// <summary>
-	/// Finds an available table control.
-	/// </summary>
-	/// <param name="typeName">The type name.</param>
-	/// <returns>Found table control or null.</returns>
-	public static TableControl FindTableControl(string typeName)
+	// Finds an available table control.
+	public static TableControl? FindTableControl(string typeName)
 	{
 		// make/try cache
-		if (_CacheTableControl == null)
+		if (_CacheTableControl is null)
 		{
-			_CacheTableControl = new Dictionary<string, TableControl>();
+			_CacheTableControl = new Dictionary<string, TableControl?>();
 		}
-		else if (_CacheTableControl.TryGetValue(typeName, out TableControl result))
+		else if (_CacheTableControl.TryGetValue(typeName, out TableControl? result))
 		{
 			return result;
 		}
@@ -312,9 +267,7 @@ static class A
 		return null;
 	}
 
-	/// <summary>
-	/// Robust Get-ChildItem.
-	/// </summary>
+	// Robust Get-ChildItem.
 	public static Collection<PSObject> GetChildItems(string literalPath)
 	{
 		//! If InvokeProvider.ChildItem.Get() fails (e.g. hklm:) then we get nothing at all.
@@ -342,9 +295,7 @@ static class A
 		return new Collection<PSObject>();
 	}
 
-	/// <summary>
-	/// Gets the $FormatEnumerationLimit if it is sane or 4.
-	/// </summary>
+	// Gets the $FormatEnumerationLimit if it is sane or 4.
 	public static int FormatEnumerationLimit
 	{
 		get
@@ -392,12 +343,8 @@ static class A
 		}
 	}
 
-	/// <summary>
-	/// Invokes the script text and returns the result collection.
-	/// </summary>
-	/// <param name="code">Script text.</param>
-	/// <param name="args">Script arguments.</param>
-	internal static Collection<PSObject> InvokeCode(string code, params object[] args)
+	// Invokes the script text and returns the result collection.
+	internal static Collection<PSObject> InvokeCode(string code, params object?[] args)
 	{
 		return ScriptBlock.Create(code).Invoke(args);
 	}
@@ -410,7 +357,7 @@ static class A
 		if (pi.Value is PSObject ps)
 		{
 			isPSObject = true;
-			type = ps.BaseObject.GetType().FullName;
+			type = ps.BaseObject.GetType().FullName!;
 		}
 		else
 		{
@@ -443,10 +390,8 @@ static class A
 			Far.Api.Message(ex.Message, "Setting property");
 		}
 	}
-	/// <summary>
-	/// Collects names of files.
-	/// </summary>
 
+	// Collects names of files.
 	internal static List<string> FileNameList(IList<FarFile> files)
 	{
 		var r = new List<string>
@@ -458,10 +403,8 @@ static class A
 		return r;
 	}
 
-	/// <summary>
-	/// Invokes Format-List with output to string.
-	/// </summary>
-	internal static string InvokeFormatList(object data, bool full)
+	// Invokes Format-List with output to string.
+	internal static string InvokeFormatList(object? data, bool full)
 	{
 		// suitable for DataRow, noisy data are excluded
 		const string codeMain = @"
@@ -473,10 +416,10 @@ Out-String -Width $args[1]
 Format-List -InputObject $args[0] -Property * -Force -Expand Both -ErrorAction 0 |
 Out-String -Width $args[1]
 ";
-		return InvokeCode((full ? codeFull : codeMain), data, int.MaxValue)[0].ToString();
+		return InvokeCode(full ? codeFull : codeMain, data, int.MaxValue)[0].ToString();
 	}
 
-	internal static void SetBreakpoint(string script, int line, ScriptBlock action)
+	internal static void SetBreakpoint(string? script, int line, ScriptBlock? action)
 	{
 		string code = "Set-PSBreakpoint -Script $args[0] -Line $args[1]";
 		if (action != null)
@@ -507,14 +450,14 @@ Out-String -Width $args[1]
 		}
 	}
 
-	internal static string SafeToString(object value)
+	internal static string SafeToString(object? value)
 	{
-		if (value == null)
+		if (value is null)
 			return string.Empty;
 
 		try
 		{
-			return value.ToString();
+			return value.ToString()!;
 		}
 		catch (Exception e)
 		{

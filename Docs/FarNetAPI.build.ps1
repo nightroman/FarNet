@@ -42,4 +42,4 @@ task run {
 	Invoke-Item $FarHome\FarNet\FarNetAPI.chm
 }
 
-task . build, install, run
+task . build, install, run, clean

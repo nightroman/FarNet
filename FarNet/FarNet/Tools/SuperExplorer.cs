@@ -115,7 +115,8 @@ public class SuperExplorer : Explorer
 	/// <inheritdoc/>
 	public override void AcceptFiles(AcceptFilesEventArgs args)
 	{
-		if (args == null) return;
+		if (args is null)
+			throw new ArgumentNullException(nameof(args));
 
 		foreach (var file in args.Files)
 		{
@@ -129,7 +130,8 @@ public class SuperExplorer : Explorer
 	/// <inheritdoc/>
 	public override void GetContent(GetContentEventArgs args)
 	{
-		if (args == null) return;
+		if (args is null)
+			throw new ArgumentNullException(nameof(args));
 
 		// check
 		var xfile = (SuperFile)args.File;
@@ -154,7 +156,8 @@ public class SuperExplorer : Explorer
 	/// <inheritdoc/>
 	public override void SetFile(SetFileEventArgs args)
 	{
-		if (args == null) return;
+		if (args is null)
+			throw new ArgumentNullException(nameof(args));
 
 		// call
 		var xfile = (SuperFile)args.File;
@@ -173,7 +176,8 @@ public class SuperExplorer : Explorer
 	/// <inheritdoc/>
 	public override void SetText(SetTextEventArgs args)
 	{
-		if (args == null) return;
+		if (args is null)
+			throw new ArgumentNullException(nameof(args));
 
 		// call
 		var xfile = (SuperFile)args.File;
@@ -384,7 +388,8 @@ public class SuperExplorer : Explorer
 	/// <inheritdoc/>
 	public override void DeleteFiles(DeleteFilesEventArgs args)
 	{
-		if (args == null) return;
+		if (args is null)
+			throw new ArgumentNullException(nameof(args));
 
 		var dicTypeId = GroupFiles(args.Files, ExplorerFunctions.DeleteFiles);
 
@@ -414,7 +419,8 @@ public class SuperExplorer : Explorer
 	/// <inheritdoc/>
 	public override void ExportFiles(ExportFilesEventArgs args)
 	{
-		if (args == null) return;
+		if (args is null)
+			throw new ArgumentNullException(nameof(args));
 
 		var dicTypeId = GroupFiles(args.Files, ExplorerFunctions.ExportFiles);
 

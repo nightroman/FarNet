@@ -11,7 +11,7 @@ namespace PowerShellFar;
 static class History
 {
 	static readonly HistoryCommands _history = new();
-	static HistoryNext _next;
+	static HistoryNext? _next;
 
 	/// <summary>
 	/// Gets history lines.
@@ -38,11 +38,11 @@ static class History
 	/// <summary>
 	/// For Actor. Inserts code to known targets and returns null or returns the code.
 	/// </summary>
-	public static string ShowHistory()
+	public static string? ShowHistory()
 	{
 		var ui = new UI.CommandHistoryMenu(_history, string.Empty);
-		string code = ui.Show();
-		if (code == null)
+		string? code = ui.Show();
+		if (code is null)
 			return null;
 
 		// case: panels, preserve the prefix
@@ -59,7 +59,7 @@ static class History
 		switch (Far.Api.Window.Kind)
 		{
 			case WindowKind.Editor:
-				var editor = Far.Api.Editor;
+				var editor = Far.Api.Editor!;
 				if (editor.Host is not Interactive)
 					break;
 				editor.GoToEnd(true);

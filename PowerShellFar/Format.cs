@@ -24,11 +24,12 @@ static class Format
 
 		return result;
 	}
+
 	//! assume it is done for the active panel, it does not work well from the disk menu
-	internal static Meta[] TryFormatByTableControl(PSObject value, int formatWidth)
+	internal static Meta[]? TryFormatByTableControl(PSObject value, int formatWidth)
 	{
 		// try to find a table
-		TableControl table = A.FindTableControl(value.BaseObject.GetType().FullName);
+		var table = A.FindTableControl(value.BaseObject.GetType().FullName!);
 		if (table == null)
 			return null;
 
@@ -79,7 +80,8 @@ static class Format
 
 		return metas;
 	}
-	internal static Meta[] TryFormatByMembers(Collection<PSObject> values, bool homogeneous)
+
+	internal static Meta[]? TryFormatByMembers(Collection<PSObject> values, bool homogeneous)
 	{
 		Meta[] metas;
 
@@ -91,7 +93,7 @@ static class Format
 			{
 				string code = "Get-Member -InputObject $args[0] -MemberType Properties -ErrorAction 0";
 				foreach (PSObject o in A.InvokeCode(code, value))
-					membersToShow.Add(o.Properties[Word.Name].Value.ToString());
+					membersToShow.Add(o.Properties[Word.Name].Value.ToString()!);
 			}
 			var list = new List<Meta>(membersToShow.Count);
 			foreach (PSPropertyInfo pi in values[0].Properties)
@@ -105,7 +107,7 @@ static class Format
 			var members = A.InvokeCode("$args[0] | Get-Member -MemberType Properties -ErrorAction 0", values);
 			metas = new Meta[members.Count];
 			for (int i = 0; i < members.Count; ++i)
-				metas[i] = new Meta(members[i].Properties[Word.Name].Value.ToString());
+				metas[i] = new Meta(members[i].Properties[Word.Name].Value.ToString()!);
 		}
 
 		if (metas.Length == 0)
@@ -117,6 +119,7 @@ static class Format
 		// 2) cut off
 		return CutOffMetas(metas);
 	}
+
 	static void SetBestTypes(Meta[] metas, int maximum)
 	{
 		int count = metas.Length;
@@ -133,6 +136,7 @@ static class Format
 		if (count > 1)
 			SetBestType(metas, maximum, "O", Word.Value, Word.Status);
 	}
+
 	static bool SetBestType(Meta[] metas, int maximum, string type, params string[] patterns)
 	{
 		int iBestPattern = patterns.Length;
@@ -204,14 +208,15 @@ static class Format
 
 		return true;
 	}
+
 	// _101125_173951 Out-GridView approach:
 	// show Index (##), Value, Type columns for mixed types and the only 'TypeName' column for the same type.
-	internal static string BuildFilesMixed(IList<FarFile> files, Collection<PSObject> values)
+	internal static string? BuildFilesMixed(IList<FarFile> files, Collection<PSObject> values)
 	{
 		files.Clear();
 
 		int index = -1;
-		string sameType = null;
+		string? sameType = null;
 		foreach (PSObject value in values)
 		{
 			++index;
@@ -220,7 +225,7 @@ static class Format
 			SetFile file = new() { Data = value, Length = index };
 
 			// description: watch the same type to choose the panel columns and to reuse same type string
-			string newType = value.BaseObject.GetType().FullName;
+			string newType = value.BaseObject.GetType().FullName!;
 			if (index == 0)
 			{
 				sameType = newType;
@@ -243,7 +248,7 @@ static class Format
 
 			// discover name
 			// _100309_121508 Linear type case
-			PSPropertyInfo pi;
+			PSPropertyInfo? pi;
 			if (Converter.IsLinearType(value.BaseObject.GetType()))
 				file.Name = value.ToString();
 			else if (value.BaseObject is IEnumerable asIEnumerable)
@@ -259,7 +264,8 @@ static class Format
 
 		return sameType;
 	}
-	internal static FileMap MakeMap(ref Meta[] metas, object[] columns)
+
+	internal static FileMap MakeMap(ref Meta[]? metas, object[] columns)
 	{
 		// pass 1: get metas and types and pre-process only specified default types
 		if (metas == null)
@@ -272,7 +278,7 @@ static class Format
 		foreach (Meta meta in metas)
 		{
 			// type -> map:
-			switch (meta.Kind[0])
+			switch (meta.Kind![0])
 			{
 				case 'N':
 					map.Name = meta;
@@ -284,7 +290,7 @@ static class Format
 					map.Description = meta;
 					break;
 				case 'C':
-					map.Columns.Add(meta);
+					map.Columns!.Add(meta);
 					break;
 				case 'S':
 					{
@@ -336,6 +342,7 @@ static class Format
 
 		return map;
 	}
+
 	internal static Meta[] SetupColumns(object[] columns)
 	{
 		Meta[] metas = new Meta[columns.Length];
@@ -345,6 +352,7 @@ static class Format
 		SetupMetas(metas);
 		return metas;
 	}
+
 	internal static void SetupMetas(Meta[] metas)
 	{
 		var availableColumnTypes = new List<string>(FarColumn.DefaultColumnKinds);
@@ -410,6 +418,7 @@ static class Format
 			}
 		}
 	}
+
 	/// <summary>
 	/// Gets meta objects for columns.
 	/// </summary>

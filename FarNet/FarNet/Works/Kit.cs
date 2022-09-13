@@ -130,7 +130,7 @@ public static class Kit
 	// Interactively fixes an invalid file name.
 	// name An invalid file name.
 	// returns A valid file name or null if canceled.
-	public static string? FixInvalidFileName(string name)
+	public static string? FixInvalidFileName(string? name)
 	{
 		for (; ; )
 		{

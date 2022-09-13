@@ -10,10 +10,10 @@ namespace PowerShellFar;
 
 sealed class TranscriptOutputWriter : TextOutputWriter
 {
-	public static string LastFileName { get; private set; }
+	public static string? LastFileName { get; private set; }
 	const string TextTranscriptPrologue = @"
 **********************
-Windows PowerShell transcript start
+PowerShell transcript start
 Start time: {0:yyyyMMddHHmmss}
 Username  : {1}\{2}
 Machine	  : {3} ({4})
@@ -21,17 +21,17 @@ Machine	  : {3} ({4})
 ";
 	const string TextTranscriptEpilogue = @"
 **********************
-Windows PowerShell transcript end
+PowerShell transcript end
 End time: {0:yyyyMMddHHmmss}
 **********************
 ";
 
 	static int _fileNameCount;
-	StreamWriter _writer;
-	string _fileName;
+	StreamWriter? _writer;
+	string? _fileName;
 	readonly bool _transcript;
 
-	public string FileName => _fileName;
+	public string? FileName => _fileName;
 
 	public TranscriptOutputWriter()
 	{
@@ -104,18 +104,18 @@ End time: {0:yyyyMMddHHmmss}
 	protected override void Append(string value)
 	{
 		Writing();
-		_writer.Write(value);
+		_writer!.Write(value);
 	}
 
 	protected override void AppendLine()
 	{
 		Writing();
-		_writer.WriteLine();
+		_writer!.WriteLine();
 	}
 
 	protected override void AppendLine(string value)
 	{
 		Writing();
-		_writer.WriteLine(value);
+		_writer!.WriteLine(value);
 	}
 }

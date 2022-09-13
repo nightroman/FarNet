@@ -84,7 +84,8 @@ public static class EditorTools
 
 	public static string? EditText(EditTextArgs args)
 	{
-		if (args == null) throw new ArgumentNullException(nameof(args));
+		if (args is null)
+			throw new ArgumentNullException(nameof(args));
 
 		var editor = EditTextCreate(args);
 		editor.Open(OpenMode.Modal);
@@ -93,7 +94,8 @@ public static class EditorTools
 
 	public static async Task<string?> EditTextAsync(EditTextArgs args)
 	{
-		if (args == null) throw new ArgumentNullException(nameof(args));
+		if (args is null)
+			throw new ArgumentNullException(nameof(args));
 
 		var editor = EditTextCreate(args);
 		await Tasks.Editor(editor);

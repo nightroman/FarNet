@@ -12,11 +12,11 @@ namespace PowerShellFar.UI;
 
 class InputBoxEx
 {
-	public string Title { get; set; }
-	public string Prompt { get; set; }
-	public string Text { get; set; }
-	public string History { get; set; }
-	public Func<IEnumerable> GetWords { get; set; }
+	public string? Title { get; set; }
+	public string? Prompt { get; set; }
+	public string? Text { get; set; }
+	public string? History { get; set; }
+	public Func<IEnumerable>? GetWords { get; set; }
 	public bool Password { get; set; }
 	public Guid? TypeId { get; set; }
 
@@ -46,13 +46,13 @@ class InputBoxEx
 		else
 		{
 			edit = dialog.AddEdit(5, -1, w - 6, Text);
-			edit.History = History;
+			edit.History = History ?? string.Empty;
 		}
 
 		// expansion
 		if (GetWords != null)
 		{
-			edit.KeyPressed += delegate(object sender, KeyPressedEventArgs e)
+			edit.KeyPressed += (s, e) =>
 			{
 				switch (e.Key.VirtualKeyCode)
 				{
@@ -74,10 +74,10 @@ class InputBoxEx
 	public static void CompleteWord(ILine editLine, IEnumerable words)
 	{
 		// hot line
-		if (editLine == null)
+		if (editLine is null)
 		{
 			editLine = Far.Api.Line;
-			if (editLine == null)
+			if (editLine is null)
 			{
 				A.Message("There is no current editor line.");
 				return;
@@ -109,10 +109,10 @@ class InputBoxEx
 
 		foreach (var it in words)
 		{
-			if (it == null)
+			if (it is null)
 				continue;
 
-			var candidate = it.ToString();
+			var candidate = it.ToString()!;
 			if (candidate.Length == 0)
 			{
 				menu.Add(string.Empty).IsSeparator = true;

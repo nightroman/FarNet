@@ -17,10 +17,10 @@ namespace PowerShellFar;
 /// </summary>
 class Interactive : InteractiveEditor
 {
-	FarUI FarUI;
-	FarHost FarHost;
-	Runspace Runspace;
-	PowerShell PowerShell;
+	FarUI? FarUI;
+	FarHost? FarHost;
+	Runspace? Runspace;
+	PowerShell? PowerShell;
 	bool _doneTabExpansion;
 
 	static readonly HistoryLog _history = new(Entry.LocalData + "\\InteractiveHistory.log", Settings.Default.MaximumHistoryCount);
@@ -36,7 +36,7 @@ class Interactive : InteractiveEditor
 	/// <remarks>
 	/// With prompt may return null if a user cancels.
 	/// </remarks>
-	public static Interactive Create(bool prompt)
+	public static Interactive? Create(bool prompt)
 	{
 		int mode = 0;
 		if (prompt)
@@ -99,7 +99,7 @@ class Interactive : InteractiveEditor
 
 	void EnsureHost()
 	{
-		if (FarHost == null)
+		if (FarHost is null)
 		{
 			Editor.Closed += delegate { CloseSession(); };
 			Editor.CtrlCPressed += OnCtrlCPressed;
@@ -110,7 +110,7 @@ class Interactive : InteractiveEditor
 
 	void RunspaceOpen()
 	{
-		Runspace.Open();
+		Runspace!.Open();
 	}
 
 	void OpenMainSession()
@@ -138,11 +138,11 @@ class Interactive : InteractiveEditor
 			return;
 
 		string computerName = (dialog.ComputerName.Length == 0 || dialog.ComputerName == ".") ? "localhost" : dialog.ComputerName;
-		PSCredential credential = null;
+		PSCredential? credential = null;
 		if (dialog.UserName.Length > 0)
 		{
 			credential = NativeMethods.PromptForCredential(null, null, dialog.UserName, string.Empty, PSCredentialTypes.Generic | PSCredentialTypes.Domain, PSCredentialUIOptions.Default);
-			if (credential == null)
+			if (credential is null)
 				return;
 		}
 
@@ -183,7 +183,7 @@ class Interactive : InteractiveEditor
 	}
 
 	//! This method is sync and uses pipeline, that is why we must not null the pipeline async.
-	void OnCtrlCPressed(object sender, EventArgs e)
+	void OnCtrlCPressed(object? sender, EventArgs e)
 	{
 		if (PowerShell != null && PowerShell.InvocationStateInfo.State == PSInvocationState.Running)
 		{
@@ -210,7 +210,8 @@ class Interactive : InteractiveEditor
 	/// </summary>
 	protected override bool KeyPressed(KeyInfo key)
 	{
-		if (key == null) return false;
+		if (key is null)
+			throw new ArgumentNullException(nameof(key));
 
 		// drop pipeline now, if any
 		PowerShell = null;
@@ -251,7 +252,7 @@ class Interactive : InteractiveEditor
 
 	protected override void Invoke(string code, InteractiveArea area)
 	{
-		if (Runspace == null)
+		if (Runspace is null)
 		{
 			EditorOutputWriter2 writer = new(Editor);
 			A.Psf.Run(new RunArgs(code) { Writer = writer });
@@ -259,7 +260,7 @@ class Interactive : InteractiveEditor
 		}
 
 		// begin editor
-		FarUI.PushWriter(new EditorOutputWriter3(Editor));
+		FarUI!.PushWriter(new EditorOutputWriter3(Editor));
 
 		// begin command
 		PowerShell = PowerShell.Create();

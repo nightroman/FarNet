@@ -60,7 +60,7 @@ public sealed class ObjectExplorer : FormatExplorer
 		var unknown = new List<FarFile>();
 		foreach (FarFile file in args.Files)
 		{
-			string filePath = My.PathEx.TryGetFilePath(file.Data);
+			var filePath = My.PathEx.TryGetFilePath(file.Data);
 			if (filePath != null)
 			{
 				knownFiles.Add((file, filePath));
@@ -88,7 +88,7 @@ public sealed class ObjectExplorer : FormatExplorer
 		var data = args.File.Data;
 
 		// use existing file
-		string filePath = My.PathEx.TryGetFilePath(data);
+		var filePath = My.PathEx.TryGetFilePath(data);
 		if (filePath != null)
 		{
 			args.UseFileName = filePath;
@@ -98,7 +98,7 @@ public sealed class ObjectExplorer : FormatExplorer
 
 		// MatchInfo of Select-String
 		var obj = PS2.BaseObject(data);
-		if (obj.GetType().FullName == Res.MatchInfoTypeName)
+		if (obj!.GetType().FullName == Res.MatchInfoTypeName)
 		{
 			var dynamo = (dynamic)obj;
 			filePath = (string)dynamo.Path;
@@ -108,7 +108,7 @@ public sealed class ObjectExplorer : FormatExplorer
 			var match = ((Match[])dynamo.Matches)[0];
 			args.EditorOpened = (sender, e) =>
 			{
-				var editor = (IEditor)sender;
+				var editor = (IEditor)sender!;
 				var frame = new TextFrame
 				{
 					VisibleLine = Math.Max(lineIndex - Far.Api.UI.WindowSize.Y / 3, 0),
@@ -151,7 +151,7 @@ public sealed class ObjectExplorer : FormatExplorer
 	/// </para>
 	/// </remarks>
 	/// <example>Panel-Process.ps1</example>
-	public ScriptBlock AsGetData { get; set; }
+	public ScriptBlock? AsGetData { get; set; }
 
 	internal override object GetData(GetFilesEventArgs args)
 	{
@@ -207,20 +207,17 @@ public sealed class ObjectExplorer : FormatExplorer
 		}
 	}
 
-	Collection<PSObject> _AddedValues;
-	internal Collection<PSObject> AddedValues
-	{
-		get { return _AddedValues ??= new Collection<PSObject>(); }
-	}
+	Collection<PSObject>? _AddedValues;
+	internal Collection<PSObject> AddedValues => _AddedValues ??= new Collection<PSObject>();
 
 	/// <inheritdoc/>
-	public override Explorer DoOpenFile(OpenFileEventArgs args)
+	public override Explorer? DoOpenFile(OpenFileEventArgs args)
 	{
-		object data = args.File.Data;
+		var data = args.File.Data!;
 
 		// open file-like
 		{
-			string filePath = My.PathEx.TryGetFilePath(data);
+			var filePath = My.PathEx.TryGetFilePath(data);
 			if (filePath != null)
 			{
 				Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
@@ -230,7 +227,7 @@ public sealed class ObjectExplorer : FormatExplorer
 
 		// open directory-like
 		{
-			string directoryPath = My.PathEx.TryGetDirectoryPath(data);
+			var directoryPath = My.PathEx.TryGetDirectoryPath(data);
 			if (directoryPath != null)
 			{
 				Far.Api.Panel2.CurrentDirectory = directoryPath;
@@ -253,7 +250,7 @@ public sealed class ObjectExplorer : FormatExplorer
 		}
 
 		// replace key/value pair with its value if it is complex
-		var typeName = type.FullName;
+		var typeName = type.FullName!;
 		if (typeName.StartsWith("System.Collections.Generic.KeyValuePair`", StringComparison.OrdinalIgnoreCase))
 		{
 			var value = psData.Properties["Value"].Value;
@@ -272,7 +269,7 @@ public sealed class ObjectExplorer : FormatExplorer
 		}
 
 		// case: enumerable (string is excluded by linear type case)
-		IEnumerable asIEnumerable = Cast<IEnumerable>.From(data);
+		var asIEnumerable = Cast<IEnumerable>.From(data);
 		if (asIEnumerable != null)
 		{
 			var explorer = new ObjectExplorer();
@@ -295,13 +292,13 @@ public sealed class ObjectExplorer : FormatExplorer
 
 	internal void AddObjects(object values)
 	{
-		if (values == null)
+		if (values is null)
 			return;
 
 		var added = AddedValues;
 
-		IEnumerable enumerable = Cast<IEnumerable>.From(values);
-		if (enumerable == null || enumerable is string)
+		var enumerable = Cast<IEnumerable>.From(values);
+		if (enumerable is null || enumerable is string)
 		{
 			added.Add(PSObject.AsPSObject(values));
 		}
@@ -353,7 +350,7 @@ public sealed class ObjectExplorer : FormatExplorer
 		args.Result = JobResult.Ignore;
 
 		// prompt for a command
-		string code = Far.Api.MacroState == MacroState.None ? A.Psf.InputCode() : Far.Api.Input(null);
+		var code = Far.Api.MacroState == MacroState.None ? A.Psf.InputCode() : Far.Api.Input(null);
 		if (string.IsNullOrEmpty(code))
 			return;
 

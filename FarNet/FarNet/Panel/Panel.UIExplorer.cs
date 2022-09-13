@@ -2,6 +2,7 @@
 // FarNet plugin for Far Manager
 // Copyright (c) Roman Kuzmin
 
+using System;
 using System.Collections.Generic;
 
 namespace FarNet;
@@ -68,7 +69,8 @@ public partial class Panel
 	/// <param name="args">.</param>
 	public virtual void UISetFile(SetFileEventArgs args)
 	{
-		if (args == null) return;
+		if (args is null)
+			throw new ArgumentNullException(nameof(args));
 
 		Explorer.SetFile(args);
 
@@ -82,7 +84,8 @@ public partial class Panel
 	/// <param name="args">.</param>
 	public virtual void UISetText(SetTextEventArgs args)
 	{
-		if (args == null) return;
+		if (args is null)
+			throw new ArgumentNullException(nameof(args));
 
 		Explorer.SetText(args);
 
@@ -96,7 +99,8 @@ public partial class Panel
 	/// <param name="args">.</param>
 	public virtual void UIAcceptFiles(AcceptFilesEventArgs args)
 	{
-		if (args == null) return;
+		if (args is null)
+			throw new ArgumentNullException(nameof(args));
 
 		Explorer.AcceptFiles(args);
 
@@ -110,7 +114,8 @@ public partial class Panel
 	/// <param name="args">.</param>
 	public virtual void UIDeleteFiles(DeleteFilesEventArgs args)
 	{
-		if (args == null) return;
+		if (args is null)
+			throw new ArgumentNullException(nameof(args));
 
 		Explorer.DeleteFiles(args);
 
@@ -124,7 +129,8 @@ public partial class Panel
 	/// <param name="args">.</param>
 	public virtual void UIExportFiles(ExportFilesEventArgs args)
 	{
-		if (args == null) return;
+		if (args is null)
+			throw new ArgumentNullException(nameof(args));
 
 		Explorer.ExportFiles(args);
 
@@ -138,7 +144,8 @@ public partial class Panel
 	/// <param name="args">.</param>
 	public virtual void UIImportFiles(ImportFilesEventArgs args)
 	{
-		if (args == null) return;
+		if (args is null)
+			throw new ArgumentNullException(nameof(args));
 
 		Explorer.ImportFiles(args);
 
@@ -152,7 +159,8 @@ public partial class Panel
 	/// <param name="args">.</param>
 	public virtual void UICloneFile(CloneFileEventArgs args)
 	{
-		if (args == null) return;
+		if (args is null)
+			throw new ArgumentNullException(nameof(args));
 
 		Explorer.CloneFile(args);
 
@@ -166,7 +174,8 @@ public partial class Panel
 	/// <param name="args">.</param>
 	public virtual void UICreateFile(CreateFileEventArgs args)
 	{
-		if (args == null) return;
+		if (args is null)
+			throw new ArgumentNullException(nameof(args));
 
 		Explorer.CreateFile(args);
 
@@ -189,7 +198,8 @@ public partial class Panel
 	/// <param name="args">.</param>
 	public virtual void UIRenameFile(RenameFileEventArgs args)
 	{
-		if (args == null) return;
+		if (args is null)
+			throw new ArgumentNullException(nameof(args));
 
 		Explorer.RenameFile(args);
 		

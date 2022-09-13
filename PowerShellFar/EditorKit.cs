@@ -49,7 +49,7 @@ $r = TabExpansion2 @args
 ";
 
 	static bool _doneTabExpansion;
-	static string _pathTabExpansion;
+	static string? _pathTabExpansion;
 
 	static void InitTabExpansion()
 	{
@@ -61,7 +61,7 @@ $r = TabExpansion2 @args
 	}
 
 	//! It is called once in the main session and once per each local and remote session.
-	public static void InitTabExpansion(Runspace runspace)
+	public static void InitTabExpansion(Runspace? runspace)
 	{
 		// init path and caller
 		_pathTabExpansion ??= Path.Combine(A.Psf.AppHome, "TabExpansion2.ps1");
@@ -78,22 +78,22 @@ $r = TabExpansion2 @args
 	{
 		var t = Cast<Hashtable>.From(value); //! remote gets PSObject
 		if (t == null)
-			return value.ToString();
+			return value.ToString()!;
 
-		return t[CompletionText].ToString();
+		return t[CompletionText]!.ToString()!;
 	}
 
 	static string TEListItemText(object value)
 	{
 		var t = Cast<Hashtable>.From(value); //! remote gets PSObject
 		if (t == null)
-			return value.ToString();
+			return value.ToString()!;
 
 		var r = t[ListItemText];
 		if (r != null)
-			return r.ToString();
+			return r.ToString()!;
 
-		return t[CompletionText].ToString();
+		return t[CompletionText]!.ToString()!;
 	}
 
 	/// <summary>
@@ -102,15 +102,15 @@ $r = TabExpansion2 @args
 	/// <param name="editLine">Editor line, command line or dialog edit box line; if null then <see cref="IFar.Line"/> is used.</param>
 	/// <param name="runspace">Runspace or null for the main.</param>
 	/// <seealso cref="Actor.ExpandCode"/>
-	public static void ExpandCode(ILine editLine, Runspace runspace)
+	public static void ExpandCode(ILine? editLine, Runspace? runspace)
 	{
 		InitTabExpansion();
 
 		// hot line
-		if (editLine == null)
+		if (editLine is null)
 		{
 			editLine = Far.Api.Line;
-			if (editLine == null)
+			if (editLine is null)
 			{
 				A.Message("There is no current editor line.");
 				return;
@@ -122,11 +122,11 @@ $r = TabExpansion2 @args
 		int cursorColumn;
 		var prefix = string.Empty;
 
-		IEditor editor = null;
-		InteractiveArea area;
+		IEditor? editor = null;
+		InteractiveArea? area;
 
 		// script?
-		if (editLine.WindowKind == WindowKind.Editor && My.PathEx.IsPSFile((editor = Far.Api.Editor).FileName))
+		if (editLine.WindowKind == WindowKind.Editor && My.PathEx.IsPSFile((editor = Far.Api.Editor)!.FileName))
 		{
 			int lineIndex = editor.Caret.Y;
 			int lastIndex = editor.Count - 1;
@@ -213,9 +213,9 @@ $r = TabExpansion2 @args
 			}
 
 			// results
-			var words = Cast<IList>.From(result["CompletionMatches"]); //! remote gets PSObject
-			int replacementIndex = (int)result["ReplacementIndex"];
-			int replacementLength = (int)result["ReplacementLength"];
+			var words = Cast<IList>.From(result["CompletionMatches"])!; //! remote gets PSObject
+			int replacementIndex = (int)result["ReplacementIndex"]!;
+			int replacementLength = (int)result["ReplacementLength"]!;
 			replacementIndex -= lineOffset;
 			if (replacementIndex < 0 || replacementLength < 0)
 				return;
@@ -235,7 +235,7 @@ $r = TabExpansion2 @args
 					var re = new Regex(@"\$(global:|script:|private:)?(" + scope + matchVar.Groups[3].Value + @"\w+:?)", RegexOptions.IgnoreCase);
 
 					var variables = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-					foreach (var line1 in Far.Api.Editor.Lines)
+					foreach (var line1 in Far.Api.Editor!.Lines)
 					{
 						foreach (var m in re.Matches(line1.Text).Cast<Match>())
 						{
@@ -274,10 +274,11 @@ $r = TabExpansion2 @args
 		if (words.Count == 1)
 		{
 			// 1 word
-			if (words[0] == null)
+			var word0 = words[0];
+			if (word0 is null)
 				return;
 
-			word = TECompletionText(words[0]);
+			word = TECompletionText(word0);
 		}
 		else
 		{
@@ -314,14 +315,15 @@ $r = TabExpansion2 @args
 
 			if (menu.Items.Count == 1)
 			{
-				word = TECompletionText(menu.Items[0].Data);
+				word = TECompletionText(menu.Items[0].Data!);
 			}
 			else
 			{
 				// show menu
 				if (!menu.Show())
 					return;
-				word = TECompletionText(menu.Items[menu.Selected].Data);
+
+				word = TECompletionText(menu.Items[menu.Selected].Data!);
 			}
 		}
 
@@ -368,7 +370,7 @@ $r = TabExpansion2 @args
 			// case: editor
 			if (Far.Api.Window.Kind == WindowKind.Editor)
 			{
-				var editor = Far.Api.Editor;
+				var editor = Far.Api.Editor!;
 				if (editor.SelectionExists)
 					return editor.GetSelectedText();
 				return editor.Line.Text;
@@ -376,7 +378,7 @@ $r = TabExpansion2 @args
 
 			// other lines
 			ILine line = Far.Api.Line;
-			if (line == null)
+			if (line is null)
 				return string.Empty;
 			else
 				return line.ActiveText;
@@ -386,7 +388,7 @@ $r = TabExpansion2 @args
 			// case: editor
 			if (Far.Api.Window.Kind == WindowKind.Editor)
 			{
-				var editor = Far.Api.Editor;
+				var editor = Far.Api.Editor!;
 				switch (editor.SelectionKind)
 				{
 					case PlaceKind.Column:
@@ -409,7 +411,7 @@ $r = TabExpansion2 @args
 		}
 	}
 
-	public static void OnEditorFirstOpening(object sender, EventArgs e)
+	public static void OnEditorFirstOpening(object? sender, EventArgs e)
 	{
 		A.Psf.Invoking();
 
@@ -428,9 +430,9 @@ $r = TabExpansion2 @args
 		}
 	}
 
-	public static void OnEditorOpened(object sender, EventArgs e)
+	public static void OnEditorOpened(object? sender, EventArgs e)
 	{
-		var editor = (IEditor)sender;
+		var editor = (IEditor)sender!;
 		var fileName = editor.FileName;
 		bool isInteractive = fileName.EndsWith(Word.InteractiveSuffix, StringComparison.OrdinalIgnoreCase);
 		if (isInteractive)
@@ -444,16 +446,16 @@ $r = TabExpansion2 @args
 		}
 	}
 
-	static void OnChangedPSFile(object sender, EditorChangedEventArgs e)
+	static void OnChangedPSFile(object? sender, EditorChangedEventArgs e)
 	{
 		if (e.Kind == EditorChangeKind.LineChanged)
 			return;
 
-		var editor = (IEditor)sender;
+		var editor = (IEditor)sender!;
 		var line = e.Line + 1;
 		var fullPath = Path.GetFullPath(editor.FileName); //!
 
-		IEnumerable<LineBreakpoint> bps = null;
+		IEnumerable<LineBreakpoint>? bps = null;
 		int delta = 0;
 		if (e.Kind == EditorChangeKind.LineAdded)
 		{
@@ -480,7 +482,7 @@ $r = TabExpansion2 @args
 	/// <summary>
 	/// Called on key in *.ps1.
 	/// </summary>
-	static void OnKeyDownPSFile(object sender, KeyEventArgs e)
+	static void OnKeyDownPSFile(object? sender, KeyEventArgs e)
 	{
 		switch (e.Key.VirtualKeyCode)
 		{
@@ -497,7 +499,7 @@ $r = TabExpansion2 @args
 				{
 					// [F5]
 					e.Ignore = true;
-					var editor = (IEditor)sender;
+					var editor = (IEditor)sender!;
 					InvokeScriptFromEditor(editor);
 				}
 				return;
@@ -505,7 +507,7 @@ $r = TabExpansion2 @args
 				if (e.Key.Is())
 				{
 					// [Tab]
-					var editor = (IEditor)sender;
+					var editor = (IEditor)sender!;
 					if (!editor.SelectionExists && NeedsTabExpansion(editor))
 					{
 						// TabExpansion
@@ -525,7 +527,7 @@ $r = TabExpansion2 @args
 
 		if (from == WindowKind.Editor)
 		{
-			var editor = Far.Api.Editor;
+			var editor = Far.Api.Editor!;
 			code = editor.GetSelectedText();
 			if (string.IsNullOrEmpty(code))
 				code = editor[editor.Caret.Y].Text;
@@ -554,7 +556,7 @@ $r = TabExpansion2 @args
 	// PSF sets the current directory and location to the script directory.
 	// This is often useful and consistent with invoking from panels.
 	// NOTE: ISE [F5] does not.
-	public static void InvokeScriptFromEditor(IEditor editor)
+	public static void InvokeScriptFromEditor(IEditor? editor)
 	{
 		// editor
 		editor ??= Far.Api.Editor ?? throw new ModuleException("No current editor.");
@@ -587,7 +589,7 @@ $r = TabExpansion2 @args
 		// note: GetDirectoryName fails on a long path, too
 		try
 		{
-			dir1 = Path.GetDirectoryName(fileName);
+			dir1 = Path.GetDirectoryName(fileName)!;
 			dir0 = Environment.CurrentDirectory;
 			Environment.CurrentDirectory = dir1;
 		}

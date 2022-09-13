@@ -2,22 +2,22 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
-using System.Management.Automation;
 using FarNet;
+using System.Management.Automation;
 
-namespace PowerShellFar.Commands
+namespace PowerShellFar.Commands;
+
+sealed class OpenFarViewerCommand : NewFarViewerCommand
 {
-	sealed class OpenFarViewerCommand : NewFarViewerCommand
+	[Parameter]
+	public SwitchParameter Modal { get; set; }
+
+	protected override void ProcessRecord()
 	{
-		[Parameter]
-		public SwitchParameter Modal { get; set; }
-		protected override void ProcessRecord()
-		{
-			IViewer viewer = CreateViewer();
-			if (Modal)
-				viewer.Open(OpenMode.Modal);
-			else
-				viewer.Open();
-		}
+		var viewer = CreateViewer();
+		if (Modal)
+			viewer.Open(OpenMode.Modal);
+		else
+			viewer.Open();
 	}
 }

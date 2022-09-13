@@ -234,63 +234,63 @@ public abstract class IDialog
 	/// <remarks>
 	/// If <c>right</c>\<c>bottom</c> is 0 then it is calculated.
 	/// </remarks>
-	public abstract IBox AddBox(int left, int top, int right, int bottom, string text);
+	public abstract IBox AddBox(int left, int top, int right, int bottom, string? text);
 
 	/// <summary>
 	/// Adds a button control. See <see cref="NoSmartCoordinates"/>.
 	/// </summary>
 	/// <include file='doc.xml' path='doc/LT/*'/>
 	/// <param name="text">Control text.</param>
-	public abstract IButton AddButton(int left, int top, string text);
+	public abstract IButton AddButton(int left, int top, string? text);
 
 	/// <summary>
 	/// Adds a check box control. See <see cref="NoSmartCoordinates"/>.
 	/// </summary>
 	/// <include file='doc.xml' path='doc/LT/*'/>
 	/// <param name="text">Control text.</param>
-	public abstract ICheckBox AddCheckBox(int left, int top, string text);
+	public abstract ICheckBox AddCheckBox(int left, int top, string? text);
 
 	/// <summary>
 	/// Adds a combo box control. See <see cref="NoSmartCoordinates"/>.
 	/// </summary>
 	/// <include file='doc.xml' path='doc/LTR/*'/>
 	/// <param name="text">Control text.</param>
-	public abstract IComboBox AddComboBox(int left, int top, int right, string text);
+	public abstract IComboBox AddComboBox(int left, int top, int right, string? text);
 
 	/// <summary>
 	/// Adds a standard edit control. See <see cref="NoSmartCoordinates"/>.
 	/// </summary>
 	/// <include file='doc.xml' path='doc/LTR/*'/>
 	/// <param name="text">Control text.</param>
-	public abstract IEdit AddEdit(int left, int top, int right, string text);
+	public abstract IEdit AddEdit(int left, int top, int right, string? text);
 
 	/// <summary>
 	/// Adds a fixed size edit control. See <see cref="NoSmartCoordinates"/>.
 	/// </summary>
 	/// <include file='doc.xml' path='doc/LTR/*'/>
 	/// <param name="text">Control text.</param>
-	public abstract IEdit AddEditFixed(int left, int top, int right, string text);
+	public abstract IEdit AddEditFixed(int left, int top, int right, string? text);
 
 	/// <summary>
 	/// Adds a password edit control. See <see cref="NoSmartCoordinates"/>.
 	/// </summary>
 	/// <include file='doc.xml' path='doc/LTR/*'/>
 	/// <param name="text">Control text.</param>
-	public abstract IEdit AddEditPassword(int left, int top, int right, string text);
+	public abstract IEdit AddEditPassword(int left, int top, int right, string? text);
 
 	/// <summary>
 	/// Adds a list box control. See <see cref="NoSmartCoordinates"/>.
 	/// </summary>
 	/// <include file='doc.xml' path='doc/LTRB/*'/>
 	/// <param name="title">Title.</param>
-	public abstract IListBox AddListBox(int left, int top, int right, int bottom, string title);
+	public abstract IListBox AddListBox(int left, int top, int right, int bottom, string? title);
 
 	/// <summary>
 	/// Adds a radio button. See <see cref="NoSmartCoordinates"/>.
 	/// </summary>
 	/// <include file='doc.xml' path='doc/LT/*'/>
 	/// <param name="text">Control text.</param>
-	public abstract IRadioButton AddRadioButton(int left, int top, string text);
+	public abstract IRadioButton AddRadioButton(int left, int top, string? text);
 
 	/// <summary>
 	/// Adds a text control. See <see cref="NoSmartCoordinates"/>.
@@ -300,14 +300,14 @@ public abstract class IDialog
 	/// <remarks>
 	/// For separators use of -1 as position tells to center the text (alternative to <see cref="IText.Centered"/>).
 	/// </remarks>
-	public abstract IText AddText(int left, int top, int right, string text);
+	public abstract IText AddText(int left, int top, int right, string? text);
 
 	/// <summary>
 	/// Adds a vertical text control. See <see cref="NoSmartCoordinates"/>.
 	/// </summary>
 	/// <include file='doc.xml' path='doc/LTB/*'/>
 	/// <param name="text">Control text.</param>
-	public abstract IText AddVerticalText(int left, int top, int bottom, string text);
+	public abstract IText AddVerticalText(int left, int top, int bottom, string? text);
 
 	/// <summary>
 	/// Adds a user control. See <see cref="NoSmartCoordinates"/>.

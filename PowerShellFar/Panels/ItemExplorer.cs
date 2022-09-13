@@ -39,15 +39,15 @@ public sealed class ItemExplorer : FormatExplorer
 	}
 
 	//! Very slow operation, that is why we propagate the provider on exploring.
-	internal PathInfoEx Info() { return _Info_ ?? (_Info_ = new PathInfoEx(Location)); }
-	PathInfoEx _Info_;
+	internal PathInfoEx Info() => _Info_ ??= new PathInfoEx(Location);
+	PathInfoEx? _Info_;
 
 	internal ProviderInfo Provider
 	{
-		get { return _Provider_ ?? (_Provider_ = Info().Provider); }
-		private set { _Provider_ = value; }
+		get => _Provider_ ??= Info().Provider;
+		private set => _Provider_ = value;
 	}
-	ProviderInfo _Provider_;
+	ProviderInfo? _Provider_;
 
 	/// <inheritdoc/>
 	public override Panel DoCreatePanel()
@@ -58,10 +58,11 @@ public sealed class ItemExplorer : FormatExplorer
 	/// <inheritdoc/>
 	public override void DoAcceptFiles(AcceptFilesEventArgs args)
 	{
-		if (args == null) return;
+		if (args is null)
+			throw new ArgumentNullException(nameof(args));
 
 		// that source
-		if (!(args.Explorer is ItemExplorer))
+		if (args.Explorer is not ItemExplorer)
 		{
 			if (args.UI) A.Message(Res.UnknownFileSource);
 			args.Result = JobResult.Ignore;
@@ -78,34 +79,33 @@ public sealed class ItemExplorer : FormatExplorer
 		}
 
 		// call
-		using (var ps = A.Psf.NewPowerShell())
+		using var ps = A.Psf.NewPowerShell();
+		if (args.Move)
+			ps.AddCommand("Move-Item").AddParameter(Prm.Force);
+		else
+			ps.AddCommand("Copy-Item").AddParameter(Prm.Recurse);
+
+		ps
+			.AddParameter("Destination", this.Location)
+			.AddParameter(Prm.Confirm)
+			.AddParameter(Prm.ErrorAction, ActionPreference.Continue);
+
+		ps.Invoke(args.FilesData);
+
+		// errors
+		if (ps.Streams.Error.Count > 0)
 		{
-			if (args.Move)
-				ps.AddCommand("Move-Item").AddParameter(Prm.Force);
-			else
-				ps.AddCommand("Copy-Item").AddParameter(Prm.Recurse);
-
-			ps
-				.AddParameter("Destination", this.Location)
-				.AddParameter(Prm.Confirm)
-				.AddParameter(Prm.ErrorAction, ActionPreference.Continue);
-
-			ps.Invoke(args.FilesData);
-
-			// errors
-			if (ps.Streams.Error.Count > 0)
-			{
-				args.Result = JobResult.Incomplete;
-				if (args.UI)
-					A.ShowError(ps);
-			}
+			args.Result = JobResult.Incomplete;
+			if (args.UI)
+				A.ShowError(ps);
 		}
 	}
 
 	/// <inheritdoc/>
 	public override void DoDeleteFiles(DeleteFilesEventArgs args)
 	{
-		if (args == null) return;
+		if (args is null)
+			throw new ArgumentNullException(nameof(args));
 
 		// -Confirm -Recurse
 		var confirmDelete = 0 != (long)Far.Api.GetSetting(FarSetting.Confirmations, "Delete");
@@ -114,27 +114,25 @@ public sealed class ItemExplorer : FormatExplorer
 		// call
 		try
 		{
-			using (var ps = A.Psf.NewPowerShell())
+			using var ps = A.Psf.NewPowerShell();
+			ps.AddCommand("Remove-Item")
+				.AddParameter(Prm.Force)
+				.AddParameter(Prm.ErrorAction, ActionPreference.Continue);
+
+			if (confirmDelete && confirmDeleteFolder)
+				ps.AddParameter(Prm.Confirm);
+			else if (confirmDelete)
+				ps.AddParameter(Prm.Confirm).AddParameter(Prm.Recurse);
+			else if (confirmDeleteFolder)
+				ps.AddParameter(Prm.Recurse);
+
+			ps.Invoke(args.FilesData);
+
+			if (ps.Streams.Error.Count > 0)
 			{
-				ps.AddCommand("Remove-Item")
-					.AddParameter(Prm.Force)
-					.AddParameter(Prm.ErrorAction, ActionPreference.Continue);
-
-				if (confirmDelete && confirmDeleteFolder)
-					ps.AddParameter(Prm.Confirm);
-				else if (confirmDelete)
-					ps.AddParameter(Prm.Confirm).AddParameter(Prm.Recurse);
-				else if (confirmDeleteFolder)
-					ps.AddParameter(Prm.Recurse);
-
-				ps.Invoke(args.FilesData);
-
-				if (ps.Streams.Error.Count > 0)
-				{
-					args.Result = JobResult.Incomplete;
-					if (args.UI)
-						A.ShowError(ps);
-				}
+				args.Result = JobResult.Incomplete;
+				if (args.UI)
+					A.ShowError(ps);
 			}
 		}
 		catch
@@ -147,7 +145,8 @@ public sealed class ItemExplorer : FormatExplorer
 	/// <inheritdoc/>
 	public override void DoGetContent(GetContentEventArgs args)
 	{
-		if (args == null) return;
+		if (args is null)
+			throw new ArgumentNullException(nameof(args));
 
 		if (!My.ProviderInfoEx.HasContent(Provider))
 		{
@@ -163,7 +162,7 @@ public sealed class ItemExplorer : FormatExplorer
 		args.CanSet = true;
 
 		// actual file
-		string filePath = My.PathEx.TryGetFilePath(args.File.Data);
+		var filePath = My.PathEx.TryGetFilePath(args.File.Data);
 		if (filePath != null) //????base.UIEditFile(file); // to use RealNames?
 		{
 			args.UseFileName = filePath;
@@ -189,15 +188,17 @@ public sealed class ItemExplorer : FormatExplorer
 	/// <inheritdoc/>
 	public override Explorer DoExploreDirectory(ExploreDirectoryEventArgs args)
 	{
-		if (args == null) return null;
+		if (args is null)
+			throw new ArgumentNullException(nameof(args));
 
 		return Explore(My.PathEx.Combine(Location, args.File.Name));
 	}
 
 	/// <inheritdoc/>
-	public override Explorer DoExploreParent(ExploreParentEventArgs args)
+	public override Explorer? DoExploreParent(ExploreParentEventArgs args)
 	{
-		if (args == null) return null;
+		if (args is null)
+			throw new ArgumentNullException(nameof(args));
 
 		/*
 		We might use 'cd ..' but we have to be sure that the current location is in sync
@@ -255,9 +256,9 @@ public sealed class ItemExplorer : FormatExplorer
 	}
 
 	/// <inheritdoc/>
-	public override Explorer DoExploreRoot(ExploreRootEventArgs args)
+	public override Explorer? DoExploreRoot(ExploreRootEventArgs args)
 	{
-		string driveName = Info().DriveName;
+		var driveName = Info().DriveName;
 		if (string.IsNullOrEmpty(driveName))
 			return null;
 
@@ -286,12 +287,12 @@ public sealed class ItemExplorer : FormatExplorer
 		if (Provider.ImplementingType == typeof(FileSystemProvider))
 		{
 			foreach (PSObject value in values)
-				Cache.Add(new SystemMapFile(value, Map));
+				Cache.Add(new SystemMapFile(value, Map!));
 		}
 		else
 		{
 			foreach (PSObject value in values)
-				Cache.Add(new ItemMapFile(value, Map));
+				Cache.Add(new ItemMapFile(value, Map!));
 		}
 	}
 
@@ -304,9 +305,10 @@ public sealed class ItemExplorer : FormatExplorer
 	/// <inheritdoc/>
 	public override void DoRenameFile(RenameFileEventArgs args)
 	{
-		if (args == null) return;
+		if (args is null)
+			throw new ArgumentNullException(nameof(args));
 
-		if (!(args.Parameter is string newName))
+		if (args.Parameter is not string newName)
 			throw new InvalidOperationException(Res.ParameterString);
 
 		// workaround; Rename-Item has no -LiteralPath; e.g. z`z[z.txt is a big problem
@@ -317,11 +319,12 @@ public sealed class ItemExplorer : FormatExplorer
 	/// <inheritdoc/>
 	public override void DoCreateFile(CreateFileEventArgs args)
 	{
-		if (args == null) return;
+		if (args is null)
+			throw new ArgumentNullException(nameof(args));
 
 		args.Result = JobResult.Ignore;
 
-		UI.NewValueDialog ui = new UI.NewValueDialog("New " + Provider.Name + " item");
+		var ui = new UI.NewValueDialog("New " + Provider.Name + " item");
 		while (ui.Dialog.Show())
 		{
 			try
@@ -362,7 +365,8 @@ public sealed class ItemExplorer : FormatExplorer
 	/// <inheritdoc/>
 	public override void DoSetText(SetTextEventArgs args)
 	{
-		if (args == null) return;
+		if (args is null)
+			throw new ArgumentNullException(nameof(args));
 
 		try
 		{
@@ -386,9 +390,10 @@ public sealed class ItemExplorer : FormatExplorer
 	/// <inheritdoc/>
 	public override void DoCloneFile(CloneFileEventArgs args)
 	{
-		if (args == null) return;
+		if (args is null)
+			throw new ArgumentNullException(nameof(args));
 
-		if (!(args.Parameter is string newName))
+		if (args.Parameter is not string newName)
 			throw new InvalidOperationException(Res.ParameterString);
 
 		string source = Kit.EscapeWildcard(My.PathEx.Combine(Location, args.File.Name));
