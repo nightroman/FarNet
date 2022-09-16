@@ -31,7 +31,7 @@ sealed class Session : IDisposable
 
 	public bool IsDebug => _config.V8ScriptEngineFlags.HasFlag(V8ScriptEngineFlags.EnableDebugging);
 
-	private Session(string root, string xml, IEnumerable<string> scripts, bool isDebug)
+	private Session(string root, string? xml, IEnumerable<string> scripts, bool isDebug)
 	{
 		Root = root;
 
@@ -47,7 +47,7 @@ sealed class Session : IDisposable
 			DefaultDocumentCategory.Script => DocumentCategory.Script,
 			DefaultDocumentCategory.Standard => ModuleCategory.Standard,
 			DefaultDocumentCategory.CommonJS => ModuleCategory.CommonJS,
-			_ => throw null
+			_ => throw new Exception()
 		};
 
 		_engine = V8ScriptEngine(root, _config);
@@ -136,7 +136,7 @@ sealed class Session : IDisposable
 			session.Dispose();
 	}
 
-	void SetHostArgs(IDictionary parameters)
+	void SetHostArgs(IDictionary? parameters)
 	{
 		var bag = new PropertyBag();
 		if (parameters is not null)
@@ -157,7 +157,7 @@ sealed class Session : IDisposable
 		string root;
 		if (isRootFromParameter)
 		{
-			root = args.Parameters[SessionParameterName] as string ?? throw new ModuleException("Parameter _session must be string.");
+			root = args.Parameters![SessionParameterName] as string ?? throw new ModuleException("Parameter _session must be string.");
 
 			if (!Path.IsPathRooted(root))
 				root = Path.Join(Far.Api.CurrentDirectory, root);
@@ -166,7 +166,7 @@ sealed class Session : IDisposable
 		}
 		else
 		{
-			root = args.Document is not null ? Path.GetDirectoryName(args.Document) : Far.Api.CurrentDirectory;
+			root = args.Document is not null ? Path.GetDirectoryName(args.Document)! : Far.Api.CurrentDirectory;
 		}
 
 		var files = Directory.GetFiles(root, SessionFileMask);
@@ -196,10 +196,10 @@ sealed class Session : IDisposable
 			else
 			{
 				// update parameters
-				session.SetHostArgs(args.Parameters);
+				session.SetHostArgs(args.Parameters!);
 
 				// and make it first in the list
-				if (s_sessions.First.Value != session)
+				if (s_sessions.First!.Value != session)
 				{
 					s_sessions.Remove(session);
 					s_sessions.AddFirst(session);

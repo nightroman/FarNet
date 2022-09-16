@@ -26,7 +26,7 @@ public class JavaScriptTool : ModuleTool
 		{
 			case ModuleToolOptions.Editor:
 				{
-					var editor = Far.Api.Editor;
+					var editor = Far.Api.Editor!;
 					var file = editor.FileName;
 					if (Session.IsFileDocument(file))
 					{
@@ -88,7 +88,7 @@ public class JavaScriptTool : ModuleTool
 			if (!menu.Show())
 				return;
 
-			var selectedSession = (Session)menu.SelectedData;
+			var selectedSession = (Session?)menu.SelectedData;
 			if (selectedSession is null)
 				return;
 

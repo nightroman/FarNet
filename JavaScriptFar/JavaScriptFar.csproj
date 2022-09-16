@@ -3,10 +3,12 @@
     <FarHome Condition="'$(FarHome)' == ''">C:\Bin\Far\x64</FarHome>
     <TargetFramework>net6.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
+    <Nullable>enable</Nullable>
     <RunPostBuildEvent>1</RunPostBuildEvent>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.ClearScript" Version="7.3.1" />
+    <PackageReference Include="Microsoft.ClearScript" Version="7.3.2" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FarNet">

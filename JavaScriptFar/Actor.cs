@@ -17,7 +17,7 @@ static class Actor
 		Process.Start(new ProcessStartInfo("code.cmd") { Arguments = arguments, UseShellExecute = true, WindowStyle = ProcessWindowStyle.Hidden });
 	}
 
-	public static void StartDebugging(string document = null, int lineNumber = 1, int columnNumber = 1)
+	public static void StartDebugging(string? document = null, int lineNumber = 1, int columnNumber = 1)
 	{
 		var args = new ExecuteArgs { IsDebug = true };
 
@@ -48,9 +48,18 @@ static class Actor
 			try
 			{
 				if (args.Document is not null)
+				{
 					session.ExecuteDocument(args.Document);
-				else
+					return;
+				}
+
+				if (args.Command is not null)
+				{
 					session.ExecuteCommand(args.Command);
+					return;
+				}
+
+				throw new Exception();
 			}
 			catch (Exception ex)
 			{
@@ -69,8 +78,10 @@ static class Actor
 			if (args.IsTask)
 			{
 				StartExecuteTask(session, args);
+				return;
 			}
-			else if (args.Document is not null)
+
+			if (args.Document is not null)
 			{
 				if (args.Print is null)
 				{
@@ -80,10 +91,12 @@ static class Actor
 				{
 					var res = session.EvaluateDocument(args.Document);
 					if (res is not null)
-						args.Print(res.ToString());
+						args.Print(res.ToString()!);
 				}
+				return;
 			}
-			else
+
+			if (args.Command is not null)
 			{
 				var res = session.ExecuteCommand(args.Command);
 				if (args.Print is not null)
@@ -97,7 +110,10 @@ static class Actor
 					Far.Api.UI.WriteLine(res);
 					Far.Api.UI.SaveUserScreen();
 				}
+				return;
 			}
+
+			throw new Exception();
 		}
 		catch (ScriptEngineException ex)
 		{

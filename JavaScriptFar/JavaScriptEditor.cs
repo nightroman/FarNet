@@ -11,7 +11,7 @@ namespace JavaScriptFar;
 [ModuleEditor(Name = "Editor", Mask = "*.js;*.cjs;*.mjs", Id = "895b09e1-b286-4ee7-8121-14c6825a2223")]
 public class JavaScriptEditor : ModuleEditor
 {
-	IEditor _editor;
+	IEditor _editor = null!;
 
 	public override void Invoke(IEditor editor, ModuleEditorEventArgs e)
 	{
@@ -19,7 +19,7 @@ public class JavaScriptEditor : ModuleEditor
 		editor.KeyDown += Editor_KeyDown;
 	}
 
-	private void Editor_KeyDown(object sender, KeyEventArgs e)
+	private void Editor_KeyDown(object? sender, KeyEventArgs e)
 	{
 		switch (e.Key.VirtualKeyCode)
 		{

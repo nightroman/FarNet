@@ -10,8 +10,8 @@ namespace JavaScriptFar;
 
 public class JavaScriptModule : ModuleHost
 {
-	public static JavaScriptModule Instance { get; private set; }
-	public static string Root { get; private set; }
+	public static JavaScriptModule Instance { get; private set; } = null!;
+	public static string Root { get; private set; } = null!;
 
 	public JavaScriptModule()
 	{
