@@ -74,15 +74,8 @@ static class ActorMenu
 		menu.Lock();
 
 		//! show, with sync for handlers, e.g. TabEx depends
-		var currentDirectory = A.Psf.SyncPaths();
-		try
-		{
-			menu.Show();
-		}
-		finally
-		{
-			A.SetCurrentDirectoryFinally(currentDirectory);
-		}
+		A.Psf.SyncPaths();
+		menu.Show();
 	}
 
 	static void AddTool(string text, EventHandler<MenuEventArgs> click, ModuleToolOptions from)

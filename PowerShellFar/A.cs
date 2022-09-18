@@ -143,22 +143,6 @@ static class A
 		return true;
 	}
 
-	// Sets current directory, shows errors but does not throw.
-	public static void SetCurrentDirectoryFinally(string? currentDirectory)
-	{
-		if (currentDirectory != null)
-		{
-			try
-			{
-				Directory.SetCurrentDirectory(currentDirectory);
-			}
-			catch (IOException ex)
-			{
-				Far.Api.ShowError(Res.Me, ex);
-			}
-		}
-	}
-
 	// Command for formatted output friendly for apps with interaction and colors.
 	// "Out-Host" is not suitable for apps with interaction, e.g. more.com, git.exe.
 	public static Command OutDefaultCommand => new("Out-Default")

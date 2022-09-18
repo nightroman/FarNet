@@ -90,42 +90,30 @@ public sealed class Entry : ModuleHost
 
 	void OnCommandInvoke1(object? sender, ModuleCommandEventArgs e)
 	{
-		var currentDirectory = A.Psf.SyncPaths();
-		try
-		{
-			// if ends with `#` then omit echo else make echo with prefix
-			var echo = e.Command.TrimEnd();
-			if (echo.EndsWith("#"))
-			{
-				echo = null;
-			}
-			else
-			{
-				var colon = e.Command.Length > 0 && char.IsWhiteSpace(e.Command[0]) ? ":" : ": ";
-				echo = CommandInvoke1.Prefix + colon + e.Command;
-			}
+		A.Psf.SyncPaths();
 
-			var ok = A.Psf.Run(new RunArgs(e.Command) { Writer = new ConsoleOutputWriter(echo) });
-			e.Ignore = !ok;
-		}
-		finally
+		// if ends with `#` then omit echo else make echo with prefix
+		var echo = e.Command.TrimEnd();
+		if (echo.EndsWith("#"))
 		{
-			A.SetCurrentDirectoryFinally(currentDirectory);
+			echo = null;
 		}
+		else
+		{
+			var colon = e.Command.Length > 0 && char.IsWhiteSpace(e.Command[0]) ? ":" : ": ";
+			echo = CommandInvoke1.Prefix + colon + e.Command;
+		}
+
+		var ok = A.Psf.Run(new RunArgs(e.Command) { Writer = new ConsoleOutputWriter(echo) });
+		e.Ignore = !ok;
 	}
 
 	void OnCommandInvoke2(object? sender, ModuleCommandEventArgs e)
 	{
-		var currentDirectory = A.Psf.SyncPaths();
-		try
-		{
-			var ok = A.Psf.Run(new RunArgs(e.Command));
-			e.Ignore = !ok;
-		}
-		finally
-		{
-			A.SetCurrentDirectoryFinally(currentDirectory);
-		}
+		A.Psf.SyncPaths();
+
+		var ok = A.Psf.Run(new RunArgs(e.Command));
+		e.Ignore = !ok;
 	}
 
 	public override object Interop(string command, object args)

@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 6.0.19 =
+
+Reworked SyncPaths on invoking commands, see https://github.com/nightroman/FarNet/issues/34
+
 = 6.0.18 =
 
 Enables nullable reference types (NRT) in the API.

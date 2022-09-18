@@ -222,153 +222,45 @@ public sealed partial class Actor
 		}
 	}
 
-	/// <summary>
-	/// Sync provider location and current directory with Far state.
-	/// </summary>
-	/// <remarks>
-	/// Returned system path (if not null) must be restored by a called.
-	/// </remarks>
-	internal string? SyncPaths()
+	// Sets the current provider location to the user expected.
+	// Used in operations which potentially invoke user code.
+	internal void SyncPaths()
 	{
-		// don't on running
+		// skip running
 		if (IsRunning)
-			return null;
+			return;
 
-		// don't on no panels mode
-		IPanel panel = Far.Api.Panel;
+		// skip no panels
+		var panel = Far.Api.Panel;
 		if (panel is null)
-			return null;
+			return;
 
-		// at first get both paths: for the current system directory and provider location
-		string directory = Far.Api.CurrentDirectory;
+		// try get the panel location
 		string? location = null;
-		if (panel.IsPlugin)
+		if (panel is Panel plugin)
 		{
-			if (panel is Panel plugin)
+			if (plugin is ItemPanel itemPanel)
 			{
-				if (plugin is ItemPanel itemPanel)
-				{
-					location = itemPanel.Explorer.Location;
-				}
-				else
-				{
-					if (plugin is FolderTree)
-					{
-						location = panel.CurrentDirectory;
-						if (location == "*") //_130117_234326
-							location = directory;
-					}
-				}
+				location = itemPanel.Explorer.Location;
+			}
+			else if (plugin is FolderTree)
+			{
+				location = panel.CurrentDirectory;
+				if (location == "*") //_130117_234326
+					location = Far.Api.CurrentDirectory;
 			}
 		}
 
-		// to set yet unknown location to the directory
-		location ??= directory;
+		// set yet unknown to the far current
+		location ??= Far.Api.CurrentDirectory;
 
-		// set the current provider location; let's do it first, in case of failure
-		// we can skip directory setting/restoring in cases when they are the same.
-		bool okLocation = true;
-		try
-		{
-			//! Parameter is wildcard. Test: enter into a container "[]" and invoke a command.
-			Engine.SessionState.Path.SetLocation(Kit.EscapeWildcard(location));
-
-			// drop failure info
-			_failedInvokingLocationNew = null;
-			_failedInvokingLocationOld = null;
-		}
-		catch
-		{
-			okLocation = false;
-
-			// get the current
-			string currentLocation = Engine.SessionState.Path.CurrentLocation.Path;
-
-			// ask a user if he has not told to ignore this pair
-			if (location != _failedInvokingLocationNew || currentLocation != _failedInvokingLocationOld)
-			{
-				string message = string.Format(null, @"
-Cannot set the current location to
-{0}
-
-Continue with this current location?
-{1}
-", location, currentLocation);
-
-				switch (Far.Api.Message(message, Res.Me, MessageOptions.GuiOnMacro | MessageOptions.AbortRetryIgnore | MessageOptions.Warning | MessageOptions.LeftAligned))
-				{
-					case 1:
-						break;
-					case 2:
-						_failedInvokingLocationNew = location;
-						_failedInvokingLocationOld = currentLocation;
-						break;
-					default:
-						if (Far.Api.MacroState != MacroState.None)
-							Far.Api.UI.Break();
-						throw;
-				}
-			}
-		}
-
-		// do not try failed
-		if (!okLocation && location == directory)
-			return null;
-
-		// get the current directory to be restored by a caller
-		string? currentDirectory = Directory.GetCurrentDirectory();
-
-		// set the current directory to the active path to avoid confusions [_090929_061740]
-		try
-		{
-			// try to set
-			Directory.SetCurrentDirectory(directory);
-
-			// drop failure info
-			_failedInvokingDirectoryNew = null;
-			_failedInvokingDirectoryOld = null;
-		}
-		catch
-		{
-			// ask a user if he has not told to ignore this pair
-			if (directory != _failedInvokingDirectoryNew || currentDirectory != _failedInvokingDirectoryOld)
-			{
-				string message = string.Format(null, @"
-Cannot set the current directory to
-{0}
-
-Continue with this current directory?
-{1}
-", directory, currentDirectory);
-
-				switch (Far.Api.Message(message, Res.Me, MessageOptions.GuiOnMacro | MessageOptions.AbortRetryIgnore | MessageOptions.Warning | MessageOptions.LeftAligned))
-				{
-					case 1:
-						currentDirectory = null;
-						break;
-					case 2:
-						currentDirectory = null;
-						_failedInvokingDirectoryNew = directory;
-						_failedInvokingDirectoryOld = currentDirectory;
-						break;
-					default:
-						if (Far.Api.MacroState != MacroState.None)
-							Far.Api.UI.Break();
-						throw;
-				}
-			}
-		}
-
-		// to be restored by a caller
-		return currentDirectory;
+		// Set the current location. Note, PS Core works fine with long paths.
+		// So do not catch, we should know why it fails and how to handle this.
+		//! Parameter is wildcard. Test: enter into a container "[]" and invoke a command.
+		Engine.SessionState.Path.SetLocation(Kit.EscapeWildcard(location));
 	}
-
-	string? _failedInvokingDirectoryNew;
-	string? _failedInvokingDirectoryOld;
-	string? _failedInvokingLocationNew;
-	string? _failedInvokingLocationOld;
-
 	#endregion
+
 	/// <summary>
 	/// Gets the configuration settings and the session settings.
 	/// </summary>
@@ -483,26 +375,21 @@ Continue with this current directory?
 	/// </summary>
 	public void ShowPanel()
 	{
-		var currentDirectory = A.Psf.SyncPaths();
-		try
-		{
-			var drive = UI.SelectMenu.SelectPowerPanel();
-			if (drive is null)
-				return;
+		A.Psf.SyncPaths();
 
-			AnyPanel ap;
-			if (drive == UI.SelectMenu.TextFolderTree)
-				ap = new FolderTree();
-			else if (drive == UI.SelectMenu.TextAnyObjects)
-				ap = new ObjectPanel();
-			else
-				ap = new ItemPanel(drive);
-			ap.Open();
-		}
-		finally
-		{
-			A.SetCurrentDirectoryFinally(currentDirectory);
-		}
+		var drive = UI.SelectMenu.SelectPowerPanel();
+		if (drive is null)
+			return;
+
+		AnyPanel panel;
+		if (drive == UI.SelectMenu.TextFolderTree)
+			panel = new FolderTree();
+		else if (drive == UI.SelectMenu.TextAnyObjects)
+			panel = new ObjectPanel();
+		else
+			panel = new ItemPanel(drive);
+
+		panel.Open();
 	}
 
 	/// <summary>
