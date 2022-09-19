@@ -255,7 +255,12 @@ public abstract class IEditor : IEditorBase
 	/// Closes the editor.
 	/// </summary>
 	/// <remarks>
+	/// <para>
 	/// Changes, if any, are lost. Call <see cref="Save()"/> to save them.
+	/// </para>
+	/// <para>
+	/// The call is ignored if the editor is not opened or already closed.
+	/// </para>
 	/// </remarks>
 	public abstract void Close();
 

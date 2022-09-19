@@ -1,6 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 6.0.17 =
+
+IEditor.Close - ignore if editor is not opened.
+
 = 6.0.16 =
 
 NRT tweaks in the API.

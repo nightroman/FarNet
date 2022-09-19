@@ -146,6 +146,10 @@ void Editor::Open(OpenMode mode)
 
 void Editor::Close()
 {
+	// case: called by a program not expecting interaction but a user has closed the editor interactively
+	if (!IsOpened)
+		return;
+
 	if (!Info.EditorControl(_id, ECTL_QUIT, 0, 0))
 		throw gcnew InvalidOperationException(__FUNCTION__);
 }
