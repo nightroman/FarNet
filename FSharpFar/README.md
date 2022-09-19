@@ -24,16 +24,18 @@ F# scripting and interactive services in Far Manager
 
 **Credits**
 
-- FSharpFar is based on [F# Compiler Services](https://fsharp.github.io/fsharp-compiler-docs/).
+- FSharpFar is based on [FSharp.Compiler.Service](https://www.nuget.org/packages/FSharp.Compiler.Service).
 
 **Installation**
 
-FSharpFar requires Far Manager, FarNet, .NET 6 \
-F# or anything else does not have to be installed.
+- Far Manager
+- Package [FarNet](https://www.nuget.org/packages/FarNet/)
+- Package [FarNet.FSharpFar](https://www.nuget.org/packages/FarNet.FSharpFar/)
 
-[Get, install, update FarNet and FarNet.FSharpFar.](https://github.com/nightroman/FarNet#readme)
+How to install and update FarNet and modules:\
+https://github.com/nightroman/FarNet#readme
 
-As a result, you get the complete F# scripting portable with Far Manager. \
+As a result, you get the complete F# scripting portable with Far Manager.\
 Use it with Far Manager by FSharpFar or without Far Manager by fsx.exe.
 
 ***
