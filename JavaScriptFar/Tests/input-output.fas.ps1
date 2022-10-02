@@ -1,5 +1,7 @@
 ﻿
-macro "print [[js:@ $env:FarNetCode\JavaScriptFar\Samples\input-output.js]] Keys'Enter'"
+run {
+	$Far.InvokeCommand("js:@ $env:FarNetCode\JavaScriptFar\Samples\input-output.js")
+}
 job {
 	Assert-Far -Dialog
 	Assert-Far $Far.Dialog[1].Text -eq 'Enter your name'

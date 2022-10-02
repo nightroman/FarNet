@@ -6,7 +6,9 @@ if (!(Test-Path $dll)) {
 	if ($LASTEXITCODE) {throw}
 }
 
-macro "print [[js:@ $env:FarNetCode\JavaScriptFar\Samples\extras\test-MyLibForJS.js]] Keys'Enter'"
+run {
+	$Far.InvokeCommand("js:@ $env:FarNetCode\JavaScriptFar\Samples\extras\test-MyLibForJS.js")
+}
 job {
 	Assert-Far -Dialog
 	Assert-Far $Far.Dialog[1].Text -eq 'done Job1, done Job2'

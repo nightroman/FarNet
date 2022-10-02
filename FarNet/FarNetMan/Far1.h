@@ -53,6 +53,7 @@ public:
 	virtual String^ PasteFromClipboard() override;
 	virtual String^ TempName(String^ prefix) override;
 	virtual void CopyToClipboard(String^ text) override;
+	virtual void InvokeCommand(String^ command) override;
 	virtual void PostJob(Action^ handler) override;
 	virtual void PostMacro(String^ macro, bool enableOutput, bool disablePlugins) override;
 	virtual void PostStep(Action^ step) override;

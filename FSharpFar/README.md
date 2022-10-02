@@ -491,18 +491,18 @@ fs: //exec [file = <script>] [; with = <config>] [;; F# code]
 
 Commands in Far Manager may be invoked is several ways:
 
-- Commands typed in panels.
-- Commands stored in user menus.
-- Commands stored in file associations.
-- Commands invoked by predefined macros:
-    - Commands bound to keys.
-    - Commands typed in an input box.
+- Typed in the panels command line.
+- Typed in the "Invoke" input box.
+- Stored in user menus.
+- Stored in file associations.
+- Invoked by macros bound to keys.
 
-The first option is available right away. If you are in panels then just type
-required commands in the command line.
+The first two option are available right away. In panels type commands in the
+command line. In other areas use the menu `F11` \ `FarNet` \ `Invoke` to open
+the command input box.
 
-Other options need some work for defining and storing commands. But then they
-are used without typing and available not just in panels.
+Other ways need some work for defining and storing commands.
+But then commands are invoked without typing.
 
 **F# scripts in user menus**
 
@@ -534,38 +534,22 @@ F# Far script
 F# scripts may be assigned to keys using Far Manager macros. Example:
 
 ```lua
-local FarNet = function(cmd) return Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", cmd) end
 Macro {
-  area="Common"; key="CtrlShiftF9"; description="F# MyScript"; action=function()
-  FarNet [[fs: //exec file = C:\Scripts\Far\MyScript.fsx]]
-  end;
-}
-```
-
-**F# calls from an input box**
-
-`fs:` commands may be invoked from an input box. The input box may be needed if
-the current window is not panels and opening an interactive is not suitable, too.
-
-The following macro prompts for a command in the input box and invokes it:
-
-```lua
-local FarNet = function(cmd) return Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", cmd) end
-Macro {
-  area="Common"; key="CtrlShiftF9"; description="FarNet command"; action=function()
-    local cmd = far.InputBox(nil, "FarNet command", "prefix: command", "FarNet command")
-    if cmd then
-      FarNet(cmd)
-    end
+  area="Common"; key="CtrlShiftF9"; description="F# MyScript";
+  action=function()
+    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", [[fs: //exec file=C:\Scripts\Far\MyScript.fsx]])
   end;
 }
 ```
 
 **Scripts debugging**
 
+> FSharp.Compiler.Service stopped supporting script debugging (38.0).
+
 For debugging, use temporary FarNet modules, see [Projects](#projects).
 
-> FSharp.Compiler.Service stopped supporting script debugging (38.0+).
+Alternatively, develop complex code as FarNet script (6.0.18) and debug it.
+Then reference this script assembly and call its methods from F# scripts.
 
 ***
 ## Using fsx.exe tool

@@ -1,6 +1,8 @@
 ﻿
 # CommonJS
-macro "print [[js:@ $env:FarNetCode\JavaScriptFar\Samples\modules\CommonJS\try.js]] Keys'Enter'"
+run {
+	$Far.InvokeCommand("js:@ $env:FarNetCode\JavaScriptFar\Samples\modules\CommonJS\try.js")
+}
 job {
 	Assert-Far -Dialog
 	Assert-Far $Far.Dialog[1].Text -eq 'Hello from JavaScriptFar/CommonJS'
@@ -8,7 +10,9 @@ job {
 }
 
 # Standard
-macro "print [[js:@ $env:FarNetCode\JavaScriptFar\Samples\modules\Standard\try.js]] Keys'Enter'"
+run {
+	$Far.InvokeCommand("js:@ $env:FarNetCode\JavaScriptFar\Samples\modules\Standard\try.js")
+}
 job {
 	Assert-Far -Dialog
 	Assert-Far $Far.Dialog[1].Text -eq 'Hello from JavaScriptFar/Standard'
@@ -16,7 +20,9 @@ job {
 }
 
 # Script + .cjs
-macro "print [[js:@ $env:FarNetCode\JavaScriptFar\Samples\modules\try.cjs]] Keys'Enter'"
+run {
+	$Far.InvokeCommand("js:@ $env:FarNetCode\JavaScriptFar\Samples\modules\try.cjs")
+}
 job {
 	Assert-Far -Dialog
 	Assert-Far $Far.Dialog[1].Text -eq 'Hello from JavaScriptFar/CommonJS'
@@ -24,7 +30,9 @@ job {
 }
 
 # Script + .mjs
-macro "print [[js:@ $env:FarNetCode\JavaScriptFar\Samples\modules\try.mjs]] Keys'Enter'"
+run {
+	$Far.InvokeCommand("js:@ $env:FarNetCode\JavaScriptFar\Samples\modules\try.mjs")
+}
 job {
 	Assert-Far -Dialog
 	Assert-Far $Far.Dialog[1].Text -eq 'Hello from JavaScriptFar/Standard'
@@ -32,7 +40,9 @@ job {
 }
 
 # mix
-macro "print [[js:@ $env:FarNetCode\JavaScriptFar\Samples\modules\use-mix\try.js]] Keys'Enter'"
+run {
+	$Far.InvokeCommand("js:@ $env:FarNetCode\JavaScriptFar\Samples\modules\use-mix\try.js")
+}
 job {
 	Assert-Far -Dialog
 	Assert-Far $Far.Dialog[1].Text -eq 'JavaScriptFar/CommonJS'

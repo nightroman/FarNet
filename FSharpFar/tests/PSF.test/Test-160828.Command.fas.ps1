@@ -1,6 +1,7 @@
 
-macro "print 'fs: let x = 42'; Keys'Enter' -- invoke code"
 job {
+	$Far.InvokeCommand('fs: let x = 42')
+
 	$y = $Host.UI.RawUI.CursorPosition.Y
 	$rect = New-Object System.Management.Automation.Host.Rectangle 0, ($y - 3), 20, ($y - 1)
 	$buff = $Host.UI.RawUI.GetBufferContents($rect)

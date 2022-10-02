@@ -27,6 +27,7 @@ clean
 
 task clean {
 	foreach($_ in $Builds) { Invoke-Build clean $_ }
+	remove Script\obj, ScriptFS\obj
 }
 
 task . testBuild

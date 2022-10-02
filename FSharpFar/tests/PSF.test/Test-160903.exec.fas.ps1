@@ -8,8 +8,10 @@ FarNet.Far.Api.Message "_160903_160456"
 
 ### temp session
 
-$config = "$PSScriptRoot\Vanilla\Vanilla.fs.ini".Replace('\','\\')
-macro "print 'fs: //exec file = c:/tmp/missing.fsx; with = $config'; Keys'Enter' -- exec in temp session"
+run {
+	# exec in temp session
+	$Far.InvokeCommand("fs: //exec file=c:/tmp/missing.fsx; with=$PSScriptRoot\Vanilla\Vanilla.fs.ini")
+}
 job {
 	Assert-Far -Dialog
 	Assert-Far $Far.Dialog[1].Text -eq '_160903_160456'
@@ -30,7 +32,10 @@ Keys'0 Del Esc' -- exit all
 
 ### main session
 
-macro "print 'fs: //exec file = c:/tmp/missing.fsx'; Keys'Enter' -- exec in main session"
+run {
+	# exec in main session
+	$Far.InvokeCommand('fs: //exec file = c:/tmp/missing.fsx')
+}
 job {
 	Assert-Far -Dialog
 	Assert-Far $Far.Dialog[1].Text -eq '_160903_160456'

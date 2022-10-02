@@ -110,6 +110,13 @@ void Far1::CopyToClipboard(String^ text)
 	Info.FSF->CopyToClipboard(FCT_STREAM, pin);
 }
 
+void Far1::InvokeCommand(String^ command)
+{
+	PIN_NE(pin, command);
+	if (!Far0::InvokeCommand(pin, true))
+		throw gcnew InvalidOperationException("Unknown command.");
+}
+
 IEditor^ Far1::CreateEditor()
 {
 	return gcnew FarNet::Editor;

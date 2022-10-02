@@ -1,12 +1,16 @@
 ﻿
-macro "print [[js:@$env:FarNetCode\JavaScriptFar\Samples\events\connect.js]] Keys'Enter'"
+run {
+	$Far.InvokeCommand("js:@$env:FarNetCode\JavaScriptFar\Samples\events\connect.js")
+}
 job {
 	Assert-Far -Dialog
 	Assert-Far $Far.Dialog[1].Text -eq 'Connected, open any editor.'
 	$Far.Dialog.Close()
 }
 
-macro "print [[js:@$env:FarNetCode\JavaScriptFar\Samples\events\connect.js]] Keys'Enter'"
+run {
+	$Far.InvokeCommand("js:@$env:FarNetCode\JavaScriptFar\Samples\events\connect.js")
+}
 job {
 	Assert-Far -Dialog
 	Assert-Far $Far.Dialog[1].Text -eq 'Already connected, open any editor.'
@@ -28,14 +32,18 @@ job {
 	$Far.Editor.Close()
 }
 
-macro "print [[js:@$env:FarNetCode\JavaScriptFar\Samples\events\disconnect.js]] Keys'Enter'"
+run {
+	$Far.InvokeCommand("js:@$env:FarNetCode\JavaScriptFar\Samples\events\disconnect.js")
+}
 job {
 	Assert-Far -Dialog
 	Assert-Far $Far.Dialog[1].Text -eq 'Disconnected.'
 	$Far.Dialog.Close()
 }
 
-macro "print [[js:@$env:FarNetCode\JavaScriptFar\Samples\events\disconnect.js]] Keys'Enter'"
+run {
+	$Far.InvokeCommand("js:@$env:FarNetCode\JavaScriptFar\Samples\events\disconnect.js")
+}
 job {
 	Assert-Far -Dialog
 	Assert-Far $Far.Dialog[1].Text -eq 'Not connected.'

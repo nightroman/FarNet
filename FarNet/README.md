@@ -12,7 +12,8 @@ The Far Manager plugin and framework for .NET modules.
 
 * [About](#about)
 * [Installation](#installation)
-* [Commands in macros](#commands-in-macros)
+* [FarNet scripts](#farnet-scripts)
+* [Running commands](#running-commands)
 * [Technical information](#technical-information)
 * [Problems and solutions](#problems-and-solutions)
 
@@ -66,7 +67,7 @@ How to install and update FarNet and modules:
 
 - `FarNetMan.dll` - FarNet manager
 - `FarNetMan.hlf` - plugin help
-- `Ijwhost.dll` - .NET Core
+- `Ijwhost.dll` - .NET host
 
 `%FARHOME%\FarNet`
 
@@ -74,25 +75,83 @@ How to install and update FarNet and modules:
 - `FarNet.xml` - FarNet API comments
 - `FarNetAPI.chm` - FarNet API help
 
-`%FARHOME%\FarNet\Modules`
-
-- FarNet modules, each folder is a module
-
 `%FARHOME%\FarNet\Lib`
 
 - FarNet packages for common use
 
+`%FARHOME%\FarNet\Modules`
+
+- FarNet modules, each module folder `MyModule` contains `MyModule.dll`
+
+`%FARHOME%\FarNet\Scripts`
+
+- FarNet scripts, each script folder `MyScript` contains `MyScript.dll`
+
 *********************************************************************
-## Commands in macros
+## FarNet scripts
 
 [Contents]
 
-If a FarNet module provides commands invoked by prefixes then these commands
-can be called from macros by `Plugin.Call()`. The first argument is the FarNet
-GUID. The second argument is a command with prefix. For asynchronous jobs and
-steps the argument starts with one and two colons respectively.
+In addition to modules, i.e. assemblies with special module types, FarNet
+supports script assemblies with methods designed for FarNet calls.
 
-The FarNet GUID is `"10435532-9BB3-487B-A045-B0E6ECAAB6BC"`.
+For the moment script assemblies are built manually. In the future FarNet will
+provide tools for building from sources. Then FarNet scripts will be closer to
+what "scripts" usually mean.
+
+Unlike modules, scripts may be optionally unloaded after invoking them.
+
+Scripts are invoked by the command `fn:` with the following format:
+
+    fn: <script parameters> [:: <method parameters>]
+
+Parameters are `name=value` pairs separated by `;` (connection string format).
+
+**Script parameters:**
+
+- `script` (required)
+
+    The script name which defines the conventional script assembly.
+    E.g. `MyScript` for `%FARHOME%\FarNet\Scripts\MyScript\MyScript.dll`.
+
+- `method` (required)
+
+    The assembly method full name, `Namespace.Type.Method`.
+    Methods are instance or static, with optional string parameters.
+    Parameter names correspond to the method parameters in commands.
+
+- `unload` (optional)
+
+    If `true`, tells to unload the script assemblies after invoking.
+    The default is `false`, unloading has some performance cost.
+
+*********************************************************************
+## Running commands
+
+[Contents]
+
+FarNet commands may be invoked using:
+
+- Far Manager command line, user menu, file associations
+- FarNet menu "Invoke" with command input box
+- Far Manager macros
+
+**Far Manager command line, user menu, file associations**
+
+This is the standard way of invoking commands. Either type them manually in the
+command line or create user menu or file association items with FarNet commands.
+
+**FarNet menu "Invoke" with command input box**
+
+Use the menu `F11` \ `FarNet` \ `Invoke`. It shows the command input box for
+typing and invoking FarNet commands.
+
+**Far Manager macros**
+
+FarNet commands may be called from macros by `Plugin.Call()` with two parameters.
+The first parameter is the FarNet GUID. Its second parameter is a FarNet command
+with prefix. For asynchronous jobs and steps the prefix starts with one and two
+colons respectively.
 
 **Syntax**
 
@@ -211,14 +270,24 @@ can be used to start x86 Far:
 
 [Contents]
 
-The main plugin menu shows the following menus:
+The main plugin menu shows the following items:
 
-* [Panels menu](#panels-menu)
-* [Drawers menu](#drawers-menu)
-* [Editors menu](#editors-menu)
-* [Viewers menu](#viewers-menu)
-* [Console menu](#console-menu)
-* [Settings menu](#module-settings)
+* [Invoke](#invoke-command)
+* [Panels](#panels-menu)
+* [Drawers](#drawers-menu)
+* [Editors](#editors-menu)
+* [Viewers](#viewers-menu)
+* [Console](#console-menu)
+* [Settings](#module-settings)
+
+*********************************************************************
+## Invoke command
+
+[Contents]
+[FarNet scripts](#farnet-scripts)
+[Running commands](#running-commands)
+
+Shows the input box for typing and invoking FarNet commands.
 
 *********************************************************************
 ## Panels menu

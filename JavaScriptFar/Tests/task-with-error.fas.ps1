@@ -1,7 +1,9 @@
 ﻿#! mind possible race, do not use stepper
 
-# start
-macro "print [[js:task:@ $env:FarNetCode\JavaScriptFar\Samples\task-with-error.js :: milliseconds=600]] Keys'Enter'"
+job {
+	# start
+	$Far.InvokeCommand("js:task:@ $env:FarNetCode\JavaScriptFar\Samples\task-with-error.js :: milliseconds=600")
+}
 
 # wait for it started
 while([FarNet.User]::Data['_220723_1411_state'] -ne 'start') {

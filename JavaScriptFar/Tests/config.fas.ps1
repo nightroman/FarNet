@@ -1,12 +1,16 @@
 ﻿
-macro "print [[js:@ $env:FarNetCode\JavaScriptFar\Samples\config\StringifyEnhancements.js]] Keys'Enter'"
+run {
+	$Far.InvokeCommand("js:@ $env:FarNetCode\JavaScriptFar\Samples\config\StringifyEnhancements.js")
+}
 job {
 	Assert-Far -Dialog
 	Assert-Far $Far.Dialog[1].Text -eq '{"foo":123,"bar":"baz"}'
 	$Far.Dialog.Close()
 }
 
-macro "print [[js:@ $env:FarNetCode\JavaScriptFar\Samples\config\TaskPromiseConversion.js :: milliseconds=50]] Keys'Enter'"
+job {
+	$Far.InvokeCommand("js:@ $env:FarNetCode\JavaScriptFar\Samples\config\TaskPromiseConversion.js :: milliseconds=50")
+}
 Start-Sleep -Milliseconds 100
 job {
 	Assert-Far -Dialog
@@ -14,7 +18,9 @@ job {
 	$Far.Dialog.Close()
 }
 
-macro "print [[js:@ $env:FarNetCode\JavaScriptFar\Samples\config\WebLoadingAndSearchPath.js]] Keys'Enter'"
+run {
+	$Far.InvokeCommand("js:@ $env:FarNetCode\JavaScriptFar\Samples\config\WebLoadingAndSearchPath.js")
+}
 job {
 	Assert-Far -Dialog
 	Assert-Far $Far.Dialog[1].Text -eq 'JavaScriptFar'

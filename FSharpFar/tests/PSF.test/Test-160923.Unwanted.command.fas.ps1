@@ -1,6 +1,8 @@
 ﻿
-$config = "$PSScriptRoot\Vanilla\Vanilla.fs.ini".Replace('\','\\')
-macro "print 'fs: //open with=$config'; Keys'Enter' -- open empty session"
+job {
+	# open empty session
+	$Far.InvokeCommand("fs: //open with=$PSScriptRoot\Vanilla\Vanilla.fs.ini")
+}
 job {
 	Assert-Far -EditorTitle 'F# Vanilla.fs.ini *_??????_??????.interactive.fsx'
 }

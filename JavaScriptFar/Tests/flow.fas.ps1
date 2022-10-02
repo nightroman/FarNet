@@ -1,5 +1,7 @@
 ﻿
-macro "print [[js:@ $env:FarNetCode\JavaScriptFar\Samples\async\flow.js]] Keys'Enter'"
+job {
+	$Far.InvokeCommand("js:@ $env:FarNetCode\JavaScriptFar\Samples\async\flow.js")
+}
 Start-Sleep -Milliseconds 100
 job {
 	Assert-Far -Dialog

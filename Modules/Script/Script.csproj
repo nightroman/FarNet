@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <FarHome Condition="'$(FarHome)' == ''">C:\Bin\Far\x64</FarHome>
+    <OutDir>$(FarHome)\FarNet\Scripts\$(AssemblyName)</OutDir>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="$(FarHome)\FarNet\FarNet.dll">
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+</Project>

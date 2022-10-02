@@ -507,6 +507,12 @@ public abstract class IFar
 	/// <returns>Requested value (long, string, or byte[]).</returns>
 	/// <exception cref="ArgumentException">The specified set or name is invalid.</exception>
 	public abstract object GetSetting(FarSetting settingSet, string settingName);
+
+	/// <summary>
+	/// Invokes the specified FarNet command.
+	/// </summary>
+	/// <param name="command">The FarNet command.</param>
+	public abstract void InvokeCommand(string command);
 }
 
 /// <summary>

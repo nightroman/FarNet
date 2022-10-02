@@ -426,18 +426,18 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 		break;
 	}
 
-	if (_registeredCommand.Count)
+	// command prefixes
 	{
 		if (_prefixes == 0)
 		{
-			String^ PrefString = String::Empty;
-			for each(IModuleCommand^ it in _registeredCommand)
+			auto sb = gcnew StringBuilder("fn");
+			for each (IModuleCommand ^ it in _registeredCommand)
 			{
-				if (PrefString->Length > 0)
-					PrefString = String::Concat(PrefString, ":");
-				PrefString = String::Concat(PrefString, it->Prefix);
+				sb->Append(":");
+				sb->Append(it->Prefix);
 			}
-			_prefixes = new CStr(PrefString);
+
+			_prefixes = new CStr(sb->ToString());
 		}
 
 		pi->CommandPrefix = *_prefixes;
@@ -777,6 +777,7 @@ void Far0::InvalidateProxyCommand()
 
 void Far0::ShowMenu(ModuleToolOptions from)
 {
+	String^ sInvoke = "&Invoke";
 	String^ sPanels = "&Panels";
 	String^ sDrawers = "&Drawers";
 	String^ sEditors = "&Editors";
@@ -787,6 +788,9 @@ void Far0::ShowMenu(ModuleToolOptions from)
 	IMenu^ menu = Far::Api->CreateMenu();
 	menu->HelpTopic = "plugin-menu";
 	menu->Title = "FarNet";
+
+	// Invoke
+	menu->Add(sInvoke);
 
 	// Panels
 	if (from == ModuleToolOptions::Panels)
@@ -823,6 +827,8 @@ void Far0::ShowMenu(ModuleToolOptions from)
 		Works::EditorTools::ShowViewersMenu();
 	else if (Object::ReferenceEquals(text, sDrawers))
 		ShowDrawersMenu();
+	else if (Object::ReferenceEquals(text, sInvoke))
+		Works::Script::InvokeCommand();
 	else
 		ShowConsoleMenu();
 }
@@ -928,6 +934,7 @@ public:
 	}
 };
 
+// `isMacro` is true when a command is invoked from macro or input
 bool Far0::InvokeCommand(const wchar_t* command, bool isMacro)
 {
 	// asynchronous command
@@ -941,18 +948,28 @@ bool Far0::InvokeCommand(const wchar_t* command, bool isMacro)
 	// find the colon
 	const wchar_t* colon = wcschr(command, ':');
 
-	// missing colon is possible from macro
+	// missing colon is possible from macro or input
 	if (!colon)
-		throw gcnew InvalidOperationException("Invalid module command syntax.");
+		throw gcnew InvalidOperationException("Commands should start with prefixes.");
 
-	// get the prefix, find and invoke the command handler
-	String^ prefix = gcnew String(command, 0, (int)(colon - command));
+	// get the prefix
+	auto prefix = gcnew String(command, 0, (int)(colon - command));
+	auto text = gcnew String(colon + 1);
+
+	// case: script
+	if (prefix->Equals("fn", StringComparison::OrdinalIgnoreCase))
+	{
+		Works::Script::Invoke(text);
+		return true;
+	}
+
+	// find and invoke the command handler
 	for each(IModuleCommand^ it in _registeredCommand)
 	{
 		if (!prefix->Equals(it->Prefix, StringComparison::OrdinalIgnoreCase))
 			continue;
 
-		ModuleCommandEventArgs^ e = gcnew ModuleCommandEventArgs(gcnew String(colon + 1));
+		ModuleCommandEventArgs^ e = gcnew ModuleCommandEventArgs(text);
 		e->Prefix = prefix;
 		e->IsMacro = isMacro;
 

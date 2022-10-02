@@ -24,8 +24,9 @@ public static class AssemblyResolver
 
 	static AssemblyResolver()
 	{
-		var root = Path.GetDirectoryName(typeof(AssemblyResolver).Assembly.Location)!;
-		AddAssemblyCache(root);
+		var root = $"{Environment.GetEnvironmentVariable("FARHOME")}\\FarNet\\";
+		AddAssemblyCache(root + "Modules");
+		AddAssemblyCache(root + "Lib");
 		Log.Source.TraceInformation("Assembly cache {0}", s_cache.Count);
 	}
 

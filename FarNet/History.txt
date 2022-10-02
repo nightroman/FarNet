@@ -1,6 +1,14 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 6.0.18 =
+
+Support FarNet scripts (first step), alternative to modules,
+see https://github.com/nightroman/FarNet/discussions/35
+
+- add IFar.InvokeCommand
+- add menu item "Invoke"
+
 = 6.0.17 =
 
 IEditor.Close - ignore if editor is not opened.

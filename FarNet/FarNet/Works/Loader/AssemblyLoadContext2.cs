@@ -12,7 +12,7 @@ class AssemblyLoadContext2 : AssemblyLoadContext
 {
 	readonly AssemblyDependencyResolver _resolver;
 
-	public AssemblyLoadContext2(string pluginPath)
+	public AssemblyLoadContext2(string pluginPath, bool isCollectible = false) : base(isCollectible)
 	{
 		_resolver = new AssemblyDependencyResolver(pluginPath);
 	}

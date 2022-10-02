@@ -1,5 +1,7 @@
 ﻿
-macro "print [[fs: //exec file=$env:FarNetCode\FSharpFar\samples\PowerShellFar\PanelObjects.fsx]]; Keys'Enter'"
+job {
+	$Far.InvokeCommand("fs: //exec file=$env:FarNetCode\FSharpFar\samples\PowerShellFar\PanelObjects.fsx")
+}
 job {
 	Assert-Far -Plugin
 	Assert-Far $Far.Panel.Title -eq 'Objects'
