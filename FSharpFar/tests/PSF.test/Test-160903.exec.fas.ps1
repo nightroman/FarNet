@@ -10,7 +10,7 @@ FarNet.Far.Api.Message "_160903_160456"
 
 run {
 	# exec in temp session
-	$Far.InvokeCommand("fs: //exec file=c:/tmp/missing.fsx; with=$PSScriptRoot\Vanilla\Vanilla.fs.ini")
+	$Far.InvokeCommand("fs: exec: file=c:/tmp/missing.fsx; with=$PSScriptRoot\Vanilla\Vanilla.fs.ini")
 }
 job {
 	Assert-Far -Dialog
@@ -34,7 +34,7 @@ Keys'0 Del Esc' -- exit all
 
 run {
 	# exec in main session
-	$Far.InvokeCommand('fs: //exec file = c:/tmp/missing.fsx')
+	$Far.InvokeCommand('fs: exec: file = c:/tmp/missing.fsx')
 }
 job {
 	Assert-Far -Dialog

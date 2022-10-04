@@ -3,6 +3,7 @@ open FarNet
 open System
 open System.IO
 open FarInteractive
+open System.Diagnostics
 
 [<ModuleCommand(Name = "FSharpFar", Prefix = "fs", Id = "2b52615b-ea79-46e4-ac9d-78f33599db62")>]
 type FarCommand() =
@@ -46,11 +47,33 @@ type FarCommand() =
                 far.UI.Write(writer.ToString())
                 writeResult r
 
+        | Command.Project args ->
+            let configPath = Config.ensureParameterWith args.With
+            let directoryPath = Path.GetDirectoryName configPath
+            Watcher.add directoryPath
+
+            let projectPath = Config.generateProject configPath args.Type
+
+            match args.Open with
+            | Command.ProjectOpenBy.VS ->
+                ProcessStartInfo(projectPath, UseShellExecute = true)
+                |> Process.Start
+                |> ignore
+            | Command.ProjectOpenBy.VSCode ->
+                let dir = Path.GetDirectoryName projectPath
+                Config.writeVSCodeSettings dir
+                try
+                    ProcessStartInfo("code.cmd", "\"" + dir + "\"", UseShellExecute = true, WindowStyle = ProcessWindowStyle.Hidden)
+                    |> Process.Start
+                    |> ignore
+                with exn ->
+                    showText exn.Message "Cannot start code.cmd"
+
         | Command.Exec args ->
             try
                 use _std = new FarNet.FSharp.Works.FarStdWriter()
 
-                //! fs: //exec ;; TryPanelFSharp.run () // must pick up the root config
+                //! fs: exec: ;; TryPanelFSharp.run () // must pick up the root config
                 let ses =
                     match args.With, args.File with
                     | Some configPath, _ -> configPath
@@ -97,22 +120,12 @@ type FarCommand() =
 
             with exn ->
                 // e.g. on missing file
-                far.ShowError("fs: //exec", exn)
+                far.ShowError("fs: exec:", exn)
 
         | Command.Compile args ->
             use _progress = new Progress "Compiling..."
 
-            let path =
-                match args.With with
-                | Some path ->
-                    path
-                | None ->
-                    match Config.tryFindFileInDirectory far.CurrentDirectory with
-                    | Some path ->
-                        path
-                    | None ->
-                        invalidOp "Cannot find configuration file."
-
+            let path = Config.ensureParameterWith args.With
             let config = Config.readFromFile path
 
             let errors, code = Checker.compile config |> Async.RunSynchronously

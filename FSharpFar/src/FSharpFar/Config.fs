@@ -15,6 +15,18 @@ module Config =
             // main config
             farMainConfigPath
 
+    /// Resolves the optional parameter `with` to the specified or existing default file.
+    let ensureParameterWith path =
+        match path with
+        | Some path ->
+            path
+        | None ->
+            match Config.tryFindFileInDirectory (farCurrentDirectory ()) with
+            | Some path ->
+                path
+            | None ->
+                invalidOp "Cannot find configuration file."
+
     /// Get the local or main config file for the current directory.
     let defaultFile () =
         defaultFileForDirectory (farCurrentDirectory ())
@@ -68,9 +80,9 @@ module Config =
         File.WriteAllText(Path.Combine(dir2.FullName, "settings.json"), textVSCodeSettings ())
 
     /// Makes the temp project for the specified config file.
-    let generateProject (configPath: string) =
+    let generateProject (configPath: string) (output: Command.ProjectOutput) =
         // get .fsproj path and make its folder
-        let projectPath =
+        let projectPath, projectName =
             let projectName, folderName =
                 let projectName = configPath |> Path.GetFileNameWithoutExtension |> Path.GetFileNameWithoutExtension
                 let projectName, folderPath =
@@ -89,7 +101,7 @@ module Config =
             let nameInTemp = "_Project_" + projectName + "_" + folderName
             let projectRoot = Path.Combine(Path.GetTempPath(), nameInTemp)
             Directory.CreateDirectory projectRoot |> ignore
-            projectRoot + "\\" + projectName + ".fsproj"
+            (projectRoot + "\\" + projectName + ".fsproj", projectName)
 
         // read config
         let config = Config.readFromFile configPath
@@ -136,22 +148,27 @@ module Config =
         // Works just for VS and MSBuild. Well, at least VS is happy.
         addProperty "AssemblySearchPaths" "$(AssemblySearchPaths);{GAC}"
 
-        // respect output
-        config.OutArgs
-        |> Array.tryPick (fun x ->
-            if x.StartsWith("--out:") then
-                Some x[6..]
-            else if x.StartsWith("-o:") then
-                Some x[3..]
-            else
-                None
-        )
-        |> function
-        | None ->
-            ()
-        | Some output ->
-            addProperty "OutDir" (Path.GetDirectoryName(output))
-            addProperty "AssemblyName" (Path.GetFileNameWithoutExtension(output))
+        // output
+        match output with
+        | Command.ProjectOutput.Normal ->
+            config.OutArgs
+            |> Array.tryPick (fun x ->
+                if x.StartsWith("--out:") then
+                    Some x[6..]
+                else if x.StartsWith("-o:") then
+                    Some x[3..]
+                else
+                    None
+            )
+            |> function
+            | None ->
+                ()
+            | Some output ->
+                addProperty "OutDir" (Path.GetDirectoryName(output))
+                addProperty "AssemblyName" (Path.GetFileNameWithoutExtension(output))
+        | Command.ProjectOutput.Script ->
+            addProperty "OutDir" ((Environment.GetEnvironmentVariable "FARHOME") + @"\FarNet\Scripts\" + projectName)
+            addProperty "AssemblyName" projectName
 
         do
             let flags = ResizeArray()

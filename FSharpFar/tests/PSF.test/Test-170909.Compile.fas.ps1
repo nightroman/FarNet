@@ -6,7 +6,7 @@ $Data.ini = "$env:FarNetCode\FSharpFar\samples\TryPanelFSharp\TryPanelFSharp.fs.
 
 job {
 	# build the module
-	$Far.InvokeCommand("fs: //compile with = $($Data.ini)")
+	$Far.InvokeCommand("fs: compile: with = $($Data.ini)")
 }
 
 job {

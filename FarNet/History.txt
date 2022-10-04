@@ -1,6 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 6.0.19 =
+
+Script method parameters may have convertible types, not just strings.
+
 = 6.0.18 =
 
 Support FarNet scripts (first step), alternative to modules,

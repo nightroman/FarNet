@@ -959,7 +959,7 @@ bool Far0::InvokeCommand(const wchar_t* command, bool isMacro)
 	// case: script
 	if (prefix->Equals("fn", StringComparison::OrdinalIgnoreCase))
 	{
-		Works::Script::Invoke(text);
+		Works::Script::InvokeScript(text);
 		return true;
 	}
 

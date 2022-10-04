@@ -19,7 +19,7 @@ This async job is defined in *Wizard.fs*. You may start it as:
 
 In order to execute it from another directory use the command like:
 
-    fs: //exec with=.\.fs.ini ;; Async.Start Wizard.jobWizard
+    fs: exec: with=.\.fs.ini ;; Async.Start Wizard.jobWizard
 
 Several async jobs may be in started simultaneously. For example, start the
 wizard job, click `[Editor]`, switch to panels. Then run the job again and

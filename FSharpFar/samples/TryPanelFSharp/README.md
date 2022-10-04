@@ -20,14 +20,14 @@ The sample creates and opens a plugin panel with the following features
 From this directory use these commands:
 
     fs: TryPanelFSharp.run ()
-    fs: //exec ;; TryPanelFSharp.run ()
+    fs: exec: ;; TryPanelFSharp.run ()
 
 The first command is rather for development, with interactive output.
 The second command omits the interactive info.
 
 From any directory use the command with the specified configuration:
 
-    fs: //exec with=...\TryPanelFSharp.ini ;; TryPanelFSharp.run ()
+    fs: exec: with=...\TryPanelFSharp.ini ;; TryPanelFSharp.run ()
 
 ### Using as a module
 
@@ -60,7 +60,7 @@ Use this project in order to edit sources, build, run, debug.
 
 Alternatively, you can build the module by this command:
 
-    fs: //compile
+    fs: compile:
 
 One way or another, after building start Far Manager.
 Use the menu item `F11` \ `TryPanelFSharp`

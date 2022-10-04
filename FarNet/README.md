@@ -117,7 +117,7 @@ Parameters are `name=value` pairs separated by `;` (connection string format).
 - `method` (required)
 
     The assembly method full name, `Namespace.Type.Method`.
-    Methods are instance or static, with optional string parameters.
+    Methods are instance or static with or without parameters.
     Parameter names correspond to the method parameters in commands.
 
 - `unload` (optional)

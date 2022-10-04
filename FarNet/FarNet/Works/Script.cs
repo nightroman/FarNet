@@ -2,7 +2,7 @@
 // Copyright (c) Roman Kuzmin
 
 using System;
-using System.Data.Common;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -34,7 +34,7 @@ public static class Script
 
 	static ScriptParameters ParseScriptParameters(string text)
 	{
-		var sb = new DbConnectionStringBuilder { ConnectionString = text };
+		var sb = Kit.ParseParameters(text);
 		var res = new ScriptParameters();
 
 		if (sb.TryGetValue(KeyScript, out object? script))
@@ -70,7 +70,7 @@ public static class Script
 		}
 
 		if (sb.Count > 0)
-			throw new InvalidOperationException($"Unknown script parameter '{sb.Keys.OfType<object>().First()}'.");
+			throw new InvalidOperationException($"Unknown script parameters: {sb}");
 
 		return res;
 	}
@@ -86,19 +86,34 @@ public static class Script
 			return null;
 		}
 
-		var sb = text is null ? null : new DbConnectionStringBuilder { ConnectionString = text };
+		var sb = text is null ? null : Kit.ParseParameters(text);
 
 		var res = new object?[methodParameters.Length];
 		for (int i = 0; i < res.Length; i++)
 		{
 			var parameter = methodParameters[i];
-			if (parameter.ParameterType != typeof(string))
-				throw new InvalidOperationException($"Method parameters should be strings.");
 
 			if (sb != null && sb.TryGetValue(parameter.Name!, out object? value))
 			{
-				res[i] = value;
 				sb.Remove(parameter.Name!);
+
+				if (parameter.ParameterType == typeof(string))
+				{
+					res[i] = value;
+				}
+				else
+				{
+					var converter = TypeDescriptor.GetConverter(parameter.ParameterType);
+					res[i] = converter.ConvertFromInvariantString(value.ToString()!);
+				}
+			}
+			else if (parameter.HasDefaultValue)
+			{
+				res[i] = parameter.DefaultValue;
+			}
+			else if (parameter.ParameterType.IsValueType)
+			{
+				res[i] = Activator.CreateInstance(parameter.ParameterType);
 			}
 		}
 
@@ -108,7 +123,7 @@ public static class Script
 		return res;
 	}
 
-	public static void Invoke(string command)
+	public static void InvokeScript(string command)
 	{
 		// get script and method parts of the command
 		string scriptParametersText;

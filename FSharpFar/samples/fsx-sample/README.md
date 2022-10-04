@@ -25,7 +25,7 @@ We do not need a script for this task:
 
 or, without interactive output:
 
-    fs: //exec;; Module1.hello "John"
+    fs: exec: ;; Module1.hello "John"
 
 ## Sample 2: conditional compilation
 
@@ -47,4 +47,4 @@ Create the script [App2.fsx](App2.fsx) which defines input UI using conditional 
 
 **Run by FSharpFar**
 
-    fs: //exec file=App2.fsx
+    fs: exec: file=App2.fsx

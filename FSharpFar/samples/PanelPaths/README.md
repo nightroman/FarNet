@@ -1,5 +1,4 @@
-
-## How to get full paths of various panel items
+# How to get full paths of various panel items
 
 Getting file systems paths of various panel items is a typical task.
 Such paths are used as input for operations on files and folders.
@@ -12,6 +11,6 @@ For example, the special item ".." normally should be excluded.
 
 [app.fsx](app.fsx) invokes sample functions and prints the results.
 
-````
-    fs: //exec file = app.fsx
-````
+```
+fs: exec: file = app.fsx
+```

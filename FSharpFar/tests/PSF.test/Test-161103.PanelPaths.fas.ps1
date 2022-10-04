@@ -1,6 +1,6 @@
 ﻿
 job {
-	$Far.InvokeCommand("fs: //exec file=$env:FarNetCode\FSharpFar\samples\PanelPaths\app.fsx")
+	$Far.InvokeCommand("fs: exec: file=$env:FarNetCode\FSharpFar\samples\PanelPaths\app.fsx")
 }
 
 macro @'

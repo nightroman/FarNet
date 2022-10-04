@@ -5,6 +5,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -13,6 +14,18 @@ namespace FarNet.Works;
 
 public static class Kit
 {
+	public static DbConnectionStringBuilder ParseParameters(string parameters)
+	{
+		try
+		{
+			return new DbConnectionStringBuilder { ConnectionString = parameters };
+		}
+		catch (Exception ex)
+		{
+			throw new ArgumentException($"Invalid parameters (connection string format):\r\n{parameters}\r\n{ex.Message}");
+		}
+	}
+
 	// Joins two strings with a space. Either string may be null or empty.
 	public static string JoinText(string? head, string? tail)
 	{

@@ -62,7 +62,7 @@ type FarInteractive(session: Session) =
             )
 
         // Open. Post, to avoid modal. Use case:
-        // - open session by `fs: //open`
+        // - open session by `fs: open:`
         // - it writes echo -> user screen
         // - opening from user screen is modal
         far.PostJob(fun () ->

@@ -55,7 +55,7 @@ Change:
 
 - nothing on reading config
 - nothing on `Project`, the default target of .fsproj is library
-- on `//compile`, add `--target:library` after other options, it takes over
+- on `compile:`, add `--target:library` after other options, it takes over
 
 ***
 ### DLL hell System.Text.Json
@@ -352,11 +352,11 @@ Far home works in both cases, so let it be the location of our packaged F# core 
 See [#631](https://github.com/fsharp/FSharp.Compiler.Service/issues/631).
 In 8.0 MSBuild is still loaded (not used) if it is present.
 
-### 2016-09-04 `//exec` and console output
+### 2016-09-04 `exec:` and console output
 
 Intercept `Console.Out` / `Error` and use `ShowUserScreen` / `SaveUserScreen` automatically.
 
-So `//exec` is fine for any script, except operating on console buffer.
+So `exec:` is fine for any script, except operating on console buffer.
 
 **IDEA**
 Intercept `Out` and `Error` separately. Different colors?

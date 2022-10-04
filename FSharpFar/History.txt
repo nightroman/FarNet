@@ -1,5 +1,27 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 
+= 2.0.11 =
+
+Requires FarNet 6.0.19
+
+Changed format of fs: commands:
+New format: fs: command: ...
+Old format: fs: //command ...
+
+	The old format still works but will be retired.
+
+Engaged new FarNet "scripts", replaced old menu items "Project" with new command:
+fs: project: open=VS|VSCode; type=Normal|Script; with=<config>
+
+	The command provides more options, ability to specify
+	the location, and ability to call not just from panels.
+
+	Old menu items covered only VS|VSCode in panels.
+	If you need them, make user menu items instead:
+
+		fs: project: open=VS
+		fs: project: open=VSCode
+
 = 2.0.10 =
 
 FSharp.Core 6.0.6

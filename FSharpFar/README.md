@@ -11,6 +11,7 @@ F# scripting and interactive services in Far Manager
 - [Commands](#commands)
 - [Configuration](#configuration)
 - [Projects](#projects)
+- [Debugging](#debugging)
 - [Interactive](#interactive)
 - [Editor services](#editor-services)
 - [Using F# scripts](#using-f-scripts)
@@ -62,10 +63,6 @@ Use `[F11]` \ `FSharpFar` to open the module menu:
     - `[F4]`
 
         Edits the session configuration file.
-
-- **Project**
-
-    Generates and opens F# project by the associated program or VSCode, see [Projects](#projects).
 
 - **Load**
 
@@ -123,9 +120,13 @@ fs: #help
 ****
 ### open
 
-`fs: //open [with = <config>]`
+```
+fs: open: with = <config>
+```
 
-Opens the interactive editor with the specified or default configuration.
+- `with` (optional) configuration file
+
+The `open` command opens the interactive editor with the specified or default configuration.
 
 Sample file association:
 
@@ -136,24 +137,36 @@ Description of the association:
 F# interactive
 ─────────────────────────────────────
 [x] Execute command (used for Enter):
-    fs: //open with = !\!.!
+    fs: open: with = !\!.!
 ```
 
 ****
 ### exec
 
-`fs: //exec [file = <script>] [; with = <config>] [;; F# code]`
+```
+fs: exec: <parameters>
+fs: exec: <parameters> ;; <code>
+```
 
-Invokes the script or F# code with the specified or default configuration.
+Parameters:
+
+```
+file = <script> ; with = <config>
+```
+
+- `file` (optional) F# script file
+- `with` (optional) configuration file
+
+The `exec` command invokes a script or F# code with the specified or default configuration.
 The default is `*.fs.ini` in the script folder or the active panel.
 If there is none then the main configuration is used.
 
 Examples:
 
 ```
-fs: //exec file = Script1.fsx
-fs: //exec file = Module1.fs ;; Module1.test "answer" 42
-fs: //exec with = %TryPanelFSharp%\TryPanelFSharp.fs.ini ;; TryPanelFSharp.run ()
+fs: exec: file = Script1.fsx
+fs: exec: file = Module1.fs ;; Module1.test "answer" 42
+fs: exec: with = %TryPanelFSharp%\TryPanelFSharp.fs.ini ;; TryPanelFSharp.run ()
 ```
 
 The first two commands evaluate the specified files on every call. The last
@@ -169,7 +182,7 @@ Description of the association:
 F# script
 ─────────────────────────────────────
 [x] Execute command (used for Enter):
-    fs: //exec file = !\!.!
+    fs: exec: file = !\!.!
 [x] Execute command (used for Ctrl+PgDn):
     fs: #load @"!\!.!"
 ```
@@ -177,18 +190,44 @@ F# script
 ****
 ### compile
 
-`fs: //compile [with = <config>]`
+```
+fs: compile: with = <config>
+```
+
+- `with` (optional) configuration file
 
 Compiles a library (dll) with the specified or default configuration.
 The default is `*.fs.ini` in the active panel.
 
 The command is useful for making FarNet modules without installing anything else.
-But it may create any .NET Framework libraries, not just FarNet modules.
+But it may create any .NET libraries, not just FarNet modules.
 
 Configuration requirements:
 
 - At least one source file must be specified.
 - `[out]` must specify `{-o|--out}:<file.dll>`.
+
+****
+### project
+
+```
+fs: project: open = VS|VSCode; type = Normal|Script; with = <config>
+```
+
+Generates and opens F# project from the specified or default configuration.
+The default is `*.fs.ini` in the active panel.
+
+Parameters:
+
+- `open` (optional) tells how to open the project:
+    - `VS` (default) for Visual Studio
+    - `VSCode` for Visual Studio Code
+- `type` (optional) specifies the project type:
+    - `Normal` (default) for the default output or specified by `[out]`
+    - `Script` for `%FARHOME%\FarNet\Scripts\<name>\<name>.dll`
+- `with` (optional) specifies the configuration file.
+
+See also: [Projects](#projects)
 
 ***
 ## Configuration
@@ -237,7 +276,7 @@ File2.fs
 
 **`[out]`**
 
-This section defines options for `fs: //compile` with `{-o|--out}:<file.dll>` required.
+This section defines options for `fs: compile:` with `{-o|--out}:<file.dll>` required.
 It is also used by [Projects](#projects) commands, e.g. for making FarNet modules.
 
 Example: [TryPanelFSharp] - how to make FarNet modules from sources.
@@ -356,23 +395,29 @@ let show text = far.Message text
 ***
 ## Projects
 
-When a configuration file `*.fs.ini` is ready, use the menu commands `Project
-(fsproj) (VSCode)` in order to generate a special `*.fsproj` with the source
-files and open it by the associated program (usually Visual Studio) or by
-VSCode (ensure `code.cmd` is in the path and the VSCode F# extension is
-installed).
+With a configuration file `*.fs.ini`, use the following command in order to
+generate `*.fsproj` with the source files and open it by the associated program
+(usually Visual Studio) or by VSCode:
 
-If the configuration specifies the output section, the generated project is
-configured accordingly. This may be effectively used for building, running,
-and debugging FarNet modules from sources.
+```
+fs: project: open=VS|VSCode; type=Normal|Script; with=<config>
+```
+
+> VSCode should have installed the F# extension.
+
+If `type=Normal` and the configuration specifies the output section, the
+generated project is configured accordingly. This may be used for building,
+running, and debugging FarNet modules from sources.
 
 Example: [TryPanelFSharp] - how to make FarNet modules from sources.
 
+If `type=Script` the output is `%FARHOME%\FarNet\Scripts\<name>\<name>.dll`
+where `<name>` is inferred from the configuration or its folder.
+
 Without the configured output generated projects are still useful for working
-with sources using powerful IDE. You may build to make sure everything is
+with sources in a more powerful IDE. You may build to make sure everything is
 correct but normally code checkers show errors quite well without building.
-Edit your files, save, switch to Far Manager (no restart needed), and run
-changed scripts.
+Edit sources, save, switch to Far Manager (no restart needed), and invoke.
 
 Generated projects include:
 
@@ -393,6 +438,17 @@ On problems with associating .fsproj files with Visual Studio 2022, use this reg
 HKEY_CLASSES_ROOT\fsproj_auto_file\shell\open\command
 "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\devenv.exe" "%1"
 ```
+
+***
+## Debugging
+
+Direct script debugging is not possible because FSharp.Compiler.Service 38.0+
+does not support this
+
+For debugging, use temporary FarNet scripts or modules, see [Projects](#projects).
+
+Consider developing complex code as FarNet scripts and debug when needed.
+Then reference script assemblies and call their methods from F# scripts.
 
 ***
 ## Interactive
@@ -486,7 +542,7 @@ How to run F# script tools in Far Manager?
 **Running as commands**
 
 ```
-fs: //exec [file = <script>] [; with = <config>] [;; F# code]
+fs: exec: [file = <script>] [; with = <config>] [;; F# code]
 ```
 
 Commands in Far Manager may be invoked is several ways:
@@ -524,7 +580,7 @@ Description of the association:
 F# Far script
 ─────────────────────────────────────
 [x] Execute command (used for Enter):
-    fs: //exec file = !\!.!
+    fs: exec: file = !\!.!
 [x] Execute command (used for Ctrl+PgDn):
     fs: #load @"!\!.!"
 ```
@@ -537,19 +593,10 @@ F# scripts may be assigned to keys using Far Manager macros. Example:
 Macro {
   area="Common"; key="CtrlShiftF9"; description="F# MyScript";
   action=function()
-    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", [[fs: //exec file=C:\Scripts\Far\MyScript.fsx]])
+    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", [[fs: exec: file=C:\Scripts\Far\MyScript.fsx]])
   end;
 }
 ```
-
-**Scripts debugging**
-
-> FSharp.Compiler.Service stopped supporting script debugging (38.0).
-
-For debugging, use temporary FarNet modules, see [Projects](#projects).
-
-Alternatively, develop complex code as FarNet script (6.0.18) and debug it.
-Then reference this script assembly and call its methods from F# scripts.
 
 ***
 ## Using fsx.exe tool

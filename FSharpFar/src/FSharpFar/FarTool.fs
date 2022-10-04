@@ -11,27 +11,6 @@ type FarTool() =
     let openSession () =
         FarInteractive(Session.DefaultSession()).Open()
 
-    let openProjectFile () =
-        let directoryPath = farCurrentDirectory ()
-        Watcher.add directoryPath
-
-        let projectPath = Config.generateProject (Config.defaultFileForDirectory directoryPath)
-
-        ProcessStartInfo(projectPath, UseShellExecute = true)
-        |> Process.Start |> ignore
-
-    let openProjectVSCode () =
-        let directoryPath = farCurrentDirectory ()
-        Watcher.add directoryPath
-
-        let dir = Config.generateProject (Config.defaultFileForDirectory directoryPath) |> Path.GetDirectoryName
-        Config.writeVSCodeSettings dir
-        try
-            ProcessStartInfo("code.cmd", "\"" + dir + "\"", UseShellExecute = true, WindowStyle = ProcessWindowStyle.Hidden)
-            |> Process.Start |> ignore
-        with exn ->
-            showText exn.Message "Cannot start code.cmd"
-
     let showSessions () =
         let menu = far.CreateListMenu(Title = "F# sessions", Bottom = "Enter, Del, F4", ShowAmpersands = true, UsualMargins = true)
         menu.AddKey KeyCode.Delete
@@ -63,9 +42,6 @@ type FarTool() =
             // all menus
             "&1. Interactive", openSession
             "&0. Sessions...", showSessions
-            if e.From = ModuleToolOptions.Panels then
-                "&P. Project (fsproj)", openProjectFile
-                "&O. Project (VSCode)", openProjectVSCode
             // editor with F#
             if e.From = ModuleToolOptions.Editor && isFSharpFileName editor.FileName then
                 // all F# files; load interactive, too, i.e. load header then type
