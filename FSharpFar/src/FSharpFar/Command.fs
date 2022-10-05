@@ -25,10 +25,13 @@ type Data =
     | Code of string
     | Open of OpenArgs
     | Exec of ExecArgs
-    | Compile of OpenArgs
+    | Compile of CompileArgs
     | Project of ProjectArgs
 
 and OpenArgs =
+    { With : string option }
+
+and CompileArgs =
     { With : string option }
 
 and ProjectArgs =
@@ -70,7 +73,7 @@ let private command name rest sb =
     | _ ->
         failwithf "Unknown command '%s'." name
 
-let private reCommand = Regex @"^\s*(?://(?<name>\w+)|(?<name>\w+):)\s*(?<rest>.*)"
+let private reCommand = Regex @"^\s*(?<name>\w+):\s*(?<rest>.*)"
 let private reQuit = Regex @"^\s*#quit\b"
 
 /// Parses the module command "fs:".

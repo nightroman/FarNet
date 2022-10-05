@@ -137,7 +137,7 @@ Description of the association:
 F# interactive
 ─────────────────────────────────────
 [x] Execute command (used for Enter):
-    fs: open: with = !\!.!
+    fs: open: with="!\!.!"
 ```
 
 ****
@@ -182,7 +182,7 @@ Description of the association:
 F# script
 ─────────────────────────────────────
 [x] Execute command (used for Enter):
-    fs: exec: file = !\!.!
+    fs: exec: file="!\!.!"
 [x] Execute command (used for Ctrl+PgDn):
     fs: #load @"!\!.!"
 ```
@@ -199,13 +199,15 @@ fs: compile: with = <config>
 Compiles a library (dll) with the specified or default configuration.
 The default is `*.fs.ini` in the active panel.
 
-The command is useful for making FarNet modules without installing anything else.
-But it may create any .NET libraries, not just FarNet modules.
+The command is used for making FarNet scripts or modules without installing
+anything else. But it may create any .NET libraries, not just for FarNet.
 
-Configuration requirements:
+Configuration notes:
 
 - At least one source file must be specified.
-- `[out]` must specify `{-o|--out}:<file.dll>`.
+- The section `[out]` may specify `{-o|--out}:<file.dll>` but if it is omitted
+  then the FarNet script is assumed with its name derived from configuration or
+  its folder.
 
 ****
 ### project
@@ -276,8 +278,12 @@ File2.fs
 
 **`[out]`**
 
-This section defines options for `fs: compile:` with `{-o|--out}:<file.dll>` required.
-It is also used by [Projects](#projects) commands, e.g. for making FarNet modules.
+This section defines sources and options for `fs: compile:`, and `fs: project:`.
+
+The output target `{-o|--out}:<file.dll>` is respected by `fs: compile:` and
+`fs: project: type=Normal`. If it is missing then the FarNet script target
+location is assumed with the script name derived either from the
+configuration file or its directory.
 
 Example: [TryPanelFSharp] - how to make FarNet modules from sources.
 
@@ -289,8 +295,6 @@ Module.fs
 ```
 
 Options `-a` and `--target` are ignored, `--target:library` is always used.
-
-The output section is not needed if you are not compiling libraries.
 
 **`[use]`**
 
@@ -580,7 +584,7 @@ Description of the association:
 F# Far script
 ─────────────────────────────────────
 [x] Execute command (used for Enter):
-    fs: exec: file = !\!.!
+    fs: exec: file="!\!.!"
 [x] Execute command (used for Ctrl+PgDn):
     fs: #load @"!\!.!"
 ```

@@ -72,7 +72,7 @@ task package markdown, {
 
 	# module
 	exec { robocopy $ModuleRoot $toModule /s /xf *.pdb } (0..2)
-	equals 34 (Get-ChildItem $toModule -Recurse -File).Count
+	equals 33 (Get-ChildItem $toModule -Recurse -File).Count
 
 	# logo
 	Copy-Item -Destination z ..\Zoo\FarNetLogo.png

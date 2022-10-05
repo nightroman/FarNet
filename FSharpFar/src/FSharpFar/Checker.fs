@@ -1,5 +1,6 @@
 ﻿[<RequireQualifiedAccess>]
 module FSharpFar.Checker
+open System
 open System.IO
 open FSharp.Compiler.CodeAnalysis
 
@@ -71,11 +72,7 @@ let check file text config = async {
     }
 }
 
-let compile config = async {
-    // assert output is set
-    let hasOutOption = config.OutArgs |> Array.exists (fun x -> x.StartsWith "-o:" || x.StartsWith "--out:")
-    if not hasOutOption then invalidOp "Configuration must have [out] {-o|--out}:<file.dll>"
-
+let compile config (configPath: string) = async {
     // combine options
     let args = [|
         // required
@@ -90,6 +87,13 @@ let compile config = async {
         // sources
         yield! config.FscFiles
         yield! config.OutFiles
+
+        // if output is none make it script
+        let hasOutOption = config.OutArgs |> Array.exists (fun x -> x.StartsWith "-o:" || x.StartsWith "--out:")
+        if not hasOutOption then
+            let name = configPath |> Path.GetFileNameWithoutExtension |> Path.GetFileNameWithoutExtension
+            let name = if name.Length > 0 then name else configPath |> Path.GetDirectoryName |> Path.GetFileName
+            yield "-o:" + Environment.GetEnvironmentVariable("FARHOME") + $@"\FarNet\Scripts\{name}\{name}.dll"
     |]
 
     // compile and get errors and exit code

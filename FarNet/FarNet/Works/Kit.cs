@@ -14,6 +14,7 @@ namespace FarNet.Works;
 
 public static class Kit
 {
+	// Parses parameters string in connection string format, wraps exceptions.
 	public static DbConnectionStringBuilder ParseParameters(string parameters)
 	{
 		try

@@ -8,7 +8,7 @@ job {
 }
 macro @'
 Keys 'CtrlA Del'
-print '//bar'
+print 'bar:'
 Keys 'ShiftEnter'
 '@
 job {

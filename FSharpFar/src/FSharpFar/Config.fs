@@ -15,8 +15,8 @@ module Config =
             // main config
             farMainConfigPath
 
-    /// Resolves the optional parameter `with` to the specified or existing default file.
-    let ensureParameterWith path =
+    /// Resolves the optional path to the specified or existing default file.
+    let ensureConfigPath path =
         match path with
         | Some path ->
             path

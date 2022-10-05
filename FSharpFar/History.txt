@@ -1,5 +1,12 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 
+= 2.0.12 =
+
+Retired `fs://command` format, use `fs:command:` instead.
+
+`fs: compile` and `fs: project:` -- if the configuration section `[out]`
+is missing or omits `-o|--out` then the FarNet script location is assumed.
+
 = 2.0.11 =
 
 Requires FarNet 6.0.19
