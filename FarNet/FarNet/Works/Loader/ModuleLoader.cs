@@ -303,6 +303,6 @@ public class ModuleLoader
 		if (_Managers.TryGetValue(name, out ModuleManager? manager))
 			return manager;
 
-		throw new ArgumentException("Cannot find the module name.");
+		throw new ArgumentException($"Cannot find module '{name}'.");
 	}
 }

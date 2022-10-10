@@ -1,6 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 6.0.20 =
+
+FarNet modules, like FarNet scripts, may have methods for calls by the command `fn:`.
+Syntax: `fn: module=<name>; ...`. Example: see the sample module FarNet.Demo.
+
 = 6.0.19 =
 
 Script method parameters may have convertible types, not just strings.

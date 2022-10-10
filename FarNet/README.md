@@ -125,6 +125,15 @@ Parameters are `name=value` pairs separated by `;` (connection string format).
     If `true`, tells to unload the script assemblies after invoking.
     The default is `false`, unloading has some performance cost.
 
+**Module methods**
+
+Methods designed for `fn:` call may live in FarNet modules, too. In order to
+call them, use the same command syntax with the parameter `script` replaced
+with `module` and module name.
+
+The parameter `unload` is ignored for modules.
+Unloading modules is not currently supported.
+
 *********************************************************************
 ## Running commands
 

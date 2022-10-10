@@ -12,6 +12,14 @@ This modules demonstrates some FarNet module features:
 - Settings using XML files.
 - Module help files.
 
+## Module methods
+
+FarNet modules, like FarNet scripts, may have methods for calls by the command `fn:`.
+
+Example: [DemoMethods.cs](DemoMethods.cs) method `Message` may be called as:
+
+    fn: module=FarNet.Demo; method=FarNet.Demo.DemoMethods.Message :: name=John Doe; age=42
+
 ## Module settings
 
 Module may define settings by implementing `ModuleSettings`.
