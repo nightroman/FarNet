@@ -2,10 +2,10 @@
 
 Files:
 
-- `Script.csproj`, the project file.
-- `Demo.cs` implements demo methods.
-- `Editor.cs` implements editor methods.
-- `Script.lua` shows how to call methods from macros.
+- `Script.csproj`, the project file
+- `Demo.cs` implements demo methods
+- `Editor.cs` implements editor methods
+- `Script.lua` shows how to call methods from macros
 
 After building by `dotnet build`, the methods are invoked by `fn:` commands.
 
