@@ -27,5 +27,6 @@ fn: script=Script; method=Script.Editor.Unescape
 
 See also:
 
+- [Script using PowerShell](../ScriptPS)
 - [Script in FSharp](../ScriptFS)
 - [Backslash](../Backslash)
