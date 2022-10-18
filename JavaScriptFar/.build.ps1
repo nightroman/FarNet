@@ -16,10 +16,6 @@ task build meta, {
 	exec { dotnet build -c $Configuration -p:FarHome=$FarHome }
 }
 
-task publish {
-	exec { dotnet publish -c $Configuration -o $ModuleRoot --no-build }
-}
-
 task clean {
 	remove z, bin, obj, README.htm, *.nupkg
 }
