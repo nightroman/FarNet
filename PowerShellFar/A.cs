@@ -304,13 +304,9 @@ static class A
 		try
 		{
 			// input code
-			var ui = new UI.InputDialog()
-			{
-				Title = Res.Me,
-				History = Res.HistoryApply,
-				UseLastHistory = true,
-				Prompt = new string[] { "For each $_ in " + input.Count + " selected:" }
-			};
+			var ui = new UI.InputBox2($"For each $_ in {input.Count} selected:", Res.Me);
+			ui.Edit.History = Res.HistoryApply;
+			ui.Edit.UseLastHistory = true;
 
 			var code = ui.Show();
 			if (string.IsNullOrEmpty(code))

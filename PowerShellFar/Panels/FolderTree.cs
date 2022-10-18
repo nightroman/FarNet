@@ -42,7 +42,7 @@ public sealed class FolderTree : TreePanel
 		// post name
 		if (string.IsNullOrEmpty(path) || path == ".")
 		{
-			var currentFile = Far.Api.Panel.CurrentFile;
+			var currentFile = Far.Api.Panel?.CurrentFile;
 			if (currentFile != null)
 				PostName(currentFile.Name);
 		}
@@ -128,9 +128,10 @@ public sealed class FolderTree : TreePanel
 		// open at the passive panel
 		if (provider.Name == "FileSystem")
 		{
-			Far.Api.Panel2.CurrentDirectory = node.Path;
-			Far.Api.Panel2.Update(false);
-			Far.Api.Panel2.Redraw();
+			var panel2 = Far.Api.Panel2!;
+			panel2.CurrentDirectory = node.Path;
+			panel2.Update(false);
+			panel2.Redraw();
 		}
 		// open at the same panel as child
 		else

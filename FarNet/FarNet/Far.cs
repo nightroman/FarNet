@@ -248,7 +248,7 @@ public abstract class IFar
 	/// If it is not a FarNet panel then you use this object instantly and do not keep it.
 	/// </para>
 	/// </remarks>
-	public abstract IPanel Panel { get; }
+	public abstract IPanel? Panel { get; }
 
 	/// <summary>
 	/// Gets the passive panel or null if Far started with /e or /v.
@@ -256,7 +256,7 @@ public abstract class IFar
 	/// <remarks>
 	/// See remarks for the active panel (<see cref="Panel"/>).
 	/// </remarks>
-	public abstract IPanel Panel2 { get; }
+	public abstract IPanel? Panel2 { get; }
 
 	/// <summary>
 	/// Gets the command line operator.
@@ -403,7 +403,7 @@ public abstract class IFar
 	/// Mantis 2241: This call from not the main thread hangs if a menu is opened after a dialog.
 	/// </para>
 	/// </remarks>
-	public abstract IDialog Dialog { get; }
+	public abstract IDialog? Dialog { get; }
 
 	/// <summary>
 	/// Gets the current editor or dialog edit box line or the command line.
@@ -414,7 +414,7 @@ public abstract class IFar
 	/// Mantis 2241: This call from not the main thread hangs if a menu is opened, e.g. autocomplete.
 	/// </para>
 	/// </remarks>
-	public abstract ILine Line { get; }
+	public abstract ILine? Line { get; }
 
 	/// <summary>
 	/// Gets the internal current directory.

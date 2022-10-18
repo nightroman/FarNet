@@ -410,7 +410,8 @@ class FarUI : UniformUI
 		}
 		else
 		{
-			var ui = new UI.InputDialog() { History = Res.HistoryPrompt };
+			var ui = new UI.InputBox2();
+			ui.Edit.History = Res.HistoryPrompt;
 			var text = ui.Show();
 			if (text != null)
 				return text;

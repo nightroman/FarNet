@@ -67,7 +67,7 @@ $r = TabExpansion2 @args
 		_pathTabExpansion ??= Path.Combine(A.Psf.AppHome, "TabExpansion2.ps1");
 
 		// load TabExpansion
-		using var ps = runspace == null ? A.Psf.NewPowerShell() : PowerShell.Create();
+		using var ps = runspace is null ? A.Psf.NewPowerShell() : PowerShell.Create();
 		if (runspace != null)
 			ps.Runspace = runspace;
 
@@ -77,7 +77,7 @@ $r = TabExpansion2 @args
 	static string TECompletionText(object value)
 	{
 		var t = Cast<Hashtable>.From(value); //! remote gets PSObject
-		if (t == null)
+		if (t is null)
 			return value.ToString()!;
 
 		return t[CompletionText]!.ToString()!;
@@ -86,7 +86,7 @@ $r = TabExpansion2 @args
 	static string TEListItemText(object value)
 	{
 		var t = Cast<Hashtable>.From(value); //! remote gets PSObject
-		if (t == null)
+		if (t is null)
 			return value.ToString()!;
 
 		var r = t[ListItemText];
@@ -204,7 +204,7 @@ $r = TabExpansion2 @args
 		{
 			// call TabExpansion
 			Hashtable result;
-			using (var ps = runspace == null ? A.Psf.NewPowerShell() : PowerShell.Create())
+			using (var ps = runspace is null ? A.Psf.NewPowerShell() : PowerShell.Create())
 			{
 				if (runspace != null)
 					ps.Runspace = runspace;
@@ -301,7 +301,7 @@ $r = TabExpansion2 @args
 
 			foreach (var it in words)
 			{
-				if (it == null) continue;
+				if (it is null) continue;
 				var item = new SetItem
 				{
 					Text = TEListItemText(it),
@@ -377,7 +377,7 @@ $r = TabExpansion2 @args
 			}
 
 			// other lines
-			ILine line = Far.Api.Line;
+			var line = Far.Api.Line;
 			if (line is null)
 				return string.Empty;
 			else
@@ -403,8 +403,8 @@ $r = TabExpansion2 @args
 			}
 
 			// other lines
-			ILine line = Far.Api.Line;
-			if (line == null)
+			var line = Far.Api.Line;
+			if (line is null)
 				throw new InvalidOperationException("There is no current text to set.");
 			else
 				line.ActiveText = value;
@@ -534,7 +534,7 @@ $r = TabExpansion2 @args
 		}
 		else if (from == WindowKind.Dialog)
 		{
-			var dialog = Far.Api.Dialog;
+			var dialog = Far.Api.Dialog!;
 			if (dialog.Focused is not IEdit edit)
 				return;
 			code = edit.Line.SelectedText;

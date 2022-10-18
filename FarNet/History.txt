@@ -1,6 +1,14 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 6.0.21 =
+
+Add FarNet.Tools.InputBox, use for fn-commands input.
+
+Improve errors on exceptions in fn-commands.
+
+Amend API nullable references.
+
 = 6.0.20 =
 
 FarNet modules, like FarNet scripts, may have methods for calls by the command `fn:`.

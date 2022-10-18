@@ -115,7 +115,7 @@ class ReadCommand
 		if (from == WindowKind.Desktop)
 			return true;
 
-		return from == WindowKind.Dialog && Far.Api.Dialog.TypeId == new Guid(Guids.ReadCommandDialog);
+		return from == WindowKind.Dialog && Far.Api.Dialog!.TypeId == new Guid(Guids.ReadCommandDialog);
 	}
 
 	public static void Stop()
@@ -199,7 +199,7 @@ class ReadCommand
 				{
 					// insert current file name
 					e.Ignore = true;
-					var file = Far.Api.Panel.CurrentFile;
+					var file = Far.Api.Panel!.CurrentFile;
 					if (file != null)
 						Edit.Line.InsertText(file.Name);
 				}
@@ -208,9 +208,10 @@ class ReadCommand
 				{
 					// insert current file path
 					e.Ignore = true;
-					var file = Far.Api.Panel.CurrentFile;
+					var panel = Far.Api.Panel!;
+					var file = panel.CurrentFile;
 					if (file != null)
-						Edit.Line.InsertText(Path.Combine(Far.Api.Panel.CurrentDirectory, file.Name));
+						Edit.Line.InsertText(Path.Combine(panel.CurrentDirectory, file.Name));
 				}
 				return;
 		}
@@ -252,7 +253,7 @@ class ReadCommand
 				if (e.Key.Is())
 				{
 					e.Ignore = true;
-					if (Far.Api.Panel.IsVisible || Far.Api.Panel2.IsVisible)
+					if (Far.Api.Panel!.IsVisible || Far.Api.Panel2!.IsVisible)
 						RunKeyInPanelsAsync(e.Key, true);
 					else
 						Edit.Text = History.GetNextCommand(e.Key.VirtualKeyCode == KeyCode.UpArrow, Edit.Text);

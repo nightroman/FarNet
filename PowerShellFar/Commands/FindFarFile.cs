@@ -26,10 +26,14 @@ sealed class FindFarFileCommand : BaseCmdlet
 
 	protected override void BeginProcessing()
 	{
+		var panel = Far.Api.Panel;
+		if (panel is null)
+			throw new PSInvalidOperationException("Expected panel.");
+
 		// case: find by name
 		if (Name != null)
 		{
-			bool found = Far.Api.Panel.GoToName(Name, false);
+			bool found = panel.GoToName(Name, false);
 			if (!found)
 				WriteError(new ErrorRecord(
 					new FileNotFoundException("File is not found: '" + Name + "'."),
@@ -40,9 +44,9 @@ sealed class FindFarFileCommand : BaseCmdlet
 		}
 
 		// case: find by filter
-		var files = Far.Api.Panel.Files;
+		var files = panel.Files;
 		int count = files.Count;
-		int current = Far.Api.Panel.CurrentIndex;
+		int current = panel.CurrentIndex;
 
 		int step;
 		int[] st;
@@ -70,14 +74,14 @@ sealed class FindFarFileCommand : BaseCmdlet
 
 				if (result.Count > 1 || LanguagePrimitives.IsTrue(result[0]))
 				{
-					Far.Api.Panel.Redraw(index, -1);
+					panel.Redraw(index, -1);
 					return;
 				}
 			}
 		}
 
 		WriteError(new ErrorRecord(
-			new FileNotFoundException($"File is not found: {{{Where}}}."),
+			new FileNotFoundException($"File is not found: '{Where}'."),
 			"FileNotFound",
 			ErrorCategory.ObjectNotFound,
 			Where));

@@ -11,9 +11,12 @@ namespace PowerShellFar;
 
 public sealed partial class Actor
 {
-	static UI.InputDialog CreateCodeDialog()
+	static UI.InputBox2 CreateCodeDialog()
 	{
-		return new UI.InputDialog() { Title = Res.Me, History = Res.History, UseLastHistory = true, Prompt = new string[] { Res.InvokeCommands } };
+		var ui = new UI.InputBox2(Res.InvokeCommands, Res.Me);
+		ui.Edit.History = Res.History;
+		ui.Edit.UseLastHistory = true;
+		return ui;
 	}
 
 	/// <summary>
@@ -44,7 +47,8 @@ public sealed partial class Actor
 	void InvokeInputCodePrivate(string? input)
 	{
 		var ui = CreateCodeDialog();
-		ui.Text = input;
+		if (input != null)
+			ui.Edit.Text = input;
 		var code = ui.Show();
 		if (!string.IsNullOrEmpty(code))
 			Run(new RunArgs(code));
@@ -103,7 +107,6 @@ public sealed partial class Actor
 		StartCommandConsole();
 		return FarNet.Works.Tasks2.Wait(nameof(StartCommandConsole), () =>
 			Far.Api.Window.Kind == WindowKind.Dialog &&
-			Far.Api.Dialog.TypeId == new Guid(Guids.ReadCommandDialog));
+			Far.Api.Dialog!.TypeId == new Guid(Guids.ReadCommandDialog));
 	}
-
 }

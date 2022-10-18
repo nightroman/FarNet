@@ -1,5 +1,12 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 6.0.20 =
+
+Requires FarNet 6.0.21
+
+Use FarNet.Tools.InputBox.
+Amend nullable references.
+
 = 6.0.19 =
 
 Reworked SyncPaths on invoking commands, see https://github.com/nightroman/FarNet/issues/34

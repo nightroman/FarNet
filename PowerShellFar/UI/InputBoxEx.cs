@@ -71,7 +71,7 @@ class InputBoxEx
 		return true;
 	}
 
-	public static void CompleteWord(ILine editLine, IEnumerable words)
+	public static void CompleteWord(ILine? editLine, IEnumerable words)
 	{
 		// hot line
 		if (editLine is null)

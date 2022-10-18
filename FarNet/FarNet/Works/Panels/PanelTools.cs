@@ -105,7 +105,7 @@ public static class PanelTools
 
 		for (; ; menu.Items.Clear())
 		{
-			IPanel panel = Far.Api.Panel;
+			var panel = Far.Api.Panel!;
 			Panel? module = null;
 
 			// Push/Shelve

@@ -67,12 +67,12 @@ static class History
 				editor.Redraw();
 				return null;
 			case WindowKind.Dialog:
-				var dialog = Far.Api.Dialog;
+				var dialog = Far.Api.Dialog!;
 				var typeId = dialog.TypeId;
 				if (typeId != new Guid(Guids.ReadCommandDialog) && typeId != new Guid(Guids.InputDialog))
 					break;
 				var line = Far.Api.Line;
-				if (line == null || line.IsReadOnly)
+				if (line is null || line.IsReadOnly)
 					break;
 				line.Text = code;
 				return null;

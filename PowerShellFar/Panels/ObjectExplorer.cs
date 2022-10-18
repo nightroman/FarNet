@@ -230,7 +230,7 @@ public sealed class ObjectExplorer : FormatExplorer
 			var directoryPath = My.PathEx.TryGetDirectoryPath(data);
 			if (directoryPath != null)
 			{
-				Far.Api.Panel2.CurrentDirectory = directoryPath;
+				Far.Api.Panel2!.CurrentDirectory = directoryPath;
 				return null;
 			}
 		}

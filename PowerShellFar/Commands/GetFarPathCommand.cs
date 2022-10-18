@@ -16,8 +16,8 @@ sealed class GetFarPathCommand : BaseFileCmdlet
 
 	protected override void BeginProcessing()
 	{
-		IPanel panel1 = Passive ? Far.Api.Panel2 : Far.Api.Panel;
-		IPanel panel2 = Mirror ? (Passive ? Far.Api.Panel : Far.Api.Panel2) : panel1;
+		var panel1 = Passive ? Far.Api.Panel2 : Far.Api.Panel;
+		var panel2 = Mirror ? (Passive ? Far.Api.Panel : Far.Api.Panel2) : panel1;
 
 		// no panel?
 		if (panel1 is null || panel2 is null)

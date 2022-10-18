@@ -117,7 +117,7 @@ public partial class Panel
 				return;
 
 			// target?
-			var native = Far.Api.Panel2;
+			var native = Far.Api.Panel2!;
 			if (native.IsPlugin || native.Kind != PanelKind.File)
 				return;
 
@@ -853,6 +853,7 @@ public partial class Panel
 
 		return false;
 	}
+
 	bool NeedDefaultCopy()
 	{
 		// target panel
@@ -863,7 +864,7 @@ public partial class Panel
 			return false;
 
 		// native plugin
-		if (panel2.IsPlugin)
+		if (panel2!.IsPlugin)
 			return true;
 
 		// default if cannot export but can get content

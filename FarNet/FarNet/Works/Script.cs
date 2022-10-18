@@ -1,6 +1,7 @@
 ﻿// FarNet plugin for Far Manager
 // Copyright (c) Roman Kuzmin
 
+using FarNet.Tools;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -29,9 +30,17 @@ public static class Script
 
 	public static void InvokeCommand()
 	{
-		var command = Far.Api.Input("Command", "FarNet command", "FarNet command");
-		if (command != null)
-			Far.Api.InvokeCommand(command);
+		Task.Run(async () =>
+		{
+			var ui = new InputBox("Command", "FarNet command");
+			ui.Edit.History = "FarNet command";
+			ui.Edit.UseLastHistory = true;
+
+			var text = await ui.ShowAsync();
+
+			if (!string.IsNullOrEmpty(text))
+				await Tasks.Job(() => Far.Api.InvokeCommand(text));
+		});
 	}
 
 	static ScriptParameters ParseScriptParameters(string text)

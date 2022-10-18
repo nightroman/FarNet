@@ -12,7 +12,7 @@ sealed class GetFarItemCommand : BaseFileCmdlet
 {
 	protected override void BeginProcessing()
 	{
-		IPanel panel = Passive ? Far.Api.Panel2 : Far.Api.Panel;
+		var panel = Passive ? Far.Api.Panel2 : Far.Api.Panel;
 		if (panel is null)
 			return;
 

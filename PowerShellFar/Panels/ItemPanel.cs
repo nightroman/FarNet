@@ -40,7 +40,7 @@ public sealed class ItemPanel : FormatPanel
 		// current location, post the current name
 		if (string.IsNullOrEmpty(path))
 		{
-			var file = Far.Api.Panel.CurrentFile;
+			var file = Far.Api.Panel?.CurrentFile;
 			if (file != null)
 				PostName(file.Name);
 		}
