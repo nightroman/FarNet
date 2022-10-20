@@ -38,8 +38,20 @@ public static class Script
 
 			var text = await ui.ShowAsync();
 
-			if (!string.IsNullOrEmpty(text))
-				await Tasks.Job(() => Far.Api.InvokeCommand(text));
+			if (string.IsNullOrEmpty(text))
+				return;
+
+			await Tasks.Job(() =>
+			{
+				try
+				{
+					Far.Api.InvokeCommand(text);
+				}
+				catch (Exception ex)
+				{
+					Far.Api.ShowError(null, ex);
+				}
+			});
 		});
 	}
 
@@ -216,7 +228,14 @@ public static class Script
 			}
 
 			// go!
-			method.Invoke(instance, methodParameters);
+			try
+			{
+				method.Invoke(instance, methodParameters);
+			}
+			catch (TargetInvocationException ex)
+			{
+				throw ex.InnerException ?? ex;
+			}
 		}
 		finally
 		{
