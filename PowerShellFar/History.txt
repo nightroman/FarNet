@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 6.0.21 =
+
+Microsoft.PowerShell.SDK 7.2.7
+
 = 6.0.20 =
 
 Requires FarNet 6.0.21
