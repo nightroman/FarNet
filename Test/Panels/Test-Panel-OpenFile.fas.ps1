@@ -44,14 +44,14 @@ job {
 ### Test String
 keys Down
 job {
-	Assert-Far (Get-FarFile).Name -eq $Data.File
+	Assert-Far -FileName $Data.File
 }
 & $F3F4
 
 ### Test FileInfo
 keys Down
 job {
-	Assert-Far (Get-FarFile).Name -eq "Far.exe.example.ini"
+	Assert-Far -FileName Far.exe.example.ini
 }
 & $F3F4
 

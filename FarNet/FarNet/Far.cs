@@ -513,6 +513,23 @@ public abstract class IFar
 	/// </summary>
 	/// <param name="command">The FarNet command.</param>
 	public abstract void InvokeCommand(string command);
+
+	/// <summary>
+	/// <b>EXPERIMENTAL</b>
+	/// Gets the current file system context.
+	/// </summary>
+	public FSContext FS
+	{
+		get
+		{
+			return Window.Kind switch
+			{
+				WindowKind.Editor => new FSContextSingle(Editor!.FileName),
+				WindowKind.Viewer => new FSContextSingle(Viewer!.FileName),
+				_ => new FSContextPanel(Panel),
+			};
+		}
+	}
 }
 
 /// <summary>

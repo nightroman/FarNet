@@ -71,13 +71,11 @@ of where the problem is.
 		EditorTitle = 'Checks the current editor title wildcard.'
 		Panels = 'Checks the current window is panels.'
 		Viewer = 'Checks the current window is viewer.'
-		Plugin = 'Checks the active panel is plugin.'
-		Plugin2 = 'Checks the passive panel is plugin.'
-		Native = 'Checks the active panel is not plugin.'
-		Native2 = 'Checks the passive panel is not plugin.'
+		Plugin = 'Checks the panel is plugin.'
+		Native = 'Checks the panel is not plugin.'
+		Passive = 'Tells using the passive panel.'
 		DialogTypeId = 'Checks the current window is dialog with the specified type ID.'
-		ExplorerTypeId = 'Checks the active panel explorer with the specified type ID.'
-		ExplorerTypeId2 = 'Checks the passive panel explorer with the specified type ID.'
+		ExplorerTypeId = 'Checks the panel explorer with the specified type ID.'
 	}
 
 	examples = @(
@@ -258,15 +256,6 @@ $BaseFile = @{
 		All = 'Tells to get all the panel items.'
 		Passive = 'Tells to get items from the passive panel.'
 		Selected = 'Tells to get selected panel items or the current one if none is selected.'
-	}
-}
-
-### Get-FarFile
-Merge-Helps $BaseFile @{
-	command = 'Get-FarFile'
-	synopsis = 'Gets the current panel file, selected files, or all files.'
-	outputs = @{
-		type = 'FarNet.FarFile'
 	}
 }
 

@@ -1,5 +1,15 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 6.0.22 =
+
+Requires FarNet 6.0.23
+
+Retire Get-FarFile as not adding value to other methods.
+
+Assert-Far
+- new switch Passive tells to check the passive panel
+- removed Native2, Plugin2, ExplorerTypeId2 (use -Passive instead)
+
 = 6.0.21 =
 
 Microsoft.PowerShell.SDK 7.2.7

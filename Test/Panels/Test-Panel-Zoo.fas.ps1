@@ -317,13 +317,15 @@ job {
 }
 macro 'Keys"ShiftDel Enter"'#??????
 job {
-	Assert-Far (Get-FarFile).Name -eq 'name'
+	Assert-Far -FileName name
 	Assert-Far $Far.Panel.Value.Name -eq $null
 }
 
 # try to delete and check it is not deleted
 macro 'Keys"Del Enter"'#??????
-job { Assert-Far (Get-FarFile).Name -eq 'name' }
+job {
+	Assert-Far -FileName name
+}
 
 # add and delete a property
 Get-Block-Add
@@ -332,7 +334,7 @@ Get-Block-Delete
 ### Deserialized bytes
 job {
 	Find-FarFile 'bytes'
-	Assert-Far (Get-FarFile).Description -eq '{11, 22}'
+	Assert-Far -FileDescription '{11, 22}'
 }
 # edit
 keys F4
@@ -348,7 +350,7 @@ job {
 ### Deserialized strings
 job {
 	Find-FarFile 'strings'
-	Assert-Far (Get-FarFile).Description -eq '{Power, Shell}'
+	Assert-Far -FileDescription '{Power, Shell}'
 }
 # edit
 keys F4

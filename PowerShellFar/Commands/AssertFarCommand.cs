@@ -58,13 +58,10 @@ sealed class AssertFarCommand : BaseCmdlet
 	public SwitchParameter Plugin { get; set; }
 
 	[Parameter(ParameterSetName = PSParameters)]
-	public SwitchParameter Plugin2 { get; set; }
-
-	[Parameter(ParameterSetName = PSParameters)]
 	public SwitchParameter Native { get; set; }
 
 	[Parameter(ParameterSetName = PSParameters)]
-	public SwitchParameter Native2 { get; set; }
+	public SwitchParameter Passive { get; set; }
 
 	[Parameter(ParameterSetName = PSParameters)]
 	public Guid DialogTypeId { set => _DialogTypeId = value; }
@@ -73,10 +70,6 @@ sealed class AssertFarCommand : BaseCmdlet
 	[Parameter(ParameterSetName = PSParameters)]
 	public Guid ExplorerTypeId { set => _ExplorerTypeId = value; }
 	Guid? _ExplorerTypeId;
-
-	[Parameter(ParameterSetName = PSParameters)]
-	public Guid ExplorerTypeId2 { set => _ExplorerTypeId2 = value; }
-	Guid? _ExplorerTypeId2;
 
 	[Parameter(ParameterSetName = PSParameters)]
 	public string EditorFileName { set { _isEditorFileName = true; _EditorFileName = value; } }
@@ -89,6 +82,21 @@ sealed class AssertFarCommand : BaseCmdlet
 	bool _isEditorTitle;
 
 	bool IsError => Title is null;
+
+	IPanel? _panel_;
+	IPanel Panel
+	{
+		get
+		{
+			if (_panel_ is null)
+			{
+				_panel_ = Passive ? Far.Api.Panel2 : Far.Api.Panel;
+				if (_panel_ is null)
+					throw new InvalidOperationException("Far has no panels.");
+			}
+			return _panel_;
+		}
+	}
 
 	protected override void BeginProcessing()
 	{
@@ -157,63 +165,29 @@ sealed class AssertFarCommand : BaseCmdlet
 		if (Viewer && Far.Api.Window.Kind != WindowKind.Viewer)
 			AssertDialog(Message ?? "The current window is not viewer.");
 
+		// check native
+		if (Native && Panel.IsPlugin)
+			AssertDialog(Message ?? "The panel is not native.");
+
 		// check plugin
-		IPanel? anyPanel;
 		if (Plugin || _ExplorerTypeId.HasValue)
 		{
-			anyPanel = Far.Api.Panel;
-			if (anyPanel is null)
-			{
-				AssertDialog(Message ?? "Expected active panel.", doNotIgnore: true);
-				return;
-			}
-
-			if (!anyPanel.IsPlugin)
-				AssertDialog(Message ?? "The active panel is not plugin.");
+			if (!Panel.IsPlugin)
+				AssertDialog(Message ?? "The panel is not plugin.");
 
 			if (_ExplorerTypeId.HasValue)
 			{
-				if (anyPanel is not Panel panel)
-					AssertDialog(Message ?? "Active panel is not module panel.");
+				if (Panel is not Panel panel)
+					AssertDialog(Message ?? "The panel is not module panel.");
 				else if (panel.Explorer.TypeId != _ExplorerTypeId)
-					AssertDialog(Message ?? $"Unexpected active panel explorer type ID {panel.Explorer.TypeId}");
+					AssertDialog(Message ?? $"Unexpected panel explorer type ID {panel.Explorer.TypeId}");
 			}
 		}
-
-		// check plugin 2
-		if (Plugin2 || _ExplorerTypeId2.HasValue)
-		{
-			anyPanel = Far.Api.Panel2;
-			if (anyPanel is null)
-			{
-				AssertDialog(Message ?? "Expected passive panel.", doNotIgnore: true);
-				return;
-			}
-
-			if (!anyPanel.IsPlugin)
-				AssertDialog(Message ?? "The passive panel is not plugin.");
-
-			if (_ExplorerTypeId2.HasValue)
-			{
-				if (anyPanel is not Panel panel)
-					AssertDialog(Message ?? "Passive panel is not module panel.");
-				else if (panel.Explorer.TypeId != _ExplorerTypeId2)
-					AssertDialog(Message ?? "Unexpected passive panel explorer type ID {panel.Explorer.TypeId}");
-			}
-		}
-
-		// check native
-		if (Native && ((anyPanel = Far.Api.Panel) is null || anyPanel.IsPlugin))
-			AssertDialog(Message ?? "The active panel is not native.");
-
-		// check native 2
-		if (Native2 && ((anyPanel = Far.Api.Panel2) is null || anyPanel.IsPlugin))
-			AssertDialog(Message ?? "The passive panel is not native.");
 
 		// check file data
 		if (FileDescription != null || FileName != null || FileOwner != null)
 		{
-			var file = Far.Api.Panel?.CurrentFile;
+			var file = Panel.CurrentFile;
 			if (file is null)
 			{
 				AssertDialog(Message ?? "There is not a current file.");

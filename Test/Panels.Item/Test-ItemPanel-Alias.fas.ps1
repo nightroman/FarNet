@@ -25,12 +25,10 @@ job {
 	Go-To Alias:\
 }
 job {
-	# It's questionable to have a path like this, but why not? But there was a bug, see below
+	# It's questionable to have a path like this, but why not? But there was an issue, see below
 	# _110227_123432 We do not have such paths. Test anyway.
-	Assert-Far @(
-		$Far.Panel.CurrentDirectory -eq 'Alias:\'
-		!(Get-FarFile) # dots
-	)
+	Assert-Far $Far.Panel.CurrentDirectory -eq Alias:\
+	Assert-Far $Far.Panel.CurrentFile -eq $null # dots
 }
 
 # view all
@@ -54,7 +52,7 @@ job { Assert-Far -Editor }
 keys Esc
 job { Assert-Far -Panels }
 
-# fix: edit %, exactly this name was problematic
+# fixed: edit %, exactly this name was problematic
 keys F4
 job {
 	Assert-Far -Editor

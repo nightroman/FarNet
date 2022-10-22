@@ -19,7 +19,7 @@ job {
 macro 'Keys"F7 F7 F7 F7"'
 job {
 	# Item4
-	Assert-Far (Get-FarFile).Name -eq 'Item4'
+	Assert-Far -FileName Item4
 
 	# 5 items with dots, nothing is selected
 	Assert-Far $Far.Panel.Files.Count -eq 5

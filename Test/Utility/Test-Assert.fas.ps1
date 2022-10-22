@@ -91,31 +91,38 @@ job {
 
 ### Plugin/Native
 job {
-	Assert-Far -Panels -Native -Native2
+	Assert-Far -Panels -Native
+	Assert-Far -Passive -Native
 	& "$env:PSF\Samples\Tests\Test-Panel-.ps1"
 }
 job {
-	Assert-Far -Panels -Plugin -Native2
+	Assert-Far -Panels -Plugin
+	Assert-Far -Passive -Native
 }
 keys Tab
 job {
-	Assert-Far -Panels -Native -Plugin2
+	Assert-Far -Panels -Native
+	Assert-Far -Passive -Plugin
 	& "$env:PSF\Samples\Tests\Test-Panel-.ps1"
 }
 job {
-	Assert-Far -Panels -Plugin -Plugin2
+	Assert-Far -Panels -Plugin
+	Assert-Far -Passive -Plugin
 }
 macro 'Keys"Esc 1"'
 job {
-	Assert-Far -Panels -Native -Plugin2
+	Assert-Far -Panels -Native
+	Assert-Far -Passive -Plugin
 }
 keys Tab
 job {
-	Assert-Far -Panels -Plugin -Native2
+	Assert-Far -Panels -Plugin
+	Assert-Far -Passive -Native
 }
 macro 'Keys"Esc 1"'
 job {
-	Assert-Far -Panels -Native -Native2
+	Assert-Far -Panels -Native
+	Assert-Far -Passive -Native
 }
 
 ### TEST -File*

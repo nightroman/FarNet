@@ -9,10 +9,8 @@ job {
 	Assert-Far -FileName About.ps1
 
 	$Far.Panel2.GoToPath('C:\TEMP\Missed-Missed-Missed')
-	Assert-Far @(
-		$Far.Panel2.CurrentDirectory -eq 'C:\TEMP'
-		(Get-FarFile -Passive).Name -eq '..'
-	)
+	Assert-Far $Far.Panel2.CurrentDirectory -eq C:\TEMP
+	Assert-Far -Passive -FileName ..
 }
 job {
 	Assert-Far @(

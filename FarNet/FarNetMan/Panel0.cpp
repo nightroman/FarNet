@@ -499,14 +499,16 @@ int Panel0::AsProcessPanelInput(const ProcessPanelInputInfo* info)
 
 IPanel^ Panel0::GetPanel(bool active)
 {
-	// get info and return null (e.g. Far started with /e or /v)
+	// get info, return null if no panel
 	PanelInfo pi;
 	if (!TryPanelInfo((active ? PANEL_ACTIVE : PANEL_PASSIVE), pi))
 		return nullptr;
 
+	// native panel?
 	if (0 == (pi.Flags & PFLAGS_PLUGIN))
 		return gcnew Panel1(active);
 
+	// module panel?
 	for (int i = 1; i < cPanels; ++i)
 	{
 		Panel2^ p = _panels[i];
@@ -514,6 +516,7 @@ IPanel^ Panel0::GetPanel(bool active)
 			return p->Host;
 	}
 
+	// plugin panel
 	return gcnew Panel1(true);
 }
 

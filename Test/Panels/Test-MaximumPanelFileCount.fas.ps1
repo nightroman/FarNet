@@ -77,7 +77,8 @@ job {
 	$Data.Panel.Open()
 }
 job {
-	Assert-Far -Panels -Plugin -Plugin2
+	Assert-Far -Panels -Plugin
+	Assert-Far -Passive -Plugin
 	$1 = $Far.Panel.Files
 	Assert-Far @(
 		$1.Count -eq 1001
@@ -87,7 +88,8 @@ job {
 
 keys Esc
 job {
-	Assert-Far -Panels -Native -Plugin2
+	Assert-Far -Panels -Native
+	Assert-Far -Passive -Plugin
 }
 
 ### Enumerable, Retry, Ignore
@@ -116,7 +118,8 @@ job {
 	$Data.Panel.Open()
 }
 job {
-	Assert-Far -Panels -Plugin -Plugin2
+	Assert-Far -Panels -Plugin
+	Assert-Far -Passive -Plugin
 	$1 = $Far.Panel.Files
 	Assert-Far @(
 		$1.Count -eq 3001
@@ -128,10 +131,12 @@ job {
 
 macro 'Keys"Esc"'# exit panel 2
 job {
-	Assert-Far -Panels -Native -Plugin2
+	Assert-Far -Panels -Native
+	Assert-Far -Passive -Plugin
 }
 keys Tab
 job {
-	Assert-Far -Panels -Plugin -Native2
+	Assert-Far -Panels -Plugin
+	Assert-Far -Passive -Native
 }
 keys Esc

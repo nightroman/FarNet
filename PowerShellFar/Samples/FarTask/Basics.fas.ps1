@@ -58,7 +58,7 @@ macro 'Keys"Esc" -- exit dialog'
 job {
 	# test: the window (panels) and item ('Far.exe.example.ini')
 	Assert-Far -Panels
-	Assert-Far (Get-FarFile).Name -eq 'Far.exe.example.ini'
+	Assert-Far -FileName Far.exe.example.ini
 }
 
 ### HOW TO: start a modal dialog

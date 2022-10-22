@@ -32,16 +32,11 @@ param(
 $ErrorActionPreference=1
 Import-Module FarDescription
 
-### get the current FileSystemInfo item, ignore others
-$private:file = Get-FarFile
-if (!$file -or $file.Name -eq '..') {
+### get existing FileSystemInfo item
+$private:item = $Far.FS.CursorItem
+if (!$item) {
 	return
 }
-$private:path = Get-FarPath
-if (![System.IO.File]::Exists($path) -and ![System.IO.Directory]::Exists($path)) {
-	return
-}
-$private:item = Get-Item -LiteralPath $path
 
 ### get the new name
 if ($Name -is [scriptblock]) {

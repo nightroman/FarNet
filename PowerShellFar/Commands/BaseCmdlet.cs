@@ -22,7 +22,6 @@ class BaseCmdlet : PSCmdlet
 		state.Commands.Add(new SessionStateCmdletEntry[] {
 			new SessionStateCmdletEntry(AssertFarCommand.MyName, typeof(AssertFarCommand), Help),
 			new SessionStateCmdletEntry("Find-FarFile", typeof(FindFarFileCommand), Help),
-			new SessionStateCmdletEntry("Get-FarFile", typeof(GetFarFileCommand), Help),
 			new SessionStateCmdletEntry("Get-FarItem", typeof(GetFarItemCommand), Help),
 			new SessionStateCmdletEntry("Get-FarPath", typeof(GetFarPathCommand), Help),
 			new SessionStateCmdletEntry("New-FarEditor", typeof(NewFarEditorCommand), Help),
