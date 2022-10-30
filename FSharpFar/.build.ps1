@@ -24,7 +24,7 @@ task publish {
 	Copy-Item "$HOME\.nuget\packages\FSharp.Core\$($node.Version)\lib\netstandard2.1\FSharp.Core.xml" $ModuleRoot
 
 	Set-Location $ModuleRoot
-	remove cs, de, es, fr, it, ja, ko, pl, pt-BR, ru, tr, zh-Hans, zh-Hant, runtimes\unix
+	remove *.deps.json, cs, de, es, fr, it, ja, ko, pl, pt-BR, ru, tr, zh-Hans, zh-Hant, runtimes\unix
 }
 
 task clean {
@@ -72,7 +72,7 @@ task package markdown, {
 
 	# module
 	exec { robocopy $ModuleRoot $toModule /s /xf *.pdb } (0..2)
-	equals 33 (Get-ChildItem $toModule -Recurse -File).Count
+	equals 29 (Get-ChildItem $toModule -Recurse -File).Count
 
 	# logo
 	Copy-Item -Destination z ..\Zoo\FarNetLogo.png

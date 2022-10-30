@@ -1,6 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 6.0.24 =
+
+Improve AssemblyResolver, fix known cases.
+
 = 6.0.23 =
 
 Add experimental IFar.FS file system context helpers.

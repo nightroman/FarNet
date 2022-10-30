@@ -20,7 +20,7 @@ public static class AssemblyResolver
 {
 	const int MaxLastRoots = 4;
 	static readonly LinkedList<string> s_lastRoots = new();
-	static readonly Dictionary<string, object?> s_cache = new(StringComparer.OrdinalIgnoreCase);
+	static readonly Dictionary<string, string> s_cache = new(StringComparer.OrdinalIgnoreCase);
 
 	static AssemblyResolver()
 	{
@@ -34,14 +34,17 @@ public static class AssemblyResolver
 	{
 		foreach (var path in Directory.EnumerateFiles(root, "*.dll", SearchOption.AllDirectories))
 		{
-			if (path.Contains("\\native\\"))
+			if (path.Contains("\\native\\") ||
+				path.Contains("\\unix\\") ||
+				path.EndsWith(".resources.dll"))
 				continue;
 
 			var key = Path.GetFileNameWithoutExtension(path);
 
-			// null existing dupe
-			if (!s_cache.TryAdd(key, path))
-				s_cache[key] = null;
+			if (s_cache.TryGetValue(key, out string? value))
+				s_cache[key] = $"{value}|{path}";
+			else
+				s_cache.Add(key, path);
 		}
 	}
 
@@ -108,6 +111,44 @@ public static class AssemblyResolver
 		return null;
 	}
 
+	static int GetSamePrefixLength(string path1, string path2)
+	{
+		int index = 0;
+		while (index < path1.Length && index < path2.Length && char.ToUpperInvariant(path1[index]) == char.ToUpperInvariant(path2[index]))
+			++index;
+		return index;
+	}
+
+	static string FindBestPath(string path, string[] paths)
+	{
+		string? bestPath = null;
+		int maxPrefixLength = -1;
+		foreach (var path2 in paths)
+		{
+			int length = GetSamePrefixLength(path, path2);
+			if (length > maxPrefixLength)
+			{
+				bestPath = path2;
+				maxPrefixLength = length;
+			}
+		}
+		return bestPath!;
+	}
+
+	static Assembly? LoadFromLastRoots(string dllName)
+	{
+		foreach (var root in s_lastRoots)
+		{
+			var path = root + "\\" + dllName;
+			if (File.Exists(path))
+			{
+				AddRoot(root);
+				return Assembly.LoadFrom(path);
+			}
+		}
+		return null;
+	}
+
 	// examples used to have issues:
 	// 1) Microsoft.Bcl.AsyncInterfaces in Lib\FarNet.CsvHelper, Modules\PowerShellFar
 	// 2) System.Data.OleDb.dll in Lib\FarNet.FSharp.Charting (2) Modules\FolderChart (2) Modules\PowerShellFar (2)
@@ -116,59 +157,67 @@ public static class AssemblyResolver
 		Log.Source.TraceInformation("LoadFrom {0}", name);
 
 		// skip missing in FarNet
-		if (!s_cache.TryGetValue(name, out object? value))
+		if (!s_cache.TryGetValue(name, out string? pathsString))
 			return null;
 
-		// unique in FarNet, load once
-		if (value is not null)
+		// unique in FarNet, load
+		var paths = pathsString.Split('|');
+		if (paths.Length == 1)
 		{
-			// not yet loaded assembly path?
-			if (value is not Assembly assembly)
-			{
-				assembly = Assembly.LoadFrom((string)value);
-				s_cache[name] = assembly;
-			}
+			var location = paths[0];
+			var assembly = Assembly.LoadFrom(location);
 
-			var location = assembly.Location;
 			if (IsRoot(location))
 				AddRoot(Path.GetDirectoryName(location)!);
 
 			return assembly;
 		}
 
+		// 2+ candidates exist
+		// how to test:
+		// Microsoft.CodeAnalysis issue
+		// - InferKit scripts should work
+		// - Test\Debugger\Debug-Assert-Far-1.fas.ps1 should work
 		string? dllName = null;
 		if (!args.RequestingAssembly!.IsDynamic)
 		{
-			var callerFile = args.RequestingAssembly.Location;
+			var callerLocation = args.RequestingAssembly.Location;
 
 			// case: PowerShellFar
-			int index = callerFile.LastIndexOf("\\PowerShellFar\\");
+			// why? PowerShell package is very convoluted and unpredictable, we hard code some known fixes
+			int index = callerLocation.LastIndexOf("\\PowerShellFar\\");
 			if (index > 0)
-				return ResolvePowerShellFar(callerFile[..(index + 14)], args);
-
-			// case: same folder as the caller
-			var callerRoot = Path.GetDirectoryName(callerFile)!;
-			dllName = AssemblyNameToDllName(args.Name);
-			var path = callerRoot + "\\" + dllName;
-			if (File.Exists(path))
 			{
-				if (IsRoot(callerRoot))
-					AddRoot(callerRoot);
-
-				return Assembly.LoadFrom(path);
+				var assembly = ResolvePowerShellFar(callerLocation[..(index + 14)], args);
+				if (assembly != null)
+					return assembly;
 			}
+
+			// try: same folder as last roots
+			// why before best? weird, but on running InferKit scripts on loading
+			// Microsoft.CodeAnalysis the RequestingAssembly is one of PowerShell
+			// instead of some InferKit assembly
+			dllName ??= AssemblyNameToDllName(args.Name);
+			{
+				var assembly = LoadFromLastRoots(dllName);
+				if (assembly != null)
+					return assembly;
+			}
+
+			// finally: use the best candidate
+			var location = FindBestPath(callerLocation, paths);
+			if (IsRoot(location))
+				AddRoot(Path.GetDirectoryName(location)!);
+
+			return Assembly.LoadFrom(location);
 		}
 
-		// case: same folder as last roots
+		// try: same folder as last roots
 		dllName ??= AssemblyNameToDllName(args.Name);
-		foreach(var root in s_lastRoots)
 		{
-			var path = root + "\\" + dllName;
-			if (File.Exists(path))
-			{
-				AddRoot(root);
-				return Assembly.LoadFrom(path);
-			}
+			var assembly = LoadFromLastRoots(dllName);
+			if (assembly != null)
+				return assembly;
 		}
 
 		Log.Source.TraceInformation("Cannot load {0}", name);

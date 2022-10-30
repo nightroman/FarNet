@@ -31,6 +31,10 @@
 .Parameter Quit
 		Tells to quit Far when the command completes.
 
+.Parameter Quit2
+		Tells to quit Far when the command completes after sleeping for the
+		specified time in milliseconds.
+
 .Parameter Timeout
 		Specifies the timeout interval in milliseconds.
 		The exit code is set to this number on timeout.
@@ -51,6 +55,7 @@ param(
 	[switch]$ReadOnly,
 	[switch]$Wait,
 	[switch]$Quit,
+	[int]$Quit2,
 	[int]$Timeout,
 	[hashtable]$Environment
 )
@@ -71,6 +76,7 @@ if ($Command) {
 	$Environment.FAR_START_PANEL1 = $Panel1
 	$Environment.FAR_START_PANEL2 = $Panel2
 	$Environment.FAR_START_QUIT = if ($Quit) {1} else {$null}
+	$Environment.FAR_START_QUIT2 = if ($Quit2 -gt 0) {$Quit2} else {$null}
 	$Environment.FAR_START_TIMEOUT = if ($Timeout -gt 0) {$Timeout} else {$null}
 	$oldEnvironment = @{}
 	foreach($_ in $Environment.GetEnumerator()) {
@@ -140,7 +146,10 @@ else {
 	}
 
 	# quit
-	if ($env:FAR_START_QUIT -eq 1) {
+	if ($env:FAR_START_QUIT -or $env:FAR_START_QUIT2) {
+		if ($env:FAR_START_QUIT2) {
+			Start-Sleep -Milliseconds $env:FAR_START_QUIT2
+		}
 		job {
 			$Far.Quit()
 		}

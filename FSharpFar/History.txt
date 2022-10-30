@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 
+= 2.0.13 =
+
+Build as simple module, ALC loading is bad for data providers.
+As a result, FarNet.FSharp.Data is back to normal.
+
 = 2.0.12 =
 
 Retired `fs://command` format, use `fs:command:` instead.
