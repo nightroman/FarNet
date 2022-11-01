@@ -533,6 +533,9 @@ public sealed partial class Actor
 		}
 		catch (Exception reason)
 		{
+			if (FarNet.Works.Test.IsTestCommand)
+				throw;
+
 			args.Reason = reason;
 			if (args.NoOutReason)
 				return false;

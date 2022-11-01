@@ -1,6 +1,12 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 6.0.25 =
+
+Changed command processing with testing, e.g. used by Start-Far.ps1 (PowerShellFar).
+
+Amend exception info formatting.
+
 = 6.0.24 =
 
 Improve AssemblyResolver, fix known cases.

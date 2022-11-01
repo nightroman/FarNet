@@ -42,18 +42,15 @@ public static class Log
 	/// <param name="error">.</param>
 	public static void FormatException(TextWriter writer, Exception error)
 	{
-		if (error == null)
+		if (error is null)
 			throw new ArgumentNullException(nameof(error));
 
-		//?? _090901_055134 Regex is used to fix bad PS V1 strings; check V2
-		var re = new Regex("[\r\n]+");
-
-		writer.Write(error.GetType().Name);
-		writer.WriteLine(":");
-		writer.WriteLine(re.Replace(error.Message, Environment.NewLine));
+		writer.Write(error.GetType().FullName);
+		writer.Write(": ");
+		writer.WriteLine(error.Message);
 
 		// get an error record
-		if (error.GetType().FullName!.StartsWith("System.Management.Automation.", StringComparison.Ordinal))
+		if (error.GetType().FullName!.StartsWith("System.Management.Automation."))
 		{
 			var errorRecord = GetPropertyValue(error, "ErrorRecord");
 			if (errorRecord != null)
@@ -64,8 +61,7 @@ public static class Log
 				{
 					var pm = GetPropertyValue(ii, "PositionMessage");
 					if (pm != null)
-						//?? 090517 Added Trim(), because a position message starts with an empty line
-						writer.WriteLine(re.Replace(pm.ToString()!.Trim(), Environment.NewLine));
+						writer.WriteLine(pm.ToString());
 				}
 			}
 		}
@@ -92,24 +88,8 @@ public static class Log
 	/// <param name="error">.</param>
 	public static void TraceException(Exception error)
 	{
-		// no job?
-		if (null == error || !Source.Switch.ShouldTrace(TraceEventType.Error))
-			return;
-
-		// find the last dot
-		string type = error.GetType().FullName!;
-		int i = type.LastIndexOf('.');
-
-		// system error: trace as error
-		if (i >= 0 && type[..i] == "System")
-		{
+		if (error != null && Source.Switch.ShouldTrace(TraceEventType.Error))
 			Source.TraceEvent(TraceEventType.Error, 0, FormatException(error));
-		}
-		// other error: trace as warning
-		else if (Source.Switch.ShouldTrace(TraceEventType.Warning))
-		{
-			Source.TraceEvent(TraceEventType.Warning, 0, FormatException(error));
-		}
 	}
 
 	// gets property value or null

@@ -10,13 +10,15 @@ type Progress(title) as this =
     let tail = head
     do
         far.UI.SetProgressState TaskbarProgressBarState.Indeterminate
-        far.UI.WindowTitle <- title
+        if not (isNull title) then
+            far.UI.WindowTitle <- title
         head <- Some this
 
     interface IDisposable with
         member __.Dispose() =
             head <- tail
-            far.UI.WindowTitle <- oldWindowTitle
+            if not (isNull title) then
+                far.UI.WindowTitle <- oldWindowTitle
             if tail.IsNone then
                 far.UI.SetProgressState TaskbarProgressBarState.NoProgress
 

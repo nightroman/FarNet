@@ -1,5 +1,17 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 6.0.23 =
+
+Requires FarNet 6.0.25
+
+Changed command exception handling in the test mode.
+
+Reworked Start-Far.ps1
+- new parameter `Test` enables command test mode
+- switch `Wait` now checks for the exit code
+- amended parameter `Timeout`
+- new parameter `WindowStyle`
+
 = 6.0.22 =
 
 Requires FarNet 6.0.23

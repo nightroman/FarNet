@@ -24,7 +24,11 @@ DEFINE_GUID(MainGuid, 0x10435532, 0x9bb3, 0x487b, 0xa0, 0x45, 0xb0, 0xe6, 0xec, 
 DEFINE_GUID(ColorerGuid, 0xd2f36b62, 0xa470, 0x418d, 0x83, 0xa3, 0xed, 0x7a, 0x37, 0x10, 0xe5, 0xb5);
 
 #define __START try {
-#define __END } catch(Exception^ e) { Far::Api->ShowError(nullptr, e); } finally { FarUI::ResetUserScreen(); }
+
+//! ResetUserScreen before the error dialog. The dialog may have the button [More].
+//! It opens the editor and Colorer shows its progress message on opening.
+//! This message stays and pollutes the user screen permanently.
+#define __END } catch(Exception^ e) { FarUI::ResetUserScreen(); Far::Api->ShowError(nullptr, e); } finally { FarUI::ResetUserScreen(); }
 
 void WINAPI GetGlobalInfoW(struct GlobalInfo* info)
 {

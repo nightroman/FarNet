@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 
+= 2.0.14 =
+
+Throw exceptions from `fs:` commands instead of writing to console.
+Otherwise callers cannot know about failures (API, interop, tests).
+
 = 2.0.13 =
 
 Build as simple module, ALC loading is bad for data providers.

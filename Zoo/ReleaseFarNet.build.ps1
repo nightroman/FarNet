@@ -53,7 +53,7 @@ task buildFarNet -If {
 task buildPsfHelp -If {
 	$env:FarNetToBuildPowerShellFarHelp -and (ask 'Build PowerShellFar help')
 } {
-	Start-Far 'ps: Invoke-Build help; $Far.Quit()' -Panel1 $env:FarNetCode\PowerShellFar -Title buildPsfHelp -ReadOnly
+	Start-Far -Test 0 'ps: Invoke-Build help' -Panel1 $env:FarNetCode\PowerShellFar -Title buildPsfHelp
 }
 
 task buildDocs -If {

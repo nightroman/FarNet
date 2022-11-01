@@ -7,9 +7,12 @@
 	The script starts Far in a new console with shown panels, optionally with
 	specified paths, and invokes the specified command in the active panel.
 
+	Parameters Test and Timeout are useful for running FarNet commands as tools
+	or tests. Note that they automatically set ReadOnly and Wait to true.
+
 .Parameter Command
 		Specifies the command to be invoked in the active panel.
-		Note, commands starting with ":" are ignored.
+		Commands starting with ":" are ignored (void or disabled).
 
 .Parameter Panel1
 		Specifies the active panel path.
@@ -26,21 +29,35 @@
 		Tells to start with read only profile data.
 
 .Parameter Wait
-		Tells to wait for exit and set $LASTEXITCODE.
+		Tells to wait for exit, check for the exit code, and fail if it is not 0.
 
 .Parameter Quit
 		Tells to quit Far when the command completes.
 
-.Parameter Quit2
-		Tells to quit Far when the command completes after sleeping for the
-		specified time in milliseconds.
+.Parameter Test
+		Tells to invoke the command as a tool or test and exit after the
+		specified time in milliseconds. The exit code is 1 if the command
+		throws any exception and 0 otherwise.
+
+		Use 0 for immediate exit or some positive value in order to see the
+		command results or errors for some time.
+
+		This parameter only works for FarNet commands.
+		Commands must be synchronous and non interactive.
+
+		ReadOnly and Wait are set to true.
 
 .Parameter Timeout
-		Specifies the timeout interval in milliseconds.
-		The exit code is set to this number on timeout.
+		Tells to exit if the command runs longer than the specifies time in
+		milliseconds. The exit code is set to the timeout value.
+
+		ReadOnly and Wait are set to true.
 
 .Parameter Environment
 		Specifies the environment variables dictionary.
+
+.Parameter WindowStyle
+		Specifies the value for Start-Process -WindowStyle.
 
 .Example
 	> ps: Start-Far 'ps:$Psf.StartCommandConsole()' $Far.Panel.CurrentDirectory $Far.Panel2.CurrentDirectory
@@ -55,9 +72,10 @@ param(
 	[switch]$ReadOnly,
 	[switch]$Wait,
 	[switch]$Quit,
-	[int]$Quit2,
-	[int]$Timeout,
-	[hashtable]$Environment
+	[int]$Test = -1,
+	[int]$Timeout = -1,
+	[hashtable]$Environment,
+	[System.Diagnostics.ProcessWindowStyle]$WindowStyle = 'Normal'
 )
 
 trap {$PSCmdlet.ThrowTerminatingError($_)}
@@ -76,8 +94,8 @@ if ($Command) {
 	$Environment.FAR_START_PANEL1 = $Panel1
 	$Environment.FAR_START_PANEL2 = $Panel2
 	$Environment.FAR_START_QUIT = if ($Quit) {1} else {$null}
-	$Environment.FAR_START_QUIT2 = if ($Quit2 -gt 0) {$Quit2} else {$null}
-	$Environment.FAR_START_TIMEOUT = if ($Timeout -gt 0) {$Timeout} else {$null}
+	$Environment.FAR_START_TEST = if ($Test -ge 0) {$ReadOnly = $Wait = $true; $Test} else {$null}
+	$Environment.FAR_START_TIMEOUT = if ($Timeout -ge 1) {$ReadOnly = $Wait = $true; $Timeout} else {$null}
 	$oldEnvironment = @{}
 	foreach($_ in $Environment.GetEnumerator()) {
 		$oldEnvironment.Add($_.Key, [System.Environment]::GetEnvironmentVariable($_.Key))
@@ -91,10 +109,13 @@ if ($Command) {
 			if ($Title) {"/title:`"$Title`""}
 			if ($ReadOnly) {'/ro'}
 		)
-		$p = Start-Process $exe $arg -PassThru
+		$p = Start-Process $exe $arg -WindowStyle $WindowStyle -PassThru
 		if ($Wait) {
 			$p.WaitForExit()
 			$global:LASTEXITCODE = $p.ExitCode
+			if ($global:LASTEXITCODE) {
+				throw "Command exited with code $global:LASTEXITCODE -- $Command"
+			}
 		}
 	}
 	finally {
@@ -106,7 +127,17 @@ if ($Command) {
 else {
 	### Internall call in started Far by Start-FarTask
 
-	if (!$env:FAR_START_COMMAND) {throw 'Please specify the command.'}
+	if (!$env:FAR_START_COMMAND) {
+		throw 'Please specify the command or use ":" for void.'
+	}
+
+	if ($env:FAR_START_TEST) {
+		[FarNet.Works.Test]::SetTestCommand($env:FAR_START_TEST)
+	}
+
+	if ($env:FAR_START_TIMEOUT) {
+		[FarNet.Works.Test]::SetTimeout($env:FAR_START_TIMEOUT)
+	}
 
 	# setup panels
 	job {
@@ -130,14 +161,7 @@ else {
 		}
 	}
 
-	# start timer
-	if ($env:FAR_START_TIMEOUT) {
-		$timer = [System.Timers.Timer]::new($env:FAR_START_TIMEOUT)
-		$null = Register-ObjectEvent -InputObject $timer -EventName Elapsed -Action {[System.Environment]::Exit($env:FAR_START_TIMEOUT)}
-		$timer.Start()
-	}
-
-	# invoke command
+	# invoke command unless void or disabled
 	if (!$env:FAR_START_COMMAND.StartsWith(':')) {
 		job {
 			$Far.CommandLine.Text = $env:FAR_START_COMMAND
@@ -146,10 +170,7 @@ else {
 	}
 
 	# quit
-	if ($env:FAR_START_QUIT -or $env:FAR_START_QUIT2) {
-		if ($env:FAR_START_QUIT2) {
-			Start-Sleep -Milliseconds $env:FAR_START_QUIT2
-		}
+	if ($env:FAR_START_QUIT) {
 		job {
 			$Far.Quit()
 		}

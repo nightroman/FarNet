@@ -44,7 +44,8 @@ type Session private (configFile) =
     let evalWriter = new ProxyWriter(hiddenWriter)
 
     let fsiSession, errors, ok, config =
-        use _progress = new Progress "Loading session..."
+        //! do not change console titles here, e.g. useful titles on testing by Start-Far
+        use _progress = new Progress null
         let mutable ok = true
 
         let config = Config.readFromFile configFile

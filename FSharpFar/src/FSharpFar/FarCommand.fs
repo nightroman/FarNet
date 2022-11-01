@@ -4,6 +4,9 @@ open System
 open System.IO
 open System.Diagnostics
 open FarInteractive
+open FSharp.Compiler.Diagnostics
+open FSharp.Compiler.Interactive.Shell
+open System.Runtime.ExceptionServices
 
 [<ModuleCommand(Name = "FSharpFar", Prefix = "fs", Id = "2b52615b-ea79-46e4-ac9d-78f33599db62")>]
 type FarCommand() =
@@ -13,10 +16,16 @@ type FarCommand() =
         far.UI.WriteLine($"fs:{command}", ConsoleColor.DarkGray)
 
     let writeResult r =
+        // first write warnings and errors
         for w in r.Warnings do
-            far.UI.WriteLine(FSharpDiagnostic.strErrorFull w, ConsoleColor.Yellow)
+            let color = match w.Severity with FSharpDiagnosticSeverity.Error -> ConsoleColor.Red | _ -> ConsoleColor.Yellow
+            far.UI.WriteLine(FSharpDiagnostic.strErrorFull w, color)
+
+        // then throw an exception (do not write or the caller has no way to know and handle it)
+        // exceptions may be due to compile errors (written above) and runtime exceptions
         if not (isNull r.Exception) then
-            writeException r.Exception
+            //! preserve stack trace of runtime exceptions
+            (ExceptionDispatchInfo.Capture r.Exception).Throw()
 
     let commandCode code =
         let ses = Session.DefaultSession()
@@ -136,12 +145,8 @@ type FarCommand() =
             commandCompile args
 
         | Command.Exec args ->
-            try
-                use _ = new FarNet.FSharp.Works.FarStdWriter()
-                commandExec command args
-            with exn ->
-                // e.g. on missing file
-                far.ShowError("fs: exec:", exn)
+            use _ = new FarNet.FSharp.Works.FarStdWriter()
+            commandExec command args
 
         | Command.Open args ->
             commandOpen args
@@ -156,5 +161,6 @@ type FarCommand() =
         try
             invoke e.Command
 
-        with Failure error ->
-            raise (ModuleException(error, Source = "F# command"))
+        with
+        | :? FsiCompilationException as ex ->
+            raise (ModuleException(ex.Message, Source = "F# compiler"))

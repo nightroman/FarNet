@@ -120,7 +120,6 @@ void Far0::Start()
 	}
 }
 
-
 //! Don't use Far UI
 void Far0::Stop()
 {
@@ -504,6 +503,9 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 			{
 				Log::Source->TraceInformation("OPEN_COMMANDLINE");
 				InvokeCommand(((OpenCommandLineInfo*)info->Data)->CommandLine, false);
+
+				if (Works::Test::IsTestCommand)
+					Works::Test::Exit(nullptr);
 			}
 			break;
 		case OPEN_LEFTDISKMENU:
@@ -598,6 +600,13 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 
 		// no panel
 		return nullptr;
+	}
+	catch (Exception^ ex)
+	{
+		if (info->OpenFrom == OPEN_COMMANDLINE && Works::Test::IsTestCommand)
+			Works::Test::Exit(ex);
+
+		throw;
 	}
 	finally
 	{

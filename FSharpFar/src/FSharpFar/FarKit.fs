@@ -47,9 +47,6 @@ let farResolvePath path =
     let path = Environment.ExpandEnvironmentVariables path
     Path.GetFullPath(if Path.IsPathRooted path then path else Path.Combine(far.CurrentDirectory, path))
 
-let writeException exn =
-    far.UI.WriteLine(sprintf "%A" exn, ConsoleColor.Red)
-
 /// Completes an edit line. In an editor callers should Redraw().
 let completeLine (editLine: ILine) replacementIndex replacementLength words =
     let count = Array.length words
