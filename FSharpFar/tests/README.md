@@ -6,10 +6,6 @@ How to run all tests:
 
     fs: exec: file=App1.fsx
 
-How to run a particular function:
+How to run a particular test by name:
 
-    fs: ModuleName.FunctionName()
-
-How to run a particular async job:
-
-    fs: test ModuleName.AsyncName
+    fs: run "TestName"

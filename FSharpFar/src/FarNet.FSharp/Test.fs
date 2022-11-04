@@ -55,13 +55,13 @@ type Test =
 
         // run sync tests
         for it in Tests.sync do
-            outTest $"fs: test \"{it.Key}\""
+            outTest $"fs: run \"{it.Key}\""
             it.Value()
 
         // run async tests
         async {
             for it in Tests.async do
-                do! Jobs.Job(fun () -> outTest $"fs: test \"{it.Key}\"")
+                do! Jobs.Job(fun () -> outTest $"fs: run \"{it.Key}\"")
                 do! it.Value
 
             // summary

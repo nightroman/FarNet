@@ -80,6 +80,7 @@ Install libraries
     Install-FarPackage FarNet.FSharp.Charting
     Install-FarPackage FarNet.FSharp.Data
     Install-FarPackage FarNet.FSharp.PowerShell
+    Install-FarPackage FarNet.FSharp.Unquote
     Install-FarPackage FarNet.ScottPlot
 
 You may start Far Manager after this.

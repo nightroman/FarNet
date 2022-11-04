@@ -4,7 +4,7 @@ module AutoTest
 open FarNet
 open FarNet.FSharp
 
-let test name =
+let run name =
     Test.Run(name)
 
 let isWizard () =
