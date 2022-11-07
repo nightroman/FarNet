@@ -498,12 +498,20 @@ public abstract class IEditor : IEditorBase
 	public abstract void Open(OpenMode mode);
 
 	/// <summary>
-	/// Begins an undo block.
+	/// Begins a new undo block.
 	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// This call fails if the editor is locked.
+	/// </para>
+	/// <para>
+	/// Ensure <see cref="EndUndo"/> after this call.
+	/// </para>
+	/// </remarks>
 	public abstract void BeginUndo();
 
 	/// <summary>
-	/// Ends an undo block.
+	/// Ends the current undo block.
 	/// </summary>
 	public abstract void EndUndo();
 

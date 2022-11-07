@@ -1,3 +1,3 @@
 $FarVersion = "3.0.5505"
-$FarNetVersion = "6.0.26"
+$FarNetVersion = "6.0.27"
 $PowerShellFarVersion = "6.0.23"

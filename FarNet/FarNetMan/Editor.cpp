@@ -721,6 +721,8 @@ void Editor::SetText(String^ text)
 
 void Editor::BeginUndo()
 {
+	ThrowEditorLocked(_id);
+
 	EditorUndoRedo eur = { sizeof(eur), EUR_BEGIN };
 	Info.EditorControl(_id, ECTL_UNDOREDO, 0, &eur);
 }

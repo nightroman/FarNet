@@ -114,15 +114,35 @@ FarNet::WindowKind DialogLine::WindowKind::get()
 
 void DialogLine::InsertText(String^ text)
 {
-	if (!text) throw gcnew ArgumentNullException("text");
+	if (!text)
+		throw gcnew ArgumentNullException("text");
 
-	// insert string before cursor
-	int pos = Caret;
-	String^ str = Text;
+	// case: not changed, replace all text
+	bool notChanged = Info.SendDlgMessage(_hDlg, DM_EDITUNCHANGEDFLAG, _id, (void*)(-1));
+	if (notChanged)
+	{
+		Text = text;
+		Caret = text->Length;
+		return;
+	}
 
-	// set new text and move cursor to the end of inserted part
-	Text = str->Substring(0, pos) + text + str->Substring(pos);
-	Caret = pos + text->Length;
+	// current text and selection
+	auto str = Text;
+	auto ss = SelectionSpan;
+
+	if (ss.Length < 0)
+	{
+		// insert at the caret
+		int pos = Caret;
+		Text = str->Substring(0, pos) + text + str->Substring(pos);
+		Caret = pos + text->Length;
+	}
+	else
+	{
+		// replace selected text
+		Text = str->Substring(0, ss.Start) + text + str->Substring(ss.End);
+		Caret = ss.Start + text->Length;
+	}
 }
 
 void DialogLine::SelectText(int start, int end)

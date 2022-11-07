@@ -75,9 +75,11 @@ void CopyStringToChars(String^ str, wchar_t* buffer)
 // Generic Far wrappers
 //
 
-void ThrowEditorLocked()
+void ThrowEditorLocked(intptr_t editorId)
 {
-	if (Far::Api->Editor->IsLocked)
+	AutoEditorInfo ei(editorId);
+
+	if ((ei.CurState & ECSTATE_LOCKED) != 0)
 		throw gcnew InvalidOperationException("Editor is locked for changes. Unlock by [CtrlL].");
 }
 
@@ -86,7 +88,7 @@ void EditorControl_ECTL_DELETEBLOCK(intptr_t editorId)
 	if (Info.EditorControl(editorId, ECTL_DELETEBLOCK, 0, 0))
 		return;
 
-	ThrowEditorLocked();
+	ThrowEditorLocked(editorId);
 	throw gcnew InvalidOperationException(__FUNCTION__ " failed.");
 }
 
@@ -95,7 +97,7 @@ void EditorControl_ECTL_DELETECHAR(intptr_t editorId)
 	if (Info.EditorControl(editorId, ECTL_DELETECHAR, 0, 0))
 		return;
 
-	ThrowEditorLocked();
+	ThrowEditorLocked(editorId);
 	throw gcnew InvalidOperationException(__FUNCTION__ " failed.");
 }
 
@@ -104,7 +106,7 @@ void EditorControl_ECTL_DELETESTRING(intptr_t editorId)
 	if (Info.EditorControl(editorId, ECTL_DELETESTRING, 0, 0))
 		return;
 
-	ThrowEditorLocked();
+	ThrowEditorLocked(editorId);
 	throw gcnew InvalidOperationException(__FUNCTION__ " failed.");
 }
 
@@ -121,7 +123,7 @@ void EditorControl_ECTL_INSERTSTRING(intptr_t editorId, bool indent)
 	if (Info.EditorControl(editorId, ECTL_INSERTSTRING, 0, &value))
 		return;
 
-	ThrowEditorLocked();
+	ThrowEditorLocked(editorId);
 	throw gcnew InvalidOperationException(__FUNCTION__ " failed.");
 }
 
@@ -137,7 +139,7 @@ void EditorControl_ECTL_INSERTTEXT(intptr_t editorId, Char text, int overtype)
 		if (Info.EditorControl(editorId, ECTL_INSERTTEXT, 0, (wchar_t*)buf))
 			return;
 
-		ThrowEditorLocked();
+		ThrowEditorLocked(editorId);
 		throw gcnew InvalidOperationException(__FUNCTION__ " failed.");
 	}
 	finally
@@ -160,7 +162,7 @@ void EditorControl_ECTL_INSERTTEXT(intptr_t editorId, String^ text, int overtype
 		if (Info.EditorControl(editorId, ECTL_INSERTTEXT, 0, (wchar_t*)pin))
 			return;
 
-		ThrowEditorLocked();
+		ThrowEditorLocked(editorId);
 		throw gcnew InvalidOperationException(__FUNCTION__ " failed.");
 	}
 	finally
@@ -194,7 +196,7 @@ void EditorControl_ECTL_SETSTRING(intptr_t editorId, EditorSetString& ess)
 	if (Info.EditorControl(editorId, ECTL_SETSTRING, 0, &ess))
 		return;
 
-	ThrowEditorLocked();
+	ThrowEditorLocked(editorId);
 	throw gcnew InvalidOperationException(__FUNCTION__ " failed with line index: " + ess.StringNumber + ". Ensure current editor and valid line number.");
 }
 

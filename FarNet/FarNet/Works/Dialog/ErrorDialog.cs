@@ -45,21 +45,23 @@ public static class ErrorDialog
 		if (res < 1)
 			return;
 
-		// text
-		var text = new StringWriter();
-		Log.FormatException(text, error);
+		// write error text
+		var writer = new StringWriter();
+		Log.FormatException(writer, error);
 		if (more != null)
 		{
-			text.WriteLine();
-			text.WriteLine(more);
-			text.WriteLine();
+			writer.WriteLine();
+			writer.WriteLine(more);
+			writer.WriteLine();
 		}
-		text.WriteLine(error.ToString());
 
-		// editor
+		writer.WriteLine();
+		writer.WriteLine(error.ToString());
+
+		// show text in the editor
 		Far.Api.AnyEditor.EditText(new EditTextArgs()
 		{
-			Text = text.ToString(),
+			Text = writer.ToString(),
 			Title = error.GetType().FullName,
 			IsLocked = true
 		});

@@ -201,6 +201,7 @@ struct SEditorSetPosition : EditorSetPosition
 };
 
 // Far API wrappers
+void ThrowEditorLocked(intptr_t editorId);
 void EditorControl_ECTL_DELETEBLOCK(intptr_t editorId);
 void EditorControl_ECTL_DELETECHAR(intptr_t editorId);
 void EditorControl_ECTL_DELETESTRING(intptr_t editorId);

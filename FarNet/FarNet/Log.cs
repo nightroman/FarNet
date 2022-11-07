@@ -69,6 +69,7 @@ public static class Log
 		if (error.InnerException != null)
 		{
 			writer.WriteLine();
+			writer.WriteLine("InnerException:");
 			FormatException(writer, error.InnerException);
 		}
 	}
