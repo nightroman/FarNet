@@ -20,6 +20,7 @@ public static class Format
 	/// </example>
 	public static async Task File(string path)
 	{
+		// the task starts in the main thread, we can call FarNet
         if (path is null)
         {
             path = Far.Api.FS.CursorFile?.FullName;
@@ -27,10 +28,10 @@ public static class Format
                 return;
         }
 
+		// the rest does not call FarNet, so go full async
         var text1 = System.IO.File.ReadAllText(path);
         var text2 = await FormatAsync(text1);
-
-        System.IO.File.WriteAllText(path, text2);
+        await System.IO.File.WriteAllTextAsync(path, text2);
     }
 
 	/// <summary>
@@ -41,16 +42,24 @@ public static class Format
 	/// </example>
 	public static async Task Editor()
     {
-        var editor = Far.Api.Editor;
+		// the task starts in the main thread, we can call FarNet
+		var editor = Far.Api.Editor;
         if (editor is null)
             return;
 
-        var text1 = editor.GetSelectedText();
+		// here we call FarNet in the main thread
+		var text1 = editor.GetSelectedText();
+
+		// after this async call the thread is unknown, i.e. not main
         var text2 = await FormatAsync(text1);
 
-        editor.BeginUndo();
-        editor.SetSelectedText(text2);
-        editor.EndUndo();
+		// use Tasks.Job to continue in the main thread and use FarNet
+		await Tasks.Job(() =>
+		{
+			editor.BeginUndo();
+			editor.SetSelectedText(text2);
+			editor.EndUndo();
+		});
     }
 
     private static async Task<string> FormatAsync(string text)
