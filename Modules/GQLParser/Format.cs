@@ -2,6 +2,7 @@
 using GraphQLParser;
 using GraphQLParser.Visitors;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace GQLParser;
 
@@ -17,7 +18,7 @@ public static class Format
 	/// <example>
 	/// fn: script=GQLParser; method=GQLParser.Format.File
 	/// </example>
-	public static void File(string path)
+	public static async Task File(string path)
 	{
         if (path is null)
         {
@@ -27,7 +28,7 @@ public static class Format
         }
 
         var text1 = System.IO.File.ReadAllText(path);
-        var text2 = DoFormat(text1);
+        var text2 = await FormatAsync(text1);
 
         System.IO.File.WriteAllText(path, text2);
     }
@@ -38,26 +39,26 @@ public static class Format
 	/// <example>
 	/// fn: script=GQLParser; method=GQLParser.Format.Editor
 	/// </example>
-	public static void Editor()
+	public static async Task Editor()
     {
         var editor = Far.Api.Editor;
         if (editor is null)
             return;
 
         var text1 = editor.GetSelectedText();
-        var text2 = DoFormat(text1);
+        var text2 = await FormatAsync(text1);
 
         editor.BeginUndo();
         editor.SetSelectedText(text2);
         editor.EndUndo();
     }
 
-    private static string DoFormat(string text)
+    private static async Task<string> FormatAsync(string text)
     {
         var document = Parser.Parse(text);
         var writer = new StringWriter();
         var printer = new SDLPrinter();
-        printer.PrintAsync(document, writer).GetAwaiter().GetResult();
+        await printer.PrintAsync(document, writer);
 
         if (text.EndsWith('\n'))
             writer.WriteLine();

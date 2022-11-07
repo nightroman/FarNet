@@ -1,6 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 6.0.26 =
+
+Support async fn-methods.
+See Modules/GQLParser sample.
+
 = 6.0.25 =
 
 Changed command processing with testing, e.g. used by Start-Far.ps1 (PowerShellFar).

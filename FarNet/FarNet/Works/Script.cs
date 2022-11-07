@@ -193,6 +193,24 @@ public static class Script
 			assembly = manager.LoadAssembly(true);
 		}
 
+		bool doFinallyComplete = true;
+		void complete()
+		{
+			if (scriptParameters.Unload && loader != null)
+			{
+				loader.Unload();
+				Task.Run(() =>
+				{
+					var weakRef = new WeakReference(loader, true);
+					for (int i = 0; weakRef.IsAlive && i < 10; i++)
+					{
+						GC.Collect();
+						GC.WaitForPendingFinalizers();
+					}
+				});
+			}
+		}
+
 		// to be finally unloaded
 		try
 		{
@@ -230,7 +248,29 @@ public static class Script
 			// go!
 			try
 			{
-				method.Invoke(instance, methodParameters);
+				var res = method.Invoke(instance, methodParameters);
+				if (res is Task task)
+				{
+					doFinallyComplete = false;
+					Task.Run(async () =>
+					{
+						try
+						{
+							await task;
+						}
+						catch (Exception ex)
+						{
+							await Tasks.Job(() =>
+							{
+								Far.Api.ShowError(null, ex);
+							});
+						}
+						finally
+						{
+							complete();
+						}
+					});
+				}
 			}
 			catch (TargetInvocationException ex)
 			{
@@ -239,19 +279,8 @@ public static class Script
 		}
 		finally
 		{
-			if (scriptParameters.Unload && loader != null)
-			{
-				loader.Unload();
-				Task.Run(() =>
-				{
-					var weakRef = new WeakReference(loader, true);
-					for (int i = 0; weakRef.IsAlive && i < 10; i++)
-					{
-						GC.Collect();
-						GC.WaitForPendingFinalizers();
-					}
-				});
-			}
+			if (doFinallyComplete)
+				complete();
 		}
 	}
 }

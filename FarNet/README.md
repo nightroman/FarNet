@@ -120,6 +120,10 @@ Parameters are `name=value` pairs separated by `;` (connection string format).
     Methods are instance or static with or without parameters.
     Parameter names correspond to the method parameters in commands.
 
+    Methods return values are void for synchronous and `Task` for asynchronous.
+    Asynchronous methods start in the main thread, i.e. they may safely call
+    FarNet API for input, then they may continue asynchronously.
+
 - `unload` (optional)
 
     If `true`, tells to unload the script assemblies after invoking.
