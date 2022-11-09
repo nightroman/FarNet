@@ -1,6 +1,17 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 7.0.0 =
+
+Requires .NET 7 SDK or runtime, see https://github.com/nightroman/FarNet#readme
+
+fn-scripts:
+- load assembly once if `unload=false`
+- allow omitting type namespace if the name is the same as script:
+	fn: script=MyScript; method=.MyType.MyMethod
+
+Modules/GQLParser - add directiveNewLine, unionMemberNewLine
+
 = 6.0.27 =
 
 - Amend error formatting.

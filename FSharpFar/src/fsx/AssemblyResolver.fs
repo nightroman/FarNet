@@ -47,7 +47,7 @@ let resolvePowerShellFar (root: string) (args: ResolveEventArgs) =
     //   Microsoft.PowerShell.Security
     let assembly =
         if caller.StartsWith("System.Management.Automation") then
-            let path = root + "\\runtimes\\win\\lib\\net6.0\\" + dllName
+            let path = root + "\\runtimes\\win\\lib\\net7.0\\" + dllName
             if File.Exists(path) then
                 Assembly.LoadFrom(path)
             else

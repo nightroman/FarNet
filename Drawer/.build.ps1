@@ -18,8 +18,8 @@ task build meta, {
 
 task publish {
 	Copy-Item -Destination $ModuleRoot @(
-		"bin\$Configuration\net6.0\$ModuleName.dll"
-		"bin\$Configuration\net6.0\$ModuleName.pdb"
+		"bin\$Configuration\net7.0\$ModuleName.dll"
+		"bin\$Configuration\net7.0\$ModuleName.pdb"
 	)
 }
 

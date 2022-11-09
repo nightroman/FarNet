@@ -1,6 +1,6 @@
 ﻿<#
 .Synopsis
-	Build script (https://github.com/nightroman/Invoke-Build)
+	Build script, https://github.com/nightroman/Invoke-Build
 #>
 
 param(
@@ -47,8 +47,8 @@ task installBin {
 	Remove-Item "$ModuleHome\PowerShellFar.deps.json"
 
 	# move `ref` folder to "expected" location or cannot compile C# in PS
-	# ~ cannot find '...\PowerShellFar\runtimes\win\lib\net6.0\ref'.
-	exec { robocopy "$ModuleHome\ref" "$ModuleHome\runtimes\win\lib\net6.0\ref" /s } (0..2)
+	# ~ cannot find '...\PowerShellFar\runtimes\win\lib\net7.0\ref'.
+	exec { robocopy "$ModuleHome\ref" "$ModuleHome\runtimes\win\lib\net7.0\ref" /s } (0..2)
 	Remove-Item -LiteralPath "$ModuleHome\ref" -Force -Recurse
 
 	# prune resources, to keep our dll cache cleaner
@@ -85,7 +85,7 @@ task package markdown, {
 
 	# module
 	exec { robocopy $ModuleHome $toModule /s /xf *.pdb } (0..2)
-	equals 320 (Get-ChildItem $toModule -Recurse -File).Count
+	equals 328 (Get-ChildItem $toModule -Recurse -File).Count
 
 	# logo
 	Copy-Item -Destination z ..\Zoo\FarNetLogo.png

@@ -3,26 +3,17 @@
 // Copyright (c) Roman Kuzmin
 
 using System;
-using System.Text.RegularExpressions;
+using System.Management.Automation;
+using System.Management.Automation.Internal;
 
 namespace PowerShellFar;
 
 abstract class OutputWriter
 {
-	#region https://github.com/PowerShell/PowerShell/blob/master/src/System.Management.Automation/FormatAndOutput/common/StringDecorated.cs
-	// graphics/color mode ESC[1;2;...m
-	const string GraphicsRegex = @"(\x1b\[\d+(;\d+)*m)";
-	// CSI escape sequences
-	const string CsiRegex = @"(\x1b\[\?\d+[hl])";
-	// Hyperlink escape sequences. Note: '.*?' makes '.*' do non-greedy match.
-	const string HyperlinkRegex = @"(\x1b\]8;;.*?\x1b\\)";
-	// replace regex with .NET 6 API once available
-	static readonly Regex AnsiRegex = new($"{GraphicsRegex}|{CsiRegex}|{HyperlinkRegex}", RegexOptions.Compiled);
-	#endregion
-
-	protected static string RemoveOutputRendering(string s)
+	public static string RemoveOutputRendering(string s)
 	{
-		return AnsiRegex.Replace(s, string.Empty);
+		var str = new StringDecorated(s);
+		return str.ToString(OutputRendering.PlainText);
 	}
 
 	public OutputWriter? Next { get; set; }

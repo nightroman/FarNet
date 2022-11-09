@@ -270,11 +270,17 @@ public sealed class Meta : FarColumn
 		// Exception case: cert provider, search all
 		try
 		{
-			return pi.Value;
+			var obj = pi.Value;
+
+			// PS 7.3.0 `ls | op` -- folders and exe names have esc sequences
+			if (obj is string str)
+				return OutputWriter.RemoveOutputRendering(str);
+
+			return obj;
 		}
-		catch (RuntimeException e)
+		catch (RuntimeException ex)
 		{
-			FarNet.Log.TraceException(e);
+			Log.TraceException(ex);
 			return null;
 		}
 	}

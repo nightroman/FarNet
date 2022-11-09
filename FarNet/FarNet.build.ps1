@@ -1,12 +1,12 @@
 <#
 .Synopsis
-	Build script (https://github.com/nightroman/Invoke-Build)
+	Build script, https://github.com/nightroman/Invoke-Build
 #>
 
 param(
 	$Platform = (property Platform x64),
 	$Configuration = (property Configuration Release),
-	$TargetFramework = (property TargetFramework net6.0)
+	$TargetFramework = (property TargetFramework net7.0)
 )
 $FarHome = "C:\Bin\Far\$Platform"
 
@@ -64,7 +64,7 @@ task beginPackage {
 
 	#! build just FarNetMan, PowerShellFar is not needed and causes locked files...
 	exec { & (Resolve-MSBuild) @(
-		"..\FarNet6.sln"
+		"..\FarNet.sln"
 		"/t:restore,FarNetMan"
 		"/p:Platform=$bit"
 		"/p:Configuration=Release"

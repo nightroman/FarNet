@@ -1,9 +1,0 @@
-{
-  "profiles": {
-    "Far": {
-      "commandName": "Executable",
-      "executablePath": "C:\\Bin\\Far\\x64\\Far.exe",
-      "nativeDebugging": false
-    }
-  }
-}

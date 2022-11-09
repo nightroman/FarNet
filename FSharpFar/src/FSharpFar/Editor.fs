@@ -255,7 +255,7 @@ let complete (editor: IEditor) =
 
     let completions =
         decs.Items
-        |> Array.map (fun item -> item.Name) //?? mind NameInCode
+        |> Array.map (fun item -> item.NameInList)
         |> Array.filter (fun name -> name.StartsWith(if partialIdent.StartsWith "``" then partialIdent.Substring 2 else partialIdent))
         |> Array.sort
 

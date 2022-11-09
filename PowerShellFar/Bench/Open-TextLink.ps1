@@ -13,7 +13,7 @@
 	The found link is opened in the editor or browser.
 
 	Recognised text link types: Visual Studio, PowerShell (error messages or
-	Select-String output), file system paths, URLs, markdown file links.
+	Select-String output), file system paths, URLs, markdown file links, etc.
 
 	Links may include a hint, the original line text after a column:
 	- <File>(<Line>):<Text>
@@ -48,6 +48,9 @@
 		C:\WINDOWS\setuplog.txt
 		"..\Read Me.txt"
 		.\ReadMe.txt
+
+	NuGet
+		PackageReference ... Include="FarNet"
 
 .Parameter Text
 		Text with a text link.
@@ -216,6 +219,12 @@ $regexUrl = [regex]@'
 
 if ($Text -match $regexUrl) {
 	Start-Process $matches[0]
+	return
+}
+
+### NuGet
+if ($Text -match '\bPackageReference\b.*?\bInclude\b\s*=\s*\"(.+?)\"') {
+	Start-Process "https://www.nuget.org/packages/$($matches[1])"
 	return
 }
 

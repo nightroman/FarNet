@@ -84,7 +84,7 @@ public static class AssemblyResolver
 			//   Microsoft.PowerShell.Commands.Utility
 			//   Microsoft.PowerShell.Commands.Management
 			//   Microsoft.PowerShell.Security
-			var path = root + "\\runtimes\\win\\lib\\net6.0\\" + dllName;
+			var path = root + "\\runtimes\\win\\lib\\net7.0\\" + dllName;
 			if (File.Exists(path))
 				return Assembly.LoadFrom(path);
 		}

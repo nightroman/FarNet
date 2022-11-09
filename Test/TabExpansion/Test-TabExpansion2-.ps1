@@ -347,6 +347,8 @@ Test '$hos_' -caret 4 {$_ -contains '$Host'}
 Test '$hos1' -caret 4 {$_ -contains '$Host'}
 Test '$hosZ' -caret 4 {$_ -contains '$Host'}
 Test '$hos$' -caret 4 {$_ -contains '$Host'}
+# 1.0.6 - ditto on any \S
+Test '$hos"' -caret 4 {$_ -contains '$Host'}
 
 # OK
 Assert-Far $Error.Count -eq 0

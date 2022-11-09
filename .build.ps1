@@ -6,7 +6,7 @@
 param(
 	$Platform = (property Platform x64),
 	$Configuration = (property Configuration Release),
-	$TargetFramework = (property TargetFramework net472)
+	$TargetFramework = (property TargetFramework net7.0)
 )
 
 $FarHome = "C:\Bin\Far\$Platform"
@@ -87,7 +87,7 @@ task meta -Inputs .build.ps1, Get-Version.ps1 -Outputs @(
 task build meta, {
 	#! build the whole solution, i.e. FarNet, FarNetMan, PowerShellFar
 	exec { & (Resolve-MSBuild) @(
-		'FarNet6.sln'
+		'FarNet.sln'
 		'/t:restore,build'
 		'/verbosity:minimal'
 		"/p:FarHome=$FarHome"

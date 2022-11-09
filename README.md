@@ -1,4 +1,4 @@
-﻿<img src="https://raw.githubusercontent.com/wiki/nightroman/FarNet/images/FarNetLogo.png" align="right"/>
+﻿<img src="https://github.com/nightroman/FarNet/raw/master/Zoo/FarNetLogo.png" align="right"/>
 
 # FarNet
 
@@ -10,9 +10,9 @@ Far Manager platform for .NET modules and scripts in PowerShell, F#, JavaScript
 
 ## Prerequisites
 
-**.NET 6**
+**.NET 7**
 
-Download and install [.NET 6 SDK or runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0).
+Download and install [.NET 7 SDK or runtime](https://aka.ms/dotnet/download).
 SDK is needed for developing FarNet modules but recommended in any case.
 
 Check for existing installations by these commands:

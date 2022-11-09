@@ -3,6 +3,7 @@
 
 using FarNet.Tools;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
@@ -18,6 +19,8 @@ public static class Script
 		KeyModule = "module",
 		KeyScript = "script",
 		KeyUnload = "unload";
+
+	static readonly Dictionary<string, Assembly> s_scripts = new(StringComparer.OrdinalIgnoreCase);
 
 	class ScriptParameters
 	{
@@ -91,6 +94,10 @@ public static class Script
 			res.TypeName = name[..index];
 			res.MethodName = name[(index + 1)..];
 			sb.Remove(KeyMethod);
+
+			// if type name is like .* then use script/module name as namespace
+			if (res.TypeName.StartsWith('.'))
+				res.TypeName = (res.ScriptName ?? res.ModuleName) + res.TypeName;
 		}
 		else
 		{
@@ -158,6 +165,38 @@ public static class Script
 		return res;
 	}
 
+	static (Assembly, AssemblyLoadContext2?) LoadAssembly(ScriptParameters scriptParameters)
+	{
+		// load the module
+		if (scriptParameters.ScriptName is null)
+		{
+			var manager = Far.Api.GetModuleManager(scriptParameters.ModuleName);
+			return (manager.LoadAssembly(true), null);
+		}
+
+		// use permanently loaded script
+		if (!scriptParameters.Unload && s_scripts.TryGetValue(scriptParameters.ScriptName, out Assembly? loadedAssembly))
+		{
+			return (loadedAssembly, null);
+		}
+
+		// load the script assembly
+		var dll = $"{Environment.GetEnvironmentVariable("FARHOME")}\\FarNet\\Scripts\\{scriptParameters.ScriptName}\\{scriptParameters.ScriptName}.dll";
+		var loader = new AssemblyLoadContext2(dll, scriptParameters.Unload);
+		var assembly = loader.LoadFromAssemblyPath(dll);
+		if (scriptParameters.Unload)
+		{
+			// to be unloaded
+			return (assembly, loader);
+		}
+		else
+		{
+			// keep permanently loaded
+			s_scripts.Add(scriptParameters.ScriptName, assembly);
+			return (assembly, null);
+		}
+	}
+
 	public static void InvokeScript(string command)
 	{
 		// get script and method parts of the command
@@ -179,24 +218,12 @@ public static class Script
 		var scriptParameters = ParseScriptParameters(scriptParametersText);
 
 		// load assembly
-		AssemblyLoadContext2? loader = null;
-		Assembly assembly;
-		if (scriptParameters.ModuleName is null)
-		{
-			var dll = $"{Environment.GetEnvironmentVariable("FARHOME")}\\FarNet\\Scripts\\{scriptParameters.ScriptName}\\{scriptParameters.ScriptName}.dll";
-			loader = new AssemblyLoadContext2(dll, scriptParameters.Unload);
-			assembly = loader.LoadFromAssemblyPath(dll);
-		}
-		else
-		{
-			var manager = Far.Api.GetModuleManager(scriptParameters.ModuleName);
-			assembly = manager.LoadAssembly(true);
-		}
+		var (assembly, loader) = LoadAssembly(scriptParameters);
 
 		bool doFinallyComplete = true;
 		void complete()
 		{
-			if (scriptParameters.Unload && loader != null)
+			if (loader != null)
 			{
 				loader.Unload();
 				Task.Run(() =>

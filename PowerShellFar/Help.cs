@@ -33,7 +33,7 @@ static class Help
 	static bool ShowOnlineHelp(string command)
 	{
 		var po = (PSObject)ScriptBlock.Create("Get-Command $args[0] -ErrorAction 0 | Select-Object HelpUri, CommandType -First 1").InvokeReturnAsIs(command);
-		if (po.Properties["CommandType"].Value?.ToString() == "Cmdlet")
+		if (po.Properties["CommandType"]?.Value?.ToString() == "Cmdlet")
 		{
 			var uri = po.Properties["HelpUri"].Value?.ToString();
 			if (!string.IsNullOrEmpty(uri))

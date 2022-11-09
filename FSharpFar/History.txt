@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 
+= 3.0.0 =
+
+Requires FarNet 7, uses .NET 7.
+FSharp.Core 7.0.0
+FSharp.Compiler.Service 42.7.101
+
 = 2.0.14 =
 
 Throw exceptions from `fs:` commands instead of writing to console.

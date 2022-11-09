@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.0.5
+.VERSION 1.0.6
 .AUTHOR Roman Kuzmin
 .COPYRIGHT (c) Roman Kuzmin
 .GUID 550bc198-dd44-4bbc-8ad7-ccf4b8bd2aff
@@ -229,8 +229,8 @@ function global:TabExpansion2 {
 		}
 	}
 
-	# nothing and cursor char is `\w`? try insert space
-	if (!${*}.result.CompletionMatches -and ($_ = ${*}.inputScript) -and $_.Length -gt ${*}.cursorColumn -and $_[${*}.cursorColumn] -match '[\w$]') {
+	# nothing and cursor char is not space? try insert space
+	if (!${*}.result.CompletionMatches -and ($_ = ${*}.inputScript) -and ${*}.cursorColumn -lt $_.Length -and $_[${*}.cursorColumn] -match '\S') {
 		return TabExpansion2 ($_.Insert(${*}.cursorColumn, ' ')) ${*}.cursorColumn
 	}
 

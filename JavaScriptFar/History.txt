@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.JavaScriptFar
 
+= 1.0.0 =
+
+Requires FarNet 7, uses .NET 7.
+
 = 0.4.4 =
 
 Microsoft.ClearScript 7.3.4

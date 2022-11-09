@@ -2,16 +2,14 @@
   <PropertyGroup>
     <FarHome Condition="'$(FarHome)' == ''">C:\Bin\Far\x64</FarHome>
     <FarNetModules Condition="'$(FarNetModules)' == ''">$(FarHome)\FarNet\Modules</FarNetModules>
-    <TargetFramework>net6.0</TargetFramework>
-    <RunPostBuildEvent>1</RunPostBuildEvent>
+    <TargetFramework>net7.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="IronPython" Version="3.4.0-beta1" />
     <PackageReference Include="IronPython.StdLib" Version="3.4.0-beta1" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="FarNet">
-      <HintPath>$(FarHome)\FarNet\FarNet.dll</HintPath>
+    <Reference Include="$(FarHome)\FarNet\FarNet.dll">
       <Private>False</Private>
     </Reference>
   </ItemGroup>

@@ -39,7 +39,7 @@ public class JavaScriptTool : ModuleTool
 				break;
 			case ModuleToolOptions.Panels:
 				{
-					var file = Far.Api.Panel.CurrentFile;
+					var file = Far.Api.Panel!.CurrentFile;
 					if (file is not null && Session.IsFileDocument(file.Name))
 					{
 						var path = Path.Join(Far.Api.CurrentDirectory, file.Name);
@@ -101,7 +101,7 @@ public class JavaScriptTool : ModuleTool
 
 			// Enter
 			try { Far.Api.Window.SetCurrentAt(-1); } catch { }
-			try { Far.Api.Panel.CurrentDirectory = selectedSession.Root; } catch { }
+			try { Far.Api.Panel!.CurrentDirectory = selectedSession.Root; } catch { }
 			return;
 		}
 	}

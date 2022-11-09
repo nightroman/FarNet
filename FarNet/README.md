@@ -49,14 +49,13 @@ tiny pieces of boilerplate framework code.
 
 **Requirements**
 
-- .NET 6 SDK (recommended) or runtime
+- .NET 7 SDK (recommended) or runtime
 - Microsoft Visual C++ 2015-2022 Redistributable
 - Far Manager, see History.txt for the required version
 
 **Instructions**
 
-How to install and update FarNet and modules:
-
+How to install and update FarNet and modules:\
 <https://github.com/nightroman/FarNet#readme>
 
 ---
@@ -109,34 +108,30 @@ Parameters are `name=value` pairs separated by `;` (connection string format).
 
 **Script parameters:**
 
-- `script` (required)
+- `script` or `module` (required)
 
-    The script name which defines the conventional script assembly.
-    E.g. `MyScript` for `%FARHOME%\FarNet\Scripts\MyScript\MyScript.dll`.
+    The script name defines the script assembly.
+    E.g. `script=MyScript` is `%FARHOME%\FarNet\Scripts\MyScript\MyScript.dll`.
+
+    The module name defines the module assembly.
+    E.g. `module=MyModule` is `%FARHOME%\FarNet\Modules\MyModule\MyModule.dll`.
 
 - `method` (required)
 
-    The assembly method full name, `Namespace.Type.Method`.
-    Methods are instance or static with or without parameters.
+    The assembly method full name, `Namespace.Type.Method`. If `Namespace` is
+    the same as script or module name then `.Type.Method` is allowed as well.
+
+    Methods are instance or static methods, with or without parameters.
     Parameter names correspond to the method parameters in commands.
 
     Methods return values are void for synchronous and `Task` for asynchronous.
     Asynchronous methods start in the main thread, i.e. they may safely call
     FarNet API for input, then they may continue asynchronously.
 
-- `unload` (optional)
+- `unload` (optional, when `script`)
 
-    If `true`, tells to unload the script assemblies after invoking.
+    If `true`, tells to unload the script assembly after invoking.
     The default is `false`, unloading has some performance cost.
-
-**Module methods**
-
-Methods designed for `fn:` call may live in FarNet modules, too. In order to
-call them, use the same command syntax with the parameter `script` replaced
-with `module` and module name.
-
-The parameter `unload` is ignored for modules.
-Unloading modules is not currently supported.
 
 *********************************************************************
 ## Running commands

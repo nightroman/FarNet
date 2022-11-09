@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.RightControl
 
+= 4.0.0 =
+
+Requires FarNet 7, uses .NET 7.
+
 = 3.0.1 =
 
 Use latest FarNet.

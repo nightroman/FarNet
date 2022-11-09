@@ -1,5 +1,15 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 7.0.0 =
+
+Requires FarNet 7, uses .NET 7.
+
+Open-TextLink.ps1 - open NuGet package references (like in project files)
+
+TabExpansion2: support case .\S
+
+PS help: fix `ShiftF1` in editor
+
 = 6.0.23 =
 
 Requires FarNet 6.0.25

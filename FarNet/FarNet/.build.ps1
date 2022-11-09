@@ -1,12 +1,12 @@
 <#
 .Synopsis
-	Build script (https://github.com/nightroman/Invoke-Build)
+	Build script, https://github.com/nightroman/Invoke-Build
 #>
 
 param(
 	$FarHome = (property FarHome C:\Bin\Far\x64),
 	$Configuration = (property Configuration Release),
-	$TargetFramework = (property TargetFramework net6.0)
+	$TargetFramework = (property TargetFramework net7.0)
 )
 
 task clean {
