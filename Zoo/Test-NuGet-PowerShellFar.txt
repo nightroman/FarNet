@@ -7,7 +7,6 @@ FarHome\FarNet\Modules\PowerShellFar\Bench
 FarHome\FarNet\Modules\PowerShellFar\Bench\ArgumentCompleters.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Clear-Session.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Complete-Word.ps1
-FarHome\FarNet\Modules\PowerShellFar\Bench\Connect-SQLite-.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Descript.ion
 FarHome\FarNet\Modules\PowerShellFar\Bench\Edit-FarDescription.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Generate-Dialog-.ps1
@@ -26,10 +25,12 @@ FarHome\FarNet\Modules\PowerShellFar\Bench\Merge-Selected.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Open-TextLink.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Open-TODO-.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-BitsTransfer.ps1
-FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-DbData-.ps1
-FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-DbTable-.ps1
+FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-DBData.ps1
+FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-DBTable.ps1
+FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-History.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-Process.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-Property-.ps1
+FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-SQLite.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Profile.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Profile-Editor.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Reformat-Selection-.ps1

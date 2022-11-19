@@ -25,15 +25,13 @@ function Get-F7EscNo {
 
 job {
 	# open a memory database, create a table
-	. Connect-SQLite-.ps1 -Path ':memory:'
-	$command = $DbConnection.CreateCommand()
-	$command.CommandText = @'
-CREATE TABLE Test (It INTEGER PRIMARY KEY, Name TEXT);
-'@
-	$null = $command.ExecuteNonQuery()
+	Import-Module FarNet.SQLite
+	Open-SQLite
+	Set-SQLite 'CREATE TABLE Test (It INTEGER PRIMARY KEY, Name TEXT);'
 
 	# open panel with the data table
-	Panel-DbData-.ps1 -CloseConnection -TableName Test -Title _110330_175246
+	Panel-DBData -TableName Test -Title _110330_175246 `
+	-CloseConnection -DbConnection $db.Connection -DbProviderFactory $db.Factory
 }
 job {
 	Assert-Far -Plugin

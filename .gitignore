@@ -7,6 +7,7 @@ Debug
 Release
 Properties
 z
+z.*
 *.opendb
 *.opensdf
 *.sdf

@@ -7,10 +7,7 @@ $#PowerShellFar Tests#
 
 PREREQUISITES
 
-*) Include the directory Bench to the path. Tests may call scripts from there.
-
-*) Some tests should be initialized. For example database tests need some data
-to work with. Invoke Initialize-Test-.ps1 before such tests.
+Include the directory Bench to the path. Tests may call scripts from there.
 
 SEE ALSO
 
@@ -21,43 +18,26 @@ SEE ALSO
 $#Database Tests#
 ~Contents~@Contents@
 
-You can invoke Test-Panel-DbText-.ps1 without preparations. See the script
-comments for details.
+Scripts are designed for SQLite and require the package FarNet.SQLite.
 
-*) Other scripts are designed for and tested with SQL Server Express (instance
-".\sqlexpress", e.g. installed with Visual Studio), SQL Server Compact
-(installed with Visual Studio), and SQLite (http://system.data.sqlite.org/).
+How to play with scripts:
 
-*) If your SQL Server is different, change the connection string in
-Initialize-Test-.ps1, see $DbConnection.ConnectionString = ..
+0) Run Initialize-Test.far.ps1 to create a temp database file in %TEMP%.
 
-*) Invoke Initialize-Test-.ps1 to create a mini-database with two tables.
+1) Run Panel-DBTable.ps1 (from Bench), you get tables in TempDB, TestNotes and
+TestCategories. Open them by [Enter] and see how they look in basic mode (i.e.
+without customisation). Note that you can even perform operations like insert,
+delete and update ([F7], [Del], etc.)
 
-	For SQL Server Express it creates two related tables in Tempdb: TestNotes
-	and TestCategories. After tests drop the tables manually or just leave
-	them, they will be removed automatically when the server restarts.
+2) Run Test-Panel-DBCategories.far.ps1 - the table looks different, the field
+CategoryId is hidden because a user normally should not use or even see it,
+this information is internal.
 
-	For SQL Server Compact or SQLite it creates in %TEMP% the file Tempdb.sdf
-	or Tempdb.sqlite and adds the same tables and data. You may remove these
-	files after tests.
-
-Now you are ready to play with scripts. Recommended sequence:
-
-1) Run Panel-DbTable-.ps1 (from Bench), if everything is fine you get all
-tables in your Tempdb including TestNotes and TestCategories. Open them by
-[Enter] and see how they look in basic mode (i.e. without any customisation).
-Note that you can even perform all operations like insert, delete and update
-([F7], [Del], etc.)
-
-2) Run Test-Panel-DbCategories-.ps1 - the table looks different, not much, but
-the field CategoryId is hidden because a user normally should not use or even
-see it, this information is internal.
-
-3) Run Test-Panel-DbNotes-.ps1 - it looks more different (two fields are
-hidden). The important point is that how you modify Category. When you [Enter]
-on it Test-Panel-DbCategories-.ps1 is actually called and the table
-TestCategories is opened for selection of another category. At the same time
-you can modify or add new categories as if you opened it directly in step 2).
+3) Run Test-Panel-DBNotes.far.ps1 - it looks even more different, two fields
+are hidden. The point of interest is how you modify Category. When you [Enter]
+it the Test-Panel-DBCategories.far.ps1 is called and TestCategories is opened
+for selection of a category. When in TestCategories panel, you can modify or
+add new categories as if you opened it directly in (2).
 
 #KNOWN ISSUES#
 

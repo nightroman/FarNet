@@ -21,7 +21,7 @@ if (!$DbProviderFactory -or !$DbConnection) {
 	$DbConnection.Open()
 }
 
-$Panel = Panel-DbData- -NoShow -SelectCommand 'SELECT * FROM sys.databases' -Columns 'name', 'database_id', 'state_desc', 'create_date'
+$Panel = Panel-DBData -NoShow -SelectCommand 'SELECT * FROM sys.databases' -Columns 'name', 'database_id', 'state_desc', 'create_date'
 $Panel.AsOpenFile = {
 	param($0, $_)
 	$DbProviderFactory = [Data.SqlClient.SqlClientFactory]::Instance

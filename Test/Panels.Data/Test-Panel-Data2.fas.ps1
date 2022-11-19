@@ -3,10 +3,10 @@
 	DB 2.
 #>
 
-### Test Test-Panel-DbNotes-.ps1 (simple lookup)
+### Test Test-Panel-DBNotes.far.ps1 (simple lookup)
 
 # open it
-job { & "$env:PSF\Samples\Tests\Test-Panel-DbNotes-.ps1" }
+job { & "$env:PSF\Samples\Tests\Test-Panel-DBNotes.far.ps1" }
 job { Assert-Far ($Far.Panel -is [PowerShellFar.DataPanel]) }
 
 # go to Note1
@@ -83,10 +83,10 @@ job {
 keys Esc
 job { Assert-Far -Native }
 
-### Test Test-Panel-DbNotes-.ps1 (generic lookup)
+### Test Test-Panel-DBNotes.far.ps1 (generic lookup)
 
 # open it
-job { & "$env:PSF\Samples\Tests\Test-Panel-DbNotes-.ps1" -GenericLookup }
+job { & "$env:PSF\Samples\Tests\Test-Panel-DBNotes.far.ps1" -GenericLookup }
 job { Assert-Far ($Far.Panel -is [PowerShellFar.DataPanel]) }
 
 # go to Note1

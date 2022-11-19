@@ -106,7 +106,7 @@ public sealed class MemberPanel : ListPanel
 	/// <para>
 	/// The returned handler copies data from the source (lookup) row to the destination row using
 	/// destination and source field name pairs, e.g.: <c>dst1, src1 [, dst2, src2 [, ...]]</c>.
-	/// Example script: <c>Test-Panel-DbNotes-.ps1</c>.
+	/// Example script: <c>Test-Panel-DBNotes.far.ps1</c>.
 	/// </para>
 	/// </remarks>
 	public EventHandler<OpenFileEventArgs> CreateDataLookup(string[] namePairs)

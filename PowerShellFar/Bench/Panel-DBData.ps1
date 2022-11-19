@@ -77,19 +77,25 @@ param(
 if (!$DbProviderFactory) { throw "Provider factory is not defined." }
 if (!$DbConnection) { throw "Connection is not defined." }
 
+# create a panel
+$Panel = [PowerShellFar.DataPanel]::new()
+
 # create adapter
 if (!$DbDataAdapter) {
 	$DbDataAdapter = $DbProviderFactory.CreateDataAdapter()
+	$Panel.Garbage.Add($DbDataAdapter)
 }
 
 # setup select command
 if ($TableName) {
 	$DbDataAdapter.SelectCommand = $DbConnection.CreateCommand()
 	$DbDataAdapter.SelectCommand.CommandText = "SELECT * FROM $TableName"
+	$Panel.Garbage.Add($DbDataAdapter.SelectCommand)
 }
 elseif ($SelectCommand -is [string]) {
 	$DbDataAdapter.SelectCommand = $DbConnection.CreateCommand()
 	$DbDataAdapter.SelectCommand.CommandText = $SelectCommand
+	$Panel.Garbage.Add($DbDataAdapter.SelectCommand)
 }
 elseif ($SelectCommand -is [System.Data.Common.DbCommand]) {
 	$DbDataAdapter.SelectCommand = $SelectCommand
@@ -98,20 +104,20 @@ elseif ($DbDataAdapter.SelectCommand -eq $null) {
 	throw "You have to set -TableName or -SelectCommand or SelectCommand in -Adapter"
 }
 
-# create a panel
-$Panel = New-Object PowerShellFar.DataPanel -Property @{
-	# data
-	Factory = $DbProviderFactory
-	Adapter = $DbDataAdapter
-	Lookup = $Lookup
-	# view
-	Title = $Title
-	Columns = $Columns
-	ExcludeMemberPattern = $ExcludeMemberPattern
-}
+# panel data
+$Panel.Factory = $DbProviderFactory
+$Panel.Adapter = $DbDataAdapter
+$Panel.Lookup = $Lookup
+
+# panel view
+$Panel.Title = $Title
+$Panel.Columns = $Columns
+$Panel.ExcludeMemberPattern = $ExcludeMemberPattern
 
 # objects to be disposed
-if ($CloseConnection) { $Panel.Garbage.Add($DbConnection) }
+if ($CloseConnection) {
+	$Panel.Garbage.Add($DbConnection)
+}
 
 # go!
 if ($NoShow) {

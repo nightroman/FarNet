@@ -97,7 +97,7 @@ ls
 pp
 '@ { $_ -ceq 'Get-FarPath' }
 Test 'Panel-Bits' { $_ -ceq 'Panel-BitsTransfer.ps1' }
-Test 'Panel-DbData- -col' { $_ -ceq '-Columns' }
+Test 'Panel-DBData -col' { $_ -ceq '-Columns' }
 
 # advanced function
 function test-me { param ([Parameter(Position = 0, Mandatory = $true)]$prm1, $prm2) {} }

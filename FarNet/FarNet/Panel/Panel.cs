@@ -385,12 +385,8 @@ public partial class Panel : IPanel
 	protected virtual bool CanCloseChild() => true;
 
 	/// <summary>
-	/// Gets the list of user objects to be disposed when the panel is closed.
+	/// The list of user objects to be disposed when the panel is closed.
 	/// </summary>
-	/// <remarks>
-	/// It is mostly designed for PowerShell scripts and not recommended for modules.
-	/// </remarks>
-	[Obsolete("PowerShell scripts helper.")]
 	public IList<IDisposable> Garbage => _Garbage ??= new List<IDisposable>();
 	List<IDisposable>? _Garbage;
 

@@ -94,7 +94,6 @@ public sealed class DataPanel : TablePanel, IDisposable
 
 	/// <summary>
 	/// Database provider factory instance.
-	/// See <b>System.Data.Common.DbProviderFactories</b> methods <b>GetFactoryClasses</b>, <b>GetFactory</b>.
 	/// </summary>
 	public DbProviderFactory? Factory { get; set; }
 
@@ -160,6 +159,9 @@ public sealed class DataPanel : TablePanel, IDisposable
 
 			if (Adapter != null)
 			{
+				//! may fail ~ Dynamic SQL generation is not supported against a SelectCommand that does not return any key column information.
+				// _221127_1221: Dik.sqlite -- table with no PK -- open a record -- change data -- save
+
 				Adapter.Update(Table!);
 			}
 			else if (!string.IsNullOrEmpty(_XmlFile))
@@ -589,7 +591,19 @@ public sealed class DataPanel : TablePanel, IDisposable
 			return;
 
 		EnsureBuilder();
-		Adapter.UpdateCommand = _Builder!.GetUpdateCommand();
+
+		try
+		{
+			Adapter.UpdateCommand = _Builder!.GetUpdateCommand();
+		}
+		catch (Exception ex)
+		{
+			// ~ Dynamic SQL generation for the UpdateCommand is not supported against a SelectCommand that does not return any key column information.
+			// _221127_1221: Dik.sqlite -- table with no PK -- open a record
+
+			Log.TraceError(ex.Message);
+			Adapter.UpdateCommand = null;
+		}
 	}
 
 	internal override string HelpMenuTextOpenFileMembers => "Edit row data";

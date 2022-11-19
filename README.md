@@ -82,6 +82,7 @@ Install libraries
     Install-FarPackage FarNet.FSharp.PowerShell
     Install-FarPackage FarNet.FSharp.Unquote
     Install-FarPackage FarNet.ScottPlot
+    Install-FarPackage FarNet.SQLite
 
 You may start Far Manager after this.
 Modules are installed in `%FARHOME%\FarNet\Modules`.

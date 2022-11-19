@@ -1,7 +1,6 @@
 ﻿ArgumentCompleters.ps1 TabExpansion2 argument completers.
 Clear-Session.ps1 Clears PowerShell session resources.
 Complete-Word.ps1 Completes the current word in editors.
-Connect-SQLite-.ps1 Connects SQLite database and optionally shows tables in a panel.
 Edit-FarDescription.ps1 Edits multiline Far descriptions in the editor.
 Generate-Dialog-.ps1 Generates template code for the current dialog.
 Get-TextLink.ps1 Gets a text link with the current editor line or selection.
@@ -14,14 +13,17 @@ Invoke-FromEditor.ps1 Invokes a file from the current editor.
 Invoke-Shortcut-.ps1 Opens a shortcut file (.lnk).
 Job-RemoveItem-.ps1 Job: remove the specified provider items.
 Menu-Favorites-.ps1 Shows Windows Favorites as a menu and invokes items.
+Menu-More.ps1 Example command menu created by a script.
 Merge-Selected.ps1 Invokes merge for two panels items.
 Open-TextLink.ps1 Opens a text link contained in the text.
 Open-TODO-.ps1 TODO notes in XML files.
 Panel-BitsTransfer.ps1 Starts or manages file transfer jobs in a panel.
-Panel-DbData-.ps1 Panel DataTable rows.
-Panel-DbTable-.ps1 Panel database tables for the specified connection.
+Panel-DBData.ps1 Panel DataTable rows.
+Panel-DBTable.ps1 Panel database tables for the specified connection.
+Panel-History.ps1 Far Manager history browser.
 Panel-Process.ps1 Panel current processes.
 Panel-Property-.ps1 Panel PowerShell provider item properties.
+Panel-SQLite.ps1 Opens SQLite database panel.
 Profile-Editor.ps1 Editor profile (example).
 Profile.ps1 Main profile (example).
 Reformat-Selection-.ps1 Reformats selected lines or the current line in the editor.
@@ -41,4 +43,3 @@ Show-KeyName-.ps1 Shows internal names of pressed keys.
 Show-Markdown-.ps1 Shows markdown as HTML or Far help file.
 Start-Far.ps1 Starts Far with the command, panels, options.
 Update-FarManager.ps1 Updates Far Manager and standard plugins.
-Menu-More.ps1 Example command menu created by a script.

@@ -1,10 +1,9 @@
 <#
 .Synopsis
 	Test panel with joined table TestNotes with lookup
-	Author: Roman Kuzmin
 
 .Description
-	This script demonstrates some important techniques:
+	This script demonstrates some techniques:
 
 	1) Panel uses data adapter with manually configured INSERT, DELETE and
 	UPDATE commands. Why?
@@ -22,49 +21,52 @@
 	lookup - that is why they are still selected.
 #>
 
+[CmdletBinding()]
 param(
 	[switch]$GenericLookup
 )
 
-Assert-Far ($DbConnection -and $DbProviderFactory) -Message "No connection, run Initialize-Test-.ps1" -Title Assert
+if (!$PSCmdlet.GetVariableValue('DbConnection')) {
+	& $PSScriptRoot\Initialize-Test.far.ps1
+}
 
 # data adapter and command to select data
-$a = $DbProviderFactory.CreateDataAdapter()
-$a.SelectCommand = $c = $DbConnection.CreateCommand()
-$c.CommandText = @"
+$adapter = $DbProviderFactory.CreateDataAdapter()
+$adapter.SelectCommand = $cmd = $DbConnection.CreateCommand()
+$cmd.CommandText = @"
 SELECT n.Note, c.Category, n.Created, n.NoteId, n.CategoryId
 FROM TestNotes n JOIN TestCategories c ON n.CategoryId = c.CategoryId
 "@
 
 # reusable script blocks to add command parameters
 $NoteId = {
-	$p = $c.CreateParameter()
-	$p.ParameterName = $p.SourceColumn = 'NoteId'
-	$p.DbType = [Data.DbType]::Int32
-	$null = $c.Parameters.Add($p)
+	$prm = $cmd.CreateParameter()
+	$prm.ParameterName = $prm.SourceColumn = 'NoteId'
+	$prm.DbType = [Data.DbType]::Int32
+	$null = $cmd.Parameters.Add($prm)
 }
 $CategoryId = {
-	$p = $c.CreateParameter()
-	$p.ParameterName = $p.SourceColumn = 'CategoryId'
-	$p.DbType = [Data.DbType]::Int32
-	$null = $c.Parameters.Add($p)
+	$prm = $cmd.CreateParameter()
+	$prm.ParameterName = $prm.SourceColumn = 'CategoryId'
+	$prm.DbType = [Data.DbType]::Int32
+	$null = $cmd.Parameters.Add($prm)
 }
 $Note = {
-	$p = $c.CreateParameter()
-	$p.ParameterName = $p.SourceColumn = 'Note'
-	$p.DbType = [Data.DbType]::String
-	$null = $c.Parameters.Add($p)
+	$prm = $cmd.CreateParameter()
+	$prm.ParameterName = $prm.SourceColumn = 'Note'
+	$prm.DbType = [Data.DbType]::String
+	$null = $cmd.Parameters.Add($prm)
 }
 $Created = {
-	$p = $c.CreateParameter()
-	$p.ParameterName = $p.SourceColumn = 'Created'
-	$p.DbType = [Data.DbType]::DateTime
-	$null = $c.Parameters.Add($p)
+	$prm = $cmd.CreateParameter()
+	$prm.ParameterName = $prm.SourceColumn = 'Created'
+	$prm.DbType = [Data.DbType]::DateTime
+	$null = $cmd.Parameters.Add($prm)
 }
 
-# command to insert data
-$a.InsertCommand = $c = $DbConnection.CreateCommand()
-$c.CommandText = <#sql#>@'
+### command to insert data
+$adapter.InsertCommand = $cmd = $DbConnection.CreateCommand()
+$cmd.CommandText = <#sql#>@'
 INSERT TestNotes (Note, CategoryId, Created)
 VALUES (@Note, @CategoryId, @Created)
 '@
@@ -72,17 +74,17 @@ VALUES (@Note, @CategoryId, @Created)
 . $Note
 . $Created
 
-# command to delete data
-$a.DeleteCommand = $c = $DbConnection.CreateCommand()
-$c.CommandText = <#sql#>@'
+### command to delete data
+$adapter.DeleteCommand = $cmd = $DbConnection.CreateCommand()
+$cmd.CommandText = <#sql#>@'
 DELETE FROM TestNotes
 WHERE NoteId = @NoteId
 '@
 . $NoteId
 
-# command to update data
-$a.UpdateCommand = $c = $DbConnection.CreateCommand()
-$c.CommandText = <#sql#>@'
+### command to update data
+$adapter.UpdateCommand = $cmd = $DbConnection.CreateCommand()
+$cmd.CommandText = <#sql#>@'
 UPDATE TestNotes
 SET Note = @Note, CategoryId = @CategoryId, Created = @Created
 WHERE NoteId = @NoteId
@@ -92,12 +94,9 @@ WHERE NoteId = @NoteId
 . $Note
 . $Created
 
-# create a panel, set adapter
-$Panel = New-Object PowerShellFar.DataPanel
-$Panel.Data.ScriptRoot = Split-Path $MyInvocation.MyCommand.Path
-$Panel.Adapter = $a
-
-# data appearance
+# create and configure panel
+$Panel = [PowerShellFar.DataPanel]::new()
+$Panel.Adapter = $adapter
 $Panel.Title = 'TestNotes'
 $Panel.Columns = @(
 	@{ Kind = 'N'; Expression = 'Note'; Width = -80 }
@@ -110,7 +109,7 @@ $Panel.ExcludeMemberPattern = '^(NoteId|CategoryId)$'
 # there are two alternative examples below:
 #
 # 1) GENERIC LOOKUP (NOT SIMPLE BUT MORE UNIVERSAL)
-# $0 - event sender, it is a lookup panel created by Test-Panel-DbCategories-.ps1
+# $0 - event sender, it is a lookup panel created by Test-Panel-DBCategories.far.ps1
 # $0.Parent - its parent panel, it is a member panel with TestNotes row fields
 # $0.Parent.Value - destination row with CategoryId and Category
 # $_ - event arguments (PowerShellFar.FileEventArgs)
@@ -123,7 +122,7 @@ $Panel.ExcludeMemberPattern = '^(NoteId|CategoryId)$'
 if ($GenericLookup) {
 	$Panel.AddLookup('Category', {
 		param($0, $_)
-		& "$($0.Parent.Data.ScriptRoot)\Test-Panel-DbCategories-.ps1" -Lookup {
+		& "$PSScriptRoot\Test-Panel-DBCategories.far.ps1" -Lookup {
 			param($0, $_)
 			$r1 = $0.Parent.Value
 			$r2 = $_.File.Data
@@ -135,7 +134,7 @@ if ($GenericLookup) {
 else {
 	$Panel.AddLookup('Category', {
 		param($0, $_)
-		& "$($0.Parent.Data.ScriptRoot)\Test-Panel-DbCategories-.ps1" -Lookup $0.CreateDataLookup(@('Category', 'Category', 'CategoryId', 'CategoryId'))
+		& "$PSScriptRoot\Test-Panel-DBCategories.far.ps1" -Lookup $0.CreateDataLookup(@('Category', 'Category', 'CategoryId', 'CategoryId'))
 	})
 }
 

@@ -1,5 +1,17 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 7.0.1 =
+
+Database scripts now use the package FarNet.SQLite.
+- New script Panel-History.ps1 to browse histories
+- Connect-SQLite-.ps1 -> Panel-SQLite.ps1
+- Panel-DbData-.ps1 -> Panel-DBData.ps1
+- Panel-DbTable-.ps1 -> Panel-DBTable.ps1
+- rework sample/test scripts
+
+DataPanel
+- fixed issue on opening records without primary key
+
 = 7.0.0 =
 
 Requires FarNet 7, uses .NET 7.

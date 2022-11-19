@@ -1,5 +1,4 @@
-﻿Initialize-Test-.ps1 Initializes test database data.
-Test-Base-.ps1 Test base features.
+﻿Test-Base-.ps1 Test base features.
 Test-CallStack-.ps1 Test prompt dialog and shows how to get call stack info.
 Test-Dialog.far.ps1 Demo dialog for testing dialog controls.
 Test-Editor-.ps1 Test editor and related scripts.
@@ -7,9 +6,6 @@ Test-Explorer-.ps1 Test scripted explorers with panels.
 Test-Job-.ps1 Test background jobs.
 Test-Msg-.ps1 Test extreme message boxes.
 Test-Panel-.ps1 Test simple panels.
-Test-Panel-DbCategories-.ps1 Test panel with simple table TestCategories.
-Test-Panel-DbNotes-.ps1 Test panel with joined table TestNotes with lookup
-Test-Panel-DbText-.ps1 Test panel with data from .CSV files
 Test-Panel-Lookup-.ps1 Test panel lookup actions
 Test-Panel-Menu-.ps1 Test panel with demo menu called on [ShiftF3]
 Test-Panel-Tree-.ps1 Test panel mixed items on TreePanel
@@ -21,3 +17,6 @@ Test-Assert-Far.far.ps1 How Assert-Far works.
 Test-RegisterCommand.far.ps1 Shows how to register commands dynamically.
 Test-RegisterDrawer.far.ps1 Test editor drawer with all console colors.
 Test-RegisterTool.far.ps1 Shows how to register tools dynamically.
+Initialize-Test.far.ps1 Initializes test database data.
+Test-Panel-DBCategories.far.ps1 Test panel with simple table TestCategories.
+Test-Panel-DBNotes.far.ps1 Test panel with joined table TestNotes with lookup

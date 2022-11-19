@@ -1093,7 +1093,7 @@ so that you can find other keys not listed here that still work in Data panel.
     Use `[CtrlS]` to save your changes or `[Esc]` to return to the parent data
     panel (you will be prompted to save changes). On `[Enter]` some fields can
     open another (lookup) table so that values (or/and foreign keys) are taken
-    from there (see *Test-Panel-DbNotes-.ps1*). If `[Enter]` is pressed in a
+    from there (see *Test-Panel-DBNotes.far.ps1*). If `[Enter]` is pressed in a
     lookup table panel it selects the value and closes the panel (`[CtrlPgDn]`
     still can be used to enter the record).
 
@@ -1105,14 +1105,13 @@ At least they should be enough to learn how to create data panels.
 
 **Utility scripts**
 
-* *Panel-DbData-.ps1* creates a data panel by a single command with parameters
-* *Panel-DbTable-.ps1* shows all connected tables and opens them in basic mode
+* *Panel-DBData.ps1* creates a data panel by a single command with parameters
+* *Panel-DBTable.ps1* shows all connected tables and opens them in basic mode
 
 **Demo scripts (see also About-Test.hlf)**
 
-* *Test-Panel-DbCategories-.ps1* - simple data table with all operations
-* *Test-Panel-DbNotes-.ps1* - complex data table with all operations and lookup field.
-* *Test-Panel-DbText-.ps1* - read only table with data from two joined .CSV files (Jet 4.0)
+* *Test-Panel-DBCategories.far.ps1* - simple data table with all operations
+* *Test-Panel-DBNotes.far.ps1* - complex data table with all operations and lookup field.
 
 ---
 **Notes**

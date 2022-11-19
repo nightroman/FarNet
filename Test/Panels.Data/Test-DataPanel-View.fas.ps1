@@ -1,15 +1,18 @@
 ﻿
 job {
 	# make data
-	Import-Module DB; Connect-DBSQLite ':memory:'
-	$null = Set-DB @'
+	Import-Module FarNet.SQLite
+	Open-SQLite
+	Set-SQLite @'
 CREATE TABLE [Test] ([It] INTEGER PRIMARY KEY, [Category] TEXT);
 INSERT INTO Test (Category) VALUES ('Task');
 INSERT INTO Test (Category) VALUES ('Warning');
 INSERT INTO Test (Category) VALUES ('Information');
 '@
+
 	# open panel
-	Panel-DbData-.ps1 -CloseConnection -SelectCommand "SELECT * FROM Test" -DbConnection $Connect.Connection -DbProviderFactory $Connect.Factory
+	Panel-DBData -SelectCommand 'SELECT * FROM Test' `
+	-CloseConnection -DbConnection $db.Connection -DbProviderFactory $db.Factory
 }
 job {
 	Assert-Far ($Far.Panel.GetFiles() -join ' ') -eq '1 2 3'

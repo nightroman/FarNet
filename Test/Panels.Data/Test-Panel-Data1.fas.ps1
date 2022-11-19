@@ -4,14 +4,14 @@
 #>
 
 job {
-	# connect
-	& "$env:PSF\Samples\Tests\Initialize-Test-.ps1" -DbProviderName System.Data.SQLite
+	# make data and connect
+	& "$env:PSF\Samples\Tests\Initialize-Test.far.ps1"
 }
 
-### Test Panel-DbTable-.ps1
+### Test Panel-DBTable
 
 job {
-	& "$env:PSF\Bench\Panel-DbTable-.ps1"
+	Panel-DBTable
 }
 job {
 	Assert-Far $Far.Panel.Title -eq 'main Tables'
@@ -27,7 +27,7 @@ job {
 	Assert-Far $Far.Dialog[2].Text -eq "SELECT * FROM [TestCategories]"
 }
 keys Enter
-### Test Panel-DbData-.ps1 on TestCategories
+### Test Panel-DBData on TestCategories
 
 job {
 	Assert-Far ($Far.Panel.Title -like '*TestCategories')
@@ -75,7 +75,7 @@ job {
 	Assert-Far $Far.Dialog[2].Text -eq "SELECT * FROM [TestNotes]"
 }
 keys Enter
-### Test Panel-DbData-.ps1 on TestNotes
+### Test Panel-DBData on TestNotes
 
 job {
 	Assert-Far ($Far.Panel.Title -like '*TestNotes')

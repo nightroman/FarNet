@@ -30,7 +30,7 @@
 	a different SQL command. ANY COMMAND IS EXECUTED AS IT IS, e.g. if you type
 	DROP TABLE X then you get it done. [Enter] executes the SQL statement from
 	the input box and opens a panel with the result records using the script
-	Panel-DbData-.ps1.
+	Panel-DBData.ps1.
 
 	[CtrlPgDn]
 	Opens a panel with the current table properties.
@@ -70,6 +70,7 @@ function Table($Sql) {
 	$table = [System.Data.DataTable]'Tables'
 	$null = $adapter.Fill($table)
 	$adapter.Dispose()
+	$command.Dispose()
 	, $table
 }
 
@@ -100,18 +101,25 @@ else {
 }
 
 ### Open object panel with table/view rows
-$Panel = New-Object PowerShellFar.ObjectPanel
+$Panel = [PowerShellFar.ObjectPanel]::new()
 $Panel.Explorer.Functions = 'GetContent, OpenFile'
 $Panel.Title = "$($DbConnection.Database) Tables"
 $Panel.Columns = $columns
 $Panel.Data['66e6fa15-150f-450e-baa1-e7e0bf19c6e1'] = @{ DbProviderFactory = $DbProviderFactory; DbConnection = $DbConnection }
 
 # garbage
-if ($CloseConnection) { $Panel.Garbage.Add($DbConnection) }
+if ($CloseConnection) {
+	$Panel.Garbage.Add($DbConnection)
+}
 
 # go
 $Panel.AddObjects(($table.Rows | Sort-Object 'TABLE_NAME'))
-if ($AsChild) { $Panel.OpenChild($null) } else { $Panel.Open() }
+if ($AsChild) {
+	$Panel.OpenChild($null)
+}
+else {
+	$Panel.Open()
+}
 
 ### [Enter] handler ([CtrlPgDn] is for members)
 $Panel.AsOpenFile = {
@@ -141,6 +149,6 @@ $Panel.AsOpenFile = {
 	$select = $Far.Input('Command text', 'Connection.Select', 'SQL SELECT', $select)
 	if ($select) {
 		# open child table data panel
-		Panel-DbData- -AsChild -SelectCommand:$select -Title:$table -DbProviderFactory:$DbProviderFactory -DbConnection:$DbConnection
+		Panel-DBData -AsChild -SelectCommand:$select -Title:$table -DbProviderFactory:$DbProviderFactory -DbConnection:$DbConnection
 	}
 }
