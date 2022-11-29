@@ -128,7 +128,7 @@ task version {
 
 # Make NuGet package
 task nuget package, version, {
-	Copy-Item ..\README.md z
+	Get-Content ..\README.md | ?{$_ -notlike '*FarNetLogo.png*'} | Set-Content z\README.md
 
 	Set-Content z\Package.nuspec @"
 <?xml version="1.0"?>

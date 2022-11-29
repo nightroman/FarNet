@@ -1,9 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
-= 7.0.1 =
+= 7.0.2 =
 
-Tweaks.
+Package tweaks.
 
 = 7.0.0 =
 
