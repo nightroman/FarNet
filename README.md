@@ -35,54 +35,63 @@ Links are not provided, they keep changing.
 Choose the required from [downloads](https://www.farmanager.com/download.php?l=en).\
 Normally the stable build is recommended.
 
-
 ## Install using PowerShell
 
 This way avoids manual steps and allows updates later.
 
-Close Far Manager and start the PowerShell console
-
-    powershell
+Close Far Manager and start the PowerShell console.
 
 Change to the Far Manager directory
 
-    cd "C:\Program Files\Far Manager"
+```powershell
+Set-Location "C:\Program Files\Far Manager"
+```
 
 Import Far package functions
 
-    Invoke-Expression (Invoke-WebRequest https://raw.githubusercontent.com/nightroman/FarNet/master/web.ps1)
+```powershell
+Invoke-Expression (Invoke-WebRequest https://raw.githubusercontent.com/nightroman/FarNet/master/web.ps1)
+```
 
 If it fails on older systems, try
 
-    [Net.ServicePointManager]::SecurityProtocol = "Tls11,Tls12,$([Net.ServicePointManager]::SecurityProtocol)"
-    Invoke-Expression (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/nightroman/FarNet/master/web.ps1')
+```powershell
+[Net.ServicePointManager]::SecurityProtocol = "Tls11,Tls12,$([Net.ServicePointManager]::SecurityProtocol)"
+Invoke-Expression (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/nightroman/FarNet/master/web.ps1')
+```
 
 Install FarNet
 
-    Install-FarPackage FarNet
+```powershell
+Install-FarPackage FarNet
+```
 
 Install modules
 
-    Install-FarPackage FarNet.CopyColor
-    Install-FarPackage FarNet.Drawer
-    Install-FarPackage FarNet.EditorKit
-    Install-FarPackage FarNet.Explore
-    Install-FarPackage FarNet.FolderChart
-    Install-FarPackage FarNet.FSharpFar
-    Install-FarPackage FarNet.JavaScriptFar
-    Install-FarPackage FarNet.PowerShellFar
-    Install-FarPackage FarNet.RightControl
-    Install-FarPackage FarNet.RightWords
-    Install-FarPackage FarNet.Vessel
+```powershell
+Install-FarPackage FarNet.CopyColor
+Install-FarPackage FarNet.Drawer
+Install-FarPackage FarNet.EditorKit
+Install-FarPackage FarNet.Explore
+Install-FarPackage FarNet.FolderChart
+Install-FarPackage FarNet.FSharpFar
+Install-FarPackage FarNet.JavaScriptFar
+Install-FarPackage FarNet.PowerShellFar
+Install-FarPackage FarNet.RightControl
+Install-FarPackage FarNet.RightWords
+Install-FarPackage FarNet.Vessel
+```
 
 Install libraries
 
-    Install-FarPackage FarNet.FSharp.Charting
-    Install-FarPackage FarNet.FSharp.Data
-    Install-FarPackage FarNet.FSharp.PowerShell
-    Install-FarPackage FarNet.FSharp.Unquote
-    Install-FarPackage FarNet.ScottPlot
-    Install-FarPackage FarNet.SQLite
+```powershell
+Install-FarPackage FarNet.FSharp.Charting
+Install-FarPackage FarNet.FSharp.Data
+Install-FarPackage FarNet.FSharp.PowerShell
+Install-FarPackage FarNet.FSharp.Unquote
+Install-FarPackage FarNet.ScottPlot
+Install-FarPackage FarNet.SQLite
+```
 
 You may start Far Manager after this.
 Modules are installed in `%FARHOME%\FarNet\Modules`.
@@ -95,21 +104,28 @@ FarNet packages installed by `Install-FarPackage` may be updated in the same way
 
 Close Far Manager, open PowerShell console, and invoke
 
-    cd "C:\Program Files\Far Manager"
-    Invoke-Expression (Invoke-WebRequest https://raw.githubusercontent.com/nightroman/FarNet/master/web.ps1)
+```powershell
+Set-Location "C:\Program Files\Far Manager"
+Invoke-Expression (Invoke-WebRequest https://raw.githubusercontent.com/nightroman/FarNet/master/web.ps1)
+```
 
 To update all packages, use
 
-    Update-FarPackage
+```powershell
+Update-FarPackage
+```
 
 To update one package, use `Install-FarPackage`
 
-    Install-FarPackage FarNet.PowerShellFar
+```powershell
+Install-FarPackage FarNet.PowerShellFar
+```
 
 To remove one package, use `Uninstall-FarPackage`
 
-    Uninstall-FarPackage FarNet.PowerShellFar
-
+```powershell
+Uninstall-FarPackage FarNet.PowerShellFar
+```
 
 ## Install packages manually
 

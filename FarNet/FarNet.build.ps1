@@ -128,21 +128,13 @@ task version {
 
 # Make NuGet package
 task nuget package, version, {
-	$description = @'
-FarNet provides the .NET API for Far Manager and the runtime infrastructure for
-.NET modules. The package includes the framework and the module manager plugin.
-
----
-
-How to install and update FarNet and modules:
-
-https://github.com/nightroman/FarNet#readme
-'@
+	Copy-Item ..\README.md z
 
 	Set-Content z\Package.nuspec @"
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
+		<description>.NET API for Far Manager and runtime for .NET modules and scripts.</description>
 		<id>FarNet</id>
 		<version>$Version</version>
 		<authors>Roman Kuzmin</authors>
@@ -150,9 +142,9 @@ https://github.com/nightroman/FarNet#readme
 		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
 		<icon>FarNetLogo.png</icon>
 		<license type="expression">BSD-3-Clause</license>
-		<description>$description</description>
 		<releaseNotes>https://github.com/nightroman/FarNet/blob/master/FarNet/History.txt</releaseNotes>
 		<tags>FarManager FarNet PowerShell Module Plugin</tags>
+		<readme>README.md</readme>
 	</metadata>
 </package>
 "@

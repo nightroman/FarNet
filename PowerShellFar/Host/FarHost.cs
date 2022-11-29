@@ -132,9 +132,7 @@ class FarHost : PSHost
 	/// </summary>
 	public override void NotifyBeginApplication()
 	{
-		// write a line, it also calls ShowUserScreen and echo ps: ...
-		if (A.Psf.FarUI.Writer is ConsoleOutputWriter console)
-			console.WriteLine();
+		Far.Api.UI.ShowUserScreen();
 	}
 
 	/// <summary>
@@ -143,6 +141,7 @@ class FarHost : PSHost
 	/// </summary>
 	public override void NotifyEndApplication()
 	{
+		Far.Api.UI.SaveUserScreen();
 	}
 
 	/// <summary>

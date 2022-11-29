@@ -85,7 +85,6 @@ task package markdown, {
 
 	# module
 	exec { robocopy $ModuleHome $toModule /s /xf *.pdb } (0..2)
-	equals 328 (Get-ChildItem $toModule -Recurse -File).Count
 
 	# logo
 	Copy-Item -Destination z ..\Zoo\FarNetLogo.png
@@ -107,23 +106,13 @@ task version {
 
 # Make NuGet package
 task nuget package, version, {
-	$description = @'
-PowerShellFar is the FarNet module for Far Manager.
-It is the PowerShell Core host in the genuine console environment.
+	Copy-Item About.md z\README.md
 
----
-
-How to install and update FarNet and modules:
-
-https://github.com/nightroman/FarNet#readme
-
----
-'@
-	# nuspec
 	Set-Content z\Package.nuspec @"
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
+		<description>PowerShell Core host and scripting environment for Far Manager</description>
 		<id>FarNet.PowerShellFar</id>
 		<version>$Version</version>
 		<authors>Roman Kuzmin</authors>
@@ -131,12 +120,13 @@ https://github.com/nightroman/FarNet#readme
 		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
 		<icon>FarNetLogo.png</icon>
 		<license type="expression">BSD-3-Clause</license>
-		<description>$description</description>
 		<releaseNotes>https://github.com/nightroman/FarNet/blob/master/PowerShellFar/History.txt</releaseNotes>
 		<tags>FarManager FarNet PowerShell Module Plugin</tags>
+		<readme>README.md</readme>
 	</metadata>
 </package>
 "@
-	# pack
+
+	#! -NoPackageAnalysis ~ "scripts will not be executed"
 	exec { nuget pack z\Package.nuspec -NoPackageAnalysis }
 }

@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 7.0.2 =
+
+Amend begin/end application processing.
+
 = 7.0.1 =
 
 Database scripts now use the package FarNet.SQLite.

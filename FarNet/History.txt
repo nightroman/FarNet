@@ -1,6 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 7.0.1 =
+
+Tweaks.
+
 = 7.0.0 =
 
 Requires .NET 7 SDK or runtime, see https://github.com/nightroman/FarNet#readme
