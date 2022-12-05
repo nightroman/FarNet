@@ -1,5 +1,15 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 7.0.3 =
+
+Object panel:
+- Group-Object result panel: set Count column kind to "S"
+
+Panel-History.ps1
+- replace AllowDelete with ReadOnly, i.e. invert the default
+
+Add .ForEach and .Where helpers to code completion.
+
 = 7.0.2 =
 
 Amend begin/end application processing.

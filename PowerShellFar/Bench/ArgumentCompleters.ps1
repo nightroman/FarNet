@@ -82,7 +82,7 @@ Register-ArgumentCompleter -CommandName git -Native -ScriptBlock {
 ### Result processors
 
 Register-ResultCompleter {
-	### .WORD[Tab] -> Equals, GetType, ToString
+	### .WORD[Tab] -> Equals, GetType, ToString, ForEach, Where.
 	param($result, $ast, $tokens, $positionOfCursor, $options)
 
 	if ("$ast".Substring($result.ReplacementIndex, $result.ReplacementLength) -notmatch '(^.*?\.)(\w*)$') {
@@ -91,7 +91,7 @@ Register-ResultCompleter {
 
 	$m1 = $matches[1]
 	$re = "^$($matches[2])"
-	foreach($_ in @('Equals(', 'GetType()', 'ToString()')) {
+	foreach($_ in @('Equals(', 'GetType()', 'ToString()', 'ForEach{$_', 'Where{$_')) {
 		if ($_ -match $re) {
 			$result.CompletionMatches.Add((
 				New-Object System.Management.Automation.CompletionResult ($m1 + $_), $_, Method, $_
@@ -110,19 +110,25 @@ Register-ResultCompleter {
 	}
 
 	# WORD=?
-	if ("$ast".Substring($result.ReplacementIndex, $result.ReplacementLength) -notmatch '(^.*?)=$') {
+	if ("$ast".Substring($result.ReplacementIndex, $result.ReplacementLength) -notmatch '(^.*?)(:?\.(\w*))?=$') {
 		return
 	}
 
-	$body = [regex]::Escape($matches[1])
+	$m1 = $matches[1]
+	$m2 = $matches[2]
+	$m = if ($m2) {$m2} else {$m1}
+	$body = [regex]::Escape($m)
 	$head = "^$body"
 
 	# completions from TabExpansion.txt
 	$path = [System.IO.Path]::GetDirectoryName((Get-Item Function:TabExpansion2).ScriptBlock.File)
 	$lines = @(Get-Content -LiteralPath $path\TabExpansion.txt)
 	$lines -match $body | Sort-Object {$_ -notmatch $head}, {$_} | .{process{
-		if ($Host.Name -cne 'FarHost') {$_ = $_.Replace('#', '')}
-		$result.CompletionMatches.Add($_)
+		if ($Host.Name -cne 'FarHost') {
+			$_ = $_.Replace('#', '')
+		}
+		$r = if ($m2) {$m1 + $_} else {$_}
+		$result.CompletionMatches.Add($r)
 	}}
 }
 

@@ -1,17 +1,12 @@
-$ErrorActionPreference = 'Stop'
-$InputObject
-$LastExitCode
-$PSCmdlet.GetUnresolvedProviderPathFromPSPath(#)
-$PSCmdlet.ParameterSetName
-$PSCmdlet.ShouldProcess(#)
-$PSScriptRoot
-@PSBoundParameters
+.ForEach{$_.
+.Where{$_.
 [Alias('#')]
 [AllowEmptyCollection()]
 [AllowEmptyString()]
 [AllowNull()]
 [CmdletBinding(#)]
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
+[OutputType([#])]
 [Parameter(#)]
 [ValidateCount(#, )]
 [ValidateLength(#, )]
@@ -21,6 +16,14 @@ $PSScriptRoot
 [ValidateRange(#, )]
 [ValidateScript({#})]
 [ValidateSet(#, )]
+@PSBoundParameters
+$ErrorActionPreference = 'Stop'
+$InputObject
+$LastExitCode
+$PSCmdlet.GetUnresolvedProviderPathFromPSPath(#)
+$PSCmdlet.ParameterSetName
+$PSCmdlet.ShouldProcess(#)
+$PSScriptRoot
 Assert-Far (#)
 Assert-Far @(
 ConfirmImpact='High'

@@ -19,27 +19,28 @@
 	Use F1-menu for Sort and Filter expressions, if needed.
 	Use Enter to view the details: name, time, file, data.
 
-	With AllowDelete you can delete selected records.
+	NOTE:
+	You can delete selected records by default.
+	Use ReadOnly to avoid accidental changes.
 
 .Parameter Database
 		Specifies the database path. If it is omitted then the current Far
 		Manager history database is opened. The database is read only by
 		default.
 
-.Parameter AllowDelete
-		Tells to allow deleting selected records.
-		The panel title includes "(deletable)".
+.Parameter ReadOnly
+		Tells to open the database as read only.
 #>
 
 [CmdletBinding()]
 param(
 	[string]$Database = "$env:FARLOCALPROFILE\history.db"
 	,
-	[switch]$AllowDelete
+	[switch]$ReadOnly
 )
 
 Import-Module $env:FARHOME\FarNet\Lib\FarNet.SQLite
-Open-SQLite $Database -ReadOnly:(!$AllowDelete)
+Open-SQLite $Database -ReadOnly:$ReadOnly
 
 $MetaMap = @{
 	'0/0' = @{Name='0/0 Commands'; Columns=@('name', 'data')} # name=command; data=folder
@@ -115,9 +116,6 @@ $Panel.Title = $Meta.Name
 if ($it2.key) {
 	$Panel.Title += ' / ' + $it2.key
 }
-if ($AllowDelete) {
-	$Panel.Title += ' (deletable)'
-}
 
 ### save
 $Panel.AsSaveData = {
@@ -128,7 +126,7 @@ $Panel.AsSaveData = {
 
 	# delete and accept each
 	foreach($row in $Panel.Table.Select($null, $null, 'Deleted')) {
-		Set-SQLite 'delete from history where id = @id' @{id = ($row['id', 'Original'])}
+		Set-SQLite 'delete from history where id = ?' ($row['id', 'Original'])
 		$row.AcceptChanges()
 	}
 

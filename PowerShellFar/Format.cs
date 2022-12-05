@@ -29,7 +29,8 @@ static class Format
 	internal static Meta[]? TryFormatByTableControl(PSObject value, int formatWidth)
 	{
 		// try to find a table
-		var table = A.FindTableControl(value.BaseObject.GetType().FullName!);
+		var typeName = value.BaseObject.GetType().FullName!;
+		var table = A.FindTableControl(typeName);
 		if (table == null)
 			return null;
 
@@ -38,11 +39,21 @@ static class Format
 		for (int i = metas.Length; --i >= 0; )
 			metas[i] = new Meta(table.Rows[0].Columns[i].DisplayEntry, table.Headers[i]);
 
-		// 1) set heuristic types, some columns are moved to the left
-		SetBestTypes(metas, Settings.Default.MaximumPanelColumnCount);
+		// known type?
+		if (typeName == "Microsoft.PowerShell.Commands.GroupInfo" ||
+			typeName == "Microsoft.PowerShell.Commands.GroupInfoNoElement")
+		{
+			metas[0].Kind = "S";
+			metas[1].Kind = "N";
+		}
+		else
+		{
+			// 1) set heuristic types, some columns are moved to the left
+			SetBestTypes(metas, Settings.Default.MaximumPanelColumnCount);
 
-		// 2) cut off too many columns
-		metas = CutOffMetas(metas);
+			// 2) cut off too many columns
+			metas = CutOffMetas(metas);
+		}
 
 		// adjust formatting to the panel width
 		int totalWidth = formatWidth - (metas.Length + 1); // N columns ~ N + 1 borders
