@@ -91,7 +91,7 @@ Register-ResultCompleter {
 
 	$m1 = $matches[1]
 	$re = "^$($matches[2])"
-	foreach($_ in @('Equals(', 'GetType()', 'ToString()', 'ForEach{$_', 'Where{$_')) {
+	foreach($_ in @('Equals(', 'GetType()', 'ToString()', 'ForEach{', 'Where{')) {
 		if ($_ -match $re) {
 			$result.CompletionMatches.Add((
 				New-Object System.Management.Automation.CompletionResult ($m1 + $_), $_, Method, $_

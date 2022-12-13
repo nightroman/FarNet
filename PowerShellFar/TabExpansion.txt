@@ -1,5 +1,5 @@
-.ForEach{$_.
-.Where{$_.
+.ForEach{
+.Where{
 [Alias('#')]
 [AllowEmptyCollection()]
 [AllowEmptyString()]

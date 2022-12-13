@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 7.0.4 =
+
+Microsoft.PowerShell.SDK 7.3.1
+
+TabExpansion tweaks
+
 = 7.0.3 =
 
 Object panel:
