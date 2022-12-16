@@ -262,7 +262,6 @@ internal:
 }
 
 // Helpers
-int Compare(String^ strA, String^ strB);
 int ParseInt(String^ value, int fallback);
 KeyInfo^ KeyInfoFromInputRecord(const INPUT_RECORD& ir);
 MouseInfo^ GetMouseInfo(const MOUSE_EVENT_RECORD& m);

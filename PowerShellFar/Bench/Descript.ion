@@ -2,6 +2,7 @@
 Clear-Session.ps1 Clears PowerShell session resources.
 Complete-Word.ps1 Completes the current word in editors.
 Edit-FarDescription.ps1 Edits multiline Far descriptions in the editor.
+Edit-IB.ps1 Finds and edits selected Invoke-Build task.
 Generate-Dialog-.ps1 Generates template code for the current dialog.
 Get-TextLink.ps1 Gets a text link with the current editor line or selection.
 Go-Head-.ps1 Goes to the first panel file.

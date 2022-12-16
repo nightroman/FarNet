@@ -412,11 +412,6 @@ void DeleteSourceOptional(String^ path, DeleteSource option)
 	}
 }
 
-int Compare(String^ strA, String^ strB)
-{
-	return String::Compare(strA, strB, true, CultureInfo::InvariantCulture);
-}
-
 int ParseInt(String^ value, int fallback)
 {
 	int result;

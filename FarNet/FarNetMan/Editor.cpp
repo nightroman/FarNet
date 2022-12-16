@@ -118,30 +118,36 @@ void Editor::Open(OpenMode mode)
 		flags,
 		nLine,
 		nPos,
-		_CodePage); //?? test window values, make window settable
+		_CodePage);
 
-	//! Check errors: ID must not be -1 (even if it is already closed then ID = -2).
-	//! Using Far diagnostics fires false errors, e.g.:
-	//! Test-CallStack-.ps1 \ s \ type: exit \ enter
-	//! SVN tag 4.2.26
-	if (_id == -1)
+	// drop the waiting editor to avoid this case:
+	// - edit file X by FarNet with Opened handler (Opened is called), keep editor opened
+	// - edit file X by FarNet again, cancel Far dialog "same file", Opened is not called
+	// - edit file Y by F4 -> Opened of the still waiting editor X is called for Y
+	Editor0::_editorWaiting = nullptr;
+
+	// done, if opened (0+) or already closed (-2)
+	if (_id != -1)
+		return;
+
+	// - error or same file is reopened and activated
+	auto editor = Editor0::GetCurrentEditor();
+	if (editor)
 	{
-		// - error or a file was already opened in the editor and its window is activated
-		Editor^ editor = Editor0::GetCurrentEditor();
-		if (editor)
+		auto fileName1 = Path::GetFullPath(_FileName);
+		auto fileName2 = Path::GetFullPath(editor->_FileName);
+		if (String::Equals(fileName1, fileName2, StringComparison::OrdinalIgnoreCase))
 		{
-			String^ fileName1 = Path::GetFullPath(_FileName);
-			String^ fileName2 = Path::GetFullPath(editor->_FileName);
-			if (Compare(fileName1, fileName2) == 0)
-			{
-				// goto?
-				if (nLine >= 0 || nPos >= 0)
-					editor->GoTo(_frameStart.CaretColumn, _frameStart.CaretLine);
-				return;
-			}
+			// - same file is reopened, go to the set position (maybe out of sync)
+			if (nLine >= 0 || nPos >= 0)
+				editor->GoTo(_frameStart.CaretColumn, _frameStart.CaretLine);
+
+			return;
 		}
-		throw gcnew InvalidOperationException("Cannot open the file '" + (FileName ? FileName : "<null>") + "'");
 	}
+
+	// - cannot open or reopen
+	throw gcnew InvalidOperationException("Cannot open the file '" + (_FileName ? _FileName : "<null>") + "'");
 }
 
 void Editor::Close()
