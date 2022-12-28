@@ -175,6 +175,10 @@ Keys and actions:
 
     Opens the file in the modal viewer.
 
+- `[F12]`
+
+    Toggles filter by the current directory.
+
 - `[CtrlR]`
 
     Updates the history log.
@@ -212,6 +216,10 @@ Keys and actions:
 
     Opens the folder in the current panel in a new window.
     The passive panel is set to the current active path.
+
+- `[F12]`
+
+    Toggles filter by the current directory.
 
 - `[CtrlR]`
 

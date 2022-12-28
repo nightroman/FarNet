@@ -1,6 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 7.0.4 =
+
+Respect changed `Incremental` filter on menu restarts.
+
 = 7.0.3 =
 
 Avoid stale editor Opened called in rare cases.

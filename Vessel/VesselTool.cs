@@ -196,6 +196,14 @@ public class VesselTool : ModuleTool
 		}
 	}
 
+	static void FilterByCurrentDirectory(object sender, MenuEventArgs e)
+	{
+		var menu = (IListMenu)sender;
+		menu.Incremental = menu.Incremental.Length > 0 ? string.Empty : Far.Api.Panel.CurrentDirectory + '\\';
+		menu.Selected = -1;
+		e.Restart = true;
+	}
+
 	static void ShowFiles()
 	{
 		var settings = Settings.Default.GetData();
@@ -215,6 +223,7 @@ public class VesselTool : ModuleTool
 		menu.AddKey(KeyCode.F3, ControlKeyStates.LeftCtrlPressed);
 		menu.AddKey(KeyCode.F4);
 		menu.AddKey(KeyCode.F4, ControlKeyStates.LeftCtrlPressed);
+		menu.AddKey(KeyCode.F12, ControlKeyStates.None, FilterByCurrentDirectory);
 		menu.AddKey(KeyCode.R, ControlKeyStates.LeftCtrlPressed);
 		var area = Far.Api.Window.Kind;
 		if (area == WindowKind.Panels || area == WindowKind.Editor || area == WindowKind.Viewer)
@@ -222,8 +231,7 @@ public class VesselTool : ModuleTool
 
 		for (; ; )
 		{
-			var old = DateTime.Now - limit;
-			var context = new Context(menu, mode, old);
+			var context = new Context(menu, mode, DateTime.Now - limit);
 
 		show:
 
@@ -322,6 +330,7 @@ public class VesselTool : ModuleTool
 		menu.AddKey(KeyCode.Delete, ControlKeyStates.None);
 		menu.AddKey(KeyCode.Enter, ControlKeyStates.LeftCtrlPressed);
 		menu.AddKey(KeyCode.Enter, ControlKeyStates.ShiftPressed);
+		menu.AddKey(KeyCode.F12, ControlKeyStates.None, FilterByCurrentDirectory);
 		menu.AddKey(KeyCode.R, ControlKeyStates.LeftCtrlPressed);
 		if (Far.Api.Window.Kind == WindowKind.Panels)
 			menu.AddKey(KeyCode.Delete, ControlKeyStates.ShiftPressed);

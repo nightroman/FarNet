@@ -11,6 +11,7 @@ param(
 Set-StrictMode -Version 3
 $ModuleName = 'Vessel'
 $ModuleRoot = "$FarHome\FarNet\Modules\$ModuleName"
+$Description = 'Enhanced history of files, folders, commands. FarNet module for Far Manager.'
 
 task build meta, {
 	exec { dotnet build -c $Configuration /p:FarHome=$FarHome }
@@ -40,7 +41,7 @@ task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props version
     <Copyright>Copyright (c) Roman Kuzmin</Copyright>
     <Product>FarNet.$ModuleName</Product>
     <Version>$Version</Version>
-    <Description>Far Manager enhanced history of files, folders, commands</Description>
+    <Description>$Description</Description>
   </PropertyGroup>
 </Project>
 "@
@@ -66,36 +67,27 @@ task markdown {
 }
 
 task package markdown, {
-	$toModule = "z\tools\FarHome\FarNet\Modules\$ModuleName"
-
 	remove z
-	$null = mkdir $toModule
+	$toModule = mkdir "z\tools\FarHome\FarNet\Modules\$ModuleName"
 
 	# main
-	Copy-Item -Destination $toModule `
-	README.htm,
-	History.txt,
-	..\LICENSE,
-	Vessel.macro.lua,
-	$ModuleRoot\Vessel.dll,
-	$ModuleRoot\Vessel.hlf
+	Copy-Item -Destination $toModule @(
+		'README.htm'
+		'History.txt'
+		'..\LICENSE'
+		'Vessel.macro.lua'
+		"$ModuleRoot\Vessel.dll"
+		"$ModuleRoot\Vessel.hlf"
+	)
 
-	# icon
-	Copy-Item ..\Zoo\FarNetLogo.png z
+	# meta
+	Copy-Item -Destination z @(
+		'..\Zoo\FarNetLogo.png'
+		'README.md'
+	)
 }
 
 task nuget package, version, {
-	$description = @'
-Vessel is the FarNet module for Far Manager.
-It provides enhanced history of files, folders, commands.
-
----
-
-How to install and update FarNet and modules:
-
-https://github.com/nightroman/FarNet#readme
-'@
-
 	Set-Content z\Package.nuspec @"
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
@@ -107,9 +99,10 @@ https://github.com/nightroman/FarNet#readme
 		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
 		<icon>FarNetLogo.png</icon>
 		<license type="expression">BSD-3-Clause</license>
-		<description>$description</description>
+		<description>$Description</description>
 		<releaseNotes>https://github.com/nightroman/FarNet/blob/master/$ModuleName/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module</tags>
+		<readme>README.md</readme>
 	</metadata>
 </package>
 "@

@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.Vessel
-FarNet 5.4.17
+
+= 5.0.1 =
+
+Requires FarNet 7.0.4
+
+[F12] in file and folder histories toggles filter by the current directory.
 
 = 5.0.0 =
 

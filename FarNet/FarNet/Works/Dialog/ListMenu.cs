@@ -15,10 +15,10 @@ public sealed class ListMenu : AnyMenu, IListMenu
 	IListBox _box = null!;
 
 	// Original user defined filter
-	string _Incremental_;
+	string _Incremental_ = string.Empty;
 
 	// Currently used filter
-	string _filter;
+	string _filter = string.Empty;
 
 	// To update the filter
 	bool _toFilter;
@@ -38,7 +38,7 @@ public sealed class ListMenu : AnyMenu, IListMenu
 
 	public int ScreenMargin { get; set; }
 
-	public Guid TypeId { get; set; }
+	public Guid TypeId { get; set; } = new Guid("01a43865-b81d-4bca-b3a4-a9ae4f9f7b55");
 
 	public PatternOptions IncrementalOptions { get; set; }
 
@@ -53,24 +53,14 @@ public sealed class ListMenu : AnyMenu, IListMenu
 		}
 	}
 
-	public ListMenu()
-	{
-		_Incremental_ = string.Empty;
-		_filter = string.Empty;
-		TypeId = new Guid("01a43865-b81d-4bca-b3a4-a9ae4f9f7b55");
-	}
-
 	void MakeFilter()
 	{
-		// filter
+		// done? skip
 		if (!_toFilter)
 			return;
-		_toFilter = false;
 
-		// Do not filter by predefined. Case:
-		// TabEx: 'sc[Tab]' gets 'Set-Contents' which doesn't match the prefix 'sc', but it should be shown.
-		if (_filter == Incremental)
-			return;
+		// mark done
+		_toFilter = false;
 
 		// create
 		_re ??= BulletFilter.ToRegex(_filter, IncrementalOptions);
@@ -81,7 +71,7 @@ public sealed class ListMenu : AnyMenu, IListMenu
 		if (_ii != null)
 		{
 			var ii = new List<int>();
-			foreach(int k in _ii)
+			foreach (int k in _ii)
 			{
 				if (_re.IsMatch(myItems[k].Text))
 					ii.Add(k);
@@ -93,7 +83,7 @@ public sealed class ListMenu : AnyMenu, IListMenu
 		// case: not yet filtered
 		_ii = new List<int>();
 		int i = -1;
-		foreach(var mi in Items)
+		foreach (var mi in Items)
 		{
 			++i;
 			if (_re.IsMatch(mi.Text))
@@ -170,13 +160,13 @@ public sealed class ListMenu : AnyMenu, IListMenu
 		int w = 0;
 		if (_ii == null)
 		{
-			foreach(var mi in myItems)
+			foreach (var mi in myItems)
 				if (mi.Text.Length > w)
 					w = mi.Text.Length;
 		}
 		else
 		{
-			foreach(int k in _ii)
+			foreach (int k in _ii)
 				if (myItems[k].Text.Length > w)
 					w = myItems[k].Text.Length;
 		}
@@ -298,7 +288,7 @@ public sealed class ListMenu : AnyMenu, IListMenu
 			if (_filter.Length == 0)
 				return;
 
-			// case: Shift, drop incremental
+			// case: Shift, drop incremental, including predefined
 			if (key.IsShift())
 			{
 				Incremental = string.Empty;
@@ -309,6 +299,7 @@ public sealed class ListMenu : AnyMenu, IListMenu
 				return;
 			}
 
+			// let only delete the filter excess over predefined
 			if (_filter.Length > Incremental.Length || _filter.Length == Incremental.Length && Incremental.EndsWith("*"))
 			{
 				char c = _filter[^1];
