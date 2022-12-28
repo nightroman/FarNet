@@ -199,7 +199,7 @@ public class VesselTool : ModuleTool
 	static void FilterByCurrentDirectory(object sender, MenuEventArgs e)
 	{
 		var menu = (IListMenu)sender;
-		menu.Incremental = menu.Incremental.Length > 0 ? string.Empty : Far.Api.Panel.CurrentDirectory + '\\';
+		menu.Incremental = menu.Incremental.Length > 0 ? string.Empty : Far.Api.Panel.CurrentDirectory + @"\*";
 		menu.Selected = -1;
 		e.Restart = true;
 	}
