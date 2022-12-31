@@ -213,7 +213,6 @@ let fixComplete (word: string) words (ident: PartialLongName) =
                 words[i] <- "``" + word + "``"
         words
 
-// https://fsharp.github.io/FSharp.Compiler.Service/editor.html#Getting-auto-complete-lists
 // old EditorTests.fs(265) they use [], "" instead of names, so do we.
 // new Use FsAutoComplete way.
 let complete (editor: IEditor) =
@@ -226,7 +225,7 @@ let complete (editor: IEditor) =
     else
 
     // skip no solid base
-    //TODO complete parameters -- x (y, [Tab] -- https://fsharp.github.io/FSharp.Compiler.Service/editor.html#Getting-parameter-information
+    //TODO complete parameters -- x (y, [Tab]
     let lineStr = line.Text
     if Char.IsWhiteSpace lineStr[caret.X - 1] then false
     else

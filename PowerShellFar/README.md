@@ -437,7 +437,7 @@ The history includes Far Manager command and PowerShellFar input dialog historie
 
     Copies the command text to the clipboard.
 
-- [List menu keys](https://github.com/nightroman/FarNet/tree/master/FarNet#list-menu)
+- [List menu keys](https://github.com/nightroman/FarNet/tree/main/FarNet#list-menu)
 
 *********************************************************************
 ## Power panel menu

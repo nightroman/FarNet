@@ -92,7 +92,6 @@ The package moved to NuGet.
 = 2.1.3 =
 
 Upgraded for NHunspell 1.1.0
-http://sourceforge.net/projects/nhunspell/files/NHunspell.1.1.0.0.zip/download
 
 = 2.1.2 =
 

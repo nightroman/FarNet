@@ -11,7 +11,7 @@ Word, Outlook, and some other editors. Not all editors support this (WordPad).
 
 **Project**
 
- * Source: <https://github.com/nightroman/FarNet/tree/master/CopyColor>
+ * Source: <https://github.com/nightroman/FarNet/tree/main/CopyColor>
  * Author: Roman Kuzmin
 
 *********************************************************************

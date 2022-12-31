@@ -555,8 +555,8 @@ Start-FarTask
 = 5.3.6 =
 
 Add Start-FarTask for async scripts with sync Far jobs and keys.
-Samples: https://github.com/nightroman/FarNet/tree/master/PowerShellFar/Samples/FarTask
-F# tests: https://github.com/nightroman/FarNet/blob/master/FSharpFar/tests/TestPSFar.fs
+Samples: https://github.com/nightroman/FarNet/tree/main/PowerShellFar/Samples/FarTask
+F# tests: https://github.com/nightroman/FarNet/blob/main/FSharpFar/tests/TestPSFar.fs
 
 = 5.3.5 =
 
@@ -1710,4 +1710,4 @@ Some PSF features were removed (forever or not may depend on the feedback):
 
 = 1.0.0 - 4.6.1 =
 
-https://github.com/nightroman/FarNet/blob/master/PowerShellFar/History4.txt
+https://github.com/nightroman/FarNet/blob/main/PowerShellFar/History4.txt

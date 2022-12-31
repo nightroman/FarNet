@@ -145,7 +145,7 @@ Fix existing (System.Text.Json) and potential assembly conflicts:
 Respect the configuration section [out] by the Project commands.
 As a result, you can build, run, debug FarNet modules on the fly.
 
-	Example: https://github.com/nightroman/FarNet/tree/master/FSharpFar/samples/TryPanelFSharp
+	Example: https://github.com/nightroman/FarNet/tree/main/FSharpFar/samples/TryPanelFSharp
 
 Engage F# v6 features in samples and tests.
 

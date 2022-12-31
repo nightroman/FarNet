@@ -646,6 +646,6 @@ Tells to set breakpoints for stopping at each step: `job`, `ps:`, `run`, `keys`,
 	}
 
 	links = @(
-		@{ text = 'Samples -- https://github.com/nightroman/FarNet/tree/master/PowerShellFar/Samples/FarTask' }
+		@{ text = 'Samples -- https://github.com/nightroman/FarNet/tree/main/PowerShellFar/Samples/FarTask' }
 	)
 }

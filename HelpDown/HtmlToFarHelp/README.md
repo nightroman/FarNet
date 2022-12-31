@@ -14,7 +14,7 @@ The tool requires .NET Framework 4.0.
 Get the tool as the NuGet package [HtmlToFarHelp](https://www.nuget.org/packages/HtmlToFarHelp).
 You may download and unpack it to the current location by this PowerShell command:
 
-    Invoke-Expression "& {$((New-Object Net.WebClient).DownloadString('https://github.com/nightroman/PowerShelf/raw/master/Save-NuGetTool.ps1'))} HtmlToFarHelp"
+    Invoke-Expression "& {$((New-Object Net.WebClient).DownloadString('https://github.com/nightroman/PowerShelf/raw/main/Save-NuGetTool.ps1'))} HtmlToFarHelp"
 
 ## Syntax
 
@@ -169,7 +169,7 @@ The FarNet module PowerShellFar comes with HLF utility scripts:
 
 ## See also
 
-- [HtmlToFarHelp Release Notes](https://github.com/nightroman/FarNet/blob/master/HelpDown/HtmlToFarHelp/Release-Notes.md)
+- [HtmlToFarHelp Release Notes](https://github.com/nightroman/FarNet/blob/main/HelpDown/HtmlToFarHelp/Release-Notes.md)
 <!---->
 - [GitHub Flavored Markdown](https://github.github.com/gfm/)
 - [PHP Markdown Extra](https://michelf.ca/projects/php-markdown/extra/)

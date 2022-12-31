@@ -109,11 +109,11 @@ https://github.com/nightroman/FarNet#readme
 		<version>$Version</version>
 		<authors>Roman Kuzmin</authors>
 		<owners>Roman Kuzmin</owners>
-		<projectUrl>https://github.com/nightroman/FarNet/tree/master/FSharpFar</projectUrl>
+		<projectUrl>https://github.com/nightroman/FarNet/tree/main/FSharpFar</projectUrl>
 		<icon>FarNetLogo.png</icon>
 		<license type="expression">BSD-3-Clause</license>
 		<description>$description</description>
-		<releaseNotes>https://github.com/nightroman/FarNet/blob/master/FSharpFar/History.txt</releaseNotes>
+		<releaseNotes>https://github.com/nightroman/FarNet/blob/main/FSharpFar/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module FSharp</tags>
 	</metadata>
 </package>

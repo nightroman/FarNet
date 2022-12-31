@@ -12,7 +12,7 @@ namespace FarNet;
 /// It may implement <see cref="IValidate"/> for data validation and completion.
 /// </typeparam>
 /// <remarks>
-/// See the <see href="https://github.com/nightroman/FarNet/tree/master/Modules/FarNet.Demo">FarNet.Demo</see> module
+/// See the <see href="https://github.com/nightroman/FarNet/tree/main/Modules/FarNet.Demo">FarNet.Demo</see> module
 /// for examples of browsable roaming settings (user preferences) and non-browsable local settings (working data).
 /// Other modules with settings: Drawer, FSharpFar, RightControl, RightWords, Vessel.
 /// <para>

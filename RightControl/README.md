@@ -12,7 +12,7 @@ deleting by words, and etc. Example: Visual Studio, Word, WordPad, etc.
 
 **Project**
 
- * Source: <https://github.com/nightroman/FarNet/tree/master/RightControl>
+ * Source: <https://github.com/nightroman/FarNet/tree/main/RightControl>
  * Author: Roman Kuzmin
 
 *********************************************************************

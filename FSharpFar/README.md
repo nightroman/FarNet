@@ -1,6 +1,6 @@
 ﻿
-[/samples]: https://github.com/nightroman/FarNet/tree/master/FSharpFar/samples
-[TryPanelFSharp]: https://github.com/nightroman/FarNet/tree/master/FSharpFar/samples/TryPanelFSharp
+[/samples]: https://github.com/nightroman/FarNet/tree/main/FSharpFar/samples
+[TryPanelFSharp]: https://github.com/nightroman/FarNet/tree/main/FSharpFar/samples/TryPanelFSharp
 [F# Interactive Options]: https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/fsharp-interactive-options
 
 # FarNet.FSharpFar
@@ -20,7 +20,7 @@ F# scripting and interactive services in Far Manager
 
 **Project**
 
-- Source: [FarNet/FSharpFar](https://github.com/nightroman/FarNet/tree/master/FSharpFar)
+- Source: [FarNet/FSharpFar](https://github.com/nightroman/FarNet/tree/main/FSharpFar)
 - Author: Roman Kuzmin
 
 **Credits**
@@ -643,7 +643,7 @@ Note that if a script is invoked in FSharpFar then arguments are not used.
 Conditional compilation may be used for separating FarNet code from exclusively
 designed for `fsx` or `fsi`. Use `#if FARNET` or `#if !FARNET` directives.
 
-See [/samples/fsx-sample](https://github.com/nightroman/FarNet/tree/master/FSharpFar/samples/fsx-sample).
+See [/samples/fsx-sample](https://github.com/nightroman/FarNet/tree/main/FSharpFar/samples/fsx-sample).
 
 ***
 ## FSharpFar packages
@@ -658,14 +658,14 @@ Each package has its `*.ini` file for use in other F# configuration files.
 * [FarNet.FSharp.PowerShell](https://github.com/nightroman/FarNet.FSharp.PowerShell)
 
     F# friendly PowerShell extension,
-    see [/samples](https://github.com/nightroman/FarNet.FSharp.PowerShell/tree/master/samples).
+    see [/samples](https://github.com/nightroman/FarNet.FSharp.PowerShell/tree/main/samples).
 
 * [FarNet.FSharp.Charting](https://github.com/nightroman/FarNet.FSharp.Charting)
 
     FarNet friendly [FSharp.Charting](https://fslab.org/FSharp.Charting/index.html) extension,
-    see [/samples](https://github.com/nightroman/FarNet.FSharp.Charting/tree/master/samples).
+    see [/samples](https://github.com/nightroman/FarNet.FSharp.Charting/tree/main/samples).
 
 * [FarNet.FSharp.Data](https://github.com/nightroman/FarNet.FSharp.Data)
 
     [FSharp.Data](https://github.com/fsprojects/FSharp.Data) package for FarNet.FSharpFar
-    see [/samples](https://github.com/nightroman/FarNet.FSharp.Data/tree/master/samples).
+    see [/samples](https://github.com/nightroman/FarNet.FSharp.Data/tree/main/samples).

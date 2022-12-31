@@ -18,7 +18,7 @@ Interface
 
 Project
 
-* Source: <https://github.com/nightroman/FarNet/tree/master/RightWords>
+* Source: <https://github.com/nightroman/FarNet/tree/main/RightWords>
 * Author: Roman Kuzmin
 
 Credits

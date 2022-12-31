@@ -1,6 +1,6 @@
 = 5.0.0 - ... =
 
-https://github.com/nightroman/FarNet/blob/master/PowerShellFar/History.txt
+https://github.com/nightroman/FarNet/blob/main/PowerShellFar/History.txt
 
 = 4.6.1 =
 
@@ -1377,8 +1377,7 @@ type (e.g. deserialized from .clixml properties are PSObject-s).
 [F3], [F4] allow to view, edit that file. This is by default, real actions may
 depend on a panel.
 
-*) New script Set-Console.ps1. It is the next version of this script:
-http://nightroman.spaces.live.com/blog/cns!F011223B604739FA!129.entry
+*) New script Set-Console.ps1.
 1) It can be called from any of these consoles: Far, PowerShell, or Cmd.
 2) In Far it must be invoked by PowerShell.exe, not by the PSF host.
 3) Do not use with console emulators.

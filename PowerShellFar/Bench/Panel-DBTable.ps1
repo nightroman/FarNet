@@ -80,7 +80,7 @@ if ($provider -eq 'OdbcConnection' -or $provider -eq 'OleDbConnection') {
 	$table = $DbConnection.GetSchema('Tables')
 }
 elseif ($provider -eq 'SQLiteConnection') {
-	$table = Table "SELECT name AS TABLE_NAME, type AS TABLE_TYPE, sql AS SQL FROM sqlite_master WHERE type = 'table' OR type = 'view'"
+	$table = Table "SELECT name AS TABLE_NAME, type AS TABLE_TYPE, sql AS SQL FROM sqlite_schema WHERE type = 'table' OR type = 'view'"
 }
 else {
 	$table = Table "SELECT * FROM INFORMATION_SCHEMA.TABLES"

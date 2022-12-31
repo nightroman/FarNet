@@ -101,7 +101,7 @@ The tool requires .NET Framework 4.0.
 		<version>$Version</version>
 		<owners>Roman Kuzmin</owners>
 		<authors>Roman Kuzmin</authors>
-		<projectUrl>https://github.com/nightroman/FarNet/tree/master/HelpDown/HtmlToFarHelp</projectUrl>
+		<projectUrl>https://github.com/nightroman/FarNet/tree/main/HelpDown/HtmlToFarHelp</projectUrl>
 		<icon>images\HtmlToFarHelp.png</icon>
 		<license type="expression">Apache-2.0</license>
 		<description>$description</description>

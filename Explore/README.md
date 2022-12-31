@@ -16,7 +16,7 @@ It is invoked from the command line with the prefix *Explore:*.
 
 **Project**
 
- * Source: <https://github.com/nightroman/FarNet/tree/master/Explore>
+ * Source: <https://github.com/nightroman/FarNet/tree/main/Explore>
  * Author: Roman Kuzmin
 
 *********************************************************************

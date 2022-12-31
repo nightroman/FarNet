@@ -32,7 +32,7 @@ task help @{
 	}
 }
 
-# https://github.com/nightroman/PowerShelf/blob/master/Invoke-Environment.ps1
+# https://github.com/nightroman/PowerShelf/blob/main/Invoke-Environment.ps1
 task resgen @{
 	Inputs = 'RightWords.restext', 'RightWords.ru.restext'
 	Outputs = "$ModuleRoot\RightWords.resources", "$ModuleRoot\RightWords.ru.resources"
@@ -119,7 +119,7 @@ https://github.com/nightroman/FarNet#readme
 		<icon>FarNetLogo.png</icon>
 		<license type="expression">BSD-3-Clause</license>
 		<description>$text</description>
-		<releaseNotes>https://github.com/nightroman/FarNet/blob/master/RightWords/History.txt</releaseNotes>
+		<releaseNotes>https://github.com/nightroman/FarNet/blob/main/RightWords/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module NHunspell</tags>
 	</metadata>
 </package>

@@ -13,5 +13,5 @@ https://github.com/nightroman/FarNet#readme
 
 ## See also
 
-- [README](https://github.com/nightroman/FarNet/tree/master/PowerShellFar#readme)
+- [README](https://github.com/nightroman/FarNet/tree/main/PowerShellFar#readme)
 - [Wiki](https://github.com/nightroman/FarNet/wiki/PowerShellFar)

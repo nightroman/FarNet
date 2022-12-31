@@ -1,6 +1,6 @@
 ﻿= 5.0.0 - ... =
 
-https://github.com/nightroman/FarNet/blob/master/FarNet/History.txt
+https://github.com/nightroman/FarNet/blob/main/FarNet/History.txt
 
 = 4.6.1 =
 

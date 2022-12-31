@@ -9,7 +9,7 @@ and shows the results as a chart in a separate window with some interaction.
 
 **Project**
 
- * Source: <https://github.com/nightroman/FarNet/tree/master/FolderChart>
+ * Source: <https://github.com/nightroman/FarNet/tree/main/FolderChart>
  * Author: Roman Kuzmin
 
 ***

@@ -1,5 +1,4 @@
-
-// http://fsharpnews.blogspot.com/2010/07/f-vs-mathematica-parametric-plots.html
+// from fsharpnews.blogspot.com (removed)
 
 module FoxesRubbits
 open System.Windows.Forms

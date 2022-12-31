@@ -5,7 +5,7 @@
 .GUID 550bc198-dd44-4bbc-8ad7-ccf4b8bd2aff
 .TAGS TabExpansion2, Register-ArgumentCompleter
 .LICENSEURI http://www.apache.org/licenses/LICENSE-2.0
-.PROJECTURI https://github.com/nightroman/FarNet/blob/master/PowerShellFar/TabExpansion2.ps1
+.PROJECTURI https://github.com/nightroman/FarNet/blob/main/PowerShellFar/TabExpansion2.ps1
 #>
 
 <#

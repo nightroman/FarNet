@@ -1,7 +1,7 @@
 # Demo panel with some operations
 
 [TryPanelFSharp.fs](TryPanelFSharp.fs) shows how to program a plugin panel with some operations in F#.
-The similar C# code is [TryPanelCSharp.cs](https://github.com/nightroman/FarNet/blob/master/Modules/TryPanelCSharp/TryPanelCSharp.cs).
+The similar C# code is [TryPanelCSharp.cs](https://github.com/nightroman/FarNet/blob/main/Modules/TryPanelCSharp/TryPanelCSharp.cs).
 
 The sample creates and opens a plugin panel with the following features
 

@@ -9,7 +9,7 @@ Windows forms directly without any extra packages. Run `*.fsx` scripts in order
 to show sample charts.
 
 For easier charting in F# consider using [FarNet.FSharp.Charting](https://github.com/nightroman/FarNet.FSharp.Charting),
-see [/samples](https://github.com/nightroman/FarNet.FSharp.Charting/tree/master/samples).
+see [/samples](https://github.com/nightroman/FarNet.FSharp.Charting/tree/main/samples).
 
 **Using fsx.exe or fsi.exe**
 

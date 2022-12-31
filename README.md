@@ -1,4 +1,4 @@
-﻿<img src="https://github.com/nightroman/FarNet/raw/master/Zoo/FarNetLogo.png" align="right"/>
+﻿<img src="https://github.com/nightroman/FarNet/raw/main/Zoo/FarNetLogo.png" align="right"/>
 
 # FarNet
 
@@ -50,14 +50,14 @@ Set-Location "C:\Program Files\Far Manager"
 Import Far package functions
 
 ```powershell
-Invoke-Expression (Invoke-WebRequest https://raw.githubusercontent.com/nightroman/FarNet/master/web.ps1)
+Invoke-Expression (Invoke-WebRequest https://raw.githubusercontent.com/nightroman/FarNet/main/web.ps1)
 ```
 
 If it fails on older systems, try
 
 ```powershell
 [Net.ServicePointManager]::SecurityProtocol = "Tls11,Tls12,$([Net.ServicePointManager]::SecurityProtocol)"
-Invoke-Expression (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/nightroman/FarNet/master/web.ps1')
+Invoke-Expression (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/nightroman/FarNet/main/web.ps1')
 ```
 
 Install FarNet
@@ -106,7 +106,7 @@ Close Far Manager, open PowerShell console, and invoke
 
 ```powershell
 Set-Location "C:\Program Files\Far Manager"
-Invoke-Expression (Invoke-WebRequest https://raw.githubusercontent.com/nightroman/FarNet/master/web.ps1)
+Invoke-Expression (Invoke-WebRequest https://raw.githubusercontent.com/nightroman/FarNet/main/web.ps1)
 ```
 
 To update all packages, use

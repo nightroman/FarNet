@@ -79,7 +79,7 @@ parameter:
 
 - `args` - property bag of named parameters from command line or interop
 - `host` - extended JavaScript functions provided by ClearScript, see [here](https://microsoft.github.io/ClearScript/Reference/html/Methods_T_Microsoft_ClearScript_ExtendedHostFunctions.htm)
-- `far` - FarNet main methods, shortcut to `clr.FarNet.Far.Api` see [here](https://github.com/nightroman/FarNet/blob/master/FarNet/FarNet/Far.cs)
+- `far` - FarNet main methods, shortcut to `clr.FarNet.Far.Api` see [here](https://github.com/nightroman/FarNet/blob/main/FarNet/FarNet/Far.cs)
 - `clr` - .NET types of the following assemblies:
     - mscorlib
     - System

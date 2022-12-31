@@ -9,7 +9,7 @@ The module provides a few editor color tools (drawers).
 
 **Project**
 
- * Source: <https://github.com/nightroman/FarNet/tree/master/Drawer>
+ * Source: <https://github.com/nightroman/FarNet/tree/main/Drawer>
  * Author: Roman Kuzmin
 
 *********************************************************************

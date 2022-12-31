@@ -93,11 +93,11 @@ https://github.com/nightroman/FarNet#readme
 		<version>$Version</version>
 		<authors>Roman Kuzmin</authors>
 		<owners>Roman Kuzmin</owners>
-		<projectUrl>https://github.com/nightroman/FarNet/tree/master/$ModuleName</projectUrl>
+		<projectUrl>https://github.com/nightroman/FarNet/tree/main/$ModuleName</projectUrl>
 		<icon>FarNetLogo.png</icon>
 		<license type="expression">BSD-3-Clause</license>
 		<description>$description</description>
-		<releaseNotes>https://github.com/nightroman/FarNet/blob/master/$ModuleName/History.txt</releaseNotes>
+		<releaseNotes>https://github.com/nightroman/FarNet/blob/main/$ModuleName/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module JavaScript ClearScript V8</tags>
 	</metadata>
 </package>

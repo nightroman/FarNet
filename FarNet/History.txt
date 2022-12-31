@@ -1220,4 +1220,4 @@ and GetKindNameAt().
 
 = 3.1.? - 4.6.1 =
 
-https://github.com/nightroman/FarNet/blob/master/FarNet/History4.txt
+https://github.com/nightroman/FarNet/blob/main/FarNet/History4.txt

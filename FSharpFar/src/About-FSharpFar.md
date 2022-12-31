@@ -363,7 +363,7 @@ Intercept `Out` and `Error` separately. Different colors?
 
 ### 2016-08-26 How `#r` works
 
-[from](https://sergeytihon.wordpress.com/2014/07/23/avoid-using-relative-paths-in-r-directives/)
+[from](https://sergeytihon.com/2014/07/23/avoid-using-relative-paths-in-r-directives/)
 
 > `#r` means to reference by dll-path; focusing on name. This means that FSI will
 use the file name first, looking in the system-wide search path and only then

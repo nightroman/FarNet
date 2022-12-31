@@ -1,5 +1,5 @@
 [Contents]: #vessel
-[List menu keys]: https://github.com/nightroman/FarNet/tree/master/FarNet#list-menu
+[List menu keys]: https://github.com/nightroman/FarNet/tree/main/FarNet#list-menu
 
 # Vessel
 
@@ -20,7 +20,7 @@ It provides enhanced history of files, folders, commands.
 
 **Project**
 
-* Source: <https://github.com/nightroman/FarNet/tree/master/Vessel>
+* Source: <https://github.com/nightroman/FarNet/tree/main/Vessel>
 * Author: Roman Kuzmin
 
 **Installation**

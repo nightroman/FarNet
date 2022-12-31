@@ -42,15 +42,9 @@ if ($Host.Name -ceq 'FarHost') {
 
 ### Parameter ComputerName for all cmdlets
 Register-ArgumentCompleter -ParameterName ComputerName -ScriptBlock {
-	# add this machine first
-	$name = $env:COMPUTERNAME
-	New-Object System.Management.Automation.CompletionResult $name, $name, ParameterValue, $name
-
-	# add others from the list
-	foreach($_ in $env:pc_master, $env:pc_slave) {
-		if ($_ -and $_ -ne $name) {
-			New-Object System.Management.Automation.CompletionResult $_, $_, ParameterValue, $_
-		}
+	foreach($_ in Get-Item env:\*COMPUTERNAME* | Sort-Object Value) {
+		$_ = $_.Value
+		New-Object System.Management.Automation.CompletionResult $_, $_, ParameterValue, $_
 	}
 }
 

@@ -1,6 +1,6 @@
 <#
 .Synopsis
-	Build script (https://github.com/nightroman/Invoke-Build)
+	Build script, https://github.com/nightroman/Invoke-Build
 #>
 
 param(
@@ -21,7 +21,7 @@ task clean {
 	remove bin, obj
 }
 
-# https://github.com/nightroman/PowerShelf/blob/master/Invoke-Environment.ps1
+# https://github.com/nightroman/PowerShelf/blob/main/Invoke-Environment.ps1
 task resgen @{
 	Inputs = 'FarNet.Demo.restext', 'FarNet.Demo.ru.restext'
 	Outputs = "$ModuleRoot\FarNet.Demo.resources", "$ModuleRoot\FarNet.Demo.ru.resources"
