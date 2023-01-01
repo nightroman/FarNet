@@ -82,8 +82,8 @@ task package markdown, {
 
 	# meta
 	Copy-Item -Destination z @(
-		'..\Zoo\FarNetLogo.png'
 		'README.md'
+		'..\Zoo\FarNetLogo.png'
 	)
 }
 
@@ -98,11 +98,11 @@ task nuget package, version, {
 		<authors>Roman Kuzmin</authors>
 		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
 		<icon>FarNetLogo.png</icon>
+		<readme>README.md</readme>
 		<license type="expression">BSD-3-Clause</license>
 		<description>$Description</description>
 		<releaseNotes>https://github.com/nightroman/FarNet/blob/main/$ModuleName/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module</tags>
-		<readme>README.md</readme>
 	</metadata>
 </package>
 "@

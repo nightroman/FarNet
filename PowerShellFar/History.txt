@@ -1,5 +1,13 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 7.0.6 =
+
+master -> main, update links.
+
+ArgumentCompleters.ps1 - amend completion of -ComputerName
+
+Panel-DBTable.ps1 - use sqlite_schema instead of sqlite_master
+
 = 7.0.5 =
 
 New Edit-IB.ps1 finds and edits selected Invoke-Build tasks.

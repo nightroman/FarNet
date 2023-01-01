@@ -11,6 +11,7 @@ param(
 Set-StrictMode -Version 3
 $ModuleName = 'CopyColor'
 $ModuleRoot = "$FarHome\FarNet\Modules\$ModuleName"
+$Description = 'Copy editor text with colors as HTML. FarNet module for Far Manager.'
 
 task build meta, {
 	exec { dotnet build -c $Configuration /p:FarHome=$FarHome }
@@ -40,7 +41,7 @@ task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props version
     <Copyright>Copyright (c) Roman Kuzmin</Copyright>
     <Product>FarNet.$ModuleName</Product>
     <Version>$Version</Version>
-    <Description>Copy text with colors as HTML.</Description>
+    <Description>$Description</Description>
   </PropertyGroup>
 </Project>
 "@
@@ -67,8 +68,11 @@ task package markdown, version, {
 	remove z
 	$null = mkdir $toModule
 
-	# logo
-	Copy-Item -Destination z ..\Zoo\FarNetLogo.png
+	# meta
+	Copy-Item -Destination z @(
+		'README.md'
+		'..\Zoo\FarNetLogo.png'
+	)
 
 	# module
 	Copy-Item -Destination $toModule @(
@@ -80,19 +84,6 @@ task package markdown, version, {
 }
 
 task nuget package, version, {
-	$description = @'
-CopyColor is the FarNet module for Far Manager.
-
-It copies selected text with colors from the editor to the clipboard using HTML
-clipboard format. This text can be pasted to editors supporting this format.
-
----
-
-How to install and update FarNet and modules:
-
-https://github.com/nightroman/FarNet#readme
-'@
-
 	Set-Content z\Package.nuspec @"
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
@@ -103,6 +94,7 @@ https://github.com/nightroman/FarNet#readme
 		<authors>Roman Kuzmin</authors>
 		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
 		<icon>FarNetLogo.png</icon>
+		<readme>README.md</readme>
 		<license type="expression">BSD-3-Clause</license>
 		<description>$description</description>
 		<releaseNotes>https://github.com/nightroman/FarNet/blob/main/$ModuleName/History.txt</releaseNotes>

@@ -655,17 +655,25 @@ The directory is `%FARHOME%\FarNet\Lib` instead of `%FARHOME%\FarNet\Modules`.
 Once installed, the content of such packages is portable with Far Manager.
 Each package has its `*.ini` file for use in other F# configuration files.
 
-* [FarNet.FSharp.PowerShell](https://github.com/nightroman/FarNet.FSharp.PowerShell)
-
-    F# friendly PowerShell extension,
-    see [/samples](https://github.com/nightroman/FarNet.FSharp.PowerShell/tree/main/samples).
-
 * [FarNet.FSharp.Charting](https://github.com/nightroman/FarNet.FSharp.Charting)
 
     FarNet friendly [FSharp.Charting](https://fslab.org/FSharp.Charting/index.html) extension,
     see [/samples](https://github.com/nightroman/FarNet.FSharp.Charting/tree/main/samples).
 
+    The alternative package: [FarNet.ScottPlot](https://github.com/nightroman/FarNet.ScottPlot).
+    It is suitable for all modules (C#, F#) and scripts (F#, PowerShell, JavaScript).
+
 * [FarNet.FSharp.Data](https://github.com/nightroman/FarNet.FSharp.Data)
 
     [FSharp.Data](https://github.com/fsprojects/FSharp.Data) package for FarNet.FSharpFar
     see [/samples](https://github.com/nightroman/FarNet.FSharp.Data/tree/main/samples).
+
+* [FarNet.FSharp.PowerShell](https://github.com/nightroman/FarNet.FSharp.PowerShell)
+
+    F# friendly PowerShell extension,
+    see [/samples](https://github.com/nightroman/FarNet.FSharp.PowerShell/tree/main/samples).
+
+* [FarNet.FSharp.Unquote](https://github.com/nightroman/FarNet.FSharp.Unquote)
+
+    Easy and handy assert expressions for tests,
+    see [/samples](https://github.com/nightroman/FarNet.FSharp.Unquote/tree/main/samples).

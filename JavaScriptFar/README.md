@@ -152,6 +152,6 @@ functions.
 
 ## See also
 
-- [Samples](Samples) - demo scripts presenting features and techniques.
+- [Samples](https://github.com/nightroman/FarNet/tree/main/JavaScriptFar/Samples) - demo scripts presenting features and techniques.
 - [FarNet.ScottPlot](https://github.com/nightroman/FarNet.ScottPlot/tree/main/samples-JavaScript) - interactive plots, JavaScript samples.
 - [JavaScript in Visual Studio Code](https://code.visualstudio.com/docs/languages/javascript)

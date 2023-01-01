@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.Vessel
 
+= 5.0.2 =
+
+master -> main, update links.
+
 = 5.0.1 =
 
 Requires FarNet 7.0.4

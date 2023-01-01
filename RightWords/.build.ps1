@@ -11,6 +11,7 @@ param(
 Set-StrictMode -Version 3
 $ModuleName = 'RightWords'
 $ModuleRoot = "$FarHome\FarNet\Modules\$ModuleName"
+$Description = 'Spell-checker. FarNet module for Far Manager.'
 
 task build meta, {
 	exec { dotnet build -c $Configuration /p:FarHome=$FarHome }
@@ -52,6 +53,25 @@ task clean {
 	remove z, bin, obj, README.htm, *.nupkg
 }
 
+task version {
+	($script:Version = switch -regex -file History.txt {'^= (\d+\.\d+\.\d+) =$' {$matches[1]; break}})
+	assert $script:Version
+}
+
+task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props -Jobs version, {
+	Set-Content Directory.Build.props @"
+<Project>
+  <PropertyGroup>
+    <Company>https://github.com/nightroman/FarNet</Company>
+    <Copyright>Copyright (c) Roman Kuzmin</Copyright>
+    <Product>FarNet.$ModuleName</Product>
+    <Version>$Version</Version>
+    <Description>$Description</Description>
+  </PropertyGroup>
+</Project>
+"@
+}
+
 task markdown {
 	assert (Test-Path $env:MarkdownCss)
 	exec { pandoc.exe @(
@@ -61,11 +81,6 @@ task markdown {
 		'--self-contained', "--css=$env:MarkdownCss"
 		'--standalone', '--metadata=pagetitle=RightWords'
 	)}
-}
-
-task version {
-	($script:Version = switch -regex -file History.txt {'^= (\d+\.\d+\.\d+) =$' {$matches[1]; break}})
-	assert $script:Version
 }
 
 task package markdown, version, {
@@ -80,8 +95,11 @@ task package markdown, version, {
 	exec { robocopy $ModuleRoot $toModule /s /xf *.pdb } (0..2)
 	equals 7 (Get-ChildItem $toModule -Recurse -File).Count
 
-	# logo
-	Copy-Item -Destination z ..\Zoo\FarNetLogo.png
+	# meta
+	Copy-Item -Destination z @(
+		'README.md'
+		'..\Zoo\FarNetLogo.png'
+	)
 
 	# module
 	Copy-Item -Destination $toModule @(
@@ -93,20 +111,6 @@ task package markdown, version, {
 }
 
 task nuget package, version, {
-	$text = @'
-FarNet module for Far Manager, spell-checker.
-
-The spell-checker is based on Hunspell used in OpenOffice.
-
----
-
-How to install and update FarNet and modules:
-
-https://github.com/nightroman/FarNet#readme
-
----
-'@
-	# nuspec
 	Set-Content z\Package.nuspec @"
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
@@ -117,27 +121,16 @@ https://github.com/nightroman/FarNet#readme
 		<owners>Roman Kuzmin</owners>
 		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
 		<icon>FarNetLogo.png</icon>
+		<readme>README.md</readme>
 		<license type="expression">BSD-3-Clause</license>
-		<description>$text</description>
+		<description>$Description</description>
 		<releaseNotes>https://github.com/nightroman/FarNet/blob/main/RightWords/History.txt</releaseNotes>
-		<tags>FarManager FarNet Module NHunspell</tags>
+		<tags>FarManager FarNet Module Hunspell</tags>
 	</metadata>
 </package>
 "@
-	# pack
-	exec { NuGet pack z\Package.nuspec }
-}
 
-task meta -Inputs .build.ps1, History.txt -Outputs AssemblyInfo.cs -Jobs version, {
-	Set-Content AssemblyInfo.cs @"
-using System.Reflection;
-[assembly: AssemblyCompany("https://github.com/nightroman/FarNet")]
-[assembly: AssemblyCopyright("Copyright (c) Roman Kuzmin")]
-[assembly: AssemblyDescription("Spell-checker")]
-[assembly: AssemblyProduct("FarNet.RightWords")]
-[assembly: AssemblyTitle("FarNet module RightWords for Far Manager")]
-[assembly: AssemblyVersion("$script:Version")]
-"@
+	exec { NuGet pack z\Package.nuspec }
 }
 
 task . build, clean

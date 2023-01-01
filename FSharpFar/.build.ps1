@@ -1,6 +1,6 @@
 <#
 .Synopsis
-	Build script (https://github.com/nightroman/Invoke-Build)
+	Build script, https://github.com/nightroman/Invoke-Build
 #>
 
 param(
@@ -11,6 +11,7 @@ param(
 Set-StrictMode -Version 3
 $ModuleName = 'FSharpFar'
 $ModuleRoot = "$FarHome\FarNet\Modules\$ModuleName"
+$Description = 'F# scripting and interactive services in Far Manager.'
 
 task build meta, {
 	exec { dotnet build "src\$ModuleName.sln" -c $Configuration "/p:FarHome=$FarHome" }
@@ -47,7 +48,7 @@ task meta -Inputs .build.ps1, History.txt -Outputs src/Directory.Build.props -Jo
 	<PropertyGroup>
 		<Company>https://github.com/nightroman/FarNet</Company>
 		<Copyright>Copyright (c) Roman Kuzmin</Copyright>
-		<Description>F# scripting and interactive services in Far Manager</Description>
+		<Description>$Description</Description>
 		<Product>FarNet.FSharpFar</Product>
 		<Version>$Version</Version>
 	</PropertyGroup>
@@ -74,8 +75,11 @@ task package markdown, {
 	exec { robocopy $ModuleRoot $toModule /s /xf *.pdb } (0..2)
 	equals 29 (Get-ChildItem $toModule -Recurse -File).Count
 
-	# logo
-	Copy-Item -Destination z ..\Zoo\FarNetLogo.png
+	# meta
+	Copy-Item -Destination z @(
+		'README.md'
+		'..\Zoo\FarNetLogo.png'
+	)
 
 	# repo
 	Copy-Item -Destination $toModule @(
@@ -87,19 +91,10 @@ task package markdown, {
 
 task nuget package, version, {
 	# test versions
-	$dllPath = "$FarHome\FarNet\Modules\$ModuleName\$ModuleName.dll"
+	$dllPath = "$ModuleRoot\$ModuleName.dll"
 	($dllVersion = (Get-Item $dllPath).VersionInfo.FileVersion.ToString())
 	assert $dllVersion.StartsWith("$Version.") 'Versions mismatch.'
 
-	$description = @'
-F# scripting and interactive services in Far Manager
-
----
-
-How to install and update FarNet and modules:
-
-https://github.com/nightroman/FarNet#readme
-'@
 	# nuspec
 	Set-Content z\Package.nuspec @"
 <?xml version="1.0"?>
@@ -111,8 +106,9 @@ https://github.com/nightroman/FarNet#readme
 		<owners>Roman Kuzmin</owners>
 		<projectUrl>https://github.com/nightroman/FarNet/tree/main/FSharpFar</projectUrl>
 		<icon>FarNetLogo.png</icon>
+		<readme>README.md</readme>
 		<license type="expression">BSD-3-Clause</license>
-		<description>$description</description>
+		<description>$Description</description>
 		<releaseNotes>https://github.com/nightroman/FarNet/blob/main/FSharpFar/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module FSharp</tags>
 	</metadata>

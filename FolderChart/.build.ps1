@@ -11,6 +11,7 @@ param(
 Set-StrictMode -Version 3
 $ModuleName = 'FolderChart'
 $ModuleRoot = "$FarHome\FarNet\Modules\$ModuleName"
+$Description = 'Shows folder sizes chart. FarNet module for Far Manager.'
 
 task build meta, {
 	exec { dotnet build -c $Configuration -p:FarHome=$FarHome }
@@ -43,10 +44,24 @@ task markdown {
 	)}
 }
 
+task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props -Jobs version, {
+	Set-Content Directory.Build.props @"
+<Project>
+	<PropertyGroup>
+		<Company>https://github.com/nightroman/FarNet</Company>
+		<Copyright>Copyright (c) Roman Kuzmin</Copyright>
+		<Description>$Description</Description>
+		<Product>FarNet.$ModuleName</Product>
+		<Version>$Version</Version>
+		<FileVersion>$Version</FileVersion>
+		<AssemblyVersion>$Version</AssemblyVersion>
+	</PropertyGroup>
+</Project>
+"@
+}
+
 task package version, markdown, {
-	$dll = Get-Item "$ModuleRoot\$ModuleName.dll"
-	assert ($dll.VersionInfo.FileVersion -match '^(\d+\.\d+\.\d+)\.0$')
-	equals ($matches[1]) $script:Version
+	equals $Version (Get-Item $ModuleRoot\$ModuleName.dll).VersionInfo.FileVersion
 
 	remove z
 	$toModule = mkdir "z\tools\FarHome\FarNet\Modules\$ModuleName"
@@ -54,7 +69,10 @@ task package version, markdown, {
 	exec { robocopy $ModuleRoot $toModule /s /xf *.pdb } (0..2)
 	equals 10 (Get-ChildItem $toModule -Recurse -File).Count
 
-	Copy-Item -Destination z ..\Zoo\FarNetLogo.png
+	Copy-Item -Destination z @(
+		'README.md'
+		'..\Zoo\FarNetLogo.png'
+	)
 
 	Copy-Item -Destination $toModule @(
 		"README.htm"
@@ -64,52 +82,26 @@ task package version, markdown, {
 }
 
 task nuget package, {
-	$text = @'
-FolderChart is the FarNet module for Far Manager.
-
-For the current panel directory this tool calculates file and directory sizes
-and shows the results as a chart in a separate window with some interaction.
-
----
-
-How to install and update FarNet and modules:
-
-https://github.com/nightroman/FarNet#readme
-
----
-'@
-	# nuspec
 	Set-Content z\Package.nuspec @"
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
 		<id>FarNet.FolderChart</id>
-		<version>$script:Version</version>
+		<version>$Version</version>
 		<owners>Roman Kuzmin</owners>
 		<authors>Roman Kuzmin</authors>
 		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
 		<icon>FarNetLogo.png</icon>
+		<readme>README.md</readme>
 		<license type="expression">BSD-3-Clause</license>
-		<description>$text</description>
+		<description>$Description</description>
 		<releaseNotes>https://github.com/nightroman/FarNet/blob/main/FolderChart/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module</tags>
 	</metadata>
 </package>
 "@
-	# pack
-	exec { NuGet pack z\Package.nuspec }
-}
 
-task meta -Inputs .build.ps1, History.txt -Outputs AssemblyInfo.cs -Jobs version, {
-	Set-Content AssemblyInfo.cs @"
-using System.Reflection;
-[assembly: AssemblyProduct("FarNet.FolderChart")]
-[assembly: AssemblyVersion("$script:Version")]
-[assembly: AssemblyTitle("FarNet module for Far Manager")]
-[assembly: AssemblyDescription("Shows folder item sizes in a chart.")]
-[assembly: AssemblyCompany("https://github.com/nightroman/FarNet")]
-[assembly: AssemblyCopyright("Copyright (c) Roman Kuzmin")]
-"@
+	exec { NuGet pack z\Package.nuspec }
 }
 
 task . build, clean

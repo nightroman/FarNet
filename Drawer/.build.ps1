@@ -11,6 +11,7 @@ param(
 Set-StrictMode -Version 3
 $ModuleName = 'Drawer'
 $ModuleRoot = "$FarHome\FarNet\Modules\$ModuleName"
+$Description = 'Editor color tools. FarNet module for Far Manager.'
 
 task build meta, {
 	exec { dotnet build -c $Configuration /p:FarHome=$FarHome }
@@ -40,7 +41,7 @@ task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props version
     <Copyright>Copyright (c) Roman Kuzmin</Copyright>
     <Product>FarNet.$ModuleName</Product>
     <Version>$Version</Version>
-    <Description>Editor color tools</Description>
+    <Description>$Description</Description>
   </PropertyGroup>
 </Project>
 "@
@@ -67,8 +68,11 @@ task package markdown, version, {
 	remove z
 	$null = mkdir $toModule
 
-	# logo
-	Copy-Item -Destination z ..\Zoo\FarNetLogo.png
+	# meta
+	Copy-Item -Destination z @(
+		'README.md'
+		'..\Zoo\FarNetLogo.png'
+	)
 
 	# module
 	Copy-Item -Destination $toModule @(
@@ -80,18 +84,6 @@ task package markdown, version, {
 }
 
 task nuget package, version, {
-	$description = @'
-Drawer is the FarNet module for Far Manager.
-
-It provides a few editor color tools (drawers).
-
----
-
-How to install and update FarNet and modules:
-
-https://github.com/nightroman/FarNet#readme
-'@
-
 	Set-Content z\Package.nuspec @"
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
@@ -102,8 +94,9 @@ https://github.com/nightroman/FarNet#readme
 		<authors>Roman Kuzmin</authors>
 		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
 		<icon>FarNetLogo.png</icon>
+		<readme>README.md</readme>
 		<license type="expression">BSD-3-Clause</license>
-		<description>$description</description>
+		<description>$Description</description>
 		<releaseNotes>https://github.com/nightroman/FarNet/blob/main/$ModuleName/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module</tags>
 	</metadata>

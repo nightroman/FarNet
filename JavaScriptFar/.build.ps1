@@ -11,6 +11,7 @@ param(
 Set-StrictMode -Version 3
 $ModuleName = 'JavaScriptFar'
 $ModuleRoot = "$FarHome\FarNet\Modules\$ModuleName"
+$Description = 'JavaScript scripting in Far Manager.'
 
 task build meta, {
 	exec { dotnet build -c $Configuration -p:FarHome=$FarHome }
@@ -43,8 +44,11 @@ task package markdown, {
 	exec { robocopy $ModuleRoot $toModule /s /xf *.pdb } (0..2)
 	equals 11 (Get-ChildItem $toModule -Recurse -File).Count
 
-	# logo
-	Copy-Item -Destination z ..\Zoo\FarNetLogo.png
+	# meta
+	Copy-Item -Destination z @(
+		'README.md'
+		'..\Zoo\FarNetLogo.png'
+	)
 
 	# repo
 	Copy-Item -Destination $toModule @(
@@ -58,7 +62,7 @@ task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props -Jobs v
 	Set-Content Directory.Build.props @"
 <Project>
 	<PropertyGroup>
-		<Description>JavaScript scripting in Far Manager</Description>
+		<Description>$Description</Description>
 		<Company>https://github.com/nightroman/FarNet</Company>
 		<Copyright>Copyright (c) Roman Kuzmin</Copyright>
 		<Product>FarNet.$ModuleName</Product>
@@ -74,16 +78,6 @@ task nuget package, version, {
 	($dllVersion = (Get-Item $dllPath).VersionInfo.FileVersion.ToString())
 	assert $dllVersion.StartsWith("$Version.") 'Versions mismatch.'
 
-	$description = @'
-JavaScript scripting in Far Manager using ClearScript with V8
-
----
-
-How to install and update FarNet and modules:
-
-https://github.com/nightroman/FarNet#readme
-'@
-
 	# nuspec
 	Set-Content z\Package.nuspec @"
 <?xml version="1.0"?>
@@ -95,8 +89,9 @@ https://github.com/nightroman/FarNet#readme
 		<owners>Roman Kuzmin</owners>
 		<projectUrl>https://github.com/nightroman/FarNet/tree/main/$ModuleName</projectUrl>
 		<icon>FarNetLogo.png</icon>
+		<readme>README.md</readme>
 		<license type="expression">BSD-3-Clause</license>
-		<description>$description</description>
+		<description>$Description</description>
 		<releaseNotes>https://github.com/nightroman/FarNet/blob/main/$ModuleName/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module JavaScript ClearScript V8</tags>
 	</metadata>

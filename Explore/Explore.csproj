@@ -1,12 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Company>https://github.com/nightroman/FarNet</Company>
-    <Copyright>Copyright (c) Roman Kuzmin</Copyright>
-    <Product>FarNet.Explore</Product>
-    <Version>4.0.0</Version>
-    <Description>Search in FarNet panels</Description>
-  </PropertyGroup>
-  <PropertyGroup>
     <FarHome Condition="'$(FarHome)' == ''">C:\Bin\Far\x64</FarHome>
     <TargetFramework>net7.0</TargetFramework>
   </PropertyGroup>

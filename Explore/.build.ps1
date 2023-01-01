@@ -11,8 +11,9 @@ param(
 Set-StrictMode -Version 3
 $ModuleName = 'Explore'
 $ModuleRoot = "$FarHome\FarNet\Modules\$ModuleName"
+$Description = 'Search in FarNet panels. FarNet module for Far Manager.'
 
-task build {
+task build meta, {
 	exec { dotnet build -c $Configuration /p:FarHome=$FarHome }
 }
 
@@ -46,15 +47,34 @@ task markdown {
 	}
 }
 
+task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props -Jobs version, {
+	Set-Content Directory.Build.props @"
+<Project>
+	<PropertyGroup>
+		<Company>https://github.com/nightroman/FarNet</Company>
+		<Copyright>Copyright (c) Roman Kuzmin</Copyright>
+		<Description>$Description</Description>
+		<Product>FarNet.$ModuleName</Product>
+		<Version>$Version</Version>
+		<FileVersion>$Version</FileVersion>
+		<AssemblyVersion>$Version</AssemblyVersion>
+	</PropertyGroup>
+</Project>
+"@
+}
+
 task package markdown, version, {
-	equals "$Version.0" (Get-Item $ModuleRoot\$ModuleName.dll).VersionInfo.FileVersion
+	equals $Version (Get-Item $ModuleRoot\$ModuleName.dll).VersionInfo.FileVersion
 	$toModule = "z\tools\FarHome\FarNet\Modules\$ModuleName"
 
 	remove z
 	$null = mkdir $toModule
 
-	# logo
-	Copy-Item -Destination z ..\Zoo\FarNetLogo.png
+	# meta
+	Copy-Item -Destination z @(
+		'README.md'
+		'..\Zoo\FarNetLogo.png'
+	)
 
 	# module
 	Copy-Item -Destination $toModule @(
@@ -66,19 +86,6 @@ task package markdown, version, {
 }
 
 task nuget package, version, {
-	$description = @'
-Explore is the FarNet module for Far Manager.
-
-It searches in FarNet module panels and opens the result panel.
-It is invoked from the command line with the prefix "Explore:".
-
----
-
-How to install and update FarNet and modules:
-
-https://github.com/nightroman/FarNet#readme
-'@
-
 	Set-Content z\Package.nuspec @"
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
@@ -89,8 +96,9 @@ https://github.com/nightroman/FarNet#readme
 		<authors>Roman Kuzmin</authors>
 		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
 		<icon>FarNetLogo.png</icon>
+		<readme>README.md</readme>
 		<license type="expression">BSD-3-Clause</license>
-		<description>$description</description>
+		<description>$Description</description>
 		<releaseNotes>https://github.com/nightroman/FarNet/blob/main/$ModuleName/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module</tags>
 	</metadata>

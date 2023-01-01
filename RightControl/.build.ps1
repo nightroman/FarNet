@@ -11,6 +11,7 @@ param(
 Set-StrictMode -Version 3
 $ModuleName = 'RightControl'
 $ModuleRoot = "$FarHome\FarNet\Modules\$ModuleName"
+$Description = 'Editor and line editor tweaks. FarNet module for Far Manager.'
 
 task build meta, {
 	exec { dotnet build -c $Configuration /p:FarHome=$FarHome }
@@ -27,17 +28,12 @@ task clean {
 	remove z, bin, obj, README.htm, FarNet.$ModuleName.*.nupkg
 }
 
-function Get-Version {
-	switch -Regex -File History.txt {'=\s*(\d+\.\d+\.\d+)\s*=' {return $Matches[1]} }
-}
-
 task version {
-	($script:Version = Get-Version)
+	($script:Version = switch -Regex -File History.txt {'=\s*(\d+\.\d+\.\d+)\s*=' {$Matches[1]; break}})
+	assert $script:Version
 }
 
-task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props {
-	$Version = Get-Version
-
+task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props -Jobs version, {
 	Set-Content Directory.Build.props @"
 <Project>
   <PropertyGroup>
@@ -45,7 +41,7 @@ task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props {
     <Copyright>Copyright (c) Roman Kuzmin</Copyright>
     <Product>FarNet.$ModuleName</Product>
     <Version>$Version</Version>
-    <Description>Far Manager editor and line editor tweaks</Description>
+    <Description>$Description</Description>
   </PropertyGroup>
 </Project>
 "@
@@ -72,8 +68,11 @@ task package markdown, version, {
 	remove z
 	$null = mkdir $toModule
 
-	# logo
-	Copy-Item -Destination z ..\Zoo\FarNetLogo.png
+	# meta
+	Copy-Item -Destination z @(
+		'README.md'
+		'..\Zoo\FarNetLogo.png'
+	)
 
 	# module
 	Copy-Item -Destination $toModule @(
@@ -86,20 +85,6 @@ task package markdown, version, {
 }
 
 task nuget package, version, {
-	$description = @'
-RightControl is the FarNet module for Far Manager.
-
-It alters some actions in editors, edit controls, and the command line.
-New actions are similar to what many popular editors do on stepping,
-selecting, deleting by words, and etc.
-
----
-
-How to install and update FarNet and modules:
-
-https://github.com/nightroman/FarNet#readme
-'@
-
 	Set-Content z\Package.nuspec @"
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
@@ -110,8 +95,9 @@ https://github.com/nightroman/FarNet#readme
 		<authors>Roman Kuzmin</authors>
 		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
 		<icon>FarNetLogo.png</icon>
+		<readme>README.md</readme>
 		<license type="expression">BSD-3-Clause</license>
-		<description>$description</description>
+		<description>$Description</description>
 		<releaseNotes>https://github.com/nightroman/FarNet/blob/main/$ModuleName/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module</tags>
 	</metadata>
