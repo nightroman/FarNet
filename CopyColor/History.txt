@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.CopyColor
 
+= 4.0.2 =
+
+Use ClipboardHelper by Arthur Teplitzki.
+Add plain text to clipboard in addition to HTML.
+
 = 4.0.1 =
 
 master -> main, update links.

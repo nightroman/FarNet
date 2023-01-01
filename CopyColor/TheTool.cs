@@ -13,7 +13,7 @@ namespace FarNet.CopyColor;
 public class TheTool : ModuleTool
 {
 	const string ModuleName = "CopyColor";
-	readonly static Guid Colorer = new Guid("d2f36b62-a470-418d-83a3-ed7a3710e5b5");
+	readonly static Guid Colorer = new("d2f36b62-a470-418d-83a3-ed7a3710e5b5");
 	readonly static string[] Colors = { "#000000", "#000080", "#008000", "#008080", "#800000", "#800080", "#808000", "#c0c0c0", "#808080", "#0000ff", "#00ff00", "#00ffff", "#ff0000", "#ff00ff", "#ffff00", "#ffffff", };
 
 	static string EncodeHtml(string html)
@@ -80,14 +80,17 @@ Try to scroll the text. Long lines are not supported.
 		int bgindex = Array.IndexOf(bgcount, bgcount.Max());
 		var bgcolor = (ConsoleColor)bgindex;
 
-		var sb = new StringBuilder();
-		sb.AppendFormat(null, "<div style='background:{0}'><pre>", Colors[bgindex]);
-		sb.AppendLine();
+		var sbText = new StringBuilder();
+		var sbHtml = new StringBuilder();
+		sbHtml.AppendFormat(@"<div style=""background-color:{0};""><pre>", Colors[bgindex]);
+		sbHtml.AppendLine();
 
 		for (int line = 0; line < linetexts.Count; ++line)
 		{
 			var text = linetexts[line];
 			var colors = linespans[line];
+
+			sbText.AppendLine(text);
 
 			for (int start = 0; start < text.Length; )
 			{
@@ -97,22 +100,22 @@ Try to scroll the text. Long lines are not supported.
 				while (end < text.Length && colors[end].Background == color.Background && colors[end].Foreground == color.Foreground)
 					++end;
 
-				var html = EncodeHtml(text.Substring(start, end - start));
+				var html = EncodeHtml(text[start..end]);
 				if (color.Background == bgcolor)
-					sb.AppendFormat(null, "<span style='color:{0}'>{1}</span>",
+					sbHtml.AppendFormat(@"<span style=""color:{0};"">{1}</span>",
 						Colors[(int)color.Foreground], html);
 				else
-					sb.AppendFormat(null, "<span style='color:{0}; background:{1}'>{2}</span>",
+					sbHtml.AppendFormat(@"<span style=""color:{0}; background-color:{1};"">{2}</span>",
 						Colors[(int)color.Foreground], Colors[(int)color.Background], html);
 
 				start = end;
 			}
 
-			sb.AppendLine();
+			sbHtml.AppendLine();
 		}
 
-		sb.AppendLine("</pre></div>");
+		sbHtml.AppendLine("</pre></div>");
 
-		ClipboardHelper.SetHtml(sb.ToString());
+		ClipboardHelper.CopyToClipboard(sbHtml.ToString(), sbText.ToString());
 	}
 }

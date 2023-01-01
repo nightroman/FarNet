@@ -68,13 +68,11 @@ task package markdown, version, {
 	remove z
 	$null = mkdir $toModule
 
-	# meta
 	Copy-Item -Destination z @(
 		'README.md'
 		'..\Zoo\FarNetLogo.png'
 	)
 
-	# module
 	Copy-Item -Destination $toModule @(
 		'README.htm'
 		'History.txt'
@@ -92,13 +90,13 @@ task nuget package, version, {
 		<version>$Version</version>
 		<owners>Roman Kuzmin</owners>
 		<authors>Roman Kuzmin</authors>
-		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
+		<license type="expression">BSD-3-Clause</license>
 		<icon>FarNetLogo.png</icon>
 		<readme>README.md</readme>
-		<license type="expression">BSD-3-Clause</license>
+		<projectUrl>https://github.com/nightroman/FarNet/tree/main/CopyColor</projectUrl>
 		<description>$description</description>
-		<releaseNotes>https://github.com/nightroman/FarNet/blob/main/$ModuleName/History.txt</releaseNotes>
-		<tags>FarManager FarNet Module</tags>
+		<releaseNotes>https://github.com/nightroman/FarNet/blob/main/CopyColor/History.txt</releaseNotes>
+		<tags>FarManager FarNet Module HTML Clipboard</tags>
 	</metadata>
 </package>
 "@
