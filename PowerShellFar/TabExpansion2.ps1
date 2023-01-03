@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.0.6
+.VERSION 1.0.7
 .AUTHOR Roman Kuzmin
 .COPYRIGHT (c) Roman Kuzmin
 .GUID 550bc198-dd44-4bbc-8ad7-ccf4b8bd2aff
