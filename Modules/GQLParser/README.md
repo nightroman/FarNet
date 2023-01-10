@@ -1,6 +1,7 @@
 # FarNet script GQLParser
 
 GQLParser provides methods for formatting GraphQL source code.
+See [Format.cs](Format.cs) for available parameters.
 
 **Format the specified or cursor file**
 

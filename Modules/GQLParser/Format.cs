@@ -4,6 +4,7 @@ using GraphQLParser.AST;
 using GraphQLParser.Visitors;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace GQLParser;
@@ -20,10 +21,16 @@ public static class Format
 	/// <param name="directiveNewLine">Whether to print each directive location on its own line.</param>
 	/// <param name="unionMemberNewLine">Whether to print each union member on its own line.</param>
 	/// <param name="sort">Tells to sort definitions.</param>
+	/// <param name="noEmptyLine">Tells to remove empty lines.</param>
 	/// <example>
 	/// fn: script=GQLParser; method=GQLParser.Format.File
 	/// </example>
-	public static async Task File(string path, bool directiveNewLine, bool unionMemberNewLine, bool sort)
+	public static async Task File(
+		string path,
+		bool directiveNewLine,
+		bool unionMemberNewLine,
+		bool sort,
+		bool noEmptyLine)
 	{
 		// the task starts in the main thread, we can call FarNet
 		if (path is null)
@@ -35,7 +42,13 @@ public static class Format
 
 		// the rest does not call FarNet, so go full async
 		var text1 = System.IO.File.ReadAllText(path);
-		var text2 = await FormatAsync(text1, directiveNewLine, unionMemberNewLine, sort);
+		var text2 = await FormatAsync(
+			text1,
+			directiveNewLine,
+			unionMemberNewLine,
+			sort,
+			noEmptyLine);
+
 		await System.IO.File.WriteAllTextAsync(path, text2);
 	}
 
@@ -45,10 +58,15 @@ public static class Format
 	/// <param name="directiveNewLine">Whether to print each directive location on its own line.</param>
 	/// <param name="unionMemberNewLine">Whether to print each union member on its own line.</param>
 	/// <param name="sort">Tells to sort definitions.</param>
+	/// <param name="noEmptyLine">Tells to remove empty lines.</param>
 	/// <example>
 	/// fn: script=GQLParser; method=GQLParser.Format.Editor
 	/// </example>
-	public static async Task Editor(bool directiveNewLine, bool unionMemberNewLine, bool sort)
+	public static async Task Editor(
+		bool directiveNewLine,
+		bool unionMemberNewLine,
+		bool sort,
+		bool noEmptyLine)
 	{
 		// the task starts in the main thread, we can call FarNet
 		var editor = Far.Api.Editor;
@@ -59,7 +77,12 @@ public static class Format
 		var text1 = editor.GetSelectedText();
 
 		// after this async call the thread is unknown, i.e. not main
-		var text2 = await FormatAsync(text1, directiveNewLine, unionMemberNewLine, sort);
+		var text2 = await FormatAsync(
+			text1,
+			directiveNewLine,
+			unionMemberNewLine,
+			sort,
+			noEmptyLine);
 
 		// use Tasks.Job to continue in the main thread and use FarNet
 		await Tasks.Job(() =>
@@ -76,7 +99,12 @@ public static class Format
 		});
 	}
 
-	private static async Task<string> FormatAsync(string text, bool directiveNewLine, bool unionMemberNewLine, bool sort)
+	private static async Task<string> FormatAsync(
+		string text,
+		bool directiveNewLine,
+		bool unionMemberNewLine,
+		bool sort,
+		bool noEmptyLine)
 	{
 		var document = Parser.Parse(text, new ParserOptions
 		{
@@ -104,6 +132,11 @@ public static class Format
 		if (text.EndsWith('\n'))
 			writer.WriteLine();
 
-		return writer.ToString();
+		var result = writer.ToString();
+
+		if (noEmptyLine)
+			result = Regex.Replace(result, @"(?m:^\s*(?:\r?\n|\r)+)", string.Empty);
+
+		return result;
 	}
 }
