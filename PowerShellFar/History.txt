@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 7.0.7 =
+
+Microsoft.PowerShell.SDK 7.3.2
+
 = 7.0.6 =
 
 master -> main, update links.
