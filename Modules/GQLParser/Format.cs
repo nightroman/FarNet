@@ -99,6 +99,23 @@ public static class Format
 		});
 	}
 
+	private static int NodeSortCode(ASTNode node)
+	{
+		if (node is not INamedNode named)
+			return 0;
+
+		if (named.Name.Value == "Query")
+			return 1;
+
+		if (named.Name.Value == "Mutation")
+			return 2;
+
+		if (named.Name.Value == "Subscription")
+			return 3;
+
+		return 4;
+	}
+
 	private static async Task<string> FormatAsync(
 		string text,
 		bool directiveNewLine,
@@ -114,8 +131,8 @@ public static class Format
 		if (sort)
 		{
 			document.Definitions = document.Definitions
-				.OrderBy(x => x is INamedNode)
-				.OrderBy(x => x.Kind)
+				.OrderBy(NodeSortCode)
+				.ThenBy(x => x.Kind)
 				.ThenBy(x => x is INamedNode named ? named.Name.StringValue : null)
 				.ToList();
 		}
