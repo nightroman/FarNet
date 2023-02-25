@@ -316,7 +316,6 @@ FarHome\FarNet\Modules\PowerShellFar\runtimes\win\lib\net7.0\System.Management.d
 FarHome\FarNet\Modules\PowerShellFar\runtimes\win\lib\net7.0\System.Net.Http.WinHttpHandler.dll
 FarHome\FarNet\Modules\PowerShellFar\runtimes\win\lib\net7.0\System.Runtime.Caching.dll
 FarHome\FarNet\Modules\PowerShellFar\runtimes\win\lib\net7.0\System.Security.Cryptography.Pkcs.dll
-FarHome\FarNet\Modules\PowerShellFar\runtimes\win\lib\net7.0\System.Security.Cryptography.ProtectedData.dll
 FarHome\FarNet\Modules\PowerShellFar\runtimes\win\lib\net7.0\System.ServiceProcess.ServiceController.dll
 FarHome\FarNet\Modules\PowerShellFar\runtimes\win\lib\net7.0\System.Speech.dll
 FarHome\FarNet\Modules\PowerShellFar\runtimes\win\lib\net7.0\System.Threading.AccessControl.dll
