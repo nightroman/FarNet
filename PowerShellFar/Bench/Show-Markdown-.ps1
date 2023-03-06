@@ -88,7 +88,7 @@ $param = $(
 		$root = [System.IO.Path]::GetDirectoryName($FileName)
 		$more = [System.IO.Path]::GetFileName($root)
 		'--standalone'
-		'--self-contained'
+		'--embed-resources'
 		"--metadata=pagetitle:$name - $more"
 		"--resource-path=$root"
 

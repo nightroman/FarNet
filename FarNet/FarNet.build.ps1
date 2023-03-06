@@ -42,15 +42,16 @@ task helpHLF -If ($Configuration -eq 'Release') {
 	remove z.htm
 }
 
-# Make HTM
-task helpHTM {
+# Make markdown
+task markdown {
 	assert (Test-Path $env:MarkdownCss)
 	exec {
 		pandoc.exe @(
 			'README.md'
 			'--output=About-FarNet.htm'
 			'--from=gfm'
-			'--self-contained'
+			'--embed-resources'
+			'--standalone'
 			"--css=$env:MarkdownCss"
 			'--metadata=pagetitle:FarNet'
 		)
@@ -72,7 +73,7 @@ task beginPackage {
 }
 
 # Make package files
-task package beginPackage, helpHTM, {
+task package beginPackage, markdown, {
 	# folders
 	remove z
 	$null = mkdir `

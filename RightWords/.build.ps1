@@ -78,7 +78,9 @@ task markdown {
 		'README.md'
 		'--output=README.htm'
 		'--from=gfm'
-		'--self-contained', "--css=$env:MarkdownCss"
+		'--embed-resources'
+		'--standalone'
+		"--css=$env:MarkdownCss"
 		'--standalone', '--metadata=pagetitle=RightWords'
 	)}
 }

@@ -467,7 +467,7 @@ Removed FarPackage, see https://github.com/nightroman/FarNet/issues/20
 - FarPackage - use NuGet v3 API
 - ArgumentCompleters.ps1 - escape aliases pattern
 - Open-TextLink-.ps1 - tweak pattern
-- Show-Markdown-.ps1 - support images (--self-contained)
+- Show-Markdown-.ps1 - support images
 
 = 5.4.11 =
 

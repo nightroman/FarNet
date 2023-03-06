@@ -59,7 +59,8 @@ task markdown {
 			'README.md'
 			'--output=README.htm'
 			'--from=gfm'
-			'--self-contained'
+			'--embed-resources'
+			'--standalone'
 			"--css=$env:MarkdownCss"
 			"--metadata=pagetitle:$ModuleName"
 		)

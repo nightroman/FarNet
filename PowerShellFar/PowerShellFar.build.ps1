@@ -35,7 +35,8 @@ task markdown {
 			'README.md'
 			'--output=About-PowerShellFar.htm'
 			'--from=gfm'
-			'--self-contained'
+			'--embed-resources'
+			'--standalone'
 			"--css=$env:MarkdownCss"
 			'--metadata=pagetitle:PowerShellFar'
 		)
