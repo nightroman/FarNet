@@ -18,6 +18,7 @@ task build meta, {
 }
 
 task publish {
+	$null = mkdir $ModuleRoot -Force
 	Copy-Item -Destination $ModuleRoot @(
 		"bin\$Configuration\net7.0\$ModuleName.dll"
 		"bin\$Configuration\net7.0\$ModuleName.pdb"

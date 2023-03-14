@@ -32,6 +32,9 @@ public static class AssemblyResolver
 
 	static void AddAssemblyCache(string root)
 	{
+		if (!Directory.Exists(root))
+			return;
+
 		foreach (var path in Directory.EnumerateFiles(root, "*.dll", SearchOption.AllDirectories))
 		{
 			if (path.Contains("\\native\\") ||
