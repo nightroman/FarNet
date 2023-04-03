@@ -583,6 +583,12 @@ hosting PowerShell select Far Manager. Assuming you have set some breakpoints
 (in Far Manager, not VSCode), run your PowerShellFar code. If breakpoints are
 hit then VSCode debugger opens the source code at the active breakpoint.
 
+[#4489]: https://github.com/PowerShell/vscode-powershell/issues/4489
+
+> With the latest VSCode and PowerShell breakpoints set in Far Manager are
+removed when VSCode debugger attaches. If you experience this issue, set
+breakpoints in VSCode instead. Hopefully, this issue will be fixed, [#4489].
+
 **Tips**
 
 (1) Consider running VSCode as admin, especially if Far runs as admin.
