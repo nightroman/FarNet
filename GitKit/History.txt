@@ -1,0 +1,7 @@
+﻿https://www.nuget.org/packages/FarNet.GitKit
+
+= 0.0.1 =
+
+- Branches panel
+- Commits panel
+- Changes panel

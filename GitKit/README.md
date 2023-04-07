@@ -1,0 +1,187 @@
+[Contents]: #farnetgitkit
+[LibGit2Sharp]: https://github.com/libgit2/libgit2sharp
+
+# FarNet.GitKit
+
+Far Manager git helpers based on LibGit2Sharp
+
+* [About](#about)
+* [Install](#install)
+* [Commands](#commands)
+* [Panels](#panels)
+
+*********************************************************************
+## About
+
+[Contents]
+
+GitKit is the FarNet module for Far Manager for git operations.
+GitKit uses [LibGit2Sharp] and does not require installed git.
+
+**Project FarNet**
+
+* Wiki: <https://github.com/nightroman/FarNet/wiki>
+* Site: <https://github.com/nightroman/FarNet>
+* Author: Roman Kuzmin
+
+*********************************************************************
+## Install
+
+[Contents]
+
+- Far Manager
+- Package [FarNet](https://www.nuget.org/packages/FarNet/)
+- Package [FarNet.GitKit](https://www.nuget.org/packages/FarNet.GitKit/)
+- Optional package [FarNet.PowerShellFar](https://www.nuget.org/packages/FarNet.PowerShellFar/)
+
+How to install and update FarNet and modules\
+<https://github.com/nightroman/FarNet#readme>
+
+*********************************************************************
+## Commands
+
+[Contents]
+
+GitKit commands use the prefix `gk`. Commands may be typed and invoked in the
+Far Manager command line or using F11 / FarNet / Invoke. Commands may be also
+defined in the Far Manager user menu and file associations.
+
+The command `gk:` without parameters shows GitKit help. Other commands require
+parameters, one or more key=value pairs separated by semicolons, using the
+connection string format.
+
+```
+gk: key=value [; key=value]
+```
+
+**Common parameters**
+
+- `repo=<path>`
+
+    Specifies the repository path. Default: the current panel directory.
+
+**Panel parameters**
+
+- `gk: panel=branches`
+
+    Opens the [Branches panel](#branches-panel).
+
+- `gk: panel=commits`
+
+    Opens the [Commits panel](#commits-panel).
+
+- `gk: panel=changes`
+
+    Opens the [Changes panel](#changes-panel).
+
+*********************************************************************
+## Panels
+
+[Contents]
+
+- [Branches panel](#branches-panel)
+- [Commits panel](#commits-panel)
+- [Changes panel](#changes-panel)
+
+Common panel keys and actions:
+
+- `CtrlA`
+
+    Opens the current item property panel.
+    This operation requires `FarNet.PowerShellFar`.
+
+*********************************************************************
+## Branches panel
+
+[Contents]
+
+This panel shows the repository branches, local first, then remote. The current
+branch is marked by `*`. If there is no current branch then the special branch
+`origin/HEAD` is shown instead.
+
+The panel is opened by
+
+```
+gk: panel=branches
+```
+
+Keys and actions
+
+- `Enter`
+
+    Opens the selected branch [Commits panel](#commits-panel).
+
+- `ShiftEnter`
+
+    For the local branch, makes it the current branch.
+    For the remote branch, checkouts the branch and sets it current.
+
+- `F7`
+
+    Creates and checkouts a new branch from the current branch.
+
+- `F8`, `Del`
+
+    Removes the selected branches.
+
+- Other keys
+
+    See [Panels](#panels) for common keys and actions.
+
+*********************************************************************
+## Commits panel
+
+[Contents]
+
+This panel shows the branch commits. Commits are shown by pages of 100.
+
+The panel is opened from the branches panel or for the current branch by
+
+```
+gk: panel=commits
+```
+
+Keys and actions
+
+- `Enter`
+
+    Opens the selected commit [Changes panel](#changes-panel).
+
+- `PgDn`
+
+    At the last shown commit, loads the next page commits.
+
+- `PgUp`
+
+    At the first shown commit, loads the previous page commits.
+
+- Other keys
+
+    See [Panels](#panels) for common keys and actions.
+
+*********************************************************************
+## Changes panel
+
+[Contents]
+
+This panel shows the changed files.
+
+The panel is opened from the commits panel or for the current changes by
+
+```
+gk: panel=changes
+```
+
+Keys and actions
+
+- `Enter`
+
+    Opens the diff tool specified by the environment variable `MERGE`.
+
+- `F3`, `F4`
+
+    Opens the diff patch in the viewer or editor.
+
+- Other keys
+
+    See [Panels](#panels) for common keys and actions.

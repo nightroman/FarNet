@@ -75,6 +75,7 @@ Install-FarPackage FarNet.EditorKit
 Install-FarPackage FarNet.Explore
 Install-FarPackage FarNet.FolderChart
 Install-FarPackage FarNet.FSharpFar
+Install-FarPackage FarNet.GitKit
 Install-FarPackage FarNet.JavaScriptFar
 Install-FarPackage FarNet.PowerShellFar
 Install-FarPackage FarNet.RightControl
