@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.Explore
 
+= 4.0.2 =
+
+Parameters
+-Directory: get only directories
+-File: get only files
+
 = 4.0.1 =
 
 master -> main, update links.

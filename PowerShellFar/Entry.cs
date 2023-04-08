@@ -33,8 +33,7 @@ public sealed class Entry : ModuleHost
 
 	internal static void Unregister()
 	{
-		if (Instance != null)
-			Instance.Manager.Unregister();
+		Instance?.Manager.Unregister();
 	}
 
 	public override void Connect()
@@ -116,7 +115,7 @@ public sealed class Entry : ModuleHost
 		e.Ignore = !ok;
 	}
 
-	public override object Interop(string command, object args)
+	public override object Interop(string command, object? args)
 	{
 		return command switch
 		{

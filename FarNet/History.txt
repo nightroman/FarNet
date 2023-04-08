@@ -1,6 +1,16 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 7.0.7 =
+
+Tweaks for FarNet.GitKit (new) and FarNet.Explore modules.
+
+- Fix paging in panels (last empty page).
+- Add IsMaskMatch() overload.
+- Add GetModuleInterop() helper.
+- Make args nullable in Interop().
+- SearchFileCommand, new parameter File.
+
 = 7.0.6 =
 
 Fix load errors on missing Modules and Lib

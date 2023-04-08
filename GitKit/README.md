@@ -15,7 +15,7 @@ Far Manager git helpers based on LibGit2Sharp
 
 [Contents]
 
-GitKit is the FarNet module for Far Manager for git operations.
+GitKit is the FarNet module for git operations in Far Manager.
 GitKit uses [LibGit2Sharp] and does not require installed git.
 
 **Project FarNet**
@@ -79,11 +79,13 @@ gk: key=value [; key=value]
 
 [Contents]
 
+GitKit provides several panels for browsing and operating
+
 - [Branches panel](#branches-panel)
 - [Commits panel](#commits-panel)
 - [Changes panel](#changes-panel)
 
-Common panel keys and actions:
+Common panel keys and actions
 
 - `CtrlA`
 
@@ -95,9 +97,8 @@ Common panel keys and actions:
 
 [Contents]
 
-This panel shows the repository branches, local first, then remote. The current
-branch is marked by `*`. If there is no current branch then the special branch
-`origin/HEAD` is shown instead.
+This panel shows the repository branches, local and remote. The current branch
+is marked by `*`. If there is no current branch then `origin/HEAD` is shown.
 
 The panel is opened by
 
@@ -113,12 +114,13 @@ Keys and actions
 
 - `ShiftEnter`
 
-    For the local branch, makes it the current branch.
-    For the remote branch, checkouts the branch and sets it current.
+    For the local branch, makes it current.
+    For the remote branch, checkouts and makes it current.
 
 - `F7`
 
     Creates and checkouts a new branch from the current branch.
+    Note that the current branch is with `*`, not the selected.
 
 - `F8`, `Del`
 

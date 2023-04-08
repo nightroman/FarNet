@@ -102,7 +102,7 @@ public abstract class ModuleHost : BaseModuleItem
 	/// <param name="command">The command provided by the module.</param>
 	/// <param name="args">The command arguments.</param>
 	/// <returns>The command result.</returns>
-	public virtual object Interop(string command, object args)
+	public virtual object Interop(string command, object? args)
 	{
 		throw new NotImplementedException();
 	}

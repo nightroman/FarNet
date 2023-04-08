@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Xml.Linq;
 
 namespace FarNet.Works;
 #pragma warning disable 1591
@@ -304,5 +305,13 @@ public class ModuleLoader
 			return manager;
 
 		throw new ArgumentException($"Cannot find module '{name}'.");
+	}
+
+	public static object? GetModuleInterop(string moduleName, string interopName, object? args)
+	{
+		if (!_Managers.TryGetValue(moduleName, out ModuleManager? manager))
+			return null;
+
+		return manager.Interop(interopName, args);
 	}
 }

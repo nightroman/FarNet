@@ -128,5 +128,5 @@ public abstract class IModuleManager
 	/// <param name="command">.</param>
 	/// <param name="args">.</param>
 	/// <returns>.</returns>
-	public abstract object Interop(string command, object args);
+	public abstract object Interop(string command, object? args);
 }

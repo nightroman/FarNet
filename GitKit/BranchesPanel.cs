@@ -9,7 +9,7 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 {
 	public BranchesPanel(BranchesExplorer explorer) : base(explorer)
 	{
-		Title = $"Branches: {explorer.Repository.Info.WorkingDirectory}";
+		Title = $"Branches {explorer.Repository.Info.WorkingDirectory}";
 		SortMode = PanelSortMode.Unsorted;
 		ViewMode = 0;
 

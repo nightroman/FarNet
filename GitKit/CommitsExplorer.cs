@@ -23,14 +23,16 @@ class CommitsExplorer : BaseExplorer
 
 	public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 	{
-		return Branch.Commits
-			.Skip(args.Offset)
-			.Take(args.Limit)
+		IEnumerable<Commit> commits = Branch.Commits;
+
+		if (args.Limit > 0)
+			commits = commits.Skip(args.Offset).Take(args.Limit);
+
+		return commits
 			.Select(x => new SetFile
 			{
-				Name = x.Sha[..7],
-				Description = x.MessageShort,
-				Owner = x.Author.Name,
+				Name = $"{x.Sha[..7]} {x.Author.When:yyyy-MM-dd} {x.Author.Name}: {x.MessageShort}",
+				LastWriteTime = x.Author.When.DateTime,
 				IsDirectory = true,
 				Data = x,
 			});
@@ -42,6 +44,6 @@ class CommitsExplorer : BaseExplorer
 		var tree1 = commit.Tree;
 		var tree2 = commit.Parents.First().Tree;
 		var diff = Repository.Diff.Compare<TreeChanges>(tree2, tree1);
-		return new ChangesExplorer(Repository, diff);
+		return new ChangesExplorer(Repository, () => diff);
 	}
 }

@@ -51,7 +51,7 @@ public class Command : ModuleCommand
 					return;
 
 				case "changes":
-					var changes = repo.Diff.Compare<TreeChanges>(repo.Head.Tip.Tree, DiffTargets.Index | DiffTargets.WorkingDirectory);
+					TreeChanges changes() => repo.Diff.Compare<TreeChanges>(repo.Head.Tip.Tree, DiffTargets.Index | DiffTargets.WorkingDirectory);
 					new ChangesExplorer(repo, changes).CreatePanel().Open();
 					return;
 

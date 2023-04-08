@@ -47,15 +47,19 @@ Syntax:
 
 - `-Directory`
 
-    Tells to include directories into the search process and results.
+    Tells to get only directories.
+
+- `-File`
+
+    Tells to get only files.
 
 - `-Recurse`
 
-    Tells to search through all directories and sub-directories.
+    Tells to search directories recursively.
 
 - `-Depth <N>`
 
-    N: 0: ignored; negative: unlimited; positive: search depth, -Recurse is
+    N = 0: ignored. N < 0: unlimited. N > 0: the search depth with -Recurse
     ignored. Note: order of -Depth and -Recurse results may be different.
 
 - `-Asynchronous`

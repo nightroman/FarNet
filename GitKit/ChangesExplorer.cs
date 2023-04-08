@@ -9,13 +9,13 @@ namespace GitKit;
 class ChangesExplorer : BaseExplorer
 {
 	public static Guid MyTypeId = new("7b4c229a-949e-4100-856e-45c17d516d25");
-	public IReadOnlyList<TreeEntryChanges> Changes { get; }
+	public Func<TreeChanges> Changes { get; }
 
-	public ChangesExplorer(Repository repository, TreeChanges changes) : base(repository, MyTypeId)
+	public ChangesExplorer(Repository repository, Func<TreeChanges> changes) : base(repository, MyTypeId)
 	{
-		CanGetContent = true;
+		Changes = changes;
 
-		Changes = changes.ToList();
+		CanGetContent = true;
 	}
 
 	public override Panel CreatePanel()
@@ -25,7 +25,7 @@ class ChangesExplorer : BaseExplorer
 
 	public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 	{
-		return Changes
+		return Changes()
 			.Select(x => new SetFile
 			{
 				Name = x.Path,

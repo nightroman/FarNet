@@ -64,7 +64,7 @@ class SearchFarFileCommand : BaseCmdlet
 		{
 			search.Filter = delegate(Explorer explorer, FarFile file)
 			{
-				return Far.Api.IsMaskMatch(file.Name, Mask);
+				return Far.Api.IsMaskMatch(file.Name, Mask, true);
 			};
 		}
 		else if (Script != null)

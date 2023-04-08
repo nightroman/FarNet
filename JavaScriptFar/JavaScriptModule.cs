@@ -19,7 +19,7 @@ public class JavaScriptModule : ModuleHost
 		Root = Manager.GetFolderPath(SpecialFolder.RoamingData, true);
 	}
 
-	public override object Interop(string command, object args)
+	public override object Interop(string command, object? args)
 	{
 		return command switch
 		{

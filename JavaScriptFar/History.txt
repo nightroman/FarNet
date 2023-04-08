@@ -1,5 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet.JavaScriptFar
 
+= 1.0.3 =
+
+Microsoft.ClearScript 7.4.1
+
+Make Interop args nullable.
+
 = 1.0.2 =
 
 Microsoft.ClearScript 7.3.7

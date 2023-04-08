@@ -41,6 +41,7 @@ Assert-Far ($Far.IsMaskMatch('InputString', '*zz*;*xx*,*in*'))
 
 Assert-Far ($Far.IsMaskMatch('C:\Bar\InputString', '*Ts*'))
 Assert-Far (!$Far.IsMaskMatch('C:\InputString\Bar', '*Ts*'))
+Assert-Far ($Far.IsMaskMatch('C:\InputString\Bar', '*Ts*', $true))
 
 Assert-Far (!$Far.IsMaskMatch('InputString', '*|*'))
 Assert-Far (!$Far.IsMaskMatch('InputString', '*|*Ts*'))

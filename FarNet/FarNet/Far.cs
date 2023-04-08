@@ -3,6 +3,7 @@
 // Copyright (c) Roman Kuzmin
 
 using FarNet.Forms;
+using FarNet.Works;
 using System;
 using System.Globalization;
 using System.IO;
@@ -454,11 +455,19 @@ public abstract class IFar
 	public abstract IUserInterface UI { get; }
 
 	/// <summary>
+	/// Gets true if a file name matches a Far Manager file mask.
+	/// </summary>
+	/// <param name="path">Input file path.</param>
+	/// <param name="mask">Mask: "include-wildcard-list[|exclude-wildcard-list]" or "/regex/[option]".</param>
+	public bool IsMaskMatch(string path, string mask) => IsMaskMatch(path, mask, false);
+
+	/// <summary>
 	/// Gets true if a file path matches a Far Manager file mask.
 	/// </summary>
 	/// <param name="path">Input file path.</param>
 	/// <param name="mask">Mask: "include-wildcard-list[|exclude-wildcard-list]" or "/regex/[option]".</param>
-	public abstract bool IsMaskMatch(string path, string mask);
+	/// <param name="full">True tells to compare the whole path, false tells to compare just the name.</param>
+	public abstract bool IsMaskMatch(string path, string mask, bool full);
 
 	/// <summary>
 	/// Gets true if a Far Manager file mask is valid.
@@ -486,13 +495,17 @@ public abstract class IFar
 	/// Returns the manager of a module specified by any type from it.
 	/// </summary>
 	/// <param name="type">Any type from the module assembly.</param>
-	public IModuleManager GetModuleManager(Type type)
-	{
-		//! Assembly.GetName().Name: 1) slower; 2) does not guarantee the same name.
-		return type == null
-			? throw new ArgumentNullException(nameof(type))
-			: GetModuleManager(Path.GetFileNameWithoutExtension(type.Assembly.Location));
-	}
+	//! Assembly.GetName().Name: 1) slower; 2) does not guarantee the same name.
+	public IModuleManager GetModuleManager(Type type) => GetModuleManager(Path.GetFileNameWithoutExtension(type.Assembly.Location));
+
+	/// <summary>
+	/// Gets the module interop data if available.
+	/// </summary>
+	/// <param name="name">The module name.</param>
+	/// <param name="command">The command name.</param>
+	/// <param name="args">Arguments required by the command.</param>
+	/// <returns>The result data or null if the module is not available.</returns>
+	public object? GetModuleInterop(string name, string command, object? args) => ModuleLoader.GetModuleInterop(name, command, args);
 
 	/// <summary>
 	/// Gets the history operator.

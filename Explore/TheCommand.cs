@@ -38,6 +38,7 @@ public class TheCommand : ModuleCommand
 			"-Asynchronous",
 			"-Depth",
 			"-Directory",
+			"-File",
 			"-Recurse",
 			"-XFile",
 			"-XPath",
@@ -74,24 +75,34 @@ public class TheCommand : ModuleCommand
 						search.XPath = tokens[iToken + 1];
 						if (search.XPath.Length == 0)
 							throw new ModuleException("Invalid -XPath.");
+
 						iToken = tokens.Count;
 						break;
 					}
 				case "-XFile":
 					{
-						if (++iToken >= token.Length) throw new ModuleException("Invalid -XFile.");
+						if (++iToken >= token.Length)
+							throw new ModuleException("Invalid -XFile.");
+
 						search.XFile = tokens[iToken];
 						break;
 					}
 				case "-Depth":
 					{
-						if (++iToken >= token.Length) throw new ModuleException("Invalid -Depth.");
+						if (++iToken >= token.Length)
+							throw new ModuleException("Invalid -Depth.");
+
 						search.Depth = int.Parse(tokens[iToken]);
 						break;
 					}
 				case "-Directory":
 					{
 						search.Directory = true;
+						break;
+					}
+				case "-File":
+					{
+						search.File = true;
 						break;
 					}
 				case "-Recurse":
@@ -106,6 +117,9 @@ public class TheCommand : ModuleCommand
 					}
 			}
 		}
+
+		if (search.Directory && search.File)
+			throw new ModuleException("-Directory and -File cannot be used together.");
 
 		// go
 		if (async)

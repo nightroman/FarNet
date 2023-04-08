@@ -407,14 +407,14 @@ IUserInterface^ Far1::UI::get()
 	return %FarUI::Instance;
 }
 
-bool Far1::IsMaskMatch(String^ path, String^ mask)
+bool Far1::IsMaskMatch(String^ path, String^ mask, bool full)
 {
 	if (!path) throw gcnew ArgumentNullException("path");
 	if (!mask) throw gcnew ArgumentNullException("mask");
 
 	// match
 	PIN_NE(pin, path);
-	return Far0::MatchMask(mask, pin, true);
+	return Far0::MatchMask(mask, pin, !full);
 }
 
 bool Far1::IsMaskValid(String^ mask)

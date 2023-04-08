@@ -811,9 +811,8 @@ public partial class Panel
 
 				break;
 
-			case KeyCode.PageDown:
-
-				if (key.Is())
+			//! index -1 ~ no files, e.g. page after the last
+			case KeyCode.PageDown when key.Is() && CurrentIndex >= 0:
 				{
 					int currentIndex;
 					FarFile? currentFile;
@@ -828,27 +827,20 @@ public partial class Panel
 						return true;
 					}
 				}
-
 				break;
 
-			case KeyCode.PageUp:
-
-				if (key.Is())
+			//! index -1 ~ no files, e.g. page after the last
+			case KeyCode.PageUp when key.Is() && PageLimit > 0 && CurrentIndex <= 0:
 				{
-					if (PageLimit > 0 && CurrentIndex == 0)
-					{
-						PageOffset -= PageLimit;
-						if (PageOffset < 0)
-							PageOffset = 0;
+					PageOffset -= PageLimit;
+					if (PageOffset < 0)
+						PageOffset = 0;
 
-						NeedsNewFiles = true;
-						Update(false);
-						Redraw(0, 0);
-						return true;
-					}
+					NeedsNewFiles = true;
+					Update(false);
+					Redraw(0, 0);
+					return true;
 				}
-
-				break;
 		}
 
 		return false;

@@ -94,11 +94,10 @@ sealed partial class ModuleManager : IModuleManager
 		if (_ModuleHostType is not null)
 			ConnectModuleHost();
 
-		if (_ModuleHost is not null)
-			_ModuleHost.Invoking();
+		_ModuleHost?.Invoking();
 	}
 
-	public override object Interop(string command, object args)
+	public override object Interop(string command, object? args)
 	{
 		Invoking();
 

@@ -30,10 +30,16 @@ public class SearchFileCommand
 	public int Depth { get; set; }
 
 	/// <summary>
-	/// Tells to include directories into the search process and results.
+	/// Tells to get only directories.
 	/// Ignored in XPath searches with no filter.
 	/// </summary>
 	public bool Directory { get; set; }
+
+	/// <summary>
+	/// Tells to gets only files.
+	/// Ignored in XPath searches with no filter.
+	/// </summary>
+	public bool File { get; set; }
 
 	/// <summary>
 	/// Tells to search through all directories and sub-directories.
@@ -315,7 +321,7 @@ public class SearchFileCommand
 					break;
 
 				// process and add
-				bool add = Directory || !file.IsDirectory;
+				bool add = file.IsDirectory ? !File : !Directory;
 				if (add && Filter != null)
 					add = Filter(explorer, file);
 				if (add)
