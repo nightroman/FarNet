@@ -1,5 +1,12 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.1.0 =
+
+Add GitKit module menu in panels
+- Compare branches
+- Compare commits
+- Create branch
+
 = 0.0.3 =
 
 Branches panel:

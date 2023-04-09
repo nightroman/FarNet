@@ -8,21 +8,9 @@ namespace GitKit;
 [ModuleCommand(Name = "GitKit", Prefix = "gk", Id = "15a36561-bf47-47a5-ae43-9729eda272a3")]
 public class Command : ModuleCommand
 {
-	static DbConnectionStringBuilder ParseParameters(string text)
-	{
-		try
-		{
-			return new DbConnectionStringBuilder { ConnectionString = text };
-		}
-		catch (Exception ex)
-		{
-			throw new ModuleException($"Use semicolon separated key=value pairs. Error: {ex.Message}");
-		}
-	}
-
 	public override void Invoke(object sender, ModuleCommandEventArgs e)
 	{
-		var parameters = ParseParameters(e.Command);
+		var parameters = Parameters.Parse(e.Command);
 
 		if (parameters.Count == 0)
 		{
@@ -30,36 +18,40 @@ public class Command : ModuleCommand
 			return;
 		}
 
-		string path;
-		if (parameters.TryGetValue("repo", out object? value))
-			path = Environment.ExpandEnvironmentVariables((string)value);
-		else
+		var path = parameters.GetValue("repo");
+		if (path is null)
 			path = Far.Api.CurrentDirectory;
+		else
+			path = Environment.ExpandEnvironmentVariables(path);
 
 		var repo = new Repository(Lib.GetGitRoot(path));
 
-		if (parameters.TryGetValue("panel", out value))
+		var panel = parameters.GetValue("panel");
+		if (panel is not null)
 		{
-			switch (value)
+			switch (panel)
 			{
 				case "branches":
+					parameters.AssertNone();
 					new BranchesExplorer(repo).CreatePanel().Open();
 					return;
 
 				case "commits":
+					parameters.AssertNone();
 					new CommitsExplorer(repo, repo.Head).CreatePanel().Open();
 					return;
 
 				case "changes":
+					parameters.AssertNone();
 					TreeChanges changes() => repo.Diff.Compare<TreeChanges>(repo.Head.Tip.Tree, DiffTargets.Index | DiffTargets.WorkingDirectory);
 					new ChangesExplorer(repo, changes).CreatePanel().Open();
 					return;
 
 				default:
-					throw new ModuleException($"Unknown panel `{value}`.");
+					throw new ModuleException($"Unknown panel `{panel}`.");
 			}
 		}
 
-		throw new ModuleException($"Unknown parameters in {e.Prefix}:{e.Command}");
+		parameters.AssertNone();
 	}
 }

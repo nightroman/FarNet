@@ -18,7 +18,7 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 		var cn = new SetColumn { Kind = "N", Name = "Branch" };
 		var cd = new SetColumn { Kind = "Z", Name = "Commit" };
 
-		var plan0 = new PanelPlan { Columns = new FarColumn[] { co, cn, cd} };
+		var plan0 = new PanelPlan { Columns = new FarColumn[] { co, cn, cd } };
 		SetPlan(0, plan0);
 	}
 
@@ -26,11 +26,12 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 
 	static void CloneBranch(ExplorerEventArgs args, Branch branch, Action action)
 	{
+		var friendlyName = branch.FriendlyName;
 		var newName = Far.Api.Input(
 			"New branch name",
 			"GitBranch",
-			$"Create new branch from {branch.FriendlyName}",
-			Path.GetFileName(branch.FriendlyName));
+			$"Create new branch from {friendlyName}",
+			Path.GetFileName(friendlyName));
 
 		if (string.IsNullOrEmpty(newName))
 		{
@@ -113,5 +114,18 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 		}
 
 		return base.UIKeyPressed(key);
+	}
+
+	public void CompareBranches()
+	{
+		var (data1, data2) = GetSelectedDataRange<Branch>();
+		if (data2 is null)
+			return;
+
+		data1 ??= Repository.Head;
+
+		var commits = new Commit[] { data1.Tip, data2.Tip }.OrderBy(x => x.Author.When).ToArray();
+
+		CompareCommits(commits[0], commits[1]);
 	}
 }

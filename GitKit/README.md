@@ -12,6 +12,7 @@ Far Manager git helpers based on LibGit2Sharp
     - [Branches panel](#branches-panel)
     - [Commits panel](#commits-panel)
     - [Changes panel](#changes-panel)
+- [Menu](#menu)
 
 *********************************************************************
 ## About
@@ -149,6 +150,10 @@ Keys and actions
 
     See [Panels](#panels) for common keys and actions.
 
+- Other actions
+
+    See [Menu](#menu).
+
 *********************************************************************
 ## Commits panel
 
@@ -180,6 +185,10 @@ Keys and actions
 
     See [Panels](#panels) for common keys and actions.
 
+- Other actions
+
+    See [Menu](#menu).
+
 *********************************************************************
 ## Changes panel
 
@@ -206,3 +215,28 @@ Keys and actions
 - Other keys
 
     See [Panels](#panels) for common keys and actions.
+
+*********************************************************************
+## Menu
+
+[Contents]
+
+- **Compare branches**
+
+    Compares the cursor branch with the selected branch and opens the changes panel.
+    If nothing is selected then the repository head is used.
+
+- **Compare commits**
+
+    Compares the cursor commit with the selected commit and opens the changes panel.
+    If nothing is selected then the branch tip is used.
+
+- **Create branch**
+
+    Creates a new branch from the cursor commit.
+
+- **Help**
+
+    Shows GitKit help.
+
+*********************************************************************
