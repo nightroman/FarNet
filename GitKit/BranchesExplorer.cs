@@ -12,6 +12,7 @@ class BranchesExplorer : BaseExplorer
 
 	public BranchesExplorer(Repository repository) : base(repository, MyTypeId)
 	{
+		CanCloneFile = true;
 		CanCreateFile = true;
 		CanDeleteFiles = true;
 		CanRenameFile = true;
@@ -46,13 +47,15 @@ class BranchesExplorer : BaseExplorer
 		return new CommitsExplorer(Repository, branch);
 	}
 
-	public override void CreateFile(CreateFileEventArgs args)
+	void CloneBranch(ExplorerEventArgs args, bool checkout)
 	{
+		var (branch, newName) = ((Branch, string))args.Data!;
 		try
 		{
-			var newName = (string)args.Data!;
-			var branch = Repository.CreateBranch(newName);
-			Commands.Checkout(Repository, branch);
+			var newBranch = Repository.CreateBranch(newName, branch.Tip);
+			if (checkout)
+				Commands.Checkout(Repository, newBranch);
+
 			args.PostName = newName;
 		}
 		catch (LibGit2SharpException ex)
@@ -61,21 +64,53 @@ class BranchesExplorer : BaseExplorer
 		}
 	}
 
+	public override void CloneFile(CloneFileEventArgs args)
+	{
+		CloneBranch(args, false);
+	}
+
+	public override void CreateFile(CreateFileEventArgs args)
+	{
+		CloneBranch(args, true);
+	}
+
+	static void CannotDelete(DeleteFilesEventArgs args, FarFile file, string message)
+	{
+		args.Result = JobResult.Incomplete;
+		args.FilesToStay.Add(file);
+		if (0 == (args.Mode & ExplorerModes.Silent))
+			Far.Api.Message(message, "GitKit: cannot delete", MessageOptions.LeftAligned | MessageOptions.Warning);
+	}
+
 	public override void DeleteFiles(DeleteFilesEventArgs args)
 	{
 		foreach (var file in args.Files)
 		{
 			var branch = (Branch)file.Data!;
+
+			if (!args.Force)
+			{
+				if (branch.IsRemote)
+				{
+					CannotDelete(args, file, $"Use [ShiftDel] to delete remote branch '{branch.FriendlyName}'.");
+					continue;
+				}
+
+				var another = Lib.GetBranchesContainingCommit(Repository, branch.Tip).FirstOrDefault(another => another != branch);
+				if (another is null)
+				{
+					CannotDelete(args, file, $"Use [ShiftDel] to delete branch '{branch.FriendlyName}' and its unique local commit(s).");
+					continue;
+				}
+			}
+
 			try
 			{
 				Repository.Branches.Remove(branch);
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
-				args.Result = JobResult.Incomplete;
-				args.FilesToStay.Add(file);
-				if (0 == (args.Mode & ExplorerModes.Silent))
-					Far.Api.Message(ex.Message, "Error", MessageOptions.LeftAligned | MessageOptions.Warning);
+				CannotDelete(args, file, ex.Message);
 			}
 		}
 	}

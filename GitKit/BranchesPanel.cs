@@ -1,5 +1,6 @@
 ﻿using FarNet;
 using LibGit2Sharp;
+using System;
 using System.IO;
 using System.Linq;
 
@@ -23,13 +24,13 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 
 	protected override string HelpTopic => "branches-panel";
 
-	public override void UICreateFile(CreateFileEventArgs args)
+	static void CloneBranch(ExplorerEventArgs args, Branch branch, Action action)
 	{
 		var newName = Far.Api.Input(
 			"New branch name",
 			"GitBranch",
-			$"Create new branch from {Repository.Head.FriendlyName}",
-			Path.GetFileName(Repository.Head.FriendlyName));
+			$"Create new branch from {branch.FriendlyName}",
+			Path.GetFileName(branch.FriendlyName));
 
 		if (string.IsNullOrEmpty(newName))
 		{
@@ -37,8 +38,20 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 			return;
 		}
 
-		args.Data = newName;
-		Explorer.CreateFile(args);
+		args.Data = (branch, newName);
+		action();
+	}
+
+	public override void UICloneFile(CloneFileEventArgs args)
+	{
+		var branch = (Branch)args.File.Data!;
+		CloneBranch(args, branch, () => Explorer.CloneFile(args));
+	}
+
+	public override void UICreateFile(CreateFileEventArgs args)
+	{
+		var branch = Repository.Head;
+		CloneBranch(args, branch, () => Explorer.CreateFile(args));
 	}
 
 	public override void UIDeleteFiles(DeleteFilesEventArgs args)

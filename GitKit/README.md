@@ -5,10 +5,13 @@
 
 Far Manager git helpers based on LibGit2Sharp
 
-* [About](#about)
-* [Install](#install)
-* [Commands](#commands)
-* [Panels](#panels)
+- [About](#about)
+- [Install](#install)
+- [Commands](#commands)
+- [Panels](#panels)
+    - [Branches panel](#branches-panel)
+    - [Commits panel](#commits-panel)
+    - [Changes panel](#changes-panel)
 
 *********************************************************************
 ## About
@@ -117,14 +120,30 @@ Keys and actions
     For the local branch, makes it current.
     For the remote branch, checkouts and makes it current.
 
+- `ShiftF5`
+
+    Creates a new branch from the selected branch.
+
+- `ShiftF6`
+
+    Renames the selected branch.
+
 - `F7`
 
     Creates and checkouts a new branch from the current branch.
     Note that the current branch is with `*`, not the selected.
+    To copy the selected branch, use `ShiftF5`.
 
 - `F8`, `Del`
 
-    Removes the selected branches.
+    Safely deletes the selected local branches.
+
+    Remote branches and local branches with unique local commits are not
+    deleted this way. Use `ShiftF8`, `ShiftDel` in order to force delete.
+
+- `ShiftF8`, `ShiftDel`
+
+    Forcedly deletes the selected remote and local branches.
 
 - Other keys
 

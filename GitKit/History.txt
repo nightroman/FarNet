@@ -1,5 +1,12 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.0.3 =
+
+Branches panel:
+- ShiftF5 - clone the selected branch
+- F8, Del - safe delete local branches
+- ShiftF8, ShiftDel - delete remote and local branches
+
 = 0.0.2 =
 
 Requires FarNet 7.0.7

@@ -36,7 +36,7 @@ public class Command : ModuleCommand
 		else
 			path = Far.Api.CurrentDirectory;
 
-		var repo = new Repository(Host.GetGitRoot(path));
+		var repo = new Repository(Lib.GetGitRoot(path));
 
 		if (parameters.TryGetValue("panel", out value))
 		{
