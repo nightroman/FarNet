@@ -235,7 +235,7 @@ Keys and actions
 
 - `Enter`
 
-    Opens the selected branch [Commits panel](#commits-panel).
+    Opens the cursor branch [Commits panel](#commits-panel).
 
 - `ShiftEnter`
 
@@ -244,17 +244,17 @@ Keys and actions
 
 - `ShiftF5`
 
-    Creates a new branch from the selected branch.
+    Creates a new branch from the cursor branch.
 
 - `ShiftF6`
 
-    Renames the selected branch.
+    Renames the cursor branch.
 
 - `F7`
 
     Creates and checkouts a new branch from the current branch.
-    Note that the current branch is with `*`, not the selected.
-    To copy the selected branch, use `ShiftF5`.
+    Note that the current branch is with `*`, not the cursor.
+    To copy the cursor branch, use `ShiftF5`.
 
 - `F8`, `Del`
 
@@ -292,7 +292,7 @@ Keys and actions
 
 - `Enter`
 
-    Opens the selected commit [Changes panel](#changes-panel).
+    Opens the cursor commit [Changes panel](#changes-panel).
 
 - `PgDn`
 

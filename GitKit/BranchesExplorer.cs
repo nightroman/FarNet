@@ -88,14 +88,14 @@ class BranchesExplorer : BaseExplorer
 		{
 			var branch = (Branch)file.Data!;
 
+			if (branch.IsRemote)
+			{
+				CannotDelete(args, file, $"Remote branch '{branch.FriendlyName}' is not yet supported.");
+				continue;
+			}
+
 			if (!args.Force)
 			{
-				if (branch.IsRemote)
-				{
-					CannotDelete(args, file, $"Use [ShiftDel] to delete remote branch '{branch.FriendlyName}'.");
-					continue;
-				}
-
 				var another = Lib.GetBranchesContainingCommit(Repository, branch.Tip).FirstOrDefault(another => another != branch);
 				if (another is null)
 				{
