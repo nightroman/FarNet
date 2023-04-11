@@ -23,7 +23,7 @@ Far Manager git helpers based on LibGit2Sharp
 [Contents]
 
 GitKit is the FarNet module for git operations in Far Manager.
-GitKit uses [LibGit2Sharp] and does not require installed git.
+GitKit uses [LibGit2Sharp]. Git is not needed for local tasks.
 
 **Project FarNet**
 
@@ -266,6 +266,8 @@ Keys and actions
 - `ShiftF8`, `ShiftDel`
 
     Forcedly deletes the selected remote and local branches.
+
+    > git.exe is used to delete remote branches.
 
 - Other keys
 

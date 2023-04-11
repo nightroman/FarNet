@@ -2,12 +2,16 @@
 using LibGit2Sharp;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace GitKit;
 
 class BranchesExplorer : BaseExplorer
 {
+	const string MarkCurrentBranch = "*";
+	const string MarkRemoteBranch = "r";
+
 	public static Guid MyTypeId = new("75a5d4a6-85b7-4bab-974c-f3a3eb21c992");
 
 	public BranchesExplorer(Repository repository) : base(repository, MyTypeId)
@@ -35,7 +39,7 @@ class BranchesExplorer : BaseExplorer
 			{
 				Name = x.FriendlyName,
 				Description = x.Tip.MessageShort,
-				Owner = x.IsCurrentRepositoryHead ? "*" : null,
+				Owner = x.IsCurrentRepositoryHead ? MarkCurrentBranch : x.IsRemote ? MarkRemoteBranch : null,
 				IsDirectory = true,
 				Data = x,
 			});
@@ -82,20 +86,39 @@ class BranchesExplorer : BaseExplorer
 			Far.Api.Message(message, "GitKit: cannot delete", MessageOptions.LeftAligned | MessageOptions.Warning);
 	}
 
+	void DeleteRemoteBranch(Branch branch)
+	{
+		Far.Api.UI.ShowUserScreen();
+		try
+		{
+			var process = Process.Start(
+				"git.exe",
+				new string[] { "-C", Repository.Info.WorkingDirectory, "push", branch.RemoteName, "--delete", branch.UpstreamBranchCanonicalName });
+
+			process.WaitForExit();
+			if (process.ExitCode != 0)
+				throw new Exception($"git exit code {process.ExitCode}");
+		}
+		finally
+		{
+			Far.Api.UI.SaveUserScreen();
+		}
+	}
+
 	public override void DeleteFiles(DeleteFilesEventArgs args)
 	{
 		foreach (var file in args.Files)
 		{
 			var branch = (Branch)file.Data!;
 
-			if (branch.IsRemote)
-			{
-				CannotDelete(args, file, $"Remote branch '{branch.FriendlyName}' is not yet supported.");
-				continue;
-			}
-
 			if (!args.Force)
 			{
+				if (branch.IsRemote)
+				{
+					CannotDelete(args, file, $"Use [ShiftDel] to delete remote branch '{branch.FriendlyName}'.");
+					continue;
+				}
+
 				var another = Lib.GetBranchesContainingCommit(Repository, branch.Tip).FirstOrDefault(another => another != branch);
 				if (another is null)
 				{
@@ -106,7 +129,14 @@ class BranchesExplorer : BaseExplorer
 
 			try
 			{
-				Repository.Branches.Remove(branch);
+				if (branch.IsRemote)
+				{
+					DeleteRemoteBranch(branch);
+				}
+				else
+				{
+					Repository.Branches.Remove(branch);
+				}
 			}
 			catch (Exception ex)
 			{

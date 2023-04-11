@@ -58,7 +58,11 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 	public override void UIDeleteFiles(DeleteFilesEventArgs args)
 	{
 		var text = $"{args.Files.Count} branches:\n{string.Join("\n", args.Files.Select(x => x.Name))}";
-		if (0 != Far.Api.Message(text, "Delete", MessageOptions.YesNo | MessageOptions.LeftAligned))
+		var op = MessageOptions.YesNo | MessageOptions.LeftAligned;
+		if (args.Force)
+			op |= MessageOptions.Warning;
+
+		if (0 != Far.Api.Message(text, "Delete", op))
 		{
 			args.Result = JobResult.Ignore;
 			return;
