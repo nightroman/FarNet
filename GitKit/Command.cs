@@ -8,7 +8,7 @@ using System.Text;
 
 namespace GitKit;
 
-[ModuleCommand(Name = "GitKit", Prefix = "gk", Id = "15a36561-bf47-47a5-ae43-9729eda272a3")]
+[ModuleCommand(Name = Host.MyName, Prefix = "gk", Id = "15a36561-bf47-47a5-ae43-9729eda272a3")]
 public class Command : ModuleCommand
 {
 	DbConnectionStringBuilder _parameters = null!;

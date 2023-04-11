@@ -6,6 +6,7 @@ namespace GitKit;
 
 public class Host : ModuleHost
 {
+	public const string MyName = "GitKit";
 	public static Host Instance { get; private set; } = null!;
 
 	static readonly Lazy<Func<string, object[], object[]>?> s_invokeScriptArguments =

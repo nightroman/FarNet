@@ -2,13 +2,13 @@
 
 namespace GitKit;
 
-[ModuleTool(Name = "GitKit", Options = ModuleToolOptions.Panels, Id = "7250a2f6-4eb1-4771-bf69-7a0bccd5c516")]
+[ModuleTool(Name = Host.MyName, Options = ModuleToolOptions.Panels, Id = "7250a2f6-4eb1-4771-bf69-7a0bccd5c516")]
 public class Tool : ModuleTool
 {
 	public override void Invoke(object sender, ModuleToolEventArgs e)
 	{
 		var menu = Far.Api.CreateMenu();
-		menu.Title = "GitKit";
+		menu.Title = Host.MyName;
 		menu.HelpTopic = GetHelpTopic("menu");
 
 		switch (Far.Api.Panel)

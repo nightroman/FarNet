@@ -83,7 +83,7 @@ class BranchesExplorer : BaseExplorer
 		args.Result = JobResult.Incomplete;
 		args.FilesToStay.Add(file);
 		if (0 == (args.Mode & ExplorerModes.Silent))
-			Far.Api.Message(message, "GitKit: cannot delete", MessageOptions.LeftAligned | MessageOptions.Warning);
+			Far.Api.Message(message, Host.MyName, MessageOptions.LeftAligned | MessageOptions.Warning);
 	}
 
 	void DeleteRemoteBranch(Branch branch)
@@ -91,9 +91,8 @@ class BranchesExplorer : BaseExplorer
 		Far.Api.UI.ShowUserScreen();
 		try
 		{
-			var process = Process.Start(
-				"git.exe",
-				new string[] { "-C", Repository.Info.WorkingDirectory, "push", branch.RemoteName, "--delete", branch.UpstreamBranchCanonicalName });
+			var arguments = $"push {branch.RemoteName} --delete {branch.UpstreamBranchCanonicalName}";
+			var process = Process.Start(new ProcessStartInfo("git.exe", arguments) { WorkingDirectory = Repository.Info.WorkingDirectory })!;
 
 			process.WaitForExit();
 			if (process.ExitCode != 0)
@@ -140,7 +139,7 @@ class BranchesExplorer : BaseExplorer
 			}
 			catch (Exception ex)
 			{
-				CannotDelete(args, file, ex.Message);
+				CannotDelete(args, file, $"Cannot delete branch '{branch.FriendlyName}': {ex.Message}");
 			}
 		}
 	}
