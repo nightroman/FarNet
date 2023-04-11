@@ -112,31 +112,32 @@ public class Command : ModuleCommand
 		{
 			int n;
 
-			Far.Api.UI.Write($"{changes.Count} ");
-
 			n = changes.Added.Count();
 			if (n > 0)
-				Far.Api.UI.Write($"a{n} ");
+				Far.Api.UI.Write($"a{n} ", ConsoleColor.Red);
 
 			n = changes.Modified.Count();
 			if (n > 0)
-				Far.Api.UI.Write($"m{n} ");
+				Far.Api.UI.Write($"m{n} ", ConsoleColor.Red);
 
 			n = changes.Deleted.Count();
 			if (n > 0)
-				Far.Api.UI.Write($"d{n} ");
+				Far.Api.UI.Write($"d{n} ", ConsoleColor.Red);
 
 			n = changes.TypeChanged.Count();
 			if (n > 0)
-				Far.Api.UI.Write($"\u00B1{n} ");
+				Far.Api.UI.Write($"t{n} ", ConsoleColor.Red);
 
 			n = changes.Renamed.Count();
 			if (n > 0)
-				Far.Api.UI.Write($"r{n} ");
+				Far.Api.UI.Write($"r{n} ", ConsoleColor.Red);
 
 			n = changes.Copied.Count();
 			if (n > 0)
-				Far.Api.UI.Write($"c{n} ");
+				Far.Api.UI.Write($"c{n} ", ConsoleColor.Red);
+
+			//! sign of changes, just in case if none of the above
+			Far.Api.UI.Write("- ");
 		}
 
 		var commit = _repo.Head.Tip;

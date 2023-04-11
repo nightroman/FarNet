@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.2.4 =
+
+Tweak status line format
+
 = 0.2.3 =
 
 Tweak errors and start of git.
