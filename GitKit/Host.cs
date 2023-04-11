@@ -1,5 +1,6 @@
 ﻿using FarNet;
 using System;
+using System.IO;
 
 namespace GitKit;
 
@@ -13,6 +14,15 @@ public class Host : ModuleHost
 	public Host()
 	{
 		Instance = this;
+	}
+
+	public static string GetFullPath(string? path)
+	{
+		if (string.IsNullOrEmpty(path))
+			return Far.Api.CurrentDirectory;
+
+		path = Environment.ExpandEnvironmentVariables(path);
+		return Path.GetFullPath(Path.IsPathRooted(path) ? path : Path.Combine(Far.Api.CurrentDirectory, path));
 	}
 
 	public static object[] InvokeScript(string script, object[] args)

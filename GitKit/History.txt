@@ -1,5 +1,21 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.2.0 =
+
+New commands
+
+	gk:
+	- prints the repository status
+
+	gk: init=<path> ...
+	- creates a new repository
+
+	gk: clone=<url> ...
+	- clones the specified repository
+
+	gk: commit=<message> ...
+	- commits/amends staged/all changes
+
 = 0.1.0 =
 
 Add GitKit module menu in panels

@@ -8,6 +8,9 @@ Far Manager git helpers based on LibGit2Sharp
 - [About](#about)
 - [Install](#install)
 - [Commands](#commands)
+    - [Init command](#init-command)
+    - [Clone command](#clone-command)
+    - [Commit command](#commit-command)
 - [Panels](#panels)
     - [Branches panel](#branches-panel)
     - [Commits panel](#commits-panel)
@@ -50,21 +53,22 @@ GitKit commands use the prefix `gk`. Commands may be typed and invoked in the
 Far Manager command line or using F11 / FarNet / Invoke. Commands may be also
 defined in the Far Manager user menu and file associations.
 
-The command `gk:` without parameters shows GitKit help. Other commands require
-parameters, one or more key=value pairs separated by semicolons, using the
-connection string format.
+The command `gk:` without parameters prints the repository status. Other
+commands require parameters, one or more key=value pairs separated by
+semicolons, using the connection string format.
 
 ```
-gk: key=value [; key=value]
+gk: [key=value] [; key=value] ...
 ```
 
 **Common parameters**
 
-- `repo=<path>`
+- `Repo=<path>`
 
-    Specifies the repository path. Default: the current panel directory.
+    Specifies the existing repository path.
+    Default: the current panel directory.
 
-**Panel parameters**
+**Panel commands**
 
 - `gk: panel=branches`
 
@@ -77,6 +81,123 @@ gk: key=value [; key=value]
 - `gk: panel=changes`
 
     Opens the [Changes panel](#changes-panel).
+
+**Operation commands**
+
+- `gk: init=<path>`
+
+    Creates repository, see [Init command](#init-command).
+
+- `gk: clone=<url>`
+
+    Clones repository, see [Clone command](#clone-command).
+
+- `gk: commit=<message>`
+
+    Commits changes, see [Commit command](#commit-command).
+
+- `gk:`
+
+    Prints the repository status: summary of changes if any, the commit hash,
+    local and remote branches with the same tip commit, the commit message.
+
+*********************************************************************
+## Init command
+
+[Contents]
+
+Use this command in order to create a repository
+
+```
+gk: init=<path>
+```
+
+Parameters
+
+- `IsBare={true|false}`
+
+    Tells to create a bare repository.
+
+*********************************************************************
+## Clone command
+
+[Contents]
+
+Use this command in order to clone a repository
+
+```
+gk: clone=<url>
+```
+
+Parameters
+
+- `Path=<path>`
+
+    Specifies the local path to clone into.
+    Default: the current panel directory.
+
+- `IsBare={true|false}`
+
+    Tells to clone a bare repository.
+
+- `NoCheckout={true|false}`
+
+    Tells not to checkout after cloning.
+
+- `RecurseSubmodules={true|false}`
+
+    Tells to recursively clone submodules.
+
+*********************************************************************
+## Commit command
+
+[Contents]
+
+Use this command in order to commit changes
+
+```
+gk: commit=<message>
+```
+
+Set the message to "#" in order to compose it in the editor. If you also set
+`CommentaryChar` then the message will contain the commented out info about
+changes to be committed.
+
+Parameters
+
+- `All={true|false}`
+
+    Tells to stage all changes before committing.
+
+- `AllowEmptyCommit={true|false}`
+
+    Tells to allow creation of an empty commit.
+
+- `AmendPreviousCommit={true|false}`
+
+    Tells to amend the previous commit.
+
+- `PrettifyMessage={true|false}`
+
+    Tells to prettify the message by stripping leading and trailing empty
+    lines, trailing spaces, and collapsing consecutive empty lines.
+    `PrettifyMessage` is ignored if `CommentaryChar` is set.
+
+- `CommentaryChar=<char>`
+
+    The starting line char used to identify commentaries in the commit message.
+    If set (usually to "#"), all lines starting with this char will be removed.
+    `CommentaryChar` implies `PrettifyMessage=true`.
+
+Examples
+
+```
+# commit all changes, compose a new message in the editor
+gk: commit=#; All=true; CommentaryChar=#
+
+# amend with all changes, modify the old message in the editor
+gk: commit=#; All=true; CommentaryChar=#; AmendPreviousCommit=true
+```
 
 *********************************************************************
 ## Panels

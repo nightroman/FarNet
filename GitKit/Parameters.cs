@@ -32,6 +32,26 @@ public static class Parameters
 		}
 	}
 
+	public static T GetValue<T>(this DbConnectionStringBuilder parameters, string name)
+	{
+		if (parameters.TryGetValue(name, out object? value))
+		{
+			parameters.Remove(name);
+			try
+			{
+				return (T)Convert.ChangeType(value, typeof(T));
+			}
+			catch (Exception ex)
+			{
+				throw new ModuleException($"{name}: {ex.Message}");
+			}
+		}
+		else
+		{
+			return default!;
+		}
+	}
+
 	public static void AssertNone(this DbConnectionStringBuilder parameters)
 	{
 		if (parameters.Count > 0)
