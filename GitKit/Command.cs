@@ -149,10 +149,21 @@ public class Command : ModuleCommand
 
 		Far.Api.UI.Write(tip.Sha[0..7], ConsoleColor.DarkYellow);
 		Far.Api.UI.Write(" (");
+
 		Far.Api.UI.Write("HEAD -> ", ConsoleColor.Cyan);
 
+		var tracking = _repo.Head.TrackingDetails;
+		if (tracking is not null)
+		{
+			if (tracking.AheadBy > 0)
+				Far.Api.UI.Write($"+{tracking.AheadBy} ", ConsoleColor.Green);
+
+			if (tracking.BehindBy > 0)
+				Far.Api.UI.Write($"-{tracking.BehindBy} ", ConsoleColor.Red);
+		}
+
 		bool comma = false;
-		foreach (var branch in _repo.Branches.Where(x => x.Tip == tip))
+		foreach (var branch in _repo.Branches.Where(x => x.Tip == tip).OrderBy(x => x.IsRemote))
 		{
 			if (comma)
 				Far.Api.UI.Write(", ");
@@ -235,6 +246,13 @@ public class Command : ModuleCommand
 				var sb = new StringBuilder();
 				sb.AppendLine(message.TrimEnd());
 				sb.AppendLine();
+
+				if (op.AmendPreviousCommit && _repo.Head.TrackedBranch is not null && _repo.Head.TrackedBranch.Tip == tip)
+				{
+					sb.AppendLine($"{CommentaryChar} WARNING:");
+					sb.AppendLine($"{CommentaryChar}\tThe remote commit will be amended.");
+					sb.AppendLine();
+				}
 
 				sb.AppendLine($"{CommentaryChar} Changes to be committed:");
 

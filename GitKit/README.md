@@ -262,12 +262,12 @@ Keys and actions
 
     Safely deletes the selected local branches.
 
-    Remote branches and local branches with unique local commits are not
-    deleted this way. Use `ShiftF8`, `ShiftDel` in order to force delete.
+    Branches with unique local commits and remote branches are not deleted.
+    Use `ShiftF8`, `ShiftDel` in order to force delete them.
 
 - `ShiftF8`, `ShiftDel`
 
-    Forcedly deletes the selected remote and local branches.
+    Forcedly deletes the selected local and remote branches.
 
     > git.exe is used to delete remote branches.
 
@@ -284,7 +284,7 @@ Keys and actions
 
 [Contents]
 
-This panel shows the branch commits. Commits are shown by pages of 100.
+This panel shows branch commits. Commits are shown by pages of 100.
 
 The panel is opened from the branches panel or for the head branch by
 
@@ -319,9 +319,10 @@ Keys and actions
 
 [Contents]
 
-This panel shows the changed files.
+This panel shows changed files.
 
-The panel is opened from the commits panel or for the current changes by
+The panel is opened from the commits panel or by the menu commands "Compare
+branches" and "Compare commits" or for the current changes by
 
 ```
 gk: panel=changes
