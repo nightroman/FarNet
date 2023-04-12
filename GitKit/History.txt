@@ -1,5 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.3.0 =
+
+New menu "Merge branch".
+
+Show "origin/HEAD" branch.
+
 = 0.2.4 =
 
 Tweak status line format

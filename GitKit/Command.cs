@@ -146,7 +146,7 @@ public class Command : ModuleCommand
 		Far.Api.UI.Write("HEAD -> ", ConsoleColor.Cyan);
 
 		bool comma = false;
-		foreach (var branch in _repo.Branches.Where(x => x.Tip == commit && x.FriendlyName != "origin/HEAD"))
+		foreach (var branch in _repo.Branches.Where(x => x.Tip == commit))
 		{
 			if (comma)
 				Far.Api.UI.Write(", ");
@@ -259,7 +259,7 @@ public class Command : ModuleCommand
 		if (All)
 			Commands.Stage(_repo, "*");
 
-		var sig = _repo.Config.BuildSignature(DateTimeOffset.UtcNow);
+		var sig = Lib.BuildSignature(_repo);
 		_repo.Commit(message, sig, sig, op);
 	}
 }

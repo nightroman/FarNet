@@ -214,7 +214,7 @@ Common panel keys and actions
 
 - `CtrlA`
 
-    Opens the current item property panel.
+    Opens the cursor item property panel.
     This operation requires `FarNet.PowerShellFar`.
 
 *********************************************************************
@@ -222,8 +222,9 @@ Common panel keys and actions
 
 [Contents]
 
-This panel shows the repository branches, local and remote. The current branch
-is marked by `*`. If there is no current branch then `origin/HEAD` is shown.
+This panel shows the repository branches, local and remote.
+The head branch is marked by `*`.
+Remote branches are marked by `r`.
 
 The panel is opened by
 
@@ -239,8 +240,9 @@ Keys and actions
 
 - `ShiftEnter`
 
-    For the local branch, makes it current.
-    For the remote branch, checkouts and makes it current.
+    Checkouts the cursor branch.
+    For the local branch, makes it the head branch.
+    For the remote branch, creates a new branch from it and makes it the head branch.
 
 - `ShiftF5`
 
@@ -252,8 +254,8 @@ Keys and actions
 
 - `F7`
 
-    Creates and checkouts a new branch from the current branch.
-    Note that the current branch is with `*`, not the cursor.
+    Creates and checkouts a new branch from the head branch.
+    Note that the head branch is with `*`, not the cursor.
     To copy the cursor branch, use `ShiftF5`.
 
 - `F8`, `Del`
@@ -284,7 +286,7 @@ Keys and actions
 
 This panel shows the branch commits. Commits are shown by pages of 100.
 
-The panel is opened from the branches panel or for the current branch by
+The panel is opened from the branches panel or for the head branch by
 
 ```
 gk: panel=commits
@@ -347,12 +349,16 @@ Keys and actions
 - **Compare branches**
 
     Compares the cursor branch with the selected branch and opens the changes panel.
-    If nothing is selected then the repository head is used.
+    If nothing is selected then the head branch is used.
+
+- **Merge branch**
+
+    Merges the cursor branch into the head branch, with a confirmation dialog.
 
 - **Compare commits**
 
     Compares the cursor commit with the selected commit and opens the changes panel.
-    If nothing is selected then the branch tip is used.
+    If nothing is selected then the tip commit is used.
 
 - **Create branch**
 

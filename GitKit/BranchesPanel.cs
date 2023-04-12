@@ -57,12 +57,12 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 
 	public override void UIDeleteFiles(DeleteFilesEventArgs args)
 	{
-		var text = $"{args.Files.Count} branches:\n{string.Join("\n", args.Files.Select(x => x.Name))}";
+		var text = $"Delete {args.Files.Count} branches:\n{string.Join("\n", args.Files.Select(x => x.Name))}";
 		var op = MessageOptions.YesNo | MessageOptions.LeftAligned;
 		if (args.Force)
 			op |= MessageOptions.Warning;
 
-		if (0 != Far.Api.Message(text, "Delete", op))
+		if (0 != Far.Api.Message(text, Host.MyName, op))
 		{
 			args.Result = JobResult.Ignore;
 			return;
@@ -131,5 +131,26 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 		var commits = new Commit[] { data1.Tip, data2.Tip }.OrderBy(x => x.Author.When).ToArray();
 
 		CompareCommits(commits[0], commits[1]);
+	}
+
+	public void MergeBranch()
+	{
+		if (Repository.Info.IsHeadDetached)
+			return;
+
+		var branch = CurrentFile?.Data as Branch;
+		if (branch is null || branch.Tip == Repository.Head.Tip)
+			return;
+
+		if (0 != Far.Api.Message(
+			$"Merge branch {branch.FriendlyName} into {Repository.Head.FriendlyName}",
+			Host.MyName,
+			MessageOptions.YesNo))
+			return;
+
+		Repository.Merge(branch, Lib.BuildSignature(Repository));
+
+		Update(true);
+		Redraw();
 	}
 }

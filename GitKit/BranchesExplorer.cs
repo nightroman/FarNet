@@ -29,10 +29,7 @@ class BranchesExplorer : BaseExplorer
 
 	public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 	{
-		var isHeadDetached = Repository.Info.IsHeadDetached;
-
 		return Repository.Branches
-			.Where(x => isHeadDetached || x.FriendlyName != "origin/HEAD")
 			.OrderBy(x => x.IsRemote)
 			.ThenBy(x => x.FriendlyName)
 			.Select(x => new SetFile
@@ -88,20 +85,9 @@ class BranchesExplorer : BaseExplorer
 
 	void DeleteRemoteBranch(Branch branch)
 	{
-		Far.Api.UI.ShowUserScreen();
-		try
-		{
-			var arguments = $"push {branch.RemoteName} --delete {branch.UpstreamBranchCanonicalName}";
-			var process = Process.Start(new ProcessStartInfo("git.exe", arguments) { WorkingDirectory = Repository.Info.WorkingDirectory })!;
-
-			process.WaitForExit();
-			if (process.ExitCode != 0)
-				throw new Exception($"git exit code {process.ExitCode}");
-		}
-		finally
-		{
-			Far.Api.UI.SaveUserScreen();
-		}
+		Host.InvokeGit(
+			$"push {branch.RemoteName} --delete {branch.UpstreamBranchCanonicalName}",
+			Repository.Info.WorkingDirectory);
 	}
 
 	public override void DeleteFiles(DeleteFilesEventArgs args)

@@ -15,6 +15,7 @@ public class Tool : ModuleTool
 		{
 			case BranchesPanel panel:
 				menu.Add("Compare branches", (s, e) => panel.CompareBranches());
+				menu.Add("Merge branch", (s, e) => panel.MergeBranch());
 				break;
 
 			case CommitsPanel panel:

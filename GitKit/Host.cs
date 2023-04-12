@@ -1,5 +1,6 @@
 ﻿using FarNet;
 using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace GitKit;
@@ -30,5 +31,22 @@ public class Host : ModuleHost
 	{
 		var func = s_invokeScriptArguments.Value ?? throw new ModuleException("This operation requires FarNet.PowerShellFar");
 		return func(script, args);
+	}
+
+	public static void InvokeGit(string arguments, string workingDirectory)
+	{
+		Far.Api.UI.ShowUserScreen();
+		try
+		{
+			var process = Process.Start(new ProcessStartInfo("git.exe", arguments) { WorkingDirectory = workingDirectory })!;
+
+			process.WaitForExit();
+			if (process.ExitCode != 0)
+				throw new Exception($"git exit code {process.ExitCode}");
+		}
+		finally
+		{
+			Far.Api.UI.SaveUserScreen();
+		}
 	}
 }
