@@ -79,6 +79,11 @@ public class Command : ModuleCommand
 		}
 	}
 
+	Commit GetExistingTip()
+	{
+		return _repo.Head.Tip ?? throw new ModuleException("The repository has no commits.");
+	}
+
 	void InitCommand(string path)
 	{
 		path = Host.GetFullPath(path);
@@ -106,8 +111,10 @@ public class Command : ModuleCommand
 
 	void StatusCommand()
 	{
+		Commit tip = GetExistingTip();
+
 		// see TreeChanges.DebuggerDisplay
-		var changes = _repo.Diff.Compare<TreeChanges>(_repo.Head.Tip.Tree, DiffTargets.Index | DiffTargets.WorkingDirectory);
+		var changes = _repo.Diff.Compare<TreeChanges>(tip.Tree, DiffTargets.Index | DiffTargets.WorkingDirectory);
 		if (changes.Count > 0)
 		{
 			int n;
@@ -140,13 +147,12 @@ public class Command : ModuleCommand
 			Far.Api.UI.Write("- ");
 		}
 
-		var commit = _repo.Head.Tip;
-		Far.Api.UI.Write(commit.Sha[0..7], ConsoleColor.DarkYellow);
+		Far.Api.UI.Write(tip.Sha[0..7], ConsoleColor.DarkYellow);
 		Far.Api.UI.Write(" (");
 		Far.Api.UI.Write("HEAD -> ", ConsoleColor.Cyan);
 
 		bool comma = false;
-		foreach (var branch in _repo.Branches.Where(x => x.Tip == commit))
+		foreach (var branch in _repo.Branches.Where(x => x.Tip == tip))
 		{
 			if (comma)
 				Far.Api.UI.Write(", ");
@@ -155,7 +161,7 @@ public class Command : ModuleCommand
 			Far.Api.UI.Write(branch.FriendlyName, branch.IsRemote ? ConsoleColor.Red : branch.IsCurrentRepositoryHead ? ConsoleColor.Green: ConsoleColor.Gray);
 		}
 
-		Far.Api.UI.Write($") {commit.MessageShort}");
+		Far.Api.UI.Write($") {tip.MessageShort}");
 		Far.Api.UI.WriteLine();
 	}
 
@@ -165,22 +171,31 @@ public class Command : ModuleCommand
 		{
 			case "branches":
 				_parameters.AssertNone();
-				new BranchesExplorer(_repo).CreatePanel().Open();
+				new BranchesExplorer(_repo)
+					.CreatePanel()
+					.Open();
 				return;
 
 			case "commits":
 				_parameters.AssertNone();
-				new CommitsExplorer(_repo, _repo.Head).CreatePanel().Open();
+				new CommitsExplorer(_repo, _repo.Head)
+					.CreatePanel()
+					.Open();
 				return;
 
 			case "changes":
 				_parameters.AssertNone();
-				TreeChanges changes() => _repo.Diff.Compare<TreeChanges>(_repo.Head.Tip.Tree, DiffTargets.Index | DiffTargets.WorkingDirectory);
-				new ChangesExplorer(_repo, changes).CreatePanel().Open();
+				GetExistingTip();
+				new ChangesExplorer(_repo, () =>
+				{
+					return _repo.Diff.Compare<TreeChanges>(_repo.Head.Tip.Tree, DiffTargets.Index | DiffTargets.WorkingDirectory);
+				})
+					.CreatePanel()
+					.Open();
 				return;
 
 			default:
-				throw new ModuleException($"Unknown panel `{panel}`.");
+				throw new ModuleException($"Unknown panel '{panel}'.");
 		}
 	}
 
@@ -209,11 +224,13 @@ public class Command : ModuleCommand
 
 		if (message == "#")
 		{
-			message = string.Empty;
-			if (op.AmendPreviousCommit)
-				message = _repo.Head.Tip.Message;
+			Commit? tip = _repo.Head.Tip;
 
-			if (CommentaryChar > 0)
+			message = string.Empty;
+			if (op.AmendPreviousCommit && tip is not null)
+				message = tip.Message;
+
+			if (CommentaryChar > 0 && tip is not null)
 			{
 				var sb = new StringBuilder();
 				sb.AppendLine(message.TrimEnd());
@@ -222,7 +239,7 @@ public class Command : ModuleCommand
 				sb.AppendLine($"{CommentaryChar} Changes to be committed:");
 
 				var changes = _repo.Diff.Compare<TreeChanges>(
-					_repo.Head.Tip.Tree,
+					tip.Tree,
 					All ? (DiffTargets.Index | DiffTargets.WorkingDirectory) : DiffTargets.Index);
 
 				foreach(var change in changes)

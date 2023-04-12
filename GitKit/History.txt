@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.3.1 =
+
+Fix cases of repository with no commits.
+
 = 0.3.0 =
 
 New menu "Merge branch".
