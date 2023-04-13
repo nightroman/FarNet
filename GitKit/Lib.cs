@@ -20,11 +20,9 @@ public static class Lib
 
 	public static IEnumerable<Branch> GetBranchesContainingCommit(Repository repo, Commit commit)
 	{
-		var localHeads = repo.Refs.Where(reference => reference.IsLocalBranch);
-
-		var localHeadsContainingCommit = repo.Refs.ReachableFrom(localHeads, new[] { commit });
-
-		return localHeadsContainingCommit
+		var heads = repo.Refs;
+		var headsContainingCommit = repo.Refs.ReachableFrom(heads, new[] { commit });
+		return headsContainingCommit
 			.Select(branchRef => repo.Branches[branchRef.CanonicalName]);
 	}
 }

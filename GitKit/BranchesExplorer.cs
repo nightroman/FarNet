@@ -2,7 +2,6 @@
 using LibGit2Sharp;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace GitKit;
@@ -107,7 +106,7 @@ class BranchesExplorer : BaseExplorer
 				var another = Lib.GetBranchesContainingCommit(Repository, branch.Tip).FirstOrDefault(another => another != branch);
 				if (another is null)
 				{
-					CannotDelete(args, file, $"Use [ShiftDel] to delete branch '{branch.FriendlyName}' and its unique local commit(s).");
+					CannotDelete(args, file, $"Use [ShiftDel] to delete branch '{branch.FriendlyName}', it has unique commits.");
 					continue;
 				}
 			}

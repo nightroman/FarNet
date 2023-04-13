@@ -67,6 +67,13 @@ public class Command : ModuleCommand
 				return;
 			}
 
+			var checkout = _parameters.GetValue("checkout");
+			if (checkout is not null)
+			{
+				CheckoutCommand(checkout);
+				return;
+			}
+
 			_parameters.AssertNone();
 		}
 		catch (ModuleException)
@@ -206,7 +213,7 @@ public class Command : ModuleCommand
 				return;
 
 			default:
-				throw new ModuleException($"Unknown panel '{panel}'.");
+				throw new ModuleException($"Unknown 'panel={panel}'.");
 		}
 	}
 
@@ -296,5 +303,24 @@ public class Command : ModuleCommand
 
 		var sig = Lib.BuildSignature(_repo);
 		_repo.Commit(message, sig, sig, op);
+	}
+
+	void CheckoutCommand(string branchName)
+	{
+		_parameters.AssertNone();
+
+		var branch = _repo.Branches[branchName];
+		if (branch is null)
+		{
+			if (0 != Far.Api.Message(
+				$"Create branch '{branchName}' from '{_repo.Head.FriendlyName}'?",
+				Host.MyName,
+				MessageOptions.YesNo))
+				return;
+
+			branch = _repo.CreateBranch(branchName, _repo.Head.Tip);
+		}
+
+		Commands.Checkout(_repo, branch);
 	}
 }

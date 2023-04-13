@@ -11,6 +11,7 @@ Far Manager git helpers based on LibGit2Sharp
     - [Init command](#init-command)
     - [Clone command](#clone-command)
     - [Commit command](#commit-command)
+    - [Checkout command](#checkout-command)
 - [Panels](#panels)
     - [Branches panel](#branches-panel)
     - [Commits panel](#commits-panel)
@@ -95,6 +96,10 @@ gk: [key=value] [; key=value] ...
 - `gk: commit=<message>`
 
     Commits changes, see [Commit command](#commit-command).
+
+- `gk: checkout=<branch>`
+
+    Checkouts the branch, see [Checkout command](#checkout-command).
 
 - `gk:`
 
@@ -198,6 +203,20 @@ gk: commit=#; All=true; CommentaryChar=#
 # amend with all changes, modify the old message in the editor
 gk: commit=#; All=true; CommentaryChar=#; AmendPreviousCommit=true
 ```
+
+*********************************************************************
+## Checkout command
+
+[Contents]
+
+Use this command in order to checkout the specified branch
+
+```
+gk: checkout=<branch>
+```
+
+If the specified branch does not exists, it is created from the head branch,
+with a confirmation dialog.
 
 *********************************************************************
 ## Panels

@@ -1,5 +1,12 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.4.0 =
+
+New command
+	gk: checkout=<branch>
+
+Allow safe delete of a branch if its tip exists in any other branch, not just local.
+
 = 0.3.2 =
 
 - Sort branches in status.
