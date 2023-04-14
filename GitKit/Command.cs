@@ -154,7 +154,8 @@ public class Command : ModuleCommand
 			Far.Api.UI.Write("- ");
 		}
 
-		Far.Api.UI.Write(tip.Sha[0..7], ConsoleColor.DarkYellow);
+		var settings = Settings.Default.GetData();
+		Far.Api.UI.Write(tip.Sha[0..settings.ShaPrefixLength], ConsoleColor.DarkYellow);
 		Far.Api.UI.Write(" (");
 
 		Far.Api.UI.Write("HEAD -> ", ConsoleColor.Cyan);
@@ -176,7 +177,7 @@ public class Command : ModuleCommand
 				Far.Api.UI.Write(", ");
 
 			comma = true;
-			Far.Api.UI.Write(branch.FriendlyName, branch.IsRemote ? ConsoleColor.Red : branch.IsCurrentRepositoryHead ? ConsoleColor.Green: ConsoleColor.Gray);
+			Far.Api.UI.Write(branch.FriendlyName, branch.IsRemote ? ConsoleColor.Red : branch.IsCurrentRepositoryHead ? ConsoleColor.Green : ConsoleColor.Gray);
 		}
 
 		Far.Api.UI.Write($") {tip.MessageShort}");
@@ -267,7 +268,7 @@ public class Command : ModuleCommand
 					tip.Tree,
 					All ? (DiffTargets.Index | DiffTargets.WorkingDirectory) : DiffTargets.Index);
 
-				foreach(var change in changes)
+				foreach (var change in changes)
 					sb.AppendLine($"{CommentaryChar}\t{change.Status}:\t{change.Path}");
 
 				message = sb.ToString();

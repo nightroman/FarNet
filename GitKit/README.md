@@ -17,6 +17,7 @@ Far Manager git helpers based on LibGit2Sharp
     - [Commits panel](#commits-panel)
     - [Changes panel](#changes-panel)
 - [Menu](#menu)
+- [Settings](#settings)
 
 *********************************************************************
 ## About
@@ -351,7 +352,7 @@ Keys and actions
 
 - `Enter`
 
-    Opens the diff tool specified by the environment variable `MERGE`.
+    Opens the diff tool specified by the setting `DiffTool`.
 
 - `F3`, `F4`
 
@@ -387,5 +388,29 @@ Keys and actions
 - **Help**
 
     Shows GitKit help.
+
+*********************************************************************
+## Settings
+
+[Contents]
+
+The module settings: F11 / FarNet / Settings / GitKit.
+
+*********************************************************************
+**DiffTool** and **DiffToolArguments**
+
+Specify the diff tool and its arguments used to compare changed files.
+In arguments use `%1` and `%2` as file path substitutes.
+Environment variables are expanded.
+
+VSCode is used as the default diff tool
+
+    %LOCALAPPDATA%\Programs\Microsoft VS Code\bin\code.cmd
+    --wait --diff "%1" "%2"
+
+*********************************************************************
+**ShaPrefixLength**
+
+The number of chars commit SHA should be truncated to.
 
 *********************************************************************

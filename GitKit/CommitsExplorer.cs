@@ -28,10 +28,11 @@ class CommitsExplorer : BaseExplorer
 		if (args.Limit > 0)
 			commits = commits.Skip(args.Offset).Take(args.Limit);
 
+		var settings = Settings.Default.GetData();
 		return commits
 			.Select(x => new SetFile
 			{
-				Name = $"{x.Sha[..7]} {x.Author.When:yyyy-MM-dd} {x.Author.Name}: {x.MessageShort}",
+				Name = $"{x.Sha[..settings.ShaPrefixLength]} {x.Author.When:yyyy-MM-dd} {x.Author.Name}: {x.MessageShort}",
 				LastWriteTime = x.Author.When.DateTime,
 				IsDirectory = true,
 				Data = x,

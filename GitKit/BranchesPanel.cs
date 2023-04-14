@@ -30,7 +30,7 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 		var newName = Far.Api.Input(
 			"New branch name",
 			"GitBranch",
-			$"Create new branch from {friendlyName}",
+			$"Create new branch from '{friendlyName}'",
 			Path.GetFileName(friendlyName));
 
 		if (string.IsNullOrEmpty(newName))
@@ -143,7 +143,7 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 			return;
 
 		if (0 != Far.Api.Message(
-			$"Merge branch {branch.FriendlyName} into {Repository.Head.FriendlyName}",
+			$"Merge branch '{branch.FriendlyName}' into '{Repository.Head.FriendlyName}'?",
 			Host.MyName,
 			MessageOptions.YesNo))
 			return;

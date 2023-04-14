@@ -47,7 +47,8 @@ class CommitsPanel : BasePanel<CommitsExplorer>
 			return;
 
 		var friendlyName = Explorer.Branch.FriendlyName;
-		var hash = commit.Sha[0..7];
+		var settings = Settings.Default.GetData();
+		var hash = commit.Sha[0..settings.ShaPrefixLength];
 		var newName = Far.Api.Input(
 			"New branch name",
 			"GitBranch",

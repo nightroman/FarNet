@@ -49,14 +49,17 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 
 	void ShowDiff(TreeEntryChanges changes)
 	{
-		var merge = Environment.GetEnvironmentVariable("MERGE");
-		if (merge is null)
-			throw new ModuleException("Expected environment variable `MERGE`.");
+		var settings = Settings.Default.GetData();
+		var diffTool = Environment.ExpandEnvironmentVariables(settings.DiffTool);
+		var diffToolArguments = Environment.ExpandEnvironmentVariables(settings.DiffToolArguments);
+		if (string.IsNullOrEmpty(diffTool) || string.IsNullOrEmpty(diffToolArguments))
+			throw new ModuleException($"Please define settings '{nameof(settings.DiffTool)}' and '{nameof(settings.DiffToolArguments)}'.");
 
 		var (file1, kill1) = GetBlobFile(changes.OldOid, changes.OldPath, changes.OldExists);
 		var (file2, kill2) = GetBlobFile(changes.Oid, changes.Path, changes.Exists);
 
-		var process = Process.Start(merge, $"\"{file1}\" \"{file2}\"");
+		diffToolArguments = diffToolArguments.Replace("%1", file1).Replace("%2", file2);
+		var process = Process.Start(diffTool, diffToolArguments);
 		Task.Run(async () =>
 		{
 			await process.WaitForExitAsync();

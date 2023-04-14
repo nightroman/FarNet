@@ -1,5 +1,13 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.5.0 =
+
+Module settings: F11 / FarNet / Settings / GitKit
+- DiffTool, DiffToolArguments
+- ShaPrefixLength
+
+VSCode is used as the default diff tool.
+
 = 0.4.0 =
 
 New command
