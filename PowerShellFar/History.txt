@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 7.0.10 =
+
+Microsoft.PowerShell.SDK 7.3.4
+
 = 7.0.9 =
 
 Make args nullable in Interop().
