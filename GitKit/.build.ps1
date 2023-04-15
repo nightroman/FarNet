@@ -25,7 +25,7 @@ task publish {
 
 	Copy-Item -Destination $ModuleRoot @(
 		"$ModuleRoot\runtimes\$bit\native\*.dll"
-		"$HOME\.nuget\packages\LibGit2Sharp\$ver\lib\netstandard2.0\LibGit2Sharp.xml"
+		"$HOME\.nuget\packages\LibGit2Sharp\$ver\lib\net6.0\LibGit2Sharp.xml"
 	)
 
 	remove $ModuleRoot\runtimes

@@ -43,7 +43,10 @@ class CommitsExplorer : BaseExplorer
 	{
 		var commit = (Commit)args.File.Data!;
 		var tree1 = commit.Tree;
-		var tree2 = commit.Parents.First().Tree;
+
+		//! null for the first commit
+		var tree2 = commit.Parents.FirstOrDefault()?.Tree;
+
 		var diff = Repository.Diff.Compare<TreeChanges>(tree2, tree1);
 		return new ChangesExplorer(Repository, () => diff);
 	}
