@@ -11,7 +11,7 @@ class CommitsExplorer : BaseExplorer
 	public static Guid MyTypeId = new("80354846-50a0-4675-a418-e177f6747d30");
 	public Branch Branch { get; }
 
-	public CommitsExplorer(MyRepository repository, Branch branch) : base(repository, MyTypeId)
+	public CommitsExplorer(Repository repository, Branch branch) : base(repository, MyTypeId)
 	{
 		Branch = branch;
 	}
@@ -48,6 +48,6 @@ class CommitsExplorer : BaseExplorer
 		var tree2 = commit.Parents.FirstOrDefault()?.Tree;
 
 		var diff = Repository.Diff.Compare<TreeChanges>(tree2, tree1);
-		return new ChangesExplorer(MyRepository, () => diff);
+		return new ChangesExplorer(Repository, () => diff);
 	}
 }

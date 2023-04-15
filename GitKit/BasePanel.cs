@@ -6,14 +6,13 @@ namespace GitKit;
 
 abstract class BasePanel<T> : Panel where T : BaseExplorer
 {
-	public MyRepository MyRepository { get; }
-	public Repository Repository => MyRepository.Repository;
+	public Repository Repository { get; }
 
 	public new T Explorer => (T)base.Explorer;
 
 	public BasePanel(T explorer) : base(explorer)
 	{
-		MyRepository = explorer.MyRepository;
+		Repository = explorer.Repository;
 	}
 
 	protected abstract string HelpTopic { get; }
@@ -21,12 +20,12 @@ abstract class BasePanel<T> : Panel where T : BaseExplorer
 	public override void Open()
 	{
 		base.Open();
-		MyRepository.AddRef();
+		Repository.AddRef();
 	}
 
 	public override void UIClosed()
 	{
-		MyRepository.Dispose();
+		Repository.Release();
 	}
 
 	public (TData?, TData?) GetSelectedDataRange<TData>()
@@ -47,7 +46,7 @@ abstract class BasePanel<T> : Panel where T : BaseExplorer
 	public void CompareCommits(Commit commit1, Commit commit2)
 	{
 		TreeChanges changes = Repository.Diff.Compare<TreeChanges>(commit1.Tree, commit2.Tree);
-		new ChangesExplorer(MyRepository, () => changes).CreatePanel().OpenChild(this);
+		new ChangesExplorer(Repository, () => changes).CreatePanel().OpenChild(this);
 	}
 
 	public override bool UIKeyPressed(KeyInfo key)

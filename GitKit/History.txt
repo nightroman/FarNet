@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.5.3 =
+
+Simplify repository factory.
+
 = 0.5.2 =
 
 Dispose repository to avoid file locks.
