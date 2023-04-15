@@ -13,7 +13,7 @@ class BranchesExplorer : BaseExplorer
 
 	public static Guid MyTypeId = new("75a5d4a6-85b7-4bab-974c-f3a3eb21c992");
 
-	public BranchesExplorer(Repository repository) : base(repository, MyTypeId)
+	public BranchesExplorer(MyRepository repository) : base(repository, MyTypeId)
 	{
 		CanCloneFile = true;
 		CanCreateFile = true;
@@ -44,7 +44,7 @@ class BranchesExplorer : BaseExplorer
 	public override Explorer? ExploreDirectory(ExploreDirectoryEventArgs args)
 	{
 		var branch = (Branch)args.File.Data!;
-		return new CommitsExplorer(Repository, branch);
+		return new CommitsExplorer(MyRepository, branch);
 	}
 
 	void CloneBranch(ExplorerEventArgs args, bool checkout)

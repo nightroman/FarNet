@@ -11,7 +11,7 @@ class ChangesExplorer : BaseExplorer
 	public static Guid MyTypeId = new("7b4c229a-949e-4100-856e-45c17d516d25");
 	public Func<TreeChanges> Changes { get; }
 
-	public ChangesExplorer(Repository repository, Func<TreeChanges> changes) : base(repository, MyTypeId)
+	public ChangesExplorer(MyRepository repository, Func<TreeChanges> changes) : base(repository, MyTypeId)
 	{
 		Changes = changes;
 

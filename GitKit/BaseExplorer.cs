@@ -6,10 +6,13 @@ namespace GitKit;
 
 abstract class BaseExplorer : Explorer
 {
-	public Repository Repository { get; }
+	readonly MyRepository _myRepository;
 
-	public BaseExplorer(Repository repository, Guid typeId) : base(typeId)
+	public MyRepository MyRepository => _myRepository;
+	public Repository Repository => _myRepository.Repository;
+
+	public BaseExplorer(MyRepository repository, Guid typeId) : base(typeId)
 	{
-		Repository = repository;
+		_myRepository = repository;
 	}
 }

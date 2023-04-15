@@ -12,6 +12,7 @@ namespace GitKit;
 public class Command : ModuleCommand
 {
 	DbConnectionStringBuilder _parameters = null!;
+	MyRepository _myRepo = null!;
 	Repository _repo = null!;
 
 	public override void Invoke(object sender, ModuleCommandEventArgs e)
@@ -45,7 +46,8 @@ public class Command : ModuleCommand
 			var path = _parameters.GetValue("repo");
 			path = Host.GetFullPath(path);
 
-			_repo = new Repository(Lib.GetGitRoot(path));
+			_myRepo = new MyRepository(path);
+			_repo = _myRepo.Repository;
 
 			if (_parameters.Count == 0)
 			{
@@ -83,6 +85,10 @@ public class Command : ModuleCommand
 		catch (LibGit2SharpException ex)
 		{
 			throw new ModuleException(ex.Message, ex);
+		}
+		finally
+		{
+			_myRepo?.Dispose();
 		}
 	}
 
@@ -190,14 +196,14 @@ public class Command : ModuleCommand
 		{
 			case "branches":
 				_parameters.AssertNone();
-				new BranchesExplorer(_repo)
+				new BranchesExplorer(_myRepo)
 					.CreatePanel()
 					.Open();
 				return;
 
 			case "commits":
 				_parameters.AssertNone();
-				new CommitsExplorer(_repo, _repo.Head)
+				new CommitsExplorer(_myRepo, _repo.Head)
 					.CreatePanel()
 					.Open();
 				return;
@@ -205,7 +211,7 @@ public class Command : ModuleCommand
 			case "changes":
 				_parameters.AssertNone();
 				GetExistingTip();
-				new ChangesExplorer(_repo, () =>
+				new ChangesExplorer(_myRepo, () =>
 				{
 					return _repo.Diff.Compare<TreeChanges>(_repo.Head.Tip.Tree, DiffTargets.Index | DiffTargets.WorkingDirectory);
 				})
