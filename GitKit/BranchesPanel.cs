@@ -1,7 +1,6 @@
 ﻿using FarNet;
 using LibGit2Sharp;
 using System;
-using System.IO;
 using System.Linq;
 
 namespace GitKit;
@@ -56,6 +55,116 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 		action();
 	}
 
+	void CheckoutBranch()
+	{
+		var branch = (Branch?)CurrentFile?.Data;
+		if (branch is null || branch.IsCurrentRepositoryHead)
+			return;
+
+		// create local tracked branch from remote
+		if (branch.IsRemote)
+		{
+			var newName = InputNewBranchName(branch);
+			if (string.IsNullOrEmpty(newName))
+				return;
+
+			var newBranch = Repository.CreateBranch(newName, branch.Tip);
+
+			branch = Repository.Branches.Update(
+				newBranch,
+				b => b.TrackedBranch = branch.CanonicalName);
+
+			PostName(newName);
+		}
+
+		// checkout local branch
+		Commands.Checkout(Repository, branch);
+
+		Update(true);
+		Redraw();
+	}
+
+	public void CompareBranches()
+	{
+		var (data1, data2) = GetSelectedDataRange<Branch>();
+		if (data2 is null)
+			return;
+
+		data1 ??= Repository.Head;
+
+		var commits = new Commit[] { data1.Tip, data2.Tip }.OrderBy(x => x.Author.When).ToArray();
+
+		CompareCommits(commits[0], commits[1]);
+	}
+
+	public void MergeBranch()
+	{
+		if (Repository.Info.IsHeadDetached)
+			return;
+
+		var branch = CurrentFile?.Data as Branch;
+		if (branch is null || branch.Tip == Repository.Head.Tip)
+			return;
+
+		if (0 != Far.Api.Message(
+			$"Merge branch '{branch.FriendlyName}' into '{Repository.Head.FriendlyName}'?",
+			Host.MyName,
+			MessageOptions.YesNo))
+			return;
+
+		Repository.Merge(branch, Lib.BuildSignature(Repository));
+
+		Update(true);
+		Redraw();
+	}
+
+	public void PushBranch()
+	{
+		var branch = CurrentFile?.Data as Branch;
+		if (branch is null || branch.IsRemote)
+			return;
+
+		if (0 != Far.Api.Message(
+			$"Push branch '{branch.FriendlyName}'?",
+			Host.MyName,
+			MessageOptions.YesNo))
+			return;
+
+		var op = new PushOptions
+		{
+			CredentialsProvider = Lib.GitCredentialsHandler
+		};
+
+		if (branch.TrackedBranch is null)
+		{
+			var remotes = Repository.Network.Remotes.ToList();
+
+			Remote remote;
+			if (remotes.Count == 0)
+			{
+				throw new ModuleException("Repository has no remotes.");
+			}
+			else if (remotes.Count == 1)
+			{
+				remote = remotes[0];
+			}
+			else
+			{
+				throw new ModuleException("Several remotes not yet implemented.");
+			}
+
+			branch = Repository.Branches.Update(
+				branch,
+				b => b.Remote = remote.Name,
+				b => b.UpstreamBranch = branch.CanonicalName);
+		}
+
+		Repository.Network.Push(branch, op);
+
+		Update(true);
+		Redraw();
+	}
+
 	public override void UICloneFile(CloneFileEventArgs args)
 	{
 		var branch = (Branch)args.File.Data!;
@@ -108,93 +217,12 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 	{
 		switch (key.VirtualKeyCode)
 		{
-			// checkout remote or local branch
+			// checkout cursor branch
 			case KeyCode.Enter when key.IsShift():
-				var branch = (Branch?)CurrentFile?.Data;
-				if (branch is not null && !branch.IsCurrentRepositoryHead)
-				{
-					// create a local branch from remote
-					if (branch.IsRemote)
-					{
-						var newName = InputNewBranchName(branch);
-						if (string.IsNullOrEmpty(newName))
-							return true;
-
-						var newBranch = Repository.CreateBranch(newName, branch.Tip);
-
-						// set tracking https://stackoverflow.com/a/23344700/323582
-						branch = Repository.Branches.Update(newBranch, b => b.TrackedBranch = branch.CanonicalName);
-
-						PostName(newName);
-					}
-
-					// checkout local branch
-					Commands.Checkout(Repository, branch);
-
-					Update(true);
-					Redraw();
-				}
+				CheckoutBranch();
 				return true;
 		}
 
 		return base.UIKeyPressed(key);
-	}
-
-	public void CompareBranches()
-	{
-		var (data1, data2) = GetSelectedDataRange<Branch>();
-		if (data2 is null)
-			return;
-
-		data1 ??= Repository.Head;
-
-		var commits = new Commit[] { data1.Tip, data2.Tip }.OrderBy(x => x.Author.When).ToArray();
-
-		CompareCommits(commits[0], commits[1]);
-	}
-
-	public void MergeBranch()
-	{
-		if (Repository.Info.IsHeadDetached)
-			return;
-
-		var branch = CurrentFile?.Data as Branch;
-		if (branch is null || branch.Tip == Repository.Head.Tip)
-			return;
-
-		if (0 != Far.Api.Message(
-			$"Merge branch '{branch.FriendlyName}' into '{Repository.Head.FriendlyName}'?",
-			Host.MyName,
-			MessageOptions.YesNo))
-			return;
-
-		Repository.Merge(branch, Lib.BuildSignature(Repository));
-
-		Update(true);
-		Redraw();
-	}
-
-	public void PushBranches()
-	{
-		var branches = SelectedFiles
-			.Select(x => (Branch)x.Data!)
-			.ToList();
-
-		var text = $"Push {branches.Count} branches:\n{string.Join("\n", branches.Select(x => x.FriendlyName))}";
-		if (0 != Far.Api.Message(
-			text,
-			Host.MyName,
-			MessageOptions.YesNo | MessageOptions.LeftAligned))
-			return;
-
-		var op = new PushOptions
-		{
-			CredentialsProvider = Lib.GitCredentialsHandler
-		};
-
-		Repository.Network.Push(branches, op);
-
-		Update(true);
-		Redraw();
 	}
 }

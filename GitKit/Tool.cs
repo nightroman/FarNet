@@ -14,8 +14,8 @@ public class Tool : ModuleTool
 		switch (Far.Api.Panel)
 		{
 			case BranchesPanel panel:
+				menu.Add("Push branch", (s, e) => panel.PushBranch());
 				menu.Add("Merge branch", (s, e) => panel.MergeBranch());
-				menu.Add("Push branches", (s, e) => panel.PushBranches());
 				menu.Add("Compare branches", (s, e) => panel.CompareBranches());
 				break;
 

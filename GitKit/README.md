@@ -365,13 +365,13 @@ Keys and actions
 
 [Contents]
 
+- **Push branch** (branches panel)
+
+    Pushes the cursor branch, with a confirmation dialog.
+
 - **Merge branch** (branches panel)
 
     Merges the cursor branch into the head branch, with a confirmation dialog.
-
-- **Push branches** (branches panel)
-
-    Pushes the selected branches, with a confirmation dialog.
 
 - **Compare branches** (branches panel)
 

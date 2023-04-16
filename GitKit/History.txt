@@ -1,5 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.6.1 =
+
+Branches panel
+- Push branch: support not tracked branches.
+
 = 0.6.0 =
 
 Use git credential for remote tasks.
