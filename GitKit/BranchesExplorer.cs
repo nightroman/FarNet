@@ -8,9 +8,6 @@ namespace GitKit;
 
 class BranchesExplorer : BaseExplorer
 {
-	const string MarkCurrentBranch = "*";
-	const string MarkRemoteBranch = "r";
-
 	public static Guid MyTypeId = new("75a5d4a6-85b7-4bab-974c-f3a3eb21c992");
 
 	public BranchesExplorer(Repository repository) : base(repository, MyTypeId)
@@ -26,6 +23,28 @@ class BranchesExplorer : BaseExplorer
 		return new BranchesPanel(this);
 	}
 
+	static char GetTipsMark(Commit tip1, Commit tip2)
+	{
+		if (tip1 is null || tip2 is null)
+			return '?';
+
+		if (tip1 == tip2)
+			return '=';
+
+		return tip1.Author.When < tip2.Author.When ? '<' : '>';
+	}
+
+	static string GetBranchMarks(Branch branch)
+	{
+		if (branch.IsRemote)
+			return $"r ";
+
+		var tracked = branch.TrackedBranch;
+		char m1 = tracked is null ? ' ' : GetTipsMark(branch.Tip, tracked.Tip);
+		char m2 = branch.IsCurrentRepositoryHead ? '*' : ' ';
+		return $"{m1}{m2}";
+	}
+
 	public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 	{
 		return Repository.Branches
@@ -35,7 +54,7 @@ class BranchesExplorer : BaseExplorer
 			{
 				Name = x.FriendlyName,
 				Description = x.Tip.MessageShort,
-				Owner = x.IsCurrentRepositoryHead ? MarkCurrentBranch : x.IsRemote ? MarkRemoteBranch : null,
+				Owner = GetBranchMarks(x),
 				IsDirectory = true,
 				Data = x,
 			});
@@ -84,9 +103,13 @@ class BranchesExplorer : BaseExplorer
 
 	void DeleteRemoteBranch(Branch branch)
 	{
-		Host.InvokeGit(
-			$"push {branch.RemoteName} --delete {branch.UpstreamBranchCanonicalName}",
-			Repository.Info.WorkingDirectory);
+		var op = new PushOptions
+		{
+			CredentialsProvider = Lib.GitCredentialsHandler
+		};
+
+		var remote = Repository.Network.Remotes[branch.RemoteName];
+		Repository.Network.Push(remote, $":{branch.UpstreamBranchCanonicalName}", op);
 	}
 
 	public override void DeleteFiles(DeleteFilesEventArgs args)

@@ -14,13 +14,14 @@ public class Tool : ModuleTool
 		switch (Far.Api.Panel)
 		{
 			case BranchesPanel panel:
-				menu.Add("Compare branches", (s, e) => panel.CompareBranches());
 				menu.Add("Merge branch", (s, e) => panel.MergeBranch());
+				menu.Add("Push branches", (s, e) => panel.PushBranches());
+				menu.Add("Compare branches", (s, e) => panel.CompareBranches());
 				break;
 
 			case CommitsPanel panel:
-				menu.Add("Compare commits", (s, e) => panel.CompareCommits());
 				menu.Add("Create branch", (s, e) => panel.CreateBranch());
+				menu.Add("Compare commits", (s, e) => panel.CompareCommits());
 				break;
 		}
 

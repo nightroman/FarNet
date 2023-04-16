@@ -14,7 +14,7 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 		SortMode = PanelSortMode.Unsorted;
 		ViewMode = 0;
 
-		var co = new SetColumn { Kind = "O", Name = "Current", Width = 1 };
+		var co = new SetColumn { Kind = "O", Name = " ", Width = 2 };
 		var cn = new SetColumn { Kind = "N", Name = "Branch" };
 		var cd = new SetColumn { Kind = "Z", Name = "Commit" };
 
@@ -24,15 +24,28 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 
 	protected override string HelpTopic => "branches-panel";
 
-	static void CloneBranch(ExplorerEventArgs args, Branch branch, Action action)
+	static string GetSampleBranchName(Branch branch)
 	{
-		var friendlyName = branch.FriendlyName;
-		var newName = Far.Api.Input(
+		var name = branch.FriendlyName;
+		if (!branch.IsRemote)
+			return name;
+
+		var index = name.IndexOf('/');
+		return index < 0 ? name : name[(index + 1)..];
+	}
+
+	static string? InputNewBranchName(Branch branch)
+	{
+		return Far.Api.Input(
 			"New branch name",
 			"GitBranch",
-			$"Create new branch from '{friendlyName}'",
-			Path.GetFileName(friendlyName));
+			$"Create new branch from '{branch.FriendlyName}'",
+			GetSampleBranchName(branch));
+	}
 
+	static void CloneBranch(ExplorerEventArgs args, Branch branch, Action action)
+	{
+		var newName = InputNewBranchName(branch);
 		if (string.IsNullOrEmpty(newName))
 		{
 			args.Result = JobResult.Ignore;
@@ -100,11 +113,18 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 				var branch = (Branch?)CurrentFile?.Data;
 				if (branch is not null && !branch.IsCurrentRepositoryHead)
 				{
-					// create a new local branch from remote
+					// create a local branch from remote
 					if (branch.IsRemote)
 					{
-						var newName = Path.GetFileName(branch.FriendlyName);
-						branch = Repository.CreateBranch(newName, branch.Tip);
+						var newName = InputNewBranchName(branch);
+						if (string.IsNullOrEmpty(newName))
+							return true;
+
+						var newBranch = Repository.CreateBranch(newName, branch.Tip);
+
+						// set tracking https://stackoverflow.com/a/23344700/323582
+						branch = Repository.Branches.Update(newBranch, b => b.TrackedBranch = branch.CanonicalName);
+
 						PostName(newName);
 					}
 
@@ -149,6 +169,30 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 			return;
 
 		Repository.Merge(branch, Lib.BuildSignature(Repository));
+
+		Update(true);
+		Redraw();
+	}
+
+	public void PushBranches()
+	{
+		var branches = SelectedFiles
+			.Select(x => (Branch)x.Data!)
+			.ToList();
+
+		var text = $"Push {branches.Count} branches:\n{string.Join("\n", branches.Select(x => x.FriendlyName))}";
+		if (0 != Far.Api.Message(
+			text,
+			Host.MyName,
+			MessageOptions.YesNo | MessageOptions.LeftAligned))
+			return;
+
+		var op = new PushOptions
+		{
+			CredentialsProvider = Lib.GitCredentialsHandler
+		};
+
+		Repository.Network.Push(branches, op);
 
 		Update(true);
 		Redraw();

@@ -1,5 +1,16 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.6.0 =
+
+Use git credential for remote tasks.
+
+New menu
+	Push branches
+
+Branches panel
+- Amend checkout remote branch: make new branch tracking.
+- Marks: `*` head, `r` remote, `=` tracked same as remote, `<` tracked older, `>` tracked newer.
+
 = 0.5.3 =
 
 Simplify repository factory.

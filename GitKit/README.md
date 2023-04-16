@@ -26,6 +26,7 @@ Far Manager git helpers based on LibGit2Sharp
 
 GitKit is the FarNet module for git operations in Far Manager.
 GitKit uses [LibGit2Sharp]. Git is not needed for local tasks.
+Git is used for getting credentials for remote tasks.
 
 **Project FarNet**
 
@@ -243,8 +244,7 @@ Common panel keys and actions
 [Contents]
 
 This panel shows the repository branches, local and remote.
-The head branch is marked by `*`.
-Remote branches are marked by `r`.
+Branch marks: `*` head, `r` remote, `=` tracked same as remote, `<` tracked older, `>` tracked newer.
 
 The panel is opened by
 
@@ -288,8 +288,6 @@ Keys and actions
 - `ShiftF8`, `ShiftDel`
 
     Forcedly deletes the selected local and remote branches.
-
-    > git.exe is used to delete remote branches.
 
 - Other keys
 
@@ -367,23 +365,27 @@ Keys and actions
 
 [Contents]
 
-- **Compare branches**
+- **Merge branch** (branches panel)
+
+    Merges the cursor branch into the head branch, with a confirmation dialog.
+
+- **Push branches** (branches panel)
+
+    Pushes the selected branches, with a confirmation dialog.
+
+- **Compare branches** (branches panel)
 
     Compares the cursor branch with the selected branch and opens the changes panel.
     If nothing is selected then the head branch is used.
 
-- **Merge branch**
+- **Create branch** (commits panel)
 
-    Merges the cursor branch into the head branch, with a confirmation dialog.
+    Creates a new branch from the cursor commit.
 
-- **Compare commits**
+- **Compare commits** (commits panel)
 
     Compares the cursor commit with the selected commit and opens the changes panel.
     If nothing is selected then the tip commit is used.
-
-- **Create branch**
-
-    Creates a new branch from the cursor commit.
 
 - **Help**
 
