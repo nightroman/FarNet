@@ -1,5 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.6.2 =
+
+Branches panel
+- Add "Select remote" menu.
+- Do not push with local changes.
+
 = 0.6.1 =
 
 Branches panel

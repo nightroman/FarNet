@@ -32,6 +32,12 @@ public static class Lib
 		return repo.Head.Tip ?? throw new ModuleException("The repository has no commits.");
 	}
 
+	public static TreeChanges GetChanges(Repository repo)
+	{
+		Commit tip = GetExistingTip(repo);
+		return repo.Diff.Compare<TreeChanges>(tip.Tree, DiffTargets.Index | DiffTargets.WorkingDirectory);
+	}
+
 	// https://stackoverflow.com/a/55371988/323582
 	public static Credentials GitCredentialsHandler(string url, string usernameFromUrl, SupportedCredentialTypes types)
 	{

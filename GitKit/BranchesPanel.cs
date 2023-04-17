@@ -57,8 +57,7 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 
 	void CheckoutBranch()
 	{
-		var branch = (Branch?)CurrentFile?.Data;
-		if (branch is null || branch.IsCurrentRepositoryHead)
+		if (CurrentFile?.Data is not Branch branch || branch.IsCurrentRepositoryHead)
 			return;
 
 		// create local tracked branch from remote
@@ -102,8 +101,7 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 		if (Repository.Info.IsHeadDetached)
 			return;
 
-		var branch = CurrentFile?.Data as Branch;
-		if (branch is null || branch.Tip == Repository.Head.Tip)
+		if (CurrentFile?.Data is not Branch branch || branch.Tip == Repository.Head.Tip)
 			return;
 
 		if (0 != Far.Api.Message(
@@ -120,9 +118,12 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 
 	public void PushBranch()
 	{
-		var branch = CurrentFile?.Data as Branch;
-		if (branch is null || branch.IsRemote)
+		if (CurrentFile?.Data is not Branch branch || branch.IsRemote)
 			return;
+
+		var changes = Lib.GetChanges(Repository);
+		if (changes.Count > 0)
+			throw new ModuleException($"Cannot push: {changes.Count} not committed changes.");
 
 		if (0 != Far.Api.Message(
 			$"Push branch '{branch.FriendlyName}'?",
@@ -137,21 +138,14 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 
 		if (branch.TrackedBranch is null)
 		{
-			var remotes = Repository.Network.Remotes.ToList();
+			var menu = Far.Api.CreateListMenu();
+			menu.Title = "Select remote";
+			menu.UsualMargins = true;
+			foreach(var it in Repository.Network.Remotes)
+				menu.Add(it.Name).Data = it;
 
-			Remote remote;
-			if (remotes.Count == 0)
-			{
-				throw new ModuleException("Repository has no remotes.");
-			}
-			else if (remotes.Count == 1)
-			{
-				remote = remotes[0];
-			}
-			else
-			{
-				throw new ModuleException("Several remotes not yet implemented.");
-			}
+			if (!menu.Show() || menu.SelectedData is not Remote remote)
+				return;
 
 			branch = Repository.Branches.Update(
 				branch,

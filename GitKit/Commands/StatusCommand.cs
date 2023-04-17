@@ -16,7 +16,7 @@ sealed class StatusCommand : BaseCommand
 		Commit tip = Lib.GetExistingTip(_repo);
 
 		// see TreeChanges.DebuggerDisplay
-		var changes = _repo.Diff.Compare<TreeChanges>(tip.Tree, DiffTargets.Index | DiffTargets.WorkingDirectory);
+		var changes = Lib.GetChanges(_repo);
 		if (changes.Count > 0)
 		{
 			int n;

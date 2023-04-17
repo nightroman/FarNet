@@ -30,10 +30,7 @@ sealed class PanelCommand : BaseCommand
 
 			case "changes":
 				Lib.GetExistingTip(_repo);
-				new ChangesExplorer(_repo, () =>
-				{
-					return _repo.Diff.Compare<TreeChanges>(_repo.Head.Tip.Tree, DiffTargets.Index | DiffTargets.WorkingDirectory);
-				})
+				new ChangesExplorer(_repo, () => Lib.GetChanges(_repo))
 					.CreatePanel()
 					.Open();
 				return;
