@@ -6,7 +6,7 @@
     <TargetFramework>net7.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="GraphQL-Parser" Version="8.1.0" />
+    <PackageReference Include="GraphQL-Parser" Version="8.2.0" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="$(FarHome)\FarNet\FarNet.dll">
