@@ -1,5 +1,11 @@
 # HtmlToFarHelp Release Notes
 
+## v1.3.4
+
+Requires .NET Framework 4.7.2
+
+Ignore formatting in links, #45
+
 ## v1.3.3
 
 Maintenance.

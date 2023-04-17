@@ -392,6 +392,14 @@ Headings](#headings) across lines.
 This is not a link: [Go To Contents].
 But it is treated as link because it is *potentially* a link.
 
+### Ignore formatting in links, issue 45
+
+[_em_ text](https://github.com/nightroman/FarNet/issues/45)
+
+[text _em_](https://github.com/nightroman/FarNet/issues/45)
+
+[text **_mix_** text](https://github.com/nightroman/FarNet/issues/45)
+
 *********************************************************************
 ## Misc
 

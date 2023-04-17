@@ -48,7 +48,7 @@ task meta @{
 
 task build {
 	exec { dotnet build -c $Configuration }
-	Copy-Item -Destination $Bin -LiteralPath Bin\$Configuration\net40\HtmlToFarHelp.exe
+	Copy-Item -Destination $Bin -LiteralPath Bin\$Configuration\net472\HtmlToFarHelp.exe
 }
 
 # Convert markdown for packaging
@@ -80,7 +80,7 @@ task package markdown, {
 # Get version
 task version {
 	($script:Version = Get-Version)
-	equals (Get-Command HtmlToFarHelp.exe).FileVersionInfo.FileVersion $Version
+	equals (Get-Command HtmlToFarHelp.exe).FileVersionInfo.FileVersion "$Version.0"
 }
 
 # Make NuGet package
@@ -146,6 +146,7 @@ task test {
 
 		# used for HLF and docs
 		[TestCase]@{File = "..\..\FarNet\README.md"; Name = 'About-FarNet'; Mode = 3; Root = $SampleHome3}
+		[TestCase]@{File = "..\..\GitKit\README.md"; Name = 'About-GitKit'; Mode = 3; Root = $SampleHome3}
 		[TestCase]@{File = "..\..\PowerShellFar\README.md"; Name = 'About-PowerShellFar'; Mode = 3; Root = $SampleHome3}
 		[TestCase]@{File = "..\..\Vessel\README.md"; Name = 'About-Vessel'; Mode = 3; Root = $SampleHome3}
 

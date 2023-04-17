@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Xml;
 
 namespace HtmlToFarHelp
@@ -56,6 +57,8 @@ namespace HtmlToFarHelp
 		readonly XmlReader _reader;
 		readonly StreamWriter _writer;
 		readonly bool _verbose;
+		readonly StringBuilder _sbA = new StringBuilder();
+
 		public Converter(string inputFileName, XmlReader reader, StreamWriter writer, bool verbose)
 		{
 			_fileName = inputFileName;
@@ -63,6 +66,7 @@ namespace HtmlToFarHelp
 			_writer = writer;
 			_verbose = verbose;
 		}
+
 		void ProcessOptions()
 		{
 			_IndentList_ = "".PadRight(_options.Margin + _options.IndentList, ' ');
@@ -76,6 +80,7 @@ namespace HtmlToFarHelp
 			_IndentCode2_ = _IndentList_ + "  " + "".PadRight(indentCode, ' ');
 			_IndentCode3_ = _IndentList_ + "   " + "".PadRight(indentCode, ' ');
 		}
+
 		public void Run()
 		{
 			if (_reader == null || _writer == null) throw new InvalidOperationException();
@@ -96,6 +101,7 @@ namespace HtmlToFarHelp
 					throw new InvalidDataException(string.Format(ErrMissingTarget, link));
 			}
 		}
+
 		void Node()
 		{
 			switch (_reader.NodeType)
@@ -249,10 +255,42 @@ namespace HtmlToFarHelp
 			//! Ultimate solution: reset _needNewLine on each EndElement.
 			_needNewLine = false;
 		}
+
+		// Reads just text in a link element.
+		void ReadA(StringBuilder sb)
+		{
+			if (_reader.NodeType == XmlNodeType.Element)
+			{
+				_reader.MoveToContent();
+				_reader.Read();
+				ReadA(sb);
+				return;
+			}
+
+			if (_reader.NodeType == XmlNodeType.Text)
+			{
+				sb.Append(_reader.Value);
+				_reader.Read();
+				ReadA(sb);
+				return;
+			}
+
+			if (_reader.NodeType == XmlNodeType.EndElement)
+			{
+				if (_reader.Name == "a")
+					return;
+
+				_reader.Read();
+				ReadA(sb);
+				return;
+			}
+		}
+
 		void A1()
 		{
 			string href = _reader.GetAttribute("href");
-			if (href == null) Throw(ErrExpectedA);
+			if (href == null)
+				Throw(ErrExpectedA);
 
 			if (href.StartsWith("#"))
 			{
@@ -262,15 +300,14 @@ namespace HtmlToFarHelp
 				_links.Add(href);
 			}
 
-			_reader.MoveToContent();
-			_reader.Read();
-			if (_reader.NodeType != XmlNodeType.Text)
-				Throw(ErrExpectedA);
-
-			var text = Kit.FixNewLine(_reader.Value);
+			_sbA.Length = 0;
+			ReadA(_sbA);
+			var text = Kit.FixNewLine(_sbA.ToString());
 			_writer.Write("~{0}~@{1}@", Escape(text), href.Replace("@", "@@"));
 		}
+
 		string _topicContentsId;
+
 		void Heading1(string tag)
 		{
 			Start();
@@ -321,6 +358,7 @@ namespace HtmlToFarHelp
 				++_emphasis;
 			}
 		}
+
 		void Heading2()
 		{
 			_emphasis = 0;
@@ -328,6 +366,7 @@ namespace HtmlToFarHelp
 			if (!_options.PlainHeading)
 				_writer.Write("#");
 		}
+
 		void Emphasis1()
 		{
 			++_emphasis;
@@ -337,6 +376,7 @@ namespace HtmlToFarHelp
 			if (_emphasis == 1)
 				_writer.Write("#");
 		}
+
 		void Emphasis2()
 		{
 			--_emphasis;
@@ -344,6 +384,7 @@ namespace HtmlToFarHelp
 			if (_emphasis == 0)
 				_writer.Write("#");
 		}
+
 		void Term1()
 		{
 			if (_list.Count == 0)
@@ -359,6 +400,7 @@ namespace HtmlToFarHelp
 			list.CountParaInItem = 0;
 			_writer.Write(IndentPara);
 		}
+
 		void Item1()
 		{
 			if (_list.Count == 0)
@@ -391,11 +433,13 @@ namespace HtmlToFarHelp
 					break;
 			}
 		}
+
 		void Item2()
 		{
 			var list = _list.Peek();
 			--list.Item;
 		}
+
 		void List1(ListKind kind)
 		{
 			if (_list.Count == 0 || _list.Peek().CountParaInItem > 0)
@@ -403,17 +447,20 @@ namespace HtmlToFarHelp
 
 			_list.Push(new ListInfo(kind));
 		}
+
 		void List2()
 		{
 			_list.Pop();
 			_needNewLine = false;
 		}
+
 		void Rule()
 		{
 			_writer.WriteLine();
 			_writer.WriteLine();
 			_writer.Write("@=");
 		}
+
 		void P1()
 		{
 			++_para;
@@ -442,12 +489,14 @@ namespace HtmlToFarHelp
 					_writer.Write(IndentList + "  " + ArgWrap);
 			}
 		}
+
 		void P2()
 		{
 			--_para;
 			_needNewLine = false;
 			_countTextInPara = 0;
 		}
+
 		void Pre()
 		{
 			_reader.Read();
@@ -481,6 +530,7 @@ namespace HtmlToFarHelp
 				}
 			}
 		}
+
 		void Text()
 		{
 			++_countTextInPara;
@@ -514,10 +564,12 @@ namespace HtmlToFarHelp
 
 			_writer.Write(text);
 		}
+
 		void Quote1()
 		{
 			++_quote;
 		}
+
 		void Quote2()
 		{
 			--_quote;

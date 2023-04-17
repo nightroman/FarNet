@@ -7,7 +7,7 @@
 HtmlToFarHelp converts HTML with compatible structure to HLF (Far Manager help
 format) and performs sanity checks for unique topic identifiers and valid links.
 
-The tool requires .NET Framework 4.0.
+The tool requires .NET Framework 4.7.2.
 
 ## Download
 
