@@ -24,6 +24,7 @@ namespace HtmlToFarHelp
 		const string ErrUnexpectedNode = "Unexpected node {0} {1}.";
 		readonly HashSet<string> _topics = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		readonly HashSet<string> _links = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		bool _br;
 		bool _started;
 		bool _needNewLine;
 		int _emphasis;
@@ -191,6 +192,7 @@ namespace HtmlToFarHelp
 			{
 				case "a": A1(); break;
 				case "blockquote": Quote1(); break;
+				case "br": BR(); break;
 				case "code": Emphasis1(); break;
 				case "dd": Item1(); break;
 				case "dl": List1(ListKind.Definition); break;
@@ -212,7 +214,6 @@ namespace HtmlToFarHelp
 				case "ul": List1(ListKind.Unordered); break;
 				// break
 				case "body":
-				case "br":
 				case "html":
 					break;
 				// skip
@@ -256,7 +257,7 @@ namespace HtmlToFarHelp
 			_needNewLine = false;
 		}
 
-		// Reads just text in a link element.
+		// Reads just text, https://github.com/nightroman/FarNet/issues/45
 		void ReadA(StringBuilder sb)
 		{
 			if (_reader.NodeType == XmlNodeType.Element)
@@ -304,6 +305,11 @@ namespace HtmlToFarHelp
 			ReadA(_sbA);
 			var text = Kit.FixNewLine(_sbA.ToString());
 			_writer.Write("~{0}~@{1}@", Escape(text), href.Replace("@", "@@"));
+		}
+
+		void BR()
+		{
+			_br = true;
 		}
 
 		string _topicContentsId;
@@ -544,7 +550,19 @@ namespace HtmlToFarHelp
 				var len1 = text.Length;
 				text = Kit.TrimStartNewLine(text);
 				if (len1 != text.Length && _countTextInPara > 1)
+				{
 					_writer.WriteLine();
+
+					// https://github.com/nightroman/FarNet/issues/44
+					if (_br)
+					{
+						var list = _list.Peek();
+						if (list.Kind == ListKind.Ordered)
+							_writer.Write(IndentList + "   " + ArgWrap);
+						else
+							_writer.Write(IndentList + "  " + ArgWrap);
+					}
+				}
 
 				var len2 = text.Length;
 				text = Kit.TrimEndNewLine(text);
@@ -563,6 +581,7 @@ namespace HtmlToFarHelp
 				text = Kit.EmphasisText(text);
 
 			_writer.Write(text);
+			_br = false;
 		}
 
 		void Quote1()

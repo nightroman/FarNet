@@ -362,6 +362,13 @@ para 1.1
 - item 2
 para 2.1
 
+### Line break in para
+
+- item 1
+
+    issue 44\
+    see <https://github.com/nightroman/FarNet/issues/44>
+
 *********************************************************************
 ## Links
 

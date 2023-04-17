@@ -90,7 +90,7 @@ HtmlToFarHelp.exe converts HTML files with compatible structure to HLF,
 Far Manager help format. It also performs some sanity checks for unique
 topic anchors, valid topic links, and etc.
 
-The tool requires .NET Framework 4.0.
+The tool requires .NET Framework 4.7.2.
 '@
 	# NuGet file
 	Set-Content z\Package.nuspec @"

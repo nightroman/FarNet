@@ -1,5 +1,9 @@
 # HtmlToFarHelp Release Notes
 
+## v1.3.5
+
+Respect br in list paragraphs, #44
+
 ## v1.3.4
 
 Requires .NET Framework 4.7.2
