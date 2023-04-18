@@ -9,7 +9,7 @@ namespace GitKit;
 /// <summary>
 /// Creates and disposes repository instances.
 /// </summary>
-static class RepositoryFactory
+public static class RepositoryFactory
 {
 	static readonly LinkedList<Reference> s_references = new();
 
@@ -70,5 +70,16 @@ static class RepositoryFactory
 			s_references.Remove(reference);
 			reference.Instance.Dispose();
 		}
+	}
+
+	/// <summary>
+	/// Forcedly disposes and removes all repository references.
+	/// </summary>
+	public static void Clear()
+	{
+		foreach(var reference in s_references)
+			reference.Instance.Dispose();
+
+		s_references.Clear();
 	}
 }

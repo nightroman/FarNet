@@ -4,7 +4,7 @@
 #>
 
 job {
-	Import-Module FarInventory
+	Import-Module $PSScriptRoot\..\..\PowerShellFar\Modules\FarInventory
 	Open-LogicalDiskPanel
 }
 job {

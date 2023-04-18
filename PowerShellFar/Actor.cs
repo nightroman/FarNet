@@ -157,7 +157,7 @@ public sealed partial class Actor
 		// *) Add before the profile, so that it can load modules.
 		// *) Add after the opening so that standard paths are added.
 		// *) Check for already added, e.g. when starting from another Far.
-		var modulePathAdd = $"{AppHome}\\Modules;";
+		var modulePathAdd = $"{Entry.RoamingData}\\Modules;";
 		var modulePathNow = Environment.GetEnvironmentVariable(Word.PSModulePath) ?? string.Empty;
 		if (!modulePathNow.Contains(modulePathAdd))
 			Environment.SetEnvironmentVariable(Word.PSModulePath, modulePathAdd + modulePathNow);

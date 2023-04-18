@@ -1,5 +1,15 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 7.0.11 =
+
+PS modules and paths
+- Add %FarProfile%\FarNet\PowerShellFar\Modules to %PSModulePath%.
+- Retire %FarHome%\Modules\PowerShellFar\Modules from %PSModulePath%.
+- Retire FarInventory module from package, it is available in sources.
+
+New script
+- Bench\Panel-Version.ps1
+
 = 7.0.10 =
 
 Microsoft.PowerShell.SDK 7.3.4

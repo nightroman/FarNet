@@ -32,6 +32,7 @@ FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-History.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-Process.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-Property-.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-SQLite.ps1
+FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-Version.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Profile.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Profile-Editor.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Reformat-Selection-.ps1
@@ -62,10 +63,6 @@ FarHome\FarNet\Modules\PowerShellFar\Microsoft.Extensions.ObjectPool.dll
 FarHome\FarNet\Modules\PowerShellFar\Microsoft.PowerShell.MarkdownRender.dll
 FarHome\FarNet\Modules\PowerShellFar\Microsoft.Win32.Registry.AccessControl.dll
 FarHome\FarNet\Modules\PowerShellFar\Microsoft.Win32.SystemEvents.dll
-FarHome\FarNet\Modules\PowerShellFar\Modules
-FarHome\FarNet\Modules\PowerShellFar\Modules\FarInventory
-FarHome\FarNet\Modules\PowerShellFar\Modules\FarInventory\about_FarInventory.help.txt
-FarHome\FarNet\Modules\PowerShellFar\Modules\FarInventory\FarInventory.psm1
 FarHome\FarNet\Modules\PowerShellFar\Namotion.Reflection.dll
 FarHome\FarNet\Modules\PowerShellFar\Newtonsoft.Json.dll
 FarHome\FarNet\Modules\PowerShellFar\NJsonSchema.dll

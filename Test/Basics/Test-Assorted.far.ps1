@@ -25,7 +25,7 @@ function Test-ModulePath
 	$paths = $env:PSModulePath -split ';'
 	Assert-Far @(
 		$paths.Count -ge 3
-		$paths[0] -eq "$($Psf.AppHome)\Modules"
+		$paths[0] -eq "$env:FARPROFILE\FarNet\PowerShellFar\Modules"
 		$paths -contains "$HOME\Documents\PowerShell\Modules"
 	)
 	# other path names depend on x86 x64 and v4.0 has extra path in Program Files

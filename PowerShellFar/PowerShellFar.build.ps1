@@ -63,7 +63,6 @@ task installBin {
 
 task installRes {
 	exec { robocopy . $ModuleHome PowerShellFar.ps1 TabExpansion2.ps1 TabExpansion.txt } (0..2)
-	exec { robocopy Modules\FarInventory $ModuleHome\Modules\FarInventory about_FarInventory.help.txt FarInventory.psm1 } (0..2)
 }
 
 # Build PowerShell help if FarHost else Write-Warning.

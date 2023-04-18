@@ -129,7 +129,7 @@ class BranchesExplorer : BaseExplorer
 				var another = Lib.GetBranchesContainingCommit(Repository, branch.Tip).FirstOrDefault(another => another != branch);
 				if (another is null)
 				{
-					CannotDelete(args, file, $"Use [ShiftDel] to delete branch '{branch.FriendlyName}', it has unique commits.");
+					CannotDelete(args, file, $"Use [ShiftDel] to delete branch '{branch.FriendlyName}' with unique commits.");
 					continue;
 				}
 			}

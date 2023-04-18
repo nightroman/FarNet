@@ -25,6 +25,7 @@ Panel-History.ps1 Far Manager history browser.
 Panel-Process.ps1 Panel current processes.
 Panel-Property-.ps1 Panel PowerShell provider item properties.
 Panel-SQLite.ps1 Opens SQLite database panel.
+Panel-Version.ps1 Shows file version information.
 Profile-Editor.ps1 Editor profile (example).
 Profile.ps1 Main profile (example).
 Reformat-Selection-.ps1 Reformats selected lines or the current line in the editor.
