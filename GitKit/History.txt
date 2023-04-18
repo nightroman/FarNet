@@ -1,5 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.6.3 =
+
+Commits panel
+- Mark the "fork" commit
+- Setting CommitsPageLimit
+
 = 0.6.2 =
 
 Branches panel

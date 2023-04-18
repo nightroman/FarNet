@@ -28,15 +28,44 @@ class CommitsExplorer : BaseExplorer
 		if (args.Limit > 0)
 			commits = commits.Skip(args.Offset).Take(args.Limit);
 
-		var settings = Settings.Default.GetData();
-		return commits
-			.Select(x => new SetFile
+		Func<Commit, bool>? hasCommitMark = null;
+		if (!Branch.IsRemote && args.Offset == 0)
+		{
+			if (Branch.TrackedBranch?.Tip is null)
 			{
-				Name = $"{x.Sha[..settings.ShaPrefixLength]} {x.Author.When:yyyy-MM-dd} {x.Author.Name}: {x.MessageShort}",
-				LastWriteTime = x.Author.When.DateTime,
+				var heads = Repository.Refs.Where(x => x.IsLocalBranch && x.CanonicalName != Branch.CanonicalName).ToList();
+				if (heads.Count > 0)
+					hasCommitMark = commit => Repository.Refs.ReachableFrom(heads, new[] { commit }).Any();
+			}
+			else
+			{
+				var trackedTip = Branch.TrackedBranch.Tip;
+				hasCommitMark = commit => commit == trackedTip;
+			}
+		}
+
+		var settings = Settings.Default.GetData();
+		foreach (var commit in commits)
+		{
+			var file = new SetFile
+			{
+				Name = $"{commit.Sha[..settings.ShaPrefixLength]} {commit.Author.When:yyyy-MM-dd} {commit.Author.Name}: {commit.MessageShort}",
+				LastWriteTime = commit.Author.When.DateTime,
 				IsDirectory = true,
-				Data = x,
-			});
+				Data = commit,
+			};
+
+			if (hasCommitMark is not null)
+			{
+				if (hasCommitMark(commit))
+				{
+					file.Owner = "=";
+					hasCommitMark = null;
+				}
+			}
+
+			yield return file;
+		}
 	}
 
 	public override Explorer? ExploreDirectory(ExploreDirectoryEventArgs args)

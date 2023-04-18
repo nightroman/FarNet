@@ -302,7 +302,7 @@ Keys and actions
 
 [Contents]
 
-This panel shows branch commits. Commits are shown by pages of 100.
+This panel shows branch commits. Commits are shown by pages of `CommitsPageLimit`, see [Settings](#settings).
 
 The panel is opened from the branches panel or for the head branch by
 
@@ -411,8 +411,15 @@ VSCode is used as the default diff tool
     --wait --diff "%1" "%2"
 
 *********************************************************************
+**CommitsPageLimit**
+
+Maximum number of commits per panel pages.
+Default: 100.
+
+*********************************************************************
 **ShaPrefixLength**
 
-The number of chars commit SHA should be truncated to.
+The number of chars for truncated commit SHA.
+Default: 7.
 
 *********************************************************************
