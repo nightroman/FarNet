@@ -1,9 +1,13 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.6.5 =
+
+Amend commits panel updates.
+
 = 0.6.4 =
 
 Menu
-- Add "Push branch" to commits panel
+- Add "Push branch" to commits panel.
 
 = 0.6.3 =
 

@@ -3,6 +3,7 @@ using LibGit2Sharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace GitKit;
 
@@ -25,13 +26,21 @@ class ChangesExplorer : BaseExplorer
 
 	public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 	{
-		return Changes()
-			.Select(x => new SetFile
+		foreach (var change in Changes())
+		{
+			var file = new SetFile
 			{
-				Name = x.Path,
-				Description = x.Status.ToString(),
-				Data = x,
-			});
+				Description = change.Status.ToString(),
+				Data = change,
+			};
+
+			if (change.Status == ChangeKind.Renamed)
+				file.Name = $"{change.Path} << {change.OldPath}";
+			else
+				file.Name = change.Path;
+
+			yield return file;
+		}
 	}
 
 	public override void GetContent(GetContentEventArgs args)

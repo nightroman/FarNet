@@ -9,7 +9,7 @@ namespace GitKit;
 class CommitsExplorer : BaseExplorer
 {
 	public static Guid MyTypeId = new("80354846-50a0-4675-a418-e177f6747d30");
-	public Branch Branch { get; }
+	public Branch Branch { get; private set; }
 
 	public CommitsExplorer(Repository repository, Branch branch) : base(repository, MyTypeId)
 	{
@@ -23,8 +23,10 @@ class CommitsExplorer : BaseExplorer
 
 	public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 	{
-		IEnumerable<Commit> commits = Branch.Commits;
+		//! get fresh instance, e.g. important for marks after push
+		Branch = Repository.Branches[Branch.CanonicalName];
 
+		IEnumerable<Commit> commits = Branch.Commits;
 		if (args.Limit > 0)
 			commits = commits.Skip(args.Offset).Take(args.Limit);
 
