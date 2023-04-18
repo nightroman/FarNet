@@ -20,6 +20,7 @@ public class Tool : ModuleTool
 				break;
 
 			case CommitsPanel panel:
+				menu.Add("Push branch", (s, e) => panel.PushBranch());
 				menu.Add("Create branch", (s, e) => panel.CreateBranch());
 				menu.Add("Compare commits", (s, e) => panel.CompareCommits());
 				break;

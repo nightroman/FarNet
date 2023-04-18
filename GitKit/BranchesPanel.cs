@@ -118,45 +118,8 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 
 	public void PushBranch()
 	{
-		if (CurrentFile?.Data is not Branch branch || branch.IsRemote)
-			return;
-
-		var changes = Lib.GetChanges(Repository);
-		if (changes.Count > 0)
-			throw new ModuleException($"Cannot push: {changes.Count} not committed changes.");
-
-		if (0 != Far.Api.Message(
-			$"Push branch '{branch.FriendlyName}'?",
-			Host.MyName,
-			MessageOptions.YesNo))
-			return;
-
-		var op = new PushOptions
-		{
-			CredentialsProvider = Lib.GitCredentialsHandler
-		};
-
-		if (branch.TrackedBranch is null)
-		{
-			var menu = Far.Api.CreateListMenu();
-			menu.Title = "Select remote";
-			menu.UsualMargins = true;
-			foreach(var it in Repository.Network.Remotes)
-				menu.Add(it.Name).Data = it;
-
-			if (!menu.Show() || menu.SelectedData is not Remote remote)
-				return;
-
-			branch = Repository.Branches.Update(
-				branch,
-				b => b.Remote = remote.Name,
-				b => b.UpstreamBranch = branch.CanonicalName);
-		}
-
-		Repository.Network.Push(branch, op);
-
-		Update(true);
-		Redraw();
+		if (CurrentFile?.Data is Branch branch)
+			PushBranch(branch);
 	}
 
 	public override void UICloneFile(CloneFileEventArgs args)

@@ -29,6 +29,11 @@ class CommitsPanel : BasePanel<CommitsExplorer>
 
 	protected override string HelpTopic => "commits-panel";
 
+	public void PushBranch()
+	{
+		PushBranch(Explorer.Branch);
+	}
+
 	public void CompareCommits()
 	{
 		var (data1, data2) = GetSelectedDataRange<Commit>();

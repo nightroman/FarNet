@@ -28,6 +28,7 @@ class CommitsExplorer : BaseExplorer
 		if (args.Limit > 0)
 			commits = commits.Skip(args.Offset).Take(args.Limit);
 
+		string? mark = null;
 		Func<Commit, bool>? hasCommitMark = null;
 		if (!Branch.IsRemote && args.Offset == 0)
 		{
@@ -35,10 +36,14 @@ class CommitsExplorer : BaseExplorer
 			{
 				var heads = Repository.Refs.Where(x => x.IsLocalBranch && x.CanonicalName != Branch.CanonicalName).ToList();
 				if (heads.Count > 0)
+				{
+					mark = "#";
 					hasCommitMark = commit => Repository.Refs.ReachableFrom(heads, new[] { commit }).Any();
+				}
 			}
 			else
 			{
+				mark = "=";
 				var trackedTip = Branch.TrackedBranch.Tip;
 				hasCommitMark = commit => commit == trackedTip;
 			}
@@ -59,7 +64,7 @@ class CommitsExplorer : BaseExplorer
 			{
 				if (hasCommitMark(commit))
 				{
-					file.Owner = "=";
+					file.Owner = mark;
 					hasCommitMark = null;
 				}
 			}

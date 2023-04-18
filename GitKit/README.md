@@ -365,7 +365,7 @@ Keys and actions
 
 [Contents]
 
-- **Push branch** (branches panel)
+- **Push branch** (branches panel, commits panel)
 
     Pushes the cursor branch, with a confirmation dialog.
 
