@@ -1,5 +1,9 @@
 # HtmlToFarHelp Release Notes
 
+## v1.3.7
+
+Fix escaping in links.
+
 ## v1.3.6
 
 Fix other `br` cases, #44

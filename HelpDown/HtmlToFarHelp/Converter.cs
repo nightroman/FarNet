@@ -315,7 +315,7 @@ namespace HtmlToFarHelp
 			_sbA.Length = 0;
 			ReadA(_sbA);
 			var text = Kit.FixNewLine(_sbA.ToString());
-			_writer.Write("~{0}~@{1}@", Escape(text), href.Replace("@", "@@"));
+			_writer.Write("~{0}~@{1}@", Escape(text), href.Replace("@", "@@").Replace("#", "##"));
 		}
 
 		// https://github.com/nightroman/FarNet/issues/44
