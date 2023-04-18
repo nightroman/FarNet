@@ -51,7 +51,7 @@ See also its raw Markdown for useful details including HTML comments.
 * [Escape ~, #, @ in HLF](#escape----in-hlf)
 * [Emphasis of "#"](#emphasis-of-)
 * [Eaten spaces](#eaten-spaces)
-
+* [Line breaks issue 44](#line-breaks-issue-44)
 
 *********************************************************************
 <!--Other topics are headings less than or equal to `TopicHeading`-->
@@ -189,7 +189,6 @@ Write-Host $x
 ~~~
 
 <!--HLF:-->
-
 
 *********************************************************************
 ## Blockquotes
@@ -361,13 +360,6 @@ para 1.1
 
 - item 2
 para 2.1
-
-### Line break in para
-
-- item 1
-
-    issue 44\
-    see <https://github.com/nightroman/FarNet/issues/44>
 
 *********************************************************************
 ## Links
@@ -560,5 +552,32 @@ need space
 
 *need*
 *space*
+
+*********************************************************************
+## Line breaks issue 44
+
+line1\
+line2
+
+line1\
+[link](https://github.com/nightroman/FarNet/issues/44)
+
+line1\
+`code`
+
+line1\
+**bold**
+
+line1\
+*italic*
+
+- item1\
+  line2
+
+    issue 44\
+    [link](https://github.com/nightroman/FarNet/issues/44)
+
+    issue 44\
+    see [link](https://github.com/nightroman/FarNet/issues/44)
 
 *********************************************************************

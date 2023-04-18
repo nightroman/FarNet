@@ -118,6 +118,7 @@ namespace HtmlToFarHelp
 					break;
 			}
 		}
+
 		void Start()
 		{
 			if (_started)
@@ -132,6 +133,7 @@ namespace HtmlToFarHelp
 
 			_writer.WriteLine(".Options CtrlStartPosChar=" + ArgWrap);
 		}
+
 		void Comment()
 		{
 			var match = Kit.MatchOptions(_reader.Value);
@@ -159,6 +161,7 @@ namespace HtmlToFarHelp
 			// apply
 			ProcessOptions();
 		}
+
 		void NewLine()
 		{
 			if (_needNewLine)
@@ -167,15 +170,18 @@ namespace HtmlToFarHelp
 				_needNewLine = false;
 			}
 		}
+
 		static string Escape(string text)
 		{
 			return text.Replace("#", "##").Replace("@", "@@").Replace("~", "~~");
 		}
+
 		void Whitespace()
 		{
-			if (_para > 0 || Kit.HasSpaces(_reader.Value))
+			if ((_para > 0 || Kit.HasSpaces(_reader.Value)) && !_br)
 				_writer.Write(Kit.FixNewLine(_reader.Value));
 		}
+
 		void Throw(string text)
 		{
 			string message;
@@ -186,6 +192,7 @@ namespace HtmlToFarHelp
 
 			throw new InvalidDataException(message);
 		}
+
 		void Element()
 		{
 			switch (_reader.Name)
@@ -227,6 +234,7 @@ namespace HtmlToFarHelp
 					break;
 			}
 		}
+
 		void EndElement()
 		{
 			switch (_reader.Name)
@@ -255,6 +263,9 @@ namespace HtmlToFarHelp
 			//! This affects the next item and gives `\r\n \r\nXYZ` instead of `\r\n XYZ`.
 			//! Ultimate solution: reset _needNewLine on each EndElement.
 			_needNewLine = false;
+
+			// just convenient to reset here
+			_br = false;
 		}
 
 		// Reads just text, https://github.com/nightroman/FarNet/issues/45
@@ -307,9 +318,24 @@ namespace HtmlToFarHelp
 			_writer.Write("~{0}~@{1}@", Escape(text), href.Replace("@", "@@"));
 		}
 
+		// https://github.com/nightroman/FarNet/issues/44
 		void BR()
 		{
 			_br = true;
+			_writer.WriteLine();
+
+			var tryList = _list.Count == 0 ? null : _list.Peek();
+			if (tryList == null || tryList.Item == 0)
+			{
+				_writer.Write(IndentPara);
+			}
+			else
+			{
+				if (tryList.Kind == ListKind.Ordered)
+					_writer.Write(IndentList + "   " + ArgWrap);
+				else
+					_writer.Write(IndentList + "  " + ArgWrap);
+			}
 		}
 
 		string _topicContentsId;
@@ -489,7 +515,7 @@ namespace HtmlToFarHelp
 				_writer.WriteLine();
 				_writer.WriteLine();
 
-				if (tryList != null && tryList.Kind == ListKind.Ordered)
+				if (tryList.Kind == ListKind.Ordered)
 					_writer.Write(IndentList + "   " + ArgWrap);
 				else
 					_writer.Write(IndentList + "  " + ArgWrap);
@@ -549,20 +575,8 @@ namespace HtmlToFarHelp
 			{
 				var len1 = text.Length;
 				text = Kit.TrimStartNewLine(text);
-				if (len1 != text.Length && _countTextInPara > 1)
-				{
+				if (len1 != text.Length && _countTextInPara > 1 && !_br)
 					_writer.WriteLine();
-
-					// https://github.com/nightroman/FarNet/issues/44
-					if (_br)
-					{
-						var list = _list.Peek();
-						if (list.Kind == ListKind.Ordered)
-							_writer.Write(IndentList + "   " + ArgWrap);
-						else
-							_writer.Write(IndentList + "  " + ArgWrap);
-					}
-				}
 
 				var len2 = text.Length;
 				text = Kit.TrimEndNewLine(text);
@@ -580,8 +594,10 @@ namespace HtmlToFarHelp
 			if (_emphasis > 0)
 				text = Kit.EmphasisText(text);
 
+			if (_br)
+				text = Kit.TrimStartNewLine(text);
+
 			_writer.Write(text);
-			_br = false;
 		}
 
 		void Quote1()

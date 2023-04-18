@@ -1,8 +1,12 @@
 # HtmlToFarHelp Release Notes
 
+## v1.3.6
+
+Fix other `br` cases, #44
+
 ## v1.3.5
 
-Respect br in list paragraphs, #44
+Respect `br` in list paragraphs, #44
 
 ## v1.3.4
 
