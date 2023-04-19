@@ -10,10 +10,12 @@ class CommitsExplorer : BaseExplorer
 {
 	public static Guid MyTypeId = new("80354846-50a0-4675-a418-e177f6747d30");
 	public Branch Branch { get; private set; }
+	readonly bool _isHead;
 
 	public CommitsExplorer(Repository repository, Branch branch) : base(repository, MyTypeId)
 	{
 		Branch = branch;
+		_isHead = branch.IsCurrentRepositoryHead && Repository.Info.IsHeadDetached;
 	}
 
 	public override Panel CreatePanel()
@@ -24,7 +26,8 @@ class CommitsExplorer : BaseExplorer
 	public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 	{
 		//! get fresh instance, e.g. important for marks after push
-		Branch = Repository.Branches[Branch.CanonicalName];
+		//! it may have pseudo name (no branch), case bare repo
+		Branch = _isHead ? Repository.Head : Repository.Branches[Branch.CanonicalName];
 
 		IEnumerable<Commit> commits = Branch.Commits;
 		if (args.Limit > 0)

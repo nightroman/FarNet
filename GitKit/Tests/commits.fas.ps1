@@ -1,6 +1,6 @@
 ﻿
 job {
-	$Far.InvokeCommand("gk: panel=commits; repo=$PSScriptRoot")
+	$Far.InvokeCommand("gk:commits repo=$PSScriptRoot")
 }
 
 job {

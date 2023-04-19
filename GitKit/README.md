@@ -12,6 +12,8 @@ Far Manager git helpers based on LibGit2Sharp
     - [Clone command](#clone-command)
     - [Commit command](#commit-command)
     - [Checkout command](#checkout-command)
+    - [Pull command](#pull-command)
+    - [Push command](#push-command)
 - [Panels](#panels)
     - [Branches panel](#branches-panel)
     - [Commits panel](#commits-panel)
@@ -56,12 +58,12 @@ GitKit commands use the prefix `gk`. Commands may be typed and invoked in the
 Far Manager command line or using F11 / FarNet / Invoke. Commands may be also
 defined in the Far Manager user menu and file associations.
 
-The command `gk:` without parameters prints the repository status. Other
+The command `gk:` without subcommand prints the repository status. Some
 commands require parameters, one or more key=value pairs separated by
 semicolons, using the connection string format.
 
 ```
-gk: [key=value] [; key=value] ...
+gk:subcommand [key=value] [; key=value] ...
 ```
 
 **Common parameters**
@@ -73,35 +75,43 @@ gk: [key=value] [; key=value] ...
 
 **Panel commands**
 
-- `gk: panel=branches`
+- `gk:branches`
 
     Opens the [Branches panel](#branches-panel).
 
-- `gk: panel=commits`
+- `gk:commits`
 
     Opens the [Commits panel](#commits-panel).
 
-- `gk: panel=changes`
+- `gk:changes`
 
     Opens the [Changes panel](#changes-panel).
 
 **Operation commands**
 
-- `gk: init=<path>`
+- `gk:init`
 
     Creates repository, see [Init command](#init-command).
 
-- `gk: clone=<url>`
+- `gk:clone`
 
     Clones repository, see [Clone command](#clone-command).
 
-- `gk: commit=<message>`
+- `gk:commit`
 
     Commits changes, see [Commit command](#commit-command).
 
-- `gk: checkout=<branch>`
+- `gk:checkout`
 
-    Checkouts the branch, see [Checkout command](#checkout-command).
+    Checkouts branch, see [Checkout command](#checkout-command).
+
+- `gk:pull`
+
+    Pulls the head branch, see [Pull command](#pull-command).
+
+- `gk:push`
+
+    Pushes the head branch, see [Push command](#push-command).
 
 - `gk:`
 
@@ -116,10 +126,15 @@ gk: [key=value] [; key=value] ...
 Use this command in order to create a repository
 
 ```
-gk: init=<path>
+gk:init
 ```
 
 Parameters
+
+- `Path=<string>`
+
+    Specifies the new repository directory.
+    Default: the current panel directory.
 
 - `IsBare={true|false}`
 
@@ -133,12 +148,16 @@ Parameters
 Use this command in order to clone a repository
 
 ```
-gk: clone=<url>
+gk:clone
 ```
 
 Parameters
 
-- `Path=<path>`
+- `Url=<string>` (required)
+
+    Specifies the source repository URL.
+
+- `Path=<string>`
 
     Specifies the local path to clone into.
     Default: the current panel directory.
@@ -163,14 +182,16 @@ Parameters
 Use this command in order to commit changes
 
 ```
-gk: commit=<message>
+gk:commit
 ```
 
-Set the message to "#" in order to compose it in the editor. If you also set
-`CommentaryChar` then the message will contain the commented out info about
-changes to be committed.
-
 Parameters
+
+- `Message=<string>`
+
+    The commit message. Omit it in order to compose in the editor. If you also
+    set `CommentaryChar` then the editor text will contain commentaries about
+    changes.
 
 - `All={true|false}`
 
@@ -200,10 +221,10 @@ Examples
 
 ```
 # commit all changes, compose a new message in the editor
-gk: commit=#; All=true; CommentaryChar=#
+gk:commit All=true; CommentaryChar=#
 
 # amend with all changes, modify the old message in the editor
-gk: commit=#; All=true; CommentaryChar=#; AmendPreviousCommit=true
+gk:commit All=true; CommentaryChar=#; AmendPreviousCommit=true
 ```
 
 *********************************************************************
@@ -214,11 +235,40 @@ gk: commit=#; All=true; CommentaryChar=#; AmendPreviousCommit=true
 Use this command in order to checkout the specified branch
 
 ```
-gk: checkout=<branch>
+gk:checkout
 ```
 
-If the specified branch does not exists, it is created from the head branch,
-with a confirmation dialog.
+Parameters
+
+- `Branch=<string>`
+
+    The branch to checkout. If it is omitted you are prompted to input the
+    branch name.
+
+    If the specified branch does not exists, it is created from the head
+    branch, with a confirmation dialog.
+
+*********************************************************************
+## Pull command
+
+[Contents]
+
+Use this command in order to pull the head branch
+
+```
+gk:pull
+```
+
+*********************************************************************
+## Push command
+
+[Contents]
+
+Use this command in order to push the head branch, with a confirmation dialog
+
+```
+gk:push
+```
 
 *********************************************************************
 ## Panels
@@ -249,7 +299,7 @@ Branch marks: `*` head, `r` remote, `=` tracked same as remote, `<` tracked olde
 The panel is opened by
 
 ```
-gk: panel=branches
+gk:branches
 ```
 
 Keys and actions
@@ -307,7 +357,7 @@ This panel shows branch commits. Commits are shown by pages of `CommitsPageLimit
 The panel is opened from the branches panel or for the head branch by
 
 ```
-gk: panel=commits
+gk:commits
 ```
 
 Keys and actions
@@ -343,7 +393,7 @@ The panel is opened from the commits panel or by the menu commands "Compare
 branches" and "Compare commits" or for the current changes by
 
 ```
-gk: panel=changes
+gk:changes
 ```
 
 Keys and actions
@@ -367,7 +417,9 @@ Keys and actions
 
 - **Push branch** (branches panel, commits panel)
 
-    Pushes the cursor branch, with a confirmation dialog.
+    Branches panel: Pushes the cursor branch, with a confirmation dialog.
+
+    Commits panel: Pushes the commits branch, with a confirmation dialog.
 
 - **Merge branch** (branches panel)
 

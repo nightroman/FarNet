@@ -1,4 +1,5 @@
-﻿using LibGit2Sharp;
+﻿using FarNet;
+using LibGit2Sharp;
 using System.Data.Common;
 
 namespace GitKit;
@@ -9,9 +10,9 @@ sealed class CloneCommand : AnyCommand
 	readonly string _path;
 	readonly CloneOptions _op;
 
-	public CloneCommand(string value, DbConnectionStringBuilder parameters)
+	public CloneCommand(DbConnectionStringBuilder parameters)
 	{
-		_url = value;
+		_url = parameters.GetValue("Url") ?? throw new ModuleException("Required parameter 'Url'.");
 
 		_path = Host.GetFullPath(parameters.GetValue("Path"));
 

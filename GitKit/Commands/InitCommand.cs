@@ -8,9 +8,9 @@ sealed class InitCommand : AnyCommand
 	readonly string _path;
 	readonly bool _isBare;
 
-	public InitCommand(string value, DbConnectionStringBuilder parameters)
+	public InitCommand(DbConnectionStringBuilder parameters)
 	{
-		_path = Host.GetFullPath(value);
+		_path = Host.GetFullPath(parameters.GetValue("Path"));
 		_isBare = parameters.GetValue<bool>("IsBare");
 	}
 

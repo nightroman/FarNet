@@ -9,13 +9,13 @@ namespace GitKit;
 sealed class CommitCommand : BaseCommand
 {
 	readonly CommitOptions op = new();
-	readonly string _message;
+	readonly string? _message;
 	readonly bool _All;
 	readonly char _CommentaryChar;
 
-	public CommitCommand(Repository repo, string value, DbConnectionStringBuilder parameters) : base(repo)
+	public CommitCommand(Repository repo, DbConnectionStringBuilder parameters) : base(repo)
 	{
-		_message = value;
+		_message = parameters.GetValue("Message");
 
 		_All = parameters.GetValue<bool>("All");
 
@@ -91,7 +91,7 @@ sealed class CommitCommand : BaseCommand
 
 	public override void Invoke()
 	{
-		var message = _message == "#" ? EditMessage() : _message;
+		var message = _message ?? EditMessage();
 		if (message.Length == 0)
 		{
 			Far.Api.UI.WriteLine("Aborting commit due to empty commit message.");

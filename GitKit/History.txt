@@ -1,5 +1,16 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.7.0 =
+
+GitKit commands use new syntax:
+
+	gk:subcommand <parameters>
+
+New commands:
+
+	gk:pull
+	gk:push
+
 = 0.6.5 =
 
 Amend commits panel updates.

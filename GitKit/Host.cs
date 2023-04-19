@@ -49,4 +49,14 @@ public class Host : ModuleHost
 			Far.Api.UI.SaveUserScreen();
 		}
 	}
+
+	public static void UpdatePanel()
+	{
+		var panel = Far.Api.Panel;
+		if (panel is BranchesPanel || panel is CommitsPanel)
+		{
+			panel.Update(true);
+			panel.Redraw();
+		}
+	}
 }

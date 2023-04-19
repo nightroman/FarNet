@@ -1,5 +1,6 @@
 ﻿using FarNet;
 using LibGit2Sharp;
+using System;
 using System.Data.Common;
 
 namespace GitKit;
@@ -9,50 +10,56 @@ public class Command : ModuleCommand
 {
 	public override void Invoke(object sender, ModuleCommandEventArgs e)
 	{
-		AnyCommand? command = null;
-		Repository? _repo = null;
+		int index = 0;
+		var command = e.Command;
+		while (index < command.Length && char.IsLetter(command[index]))
+			++index;
+
+		string subcommand = command[0..index];
+		DbConnectionStringBuilder parameters;
 		try
 		{
-			DbConnectionStringBuilder _parameters = Parameters.Parse(e.Command);
-			string? value;
-
-			if ((value = _parameters.GetValue("init")) is not null)
-			{
-				command = new InitCommand(value, _parameters);
-			}
-			else if ((value = _parameters.GetValue("clone")) is not null)
-			{
-				command = new CloneCommand(value, _parameters);
-			}
-			else
-			{
-				_repo = RepositoryFactory.Instance(Host.GetFullPath(_parameters.GetValue("repo")));
-
-				if (_parameters.Count == 0)
-				{
-					command = new StatusCommand(_repo);
-				}
-				else if ((value = _parameters.GetValue("panel")) is not null)
-				{
-					command = new PanelCommand(_repo, value);
-				}
-				else if ((value = _parameters.GetValue("commit")) is not null)
-				{
-					command = new CommitCommand(_repo, value, _parameters);
-				}
-				else if ((value = _parameters.GetValue("checkout")) is not null)
-				{
-					command = new CheckoutCommand(_repo, value);
-				}
-			}
-
-			_parameters.AssertNone();
-
-			command?.Invoke();
+			parameters = new() { ConnectionString = command[index..] };
 		}
-		catch (ModuleException)
+		catch (ArgumentException ex)
 		{
-			throw;
+			throw new ModuleException($"Invalid parameters: {ex.Message}");
+		}
+
+		Invoke(subcommand, parameters);
+	}
+
+	static void Invoke(string subcommand, DbConnectionStringBuilder parameters)
+	{
+		Repository? repo = null;
+		try
+		{
+			AnyCommand? command = subcommand switch
+			{
+				"init" => new InitCommand(parameters),
+				"clone" => new CloneCommand(parameters),
+				_ => null
+			};
+
+			if (command is null)
+			{
+				repo = RepositoryFactory.Instance(Host.GetFullPath(parameters.GetValue("repo")));
+				command = subcommand switch
+				{
+					"" => new StatusCommand(repo),
+					"branches" => new BranchesCommand(repo),
+					"commits" => new CommitsCommand(repo),
+					"changes" => new ChangesCommand(repo),
+					"checkout" => new CheckoutCommand(repo, parameters),
+					"commit" => new CommitCommand(repo, parameters),
+					"pull" => new PullCommand(repo),
+					"push" => new PushCommand(repo),
+					_ => throw new ModuleException($"Unknown command '{subcommand}'.")
+				};
+			}
+
+			parameters.AssertNone();
+			command.Invoke();
 		}
 		catch (LibGit2SharpException ex)
 		{
@@ -60,7 +67,7 @@ public class Command : ModuleCommand
 		}
 		finally
 		{
-			_repo?.Release();
+			repo?.Release();
 		}
 	}
 }

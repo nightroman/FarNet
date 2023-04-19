@@ -26,7 +26,7 @@
 [CmdletBinding()]
 param(
 	$Tests = -1,
-	$ExpectedTaskCount = 204,
+	$ExpectedTaskCount = 202,
 	$ExpectedBasicsCount = 18,
 	$ExpectedExtrasCount = 3,
 	[switch]$All,
@@ -74,6 +74,7 @@ if (!$Tests) {
 if ($All) {
 	$extras = @(
 		Get-Item "$env:FarNetCode\Test\TabExpansion\Test-TabExpansion2-.ps1"
+		{ Invoke-Build test "$env:FarNetCode\GitKit\.build.ps1" }
 		{ Invoke-Build test "$env:FarNetCode\FSharpFar\.build.ps1" }
 		{ Invoke-Build test "$env:FarNetCode\JavaScriptFar\.build.ps1" }
 	)

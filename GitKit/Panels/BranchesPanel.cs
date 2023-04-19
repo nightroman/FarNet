@@ -119,7 +119,7 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 	public void PushBranch()
 	{
 		if (CurrentFile?.Data is Branch branch)
-			PushBranch(branch);
+			PushCommand.PushBranch(Repository, branch);
 	}
 
 	public override void UICloneFile(CloneFileEventArgs args)

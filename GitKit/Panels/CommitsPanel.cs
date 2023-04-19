@@ -31,7 +31,7 @@ class CommitsPanel : BasePanel<CommitsExplorer>
 
 	public void PushBranch()
 	{
-		PushBranch(Explorer.Branch);
+		PushCommand.PushBranch(Repository, Explorer.Branch);
 	}
 
 	public void CompareCommits()
