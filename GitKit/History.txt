@@ -1,5 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.7.1 =
+
+- Show (no branch) on detached.
+- Tweaks for bare repositories.
+- Update panels on gk:checkout.
+
 = 0.7.0 =
 
 GitKit commands use new syntax:

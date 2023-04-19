@@ -28,6 +28,6 @@ sealed class PullCommand : BaseCommand
 		var sig = Lib.BuildSignature(repo);
 		Commands.Pull(repo, sig, pull);
 
-		Host.UpdatePanel();
+		Host.UpdatePanels();
 	}
 }

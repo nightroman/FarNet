@@ -47,17 +47,33 @@ class BranchesExplorer : BaseExplorer
 
 	public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 	{
-		return Repository.Branches
-			.OrderBy(x => x.IsRemote)
-			.ThenBy(x => x.FriendlyName)
-			.Select(x => new SetFile
+		if (Repository.Info.IsHeadDetached)
+		{
+			var branch = Repository.Head;
+			yield return new SetFile
 			{
-				Name = x.FriendlyName,
-				Description = x.Tip.MessageShort,
-				Owner = GetBranchMarks(x),
+				Name = branch.FriendlyName,
+				Description = branch.Tip.MessageShort,
 				IsDirectory = true,
-				Data = x,
-			});
+				Data = branch,
+			};
+		}
+
+		var branches = Repository.Branches
+			.OrderBy(x => x.IsRemote)
+			.ThenBy(x => x.FriendlyName);
+
+		foreach (var branch in branches)
+		{
+			yield return new SetFile
+			{
+				Name = branch.FriendlyName,
+				Description = branch.Tip.MessageShort,
+				Owner = GetBranchMarks(branch),
+				IsDirectory = true,
+				Data = branch,
+			};
+		}
 	}
 
 	public override Explorer? ExploreDirectory(ExploreDirectoryEventArgs args)
@@ -72,7 +88,8 @@ class BranchesExplorer : BaseExplorer
 		try
 		{
 			var newBranch = Repository.CreateBranch(newName, branch.Tip);
-			if (checkout)
+
+			if (checkout && !Repository.Info.IsBare)
 				Commands.Checkout(Repository, newBranch);
 
 			args.PostName = newName;

@@ -53,6 +53,6 @@ sealed class PushCommand : BaseCommand
 
 		repo.Network.Push(branch, op);
 
-		Host.UpdatePanel();
+		Host.UpdatePanels();
 	}
 }

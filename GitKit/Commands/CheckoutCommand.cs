@@ -41,6 +41,10 @@ sealed class CheckoutCommand : BaseCommand
 			branch = repo.CreateBranch(branchName, repo.Head.Tip);
 		}
 
-		Commands.Checkout(repo, branch);
+		if (!repo.Info.IsBare)
+		{
+			Commands.Checkout(repo, branch);
+			Host.UpdatePanels();
+		}
 	}
 }

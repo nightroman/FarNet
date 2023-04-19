@@ -77,7 +77,8 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 		}
 
 		// checkout local branch
-		Commands.Checkout(Repository, branch);
+		if (!Repository.Info.IsBare)
+			Commands.Checkout(Repository, branch);
 
 		Update(true);
 		Redraw();

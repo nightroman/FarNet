@@ -50,13 +50,18 @@ public class Host : ModuleHost
 		}
 	}
 
-	public static void UpdatePanel()
+	static void UpdatePanel(IPanel? panel)
 	{
-		var panel = Far.Api.Panel;
 		if (panel is BranchesPanel || panel is CommitsPanel)
 		{
 			panel.Update(true);
 			panel.Redraw();
 		}
+	}
+
+	public static void UpdatePanels()
+	{
+		UpdatePanel(Far.Api.Panel);
+		UpdatePanel(Far.Api.Panel2);
 	}
 }
