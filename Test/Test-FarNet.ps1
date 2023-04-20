@@ -28,7 +28,7 @@ param(
 	$Tests = -1,
 	$ExpectedTaskCount = 202,
 	$ExpectedBasicsCount = 18,
-	$ExpectedExtrasCount = 3,
+	$ExpectedExtrasCount = 4,
 	[switch]$All,
 	[switch]$Quit
 )

@@ -70,63 +70,56 @@ static class NativeMethods
 	public static PSCredential? PromptForCredential(string? caption, string? message, string userName, string targetName, PSCredentialTypes allowedCredentialTypes, PSCredentialUIOptions options)
 	{
 		if (string.IsNullOrEmpty(caption))
-		{
-			caption = Res.Me + " Credential Request";
-		}
+			caption = $"{Res.Me} credential request";
+
 		if (string.IsNullOrEmpty(message))
-		{
 			message = "Enter your credentials.";
-		}
-		CREDUI_INFO cREDUI_INFO = default;
-		cREDUI_INFO.pszCaptionText = caption;
-		cREDUI_INFO.pszMessageText = message;
-		var stringBuilder = new StringBuilder(userName, 513);
+
+		CREDUI_INFO CREDUI_INFO = default;
+		CREDUI_INFO.pszCaptionText = caption;
+		CREDUI_INFO.pszMessageText = message;
+		var stringBuilder1 = new StringBuilder(userName, 513);
 		var stringBuilder2 = new StringBuilder(256);
 		bool value = false;
 		int num = Convert.ToInt32(value);
-		cREDUI_INFO.cbSize = Marshal.SizeOf(cREDUI_INFO);
-		cREDUI_INFO.hwndParent = Far.Api.UI.MainWindowHandle; //! works for conemu, too, but the effect is as if we use IntPtr.Zero
-		CREDUI_FLAGS cREDUI_FLAGS = CREDUI_FLAGS.DO_NOT_PERSIST;
+		CREDUI_INFO.cbSize = Marshal.SizeOf(CREDUI_INFO);
+		CREDUI_INFO.hwndParent = Far.Api.UI.MainWindowHandle; //! works for conemu, too, but the effect is as if we use IntPtr.Zero
+		CREDUI_FLAGS CREDUI_FLAGS = CREDUI_FLAGS.DO_NOT_PERSIST;
 		if ((allowedCredentialTypes & PSCredentialTypes.Domain) != PSCredentialTypes.Domain)
 		{
-			cREDUI_FLAGS |= CREDUI_FLAGS.GENERIC_CREDENTIALS;
+			CREDUI_FLAGS |= CREDUI_FLAGS.GENERIC_CREDENTIALS;
 			if ((options & PSCredentialUIOptions.AlwaysPrompt) == PSCredentialUIOptions.AlwaysPrompt)
-			{
-				cREDUI_FLAGS |= CREDUI_FLAGS.ALWAYS_SHOW_UI;
-			}
+				CREDUI_FLAGS |= CREDUI_FLAGS.ALWAYS_SHOW_UI;
 		}
-		CredUIReturnCodes credUIReturnCodes = CredUIReturnCodes.ERROR_INVALID_PARAMETER;
-		if (stringBuilder.Length <= 513 && stringBuilder2.Length <= 256)
+
+		CredUIReturnCodes credUIReturnCodes = CredUIPromptForCredentials(
+			ref CREDUI_INFO,
+			targetName,
+			IntPtr.Zero,
+			0,
+			stringBuilder1,
+			stringBuilder1.Capacity,
+			stringBuilder2,
+			stringBuilder2.Capacity,
+			ref num,
+			CREDUI_FLAGS);
+
+		if (credUIReturnCodes != CredUIReturnCodes.NO_ERROR)
+			return null;
+
+		string text = stringBuilder1.ToString();
+		if (text.StartsWith('\\'))
+			text = text[1..];
+		if (text.Length == 0)
+			return null;
+
+		var secureString = new SecureString();
+		for (int i = 0; i < stringBuilder2.Length; i++)
 		{
-			credUIReturnCodes = CredUIPromptForCredentials(ref cREDUI_INFO, targetName, IntPtr.Zero, 0, stringBuilder, 513, stringBuilder2, 256, ref num, cREDUI_FLAGS);
+			secureString.AppendChar(stringBuilder2[i]);
+			stringBuilder2[i] = '\0';
 		}
-		PSCredential? psCredential;
-		if (credUIReturnCodes == CredUIReturnCodes.NO_ERROR)
-		{
-			string? text = null;
-			if (stringBuilder != null)
-			{
-				text = stringBuilder.ToString();
-			}
-			var secureString = new SecureString();
-			for (int i = 0; i < stringBuilder2.Length; i++)
-			{
-				secureString.AppendChar(stringBuilder2[i]);
-				stringBuilder2[i] = '\0';
-			}
-			if (!string.IsNullOrEmpty(text))
-			{
-				psCredential = new PSCredential(text, secureString);
-			}
-			else
-			{
-				psCredential = null;
-			}
-		}
-		else
-		{
-			psCredential = null;
-		}
-		return psCredential;
+
+		return new PSCredential(text, secureString);
 	}
 }
