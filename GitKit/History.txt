@@ -1,5 +1,13 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.7.3 =
+
+gk:
+- Fix for bare repository.
+
+gk:commit (amend)
+- Also show last commit changes in message editor.
+
 = 0.7.2 =
 
 Use credentials dialog by default, i.e. git is not used.

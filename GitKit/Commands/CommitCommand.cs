@@ -2,6 +2,7 @@
 using LibGit2Sharp;
 using System.Data.Common;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace GitKit;
@@ -35,7 +36,7 @@ sealed class CommitCommand : BaseCommand
 		}
 	}
 
-	string EditMessage()
+	string GetMessage()
 	{
 		Commit? tip = _repo.Head.Tip;
 
@@ -43,19 +44,23 @@ sealed class CommitCommand : BaseCommand
 		if (op.AmendPreviousCommit && tip is not null)
 			message = tip.Message;
 
-		if (_CommentaryChar > 0 && tip is not null)
+		if (_CommentaryChar == 0 || tip is null)
+			return message;
+
+		var sb = new StringBuilder();
+		sb.AppendLine(message.TrimEnd());
+		sb.AppendLine();
+
+		// warning about overriding remote commit
+		if (op.AmendPreviousCommit && _repo.Head.TrackedBranch is not null && _repo.Head.TrackedBranch.Tip == tip)
 		{
-			var sb = new StringBuilder();
-			sb.AppendLine(message.TrimEnd());
+			sb.AppendLine($"{_CommentaryChar} WARNING:");
+			sb.AppendLine($"{_CommentaryChar}\tThe remote commit will be amended.");
 			sb.AppendLine();
+		}
 
-			if (op.AmendPreviousCommit && _repo.Head.TrackedBranch is not null && _repo.Head.TrackedBranch.Tip == tip)
-			{
-				sb.AppendLine($"{_CommentaryChar} WARNING:");
-				sb.AppendLine($"{_CommentaryChar}\tThe remote commit will be amended.");
-				sb.AppendLine();
-			}
-
+		// current changes
+		{
 			sb.AppendLine($"{_CommentaryChar} Changes to be committed:");
 
 			var changes = _repo.Diff.Compare<TreeChanges>(
@@ -64,9 +69,28 @@ sealed class CommitCommand : BaseCommand
 
 			foreach (var change in changes)
 				sb.AppendLine($"{_CommentaryChar}\t{change.Status}:\t{change.Path}");
-
-			message = sb.ToString();
 		}
+
+		// last changes to be amended
+		if (op.AmendPreviousCommit)
+		{
+			sb.AppendLine();
+			sb.AppendLine($"{_CommentaryChar} Changes to be amended:");
+
+			var changes = _repo.Diff.Compare<TreeChanges>(
+				tip.Parents.FirstOrDefault()?.Tree,
+				tip.Tree);
+
+			foreach (var change in changes)
+				sb.AppendLine($"{_CommentaryChar}\t{change.Status}:\t{change.Path}");
+		}
+
+		return sb.ToString();
+	}
+
+	string EditMessage()
+	{
+		var message = GetMessage();
 
 		var file = Path.Combine(_repo.Info.Path, "COMMIT_EDITMSG");
 		File.WriteAllText(file, message);

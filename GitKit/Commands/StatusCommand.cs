@@ -11,10 +11,8 @@ sealed class StatusCommand : BaseCommand
 	{
 	}
 
-	public override void Invoke()
+	void WriteChanges()
 	{
-		Commit tip = Lib.GetExistingTip(_repo);
-
 		// see TreeChanges.DebuggerDisplay
 		var changes = Lib.GetChanges(_repo);
 		if (changes.Count > 0)
@@ -48,6 +46,14 @@ sealed class StatusCommand : BaseCommand
 			//! sign of changes, just in case if none of the above
 			Far.Api.UI.Write("- ");
 		}
+	}
+
+	public override void Invoke()
+	{
+		Commit tip = Lib.GetExistingTip(_repo);
+
+		if (!_repo.Info.IsBare)
+			WriteChanges();
 
 		var settings = Settings.Default.GetData();
 		Far.Api.UI.Write(tip.Sha[0..settings.ShaPrefixLength], ConsoleColor.DarkYellow);
