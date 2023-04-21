@@ -38,7 +38,7 @@ class NewValueDialog
 
 		Dialog.AddText(5, -1, 0, string.Empty).Separator = 1;
 
-		IButton buttonOK = Dialog.AddButton(0, -1, "Ok");
+		IButton buttonOK = Dialog.AddButton(0, -1, "OK");
 		buttonOK.CenterGroup = true;
 
 		IButton buttonCancel = Dialog.AddButton(0, 0, Res.Cancel);

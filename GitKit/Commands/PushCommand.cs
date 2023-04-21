@@ -31,7 +31,7 @@ sealed class PushCommand : BaseCommand
 
 		var op = new PushOptions
 		{
-			CredentialsProvider = Lib.GitCredentialsHandler
+			CredentialsProvider = Host.GetCredentialsHandler()
 		};
 
 		if (branch.TrackedBranch is null)

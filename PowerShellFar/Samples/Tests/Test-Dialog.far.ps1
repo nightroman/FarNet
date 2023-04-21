@@ -1,4 +1,4 @@
-<#
+ï»¿<#
 .Synopsis
 	Demo dialog for testing dialog controls.
 
@@ -73,7 +73,7 @@ $e2 = $dialog.AddEditFixed(53, 0, 60, 'FixEdit')
 $e2.Mask = 'AAAAAAA'
 
 ### Edit (password)
-$e3 = $dialog.AddEditPassword(63, 0, 70, 'âîëãà')
+$e3 = $dialog.AddEditPassword(63, 0, 70, 'Ð²Ð¾Ð»Ð³Ð°')
 
 ### Box (single line)
 $bs = $dialog.AddBox(5, -1, 70, 2, '&Single Box')
@@ -104,9 +104,9 @@ $null = $dialog.AddText(5, -1, 34, 'ComboBox (List)')
 $cl = $dialog.AddComboBox(5, -1, 34, '')
 $cl.DropDownList = $true
 $cl.Selected = 1
-$null = $cl.Add('Ïîíåäåëüíèê')
-$null = $cl.Add('Âòîðíèê')
-$null = $cl.Add('Ñðåäà')
+$null = $cl.Add('ÐŸÐ¾Ð½ÐµÐ´ÐµÐ»ÑŒÐ½Ð¸Ðº')
+$null = $cl.Add('Ð’Ñ‚Ð¾Ñ€Ð½Ð¸Ðº')
+$null = $cl.Add('Ð¡Ñ€ÐµÐ´Ð°')
 
 ### ListBox
 $lb = $dialog.AddListBox(37, $ce.Rect.Top - 1, 70, 16, 'ListBox.Title')

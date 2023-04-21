@@ -57,7 +57,7 @@ class ExportDialog
 
 		_Dialog.AddText(5, ++y, 0, string.Empty).Separator = 1;
 
-		IButton buttonOK = _Dialog.AddButton(0, ++y, "Ok");
+		IButton buttonOK = _Dialog.AddButton(0, ++y, "OK");
 		buttonOK.CenterGroup = true;
 		_Dialog.Default = buttonOK;
 

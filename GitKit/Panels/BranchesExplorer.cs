@@ -122,7 +122,7 @@ class BranchesExplorer : BaseExplorer
 	{
 		var op = new PushOptions
 		{
-			CredentialsProvider = Lib.GitCredentialsHandler
+			CredentialsProvider = Host.GetCredentialsHandler()
 		};
 
 		var remote = Repository.Network.Remotes[branch.RemoteName];

@@ -20,6 +20,7 @@ Far Manager git helpers based on LibGit2Sharp
     - [Changes panel](#changes-panel)
 - [Menu](#menu)
 - [Settings](#settings)
+- [Credentials](#credentials)
 
 *********************************************************************
 ## About
@@ -27,8 +28,8 @@ Far Manager git helpers based on LibGit2Sharp
 [Contents]
 
 GitKit is the FarNet module for git operations in Far Manager.
-GitKit uses [LibGit2Sharp]. Git is not needed for local tasks.
-Git is used for getting credentials for remote tasks.
+GitKit uses [LibGit2Sharp] and git is not needed as such.
+Git may be optionally used for getting credentials.
 
 **Project FarNet**
 
@@ -463,6 +464,13 @@ VSCode is used as the default diff tool
     --wait --diff "%1" "%2"
 
 *********************************************************************
+**UseGitCredentials**
+
+If true, tells to use git credentials for remote tasks.
+See [Credentials](#credentials) for details.
+Default: false.
+
+*********************************************************************
 **CommitsPageLimit**
 
 Maximum number of commits per panel pages.
@@ -473,5 +481,21 @@ Default: 100.
 
 The number of chars for truncated commit SHA.
 Default: 7.
+
+*********************************************************************
+## Credentials
+
+[Contents]
+
+Remote git operations require credentials, git host user name and password.
+GitKit offers two ways, with some advantages and disadvantages.
+
+By default, see [Settings](#settings), with `UseGitCredentials` set to false,
+the input dialog is used. For the given git host, enter the user name and
+password and optionally save them for later use. The environment variable
+`GitKit_User` is used for keeping credentials.
+
+Alternatively, if you have git installed and available in the path, set
+`UseGitCredentials` to true in order to use git for getting credentials.
 
 *********************************************************************

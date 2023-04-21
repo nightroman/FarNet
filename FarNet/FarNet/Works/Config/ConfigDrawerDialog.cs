@@ -31,7 +31,7 @@ class ConfigDrawerDialog
 
 		Dialog.AddText(5, -1, 0, string.Empty).Separator = 1;
 
-		var buttonOK = Dialog.AddButton(0, -1, "Ok");
+		var buttonOK = Dialog.AddButton(0, -1, "OK");
 		buttonOK.CenterGroup = true;
 
 		var buttonCancel = Dialog.AddButton(0, 0, "Cancel");

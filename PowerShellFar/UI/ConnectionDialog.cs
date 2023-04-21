@@ -36,7 +36,7 @@ class ConnectionDialog
 		_UserName.UseLastHistory = true;
 
 		_Dialog.AddText(5, -1, 0, string.Empty).Separator = 1;
-		IButton buttonOK = _Dialog.AddButton(0, -1, "Ok");
+		IButton buttonOK = _Dialog.AddButton(0, -1, "OK");
 		buttonOK.CenterGroup = true;
 		_Dialog.Default = buttonOK;
 		_Dialog.Cancel = _Dialog.AddButton(0, 0, Res.Cancel);

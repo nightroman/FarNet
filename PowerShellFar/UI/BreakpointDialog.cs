@@ -87,7 +87,7 @@ class BreakpointDialog
 
 		UIDialog.AddText(5, ++y, 0, string.Empty).Separator = 1;
 
-		IButton buttonOK = UIDialog.AddButton(0, ++y, "Ok");
+		IButton buttonOK = UIDialog.AddButton(0, ++y, "OK");
 		buttonOK.CenterGroup = true;
 
 		IButton buttonCancel = UIDialog.AddButton(0, y, Res.Cancel);

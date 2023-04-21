@@ -1,5 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.7.2 =
+
+Use credentials dialog by default, i.e. git is not used.
+Set UseGitCredentials to true for using git credentials.
+
 = 0.7.1 =
 
 - Show (no branch) on detached.

@@ -64,7 +64,7 @@ public static class ConfigTool
 
 			dialog.AddText(5, -1, 0, string.Empty).Separator = 1;
 
-			var buttonOK = dialog.AddButton(0, -1, "Ok");
+			var buttonOK = dialog.AddButton(0, -1, "OK");
 			buttonOK.CenterGroup = true;
 			dialog.Default = buttonOK;
 			dialog.Cancel = dialog.AddButton(0, 0, "Cancel");
@@ -80,7 +80,7 @@ public static class ConfigTool
 			if (cbDialog.Selected > 0) newOptions |= ModuleToolOptions.Dialog;
 			if (cbConfig.Selected > 0) newOptions |= ModuleToolOptions.Config;
 			if (cbDisk.Selected > 0) newOptions |= ModuleToolOptions.Disk;
-			
+
 			tool.Options = newOptions;
 			tool.Manager.SaveConfig();
 		}

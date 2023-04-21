@@ -17,7 +17,7 @@ sealed class PullCommand : BaseCommand
 	{
 		var fetch = new FetchOptions
 		{
-			CredentialsProvider = Lib.GitCredentialsHandler
+			CredentialsProvider = Host.GetCredentialsHandler()
 		};
 
 		var pull = new PullOptions

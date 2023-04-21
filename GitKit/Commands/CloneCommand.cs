@@ -20,7 +20,7 @@ sealed class CloneCommand : AnyCommand
 		{
 			IsBare = parameters.GetValue<bool>("IsBare"),
 			RecurseSubmodules = parameters.GetValue<bool>("RecurseSubmodules"),
-			CredentialsProvider = Lib.GitCredentialsHandler
+			CredentialsProvider = Host.GetCredentialsHandler()
 		};
 
 		if (parameters.GetValue<bool>("NoCheckout"))
