@@ -50,38 +50,56 @@ sealed class StatusCommand : BaseCommand
 
 	public override void Invoke()
 	{
-		Commit tip = Lib.GetExistingTip(_repo);
+		// tip is null: empty repository, fresh orphan branch ~ both "unborn"
+		Commit? tip = _repo.Head.Tip;
 
 		if (!_repo.Info.IsBare)
 			WriteChanges();
 
 		var settings = Settings.Default.GetData();
-		Far.Api.UI.Write(tip.Sha[0..settings.ShaPrefixLength], ConsoleColor.DarkYellow);
-		Far.Api.UI.Write(" (");
+		if (tip is not null)
+		{
+			Far.Api.UI.Write(tip.Sha[0..settings.ShaPrefixLength], ConsoleColor.DarkYellow);
+			Far.Api.UI.Write(" ");
+		}
 
+		Far.Api.UI.Write("(");
 		Far.Api.UI.Write("HEAD -> ", ConsoleColor.Cyan);
 
-		var tracking = _repo.Head.TrackingDetails;
-		if (tracking is not null)
+		if (tip is null)
 		{
-			if (tracking.AheadBy > 0)
-				Far.Api.UI.Write($"+{tracking.AheadBy} ", ConsoleColor.Green);
+			Far.Api.UI.Write(_repo.Head.FriendlyName);
+			if (_repo.Info.IsHeadUnborn)
+				Far.Api.UI.Write(" (unborn)");
+		}
+		else
+		{
+			var tracking = _repo.Head.TrackingDetails;
+			if (tracking is not null)
+			{
+				if (tracking.AheadBy > 0)
+					Far.Api.UI.Write($"+{tracking.AheadBy} ", ConsoleColor.Green);
 
-			if (tracking.BehindBy > 0)
-				Far.Api.UI.Write($"-{tracking.BehindBy} ", ConsoleColor.Red);
+				if (tracking.BehindBy > 0)
+					Far.Api.UI.Write($"-{tracking.BehindBy} ", ConsoleColor.Red);
+			}
+
+			bool comma = false;
+			foreach (var branch in _repo.Branches.Where(x => x.Tip == tip).OrderBy(x => x.IsRemote))
+			{
+				if (comma)
+					Far.Api.UI.Write(", ");
+
+				comma = true;
+				Far.Api.UI.Write(branch.FriendlyName, branch.IsRemote ? ConsoleColor.Red : branch.IsCurrentRepositoryHead ? ConsoleColor.Green : ConsoleColor.Gray);
+			}
 		}
 
-		bool comma = false;
-		foreach (var branch in _repo.Branches.Where(x => x.Tip == tip).OrderBy(x => x.IsRemote))
-		{
-			if (comma)
-				Far.Api.UI.Write(", ");
+		Far.Api.UI.Write(")");
 
-			comma = true;
-			Far.Api.UI.Write(branch.FriendlyName, branch.IsRemote ? ConsoleColor.Red : branch.IsCurrentRepositoryHead ? ConsoleColor.Green : ConsoleColor.Gray);
-		}
+		if (tip is not null)
+			Far.Api.UI.Write($" {tip.MessageShort}");
 
-		Far.Api.UI.Write($") {tip.MessageShort}");
 		Far.Api.UI.WriteLine();
 	}
 }

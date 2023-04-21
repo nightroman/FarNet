@@ -33,7 +33,6 @@ public static class Lib
 
 	public static TreeChanges GetChanges(Repository repo)
 	{
-		Commit tip = GetExistingTip(repo);
-		return repo.Diff.Compare<TreeChanges>(tip.Tree, DiffTargets.Index | DiffTargets.WorkingDirectory);
+		return repo.Diff.Compare<TreeChanges>(repo.Head.Tip?.Tree, DiffTargets.Index | DiffTargets.WorkingDirectory);
 	}
 }

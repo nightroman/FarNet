@@ -20,15 +20,18 @@ task build meta, {
 }
 
 task publish {
-	$bit = if ($FarHome -match 'x64') {'win-x64'} elseif ($FarHome -match 'Win32') {'win-x86'} else {throw}
-	$ver = (Select-Xml '//PackageReference[@Include="LibGit2Sharp"]' "$ModuleName.csproj").Node.Version
+	$xml = [xml](Get-Content "$ModuleName.csproj" -Raw)
+	$ver1 = $xml.SelectSingleNode('//PackageReference[@Include="LibGit2Sharp"]').Version
+	$ver2 = $xml.SelectSingleNode('//PackageReference[@Include="LibGit2Sharp.NativeBinaries"]').Version
 
+	$bit = if ($FarHome -match 'x64') {'win-x64'} elseif ($FarHome -match 'Win32') {'win-x86'} else {throw}
 	Copy-Item -Destination $ModuleRoot @(
-		"$ModuleRoot\runtimes\$bit\native\*.dll"
-		"$HOME\.nuget\packages\LibGit2Sharp\$ver\lib\net6.0\LibGit2Sharp.xml"
+		"$HOME\.nuget\packages\LibGit2Sharp\$ver1\lib\net6.0\LibGit2Sharp.dll"
+		"$HOME\.nuget\packages\LibGit2Sharp\$ver1\lib\net6.0\LibGit2Sharp.xml"
+		"$HOME\.nuget\packages\LibGit2Sharp.NativeBinaries\$ver2\runtimes\$bit\native\*.dll"
 	)
 
-	remove $ModuleRoot\runtimes
+	remove "$ModuleRoot\GitKit.deps.json"
 }
 
 task help {
@@ -88,7 +91,7 @@ task package win32, help, markdown, {
 	Copy-Item $ModuleRoot\git2*.dll $toModule64
 	Copy-Item C:\Bin\Far\Win32\FarNet\Modules\GitKit\git2*.dll $toModule86
 
-	equals 9 @(Get-ChildItem $toModule -Recurse -File).Count
+	equals 7 @(Get-ChildItem $toModule -Recurse -File).Count
 	equals 1 @(Get-ChildItem $toModule64 -Recurse -File).Count
 	equals 1 @(Get-ChildItem $toModule86 -Recurse -File).Count
 }

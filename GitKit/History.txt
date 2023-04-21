@@ -1,5 +1,13 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.7.4 =
+
+gk:
+- Handle unborn branches.
+
+Internal
+- Use simple module loading.
+
 = 0.7.3 =
 
 gk:
