@@ -107,9 +107,9 @@ public abstract class IModuleManager
 	public abstract string StoredUICulture { get; set; }
 
 	/// <summary>
-	/// INTERNAL
+	/// INTERNAL, use <see cref="IFar.LoadModule"/>.
 	/// </summary>
-	/// <param name="connect">INTERNAL</param>
+	/// <param name="connect">.</param>
 	public abstract Assembly LoadAssembly(bool connect);
 
 	/// <summary>

@@ -101,7 +101,6 @@ task pushSource -If {
 		exec { git tag -a $_ -m $_ }
 	}
 	exec { git push origin $Tags }
-	exec { git gc --aggressive --prune=now }
 }
 
 task zipFarDev -If {

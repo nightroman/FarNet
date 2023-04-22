@@ -4,8 +4,7 @@
 #>
 
 # step 1: get the function to run scripts
-$ModuleManager = $Far.GetModuleManager('JavaScriptFar')
-$EvaluateDocument = $ModuleManager.Interop('EvaluateDocument', $null)
+$EvaluateDocument = $Far.GetModuleInterop('JavaScriptFar', 'EvaluateDocument', $null)
 
 ### step 2: run scripts with parameters
 $user = $EvaluateDocument.Invoke("$PSScriptRoot\input.js", $null)

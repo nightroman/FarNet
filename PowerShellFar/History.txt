@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 7.0.13 =
+
+Show online help for microsoft.com only.
+
 = 7.0.12 =
 
 Fix PromptForCredential (remove backslash from user name).

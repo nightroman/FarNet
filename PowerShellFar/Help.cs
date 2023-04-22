@@ -3,6 +3,7 @@
 // Copyright (c) Roman Kuzmin
 
 using FarNet;
+using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -35,10 +36,10 @@ static class Help
 		var po = (PSObject)ScriptBlock.Create("Get-Command $args[0] -ErrorAction 0 | Select-Object HelpUri, CommandType -First 1").InvokeReturnAsIs(command);
 		if (po.Properties["CommandType"]?.Value?.ToString() == "Cmdlet")
 		{
-			var uri = po.Properties["HelpUri"].Value?.ToString();
-			if (!string.IsNullOrEmpty(uri))
+			var url = po.Properties["HelpUri"]?.Value?.ToString();
+			if (url is not null && url.Contains("microsoft.com"))
 			{
-				My.ProcessEx.OpenBrowser(uri);
+				My.ProcessEx.OpenBrowser(url);
 				return true;
 			}
 		}

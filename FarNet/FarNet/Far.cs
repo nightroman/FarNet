@@ -499,6 +499,12 @@ public abstract class IFar
 	public IModuleManager GetModuleManager(Type type) => GetModuleManager(Path.GetFileNameWithoutExtension(type.Assembly.Location));
 
 	/// <summary>
+	/// Loads the specified FarNet module.
+	/// </summary>
+	/// <param name="name">The module name.</param>
+	public void LoadModule(string name) => GetModuleManager(name).LoadAssembly(true);
+
+	/// <summary>
 	/// Gets the module interop data if available.
 	/// </summary>
 	/// <param name="name">The module name.</param>

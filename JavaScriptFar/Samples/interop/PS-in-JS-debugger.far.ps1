@@ -21,8 +21,7 @@
 		...
 #>
 
-$ModuleManager = $Far.GetModuleManager('JavaScriptFar')
-$EvaluateCommand = $ModuleManager.Interop('EvaluateCommand', $null)
+$EvaluateCommand = $Far.GetModuleInterop('JavaScriptFar', 'EvaluateCommand', $null)
 
 # this JS code is called via interop
 $code = @'
