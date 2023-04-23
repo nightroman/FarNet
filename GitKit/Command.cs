@@ -36,8 +36,8 @@ public class Command : ModuleCommand
 		{
 			AnyCommand? command = subcommand switch
 			{
-				"init" => new InitCommand(parameters),
 				"clone" => new CloneCommand(parameters),
+				"init" => new InitCommand(parameters),
 				_ => null
 			};
 
@@ -48,10 +48,11 @@ public class Command : ModuleCommand
 				{
 					"" => new StatusCommand(repo),
 					"branches" => new BranchesCommand(repo),
-					"commits" => new CommitsCommand(repo),
+					"cd" => new CDCommand(repo, parameters),
 					"changes" => new ChangesCommand(repo),
 					"checkout" => new CheckoutCommand(repo, parameters),
 					"commit" => new CommitCommand(repo, parameters),
+					"commits" => new CommitsCommand(repo),
 					"pull" => new PullCommand(repo),
 					"push" => new PushCommand(repo),
 					_ => throw new ModuleException($"Unknown command '{subcommand}'.")

@@ -8,6 +8,7 @@ Far Manager git helpers based on LibGit2Sharp
 - [About](#about)
 - [Install](#install)
 - [Commands](#commands)
+    - [cd command](#cd-command)
     - [Init command](#init-command)
     - [Clone command](#clone-command)
     - [Commit command](#commit-command)
@@ -90,6 +91,15 @@ gk:subcommand [key=value] [; key=value] ...
 
 **Operation commands**
 
+- `gk:`
+
+    Prints the repository status: summary of changes if any, the commit hash,
+    local and remote branches with the same tip commit, the commit message.
+
+- `gk:cd`
+
+    Navigates to the repository directory, see [cd command](#cd-command)
+
 - `gk:init`
 
     Creates repository, see [Init command](#init-command).
@@ -114,10 +124,24 @@ gk:subcommand [key=value] [; key=value] ...
 
     Pushes the head branch, see [Push command](#push-command).
 
-- `gk:`
+*********************************************************************
+## cd command
 
-    Prints the repository status: summary of changes if any, the commit hash,
-    local and remote branches with the same tip commit, the commit message.
+[Contents]
+
+Use this command to navigate to a repository directory
+
+```
+gk:cd
+```
+
+Parameters
+
+- `Path=<string>`
+
+    Specifies the repository path relative to the root. If the path starts with
+    `.git` directory then the git directory is used even when `.git` is a file.
+    Default: the repository root.
 
 *********************************************************************
 ## Init command
@@ -295,7 +319,7 @@ Common panel keys and actions
 [Contents]
 
 This panel shows the repository branches, local and remote.
-Branch marks: `*` head, `r` remote, `=` tracked same as remote, `<` tracked older, `>` tracked newer.
+Branch marks: `*` head, `r` remote, `=` tracked same as remote, `<` tracked older, `>` tracked newer, `?` tracked orphan.
 
 The panel is opened by
 
