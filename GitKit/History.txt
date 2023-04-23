@@ -1,10 +1,17 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.7.6 =
+
+New command:
+- gk:edit
+
+gk:cd
+- Path may specify a file as well.
+
 = 0.7.5 =
 
-New command
-
-	gk:cd
+New command:
+- gk:cd
 
 = 0.7.4 =
 

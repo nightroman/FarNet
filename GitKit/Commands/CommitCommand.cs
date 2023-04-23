@@ -63,7 +63,8 @@ sealed class CommitCommand : BaseCommand
 		{
 			sb.AppendLine($"{_CommentaryChar} Changes to be committed:");
 
-			var changes = _repo.Diff.Compare<TreeChanges>(
+			var changes = Lib.CompareTree(
+				_repo,
 				tip.Tree,
 				_All ? (DiffTargets.Index | DiffTargets.WorkingDirectory) : DiffTargets.Index);
 
@@ -77,9 +78,7 @@ sealed class CommitCommand : BaseCommand
 			sb.AppendLine();
 			sb.AppendLine($"{_CommentaryChar} Changes to be amended:");
 
-			var changes = _repo.Diff.Compare<TreeChanges>(
-				tip.Parents.FirstOrDefault()?.Tree,
-				tip.Tree);
+			TreeChanges changes = Lib.CompareTrees(_repo, tip.Parents.FirstOrDefault()?.Tree, tip.Tree);
 
 			foreach (var change in changes)
 				sb.AppendLine($"{_CommentaryChar}\t{change.Status}:\t{change.Path}");

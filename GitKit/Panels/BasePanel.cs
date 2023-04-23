@@ -45,7 +45,7 @@ abstract class BasePanel<T> : Panel where T : BaseExplorer
 
 	protected void CompareCommits(Commit commit1, Commit commit2)
 	{
-		TreeChanges changes = Repository.Diff.Compare<TreeChanges>(commit1.Tree, commit2.Tree);
+		TreeChanges changes = Lib.CompareTrees(Repository, commit1.Tree, commit2.Tree);
 		new ChangesExplorer(Repository, () => changes).CreatePanel().OpenChild(this);
 	}
 

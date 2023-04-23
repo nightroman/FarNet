@@ -2,6 +2,7 @@
 using LibGit2Sharp;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace GitKit;
@@ -33,6 +34,36 @@ public static class Lib
 
 	public static TreeChanges GetChanges(Repository repo)
 	{
-		return repo.Diff.Compare<TreeChanges>(repo.Head.Tip?.Tree, DiffTargets.Index | DiffTargets.WorkingDirectory);
+		return CompareTree(repo, repo.Head.Tip?.Tree, DiffTargets.Index | DiffTargets.WorkingDirectory);
+	}
+
+	public static TreeChanges CompareTree(Repository repo, Tree? oldTree, DiffTargets diffTargets)
+	{
+		return repo.Diff.Compare<TreeChanges>(oldTree, diffTargets);
+	}
+
+	public static TreeChanges CompareTrees(Repository repo, Tree? oldTree, Tree newTree)
+	{
+		return repo.Diff.Compare<TreeChanges>(oldTree, newTree);
+	}
+
+	public static string ResolveRepositoryItemPath(Repository repo, string path)
+	{
+		var info = repo.Info;
+		if (path == ".git")
+		{
+			path = info.Path;
+		}
+		else if (path.StartsWith(".git/") || path.StartsWith(@".git\"))
+		{
+			path = path[5..].TrimStart('\\').TrimStart('/');
+			path = Path.Combine(info.Path, path);
+		}
+		else
+		{
+			path = path.TrimStart('\\').TrimStart('/');
+			path = Path.Combine(info.WorkingDirectory ?? info.Path, path);
+		}
+		return Path.GetFullPath(Path.TrimEndingDirectorySeparator(path));
 	}
 }

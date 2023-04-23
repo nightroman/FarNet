@@ -53,6 +53,7 @@ public class Command : ModuleCommand
 					"checkout" => new CheckoutCommand(repo, parameters),
 					"commit" => new CommitCommand(repo, parameters),
 					"commits" => new CommitsCommand(repo),
+					"edit" => new EditCommand(repo, parameters),
 					"pull" => new PullCommand(repo),
 					"push" => new PushCommand(repo),
 					_ => throw new ModuleException($"Unknown command '{subcommand}'.")

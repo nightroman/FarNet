@@ -9,6 +9,7 @@ Far Manager git helpers based on LibGit2Sharp
 - [Install](#install)
 - [Commands](#commands)
     - [cd command](#cd-command)
+    - [Edit command](#edit-command)
     - [Init command](#init-command)
     - [Clone command](#clone-command)
     - [Commit command](#commit-command)
@@ -72,7 +73,7 @@ gk:subcommand [key=value] [; key=value] ...
 
 - `Repo=<path>`
 
-    Specifies the existing repository path.
+    Specifies the existing repository path.\
     Default: the current panel directory.
 
 **Panel commands**
@@ -99,6 +100,10 @@ gk:subcommand [key=value] [; key=value] ...
 - `gk:cd`
 
     Navigates to the repository directory, see [cd command](#cd-command)
+
+- `gk:edit`
+
+    Opens the file in the editor, see [Edit command](#edit-command)
 
 - `gk:init`
 
@@ -129,7 +134,7 @@ gk:subcommand [key=value] [; key=value] ...
 
 [Contents]
 
-Use this command to navigate to a repository directory
+Use this command to navigate to a repository directory or file
 
 ```
 gk:cd
@@ -139,9 +144,34 @@ Parameters
 
 - `Path=<string>`
 
-    Specifies the repository path relative to the root. If the path starts with
-    `.git` directory then the git directory is used even when `.git` is a file.
+    Specifies the repository path relative to the root.\
     Default: the repository root.
+
+    If the path specifies an existing file then the command navigates to its
+    directory panel and sets the cursor to this file.
+
+*********************************************************************
+## Edit command
+
+[Contents]
+
+Use this command to edit the specified repository file
+
+```
+gk:edit
+```
+
+Parameters
+
+- `Path=<string>` (required)
+
+    Specifies the repository file path relative to the root.
+
+    Examples
+
+    - `README.md` - the root `README.md`
+    - `.git\config` - the local configuration file
+    - `.git\COMMIT_EDITMSG` - the last edited commit message
 
 *********************************************************************
 ## Init command
@@ -158,7 +188,7 @@ Parameters
 
 - `Path=<string>`
 
-    Specifies the new repository directory.
+    Specifies the new repository directory.\
     Default: the current panel directory.
 
 - `IsBare={true|false}`
@@ -184,7 +214,7 @@ Parameters
 
 - `Path=<string>`
 
-    Specifies the local path to clone into.
+    Specifies the local path to clone into.\
     Default: the current panel directory.
 
 - `IsBare={true|false}`
@@ -491,32 +521,32 @@ VSCode is used as the default diff tool
 **UseGitCredentials**
 
 If true, tells to use git credentials for remote tasks.
-See [Credentials](#credentials) for details.
+See [Credentials](#credentials) for details.\
 Default: false.
 
 *********************************************************************
 **CommitsPageLimit**
 
-Maximum number of commits per panel pages.
+Maximum number of commits per panel pages.\
 Default: 100.
 
 *********************************************************************
 **ShaPrefixLength**
 
-The number of chars for truncated commit SHA.
+The number of chars for truncated commit SHA.\
 Default: 7.
 
 *********************************************************************
 ## Credentials
 
 [Contents]
+[Settings](#settings)
 
-Remote git operations require credentials, git host user name and password.
+Remote git hosts may require credentials, user name and password.
 GitKit offers two ways, with some advantages and disadvantages.
 
-By default, see [Settings](#settings), with `UseGitCredentials` set to false,
-the input dialog is used. For the given git host, enter the user name and
-password and optionally save them for later use. The environment variable
+With `UseGitCredentials` set to false, an input dialog is used. Enter user name
+and password and optionally save them for later use. The environment variable
 `GitKit_User` is used for keeping credentials.
 
 Alternatively, if you have git installed and available in the path, set

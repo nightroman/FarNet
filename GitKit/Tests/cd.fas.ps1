@@ -30,3 +30,11 @@ job {
 job {
 	Assert-Far $Far.Panel.CurrentDirectory -eq $PSScriptRoot
 }
+
+# go back to this file, use this as the last test
+job {
+	$Far.InvokeCommand('gk:cd path=GitKit\Tests\cd.fas.ps1')
+}
+job {
+	Assert-Far -FileName cd.fas.ps1
+}

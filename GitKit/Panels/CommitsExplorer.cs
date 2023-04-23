@@ -86,7 +86,7 @@ class CommitsExplorer : BaseExplorer
 		//! null for the first commit
 		var tree2 = commit.Parents.FirstOrDefault()?.Tree;
 
-		var diff = Repository.Diff.Compare<TreeChanges>(tree2, tree1);
+		TreeChanges diff = Lib.CompareTrees(Repository, tree2, tree1);
 		return new ChangesExplorer(Repository, () => diff);
 	}
 }
