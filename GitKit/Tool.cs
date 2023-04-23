@@ -24,6 +24,10 @@ public class Tool : ModuleTool
 				menu.Add("Create branch", (s, e) => panel.CreateBranch());
 				menu.Add("Compare commits", (s, e) => panel.CompareCommits());
 				break;
+
+			case ChangesPanel panel:
+				menu.Add("Edit file", (s, e) => panel.EditChangeFile());
+				break;
 		}
 
 		menu.Add("Help", (s, e) => Host.Instance.ShowHelpTopic(string.Empty));

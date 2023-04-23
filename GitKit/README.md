@@ -163,9 +163,10 @@ gk:edit
 
 Parameters
 
-- `Path=<string>` (required)
+- `Path=<string>`
 
-    Specifies the repository file path relative to the root.
+    Specifies the repository file path relative to the root.\
+    Default: you are prompted to enter.
 
     Examples
 
@@ -493,6 +494,10 @@ Keys and actions
 
     Compares the cursor commit with the selected commit and opens the changes panel.
     If nothing is selected then the tip commit is used.
+
+- **Edit file** (changes panel)
+
+    If the cursor change file exists, opens its current version the editor.
 
 - **Help**
 

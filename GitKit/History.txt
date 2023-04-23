@@ -1,5 +1,13 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.7.7 =
+
+New menu:
+- Edit file.
+
+gk:edit
+- Path is optional. Default: input dialog.
+
 = 0.7.6 =
 
 New command:

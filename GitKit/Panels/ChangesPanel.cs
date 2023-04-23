@@ -24,6 +24,17 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 
 	protected override string HelpTopic => "changes-panel";
 
+	public void EditChangeFile()
+	{
+		var change = CurrentFile?.Data as TreeEntryChanges;
+		if (change is null || !change.Exists || Repository.Info.WorkingDirectory is not string workdir)
+			return;
+
+		var editor = Far.Api.CreateEditor();
+		editor.FileName = Path.Combine(workdir, change.Path);
+		editor.Open();
+	}
+
 	(string, bool) GetBlobFile(ObjectId oid, string path, bool exists)
 	{
 		if (!exists)
