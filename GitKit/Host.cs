@@ -60,7 +60,7 @@ public class Host : ModuleHost
 
 	static void UpdatePanel(IPanel? panel)
 	{
-		if (panel is BranchesPanel || panel is CommitsPanel)
+		if (panel is BranchesPanel || panel is CommitsPanel || panel is ChangesPanel)
 		{
 			panel.Update(true);
 			panel.Redraw();

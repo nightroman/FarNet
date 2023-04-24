@@ -27,7 +27,7 @@ class CommitsExplorer : BaseExplorer
 	{
 		//! get fresh instance, e.g. important for marks after push
 		//! it may have pseudo name (no branch), case bare repo
-		Branch = _isHead ? Repository.Head : Repository.Branches[Branch.CanonicalName];
+		Branch = _isHead ? Repository.Head : Repository.Branches[Branch.CanonicalName] ?? Branch;
 
 		IEnumerable<Commit> commits = Branch.Commits;
 		if (args.Limit > 0)
@@ -80,13 +80,11 @@ class CommitsExplorer : BaseExplorer
 
 	public override Explorer? ExploreDirectory(ExploreDirectoryEventArgs args)
 	{
-		var commit = (Commit)args.File.Data!;
-		var tree1 = commit.Tree;
+		var newCommit = (Commit)args.File.Data!;
 
 		//! null for the first commit
-		var tree2 = commit.Parents.FirstOrDefault()?.Tree;
+		var oldCommit = newCommit.Parents.FirstOrDefault();
 
-		TreeChanges diff = Lib.CompareTrees(Repository, tree2, tree1);
-		return new ChangesExplorer(Repository, () => diff);
+		return new ChangesExplorer(Repository, oldCommit, newCommit);
 	}
 }

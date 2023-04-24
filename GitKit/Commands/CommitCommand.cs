@@ -126,5 +126,7 @@ sealed class CommitCommand : BaseCommand
 
 		var sig = Lib.BuildSignature(_repo);
 		_repo.Commit(message, sig, sig, op);
+
+		Host.UpdatePanels();
 	}
 }

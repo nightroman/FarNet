@@ -49,7 +49,7 @@ public class Command : ModuleCommand
 					"" => new StatusCommand(repo),
 					"branches" => new BranchesCommand(repo),
 					"cd" => new CDCommand(repo, parameters),
-					"changes" => new ChangesCommand(repo),
+					"changes" => new ChangesCommand(repo, parameters),
 					"checkout" => new CheckoutCommand(repo, parameters),
 					"commit" => new CommitCommand(repo, parameters),
 					"commits" => new CommitsCommand(repo),

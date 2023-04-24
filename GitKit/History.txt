@@ -1,5 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.7.8 =
+
+gk:changes
+- New parameter Kind={NotCommitted|NotStaged|Staged|Head|Last}.
+- The default is Last: NotCommitted if any, or else Head (instead of empty panel).
+
 = 0.7.7 =
 
 New menu:

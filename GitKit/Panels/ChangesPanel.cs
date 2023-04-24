@@ -11,7 +11,6 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 {
 	public ChangesPanel(ChangesExplorer explorer) : base(explorer)
 	{
-		Title = $"Changes {Repository.Info.WorkingDirectory}";
 		SortMode = PanelSortMode.Unsorted;
 		ViewMode = 0;
 

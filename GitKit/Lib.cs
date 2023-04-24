@@ -42,7 +42,7 @@ public static class Lib
 		return repo.Diff.Compare<TreeChanges>(oldTree, diffTargets);
 	}
 
-	public static TreeChanges CompareTrees(Repository repo, Tree? oldTree, Tree newTree)
+	public static TreeChanges CompareTrees(Repository repo, Tree? oldTree, Tree? newTree)
 	{
 		return repo.Diff.Compare<TreeChanges>(oldTree, newTree);
 	}

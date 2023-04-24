@@ -61,13 +61,12 @@ GitKit commands use the prefix `gk`. Commands may be typed and invoked in the
 Far Manager command line or using F11 / FarNet / Invoke. Commands may be also
 defined in the Far Manager user menu and file associations.
 
-The command `gk:` without subcommand prints the repository status. Some
-commands require parameters, one or more key=value pairs separated by
-semicolons, using the connection string format.
+```
+gk:[subcommand] [key=value] [; key=value] ...
+```
 
-```
-gk:subcommand [key=value] [; key=value] ...
-```
+Command parameters are key=value pairs separated by semicolons, using the
+connection string format.
 
 **Common parameters**
 
@@ -95,15 +94,15 @@ gk:subcommand [key=value] [; key=value] ...
 - `gk:`
 
     Prints the repository status: summary of changes if any, the commit hash,
-    local and remote branches with the same tip commit, the commit message.
+    local and remote branches with the same head commit, the commit message.
 
 - `gk:cd`
 
-    Navigates to the repository directory, see [cd command](#cd-command)
+    Navigates to the repository path, see [cd command](#cd-command)
 
 - `gk:edit`
 
-    Opens the file in the editor, see [Edit command](#edit-command)
+    Opens a file in the editor, see [Edit command](#edit-command)
 
 - `gk:init`
 
@@ -211,7 +210,7 @@ Parameters
 
 - `Url=<string>` (required)
 
-    Specifies the source repository URL.
+    Specifies the remote repository.
 
 - `Path=<string>`
 
@@ -446,11 +445,23 @@ Keys and actions
 This panel shows changed files.
 
 The panel is opened from the commits panel or by the menu commands "Compare
-branches" and "Compare commits" or for the current changes by
+branches" and "Compare commits" or by the command
 
 ```
 gk:changes
 ```
+
+Parameters
+
+- `Kind=<kind>`
+
+    Specifies the changes kind
+
+    - `NotCommitted`: includes all not committed changes, i.e. `NotStaged` and `Staged`
+    - `NotStaged`: not staged changes (git working directory)
+    - `Staged`: staged changes (git index)
+    - `Head`: last committed changes
+    - `Last`: (default) `NotCommitted` changes if any, or else `Head` changes
 
 Keys and actions
 
@@ -465,6 +476,10 @@ Keys and actions
 - Other keys
 
     See [Panels](#panels) for common keys and actions.
+
+- Other actions
+
+    See [Menu](#menu).
 
 *********************************************************************
 ## Menu

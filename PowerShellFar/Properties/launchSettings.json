@@ -2,7 +2,8 @@
   "profiles": {
     "Far": {
       "commandName": "Executable",
-      "executablePath": "Far.exe"
+      "executablePath": "Far.exe",
+      "nativeDebugging": true
     }
   }
 }
