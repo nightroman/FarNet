@@ -407,13 +407,24 @@ Keys and actions
 
 [Contents]
 
-This panel shows branch commits. Commits are shown by pages of `CommitsPageLimit`, see [Settings](#settings).
+This panel shows branch or path commits.
+Commits are shown by pages of `CommitsPageLimit`, see [Settings](#settings).
 
-The panel is opened from the branches panel or for the head branch by
+The panel is opened from the branches panel or by the command
 
 ```
 gk:commits
 ```
+
+Parameters
+
+- `Path=<string>`
+
+    Tells to show commits including the specified path. The path is either full
+    or git path, i.e. relative to the repository root. Use "?" for the panel
+    cursor file or directory.
+
+    If this parameter is omitted then the head branch commits are shown.
 
 Keys and actions
 
@@ -453,7 +464,7 @@ gk:changes
 
 Parameters
 
-- `Kind=<kind>`
+- `Kind=<enum>`
 
     Specifies the changes kind
 
@@ -512,7 +523,11 @@ Keys and actions
 
 - **Edit file** (changes panel)
 
-    If the cursor change file exists, opens its current version the editor.
+    If the cursor change file exists, opens this file in the editor.
+
+- **Commits** (changes panel)
+
+    Opens the panel with commits including the cursor file.
 
 - **Help**
 
@@ -523,12 +538,12 @@ Keys and actions
 
 [Contents]
 
-The module settings: F11 / FarNet / Settings / GitKit.
+Settings editor: F11 / FarNet / Settings / GitKit
 
 *********************************************************************
 **DiffTool** and **DiffToolArguments**
 
-Specify the diff tool and its arguments used to compare changed files.
+Specify the diff tool and arguments used to compare changed files.
 In arguments use `%1` and `%2` as file path substitutes.
 Environment variables are expanded.
 

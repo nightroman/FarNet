@@ -2,13 +2,11 @@
 using LibGit2Sharp;
 using LibGit2Sharp.Handlers;
 using System;
-using System.Buffers.Text;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.Json;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace GitKit;
 
@@ -60,7 +58,7 @@ public class Host : ModuleHost
 
 	static void UpdatePanel(IPanel? panel)
 	{
-		if (panel is BranchesPanel || panel is CommitsPanel || panel is ChangesPanel)
+		if (panel is AnyPanel)
 		{
 			panel.Update(true);
 			panel.Redraw();

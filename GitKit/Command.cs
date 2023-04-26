@@ -52,7 +52,7 @@ public class Command : ModuleCommand
 					"changes" => new ChangesCommand(repo, parameters),
 					"checkout" => new CheckoutCommand(repo, parameters),
 					"commit" => new CommitCommand(repo, parameters),
-					"commits" => new CommitsCommand(repo),
+					"commits" => new CommitsCommand(repo, parameters),
 					"edit" => new EditCommand(repo, parameters),
 					"pull" => new PullCommand(repo),
 					"push" => new PushCommand(repo),

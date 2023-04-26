@@ -9,7 +9,6 @@ class CommitsPanel : BasePanel<CommitsExplorer>
 {
 	public CommitsPanel(CommitsExplorer explorer) : base(explorer)
 	{
-		Title = $"{explorer.Branch.FriendlyName} branch {Repository.Info.WorkingDirectory}";
 		SortMode = PanelSortMode.Unsorted;
 		ViewMode = 0;
 
@@ -29,31 +28,33 @@ class CommitsPanel : BasePanel<CommitsExplorer>
 
 	protected override string HelpTopic => "commits-panel";
 
-	public void PushBranch()
+	public Branch Branch => ((CommitsExplorer.BranchCommits)Explorer.Data).Branch;
+
+	void PushBranch()
 	{
-		PushCommand.PushBranch(Repository, Explorer.Branch);
+		PushCommand.PushBranch(Repository, Branch);
 	}
 
-	public void CompareCommits()
+	void CompareCommits()
 	{
 		var (data1, data2) = GetSelectedDataRange<Commit>();
 		if (data2 is null)
 			return;
 
-		data1 ??= Explorer.Branch.Tip;
+		data1 ??= Branch.Tip;
 
 		var commits = new Commit[] { data1, data2 }.OrderBy(x => x.Author.When).ToArray();
 
 		CompareCommits(commits[0], commits[1]);
 	}
 
-	public void CreateBranch()
+	void CreateBranch()
 	{
 		var commit = CurrentFile?.Data as Commit;
 		if (commit is null)
 			return;
 
-		var friendlyName = Explorer.Branch.FriendlyName;
+		var friendlyName = Branch.FriendlyName;
 		var settings = Settings.Default.GetData();
 		var hash = commit.Sha[0..settings.ShaPrefixLength];
 		var newName = Far.Api.Input(
@@ -66,5 +67,15 @@ class CommitsPanel : BasePanel<CommitsExplorer>
 			return;
 
 		Repository.CreateBranch(newName, commit);
+	}
+
+	public override void AddMenu(IMenu menu)
+	{
+		if (Explorer.Data is CommitsExplorer.BranchCommits)
+		{
+			menu.Add("Push branch", (s, e) => PushBranch());
+			menu.Add("Create branch", (s, e) => CreateBranch());
+			menu.Add("Compare commits", (s, e) => CompareCommits());
+		}
 	}
 }

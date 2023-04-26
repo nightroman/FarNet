@@ -1,5 +1,16 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.8.0 =
+
+gk:commits
+- new parameter Path
+
+Changes panel
+- new menu "Commits"
+
+Commits panel
+- support path commits
+
 = 0.7.8 =
 
 gk:changes

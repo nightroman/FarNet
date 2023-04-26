@@ -34,9 +34,9 @@ task publish {
 	remove "$ModuleRoot\GitKit.deps.json"
 }
 
-task help {
-	exec { pandoc.exe README.md --output=README.htm --from=gfm --no-highlight }
-	exec { HtmlToFarHelp from=README.htm to=$ModuleRoot\GitKit.hlf }
+task help -Inputs README.md -Outputs $ModuleRoot\GitKit.hlf {
+	exec { pandoc.exe $Inputs --output=README.htm --from=gfm --no-highlight }
+	exec { HtmlToFarHelp from=README.htm to=$Outputs }
 	remove README.htm
 }
 

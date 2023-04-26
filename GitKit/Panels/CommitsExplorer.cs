@@ -9,73 +9,41 @@ namespace GitKit;
 class CommitsExplorer : BaseExplorer
 {
 	public static Guid MyTypeId = new("80354846-50a0-4675-a418-e177f6747d30");
-	public Branch Branch { get; private set; }
-	readonly bool _isHead;
+
+	public ICommits Data { get; private set; }
 
 	public CommitsExplorer(Repository repository, Branch branch) : base(repository, MyTypeId)
 	{
-		Branch = branch;
-		_isHead = branch.IsCurrentRepositoryHead && Repository.Info.IsHeadDetached;
+		Data = new BranchCommits(
+			repository,
+			branch,
+			branch.IsCurrentRepositoryHead && Repository.Info.IsHeadDetached);
+	}
+
+	public CommitsExplorer(Repository repository, string path) : base(repository, MyTypeId)
+	{
+		Data = new PathCommits(repository, path);
 	}
 
 	public override Panel CreatePanel()
 	{
-		return new CommitsPanel(this);
+		return new CommitsPanel(this)
+		{
+			Title = $"{Data.Title} {Repository.Info.WorkingDirectory}"
+		};
 	}
 
 	public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 	{
-		//! get fresh instance, e.g. important for marks after push
-		//! it may have pseudo name (no branch), case bare repo
-		Branch = _isHead ? Repository.Head : Repository.Branches[Branch.CanonicalName] ?? Branch;
-
-		IEnumerable<Commit> commits = Branch.Commits;
-		if (args.Limit > 0)
-			commits = commits.Skip(args.Offset).Take(args.Limit);
-
-		string? mark = null;
-		Func<Commit, bool>? hasCommitMark = null;
-		if (!Branch.IsRemote && args.Offset == 0)
+		if (Data is BranchCommits data)
 		{
-			if (Branch.TrackedBranch?.Tip is null)
-			{
-				var heads = Repository.Refs.Where(x => x.IsLocalBranch && x.CanonicalName != Branch.CanonicalName).ToList();
-				if (heads.Count > 0)
-				{
-					mark = "#";
-					hasCommitMark = commit => Repository.Refs.ReachableFrom(heads, new[] { commit }).Any();
-				}
-			}
-			else
-			{
-				mark = "=";
-				var trackedTip = Branch.TrackedBranch.Tip;
-				hasCommitMark = commit => commit == trackedTip;
-			}
+			//! get fresh instance, e.g. important for marks after push
+			//! it may have pseudo name (no branch), case bare repo
+			var branch = data.IsHead ? Repository.Head : Repository.Branches[data.Branch.CanonicalName] ?? data.Branch;
+			Data = data with { Branch = branch };
 		}
 
-		var settings = Settings.Default.GetData();
-		foreach (var commit in commits)
-		{
-			var file = new SetFile
-			{
-				Name = $"{commit.Sha[..settings.ShaPrefixLength]} {commit.Author.When:yyyy-MM-dd} {commit.Author.Name}: {commit.MessageShort}",
-				LastWriteTime = commit.Author.When.DateTime,
-				IsDirectory = true,
-				Data = commit,
-			};
-
-			if (hasCommitMark is not null)
-			{
-				if (hasCommitMark(commit))
-				{
-					file.Owner = mark;
-					hasCommitMark = null;
-				}
-			}
-
-			yield return file;
-		}
+		return Data.GetFiles(args);
 	}
 
 	public override Explorer? ExploreDirectory(ExploreDirectoryEventArgs args)
@@ -85,6 +53,101 @@ class CommitsExplorer : BaseExplorer
 		//! null for the first commit
 		var oldCommit = newCommit.Parents.FirstOrDefault();
 
-		return new ChangesExplorer(Repository, oldCommit, newCommit);
+		return new ChangesExplorer(Repository, new ChangesExplorer.Options
+		{
+			Kind = ChangesExplorer.Kind.CommitsRange,
+			OldCommit = oldCommit,
+			NewCommit = newCommit,
+			Path = (Data as PathCommits)?.Path
+		});
+	}
+
+	static SetFile CreateFile(Commit commit, int shaPrefixLength)
+	{
+		return new SetFile
+		{
+			Name = $"{commit.Sha[..shaPrefixLength]} {commit.Author.When:yyyy-MM-dd} {commit.Author.Name}: {commit.MessageShort}",
+			LastWriteTime = commit.Author.When.DateTime,
+			Data = commit,
+			IsDirectory = true,
+		};
+	}
+
+	public interface ICommits
+	{
+		string Title { get; }
+		IEnumerable<FarFile> GetFiles(GetFilesEventArgs args);
+	}
+
+	public record BranchCommits(Repository Repository, Branch Branch, bool IsHead) : ICommits
+	{
+		public string Title => $"{Branch.FriendlyName} branch";
+
+		public IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
+		{
+			IEnumerable<Commit> commits = Branch.Commits;
+			if (args.Limit > 0)
+				commits = commits.Skip(args.Offset).Take(args.Limit);
+
+			string? mark = null;
+			Func<Commit, bool>? hasCommitMark = null;
+			if (!Branch.IsRemote && args.Offset == 0)
+			{
+				if (Branch.TrackedBranch?.Tip is null)
+				{
+					var heads = Repository.Refs.Where(x => x.IsLocalBranch && x.CanonicalName != Branch.CanonicalName).ToList();
+					if (heads.Count > 0)
+					{
+						mark = "#";
+						hasCommitMark = commit => Repository.Refs.ReachableFrom(heads, new[] { commit }).Any();
+					}
+				}
+				else
+				{
+					mark = "=";
+					var trackedTip = Branch.TrackedBranch.Tip;
+					hasCommitMark = commit => commit == trackedTip;
+				}
+			}
+
+			var settings = Settings.Default.GetData();
+			foreach (var commit in commits)
+			{
+				var file = CreateFile(commit, settings.ShaPrefixLength);
+				if (hasCommitMark is not null)
+				{
+					if (hasCommitMark(commit))
+					{
+						file.Owner = mark;
+						hasCommitMark = null;
+					}
+				}
+
+				yield return file;
+			}
+		}
+	}
+
+	public record PathCommits(Repository Repository, string Path) : ICommits
+	{
+		public string Title => System.IO.Path.GetFileName(Path);
+
+		public IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
+		{
+			IEnumerable<LogEntry> logs = Repository.Commits.QueryBy(Path);
+			if (args.Limit > 0)
+				logs = logs.Skip(args.Offset).Take(args.Limit);
+
+			var settings = Settings.Default.GetData();
+			foreach (var log in logs)
+			{
+				var file = CreateFile(log.Commit, settings.ShaPrefixLength);
+
+				if (log.Path != Path)
+					file.Owner = "n";
+
+				yield return file;
+			}
+		}
 	}
 }

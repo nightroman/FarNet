@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace GitKit;
 
-abstract class BasePanel<T> : Panel where T : BaseExplorer
+abstract class BasePanel<T> : AnyPanel where T : BaseExplorer
 {
 	public Repository Repository { get; }
 
@@ -43,9 +43,10 @@ abstract class BasePanel<T> : Panel where T : BaseExplorer
 		return ((TData?)file1?.Data, (TData?)file2?.Data);
 	}
 
-	protected void CompareCommits(Commit commit1, Commit commit2)
+	protected void CompareCommits(Commit oldCommit, Commit newCommit)
 	{
-		new ChangesExplorer(Repository, commit1, commit2)
+		var args = new ChangesExplorer.Options { Kind = ChangesExplorer.Kind.CommitsRange, OldCommit = oldCommit, NewCommit = newCommit };
+		new ChangesExplorer(Repository, args)
 			.CreatePanel()
 			.OpenChild(this);
 	}

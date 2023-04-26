@@ -84,7 +84,7 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 		Redraw();
 	}
 
-	public void CompareBranches()
+	void CompareBranches()
 	{
 		var (data1, data2) = GetSelectedDataRange<Branch>();
 		if (data2 is null)
@@ -97,7 +97,7 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 		CompareCommits(commits[0], commits[1]);
 	}
 
-	public void MergeBranch()
+	void MergeBranch()
 	{
 		if (Repository.Info.IsHeadDetached)
 			return;
@@ -117,10 +117,17 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 		Redraw();
 	}
 
-	public void PushBranch()
+	void PushBranch()
 	{
 		if (CurrentFile?.Data is Branch branch)
 			PushCommand.PushBranch(Repository, branch);
+	}
+
+	public override void AddMenu(IMenu menu)
+	{
+		menu.Add("Push branch", (s, e) => PushBranch());
+		menu.Add("Merge branch", (s, e) => MergeBranch());
+		menu.Add("Compare branches", (s, e) => CompareBranches());
 	}
 
 	public override void UICloneFile(CloneFileEventArgs args)

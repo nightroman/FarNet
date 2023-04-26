@@ -9,13 +9,20 @@ namespace GitKit;
 class ChangesExplorer : BaseExplorer
 {
 	public static Guid MyTypeId = new("7b4c229a-949e-4100-856e-45c17d516d25");
-	readonly Kind? _kind;
-	readonly Commit? _oldCommit;
-	readonly Commit? _newCommit;
+	readonly Options _op;
 	Panel? _panel;
 
-	public enum Kind
+	internal class Options
 	{
+		public Kind Kind;
+		public Commit? OldCommit;
+		public Commit? NewCommit;
+		public string? Path;
+	}
+
+	internal enum Kind
+	{
+		CommitsRange,
 		NotCommitted,
 		NotStaged,
 		Staged,
@@ -23,20 +30,9 @@ class ChangesExplorer : BaseExplorer
 		Last,
 	}
 
-	public ChangesExplorer(Repository repository, Kind kind) : this(repository, kind, null, null)
+	public ChangesExplorer(Repository repository, Options op) : base(repository, MyTypeId)
 	{
-	}
-
-	public ChangesExplorer(Repository repository, Commit? oldCommit, Commit? newCommit) : this(repository, null, oldCommit, newCommit)
-	{
-	}
-
-	ChangesExplorer(Repository repository, Kind? kind, Commit? oldCommit, Commit? newCommit) : base(repository, MyTypeId)
-	{
-		_kind = kind;
-		_oldCommit = oldCommit;
-		_newCommit = newCommit;
-
+		_op = op;
 		CanGetContent = true;
 	}
 
@@ -48,6 +44,9 @@ class ChangesExplorer : BaseExplorer
 	public override void EnterPanel(Panel panel)
 	{
 		_panel = panel;
+
+		panel.PostName(_op.Path);
+
 		base.EnterPanel(panel);
 	}
 
@@ -55,7 +54,7 @@ class ChangesExplorer : BaseExplorer
 	{
 		TreeChanges changes;
 		string title;
-		switch (_kind)
+		switch (_op.Kind)
 		{
 			case Kind.NotCommitted:
 				{
@@ -104,12 +103,12 @@ class ChangesExplorer : BaseExplorer
 
 			default:
 				{
-					changes = Lib.CompareTrees(Repository, _oldCommit?.Tree, _newCommit?.Tree);
+					changes = Lib.CompareTrees(Repository, _op.OldCommit?.Tree, _op.NewCommit?.Tree);
 
 					var settings = Settings.Default.GetData();
-					var oldId = _oldCommit is null ? "?" : _oldCommit.Sha[0..settings.ShaPrefixLength];
-					var newId = _newCommit is null ? "?" : _newCommit.Sha[0..settings.ShaPrefixLength];
-					title = $"{oldId} {newId}";
+					var oldId = _op.OldCommit is null ? "?" : _op.OldCommit.Sha[0..settings.ShaPrefixLength];
+					var newId = _op.NewCommit is null ? "?" : _op.NewCommit.Sha[0..settings.ShaPrefixLength];
+					title = $"{newId}/{oldId}";
 				}
 				break;
 		}

@@ -23,7 +23,7 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 
 	protected override string HelpTopic => "changes-panel";
 
-	public void EditChangeFile()
+	void EditChangeFile()
 	{
 		var change = CurrentFile?.Data as TreeEntryChanges;
 		if (change is null || !change.Exists || Repository.Info.WorkingDirectory is not string workdir)
@@ -32,6 +32,21 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 		var editor = Far.Api.CreateEditor();
 		editor.FileName = Path.Combine(workdir, change.Path);
 		editor.Open();
+	}
+
+	void OpenCommits()
+	{
+		var change = CurrentFile?.Data as TreeEntryChanges;
+		if (change is null)
+			return;
+
+		var path = change.Exists ? change.Path : change.OldExists ? change.OldPath : null;
+		if (path is null)
+			return;
+
+		new CommitsExplorer(Repository, path)
+			.CreatePanel()
+			.OpenChild(this);
 	}
 
 	(string, bool) GetBlobFile(ObjectId oid, string path, bool exists)
@@ -80,13 +95,19 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 		});
 	}
 
+	public override void AddMenu(IMenu menu)
+	{
+		menu.Add("Edit file", (s, e) => EditChangeFile());
+		menu.Add("Commits", (s, e) => OpenCommits());
+	}
+
 	public override bool UIKeyPressed(KeyInfo key)
 	{
 		switch (key.VirtualKeyCode)
 		{
 			case KeyCode.Enter when key.Is():
 				var changes = (TreeEntryChanges?)CurrentFile?.Data;
-				if (changes is not null)
+				if (changes?.Mode == Mode.NonExecutableFile)
 					ShowDiff(changes);
 				return true;
 		}
