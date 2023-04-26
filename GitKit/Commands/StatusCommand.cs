@@ -14,7 +14,7 @@ sealed class StatusCommand : BaseCommand
 	void WriteChanges()
 	{
 		// see TreeChanges.DebuggerDisplay
-		var changes = Lib.GetChanges(_repo);
+		var changes = Lib.GetChanges(Repository);
 		if (changes.Count > 0)
 		{
 			int n;
@@ -51,9 +51,9 @@ sealed class StatusCommand : BaseCommand
 	public override void Invoke()
 	{
 		// tip is null: empty repository, fresh orphan branch ~ both "unborn"
-		Commit? tip = _repo.Head.Tip;
+		Commit? tip = Repository.Head.Tip;
 
-		if (!_repo.Info.IsBare)
+		if (!Repository.Info.IsBare)
 			WriteChanges();
 
 		var settings = Settings.Default.GetData();
@@ -68,13 +68,13 @@ sealed class StatusCommand : BaseCommand
 
 		if (tip is null)
 		{
-			Far.Api.UI.Write(_repo.Head.FriendlyName);
-			if (_repo.Info.IsHeadUnborn)
+			Far.Api.UI.Write(Repository.Head.FriendlyName);
+			if (Repository.Info.IsHeadUnborn)
 				Far.Api.UI.Write(" (unborn)");
 		}
 		else
 		{
-			var tracking = _repo.Head.TrackingDetails;
+			var tracking = Repository.Head.TrackingDetails;
 			if (tracking is not null)
 			{
 				if (tracking.AheadBy > 0)
@@ -84,8 +84,14 @@ sealed class StatusCommand : BaseCommand
 					Far.Api.UI.Write($"-{tracking.BehindBy} ", ConsoleColor.Red);
 			}
 
+			var branches = Repository.Branches
+				.Where(x => x.Tip == tip)
+				.OrderBy(x => x.IsCurrentRepositoryHead ? 0 : 1)
+				.ThenBy(x => x.IsRemote ? 1 : 0)
+				.ThenBy(x => x.FriendlyName);
+
 			bool comma = false;
-			foreach (var branch in _repo.Branches.Where(x => x.Tip == tip).OrderBy(x => x.IsRemote))
+			foreach (var branch in branches)
 			{
 				if (comma)
 					Far.Api.UI.Write(", ");

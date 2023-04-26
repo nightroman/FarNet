@@ -10,7 +10,7 @@ sealed class PullCommand : BaseCommand
 
 	public override void Invoke()
 	{
-		Pull(_repo);
+		Pull(Repository);
 	}
 
 	public static void Pull(Repository repo)

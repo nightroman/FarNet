@@ -19,7 +19,7 @@ sealed class CDCommand : BaseCommand
 		if (Far.Api.Window.Kind != WindowKind.Panels)
 			Far.Api.Window.SetCurrentAt(-1);
 
-		string path = Lib.ResolveRepositoryItemPath(_repo, _path);
+		string path = Lib.ResolveRepositoryItemPath(Repository, _path);
 
 		if (File.Exists(path))
 			Far.Api.Panel!.GoToPath(path);

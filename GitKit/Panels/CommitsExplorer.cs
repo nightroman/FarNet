@@ -128,13 +128,26 @@ class CommitsExplorer : BaseExplorer
 		}
 	}
 
-	public record PathCommits(Repository Repository, string Path) : ICommits
+	public class PathCommits : ICommits
 	{
+		public Repository Repository { get; }
+		public string Path { get; }
+
+		readonly CachedEnumerable<LogEntry> _commits;
+
 		public string Title => System.IO.Path.GetFileName(Path);
+
+		public PathCommits(Repository repository, string path)
+		{
+			Repository = repository;
+			Path = path;
+
+			_commits = new(repository.Commits.QueryBy(path));
+		}
 
 		public IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 		{
-			IEnumerable<LogEntry> logs = Repository.Commits.QueryBy(Path);
+			IEnumerable<LogEntry> logs = _commits;
 			if (args.Limit > 0)
 				logs = logs.Skip(args.Offset).Take(args.Limit);
 

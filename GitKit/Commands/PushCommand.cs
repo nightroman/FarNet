@@ -11,7 +11,7 @@ sealed class PushCommand : BaseCommand
 
 	public override void Invoke()
 	{
-		PushBranch(_repo, _repo.Head);
+		PushBranch(Repository, Repository.Head);
 	}
 
 	public static void PushBranch(Repository repo, Branch branch)

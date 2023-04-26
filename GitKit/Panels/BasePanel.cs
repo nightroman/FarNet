@@ -15,8 +15,6 @@ abstract class BasePanel<T> : AnyPanel where T : BaseExplorer
 		Repository = explorer.Repository;
 	}
 
-	protected abstract string HelpTopic { get; }
-
 	public override void Open()
 	{
 		base.Open();
@@ -28,51 +26,11 @@ abstract class BasePanel<T> : AnyPanel where T : BaseExplorer
 		Repository.Release();
 	}
 
-	public (TData?, TData?) GetSelectedDataRange<TData>()
-	{
-		var files = SelectedFiles;
-		if (files.Count >= 2)
-			return ((TData?)files[0].Data, (TData?)files[^1].Data);
-
-		var file1 = files.FirstOrDefault();
-		var file2 = CurrentFile;
-
-		if (ReferenceEquals(file1, file2))
-			file1 = null;
-
-		return ((TData?)file1?.Data, (TData?)file2?.Data);
-	}
-
 	protected void CompareCommits(Commit oldCommit, Commit newCommit)
 	{
 		var args = new ChangesExplorer.Options { Kind = ChangesExplorer.Kind.CommitsRange, OldCommit = oldCommit, NewCommit = newCommit };
 		new ChangesExplorer(Repository, args)
 			.CreatePanel()
 			.OpenChild(this);
-	}
-
-	public override bool UIKeyPressed(KeyInfo key)
-	{
-		switch (key.VirtualKeyCode)
-		{
-			// show help
-			case KeyCode.F1 when key.Is():
-				Host.Instance.ShowHelpTopic(HelpTopic);
-				return true;
-
-			// panel members
-			case KeyCode.A when key.IsCtrl():
-				var data = CurrentFile?.Data;
-				if (data is not null)
-				{
-					Host.InvokeScript(
-						"[PowerShellFar.MemberExplorer]::new($args[0]).CreatePanel().OpenChild($args[1])",
-						new object[] { data, this });
-				}
-
-				return true;
-		}
-
-		return base.UIKeyPressed(key);
 	}
 }

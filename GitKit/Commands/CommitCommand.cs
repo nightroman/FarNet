@@ -38,7 +38,7 @@ sealed class CommitCommand : BaseCommand
 
 	string GetMessage()
 	{
-		Commit? tip = _repo.Head.Tip;
+		Commit? tip = Repository.Head.Tip;
 
 		var message = string.Empty;
 		if (op.AmendPreviousCommit && tip is not null)
@@ -52,7 +52,7 @@ sealed class CommitCommand : BaseCommand
 		sb.AppendLine();
 
 		// warning about overriding remote commit
-		if (op.AmendPreviousCommit && _repo.Head.TrackedBranch is not null && _repo.Head.TrackedBranch.Tip == tip)
+		if (op.AmendPreviousCommit && Repository.Head.TrackedBranch is not null && Repository.Head.TrackedBranch.Tip == tip)
 		{
 			sb.AppendLine($"{_CommentaryChar} WARNING:");
 			sb.AppendLine($"{_CommentaryChar}\tThe remote commit will be amended.");
@@ -64,7 +64,7 @@ sealed class CommitCommand : BaseCommand
 			sb.AppendLine($"{_CommentaryChar} Changes to be committed:");
 
 			var changes = Lib.CompareTree(
-				_repo,
+				Repository,
 				tip.Tree,
 				_All ? (DiffTargets.Index | DiffTargets.WorkingDirectory) : DiffTargets.Index);
 
@@ -78,7 +78,7 @@ sealed class CommitCommand : BaseCommand
 			sb.AppendLine();
 			sb.AppendLine($"{_CommentaryChar} Changes to be amended:");
 
-			TreeChanges changes = Lib.CompareTrees(_repo, tip.Parents.FirstOrDefault()?.Tree, tip.Tree);
+			TreeChanges changes = Lib.CompareTrees(Repository, tip.Parents.FirstOrDefault()?.Tree, tip.Tree);
 
 			foreach (var change in changes)
 				sb.AppendLine($"{_CommentaryChar}\t{change.Status}:\t{change.Path}");
@@ -91,7 +91,7 @@ sealed class CommitCommand : BaseCommand
 	{
 		var message = GetMessage();
 
-		var file = Path.Combine(_repo.Info.Path, "COMMIT_EDITMSG");
+		var file = Path.Combine(Repository.Info.Path, "COMMIT_EDITMSG");
 		File.WriteAllText(file, message);
 
 		var editor = Far.Api.CreateEditor();
@@ -99,7 +99,7 @@ sealed class CommitCommand : BaseCommand
 		editor.CodePage = 65001;
 		editor.DisableHistory = true;
 		editor.Caret = new Point(0, 0);
-		editor.Title = (op.AmendPreviousCommit ? "Amend commit" : "Commit") + $" on branch {_repo.Head.FriendlyName} -- empty message aborts the commit";
+		editor.Title = (op.AmendPreviousCommit ? "Amend commit" : "Commit") + $" on branch {Repository.Head.FriendlyName} -- empty message aborts the commit";
 		editor.Open(OpenMode.Modal);
 
 		message = File.ReadAllText(file);
@@ -122,10 +122,10 @@ sealed class CommitCommand : BaseCommand
 		}
 
 		if (_All)
-			Commands.Stage(_repo, "*");
+			Commands.Stage(Repository, "*");
 
-		var sig = Lib.BuildSignature(_repo);
-		_repo.Commit(message, sig, sig, op);
+		var sig = Lib.BuildSignature(Repository);
+		Repository.Commit(message, sig, sig, op);
 
 		Host.UpdatePanels();
 	}

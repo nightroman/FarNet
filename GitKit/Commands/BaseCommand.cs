@@ -4,10 +4,10 @@ namespace GitKit;
 
 abstract class BaseCommand : AnyCommand
 {
-	protected readonly Repository _repo;
+	protected Repository Repository { get; }
 
 	public BaseCommand(Repository repo)
 	{
-		_repo = repo;
+		Repository = repo;
 	}
 }

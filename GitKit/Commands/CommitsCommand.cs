@@ -26,7 +26,7 @@ sealed class CommitsCommand : BaseCommand
 
 		if (Path.IsPathRooted(path))
 		{
-			var workdir = _repo.Info.WorkingDirectory;
+			var workdir = Repository.Info.WorkingDirectory;
 			path = Path.GetFullPath(path);
 
 			if (!path.StartsWith(workdir, StringComparison.OrdinalIgnoreCase))
@@ -41,7 +41,7 @@ sealed class CommitsCommand : BaseCommand
 	public override void Invoke()
 	{
 		var path = ResolvePath();
-		var explorer = path is null ? new CommitsExplorer(_repo, _repo.Head) : new CommitsExplorer(_repo, path);
+		var explorer = path is null ? new CommitsExplorer(Repository, Repository.Head) : new CommitsExplorer(Repository, path);
 
 		explorer
 			.CreatePanel()

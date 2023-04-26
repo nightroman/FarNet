@@ -15,7 +15,7 @@ sealed class EditCommand : BaseCommand
 
 	string? InputPath()
 	{
-		var path = Far.Api.Input("Git file path", "GitFile", $"Edit in {_repo.Info.WorkingDirectory ?? _repo.Info.Path}");
+		var path = Far.Api.Input("Git file path", "GitFile", $"Edit in {Repository.Info.WorkingDirectory ?? Repository.Info.Path}");
 		return string.IsNullOrEmpty(path) ? null : path;
 	}
 
@@ -25,7 +25,7 @@ sealed class EditCommand : BaseCommand
 		if (path is null)
 			return;
 
-		path = Lib.ResolveRepositoryItemPath(_repo, path);
+		path = Lib.ResolveRepositoryItemPath(Repository, path);
 
 		var editor = Far.Api.CreateEditor();
 		editor.FileName = path;

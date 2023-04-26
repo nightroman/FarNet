@@ -10,7 +10,7 @@ sealed class BranchesCommand : BaseCommand
 
 	public override void Invoke()
 	{
-		new BranchesExplorer(_repo)
+		new BranchesExplorer(Repository)
 			.CreatePanel()
 			.Open();
 	}

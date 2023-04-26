@@ -1,5 +1,13 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.8.1 =
+
+gk:
+- Print the head branch first.
+
+Commits panel
+- Cache slow path commits.
+
 = 0.8.0 =
 
 gk:commits

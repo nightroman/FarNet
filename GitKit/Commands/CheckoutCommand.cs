@@ -18,13 +18,13 @@ sealed class CheckoutCommand : BaseCommand
 		var branchName = _branchName ?? Far.Api.Input(
 			"Branch name",
 			"GitBranch",
-			$"Checkout branch from {_repo.Head.FriendlyName}",
-			_repo.Head.FriendlyName);
+			$"Checkout branch from {Repository.Head.FriendlyName}",
+			Repository.Head.FriendlyName);
 
 		if (branchName is null)
 			return;
 
-		CheckoutBranch(_repo, branchName);
+		CheckoutBranch(Repository, branchName);
 	}
 
 	static void CheckoutBranch(Repository repo, string branchName)
