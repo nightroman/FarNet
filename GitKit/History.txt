@@ -1,5 +1,12 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.8.2 =
+
+Use FarNet 7.0.9
+
+Changes panel
+- Do not show renamed as new << old.
+
 = 0.8.1 =
 
 gk:

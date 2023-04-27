@@ -899,10 +899,19 @@ int Panel2::AsGetFindData(GetFindDataInfo* info)
 			_Files_ = dynamic_cast<IList<FarFile^>^>(files);
 			if (_Files_ == nullptr)
 			{
-				List<FarFile^>^ list = gcnew List<FarFile^>();
-				for each (FarFile ^ file in files)
-					list->Add(file);
-				_Files_ = list;
+				//! Do not let exceptions out:
+				//! - get and show at least files before exceptions
+				//! - error message boxes may trigger getting files again -> stack overflow
+				_Files_ = gcnew List<FarFile^>();
+				try
+				{
+					for each (FarFile ^ file in files)
+						_Files_->Add(file);
+				}
+				catch (Exception^ ex)
+				{
+					Far::Api->UI->WriteLine("Cannot get all files: " + ex->Message);
+				}
 			}
 
 			if (args.Result != JobResult::Done)

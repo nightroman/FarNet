@@ -1,6 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 7.0.9 =
+
+Avoid stack overflow on exceptions in GetFiles.
+
 = 7.0.8 =
 
 Add IFar.LoadModule().

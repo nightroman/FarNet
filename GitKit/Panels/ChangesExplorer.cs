@@ -116,20 +116,16 @@ class ChangesExplorer : BaseExplorer
 		if (_panel is not null)
 			_panel.Title = $"{title} {Repository.Info.WorkingDirectory}";
 
+		//! Used to set renamed Name = new << old. This breaks `PostName`.
+		//! Keep Name, it is useful as is. Use [CtrlA] to see old names.
 		foreach (var change in changes)
 		{
-			var file = new SetFile
+			yield return new SetFile
 			{
+				Name = change.Path,
 				Description = change.Status.ToString(),
 				Data = change,
 			};
-
-			if (change.Status == ChangeKind.Renamed)
-				file.Name = $"{change.Path} << {change.OldPath}";
-			else
-				file.Name = change.Path;
-
-			yield return file;
 		}
 	}
 
