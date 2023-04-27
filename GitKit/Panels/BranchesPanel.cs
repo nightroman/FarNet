@@ -123,7 +123,7 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 			PushCommand.PushBranch(Repository, branch);
 	}
 
-	public override void AddMenu(IMenu menu)
+	internal override void AddMenu(IMenu menu)
 	{
 		menu.Add("Push branch", (s, e) => PushBranch());
 		menu.Add("Merge branch", (s, e) => MergeBranch());

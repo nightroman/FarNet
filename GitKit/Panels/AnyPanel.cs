@@ -1,5 +1,4 @@
 ﻿using FarNet;
-using System.Linq;
 
 namespace GitKit;
 
@@ -11,7 +10,7 @@ abstract class AnyPanel : Panel
 
 	protected abstract string HelpTopic { get; }
 
-	public abstract void AddMenu(IMenu menu);
+	internal abstract void AddMenu(IMenu menu);
 
 	protected (TData?, TData?) GetSelectedDataRange<TData>()
 	{

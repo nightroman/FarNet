@@ -1,6 +1,4 @@
-﻿using FarNet;
-using LibGit2Sharp;
-using System.Linq;
+﻿using LibGit2Sharp;
 
 namespace GitKit;
 
@@ -28,8 +26,12 @@ abstract class BasePanel<T> : AnyPanel where T : BaseExplorer
 
 	protected void CompareCommits(Commit oldCommit, Commit newCommit)
 	{
-		var args = new ChangesExplorer.Options { Kind = ChangesExplorer.Kind.CommitsRange, OldCommit = oldCommit, NewCommit = newCommit };
-		new ChangesExplorer(Repository, args)
+		new ChangesExplorer(Repository, new ChangesExplorer.Options
+		{
+			Kind = ChangesExplorer.Kind.CommitsRange,
+			NewCommit = newCommit,
+			OldCommit = oldCommit,
+		})
 			.CreatePanel()
 			.OpenChild(this);
 	}

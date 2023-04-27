@@ -521,13 +521,13 @@ Keys and actions
     Compares the cursor commit with the selected commit and opens the changes panel.
     If nothing is selected then the tip commit is used.
 
+- **Commit log** (changes panel)
+
+    Opens the panel with commits including the cursor file path.
+
 - **Edit file** (changes panel)
 
     If the cursor change file exists, opens this file in the editor.
-
-- **Commits** (changes panel)
-
-    Opens the panel with commits including the cursor file.
 
 - **Help**
 

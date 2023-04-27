@@ -69,7 +69,7 @@ class CommitsPanel : BasePanel<CommitsExplorer>
 		Repository.CreateBranch(newName, commit);
 	}
 
-	public override void AddMenu(IMenu menu)
+	internal override void AddMenu(IMenu menu)
 	{
 		if (Explorer.Data is CommitsExplorer.BranchCommits)
 		{

@@ -15,8 +15,9 @@ class ChangesExplorer : BaseExplorer
 	internal class Options
 	{
 		public Kind Kind;
-		public Commit? OldCommit;
 		public Commit? NewCommit;
+		public Commit? OldCommit;
+		public bool IsSingleCommit;
 		public string? Path;
 	}
 
@@ -59,21 +60,21 @@ class ChangesExplorer : BaseExplorer
 			case Kind.NotCommitted:
 				{
 					changes = Lib.GetChanges(Repository);
-					title = "Not committed changes";
+					title = $"Not committed changes {Repository.Info.WorkingDirectory}";
 				}
 				break;
 
 			case Kind.NotStaged:
 				{
 					changes = Repository.Diff.Compare<TreeChanges>();
-					title = "Not staged changes";
+					title = $"Not staged changes {Repository.Info.WorkingDirectory}";
 				}
 				break;
 
 			case Kind.Staged:
 				{
 					changes = Repository.Diff.Compare<TreeChanges>(Repository.Head.Tip?.Tree, DiffTargets.Index);
-					title = "Staged changes";
+					title = $"Staged changes {Repository.Info.WorkingDirectory}";
 				}
 				break;
 
@@ -81,7 +82,7 @@ class ChangesExplorer : BaseExplorer
 				{
 					var tip = Repository.Head.Tip;
 					changes = Lib.CompareTrees(Repository, tip?.Parents.FirstOrDefault()?.Tree, tip?.Tree);
-					title = "Head commit";
+					title = $"Head commit: {tip?.MessageShort}";
 				}
 				break;
 
@@ -90,31 +91,40 @@ class ChangesExplorer : BaseExplorer
 					changes = Lib.GetChanges(Repository);
 					if (changes.Count > 0)
 					{
-						title = "Last not committed";
+						title = $"Last not committed {Repository.Info.WorkingDirectory}";
 					}
 					else
 					{
 						var tip = Repository.Head.Tip;
 						changes = Lib.CompareTrees(Repository, tip?.Parents.FirstOrDefault()?.Tree, tip?.Tree);
-						title = "Last committed";
+						title = $"Last commit: {tip?.MessageShort}";
+					}
+				}
+				break;
+
+			case Kind.CommitsRange:
+				{
+					changes = Lib.CompareTrees(Repository, _op.OldCommit?.Tree, _op.NewCommit?.Tree);
+					var settings = Settings.Default.GetData();
+					var newId = _op.NewCommit is null ? "?" : _op.NewCommit.Sha[0..settings.ShaPrefixLength];
+					if (_op.IsSingleCommit)
+					{
+						title = $"{newId}: {_op.NewCommit?.MessageShort}";
+					}
+					else
+					{
+						var oldId = _op.OldCommit is null ? "?" : _op.OldCommit.Sha[0..settings.ShaPrefixLength];
+						title = $"{newId}/{oldId} {Repository.Info.WorkingDirectory}";
 					}
 				}
 				break;
 
 			default:
-				{
-					changes = Lib.CompareTrees(Repository, _op.OldCommit?.Tree, _op.NewCommit?.Tree);
-
-					var settings = Settings.Default.GetData();
-					var oldId = _op.OldCommit is null ? "?" : _op.OldCommit.Sha[0..settings.ShaPrefixLength];
-					var newId = _op.NewCommit is null ? "?" : _op.NewCommit.Sha[0..settings.ShaPrefixLength];
-					title = $"{newId}/{oldId}";
-				}
-				break;
+				throw null!;
 		}
 
 		if (_panel is not null)
-			_panel.Title = $"{title} {Repository.Info.WorkingDirectory}";
+			_panel.Title = title;
 
 		//! Used to set renamed Name = new << old. This breaks `PostName`.
 		//! Keep Name, it is useful as is. Use [CtrlA] to see old names.

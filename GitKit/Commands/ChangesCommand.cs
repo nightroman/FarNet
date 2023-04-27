@@ -24,8 +24,7 @@ sealed class ChangesCommand : BaseCommand
 
 	public override void Invoke()
 	{
-		var args = new ChangesExplorer.Options { Kind = _kind };
-		new ChangesExplorer(Repository, args)
+		new ChangesExplorer(Repository, new ChangesExplorer.Options { Kind = _kind })
 			.CreatePanel()
 			.Open();
 	}

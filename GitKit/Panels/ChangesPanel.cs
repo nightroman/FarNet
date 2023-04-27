@@ -34,7 +34,7 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 		editor.Open();
 	}
 
-	void OpenCommits()
+	void OpenCommitLog()
 	{
 		var change = CurrentFile?.Data as TreeEntryChanges;
 		if (change is null)
@@ -95,10 +95,10 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 		});
 	}
 
-	public override void AddMenu(IMenu menu)
+	internal override void AddMenu(IMenu menu)
 	{
+		menu.Add("Commit log", (s, e) => OpenCommitLog());
 		menu.Add("Edit file", (s, e) => EditChangeFile());
-		menu.Add("Commits", (s, e) => OpenCommits());
 	}
 
 	public override bool UIKeyPressed(KeyInfo key)

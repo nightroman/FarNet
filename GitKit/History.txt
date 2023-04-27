@@ -1,5 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.8.3 =
+
+Changes panel
+- Show commit info in title.
+- Menu "Commits" -> "Commit log"
+
 = 0.8.2 =
 
 Use FarNet 7.0.9

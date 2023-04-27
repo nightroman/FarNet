@@ -56,8 +56,9 @@ class CommitsExplorer : BaseExplorer
 		return new ChangesExplorer(Repository, new ChangesExplorer.Options
 		{
 			Kind = ChangesExplorer.Kind.CommitsRange,
-			OldCommit = oldCommit,
 			NewCommit = newCommit,
+			OldCommit = oldCommit,
+			IsSingleCommit = true,
 			Path = (Data as PathCommits)?.Path
 		});
 	}
