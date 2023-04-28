@@ -143,7 +143,9 @@ class CommitsExplorer : BaseExplorer
 			Repository = repository;
 			Path = path;
 
-			_commits = new(repository.Commits.QueryBy(path));
+			//! this filter avoids not found refs exceptions and broken GetFiles
+			var filter = new CommitFilter { FirstParentOnly = true };
+			_commits = new(repository.Commits.QueryBy(path, filter));
 		}
 
 		public IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)

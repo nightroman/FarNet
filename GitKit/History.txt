@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.8.4 =
+
+Use first parent only in commit log.
+
 = 0.8.3 =
 
 Changes panel

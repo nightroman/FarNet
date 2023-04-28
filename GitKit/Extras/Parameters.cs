@@ -1,11 +1,10 @@
 ﻿using FarNet;
-using LibGit2Sharp;
 using System;
 using System.Data.Common;
 
 namespace GitKit;
 
-public static class Parameters
+static class Parameters
 {
 	public static DbConnectionStringBuilder Parse(string text)
 	{
