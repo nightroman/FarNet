@@ -178,8 +178,8 @@ if ($Text -match $regexTextLink) {
 	return
 }
 
-### Full file system paths: quoted and simple.
-if ($Text -match '"((?:\w+:|%\w+%)\\[^"]+)"' -or $Text -match '((?:\b\w+:|%\w+%)\\[^\s:]+)') {
+### Full file system paths: quoted and not, either no spaces or space+word+\.
+if ($Text -match '"((?:\w+:|%\w+%)\\[^"]+)"' -or $Text -match '((?:\b\w+:|%\w+%)\\([^\s:]|\s(?=\w+\\))+)') {
 	$file = [System.Environment]::ExpandEnvironmentVariables($matches[1])
 	if (![IO.File]::Exists($file)) {
 		Show-FarMessage "File '$file' does not exist."
