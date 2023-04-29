@@ -143,8 +143,10 @@ class CommitsExplorer : BaseExplorer
 			Repository = repository;
 			Path = path;
 
-			//! this filter avoids not found refs exceptions and broken GetFiles
-			var filter = new CommitFilter { FirstParentOnly = true };
+			//! FirstParentOnly=true avoids missing key exceptions and broken GetFiles in some cases (Colorer-schemes) but fails in others.
+			//! Use topological sort, it works in so far known cases. https://github.com/libgit2/libgit2sharp/issues/1520
+			var filter = new CommitFilter { SortBy = CommitSortStrategies.Topological };
+
 			_commits = new(repository.Commits.QueryBy(path, filter));
 		}
 

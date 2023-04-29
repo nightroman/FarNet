@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.8.5 =
+
+Use topological order in commit log, resolve known cases.
+
 = 0.8.4 =
 
 Use first parent only in commit log.
