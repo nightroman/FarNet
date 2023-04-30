@@ -16,12 +16,12 @@ abstract class BasePanel<T> : AnyPanel where T : BaseExplorer
 	public override void Open()
 	{
 		base.Open();
-		Repository.AddRef();
+		RepositoryReference.AddRef(Repository);
 	}
 
 	public override void UIClosed()
 	{
-		Repository.Release();
+		RepositoryReference.Release(Repository);
 	}
 
 	protected void CompareCommits(Commit oldCommit, Commit newCommit)

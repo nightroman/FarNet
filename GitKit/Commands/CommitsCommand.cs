@@ -10,9 +10,14 @@ sealed class CommitsCommand : BaseCommand
 {
 	readonly string? _path;
 
-	public CommitsCommand(Repository repo, DbConnectionStringBuilder parameters) : base(repo)
+	public CommitsCommand(DbConnectionStringBuilder parameters) : base(parameters)
 	{
 		_path = parameters.GetValue("Path");
+	}
+
+	public CommitsCommand() : base(Far.Api.CurrentDirectory)
+	{
+		_path = "?";
 	}
 
 	string? ResolvePath()
@@ -26,13 +31,22 @@ sealed class CommitsCommand : BaseCommand
 
 		if (Path.IsPathRooted(path))
 		{
+			//! LibGit2 gets it with trailing backslash
 			var workdir = Repository.Info.WorkingDirectory;
+
 			path = Path.GetFullPath(path);
-
-			if (!path.StartsWith(workdir, StringComparison.OrdinalIgnoreCase))
+			if (path.StartsWith(workdir, StringComparison.OrdinalIgnoreCase))
+			{
+				path = path[workdir.Length..];
+			}
+			else if (path.Length == workdir.Length - 1 && workdir.StartsWith(path, StringComparison.OrdinalIgnoreCase))
+			{
+				return null;
+			}
+			else
+			{
 				throw new ModuleException("Cannot resolve path.");
-
-			path = path[workdir.Length..];
+			}
 		}
 
 		return path.Replace('\\', '/');

@@ -1,10 +1,10 @@
-﻿using LibGit2Sharp;
+﻿using System.Data.Common;
 
 namespace GitKit;
 
 sealed class BranchesCommand : BaseCommand
 {
-	public BranchesCommand(Repository repo) : base(repo)
+	public BranchesCommand(DbConnectionStringBuilder parameters) : base(parameters)
 	{
 	}
 

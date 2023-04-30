@@ -1,7 +1,6 @@
 ﻿using FarNet;
 using LibGit2Sharp;
-using System;
-using System.Data.Common;
+using System.Linq;
 
 namespace GitKit;
 
@@ -10,66 +9,47 @@ public class Command : ModuleCommand
 {
 	public override void Invoke(object sender, ModuleCommandEventArgs e)
 	{
-		int index = 0;
-		var command = e.Command;
-		while (index < command.Length && char.IsLetter(command[index]))
-			++index;
-
-		string subcommand = command[0..index];
-		DbConnectionStringBuilder parameters;
-		try
+		var (subcommand, parameters) = Parameters.Parse(e.Command);
+		if (subcommand is null || parameters is null)
 		{
-			parameters = new() { ConnectionString = command[index..] };
-		}
-		catch (ArgumentException ex)
-		{
-			throw new ModuleException($"Invalid parameters: {ex.Message}");
+			Host.Instance.ShowHelpTopic("commands");
+			return;
 		}
 
-		Invoke(subcommand, parameters);
-	}
-
-	static void Invoke(string subcommand, DbConnectionStringBuilder parameters)
-	{
-		Repository? repo = null;
 		try
 		{
-			AnyCommand? command = subcommand switch
+			using AnyCommand command = subcommand switch
 			{
+				"branches" => new BranchesCommand(parameters),
+				"cd" => new CDCommand(parameters),
+				"changes" => new ChangesCommand(parameters),
+				"checkout" => new CheckoutCommand(parameters),
 				"clone" => new CloneCommand(parameters),
+				"commit" => new CommitCommand(parameters),
+				"commits" => new CommitsCommand(parameters),
+				"edit" => new EditCommand(parameters),
 				"init" => new InitCommand(parameters),
-				_ => null
+				"pull" => new PullCommand(parameters),
+				"push" => new PushCommand(parameters),
+				"status" => new StatusCommand(parameters),
+				_ => throw new ModuleException($"Unknown command 'gk:{subcommand}'.")
 			};
 
-			if (command is null)
+			if (parameters.Count > 0)
 			{
-				repo = RepositoryFactory.Instance(Host.GetFullPath(parameters.GetValue("repo")));
-				command = subcommand switch
-				{
-					"" => new StatusCommand(repo),
-					"branches" => new BranchesCommand(repo),
-					"cd" => new CDCommand(repo, parameters),
-					"changes" => new ChangesCommand(repo, parameters),
-					"checkout" => new CheckoutCommand(repo, parameters),
-					"commit" => new CommitCommand(repo, parameters),
-					"commits" => new CommitsCommand(repo, parameters),
-					"edit" => new EditCommand(repo, parameters),
-					"pull" => new PullCommand(repo),
-					"push" => new PushCommand(repo),
-					_ => throw new ModuleException($"Unknown command '{subcommand}'.")
-				};
+				var message = $"""
+				Uknknown parameters
+				Subcommand: {subcommand}
+				Parameters: {string.Join(", ", parameters.Keys.Cast<string>())}
+				""";
+				throw new ModuleException(message);
 			}
 
-			parameters.AssertNone();
 			command.Invoke();
 		}
 		catch (LibGit2SharpException ex)
 		{
 			throw new ModuleException(ex.Message, ex);
-		}
-		finally
-		{
-			repo?.Release();
 		}
 	}
 }

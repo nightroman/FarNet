@@ -12,10 +12,22 @@ public class Tool : ModuleTool
 		menu.HelpTopic = GetHelpTopic("menu");
 
 		if (Far.Api.Panel is AnyPanel panel)
+		{
 			panel.AddMenu(menu);
+		}
+		else
+		{
+			menu.Add("Commit log", CommitLog);
+		}
 
 		menu.Add("Help", (s, e) => Host.Instance.ShowHelpTopic(string.Empty));
 
 		menu.Show();
+	}
+
+	void CommitLog(object? sender, MenuEventArgs e)
+	{
+		using var command = new CommitsCommand();
+		command.Invoke();
 	}
 }

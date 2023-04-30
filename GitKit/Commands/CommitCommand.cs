@@ -14,7 +14,7 @@ sealed class CommitCommand : BaseCommand
 	readonly bool _All;
 	readonly char _CommentaryChar;
 
-	public CommitCommand(Repository repo, DbConnectionStringBuilder parameters) : base(repo)
+	public CommitCommand(DbConnectionStringBuilder parameters) : base(parameters)
 	{
 		_message = parameters.GetValue("Message");
 

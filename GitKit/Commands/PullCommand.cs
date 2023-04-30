@@ -1,10 +1,11 @@
 ﻿using LibGit2Sharp;
+using System.Data.Common;
 
 namespace GitKit;
 
 sealed class PullCommand : BaseCommand
 {
-	public PullCommand(Repository repo) : base(repo)
+	public PullCommand(DbConnectionStringBuilder parameters) : base(parameters)
 	{
 	}
 

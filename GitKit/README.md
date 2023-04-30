@@ -16,6 +16,7 @@ Far Manager git helpers based on LibGit2Sharp
     - [Checkout command](#checkout-command)
     - [Pull command](#pull-command)
     - [Push command](#push-command)
+    - [Status command](#status-command)
 - [Panels](#panels)
     - [Branches panel](#branches-panel)
     - [Commits panel](#commits-panel)
@@ -57,16 +58,16 @@ How to install and update FarNet and modules\
 
 [Contents]
 
-GitKit commands use the prefix `gk`. Commands may be typed and invoked in the
-Far Manager command line or using F11 / FarNet / Invoke. Commands may be also
-defined in the Far Manager user menu and file associations.
-
-```
-gk:[subcommand] [key=value] [; key=value] ...
-```
-
+GitKit commands start with `gk:`. Commands are invoked in the command line or
+using F11 / FarNet / Invoke or defined in the user menu and file associations.
 Command parameters are key=value pairs separated by semicolons, using the
-connection string format.
+connection string format
+
+```
+gk:subcommand [key=value] [; key=value] ...
+```
+
+> If you have nothing or spaces after `gk:` then this help topic is shown.
 
 **Common parameters**
 
@@ -90,11 +91,6 @@ connection string format.
     Opens the [Changes panel](#changes-panel).
 
 **Operation commands**
-
-- `gk:`
-
-    Prints the repository status: summary of changes if any, the commit hash,
-    local and remote branches with the same head commit, the commit message.
 
 - `gk:cd`
 
@@ -127,6 +123,10 @@ connection string format.
 - `gk:push`
 
     Pushes the head branch, see [Push command](#push-command).
+
+- `gk:status`
+
+    Prints the repository status, see [Status command](#status-command).
 
 *********************************************************************
 ## cd command
@@ -326,6 +326,18 @@ gk:push
 ```
 
 *********************************************************************
+## Status command
+
+[Contents]
+
+Use this command in order to print the repository status information like
+change summary, commit hash, head branch, similar branches, commit message
+
+```
+gk:status
+```
+
+*********************************************************************
 ## Panels
 
 [Contents]
@@ -521,9 +533,9 @@ Keys and actions
     Compares the cursor commit with the selected commit and opens the changes panel.
     If nothing is selected then the tip commit is used.
 
-- **Commit log** (changes panel)
+- **Commit log**
 
-    Opens the panel with commits including the cursor file path.
+    Opens the panel with commits including the cursor file or directory path.
 
 - **Edit file** (changes panel)
 

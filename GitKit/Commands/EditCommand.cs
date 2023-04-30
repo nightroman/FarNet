@@ -8,7 +8,7 @@ sealed class EditCommand : BaseCommand
 {
 	readonly string? _path;
 
-	public EditCommand(Repository repo, DbConnectionStringBuilder parameters) : base(repo)
+	public EditCommand(DbConnectionStringBuilder parameters) : base(parameters)
 	{
 		_path = parameters.GetValue("Path");
 	}

@@ -8,7 +8,7 @@ sealed class CheckoutCommand : BaseCommand
 {
 	readonly string? _branchName;
 
-	public CheckoutCommand(Repository repo, DbConnectionStringBuilder parameters) : base(repo)
+	public CheckoutCommand(DbConnectionStringBuilder parameters) : base(parameters)
 	{
 		_branchName = parameters.GetValue("Branch");
 	}

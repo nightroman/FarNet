@@ -2,12 +2,13 @@
 using LibGit2Sharp;
 using System.Linq;
 using System;
+using System.Data.Common;
 
 namespace GitKit;
 
 sealed class StatusCommand : BaseCommand
 {
-	public StatusCommand(Repository repo) : base(repo)
+	public StatusCommand(DbConnectionStringBuilder parameters) : base(parameters)
 	{
 	}
 

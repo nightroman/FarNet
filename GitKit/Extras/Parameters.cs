@@ -6,15 +6,34 @@ namespace GitKit;
 
 static class Parameters
 {
-	public static DbConnectionStringBuilder Parse(string text)
+	public static (string?, DbConnectionStringBuilder?) Parse(string command)
 	{
+		int index = 0;
+		while (index < command.Length && !char.IsWhiteSpace(command[index]))
+			++index;
+
+		var subcommand = command[0..index];
+		if (subcommand.Length == 0)
+			return (null, null);
+
+		while (index < command.Length && char.IsWhiteSpace(command[index]))
+			++index;
+
+		var parameters = command[index..];
+
 		try
 		{
-			return new DbConnectionStringBuilder { ConnectionString = text };
+			return (subcommand, new DbConnectionStringBuilder { ConnectionString = parameters });
 		}
 		catch (Exception ex)
 		{
-			throw new ModuleException($"Use semicolon separated key=value pairs. Error: {ex.Message}");
+			var message = $"""
+			Invalid parameters syntax
+			Subcommand: {subcommand}
+			Parameters: {parameters}
+			{ex.Message}
+			""";
+			throw new ModuleException(message);
 		}
 	}
 
@@ -49,11 +68,5 @@ static class Parameters
 		{
 			return default!;
 		}
-	}
-
-	public static void AssertNone(this DbConnectionStringBuilder parameters)
-	{
-		if (parameters.Count > 0)
-			throw new ModuleException($"Unknown parameters: {parameters}");
 	}
 }

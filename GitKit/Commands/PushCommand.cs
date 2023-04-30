@@ -1,11 +1,12 @@
 ﻿using FarNet;
 using LibGit2Sharp;
+using System.Data.Common;
 
 namespace GitKit;
 
 sealed class PushCommand : BaseCommand
 {
-	public PushCommand(Repository repo) : base(repo)
+	public PushCommand(DbConnectionStringBuilder parameters) : base(parameters)
 	{
 	}
 

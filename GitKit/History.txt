@@ -1,5 +1,13 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.8.6 =
+
+Add "Commit log" to common menu.
+
+gk:
+- Nothing or spaces after `gk:` show commands help.
+- To show status use `gk:status` instead of `gk:`.
+
 = 0.8.5 =
 
 Use topological order in commit log, resolve known cases.

@@ -1,5 +1,4 @@
 ﻿using FarNet;
-using LibGit2Sharp;
 using System.Data.Common;
 using System.IO;
 
@@ -9,7 +8,7 @@ sealed class CDCommand : BaseCommand
 {
 	readonly string _path;
 
-	public CDCommand(Repository repo, DbConnectionStringBuilder parameters) : base(repo)
+	public CDCommand(DbConnectionStringBuilder parameters) : base(parameters)
 	{
 		_path = parameters.GetValue("Path") ?? string.Empty;
 	}

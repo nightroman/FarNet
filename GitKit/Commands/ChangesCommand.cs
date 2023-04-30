@@ -1,5 +1,4 @@
 ﻿using FarNet;
-using LibGit2Sharp;
 using System.Data.Common;
 
 namespace GitKit;
@@ -8,7 +7,7 @@ sealed class ChangesCommand : BaseCommand
 {
 	readonly ChangesExplorer.Kind _kind;
 
-	public ChangesCommand(Repository repo, DbConnectionStringBuilder parameters) : base(repo)
+	public ChangesCommand(DbConnectionStringBuilder parameters) : base(parameters)
 	{
 		var kind = parameters.GetValue("Kind");
 		_kind = kind switch
