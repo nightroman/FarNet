@@ -1,27 +1,69 @@
-﻿using LibGit2Sharp;
+﻿using FarNet;
+using LibGit2Sharp;
+using System;
 using System.Data.Common;
+using System.IO;
 
 namespace GitKit;
 
 abstract class BaseCommand : AnyCommand
 {
-	readonly RepositoryReference _reference;
+	protected RepositoryReference Reference { get; }
 	protected Repository Repository { get; }
 
 	protected BaseCommand(DbConnectionStringBuilder parameters)
 	{
-		_reference = RepositoryReference.GetReference(Host.GetFullPath(parameters.GetValue("repo")));
-		Repository = _reference.Instance;
+		Reference = RepositoryReference.GetReference(Host.GetFullPath(parameters.GetValue(Parameter.Repo)));
+		Repository = Reference.Instance;
 	}
 
 	protected BaseCommand(string path)
 	{
-		_reference = RepositoryReference.GetReference(path);
-		Repository = _reference.Instance;
+		Reference = RepositoryReference.GetReference(path);
+		Repository = Reference.Instance;
 	}
 
 	protected override void Dispose(bool disposing)
 	{
-		_reference.Dispose();
+		Reference.Dispose();
+	}
+
+	protected string? GetGitPathOrPath(
+		DbConnectionStringBuilder parameters,
+		Func<string?, string?> validate,
+		bool returnNullIfRoot = false)
+	{
+		var path = parameters.GetValue(Parameter.Path);
+		var isGitPath = parameters.GetValue<bool>(Parameter.IsGitPath);
+		if (isGitPath)
+			return path;
+
+		path = validate(path);
+		if (path is null)
+			return null;
+
+		if (!Path.IsPathRooted(path))
+			path = Path.Combine(Far.Api.CurrentDirectory, path);
+
+		// normalize
+		path = Path.GetFullPath(path);
+
+		//! LibGit2 gets it with trailing backslash
+		var workdir = Repository.Info.WorkingDirectory;
+
+		if (path.StartsWith(workdir, StringComparison.OrdinalIgnoreCase))
+		{
+			path = path[workdir.Length..];
+		}
+		else if (returnNullIfRoot && path.Length == workdir.Length - 1 && workdir.StartsWith(path, StringComparison.OrdinalIgnoreCase))
+		{
+			return null;
+		}
+		else
+		{
+			throw new ModuleException("Cannot resolve path: " + path);
+		}
+
+		return path.Replace('\\', '/');
 	}
 }

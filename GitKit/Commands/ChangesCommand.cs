@@ -9,7 +9,7 @@ sealed class ChangesCommand : BaseCommand
 
 	public ChangesCommand(DbConnectionStringBuilder parameters) : base(parameters)
 	{
-		var kind = parameters.GetValue("Kind");
+		var kind = parameters.GetValue(Parameter.Kind);
 		_kind = kind switch
 		{
 			"NotCommitted" => ChangesExplorer.Kind.NotCommitted,
@@ -17,7 +17,7 @@ sealed class ChangesCommand : BaseCommand
 			"Staged" => ChangesExplorer.Kind.Staged,
 			"Head" => ChangesExplorer.Kind.Head,
 			"Last" or null => ChangesExplorer.Kind.Last,
-			_ => throw new ModuleException($"Unknown Kind value: '{kind}'.")
+			_ => throw new ModuleException($"Unknown {Parameter.Kind} value: '{kind}'.")
 		};
 	}
 

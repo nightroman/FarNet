@@ -16,6 +16,7 @@ Far Manager git helpers based on LibGit2Sharp
     - [Checkout command](#checkout-command)
     - [Pull command](#pull-command)
     - [Push command](#push-command)
+    - [Blame command](#blame-command)
     - [Status command](#status-command)
 - [Panels](#panels)
     - [Branches panel](#branches-panel)
@@ -123,6 +124,10 @@ gk:subcommand [key=value] [; key=value] ...
 - `gk:push`
 
     Pushes the head branch, see [Push command](#push-command).
+
+- `gk:blame`
+
+    Analyses file line commits, see [Blame command](#blame-command).
 
 - `gk:status`
 
@@ -326,6 +331,33 @@ gk:push
 ```
 
 *********************************************************************
+## Blame command
+
+[Contents]
+
+Use this command in order to view the specified file line commits in the editor
+
+```
+gk:blame
+```
+
+Parameters
+
+- `Path=<string>`
+
+    Specifies the file to blame. For the cursor file omit the parameter or use "?".
+
+- `IsGitPath={true|false}`
+
+    Tells to treat `Path` as git path.
+
+Keys and actions
+
+- `Enter`
+
+    Opens the changes panel for the caret line commit.
+
+*********************************************************************
 ## Status command
 
 [Contents]
@@ -432,11 +464,14 @@ Parameters
 
 - `Path=<string>`
 
-    Tells to show commits including the specified path. The path is either full
-    or git path, i.e. relative to the repository root. Use "?" for the panel
-    cursor file or directory.
+    Tells to show commits including the specified file system or git path. Use
+    "?" for the panel cursor file or directory.
 
-    If this parameter is omitted then the head branch commits are shown.
+    When `Path` is omitted, the head branch commits are shown.
+
+- `IsGitPath={true|false}`
+
+    Tells to treat `Path` as git path.
 
 Keys and actions
 

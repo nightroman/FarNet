@@ -1,5 +1,4 @@
-﻿using FarNet;
-using LibGit2Sharp;
+﻿using LibGit2Sharp;
 using System.Data.Common;
 
 namespace GitKit;
@@ -12,18 +11,18 @@ sealed class CloneCommand : AnyCommand
 
 	public CloneCommand(DbConnectionStringBuilder parameters)
 	{
-		_url = parameters.GetValue("Url") ?? throw new ModuleException("Required parameter 'Url'.");
+		_url = parameters.GetRequired(Parameter.Url);
 
-		_path = Host.GetFullPath(parameters.GetValue("Path"));
+		_path = Host.GetFullPath(parameters.GetValue(Parameter.Path));
 
 		_op = new CloneOptions
 		{
-			IsBare = parameters.GetValue<bool>("IsBare"),
-			RecurseSubmodules = parameters.GetValue<bool>("RecurseSubmodules"),
+			IsBare = parameters.GetValue<bool>(Parameter.IsBare),
+			RecurseSubmodules = parameters.GetValue<bool>(Parameter.RecurseSubmodules),
 			CredentialsProvider = Host.GetCredentialsHandler()
 		};
 
-		if (parameters.GetValue<bool>("NoCheckout"))
+		if (parameters.GetValue<bool>(Parameter.NoCheckout))
 			_op.Checkout = false;
 	}
 

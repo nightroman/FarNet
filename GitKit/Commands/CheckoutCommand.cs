@@ -10,7 +10,7 @@ sealed class CheckoutCommand : BaseCommand
 
 	public CheckoutCommand(DbConnectionStringBuilder parameters) : base(parameters)
 	{
-		_branchName = parameters.GetValue("Branch");
+		_branchName = parameters.GetValue(Parameter.Branch);
 	}
 
 	public override void Invoke()

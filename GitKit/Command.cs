@@ -20,6 +20,7 @@ public class Command : ModuleCommand
 		{
 			using AnyCommand command = subcommand switch
 			{
+				"blame" => new BlameCommand(parameters),
 				"branches" => new BranchesCommand(parameters),
 				"cd" => new CDCommand(parameters),
 				"changes" => new ChangesCommand(parameters),

@@ -40,7 +40,7 @@ public sealed class RepositoryReference : IDisposable
 		}
 		else
 		{
-			++reference._refCount;
+			reference.AddRef();
 		}
 
 		return reference;
@@ -52,6 +52,14 @@ public sealed class RepositoryReference : IDisposable
 		Directory = directory;
 
 		s_references.AddFirst(this);
+	}
+
+	/// <summary>
+	/// Increments reference count.
+	/// </summary>
+	public void AddRef()
+	{
+		++_refCount;
 	}
 
 	/// <summary>
@@ -94,7 +102,7 @@ public sealed class RepositoryReference : IDisposable
 	public static void AddRef(Repository instance)
 	{
 		var reference = s_references.FirstOrDefault(x => ReferenceEquals(x.Instance, instance)) ?? throw new InvalidOperationException(UnknownInstance);
-		++reference._refCount;
+		reference.AddRef();
 	}
 
 	/// <summary>

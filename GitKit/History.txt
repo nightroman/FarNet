@@ -1,5 +1,14 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.9.0 =
+
+New command gk:blame
+- opens the file editor annotated with commits per line
+- [Enter] opens the changes panel for the caret commit
+
+gk:commits
+- new parameter IsGitPath
+
 = 0.8.6 =
 
 Add "Commit log" to common menu.

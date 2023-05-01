@@ -1,4 +1,5 @@
 ﻿using FarNet;
+using System.Data.Common;
 
 namespace GitKit;
 
@@ -27,7 +28,8 @@ public class Tool : ModuleTool
 
 	void CommitLog(object? sender, MenuEventArgs e)
 	{
-		using var command = new CommitsCommand();
+		var parameters = new DbConnectionStringBuilder { { Parameter.Path, "?" } };
+		using var command = new CommitsCommand(parameters);
 		command.Invoke();
 	}
 }

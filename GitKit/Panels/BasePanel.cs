@@ -22,6 +22,7 @@ abstract class BasePanel<T> : AnyPanel where T : BaseExplorer
 	public override void UIClosed()
 	{
 		RepositoryReference.Release(Repository);
+		base.UIClosed();
 	}
 
 	protected void CompareCommits(Commit oldCommit, Commit newCommit)

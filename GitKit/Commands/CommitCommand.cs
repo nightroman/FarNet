@@ -16,15 +16,15 @@ sealed class CommitCommand : BaseCommand
 
 	public CommitCommand(DbConnectionStringBuilder parameters) : base(parameters)
 	{
-		_message = parameters.GetValue("Message");
+		_message = parameters.GetValue(Parameter.Message);
 
-		_All = parameters.GetValue<bool>("All");
+		_All = parameters.GetValue<bool>(Parameter.All);
 
-		op.AmendPreviousCommit = parameters.GetValue<bool>("AmendPreviousCommit");
-		op.AllowEmptyCommit = parameters.GetValue<bool>("AllowEmptyCommit");
+		op.AmendPreviousCommit = parameters.GetValue<bool>(Parameter.AmendPreviousCommit);
+		op.AllowEmptyCommit = parameters.GetValue<bool>(Parameter.AllowEmptyCommit);
 
-		var PrettifyMessage = parameters.GetValue<bool>("PrettifyMessage");
-		_CommentaryChar = parameters.GetValue<char>("CommentaryChar");
+		var PrettifyMessage = parameters.GetValue<bool>(Parameter.PrettifyMessage);
+		_CommentaryChar = parameters.GetValue<char>(Parameter.CommentaryChar);
 		if (_CommentaryChar == 0)
 		{
 			op.PrettifyMessage = PrettifyMessage;

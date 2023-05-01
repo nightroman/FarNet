@@ -50,6 +50,11 @@ static class Parameters
 		}
 	}
 
+	public static string GetRequired(this DbConnectionStringBuilder parameters, string name)
+	{
+		return GetValue(parameters, name) ?? throw new ModuleException($"Missing required parameter '{name}'.");
+	}
+
 	public static T GetValue<T>(this DbConnectionStringBuilder parameters, string name)
 	{
 		if (parameters.TryGetValue(name, out object? value))
