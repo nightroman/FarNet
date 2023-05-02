@@ -10,8 +10,8 @@ sealed class InitCommand : AnyCommand
 
 	public InitCommand(DbConnectionStringBuilder parameters)
 	{
-		_path = Host.GetFullPath(parameters.GetValue(Parameter.Path));
-		_isBare = parameters.GetValue<bool>(Parameter.IsBare);
+		_path = Host.GetFullPath(parameters.GetString(Parameter.Path, true));
+		_isBare = parameters.GetBool(Parameter.IsBare);
 	}
 
 	public override void Invoke()

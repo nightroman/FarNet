@@ -196,7 +196,7 @@ Parameters
     Specifies the new repository directory.\
     Default: the current panel directory.
 
-- `IsBare={true|false}`
+- `IsBare=<bool>`
 
     Tells to create a bare repository.
 
@@ -222,15 +222,15 @@ Parameters
     Specifies the local path to clone into.\
     Default: the current panel directory.
 
-- `IsBare={true|false}`
+- `IsBare=<bool>`
 
     Tells to clone a bare repository.
 
-- `NoCheckout={true|false}`
+- `NoCheckout=<bool>`
 
     Tells not to checkout after cloning.
 
-- `RecurseSubmodules={true|false}`
+- `RecurseSubmodules=<bool>`
 
     Tells to recursively clone submodules.
 
@@ -253,19 +253,19 @@ Parameters
     set `CommentaryChar` then the editor text will contain commentaries about
     changes.
 
-- `All={true|false}`
+- `All=<bool>`
 
     Tells to stage all changes before committing.
 
-- `AllowEmptyCommit={true|false}`
+- `AllowEmptyCommit=<bool>`
 
     Tells to allow creation of an empty commit.
 
-- `AmendPreviousCommit={true|false}`
+- `AmendPreviousCommit=<bool>`
 
     Tells to amend the previous commit.
 
-- `PrettifyMessage={true|false}`
+- `PrettifyMessage=<bool>`
 
     Tells to prettify the message by stripping leading and trailing empty
     lines, trailing spaces, and collapsing consecutive empty lines.
@@ -347,7 +347,7 @@ Parameters
 
     Specifies the file to blame. For the cursor file omit the parameter or use "?".
 
-- `IsGitPath={true|false}`
+- `IsGitPath=<bool>`
 
     Tells to treat `Path` as git path.
 
@@ -438,13 +438,7 @@ Keys and actions
 
     Forcedly deletes the selected local and remote branches.
 
-- Other keys
-
-    See [Panels](#panels) for common keys and actions.
-
-- Other actions
-
-    See [Menu](#menu).
+- See also [Panels](#panels) and [Menu](#menu).
 
 *********************************************************************
 ## Commits panel
@@ -469,7 +463,7 @@ Parameters
 
     When `Path` is omitted, the head branch commits are shown.
 
-- `IsGitPath={true|false}`
+- `IsGitPath=<bool>`
 
     Tells to treat `Path` as git path.
 
@@ -487,13 +481,7 @@ Keys and actions
 
     At the first shown commit, loads the previous page commits.
 
-- Other keys
-
-    See [Panels](#panels) for common keys and actions.
-
-- Other actions
-
-    See [Menu](#menu).
+- See also [Panels](#panels) and [Menu](#menu).
 
 *********************************************************************
 ## Changes panel
@@ -531,13 +519,7 @@ Keys and actions
 
     Opens the diff patch in the viewer or editor.
 
-- Other keys
-
-    See [Panels](#panels) for common keys and actions.
-
-- Other actions
-
-    See [Menu](#menu).
+- See also [Panels](#panels) and [Menu](#menu).
 
 *********************************************************************
 ## Menu

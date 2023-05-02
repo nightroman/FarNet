@@ -10,7 +10,7 @@ sealed class EditCommand : BaseCommand
 
 	public EditCommand(DbConnectionStringBuilder parameters) : base(parameters)
 	{
-		_path = parameters.GetValue(Parameter.Path);
+		_path = parameters.GetString(Parameter.Path, true);
 	}
 
 	string? InputPath()

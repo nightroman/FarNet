@@ -10,7 +10,7 @@ sealed class CDCommand : BaseCommand
 
 	public CDCommand(DbConnectionStringBuilder parameters) : base(parameters)
 	{
-		_path = parameters.GetValue(Parameter.Path) ?? string.Empty;
+		_path = parameters.GetString(Parameter.Path, true) ?? string.Empty;
 	}
 
 	public override void Invoke()

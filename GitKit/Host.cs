@@ -29,7 +29,6 @@ public class Host : ModuleHost
 		if (string.IsNullOrEmpty(path))
 			return Far.Api.CurrentDirectory;
 
-		path = Environment.ExpandEnvironmentVariables(path);
 		return Path.GetFullPath(Path.IsPathRooted(path) ? path : Path.Combine(Far.Api.CurrentDirectory, path));
 	}
 

@@ -9,7 +9,7 @@ sealed class ChangesCommand : BaseCommand
 
 	public ChangesCommand(DbConnectionStringBuilder parameters) : base(parameters)
 	{
-		var kind = parameters.GetValue(Parameter.Kind);
+		var kind = parameters.GetString(Parameter.Kind);
 		_kind = kind switch
 		{
 			"NotCommitted" => ChangesExplorer.Kind.NotCommitted,

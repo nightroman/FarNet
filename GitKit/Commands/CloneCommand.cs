@@ -11,18 +11,18 @@ sealed class CloneCommand : AnyCommand
 
 	public CloneCommand(DbConnectionStringBuilder parameters)
 	{
-		_url = parameters.GetRequired(Parameter.Url);
+		_url = parameters.GetStringRequired(Parameter.Url);
 
-		_path = Host.GetFullPath(parameters.GetValue(Parameter.Path));
+		_path = Host.GetFullPath(parameters.GetString(Parameter.Path, true));
 
 		_op = new CloneOptions
 		{
-			IsBare = parameters.GetValue<bool>(Parameter.IsBare),
-			RecurseSubmodules = parameters.GetValue<bool>(Parameter.RecurseSubmodules),
+			IsBare = parameters.GetBool(Parameter.IsBare),
+			RecurseSubmodules = parameters.GetBool(Parameter.RecurseSubmodules),
 			CredentialsProvider = Host.GetCredentialsHandler()
 		};
 
-		if (parameters.GetValue<bool>(Parameter.NoCheckout))
+		if (parameters.GetBool(Parameter.NoCheckout))
 			_op.Checkout = false;
 	}
 

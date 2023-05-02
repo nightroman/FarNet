@@ -13,7 +13,7 @@ abstract class BaseCommand : AnyCommand
 
 	protected BaseCommand(DbConnectionStringBuilder parameters)
 	{
-		Reference = RepositoryReference.GetReference(Host.GetFullPath(parameters.GetValue(Parameter.Repo)));
+		Reference = RepositoryReference.GetReference(Host.GetFullPath(parameters.GetString(Parameter.Repo, true)));
 		Repository = Reference.Instance;
 	}
 
@@ -33,8 +33,8 @@ abstract class BaseCommand : AnyCommand
 		Func<string?, string?> validate,
 		bool returnNullIfRoot = false)
 	{
-		var path = parameters.GetValue(Parameter.Path);
-		var isGitPath = parameters.GetValue<bool>(Parameter.IsGitPath);
+		var path = parameters.GetString(Parameter.Path, true);
+		var isGitPath = parameters.GetBool(Parameter.IsGitPath);
 		if (isGitPath)
 			return path;
 

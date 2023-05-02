@@ -37,12 +37,12 @@ static class Parameters
 		}
 	}
 
-	public static string? GetValue(this DbConnectionStringBuilder parameters, string name)
+	public static string? GetString(this DbConnectionStringBuilder parameters, string name, bool expand = false)
 	{
 		if (parameters.TryGetValue(name, out object? value))
 		{
 			parameters.Remove(name);
-			return (string)value;
+			return expand ? Environment.ExpandEnvironmentVariables((string)value) : (string)value;
 		}
 		else
 		{
@@ -50,28 +50,45 @@ static class Parameters
 		}
 	}
 
-	public static string GetRequired(this DbConnectionStringBuilder parameters, string name)
+	public static string GetStringRequired(this DbConnectionStringBuilder parameters, string name, bool expand = false)
 	{
-		return GetValue(parameters, name) ?? throw new ModuleException($"Missing required parameter '{name}'.");
+		return GetString(parameters, name, expand) ?? throw new ModuleException($"Missing required parameter '{name}'.");
+	}
+
+	public static bool GetBool(this DbConnectionStringBuilder parameters, string name)
+	{
+		var string1 = GetString(parameters, name);
+		if (string1 is null)
+			return false;
+
+		if (bool.TryParse(string1, out bool bool1))
+			return bool1;
+
+		if (int.TryParse(string1, out int int1))
+		{
+			if (int1 == 1)
+				return true;
+
+			if (int1 == 0)
+				return false;
+		}
+
+		throw new ModuleException($"Invalid parameter '{name}={string1}'. Valid values: true, false, 1, 0.");
 	}
 
 	public static T GetValue<T>(this DbConnectionStringBuilder parameters, string name)
 	{
-		if (parameters.TryGetValue(name, out object? value))
-		{
-			parameters.Remove(name);
-			try
-			{
-				return (T)Convert.ChangeType(value, typeof(T));
-			}
-			catch (Exception ex)
-			{
-				throw new ModuleException($"{name}: {ex.Message}");
-			}
-		}
-		else
-		{
+		var string1 = GetString(parameters, name);
+		if (string1 is null)
 			return default!;
+
+		try
+		{
+			return (T)Convert.ChangeType(string1, typeof(T));
+		}
+		catch (Exception ex)
+		{
+			throw new ModuleException($"Invalid parameter '{name}={string1}': {ex.Message}");
 		}
 	}
 }
