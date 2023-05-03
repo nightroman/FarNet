@@ -369,6 +369,12 @@ change summary, commit hash, head branch, similar branches, commit message
 gk:status
 ```
 
+Parameters
+
+- `ShowFiles=<bool>`
+
+    Tells to print changed file statuses and paths before the summary line.
+
 *********************************************************************
 ## Panels
 

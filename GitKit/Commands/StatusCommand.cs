@@ -8,45 +8,55 @@ namespace GitKit;
 
 sealed class StatusCommand : BaseCommand
 {
+	readonly bool _showFiles;
+
 	public StatusCommand(DbConnectionStringBuilder parameters) : base(parameters)
 	{
+		_showFiles = parameters.GetBool("ShowFiles");
 	}
 
 	void WriteChanges()
 	{
 		// see TreeChanges.DebuggerDisplay
 		var changes = Lib.GetChanges(Repository);
-		if (changes.Count > 0)
+		if (changes.Count == 0)
+			return;
+
+		if (_showFiles)
 		{
-			int n;
-
-			n = changes.Added.Count();
-			if (n > 0)
-				Far.Api.UI.Write($"a{n} ", ConsoleColor.Red);
-
-			n = changes.Modified.Count();
-			if (n > 0)
-				Far.Api.UI.Write($"m{n} ", ConsoleColor.Red);
-
-			n = changes.Deleted.Count();
-			if (n > 0)
-				Far.Api.UI.Write($"d{n} ", ConsoleColor.Red);
-
-			n = changes.TypeChanged.Count();
-			if (n > 0)
-				Far.Api.UI.Write($"t{n} ", ConsoleColor.Red);
-
-			n = changes.Renamed.Count();
-			if (n > 0)
-				Far.Api.UI.Write($"r{n} ", ConsoleColor.Red);
-
-			n = changes.Copied.Count();
-			if (n > 0)
-				Far.Api.UI.Write($"c{n} ", ConsoleColor.Red);
-
-			//! sign of changes, just in case if none of the above
-			Far.Api.UI.Write("- ");
+			Far.Api.UI.WriteLine($"Changes in {Repository.Info.WorkingDirectory}", ConsoleColor.White);
+			foreach (var change in changes)
+				Far.Api.UI.WriteLine($"  {change.Status}:\t{change.Path}");
 		}
+
+		int n;
+
+		n = changes.Added.Count();
+		if (n > 0)
+			Far.Api.UI.Write($"a{n} ", ConsoleColor.Red);
+
+		n = changes.Modified.Count();
+		if (n > 0)
+			Far.Api.UI.Write($"m{n} ", ConsoleColor.Red);
+
+		n = changes.Deleted.Count();
+		if (n > 0)
+			Far.Api.UI.Write($"d{n} ", ConsoleColor.Red);
+
+		n = changes.TypeChanged.Count();
+		if (n > 0)
+			Far.Api.UI.Write($"t{n} ", ConsoleColor.Red);
+
+		n = changes.Renamed.Count();
+		if (n > 0)
+			Far.Api.UI.Write($"r{n} ", ConsoleColor.Red);
+
+		n = changes.Copied.Count();
+		if (n > 0)
+			Far.Api.UI.Write($"c{n} ", ConsoleColor.Red);
+
+		//! sign of changes, just in case if none of the above
+		Far.Api.UI.Write("- ");
 	}
 
 	public override void Invoke()

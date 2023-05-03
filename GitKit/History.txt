@@ -1,5 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.9.2 =
+
+gk:status
+- New parameter ShowFiles.
+
 = 0.9.1 =
 
 Command parameters
