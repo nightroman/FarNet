@@ -122,7 +122,16 @@ sealed class CommitCommand : BaseCommand
 		}
 
 		if (_All)
-			Commands.Stage(Repository, "*");
+		{
+			try
+			{
+				Commands.Stage(Repository, "*");
+			}
+			catch (LibGit2SharpException ex)
+			{
+				throw new ModuleException($"Cannot stage changes. Make sure directories are not repositories. Error: {ex.Message}", ex);
+			}
+		}
 
 		var sig = Lib.BuildSignature(Repository);
 		Repository.Commit(message, sig, sig, op);
