@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 7.0.14 =
+
+ArgumentCompleters.ps1
+- support `dotnet`
+- support `dotnet-suggest`, if available
+
 = 7.0.13 =
 
 Show online help for microsoft.com only.

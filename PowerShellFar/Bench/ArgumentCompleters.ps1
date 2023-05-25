@@ -48,8 +48,8 @@ Register-ArgumentCompleter -ParameterName ComputerName -ScriptBlock {
 	}
 }
 
-### Complete x in "git x"
-Register-ArgumentCompleter -CommandName git -Native -ScriptBlock {
+### Native git
+Register-ArgumentCompleter -Native -CommandName git -ScriptBlock {
 	param($wordToComplete, $commandAst)
 
 	# if (!word)
@@ -71,6 +71,27 @@ Register-ArgumentCompleter -CommandName git -Native -ScriptBlock {
 			}
 		}
 	}) | Sort-Object
+}
+
+### Native dotnet
+Register-ArgumentCompleter -Native -CommandName dotnet -ScriptBlock {
+	param($commandName, $wordToComplete, $cursorPosition)
+	dotnet complete --position $cursorPosition "$wordToComplete" | .{process{
+		[System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_)
+	}}
+}
+
+### Native dotnet-suggest
+if (Get-Command dotnet-suggest -ErrorAction Ignore) {
+    Register-ArgumentCompleter -Native -CommandName (dotnet-suggest list) -ScriptBlock {
+        param($wordToComplete, $commandAst, $cursorPosition)
+        $fullpath = (Get-Command $commandAst.CommandElements[0]).Source
+
+        $arguments = $commandAst.Extent.ToString().Replace('"', '\"')
+        dotnet-suggest get -e $fullpath --position $cursorPosition -- "$arguments" | .{process{
+            [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_)
+        }}
+    }
 }
 
 ### Result processors
