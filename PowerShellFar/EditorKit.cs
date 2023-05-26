@@ -104,6 +104,8 @@ $r = TabExpansion2 @args
 	/// <seealso cref="Actor.ExpandCode"/>
 	public static void ExpandCode(ILine? editLine, Runspace? runspace)
 	{
+		using var IgnoreApplications = new FarHost.IgnoreApplications();
+
 		InitTabExpansion();
 
 		// hot line

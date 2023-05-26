@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 7.0.15 =
+
+Avoid user screen on completion calling native apps.
+
 = 7.0.14 =
 
 ArgumentCompleters.ps1

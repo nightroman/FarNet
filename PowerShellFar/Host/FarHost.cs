@@ -132,7 +132,8 @@ class FarHost : PSHost
 	/// </summary>
 	public override void NotifyBeginApplication()
 	{
-		Far.Api.UI.ShowUserScreen();
+		if (!s_ignoreApplications)
+			Far.Api.UI.ShowUserScreen();
 	}
 
 	/// <summary>
@@ -141,7 +142,8 @@ class FarHost : PSHost
 	/// </summary>
 	public override void NotifyEndApplication()
 	{
-		Far.Api.UI.SaveUserScreen();
+		if (!s_ignoreApplications)
+			Far.Api.UI.SaveUserScreen();
 	}
 
 	/// <summary>
@@ -150,6 +152,28 @@ class FarHost : PSHost
 	/// </summary>
 	public override void SetShouldExit(int exitCode)
 	{
+	}
+	#endregion
+
+	#region IgnoreApplications
+	static bool s_ignoreApplications;
+
+	/// <summary>
+	/// Use this object with `using` to disable/enable Notify*Application().
+	/// </summary>
+	internal sealed class IgnoreApplications : IDisposable
+	{
+		readonly bool _old = s_ignoreApplications;
+
+		public IgnoreApplications()
+		{
+			s_ignoreApplications = true;
+		}
+
+		public void Dispose()
+		{
+			s_ignoreApplications = _old;
+		}
 	}
 	#endregion
 }

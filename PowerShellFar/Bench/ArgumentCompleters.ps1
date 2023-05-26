@@ -83,10 +83,10 @@ Register-ArgumentCompleter -Native -CommandName dotnet -ScriptBlock {
 
 ### Native dotnet-suggest
 if (Get-Command dotnet-suggest -ErrorAction Ignore) {
-    Register-ArgumentCompleter -Native -CommandName (dotnet-suggest list) -ScriptBlock {
+	$names = @((Get-Item $HOME\.dotnet\tools\*.exe).ForEach{$_.Name})
+    Register-ArgumentCompleter -Native -CommandName $names -ScriptBlock {
         param($wordToComplete, $commandAst, $cursorPosition)
         $fullpath = (Get-Command $commandAst.CommandElements[0]).Source
-
         $arguments = $commandAst.Extent.ToString().Replace('"', '\"')
         dotnet-suggest get -e $fullpath --position $cursorPosition -- "$arguments" | .{process{
             [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_)
