@@ -232,15 +232,17 @@ bool Panel2::RealNames::get()
 void Panel2::RealNames::set(bool value)
 {
 	_RealNames = value;
-	if (m) m->Flags = Flags();
+	if (m)
+		m->Flags = Flags();
 }
 
+//! Do not call Panel1::UseSortGroups when IsOpened.
+//! In Far 3.0.6152,6153 GetOpenPanelInfoW..Flags..UseSortGroups..FCTL_GETPANELINFO fails.
+//! In any case, calling FCTL_GETPANELINFO for not yet opend panel is strange, avoid this.
+//! Workaround is possible, e.g. allow FCTL_GETPANELINFO after the first get files but UseSortGroups works strange anyway.
 bool Panel2::UseSortGroups::get()
 {
-	if (IsOpened)
-		return Panel1::UseSortGroups;
-	else
-		return _UseSortGroups;
+	return _UseSortGroups;
 }
 void Panel2::UseSortGroups::set(bool value)
 {
@@ -315,23 +317,39 @@ int Panel2::Flags()
 	// highlighting
 	switch (_Highlighting)
 	{
-	case PanelHighlighting::Default: r |= OPIF_USEATTRHIGHLIGHTING; break;
-	case PanelHighlighting::Off: r |= OPIF_DISABLEHIGHLIGHTING; break;
+	case PanelHighlighting::Default:
+		r |= OPIF_USEATTRHIGHLIGHTING;
+		break;
+	case PanelHighlighting::Off:
+		r |= OPIF_DISABLEHIGHLIGHTING;
+		break;
 	}
 
 	// other flags
-	if (CompareFatTime) r |= OPIF_COMPAREFATTIME;
-	if (NoFilter) r |= OPIF_DISABLEFILTER;
-	if (PreserveCase) r |= OPIF_SHOWPRESERVECASE;
-	if (RawSelection) r |= OPIF_RAWSELECTION;
-	if (RealNames) r |= OPIF_REALNAMES;
-	if (RealNamesDeleteFiles) r |= OPIF_EXTERNALDELETE;
-	if (RealNamesExportFiles) r |= OPIF_EXTERNALGET;
-	if (RealNamesImportFiles) r |= OPIF_EXTERNALPUT;
-	if (RealNamesMakeDirectory) r |= OPIF_EXTERNALMKDIR;
-	if (RightAligned) r |= OPIF_SHOWRIGHTALIGNNAMES;
-	if (ShowNamesOnly) r |= OPIF_SHOWNAMESONLY;
-	if (!UseSortGroups) r |= OPIF_DISABLESORTGROUPS;
+	if (CompareFatTime)
+		r |= OPIF_COMPAREFATTIME;
+	if (NoFilter)
+		r |= OPIF_DISABLEFILTER;
+	if (PreserveCase)
+		r |= OPIF_SHOWPRESERVECASE;
+	if (RawSelection)
+		r |= OPIF_RAWSELECTION;
+	if (RealNames)
+		r |= OPIF_REALNAMES;
+	if (RealNamesDeleteFiles)
+		r |= OPIF_EXTERNALDELETE;
+	if (RealNamesExportFiles)
+		r |= OPIF_EXTERNALGET;
+	if (RealNamesImportFiles)
+		r |= OPIF_EXTERNALPUT;
+	if (RealNamesMakeDirectory)
+		r |= OPIF_EXTERNALMKDIR;
+	if (RightAligned)
+		r |= OPIF_SHOWRIGHTALIGNNAMES;
+	if (ShowNamesOnly)
+		r |= OPIF_SHOWNAMESONLY;
+	if (!UseSortGroups)
+		r |= OPIF_DISABLESORTGROUPS;
 
 	return r;
 }

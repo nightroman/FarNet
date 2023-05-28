@@ -15,7 +15,7 @@
 
 job {
 	# make a file
-	Set-Content C:\TEMP\temp.temp $env:FarNetCode\Test\Panels\Test-Panel-OverNative.fas.ps1
+	Set-Content C:\TEMP\temp.temp $PSScriptRoot\Test-Panel-OverNative.fas.ps1
 
 	# go to the .temp file
 	$Far.Panel.GoToPath('C:\TEMP\temp.temp')
@@ -23,10 +23,10 @@ job {
 }
 
 # enter the .temp file
-keys Enter
+keys Enter Down
 job {
 	Assert-Far -Plugin
-	Assert-Far ($Far.Panel.GetFiles()[0].Name -eq "$env:FarNetCode\Test\Panels\Test-Panel-OverNative.fas.ps1")
+	Assert-Far -FileName $PSScriptRoot\Test-Panel-OverNative.fas.ps1
 }
 
 job {

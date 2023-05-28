@@ -1,6 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 7.0.10 =
+
+Avoid error on opening module panel from plugin panel (3.0.6153).
+
 = 7.0.9 =
 
 Avoid stack overflow on exceptions in GetFiles.
