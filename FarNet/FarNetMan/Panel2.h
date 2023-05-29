@@ -5,34 +5,25 @@
 #pragma once
 #include "Panel1.h"
 
-#define FPPI_FLAG(Name)\
-public: virtual property bool Name {\
-	bool get() { return _##Name; }\
-	void set(bool value) {\
-	_##Name = value;\
-	if (m) m->Flags = Flags();\
-}}\
-private: bool _##Name
+#define FPPI_FLAG(Type, Name, Override)\
+public: virtual property Type Name {\
+	Type get() Override { return _##Name; }\
+	void set(Type value) Override { _##Name = value; if (m) { m->Flags = Flags(); } }\
+}\
+private: Type _##Name
 
 #define FPPI_PROP(Type, Name, Set)\
 public: virtual property Type Name {\
 	Type get() { return _##Name; }\
-	void set(Type value) {\
-	_##Name = value;\
-	if (m) { Set; }\
-}}\
+	void set(Type value) { _##Name = value; if (m) { Set; } }\
+}\
 private: Type _##Name
 
 #define FPPI_TEXT(Name, Data)\
 public: virtual property String^ Name {\
 	String^ get() { return _##Name; }\
-	void set(String^ value) {\
-	_##Name = value;\
-	if (m) {\
-	delete[] m->Data;\
-	m->Data = NewChars(value);\
-	}\
-}}\
+	void set(String^ value) { _##Name = value; if (m) { delete[] m->Data; m->Data = NewChars(value); } }\
+}\
 private: String^ _##Name
 
 namespace FarNet
@@ -46,8 +37,6 @@ internal:
 	void Free();
 	OpenPanelInfo& Make();
 public: // IPanel
-	virtual property bool RealNames { bool get() override; void set(bool value) override; }
-	virtual property bool UseSortGroups { bool get() override; void set(bool value) override; }
 	virtual property FarFile^ CurrentFile { FarFile^ get() override; }
 	virtual property PanelSortMode SortMode { PanelSortMode get() override; void set(PanelSortMode value) override; }
 	virtual property PanelViewMode ViewMode { PanelViewMode get() override; void set(PanelViewMode value) override; }
@@ -57,16 +46,19 @@ public: // IPanel
 	virtual void Close() override;
 	virtual void Push() override;
 public: // IPanelWorks
-	FPPI_FLAG(CompareFatTime);
-	FPPI_FLAG(NoFilter);
-	FPPI_FLAG(PreserveCase);
-	FPPI_FLAG(RawSelection);
-	FPPI_FLAG(RealNamesDeleteFiles);
-	FPPI_FLAG(RealNamesExportFiles);
-	FPPI_FLAG(RealNamesImportFiles);
-	FPPI_FLAG(RealNamesMakeDirectory);
-	FPPI_FLAG(RightAligned);
-	FPPI_FLAG(ShowNamesOnly);
+	FPPI_FLAG(bool, CompareFatTime,);
+	FPPI_FLAG(bool, NoFilter,);
+	FPPI_FLAG(bool, PreserveCase,);
+	FPPI_FLAG(bool, RawSelection,);
+	FPPI_FLAG(bool, RealNames, override); //_230529_0854
+	FPPI_FLAG(bool, RealNamesDeleteFiles,);
+	FPPI_FLAG(bool, RealNamesExportFiles,);
+	FPPI_FLAG(bool, RealNamesImportFiles,);
+	FPPI_FLAG(bool, RealNamesMakeDirectory,);
+	FPPI_FLAG(bool, RightAligned,);
+	FPPI_FLAG(bool, ShowNamesOnly,);
+	FPPI_FLAG(bool, UseSortGroups, override); //_230529_0854
+	FPPI_FLAG(PanelHighlighting, Highlighting,);
 	FPPI_PROP(PanelViewMode, StartViewMode, m->StartPanelMode = int(_StartViewMode) + 0x30);
 	FPPI_TEXT(CurrentLocation, CurDir);
 	FPPI_TEXT(FormatName, Format);
@@ -78,7 +70,6 @@ public:
 	virtual property bool IsPushed { bool get() { return _Pushed != nullptr; } }
 	virtual property Explorer^ MyExplorer { Explorer^ get() { return _MyExplorer; } }
 	virtual property Panel^ TargetPanel { Panel^ get(); }
-	virtual property PanelHighlighting Highlighting { PanelHighlighting get(); void set(PanelHighlighting value); }
 	virtual PanelPlan^ GetPlan(PanelViewMode mode);
 	virtual void Navigate(Explorer^ explorer);
 	virtual void Open();
@@ -127,10 +118,7 @@ private:
 	Explorer^ _MyExplorer;
 	OpenPanelInfo* m;
 	bool _FarStartSortOrder;
-	bool _RealNames;
-	bool _UseSortGroups;
 	int _FarStartSortMode;
-	PanelHighlighting _Highlighting;
 	array<DataItem^>^ _InfoItems;
 	array<PanelPlan^>^ _Plans;
 	array<KeyBar^>^ _keyBars;

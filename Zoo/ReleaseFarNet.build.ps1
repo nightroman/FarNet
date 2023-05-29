@@ -96,11 +96,20 @@ task pushSource -If {
 	ask "Push commits and tags [$Tags]?"
 } {
 	Set-Location $env:FarNetCode
+
+	# push changes
 	exec { git push }
+
+	# local tags
 	foreach($_ in $Tags) {
 		exec { git tag -a $_ -m $_ }
 	}
+
+	# remote tags
 	exec { git push origin $Tags }
+
+	# gc because then we zip
+	exec { git gc --prune=now }
 }
 
 task zipFarDev -If {

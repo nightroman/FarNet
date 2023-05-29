@@ -7,6 +7,16 @@
 #include "Panel0.h"
 #include "Shelve.h"
 
+/* _230529_0854
+
+	Do not call Panel1::RealNames when IsOpened, it is not working.
+
+	Do not call Panel1::UseSortGroups when IsOpened.
+	In Far 3.0.6153 GetOpenPanelInfoW..Flags..UseSortGroups..FCTL_GETPANELINFO fails.
+	Anyway, calling FCTL_GETPANELINFO for not yet opened panel looks strange, we avoided this.
+	Workaround is possible, e.g. allow FCTL_GETPANELINFO after the first get files but UseSortGroups works strange anyway.
+*/
+
 namespace FarNet
 {
 static void WINAPI FarPanelItemFreeCallback(void* userData, const struct FarPanelItemFreeInfo* /*info*/);
@@ -224,33 +234,6 @@ void Panel2::ViewMode::set(PanelViewMode value)
 		StartViewMode = value;
 }
 
-//! Do not call Panel1::RealNames even when IsOpened, it is not working
-bool Panel2::RealNames::get()
-{
-	return _RealNames;
-}
-void Panel2::RealNames::set(bool value)
-{
-	_RealNames = value;
-	if (m)
-		m->Flags = Flags();
-}
-
-//! Do not call Panel1::UseSortGroups when IsOpened.
-//! In Far 3.0.6152,6153 GetOpenPanelInfoW..Flags..UseSortGroups..FCTL_GETPANELINFO fails.
-//! In any case, calling FCTL_GETPANELINFO for not yet opend panel is strange, avoid this.
-//! Workaround is possible, e.g. allow FCTL_GETPANELINFO after the first get files but UseSortGroups works strange anyway.
-bool Panel2::UseSortGroups::get()
-{
-	return _UseSortGroups;
-}
-void Panel2::UseSortGroups::set(bool value)
-{
-	_UseSortGroups = value;
-	if (m)
-		m->Flags = Flags();
-}
-
 void Panel2::InfoItems::set(array<DataItem^>^ value)
 {
 	_InfoItems = value;
@@ -259,17 +242,6 @@ void Panel2::InfoItems::set(array<DataItem^>^ value)
 		DeleteInfoLines();
 		CreateInfoLines();
 	}
-}
-
-PanelHighlighting Panel2::Highlighting::get()
-{
-	return _Highlighting;
-}
-void Panel2::Highlighting::set(PanelHighlighting value)
-{
-	_Highlighting = value;
-	if (m)
-		m->Flags = Flags();
 }
 
 PanelPlan^ Panel2::GetPlan(PanelViewMode mode)
@@ -309,10 +281,10 @@ void Panel2::StartSortMode::set(PanelSortMode value)
 	}
 }
 
+//_120325_180317 OPIF_SHORTCUT
 int Panel2::Flags()
 {
-	//_120325_180317
-	int r = 0; //??????OPIF_SHORTCUT;
+	int r = 0;
 
 	// highlighting
 	switch (_Highlighting)
@@ -326,29 +298,29 @@ int Panel2::Flags()
 	}
 
 	// other flags
-	if (CompareFatTime)
+	if (_CompareFatTime)
 		r |= OPIF_COMPAREFATTIME;
-	if (NoFilter)
+	if (_NoFilter)
 		r |= OPIF_DISABLEFILTER;
-	if (PreserveCase)
+	if (_PreserveCase)
 		r |= OPIF_SHOWPRESERVECASE;
-	if (RawSelection)
+	if (_RawSelection)
 		r |= OPIF_RAWSELECTION;
-	if (RealNames)
+	if (_RealNames)
 		r |= OPIF_REALNAMES;
-	if (RealNamesDeleteFiles)
+	if (_RealNamesDeleteFiles)
 		r |= OPIF_EXTERNALDELETE;
-	if (RealNamesExportFiles)
+	if (_RealNamesExportFiles)
 		r |= OPIF_EXTERNALGET;
-	if (RealNamesImportFiles)
+	if (_RealNamesImportFiles)
 		r |= OPIF_EXTERNALPUT;
-	if (RealNamesMakeDirectory)
+	if (_RealNamesMakeDirectory)
 		r |= OPIF_EXTERNALMKDIR;
-	if (RightAligned)
+	if (_RightAligned)
 		r |= OPIF_SHOWRIGHTALIGNNAMES;
-	if (ShowNamesOnly)
+	if (_ShowNamesOnly)
 		r |= OPIF_SHOWNAMESONLY;
-	if (!UseSortGroups)
+	if (!_UseSortGroups)
 		r |= OPIF_DISABLESORTGROUPS;
 
 	return r;
