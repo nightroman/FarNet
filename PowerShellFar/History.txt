@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 7.0.16 =
+
+Microsoft.PowerShell.SDK 7.3.5
+
 = 7.0.15 =
 
 Avoid user screen on completion calling native apps.
