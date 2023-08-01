@@ -12,7 +12,7 @@ Far Manager platform for .NET modules and scripts in PowerShell, F#, JavaScript
 
 **.NET 7**
 
-Download and install [.NET 7 SDK or runtime](https://aka.ms/dotnet/download).
+Download and install [.NET 7 SDK or runtime](https://aka.ms/dotnet/download), **x64 or x86 depending on Far Manager**.\
 SDK is needed for developing FarNet modules but recommended in any case.
 
 Check for existing installations by these commands:
