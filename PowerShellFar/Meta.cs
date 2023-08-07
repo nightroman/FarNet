@@ -3,6 +3,7 @@
 // Copyright (c) Roman Kuzmin
 
 using FarNet;
+using Microsoft.PowerShell.Commands;
 using System;
 using System.Collections;
 using System.Globalization;
@@ -23,7 +24,7 @@ namespace PowerShellFar;
 /// </para>
 /// <para>
 /// <b>Expression</b>: a property name or a script block operating on $_.
-/// <c>Name</c>/<c>Label</c> is usually needed for a script block, but it can be used with a property name, too.
+/// If a script uses variables from the current context and will be invoked in a different context, use <c>GetNewClosure()</c>.
 /// </para>
 /// <para>
 /// <b>Kind</b>: Far column kind (the key name comes from PowerShell).
@@ -41,8 +42,15 @@ namespace PowerShellFar;
 public sealed class Meta : FarColumn
 {
 	readonly string? _ColumnName;
+
+	// PS 7.3.0 `ls | op` -- folders and exe names have esc sequences.
+	readonly bool _RemoveEscSequences;
+
+	// If set then it is the property meta, otherwise it is the script (except rare cases, see expression).
 	readonly string? _Property;
-	readonly ScriptBlock? _Script;
+
+	// May be null, e.g. @{ Kind = 'N'; Name = 'Name' } with `ItemMetaFile` where `Name` is overridden and this meta `GetValue` is not called.
+	readonly PSPropertyExpression? _Expression;
 
 	/// <summary>
 	/// Similar to AsPSObject().
@@ -60,31 +68,32 @@ public sealed class Meta : FarColumn
 	/// <summary>
 	/// Script block operating on $_.
 	/// </summary>
-	public ScriptBlock? Script => _Script;
+	public ScriptBlock? Script => _Expression?.Script;
 
 	/// <inheritdoc/>
 	public override string Name
 	{
 		get
 		{
-			if (_ColumnName != null)
+			if (_ColumnName is not null)
 				return _ColumnName;
-			if (_Property != null)
+
+			if (_Property is not null)
 				return _Property;
-			if (_Script != null)
-				return _Script.ToString().Trim();
+
+			if (Script is not null)
+				return Script.ToString().Trim();
+
 			return
 				string.Empty;
 		}
 	}
 
 	/// <inheritdoc/>
-	public override string? Kind { get => _Kind; set => _Kind = value; }
-	string? _Kind;
+	public override string? Kind { get; set; }
 
 	/// <inheritdoc/>
-	public override int Width { get => _Width; set => _Width = value; }
-	int _Width;
+	public override int Width { get; set; }
 
 	/// <summary>
 	/// Alignment type.
@@ -122,6 +131,7 @@ public sealed class Meta : FarColumn
 			throw new ArgumentNullException(nameof(property));
 
 		_Property = property;
+		_Expression = new PSPropertyExpression(property, true);
 	}
 
 	/// <summary>
@@ -130,25 +140,30 @@ public sealed class Meta : FarColumn
 	/// <param name="script">The script block.</param>
 	public Meta(ScriptBlock script)
 	{
-		_Script = script ?? throw new ArgumentNullException(nameof(script));
+		_Expression = new PSPropertyExpression(script ?? throw new ArgumentNullException(nameof(script)));
 	}
 
 	/// <summary>
 	/// New from format table control data.
 	/// </summary>
-	internal Meta(DisplayEntry entry, TableControlColumnHeader header) // no checks, until it is internal
+	internal Meta(DisplayEntry entry, TableControlColumnHeader header)
 	{
+		_RemoveEscSequences = true;
+
 		if (entry.ValueType == DisplayEntryValueType.Property)
+		{
 			_Property = entry.Value;
+			_Expression = new PSPropertyExpression(_Property, true);
+		}
 		else
-			//! Perf: with no cache it takes 15% on scan for file system items.
-			//+ 131122 PS V3 uses its own cache, let's do not care of V2.
-			_Script = ScriptBlock.Create(entry.Value);
+		{
+			_Expression = new PSPropertyExpression(ScriptBlock.Create(entry.Value));
+		}
 
 		if (!string.IsNullOrEmpty(header.Label))
 			_ColumnName = header.Label;
 
-		_Width = header.Width;
+		Width = header.Width;
 		Alignment = header.Alignment;
 	}
 
@@ -162,12 +177,17 @@ public sealed class Meta : FarColumn
 			throw new ArgumentNullException(nameof(value));
 
 		_Property = value as string;
-		if (_Property != null)
+		if (_Property is not null)
+		{
+			_Expression = new PSPropertyExpression(_Property, true);
 			return;
+		}
 
-		_Script = value as ScriptBlock;
-		if (_Script != null)
+		if (value is ScriptBlock script)
+		{
+			_Expression = new PSPropertyExpression(script);
 			return;
+		}
 
 		if (value is IDictionary dic)
 		{
@@ -180,9 +200,14 @@ public sealed class Meta : FarColumn
 				if (Word.Expression.StartsWith(key, StringComparison.OrdinalIgnoreCase))
 				{
 					if (kv.Value is string asString)
+					{
 						_Property = asString;
+						_Expression = new PSPropertyExpression(_Property, true);
+					}
 					else
-						_Script = (ScriptBlock)kv.Value!;
+					{
+						_Expression = new PSPropertyExpression((ScriptBlock)kv.Value!);
+					}
 				}
 				else if (Word.Name.StartsWith(key, StringComparison.OrdinalIgnoreCase) || Word.Label.StartsWith(key, StringComparison.OrdinalIgnoreCase))
 				{
@@ -190,11 +215,11 @@ public sealed class Meta : FarColumn
 				}
 				else if (Word.Kind.StartsWith(key, StringComparison.OrdinalIgnoreCase))
 				{
-					_Kind = (string)LanguagePrimitives.ConvertTo(kv.Value, typeof(string), CultureInfo.InvariantCulture);
+					Kind = (string)LanguagePrimitives.ConvertTo(kv.Value, typeof(string), CultureInfo.InvariantCulture);
 				}
 				else if (Word.Width.StartsWith(key, StringComparison.OrdinalIgnoreCase))
 				{
-					_Width = (int)LanguagePrimitives.ConvertTo(kv.Value, typeof(int), CultureInfo.InvariantCulture);
+					Width = (int)LanguagePrimitives.ConvertTo(kv.Value, typeof(int), CultureInfo.InvariantCulture);
 				}
 				else if (Word.Alignment.StartsWith(key, StringComparison.OrdinalIgnoreCase))
 				{
@@ -209,6 +234,7 @@ public sealed class Meta : FarColumn
 					throw new ArgumentException("Not supported key name: " + key);
 				}
 			}
+
 			return;
 		}
 
@@ -220,20 +246,54 @@ public sealed class Meta : FarColumn
 	/// </summary>
 	public string Export()
 	{
-		var sb = new StringBuilder();
-		sb.Append("@{");
-		if (_Kind != null)
-			sb.Append(" Kind = '" + _Kind + "';");
-		if (_ColumnName != null)
-			sb.Append(" Label = '" + _ColumnName + "';");
-		if (_Width != 0)
-			sb.Append(" Width = " + _Width + ";");
+		var sb = new StringBuilder("@{");
+
+		if (Kind is not null)
+		{
+			sb.Append(" Kind = '");
+			sb.Append(Kind);
+			sb.Append("';");
+		}
+
+		if (_ColumnName is not null)
+		{
+			sb.Append(" Label = '");
+			sb.Append(_ColumnName);
+			sb.Append("';");
+		}
+
+		if (Width != 0)
+		{
+			sb.Append(" Width = ");
+			sb.Append(Width);
+			sb.Append(';');
+		}
+
 		if (Alignment != 0)
-			sb.Append(" Alignment = '" + Alignment + "';");
-		if (_Property != null)
-			sb.Append(" Expression = '" + _Property + "';");
-		if (_Script != null)
-			sb.Append(" Expression = {" + _Script + "};");
+		{
+			sb.Append(" Alignment = '");
+			sb.Append(Alignment);
+			sb.Append("';");
+		}
+
+		// last without `;`
+		if (_Property is not null)
+		{
+			sb.Append(" Expression = '");
+			sb.Append(_Property);
+			sb.Append('\'');
+		}
+		else if (Script is not null)
+		{
+			sb.Append(" Expression = {");
+			sb.Append(Script);
+			sb.Append('}');
+		}
+
+		// remove last `;`
+		if (sb[^1] == ';')
+			--sb.Length;
+
 		sb.Append(" }");
 		return sb.ToString();
 	}
@@ -242,62 +302,35 @@ public sealed class Meta : FarColumn
 	/// Gets a meta value.
 	/// </summary>
 	/// <param name="value">The input object.</param>
-	public object? GetValue(object? value)
+	public object? GetValue(object value)
 	{
-		if (_Script != null)
-		{
-			try
-			{
-				var result = PS2.InvokeWithContext(_Script, value);
-				return result.Count switch
-				{
-					0 => null,
-					1 => result[0],
-					_ => result,
-				};
-			}
-			catch (RuntimeException)
-			{
-				return null;
-			}
-		}
+		if (_Expression is null)
+			throw new InvalidOperationException("Expression is not defined.");
 
-		PSObject pso = PSObject.AsPSObject(value);
-		PSPropertyInfo pi = pso.Properties[_Property];
-		if (pi is null)
-			return null;
+		var result = _Expression.GetValues(PSObject.AsPSObject(value))[0].Result;
 
-		// Exception case: cert provider, search all
-		try
-		{
-			var obj = pi.Value;
+		if (_Property is null)
+			return result;
 
-			// PS 7.3.0 `ls | op` -- folders and exe names have esc sequences
-			if (obj is string str)
-				return OutputWriter.RemoveOutputRendering(str);
+		if (_RemoveEscSequences && result is string text)
+			return OutputWriter.RemoveOutputRendering(text);
 
-			return obj;
-		}
-		catch (RuntimeException ex)
-		{
-			Log.TraceException(ex);
-			return null;
-		}
+		return result;
 	}
 
 	/// <summary>
 	/// Gets a meta value of specified type (actual or default).
-	/// CA: not recommended to be public in this form.
 	/// </summary>
-	T Get<T>(object value)
+	public T GetValue<T>(object value)
 	{
-		var v = GetValue(value);
-		if (v is null)
+		var res = GetValue(value);
+		if (res is null)
 			return default!;
-		Type type = v.GetType();
-		if (type == typeof(T))
-			return (T)v;
-		return (T)LanguagePrimitives.ConvertTo(v, typeof(T), CultureInfo.InvariantCulture);
+
+		if (res is T typed)
+			return typed;
+
+		return LanguagePrimitives.ConvertTo<T>(res);
 	}
 
 	/// <summary>
@@ -310,47 +343,35 @@ public sealed class Meta : FarColumn
 		if (string.IsNullOrEmpty(FormatString))
 		{
 			// align right
-			if (_Width > 0 && Alignment == Alignment.Right)
+			if (Width > 0 && Alignment == Alignment.Right)
 			{
-				string s = Get<string>(value);
-				return s?.PadLeft(_Width);
+				string s = GetValue<string>(value);
+				return s?.PadLeft(Width);
 			}
 
-			// get, null??
-			var v = GetValue(value);
-			if (v is null)
+			// get, null?
+			var res = GetValue(value);
+			if (res is null)
 				return null;
 
-			// string??
-			if (v is string asString)
+			// string?
+			if (res is string asString)
 				return asString;
 
-			// enumerable??
-			if (v is IEnumerable asEnumerable)
+			// enumerable?
+			if (res is IEnumerable asEnumerable)
 				return Converter.FormatEnumerable(asEnumerable, Settings.Default.FormatEnumerationLimit);
 
 			// others
-			return (string)LanguagePrimitives.ConvertTo(v, typeof(string), CultureInfo.InvariantCulture);
+			return LanguagePrimitives.ConvertTo<string>(res);
 		}
-		else if (_Width <= 0 || Alignment != Alignment.Right)
+		else if (Width <= 0 || Alignment != Alignment.Right)
 		{
 			return string.Format(FormatString, GetValue(value));
 		}
 		else
 		{
-			return string.Format(FormatString, GetValue(value)).PadLeft(_Width);
+			return string.Format(FormatString, GetValue(value)).PadLeft(Width);
 		}
 	}
-
-	/// <summary>
-	/// Gets meta value as Int64 (actual or 0).
-	/// </summary>
-	/// <param name="value">The input object.</param>
-	public long GetInt64(object value) => Get<long>(value);
-
-	/// <summary>
-	/// Gets a meta value as DateTime (actual or default).
-	/// </summary>
-	/// <param name="value">The input object.</param>
-	public DateTime EvaluateDateTime(object value) => Get<DateTime>(value);
 }

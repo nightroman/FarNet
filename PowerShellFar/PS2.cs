@@ -49,12 +49,13 @@ static class PS2
 	}
 
 	/// <summary>
-	/// Invokes the script with $_ set to the specified value and optional arguments.
+	/// Invokes the script with $_ set to the specified value.
+	/// Consider using PSPropertyExpression.
 	/// </summary>
-	public static Collection<PSObject> InvokeWithContext(ScriptBlock script, object? value, params object?[] args)
+	public static Collection<PSObject> InvokeWithContext(ScriptBlock script, object? value)
 	{
 		var vars = new List<PSVariable> { new PSVariable("_", value) };
-		return script.InvokeWithContext(null, vars, args);
+		return script.InvokeWithContext(null, vars, null);
 	}
 
 	/// <summary>

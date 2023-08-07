@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 7.0.18 =
+
+Amend panel column expressions, document use of `GetNewClosure` in some cases.
+
 = 7.0.17 =
 
 Microsoft.PowerShell.SDK 7.3.6

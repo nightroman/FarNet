@@ -396,6 +396,8 @@ Keys are case insensitive and can be shortened, even to their first letters.
 		Property name (string) or a calculated property (script block operating
 		on input object $_). Name/Label is normally also used for a script block.
 
+		If scripts use variables from the current context, use `GetNewClosure()`.
+
 	Name or Label
 		Display name for a value from a script block or alternative name for a
 		property. It is used as a panel column title.

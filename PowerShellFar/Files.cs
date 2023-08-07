@@ -366,8 +366,14 @@ public sealed class FileMetaComparer : EqualityComparer<FarFile>
 	{
 		if (x is null || y is null)
 			return x is null && y is null;
-		else
-			return Equals(_meta.GetValue(x.Data), _meta.GetValue(y.Data));
+
+		var x1 = x.Data;
+		var y1 = y.Data;
+
+		if (x1 is null || y1 is null)
+			return x1 is null && y1 is null;
+
+		return Equals(_meta.GetValue(x1), _meta.GetValue(y1));
 	}
 
 	/// <inheritdoc/>

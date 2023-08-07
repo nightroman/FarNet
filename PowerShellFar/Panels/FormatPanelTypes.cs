@@ -87,13 +87,13 @@ class MapFile : FarFile
 
 	public override string? Description => Map.Description?.GetString(Value);
 
-	public override long Length => Map.Length == null ? 0 : Map.Length.GetInt64(Value);
+	public override long Length => Map.Length == null ? 0 : Map.Length.GetValue<long>(Value);
 
-	public override DateTime CreationTime => Map.CreationTime == null ? new DateTime() : Map.CreationTime.EvaluateDateTime(Value);
+	public override DateTime CreationTime => Map.CreationTime == null ? default : Map.CreationTime.GetValue<DateTime>(Value);
 
-	public override DateTime LastWriteTime => Map.LastWriteTime == null ? new DateTime() : Map.LastWriteTime.EvaluateDateTime(Value);
+	public override DateTime LastWriteTime => Map.LastWriteTime == null ? default : Map.LastWriteTime.GetValue<DateTime>(Value);
 
-	public override DateTime LastAccessTime => Map.LastAccessTime == null ? new DateTime() : Map.LastAccessTime.EvaluateDateTime(Value);
+	public override DateTime LastAccessTime => Map.LastAccessTime == null ? default : Map.LastAccessTime.GetValue<DateTime>(Value);
 
 	public override ICollection? Columns => Map.Columns!.Count > 0 ? new FileColumnCollection(Value, Map.Columns) : null;
 
