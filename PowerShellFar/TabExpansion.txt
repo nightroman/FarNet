@@ -17,7 +17,7 @@
 [ValidateScript({#})]
 [ValidateSet(#, )]
 @PSBoundParameters
-$ErrorActionPreference = 'Stop'
+$ErrorActionPreference = 1
 $InputObject
 $LastExitCode
 $PSCmdlet.GetUnresolvedProviderPathFromPSPath(#)
@@ -32,7 +32,7 @@ HelpMessage="#"
 Mandatory=$true
 ParameterSetName='#'
 Position=#
-Set-StrictMode -Version Latest
+Set-StrictMode -Version 3
 SupportsShouldProcess=$true
 ValueFromPipeline=$true
 ValueFromPipelineByPropertyName=$true

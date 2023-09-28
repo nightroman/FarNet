@@ -218,7 +218,22 @@ $regexUrl = [regex]@'
 '@
 
 if ($Text -match $regexUrl) {
-	Start-Process $matches[0]
+	$url = $matches[0]
+	if ($url -match '^(\w+)://' -and $matches[0] -notmatch '^https?$') {
+		# app URL, possible output
+		$Far.UI.ShowUserScreen()
+		try {
+			Start-Process $url
+			Start-Sleep 2
+		}
+		finally {
+			$Far.UI.SaveUserScreen()
+		}
+	}
+	else {
+		# usual URL
+		Start-Process $url
+	}
 	return
 }
 

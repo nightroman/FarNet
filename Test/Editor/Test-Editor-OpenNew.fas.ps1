@@ -22,7 +22,7 @@ job {
 	$e.Open()
 }
 job {
-	Assert-Far -EditorFileName '*\?New File?'
+	Assert-Far -EditorFileName '*\New_File_*.txt'
 	$Far.Editor.Close()
 }
 job {
@@ -41,7 +41,7 @@ job {
 	$e.Open()
 }
 job {
-	Assert-Far -EditorFileName '*\?New File?'
+	Assert-Far -EditorFileName '*\New_File_*.txt'
 	$Far.Editor.Close()
 }
 job {
@@ -55,7 +55,7 @@ job {
 	Open-FarEditor
 }
 job {
-	Assert-Far -EditorFileName '*\?New File?'
+	Assert-Far -EditorFileName '*\New_File_*.txt'
 	$Far.Editor.Close()
 }
 job {

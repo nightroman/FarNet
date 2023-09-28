@@ -57,6 +57,7 @@ job {
 }
 # exit file editor
 keys Esc
+Start-Sleep 1
 job {
 	# panels and the file description is empty
 	$file = Get-Item $4
@@ -86,6 +87,7 @@ job {
 }
 # exit viewer
 keys Esc
+Start-Sleep 1
 job {
 	# panels and the file description is 17
 	$file = Get-Item $4

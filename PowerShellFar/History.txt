@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 7.0.19 =
+
+- Microsoft.PowerShell.SDK 7.3.7
+- Open-TextLink - deal with possible app URL output
+- Tweak TabExpansion.txt
+
 = 7.0.18 =
 
 Amend panel column expressions, document use of `GetNewClosure` in some cases.
