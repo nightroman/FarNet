@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 7.0.20 =
+
+Microsoft.PowerShell.SDK 7.3.8
+
 = 7.0.19 =
 
 - Microsoft.PowerShell.SDK 7.3.7

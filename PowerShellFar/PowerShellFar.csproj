@@ -14,7 +14,7 @@
     <Compile Remove="Samples\**" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.3.7" />
+    <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.3.8" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FarNet\FarNet\FarNet.csproj">
