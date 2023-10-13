@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 
+= 3.1.0 =
+
+FSharp.Core 7.0.400
+FSharp.Compiler.Service 43.7.400
+Temporary, just one active session is kept open.
+
 = 3.0.1 =
 
 master -> main, update links.

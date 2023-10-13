@@ -22,7 +22,7 @@
     <Compile Include="PSFar.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FSharp.Core" Version="7.0.0" />
+    <PackageReference Include="FSharp.Core" Version="7.0.400" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FarNet">

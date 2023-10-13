@@ -24,8 +24,9 @@ task publish {
 	$node = $xml.SelectSingleNode('Project/ItemGroup/PackageReference[@Include="FSharp.Core"]')
 	Copy-Item "$HOME\.nuget\packages\FSharp.Core\$($node.Version)\lib\netstandard2.1\FSharp.Core.xml" $ModuleRoot
 
+	# used to be deleted, now missing: runtimes\unix
 	Set-Location $ModuleRoot
-	remove *.deps.json, cs, de, es, fr, it, ja, ko, pl, pt-BR, ru, tr, zh-Hans, zh-Hant, runtimes\unix
+	remove *.deps.json, cs, de, es, fr, it, ja, ko, pl, pt-BR, ru, tr, zh-Hans, zh-Hant
 }
 
 task clean {
@@ -75,7 +76,7 @@ task package markdown, {
 
 	# module
 	exec { robocopy $ModuleRoot $toModule /s /xf *.pdb } (0..2)
-	equals 29 (Get-ChildItem $toModule -Recurse -File).Count
+	equals 10 (Get-ChildItem $toModule -Recurse -File).Count
 
 	# meta
 	Copy-Item -Destination z @(
