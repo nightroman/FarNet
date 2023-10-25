@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.9.4 =
+
+Fix not shown deleted file diff.
+
 = 0.9.3 =
 
 Better error on staging directories containing repositories.
