@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
     <FarHome Condition="'$(FarHome)' == ''">C:\Bin\Far\x64</FarHome>
@@ -41,8 +41,8 @@
       <HintPath>$(FarHome)\FarNet\FarNet.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <PackageReference Include="FSharp.Core" Version="7.0.400" />
-    <PackageReference Include="FSharp.Compiler.Service" Version="43.7.400" />
+    <PackageReference Include="FSharp.Core" Version="7.0.401" />
+    <PackageReference Include="FSharp.Compiler.Service" Version="43.7.401" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="ib publish -Configuration $(Configuration) -FarHome $(FarHome)" />
