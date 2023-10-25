@@ -90,9 +90,9 @@ public partial class Panel
 			}
 		}
 
-		// write text
-		File.WriteAllText(fileName, text, Encoding.Unicode);
-		args.CodePage = 1200;
+		// write text, UTF8 just in case as the default for save as
+		File.WriteAllText(fileName, text, Encoding.UTF8);
+		args.CodePage = 65001;
 		return args;
 	}
 
