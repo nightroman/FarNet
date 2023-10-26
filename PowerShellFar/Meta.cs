@@ -321,6 +321,8 @@ public sealed class Meta : FarColumn
 	/// <summary>
 	/// Gets a meta value of specified type (actual or default).
 	/// </summary>
+	/// <typeparam name="T">The value type.</typeparam>
+	/// <param name="value">The input object.</param>
 	public T GetValue<T>(object value)
 	{
 		var res = GetValue(value);
