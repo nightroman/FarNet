@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 0.9.6 =
+
+Fix null reference in changes panel.
+
 = 0.9.5 =
 
 Fix not shown deleted file diff on F4.

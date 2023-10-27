@@ -106,9 +106,11 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 		switch (key.VirtualKeyCode)
 		{
 			case KeyCode.Enter when key.Is():
-				var changes = (TreeEntryChanges)CurrentFile?.Data!;
-				if (changes.Mode == Mode.NonExecutableFile || (changes.Mode == Mode.Nonexistent && changes.OldMode == Mode.NonExecutableFile))
-					ShowDiff(changes);
+				if (CurrentFile?.Data is TreeEntryChanges changes)
+				{
+					if (changes.Mode == Mode.NonExecutableFile || (changes.Mode == Mode.Nonexistent && changes.OldMode == Mode.NonExecutableFile))
+						ShowDiff(changes);
+				}
 				return true;
 		}
 
