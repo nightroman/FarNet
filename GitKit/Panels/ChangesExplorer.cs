@@ -145,9 +145,21 @@ class ChangesExplorer : BaseExplorer
 
 		var changes = (TreeEntryChanges)args.File.Data!;
 		var newBlob = Repository.Lookup<Blob>(changes.Oid);
-		var oldBlob = Repository.Lookup<Blob>(changes.OldOid);
-		var diff = Repository.Diff.Compare(oldBlob, newBlob, compareOptions);
-		var text = diff.Patch;
+
+		string text;
+		if (newBlob is not null || changes.Mode == Mode.Nonexistent)
+		{
+			// changed committed files (new blob) or deleted files (old blob, no new blob)
+			var oldBlob = Repository.Lookup<Blob>(changes.OldOid);
+			var diff = Repository.Diff.Compare(oldBlob, newBlob, compareOptions);
+			text = diff.Patch;
+		}
+		else
+		{
+			// other files including changed not committed (no new blob)
+			var patch = Repository.Diff.Compare<Patch>(new string[] { changes.Path }, true, null, compareOptions);
+			text = patch.Content;
+		}
 
 		args.CanSet = false;
 		args.UseText = text;
