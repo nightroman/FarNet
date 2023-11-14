@@ -487,7 +487,7 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 
 		// normal command
 		Log::Source->TraceInformation("OPEN_FROMMACRO");
-		if (InvokeCommand(command, true))
+		if (InvokeCommand(command, OPEN_FROMMACRO))
 			return (HANDLE)1;
 		else
 			return 0;
@@ -502,7 +502,7 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 		case OPEN_COMMANDLINE:
 			{
 				Log::Source->TraceInformation("OPEN_COMMANDLINE");
-				InvokeCommand(((OpenCommandLineInfo*)info->Data)->CommandLine, false);
+				InvokeCommand(((OpenCommandLineInfo*)info->Data)->CommandLine, OPEN_COMMANDLINE);
 
 				if (Works::Test::IsTestCommand)
 					Works::Test::Exit(nullptr);
@@ -944,7 +944,7 @@ public:
 };
 
 // `isMacro` is true when a command is invoked from macro or input
-bool Far0::InvokeCommand(const wchar_t* command, bool isMacro)
+bool Far0::InvokeCommand(const wchar_t* command, OPENFROM from)
 {
 	// asynchronous command
 	bool isAsync = command[0] == ':';
@@ -980,7 +980,7 @@ bool Far0::InvokeCommand(const wchar_t* command, bool isMacro)
 
 		ModuleCommandEventArgs^ e = gcnew ModuleCommandEventArgs(text);
 		e->Prefix = prefix;
-		e->IsMacro = isMacro;
+		e->IsMacro = from != OPEN_COMMANDLINE;
 
 		// invoke later
 		if (isAsync)
@@ -999,8 +999,11 @@ bool Far0::InvokeCommand(const wchar_t* command, bool isMacro)
 	}
 
 	// A missing prefix is not a fatal error, e.g. a module is not istalled.
-	// The calling macro should be able to recover on 0 result, so return false.
-	return false;
+	// Calling macros should be able to recover on 0 result, so return false.
+	if (from == OPEN_FROMMACRO)
+		return false;
+
+	throw gcnew InvalidOperationException("Unknown command prefix: " + prefix);
 }
 
 // Plugin.Menu is not a replacement for F11, it is less predictable on posted keys and async jobs.

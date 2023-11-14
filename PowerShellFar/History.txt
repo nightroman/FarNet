@@ -1,5 +1,22 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 7.0.22 =
+
+Requires FarNet 7.0.13
+
+Start-Far.ps1
+- by default commands are not entered as if typed manually
+- new switch Enter: tells to enter the command as if typed
+- new switch Hidden: tells to start with hidden panels
+
+Search-Regex.ps1
+- Use PowerShell enum.
+- Dialog: Options: treat all \W as separators.
+- With hidden panels open full screen result panel.
+
+Example:
+ps: Start-Far ps:Search-Regex -Hidden
+
 = 7.0.21 =
 
 Microsoft.PowerShell.SDK 7.3.9

@@ -110,11 +110,11 @@ void Far1::CopyToClipboard(String^ text)
 	Info.FSF->CopyToClipboard(FCT_STREAM, pin);
 }
 
+//! Send OPEN_LUAMACRO as something not command or normal macro.
 void Far1::InvokeCommand(String^ command)
 {
 	PIN_NE(pin, command);
-	if (!Far0::InvokeCommand(pin, true))
-		throw gcnew InvalidOperationException("Unknown command.");
+	Far0::InvokeCommand(pin, OPEN_LUAMACRO);
 }
 
 IEditor^ Far1::CreateEditor()

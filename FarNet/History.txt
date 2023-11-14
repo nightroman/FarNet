@@ -1,6 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 7.0.13 =
+
+- Add Tasks.ExecuteAndCatch().
+- Tweak error messages on failed commands.
+
 = 7.0.12 =
 
 Use UTF8 on editing module panel items.

@@ -29,6 +29,9 @@
 
 .Parameter AllText
 		Tells to search in all text, not in separate lines.
+
+.Example
+	> ps: Start-Far.ps1 ps:Search-Regex -Hidden
 #>
 
 param(
@@ -41,23 +44,21 @@ param(
 $ErrorActionPreference = 1
 if ($args) {Write-Error -ErrorAction Stop "Invalid arguments: $args"}
 
-Add-Type @'
-[System.Flags]
-public enum SearchRegexOptions {
-	None = 0,
-	IgnoreCase = 1, ic = 1,
-	Multiline = 2, m = 2,
-	ExplicitCapture = 4, ec = 4,
-	Compiled = 8,
-	Singleline = 16, s = 16,
-	IgnorePatternWhitespace = 32, ipw = 32,
-	RightToLeft = 64,
-	ECMAScript = 256,
-	CultureInvariant = 512,
-	SimpleMatch = 1024, sm = 1024,
-	WholeWord = 2048, ww = 2048
+[Flags()]
+enum SearchRegexOptions {
+	None = 0
+	IgnoreCase = 1; ic = 1
+	Multiline = 2; m = 2
+	ExplicitCapture = 4; ec = 4
+	Compiled = 8
+	Singleline = 16; s = 16
+	IgnorePatternWhitespace = 32; ipw = 32
+	RightToLeft = 64
+	ECMAScript = 256
+	CultureInvariant = 512
+	SimpleMatch = 1024; sm = 1024
+	WholeWord = 2048; ww = 2048
 }
-'@
 
 # Pattern to whole word
 function WholeWord($_) {
@@ -128,7 +129,7 @@ if (!$Regex) {
 
 		# options
 		if ($eOptions.Text) {
-			try { $Options = [SearchRegexOptions]$eOptions.Text }
+			try { $Options = [SearchRegexOptions]($eOptions.Text.Trim() -split '\W+' -join ',') }
 			catch {
 				$Far.Message($_, 'Invalid options')
 				$dialog.Focused = $eOptions
@@ -327,7 +328,7 @@ $Panel.RealNames = $true
 $Panel.RightAligned = $true
 $Panel.SortMode = 'Unsorted'
 $Panel.Title = 'Searching...'
-$Panel.ViewMode = 'Descriptions'
+$Panel.ViewMode = if ($Far.Panel.IsVisible) {'Descriptions'} else {'LongDescriptions'}
 $Panel.Garbage.Add($job)
 
 ### Plan
@@ -359,6 +360,7 @@ $Panel.add_Timer({
 		if ($job.JobStateInfo.State -ne 'Running') {
 			$job.Parameters.Done = $true
 			$Far.UI.SetProgressFlash()
+			$Far.UI.WindowTitle = $title
 		}
 	}
 })

@@ -60,8 +60,7 @@ public class GetContentEventArgs : ExplorerFileEventArgs
 	/// Gets or sets the code page to use in the editor.
 	/// </summary>
 	/// <remarks>
-	/// It may be use together with <see cref="UseFileName"/>.
-	/// With <see cref="UseText"/> the code page is set to 1200.
+	/// It may be used together with <see cref="UseFileName"/>.
 	/// </remarks>
 	public int CodePage { get; set; }
 

@@ -26,7 +26,7 @@ public:
 	static WaitHandle^ PostMacroWait(String^ macro);
 public:
 	static bool MatchMask(String^ mask, const wchar_t* name, bool skipPath);
-	static bool InvokeCommand(const wchar_t* command, bool isMacro);
+	static bool InvokeCommand(const wchar_t* command, OPENFROM from);
 	static CultureInfo^ GetCurrentUICulture(bool update);
 	static void ChangeFontSize(bool increase);
 	static void PostJob(Action^ job);

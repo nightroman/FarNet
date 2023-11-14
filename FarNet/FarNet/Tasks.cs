@@ -101,6 +101,29 @@ public static class Tasks
 	}
 
 	/// <summary>
+	/// Awaits the task and processes exceptions in the main thread.
+	/// </summary>
+	/// <param name="task">The task function.</param>
+	/// <param name="error">The optional exception handler.</param>
+	public static async void ExecuteAndCatch(Func<Task> task, Action<Exception>? error = null)
+	{
+		try
+		{
+			await task();
+		}
+		catch (Exception exn)
+		{
+			await Job(() =>
+			{
+				if (error is null)
+					Far.Api.ShowError(null, exn);
+				else
+					error(exn);
+			});
+		}
+	}
+
+	/// <summary>
 	/// Starts a task which posts the specified keys.
 	/// </summary>
 	/// <param name="keys">Keys text to post.</param>
