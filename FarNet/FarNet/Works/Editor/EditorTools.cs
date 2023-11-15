@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace FarNet.Works;
@@ -33,8 +32,7 @@ public static class EditorTools
 
 		//! avoid native API, do not use TempName
 		editor.FileName = Kit.TempFileName(args.Extension);
-
-		editor.CodePage = 1200;
+		editor.CodePage = 65001;
 		editor.DisableHistory = true;
 		if (!string.IsNullOrEmpty(args.Title))
 			editor.Title = args.Title;
@@ -45,7 +43,7 @@ public static class EditorTools
 
 		//? unlikely throws
 		if (!string.IsNullOrEmpty(args.Text))
-			File.WriteAllText(editor.FileName, args.Text, Encoding.Unicode);
+			File.WriteAllText(editor.FileName, args.Text);
 
 		return editor;
 	}
@@ -61,7 +59,7 @@ public static class EditorTools
 			if (File.Exists(editor.FileName))
 			{
 				// read and return
-				return File.ReadAllText(editor.FileName, Encoding.Unicode);
+				return File.ReadAllText(editor.FileName);
 			}
 			else
 			{
@@ -110,12 +108,13 @@ public static class EditorTools
 	public static void ViewText(string text, string title, OpenMode mode)
 	{
 		string tmpfile = Far.Api.TempName();
-		File.WriteAllText(tmpfile, text, Encoding.Unicode);
+		File.WriteAllText(tmpfile, text);
 
 		var viewer = Far.Api.CreateViewer();
+		viewer.FileName = tmpfile;
+		viewer.CodePage = 65001;
 		viewer.DeleteSource = DeleteSource.File; // yes, File - we can control it
 		viewer.DisableHistory = true;
-		viewer.FileName = tmpfile;
 		viewer.Switching = Switching.Enabled;
 		viewer.Title = title;
 		viewer.Open(mode);

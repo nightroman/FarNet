@@ -295,5 +295,8 @@
     <PostBuildEvent>
       <Command>ib Install $(SolutionDir)\FarNet\FarNet.build.ps1 -Platform $(Platform) -Configuration $(Configuration)</Command>
     </PostBuildEvent>
+    <ClCompile>
+      <AdditionalOptions>/Wv:18 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
   </ItemDefinitionGroup>
 </Project>
