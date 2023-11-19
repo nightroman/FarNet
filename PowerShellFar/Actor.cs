@@ -144,8 +144,8 @@ public sealed partial class Actor
 
 		// add variables
 		state.Variables.Add(new SessionStateVariableEntry[] {
-			new SessionStateVariableEntry("Far", Far.Api, "Exposes FarNet.", ScopedItemOptions.AllScope | ScopedItemOptions.Constant),
-			new SessionStateVariableEntry("Psf", this, "Exposes PowerShellFar.", ScopedItemOptions.AllScope | ScopedItemOptions.Constant),
+			new("Far", Far.Api, "Exposes FarNet.", ScopedItemOptions.AllScope | ScopedItemOptions.Constant),
+			new("Psf", this, "Exposes PowerShellFar.", ScopedItemOptions.AllScope | ScopedItemOptions.Constant),
 		});
 
 		// open runspace
@@ -376,8 +376,7 @@ public sealed partial class Actor
 	public void ShowInteractive(OpenMode mode = OpenMode.Modal)
 	{
 		var inter = Interactive.Create(false);
-		if (inter != null)
-			inter.Editor.Open(mode);
+		inter?.Editor.Open(mode);
 	}
 
 	/// <summary>
@@ -524,21 +523,19 @@ public sealed partial class Actor
 			Far.Api.UI.SetProgressState(TaskbarProgressBarState.Indeterminate);
 
 			// invoke command
-			using (var ps = NewPowerShell())
+			using var ps = NewPowerShell();
+			_myCommand = code;
+			var command = ps.Commands.AddScript(code, args.UseLocalScope);
+			if (args.Arguments != null)
 			{
-				_myCommand = code;
-				var command = ps.Commands.AddScript(code, args.UseLocalScope);
-				if (args.Arguments != null)
-				{
-					foreach (var arg in args.Arguments)
-						command.AddArgument(arg);
-				}
-
-				var output = FarUI.Writer is ConsoleOutputWriter ? A.OutDefaultCommand : A.OutHostCommand;
-				command.AddCommand(output);
-				ps.Invoke();
-				args.Reason = ps.InvocationStateInfo.Reason;
+				foreach (var arg in args.Arguments)
+					command.AddArgument(arg);
 			}
+
+			var output = FarUI.Writer is ConsoleOutputWriter ? A.OutDefaultCommand : A.OutHostCommand;
+			command.AddCommand(output);
+			ps.Invoke();
+			args.Reason = ps.InvocationStateInfo.Reason;
 
 			return true;
 		}
@@ -646,7 +643,7 @@ public sealed partial class Actor
 	}
 
 	HashSet<LineBreakpoint>? _breakpoints_;
-	internal HashSet<LineBreakpoint> Breakpoints => _breakpoints_ ??= new HashSet<LineBreakpoint>();
+	internal HashSet<LineBreakpoint> Breakpoints => _breakpoints_ ??= [];
 
 	void OnBreakpointUpdated(object? sender, BreakpointUpdatedEventArgs e)
 	{

@@ -22,7 +22,7 @@ public class Config : ModuleSettings<Config.Data>
 	public class Data
 	{
 		[XmlElement(ElementName = "Module")]
-		public List<Module> Modules { get; set; } = new();
+		public List<Module> Modules { get; set; } = [];
 
 		public Module? GetModule(string name)
 		{
@@ -50,16 +50,16 @@ public class Config : ModuleSettings<Config.Data>
 		public string? Culture { get; set; }
 
 		[XmlElement(ElementName = "Command")]
-		public List<Command> Commands { get; set; } = new();
+		public List<Command> Commands { get; set; } = [];
 
 		[XmlElement(ElementName = "Drawer")]
-		public List<Drawer> Drawers { get; set; } = new();
+		public List<Drawer> Drawers { get; set; } = [];
 
 		[XmlElement(ElementName = "Editor")]
-		public List<Editor> Editors { get; set; } = new();
+		public List<Editor> Editors { get; set; } = [];
 
 		[XmlElement(ElementName = "Tool")]
-		public List<Tool> Tools { get; set; } = new();
+		public List<Tool> Tools { get; set; } = [];
 
 		public bool IsDefault()
 		{

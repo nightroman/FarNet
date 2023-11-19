@@ -45,7 +45,7 @@ public class SuperFile : WrapFile
 		return hash;
 	}
 
-	internal static IEnumerable<FarFile> SuperFilesOfExplorerFiles(IEnumerable<SuperFile> xfiles, IList<FarFile> efiles, IEqualityComparer<FarFile> comparer)
+	internal static IEnumerable<SuperFile> SuperFilesOfExplorerFiles(IEnumerable<SuperFile> xfiles, IList<FarFile> efiles, IEqualityComparer<FarFile> comparer)
 	{
 		if (efiles.Count > 0)
 		{

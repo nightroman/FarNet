@@ -12,7 +12,7 @@ namespace FarNet.Drawer;
 [ModuleDrawer(Name = Settings.CurrentWordName, Priority = 2, Id = Settings.CurrentWordGuid)]
 public class CurrentWordDrawer : ModuleDrawer
 {
-	EditorColor NewColorKeepForeground(int lineIndex, int start, int end, ConsoleColor fg, ConsoleColor bg)
+	static EditorColor NewColorKeepForeground(int lineIndex, int start, int end, ConsoleColor fg, ConsoleColor bg)
 	{
 		if (bg == ConsoleColor.Yellow)
 		{

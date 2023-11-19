@@ -9,26 +9,18 @@ namespace FarNet;
 /// <summary>
 /// Named data item, e.g. an info panel item (<see cref="Panel.InfoItems"/>).
 /// </summary>
-public class DataItem
+/// <param name="name">Name (or separator text in some cases).</param>
+/// <param name="data">Data (or null for separator in some cases).</param>
+public class DataItem(string name, object data)
 {
-	/// <summary>
-	/// New completely defined data item.
-	/// </summary>
-	/// <param name="name">Name (or separator text in some cases).</param>
-	/// <param name="data">Data (or null for separator in some cases).</param>
-	public DataItem(string name, object data)
-	{
-		Name = name;
-		Data = data;
-	}
 
 	/// <summary>
 	/// Name (or separator text in some cases).
 	/// </summary>
-	public string Name { get; set; }
+	public string Name { get; set; } = name;
 
 	/// <summary>
 	/// Data (or null for separator in some cases).
 	/// </summary>
-	public object Data { get; set; }
+	public object Data { get; set; } = data;
 }

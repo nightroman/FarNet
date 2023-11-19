@@ -49,16 +49,16 @@ task installBin {
 
 	# move `ref` folder to "expected" location or cannot compile C# in PS
 	# ~ cannot find '...\PowerShellFar\runtimes\win\lib\net7.0\ref'.
-	exec { robocopy "$ModuleHome\ref" "$ModuleHome\runtimes\win\lib\net7.0\ref" /s } (0..2)
+	exec { robocopy "$ModuleHome\ref" "$ModuleHome\runtimes\win\lib\net8.0\ref" /s } (0..2)
 	Remove-Item -LiteralPath "$ModuleHome\ref" -Force -Recurse
 
 	# prune resources, to keep our dll cache cleaner
 	Set-Location $ModuleHome
 	remove cs, de, es, fr, it, ja, ko, pl, pt-BR, ru, tr, zh-Hans, zh-Hant
 
-	#! keep unix
+	# unused
 	Set-Location runtimes
-	remove freebsd, illumos, ios, linux*, osx*, solaris, tvos, win-arm*
+	remove freebsd, illumos, ios, linux*, osx*, solaris, tvos, unix, win-arm*
 }
 
 task installRes {

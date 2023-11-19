@@ -9,16 +9,11 @@ namespace FarNet.Forms;
 /// <summary>
 /// Base class of dialog and control event arguments.
 /// </summary>
-public class AnyEventArgs : EventArgs
+/// <param name="control">The control related to this event.</param>
+public class AnyEventArgs(IControl? control) : EventArgs
 {
-	/// <param name="control">The control related to this event.</param>
-	public AnyEventArgs(IControl? control)
-	{
-		Control = control;
-	}
-
 	/// <summary>
 	/// Gets the event control. See the constructor for details.
 	/// </summary>
-	public IControl? Control { get; }
+	public IControl? Control { get; } = control;
 }

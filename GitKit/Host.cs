@@ -154,7 +154,7 @@ public class Host : ModuleHost
 			{
 			}
 		}
-		return creds ?? new();
+		return creds ?? [];
 	}
 
 	static LocalCredentials? ReadCredentials(string host)
@@ -222,12 +222,10 @@ public class Host : ModuleHost
 
 		var credentials = ReadCredentials(host);
 
-		var res = UIDialogCredentials($"{host} credentials", credentials?.U, credentials?.P);
-		if (res is null)
-			throw new ModuleException("Cannot get git credentials.");
+		(string, string, bool)? res = UIDialogCredentials($"{host} credentials", credentials?.U, credentials?.P)
+			?? throw new ModuleException("Cannot get git credentials.");
 
 		var (username, password, save) = res.Value;
-
 		SaveCredentials(host, new LocalCredentials(username, password), save);
 
 		return new UsernamePasswordCredentials

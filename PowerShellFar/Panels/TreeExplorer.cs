@@ -20,7 +20,7 @@ public class TreeExplorer : Explorer
 {
 	const string TypeIdString = "7c3f54bc-721c-4bc0-8d05-afbd526561f6";
 	readonly TreeFileCollection _RootFiles = new(null);
-	readonly List<FarFile> _Files = new();
+	readonly List<FarFile> _Files = [];
 
 	/// <summary>
 	/// Root files.
@@ -42,8 +42,7 @@ public class TreeExplorer : Explorer
 	/// <inheritdoc/>
 	public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		_Files.Clear();
 

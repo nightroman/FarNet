@@ -12,8 +12,8 @@ namespace FarNet.Works;
 public abstract class ShelveInfo
 {
 	//! PSF test.
-	public static Collection<ShelveInfo> Stack { get { return new Collection<ShelveInfo>(_Stack); } }
-	static readonly List<ShelveInfo> _Stack = new();
+	public static Collection<ShelveInfo> Stack => new(_Stack);
+	static readonly List<ShelveInfo> _Stack = [];
 
 	//! PSF test.
 	public string[]? GetSelectedNames() => _SelectedNames;
@@ -36,7 +36,7 @@ public abstract class ShelveInfo
 
 	protected void InitSelectedNames(IPanel panel)
 	{
-		if (panel == null) throw new ArgumentNullException(nameof(panel));
+		ArgumentNullException.ThrowIfNull(panel);
 
 		// nothing
 		if (!panel.SelectionExists)
@@ -51,7 +51,7 @@ public abstract class ShelveInfo
 
 	protected void InitSelectedIndexes(IPanel panel)
 	{
-		if (panel == null) throw new ArgumentNullException(nameof(panel));
+		ArgumentNullException.ThrowIfNull(panel);
 
 		// nothing
 		if (!panel.SelectionExists)

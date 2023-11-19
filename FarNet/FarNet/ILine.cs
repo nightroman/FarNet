@@ -130,7 +130,7 @@ public abstract class ILine
 	/// </remarks>
 	public Match? MatchCaret(Regex regex)
 	{
-		if (regex == null) throw new ArgumentNullException("regex");
+		ArgumentNullException.ThrowIfNull(regex);
 
 		int caret = Caret;
 		for (var match = regex.Match(Text); match.Success; match = match.NextMatch())

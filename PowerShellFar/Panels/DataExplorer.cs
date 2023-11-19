@@ -39,8 +39,7 @@ sealed class DataExplorer : TableExplorer
 	///
 	public override void DoCreateFile(CreateFileEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		args.Result = JobResult.Ignore;
 		Panel!.DoCreateFile();
@@ -49,8 +48,7 @@ sealed class DataExplorer : TableExplorer
 	///
 	public override void DoGetContent(GetContentEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		args.UseText = A.InvokeFormatList(args.File.Data, false);
 	}

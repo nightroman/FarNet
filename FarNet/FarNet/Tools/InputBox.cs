@@ -36,7 +36,7 @@ public class InputBox
 	/// <param name="title">Optional dialog title.</param>
 	public InputBox(string? prompt = null, string? title = null)
 	{
-		var promptLines = prompt is null ? Array.Empty<string>() : Kit.SplitLines(prompt);
+		var promptLines = prompt is null ? [] : Kit.SplitLines(prompt);
 
 		int w = Far.Api.UI.WindowSize.X - 7;
 		int h = 5 + promptLines.Length;

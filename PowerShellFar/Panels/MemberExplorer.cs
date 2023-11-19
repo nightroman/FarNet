@@ -50,8 +50,7 @@ public sealed class MemberExplorer : Explorer
 	/// <param name="instance">An object which members are shown.</param>
 	public MemberExplorer(object instance) : base(new Guid(TypeIdString))
 	{
-		if (instance is null)
-			throw new ArgumentNullException(nameof(instance));
+		ArgumentNullException.ThrowIfNull(instance);
 
 		if (instance is IPanel)
 			throw new NotSupportedException("Panel instance is not supported.");
@@ -184,8 +183,7 @@ public sealed class MemberExplorer : Explorer
 	/// <inheritdoc/>
 	public override void GetContent(GetContentEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		// info
 		var pi = Cast<PSPropertyInfo>.From(args.File.Data);
@@ -209,8 +207,7 @@ public sealed class MemberExplorer : Explorer
 	/// <inheritdoc/>
 	public override void SetText(SetTextEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		var pi = Cast<PSPropertyInfo>.From(args.File.Data);
 		if (pi is null)
@@ -222,8 +219,7 @@ public sealed class MemberExplorer : Explorer
 	/// <inheritdoc/>
 	public override void DeleteFiles(DeleteFilesEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		// skip not default modes
 		if (MemberMode != 0)
@@ -235,7 +231,7 @@ public sealed class MemberExplorer : Explorer
 		// ask
 		if (args.UI && 0 != (long)Far.Api.GetSetting(FarSetting.Confirmations, "Delete"))
 		{
-			if (Far.Api.Message("Delete selected members", Res.Delete, MessageOptions.None, new string[] { Res.Delete, Res.Cancel }) != 0)
+			if (Far.Api.Message("Delete selected members", Res.Delete, MessageOptions.None, [Res.Delete, Res.Cancel]) != 0)
 			{
 				args.Result = JobResult.Ignore;
 				return;
@@ -268,8 +264,7 @@ public sealed class MemberExplorer : Explorer
 	/// <inheritdoc/>
 	public override void CreateFile(CreateFileEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		args.Result = JobResult.Ignore;
 

@@ -15,8 +15,8 @@ namespace FarNet.Tools;
 
 class XPathObjectNode
 {
-	static readonly XmlAttributeInfo[] _emptyAttributes = Array.Empty<XmlAttributeInfo>();
-	static readonly XPathObjectNode[] _emptyElements = Array.Empty<XPathObjectNode>();
+	static readonly XmlAttributeInfo[] _emptyAttributes = [];
+	static readonly XPathObjectNode[] _emptyElements = [];
 	readonly XPathObjectContext _context;
 	readonly object _target;
 	readonly string _name;
@@ -221,7 +221,7 @@ class XPathObjectNode
 		}
 	}
 
-	IList<XPathObjectNode> ActivateDictionary()
+	List<XPathObjectNode> ActivateDictionary()
 	{
 		// no attributes
 		_attributes = _emptyAttributes;
@@ -249,7 +249,7 @@ class XPathObjectNode
 		return elements;
 	}
 
-	IList<XPathObjectNode> ActivateCollection()
+	List<XPathObjectNode> ActivateCollection()
 	{
 		// no attributes
 		_attributes = _emptyAttributes;

@@ -671,7 +671,7 @@ $r = TabExpansion2 @args
 				// invoke task
 				var args = new RunArgs("Invoke-Build $args[0] $args[1]")
 				{
-					Arguments = new object[] { taskName, fileName },
+					Arguments = [taskName, fileName],
 					Writer = new ConsoleOutputWriter()
 				};
 				A.Psf.Run(args);

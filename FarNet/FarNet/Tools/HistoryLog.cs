@@ -16,22 +16,13 @@ namespace FarNet.Tools;
 /// Reads, writes, and cleans file history logs.
 /// </summary>
 /// <seealso cref="HistoryMenu"/>.
-public sealed class HistoryLog : HistoryStore
+/// <param name="fileName">History log file name.</param>
+/// <param name="maximumCount">Maximum number of history records.</param>
+public sealed class HistoryLog(string fileName, int maximumCount) : HistoryStore
 {
-	readonly string _fileName;
-	readonly int _maximumCount;
+	readonly string _fileName = fileName;
+	readonly int _maximumCount = maximumCount;
 	string? _lastLine;
-
-	/// <summary>
-	/// New history log.
-	/// </summary>
-	/// <param name="fileName">History log file name.</param>
-	/// <param name="maximumCount">Maximum number of history records.</param>
-	public HistoryLog(string fileName, int maximumCount)
-	{
-		_fileName = fileName;
-		_maximumCount = maximumCount;
-	}
 
 	void WriteLines(string[] lines)
 	{
@@ -57,7 +48,7 @@ public sealed class HistoryLog : HistoryStore
 		}
 		catch (FileNotFoundException)
 		{
-			return Array.Empty<string>();
+			return [];
 		}
 	}
 
@@ -105,7 +96,7 @@ public sealed class HistoryLog : HistoryStore
 			return lines;
 
 		// write and return new lines
-		lines = list.ToArray();
+		lines = [.. list];
 		WriteLines(lines);
 		return lines;
 	}

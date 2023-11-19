@@ -15,7 +15,7 @@ public static class Store
 	const string LINE_HEADER = "Time\tWhat\tPath";
 	const string LINE_FORMAT = "{0:yyyy-MM-dd HH:mm:ss}\t{1}\t{2}";
 
-	static readonly object _lock = new object();
+	static readonly object _lock = new();
 
 	/// <summary>
 	/// Creates the history file and imports the history.

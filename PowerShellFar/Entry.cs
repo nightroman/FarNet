@@ -93,7 +93,7 @@ public sealed class Entry : ModuleHost
 
 		// if ends with `#` then omit echo else make echo with prefix
 		var echo = e.Command.TrimEnd();
-		if (echo.EndsWith("#"))
+		if (echo.EndsWith('#'))
 		{
 			echo = null;
 		}

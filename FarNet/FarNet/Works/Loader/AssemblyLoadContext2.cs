@@ -8,14 +8,9 @@ using System.Runtime.Loader;
 
 namespace FarNet.Works;
 
-class AssemblyLoadContext2 : AssemblyLoadContext
+class AssemblyLoadContext2(string pluginPath, bool isCollectible = false) : AssemblyLoadContext(isCollectible)
 {
-	readonly AssemblyDependencyResolver _resolver;
-
-	public AssemblyLoadContext2(string pluginPath, bool isCollectible = false) : base(isCollectible)
-	{
-		_resolver = new AssemblyDependencyResolver(pluginPath);
-	}
+	readonly AssemblyDependencyResolver _resolver = new(pluginPath);
 
 	protected override Assembly? Load(AssemblyName assemblyName)
 	{

@@ -2,12 +2,8 @@
 
 namespace GitKit;
 
-abstract class AnyPanel : Panel
+abstract class AnyPanel(Explorer explorer) : Panel(explorer)
 {
-	public AnyPanel(Explorer explorer) : base(explorer)
-	{
-	}
-
 	protected abstract string HelpTopic { get; }
 
 	internal abstract void AddMenu(IMenu menu);
@@ -39,7 +35,7 @@ abstract class AnyPanel : Panel
 		{
 			Host.InvokeScript(
 				"[PowerShellFar.MemberExplorer]::new($args[0]).CreatePanel().OpenChild($args[1])",
-				new object[] { data, this });
+				[data, this]);
 		}
 	}
 

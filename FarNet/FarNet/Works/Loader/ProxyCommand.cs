@@ -43,8 +43,7 @@ sealed class ProxyCommand : ProxyAction, IModuleCommand
 
 	public void Invoke(object sender, ModuleCommandEventArgs e)
 	{
-		if (e is null)
-			throw new ArgumentNullException(nameof(e));
+		ArgumentNullException.ThrowIfNull(e);
 
 		Invoking();
 

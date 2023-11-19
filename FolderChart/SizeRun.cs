@@ -22,11 +22,11 @@ namespace FolderChart;
 
 class SizeRun
 {
-	public IEnumerable<FolderItem> Result { get { return _Result; } }
-	public Exception[] GetErrors() { return _Errors.ToArray(); }
+	public IEnumerable<FolderItem> Result => _Result;
+	public Exception[] GetErrors() => [.. _Errors];
 
-	readonly ConcurrentBag<FolderItem> _Result = new();
-	readonly ConcurrentBag<Exception> _Errors = new();
+	readonly ConcurrentBag<FolderItem> _Result = [];
+	readonly ConcurrentBag<Exception> _Errors = [];
 	readonly ProgressForm _progress = new();
 
 	void Check()

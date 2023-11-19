@@ -3,35 +3,25 @@
 	How to define and use settings in a script.
 
 .Description
-	This script does not use any FarNet module.
+	This script defines and uses its own settings.
 
-	System.Xml is not needed in this sample.
-	But it will be needed for XML attributes.
+	[XmlRoot("Data")] is not really needed, just testing.
+	System.Xml.ReaderWriter is only needed for XML attributes.
 #>
 
-Add-Type -ReferencedAssemblies "$env:FARHOME\FarNet\FarNet.dll", System.Xml @'
+Add-Type -ReferencedAssemblies "$env:FARHOME\FarNet\FarNet.dll", System.Xml.ReaderWriter @'
 using FarNet;
 using System;
 using System.Xml.Serialization;
 
-public class MySettings : ModuleSettings<MySettings.Data>
+public class MySettings(string fileName) : ModuleSettings<MySettings.Data>(fileName)
 {
+	[XmlRoot("Data")]
 	public class Data
 	{
-		public string Name { get; set; }
+		public string Name { get; set; } = "qwerty";
 		public int Age { get; set; }
-
-		public Data()
-		{
-			Name = "qwerty";
-		}
 	}
-
-	public MySettings(string fileName) : base(fileName)
-	{
-	}
-
-	public int WarningNoPublicMembers;
 }
 '@
 

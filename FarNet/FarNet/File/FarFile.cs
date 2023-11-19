@@ -212,10 +212,7 @@ public abstract class FarFile : IXmlInfo
 	/// <summary>
 	/// INTERNAL
 	/// </summary>
-	public virtual string XmlNodeName()
-	{
-		return IsDirectory ? "Directory" : "File";
-	}
+	public virtual string XmlNodeName() => IsDirectory ? "Directory" : "File";
 
 	static ReadOnlyCollection<XmlAttributeInfo>? _attrs;
 	static ReadOnlyCollection<XmlAttributeInfo> XmlAttr()
@@ -223,22 +220,22 @@ public abstract class FarFile : IXmlInfo
 		if (_attrs != null)
 			return _attrs;
 
-		var attrs = new XmlAttributeInfo[]
-		{
-			new XmlAttributeInfo("Name", (object file) => ((FarFile)file).Name),
-			new XmlAttributeInfo("Description", (object file) => ((FarFile)file).Description),
-			new XmlAttributeInfo("Owner", (object file) => ((FarFile)file).Owner),
-			new XmlAttributeInfo("Length", (object file) => ((FarFile)file).Length),
-			new XmlAttributeInfo("CreationTime", (object file) => ((FarFile)file).CreationTime),
-			new XmlAttributeInfo("LastAccessTime", (object file) => ((FarFile)file).LastAccessTime),
-			new XmlAttributeInfo("LastWriteTime", (object file) => ((FarFile)file).LastWriteTime),
-			new XmlAttributeInfo("ReadOnly", (object file) => ((FarFile)file).IsReadOnly),
-			new XmlAttributeInfo("Hidden", (object file) => ((FarFile)file).IsHidden),
-			new XmlAttributeInfo("System", (object file) => ((FarFile)file).IsSystem),
-			new XmlAttributeInfo("Archive", (object file) => ((FarFile)file).IsArchive),
-			new XmlAttributeInfo("Compressed", (object file) => ((FarFile)file).IsCompressed),
-			new XmlAttributeInfo("ReparsePoint", (object file) => ((FarFile)file).IsReparsePoint),
-		};
+		XmlAttributeInfo[] attrs =
+		[
+			new("Name", file => ((FarFile)file).Name),
+			new("Description", file => ((FarFile)file).Description),
+			new("Owner", file => ((FarFile)file).Owner),
+			new("Length", file => ((FarFile)file).Length),
+			new("CreationTime", file => ((FarFile)file).CreationTime),
+			new("LastAccessTime", file => ((FarFile)file).LastAccessTime),
+			new("LastWriteTime", file => ((FarFile)file).LastWriteTime),
+			new("ReadOnly", file => ((FarFile)file).IsReadOnly),
+			new("Hidden", file => ((FarFile)file).IsHidden),
+			new("System", file => ((FarFile)file).IsSystem),
+			new("Archive", file => ((FarFile)file).IsArchive),
+			new("Compressed", file => ((FarFile)file).IsCompressed),
+			new("ReparsePoint", file => ((FarFile)file).IsReparsePoint),
+		];
 
 		_attrs = new ReadOnlyCollection<XmlAttributeInfo>(attrs);
 		return _attrs;
@@ -247,8 +244,5 @@ public abstract class FarFile : IXmlInfo
 	/// <summary>
 	/// INTERNAL
 	/// </summary>
-	public virtual IList<XmlAttributeInfo> XmlAttributes()
-	{
-		return XmlAttr();
-	}
+	public virtual IList<XmlAttributeInfo> XmlAttributes() => XmlAttr();
 }

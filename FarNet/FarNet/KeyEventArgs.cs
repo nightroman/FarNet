@@ -9,18 +9,14 @@ namespace FarNet;
 /// <summary>
 /// Arguments of key events.
 /// </summary>
-public sealed class KeyEventArgs : EventArgs
+/// <param name="key">Key data.</param>
+public sealed class KeyEventArgs(KeyInfo key) : EventArgs
 {
-	/// <param name="key">Key data.</param>
-	public KeyEventArgs(KeyInfo key)
-	{
-		Key = key;
-	}
 
 	/// <summary>
 	/// Key data.
 	/// </summary>
-	public KeyInfo Key { get; }
+	public KeyInfo Key { get; } = key;
 
 	/// <summary>
 	/// Ignore event.

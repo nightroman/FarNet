@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.Explore
 
+= 5.0.0 =
+
+Requires FarNet 8
+
 = 4.0.2 =
 
 Parameters

@@ -81,7 +81,7 @@ public sealed class ListMenu : AnyMenu, IListMenu
 		}
 
 		// case: not yet filtered
-		_ii = new List<int>();
+		_ii = [];
 		int i = -1;
 		foreach (var mi in Items)
 		{
@@ -300,7 +300,7 @@ public sealed class ListMenu : AnyMenu, IListMenu
 			}
 
 			// let only delete the filter excess over predefined
-			if (_filter.Length > Incremental.Length || _filter.Length == Incremental.Length && Incremental.EndsWith("*"))
+			if (_filter.Length > Incremental.Length || _filter.Length == Incremental.Length && Incremental.EndsWith('*'))
 			{
 				char c = _filter[^1];
 				_filter = _filter[..^1];

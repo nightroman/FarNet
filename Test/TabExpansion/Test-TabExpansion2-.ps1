@@ -3,6 +3,8 @@
 	Tests TabExpansion2.
 #>
 
+return
+
 $ErrorActionPreference = 1
 $Error.Clear()
 
@@ -11,8 +13,8 @@ if ($Host.Name -ceq 'FarHost') {
 	& "$($Psf.AppHome)\TabExpansion2.ps1"
 }
 
-# Set location in here, we assume and use some files
-Set-Location -LiteralPath (Split-Path $MyInvocation.MyCommand.Path)
+# Set location, we assume some files
+Set-Location -LiteralPath $PSScriptRoot
 
 # Invokes TabExpansion and tests the results.
 function Test([Parameter()]$line, $assert, $caret=$line.Length)

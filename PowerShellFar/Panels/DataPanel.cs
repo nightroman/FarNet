@@ -127,11 +127,8 @@ public sealed class DataPanel : TablePanel, IDisposable
 	/// </summary>
 	public void Dispose()
 	{
-		if (_Builder != null)
-			_Builder.Dispose();
-
-		if (Table != null)
-			Table.Dispose();
+		_Builder?.Dispose();
+		Table?.Dispose();
 	}
 
 	/// <include file='doc.xml' path='doc/ScriptFork/*'/>
@@ -400,7 +397,7 @@ public sealed class DataPanel : TablePanel, IDisposable
 
 		if (args.UI && 0 != (long)Far.Api.GetSetting(FarSetting.Confirmations, "Delete"))
 		{
-			if (0 != Far.Api.Message("Delete selected record(s)?", Res.Delete, MessageOptions.None, new string[] { Res.Delete, Res.Cancel }))
+			if (0 != Far.Api.Message("Delete selected record(s)?", Res.Delete, MessageOptions.None, [Res.Delete, Res.Cancel]))
 				return;
 		}
 
@@ -442,8 +439,7 @@ public sealed class DataPanel : TablePanel, IDisposable
 
 	internal IList<FarFile>? Explore(GetFilesEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		var Files = Explorer.Cache;
 
@@ -491,8 +487,7 @@ public sealed class DataPanel : TablePanel, IDisposable
 
 	void Fill()
 	{
-		if (Adapter != null)
-			Adapter.Fill(PageOffset, PageLimit, Table!);
+		Adapter?.Fill(PageOffset, PageLimit, Table!);
 
 		var Files = Explorer.Cache;
 		Files.Clear();
@@ -729,9 +724,7 @@ public sealed class DataPanel : TablePanel, IDisposable
 			foreach (DataColumn c in Table!.Columns)
 				list.Add(c.ColumnName);
 
-			list.AddRange(new string[] {
-"","and","avg","between","child","convert","count","false","iif","in","is","isnull","len","like","max","min","not","null","or","parent","stdev","substring","sum","trim","true","var",
-});
+			list.AddRange(s_words);
 
 			return list;
 		}
@@ -834,4 +827,33 @@ public sealed class DataPanel : TablePanel, IDisposable
 	/// Gets or sets the expression used to filter which rows are viewed. See <see cref="DataView.RowFilter"/>.
 	/// </summary>
 	public string? ViewRowFilter { get; set; }
+
+	private static readonly string[] s_words = [
+		"",
+		"and",
+		"avg",
+		"between",
+		"child",
+		"convert",
+		"count",
+		"false",
+		"iif",
+		"in",
+		"is",
+		"isnull",
+		"len",
+		"like",
+		"max",
+		"min",
+		"not",
+		"null",
+		"or",
+		"parent",
+		"stdev",
+		"substring",
+		"sum",
+		"trim",
+		"true",
+		"var",
+	];
 }

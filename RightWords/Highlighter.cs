@@ -17,7 +17,7 @@ public class Highlighter : ModuleDrawer
 	/// <summary>
 	/// Last checked line data cache.
 	/// </summary>
-	LineData[] _lastData = Array.Empty<LineData>();
+	LineData[] _lastData = [];
 
 	public Highlighter()
 	{
@@ -71,7 +71,7 @@ public class Highlighter : ModuleDrawer
 		// if known words changed then drop the cache
 		if (_knownWordsVersion != KnownWords.Version)
 		{
-			_lastData = Array.Empty<LineData>();
+			_lastData = [];
 			_knownWordsVersion = KnownWords.Version;
 		}
 
@@ -135,7 +135,7 @@ public class Highlighter : ModuleDrawer
 					continue;
 
 				// expensive skip pattern
-				if (Actor.HasMatch(skip ?? (skip = Actor.GetMatches(settings.SkipRegex2, text)), match))
+				if (Actor.HasMatch(skip ??= Actor.GetMatches(settings.SkipRegex2, text), match))
 					continue;
 
 				// add the span
@@ -149,7 +149,7 @@ public class Highlighter : ModuleDrawer
 			}
 			else
 			{
-				newData[newDataIndex] = new LineData { Text = text, Spans = lineSpans.ToArray() };
+				newData[newDataIndex] = new LineData { Text = text, Spans = [.. lineSpans] };
 
 				foreach (var span in lineSpans)
 					e.Colors.Add(new EditorColor(

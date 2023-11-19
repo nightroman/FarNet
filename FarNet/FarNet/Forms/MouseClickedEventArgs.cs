@@ -7,19 +7,14 @@ namespace FarNet.Forms;
 /// <summary>
 /// <c>MouseClicked</c> event arguments for <see cref="IDialog"/> and <see cref="IControl"/>.
 /// </summary>
-public sealed class MouseClickedEventArgs : AnyEventArgs
+/// <param name="control">Current control.</param>
+/// <param name="mouse">Mouse info.</param>
+public sealed class MouseClickedEventArgs(IControl control, MouseInfo mouse) : AnyEventArgs(control)
 {
-	/// <param name="control">Current control.</param>
-	/// <param name="mouse">Mouse info.</param>
-	public MouseClickedEventArgs(IControl control, MouseInfo mouse) : base(control)
-	{
-		Mouse = mouse;
-	}
-
 	/// <summary>
 	/// Mouse info.
 	/// </summary>
-	public MouseInfo Mouse { get; set; }
+	public MouseInfo Mouse { get; set; } = mouse;
 
 	/// <summary>
 	/// Ignore further processing.

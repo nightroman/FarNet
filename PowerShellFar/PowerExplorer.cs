@@ -12,13 +12,9 @@ namespace PowerShellFar;
 /// <summary>
 /// Explorer designed for PowerShell scripts.
 /// </summary>
-public class PowerExplorer : Explorer
+/// <inheritdoc/>
+public class PowerExplorer(Guid typeId) : Explorer(typeId)
 {
-	/// <inheritdoc/>
-	public PowerExplorer(Guid typeId) : base(typeId)
-	{
-	}
-
 	/// <summary>
 	/// Gets the collection ready to use as the file cache, if needed.
 	/// </summary>

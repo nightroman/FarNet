@@ -77,7 +77,7 @@ sealed class Session : IDisposable
 	}
 
 	// see ClearScriptConsole.cs
-	static ScriptEngine V8ScriptEngine(string root, SessionConfiguration config)
+	static V8ScriptEngine V8ScriptEngine(string root, SessionConfiguration config)
 	{
 		var engine = new V8ScriptEngine(root, config.V8ScriptEngineFlags)
 		{

@@ -19,18 +19,11 @@ class BaseFileCmdlet : BaseCmdlet
 	[Parameter]
 	public SwitchParameter Passive { get; set; }
 
-	internal class PathEnumerator : My.Enumerator<string, FarFile>
+	internal class PathEnumerator(IEnumerable<FarFile> files, string path, bool realNames, bool joinRealNames) : My.Enumerator<string, FarFile>(files)
 	{
-		readonly string _path;
-		readonly bool _realNames;
-		readonly bool _joinRealNames;
-
-		public PathEnumerator(IEnumerable<FarFile> files, string path, bool realNames, bool joinRealNames) : base(files)
-		{
-			_path = path;
-			_realNames = realNames;
-			_joinRealNames = realNames && joinRealNames;
-		}
+		readonly string _path = path;
+		readonly bool _realNames = realNames;
+		readonly bool _joinRealNames = realNames && joinRealNames;
 
 		public override bool MoveNext()
 		{

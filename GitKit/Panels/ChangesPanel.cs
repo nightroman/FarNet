@@ -17,7 +17,7 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 		var cn = new SetColumn { Kind = "N", Name = "Path" };
 		var cd = new SetColumn { Kind = "Z", Name = "Status", Width = 10 };
 
-		var plan0 = new PanelPlan { Columns = new FarColumn[] { cd, cn } };
+		var plan0 = new PanelPlan { Columns = [cd, cn] };
 		SetPlan(0, plan0);
 	}
 
@@ -25,8 +25,7 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 
 	void EditChangeFile()
 	{
-		var change = CurrentFile?.Data as TreeEntryChanges;
-		if (change is null || !change.Exists || Repository.Info.WorkingDirectory is not string workdir)
+		if (CurrentFile?.Data is not TreeEntryChanges change || !change.Exists || Repository.Info.WorkingDirectory is not string workdir)
 			return;
 
 		var editor = Far.Api.CreateEditor();
@@ -36,8 +35,7 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 
 	void OpenCommitLog()
 	{
-		var change = CurrentFile?.Data as TreeEntryChanges;
-		if (change is null)
+		if (CurrentFile?.Data is not TreeEntryChanges change)
 			return;
 
 		var path = change.Exists ? change.Path : change.OldExists ? change.OldPath : null;

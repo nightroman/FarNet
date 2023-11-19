@@ -42,15 +42,15 @@ public class TreePanel : AnyPanel
 		// mode: tree column and description status
 		var plan0 = new PanelPlan
 		{
-			Columns = new FarColumn[] { cO },
-			StatusColumns = new FarColumn[] { cZ }
+			Columns = [cO],
+			StatusColumns = [cZ]
 		};
 		SetPlan(0, plan0);
 
 		// mode: tree and description columns
 		var plan1 = new PanelPlan
 		{
-			Columns = new FarColumn[] { cO, cZ }
+			Columns = [cO, cZ]
 		};
 		SetPlan((PanelViewMode)1, plan1);
 	}
@@ -66,8 +66,7 @@ public class TreePanel : AnyPanel
 	/// <param name="file">The node to open/close.</param>
 	public override void OpenFile(FarFile file)
 	{
-		if (file is null)
-			throw new ArgumentNullException(nameof(file));
+		ArgumentNullException.ThrowIfNull(file);
 
 		var node = (TreeFile)file;
 		if (node._State == 0)
@@ -87,8 +86,7 @@ public class TreePanel : AnyPanel
 	/// <inheritdoc/>
 	public override bool UIKeyPressed(KeyInfo key)
 	{
-		if (key is null)
-			throw new ArgumentNullException(nameof(key));
+		ArgumentNullException.ThrowIfNull(key);
 
 		switch (key.VirtualKeyCode)
 		{
@@ -163,8 +161,7 @@ public class TreePanel : AnyPanel
 	/// <inheritdoc/>
 	public override IEnumerable<FarFile> UIGetFiles(GetFilesEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		args.Parameter = new TreeExplorerGetFilesParameter() { ShowHidden = ShowHidden };
 

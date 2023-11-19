@@ -52,8 +52,7 @@ public abstract class FormatExplorer : TableExplorer
 	/// <inheritdoc/>
 	public override IList<FarFile> DoGetFiles(GetFilesEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		// call the worker
 		// _090408_232925 If we throw then FarNet returns false and Far closes the panel.
@@ -103,7 +102,7 @@ public abstract class FormatExplorer : TableExplorer
 				return Cache;
 
 			// reuse the mode: reset columns, keep other data intact
-			plan.Columns = new FarColumn[] { new SetColumn() { Kind = "N", Name = "<empty>" } };
+			plan.Columns = [new SetColumn() { Kind = "N", Name = "<empty>" }];
 			panel.SetPlan(PanelViewMode.AlternativeFull, plan);
 			return Cache;
 		}
@@ -126,8 +125,7 @@ public abstract class FormatExplorer : TableExplorer
 				null == (theType = A.FindCommonType(values)))
 			{
 				// use index, value, type mode
-				if (panel != null)
-					panel.BuildPlan(Format.BuildFilesMixed(Cache, values));
+				panel?.BuildPlan(Format.BuildFilesMixed(Cache, values));
 				return Cache;
 			}
 
@@ -136,7 +134,7 @@ public abstract class FormatExplorer : TableExplorer
 			// MatchInfo of Select-String
 			if (theType.FullName == Res.MatchInfoTypeName)
 			{
-				metas = new Meta[] { new Meta("Path"), new Meta("Line") };
+				metas = [new("Path"), new("Line")];
 			}
 			else
 			{
@@ -150,14 +148,12 @@ public abstract class FormatExplorer : TableExplorer
 
 			if (metas is null)
 			{
-				if (panel != null)
-					panel.BuildPlan(Format.BuildFilesMixed(Cache, values));
+				panel?.BuildPlan(Format.BuildFilesMixed(Cache, values));
 			}
 			else
 			{
 				MakeMap(metas);
-				if (panel != null)
-					panel.SetPlan(PanelViewMode.AlternativeFull, Format.SetupPanelMode(Metas!));
+				panel?.SetPlan(PanelViewMode.AlternativeFull, Format.SetupPanelMode(Metas!));
 
 				BuildFiles(values);
 			}

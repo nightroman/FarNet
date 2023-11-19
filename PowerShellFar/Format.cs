@@ -110,7 +110,7 @@ static class Format
 			foreach (PSPropertyInfo pi in values[0].Properties)
 				if (membersToShow.Contains(pi.Name))
 					list.Add(new Meta(pi.Name));
-			metas = list.ToArray();
+			metas = [.. list];
 		}
 		// heterogeneous: just get mixed properties as they are
 		else

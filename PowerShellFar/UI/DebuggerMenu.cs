@@ -107,13 +107,13 @@ class DebuggerMenu
 				switch (Far.Api.Message("Breakpoint exists",
 					"Line breakpoint",
 					MessageOptions.None,
-					new string[] {
+					[
 						"&Remove",
 						bpFound.Enabled ? "&Disable" : "&Enable",
 						"&Modify",
 						"&Add",
-						"&Cancel"
-					}))
+						"&Cancel",
+					]))
 				{
 					case 0:
 						A.RemoveBreakpoint(bpFound);

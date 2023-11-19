@@ -9,6 +9,7 @@ using System.Globalization;
 using System.IO;
 
 namespace FarNet;
+#pragma warning disable CA1822
 
 /// <summary>
 /// Main interface which exposes top entries of the FarNet object model.

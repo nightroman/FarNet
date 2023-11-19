@@ -24,11 +24,10 @@ public abstract class ListPanel : AnyPanel
 		// 090411 Use custom Descriptions mode
 		var plan = new PanelPlan
 		{
-			Columns = new FarColumn[]
-			{
+			Columns = [
 				new SetColumn { Kind = "N", Name = "Name" },
-				new SetColumn { Kind = "Z", Name = "Value" }
-			}
+				new SetColumn { Kind = "Z", Name = "Value" },
+			]
 		};
 		SetPlan(PanelViewMode.AlternativeFull, plan);
 
@@ -46,8 +45,7 @@ public abstract class ListPanel : AnyPanel
 	/// <param name="file">The file to process.</param>
 	public override void OpenFile(FarFile file)
 	{
-		if (file is null)
-			throw new ArgumentNullException(nameof(file));
+		ArgumentNullException.ThrowIfNull(file);
 
 		// e.g. visible mode: sender is MemberDefinition
 		if (file.Data is not PSPropertyInfo pi)
@@ -116,7 +114,7 @@ public abstract class ListPanel : AnyPanel
 	{
 		// base
 		string code = e.Command.TrimStart();
-		if (!code.StartsWith("=", StringComparison.Ordinal))
+		if (!code.StartsWith('='))
 			return;
 
 		// we do
@@ -207,8 +205,7 @@ public abstract class ListPanel : AnyPanel
 	/// <inheritdoc/>
 	public override bool UIKeyPressed(KeyInfo key)
 	{
-		if (key is null)
-			throw new ArgumentNullException(nameof(key));
+		ArgumentNullException.ThrowIfNull(key);
 
 		switch (key.VirtualKeyCode)
 		{

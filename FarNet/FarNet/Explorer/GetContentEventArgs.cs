@@ -9,20 +9,15 @@ namespace FarNet;
 /// <summary>
 /// Export file arguments.
 /// </summary>
-public class GetContentEventArgs : ExplorerFileEventArgs
+/// <param name="mode">See <see cref="ExplorerEventArgs.Mode"/></param>
+/// <param name="file">See <see cref="ExplorerFileEventArgs.File"/></param>
+/// <param name="fileName">See <see cref="FileName"/></param>
+public class GetContentEventArgs(ExplorerModes mode, FarFile file, string fileName) : ExplorerFileEventArgs(mode, file)
 {
-	/// <param name="mode">See <see cref="ExplorerEventArgs.Mode"/></param>
-	/// <param name="file">See <see cref="ExplorerFileEventArgs.File"/></param>
-	/// <param name="fileName">See <see cref="FileName"/></param>
-	public GetContentEventArgs(ExplorerModes mode, FarFile file, string fileName) : base(mode, file)
-	{
-		FileName = fileName;
-	}
-
 	/// <summary>
 	/// Gets the destination file path.
 	/// </summary>
-	public string FileName { get; }
+	public string FileName { get; } = fileName;
 
 	/// <summary>
 	/// Tells that the file can be updated.

@@ -9,18 +9,13 @@ namespace FarNet;
 /// <summary>
 /// Arguments of a module command event.
 /// </summary>
-public class ModuleCommandEventArgs : EventArgs
+/// <param name="command">See <see cref="Command"/></param>
+public class ModuleCommandEventArgs(string command) : EventArgs
 {
-	/// <param name="command">See <see cref="Command"/></param>
-	public ModuleCommandEventArgs(string command)
-	{
-		Command = command;
-	}
-
 	/// <summary>
 	/// Gets the command text.
 	/// </summary>
-	public string Command { get; }
+	public string Command { get; } = command;
 
 	/// <summary>
 	/// Gets or sets the command prefix.

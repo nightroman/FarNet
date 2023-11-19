@@ -27,9 +27,8 @@ sealed class BlameCommand : BaseCommand
 		// get lines from the blob to ensure the same content as used by blame
 		var lines = new List<string>();
 		{
-			var blob = Repository.Head.Tip?.Tree[_path]?.Target as Blob;
-			if (blob is null)
-				throw new ModuleException($"Cannot find '{_path}' in the tree.");
+			var blob = Repository.Head.Tip?.Tree[_path]?.Target as Blob
+				?? throw new ModuleException($"Cannot find '{_path}' in the tree.");
 
 			using var stream = blob.GetContentStream();
 			using var reader = new StreamReader(stream);

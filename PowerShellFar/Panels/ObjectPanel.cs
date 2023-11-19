@@ -76,7 +76,7 @@ public class ObjectPanel : FormatPanel
 	/// <summary>
 	/// Files data.
 	/// </summary>
-	IList<object> CollectData()
+	List<object> CollectData()
 	{
 		var Files = Explorer.Cache;
 		var r = new List<object>

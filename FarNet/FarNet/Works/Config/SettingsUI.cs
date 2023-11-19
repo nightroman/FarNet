@@ -41,9 +41,7 @@ public static class SettingsUI
 
 		// obtain settings
 		var assembly = data.Key.LoadAssembly(false);
-		var settingsType = assembly.GetType(data.Value);
-		if (settingsType is null)
-			throw new Exception();
+		var settingsType = assembly.GetType(data.Value) ?? throw new Exception();
 		var info = settingsType.GetProperty("Default", BindingFlags.Static | BindingFlags.Public);
 
 		ModuleSettingsBase? instance;

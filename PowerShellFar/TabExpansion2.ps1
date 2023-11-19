@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.0.7
+.VERSION 1.0.8
 .AUTHOR Roman Kuzmin
 .COPYRIGHT (c) Roman Kuzmin
 .GUID 550bc198-dd44-4bbc-8ad7-ccf4b8bd2aff
@@ -213,12 +213,7 @@ function global:TabExpansion2 {
 			if (${*}.result.CompletionMatches) {
 				return ${*}.result
 			}
-			${*}.result = &{
-				param(${*})
-				function TabExpansion {'*'}
-				[System.Management.Automation.CommandCompletion]::CompleteInput("$(${*}.ast)", ${*}.positionOfCursor.Offset, $null)
-			} ${*}
-			${*}.result.CompletionMatches.Clear()
+			${*}.result.CompletionMatches = New-Object System.Collections.ObjectModel.Collection[System.Management.Automation.CompletionResult]
 		}
 
 		# invoke processors

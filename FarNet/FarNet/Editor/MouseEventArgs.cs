@@ -9,18 +9,13 @@ namespace FarNet;
 /// <summary>
 /// Arguments of mouse events.
 /// </summary>
-public sealed class MouseEventArgs : EventArgs
+/// <param name="mouse">Mouse data.</param>
+public sealed class MouseEventArgs(MouseInfo mouse) : EventArgs
 {
-	/// <param name="mouse">Mouse data.</param>
-	public MouseEventArgs(MouseInfo mouse)
-	{
-		Mouse = mouse;
-	}
-
 	/// <summary>
 	/// Mouse data.
 	/// </summary>
-	public MouseInfo Mouse { get; }
+	public MouseInfo Mouse { get; } = mouse;
 
 	/// <summary>
 	/// Ignore event.

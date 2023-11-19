@@ -7,23 +7,13 @@ namespace FarNet.Tools;
 /// <summary>
 /// History next line navigator.
 /// </summary>
-public class HistoryNext
+/// <param name="lines">The history lines.</param>
+/// <param name="start">The start line. It is returned when navigation steps after the last line.</param>
+public class HistoryNext(string[] lines, string start)
 {
-	readonly string[] _lines;
-	readonly string _start;
-	int _index;
-
-	/// <summary>
-	/// New from lines and start line.
-	/// </summary>
-	/// <param name="lines">The history lines.</param>
-	/// <param name="start">The start line. It is returned when navigation steps after the last line.</param>
-	public HistoryNext(string[] lines, string start)
-	{
-		_lines = lines;
-		_start = start;
-		_index = lines.Length;
-	}
+	readonly string[] _lines = lines;
+	readonly string _start = start;
+	int _index = lines.Length;
 
 	/// <summary>
 	/// Gets the next line from history different from the current.

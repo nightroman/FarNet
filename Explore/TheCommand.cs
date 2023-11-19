@@ -22,8 +22,7 @@ public class TheCommand : ModuleCommand
 		}
 
 		// the module panel
-		Panel panel = Far.Api.Panel as Panel;
-		if (panel == null)
+		if (Far.Api.Panel is not Panel panel)
 		{
 			Far.Api.Message("This is not a module panel.");
 			return;
@@ -33,8 +32,7 @@ public class TheCommand : ModuleCommand
 		var search = new SearchFileCommand(panel.Explorer);
 
 		// parameters
-		var parameters = new string[]
-		{
+		string[] parameters = [
 			"-Asynchronous",
 			"-Depth",
 			"-Directory",
@@ -42,7 +40,7 @@ public class TheCommand : ModuleCommand
 			"-Recurse",
 			"-XFile",
 			"-XPath",
-		};
+		];
 
 		// parse, setup the search
 		bool async = false;
@@ -61,7 +59,7 @@ public class TheCommand : ModuleCommand
 				if (!Far.Api.IsMaskValid(mask))
 					throw new ModuleException("Invalid mask.");
 
-				search.Filter = delegate(Explorer explorer, FarFile file)
+				search.Filter = delegate (Explorer explorer, FarFile file)
 				{
 					return Far.Api.IsMaskMatch(file.Name, mask);
 				};

@@ -16,7 +16,7 @@ class ModuleCache
 	readonly int _CountCached;
 	internal int CountFound;
 	bool _ToUpdate;
-	readonly Dictionary<string, ModuleManager> _Cache = new();
+	readonly Dictionary<string, ModuleManager> _Cache = [];
 
 	public ModuleCache()
 	{

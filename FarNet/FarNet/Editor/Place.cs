@@ -39,7 +39,7 @@ public struct Place
 	/// </summary>
 	public Point First
 	{
-		get => _first;
+		readonly get => _first;
 		set => _first = value;
 	}
 
@@ -48,21 +48,21 @@ public struct Place
 	/// </summary>
 	public Point Last
 	{
-		get => _last;
+		readonly get => _last;
 		set => _last = value;
 	}
 
 	/// <summary>
 	/// Size as (<c>Width</c>, <c>Height</c>) pair.
 	/// </summary>
-	public Point Size => new Point(Width, Height);
+	public readonly Point Size => new(Width, Height);
 
 	/// <summary>
 	/// Top line.
 	/// </summary>
 	public int Top
 	{
-		get => _first.Y;
+		readonly get => _first.Y;
 		set => _first.Y = value;
 	}
 
@@ -71,7 +71,7 @@ public struct Place
 	/// </summary>
 	public int Left
 	{
-		get => _first.X;
+		readonly get => _first.X;
 		set => _first.X = value;
 	}
 
@@ -80,7 +80,7 @@ public struct Place
 	/// </summary>
 	public int Bottom
 	{
-		get => _last.Y;
+		readonly get => _last.Y;
 		set => _last.Y = value;
 	}
 
@@ -89,7 +89,7 @@ public struct Place
 	/// </summary>
 	public int Right
 	{
-		get => _last.X;
+		readonly get => _last.X;
 		set => _last.X = value;
 	}
 
@@ -98,7 +98,7 @@ public struct Place
 	/// </summary>
 	public int Width
 	{
-		get => Right - Left + 1;
+		readonly get => Right - Left + 1;
 		set => Right = Left + value - 1;
 	}
 
@@ -107,7 +107,7 @@ public struct Place
 	/// </summary>
 	public int Height
 	{
-		get => Bottom - Top + 1;
+		readonly get => Bottom - Top + 1;
 		set => Bottom = Top + value - 1;
 	}
 
@@ -124,13 +124,13 @@ public struct Place
 	}
 
 	/// <inheritdoc/>
-	public override bool Equals(object? obj)
+	public override readonly bool Equals(object? obj)
 	{
 		return obj != null && obj.GetType() == typeof(Place) && this == (Place)obj;
 	}
 
 	/// <inheritdoc/>
-	public override int GetHashCode()
+	public override readonly int GetHashCode()
 	{
 		return First.GetHashCode() ^ Last.GetHashCode();
 	}
@@ -138,7 +138,7 @@ public struct Place
 	/// <summary>
 	/// Returns the string "(First, Last)".
 	/// </summary>
-	public override string ToString()
+	public override readonly string ToString()
 	{
 		return "(" + First + ", " + Last + ")";
 	}
@@ -147,7 +147,7 @@ public struct Place
 	/// Returns true if the rectangular contains the point.
 	/// </summary>
 	/// <param name="point">The point to test.</param>
-	public bool RectContains(Point point)
+	public readonly bool RectContains(Point point)
 	{
 		return point.X >= First.X && point.Y >= First.Y && point.X <= Last.X && point.Y <= Last.Y;
 	}

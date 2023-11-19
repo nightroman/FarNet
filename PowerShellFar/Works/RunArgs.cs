@@ -6,9 +6,9 @@ using System;
 
 namespace PowerShellFar;
 
-class RunArgs
+class RunArgs(string code)
 {
-	public string Code { get; }
+	public string Code { get; } = code;
 
 	public OutputWriter? Writer { get; set; }
 
@@ -19,9 +19,4 @@ class RunArgs
 	public object[]? Arguments { get; set; }
 
 	public Exception? Reason { get; set; }
-
-	public RunArgs(string code)
-	{
-		Code = code;
-	}
 }

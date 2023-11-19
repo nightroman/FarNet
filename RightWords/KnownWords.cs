@@ -12,7 +12,7 @@ static class KnownWords
 	/// <summary>
 	/// User selected words to ignore in this session.
 	/// </summary>
-	static readonly HashSet<string> s_IgnoreWords = new HashSet<string>();
+	static readonly HashSet<string> s_IgnoreWords = [];
 
 	/// <summary>
 	/// Cache of the common dictionary words.
@@ -59,15 +59,13 @@ static class KnownWords
 
 		// add new words to the cache and append to the file
 		var path = Path.Combine(Actor.GetUserDictionaryDirectory(true), Settings.UserFile);
-		using (var writer = File.AppendText(path))
+		using var writer = File.AppendText(path);
+		foreach (var newWord in newWords)
 		{
-			foreach (var newWord in newWords)
+			if (cache.Add(newWord))
 			{
-				if (cache.Add(newWord))
-				{
-					++Version;
-					writer.WriteLine(newWord);
-				}
+				++Version;
+				writer.WriteLine(newWord);
 			}
 		}
 	}
@@ -81,7 +79,7 @@ static class KnownWords
 		if (s_CommonWords_ != null && !force)
 			return s_CommonWords_;
 
-		s_CommonWords_ = new HashSet<string>();
+		s_CommonWords_ = [];
 		var path = Path.Combine(Actor.GetUserDictionaryDirectory(false), Settings.UserFile);
 		if (File.Exists(path))
 		{

@@ -17,7 +17,7 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 		var cn = new SetColumn { Kind = "N", Name = "Branch" };
 		var cd = new SetColumn { Kind = "Z", Name = "Commit" };
 
-		var plan0 = new PanelPlan { Columns = new FarColumn[] { co, cn, cd } };
+		var plan0 = new PanelPlan { Columns = [co, cn, cd] };
 		SetPlan(0, plan0);
 	}
 

@@ -7,11 +7,8 @@ namespace FarNet;
 /// <summary>
 /// Rename file arguments.
 /// </summary>
-public sealed class RenameFileEventArgs : ExplorerFileEventArgs
+/// <param name="mode">See <see cref="ExplorerEventArgs.Mode"/></param>
+/// <param name="file">See <see cref="ExplorerFileEventArgs.File"/></param>
+public sealed class RenameFileEventArgs(ExplorerModes mode, FarFile file) : ExplorerFileEventArgs(mode, file)
 {
-	/// <param name="mode">See <see cref="ExplorerEventArgs.Mode"/></param>
-	/// <param name="file">See <see cref="ExplorerFileEventArgs.File"/></param>
-	public RenameFileEventArgs(ExplorerModes mode, FarFile file) : base(mode, file)
-	{
-	}
 }

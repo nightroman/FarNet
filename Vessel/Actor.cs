@@ -65,7 +65,7 @@ public partial class Actor
 		_MinimumRecentFileCount = settings.MinimumRecentFileCount;
 		_choiceLog = Environment.ExpandEnvironmentVariables(settings.ChoiceLog ?? string.Empty);
 
-		_records = Store.Read(_store).ToList();
+		_records = [.. Store.Read(_store)];
 	}
 
 	public Mode Mode => _mode;
@@ -82,19 +82,14 @@ public partial class Actor
 
 	HistoryInfo[] GetFarHistory()
 	{
-		switch (_mode)
+		return _mode switch
 		{
-			case Mode.File:
-				// ignore viewer (little value, not nice merge) -> feature: viewer does not affect our lists
-				return Far.Api.History.GetHistory(new GetHistoryArgs { Kind = HistoryKind.Editor, Last = _MaximumFileCountFromFar });
-
-			case Mode.Folder:
-				return Far.Api.History.GetHistory(new GetHistoryArgs { Kind = HistoryKind.Folder, Last = _MaximumFileCountFromFar });
-
-			case Mode.Command:
-				return Far.Api.History.GetHistory(new GetHistoryArgs { Kind = HistoryKind.Command, Last = _MaximumFileCountFromFar });
-		}
-		throw null;
+			// ignore viewer (little value, not nice merge) -> feature: viewer does not affect our lists
+			Mode.File => Far.Api.History.GetHistory(new GetHistoryArgs { Kind = HistoryKind.Editor, Last = _MaximumFileCountFromFar }),
+			Mode.Folder => Far.Api.History.GetHistory(new GetHistoryArgs { Kind = HistoryKind.Folder, Last = _MaximumFileCountFromFar }),
+			Mode.Command => Far.Api.History.GetHistory(new GetHistoryArgs { Kind = HistoryKind.Command, Last = _MaximumFileCountFromFar }),
+			_ => throw null,
+		};
 	}
 
 	/// <summary>
@@ -154,8 +149,7 @@ public partial class Actor
 		for (int iRecord = _records.Count - 1; iRecord >= 0; --iRecord)
 		{
 			var record = _records[iRecord];
-			if (!map.ContainsKey(record.Path))
-				map.Add(record.Path, record);
+			map.TryAdd(record.Path, record);
 		}
 
 		return map;

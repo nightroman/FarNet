@@ -43,13 +43,13 @@ public struct ViewFrame
 	}
 
 	/// <inheritdoc/>
-	public override bool Equals(object? obj)
+	public override readonly bool Equals(object? obj)
 	{
 		return obj != null && obj.GetType() == typeof(ViewFrame) && this == (ViewFrame)obj;
 	}
 
 	/// <inheritdoc/>
-	public override int GetHashCode()
+	public override readonly int GetHashCode()
 	{
 		return (int)Offset | ((int)Column << 16);
 	}
@@ -57,7 +57,7 @@ public struct ViewFrame
 	/// <summary>
 	/// Returns the string "(Offset, Column)".
 	/// </summary>
-	public override string ToString()
+	public override readonly string ToString()
 	{
 		return "(" + Offset + ", " + Column + ")";
 	}

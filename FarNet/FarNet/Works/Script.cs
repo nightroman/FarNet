@@ -242,14 +242,12 @@ public static class Script
 		try
 		{
 			// find type
-			var type = assembly.GetType(scriptParameters.TypeName);
-			if (type is null)
-				throw new Exception($"Cannot find type '{scriptParameters.TypeName}'.");
+			var type = assembly.GetType(scriptParameters.TypeName)
+				?? throw new Exception($"Cannot find type '{scriptParameters.TypeName}'.");
 
 			// find method
-			var method = type.GetMethod(scriptParameters.MethodName, BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
-			if (method is null)
-				throw new Exception($"Cannot find method '{scriptParameters.MethodName}'.");
+			var method = type.GetMethod(scriptParameters.MethodName, BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance)
+				?? throw new Exception($"Cannot find method '{scriptParameters.MethodName}'.");
 
 			// parse method parameters
 			var methodParameters = ParseMethodParameters(method, methodParametersText);

@@ -90,7 +90,7 @@ public class FSContext
 	public virtual string[] GetSelectedPaths()
 	{
 		var path = CursorPath;
-		return path is null ? Array.Empty<string>() : new string[] { path };
+		return path is null ? [] : [path];
 	}
 
 	/// <summary>
@@ -188,7 +188,7 @@ public class FSContext
 			}
 		}
 
-		return res.ToArray();
+		return [.. res];
 	}
 
 	/// <summary>
@@ -212,7 +212,7 @@ public class FSContext
 			}
 		}
 
-		return res.ToArray();
+		return [.. res];
 	}
 
 	/// <summary>
@@ -238,7 +238,7 @@ public class FSContext
 			}
 		}
 
-		return res.ToArray();
+		return [.. res];
 	}
 }
 
@@ -246,18 +246,10 @@ public class FSContext
 /// <b>EXPERIMENTAL</b>
 /// See <see cref="FSContext"/>.
 /// </summary>
-public class FSContextSingle : FSContext
+/// <param name="path">The item path.</param>
+public class FSContextSingle(string? path) : FSContext
 {
-	readonly string? _path;
-
-	/// <summary>
-	/// Instance with the specified item path.
-	/// </summary>
-	/// <param name="path">The path.</param>
-	public FSContextSingle(string? path)
-	{
-		_path = path;
-	}
+	readonly string? _path = path;
 
 	/// <inheritdoc/>
 	public override string? CursorPath
@@ -280,18 +272,10 @@ public class FSContextSingle : FSContext
 /// <b>EXPERIMENTAL</b>
 /// See <see cref="FSContext"/>.
 /// </summary>
-public class FSContextPanel : FSContext
+/// <param name="panel">The panel.</param>
+public class FSContextPanel(IPanel? panel) : FSContext
 {
-	readonly IPanel? _panel;
-
-	/// <summary>
-	/// Instance with the specified panel.
-	/// </summary>
-	/// <param name="panel">The panel.</param>
-	public FSContextPanel(IPanel? panel)
-	{
-		_panel = panel;
-	}
+	readonly IPanel? _panel = panel;
 
 	/// <inheritdoc/>
 	public override string? CursorPath
@@ -330,11 +314,11 @@ public class FSContextPanel : FSContext
 	public override string[] GetSelectedPaths()
 	{
 		if (_panel is null || _panel.Kind != PanelKind.File)
-			return Array.Empty<string>();
+			return [];
 
 		var files = _panel.GetSelectedFiles();
 		if (files.Length == 0)
-			return Array.Empty<string>();
+			return [];
 
 		var res = new List<string>(files.Length);
 		var location = new Lazy<string?>(() =>
@@ -370,6 +354,6 @@ public class FSContextPanel : FSContext
 			}
 		}
 
-		return res.ToArray();
+		return [.. res];
 	}
 }

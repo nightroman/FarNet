@@ -7,10 +7,7 @@ namespace FarNet.Forms;
 /// <summary>
 /// <see cref="IDropDown.DropDownOpening"/> event arguments.
 /// </summary>
-public sealed class DropDownOpeningEventArgs : AnyEventArgs
+/// <param name="control">Control which drop down is opening.</param>
+public sealed class DropDownOpeningEventArgs(IControl control) : AnyEventArgs(control)
 {
-	/// <param name="control">Control which drop down is opening.</param>
-	public DropDownOpeningEventArgs(IControl control) : base(control)
-	{
-	}
 }

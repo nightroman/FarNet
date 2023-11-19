@@ -8,14 +8,9 @@ using System.Data;
 
 namespace PowerShellFar;
 
-class DataLookup
+class DataLookup(string[] namePairs)
 {
-	readonly string[] _namePairs;
-
-	public DataLookup(string[] namePairs)
-	{
-		_namePairs = namePairs;
-	}
+	readonly string[] _namePairs = namePairs;
 
 	public void Invoke(object? sender, OpenFileEventArgs e)
 	{

@@ -94,19 +94,17 @@ static class A
 		//! as a script: if param name -Value is used, can't set e.g. Alias:\%
 		//! as a block: same problem
 		//! so, use a command
-		using (var ps = Psf.NewPowerShell())
-		{
-			ps.AddCommand("Set-Content")
-				.AddParameter("LiteralPath", itemPath)
-				.AddParameter("Value", text)
-				.AddParameter(Prm.Force)
-				.AddParameter(Prm.ErrorAction, ActionPreference.Continue);
+		using var ps = Psf.NewPowerShell();
+		ps.AddCommand("Set-Content")
+			.AddParameter("LiteralPath", itemPath)
+			.AddParameter("Value", text)
+			.AddParameter(Prm.Force)
+			.AddParameter(Prm.ErrorAction, ActionPreference.Continue);
 
-			ps.Invoke();
+		ps.Invoke();
 
-			if (ShowError(ps))
-				return false;
-		}
+		if (ShowError(ps))
+			return false;
 		return true;
 	}
 
@@ -224,7 +222,7 @@ static class A
 		// make/try cache
 		if (_CacheTableControl is null)
 		{
-			_CacheTableControl = new Dictionary<string, TableControl?>();
+			_CacheTableControl = [];
 		}
 		else if (_CacheTableControl.TryGetValue(typeName, out TableControl? result))
 		{
@@ -276,7 +274,7 @@ static class A
 			Log.TraceException(ex);
 		}
 
-		return new Collection<PSObject>();
+		return [];
 	}
 
 	// Gets the $FormatEnumerationLimit if it is sane or 4.
@@ -313,7 +311,7 @@ static class A
 				return;
 
 			// invoke with the input
-			var args = new RunArgs("$args[0] | .{process{ " + code + " }}") { Arguments = new object[] { input } };
+			var args = new RunArgs("$args[0] | .{process{ " + code + " }}") { Arguments = [input] };
 			Psf.Run(args);
 		}
 		finally
@@ -345,11 +343,9 @@ static class A
 			type = pi.TypeNameOfValue;
 		}
 
-		if (type == "System.Collections.ArrayList" || type.EndsWith("]", StringComparison.Ordinal))
+		if (type == "System.Collections.ArrayList" || type.EndsWith(']'))
 		{
-			ArrayList lines = new();
-			foreach (var line in FarNet.Works.Kit.SplitLines(text))
-				lines.Add(line);
+			ArrayList lines = [.. FarNet.Works.Kit.SplitLines(text)];
 			value = lines;
 		}
 		else

@@ -11,24 +11,19 @@ namespace FarNet;
 /// <summary>
 /// Helper for serializing browsable settings as CDATA.
 /// </summary>
-public struct XmlCData : IXmlSerializable
+/// <remarks>
+/// Creates from the specified string.
+/// </remarks>
+/// <param name="value">String value.</param>
+public struct XmlCData(string value) : IXmlSerializable
 {
-	/// <summary>
-	/// Creates from the specified string.
-	/// </summary>
-	/// <param name="value">String value.</param>
-	public XmlCData(string value)
-	{
-		Value = value;
-	}
-
 	/// <summary>
 	/// Gets the string value.
 	/// </summary>
-	public string Value { get; set; }
+	public string Value { get; set; } = value;
 
 	/// <inheritdoc/>
-	public override string ToString()
+	public override readonly string ToString()
 	{
 		return Value;
 	}
@@ -36,7 +31,7 @@ public struct XmlCData : IXmlSerializable
 	/// <summary>
 	/// .
 	/// </summary>
-	public XmlSchema? GetSchema()
+	public readonly XmlSchema? GetSchema()
 	{
 		return null;
 	}
@@ -48,7 +43,7 @@ public struct XmlCData : IXmlSerializable
 	}
 
 	/// <inheritdoc/>
-	public void WriteXml(XmlWriter writer)
+	public readonly void WriteXml(XmlWriter writer)
 	{
 		writer.WriteCData(Value);
 	}

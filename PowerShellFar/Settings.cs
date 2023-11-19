@@ -27,8 +27,7 @@ public sealed class Settings
 	/// <param name="menu">The menu with default properties.</param>
 	public void PopupMenu(IListMenu menu)
 	{
-		if (menu is null)
-			throw new ArgumentNullException(nameof(menu));
+		ArgumentNullException.ThrowIfNull(menu);
 
 		menu.AutoSelect = PopupAutoSelect;
 		menu.MaxHeight = PopupMaxHeight;
@@ -41,8 +40,7 @@ public sealed class Settings
 	/// <param name="menu">The menu with default properties.</param>
 	public void ListMenu(IListMenu menu)
 	{
-		if (menu is null)
-			throw new ArgumentNullException(nameof(menu));
+		ArgumentNullException.ThrowIfNull(menu);
 
 		menu.ScreenMargin = ListMenuScreenMargin;
 		menu.UsualMargins = ListMenuUsualMargins;

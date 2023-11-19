@@ -454,7 +454,6 @@ public class TheCommand : ModuleCommand
 			line.Caret = caret == home ? 0 : home;
 		}
 
-		if (editor != null)
-			editor.Redraw();
+		editor?.Redraw();
 	}
 }

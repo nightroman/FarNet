@@ -27,12 +27,9 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 	ScriptBlock _script = null!;
 	Exception? _scriptError;
 	Dictionary<string, ParameterMetadata>? _scriptParameters;
-	readonly RuntimeDefinedParameterDictionary _paramDynamic = new();
-	static readonly string[] _paramExclude = new string[] {
-		"Verbose", "Debug", "ErrorAction", "WarningAction", "ErrorVariable", "WarningVariable",
-		"OutVariable", "OutBuffer", "PipelineVariable", "InformationAction", "InformationVariable" };
-	static readonly string[] _paramInvalid = new string[] {
-		nameof(Script), nameof(Data), nameof(AsTask), nameof(AddDebugger), nameof(Step) };
+	readonly RuntimeDefinedParameterDictionary _paramDynamic = [];
+	static readonly HashSet<string> _paramExclude = CommonParameters;
+	static readonly string[] _paramInvalid = [nameof(Script), nameof(Data), nameof(AsTask), nameof(AddDebugger), nameof(Step)];
 
 	// sets step breaks
 	const string CodeStep = @"
@@ -102,9 +99,7 @@ param($Script, $Data, $Arguments)
 		{
 			foreach (var name in value)
 			{
-				var variable = SessionState.PSVariable.Get(name);
-				if (variable == null)
-					throw new PSArgumentException($"Variable {name} is not found.");
+				var variable = SessionState.PSVariable.Get(name) ?? throw new PSArgumentException($"Variable {name} is not found.");
 				_data.Add(variable.Name, variable.Value);
 			}
 		}
@@ -136,7 +131,7 @@ param($Script, $Data, $Arguments)
 
 		foreach (var p in _scriptParameters.Values)
 		{
-			if (!_paramExclude.Contains(p.Name, StringComparer.OrdinalIgnoreCase))
+			if (!_paramExclude.Contains(p.Name))
 			{
 				if (_paramInvalid.Contains(p.Name, StringComparer.OrdinalIgnoreCase))
 					throw new InvalidOperationException($"Task script cannot use parameter: {string.Join(", ", _paramInvalid)}");
@@ -236,7 +231,7 @@ param($Script, $Data, $Arguments)
 					Writer = new ConsoleOutputWriter(),
 					NoOutReason = true,
 					UseLocalScope = true,
-					Arguments = new object[] { Script, Self._data, Arguments }
+					Arguments = [Script, Self._data, Arguments]
 				};
 				A.Psf.Run(args);
 				reason = args.Reason;

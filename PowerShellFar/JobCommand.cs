@@ -38,8 +38,7 @@ public sealed class JobCommand
 	/// <param name="scriptBlock">Job script block.</param>
 	public JobCommand(ScriptBlock scriptBlock)
 	{
-		if (scriptBlock == null)
-			throw new ArgumentNullException(nameof(scriptBlock));
+		ArgumentNullException.ThrowIfNull(scriptBlock);
 
 		Command = scriptBlock.ToString();
 		IsScript = true;

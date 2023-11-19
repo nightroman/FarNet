@@ -17,10 +17,7 @@ public static class ErrorDialog
 
 		// special treatment of module error
 		var moduleError = error as ModuleException;
-		var buttons =
-			moduleError != null && moduleError.InnerException == null ?
-			new string[] { "OK" } :
-			new string[] { "OK", "More"};
+		string[] buttons = moduleError != null && moduleError.InnerException == null ? ["OK"] : ["OK", "More"];
 
 		// resolve title
 		if (string.IsNullOrEmpty(title))

@@ -1,15 +1,10 @@
 ﻿namespace System.Collections.Generic;
 
 // https://stackoverflow.com/a/34633464/323582
-sealed class CachedEnumerable<T> : IEnumerable<T>, IDisposable
+sealed class CachedEnumerable<T>(IEnumerable<T> enumerable) : IEnumerable<T>, IDisposable
 {
-	readonly List<T> _cache = new();
-	IEnumerator<T>? _enumerator;
-
-	public CachedEnumerable(IEnumerable<T> enumerable)
-	{
-		_enumerator = enumerable.GetEnumerator();
-	}
+	readonly List<T> _cache = [];
+	IEnumerator<T>? _enumerator = enumerable.GetEnumerator();
 
 	public IEnumerator<T> GetEnumerator()
 	{

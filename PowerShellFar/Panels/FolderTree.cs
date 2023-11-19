@@ -20,18 +20,9 @@ namespace PowerShellFar;
 /// <remarks>
 /// See <see cref="TreePanel"/> for details.
 /// </remarks>
-public sealed class FolderTree : TreePanel
+/// <param name="explorer">The panel explorer.</param>
+public sealed class FolderTree(FolderExplorer explorer) : TreePanel(explorer)
 {
-	/// <summary>
-	/// New folder tree with a folder explorer.
-	/// </summary>
-	/// <param name="explorer">The panel explorer.</param>
-	public FolderTree(FolderExplorer explorer) : base(explorer)
-	{
-		// _091015_190130 Use of UpdateInfo is problematic: it is called after Close()
-		// and somehow Close() may not work. To watch this in future Far versions.
-		// For now use redrawing, it looks working fine.
-	}
 
 	/// <summary>
 	/// New folder tree at the given location path.

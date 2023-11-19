@@ -31,7 +31,7 @@ internal static class AboutPanel
 				$"Remove {files.Count} object(s)?",
 				Res.Remove,
 				MessageOptions.None,
-				new string[] { Res.Remove, Res.Cancel });
+				[Res.Remove, Res.Cancel]);
 
 			if (choice != 0)
 			{
@@ -71,7 +71,7 @@ internal static class AboutPanel
 				sb.ToString(),
 				Res.Delete,
 				MessageOptions.LeftAligned | MessageOptions.Warning,
-				new string[] { Res.Delete, Res.Cancel });
+				[Res.Delete, Res.Cancel]);
 
 			if (choice != 0)
 			{
@@ -122,7 +122,7 @@ internal static class AboutPanel
 				sb.ToString(),
 				Res.Stop,
 				MessageOptions.LeftAligned | MessageOptions.Warning,
-				new string[] { Res.Stop, Res.Cancel });
+				[Res.Stop, Res.Cancel]);
 
 			if (choice != 0)
 			{

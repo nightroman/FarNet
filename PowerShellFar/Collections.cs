@@ -16,15 +16,10 @@ namespace My;
 /// </remarks>
 /// <typeparam name="S">Source type.</typeparam>
 /// <typeparam name="T">Result type.</typeparam>
-abstract class Enumerator<T, S> : IEnumerator<T>
+abstract class Enumerator<T, S>(IEnumerable<S> enumerable) : IEnumerator<T>
 {
-	protected IEnumerator<S> _enumerator;
+	protected IEnumerator<S> _enumerator = enumerable.GetEnumerator();
 	protected T _current = default!;
-
-	public Enumerator(IEnumerable<S> enumerable)
-	{
-		_enumerator = enumerable.GetEnumerator();
-	}
 
 	/// <summary>
 	/// Calls _enumerator.MoveNext() and set _current.
@@ -49,15 +44,15 @@ abstract class Enumerator<T, S> : IEnumerator<T>
 /// </summary>
 struct VoidEnumerator<T> : IEnumerator<T>
 {
-	public void Reset() { }
+	public readonly void Reset() { }
 
-	public bool MoveNext() => false;
+	public readonly bool MoveNext() => false;
 
-	public void Dispose() { }
+	public readonly void Dispose() { }
 
-	public T Current => throw new InvalidOperationException();
+	public readonly T Current => throw new InvalidOperationException();
 
-	object IEnumerator.Current => throw new InvalidOperationException();
+	readonly object IEnumerator.Current => throw new InvalidOperationException();
 }
 
 abstract class SimpleCollection : ICollection
@@ -68,10 +63,8 @@ abstract class SimpleCollection : ICollection
 
 	public void CopyTo(Array array, int index)
 	{
-		if (array == null)
-			throw new ArgumentNullException(nameof(array));
-		if (index < 0)
-			throw new ArgumentOutOfRangeException(nameof(index));
+		ArgumentNullException.ThrowIfNull(array);
+		ArgumentOutOfRangeException.ThrowIfNegative(index);
 		if (Count > array.Length - index)
 			throw new ArgumentException("Not enough space in the array.");
 

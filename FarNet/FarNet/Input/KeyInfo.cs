@@ -7,28 +7,21 @@ namespace FarNet;
 /// <summary>
 /// Full key information.
 /// </summary>
-public sealed class KeyInfo : KeyData
+/// <param name="virtualKeyCode">See <see cref="KeyData.VirtualKeyCode"/></param>
+/// <param name="character">See <see cref="Character"/></param>
+/// <param name="controlKeyState">See <see cref="KeyBase.ControlKeyState"/></param>
+/// <param name="keyDown">See <see cref="KeyDown"/></param>
+public sealed class KeyInfo(int virtualKeyCode, char character, ControlKeyStates controlKeyState, bool keyDown) : KeyData(virtualKeyCode, controlKeyState)
 {
-	/// <param name="virtualKeyCode">See <see cref="KeyData.VirtualKeyCode"/></param>
-	/// <param name="character">See <see cref="Character"/></param>
-	/// <param name="controlKeyState">See <see cref="KeyBase.ControlKeyState"/></param>
-	/// <param name="keyDown">See <see cref="KeyDown"/></param>
-	public KeyInfo(int virtualKeyCode, char character, ControlKeyStates controlKeyState, bool keyDown)
-		: base(virtualKeyCode, controlKeyState)
-	{
-		Character = character;
-		KeyDown = keyDown;
-	}
-
 	/// <summary>
 	/// Gets the character of the key.
 	/// </summary>
-	public char Character { get; }
+	public char Character { get; } = character;
 
 	/// <summary>
 	/// Gets true for the key down event.
 	/// </summary>
-	public bool KeyDown { get; }
+	public bool KeyDown { get; } = keyDown;
 
 	/// <inheritdoc/>
 	public override bool Equals(object? obj)

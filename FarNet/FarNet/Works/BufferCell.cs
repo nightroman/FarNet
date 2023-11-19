@@ -7,29 +7,21 @@ using System;
 namespace FarNet.Works;
 #pragma warning disable 1591
 
-public struct BufferCell
+public struct BufferCell(char character, ConsoleColor foreground, ConsoleColor background, BufferCellType bufferCellType)
 {
-	public BufferCell(char character, ConsoleColor foreground, ConsoleColor background, BufferCellType bufferCellType)
-	{
-		Character = character;
-		ForegroundColor = foreground;
-		BackgroundColor = background;
-		BufferCellType = bufferCellType;
-	}
+	public char Character { get; set; } = character;
 
-	public char Character { get; set; }
+	public ConsoleColor ForegroundColor { get; set; } = foreground;
 
-	public ConsoleColor ForegroundColor { get; set; }
+	public ConsoleColor BackgroundColor { get; set; } = background;
 
-	public ConsoleColor BackgroundColor { get; set; }
-
-	public BufferCellType BufferCellType { get; set; }
+	public BufferCellType BufferCellType { get; set; } = bufferCellType;
 
 	public static bool operator ==(BufferCell first, BufferCell second) => (first.Character == second.Character) && (first.BackgroundColor == second.BackgroundColor) && (first.ForegroundColor == second.ForegroundColor) && (first.BufferCellType == second.BufferCellType);
 
 	public static bool operator !=(BufferCell first, BufferCell second) => !(first == second);
 
-	public override bool Equals(object? obj)
+	public override readonly bool Equals(object? obj)
 	{
 		bool flag = false;
 		if (obj is BufferCell cell)
@@ -37,14 +29,14 @@ public struct BufferCell
 		return flag;
 	}
 
-	public override int GetHashCode()
+	public override readonly int GetHashCode()
 	{
 		uint num = ((uint)(ForegroundColor ^ BackgroundColor)) << 0x10;
 		num |= Character;
 		return num.GetHashCode();
 	}
 
-	public override string ToString()
+	public override readonly string ToString()
 	{
 		return string.Format(null, "'{0}' {1} {2} {3}", new object[] { Character, ForegroundColor, BackgroundColor, BufferCellType });
 	}

@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.EditorKit
 
+= 2.0.0 =
+
+Requires FarNet 8
+
 = 1.0.2 =
 
 editorconfig 0.14.0

@@ -21,8 +21,7 @@ public static class Test
 	// Used by the command runner code.
 	public static void Exit(Exception ex)
 	{
-		if (_timerTimeout != null)
-			_timerTimeout.Dispose();
+		_timerTimeout?.Dispose();
 
 		if (_exitDelay > 0)
 		{

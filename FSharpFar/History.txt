@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 
+= 4.0.0 =
+
+Requires .NET 8.0, FarNet 8.0.0
+
+Keep several open sessions again.
+
 = 3.1.1 =
 
 FSharp.Core 7.0.401

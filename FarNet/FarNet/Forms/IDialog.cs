@@ -389,7 +389,7 @@ public abstract class IDialog
 	public abstract void EnableRedraw();
 
 	/// <include file='doc.xml' path='doc/Data/*'/>
-	public Hashtable Data { get => _Data ??= new Hashtable(); }
+	public Hashtable Data => _Data ??= [];
 	Hashtable? _Data;
 
 	/// <summary>

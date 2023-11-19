@@ -38,7 +38,7 @@ static class PathEx
 		if (path is null || path == "*")
 			return file;
 
-		if (path.EndsWith("\\", StringComparison.Ordinal))
+		if (path.EndsWith('\\'))
 			return path + file;
 
 		// 090824

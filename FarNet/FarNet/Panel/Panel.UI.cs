@@ -370,8 +370,7 @@ public partial class Panel
 	/// </remarks>
 	public virtual void UIEditFile(FarFile file)
 	{
-		if (file is null)
-			throw new ArgumentNullException(nameof(file));
+		ArgumentNullException.ThrowIfNull(file);
 
 		// target file path
 		// _201223_vc Avoid Far.Api.TempName(). I think it reuses names if files do not exist. But file history may exist unexpectedly.
@@ -506,8 +505,7 @@ public partial class Panel
 	/// </remarks>
 	public virtual void UIViewFile(FarFile file)
 	{
-		if (file is null)
-			throw new ArgumentNullException(nameof(file));
+		ArgumentNullException.ThrowIfNull(file);
 
 		// target
 		var temp = Far.Api.TempName();
@@ -551,16 +549,14 @@ public partial class Panel
 	/// <param name="file">The file to be opened.</param>
 	public virtual void UIOpenFile(FarFile file)
 	{
-		if (file is null)
-			throw new ArgumentNullException(nameof(file));
+		ArgumentNullException.ThrowIfNull(file);
 
 		if (!Explorer.CanOpenFile)
 			return;
 
 		var args = new OpenFileEventArgs(file);
 		var explorer = UIOpenFile(args);
-		if (explorer != null)
-			explorer.OpenPanelChild(this);
+		explorer?.OpenPanelChild(this);
 	}
 
 	/// <summary>

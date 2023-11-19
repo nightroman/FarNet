@@ -22,7 +22,7 @@ public struct Span
 	/// <summary>
 	/// Gets length of the span or a negative value if the span does not exist.
 	/// </summary>
-	public int Length { get { return End - Start; } }
+	public readonly int Length => End - Start;
 
 	/// <include file='doc.xml' path='doc/OpEqual/*'/>
 	public static bool operator ==(Span left, Span right)
@@ -37,13 +37,13 @@ public struct Span
 	}
 
 	/// <inheritdoc/>
-	public override bool Equals(object? obj)
+	public override readonly bool Equals(object? obj)
 	{
 		return obj != null && obj.GetType() == typeof(Span) && this == (Span)obj;
 	}
 
 	/// <inheritdoc/>
-	public override int GetHashCode()
+	public override readonly int GetHashCode()
 	{
 		return Start | (End << 16);
 	}
@@ -51,7 +51,7 @@ public struct Span
 	/// <summary>
 	/// Returns the string "Empty" or "{0} from {1} to {2}", Length, Start, End.
 	/// </summary>
-	public override string ToString()
+	public override readonly string ToString()
 	{
 		return Length < 0 ? "Empty" : string.Format(null, "{0} from {1} to {2}", Length, Start, End);
 	}

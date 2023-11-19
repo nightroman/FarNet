@@ -44,8 +44,7 @@ sealed class ProxyTool : ProxyAction, IModuleTool
 
 	public void Invoke(object sender, ModuleToolEventArgs e)
 	{
-		if (e == null)
-			throw new ArgumentNullException(nameof(e));
+		ArgumentNullException.ThrowIfNull(e);
 
 		Invoking();
 

@@ -82,37 +82,32 @@ static class Converter
 			return ValueToLine(info.Value);
 
 		// null to primitive
-		switch (info.TypeNameOfValue)
+		return info.TypeNameOfValue switch
 		{
 			// popular primitives
-			case "System.String": return string.Empty;
-			case "System.Boolean": return "False";
-			case "System.DateTime": return ValueToLine(DateTime.Now);
-			case "System.Double": return "0";
-			case "System.Int32": return "0";
-			case "System.Int64": return "0";
-			case "System.Guid": return Guid.NewGuid().ToString();
-			case "System.TimeSpan": return "00:00:00";
-
+			"System.String" => string.Empty,
+			"System.Boolean" => "False",
+			"System.DateTime" => ValueToLine(DateTime.Now),
+			"System.Double" => "0",
+			"System.Int32" => "0",
+			"System.Int64" => "0",
+			"System.Guid" => Guid.NewGuid().ToString(),
+			"System.TimeSpan" => "00:00:00",
 			//! object via string
-			case "":
-				return string.Empty;
-			case "System.Object":
-				return string.Empty;
-
+			"" => string.Empty,
+			"System.Object" => string.Empty,
 			// other primitives
-			case "System.Byte": return "0";
-			case "System.Char": return string.Empty;
-			case "System.Decimal": return "0";
-			case "System.Int16": return "0";
-			case "System.SByte": return "0";
-			case "System.Single": return "0";
-			case "System.UInt16": return "0";
-			case "System.UInt32": return "0";
-			case "System.UInt64": return "0";
-		}
-
-		return null;
+			"System.Byte" => "0",
+			"System.Char" => string.Empty,
+			"System.Decimal" => "0",
+			"System.Int16" => "0",
+			"System.SByte" => "0",
+			"System.Single" => "0",
+			"System.UInt16" => "0",
+			"System.UInt32" => "0",
+			"System.UInt64" => "0",
+			_ => null,
+		};
 	}
 
 	public static string? InfoToText(PSPropertyInfo info)

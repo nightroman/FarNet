@@ -91,7 +91,7 @@ class ExportDialog
 		try
 		{
 			string filePath = ui._File.Text;
-			if (!string.IsNullOrEmpty(directory) && filePath.IndexOfAny(new char[] { '\\', '/', ':' }) < 0)
+			if (!string.IsNullOrEmpty(directory) && filePath.IndexOfAny(['\\', '/', ':']) < 0)
 				filePath = My.PathEx.Combine(directory, filePath);
 
 			if (File.Exists(filePath))

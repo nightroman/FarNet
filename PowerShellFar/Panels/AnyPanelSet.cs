@@ -24,8 +24,7 @@ public partial class AnyPanel
 	/// <param name="file">The file to be opened.</param>
 	public sealed override void UIOpenFile(FarFile file)
 	{
-		if (file is null)
-			throw new ArgumentNullException(nameof(file));
+		ArgumentNullException.ThrowIfNull(file);
 
 		// lookup closer?
 		if (UserWants == UserAction.Enter && Lookup != null)
@@ -62,8 +61,7 @@ public partial class AnyPanel
 	/// </remarks>
 	public virtual void OpenFile(FarFile file)
 	{
-		if (file is null)
-			throw new ArgumentNullException(nameof(file));
+		ArgumentNullException.ThrowIfNull(file);
 
 		if (file.Data is null)
 			return;

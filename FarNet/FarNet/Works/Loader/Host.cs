@@ -18,7 +18,7 @@ public abstract class Host
 		set => _Host = _Host == null ? value : throw new InvalidOperationException();
 	}
 
-	public static Dictionary<Guid, IModuleAction> Actions { get; } = new();
+	public static Dictionary<Guid, IModuleAction> Actions { get; } = [];
 
 	public abstract void RegisterProxyCommand(IModuleCommand info);
 
@@ -55,6 +55,6 @@ public abstract class Host
 			if (0 != (tool.Options & option))
 				tools.Add(tool);
 		}
-		return tools.ToArray();
+		return [.. tools];
 	}
 }

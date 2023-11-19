@@ -46,7 +46,7 @@ sealed class OutFarPanelCommand : BasePanelCmdlet
 	}
 
 	// Use collector to control count of finaly added to the panel.
-	readonly List<object> _Collector = new List<object>();
+	readonly List<object> _Collector = [];
 
 	protected override void ProcessRecord()
 	{

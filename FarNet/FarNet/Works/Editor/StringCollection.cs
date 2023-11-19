@@ -6,16 +6,11 @@ using System;
 using System.Collections.Generic;
 
 namespace FarNet.Works;
-#pragma warning disable 1591
+#pragma warning disable CS1591, CA1822
 
-public sealed class StringCollection : IList<string>
+public sealed class StringCollection(IEditor editor) : IList<string>
 {
-	readonly IEditor _Editor;
-
-	public StringCollection(IEditor editor)
-	{
-		_Editor = editor;
-	}
+	readonly IEditor _Editor = editor;
 
 	public int Count => _Editor.Count;
 
@@ -43,8 +38,7 @@ public sealed class StringCollection : IList<string>
 
 	public void CopyTo(string[] array, int arrayIndex)
 	{
-		if (array == null)
-			throw new ArgumentNullException("array");
+		ArgumentNullException.ThrowIfNull(array);
 
 		foreach (string it in EditorTools.EnumerateStrings(_Editor, 0, _Editor.Count))
 			array[arrayIndex++] = it;

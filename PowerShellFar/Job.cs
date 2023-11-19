@@ -64,7 +64,7 @@ public sealed class Job : IDisposable
 	public static IList<Job> Jobs => JobList.ToArray();
 
 	// UI job list controlled by a user
-	static readonly List<Job> JobList = new();
+	static readonly List<Job> JobList = [];
 
 	// Last notification target
 	static Job? JobLastNotified;
@@ -223,7 +223,7 @@ public sealed class Job : IDisposable
 		// Output: create it once: it is cumulative
 		else
 		{
-			Output = new PSDataCollection<PSObject>();
+			Output = [];
 		}
 	}
 
@@ -319,11 +319,8 @@ public sealed class Job : IDisposable
 		if (Disposed)
 			return;
 
-		if (PowerShell != null)
-			PowerShell.Dispose();
-
-		if (Runspace != null)
-			Runspace.Close();
+		PowerShell?.Dispose();
+		Runspace?.Close();
 
 		if (JobUI != null)
 		{

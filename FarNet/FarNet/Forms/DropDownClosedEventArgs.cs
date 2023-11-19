@@ -7,10 +7,7 @@ namespace FarNet.Forms;
 /// <summary>
 /// <see cref="IDropDown.DropDownClosed"/> event arguments.
 /// </summary>
-public sealed class DropDownClosedEventArgs : AnyEventArgs
+/// <param name="control">Control which drop down is closed.</param>
+public sealed class DropDownClosedEventArgs(IControl control) : AnyEventArgs(control)
 {
-	/// <param name="control">Control which drop down is closed.</param>
-	public DropDownClosedEventArgs(IControl control) : base(control)
-	{
-	}
 }

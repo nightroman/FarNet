@@ -69,8 +69,7 @@ public partial class Panel
 	/// <param name="args">.</param>
 	public virtual void UISetFile(SetFileEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		Explorer.SetFile(args);
 
@@ -84,8 +83,7 @@ public partial class Panel
 	/// <param name="args">.</param>
 	public virtual void UISetText(SetTextEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		Explorer.SetText(args);
 
@@ -99,8 +97,7 @@ public partial class Panel
 	/// <param name="args">.</param>
 	public virtual void UIAcceptFiles(AcceptFilesEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		Explorer.AcceptFiles(args);
 
@@ -114,8 +111,7 @@ public partial class Panel
 	/// <param name="args">.</param>
 	public virtual void UIDeleteFiles(DeleteFilesEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		Explorer.DeleteFiles(args);
 
@@ -129,8 +125,7 @@ public partial class Panel
 	/// <param name="args">.</param>
 	public virtual void UIExportFiles(ExportFilesEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		Explorer.ExportFiles(args);
 
@@ -144,8 +139,7 @@ public partial class Panel
 	/// <param name="args">.</param>
 	public virtual void UIImportFiles(ImportFilesEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		Explorer.ImportFiles(args);
 
@@ -159,8 +153,7 @@ public partial class Panel
 	/// <param name="args">.</param>
 	public virtual void UICloneFile(CloneFileEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		Explorer.CloneFile(args);
 
@@ -174,8 +167,7 @@ public partial class Panel
 	/// <param name="args">.</param>
 	public virtual void UICreateFile(CreateFileEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		Explorer.CreateFile(args);
 
@@ -198,8 +190,7 @@ public partial class Panel
 	/// <param name="args">.</param>
 	public virtual void UIRenameFile(RenameFileEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		Explorer.RenameFile(args);
 		

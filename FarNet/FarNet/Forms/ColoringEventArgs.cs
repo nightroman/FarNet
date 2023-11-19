@@ -31,13 +31,9 @@ namespace FarNet.Forms;
 /// <see cref="IListBox"/> recieves another event which is not yet exposed by FarNet.
 /// </para>
 /// </remarks>
-public sealed class ColoringEventArgs : AnyEventArgs
+/// <param name="control">Control for setting colors.</param>
+public sealed class ColoringEventArgs(IControl control) : AnyEventArgs(control)
 {
-	/// <param name="control">Control for setting colors.</param>
-	public ColoringEventArgs(IControl control) : base(control)
-	{
-	}
-
 	/// <summary>
 	/// Color 1, foreground.
 	/// </summary>

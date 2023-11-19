@@ -103,8 +103,7 @@ public sealed class ItemPanel : FormatPanel
 	/// </remarks>
 	public override void UIExplorerEntered(ExplorerEnteredEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		base.UIExplorerEntered(args);
 		DoExplored((ItemExplorer)args.Explorer);
@@ -233,8 +232,7 @@ public sealed class ItemPanel : FormatPanel
 	/// <inheritdoc/>
 	public override void UISetText(SetTextEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		// call
 		base.UISetText(args);

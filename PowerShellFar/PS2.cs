@@ -54,7 +54,7 @@ static class PS2
 	/// </summary>
 	public static Collection<PSObject> InvokeWithContext(ScriptBlock script, object? value)
 	{
-		var vars = new List<PSVariable> { new PSVariable("_", value) };
+		List<PSVariable> vars = [new("_", value)];
 		return script.InvokeWithContext(null, vars, null);
 	}
 

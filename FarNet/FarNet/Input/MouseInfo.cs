@@ -7,23 +7,14 @@ namespace FarNet;
 /// <summary>
 /// Mouse event information.
 /// </summary>
-public sealed class MouseInfo : KeyBase
+/// <param name="where">Position.</param>
+/// <param name="action">Action.</param>
+/// <param name="buttons">Buttons.</param>
+/// <param name="controls">Control keys.</param>
+/// <param name="value">Wheel value.</param>
+public sealed class MouseInfo(Point where, MouseAction action, MouseButtons buttons, ControlKeyStates controls, int value) : KeyBase(controls)
 {
-	Point _Where;
-
-	/// <param name="where">Position.</param>
-	/// <param name="action">Action.</param>
-	/// <param name="buttons">Buttons.</param>
-	/// <param name="controls">Control keys.</param>
-	/// <param name="value">Wheel value.</param>
-	public MouseInfo(Point where, MouseAction action, MouseButtons buttons, ControlKeyStates controls, int value)
-		: base(controls)
-	{
-		_Where = where;
-		Buttons = buttons;
-		Action = action;
-		Value = value;
-	}
+	Point _Where = where;
 
 	/// <summary>
 	/// Mouse positon.
@@ -33,12 +24,12 @@ public sealed class MouseInfo : KeyBase
 	/// <summary>
 	/// Action.
 	/// </summary>
-	public MouseAction Action { get; }
+	public MouseAction Action { get; } = action;
 
 	/// <summary>
 	/// Buttons.
 	/// </summary>
-	public MouseButtons Buttons { get; }
+	public MouseButtons Buttons { get; } = buttons;
 
 	/// <summary>
 	/// Wheel value.
@@ -47,7 +38,7 @@ public sealed class MouseInfo : KeyBase
 	/// It is positive or negative depending on the wheel direction.
 	/// The value is normally 120*X but it depends on the mouse driver.
 	/// </remarks>
-	public int Value { get; }
+	public int Value { get; } = value;
 
 	/// <inheritdoc/>
 	public override bool Equals(object? obj)

@@ -19,9 +19,10 @@ public delegate bool ExplorerFilePredicate(Explorer explorer, FarFile file);
 /// <summary>
 /// File search command.
 /// </summary>
-public class SearchFileCommand
+/// <param name="root">The root explorer.</param>
+public class SearchFileCommand(Explorer root)
 {
-	readonly Explorer _RootExplorer;
+	readonly Explorer _RootExplorer = root ?? throw new ArgumentNullException(nameof(root));
 
 	/// <summary>
 	/// Search depth. 0: ignored; negative: unlimited.
@@ -65,17 +66,8 @@ public class SearchFileCommand
 	/// <summary>
 	/// XPath variables.
 	/// </summary>
-	public Dictionary<string, object> XVariables => _XVariables ??= new Dictionary<string, object>();
+	public Dictionary<string, object> XVariables => _XVariables ??= [];
 	Dictionary<string, object>? _XVariables;
-
-	/// <summary>
-	/// New command with the search root.
-	/// </summary>
-	/// <param name="root">The root explorer.</param>
-	public SearchFileCommand(Explorer root)
-	{
-		_RootExplorer = root ?? throw new ArgumentNullException(nameof(root));
-	}
 
 	IEnumerable<FarFile> InvokeWithProgress()
 	{
@@ -93,8 +85,7 @@ public class SearchFileCommand
 			{
 				lock (_lock)
 				{
-					if (_filesAsync == null)
-						_filesAsync = new List<FarFile>();
+					_filesAsync ??= [];
 					_filesAsync.Add(file);
 				}
 			}
@@ -174,8 +165,8 @@ public class SearchFileCommand
 		// need to stop?
 		bool toStop = !IsCompleted;
 		string[] buttons = toStop
-			? new string[] { "&Close", "&Push", "&Stop", "Cancel" }
-			: new string[] { "&Close", "&Push", "Cancel" };
+			? ["&Close", "&Push", "&Stop", "Cancel"]
+			: ["&Close", "&Push", "Cancel"];
 
 		// ask
 		int ask = Far.Api.Message("How would you like to continue?", "Search", MessageOptions.None, buttons);
@@ -205,7 +196,7 @@ public class SearchFileCommand
 	/// <param name="sourcePanel">The result panel to open.</param>
 	public void Invoke(Panel sourcePanel)
 	{
-		if (sourcePanel == null) throw new ArgumentNullException(nameof(sourcePanel));
+		ArgumentNullException.ThrowIfNull(sourcePanel);
 
 		// panel with the file store
 		var panel = new SuperPanel();
@@ -236,7 +227,7 @@ public class SearchFileCommand
 	/// <param name="sourcePanel">The result panel to open.</param>
 	public void InvokeAsync(Panel sourcePanel)
 	{
-		if (sourcePanel == null) throw new ArgumentNullException(nameof(sourcePanel));
+		ArgumentNullException.ThrowIfNull(sourcePanel);
 
 		var panel = new SuperPanel
 		{

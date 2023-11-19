@@ -6,14 +6,9 @@ using System.IO;
 
 namespace PowerShellFar;
 
-sealed class StreamOutputWriter : TextOutputWriter
+sealed class StreamOutputWriter(StreamWriter writer) : TextOutputWriter
 {
-	readonly StreamWriter _writer;
-
-	public StreamOutputWriter(StreamWriter writer)
-	{
-		_writer = writer;
-	}
+	readonly StreamWriter _writer = writer;
 
 	protected override void Append(string value)
 	{

@@ -8,16 +8,11 @@ namespace FarNet;
 /// Arguments of <see cref="Panel.InvokingCommand"/>.
 /// Set <see cref="PanelEventArgs.Ignore"/> = true to tell that command has been processed internally.
 /// </summary>
-public sealed class CommandLineEventArgs : PanelEventArgs
+/// <param name="command">See <see cref="Command"/></param>
+public sealed class CommandLineEventArgs(string command) : PanelEventArgs
 {
-	/// <param name="command">See <see cref="Command"/></param>
-	public CommandLineEventArgs(string command)
-	{
-		Command = command;
-	}
-
 	/// <summary>
 	/// Gets the command to be processed.
 	/// </summary>
-	public string Command { get; }
+	public string Command { get; } = command;
 }

@@ -6,31 +6,24 @@ namespace FarNet;
 /// <summary>
 /// Panel key bar item.
 /// </summary>
-public sealed class KeyBar
+/// <param name="virtualKeyCode">Virtual key code of <see cref="Key"/></param>
+/// <param name="controlKeyState">Control states of <see cref="Key"/></param>
+/// <param name="text">See <see cref="Text"/></param>
+/// <param name="longText">See <see cref="LongText"/></param>
+public sealed class KeyBar(int virtualKeyCode, ControlKeyStates controlKeyState, string text, string longText)
 {
-	/// <param name="virtualKeyCode">Virtual key code of <see cref="Key"/></param>
-	/// <param name="controlKeyState">Control states of <see cref="Key"/></param>
-	/// <param name="text">See <see cref="Text"/></param>
-	/// <param name="longText">See <see cref="LongText"/></param>
-	public KeyBar(int virtualKeyCode, ControlKeyStates controlKeyState, string text, string longText)
-	{
-		Key = new KeyData(virtualKeyCode, controlKeyState);
-		Text = text;
-		LongText = longText;
-	}
-
 	/// <summary>
 	/// The assigned key.
 	/// </summary>
-	public KeyData Key { get; }
+	public KeyData Key { get; } = new KeyData(virtualKeyCode, controlKeyState);
 
 	/// <summary>
 	/// The short key bar text.
 	/// </summary>
-	public string Text { get; }
+	public string Text { get; } = text;
 
 	/// <summary>
 	/// The long key bar text.
 	/// </summary>
-	public string LongText { get; }
+	public string LongText { get; } = longText;
 }

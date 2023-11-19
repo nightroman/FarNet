@@ -132,14 +132,21 @@ Start-FarTask -Data Tests, ExpectedTaskCount, All, SavedPanelPaths {
 		}
 
 		### Check after test
-		job {
+		$result = job {
 			try {
 				[FarNet.Works.Test]::AssertNormalState()
-				if ($global:Error) {throw "Unexpected recorded error: $($global:Error[-1])"}
+				if ($global:Error) {
+					throw "Unexpected error after test: $($global:Error[-1])"
+				}
 			}
 			catch {
-				throw "$($test.FullName): $_"
+				$_
 			}
+		}
+
+		### Show after test issues
+		if ($result) {
+			throw "$($test.FullName):`r`n$result"
 		}
 	}
 

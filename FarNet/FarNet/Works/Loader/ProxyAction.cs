@@ -63,9 +63,8 @@ abstract class ProxyAction : IModuleAction
 		_Manager = manager;
 		_ClassType = classType;
 
-		var attr = Attribute.GetCustomAttribute(classType, attributeType);
-		if (attr is null)
-			throw new ModuleException($"{_ClassType.FullName} must use {attributeType.FullName}.");
+		var attr = Attribute.GetCustomAttribute(classType, attributeType)
+			?? throw new ModuleException($"{_ClassType.FullName} must use {attributeType.FullName}.");
 
 		ActionAttribute = (ModuleActionAttribute)attr;
 		if (!Guid.TryParse(ActionAttribute.Id, out _Id))

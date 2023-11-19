@@ -10,13 +10,9 @@ using System.Xml.Xsl;
 
 namespace FarNet.Tools;
 
-class XPathXsltContext : XsltContext
+class XPathXsltContext(NameTable nt) : XsltContext(nt)
 {
 	Dictionary<string, XsltContextVariable>? _variables;
-
-	public XPathXsltContext(NameTable nt) : base(nt)
-	{
-	}
 
 	public override bool Whitespace => true;
 
@@ -48,7 +44,7 @@ class XPathXsltContext : XsltContext
 
 	public void AddVariable(string name, object value)
 	{
-		_variables ??= new Dictionary<string, XsltContextVariable>();
+		_variables ??= [];
 		_variables.Add(name, new XsltContextVariable(value));
 	}
 }

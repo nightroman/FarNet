@@ -19,10 +19,10 @@ class CommitsPanel : BasePanel<CommitsExplorer>
 		var cm = new SetColumn { Kind = "DM", Name = "Date" };
 		var co = new SetColumn { Kind = "O", Name = " ", Width = 1 };
 
-		var plan0 = new PanelPlan { Columns = new FarColumn[] { co, cn } };
+		var plan0 = new PanelPlan { Columns = [co, cn] };
 		SetPlan(0, plan0);
 
-		var plan9 = new PanelPlan { Columns = new FarColumn[] { co, cn, cm } };
+		var plan9 = new PanelPlan { Columns = [co, cn, cm] };
 		SetPlan((PanelViewMode)9, plan9);
 	}
 
@@ -50,8 +50,7 @@ class CommitsPanel : BasePanel<CommitsExplorer>
 
 	void CreateBranch()
 	{
-		var commit = CurrentFile?.Data as Commit;
-		if (commit is null)
+		if (CurrentFile?.Data is not Commit commit)
 			return;
 
 		var friendlyName = Branch.FriendlyName;

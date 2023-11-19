@@ -51,21 +51,13 @@ public class VesselTool : ModuleTool
 		var now = DateTime.Now;
 
 		// skip recently updated
-		DateTime lastUpdateTime;
-		switch (mode)
+		var lastUpdateTime = mode switch
 		{
-			case Mode.File:
-				lastUpdateTime = works.LastUpdateTime1;
-				break;
-			case Mode.Folder:
-				lastUpdateTime = works.LastUpdateTime2;
-				break;
-			case Mode.Command:
-				lastUpdateTime = works.LastUpdateTime3;
-				break;
-			default:
-				throw new Exception();
-		}
+			Mode.File => works.LastUpdateTime1,
+			Mode.Folder => works.LastUpdateTime2,
+			Mode.Command => works.LastUpdateTime3,
+			_ => throw new Exception(),
+		};
 		if ((now - lastUpdateTime).TotalHours < settings.Limit0)
 			return;
 

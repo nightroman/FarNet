@@ -10,19 +10,14 @@ namespace PowerShellFar;
 /// <summary>
 /// Base editor writer.
 /// </summary>
-abstract class EditorOutputWriter1 : TextOutputWriter
+abstract class EditorOutputWriter1(IEditor editor) : TextOutputWriter
 {
 	Stopwatch _stopwatch = Stopwatch.StartNew();
 
 	/// <summary>
 	/// The editor.
 	/// </summary>
-	protected IEditor Editor { get; }
-
-	public EditorOutputWriter1(IEditor editor)
-	{
-		Editor = editor;
-	}
+	protected IEditor Editor { get; } = editor;
 
 	protected abstract void Redraw();
 

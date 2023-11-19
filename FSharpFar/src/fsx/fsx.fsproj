@@ -5,7 +5,7 @@
     <MyOutDir>$(FarHome)\FarNet\Modules\FSharpFar</MyOutDir>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFramework>net7.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <WarningLevel>5</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -24,8 +24,8 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FSharp.Core" Version="7.0.401" />
-    <PackageReference Include="FSharp.Compiler.Service" Version="43.7.401" />
+    <PackageReference Include="FSharp.Core" Version="8.0.100" />
+    <PackageReference Include="FSharp.Compiler.Service" Version="43.8.100" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <ItemGroup>

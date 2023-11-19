@@ -5,7 +5,6 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Text.RegularExpressions;
 
 namespace FarNet;
 
@@ -42,8 +41,7 @@ public static class Log
 	/// <param name="error">.</param>
 	public static void FormatException(TextWriter writer, Exception error)
 	{
-		if (error is null)
-			throw new ArgumentNullException(nameof(error));
+		ArgumentNullException.ThrowIfNull(error);
 
 		writer.Write(error.GetType().FullName);
 		writer.Write(": ");

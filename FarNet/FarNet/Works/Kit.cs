@@ -14,6 +14,8 @@ namespace FarNet.Works;
 
 public static class Kit
 {
+	static readonly string[] SplitLineSeparators = ["\r\n", "\r", "\n"];
+
 	// Parses parameters string in connection string format, wraps exceptions.
 	public static DbConnectionStringBuilder ParseParameters(string parameters)
 	{
@@ -61,10 +63,10 @@ public static class Kit
 	public static string[] SplitLines(string value)
 	{
 		if (value == null)
-			return new string[] { string.Empty };
+			return [string.Empty];
 
 		//! Regex is twice slower
-		return value.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+		return value.Split(SplitLineSeparators, StringSplitOptions.None);
 	}
 
 	// Formats the string as a limited number of lines of limited width.
@@ -75,8 +77,8 @@ public static class Kit
 	// mode Formatting mode.
 	public static void FormatMessage(IList<string> lines, string message, int width, int height, FormatMessageMode mode)
 	{
-		if (lines == null) throw new ArgumentNullException("lines");
-		if (message == null) throw new ArgumentNullException("message");
+		ArgumentNullException.ThrowIfNull(lines);
+		ArgumentNullException.ThrowIfNull(message);
 
 		Regex? format = null;
 		foreach (var line in Kit.SplitLines(message.Replace('\t', ' ')))
@@ -91,8 +93,7 @@ public static class Kit
 			}
 			else
 			{
-				if (format == null)
-					format = new Regex("(.{0," + width + "}(?:\\s|$))");
+				format ??= new Regex("(.{0," + width + "}(?:\\s|$))");
 				string[] s3 = format.Split(line);
 				foreach (string s2 in s3)
 				{
@@ -112,7 +113,7 @@ public static class Kit
 	// Hashes the files using the comparer, counts dupes.
 	public static Dictionary<FarFile, int> HashFiles(IEnumerable files, IEqualityComparer<FarFile> comparer)
 	{
-		if (files == null) throw new ArgumentNullException("files");
+		ArgumentNullException.ThrowIfNull(files);
 
 		var hash = new Dictionary<FarFile, int>(comparer);
 		foreach (FarFile file in files)

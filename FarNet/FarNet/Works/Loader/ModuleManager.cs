@@ -25,7 +25,7 @@ sealed partial class ModuleManager : IModuleManager
 	ModuleHost? _ModuleHost;
 
 	// from cache or reflection
-	readonly List<string> _SettingsTypeNames = new();
+	readonly List<string> _SettingsTypeNames = [];
 
 	// used by loader on reflection
 	public void AddSettingsTypeName(string name) => _SettingsTypeNames.Add(name);
@@ -122,10 +122,8 @@ sealed partial class ModuleManager : IModuleManager
 
 	public override IModuleCommand RegisterCommand(ModuleCommandAttribute attribute, EventHandler<ModuleCommandEventArgs> handler)
 	{
-		if (handler is null)
-			throw new ArgumentNullException(nameof(handler));
-		if (attribute is null)
-			throw new ArgumentNullException(nameof(attribute));
+		ArgumentNullException.ThrowIfNull(handler);
+		ArgumentNullException.ThrowIfNull(attribute);
 		if (string.IsNullOrEmpty(attribute.Name))
 			throw new ArgumentException("'attribute.Name' must not be empty.");
 		if (!Guid.TryParse(attribute.Id, out Guid id))
@@ -143,10 +141,8 @@ sealed partial class ModuleManager : IModuleManager
 
 	public override IModuleDrawer RegisterDrawer(ModuleDrawerAttribute attribute, Action<IEditor, ModuleDrawerEventArgs> handler)
 	{
-		if (handler is null)
-			throw new ArgumentNullException(nameof(handler));
-		if (attribute is null)
-			throw new ArgumentNullException(nameof(attribute));
+		ArgumentNullException.ThrowIfNull(handler);
+		ArgumentNullException.ThrowIfNull(attribute);
 		if (string.IsNullOrEmpty(attribute.Name))
 			throw new ArgumentException("'attribute.Name' must not be empty.");
 		if (!Guid.TryParse(attribute.Id, out Guid id))
@@ -162,10 +158,8 @@ sealed partial class ModuleManager : IModuleManager
 
 	public override IModuleTool RegisterTool(ModuleToolAttribute attribute, EventHandler<ModuleToolEventArgs> handler)
 	{
-		if (handler is null)
-			throw new ArgumentNullException(nameof(handler));
-		if (attribute is null)
-			throw new ArgumentNullException(nameof(attribute));
+		ArgumentNullException.ThrowIfNull(handler);
+		ArgumentNullException.ThrowIfNull(attribute);
 		if (string.IsNullOrEmpty(attribute.Name))
 			throw new ArgumentException("'attribute.Name' must not be empty.");
 		if (!Guid.TryParse(attribute.Id, out Guid id))

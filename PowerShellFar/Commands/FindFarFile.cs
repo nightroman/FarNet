@@ -26,9 +26,7 @@ sealed class FindFarFileCommand : BaseCmdlet
 
 	protected override void BeginProcessing()
 	{
-		var panel = Far.Api.Panel;
-		if (panel is null)
-			throw new PSInvalidOperationException("Expected panel.");
+		var panel = Far.Api.Panel ?? throw new PSInvalidOperationException("Expected panel.");
 
 		// case: find by name
 		if (Name != null)
@@ -54,14 +52,14 @@ sealed class FindFarFileCommand : BaseCmdlet
 		if (Up)
 		{
 			step = -1;
-			st = new int[] { current - 1, count - 1 };
-			en = new int[] { -1, current - 1 };
+			st = [current - 1, count - 1];
+			en = [-1, current - 1];
 		}
 		else
 		{
 			step = 1;
-			st = new int[] { current + 1, 0 };
-			en = new int[] { count, current + 1 };
+			st = [current + 1, 0];
+			en = [count, current + 1];
 		}
 
 		for (int pass = 0; pass < 2; ++pass)

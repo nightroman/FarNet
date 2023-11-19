@@ -14,7 +14,7 @@ public class TheTool : ModuleTool
 {
 	const string ModuleName = "CopyColor";
 	readonly static Guid Colorer = new("d2f36b62-a470-418d-83a3-ed7a3710e5b5");
-	readonly static string[] Colors = { "#000000", "#000080", "#008000", "#008080", "#800000", "#800080", "#808000", "#c0c0c0", "#808080", "#0000ff", "#00ff00", "#00ffff", "#ff0000", "#ff00ff", "#ffff00", "#ffffff", };
+	readonly static string[] Colors = ["#000000", "#000080", "#008000", "#008080", "#800000", "#800080", "#808000", "#c0c0c0", "#808080", "#0000ff", "#00ff00", "#00ffff", "#ff0000", "#ff00ff", "#ffff00", "#ffffff",];
 
 	static string EncodeHtml(string html)
 	{

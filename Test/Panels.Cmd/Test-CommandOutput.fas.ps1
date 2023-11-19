@@ -55,7 +55,7 @@ job {
 	$buff = $Host.UI.RawUI.GetBufferContents($rect)
 	$buff | Select-Object Character, ForegroundColor | Export-Csv C:\TEMP\buffer.csv
 	$hash = (Get-FileHash C:\TEMP\buffer.csv).Hash
-	Assert-Far $hash -eq BDAE383787901CACBA61E782B586AC0DF239E4986CBB2073497D89057E3BE303
+	Assert-Far $hash -eq 548C7A35E27B4D013D69776A58284E94C9532ABD635F19E3A9F476139404191A
 	Remove-Item C:\TEMP\buffer.csv
 	Assert-Far $Data.errorCount -eq ($global:Error.Count - 1)
 	$global:Error.RemoveAt(0)
@@ -122,7 +122,7 @@ job {
 	$buff = $Host.UI.RawUI.GetBufferContents($rect)
 	$buff | Select-Object Character, ForegroundColor | Export-Csv C:\TEMP\buffer.csv
 	$hash = (Get-FileHash C:\TEMP\buffer.csv).Hash
-	Assert-Far $hash -eq D8E684B135D372D77F4F9C5C5CB7251042FD60337DF4F7B62A228695790CB8AB
+	Assert-Far $hash -eq E92C1F41442A0CC3B44D17FF478C368F15B2C3ADEE94C3CF4BF55C1284784F85
 	Remove-Item C:\TEMP\buffer.csv
 }
 

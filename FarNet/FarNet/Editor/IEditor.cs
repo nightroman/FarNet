@@ -704,7 +704,7 @@ public abstract class IEditor : IEditorBase
 	public abstract DateTime TimeOfSave { get; }
 
 	/// <include file='doc.xml' path='doc/Data/*'/>
-	public Hashtable Data => _Data ??= new Hashtable();
+	public Hashtable Data => _Data ??= [];
 	Hashtable? _Data;
 
 	/// <summary>

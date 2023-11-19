@@ -3,6 +3,7 @@
 // Copyright (c) Roman Kuzmin
 
 using System;
+using System.Linq;
 using System.Management.Automation;
 using FarNet;
 
@@ -52,7 +53,7 @@ public sealed class PropertyPanel : ListPanel
 	/// </summary>
 	internal static void WhenPropertyChanged(string itemPath)
 	{
-		foreach (PropertyPanel panel in Far.Api.Panels(typeof(PropertyPanel)))
+		foreach (var panel in Far.Api.Panels(typeof(PropertyPanel)).Cast<PropertyPanel>())
 			if (panel.Explorer.ItemPath == itemPath)
 				panel.UpdateRedraw(true);
 	}
@@ -106,8 +107,7 @@ public sealed class PropertyPanel : ListPanel
 	/// <inheritdoc/>
 	public override void UICreateFile(CreateFileEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		// call
 		Explorer.CreateFile(args);

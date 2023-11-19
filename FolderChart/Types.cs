@@ -14,10 +14,9 @@ class FolderItem
 	public long Size { get; set; }
 }
 
-class WindowWrapper : IWin32Window
+class WindowWrapper(IntPtr hwnd) : IWin32Window
 {
-	public IntPtr Handle { get; private set; }
-	public WindowWrapper(IntPtr hwnd) { Handle = hwnd; }
+	public IntPtr Handle { get; } = hwnd;
 }
 
 static class Kit
@@ -32,11 +31,11 @@ static class Kit
 			return size.ToString(CultureInfo.InvariantCulture);
 
 		if (size < 1024 * 1024)
-			return String.Format(CultureInfo.InvariantCulture, "{0:n2} K", size / 1024);
+			return string.Format(CultureInfo.InvariantCulture, "{0:n2} K", size / 1024);
 
 		if (size < 1024 * 1024 * 1024)
-			return String.Format(CultureInfo.InvariantCulture, "{0:n2} M", size / (1024 * 1024));
+			return string.Format(CultureInfo.InvariantCulture, "{0:n2} M", size / (1024 * 1024));
 
-		return String.Format(CultureInfo.InvariantCulture, "{0:n2} G", size / (1024 * 1024 * 1024));
+		return string.Format(CultureInfo.InvariantCulture, "{0:n2} G", size / (1024 * 1024 * 1024));
 	}
 }

@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.RightControl
 
+= 5.0.0 =
+
+Requires FarNet 8
+
 = 4.0.1 =
 
 master -> main, update links.

@@ -24,7 +24,7 @@ sealed class GetFarPathCommand : BaseFileCmdlet
 			return;
 
 		// get path(s)
-		IEnumerator<string> it;
+		PathEnumerator it;
 		if (All)
 		{
 			it = new PathEnumerator(panel1.GetFiles(), panel2.CurrentDirectory, panel1.RealNames, panel1 != panel2);

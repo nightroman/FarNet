@@ -21,7 +21,7 @@ class DataRowFileMap
 		CreationTime = -1;
 		LastWriteTime = -1;
 		LastAccessTime = -1;
-		Columns = new List<int>();
+		Columns = [];
 	}
 
 	public int Name { get; set; }
@@ -34,17 +34,11 @@ class DataRowFileMap
 	public List<int> Columns { get; private set; }
 }
 
-class DataColumnEnumerator : IEnumerator
+class DataColumnEnumerator(DataRow row, List<int> indexes) : IEnumerator
 {
-	readonly DataRow Row;
-	readonly List<int> Indexes;
+	readonly DataRow Row = row;
+	readonly List<int> Indexes = indexes;
 	int Index = -1;
-
-	public DataColumnEnumerator(DataRow row, List<int> indexes)
-	{
-		Row = row;
-		Indexes = indexes;
-	}
 
 	public object Current => Row[Indexes[Index]];
 
@@ -53,32 +47,20 @@ class DataColumnEnumerator : IEnumerator
 	public bool MoveNext() => ++Index < Indexes.Count;
 }
 
-class DataColumnCollection : My.SimpleCollection
+class DataColumnCollection(DataRow row, List<int> indexes) : My.SimpleCollection
 {
-	readonly DataRow Row;
-	readonly List<int> Indexes;
-
-	public DataColumnCollection(DataRow row, List<int> indexes)
-	{
-		Row = row;
-		Indexes = indexes;
-	}
+	readonly DataRow Row = row;
+	readonly List<int> Indexes = indexes;
 
 	public override int Count => Indexes.Count;
 
 	public override IEnumerator GetEnumerator() => new DataColumnEnumerator(Row, Indexes);
 }
 
-class DataRowFile : FarFile
+class DataRowFile(DataRow row, DataRowFileMap map) : FarFile
 {
-	readonly DataRow Row;
-	readonly DataRowFileMap Map;
-
-	public DataRowFile(DataRow row, DataRowFileMap map)
-	{
-		Row = row;
-		Map = map;
-	}
+	readonly DataRow Row = row;
+	readonly DataRowFileMap Map = map;
 
 	public override string Name
 	{

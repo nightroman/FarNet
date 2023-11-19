@@ -24,10 +24,10 @@ sealed class OpenFarPanelCommand : BasePanelCmdlet
 			return;
 
 		// get the panel or a new member panel
-		if (!(InputObject.BaseObject is Explorer explorer))
-			_Panel = (InputObject.BaseObject as Panel) ?? new MemberPanel(new MemberExplorer(InputObject));
-		else
+		if (InputObject.BaseObject is Explorer explorer)
 			_Panel = explorer.CreatePanel();
+		else
+			_Panel = (InputObject.BaseObject as Panel) ?? new MemberPanel(new MemberExplorer(InputObject));
 
 		// setup and show
 		ApplyParameters(_Panel);

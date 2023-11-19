@@ -6,20 +6,13 @@ using System;
 using System.Collections.Generic;
 
 namespace FarNet.Works;
-#pragma warning disable 1591
+#pragma warning disable CS1591, CA1822
 
-public sealed class LineCollection : IList<ILine>
+public sealed class LineCollection(IEditor editor, int start, int count) : IList<ILine>
 {
-	readonly IEditor _Editor;
-	readonly int _Start;
-	int _Count;
-
-	public LineCollection(IEditor editor, int start, int count)
-	{
-		_Editor = editor;
-		_Start = start;
-		_Count = count;
-	}
+	readonly IEditor _Editor = editor;
+	readonly int _Start = start;
+	int _Count = count;
 
 	public int Count => _Count;
 

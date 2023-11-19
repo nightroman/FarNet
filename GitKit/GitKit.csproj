@@ -1,8 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <FarHome Condition="'$(FarHome)' == ''">C:\Bin\Far\x64</FarHome>
     <OutDir>$(FarHome)\FarNet\Modules\$(AssemblyName)</OutDir>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -12,7 +12,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="LibGit2Sharp" Version="0.27.2" />
+    <PackageReference Include="LibGit2Sharp" Version="0.28.0" />
     <PackageReference Include="LibGit2Sharp.NativeBinaries" Version="2.0.320" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

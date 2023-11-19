@@ -14,5 +14,5 @@ public static class User
 	/// <summary>
 	/// Gets the concurrent dictionary suitable for cross thread and module operations.
 	/// </summary>
-	static public ConcurrentDictionary<string, object> Data { get; } = new ConcurrentDictionary<string, object>();
+	static public ConcurrentDictionary<string, object> Data { get; } = [];
 }

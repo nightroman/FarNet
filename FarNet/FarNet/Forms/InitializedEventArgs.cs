@@ -7,13 +7,9 @@ namespace FarNet.Forms;
 /// <summary>
 /// <see cref="IDialog.Initialized"/> event arguments.
 /// </summary>
-public sealed class InitializedEventArgs : AnyEventArgs
+/// <param name="focused">Control that will initially receive focus.</param>
+public sealed class InitializedEventArgs(IControl focused) : AnyEventArgs(focused)
 {
-	/// <param name="focused">Control that will initially receive focus.</param>
-	public InitializedEventArgs(IControl focused) : base(focused)
-	{
-	}
-
 	/// <summary>
 	/// Ingore changes.
 	/// </summary>

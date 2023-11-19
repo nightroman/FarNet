@@ -34,7 +34,7 @@ public sealed class Settings : ModuleSettings<Settings.Data>
 
 	public class FixedColumn
 	{
-		public int[] ColumnNumbers { get; set; } = new int[] { 80, 120 };
+		public int[] ColumnNumbers { get; set; } = [80, 120];
 
 		public ConsoleColor ColorForeground { get; set; } = ConsoleColor.Black;
 

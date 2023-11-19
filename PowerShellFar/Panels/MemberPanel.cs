@@ -5,6 +5,7 @@
 using FarNet;
 using System;
 using System.Data;
+using System.Linq;
 using System.Management.Automation;
 
 namespace PowerShellFar;
@@ -74,7 +75,7 @@ public sealed class MemberPanel : ListPanel
 	/// </summary>
 	internal static void WhenMemberChanged(object instance)
 	{
-		foreach (MemberPanel panel in Far.Api.Panels(typeof(MemberPanel)))
+		foreach (var panel in Far.Api.Panels(typeof(MemberPanel)).Cast<MemberPanel>())
 		{
 			if (panel.Target == instance)
 			{
@@ -211,8 +212,7 @@ public sealed class MemberPanel : ListPanel
 	/// <inheritdoc/>
 	public override void UICreateFile(CreateFileEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		// skip data panel
 		if (Parent is DataPanel)

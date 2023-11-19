@@ -58,8 +58,7 @@ public sealed class ItemExplorer : FormatExplorer
 	/// <inheritdoc/>
 	public override void DoAcceptFiles(AcceptFilesEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		// that source
 		if (args.Explorer is not ItemExplorer)
@@ -104,8 +103,7 @@ public sealed class ItemExplorer : FormatExplorer
 	/// <inheritdoc/>
 	public override void DoDeleteFiles(DeleteFilesEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		// -Confirm -Recurse
 		var confirmDelete = 0 != (long)Far.Api.GetSetting(FarSetting.Confirmations, "Delete");
@@ -145,8 +143,7 @@ public sealed class ItemExplorer : FormatExplorer
 	/// <inheritdoc/>
 	public override void DoGetContent(GetContentEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		if (!My.ProviderInfoEx.HasContent(Provider))
 		{
@@ -188,8 +185,7 @@ public sealed class ItemExplorer : FormatExplorer
 	/// <inheritdoc/>
 	public override Explorer DoExploreDirectory(ExploreDirectoryEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		return Explore(My.PathEx.Combine(Location, args.File.Name));
 	}
@@ -197,8 +193,7 @@ public sealed class ItemExplorer : FormatExplorer
 	/// <inheritdoc/>
 	public override Explorer? DoExploreParent(ExploreParentEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		/*
 		We might use 'cd ..' but we have to be sure that the current location is in sync
@@ -216,7 +211,7 @@ public sealed class ItemExplorer : FormatExplorer
 			return null;
 
 		// 090814 [_090814_130836] PS V2 may get paths with extra '\' in the end
-		path = path.TrimEnd(new char[] { '\\' });
+		path = path.TrimEnd(['\\']);
 
 		// find name
 		int iSlash = path.LastIndexOf('\\');
@@ -249,7 +244,7 @@ public sealed class ItemExplorer : FormatExplorer
 			return null;
 
 		// add \, else we can't step to the root from level 1
-		if (path.EndsWith(":", StringComparison.Ordinal))
+		if (path.EndsWith(':'))
 			path += "\\";
 
 		return Explore(path);
@@ -265,7 +260,7 @@ public sealed class ItemExplorer : FormatExplorer
 		return Explore(driveName + ":\\");
 	}
 
-	Explorer Explore(string location)
+	ItemExplorer Explore(string location)
 	{
 		//! propagate the provider, or performance sucks
 		return new ItemExplorer(location)
@@ -305,8 +300,7 @@ public sealed class ItemExplorer : FormatExplorer
 	/// <inheritdoc/>
 	public override void DoRenameFile(RenameFileEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		if (args.Parameter is not string newName)
 			throw new InvalidOperationException(Res.ParameterString);
@@ -319,8 +313,7 @@ public sealed class ItemExplorer : FormatExplorer
 	/// <inheritdoc/>
 	public override void DoCreateFile(CreateFileEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		args.Result = JobResult.Ignore;
 
@@ -365,8 +358,7 @@ public sealed class ItemExplorer : FormatExplorer
 	/// <inheritdoc/>
 	public override void DoSetText(SetTextEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		try
 		{
@@ -390,8 +382,7 @@ public sealed class ItemExplorer : FormatExplorer
 	/// <inheritdoc/>
 	public override void DoCloneFile(CloneFileEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		if (args.Parameter is not string newName)
 			throw new InvalidOperationException(Res.ParameterString);

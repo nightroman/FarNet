@@ -12,12 +12,11 @@ public static class PanelTools
 {
 	public static void GoToPath(IPanel panel, string path)
 	{
-		if (path == null)
-			throw new ArgumentNullException(nameof(path));
+		ArgumentNullException.ThrowIfNull(path);
 
 		//! can be null, e.g. for '\'
 		var dir = Path.GetDirectoryName(path);
-		if (dir == null && (path.StartsWith("\\") || path.StartsWith("/")))
+		if (dir == null && (path.StartsWith('\\') || path.StartsWith('/')))
 			dir = "\\";
 
 		if (!string.IsNullOrEmpty(dir))
@@ -33,7 +32,7 @@ public static class PanelTools
 
 	public static void ResizeColumn(Panel panel, bool right)
 	{
-		if (panel == null) throw new ArgumentNullException(nameof(panel));
+		ArgumentNullException.ThrowIfNull(panel);
 
 		var view = panel.ViewMode;
 		var plan = panel.GetPlan(view) ?? panel.ViewPlan;
@@ -66,7 +65,7 @@ public static class PanelTools
 
 	public static void SwitchFullScreen(Panel panel)
 	{
-		if (panel == null) throw new ArgumentNullException(nameof(panel));
+		ArgumentNullException.ThrowIfNull(panel);
 
 		// get/make the plan
 		var iViewMode = panel.ViewMode;

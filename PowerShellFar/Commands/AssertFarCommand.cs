@@ -306,21 +306,21 @@ sealed class AssertFarCommand : BaseCmdlet
 		string[] buttons;
 		if (!IsError)
 		{
-			buttons = new[] { BtnStop, BtnThrow };
+			buttons = [BtnStop, BtnThrow];
 		}
 		else if (string.IsNullOrEmpty(MyInvocation.ScriptName))
 		{
 			if (doNotIgnore)
-				buttons = new[] { BtnStop, BtnThrow, BtnDebug };
+				buttons = [BtnStop, BtnThrow, BtnDebug];
 			else
-				buttons = new[] { BtnStop, BtnThrow, BtnIgnore, BtnDebug };
+				buttons = [BtnStop, BtnThrow, BtnIgnore, BtnDebug];
 		}
 		else
 		{
 			if (doNotIgnore)
-				buttons = new[] { BtnStop, BtnThrow, BtnDebug, BtnEdit };
+				buttons = [BtnStop, BtnThrow, BtnDebug, BtnEdit];
 			else
-				buttons = new[] { BtnStop, BtnThrow, BtnIgnore, BtnDebug, BtnEdit };
+				buttons = [BtnStop, BtnThrow, BtnIgnore, BtnDebug, BtnEdit];
 		}
 
 	repeat_dialog:

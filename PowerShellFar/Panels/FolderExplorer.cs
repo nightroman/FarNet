@@ -16,12 +16,13 @@ namespace PowerShellFar;
 public sealed class FolderExplorer : TreeExplorer
 {
 	const string TypeIdString = "c9b2ddc2-80d8-4074-9cf7-d009b4ef7ffb";
+	static readonly string[] s_paramPath = ["."];
 
-	/// <summary>
-	/// New folder explorer.
-	/// </summary>
-	/// <param name="path">The provider path to a root container.</param>
-	public FolderExplorer(string? path) : base(new Guid(TypeIdString))
+/// <summary>
+/// New folder explorer.
+/// </summary>
+/// <param name="path">The provider path to a root container.</param>
+public FolderExplorer(string? path) : base(new Guid(TypeIdString))
 	{
 		Reset(path);
 	}
@@ -71,7 +72,7 @@ public sealed class FolderExplorer : TreeExplorer
 			throw new RuntimeException("Provider '" + location.Provider + "' does not support navigation.");
 
 		// get root item
-		Collection<PSObject> items = A.Psf.Engine.SessionState.InvokeProvider.Item.Get(new string[] { "." }, true, true);
+		Collection<PSObject> items = A.Psf.Engine.SessionState.InvokeProvider.Item.Get(s_paramPath, true, true);
 		//! trap Get-Item at Cert:
 		if (items.Count == 0)
 			throw new RuntimeException(string.Format(null, "Provider '{0}' cannot get '{1}'.", location.Provider, location.Path));
@@ -95,14 +96,13 @@ public sealed class FolderExplorer : TreeExplorer
 	/// <inheritdoc/>
 	public override Explorer? ExploreParent(ExploreParentEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		string newLocation = My.PathEx.GetDirectoryName(Location); //???? GetDirectoryName to add '\' for the root like IO.Path does
 		if (newLocation.Length == 0)
 			return null;
 
-		if (newLocation.EndsWith(":", StringComparison.Ordinal))
+		if (newLocation.EndsWith(':'))
 			newLocation += "\\";
 		if (newLocation.Equals(Location, StringComparison.OrdinalIgnoreCase))
 			return null;

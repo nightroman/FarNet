@@ -38,7 +38,11 @@ public class SuperPanel : Panel
 
 		var plan = new PanelPlan
 		{
-			Columns = new FarColumn[] { new SetColumn() { Kind = "N" }, new SetColumn() { Kind = "O" } }
+			Columns =
+			[
+				new SetColumn { Kind = "N" },
+				new SetColumn { Kind = "O" },
+			]
 		};
 		SetPlan(PanelViewMode.AlternativeFull, plan);
 		ViewMode = PanelViewMode.AlternativeFull;
@@ -108,9 +112,7 @@ public class SuperPanel : Panel
 	{
 		lock (_lock)
 		{
-			if (_idleFiles is null)
-				_idleFiles = new List<FarFile>();
-
+			_idleFiles ??= [];
 			_idleFiles.AddRange(files);
 		}
 	}
@@ -118,8 +120,7 @@ public class SuperPanel : Panel
 	/// <inheritdoc/>
 	public override bool UIKeyPressed(KeyInfo key)
 	{
-		if (key is null)
-			throw new ArgumentNullException(nameof(key));
+		ArgumentNullException.ThrowIfNull(key);
 
 		switch (key.VirtualKeyCode)
 		{

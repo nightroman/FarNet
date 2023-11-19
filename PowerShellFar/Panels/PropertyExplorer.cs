@@ -30,8 +30,7 @@ public sealed class PropertyExplorer : Explorer
 	/// <param name="itemPath">Item path.</param>
 	public PropertyExplorer(string itemPath) : base(new Guid(TypeIdString))
 	{
-		if (itemPath is null)
-			throw new ArgumentNullException(nameof(itemPath));
+		ArgumentNullException.ThrowIfNull(itemPath);
 
 		// the path
 		_ThePath = new PathInfoEx(itemPath);
@@ -55,8 +54,7 @@ public sealed class PropertyExplorer : Explorer
 	/// <inheritdoc/>
 	public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		var result = new List<FarFile>();
 
@@ -127,8 +125,7 @@ public sealed class PropertyExplorer : Explorer
 	/// <inheritdoc/>
 	public override void GetContent(GetContentEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		if (args.File.Data is not PSPropertyInfo pi)
 		{
@@ -151,8 +148,7 @@ public sealed class PropertyExplorer : Explorer
 	/// <inheritdoc/>
 	public override void SetText(SetTextEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		if (args.File.Data is not PSPropertyInfo pi)
 		{
@@ -164,7 +160,7 @@ public sealed class PropertyExplorer : Explorer
 		{
 			object value;
 			string text = args.Text.TrimEnd();
-			if (pi.TypeNameOfValue.EndsWith("]", StringComparison.Ordinal))
+			if (pi.TypeNameOfValue.EndsWith(']'))
 			{
 				var lines = new ArrayList();
 				foreach (var line in FarNet.Works.Kit.SplitLines(text))
@@ -189,8 +185,7 @@ public sealed class PropertyExplorer : Explorer
 	/// <inheritdoc/>
 	public override void DeleteFiles(DeleteFilesEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		// to ask
 		bool confirm = args.UI && 0 != (long)Far.Api.GetSetting(FarSetting.Confirmations, "Delete");
@@ -246,8 +241,7 @@ public sealed class PropertyExplorer : Explorer
 	/// <inheritdoc/>
 	public override void AcceptFiles(AcceptFilesEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		// that source
 		if (args.Explorer is not PropertyExplorer that)
@@ -281,8 +275,7 @@ public sealed class PropertyExplorer : Explorer
 	/// <inheritdoc/>
 	public override void RenameFile(RenameFileEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		if (args.Parameter is not string newName)
 			throw new InvalidOperationException(Res.ParameterString);
@@ -317,8 +310,7 @@ public sealed class PropertyExplorer : Explorer
 	/// <inheritdoc/>
 	public override void CreateFile(CreateFileEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		args.Result = JobResult.Ignore;
 
@@ -362,8 +354,7 @@ public sealed class PropertyExplorer : Explorer
 	/// <inheritdoc/>
 	public override void CloneFile(CloneFileEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		if (args.Parameter is not string newName)
 			throw new InvalidOperationException(Res.ParameterString);

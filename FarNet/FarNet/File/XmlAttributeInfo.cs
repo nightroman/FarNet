@@ -7,20 +7,14 @@ using System;
 namespace FarNet;
 
 /// <summary>.</summary>
-public class XmlAttributeInfo
+/// <remarks>.</remarks>
+/// <param name="name">.</param>
+/// <param name="getter">.</param>
+public class XmlAttributeInfo(string name, Func<object, object?> getter)
 {
 	/// <summary>.</summary>
-	/// <param name="name">.</param>
-	/// <param name="getter">.</param>
-	public XmlAttributeInfo(string name, Func<object, object?> getter)
-	{
-		Name = name;
-		Getter = getter;
-	}
+	public string Name { get; } = name;
 
 	/// <summary>.</summary>
-	public string Name { get; }
-
-	/// <summary>.</summary>
-	public Func<object, object?> Getter { get; }
+	public Func<object, object?> Getter { get; } = getter;
 }

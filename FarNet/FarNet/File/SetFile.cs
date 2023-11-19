@@ -32,8 +32,7 @@ public sealed class SetFile : FarFile
 	/// <param name="file">Any panel file.</param>
 	public SetFile(FarFile file)
 	{
-		if (file is null)
-			throw new ArgumentNullException(nameof(file));
+		ArgumentNullException.ThrowIfNull(file);
 
 		Attributes = file.Attributes;
 		CreationTime = file.CreationTime;
@@ -53,8 +52,7 @@ public sealed class SetFile : FarFile
 	/// <param name="fullName">Use the full name (path) as the panel file name.</param>
 	public SetFile(FileSystemInfo info, bool fullName)
 	{
-		if (info is null)
-			throw new ArgumentNullException(nameof(info));
+		ArgumentNullException.ThrowIfNull(info);
 
 		Name = fullName ? info.FullName : info.Name;
 		CreationTime = info.CreationTime;

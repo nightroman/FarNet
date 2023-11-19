@@ -13,7 +13,7 @@ namespace FarNet.RightWords;
 
 static class Actor
 {
-	public static readonly List<DictionaryInfo> Dictionaries = new List<DictionaryInfo>();
+	public static readonly List<DictionaryInfo> Dictionaries = [];
 
 	static Actor()
 	{
@@ -193,7 +193,7 @@ static class Actor
 						continue;
 
 					// expensive skip pattern
-					if (HasMatch(skip ?? (skip = GetMatches(settings.SkipRegex2, text)), match))
+					if (HasMatch(skip ??= GetMatches(settings.SkipRegex2, text), match))
 						continue;
 
 					// check spelling and get suggestions
@@ -302,11 +302,11 @@ static class Actor
 		string word2;
 
 		if (Regex.IsMatch(word, @"^\p{Ll}{2,}$"))
-			word2 = word.Substring(0, 1).ToUpper(CultureInfo.CurrentCulture) + word.Substring(1);
+			word2 = string.Concat(word[..1].ToUpper(CultureInfo.CurrentCulture), word.AsSpan(1));
 		else if (Regex.IsMatch(word, @"^\p{Lu}\p{Ll}+$"))
 			word2 = word.ToLower(CultureInfo.CurrentCulture);
 		else
-			return new string[] { word };
+			return [word];
 
 		var menu = Far.Api.CreateMenu();
 		menu.Title = Text.AddToDictionary;
@@ -316,7 +316,7 @@ static class Actor
 		if (!menu.Show())
 			return null;
 
-		return menu.Selected == 0 ? new string[] { word } : new string[] { word, word2 };
+		return menu.Selected == 0 ? [word] : [word, word2];
 	}
 
 	static void AddRightWord(string word)

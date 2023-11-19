@@ -68,8 +68,7 @@ class FarUI : UniformUI
 	/// </summary>
 	public override Dictionary<string, PSObject> Prompt(string caption, string message, Collection<FieldDescription> descriptions)
 	{
-		if (descriptions == null)
-			throw new ArgumentNullException(nameof(descriptions));
+		ArgumentNullException.ThrowIfNull(descriptions);
 
 		var r = new Dictionary<string, PSObject>();
 
@@ -217,7 +216,7 @@ class FarUI : UniformUI
 
 		BuildHotkeysAndPlainLabels(choices, out string[,] hotkeysAndPlainLabels);
 
-		Dictionary<int, bool> dictionary = new();
+		Dictionary<int, bool> dictionary = [];
 		if (defaultChoice >= 0)
 			dictionary.Add(defaultChoice, true);
 
@@ -436,7 +435,7 @@ class FarUI : UniformUI
 	/// </summary>
 	public override void WriteProgress(long sourceId, ProgressRecord record)
 	{
-		if (record == null) throw new ArgumentNullException(nameof(record));
+		ArgumentNullException.ThrowIfNull(record);
 
 		// done
 		if (record.RecordType == ProgressRecordType.Completed)

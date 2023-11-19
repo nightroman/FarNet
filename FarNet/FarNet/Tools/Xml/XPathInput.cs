@@ -113,8 +113,8 @@ public class XPathInput
 				throw new InvalidOperationException("declare variable: expected 'external' or ':='");
 
 			text = match.Groups[1].Value;
-			if (text.StartsWith("'", StringComparison.Ordinal) && text.EndsWith("'", StringComparison.Ordinal) ||
-				text.StartsWith("\"", StringComparison.Ordinal) && text.EndsWith("\"", StringComparison.Ordinal))
+			if (text.StartsWith('\'') && text.EndsWith('\'') ||
+				text.StartsWith('"') && text.EndsWith('"'))
 			{
 				variables.Add(name, text[1..^1]);
 			}

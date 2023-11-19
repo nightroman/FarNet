@@ -15,7 +15,7 @@ class FileMap
 {
 	public FileMap()
 	{
-		Columns = new List<Meta>();
+		Columns = [];
 	}
 
 	public Meta? Name { get; set; }
@@ -28,17 +28,11 @@ class FileMap
 	public List<Meta>? Columns { get; private set; }
 }
 
-class FileColumnEnumerator : IEnumerator
+class FileColumnEnumerator(PSObject value, List<Meta> columns) : IEnumerator
 {
-	readonly PSObject Value;
-	readonly List<Meta> Columns;
+	readonly PSObject Value = value;
+	readonly List<Meta> Columns = columns;
 	int Index = -1;
-
-	public FileColumnEnumerator(PSObject value, List<Meta> columns)
-	{
-		Value = value;
-		Columns = columns;
-	}
 
 	public object? Current
 	{
@@ -54,32 +48,20 @@ class FileColumnEnumerator : IEnumerator
 	public bool MoveNext() => ++Index < Columns.Count;
 }
 
-class FileColumnCollection : My.SimpleCollection
+class FileColumnCollection(PSObject value, List<Meta> columns) : My.SimpleCollection
 {
-	readonly PSObject Value;
-	readonly List<Meta> Columns;
-
-	public FileColumnCollection(PSObject value, List<Meta> columns)
-	{
-		Value = value;
-		Columns = columns;
-	}
+	readonly PSObject Value = value;
+	readonly List<Meta> Columns = columns;
 
 	public override int Count => Columns.Count;
 
 	public override IEnumerator GetEnumerator() => new FileColumnEnumerator(Value, Columns);
 }
 
-class MapFile : FarFile
+class MapFile(PSObject value, FileMap map) : FarFile
 {
-	protected PSObject Value { get; private set; }
-	readonly FileMap Map;
-
-	public MapFile(PSObject value, FileMap map)
-	{
-		Value = value;
-		Map = map;
-	}
+	protected PSObject Value { get; private set; } = value;
+	readonly FileMap Map = map;
 
 	public override string Name => Map.Name?.GetString(Value)!;
 
@@ -103,26 +85,18 @@ class MapFile : FarFile
 /// <summary>
 /// Provider item map file.
 /// </summary>
-sealed class ItemMapFile : MapFile
+sealed class ItemMapFile(PSObject value, FileMap map) : MapFile(value, map)
 {
 	public override string Name => Value.Properties["PSChildName"].Value.ToString()!;
 
 	public override FileAttributes Attributes => ((bool)Value.Properties["PSIsContainer"].Value) ? FileAttributes.Directory : 0;
-
-	public ItemMapFile(PSObject value, FileMap map) : base(value, map)
-	{
-	}
 }
 
 /// <summary>
 /// System item map file.
 /// </summary>
-sealed class SystemMapFile : MapFile
+sealed class SystemMapFile(PSObject value, FileMap map) : MapFile(value, map)
 {
-	public SystemMapFile(PSObject value, FileMap map) : base(value, map)
-	{
-	}
-
 	public override string Name => ((FileSystemInfo)Value.BaseObject).Name;
 
 	public override DateTime CreationTime => ((FileSystemInfo)Value.BaseObject).CreationTime;

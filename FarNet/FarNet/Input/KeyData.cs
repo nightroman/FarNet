@@ -9,7 +9,7 @@ namespace FarNet;
 /// </summary>
 public class KeyData : KeyBase
 {
-	static readonly KeyData _Empty = new KeyData(0);
+	static readonly KeyData _Empty = new(0);
 
 	/// <param name="virtualKeyCode">See <see cref="VirtualKeyCode"/></param>
 	public KeyData(int virtualKeyCode)

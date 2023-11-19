@@ -9,12 +9,8 @@ namespace PowerShellFar;
 /// <summary>
 /// Asynchronous editor writer with the async mode editor.
 /// </summary>
-sealed class EditorOutputWriter3 : EditorOutputWriter1
+sealed class EditorOutputWriter3(IEditor editor) : EditorOutputWriter1(editor)
 {
-	public EditorOutputWriter3(IEditor editor) : base(editor)
-	{
-	}
-
 	protected override void Redraw()
 	{
 		Far.Api.PostJob(Editor.Sync);

@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FarNet.Tools;
 
@@ -42,7 +43,7 @@ public class SuperExplorer : Explorer
 			ExplorerFunctions.OpenFile;
 
 		// this
-		_Cache = new List<FarFile>();
+		_Cache = [];
 	}
 
 	internal static Explorer? ExploreSuperDirectory(Explorer explorer, ExplorerModes mode, FarFile file)
@@ -71,7 +72,7 @@ public class SuperExplorer : Explorer
 			return;
 
 		//! cast/check and add
-		foreach (SuperFile file in files)
+		foreach (SuperFile file in files.Cast<SuperFile>())
 			_Cache.Add(file);
 	}
 
@@ -115,8 +116,7 @@ public class SuperExplorer : Explorer
 	/// <inheritdoc/>
 	public override void AcceptFiles(AcceptFilesEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		foreach (var file in args.Files)
 		{
@@ -130,8 +130,7 @@ public class SuperExplorer : Explorer
 	/// <inheritdoc/>
 	public override void GetContent(GetContentEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		// check
 		var xfile = (SuperFile)args.File;
@@ -156,8 +155,7 @@ public class SuperExplorer : Explorer
 	/// <inheritdoc/>
 	public override void SetFile(SetFileEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		// call
 		var xfile = (SuperFile)args.File;
@@ -176,8 +174,7 @@ public class SuperExplorer : Explorer
 	/// <inheritdoc/>
 	public override void SetText(SetTextEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		// call
 		var xfile = (SuperFile)args.File;
@@ -196,20 +193,20 @@ public class SuperExplorer : Explorer
 	static Dictionary<Guid, Dictionary<Explorer, List<SuperFile>>> GroupFiles(IList<FarFile> files, ExplorerFunctions function)
 	{
 		var result = new Dictionary<Guid, Dictionary<Explorer, List<SuperFile>>>();
-		foreach (SuperFile file in files)
+		foreach (SuperFile file in files.Cast<SuperFile>())
 		{
 			if (function != ExplorerFunctions.None && 0 == (file.Explorer.Functions & function))
 				continue;
 
 			if (!result.TryGetValue(file.Explorer.TypeId, out Dictionary<Explorer, List<SuperFile>>? dicExplorer))
 			{
-				dicExplorer = new Dictionary<Explorer, List<SuperFile>>();
+				dicExplorer = [];
 				result.Add(file.Explorer.TypeId, dicExplorer);
 			}
 
 			if (!dicExplorer.TryGetValue(file.Explorer, out List<SuperFile>? efiles))
 			{
-				efiles = new List<SuperFile>();
+				efiles = [];
 				dicExplorer.Add(file.Explorer, efiles);
 			}
 			efiles.Add(file);
@@ -388,8 +385,7 @@ public class SuperExplorer : Explorer
 	/// <inheritdoc/>
 	public override void DeleteFiles(DeleteFilesEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		var dicTypeId = GroupFiles(args.Files, ExplorerFunctions.DeleteFiles);
 
@@ -419,8 +415,7 @@ public class SuperExplorer : Explorer
 	/// <inheritdoc/>
 	public override void ExportFiles(ExportFilesEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		var dicTypeId = GroupFiles(args.Files, ExplorerFunctions.ExportFiles);
 

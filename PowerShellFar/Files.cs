@@ -47,8 +47,8 @@ public sealed class ScriptAction<T>
 	{
 		if (_action != null)
 			_action(sender);
-		else if (_script != null)
-			_script.InvokeReturnAsIs(sender);
+		else
+			_script?.InvokeReturnAsIs(sender);
 	}
 }
 
@@ -86,8 +86,7 @@ public sealed class ScriptHandler<T> where T : EventArgs
 	/// <param name="handler">The delegate or script block.</param>
 	public ScriptHandler(object handler)
 	{
-		if (handler is null)
-			throw new ArgumentNullException(nameof(handler));
+		ArgumentNullException.ThrowIfNull(handler);
 
 		if (handler is EventHandler<T> asEventHandler)
 			_handler = asEventHandler;
@@ -106,8 +105,8 @@ public sealed class ScriptHandler<T> where T : EventArgs
 	{
 		if (_handler != null)
 			_handler(sender, args);
-		else if (_script != null)
-			_script.InvokeReturnAsIs(sender, args);
+		else
+			_script?.InvokeReturnAsIs(sender, args);
 	}
 }
 
@@ -286,8 +285,7 @@ public sealed class TreeFileCollection : Collection<TreeFile>
 	/// <inheritdoc/>
 	protected override void InsertItem(int index, TreeFile item)
 	{
-		if (item is null)
-			throw new ArgumentNullException(nameof(item));
+		ArgumentNullException.ThrowIfNull(item);
 
 		if (item.Parent != null)
 			throw new ArgumentException("item has a parent");
@@ -315,8 +313,7 @@ public sealed class TreeFileCollection : Collection<TreeFile>
 	/// <inheritdoc/>
 	protected override void SetItem(int index, TreeFile item)
 	{
-		if (item is null)
-			throw new ArgumentNullException(nameof(item));
+		ArgumentNullException.ThrowIfNull(item);
 
 		if (item.Parent != null)
 			throw new ArgumentException("item has a parent");
@@ -355,8 +352,7 @@ public sealed class FileMetaComparer : EqualityComparer<FarFile>
 	/// <param name="property">The property name.</param>
 	public FileMetaComparer(string property)
 	{
-		if (property is null)
-			throw new ArgumentNullException(nameof(property));
+		ArgumentNullException.ThrowIfNull(property);
 
 		_meta = new Meta(property);
 	}

@@ -9,46 +9,42 @@ namespace FarNet;
 /// <summary>
 /// Editor line color span.
 /// </summary>
-public class EditorColor
+/// <param name="line">See <see cref="Line"/></param>
+/// <param name="start">See <see cref="Start"/></param>
+/// <param name="end">See <see cref="End"/></param>
+/// <param name="foreground">See <see cref="Foreground"/></param>
+/// <param name="background">See <see cref="Background"/></param>
+public class EditorColor(
+	int line,
+	int start,
+	int end,
+	ConsoleColor foreground,
+	ConsoleColor background)
 {
-	/// <param name="line">See <see cref="Line"/></param>
-	/// <param name="start">See <see cref="Start"/></param>
-	/// <param name="end">See <see cref="End"/></param>
-	/// <param name="foreground">See <see cref="Foreground"/></param>
-	/// <param name="background">See <see cref="Background"/></param>
-	public EditorColor(int line, int start, int end, ConsoleColor foreground, ConsoleColor background)
-	{
-		Line = line;
-		Start = start;
-		End = end;
-		Foreground = foreground;
-		Background = background;
-	}
-
 	/// <summary>
 	/// Line index.
 	/// </summary>
-	public int Line { get; }
+	public int Line { get; } = line;
 
 	/// <summary>
 	/// Start position.
 	/// </summary>
-	public int Start { get; }
+	public int Start { get; } = start;
 
 	/// <summary>
 	/// End position, not included into the span, <c>End - Start</c> is the span length.
 	/// </summary>
-	public int End { get; }
+	public int End { get; } = end;
 
 	/// <summary>
 	/// Foreground color. Black on black is the special case.
 	/// </summary>
-	public ConsoleColor Foreground { get; }
+	public ConsoleColor Foreground { get; } = foreground;
 
 	/// <summary>
 	/// Background color. Black on black is the special case.
 	/// </summary>
-	public ConsoleColor Background { get; }
+	public ConsoleColor Background { get; } = background;
 
 	/// <summary>
 	/// Returns "({Start}, {End}) {Foreground}/{Background}".

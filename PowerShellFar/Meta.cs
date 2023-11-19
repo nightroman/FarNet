@@ -173,8 +173,7 @@ public sealed class Meta : FarColumn
 	/// <param name="value">One of the supported values.</param>
 	public Meta(object value)
 	{
-		if (value is null)
-			throw new ArgumentNullException(nameof(value));
+		ArgumentNullException.ThrowIfNull(value);
 
 		_Property = value as string;
 		if (_Property is not null)

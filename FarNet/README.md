@@ -49,7 +49,7 @@ tiny pieces of boilerplate framework code.
 
 **Requirements**
 
-- .NET 7 SDK (recommended) or runtime
+- .NET 8 SDK or runtime
 - Microsoft Visual C++ 2015-2022 Redistributable
 - Far Manager, see History.txt for the required version
 

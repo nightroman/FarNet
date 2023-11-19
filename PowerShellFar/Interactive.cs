@@ -210,8 +210,7 @@ class Interactive : InteractiveEditor
 	/// </summary>
 	protected override bool KeyPressed(KeyInfo key)
 	{
-		if (key is null)
-			throw new ArgumentNullException(nameof(key));
+		ArgumentNullException.ThrowIfNull(key);
 
 		// drop pipeline now, if any
 		PowerShell = null;

@@ -72,7 +72,7 @@ class Progress
 			}
 
 			// keep result for later
-			result = lines.ToArray();
+			result = [.. lines];
 			_Lines = result;
 		}
 

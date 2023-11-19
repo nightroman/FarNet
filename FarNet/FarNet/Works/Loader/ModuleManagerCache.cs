@@ -16,7 +16,7 @@ partial class ModuleManager
 	internal string? CachedUICulture { get; private set; }
 
 	// Actions from cache or reflection for caching.
-	internal List<ProxyAction> ProxyActions = new();
+	internal List<ProxyAction> ProxyActions = [];
 
 	// Called after loading.
 	internal void DropCache()

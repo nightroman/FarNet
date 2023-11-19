@@ -178,7 +178,7 @@ public sealed class ObjectExplorer : FormatExplorer
 			if (Map == null || Columns == null)
 			{
 				if (Files.Count == 0)
-					return _AddedValues ?? new Collection<PSObject>();
+					return _AddedValues ?? [];
 
 				var result = new Collection<PSObject>();
 				foreach (FarFile file in Files)
@@ -208,7 +208,7 @@ public sealed class ObjectExplorer : FormatExplorer
 	}
 
 	Collection<PSObject>? _AddedValues;
-	internal Collection<PSObject> AddedValues => _AddedValues ??= new Collection<PSObject>();
+	internal Collection<PSObject> AddedValues => _AddedValues ??= [];
 
 	/// <inheritdoc/>
 	public override Explorer? DoOpenFile(OpenFileEventArgs args)

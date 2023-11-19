@@ -10,11 +10,11 @@ namespace FarNet.Works;
 
 public abstract class AnyMenu : IAnyMenu
 {
-	protected readonly List<FarItem> myItems = new();
+	protected readonly List<FarItem> myItems = [];
 
-	protected readonly List<KeyData> myKeys = new();
+	protected readonly List<KeyData> myKeys = [];
 
-	protected readonly List<EventHandler<MenuEventArgs>?> myHandlers = new();
+	protected readonly List<EventHandler<MenuEventArgs>?> myHandlers = [];
 
 	protected int myKeyIndex = -1;
 

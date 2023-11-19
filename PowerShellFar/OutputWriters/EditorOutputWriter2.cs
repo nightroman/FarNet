@@ -9,12 +9,8 @@ namespace PowerShellFar;
 /// <summary>
 /// Synchronous editor writer.
 /// </summary>
-sealed class EditorOutputWriter2 : EditorOutputWriter1
+sealed class EditorOutputWriter2(IEditor editor) : EditorOutputWriter1(editor)
 {
-	public EditorOutputWriter2(IEditor editor) : base(editor)
-	{
-	}
-
 	protected override void Redraw()
 	{
 		Editor.Redraw();

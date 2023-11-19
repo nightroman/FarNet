@@ -32,7 +32,7 @@ module FSharpDiagnostic =
         $"{Path.GetFileName x.FileName}({x.StartLine},{x.StartColumn + 1}): {strAsLine (strErrorText x)}"
 
 type Session private (configFile) =
-    static let mutable session : Session option = None
+    static let mutable sessions : Session list = []
     let onClose = Event<unit> ()
 
     // The writer for some extra "noise" output, like loading assemblies.
@@ -119,14 +119,7 @@ type Session private (configFile) =
 
     // Used by GetOrCreate and by TryDefaultSession.
     static member private TryFind path =
-        match session with
-        | Some x ->
-            if String.equalsIgnoreCase x.ConfigFile path then
-                session
-            else
-                None
-        | None ->
-            None
+        sessions |> List.tryFind (fun x -> String.equalsIgnoreCase x.ConfigFile path)
 
     /// Gets the existing or creates a new session specified by the config path.
     /// If the path is a directory then its config is used if any else it fails.
@@ -150,40 +143,27 @@ type Session private (configFile) =
             ses
         | None ->
             let ses = Session path
-
-            match session with
-            | Some x ->
-                x.Close()
-            | None ->
-                ()
-
-            session <- Some ses
+            sessions <- ses :: sessions
             ses
 
     /// Close affected sessions on saving configs.
     static member OnSavingConfig path =
         assert (path = Path.GetFullPath path)
-        match session with
-        | Some x ->
-            if String.equalsIgnoreCase x.ConfigFile path then
-                x.Close()
-        | None ->
-            ()
+        for ses in sessions do
+            if String.equalsIgnoreCase ses.ConfigFile path then
+                ses.Close()
 
     /// Close affected sessions on saving sources.
     static member OnSavingSource path =
         assert (path = Path.GetFullPath path)
-        match session with
-        | Some x ->
-            let config = x.Config
+        for ses in sessions do
+            let config = ses.Config
             if
                 Seq.containsIgnoreCase path config.FscFiles ||
                 Seq.containsIgnoreCase path config.FsiFiles ||
                 Seq.containsIgnoreCase path config.UseFiles
                 then
-                    x.Close()
-        | None ->
-            ()
+                    ses.Close()
 
     /// Gets or creates the root session.
     static member DefaultSession() =
@@ -194,18 +174,13 @@ type Session private (configFile) =
         Session.TryFind(Config.defaultFile ())
 
     /// Gets the list of created sessions.
-    static member Sessions =
-        match session with
-        | Some x ->
-            [ x ]
-        | None ->
-            []
+    static member Sessions = sessions
 
     /// Closes the session and resources and triggers OnClose.
-    member _.Close() =
+    member x.Close() =
         onClose.Trigger()
 
-        session <- None
+        sessions <- sessions |> List.except [x]
 
         evalWriter.Dispose()
         hiddenWriter.Dispose()

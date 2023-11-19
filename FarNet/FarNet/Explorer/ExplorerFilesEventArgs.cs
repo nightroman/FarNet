@@ -4,6 +4,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FarNet;
 
@@ -30,7 +31,7 @@ public abstract class ExplorerFilesEventArgs : ExplorerEventArgs
 	/// <summary>
 	/// Gets data attached to <see cref="Files"/>.
 	/// </summary>
-	public IEnumerable FilesData { get { foreach (var it in Files) yield return it.Data; } }
+	public IEnumerable FilesData => Files.Select(x => x.Data);
 
 	/// <summary>
 	/// Gets the list of source files to stay selected and not deleted on move if the job is incomplete.
@@ -50,6 +51,6 @@ public abstract class ExplorerFilesEventArgs : ExplorerEventArgs
 	/// may lose selection or even may be deleted because the comparer cannot find them.
 	/// </para>
 	/// </remarks>
-	public IList<FarFile> FilesToStay { get { return _FilesToStay; } }
-	readonly List<FarFile> _FilesToStay = new List<FarFile>();
+	public IList<FarFile> FilesToStay => _FilesToStay;
+	readonly List<FarFile> _FilesToStay = [];
 }

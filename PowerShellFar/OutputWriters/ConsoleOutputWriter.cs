@@ -29,8 +29,7 @@ sealed class ConsoleOutputWriter : OutputWriter
 			Far.Api.UI.Write(echo2, Settings.Default.CommandForegroundColor);
 			_echo = null;
 
-			if (A.Psf.Transcript != null)
-				A.Psf.Transcript.WriteLine(Environment.NewLine + echo2);
+			A.Psf.Transcript?.WriteLine(Environment.NewLine + echo2);
 		}
 	}
 
@@ -41,16 +40,14 @@ sealed class ConsoleOutputWriter : OutputWriter
 
 		Writing();
 		Far.Api.UI.Write(value);
-		if (A.Psf.Transcript != null)
-			A.Psf.Transcript.Write(value);
+		A.Psf.Transcript?.Write(value);
 	}
 
 	public override void WriteLine()
 	{
 		Writing();
 		Far.Api.UI.WriteLine();
-		if (A.Psf.Transcript != null)
-			A.Psf.Transcript.WriteLine();
+		A.Psf.Transcript?.WriteLine();
 	}
 
 	public override void WriteLine(string value)
@@ -60,55 +57,48 @@ sealed class ConsoleOutputWriter : OutputWriter
 
 		Writing();
 		Far.Api.UI.WriteLine(value);
-		if (A.Psf.Transcript != null)
-			A.Psf.Transcript.WriteLine(value);
+		A.Psf.Transcript?.WriteLine(value);
 	}
 
 	public override void Write(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
 	{
 		Writing();
 		Far.Api.UI.Write(value, foregroundColor, backgroundColor);
-		if (A.Psf.Transcript != null)
-			A.Psf.Transcript.Write(value);
+		A.Psf.Transcript?.Write(value);
 	}
 
 	public override void WriteLine(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
 	{
 		Writing();
 		Far.Api.UI.WriteLine(value, foregroundColor, backgroundColor);
-		if (A.Psf.Transcript != null)
-			A.Psf.Transcript.WriteLine(value);
+		A.Psf.Transcript?.WriteLine(value);
 	}
 
 	public override void WriteDebugLine(string message)
 	{
 		Writing();
 		Far.Api.UI.WriteLine("DEBUG: " + message, Settings.Default.DebugForegroundColor);
-		if (A.Psf.Transcript != null)
-			A.Psf.Transcript.WriteDebugLine(message);
+		A.Psf.Transcript?.WriteDebugLine(message);
 	}
 
 	public override void WriteErrorLine(string value)
 	{
 		Writing();
 		Far.Api.UI.WriteLine(value, Settings.Default.ErrorForegroundColor);
-		if (A.Psf.Transcript != null)
-			A.Psf.Transcript.WriteErrorLine(value);
+		A.Psf.Transcript?.WriteErrorLine(value);
 	}
 
 	public override void WriteVerboseLine(string message)
 	{
 		Writing();
 		Far.Api.UI.WriteLine("VERBOSE: " + message, Settings.Default.VerboseForegroundColor);
-		if (A.Psf.Transcript != null)
-			A.Psf.Transcript.WriteVerboseLine(message);
+		A.Psf.Transcript?.WriteVerboseLine(message);
 	}
 
 	public override void WriteWarningLine(string message)
 	{
 		Writing();
 		Far.Api.UI.WriteLine("WARNING: " + message, Settings.Default.WarningForegroundColor);
-		if (A.Psf.Transcript != null)
-			A.Psf.Transcript.WriteWarningLine(message);
+		A.Psf.Transcript?.WriteWarningLine(message);
 	}
 }

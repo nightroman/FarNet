@@ -39,19 +39,17 @@ public abstract class FormatPanel : TablePanel
 		if (sameType == null)
 		{
 			//! The long "Index" clashes to sort order mark, use the short "##"
-			plan.Columns = new FarColumn[]
-			{
-			new SetColumn() { Kind = "S", Name = "##"},
-			new SetColumn() { Kind = "N", Name = "Value"},
-			new SetColumn() { Kind = "Z", Name = "Type"}
-			};
+			plan.Columns = [
+				new SetColumn() { Kind = "S", Name = "##" },
+				new SetColumn() { Kind = "N", Name = "Value" },
+				new SetColumn() { Kind = "Z", Name = "Type" },
+			];
 		}
 		else
 		{
-			plan.Columns = new FarColumn[]
-			{
-			new SetColumn() { Kind = "N", Name = sameType }
-			};
+			plan.Columns = [
+				new SetColumn() { Kind = "N", Name = sameType },
+			];
 		}
 
 		SetPlan(PanelViewMode.AlternativeFull, plan);
@@ -72,8 +70,7 @@ public abstract class FormatPanel : TablePanel
 	/// <inheritdoc/>
 	public override IEnumerable<FarFile> UIGetFiles(GetFilesEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		args.Parameter = this;
 

@@ -98,8 +98,7 @@ class RawUI : PSHostRawUserInterface
 
 	public override void SetBufferContents(Coordinates origin, PS.BufferCell[,] contents)
 	{
-		if (contents is null)
-			throw new ArgumentNullException(nameof(contents));
+		ArgumentNullException.ThrowIfNull(contents);
 
 		FN.BufferCell[,] r = new FN.BufferCell[contents.GetLength(0), contents.GetLength(1)];
 		for (int i = 0; i < contents.GetLength(0); ++i)

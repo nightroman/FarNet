@@ -55,13 +55,13 @@ public struct Point
 	}
 
 	/// <inheritdoc/>
-	public override bool Equals(object? obj)
+	public override readonly bool Equals(object? obj)
 	{
 		return obj != null && obj.GetType() == typeof(Point) && this == (Point)obj;
 	}
 
 	/// <inheritdoc/>
-	public override int GetHashCode()
+	public override readonly int GetHashCode()
 	{
 		return X | (Y << 16);
 	}
@@ -69,7 +69,7 @@ public struct Point
 	/// <summary>
 	/// Returns the string "(X, Y)".
 	/// </summary>
-	public override string ToString()
+	public override readonly string ToString()
 	{
 		return "(" + X + ", " + Y + ")";
 	}

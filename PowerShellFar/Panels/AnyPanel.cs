@@ -103,8 +103,7 @@ public partial class AnyPanel : Panel
 	/// </remarks>
 	protected override bool CanOpenAsChild(Panel parent)
 	{
-		if (parent is null)
-			throw new ArgumentNullException(nameof(parent));
+		ArgumentNullException.ThrowIfNull(parent);
 
 		if (Lookup is null)
 			return true;
@@ -245,8 +244,7 @@ public partial class AnyPanel : Panel
 	/// <include file='doc.xml' path='doc/AddLookup/*'/>
 	public void AddLookup(string name, object handler)
 	{
-		_LookupOpeners ??= new Dictionary<string, ScriptHandler<OpenFileEventArgs>>();
-
+		_LookupOpeners ??= [];
 		_LookupOpeners.Add(name, new ScriptHandler<OpenFileEventArgs>(handler));
 	}
 
@@ -333,8 +331,7 @@ public partial class AnyPanel : Panel
 	/// <inheritdoc/>
 	public override bool UIKeyPressed(KeyInfo key)
 	{
-		if (key is null)
-			throw new ArgumentNullException(nameof(key));
+		ArgumentNullException.ThrowIfNull(key);
 
 		UserWants = UserAction.None;
 		try
@@ -463,8 +460,7 @@ public partial class AnyPanel : Panel
 	/// </remarks>
 	public override void UICloneFile(CloneFileEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		// prompt
 		IInputBox input = Far.Api.CreateInputBox();
@@ -489,8 +485,7 @@ public partial class AnyPanel : Panel
 	/// <inheritdoc/>
 	public override void UIRenameFile(RenameFileEventArgs args)
 	{
-		if (args is null)
-			throw new ArgumentNullException(nameof(args));
+		ArgumentNullException.ThrowIfNull(args);
 
 		// prompt
 		IInputBox input = Far.Api.CreateInputBox();

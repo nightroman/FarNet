@@ -11,18 +11,13 @@ namespace FarNet;
 /// A menu key closes the menu and gets stored as <see cref="IAnyMenu.Key"/>.
 /// Use <see cref="Ignore"/> or <see cref="Restart"/> for different actions.
 /// </summary>
-public class MenuEventArgs : EventArgs
+/// <param name="item">Current item.</param>
+public class MenuEventArgs(FarItem? item) : EventArgs
 {
-	/// <param name="item">Current item.</param>
-	public MenuEventArgs(FarItem? item)
-	{
-		Item = item;
-	}
-
 	/// <summary>
 	/// Gets the current menu item if any.
 	/// </summary>
-	public FarItem? Item { get; }
+	public FarItem? Item { get; } = item;
 
 	/// <summary>
 	/// Tells to do nothing, a handler has processed everything.

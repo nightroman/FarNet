@@ -28,7 +28,7 @@ public sealed class FileNameComparer : EqualityComparer<FarFile>
 	/// <param name="comparer">The string comparer.</param>
 	public FileNameComparer(StringComparer comparer)
 	{
-		_comparer = comparer ?? throw new ArgumentNullException("comparer");
+		_comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
 	}
 
 	/// <inheritdoc/>

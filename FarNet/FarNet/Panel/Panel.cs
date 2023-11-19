@@ -75,8 +75,7 @@ public partial class Panel : IPanel
 	/// <param name="explorer">The panel explorer.</param>
 	public Panel(Explorer explorer)
 	{
-		if (explorer is null)
-			throw new ArgumentNullException(nameof(explorer));
+		ArgumentNullException.ThrowIfNull(explorer);
 
 		_Panel = Works.Far2.Api.CreatePanel(this, explorer);
 	}
@@ -101,8 +100,7 @@ public partial class Panel : IPanel
 	/// </remarks>
 	public virtual void Navigate(Explorer explorer)
 	{
-		if (explorer is null)
-			throw new ArgumentNullException(nameof(explorer));
+		ArgumentNullException.ThrowIfNull(explorer);
 
 		if (explorer.TypeId != Explorer.TypeId)
 			throw new ArgumentException("New explorer is not compatible with the current.");
@@ -114,7 +112,7 @@ public partial class Panel : IPanel
 	public Works.IPanelWorks WorksPanel => _Panel;
 
 	/// <include file='doc.xml' path='doc/Data/*'/>
-	public Hashtable Data => _Data ??= new Hashtable();
+	public Hashtable Data => _Data ??= [];
 	Hashtable? _Data;
 
 	/// <summary>
@@ -387,7 +385,7 @@ public partial class Panel : IPanel
 	/// <summary>
 	/// The list of user objects to be disposed when the panel is closed.
 	/// </summary>
-	public IList<IDisposable> Garbage => _Garbage ??= new List<IDisposable>();
+	public IList<IDisposable> Garbage => _Garbage ??= [];
 	List<IDisposable>? _Garbage;
 
 	/// <summary>
@@ -1134,7 +1132,7 @@ public partial class Panel : IPanel
 
 		// select by indexes
 		if (indexes.Count > 0)
-			SelectAt(indexes.ToArray());
+			SelectAt([.. indexes]);
 	}
 
 	/// <summary>

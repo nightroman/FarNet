@@ -9,23 +9,17 @@ namespace FarNet;
 /// <summary>
 /// Arguments of editor changed event.
 /// </summary>
-public sealed class EditorChangedEventArgs : EventArgs
+/// <param name="kind">See <see cref="Kind"/></param>
+/// <param name="line">See <see cref="Line"/></param>
+public sealed class EditorChangedEventArgs(EditorChangeKind kind, int line) : EventArgs
 {
-	/// <param name="kind">See <see cref="Kind"/></param>
-	/// <param name="line">See <see cref="Line"/></param>
-	public EditorChangedEventArgs(EditorChangeKind kind, int line)
-	{
-		Kind = kind;
-		Line = line;
-	}
-
 	/// <summary>
 	/// Gets the editor change kind.
 	/// </summary>
-	public EditorChangeKind Kind { get; }
+	public EditorChangeKind Kind { get; } = kind;
 
 	/// <summary>
 	/// Gets the changed line index.
 	/// </summary>
-	public int Line { get; }
+	public int Line { get; } = line;
 }
