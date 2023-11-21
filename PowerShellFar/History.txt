@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 8.0.1 =
+
+Adjust TabExpansion ArgumentCompleters.ps1 for PS 7.4.0
+
 = 8.0.0 =
 
 Requires .NET 8.0, FarNet 8.0.0

@@ -28,7 +28,7 @@ param(
 	$Tests = -1,
 	$ExpectedTaskCount = 205,
 	$ExpectedBasicsCount = 18,
-	$ExpectedExtrasCount = 4,
+	$ExpectedExtrasCount = 6,
 	[switch]$All,
 	[switch]$Quit
 )
@@ -74,6 +74,8 @@ if (!$Tests) {
 if ($All) {
 	$extras = @(
 		Get-Item "$env:FarNetCode\Test\TabExpansion\Test-TabExpansion2-.ps1"
+		{ & "$env:FarNetCode\Test\TabExpansion\Test-TabExpansion2.ps1" pwsh }
+		{ & "$env:FarNetCode\Test\TabExpansion\Test-TabExpansion2.ps1" powershell }
 		{ Invoke-Build test "$env:FarNetCode\GitKit\.build.ps1" }
 		{ Invoke-Build test "$env:FarNetCode\FSharpFar\.build.ps1" }
 		{ Invoke-Build test "$env:FarNetCode\JavaScriptFar\.build.ps1" }

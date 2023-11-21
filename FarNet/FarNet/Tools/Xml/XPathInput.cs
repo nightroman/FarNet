@@ -13,8 +13,17 @@ namespace FarNet.Tools;
 /// <summary>
 /// XPath input helper.
 /// </summary>
-public class XPathInput
+public partial class XPathInput
 {
+	[GeneratedRegex(@"^declare\s+variable\s+\$(\w+)\s+(.*)")]
+	private static partial Regex RegexDeclareVariable();
+
+	[GeneratedRegex(@"^external[;\s]*$")]
+	private static partial Regex RegexExternal();
+
+	[GeneratedRegex(@"^:=\s*(.*?)[;\s]*$")]
+	private static partial Regex RegexValue();
+
 	/// <summary>
 	/// Gets the XPath expression.
 	/// </summary>
@@ -51,9 +60,9 @@ public class XPathInput
 	{
 		var variables = new Dictionary<string, object>();
 
-		var regex1 = new Regex(@"^declare\s+variable\s+\$(\w+)\s+(.*)");
-		var regex2 = new Regex(@"^external[;\s]*$");
-		var regex3 = new Regex(@"^:=\s*(.*?)[;\s]*$");
+		var regex1 = RegexDeclareVariable();
+		var regex2 = RegexExternal();
+		var regex3 = RegexValue();
 		int i;
 		bool comment = false;
 		for (i = 0; i < lines.Length; ++i)

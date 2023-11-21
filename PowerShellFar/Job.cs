@@ -305,7 +305,7 @@ public sealed class Job : IDisposable
 		if (r.Length > maxLength)
 			r = string.Concat(r.AsSpan(0, maxLength - 3), "...");
 
-		return Regex.Replace(r, @"\s+", " ");
+		return MyRegex.Spaces().Replace(r, " ");
 	}
 
 	/// <summary>

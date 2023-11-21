@@ -2,11 +2,10 @@
 // PowerShellFar module for Far Manager
 // Copyright (c) Roman Kuzmin
 
-using System;
-using System.Collections;
-using System.Text.RegularExpressions;
 using FarNet;
 using FarNet.Forms;
+using System;
+using System.Collections;
 
 namespace PowerShellFar.UI;
 
@@ -89,7 +88,7 @@ class InputBoxEx
 		string head = text[..editLine.Caret];
 		string tail = text[head.Length..];
 
-		Match match = Regex.Match(head, @"(?:^|\s)(\S+)$");
+		var match = MyRegex.CompleteWord().Match(head);
 		string lastWord = match.Success ? match.Groups[1].Value : string.Empty;
 
 		// complete

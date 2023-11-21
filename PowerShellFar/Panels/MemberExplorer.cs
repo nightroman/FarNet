@@ -108,7 +108,9 @@ public sealed class MemberExplorer : Explorer
 				}
 
 				// to check hidden columns
+#pragma warning disable IDE0019
 				var datarow = Value.BaseObject as DataRow;
+#pragma warning restore IDE0019
 
 				// now we are ready to process properties in their original order
 				foreach (PSPropertyInfo pi in Value.Properties)

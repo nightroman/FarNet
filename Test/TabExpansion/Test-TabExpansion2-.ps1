@@ -1,24 +1,28 @@
 <#
 .Synopsis
-	Tests TabExpansion2.
-#>
+	Tests TabExpansion2 and ArgumentCompleters.
 
-return
+.Description
+	Should be tested with FarHost, pwsh, powershell.
+#>
 
 $ErrorActionPreference = 1
 $Error.Clear()
 
-# Ensure TabExpansion2 is loaded in the FarHost
-if ($Host.Name -ceq 'FarHost') {
-	& "$($Psf.AppHome)\TabExpansion2.ps1"
-}
+$FarHost = $Host.Name -eq 'FarHost'
+$v740 = $PSVersionTable.PSVersion -ge ([version]'7.4.0')
+
+Set-Alias assert Assert-Test
+Set-Alias ib Invoke-Build
+
+# Ensure TabExpansion2 is loaded
+& "$env:FarNetCode\PowerShellFar\TabExpansion2.ps1"
 
 # Set location, we assume some files
 Set-Location -LiteralPath $PSScriptRoot
 
 # Invokes TabExpansion and tests the results.
-function Test([Parameter()]$line, $assert, $caret=$line.Length)
-{
+function Test([Parameter()]$line, $assert, $caret=$line.Length) {
 	$private:line_ = $line
 	$private:assert_ = $assert
 	$private:caret_ = $caret
@@ -31,12 +35,18 @@ function Test([Parameter()]$line, $assert, $caret=$line.Length)
 		Write-Error ($_ | Out-String)
 	}
 	if (!(. $assert_)) {
-		Write-Error @"
-TabExpansion test failed
+		Write-Host -ForegroundColor Yellow @"
 Line   : $line_
 Result : $($_ -join '|')
 "@
+		Write-Error 'TabExpansion test failed.'
 	}
+}
+
+function Assert-Test([Parameter()][scriptblock]$Condition) {
+	$_ = & $Condition
+	if ($_ -isnot [bool]) {Write-Error "Assertion not Boolean: {$Condition}"}
+	if (!$_) {Write-Error "Assertion failed: {$Condition}"}
 }
 
 # GO
@@ -96,8 +106,8 @@ Test '@{Name = Split-Path -l' { $_ -ccontains '-Leaf' -and $_ -ccontains '-Liter
 
 Test @'
 ls
-pp
-'@ { $_ -ceq 'Get-FarPath' }
+assert
+'@ { $_ -ceq 'Assert-Test' }
 Test 'Panel-Bits' { $_ -ceq 'Panel-BitsTransfer.ps1' }
 Test 'Panel-DBData -col' { $_ -ceq '-Columns' }
 
@@ -145,7 +155,7 @@ Test @'
 ls
 rm*
 '@ { $_ -ccontains 'rm' }
-Assert-Far (!$Error)
+assert {!$Error}
 
 ### full path
 
@@ -172,8 +182,8 @@ ls
 '@ { [string]$_ -ceq '[System. [SystemException]' }
 Test '[mi' { $_ -ccontains '[Microsoft.' }
 Test '[system.da' { $_ -ccontains '[System.Data.' }
-Test '[system.data.sq' { $_ -ccontains '[System.Data.SqlClient.' }
-Test '[system.data.sqlclient.sql' { $_ -ccontains '[System.Data.SqlClient.SqlClientPermission]' }
+Test '[system.data.sq' { $_ -ccontains '[System.Data.SqlTypes.' }
+Test '[system.data.sqltypes.sql' { $_ -ccontains '[System.Data.SqlTypes.SqlBinary]' }
 
 # order: namespaces then classes
 Test '[System.Management.aut' { ($_ -join '=') -match '\[System\.Management\.Automation\.=.*\[System\.Management\.AuthenticationLevel\]' }
@@ -187,7 +197,7 @@ Test '[Collections.Generic.h' { $_ -ccontains '[Collections.Generic.HashSet[]]' 
 Test '[Collections.Generic.d' { $_ -ccontains '[Collections.Generic.Dictionary[,]]' }
 
 # 2013-12-16
-Test '$algo.ComputeHash(([IO' { $_ -ccontains '$algo.ComputeHash(([IO.' }
+Test '$algo.ComputeHash(([IO' { $_ -ccontains '[IO.' }
 
 ### help comments
 
@@ -228,20 +238,22 @@ Test @'
 '@ { $_ -ccontains 'Get-ChildItem' }
 
 ### fix of $Line.[Tab] (name is exactly 'LINE')
-
-$Line = $Far.CommandLine
-Test '$Line.' { $_ -ccontains 'ActiveText' }
+if ($FarHost) {
+	$Line = $Far.CommandLine
+	Test '$Line.' { $_ -ccontains 'ActiveText' }
+}
 
 ### Find-FarFile
-
-Test 'Find-FarFile ' { "$_" -ceq "$($Far.Panel.GetFiles())" }
-
-Test 'Find-FarFile zzz' { !$_ -and !$Error }
+if ($FarHost) {
+	Test 'Find-FarFile ' { "$_" -ceq "$($Far.Panel.GetFiles())" }
+	Test 'Find-FarFile zzz' { !$_ -and !$Error }
+}
 
 ### Out-FarPanel
-
-Test 'Get-ChildItem | Out-FarPanel ' { $_[0] -ceq 'Attributes' -and $_[-1] -ceq "@{e=''; n=''; k=''; w=0; a=''}" }
-Test 'Out-FarPanel ' { $_ -ceq "@{e=''; n=''; k=''; w=0; a=''}" }
+if ($FarHost) {
+	Test 'Get-ChildItem | Out-FarPanel ' { $_[0] -ceq 'Attributes' -and $_[-1] -ceq "@{e=''; n=''; k=''; w=0; a=''}" }
+	Test 'Out-FarPanel ' { $_ -ceq "@{e=''; n=''; k=''; w=0; a=''}" }
+}
 
 ### ComputerName
 
@@ -262,23 +274,30 @@ $=
 Test @'
 ls
 val=
-'@ { $_ -ccontains 'ValueFromPipeline=$true' -and $_ -ccontains '[ValidateCount(#, )]' }
+'@ { $_ -ccontains 'ValueFromPipeline=$true' -and $_ -ccontains $(if ($FarHost) {'[ValidateCount(#, )]'} else {'[ValidateCount(, )]'}) }
 
 #1
-Assert-Far (!$Error)
-Test '[val=' { $_ -ccontains '[ValidateCount(#, )]' }
+assert {!$Error}
+Test '[val=' { $_ -ccontains $(if ($FarHost) {'[ValidateCount(#, )]'} else {'[ValidateCount(, )]'}) }
 # v3.0 wildcard pattern is not valid
 # v4.0 wildcard character pattern is not valid
-Assert-Far ($Error.Count -eq 1 -and $Error -match 'pattern is not valid: \\\[val=\*')
-$Error.Clear()
+# v7.4.0 no errors
+if ($v740) {
+	assert {!$Error}
+}
+else {
+	assert {!!$Error}
+	assert {$Error[0].ToString() -like '*The specified wildcard character pattern is not valid:*'}
+	$Error.Clear()
+}
 
 #2 fixed: it's the AstInputSet parameter set, work around read only should work, too.
 #! There is no error, ulike above.
 Test @'
 ls
 [val=
-'@ { $_ -ccontains '[ValidateCount(#, )]' }
-Assert-Far (!$Error)
+'@ { $_ -ccontains $(if ($FarHost) {'[ValidateCount(#, )]'} else {'[ValidateCount(, )]'}) }
+assert {!$Error}
 
 ### Mdbc
 . $PSScriptRoot\Test-TabExpansion2-Mongo.ps1
@@ -313,14 +332,14 @@ ib  `
 
 ### Equals, GetType, ToString
 
-Test '$Missing1.e' {'$Missing1.Equals(' -ceq $_}
-Test '( $Missing1 ).g' {').GetType()' -ceq $_}
-Test '($Missing1 + $Missing2).t' {'$Missing2).ToString()' -ceq $_}
+Test '$Missing1.e' {'Equals(' -ceq $_}
+Test '( $Missing1 ).g' {'GetType()' -ceq $_}
+Test '($Missing1 + $Missing2).t' {'ToString()' -ceq $_}
 
 ### weird cases
 
 # work around read only result
-Test '    [Al=' { $_ -ccontains "[Alias('#')]" }
+Test '    [Al=' { $_ -ccontains $(if ($FarHost) {"[Alias('#')]"} else {"[Alias('')]"}) }
 
 # complete $*var, ensure no leaked variables
 Test '$*' {
@@ -337,12 +356,10 @@ Test '$*' {
 $text = "`r`n[cmd="
 $r1 = TabExpansion2 $text $text.Length
 $r2 = $r1.CompletionMatches
-Assert-Far @(
-	$r2.Count.Equals(2) #! may change
-	$r2[0].CompletionText.Equals('[CmdletBinding(#)]')
-	$r1.ReplacementIndex.Equals(2)
-	$r1.ReplacementLength.Equals(5)
-)
+assert {$r2.Count -eq 2} #! may change
+assert {$r2[0].CompletionText -ceq $(if ($FarHost) {'[CmdletBinding(#)]'} else {'[CmdletBinding()]'})}
+assert {$r1.ReplacementIndex -eq 2}
+assert {$r1.ReplacementLength -eq 5}
 
 # 1.0.4 - try insert space
 Test '$hos_' -caret 4 {$_ -contains '$Host'}
@@ -353,5 +370,5 @@ Test '$hos$' -caret 4 {$_ -contains '$Host'}
 Test '$hos"' -caret 4 {$_ -contains '$Host'}
 
 # OK
-Assert-Far $Error.Count -eq 0
+assert {$Error.Count -eq 0}
 "Done TabExpansion test, $($sw.Elapsed)"

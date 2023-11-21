@@ -9,7 +9,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Management.Automation;
-using System.Text.RegularExpressions;
 
 namespace PowerShellFar;
 
@@ -31,7 +30,7 @@ public static class Zoo
 	/// </summary>
 	public static KeyValuePair<string, string> SplitCommandWithPrefix(string text)
 	{
-		var match = Regex.Match(text, @"(\s*)(?:(\w+):)?\s*");
+		var match = MyRegex.CommandWithPrefix().Match(text);
 
 		int index;
 		var prefix = match.Groups[2].Value;

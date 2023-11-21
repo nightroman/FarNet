@@ -7,25 +7,36 @@
 
 	[XmlRoot("Data")] is not really needed, just testing.
 	System.Xml.ReaderWriter is only needed for XML attributes.
+
+.Parameter Settings
+		Tells to open the settings editor.
 #>
 
-Add-Type -ReferencedAssemblies "$env:FARHOME\FarNet\FarNet.dll", System.Xml.ReaderWriter @'
-using FarNet;
+param(
+	[switch]$Settings
+)
+
+Add-Type -ReferencedAssemblies $env:FARHOME\FarNet\FarNet.dll, System.Xml.ReaderWriter @'
 using System;
 using System.Xml.Serialization;
 
-public class MySettings(string fileName) : ModuleSettings<MySettings.Data>(fileName)
+public class MySettings(string path) : FarNet.ModuleSettings<MySettings.Data>(path)
 {
 	[XmlRoot("Data")]
 	public class Data
 	{
-		public string Name { get; set; } = "qwerty";
-		public int Age { get; set; }
+		public string Name = "qwerty";
+		public int Age;
 	}
 }
 '@
 
-$sets = [MySettings]::new("c:\temp\MySettings.xml")
+$sets = [MySettings]::new("$env:TEMP\MySettings.xml")
+if ($Settings) {
+	$sets.Edit()
+	return
+}
+
 $data = $sets.GetData()
 ++$data.Age
 $sets.Save()

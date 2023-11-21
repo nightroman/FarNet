@@ -229,7 +229,7 @@ $r = TabExpansion2 @args
 				var lastWord = inputScript.Substring(lineOffset + replacementIndex, replacementLength);
 
 				//! as TabExpansion.ps1 but ends with \$(\w*)$
-				var matchVar = Regex.Match(lastWord, @"^(.*[!;\(\{\|""'']*)\$(global:|script:|private:)?(\w*)$", RegexOptions.IgnoreCase);
+				var matchVar = MyRegex.CompleteVariable().Match(lastWord);
 				if (matchVar.Success)
 				{
 					var start = matchVar.Groups[1].Value;

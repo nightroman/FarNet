@@ -10,29 +10,21 @@ namespace FarNet.Tools;
 /// <summary>
 /// Super explorer/panel file.
 /// </summary>
-public class SuperFile : WrapFile
+/// <param name="explorer">The file's explorer.</param>
+/// <param name="file">The base file.</param>
+public class SuperFile(Explorer explorer, FarFile file) : WrapFile(file)
 {
-	/// <summary>
-	/// New super file with its explorer.
-	/// </summary>
-	/// <param name="explorer">The file's explorer.</param>
-	/// <param name="file">The base file.</param>
-	public SuperFile(Explorer explorer, FarFile file) : base(file)
-	{
-		_Explorer = explorer ?? throw new ArgumentNullException(nameof(explorer));
-	}
-
 	/// <summary>
 	/// Gets the source explorer.
 	/// </summary>
-	public Explorer Explorer { get { return _Explorer; } }
+	public Explorer Explorer => _Explorer;
 
-	readonly Explorer _Explorer;
+	readonly Explorer _Explorer = explorer ?? throw new ArgumentNullException(nameof(explorer));
 
 	/// <summary>
 	/// Gets the source explorer location.
 	/// </summary>
-	public override string Owner { get { return Explorer.Location; } }
+	public override string Owner => Explorer.Location;
 
 	internal static Dictionary<FarFile, SuperFile> HashSuperFiles(IEnumerable<SuperFile> files, IEqualityComparer<FarFile> comparer)
 	{

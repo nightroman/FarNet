@@ -18,7 +18,9 @@ public sealed class Settings : ModuleSettings<Settings.Data>
 		public XmlCData RegexRight { get; set; } = @"(?x: ^ | $ | (?<=\b|\s)\S )";
 
 		internal Regex RegexLeft2 { get; private set; }
+
 		internal Regex RegexRight2 { get; private set; }
+
 		public void Validate()
 		{
 			try

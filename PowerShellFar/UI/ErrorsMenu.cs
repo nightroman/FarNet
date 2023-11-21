@@ -7,14 +7,11 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Management.Automation;
-using System.Text.RegularExpressions;
 
 namespace PowerShellFar.UI;
 
 class ErrorsMenu
 {
-	readonly Regex _regexErrorActionPreference = new(@"ErrorActionPreference.*Stop:\s*(.*)");
-	readonly Regex _regexNewLines = new(@"[\r\n\t]+");
 	readonly IMenu _menu;
 
 	public ErrorsMenu()
@@ -26,11 +23,11 @@ class ErrorsMenu
 		_menu.AddKey(KeyCode.F4);
 	}
 
-	string GetErrorMessage(string message)
+	static string GetErrorMessage(string message)
 	{
-		Match m = _regexErrorActionPreference.Match(message);
+		var m = MyRegex.ErrorActionPreference().Match(message);
 		var r = m.Success ? m.Groups[1].Value : message;
-		return _regexNewLines.Replace(r, " ");
+		return MyRegex.NewLinesAndTabs().Replace(r, " ");
 	}
 
 	public void Show()

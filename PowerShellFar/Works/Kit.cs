@@ -4,7 +4,6 @@
 
 using System;
 using System.Globalization;
-using System.Text.RegularExpressions;
 
 namespace PowerShellFar;
 
@@ -40,11 +39,9 @@ static class Kit
 	// 1) Rename-Item has no -LiteralPath --> we have to escape wildcards (anyway it fails e.g. "name`$][").
 	// 2) BUG in [Management.Automation.WildcardPattern]::Escape(): e.g. `` is KO ==>.
 	// '``' -like [Management.Automation.WildcardPattern]::Escape('``') ==> False
-	static Regex? _reEscapeWildcard;
 	public static string EscapeWildcard(string literal)
 	{
-		_reEscapeWildcard ??= new Regex(@"([`\[\]\*\?])");
-		return _reEscapeWildcard.Replace(literal, "`$1");
+		return MyRegex.WildcardChar().Replace(literal, "`$1");
 	}
 
 	//?? _090901_055134 Check in V2 (bad for viewer and notepad)

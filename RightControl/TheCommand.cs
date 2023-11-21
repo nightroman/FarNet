@@ -2,14 +2,19 @@
 // FarNet module RightControl
 // Copyright (c) Roman Kuzmin
 
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace FarNet.RightControl;
 
 [ModuleCommand(Name = Name, Prefix = Name, Id = "1b42c03e-40c4-45db-a3ce-eb0825fe16d1")]
-public class TheCommand : ModuleCommand
+public partial class TheCommand : ModuleCommand
 {
 	const string Name = "RightControl";
+
+	[GeneratedRegex(@"^(\s+)")]
+	private static partial Regex RegexSpaces();
+
 	public override void Invoke(object sender, ModuleCommandEventArgs e)
 	{
 		ILine line = null;
@@ -41,6 +46,7 @@ public class TheCommand : ModuleCommand
 			default: throw new ModuleException("Unknown command: " + e.Command);
 		}
 	}
+
 	/// <summary>
 	/// Operation kind.
 	/// </summary>
@@ -50,6 +56,7 @@ public class TheCommand : ModuleCommand
 		Select,
 		Delete
 	}
+
 	/// <summary>
 	/// Runs the specified operation.
 	/// </summary>
@@ -72,7 +79,7 @@ public class TheCommand : ModuleCommand
 			var text = currentLine.Text;
 
 			int newX = -1;
-			foreach (Match match in regex.Matches(text))
+			foreach (var match in regex.Matches(text).Cast<Match>())
 			{
 				if (right)
 				{
@@ -183,6 +190,7 @@ public class TheCommand : ModuleCommand
 			return;
 		}
 	}
+
 	static void SelectStream(IEditor editor, ILine line, bool right, Point caretOld, Point caretNew)
 	{
 		Point first, last;
@@ -286,6 +294,7 @@ public class TheCommand : ModuleCommand
 				line.UnselectText();
 		}
 	}
+
 	static void SelectColumn(IEditor editor, bool right, int line, int caretOld, int caretNew)
 	{
 		int x1, y1, x2, y2;
@@ -369,6 +378,7 @@ public class TheCommand : ModuleCommand
 		editor.SelectText(x1, y1, x2, y2, PlaceKind.Column);
 		editor.Redraw();
 	}
+
 	/// <summary>
 	/// Moves the caret or selects the text to the smart line home.
 	/// </summary>
@@ -387,7 +397,7 @@ public class TheCommand : ModuleCommand
 		int home = 0;
 		int caret = line.Caret;
 		string text = line.Text;
-		Match match = Regex.Match(text, @"^(\s+)");
+		Match match = RegexSpaces().Match(text);
 		if (match.Success)
 			home = match.Groups[1].Length;
 
