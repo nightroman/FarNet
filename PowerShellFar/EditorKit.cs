@@ -331,8 +331,6 @@ $r = TabExpansion2 @args
 
 		// get original text and custom mode
 		var text = editLine.Text;
-		var last = replacementIndex + replacementLength - 1;
-		bool custom = last > 0 && last < text.Length && text[last] == '='; //_140112_150217 last can be out of range
 
 		//_200805_i3 Deal with auto complete selection.
 		// remove selected text before replacement
@@ -345,24 +343,11 @@ $r = TabExpansion2 @args
 		// head before replaced part
 		string head = text[..replacementIndex];
 
-		// custom pattern
-		int index, caret;
-		if (custom && (index = word.IndexOf('#')) >= 0)
-		{
-			word = string.Concat(word.AsSpan(0, index), word.AsSpan(index + 1));
-			caret = head.Length + index;
-		}
-		// standard
-		else
-		{
-			caret = head.Length + word.Length;
-		}
-
 		// set new text = old head + expanded + old tail
 		editLine.Text = string.Concat(head, word, text.AsSpan(replacementIndex + replacementLength));
 
 		// set caret
-		editLine.Caret = caret;
+		editLine.Caret = head.Length + word.Length;
 	}
 
 	public static string ActiveText

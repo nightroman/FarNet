@@ -98,10 +98,7 @@ if (Get-Command dotnet-suggest -ErrorAction Ignore) {
 Register-ResultCompleter {
 	### .WORD[Tab] -> Equals, GetType, ToString, ForEach, Where.
 	param($result, $ast, $tokens, $positionOfCursor, $options)
-
-	if ($result.CompletionMatches) {
-		return
-	}
+	if ($result.CompletionMatches) {return}
 
 	$line = $positionOfCursor.Line
 	foreach($m in [regex]::Matches($line, '\.(\w*)')) {
@@ -118,37 +115,6 @@ Register-ResultCompleter {
 }
 
 Register-ResultCompleter {
-	### WORD=[Tab] completions from TabExpansion.txt in TabExpansion2.ps1 folder
-	param($result, $ast, $tokens, $positionOfCursor, $options)
-
-	if ($result.CompletionMatches) {
-		return
-	}
-
-	$line = $positionOfCursor.Line
-	foreach($m in [regex]::Matches($line, '(?:^|\s)([^\s=]*)=')) {
-		$m1 = $m.Groups[1]
-		if ($m1.Index + $m1.Length -eq $positionOfCursor.ColumnNumber - 2) {
-			$result.ReplacementIndex = $positionOfCursor.Offset - $m1.Length - 1
-			$result.ReplacementLength = $m1.Length + 1
-
-			$path = [System.IO.Path]::GetDirectoryName((Get-Item Function:TabExpansion2).ScriptBlock.File)
-			$lines = @(Get-Content -LiteralPath $path\TabExpansion.txt)
-			$body = [regex]::Escape($m1)
-			$head = "^$body"
-			$lines -match $body | Sort-Object {$_ -notmatch $head}, {$_} | .{process{
-				if ($Host.Name -cne 'FarHost') {
-					$_ = $_.Replace('#', '')
-				}
-				$result.CompletionMatches.Add([System.Management.Automation.CompletionResult]::new($_, $_, 'Text', $_))
-			}}
-
-			break
-		}
-	}
-}
-
-Register-ResultCompleter {
 	### Expand an alias to its definition
 	param($result, $ast, $tokens, $positionOfCursor, $options)
 
@@ -158,16 +124,12 @@ Register-ResultCompleter {
 			break
 		}
 	}
-	if (!$token -or $token.TokenFlags -ne 'CommandName') {
-		return
-	}
+	if (!$token -or $token.TokenFlags -ne 'CommandName') {return}
 
 	# aliases
 	$name = [WildcardPattern]::Escape("$token")
 	$aliases = @(Get-Alias $name -ErrorAction Ignore)
-	if ($aliases.Count -ne 1) {
-		return
-	}
+	if ($aliases.Count -ne 1) {return}
 
 	# remove itself
 	for($i = $result.CompletionMatches.Count; --$i -ge 0) {
@@ -194,11 +156,9 @@ Register-ResultCompleter {
 			break
 		}
 	}
-	if (!${*token} -or ${*token} -notmatch '^\$(\*.*)') {
-		return
-	}
+	if (!${*token} -or ${*token} -notmatch '^\$(\*.*)') {return}
 
-	foreach($_ in Get-Variable "$($matches[1])*") {
+	foreach($_ in Get-Variable "$($Matches[1])*") {
 		if ($_.Name[0] -ne '*') {
 			${*result}.CompletionMatches.Add($(
 				$$ = "`$$($_.Name)"
@@ -220,19 +180,17 @@ Register-InputCompleter {
 	if (!$token -or ($token.TokenFlags -ne 'TypeName' -and $token.TokenFlags -ne 'CommandName')) {return}
 
 	$line = $positionOfCursor.Line.Substring(0, $positionOfCursor.ColumnNumber - 1)
-	if ($line -notmatch '\[([\w.*?]+)$') {
-		return
-	}
+	if ($line -notmatch '\[([\w.*?]+)$') {return}
 
-	$m0 = $matches[0]
-	$m1 = $matches[1]
+	$m0 = $Matches[0]
+	$m1 = $Matches[1]
 	$prefix = if ($m0.Length -eq $m1.Length) {''} else {'['}
 
 	[System.Management.Automation.CompletionResult[]]$results = @(
 		foreach($text in GetTabExpansionType $m1 $prefix) {
 			if ($text -match '\b(\w+([.,\[\]])+)$') {
-				$type = if ($matches[2] -ceq '.') {'Namespace'} else {'Type'}
-				[System.Management.Automation.CompletionResult]::new($text, "[$($matches[1])", $type, $text)
+				$type = if ($Matches[2] -ceq '.') {'Namespace'} else {'Type'}
+				[System.Management.Automation.CompletionResult]::new($text, "[$($Matches[1])", $type, $text)
 			}
 			else {
 				[System.Management.Automation.CompletionResult]::new($text, $text, 'Type', $text)
@@ -252,7 +210,7 @@ Register-InputCompleter {
 
 	$line = $positionOfCursor.Line
 	$caret = $positionOfCursor.ColumnNumber - 1
-	$offset = $positionOfCursor.Offset - $caret
+	if ($caret -and $line[$caret - 1] -eq '#') {return}
 
 	# help tags
 	if ($line -match '^(\s*#*\s*)(\.\w*)' -and $caret -eq $Matches[0].Length) {
@@ -280,6 +238,7 @@ Register-InputCompleter {
 	}
 
 	# one line code
+	$offset = $positionOfCursor.Offset - $caret
 	if ($token.Extent.StartOffset -gt $offset) {
 		$line = $line.Substring($token.Extent.StartOffset - $offset)
 		$offset = $token.Extent.StartOffset
@@ -332,18 +291,18 @@ function global:GetTabExpansionType($pattern, $prefix)
 		foreach($r in $re1) {
 			foreach($_ in $n) {
 				if ($_ -match $r) {
-					$1["$prefix$($matches[1])."] = $null
+					$1["$prefix$($Matches[1])."] = $null
 				}
 			}
 		}
 		foreach($r in $re2) {
 			foreach($_ in $types) {
 				if ($_.FullName -match $r) {
-					if ($matches[2]) {
-						$null = $2.Add("$prefix$($matches[1])[$(''.PadRight(([int]$matches[2] - 1), ','))]$suffix")
+					if ($Matches[2]) {
+						$null = $2.Add("$prefix$($Matches[1])[$(''.PadRight(([int]$Matches[2] - 1), ','))]$suffix")
 					}
 					else {
-						$null = $2.Add("$prefix$($matches[1])$suffix")
+						$null = $2.Add("$prefix$($Matches[1])$suffix")
 					}
 				}
 			}

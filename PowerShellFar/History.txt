@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 8.0.2 =
+
+New script Snippet.ps1 for using VSCode compatible snippets.
+Retire TabExpansion.txt, snippets are more useful.
+
 = 8.0.1 =
 
 Adjust TabExpansion ArgumentCompleters.ps1 for PS 7.4.0

@@ -50,6 +50,7 @@ FarHome\FarNet\Modules\PowerShellFar\Bench\Show-Hlf-.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Show-Image.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Show-KeyName-.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Show-Markdown-.ps1
+FarHome\FarNet\Modules\PowerShellFar\Bench\Snippet.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Start-Far.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Update-FarManager.ps1
 FarHome\FarNet\Modules\PowerShellFar\History.txt
@@ -359,5 +360,4 @@ FarHome\FarNet\Modules\PowerShellFar\System.Speech.dll
 FarHome\FarNet\Modules\PowerShellFar\System.Threading.AccessControl.dll
 FarHome\FarNet\Modules\PowerShellFar\System.Web.Services.Description.dll
 FarHome\FarNet\Modules\PowerShellFar\System.Windows.Extensions.dll
-FarHome\FarNet\Modules\PowerShellFar\TabExpansion.txt
 FarHome\FarNet\Modules\PowerShellFar\TabExpansion2.ps1

@@ -237,6 +237,9 @@ Test @'
   ## ls
 '@ { $_ -ccontains 'Get-ChildItem' }
 
+# fixed loop
+Test '#' { !$_ }
+
 ### fix of $Line.[Tab] (name is exactly 'LINE')
 if ($FarHost) {
 	$Line = $Far.CommandLine
@@ -263,41 +266,6 @@ Test 'Invoke-Command -ComputerName ' { @($_)[0] -ceq $env:COMPUTERNAME }
 
 Test 'git ' { $_ -ccontains 'clean' }
 Test 'git a' { $_ -ccontains 'add' }
-
-### =-patterns
-
-Test @'
-ls
-$=
-'@ { ($_ -ccontains '$LastExitCode') -and ($_ -notcontains '$Error') }
-
-Test @'
-ls
-val=
-'@ { $_ -ccontains 'ValueFromPipeline=$true' -and $_ -ccontains $(if ($FarHost) {'[ValidateCount(#, )]'} else {'[ValidateCount(, )]'}) }
-
-#1
-assert {!$Error}
-Test '[val=' { $_ -ccontains $(if ($FarHost) {'[ValidateCount(#, )]'} else {'[ValidateCount(, )]'}) }
-# v3.0 wildcard pattern is not valid
-# v4.0 wildcard character pattern is not valid
-# v7.4.0 no errors
-if ($v740) {
-	assert {!$Error}
-}
-else {
-	assert {!!$Error}
-	assert {$Error[0].ToString() -like '*The specified wildcard character pattern is not valid:*'}
-	$Error.Clear()
-}
-
-#2 fixed: it's the AstInputSet parameter set, work around read only should work, too.
-#! There is no error, ulike above.
-Test @'
-ls
-[val=
-'@ { $_ -ccontains $(if ($FarHost) {'[ValidateCount(#, )]'} else {'[ValidateCount(, )]'}) }
-assert {!$Error}
 
 ### Mdbc
 . $PSScriptRoot\Test-TabExpansion2-Mongo.ps1
@@ -338,9 +306,6 @@ Test '($Missing1 + $Missing2).t' {'ToString()' -ceq $_}
 
 ### weird cases
 
-# work around read only result
-Test '    [Al=' { $_ -ccontains $(if ($FarHost) {"[Alias('#')]"} else {"[Alias('')]"}) }
-
 # complete $*var, ensure no leaked variables
 Test '$*' {
 	($_ -notcontains '$inputScript') -and
@@ -350,16 +315,6 @@ Test '$*' {
 	($_ -notcontains '$positionOfCursor') -and
 	($_ -notcontains '$options')
 }
-
-# 1.0.2 fixed regression
-#! 1.0.2 still worked fine for a single line test, so use 2 lines
-$text = "`r`n[cmd="
-$r1 = TabExpansion2 $text $text.Length
-$r2 = $r1.CompletionMatches
-assert {$r2.Count -eq 2} #! may change
-assert {$r2[0].CompletionText -ceq $(if ($FarHost) {'[CmdletBinding(#)]'} else {'[CmdletBinding()]'})}
-assert {$r1.ReplacementIndex -eq 2}
-assert {$r1.ReplacementLength -eq 5}
 
 # 1.0.4 - try insert space
 Test '$hos_' -caret 4 {$_ -contains '$Host'}
