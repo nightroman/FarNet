@@ -1,5 +1,13 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 8.0.3 =
+
+Snippet.ps1
+- support "*.code-snippets" and "{language}.json"
+- support custom Get-VSCodeLanguageIdentifier
+- support more known languages by default
+- input placeholders interactively
+
 = 8.0.2 =
 
 New script Snippet.ps1 for using VSCode compatible snippets.
