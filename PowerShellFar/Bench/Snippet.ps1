@@ -8,16 +8,32 @@
 	Snippet folder: "$env:APPDATA\Code\User\snippets"
 	Snippet files: "*.code-snippets", "{language}.json"
 
-	Placeholders:
-	- $0 - caret position
-	- $N, ${N:label} - numbered inputs
-	- $name, ${name:label} - named inputs
-
-	Labels cannot use `{`, `}`, or not escaped placeholders.
-
-	Use you custom Get-VSCodeLanguageIdentifier in order to associate files
+	Use the custom Get-VSCodeLanguageIdentifier in order to associate files
 	with the VSCode languages and their existing snippets. See the limited
 	Get-VSCodeLanguageIdentifierDefault in this script.
+
+	The editor current word is used in order to find snippets by prefixes.
+	If there is none or no matches found, then all snippets list is shown.
+
+	Snippet placeholders:
+	- $0 - final caret position
+	- $N, ${N:label} - numbered inputs
+	- $name, ${name:label} - named inputs and variables
+
+	Labels cannot use `{`, `}` and not escaped placeholders.
+
+	Supported variables:
+		CLIPBOARD
+		CURRENT_YEAR
+		CURRENT_YEAR_SHORT
+		CURRENT_MONTH
+		CURRENT_DATE
+		CURRENT_HOUR
+		CURRENT_MINUTE
+		CURRENT_SECOND
+		RANDOM
+		RANDOM_HEX
+		UUID
 
 .Parameter Name
 		Tells to use the specified snippet.
@@ -31,6 +47,9 @@ param(
 
 #requires -version 7.4
 
+# Gets VSCode language identifier.
+# $Path: File path.
+# :: Language or none.
 function Get-VSCodeLanguageIdentifierDefault([string]$Path) {
 	$ext = [System.IO.Path]::GetExtension($Path)
 	if ($ext -eq '.ps1' -or $ext -eq '.psm1') {'powershell'}
@@ -48,7 +67,10 @@ function Get-VSCodeLanguageIdentifierDefault([string]$Path) {
 	elseif ($ext -eq '.r') {'r'}
 }
 
-$rePlaceholder = [regex]'(?<!\\)(?<placeholder>\$(?:(?<key>\w+)|{(?<key>\w+):(?<label>[^}]+)}))'
+# Gets snippet line placeholders, $0 excluded.
+# $text: Snippet line.
+# :: Placeholder objects, @{key; label; match}.
+$rePlaceholder = [regex]'(?<!\\)(?<placeholder>\$(?:(?<key>\w+)|{(?<key>\w+):?(?<label>[^}]+)?}))'
 $reBadLabel = [regex]'{|(?<!\\)\$\w+'
 function get_placeholders([string]$text) {
 	foreach($m in $rePlaceholder.Matches($text)) {
@@ -68,6 +90,9 @@ function get_placeholders([string]$text) {
 	}
 }
 
+# Gets snippet placeholders map, duplicates are ignored.
+# $body: Snippet body, 1+ strings.
+# :: New hashtable, placeholder.key -> placeholder.
 function map_placeholders([object]$body) {
 	$map = @{}
 	foreach($_ in $body) {
@@ -80,22 +105,67 @@ function map_placeholders([object]$body) {
 	$map
 }
 
-function input_placeholder([hashtable]$placeholder) {
-	$value = $Far.Input($placeholder.match.Value, $null, 'Snippet', $placeholder.label)
+# Replaces placeholder label with input or known variable.
+# $placeholder: To be updated.
+function resolve_placeholder([hashtable]$placeholder) {
+	$value = switch($placeholder.key) {
+		CURRENT_YEAR {
+			[datetime]::Now.ToString('yyyy')
+		}
+		CURRENT_YEAR_SHORT {
+			[datetime]::Now.ToString('yy')
+		}
+		CURRENT_MONTH {
+			[datetime]::Now.ToString('MM')
+		}
+		CURRENT_DATE {
+			[datetime]::Now.ToString('dd')
+		}
+		CURRENT_HOUR {
+			[datetime]::Now.ToString('HH')
+		}
+		CURRENT_MINUTE {
+			[datetime]::Now.ToString('mm')
+		}
+		CURRENT_SECOND {
+			[datetime]::Now.ToString('ss')
+		}
+		RANDOM {
+			'{0,6:D6}' -f [random]::new().Next(1000000)
+		}
+		RANDOM_HEX {
+			'{0,6:x6}' -f [random]::new().Next(0x1000000)
+		}
+		UUID {
+			[guid]::NewGuid().ToString()
+		}
+		CLIPBOARD {
+			$Far.PasteFromClipboard()
+		}
+		default {
+			$Far.Input($placeholder.key + ':' + $placeholder.label, $null, 'Snippet', $placeholder.label)
+		}
+	}
 	if ($value) {
 		$placeholder.label = $value
 	}
 }
 
+# Replaces placeholder labels with resolved values.
+# $map: Snippet placeholders map to be updated.
 function resolve_placeholders([hashtable]$map) {
 	foreach($key in $map.Keys | Sort-Object) {
 		if ($key -ne '0') {
-			input_placeholder $map[$key]
+			resolve_placeholder $map[$key]
 		}
 	}
 }
 
-function replace_placeholders([hashtable]$map, [string]$text) {
+# Replaces line placeholders with their labels from resolved placeholders map.
+# $text: Snippet body line.
+# $map: Resolved placeholders.
+# :: Line with replaced placeholders.
+function replace_placeholders([string]$text, [hashtable]$map) {
 	$placeholders = @(get_placeholders $text)
 	for($$ = $placeholders.Count; --$$ -ge 0) {
 		$p = $placeholders[$$]
@@ -120,6 +190,9 @@ if ($Far.Window.Kind -ne 'Editor') {
 
 $Editor = $Far.Editor
 $FileName = $Editor.FileName
+
+### language
+
 $language = ''
 if (Get-Command Get-VSCodeLanguageIdentifier -ErrorAction Ignore) {
 	$language = Get-VSCodeLanguageIdentifier $FileName
@@ -128,44 +201,62 @@ if (!$language) {
 	$language = Get-VSCodeLanguageIdentifierDefault $FileName
 }
 
-$data = @{}
+### snippets
+
+$snippets = @{}
 $root = "$env:APPDATA\Code\User\snippets"
 if ([System.IO.Directory]::Exists($root)) {
 	foreach($path in [System.IO.Directory]::GetFiles($root, '*.code-snippets')) {
-		$data2 = [System.IO.File]::ReadAllText($path) | ConvertFrom-Json -AsHashtable
-		foreach($_ in $data2.GetEnumerator()) {
+		$data = [System.IO.File]::ReadAllText($path) | ConvertFrom-Json -AsHashtable
+		foreach($_ in $data.GetEnumerator()) {
 			$scope = $_.Value['scope']
 			if (!$scope -or ($language -and ($language -in ($scope -split '\W+')))) {
-				$data[$_.Key] = $_.Value
+				$snippets[$_.Key] = $_.Value
 			}
 		}
 	}
 }
 
 if ($language -and [System.IO.File]::Exists(($path = "$root\$language.json"))) {
-	$data += [System.IO.File]::ReadAllText($path) | ConvertFrom-Json -AsHashtable
+	$snippets += [System.IO.File]::ReadAllText($path) | ConvertFrom-Json -AsHashtable
 }
 
-if (!$data.Count) {
+if (!$snippets.Count) {
 	return Show-FarMessage 'Found no snippets.' Snippet
 }
 
+### select
+
+$prefix = $null
 if (!$Name) {
-	$Name = $data.Keys | Sort-Object | Out-FarList -Title Snippet
+	$keys = $null
+	$prefix = $Editor.Line.MatchCaret('[\w\-]+')
+	if ($prefix) {
+		$like = $prefix.Value + '*'
+		$keys = foreach($_ in $snippets.GetEnumerator()) {
+			if ($_.Value['prefix'] -like $like) {
+				$_.Key
+			}
+		}
+	}
+
+	$Name = ($keys ? $keys : $snippets.Keys) | Sort-Object | Out-FarList -Title Snippet -AutoSelect
 	if (!$Name) {
 		return
 	}
 }
 
-$data = $data[$Name]
-if (!$data) {
+$snippets = $snippets[$Name]
+if (!$snippets) {
 	return Show-FarMessage "Missing snippet: '$Name'." Snippet
 }
 
-$body = @($data['body'])
+$body = @($snippets['body'])
 if (!$body) {
 	return Show-FarMessage "Snippet '$Name' must have 'body'." Snippet
 }
+
+### do
 
 $map = map_placeholders $body
 resolve_placeholders $map
@@ -174,11 +265,17 @@ $indent = $Editor.Line.Text -match '^(\s+)' ? $Matches[1] : ''
 $expand = $Editor.ExpandTabs -eq 'None' ? '' : ' ' * $Editor.TabSize
 $Editor.BeginUndo()
 try {
+	if ($prefix) {
+		$text = $Editor.Line.Text
+		$Editor.Line.Caret = $prefix.Index
+		$Editor.Line.Text = $text.Remove($prefix.Index, $prefix.Length)
+	}
+
 	$caretX = -1
 	$caretY = -1
 	$last = $body.Count - 1
 	for($$ = 0; $$ -le $last; ++$$) {
-		$text = replace_placeholders $map $body[$$]
+		$text = replace_placeholders $body[$$] $map
 		$text = $text.Replace('\$', '$')
 		if ($expand) {
 			$text = $text.Replace("`t", $expand)

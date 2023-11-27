@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 8.0.4 =
+
+Snippet.ps1
+- get snippets by prefixes matching the current word
+- support some snippet variables
+
 = 8.0.3 =
 
 Snippet.ps1

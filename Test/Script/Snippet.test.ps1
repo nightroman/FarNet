@@ -3,8 +3,8 @@ Set-StrictMode -Version 3
 . Snippet.ps1
 
 function Test-SnippetFile([string]$Path) {
-	function mock_input_placeholder([hashtable]$placeholder) {}
-	Set-Alias input_placeholder mock_input_placeholder
+	function mock_resolve_placeholder([hashtable]$placeholder) {}
+	Set-Alias resolve_placeholder mock_resolve_placeholder
 
 	try {
 		$data = [System.IO.File]::ReadAllText($path) | ConvertFrom-Json -AsHashtable
