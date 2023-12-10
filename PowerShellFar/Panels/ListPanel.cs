@@ -52,7 +52,7 @@ public abstract class ListPanel : AnyPanel
 			return;
 
 		// lookup opener?
-		if (_LookupOpeners != null)
+		if (_LookupOpeners is not null)
 		{
 			if (_LookupOpeners.TryGetValue(file.Name, out ScriptHandler<OpenFileEventArgs>? handler))
 			{
@@ -62,23 +62,30 @@ public abstract class ListPanel : AnyPanel
 		}
 
 		// case: can show value in the command line
-		var s = Converter.InfoToLine(pi);
-		if (s != null)
+		if (Converter.InfoToLine(pi) is { } text)
 		{
 			// set command line
 			ILine cl = Far.Api.CommandLine;
-			cl.Text = "=" + s;
-			cl.SelectText(1, s.Length + 1);
+			cl.Text = "=" + text;
+			cl.SelectText(1, text.Length + 1);
 			return;
 		}
 
 		// case: enumerable
-		var ie = Cast<IEnumerable>.From(pi.Value);
-		if (ie != null)
+		if (Cast<IEnumerable>.From(pi.Value) is { } ie)
 		{
-			var op = new ObjectPanel();
-			op.AddObjects(ie);
-			op.OpenChild(this);
+			ObjectPanel panel = new();
+			panel.AddObjects(ie);
+			panel.OpenChild(this);
+			return;
+		}
+
+		// case: data table
+		if (Cast<DataTable>.From(pi.Value) is { } dt)
+		{
+			DataPanel panel = new();
+			panel.Table = dt;
+			panel.OpenChild(this);
 			return;
 		}
 

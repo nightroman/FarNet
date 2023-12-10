@@ -12,7 +12,7 @@ $Unshelve = { job {
 
 job {
 	# open the test panel
-	& "$env:PSF\Samples\Tests\Test-Panel-.ps1"
+	& "$env:PSF\Samples\Tests\Test-Panel.far.ps1"
 }
 
 # insert 4 items

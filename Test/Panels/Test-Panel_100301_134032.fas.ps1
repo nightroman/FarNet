@@ -4,12 +4,12 @@
 
 .Description
 	In Far2 Panel-Macro-.ps1 was used.
-	Test-Explorer-.ps1 looks similar.
+	Test-Explorer.far.ps1 looks similar.
 #>
 
 ### open the panel
 job {
-	& $env:PSF\Samples\Tests\Test-Explorer-.ps1
+	& $env:PSF\Samples\Tests\Test-Explorer.far.ps1
 }
 job {
 	Assert-Far -Plugin -FileName Flat

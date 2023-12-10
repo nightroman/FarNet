@@ -7,7 +7,7 @@ job {
 	# set a breakpoint to watch Closing and open the panel
 	Get-PSBreakpoint | .{process{ if ($_.Variable -eq 'DebugPanelClosing') { Remove-PSBreakpoint $_ } }}
 	$null = Set-PSBreakpoint -Variable 'DebugPanelClosing' -Action {}
-	& "$env:PSF\Samples\Tests\Test-Panel-.ps1"
+	& "$env:PSF\Samples\Tests\Test-Panel.far.ps1"
 }
 
 # invoke innocent plugin commands from cmdline

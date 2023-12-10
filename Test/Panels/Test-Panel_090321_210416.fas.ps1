@@ -12,7 +12,7 @@ job {
 }
 job {
 	# open the panel
-	& "$env:PSF\Samples\Tests\Test-Panel-.ps1"
+	& "$env:PSF\Samples\Tests\Test-Panel.far.ps1"
 }
 # add 2 items, go to end
 macro 'Keys"F7 F7 End"'

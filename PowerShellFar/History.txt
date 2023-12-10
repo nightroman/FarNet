@@ -1,5 +1,13 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 8.0.5 =
+
+Panel-DataFrame.ps1
+- New script for browsing CSV files or DataFrame
+
+ListPanel
+- Recognize and open DataTable
+
 = 8.0.4 =
 
 Snippet.ps1

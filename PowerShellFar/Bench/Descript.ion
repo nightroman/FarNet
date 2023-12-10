@@ -19,6 +19,7 @@ Merge-Selected.ps1 Invokes merge for two panels items.
 Open-TextLink.ps1 Opens a text link contained in the text.
 Open-TODO-.ps1 TODO notes in XML files.
 Panel-BitsTransfer.ps1 Starts or manages file transfer jobs in a panel.
+Panel-DataFrame.ps1 Opens CSV file or DataFrame for browsing in the panel.
 Panel-DBData.ps1 Panel DataTable rows.
 Panel-DBTable.ps1 Panel database tables for the specified connection.
 Panel-History.ps1 Far Manager history browser.

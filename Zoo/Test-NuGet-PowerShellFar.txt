@@ -26,6 +26,7 @@ FarHome\FarNet\Modules\PowerShellFar\Bench\Merge-Selected.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Open-TextLink.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Open-TODO-.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-BitsTransfer.ps1
+FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-DataFrame.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-DBData.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-DBTable.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-History.ps1
