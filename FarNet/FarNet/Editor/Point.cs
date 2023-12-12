@@ -67,10 +67,11 @@ public struct Point
 	}
 
 	/// <summary>
-	/// Returns the string "(X, Y)".
+	/// Gets "({X}, {Y})".
 	/// </summary>
+	/// <returns>"({X}, {Y})"</returns>
 	public override readonly string ToString()
 	{
-		return "(" + X + ", " + Y + ")";
+		return $"({X}, {Y})";
 	}
 }

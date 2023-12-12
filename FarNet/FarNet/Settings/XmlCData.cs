@@ -31,6 +31,7 @@ public struct XmlCData(string value) : IXmlSerializable
 	/// <summary>
 	/// .
 	/// </summary>
+	/// <returns>.</returns>
 	public readonly XmlSchema? GetSchema()
 	{
 		return null;

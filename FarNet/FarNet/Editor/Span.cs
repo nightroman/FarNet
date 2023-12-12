@@ -49,10 +49,11 @@ public struct Span
 	}
 
 	/// <summary>
-	/// Returns the string "Empty" or "{0} from {1} to {2}", Length, Start, End.
+	/// Gets "Empty" or "{Length} from {Start} to {End}".
 	/// </summary>
+	/// <returns>"{Length} from {Start} to {End}"</returns>
 	public override readonly string ToString()
 	{
-		return Length < 0 ? "Empty" : string.Format(null, "{0} from {1} to {2}", Length, Start, End);
+		return Length < 0 ? "Empty" : $"{Length} from {Start} to {End}";
 	}
 }

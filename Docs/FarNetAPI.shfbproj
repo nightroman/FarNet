@@ -33,7 +33,7 @@
     <SyntaxFilters>C#</SyntaxFilters>
     <SdkLinkTarget>Blank</SdkLinkTarget>
     <RootNamespaceContainer>False</RootNamespaceContainer>
-    <PresentationStyle>VS2010</PresentationStyle>
+    <PresentationStyle>VS2013</PresentationStyle>
     <Preliminary>False</Preliminary>
     <NamingMethod>MemberName</NamingMethod>
     <HelpTitle>FarNet API</HelpTitle>
@@ -113,7 +113,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Management.Automation">
-      <HintPath>$(FarHome)\FarNet\Modules\PowerShellFar\runtimes\win\lib\net6.0\System.Management.Automation.dll</HintPath>
+      <HintPath>$(FarHome)\FarNet\Modules\PowerShellFar\runtimes\win\lib\net8.0\System.Management.Automation.dll</HintPath>
     </Reference>
   </ItemGroup>
   <!-- Import the SHFB build targets -->

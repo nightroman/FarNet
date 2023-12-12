@@ -75,8 +75,9 @@ public struct TextFrame
 	}
 
 	/// <summary>
-	/// Returns "(({CaretColumn}/{CaretScreenColumn}, {CaretLine})({VisibleChar}, {VisibleLine}))".
+	/// Gets "(({CaretColumn}/{CaretScreenColumn}, {CaretLine})({VisibleChar}, {VisibleLine}))".
 	/// </summary>
+	/// <returns>"(({CaretColumn}/{CaretScreenColumn}, {CaretLine})({VisibleChar}, {VisibleLine}))"</returns>
 	public override readonly string ToString()
 	{
 		return $"(({CaretColumn}/{CaretScreenColumn}, {CaretLine})({VisibleChar}, {VisibleLine}))";

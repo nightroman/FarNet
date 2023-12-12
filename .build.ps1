@@ -44,6 +44,7 @@ task meta -Inputs .build.ps1, Get-Version.ps1 -Outputs @(
 		<Copyright>Copyright (c) Roman Kuzmin</Copyright>
 		<Product>FarNet</Product>
 		<Version>$FarNetVersion</Version>
+		<IncludeSourceRevisionInInformationalVersion>False</IncludeSourceRevisionInInformationalVersion>
 	</PropertyGroup>
 </Project>
 "@
@@ -78,6 +79,7 @@ task meta -Inputs .build.ps1, Get-Version.ps1 -Outputs @(
 		<Copyright>Copyright (c) Roman Kuzmin</Copyright>
 		<Product>FarNet.PowerShellFar</Product>
 		<Version>$PowerShellFarVersion</Version>
+		<IncludeSourceRevisionInInformationalVersion>False</IncludeSourceRevisionInInformationalVersion>
 	</PropertyGroup>
 </Project>
 "@

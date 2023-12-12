@@ -136,17 +136,19 @@ public struct Place
 	}
 
 	/// <summary>
-	/// Returns the string "(First, Last)".
+	/// Gets "({First}, {Last})".
 	/// </summary>
+	/// <returns>"({First}, {Last})"</returns>
 	public override readonly string ToString()
 	{
-		return "(" + First + ", " + Last + ")";
+		return $"({First}, {Last})";
 	}
 
 	/// <summary>
-	/// Returns true if the rectangular contains the point.
+	/// Gets true if the rectangular contains the point.
 	/// </summary>
 	/// <param name="point">The point to test.</param>
+	/// <returns>True if the rectangular contains the point.</returns>
 	public readonly bool RectContains(Point point)
 	{
 		return point.X >= First.X && point.Y >= First.Y && point.X <= Last.X && point.Y <= Last.Y;

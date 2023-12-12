@@ -20,19 +20,26 @@ namespace PowerShellFar;
 /// PowerShellFar tools exposed by the global variable <c>$Psf</c>.
 /// </summary>
 /// <remarks>
-/// Global PowerShell variables:
-/// <c>$Far</c> is an instance of <see cref="IFar"/>, it exposes FarNet tools.
-/// <c>$Psf</c> is the only instance of this class, it exposes PowerShellFar tools.
 /// <para>
-/// There is no 'Exiting' event because in PS V2 there is a native way using <c>Register-EngineEvent</c>, see examples.
-/// Do not use native Far UI in such a handler, it may not work on exiting. GUI dialogs still can be used.
-/// This way works for any workspace where <c>Register-EngineEvent</c> is called, so that
-/// it can be used by background jobs (PSF and PS), async consoles (local and remote), and etc.
+/// Global PowerShell variables:
+/// <list>
+/// <item>
+/// <c>$Far</c> is the instance of <see cref="IFar"/>.
+/// </item>
+/// <item>
+/// <c>$Psf</c> is the instance of this class.
+/// </item>
+/// </list>
+/// </para>
+/// <para>
+/// There is no exiting event because there is a native way using <c>Register-EngineEvent</c>, see examples.
+/// Do not use Far UI in a handler, it may not work on exiting. GUI dialogs still can be used.
+/// This way works for any workspace where <c>Register-EngineEvent</c> is called.
 /// </para>
 /// </remarks>
 /// <example>
 /// <code>
-/// # Do some job on exiting
+/// # Show some GUI dialog on exit
 /// Register-EngineEvent -SourceIdentifier PowerShell.Exiting -Action { $Far.Message('See you', 'Exit', 'Gui') }
 /// </code>
 /// </example>

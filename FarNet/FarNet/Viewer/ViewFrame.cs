@@ -55,10 +55,11 @@ public struct ViewFrame
 	}
 
 	/// <summary>
-	/// Returns the string "(Offset, Column)".
+	/// Gets "({Offset}, {Column})".
 	/// </summary>
+	/// <returns>"({Offset}, {Column})"</returns>
 	public override readonly string ToString()
 	{
-		return "(" + Offset + ", " + Column + ")";
+		return $"({Offset}, {Column})";
 	}
 }
