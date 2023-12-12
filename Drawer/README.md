@@ -33,6 +33,7 @@ The module provides the following editor color drawers:
 
 * `Current word` - colors occurrences of the current word.
 * `Fixed column` - colors custom columns (80, 120 by default).
+* `Tabs` - colors tabs.
 
 In order to turn a drawer on and off use the menu: `[F11] | FarNet | Drawers`
 
