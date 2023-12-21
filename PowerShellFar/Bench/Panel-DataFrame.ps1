@@ -5,6 +5,7 @@
 
 .Description
 	Requires: https://github.com/nightroman/DataFrame
+	Optional: https://www.nuget.org/packages/FarNet.ScottPlot
 
 	Panel columns:
 	- Name: Table and columns.
@@ -13,7 +14,10 @@
 	- Max, Min, Mean: Statistics for numeric columns.
 
 	Keys:
-	- [Enter] opens data table or column panels.
+	- [Enter] opens data table or column panels
+	- [F1] panel help menu, plots:
+		- Histogram, for numeric columns
+		- Top 10 50 .., top used entries
 
 .Parameter Source
 		Specifies CSV file path or DataFrame instance.
@@ -28,6 +32,9 @@
 
 .Parameter NoHeader
 		Tells that the file has no header.
+
+.Parameter IndexColumn
+		Tells to add the index column.
 #>
 
 [CmdletBinding()]
@@ -40,21 +47,21 @@ param(
 	[int]$RowCount = 100000
 	,
 	[switch]$NoHeader
+	,
+	[switch]$IndexColumn
 )
 
-#requires -version 7.4
+#requires -Version 7.4 -Modules DataFrame
 trap {Write-Error $_}
 $ErrorActionPreference = 1
 if ($Host.Name -ne 'FarHost') {throw 'Please run with FarNet.PowerShellFar.'}
-
-Import-Module DataFrame
 
 if ($Source -is [string]) {
 	$title = [System.IO.Path]::GetFileName($Source)
 	if (!$Separator) {
 		$Separator = ([System.IO.Path]::GetExtension($Source) -eq '.tsv' ? 't' : 'c')
 	}
-	$df = Import-DataFrame $Source -GuessCount 10, 1e6, 1e7 -Separator $Separator -RowCount $RowCount -NoHeader:$NoHeader -RenameColumn
+	$df = Import-DataFrame $Source -GuessCount 10, 1e6, 1e7 -Separator $Separator -RowCount $RowCount -NoHeader:$NoHeader -IndexColumn:$IndexColumn -RenameColumn
 }
 else {
 	$title = 'DataFrame'
@@ -83,6 +90,9 @@ $Explorer.AsGetFiles = {
 	}
 
 	foreach($column in $df.Columns) {
+		if ($column.Name -eq 'IndexColumn') {
+			continue
+		}
 		$isNumericColumn = $column.IsNumericColumn()
 		[FarNet.SetFile]@{
 			Data = $column
@@ -121,6 +131,7 @@ $Panel.SetPlan(0, $plan)
 $Panel.AsOpenFile = {
 	param($Panel, $_)
 	$data = $_.File.Data
+
 	if ($data -is [Microsoft.Data.Analysis.DataFrame]) {
 		$dt = $data.ToTable()
 		$dt.AcceptChanges()
@@ -128,8 +139,10 @@ $Panel.AsOpenFile = {
 		$child = [PowerShellFar.DataPanel]::new()
 		$child.Table = $dt
 		$child.OpenChild($Panel)
+		return
 	}
-	else {
+
+	if ($data -is [Microsoft.Data.Analysis.DataFrameColumn]) {
 		$df = New-DataFrame $data
 		$dt = $df.ToTable()
 		$dt.AcceptChanges()
@@ -137,7 +150,105 @@ $Panel.AsOpenFile = {
 		$child = [PowerShellFar.DataPanel]::new()
 		$child.Table = $dt
 		$child.OpenChild($Panel)
+		return
 	}
+}
+
+### Help menu
+$Panel.add_MenuCreating({
+	$file = $_.CurrentFile
+	if (!$file) {
+		return
+	}
+
+	$data = $file.Data -as [Microsoft.Data.Analysis.DataFrameColumn]
+	if (!$data -or $data.Length - $data.NullCount -le 0) {
+		return
+	}
+
+	if ($data.IsNumericColumn()) {
+		$_.Menu.Add('Histogram', {DFShowColumnHistogram $_.Item.Data}).Data = $data
+	}
+
+	$_.Menu.Add('Top 10', {DFShowColumnCounts $_.Item.Data 10}).Data = $data
+	$_.Menu.Add('Top 50', {DFShowColumnCounts $_.Item.Data 50}).Data = $data
+	$_.Menu.Add('Top ..', {DFShowColumnCounts $_.Item.Data 0}).Data = $data
+})
+
+function global:DFAssertScottPlot {
+	try {
+		Add-Type -Path @(
+			"$env:FARHOME\FarNet\Lib\FarNet.ScottPlot\FarNet.ScottPlot.dll"
+			"$env:FARHOME\FarNet\Lib\FarNet.ScottPlot\ScottPlot.dll"
+		)
+	}
+	catch {
+		throw "Cannot load FarNet.ScottPlot, is it installed?"
+	}
+}
+
+function global:DFShowColumnHistogram {
+	param(
+		[Parameter(Mandatory=1)]
+		[Microsoft.Data.Analysis.DataFrameColumn]$Column
+	)
+
+	DFAssertScottPlot
+
+	$N = 50
+	$min = $Column.Min()
+	$max = $Column.Max()
+	$values = [double[]]$Column
+
+	$hist = [ScottPlot.Statistics.Histogram]::new($min, $max, $N)
+	$hist.AddRange($values)
+
+	$plot = [FarNet.ScottPlot.FormPlot]::new($Column.Name)
+	$set1 = $plot.AddBar($hist.Counts, $hist.Bins)
+	$set1.BarWidth = ($max - $min) / $N
+	$set2 = $plot.AddFunction($hist.GetProbabilityCurve($values), 'Green', 2, 'Dash')
+	$set2.YAxisIndex = 1
+	$null = $plot.YAxis.Label('Count')
+	$null = $plot.YAxis2.Label('Probability')
+	$plot.YAxis2.Ticks($true)
+	$plot.SetAxisLimits($null, $null, 0.0, $null, 0, 0)
+	$plot.SetAxisLimits($null, $null, 0.0, 1.1, 0, 1)
+	$plot.Show()
+}
+
+function global:DFShowColumnCounts {
+	param(
+		[Parameter(Mandatory=1)]
+		[Microsoft.Data.Analysis.DataFrameColumn]$Column
+		,
+		[int]$N
+	)
+
+	DFAssertScottPlot
+
+	$df = $Column.ValueCounts().OrderByDescending('Counts')
+
+	if ($N -le 0) {
+		try {$N = $Far.Input('Count', $null, 'Top', $df.Rows.Count)}
+		catch {}
+		if ($N -le 0) {
+			return
+		}
+	}
+
+	if ($N -lt $df.Rows.Count) {
+		$df = $df.Head($N)
+	}
+
+	[double[]]$values = $df['Counts']
+	[string[]]$labels = $df['Values'].ForEach{"$_"}.ForEach{$_.Substring(0, [Math]::Min($_.Length, 25))}
+
+	$plot = [FarNet.ScottPlot.FormPlot]::new($Column.Name)
+	$set1 = $plot.AddBar($values, $null)
+	$plot.XTicks($labels)
+	$plot.XAxis.TickLabelStyle($null, $null, $null, $null, 60)
+	$plot.YLabel('Count')
+	$plot.Show()
 }
 
 $Panel.Open()

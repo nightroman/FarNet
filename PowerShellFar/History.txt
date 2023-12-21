@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 8.0.6 =
+
+Panel-DataFrame.ps1
+- Column plots using FarNet.ScottPlot (counts, histogram)
+
 = 8.0.5 =
 
 Panel-DataFrame.ps1

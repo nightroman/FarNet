@@ -31,13 +31,13 @@ type MyPanel(explorer) =
         base.ViewMode <- PanelViewMode.Descriptions
 
     override _.UICreateFile args =
-        let name = Far.Api.Input("File name", null, "MyPanel")
+        let name = far.Input("File name", null, "MyPanel")
         if not (String.IsNullOrEmpty name) then
             args.Data <- name
             base.UICreateFile args
 
     override _.UIDeleteFiles args =
-        if 0 = Far.Api.Message("Delete files?", "MyPanel", MessageOptions.OkCancel) then
+        if 0 = far.Message("Delete files?", "MyPanel", MessageOptions.OkCancel) then
             base.UIDeleteFiles args
 
 /// Opens the panel.

@@ -4,8 +4,9 @@
 
     <introduction>
       <para>
-FarNet is the framework for Far Manager modules written in .NET languages like C# or F#
-and scripting in PowerShell (PowerShellFar module) or F# (FSharpFar module).
+FarNet is the framework for Far Manager modules written in .NET languages like
+C# or F# and scripting in PowerShell (PowerShellFar module), F# (FSharpFar
+module), JavaScript (JavaScriptFar module).
       </para>
     </introduction>
 
@@ -13,7 +14,7 @@ and scripting in PowerShell (PowerShellFar module) or F# (FSharpFar module).
       <title>FarNet modules</title>
       <content>
         <para>
-Module projects may be created using the dotnet template or manually.
+Module projects may be created using the dotnet templates or manually.
 For the details, see the wiki page <externalLink><linkText>FarNet</linkText><linkUri>https://github.com/nightroman/FarNet/wiki/FarNet</linkUri></externalLink>.
         </para>
       </content>
@@ -49,12 +50,12 @@ Actions are called on various user interactions and core events.
           </listItem>
         </list>
         <para>
-In addition modules may implement <codeEntityReference>T:FarNet.ModuleHost</codeEntityReference>.
-It is created and called when its module is loaded.
+In addition, modules may implement one <codeEntityReference>T:FarNet.ModuleHost</codeEntityReference>.
+It is created and called when the module is loaded.
         </para>
         <para>
-For settings modules may implement <codeEntityReference>T:FarNet.ModuleSettings`1</codeEntityReference>,
-roaming or local and optionally not browsable.
+For settings, modules implement one or more <codeEntityReference>T:FarNet.ModuleSettings`1</codeEntityReference>,
+roaming or local, optionally not browsable.
         </para>
       </content>
     </section>
@@ -63,7 +64,7 @@ roaming or local and optionally not browsable.
       <title>Far Manager API</title>
       <content>
         <para>
-The Far Manager API is exposed as members of <codeEntityReference>T:FarNet.IFar</codeEntityReference>.
+Main parts of Far Manager API are exposed as members of <codeEntityReference>T:FarNet.IFar</codeEntityReference>.
         </para>
 <code language="c#">
 using FarNet;
@@ -71,8 +72,7 @@ Far.Api
 </code>
 <code language="f#">
 open FarNet
-Far.Api // any code
-far     // scripts
+far
 </code>
 <code language="powershell">
 $Far
