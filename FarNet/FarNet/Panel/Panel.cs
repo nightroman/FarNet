@@ -919,15 +919,7 @@ public partial class Panel : IPanel
 	/// Called when the panel is about to be closed.
 	/// </summary>
 	/// <param name="e">.</param>
-	/// <remarks>
-	/// There are issues:  http://bugs.farmanager.com/view.php?id=602
-	/// <para>
-	/// Far calls this unexpectedly on plugin commands invoked from the command line
-	/// even if a new panel is not going to be opened and the current one closed.
-	/// Thus, it can be called more than once.
-	/// </para>
-	/// </remarks>
-	public virtual void UIClosing(PanelEventArgs e) => Closing?.Invoke(this, e); //_090321_165608
+	public virtual void UIClosing(PanelEventArgs e) => Closing?.Invoke(this, e);
 
 	/// <summary>
 	/// Called on invoking a command from the command line.

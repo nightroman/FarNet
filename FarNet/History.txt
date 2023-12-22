@@ -1,6 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 8.0.3 =
+
+Update help.
+
 = 8.0.2 =
 
 Build help with the updated builder.

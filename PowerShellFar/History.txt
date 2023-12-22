@@ -1,5 +1,14 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 8.0.7 =
+
+ArgumentCompleters.ps1, completion of types
+- use built-in completer for normal type names, e.g. [hash
+- use our completer for full name wildcards, e.g. [.hash, [hash*
+
+Snippet.ps1
+- amend auto-select
+
 = 8.0.6 =
 
 Panel-DataFrame.ps1

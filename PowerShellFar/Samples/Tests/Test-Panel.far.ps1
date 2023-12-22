@@ -218,19 +218,5 @@ $Panel.add_KeyPressed({
 	}
 })
 
-### Closing:
-<#
-Far issue [_090321_165608]: how to reproduce:
-- set variable breakpoint:
-ps: Set-PSBreakpoint -Variable DebugPanelClosing
--- open this panel and keep it active
--- invoke a trivial PowerShell command from cmdline:
-ps: 1+1
--- breakpoint is hit: this is bad, panel is not closing at all!
-#>
-$Panel.add_Closing({
-	$DebugPanelClosing = $true
-})
-
 # Go!
 $Panel.Open()

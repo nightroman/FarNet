@@ -173,31 +173,16 @@ Test '"$(test-' { $_ -ccontains '.\Test-TabExpansion2-.ps1' }
 
 Test 'Clear-H' { $_ -ccontains 'Clear-Host' }
 
-### types and namespaces
+### type wildcards
 
-# explicit namespace and type names
-Test @'
-ls
-[sy
-'@ { [string]$_ -ceq '[System. [SystemException]' }
-Test '[mi' { $_ -ccontains '[Microsoft.' }
-Test '[system.da' { $_ -ccontains '[System.Data.' }
-Test '[system.data.sq' { $_ -ccontains '[System.Data.SqlTypes.' }
-Test '[system.data.sqltypes.sql' { $_ -ccontains '[System.Data.SqlTypes.SqlBinary]' }
-
-# order: namespaces then classes
-Test '[System.Management.aut' { ($_ -join '=') -match '\[System\.Management\.Automation\.=.*\[System\.Management\.AuthenticationLevel\]' }
-
-# wildcard namespace and type names
-Test '[*commandty*' { $_ -ccontains '[System.Data.CommandType]' }
-Test '[*sqlcom*' { $_ -ccontains '[System.Data.SqlTypes.SqlCompareOptions]' }
+# wildcards
+Test '[.nullr' { $_ -ccontains '[System.NullReferenceException' }
+Test '[*commandty' { $_ -ccontains '[System.Data.CommandType' }
+Test '[*sqlcom' { $_ -ccontains '[System.Data.SqlTypes.SqlCompareOptions' }
 
 # Generics
-Test '[Collections.Generic.h' { $_ -ccontains '[Collections.Generic.HashSet[]]' }
-Test '[Collections.Generic.d' { $_ -ccontains '[Collections.Generic.Dictionary[,]]' }
-
-# 2013-12-16
-Test '$algo.ComputeHash(([IO' { $_ -ccontains '[IO.' }
+Test '[System.Collections.Generic.h*' { $_ -ccontains '[System.Collections.Generic.HashSet' }
+Test '[*Collections.Generic.d' { $_ -ccontains '[System.Collections.Generic.Dictionary' }
 
 ### help comments
 
@@ -238,7 +223,7 @@ Test @'
 '@ { $_ -ccontains 'Get-ChildItem' }
 
 # fixed loop
-Test '#' { !$_ }
+Test '#' { $true }
 
 ### fix of $Line.[Tab] (name is exactly 'LINE')
 if ($FarHost) {

@@ -118,12 +118,7 @@ Register-ResultCompleter {
 	### Expand an alias to its definition
 	param($result, $ast, $tokens, $positionOfCursor, $options)
 
-	$token = foreach($_ in $tokens) {
-		if ($_.Extent.EndOffset -eq $positionOfCursor.Offset) {
-			$_
-			break
-		}
-	}
+	$token = foreach($_ in $tokens) {if ($_.Extent.EndOffset -eq $positionOfCursor.Offset) {$_; break}}
 	if (!$token -or $token.TokenFlags -ne 'CommandName') {return}
 
 	# aliases
@@ -150,12 +145,7 @@ Register-ResultCompleter {
 	### Complete variable $*var
 	${private:*result}, $null, ${private:*tokens}, ${private:*positionOfCursor}, $null = $args
 
-	${private:*token} = foreach($_ in ${*tokens}) {
-		if ($_.Extent.EndOffset -eq ${*positionOfCursor}.Offset) {
-			$_
-			break
-		}
-	}
+	${private:*token} = foreach($_ in ${*tokens}) {if ($_.Extent.EndOffset -eq ${*positionOfCursor}.Offset) {$_; break}}
 	if (!${*token} -or ${*token} -notmatch '^\$(\*.*)') {return}
 
 	foreach($_ in Get-Variable "$($Matches[1])*") {
@@ -171,31 +161,43 @@ Register-ResultCompleter {
 ### Input processors
 
 Register-InputCompleter {
-	### Complete [Type/Namespace[Tab]
-	# Expands one piece at a time, e.g. [System. | [System.Data. | [System.Data.CommandType]
-	# If pattern in "[pattern" contains wildcard characters all types are searched for the match.
+	### Complete full type name [.x, [x*
 	param($ast, $tokens, $positionOfCursor, $options)
 
 	$token = foreach($_ in $tokens) {if ($_.Extent.EndOffset -eq $positionOfCursor.Offset) {$_; break}}
-	if (!$token -or ($token.TokenFlags -ne 'TypeName' -and $token.TokenFlags -ne 'CommandName')) {return}
+	if (!$token -or $token.TokenFlags -eq 'TypeName') {return}
 
 	$line = $positionOfCursor.Line.Substring(0, $positionOfCursor.ColumnNumber - 1)
 	if ($line -notmatch '\[([\w.*?]+)$') {return}
 
 	$m0 = $Matches[0]
-	$m1 = $Matches[1]
-	$prefix = if ($m0.Length -eq $m1.Length) {''} else {'['}
-
+	$m1 = '*' + $Matches[1] + '*'
 	[System.Management.Automation.CompletionResult[]]$results = @(
-		foreach($text in GetTabExpansionType $m1 $prefix) {
-			if ($text -match '\b(\w+([.,\[\]])+)$') {
-				$type = if ($Matches[2] -ceq '.') {'Namespace'} else {'Type'}
-				[System.Management.Automation.CompletionResult]::new($text, "[$($Matches[1])", $type, $text)
+		$(foreach($assembly in [System.AppDomain]::CurrentDomain.GetAssemblies()) {
+			try {
+				foreach($type in $assembly.GetExportedTypes()) {
+					$name = $type.FullName
+					$$ = $name.IndexOf('`')
+					if ($$ -ge 0) {
+						$name = $name.Substring(0, $$)
+					}
+					if ($name -like $m1) {
+						if ($$ -ge 0) {
+							"$name<>"
+						}
+						else {
+							$name
+						}
+					}
+				}
 			}
-			else {
-				[System.Management.Automation.CompletionResult]::new($text, $text, 'Type', $text)
+			catch {
+				$Error.RemoveAt(0)
 			}
-		}
+		}) | Sort-Object -Unique | .{process{
+			$r = if ($_.EndsWith('<>')) {'[' + $_.Substring(0, $_.Length - 2)} else {"[$_"}
+			[System.Management.Automation.CompletionResult]::new($r, $_, 'Type', $_)
+		}}
 	)
 
 	[System.Management.Automation.CommandCompletion]::new($results, -1, $positionOfCursor.Offset - $m0.Length, $m0.Length)
@@ -247,67 +249,4 @@ Register-InputCompleter {
 		$inputScript = ''.PadRight($offset + $Matches[1].Length) + $Matches[2]
 		TabExpansion2 $inputScript $positionOfCursor.Offset $options
 	}
-}
-
-<#
-.Synopsis
-	Gets types and namespaces for completers.
-#>
-function global:GetTabExpansionType($pattern, $prefix)
-{
-	$suffix = if ($prefix) {']'} else {''}
-
-	# wildcard type
-	if ([System.Management.Automation.WildcardPattern]::ContainsWildcardCharacters($pattern)) {
-		.{ foreach($assembly in [System.AppDomain]::CurrentDomain.GetAssemblies()) {
-			try {
-				foreach($_ in $assembly.GetExportedTypes()) {
-					if ($_.FullName -like $pattern) {
-						"$prefix$($_.FullName)$suffix"
-					}
-				}
-			}
-			catch { $Error.RemoveAt(0) }
-		}} | Sort-Object
-		return
-	}
-
-	# patterns
-	$escaped = [regex]::Escape($pattern)
-	$re1 = [regex]"(?i)^($escaped[^.]*)"
-	$re2 = [regex]"(?i)^($escaped[^.``]*)(?:``(\d+))?$"
-	if (!$pattern.StartsWith('System.', 'OrdinalIgnoreCase')) {
-		$re1 = $re1, [regex]"(?i)^System\.($escaped[^.]*)"
-		$re2 = $re2, [regex]"(?i)^System\.($escaped[^.``]*)(?:``(\d+))?$"
-	}
-
-	# namespaces and types
-	$1 = @{}
-	$2 = [System.Collections.ArrayList]@()
-	foreach($assembly in [System.AppDomain]::CurrentDomain.GetAssemblies()) {
-		try { $types = $assembly.GetExportedTypes() }
-		catch { $Error.RemoveAt(0); continue }
-		$n = [System.Collections.Generic.HashSet[object]]@(foreach($_ in $types) {$_.Namespace})
-		foreach($r in $re1) {
-			foreach($_ in $n) {
-				if ($_ -match $r) {
-					$1["$prefix$($Matches[1])."] = $null
-				}
-			}
-		}
-		foreach($r in $re2) {
-			foreach($_ in $types) {
-				if ($_.FullName -match $r) {
-					if ($Matches[2]) {
-						$null = $2.Add("$prefix$($Matches[1])[$(''.PadRight(([int]$Matches[2] - 1), ','))]$suffix")
-					}
-					else {
-						$null = $2.Add("$prefix$($Matches[1])$suffix")
-					}
-				}
-			}
-		}
-	}
-	$1.Keys | Sort-Object
-	$2 | Sort-Object
 }

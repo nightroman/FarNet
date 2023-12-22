@@ -240,7 +240,13 @@ if (!$Name) {
 		}
 	}
 
-	$Name = ($keys ? $keys : $snippets.Keys) | Sort-Object | Out-FarList -Title Snippet -AutoSelect
+	$keys = @($keys ? $keys : $snippets.Keys)
+	if ($keys.Count -eq 1) {
+		$Name = $keys[0]
+	}
+	else {
+		$Name = $keys | Sort-Object | Out-FarList -Title Snippet
+	}
 	if (!$Name) {
 		return
 	}

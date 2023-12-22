@@ -290,7 +290,6 @@ int Panel0::AsProcessPanelEvent(const ProcessPanelEventInfo* info)
 				pp->_timerInstance = nullptr;
 			}
 
-			//_090321_165608 FE_CLOSE issues
 			if (!pp->_Pushed)
 			{
 				PanelEventArgs e;
