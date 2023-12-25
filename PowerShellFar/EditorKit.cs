@@ -6,7 +6,6 @@ using FarNet;
 using FarNet.Forms;
 using FarNet.Tools;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
@@ -23,33 +22,7 @@ namespace PowerShellFar;
 /// </summary>
 static class EditorKit
 {
-	internal const string DataInvokeAction = "_220108_6q";
-	const string CompletionText = "CompletionText";
-	const string ListItemText = "ListItemText";
-	// CompletionText is used for:
-	// - Command, to avoid two Get-History -> Get-History, Microsoft.PowerShell.Core\Get-History
-	// - ProviderItem, to avoid two Test-Far.ps1 -> .\Test-Far.ps1, Test-Far.ps1
-	// - ProviderContainer, for consistency with ProviderItem
-	//! Use @args to avoid noise variables in completion code.
-	//! Type char marks are tempting but noise for filtering.
-	const string CallTabExpansion = @"
-$r = TabExpansion2 @args
-@{
-	ReplacementIndex = $r.ReplacementIndex
-	ReplacementLength = $r.ReplacementLength
-	CompletionMatches = @(foreach($m in $r.CompletionMatches) {
-		switch ($m.ResultType) {
-			Command { $m.CompletionText }
-			ProviderItem { $m.CompletionText }
-			ProviderContainer { $m.CompletionText }
-			default { @{CompletionText = $m.CompletionText; ListItemText = $m.ListItemText} }
-		}
-	})
-}
-";
-
 	static bool _doneTabExpansion;
-	static string? _pathTabExpansion;
 
 	static void InitTabExpansion()
 	{
@@ -63,37 +36,12 @@ $r = TabExpansion2 @args
 	//! It is called once in the main session and once per each local and remote session.
 	public static void InitTabExpansion(Runspace? runspace)
 	{
-		// init path and caller
-		_pathTabExpansion ??= Path.Combine(A.Psf.AppHome, "TabExpansion2.ps1");
-
 		// load TabExpansion
 		using var ps = runspace is null ? A.Psf.NewPowerShell() : PowerShell.Create();
-		if (runspace != null)
+		if (runspace is not null)
 			ps.Runspace = runspace;
 
-		ps.AddCommand(_pathTabExpansion, false).Invoke();
-	}
-
-	static string TECompletionText(object value)
-	{
-		var t = Cast<Hashtable>.From(value); //! remote gets PSObject
-		if (t is null)
-			return value.ToString()!;
-
-		return t[CompletionText]!.ToString()!;
-	}
-
-	static string TEListItemText(object value)
-	{
-		var t = Cast<Hashtable>.From(value); //! remote gets PSObject
-		if (t is null)
-			return value.ToString()!;
-
-		var r = t[ListItemText];
-		if (r != null)
-			return r.ToString()!;
-
-		return t[CompletionText]!.ToString()!;
+		ps.AddCommand(Path.Combine(A.Psf.AppHome, "TabExpansion2.ps1"), false).Invoke();
 	}
 
 	/// <summary>
@@ -205,22 +153,26 @@ $r = TabExpansion2 @args
 		try
 		{
 			// call TabExpansion
-			Hashtable result;
-			using (var ps = runspace is null ? A.Psf.NewPowerShell() : PowerShell.Create())
-			{
-				if (runspace != null)
-					ps.Runspace = runspace;
+			using var ps = runspace is null ? A.Psf.NewPowerShell() : PowerShell.Create();
+			if (runspace is not null)
+				ps.Runspace = runspace;
 
-				result = (Hashtable)ps.AddScript(CallTabExpansion, true).AddArgument(inputScript).AddArgument(cursorColumn).Invoke()[0].BaseObject;
-			}
+			var result = (CommandCompletion)ps
+				.AddCommand("TabExpansion2", true)
+				.AddArgument(inputScript)
+				.AddArgument(cursorColumn)
+				.Invoke()[0].BaseObject;
 
 			// results
-			var words = Cast<IList>.From(result["CompletionMatches"])!; //! remote gets PSObject
-			int replacementIndex = (int)result["ReplacementIndex"]!;
-			int replacementLength = (int)result["ReplacementLength"]!;
+			var matches = result.CompletionMatches;
+			int replacementIndex = result.ReplacementIndex;
+			int replacementLength = result.ReplacementLength;
 			replacementIndex -= lineOffset;
 			if (replacementIndex < 0 || replacementLength < 0)
 				return;
+
+			// original or joined list
+			IReadOnlyList<CompletionResult> words = matches;
 
 			// variables from the current editor
 			if (editLine.WindowKind == WindowKind.Editor)
@@ -251,13 +203,19 @@ $r = TabExpansion2 @args
 						}
 					}
 
-					// union lists
-					foreach (var x in words)
-						if (x != null)
-							variables.Add(TECompletionText(x));
+					// join lists
+					if (variables.Count > 0)
+					{
+						List<CompletionResult> list = new(variables.Count + words.Count);
+						foreach (var text in variables.OrderBy(x => x))
+						{
+							if (!words.Any(x => text.Equals(x.CompletionText, StringComparison.OrdinalIgnoreCase)))
+								list.Add(new CompletionResult(text, text, CompletionResultType.Variable, text));
+						}
 
-					// final sorted list
-					words = variables.OrderBy(x => x, StringComparer.OrdinalIgnoreCase).ToList();
+						list.AddRange(words);
+						words = list;
+					}
 				}
 			}
 
@@ -267,20 +225,13 @@ $r = TabExpansion2 @args
 		catch (RuntimeException) { }
 	}
 
-	public static void ExpandText(ILine editLine, int replacementIndex, int replacementLength, IList words)
+	public static void ExpandText(ILine editLine, int replacementIndex, int replacementLength, IReadOnlyList<CompletionResult> words)
 	{
-		bool isEmpty = words.Count == 0;
-
 		// select a word
 		string word;
 		if (words.Count == 1)
 		{
-			// 1 word
-			var word0 = words[0];
-			if (word0 is null)
-				return;
-
-			word = TECompletionText(word0);
+			word = words[0].CompletionText;
 		}
 		else
 		{
@@ -290,7 +241,9 @@ $r = TabExpansion2 @args
 			menu.X = cursor.X;
 			menu.Y = cursor.Y;
 			Settings.Default.PopupMenu(menu);
-			if (isEmpty)
+
+			// case: empty
+			if (words.Count == 0)
 			{
 				menu.Add(Res.Empty).Disabled = true;
 				menu.NoInfo = true;
@@ -301,32 +254,24 @@ $r = TabExpansion2 @args
 			menu.Incremental = "*";
 			menu.IncrementalOptions = PatternOptions.Substring;
 
-			foreach (var it in words)
+			// populate menu
+			int end = words.Count - 1;
+			for (int i = 0; i <= end; ++i)
 			{
-				if (it is null) continue;
-				var item = new SetItem
-				{
-					Text = TEListItemText(it),
-					Data = it
-				};
+				var str1 = words[i].ListItemText;
+				var str2 = words[i].CompletionText;
+				if (i > 0 && str1 == words[i - 1].ListItemText || i < end && str1 == words[i + 1].ListItemText)
+					str1 = str2;
+
+				var item = new SetItem { Text = str1, Data = str2 };
 				menu.Items.Add(item);
 			}
 
-			if (menu.Items.Count == 0)
+			// show menu
+			if (!menu.Show())
 				return;
 
-			if (menu.Items.Count == 1)
-			{
-				word = TECompletionText(menu.Items[0].Data!);
-			}
-			else
-			{
-				// show menu
-				if (!menu.Show())
-					return;
-
-				word = TECompletionText(menu.Items[menu.Selected].Data!);
-			}
+			word = (string)menu.Items[menu.Selected].Data!;
 		}
 
 		// get original text and custom mode
@@ -550,13 +495,6 @@ $r = TabExpansion2 @args
 
 		// commit
 		editor.Save();
-
-		// case: custom action
-		if (editor.Data[DataInvokeAction] is Action invoke)
-		{
-			invoke();
-			return;
-		}
 
 		var fileName = editor.FileName;
 

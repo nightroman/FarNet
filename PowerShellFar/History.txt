@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 8.0.8 =
+
+Align completion with https://github.com/nightroman/PS-GuiCompletion
+
 = 8.0.7 =
 
 ArgumentCompleters.ps1, completion of types
