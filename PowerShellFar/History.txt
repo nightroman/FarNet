@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 8.0.9 =
+
+Panel-DataFrame.ps1
+- F1 menu: scatter plot of two selected columns
+
 = 8.0.8 =
 
 Align completion with https://github.com/nightroman/PS-GuiCompletion

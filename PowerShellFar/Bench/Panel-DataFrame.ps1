@@ -18,6 +18,7 @@
 	- [F1] panel help menu, plots:
 		- Histogram, for numeric columns
 		- Top 10 50 .., top used entries
+		- Scatter of two selected columns
 
 .Parameter Source
 		Specifies CSV file path or DataFrame instance.
@@ -156,6 +157,19 @@ $Panel.AsOpenFile = {
 
 ### Help menu
 $Panel.add_MenuCreating({
+	$file = $_.SelectedFiles
+	if ($file.Count -eq 2) {
+		$c1 = $file[0].Data -as [Microsoft.Data.Analysis.DataFrameColumn]
+		$c2 = $file[1].Data -as [Microsoft.Data.Analysis.DataFrameColumn]
+		if ($c1 -and $c2) {
+			if (!$c1.IsNumericColumn()) {$c1 = DFConvertColumn $c1}
+			if (!$c2.IsNumericColumn()) {$c2 = DFConvertColumn $c2}
+			$_.Menu.Add("$($c1.Name) -> $($c2.Name)", {DFShowColumnScatter $_.Item.Data[0] $_.Item.Data[1]}).Data = $c1, $c2
+			$_.Menu.Add("$($c2.Name) -> $($c1.Name)", {DFShowColumnScatter $_.Item.Data[0] $_.Item.Data[1]}).Data = $c2, $c1
+		}
+		return
+	}
+
 	$file = $_.CurrentFile
 	if (!$file) {
 		return
@@ -175,6 +189,25 @@ $Panel.add_MenuCreating({
 	$_.Menu.Add('Top ..', {DFShowColumnCounts $_.Item.Data 0}).Data = $data
 })
 
+function global:DFConvertColumn {
+	param(
+		[Parameter(Mandatory=1)]
+		[Microsoft.Data.Analysis.DataFrameColumn]$Column
+	)
+
+	$r = New-Int32Column $Column.Name -Length $Column.Length
+	$map = [hashtable]::new([System.StringComparer]::Ordinal)
+	for($$ = 0; $$ -lt $Column.Length; ++$$) {
+		$key = $Column[$$]
+		$index = $map[$key]
+		if ($null -eq $index) {
+			$map[$key] = $index = $$
+		}
+		$r[$$] = $index
+	}
+	,$r
+}
+
 function global:DFAssertScottPlot {
 	try {
 		Add-Type -Path @(
@@ -185,6 +218,27 @@ function global:DFAssertScottPlot {
 	catch {
 		throw "Cannot load FarNet.ScottPlot, is it installed?"
 	}
+}
+
+function global:DFShowColumnScatter {
+	param(
+		[Parameter(Mandatory=1)]
+		[Microsoft.Data.Analysis.DataFrameColumn]$Column1
+		,
+		[Parameter(Mandatory=1)]
+		[Microsoft.Data.Analysis.DataFrameColumn]$Column2
+	)
+
+	DFAssertScottPlot
+
+	$xs = [double[]]$Column1
+	$ys = [double[]]$Column2
+
+	$plot = [FarNet.ScottPlot.FormPlot]::new("$($Column1.Name) -> $($Column2.Name)")
+	$set1 = $plot.AddScatter($xs, $ys, $null, 0)
+	$null = $plot.XAxis.Label($Column1.Name)
+	$null = $plot.YAxis.Label($Column2.Name)
+	$plot.Show()
 }
 
 function global:DFShowColumnHistogram {
