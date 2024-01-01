@@ -83,9 +83,7 @@ public abstract class ListPanel : AnyPanel
 		// case: data table
 		if (Cast<DataTable>.From(pi.Value) is { } dt)
 		{
-			DataPanel panel = new();
-			panel.Table = dt;
-			panel.OpenChild(this);
+			DataPanel.OpenChild(dt, this);
 			return;
 		}
 

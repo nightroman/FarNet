@@ -1,5 +1,15 @@
 https://www.nuget.org/packages/FarNet.Explore
 
+= 5.1.0 =
+
+Requires FarNet 8.1.0
+
+The `explore:` command
+- without parameters opens the file system explorer panel
+- without module panel uses the file system explorer
+- recursive by default, use -Depth to control
+- new parameter -Bfs for breadth-first-search
+
 = 5.0.0 =
 
 Requires FarNet 8

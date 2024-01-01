@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace FarNet.Explore;
@@ -102,32 +103,15 @@ public static class Parser
 			sb.Append((char)n);
 		}
 	}
-	public static string ResolveName(string part, string[] names)
+
+	public static string? ResolveName(string part, string[] names)
 	{
-		for (int i = names.Length; --i >= 0; )
+		var matches = names.Where(name => name.StartsWith(part, StringComparison.OrdinalIgnoreCase)).ToList();
+		return matches.Count switch
 		{
-			var name1 = names[i];
-			if (!name1.StartsWith(part, StringComparison.OrdinalIgnoreCase))
-				continue;
-
-			if (name1.Length == part.Length)
-				return name1;
-
-			for (int j = i; --j >= 0; )
-			{
-				var name2 = names[j];
-				if (!name2.StartsWith(part, StringComparison.OrdinalIgnoreCase))
-					continue;
-
-				if (name2.Length == part.Length)
-					return name2;
-
-				throw new InvalidOperationException("Cannot resolve the name: " + part);
-			}
-
-			return name1;
-		}
-
-		return null;
+			1 => matches[0],
+			0 => null,
+			_ => throw new ModuleException("Cannot resolve name: " + part)
+		};
 	}
 }

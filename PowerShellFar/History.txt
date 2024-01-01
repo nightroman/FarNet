@@ -1,5 +1,18 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 8.1.0 =
+
+Requires FarNet 8.1.0
+
+Redesigned Search-FarFile
+- with non FarNet panel uses file system search
+- recursive by default, use -Depth to control
+- new parameter -Path for file system search
+- new switch -Bfs for breadth-first-search
+
+DataPanel
+- new helper methods Open and OpenChild
+
 = 8.0.9 =
 
 Panel-DataFrame.ps1

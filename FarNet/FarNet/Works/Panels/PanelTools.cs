@@ -85,7 +85,8 @@ public static class PanelTools
 	}
 
 	const string
-		sPushShelveThePanel = "Push/Shelve panel",
+		sPushPanel = "Push panel",
+		sShelvePanel = "Shelve panel",
 		sSwitchFullScreen = "Switch full screen",
 		sResizeColum1 = "Decrease left column",
 		sResizeColum2 = "Increase left column",
@@ -111,9 +112,9 @@ public static class PanelTools
 			if (panel.IsPlugin)
 			{
 				module = panel as Panel;
-				if (module != null)
+				if (module is not null)
 				{
-					menu.Add(sPushShelveThePanel);
+					menu.Add(sPushPanel);
 					menu.Add(sResizeColum1);
 					menu.Add(sResizeColum2);
 					menu.Add(sSwitchFullScreen);
@@ -123,7 +124,7 @@ public static class PanelTools
 			}
 			else if (panel.Kind == PanelKind.File)
 			{
-				menu.Add(sPushShelveThePanel);
+				menu.Add(sShelvePanel);
 			}
 
 			// Pop/Unshelve
@@ -152,7 +153,7 @@ public static class PanelTools
 			}
 
 			// Push/Shelve
-			if (mi.Text == sPushShelveThePanel)
+			if (mi.Text == sPushPanel || mi.Text == sShelvePanel)
 			{
 				panel.Push();
 				return;
@@ -185,7 +186,7 @@ public static class PanelTools
 			{
 				// native plugin panel: go to the first item to work around "Far does not restore panel state",
 				// this does not restore either but is still better than unexpected current item after exit.
-				if (null == module)
+				if (module is null)
 				{
 					panel.Redraw(0, 0);
 					panel.Close();

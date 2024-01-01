@@ -10,6 +10,9 @@ namespace PowerShellFar.Commands;
 
 class SearchFarFileCommand : BaseCmdlet
 {
+	string? _Mask;
+	string? _Path;
+
 	[Parameter(Position = 0, ParameterSetName = "Mask")]
 	public string? Mask
 	{
@@ -20,10 +23,21 @@ class SearchFarFileCommand : BaseCmdlet
 			_Mask = value;
 		}
 	}
-	string? _Mask;
 
 	[Parameter(Position = 0, ParameterSetName = "Script")]
 	public ScriptBlock? Script { get; set; }
+
+	[Parameter]
+	public string? Path
+	{
+		get => _Path;
+		set
+		{
+			_Path = GetUnresolvedProviderPathFromPSPath(value);
+			if (!System.IO.Directory.Exists(_Path))
+				throw new PSArgumentException($"Directory not found: {value}");
+		}
+	}
 
 	[Parameter]
 	public string? XPath { get; set; }
@@ -32,51 +46,64 @@ class SearchFarFileCommand : BaseCmdlet
 	public string? XFile { get; set; }
 
 	[Parameter]
-	public int Depth { get; set; }
+	public int Depth { get; set; } = -1;
 
 	[Parameter]
 	public SwitchParameter Directory { get; set; }
 
 	[Parameter]
-	public SwitchParameter Recurse { get; set; }
+	public SwitchParameter File { get; set; }
 
 	[Parameter]
-	public SwitchParameter Asynchronous { get; set; }
+	public SwitchParameter Bfs { get; set; }
+
+	[Parameter]
+	public SwitchParameter Async { get; set; }
 
 	protected override void BeginProcessing()
 	{
-		if (Far.Api.Panel is not Panel panel)
+		Panel? panel;
+		Explorer? explorer;
+		if (Path is null)
 		{
-			WriteWarning("This is not a module panel.");
-			return;
+			panel = Far.Api.Panel as Panel;
+			explorer = panel is null ? new FileSystemExplorer() : panel.Explorer;
+		}
+		else
+		{
+			panel = null;
+			explorer = new FileSystemExplorer(Path);
 		}
 
-		// setup the search
-		var search = new SearchFileCommand(panel.Explorer)
+		// the search
+		var search = new SearchFileCommand(explorer)
 		{
+			Directory = Directory,
+			File = File,
+			Bfs = Bfs,
+			Depth = Depth,
 			XPath = XPath,
 			XFile = XFile,
-			Depth = Depth,
-			Recurse = Recurse,
-			Directory = Directory
 		};
-		if (Mask != null)
+
+		// the filter
+		if (Mask is not null)
 		{
-			search.Filter = delegate(Explorer explorer, FarFile file)
+			search.Filter = (Explorer explorer, FarFile file) =>
 			{
 				return Far.Api.IsMaskMatch(file.Name, Mask, true);
 			};
 		}
-		else if (Script != null)
+		else if (Script is not null)
 		{
-			search.Filter = delegate(Explorer explorer, FarFile file)
+			search.Filter = (Explorer explorer, FarFile file) =>
 			{
 				return LanguagePrimitives.IsTrue(Script.InvokeReturnAsIs(explorer, file));
 			};
 		}
 
 		// go
-		if (Asynchronous)
+		if (Async)
 			search.InvokeAsync(panel);
 		else
 			search.Invoke(panel);

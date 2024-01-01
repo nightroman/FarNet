@@ -53,9 +53,10 @@ param(
 )
 
 #requires -Version 7.4 -Modules DataFrame
-trap {Write-Error $_}
 $ErrorActionPreference = 1
-if ($Host.Name -ne 'FarHost') {throw 'Please run with FarNet.PowerShellFar.'}
+if ($Host.Name -ne 'FarHost') {
+	Write-Error 'Please run with FarNet.PowerShellFar.'
+}
 
 if ($Source -is [string]) {
 	$title = [System.IO.Path]::GetFileName($Source)
@@ -68,7 +69,7 @@ else {
 	$title = 'DataFrame'
 	$df = $Source -as [Microsoft.Data.Analysis.DataFrame]
 	if (!$df) {
-		throw 'Source must be String or DataFrame.'
+		Write-Error 'Source must be String or DataFrame.'
 	}
 }
 
@@ -133,24 +134,18 @@ $Panel.AsOpenFile = {
 	param($Panel, $_)
 	$data = $_.File.Data
 
-	if ($data -is [Microsoft.Data.Analysis.DataFrame]) {
-		$dt = $data.ToTable()
+	if ($df = $data -as [Microsoft.Data.Analysis.DataFrame]) {
+		$dt = $df.ToTable()
 		$dt.AcceptChanges()
-
-		$child = [PowerShellFar.DataPanel]::new()
-		$child.Table = $dt
-		$child.OpenChild($Panel)
+		[PowerShellFar.DataPanel]::OpenChild($dt, $Panel)
 		return
 	}
 
-	if ($data -is [Microsoft.Data.Analysis.DataFrameColumn]) {
-		$df = New-DataFrame $data
+	if ($column = $data -as [Microsoft.Data.Analysis.DataFrameColumn]) {
+		$df = New-DataFrame $column
 		$dt = $df.ToTable()
 		$dt.AcceptChanges()
-
-		$child = [PowerShellFar.DataPanel]::new()
-		$child.Table = $dt
-		$child.OpenChild($Panel)
+		[PowerShellFar.DataPanel]::OpenChild($dt, $Panel)
 		return
 	}
 }

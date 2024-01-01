@@ -177,16 +177,43 @@ of where the problem is.
 ### Search-FarFile
 @{
 	command = 'Search-FarFile'
-	synopsis = 'Searches files in the panel and opens the result panel with found items.'
+	synopsis = 'Searches module panel files and opens the result panel with found items.'
+	description = @'
+This command searches for FarNet module panel files.
+It is similar to FarNet.Explore `explore:`.
+
+If the panel is not FarNet then the file system is used.
+(FarNet.Tools.FileSystemExplorer)
+
+This command is particularly useful with a script filter.
+The script is called for each file with two arguments:
+$args[0] as file explorer and $args[1] as the file.
+The script returns Boolean or equivalent.
+See examples.
+'@
 	parameters = @{
-		Mask = 'Classic Far Manager file mask including exclude and regular expression forms.'
-		Script = 'Search script. Variables: $this is the explorer providing the file, $_ is the file.'
+		Mask = 'Far Manager file mask including exclude and regular expression forms.'
+		Script = 'Filter script with $args[0] as file explorer and $args[1] as the file.'
+		Path = 'Specifies the root directory for the file system search.'
+		Directory = 'Tells to include only directories.'
+		File = 'Tells to include only files.'
+		Bfs = 'Tells to use breadth-first-search instead of depth-first-search.'
+		Depth = 'Search depth. Zero for just root, negative for unlimited.'
 		XPath = 'XPath expression text.'
 		XFile = 'XPath expression file.'
-		Depth = 'Search depth. 0: ignored; negative: unlimited.'
-		Directory = 'Tells to include directories into the search process and results.'
-		Recurse = 'Tells to search through all directories and sub-directories.'
-		Asynchronous = 'Tells to performs the search in the background and to open the result panel immediately.'
+		Async = 'Tells to search in the background and open the result panel immediately.'
+	}
+	examples = @{
+		code = {
+			# find using Mask
+			Search-FarFile README*
+
+			# find large files
+			Search-FarFile -Path $env:FARHOME -File {$args[1].Length -ge 5mb}
+
+			# find empty directories
+			Search-FarFile -Directory {param($e, $f) !(Get-ChildItem -LiteralPath "$($e.Location)\$($f.name)") }
+		}
 	}
 }
 

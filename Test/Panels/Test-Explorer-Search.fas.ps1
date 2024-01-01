@@ -12,7 +12,7 @@ job {
 job {
 	# open search panel
 	$cmd = $Far.GetModuleAction("20b46a91-7ef4-4daa-97f5-a1ef291f7391")
-	$arg = [FarNet.ModuleCommandEventArgs]'-Recurse *'
+	$arg = [FarNet.ModuleCommandEventArgs]'*'
 	$cmd.Invoke($null, $arg)
 }
 job {

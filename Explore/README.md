@@ -11,8 +11,9 @@ FarNet module Explore for Far Manager
 *********************************************************************
 ## Synopsis
 
-The tool searches in FarNet module panels and opens the result panel.
-It is invoked from the command line with the prefix *Explore:*.
+The command `explore:` searches for files using the current FarNet panel
+explorer or the default file system explorer and opens the result panel.
+It is similar to FarNet.PowerShellFar `Search-FarFile`.
 
 **Project**
 
@@ -38,12 +39,12 @@ How to install and update FarNet and modules:\
 
 Syntax:
 
-    Explore: [<Mask>] [-Directory] [-Recurse] [-Depth <N>] [-Asynchronous] [-XFile <File>] [-XPath <Expr>]
+    explore: [<Mask>] [-Directory] [-File] [-Bfs] [-Depth <N>] [-Async] [-XFile <File>] [-XPath <Expression>]
 
 - `<Mask>`
 
-    Classic Far Manager file name mask including exclude and regex forms.
-    Use " to enclose a mask with spaces.
+    Far Manager file mask including exclude and regex forms.
+    Use double quotes to enclose a mask with spaces.
 
 - `-Directory`
 
@@ -53,31 +54,28 @@ Syntax:
 
     Tells to get only files.
 
-- `-Recurse`
+- `-Bfs`
 
-    Tells to search directories recursively.
+    Tells to use breadth-first-search instead of depth-first-search.
 
 - `-Depth <N>`
 
-    N = 0: ignored. N < 0: unlimited. N > 0: the search depth with -Recurse
-    ignored. Note: order of -Depth and -Recurse results may be different.
+    The subdirectory depth, zero for just root, negative for unlimited.
 
-- `-Asynchronous`
+- `-Async`
 
     Tells to perform the search in the background and open the result panel
-    immediately. Results are added dynamically when the panel is idle.
+    immediately. Results are added dynamically.
 
 - `-XFile <File>`
 
-    Tells to read the XPath expression from the file. Use the *.xq* extension
-    for files (Colorer processes them as *xquery* which is fine for XPath).
+    Tells to read XPath from the file. You may use `*.xq` files so that Colorer
+    treats them as XQuery, the superset of XPath.
 
-- `-XPath <Expr>`
+- `-XPath <Expression>`
 
-    The XPath has to be the last parameter because the rest of the command line
-    is used as the XPath expression. The Mask can be used with XPath. Recurse
-    and Depth parameters are nor used with XPath or XFile.
-
+    The XPath has to be the last parameter, the rest of the command is used as
+    the XPath expression. The mask may be used with XPath.
 
 *********************************************************************
 ## Result panel
@@ -118,9 +116,8 @@ The result panel provides the following keys and operations
 
 - `[Esc]`
 
-    Prompts to choose: *[Close]* or *[Push]* the result panel, or *[Stop]* the
-    search if it is still in progress in the background.
-
+    Prompts to choose: close or push the result panel
+    or stop the search if it is in progress.
 
 *********************************************************************
 ## Examples
@@ -129,44 +126,37 @@ All examples are for the FileSystem provider panel of the PowerShellFar module.
 
 ---
 
-Find directories and files with names containing "far" recursively:
+Find directories with names containing "far" recursively:
 
-    Explore: -Directory -Recurse *far*
-
----
-
-Mixed filter (mask and XPath expression with file attributes):
-
-    Explore: *.dll;*.xml -XPath //File[compare(@LastWriteTime, '2011-04-23') = 1 and @Length > 100000]
-
-Note: `compare()` is a helper function added by FarNet.
+    explore: -Directory *far*
 
 ---
 
-Find empty directories excluding *.svn*:
+Find empty directories
 
-    Explore: -XPath //Directory[not(Directory | File) and not((../.. | ../../..)/*[@Name = '.svn'])]
-
-or:
-
-    Explore: -XFile empty-directory.xq
-
-where the file *empty-directory.xq* may look like this:
-
-    //Directory
-    [
-        not(Directory | File)
-        and
-        not((../.. | ../../..)/*[@Name = '.svn'])
-    ]
+    explore: -XPath //Directory[not(Directory | File)]
 
 ---
 
-Find *.sln* files with *.csproj* files in the same directory:
+Find directories with `README.md`
 
-    Explore: -XFile sln-with-csproj.xq
+    explore: -XPath //Directory[./File[@Name='README.md']]
 
-where *sln-with-csproj.xq*:
+---
+
+Mixed filter, mask and XPath:
+
+    explore: *.dll;*.xml -XPath //File[compare(@LastWriteTime, '2011-04-23') = 1 and @Length > 100000]
+
+Note: `compare` is the helper function added by FarNet.
+
+---
+
+Find `.sln` files with `.csproj` files in the same directory:
+
+    explore: -XFile sln-with-csproj.xq
+
+where `sln-with-csproj.xq`:
 
     //File
     [
@@ -175,6 +165,6 @@ where *sln-with-csproj.xq*:
         ../File[is-match(@Name, '(?i)\.csproj$')]
     ]
 
-Note: `is-match()` is a helper function added by FarNet.
+Note: `is-match` is the helper function added by FarNet.
 
 *********************************************************************

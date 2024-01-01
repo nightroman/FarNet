@@ -33,6 +33,27 @@ public sealed class DataPanel : TablePanel, IDisposable
 		PageLimit = Settings.Default.MaximumPanelFileCount;
 	}
 
+	/// <summary>
+	/// Opens the panel with the specified table.
+	/// </summary>
+	/// <param name="table">The data table.</param>
+	public static void Open(DataTable table)
+	{
+		DataPanel panel = new() { Table = table };
+		panel.Open();
+	}
+
+	/// <summary>
+	/// Opens the panel with the specified table.
+	/// </summary>
+	/// <param name="table">The data table.</param>
+	/// <param name="parent">Optional parent panel, the current, when null.</param>
+	public static void OpenChild(DataTable table, Panel? parent = null)
+	{
+		DataPanel panel = new() { Table = table };
+		panel.OpenChild(parent);
+	}
+
 	DateTime _XmlFileTime;
 
 	/// <summary>

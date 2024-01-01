@@ -6,7 +6,7 @@ using FarNet.Tools;
 
 namespace FarNet.Explore;
 
-[ModuleCommand(Name = "Search in explorer panels", Prefix = "Explore", Id = "20b46a91-7ef4-4daa-97f5-a1ef291f7391")]
+[ModuleCommand(Name = "Search in module panels", Prefix = "explore", Id = "20b46a91-7ef4-4daa-97f5-a1ef291f7391")]
 public class TheCommand : ModuleCommand
 {
 	public override void Invoke(object sender, ModuleCommandEventArgs e)
@@ -14,30 +14,27 @@ public class TheCommand : ModuleCommand
 		// tokenize
 		var tokens = Parser.Tokenize(e.Command, "-XPath");
 
-		// open the empty panel
+		// open the file system panel
 		if (tokens.Count == 0)
 		{
-			(new SuperExplorer()).OpenPanel();
+			new FileSystemExplorer().OpenPanel();
 			return;
 		}
 
-		// the module panel
-		if (Far.Api.Panel is not Panel panel)
-		{
-			Far.Api.Message("This is not a module panel.");
-			return;
-		}
+		// get the module panel and explorer or defaults
+		var panel = Far.Api.Panel as Panel;
+		var explorer =  panel is null ? new FileSystemExplorer() : panel.Explorer;
 
 		// the search
-		var search = new SearchFileCommand(panel.Explorer);
+		var search = new SearchFileCommand(explorer);
 
 		// parameters
 		string[] parameters = [
-			"-Asynchronous",
+			"-Async",
+			"-Bfs",
 			"-Depth",
 			"-Directory",
 			"-File",
-			"-Recurse",
 			"-XFile",
 			"-XPath",
 		];
@@ -50,10 +47,10 @@ public class TheCommand : ModuleCommand
 			var parameter = Parser.ResolveName(token, parameters);
 
 			// mask
-			if (parameter == null)
+			if (parameter is null)
 			{
-				if (search.Filter != null)
-					throw new ModuleException("Invalid command line.");
+				if (token[0] == '-' || search.Filter is not null)
+					throw new ModuleException($"Invalid command token '{token}'. Valid parameters: {string.Join(", ", parameters)}.");
 
 				var mask = token;
 				if (!Far.Api.IsMaskValid(mask))
@@ -103,12 +100,12 @@ public class TheCommand : ModuleCommand
 						search.File = true;
 						break;
 					}
-				case "-Recurse":
+				case "-Bfs":
 					{
-						search.Recurse = true;
+						search.Bfs = true;
 						break;
 					}
-				case "-Asynchronous":
+				case "-Async":
 					{
 						async = true;
 						break;

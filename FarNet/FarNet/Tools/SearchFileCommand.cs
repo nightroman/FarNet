@@ -10,43 +10,44 @@ using System.Xml.XPath;
 namespace FarNet.Tools;
 
 /// <summary>
-/// Search file method.
+/// Search file filter.
 /// </summary>
 /// <param name="explorer">The explorer providing the file.</param>
 /// <param name="file">The file to be processed.</param>
 public delegate bool ExplorerFilePredicate(Explorer explorer, FarFile file);
 
 /// <summary>
-/// File search command.
+/// Module panel file search for FarNet.Explore, FarNet.PowerShellFar Search-FarFile, etc.
 /// </summary>
 /// <param name="root">The root explorer.</param>
 public class SearchFileCommand(Explorer root)
 {
+	const int ProgressDelay = 500;
+	const int TimerInterval = 2500;
+
 	readonly Explorer _RootExplorer = root ?? throw new ArgumentNullException(nameof(root));
 
 	/// <summary>
-	/// Search depth. 0: ignored; negative: unlimited.
-	/// Ignored in XPath searches.
-	/// </summary>
-	public int Depth { get; set; }
-
-	/// <summary>
 	/// Tells to get only directories.
-	/// Ignored in XPath searches with no filter.
 	/// </summary>
 	public bool Directory { get; set; }
 
 	/// <summary>
 	/// Tells to gets only files.
-	/// Ignored in XPath searches with no filter.
 	/// </summary>
 	public bool File { get; set; }
 
 	/// <summary>
-	/// Tells to search through all directories and sub-directories.
+	/// Tells to perform breadth-first-search.
 	/// Ignored in XPath searches.
 	/// </summary>
-	public bool Recurse { get; set; }
+	public bool Bfs { get; set; }
+
+	/// <summary>
+	/// Specifies the search depth, zero for just root, negative for unlimited.
+	/// Ignored in XPath searches.
+	/// </summary>
+	public int Depth { get; set; } = -1;
 
 	/// <summary>
 	/// Gets or sets the search filter.
@@ -100,7 +101,7 @@ public class SearchFileCommand(Explorer root)
 	{
 		lock (_lock)
 		{
-			if (_filesAsync == null)
+			if (_filesAsync is null)
 				return Array.Empty<FarFile>();
 
 			var result = _filesAsync;
@@ -138,9 +139,8 @@ public class SearchFileCommand(Explorer root)
 		if (IsCompleted)
 			panel.Timer -= OnPanelIdled;
 
-		string title = string.Format(null, "Found {0} items in {1} directories. {2}",
-			FoundFileCount, ProcessedDirectoryCount,
-			!IsCompleted ? "Searching..." : Stopping ? "Stopped." : "Completed.");
+		var status = !IsCompleted ? "Searching..." : Stopping ? "Stopped." : "Completed.";
+		var title = $"Found {FoundFileCount} items in {ProcessedDirectoryCount} directories. {status}";
 
 		if (panel.Title != title)
 		{
@@ -194,12 +194,12 @@ public class SearchFileCommand(Explorer root)
 	/// Starts search and when it is done opens the panel with results.
 	/// </summary>
 	/// <param name="sourcePanel">The result panel to open.</param>
-	public void Invoke(Panel sourcePanel)
+	public void Invoke(Panel? sourcePanel)
 	{
-		ArgumentNullException.ThrowIfNull(sourcePanel);
-
 		// panel with the file store
 		var panel = new SuperPanel();
+		if (_RootExplorer is FileSystemExplorer)
+			panel.Highlighting = PanelHighlighting.Full;
 
 		// invoke
 		IsCompleted = false;
@@ -214,31 +214,37 @@ public class SearchFileCommand(Explorer root)
 
 		// complete panel
 		panel.Escaping += OnPanelEscaping;
-		panel.Title = string.Format(null, Res.SearchTitle,
-			FoundFileCount, ProcessedDirectoryCount, Stopping ? Res.StateStopped : Res.StateCompleted);
+		panel.Title = string.Format(Res.SearchTitle, FoundFileCount, ProcessedDirectoryCount, Stopping ? Res.StateStopped : Res.StateCompleted);
 
 		// open panel, even empty
-		panel.OpenChild(sourcePanel);
+		if (sourcePanel is null)
+			panel.Open();
+		else
+			panel.OpenChild(sourcePanel);
 	}
 
 	/// <summary>
 	/// Starts search in the background and opens the panel for results immediately.
 	/// </summary>
 	/// <param name="sourcePanel">The result panel to open.</param>
-	public void InvokeAsync(Panel sourcePanel)
+	public void InvokeAsync(Panel? sourcePanel)
 	{
-		ArgumentNullException.ThrowIfNull(sourcePanel);
-
 		var panel = new SuperPanel
 		{
-			Title = Res.Searching
+			Title = Res.Searching,
+			TimerInterval = TimerInterval,
 		};
+		if (_RootExplorer is FileSystemExplorer)
+			panel.Highlighting = PanelHighlighting.Full;
 
 		// open panel (try)
-		panel.OpenChild(sourcePanel);
+		if (sourcePanel is null)
+			panel.Open();
+		else
+			panel.OpenChild(sourcePanel);
 
 		// start search
-		(new Thread(InvokeAsyncWorker)).Start();
+		new Thread(InvokeAsyncWorker).Start();
 
 		// subscribe
 		panel.Escaping += OnPanelEscaping;
@@ -274,108 +280,123 @@ public class SearchFileCommand(Explorer root)
 
 		if (!string.IsNullOrEmpty(XFile) || !string.IsNullOrEmpty(XPath))
 			return DoInvokeXPath(progress);
-		else if (Depth == 0)
-			return DoInvokeWide(progress);
-		else
-			return DoInvokeDeep(progress, _RootExplorer, 0);
+
+		if (Bfs)
+			return DoInvokeBfs(progress);
+
+		return DoInvokeRecurse(progress, _RootExplorer, 0);
 	}
 
-	IEnumerable<FarFile> DoInvokeWide(ProgressBox? progress)
+	IEnumerable<FarFile> DoInvokeBfs(ProgressBox? progress)
 	{
-		var queue = new Queue<Explorer>();
-		queue.Enqueue(_RootExplorer);
+		var queue = new Queue<(Explorer, int)>();
+		queue.Enqueue((_RootExplorer, 0));
 
-		while (queue.Count > 0 && !Stopping)
+		while (queue.Count > 0)
 		{
 			// cancel?
-			if (progress != null && UIUserStop())
-				break;
+			if (Stopping || progress is not null && UIUserStop())
+				yield break;
 
 			// current
-			var explorer = queue.Dequeue();
+			var (explorer, level) = queue.Dequeue();
 			++ProcessedDirectoryCount;
 
 			// progress
-			if (progress != null && progress.ElapsedFromShow.TotalMilliseconds > 500)
+			if (progress is not null && progress.ElapsedFromShow.TotalMilliseconds > ProgressDelay)
 			{
 				var directoryPerSecond = ProcessedDirectoryCount / progress.ElapsedFromStart.TotalSeconds;
-				progress.Activity = string.Format(null, Res.SearchActivityWide,
-					FoundFileCount, ProcessedDirectoryCount, queue.Count, directoryPerSecond);
+				progress.Activity = string.Format(Res.SearchActivityBfs, FoundFileCount, ProcessedDirectoryCount, queue.Count, directoryPerSecond);
 				progress.ShowProgress();
 			}
 
 			var args = new GetFilesEventArgs(ExplorerModes.Find);
-			foreach (var file in explorer.GetFiles(args))
-			{
-				// stop?
-				if (Stopping)
-					break;
+			var files = explorer.GetFiles(args);
 
-				// process and add
+			// pass 1, output matches
+			foreach (var file in files)
+			{
+				// filter
 				bool add = file.IsDirectory ? !File : !Directory;
-				if (add && Filter != null)
+				if (add && Filter is not null)
 					add = Filter(explorer, file);
+
+				// result
 				if (add)
 				{
 					++FoundFileCount;
 					yield return new SuperFile(explorer, file);
 				}
+			}
 
-				// skip if flat or leaf
-				if (!Recurse || !file.IsDirectory)
-					continue;
+			// check for depth
+			if (Depth >= 0 && level >= Depth)
+				continue;
 
-				var explorer2 = SuperExplorer.ExploreSuperDirectory(explorer, ExplorerModes.Find, file);
-				if (explorer2 != null)
-					queue.Enqueue(explorer2);
+			// pass 2, enqueue
+			foreach (var file in files)
+			{
+				if (file.IsDirectory)
+				{
+					var explorer2 = SuperExplorer.ExploreSuperDirectory(explorer, ExplorerModes.Find, file);
+					if (explorer2 is not null)
+						queue.Enqueue((explorer2, level + 1));
+				}
 			}
 		}
 	}
 
-	IEnumerable<FarFile> DoInvokeDeep(ProgressBox? progress, Explorer explorer, int depth)
+	IEnumerable<FarFile> DoInvokeRecurse(ProgressBox? progress, Explorer explorer, int level)
 	{
-		// stop?
-		if (Stopping || progress != null && UIUserStop())
+		// cancel?
+		if (Stopping || progress is not null && UIUserStop())
 			yield break;
 
 		++ProcessedDirectoryCount;
 
 		// progress
-		if (progress != null && progress.ElapsedFromShow.TotalMilliseconds > 500)
+		if (progress is not null && progress.ElapsedFromShow.TotalMilliseconds > ProgressDelay)
 		{
 			var directoryPerSecond = ProcessedDirectoryCount / progress.ElapsedFromStart.TotalSeconds;
-			progress.Activity = string.Format(null, Res.SearchActivityDeep,
-				FoundFileCount, ProcessedDirectoryCount, directoryPerSecond);
+			progress.Activity = string.Format(Res.SearchActivityRecurse, FoundFileCount, ProcessedDirectoryCount, directoryPerSecond);
 			progress.ShowProgress();
 		}
 
 		var args = new GetFilesEventArgs(ExplorerModes.Find);
-		foreach (var file in explorer.GetFiles(args))
-		{
-			// stop?
-			if (Stopping)
-				break;
+		var files = explorer.GetFiles(args);
 
-			// process and add
-			bool add = Directory || !file.IsDirectory;
-			if (add && Filter != null)
+		// pass 1, output matches
+		foreach (var file in files)
+		{
+			// filter
+			bool add = file.IsDirectory ? !File : !Directory;
+			if (add && Filter is not null)
 				add = Filter(explorer, file);
+
+			// result
 			if (add)
 			{
 				++FoundFileCount;
 				yield return new SuperFile(explorer, file);
 			}
+		}
 
-			// skip if deep or leaf
-			if (Depth > 0 && depth >= Depth || !file.IsDirectory)
-				continue;
+		// check for depth
+		if (Depth >= 0 && level >= Depth)
+			yield break;
 
-			var explorer2 = SuperExplorer.ExploreSuperDirectory(explorer, ExplorerModes.Find, file);
-			if (explorer2 == null)
-				continue;
-
-			foreach (var file2 in DoInvokeDeep(progress, explorer2, depth + 1))
-				yield return file2;
+		// pass 2, recurse
+		foreach (var file in files)
+		{
+			if (file.IsDirectory)
+			{
+				var explorer2 = SuperExplorer.ExploreSuperDirectory(explorer, ExplorerModes.Find, file);
+				if (explorer2 is not null)
+				{
+					foreach (var file2 in DoInvokeRecurse(progress, explorer2, level + 1))
+						yield return file2;
+				}
+			}
 		}
 	}
 
@@ -388,22 +409,22 @@ public class SearchFileCommand(Explorer root)
 			IncrementDirectoryCount = delegate(int count)
 			{
 				ProcessedDirectoryCount += count;
-				if (progress == null)
-					return;
 
-				var directoryPerSecond = ProcessedDirectoryCount / progress.ElapsedFromStart.TotalSeconds;
-				progress.Activity = string.Format(null, Res.SearchActivityDeep,
-					FoundFileCount, ProcessedDirectoryCount, directoryPerSecond);
-				progress.ShowProgress();
+				if (progress is not null && progress.ElapsedFromShow.TotalMilliseconds > ProgressDelay)
+				{
+					var directoryPerSecond = ProcessedDirectoryCount / progress.ElapsedFromStart.TotalSeconds;
+					progress.Activity = string.Format(Res.SearchActivityRecurse, FoundFileCount, ProcessedDirectoryCount, directoryPerSecond);
+					progress.ShowProgress();
+				}
 			},
 			Stopping = delegate
 			{
-				return Stopping || progress != null && UIUserStop();
+				return Stopping || progress is not null && UIUserStop();
 			}
 		};
 
 		var xsltContext = new XPathXsltContext(objectContext.NameTable);
-		if (_XVariables != null)
+		if (_XVariables is not null)
 		{
 			foreach (var kv in _XVariables)
 				xsltContext.AddVariable(kv.Key, kv.Value);
@@ -430,36 +451,37 @@ public class SearchFileCommand(Explorer root)
 
 		++ProcessedDirectoryCount;
 		var args = new GetFilesEventArgs(ExplorerModes.Find);
-		foreach (var file in _RootExplorer.GetFiles(args))
+		var files = _RootExplorer.GetFiles(args);
+		foreach (var file in files)
 		{
-			// stop?
-			if (Stopping || progress != null && UIUserStop()) //???? progress to navigator
-				break;
-
-			// filter out a leaf
-			if (Filter != null && !file.IsDirectory && !Filter(_RootExplorer, file))
-				continue;
+			// cancel?
+			if (Stopping || progress is not null && UIUserStop())
+				yield break;
 
 			var xfile = new SuperFile(_RootExplorer, file);
 			var navigator = new XPathObjectNavigator(xfile, objectContext);
 			var iterator = navigator.Select(expression);
 			while (iterator.MoveNext())
 			{
-				// stop?
-				if (Stopping || progress != null && UIUserStop()) //???? progress to navigator
-					break;
+				// cancel?
+				if (Stopping || progress is not null && UIUserStop())
+					yield break;
 
 				// found file or directory, ignore anything else
 				if (iterator.Current!.UnderlyingObject is not SuperFile currentFile)
 					continue;
 
-				// filter out directory, it is already done for files
-				if (Filter != null && currentFile.IsDirectory && (!Directory || !Filter(currentFile.Explorer, currentFile.File)))
-					continue;
+				// filter
+				bool add = currentFile.File.IsDirectory ? !File : !Directory;
+				if (add && Filter is not null)
+					add = Filter(currentFile.Explorer, currentFile.File);
 
-				// add
-				yield return currentFile;
-				++FoundFileCount;
+				// result
+				if (add)
+				{
+					++FoundFileCount;
+					yield return currentFile;
+				}
 			}
 		}
 	}
