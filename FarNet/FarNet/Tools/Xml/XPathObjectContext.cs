@@ -14,6 +14,9 @@ class XPathObjectContext
 	public NameTable NameTable { get; } = new();
 
 	///
+	public int Depth { get; set; } = -1;
+
+	///
 	public bool SkipFiles { get; set; }
 
 	///

@@ -38,15 +38,18 @@ public class SearchFileCommand(Explorer root)
 	public bool File { get; set; }
 
 	/// <summary>
-	/// Tells to perform breadth-first-search.
+	/// Tells to use breadth-first-search.
 	/// Ignored in XPath searches.
 	/// </summary>
 	public bool Bfs { get; set; }
 
 	/// <summary>
-	/// Specifies the search depth, zero for just root, negative for unlimited.
-	/// Ignored in XPath searches.
+	/// The search depth. Zero for just root, negative for unlimited (default).
 	/// </summary>
+	/// <remarks>
+	/// When Depth is used with XPath searches deep elements are considered not existing.
+	/// This may affect not deep elements when XPath predicates use their deep children.
+	/// </remarks>
 	public int Depth { get; set; } = -1;
 
 	/// <summary>
@@ -405,6 +408,7 @@ public class SearchFileCommand(Explorer root)
 		// object context
 		var objectContext = new XPathObjectContext
 		{
+			Depth = Depth,
 			Filter = Filter,
 			SkipFiles = Directory,
 			IncrementDirectoryCount = delegate(int count)

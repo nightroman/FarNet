@@ -21,6 +21,7 @@ class XPathObjectNode
 	readonly object _target;
 	readonly string _name;
 	readonly XPathObjectNode? _parent;
+	readonly int _depth;
 
 	// Sibling list, elements of the parent (it keeps the weak reference alive).
 	readonly IList<XPathObjectNode>? _siblings;
@@ -42,6 +43,9 @@ class XPathObjectNode
 		_parent = parent;
 		_siblings = siblings;
 		_index = index;
+
+		if (parent is not null)
+			_depth = parent._depth + 1;
 
 		if (string.IsNullOrEmpty(name))
 		{
@@ -361,34 +365,33 @@ class XPathObjectNode
 		// progress
 		_context.IncrementDirectoryCount?.Invoke(1);
 
-		Explorer? explorer2;
-		if (file.Explorer.CanExploreLocation)
-		{
-			var args = new ExploreLocationEventArgs(ExplorerModes.Find, file.File.Name);
-			explorer2 = file.Explorer.ExploreLocation(args);
-		}
-		else
-		{
-			var args = new ExploreDirectoryEventArgs(ExplorerModes.Find, file.File);
-			explorer2 = file.Explorer.ExploreDirectory(args);
-		}
-
+		// explore and get files
 		List<XPathObjectNode>? elements = null;
-		if (explorer2 is not null)
+		if (_context.Depth < 0 || _depth < _context.Depth)
 		{
-			var args = new GetFilesEventArgs(ExplorerModes.Find);
-			var files2 = explorer2.GetFiles(args);
-			var count = files2 is IList list ? list.Count : 0;
-
-			elements = new(count);
-			foreach (var file2 in files2)
+			Explorer? explorer2 = SuperExplorer.ExploreSuperDirectory(file.Explorer, ExplorerModes.Find, file);
+			if (explorer2 is not null)
 			{
-				// filter files
-				if (!file2.IsDirectory && (_context.SkipFiles || _context.Filter is not null && !_context.Filter(explorer2, file2)))
-					continue;
+				var args = new GetFilesEventArgs(ExplorerModes.Find);
+				var files2 = explorer2.GetFiles(args);
+				var count = files2 is ICollection collection ? collection.Count : 0;
 
-				// add
-				elements.Add(new XPathObjectNode(_context, new SuperFile(explorer2, file2), null, this, elements, elements.Count));
+				elements = new(count);
+				foreach (var file2 in files2)
+				{
+					// filter files
+					if (!file2.IsDirectory && (_context.SkipFiles || _context.Filter is not null && !_context.Filter(explorer2, file2)))
+						continue;
+
+					// add
+					elements.Add(new XPathObjectNode(
+						_context,
+						new SuperFile(explorer2, file2),
+						null,
+						this,
+						elements,
+						elements.Count));
+				}
 			}
 		}
 

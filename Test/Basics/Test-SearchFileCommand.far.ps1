@@ -52,3 +52,23 @@ Assert-Far $r.Count -eq ($0.Count + $1.Count)
 $search.Depth = 2
 $r = @($search.Invoke())
 Assert-Far $r.Count -eq ($0.Count + $1.Count + $2.Count)
+
+### XPath
+
+$search.XPath = '//*'
+
+$search.Depth = -1
+$r = @($search.Invoke())
+Assert-Far $r.Count -eq $all.Count
+
+$search.Depth = 0
+$r = @($search.Invoke())
+Assert-Far $r.Count -eq $0.Count
+
+$search.Depth = 1
+$r = @($search.Invoke())
+Assert-Far $r.Count -eq ($0.Count + $1.Count)
+
+$search.Depth = 2
+$r = @($search.Invoke())
+Assert-Far $r.Count -eq ($0.Count + $1.Count + $2.Count)

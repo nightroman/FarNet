@@ -1,6 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 8.1.2 =
+
+SearchFileCommand
+- Use Depth in XPath searches
+
 = 8.1.1 =
 
 Amend XPath search
