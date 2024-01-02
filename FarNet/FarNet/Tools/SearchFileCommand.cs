@@ -406,6 +406,7 @@ public class SearchFileCommand(Explorer root)
 		var objectContext = new XPathObjectContext
 		{
 			Filter = Filter,
+			SkipFiles = Directory,
 			IncrementDirectoryCount = delegate(int count)
 			{
 				ProcessedDirectoryCount += count;
@@ -458,6 +459,13 @@ public class SearchFileCommand(Explorer root)
 			if (Stopping || progress is not null && UIUserStop())
 				yield break;
 
+			// filter files
+			if (!file.IsDirectory)
+			{
+				if (Directory || Filter is not null && !Filter(_RootExplorer, file))
+					continue;
+			}
+
 			var xfile = new SuperFile(_RootExplorer, file);
 			var navigator = new XPathObjectNavigator(xfile, objectContext);
 			var iterator = navigator.Select(expression);
@@ -467,21 +475,20 @@ public class SearchFileCommand(Explorer root)
 				if (Stopping || progress is not null && UIUserStop())
 					yield break;
 
-				// found file or directory, ignore anything else
+				// skip anything but file or directory
 				if (iterator.Current!.UnderlyingObject is not SuperFile currentFile)
 					continue;
 
-				// filter
-				bool add = currentFile.File.IsDirectory ? !File : !Directory;
-				if (add && Filter is not null)
-					add = Filter(currentFile.Explorer, currentFile.File);
+				// filter directories (files are filtered in navigator)
+				if (currentFile.File.IsDirectory)
+				{
+					if (File || Filter is not null && !Filter(currentFile.Explorer, currentFile.File))
+						continue;
+				}
 
 				// result
-				if (add)
-				{
-					++FoundFileCount;
-					yield return currentFile;
-				}
+				++FoundFileCount;
+				yield return currentFile;
 			}
 		}
 	}

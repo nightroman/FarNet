@@ -10,10 +10,11 @@ namespace FarNet.Tools;
 ///
 class XPathObjectContext
 {
-	readonly NameTable _nameTable = new();
+	///
+	public NameTable NameTable { get; } = new();
 
 	///
-	public NameTable NameTable => _nameTable;
+	public bool SkipFiles { get; set; }
 
 	///
 	public ExplorerFilePredicate? Filter { get; set; }

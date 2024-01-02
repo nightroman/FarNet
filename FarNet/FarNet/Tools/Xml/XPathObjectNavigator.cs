@@ -25,7 +25,7 @@ public class XPathObjectNavigator : XPathNavigator
 		_root = new XPathObjectNode(context, root);
 		_node = _root;
 
-		//???? fails without it
+		//? fails without it
 		var type = root.GetType();
 		var name = type.FullName!;
 		if (type.IsGenericType)
@@ -133,7 +133,7 @@ public class XPathObjectNavigator : XPathNavigator
 						string data = attrs[_index].Name;
 
 						if (data[0] == '*')
-							return "urn:ObjectXPathNavigator";
+							return "urn:XPathObjectNavigator";
 					}
 					break;
 			}
@@ -241,7 +241,7 @@ public class XPathObjectNavigator : XPathNavigator
 			return (_type == XPathNodeType.Element && that._type != XPathNodeType.Element);
 
 		// ok, we need to hunt...
-		for (var parent = that._node.Parent; parent != null; parent = parent.Parent)
+		for (var parent = that._node.Parent; parent is not null; parent = parent.Parent)
 		{
 			if (parent == _node)
 				return true;
@@ -312,7 +312,7 @@ public class XPathObjectNavigator : XPathNavigator
 	}
 
 	///
-	public override bool MoveToFirst() //???? see MSDN. When is it called? Is it ever called on XPath scan?
+	public override bool MoveToFirst() //? When is it called? Is it ever called on XPath scan?
 	{
 		// The original code was wrong. We use the code similar to sdf.XPath.
 		if (_type == XPathNodeType.Attribute)
@@ -322,7 +322,7 @@ public class XPathObjectNavigator : XPathNavigator
 		if (!MoveToParent())
 			return false;
 
-		// and then its child 
+		// and then its child
 		return MoveToFirstChild();
 	}
 
@@ -387,7 +387,7 @@ public class XPathObjectNavigator : XPathNavigator
 			return false;
 
 		var parent = _node.Parent;
-		if (parent == null)
+		if (parent is null)
 			return false;
 
 		var elems = parent.Elements;
@@ -429,7 +429,7 @@ public class XPathObjectNavigator : XPathNavigator
 		}
 
 		var parent = _node.Parent;
-		if (parent == null)
+		if (parent is null)
 			return false;
 
 		MoveNavigator(parent);
@@ -447,7 +447,7 @@ public class XPathObjectNavigator : XPathNavigator
 
 		var parent = _node.Parent;
 
-		if (parent == null)
+		if (parent is null)
 			return false;
 
 		var elems = parent.Elements;

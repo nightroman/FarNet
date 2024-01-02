@@ -1,6 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 8.1.1 =
+
+Amend XPath search
+
 = 8.1.0 =
 
 New FarNet.Tools.FileSystemExplorer designed for FarNet.Explore, Search-FarFile, etc.

@@ -21,11 +21,13 @@ class XPathObjectNode
 	readonly object _target;
 	readonly string _name;
 	readonly XPathObjectNode? _parent;
+
 	// Sibling list, elements of the parent (it keeps the weak reference alive).
 	readonly IList<XPathObjectNode>? _siblings;
 
 	// Index of this node in the sibling list, needed for MoveToNext, MoveToPrevious.
 	readonly int _index;
+
 	IList<XmlAttributeInfo>? _attributes;
 	readonly WeakReference _elements = new(null);
 
@@ -81,7 +83,7 @@ class XPathObjectNode
 	{
 		get
 		{
-			if (_attributes == null)
+			if (_attributes is null)
 				ActivateAttributes();
 
 			return _attributes!.Count > 0;
@@ -103,7 +105,7 @@ class XPathObjectNode
 		{
 			Type type = _target.GetType();
 
-			return (type.IsValueType || type == typeof(string));
+			return type.IsValueType || type == typeof(string);
 		}
 	}
 
@@ -111,7 +113,7 @@ class XPathObjectNode
 	{
 		get
 		{
-			if (_attributes == null)
+			if (_attributes is null)
 				ActivateAttributes();
 
 			return _attributes!;
@@ -120,12 +122,14 @@ class XPathObjectNode
 
 	public string GetAttributeValue(string name)
 	{
-		if (_attributes == null)
+		if (_attributes is null)
 			ActivateAttributes();
 
 		foreach (var it in _attributes!)
+		{
 			if (it.Name == name)
 				return CultureSafeToString(it.Getter(_target)) ?? string.Empty;
+		}
 
 		return string.Empty;
 	}
@@ -140,7 +144,7 @@ class XPathObjectNode
 
 	public void AddSpecialName(string key, string? value)
 	{
-		if (_attributes == null)
+		if (_attributes is null)
 			ActivateAttributes();
 
 		// clone if read only
@@ -150,27 +154,27 @@ class XPathObjectNode
 		_attributes.Add(new XmlAttributeInfo("*" + key, (object v) => value));
 	}
 
-	void ActivateAttributes() //?? lock was used, why?
+	void ActivateAttributes()
 	{
-		if (_context.Stopping != null && _context.Stopping(EventArgs.Empty))
+		if (_context.Stopping is not null && _context.Stopping(EventArgs.Empty))
 		{
 			//! ensure at least dummy, a caller expects not null
 			_attributes = _emptyAttributes;
 			return;
 		}
 
-		if (_attributes != null)
+		if (_attributes is not null)
 			return;
 
-		if (_target is ValueType || _target is string) //rvk "Linear types". Perhaps we need more.
+		if (_target is SuperFile)
+		{
+			ActivateSuperFileAttributes();
+		}
+		else if (_target is ValueType || _target is string) //? "Linear types". Perhaps we need more.
 		{
 			// no attributes or children
 			_attributes = _emptyAttributes;
 			_elements.Target = _emptyElements;
-		}
-		else if (_target is SuperFile)
-		{
-			ActivateSuperFileAttributes();
 		}
 		else if (_target is IDictionary) //! before ICollection
 		{
@@ -186,9 +190,9 @@ class XPathObjectNode
 		}
 	}
 
-	IList<XPathObjectNode> ActivateElements() //?? lock was used, why?
+	IList<XPathObjectNode> ActivateElements()
 	{
-		if (_context.Stopping != null && _context.Stopping(EventArgs.Empty))
+		if (_context.Stopping is not null && _context.Stopping(EventArgs.Empty))
 			return _emptyElements;
 
 		{
@@ -196,16 +200,16 @@ class XPathObjectNode
 				return elements;
 		}
 
-		if (_target is ValueType || _target is string) //rvk "Linear types". Perhaps we need more.
+		if (_target is SuperFile)
+		{
+			return ActivateSuperFileElements();
+		}
+		else if (_target is ValueType || _target is string) //? "Linear types". Perhaps we need more.
 		{
 			// no attributes or children
 			_attributes = _emptyAttributes;
 			_elements.Target = _emptyElements;
 			return _emptyElements;
-		}
-		else if (_target is SuperFile)
-		{
-			return ActivateSuperFileElements();
 		}
 		else if (_target is IDictionary) //! before ICollection
 		{
@@ -231,7 +235,7 @@ class XPathObjectNode
 
 		foreach (DictionaryEntry entry in (IDictionary)_target)
 		{
-			if (entry.Value == null)
+			if (entry.Value is null)
 				continue;
 
 			var node = new XPathObjectNode(_context, entry.Value, null, this, elements, elements.Count);
@@ -258,7 +262,7 @@ class XPathObjectNode
 		var elements = new List<XPathObjectNode>();
 		foreach (object it in (ICollection)_target)
 		{
-			if (it != null)
+			if (it is not null)
 				elements.Add(new XPathObjectNode(_context, it, null, this, elements, elements.Count));
 		}
 
@@ -279,7 +283,7 @@ class XPathObjectNode
 			if (_attributes.Count == 0)
 				_attributes = _emptyAttributes;
 
-			_elements.Target = _emptyElements; //???? elements
+			_elements.Target = _emptyElements; //? elements
 			return _emptyElements;
 		}
 
@@ -289,16 +293,24 @@ class XPathObjectNode
 		foreach (PropertyInfo pi in _target.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
 		{
 			// get the value
-			var value = pi.GetValue(_target, null);
-			if (value == null)
+			object? value;
+			try
+			{
+				value = pi.GetValue(_target, null);
+				if (value is null)
+					continue;
+			}
+			catch
+			{
 				continue;
+			}
 
 			// get the custom attributes
-			//rvk It is done just to skip XmlIgnoreAttribute. Do we need this expensive job?
+			//? It is done just to skip XmlIgnoreAttribute. Do we need this expensive job?
 			object[] attrs = pi.GetCustomAttributes(true);
 			bool skip = false;
 
-			if (attrs != null)
+			if (attrs is not null)
 			{
 				foreach (var a in attrs.Cast<Attribute>())
 				{
@@ -311,12 +323,12 @@ class XPathObjectNode
 			}
 
 			if (skip)
-				continue; //rvk: It was break == bug?
+				continue; //? It was break == bug?
 
 			// now handle the values
 			var str = CultureSafeToString(value);
 
-			if (str != null)
+			if (str is not null)
 				_attributes.Add(new XmlAttributeInfo(GetAtomicString(pi.Name), (object v) => str));
 			else
 				elements.Add(new XPathObjectNode(_context, value, pi.Name, this, elements, elements.Count));
@@ -332,13 +344,13 @@ class XPathObjectNode
 
 	void ActivateSuperFileAttributes()
 	{
-		var file = (SuperFile)_target; //????
+		var file = (SuperFile)_target;
 		_attributes = file.XmlAttributes();
 	}
 
 	IList<XPathObjectNode> ActivateSuperFileElements()
 	{
-		var file = (SuperFile)_target; //????
+		var file = (SuperFile)_target;
 
 		if (!file.IsDirectory)
 		{
@@ -349,40 +361,47 @@ class XPathObjectNode
 		// progress
 		_context.IncrementDirectoryCount?.Invoke(1);
 
-		var elements = new List<XPathObjectNode>();
-
-		Explorer? explorer;
+		Explorer? explorer2;
 		if (file.Explorer.CanExploreLocation)
 		{
-			var argsExplore = new ExploreLocationEventArgs(ExplorerModes.Find, file.File.Name);
-			explorer = file.Explorer.ExploreLocation(argsExplore);
+			var args = new ExploreLocationEventArgs(ExplorerModes.Find, file.File.Name);
+			explorer2 = file.Explorer.ExploreLocation(args);
 		}
 		else
 		{
-			var argsExplore = new ExploreDirectoryEventArgs(ExplorerModes.Find, file.File);
-			explorer = file.Explorer.ExploreDirectory(argsExplore);
+			var args = new ExploreDirectoryEventArgs(ExplorerModes.Find, file.File);
+			explorer2 = file.Explorer.ExploreDirectory(args);
 		}
 
-		if (explorer != null)
+		List<XPathObjectNode>? elements = null;
+		if (explorer2 is not null)
 		{
-			var argsFiles = new GetFilesEventArgs(ExplorerModes.Find);
-			foreach (var it in explorer.GetFiles(argsFiles))
+			var args = new GetFilesEventArgs(ExplorerModes.Find);
+			var files2 = explorer2.GetFiles(args);
+			var count = files2 is IList list ? list.Count : 0;
+
+			elements = new(count);
+			foreach (var file2 in files2)
 			{
-				// filter out a leaf
-				if (_context.Filter != null && !it.IsDirectory && !_context.Filter(explorer, it))
+				// filter files
+				if (!file2.IsDirectory && (_context.SkipFiles || _context.Filter is not null && !_context.Filter(explorer2, file2)))
 					continue;
 
 				// add
-				elements.Add(new XPathObjectNode(_context, new SuperFile(explorer, it), null, this, elements, elements.Count));
+				elements.Add(new XPathObjectNode(_context, new SuperFile(explorer2, file2), null, this, elements, elements.Count));
 			}
 		}
 
-		if (elements.Count == 0)
+		if (elements is null || elements.Count == 0)
+		{
 			_elements.Target = _emptyElements;
+			return _emptyElements;
+		}
 		else
+		{
 			_elements.Target = elements;
-
-		return elements;
+			return elements;
+		}
 	}
 
 	string GetAtomicString(string array)
@@ -401,7 +420,7 @@ class XPathObjectNode
 			// DateTime
 			if (value is DateTime asDateTime)
 			{
-				return asDateTime.ToString((asDateTime.TimeOfDay.Ticks > 0 ? "yyyy-MM-dd HH:mm:ss" : "yyyy-MM-dd"), null);
+				return asDateTime.ToString(asDateTime.TimeOfDay.Ticks > 0 ? "yyyy-MM-dd HH:mm:ss" : "yyyy-MM-dd", null);
 			}
 
 			// Boolean
