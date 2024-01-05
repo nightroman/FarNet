@@ -4,6 +4,8 @@
 
 // http://msdn.microsoft.com/en-us/library/ms950764.aspx
 
+using System;
+using System.Collections;
 using System.Xml;
 using System.Xml.XPath;
 
@@ -12,39 +14,58 @@ namespace FarNet.Tools;
 ///
 public class XPathObjectNavigator : XPathNavigator
 {
-	XPathObjectContext _context;
+	const string UnexpectedNode = "Unexpected node type.";
+
 	XPathObjectNode _root;
 	XPathObjectNode _node;
 	XPathNodeType _type;
 	int _index = -1;
 
 	///
-	internal XPathObjectNavigator(object root, XPathObjectContext context)
+	public XPathObjectNavigator(object root, int depth) : this(new XPathObjectNodeAny(new XPathObjectContext { Depth = depth }, root))
 	{
-		_context = context;
-		_root = new XPathObjectNode(context, root);
-		_node = _root;
-
-		//? fails without it
-		var type = root.GetType();
-		var name = type.FullName!;
-		if (type.IsGenericType)
-			name = name.Remove(name.IndexOf('`'));
-		_root.AddSpecialName("type", name);
 	}
 
-	///
-	public XPathObjectNavigator(object root) : this(root, new XPathObjectContext())
+	internal XPathObjectNavigator(SuperFile root, XPathObjectContext context) : this(new XPathObjectNodeFile(context, root))
 	{
+	}
+
+	XPathObjectNavigator(XPathObjectNode root)
+	{
+		_root = root;
+		_node = root;
 	}
 
 	XPathObjectNavigator(XPathObjectNavigator that)
 	{
-		_context = that._context;
 		_root = that._root;
 		_node = that._node;
 		_type = that._type;
 		_index = that._index;
+	}
+
+	///
+	// Uses our functions.
+	public override XPathExpression Compile(string xpath)
+	{
+		return Compile(xpath, null);
+	}
+
+	///
+	// Uses our functions and variables.
+	public XPathExpression Compile(string xpath, IDictionary? variables)
+	{
+		var xsltContext = new XPathXsltContext(_root.Context.NameTable);
+		if (variables is { })
+		{
+			foreach (DictionaryEntry kv in variables)
+				xsltContext.AddVariable(kv.Key.ToString()!, kv.Value!);
+		}
+
+		var expression = base.Compile(xpath);
+		expression.SetContext(xsltContext);
+
+		return expression;
 	}
 
 	void MoveNavigator(XPathObjectNode that)
@@ -55,152 +76,73 @@ public class XPathObjectNavigator : XPathNavigator
 	}
 
 	///
-	public override object UnderlyingObject => _node.Target;
+	public override object UnderlyingObject =>
+		_node.Tag;
 
 	///
-	// don't expose a namespace
-	public override string BaseURI => string.Empty;
+	public override string BaseURI =>
+		string.Empty;
 
 	///
-	// nothing has attributes except elements
-	public override bool HasAttributes => _type == XPathNodeType.Element && _node.HasAttributes;
+	public override bool HasAttributes =>
+		_type == XPathNodeType.Element && _node.HasAttributes;
 
 	///
-	public override bool HasChildren
+	public override bool HasChildren => _type switch
 	{
-		get
-		{
-			return _type switch
-			{
-				// does the element have children?
-				XPathNodeType.Element => _node.HasChildren,
-
-				// root always has a child, the object the navigator is built from
-				XPathNodeType.Root => true,
-
-				// nothing else has children
-				_ => false,
-			};
-		}
-	}
+		XPathNodeType.Element => _node.HasChildren,
+		XPathNodeType.Root => true,
+		_ => false,
+	};
 
 	///
-	// empty if no children
-	public override bool IsEmptyElement => !HasChildren;
+	public override bool IsEmptyElement =>
+		!HasChildren;
 
 	///
-	// we don't use namespaces, so Name == LocalName
-	public override string LocalName => Name;
+	public override string LocalName =>
+		Name;
 
 	///
-	public override string Name
+	public override string Name => _type switch
 	{
-		get
-		{
-			switch (_type)
-			{
-				case XPathNodeType.Element:
-					return _node.Name;
-
-				case XPathNodeType.Attribute:
-					var attrs = _node.Attributes;
-					if (_index >= 0 && _index < attrs.Count)
-					{
-						var data = attrs[_index].Name;
-
-						if (data[0] == '*')
-							data = data[1..];
-
-						return data;
-					}
-					break;
-			}
-			return string.Empty;
-		}
-	}
+		XPathNodeType.Element => _node.Name,
+		XPathNodeType.Attribute => _node.Attributes[_index].Name,
+		_ => throw new InvalidOperationException(UnexpectedNode),
+	};
 
 	///
-	public override string NamespaceURI
+	public override string NamespaceURI =>
+		string.Empty;
+
+	///
+	public override XPathNodeType NodeType =>
+		_type;
+
+	///
+	public override XmlNameTable NameTable =>
+		_root.Context.NameTable;
+
+	///
+	public override string Prefix =>
+		string.Empty;
+
+	///
+	public override string Value => _type switch
 	{
-		get
-		{
-			switch (_type)
-			{
-				case XPathNodeType.Attribute:
-					var attrs = _node.Attributes;
-					if (_index >= 0 && _index < attrs.Count)
-					{
-						string data = attrs[_index].Name;
-
-						if (data[0] == '*')
-							return "urn:XPathObjectNavigator";
-					}
-					break;
-			}
-			return string.Empty;
-		}
-	}
+		XPathNodeType.Attribute => XPathObjectNode.LinearTypeToString(_node.Attributes[_index].Value(UnderlyingObject)) ?? string.Empty,
+		XPathNodeType.Element => _node.Value ?? string.Empty,
+		XPathNodeType.Text => _node.Value ?? string.Empty,
+		_ => throw new InvalidOperationException(UnexpectedNode)
+	};
 
 	///
-	public override XPathNodeType NodeType => _type;
+	public override string XmlLang =>
+		string.Empty;
 
 	///
-	public override XmlNameTable NameTable => _context.NameTable;
-
-	///
-	public override string Prefix
-	{
-		get
-		{
-			switch (_type)
-			{
-				case XPathNodeType.Attribute:
-					var attrs = _node.Attributes;
-					if (_index >= 0 && _index < attrs.Count)
-					{
-						string data = attrs[_index].Name;
-
-						if (data[0] == '*')
-							return "oxp";
-					}
-					break;
-			}
-			return string.Empty;
-		}
-	}
-
-	///
-	public override string Value
-	{
-		get
-		{
-			switch (_type)
-			{
-				case XPathNodeType.Attribute:
-					var attrs = _node.Attributes;
-					if (_index >= 0 && _index < attrs.Count)
-					{
-						var info = attrs[_index];
-						return XPathObjectNode.CultureSafeToString(info.Getter(UnderlyingObject)) ?? string.Empty;
-					}
-					break;
-
-				case XPathNodeType.Element:
-					return _node.Value ?? string.Empty;
-
-				case XPathNodeType.Text:
-					goto case XPathNodeType.Element;
-			}
-
-			return string.Empty;
-		}
-	}
-
-	///
-	public override string XmlLang => string.Empty;
-
-	///
-	public override XPathNavigator Clone() => new XPathObjectNavigator(this);
+	public override XPathNavigator Clone() =>
+		new XPathObjectNavigator(this);
 
 	///
 	public override string GetAttribute(string localName, string namespaceURI)
@@ -215,7 +157,8 @@ public class XPathObjectNavigator : XPathNavigator
 	}
 
 	///
-	public override string GetNamespace(string name) => string.Empty;
+	public override string GetNamespace(string name) =>
+		string.Empty;
 
 	///
 	public override bool IsDescendant(XPathNavigator? nav)
@@ -281,7 +224,6 @@ public class XPathObjectNavigator : XPathNavigator
 		if (other is not XPathObjectNavigator that)
 			return false;
 
-		_context = that._context;
 		_root = that._root;
 		_node = that._node;
 		_type = that._type;
@@ -329,7 +271,7 @@ public class XPathObjectNavigator : XPathNavigator
 	///
 	public override bool MoveToFirstAttribute()
 	{
-		if (_type != XPathNodeType.Element)
+		if (!HasAttributes)
 			return false;
 
 		_type = XPathNodeType.Attribute;
@@ -372,13 +314,16 @@ public class XPathObjectNavigator : XPathNavigator
 	}
 
 	///
-	public override bool MoveToFirstNamespace(XPathNamespaceScope namespaceScope) => false;
+	public override bool MoveToFirstNamespace(XPathNamespaceScope namespaceScope) =>
+		false;
 
 	///
-	public override bool MoveToId(string id) => false;
+	public override bool MoveToId(string id) =>
+		false;
 
 	///
-	public override bool MoveToNamespace(string name) => false;
+	public override bool MoveToNamespace(string name) =>
+		false;
 
 	///
 	public override bool MoveToNext()
@@ -409,12 +354,12 @@ public class XPathObjectNavigator : XPathNavigator
 			return false;
 
 		++_index;
-
 		return true;
 	}
 
 	///
-	public override bool MoveToNextNamespace(XPathNamespaceScope namespaceScope) => false;
+	public override bool MoveToNextNamespace(XPathNamespaceScope namespaceScope) =>
+		false;
 
 	///
 	public override bool MoveToParent()

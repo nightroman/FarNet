@@ -19,13 +19,14 @@ public delegate bool ExplorerFilePredicate(Explorer explorer, FarFile file);
 /// <summary>
 /// Module panel file search for FarNet.Explore, FarNet.PowerShellFar Search-FarFile, etc.
 /// </summary>
-/// <param name="root">The root explorer.</param>
-public class SearchFileCommand(Explorer root)
+public class SearchFileCommand
 {
-	const int ProgressDelay = 500;
+	const int ProgressDelay = 200;
 	const int TimerInterval = 2500;
 
-	readonly Explorer _RootExplorer = root ?? throw new ArgumentNullException(nameof(root));
+	readonly CancellationTokenSource _cancellationSource = new();
+	readonly CancellationToken _cancellationToken;
+	readonly Explorer _RootExplorer;
 
 	/// <summary>
 	/// Tells to get only directories.
@@ -73,6 +74,16 @@ public class SearchFileCommand(Explorer root)
 	public Dictionary<string, object> XVariables => _XVariables ??= [];
 	Dictionary<string, object>? _XVariables;
 
+	/// <summary>
+	/// .
+	/// </summary>
+	/// <param name="root">The root explorer.</param>
+	public SearchFileCommand(Explorer root)
+	{
+		_RootExplorer = root ?? throw new ArgumentNullException(nameof(root));
+		_cancellationToken = _cancellationSource.Token;
+	}
+
 	IEnumerable<FarFile> InvokeWithProgress()
 	{
 		using var progress = new ProgressBox(Res.Searching);
@@ -113,8 +124,6 @@ public class SearchFileCommand(Explorer root)
 		}
 	}
 
-	bool Stopping { get; set; }
-
 	bool IsCompleted { get; set; }
 
 	int FoundFileCount { get; set; }
@@ -127,7 +136,7 @@ public class SearchFileCommand(Explorer root)
 	// Just turns stopping on.
 	void OnPanelClosed(object? sender, EventArgs e)
 	{
-		Stopping = true;
+		_cancellationSource.Cancel();
 	}
 
 	// Progress and state in the title.
@@ -142,7 +151,7 @@ public class SearchFileCommand(Explorer root)
 		if (IsCompleted)
 			panel.Timer -= OnPanelIdled;
 
-		var status = !IsCompleted ? "Searching..." : Stopping ? "Stopped." : "Completed.";
+		var status = !IsCompleted ? "Searching..." : _cancellationToken.IsCancellationRequested ? "Stopped." : "Completed.";
 		var title = $"Found {FoundFileCount} items in {ProcessedDirectoryCount} directories. {status}";
 
 		if (panel.Title != title)
@@ -190,7 +199,7 @@ public class SearchFileCommand(Explorer root)
 
 		// stop
 		if (ask == 2 && toStop)
-			Stopping = true;
+			_cancellationSource.Cancel();
 	}
 
 	/// <summary>
@@ -217,7 +226,11 @@ public class SearchFileCommand(Explorer root)
 
 		// complete panel
 		panel.Escaping += OnPanelEscaping;
-		panel.Title = string.Format(Res.SearchTitle, FoundFileCount, ProcessedDirectoryCount, Stopping ? Res.StateStopped : Res.StateCompleted);
+		panel.Title = string.Format(
+			Res.SearchTitle,
+			FoundFileCount,
+			ProcessedDirectoryCount,
+			_cancellationToken.IsCancellationRequested ? Res.StateStopped : Res.StateCompleted);
 
 		// open panel, even empty
 		if (sourcePanel is null)
@@ -263,7 +276,7 @@ public class SearchFileCommand(Explorer root)
 		if (0 != Far.Api.Message(Res.StopSearch, Res.Search, MessageOptions.OkCancel))
 			return false;
 
-		Stopping = true;
+		_cancellationSource.Cancel();
 		return true;
 	}
 
@@ -298,7 +311,7 @@ public class SearchFileCommand(Explorer root)
 		while (queue.Count > 0)
 		{
 			// cancel?
-			if (Stopping || progress is not null && UIUserStop())
+			if (_cancellationToken.IsCancellationRequested || progress is not null && UIUserStop())
 				yield break;
 
 			// current
@@ -352,7 +365,7 @@ public class SearchFileCommand(Explorer root)
 	IEnumerable<FarFile> DoInvokeRecurse(ProgressBox? progress, Explorer explorer, int level)
 	{
 		// cancel?
-		if (Stopping || progress is not null && UIUserStop())
+		if (_cancellationToken.IsCancellationRequested || progress is not null && UIUserStop())
 			yield break;
 
 		++ProcessedDirectoryCount;
@@ -411,6 +424,7 @@ public class SearchFileCommand(Explorer root)
 			Depth = Depth,
 			Filter = Filter,
 			SkipFiles = Directory,
+			CancellationToken = _cancellationToken,
 			IncrementDirectoryCount = delegate(int count)
 			{
 				ProcessedDirectoryCount += count;
@@ -422,12 +436,9 @@ public class SearchFileCommand(Explorer root)
 					progress.ShowProgress();
 				}
 			},
-			Stopping = delegate
-			{
-				return Stopping || progress is not null && UIUserStop();
-			}
 		};
 
+		// configure common context for all selects
 		var xsltContext = new XPathXsltContext(objectContext.NameTable);
 		if (_XVariables is not null)
 		{
@@ -435,7 +446,7 @@ public class SearchFileCommand(Explorer root)
 				xsltContext.AddVariable(kv.Key, kv.Value);
 		}
 
-		// XPath text
+		// get XPath, add variables from file
 		string? xpath;
 		if (string.IsNullOrEmpty(XFile))
 		{
@@ -449,6 +460,7 @@ public class SearchFileCommand(Explorer root)
 				xsltContext.AddVariable(kv.Key, kv.Value);
 		}
 
+		// common compiled expression for all selects
 		var expression = XPathExpression.Compile(xpath!);
 		if (expression.ReturnType != XPathResultType.NodeSet)
 			throw new InvalidOperationException("Invalid expression return type.");
@@ -460,7 +472,7 @@ public class SearchFileCommand(Explorer root)
 		foreach (var file in files)
 		{
 			// cancel?
-			if (Stopping || progress is not null && UIUserStop())
+			if (_cancellationToken.IsCancellationRequested || progress is not null && UIUserStop())
 				yield break;
 
 			// filter files
@@ -476,7 +488,7 @@ public class SearchFileCommand(Explorer root)
 			while (iterator.MoveNext())
 			{
 				// cancel?
-				if (Stopping || progress is not null && UIUserStop())
+				if (_cancellationToken.IsCancellationRequested || progress is not null && UIUserStop())
 					yield break;
 
 				// skip anything but file or directory

@@ -9,6 +9,8 @@ namespace FarNet.Tools;
 
 static class Xslt
 {
+	public static XPathResultType[] ArgStringString { get; } = [XPathResultType.String, XPathResultType.String];
+
 	public static string ArgumentToString(object value)
 	{
 		if (value is string text)

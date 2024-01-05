@@ -4,8 +4,6 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 
 namespace FarNet;
@@ -25,7 +23,7 @@ namespace FarNet;
 /// a panel, other properties are implemented when needed.
 /// </para>
 /// </remarks>
-public abstract class FarFile : IXmlInfo
+public abstract class FarFile
 {
 	/// <summary>
 	/// File name.
@@ -208,41 +206,4 @@ public abstract class FarFile : IXmlInfo
 	{
 		return Name;
 	}
-
-	/// <summary>
-	/// INTERNAL
-	/// </summary>
-	public virtual string XmlNodeName() => IsDirectory ? "Directory" : "File";
-
-	static ReadOnlyCollection<XmlAttributeInfo>? _attrs;
-	static ReadOnlyCollection<XmlAttributeInfo> XmlAttr()
-	{
-		if (_attrs != null)
-			return _attrs;
-
-		XmlAttributeInfo[] attrs =
-		[
-			new("Name", file => ((FarFile)file).Name),
-			new("Description", file => ((FarFile)file).Description),
-			new("Owner", file => ((FarFile)file).Owner),
-			new("Length", file => ((FarFile)file).Length),
-			new("CreationTime", file => ((FarFile)file).CreationTime),
-			new("LastAccessTime", file => ((FarFile)file).LastAccessTime),
-			new("LastWriteTime", file => ((FarFile)file).LastWriteTime),
-			new("ReadOnly", file => ((FarFile)file).IsReadOnly),
-			new("Hidden", file => ((FarFile)file).IsHidden),
-			new("System", file => ((FarFile)file).IsSystem),
-			new("Archive", file => ((FarFile)file).IsArchive),
-			new("Compressed", file => ((FarFile)file).IsCompressed),
-			new("ReparsePoint", file => ((FarFile)file).IsReparsePoint),
-		];
-
-		_attrs = new ReadOnlyCollection<XmlAttributeInfo>(attrs);
-		return _attrs;
-	}
-
-	/// <summary>
-	/// INTERNAL
-	/// </summary>
-	public virtual IList<XmlAttributeInfo> XmlAttributes() => XmlAttr();
 }

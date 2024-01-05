@@ -9,13 +9,15 @@ namespace FarNet.Tools;
 
 class XsltFunctionCompare : IXsltContextFunction
 {
+	public static XsltFunctionCompare Instance { get; } = new();
+
 	public int Minargs => 2;
 
 	public int Maxargs => 2;
 
 	public XPathResultType ReturnType => XPathResultType.Boolean;
 
-	public XPathResultType[] ArgTypes => new XPathResultType[] { XPathResultType.String, XPathResultType.String };
+	public XPathResultType[] ArgTypes => Xslt.ArgStringString;
 
 	public object Invoke(XsltContext xsltContext, object[] args, XPathNavigator docContext)
 	{

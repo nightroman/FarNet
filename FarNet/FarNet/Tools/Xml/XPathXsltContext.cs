@@ -18,15 +18,16 @@ class XPathXsltContext(NameTable nt) : XsltContext(nt)
 
 	public override bool PreserveWhitespace(XPathNavigator node) => true;
 
-	public override int CompareDocument(string doc1, string doc2) => 0;
+	public override int CompareDocument(string baseUri, string nextbaseUri) =>
+		string.Compare(baseUri, nextbaseUri, StringComparison.Ordinal);
 
 	public override IXsltContextFunction ResolveFunction(string prefix, string name, XPathResultType[] ArgTypes)
 	{
 		return name switch
 		{
-			"compare" => new XsltFunctionCompare(),
-			"equals" => new XsltFunctionEquals(),
-			"is-match" => new XsltFunctionIsMatch(),
+			"compare" => XsltFunctionCompare.Instance,
+			"equals" => XsltFunctionEquals.Instance,
+			"is-match" => XsltFunctionIsMatch.Instance,
 			_ => throw new ArgumentException($"Unknown function '{name}'."),
 		};
 	}
@@ -36,7 +37,7 @@ class XPathXsltContext(NameTable nt) : XsltContext(nt)
 		if (!string.IsNullOrEmpty(prefix))
 			throw new ArgumentException("Prefix is not supported");
 
-		if (_variables is not null && _variables.TryGetValue(name, out XsltContextVariable? variable))
+		if (_variables is { } && _variables.TryGetValue(name, out XsltContextVariable? variable))
 			return variable;
 
 		throw new ArgumentException($"Unknown variable '{name}'.");
