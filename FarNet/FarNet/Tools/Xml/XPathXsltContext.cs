@@ -25,9 +25,9 @@ class XPathXsltContext(NameTable nt) : XsltContext(nt)
 	{
 		return name switch
 		{
-			"compare" => XsltFunctionCompare.Instance,
-			"equals" => XsltFunctionEquals.Instance,
-			"is-match" => XsltFunctionIsMatch.Instance,
+			"compare" => new XsltFunctionCompare(),
+			"equals" => new XsltFunctionEquals(),
+			"is-match" => new XsltFunctionIsMatch(),
 			_ => throw new ArgumentException($"Unknown function '{name}'."),
 		};
 	}

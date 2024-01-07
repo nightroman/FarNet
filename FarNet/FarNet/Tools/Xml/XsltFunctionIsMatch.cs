@@ -10,8 +10,6 @@ namespace FarNet.Tools;
 
 class XsltFunctionIsMatch : IXsltContextFunction
 {
-	public static XsltFunctionIsMatch Instance { get; } = new();
-
 	public int Minargs => 2;
 
 	public int Maxargs => 2;

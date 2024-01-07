@@ -9,8 +9,6 @@ namespace FarNet.Tools;
 
 class XsltFunctionCompare : IXsltContextFunction
 {
-	public static XsltFunctionCompare Instance { get; } = new();
-
 	public int Minargs => 2;
 
 	public int Maxargs => 2;

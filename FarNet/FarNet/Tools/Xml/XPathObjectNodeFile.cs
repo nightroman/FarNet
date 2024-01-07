@@ -7,53 +7,39 @@ namespace FarNet.Tools;
 
 class XPathObjectNodeFile : XPathObjectNode
 {
-	readonly SuperFile _tag;
-	readonly string _nodeName;
+	static ReadOnlyCollection<ValueGetter>? s_attributes;
 
-	public XPathObjectNodeFile(XPathObjectContext context, SuperFile tag) : this(context, tag, null, null, -1)
+	readonly XPathObjectContextFile _context;
+	readonly SuperFile _tag;
+	readonly string _name;
+
+	public XPathObjectNodeFile(XPathObjectContextFile context, SuperFile tag) : this(context, tag, null, null, -1)
 	{
 	}
 
 	XPathObjectNodeFile(
-		XPathObjectContext context,
+		XPathObjectContextFile context,
 		SuperFile tag,
 		XPathObjectNodeFile? parent,
 		IList<XPathObjectNode>? siblings,
 		int index)
 		: base(
-			context,
 			parent,
 			siblings,
 			index)
 	{
+		_context = context ?? throw new ArgumentNullException(nameof(context));
 		_tag = tag ?? throw new ArgumentNullException(nameof(tag));
-		_nodeName = context.NameTable.Add(tag.IsDirectory ? "Directory" : "File");
+		_name = context.NameTable.Add(tag.IsDirectory ? "Directory" : "File");
 	}
 
 	public override object Tag => _tag;
 
-	public override string Name => _nodeName;
+	public override string Name => _name;
 
-	protected override void ActivateAttributes()
+	protected override IList<ValueGetter> GetAttributes()
 	{
-		_attributes = XmlAttributes();
-	}
-
-	protected override IList<XPathObjectNode> ActivateElements()
-	{
-		if (_context.CancellationToken.IsCancellationRequested)
-			return _emptyElements;
-
-		if (_elements.Target is IList<XPathObjectNode> elements)
-			return elements;
-
-		return ActivateSuperFileElements();
-	}
-
-	static ReadOnlyCollection<ValueGetter>? s_attributes;
-	static ReadOnlyCollection<ValueGetter> XmlAttributes()
-	{
-		if (s_attributes != null)
+		if (s_attributes is { })
 			return s_attributes;
 
 		ValueGetter[] attrs =
@@ -77,55 +63,43 @@ class XPathObjectNodeFile : XPathObjectNode
 		return s_attributes;
 	}
 
-	IList<XPathObjectNode> ActivateSuperFileElements()
+	protected override IList<XPathObjectNode> GetElements()
 	{
-		if (!_tag.IsDirectory)
-		{
-			_elements.Target = _emptyElements;
-			return _emptyElements;
-		}
+		if (!_tag.IsDirectory || _context.Exclude is { } exclude && exclude(_tag.Explorer, _tag.File))
+			return EmptyElements;
 
 		// progress
 		_context.IncrementDirectoryCount?.Invoke(1);
 
 		// explore and get files
 		List<XPathObjectNode>? elements = null;
-		if (_context.Depth < 0 || _depth < _context.Depth)
+		Explorer? explorer2 = SuperExplorer.ExploreSuperDirectory(_tag.Explorer, ExplorerModes.Find, _tag);
+		if (explorer2 is not null)
 		{
-			Explorer? explorer2 = SuperExplorer.ExploreSuperDirectory(_tag.Explorer, ExplorerModes.Find, _tag);
-			if (explorer2 is not null)
+			var args = new GetFilesEventArgs(ExplorerModes.Find);
+			var files2 = explorer2.GetFiles(args);
+			var count = files2 is ICollection collection ? collection.Count : 0;
+
+			elements = new(count);
+			foreach (var file2 in files2)
 			{
-				var args = new GetFilesEventArgs(ExplorerModes.Find);
-				var files2 = explorer2.GetFiles(args);
-				var count = files2 is ICollection collection ? collection.Count : 0;
+				// filter files
+				if (!file2.IsDirectory && (_context.SkipFiles || _context.Filter is not null && !_context.Filter(explorer2, file2)))
+					continue;
 
-				elements = new(count);
-				foreach (var file2 in files2)
-				{
-					// filter files
-					if (!file2.IsDirectory && (_context.SkipFiles || _context.Filter is not null && !_context.Filter(explorer2, file2)))
-						continue;
-
-					// add
-					elements.Add(new XPathObjectNodeFile(
-						_context,
-						new SuperFile(explorer2, file2),
-						this,
-						elements,
-						elements.Count));
-				}
+				// add
+				elements.Add(new XPathObjectNodeFile(
+					_context,
+					new SuperFile(explorer2, file2),
+					this,
+					elements,
+					elements.Count));
 			}
 		}
 
 		if (elements is null || elements.Count == 0)
-		{
-			_elements.Target = _emptyElements;
-			return _emptyElements;
-		}
-		else
-		{
-			_elements.Target = elements;
-			return elements;
-		}
+			return EmptyElements;
+
+		return elements;
 	}
 }

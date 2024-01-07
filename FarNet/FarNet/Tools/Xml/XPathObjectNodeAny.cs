@@ -14,19 +14,20 @@ namespace FarNet.Tools;
 
 class XPathObjectNodeAny : XPathObjectNode
 {
+	readonly XPathObjectContextAny _context;
 	readonly object _tag;
 	readonly string _name;
 
 	readonly Type? _type;
 	readonly string? _key;
 
-	public XPathObjectNodeAny(XPathObjectContext? context, object tag)
-		: this(context ?? new XPathObjectContext(), tag, null, null, null, null, -1)
+	public XPathObjectNodeAny(XPathObjectContextAny context, object tag)
+		: this(context, tag, null, null, null, null, -1)
 	{
 	}
 
 	XPathObjectNodeAny(
-		XPathObjectContext context,
+		XPathObjectContextAny context,
 		object tag,
 		Type? type,
 		string? key,
@@ -34,11 +35,11 @@ class XPathObjectNodeAny : XPathObjectNode
 		IList<XPathObjectNode>? siblings,
 		int index)
 		: base(
-			context,
 			parent,
 			siblings,
 			index)
 	{
+		_context = context ?? throw new ArgumentNullException(nameof(context));
 		_tag = tag ?? throw new ArgumentNullException(nameof(tag));
 		_type = type;
 		_key = key;
@@ -59,55 +60,35 @@ class XPathObjectNodeAny : XPathObjectNode
 	public override string? Value =>
 		LinearTypeToString(_tag);
 
-	protected override void ActivateAttributes()
+	protected override IList<ValueGetter> GetAttributes()
 	{
-		if (_attributes is not null)
-			return;
-
 		var attrType = new ValueGetter("Type", _ => _type is null ? _tag.GetType().Name : _type.Name);
 
 		if (string.IsNullOrEmpty(_key))
-		{
-			_attributes = [attrType];
-		}
-		else
-		{
-			_attributes = [new ValueGetter("Name", it => _key), attrType];
-		}
+			return new ValueGetter[] { attrType };
+
+		return new ValueGetter[] { new("Name", it => _key), attrType };
 	}
 
-	protected override IList<XPathObjectNode> ActivateElements()
+	protected override IList<XPathObjectNode> GetElements()
 	{
-		if (_elements.Target is IList<XPathObjectNode> alive)
-			return alive;
-
-		if (_context.CancellationToken.IsCancellationRequested || _context.Depth >= 0 && _depth >= _context.Depth)
-			return _emptyElements;
-
 		if (IsLinearType(_tag))
-		{
-			_elements.Target = _emptyElements;
-			return _emptyElements;
-		}
+			return EmptyElements;
 
 		List<XPathObjectNode> elements = _tag switch
 		{
-			IDictionary dictionary => ActivateDictionary(dictionary),
-			IEnumerable collection => ActivateCollection(collection),
-			_ => ActivateItem(),
+			IDictionary dictionary => GetElementsOfDictionary(dictionary),
+			IEnumerable collection => GetElementsOfCollection(collection),
+			_ => GetElementsOfItem(),
 		};
 
 		if (elements.Count == 0)
-		{
-			_elements.Target = _emptyElements;
-			return _emptyElements;
-		}
+			return EmptyElements;
 
-		_elements.Target = elements;
 		return elements;
 	}
 
-	List<XPathObjectNode> ActivateCollection(IEnumerable collection)
+	List<XPathObjectNode> GetElementsOfCollection(IEnumerable collection)
 	{
 		var elements = new List<XPathObjectNode>(collection is ICollection list ? list.Count : 0);
 		foreach (object? value in collection)
@@ -124,7 +105,7 @@ class XPathObjectNodeAny : XPathObjectNode
 		return elements;
 	}
 
-	List<XPathObjectNode> ActivateDictionary(IDictionary dictionary)
+	List<XPathObjectNode> GetElementsOfDictionary(IDictionary dictionary)
 	{
 		var elements = new List<XPathObjectNode>(dictionary.Count);
 		foreach (DictionaryEntry kv in dictionary)
@@ -143,11 +124,11 @@ class XPathObjectNodeAny : XPathObjectNode
 		return elements;
 	}
 
-	List<XPathObjectNode> ActivateItem()
+	List<XPathObjectNode> GetElementsOfItem()
 	{
 		var elements = new List<XPathObjectNode>();
 
-		// public fields, e.g. of value tuples
+		// public fields, e.g. of tuples
 		foreach (FieldInfo info in _tag.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance))
 		{
 			object? value = info.GetValue(_tag);

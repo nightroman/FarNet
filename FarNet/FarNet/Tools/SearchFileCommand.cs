@@ -10,13 +10,6 @@ using System.Xml.XPath;
 namespace FarNet.Tools;
 
 /// <summary>
-/// Search file filter.
-/// </summary>
-/// <param name="explorer">The explorer providing the file.</param>
-/// <param name="file">The file to be processed.</param>
-public delegate bool ExplorerFilePredicate(Explorer explorer, FarFile file);
-
-/// <summary>
 /// Module panel file search for FarNet.Explore, FarNet.PowerShellFar Search-FarFile, etc.
 /// </summary>
 public class SearchFileCommand
@@ -54,9 +47,14 @@ public class SearchFileCommand
 	public int Depth { get; set; } = -1;
 
 	/// <summary>
-	/// Gets or sets the search filter.
+	/// Gets or sets the filter to exclude directories from getting their items.
 	/// </summary>
-	public ExplorerFilePredicate? Filter { get; set; }
+	public Func<Explorer, FarFile, bool>? Exclude { get; set; }
+
+	/// <summary>
+	/// Gets or sets the filter to include result directories and files.
+	/// </summary>
+	public Func<Explorer, FarFile, bool>? Filter { get; set; }
 
 	/// <summary>
 	/// XPath expression file.
@@ -311,7 +309,7 @@ public class SearchFileCommand
 		while (queue.Count > 0)
 		{
 			// cancel?
-			if (_cancellationToken.IsCancellationRequested || progress is not null && UIUserStop())
+			if (_cancellationToken.IsCancellationRequested || progress is { } && UIUserStop())
 				yield break;
 
 			// current
@@ -319,7 +317,7 @@ public class SearchFileCommand
 			++ProcessedDirectoryCount;
 
 			// progress
-			if (progress is not null && progress.ElapsedFromShow.TotalMilliseconds > ProgressDelay)
+			if (progress is { } && progress.ElapsedFromShow.TotalMilliseconds > ProgressDelay)
 			{
 				var directoryPerSecond = ProcessedDirectoryCount / progress.ElapsedFromStart.TotalSeconds;
 				progress.Activity = string.Format(Res.SearchActivityBfs, FoundFileCount, ProcessedDirectoryCount, queue.Count, directoryPerSecond);
@@ -334,7 +332,7 @@ public class SearchFileCommand
 			{
 				// filter
 				bool add = file.IsDirectory ? !File : !Directory;
-				if (add && Filter is not null)
+				if (add && Filter is { })
 					add = Filter(explorer, file);
 
 				// result
@@ -352,12 +350,12 @@ public class SearchFileCommand
 			// pass 2, enqueue
 			foreach (var file in files)
 			{
-				if (file.IsDirectory)
-				{
-					var explorer2 = SuperExplorer.ExploreSuperDirectory(explorer, ExplorerModes.Find, file);
-					if (explorer2 is not null)
-						queue.Enqueue((explorer2, level + 1));
-				}
+				if (!file.IsDirectory || Exclude is { } && Exclude(explorer, file))
+					continue;
+
+				var explorer2 = SuperExplorer.ExploreSuperDirectory(explorer, ExplorerModes.Find, file);
+				if (explorer2 is { })
+					queue.Enqueue((explorer2, level + 1));
 			}
 		}
 	}
@@ -365,13 +363,13 @@ public class SearchFileCommand
 	IEnumerable<FarFile> DoInvokeRecurse(ProgressBox? progress, Explorer explorer, int level)
 	{
 		// cancel?
-		if (_cancellationToken.IsCancellationRequested || progress is not null && UIUserStop())
+		if (_cancellationToken.IsCancellationRequested || progress is { } && UIUserStop())
 			yield break;
 
 		++ProcessedDirectoryCount;
 
 		// progress
-		if (progress is not null && progress.ElapsedFromShow.TotalMilliseconds > ProgressDelay)
+		if (progress is { } && progress.ElapsedFromShow.TotalMilliseconds > ProgressDelay)
 		{
 			var directoryPerSecond = ProcessedDirectoryCount / progress.ElapsedFromStart.TotalSeconds;
 			progress.Activity = string.Format(Res.SearchActivityRecurse, FoundFileCount, ProcessedDirectoryCount, directoryPerSecond);
@@ -386,7 +384,7 @@ public class SearchFileCommand
 		{
 			// filter
 			bool add = file.IsDirectory ? !File : !Directory;
-			if (add && Filter is not null)
+			if (add && Filter is { })
 				add = Filter(explorer, file);
 
 			// result
@@ -404,32 +402,33 @@ public class SearchFileCommand
 		// pass 2, recurse
 		foreach (var file in files)
 		{
-			if (file.IsDirectory)
+			if (!file.IsDirectory || Exclude is { } && Exclude(explorer, file))
+				continue;
+
+			var explorer2 = SuperExplorer.ExploreSuperDirectory(explorer, ExplorerModes.Find, file);
+			if (explorer2 is { })
 			{
-				var explorer2 = SuperExplorer.ExploreSuperDirectory(explorer, ExplorerModes.Find, file);
-				if (explorer2 is not null)
-				{
-					foreach (var file2 in DoInvokeRecurse(progress, explorer2, level + 1))
-						yield return file2;
-				}
+				foreach (var file2 in DoInvokeRecurse(progress, explorer2, level + 1))
+					yield return file2;
 			}
 		}
 	}
 
 	IEnumerable<FarFile> DoInvokeXPath(ProgressBox? progress)
 	{
-		// object context
-		var objectContext = new XPathObjectContext
+		// configure common input parameters
+		var objectContext = new XPathObjectContextFile
 		{
 			Depth = Depth,
 			Filter = Filter,
+			Exclude = Exclude,
 			SkipFiles = Directory,
 			CancellationToken = _cancellationToken,
-			IncrementDirectoryCount = delegate(int count)
+			IncrementDirectoryCount = count =>
 			{
 				ProcessedDirectoryCount += count;
 
-				if (progress is not null && progress.ElapsedFromShow.TotalMilliseconds > ProgressDelay)
+				if (progress is { } && progress.ElapsedFromShow.TotalMilliseconds > ProgressDelay)
 				{
 					var directoryPerSecond = ProcessedDirectoryCount / progress.ElapsedFromStart.TotalSeconds;
 					progress.Activity = string.Format(Res.SearchActivityRecurse, FoundFileCount, ProcessedDirectoryCount, directoryPerSecond);
@@ -438,9 +437,9 @@ public class SearchFileCommand
 			},
 		};
 
-		// configure common context for all selects
+		// configure functions and variables
 		var xsltContext = new XPathXsltContext(objectContext.NameTable);
-		if (_XVariables is not null)
+		if (_XVariables is { })
 		{
 			foreach (var kv in _XVariables)
 				xsltContext.AddVariable(kv.Key, kv.Value);
@@ -463,7 +462,7 @@ public class SearchFileCommand
 		// common compiled expression for all selects
 		var expression = XPathExpression.Compile(xpath!);
 		if (expression.ReturnType != XPathResultType.NodeSet)
-			throw new InvalidOperationException("Invalid expression return type.");
+			throw new ModuleException("XPath expression must evaluate to a node-set.");
 		expression.SetContext(xsltContext);
 
 		++ProcessedDirectoryCount;
@@ -472,23 +471,24 @@ public class SearchFileCommand
 		foreach (var file in files)
 		{
 			// cancel?
-			if (_cancellationToken.IsCancellationRequested || progress is not null && UIUserStop())
+			if (_cancellationToken.IsCancellationRequested || progress is { } && UIUserStop())
 				yield break;
 
 			// filter files
 			if (!file.IsDirectory)
 			{
-				if (Directory || Filter is not null && !Filter(_RootExplorer, file))
+				if (Directory || Filter is { } && !Filter(_RootExplorer, file))
 					continue;
 			}
 
-			var xfile = new SuperFile(_RootExplorer, file);
-			var navigator = new XPathObjectNavigator(xfile, objectContext);
+			// set the current root and select a new set of nodes
+			objectContext.Root = new SuperFile(_RootExplorer, file);
+			var navigator = new XPathObjectNavigator(objectContext);
 			var iterator = navigator.Select(expression);
 			while (iterator.MoveNext())
 			{
 				// cancel?
-				if (_cancellationToken.IsCancellationRequested || progress is not null && UIUserStop())
+				if (_cancellationToken.IsCancellationRequested || progress is { } && UIUserStop())
 					yield break;
 
 				// skip anything but file or directory
@@ -498,7 +498,7 @@ public class SearchFileCommand
 				// filter directories (files are filtered in navigator)
 				if (currentFile.File.IsDirectory)
 				{
-					if (File || Filter is not null && !Filter(currentFile.Explorer, currentFile.File))
+					if (File || Filter is { } && !Filter(currentFile.Explorer, currentFile.File))
 						continue;
 				}
 

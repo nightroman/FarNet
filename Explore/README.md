@@ -39,12 +39,17 @@ How to install and update FarNet and modules:\
 
 Syntax:
 
-    explore: [<Mask>] [-Directory] [-File] [-Bfs] [-Depth <N>] [-Async] [-XFile <File>] [-XPath <Expression>]
+    explore: [<Mask>] [-Exclude ...] [-Directory] [-File] [-Bfs] [-Depth <N>] [-Async] [-XFile <File>] [-XPath <Expression>]
 
 - `<Mask>`
 
-    Far Manager file mask including exclude and regex forms.
-    Use double quotes to enclose a mask with spaces.
+    Far Manager mask to include only matching directories and files.
+    Use double quotes for a mask with spaces.
+
+- `-Exclude ...`
+
+    Far Manager mask to exclude directories from getting their items.
+    Use double quotes for a mask with spaces.
 
 - `-Directory`
 

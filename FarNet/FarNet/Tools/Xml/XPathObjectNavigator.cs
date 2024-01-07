@@ -9,53 +9,46 @@ using System.Collections;
 using System.Xml;
 using System.Xml.XPath;
 
+#pragma warning disable 1591
 namespace FarNet.Tools;
 
-///
 public class XPathObjectNavigator : XPathNavigator
 {
 	const string UnexpectedNode = "Unexpected node type.";
 
-	XPathObjectNode _root;
+	XPathObjectContext _context;
 	XPathObjectNode _node;
 	XPathNodeType _type;
 	int _index = -1;
 
-	///
-	public XPathObjectNavigator(object root, int depth) : this(new XPathObjectNodeAny(new XPathObjectContext { Depth = depth }, root))
+	public XPathObjectNavigator(object root, int depth) : this(new XPathObjectContextAny { Root = root, Depth = depth })
 	{
 	}
 
-	internal XPathObjectNavigator(SuperFile root, XPathObjectContext context) : this(new XPathObjectNodeFile(context, root))
+	public XPathObjectNavigator(XPathObjectContext context)
 	{
-	}
-
-	XPathObjectNavigator(XPathObjectNode root)
-	{
-		_root = root;
-		_node = root;
+		_context = context;
+		_node = context.RootNode;
 	}
 
 	XPathObjectNavigator(XPathObjectNavigator that)
 	{
-		_root = that._root;
+		_context = that._context;
 		_node = that._node;
 		_type = that._type;
 		_index = that._index;
 	}
 
-	///
 	// Uses our functions.
 	public override XPathExpression Compile(string xpath)
 	{
 		return Compile(xpath, null);
 	}
 
-	///
 	// Uses our functions and variables.
 	public XPathExpression Compile(string xpath, IDictionary? variables)
 	{
-		var xsltContext = new XPathXsltContext(_root.Context.NameTable);
+		var xsltContext = new XPathXsltContext(_context.NameTable);
 		if (variables is { })
 		{
 			foreach (DictionaryEntry kv in variables)
@@ -75,35 +68,28 @@ public class XPathObjectNavigator : XPathNavigator
 		_index = -1;
 	}
 
-	///
 	public override object UnderlyingObject =>
 		_node.Tag;
 
-	///
 	public override string BaseURI =>
 		string.Empty;
 
-	///
 	public override bool HasAttributes =>
 		_type == XPathNodeType.Element && _node.HasAttributes;
 
-	///
 	public override bool HasChildren => _type switch
 	{
-		XPathNodeType.Element => _node.HasChildren,
+		XPathNodeType.Element => _node.HasText || _node.HasElements,
 		XPathNodeType.Root => true,
 		_ => false,
 	};
 
-	///
 	public override bool IsEmptyElement =>
 		!HasChildren;
 
-	///
 	public override string LocalName =>
 		Name;
 
-	///
 	public override string Name => _type switch
 	{
 		XPathNodeType.Element => _node.Name,
@@ -111,40 +97,32 @@ public class XPathObjectNavigator : XPathNavigator
 		_ => throw new InvalidOperationException(UnexpectedNode),
 	};
 
-	///
 	public override string NamespaceURI =>
 		string.Empty;
 
-	///
 	public override XPathNodeType NodeType =>
 		_type;
 
-	///
 	public override XmlNameTable NameTable =>
-		_root.Context.NameTable;
+		_context.NameTable;
 
-	///
 	public override string Prefix =>
 		string.Empty;
 
-	///
 	public override string Value => _type switch
 	{
-		XPathNodeType.Attribute => XPathObjectNode.LinearTypeToString(_node.Attributes[_index].Value(UnderlyingObject)) ?? string.Empty,
+		XPathNodeType.Attribute => XPathObjectNode.LinearTypeToString(_node.Attributes[_index].Value(UnderlyingObject)),
 		XPathNodeType.Element => _node.Value ?? string.Empty,
 		XPathNodeType.Text => _node.Value ?? string.Empty,
 		_ => throw new InvalidOperationException(UnexpectedNode)
 	};
 
-	///
 	public override string XmlLang =>
 		string.Empty;
 
-	///
 	public override XPathNavigator Clone() =>
 		new XPathObjectNavigator(this);
 
-	///
 	public override string GetAttribute(string localName, string namespaceURI)
 	{
 		if (_type == XPathNodeType.Element)
@@ -156,35 +134,32 @@ public class XPathObjectNavigator : XPathNavigator
 		return string.Empty;
 	}
 
-	///
 	public override string GetNamespace(string name) =>
 		string.Empty;
 
-	///
 	public override bool IsDescendant(XPathNavigator? nav)
 	{
 		if (nav is not XPathObjectNavigator that)
 			return false;
 
-		// if they're in different graphs, they're not the same
-		if (_root != that._root)
+		// different trees? - no
+		if (_context != that._context)
 			return false;
 
-		// if its on my root element - its still a descendant
+		// inside my tree? - yes
 		if (_type == XPathNodeType.Root && that._type != XPathNodeType.Root)
 			return true;
 
-		// if I'm not on an element, it can't be my descendant
-		// (attributes and text don't have descendants)
+		// my node is not on element - no, attributes and text have no descendants
 		if (_type != XPathNodeType.Element)
 			return false;
 
-		// if its on my attribute or content - its still a descendant
+		// same node but it is not on an element - yes, it is my attribute or text
 		if (_node == that._node)
-			return (_type == XPathNodeType.Element && that._type != XPathNodeType.Element);
+			return that._type != XPathNodeType.Element;
 
-		// ok, we need to hunt...
-		for (var parent = that._node.Parent; parent is not null; parent = parent.Parent)
+		// find my node in its parents
+		for (var parent = that._node.Parent; parent is { }; parent = parent.Parent)
 		{
 			if (parent == _node)
 				return true;
@@ -193,14 +168,13 @@ public class XPathObjectNavigator : XPathNavigator
 		return false;
 	}
 
-	///
 	public override bool IsSamePosition(XPathNavigator other)
 	{
 		if (other is not XPathObjectNavigator that)
 			return false;
 
 		// if they're in different graphs, they're not the same
-		if (_root != that._root)
+		if (_context != that._context)
 			return false;
 
 		// if they're different node types, they can't be the same node!
@@ -218,13 +192,12 @@ public class XPathObjectNavigator : XPathNavigator
 		return true;
 	}
 
-	///
 	public override bool MoveTo(XPathNavigator other)
 	{
 		if (other is not XPathObjectNavigator that)
 			return false;
 
-		_root = that._root;
+		_context = that._context;
 		_node = that._node;
 		_type = that._type;
 		_index = that._index;
@@ -232,7 +205,6 @@ public class XPathObjectNavigator : XPathNavigator
 		return true;
 	}
 
-	///
 	public override bool MoveToAttribute(string localName, string namespaceURI)
 	{
 		if (_type != XPathNodeType.Element)
@@ -253,7 +225,6 @@ public class XPathObjectNavigator : XPathNavigator
 		return false;
 	}
 
-	///
 	public override bool MoveToFirst() //? When is it called? Is it ever called on XPath scan?
 	{
 		// The original code was wrong. We use the code similar to sdf.XPath.
@@ -268,7 +239,6 @@ public class XPathObjectNavigator : XPathNavigator
 		return MoveToFirstChild();
 	}
 
-	///
 	public override bool MoveToFirstAttribute()
 	{
 		if (!HasAttributes)
@@ -280,13 +250,12 @@ public class XPathObjectNavigator : XPathNavigator
 		return true;
 	}
 
-	///
 	public override bool MoveToFirstChild()
 	{
 		if (_type == XPathNodeType.Root)
 		{
 			// move to the document element
-			MoveNavigator(_root);
+			MoveNavigator(_context.RootNode);
 			return true;
 		}
 
@@ -302,6 +271,10 @@ public class XPathObjectNavigator : XPathNavigator
 			return true;
 		}
 
+		// depth and cancel test
+		if (_context.Depth >= 0 && _node.Depth >= _context.Depth || _context.CancellationToken.IsCancellationRequested)
+			return false;
+
 		// drop down to the first element (if any)
 		var elems = _node.Elements;
 		if (elems.Count > 0)
@@ -313,19 +286,15 @@ public class XPathObjectNavigator : XPathNavigator
 		return false;
 	}
 
-	///
 	public override bool MoveToFirstNamespace(XPathNamespaceScope namespaceScope) =>
 		false;
 
-	///
 	public override bool MoveToId(string id) =>
 		false;
 
-	///
 	public override bool MoveToNamespace(string name) =>
 		false;
 
-	///
 	public override bool MoveToNext()
 	{
 		if (_type != XPathNodeType.Element)
@@ -344,7 +313,6 @@ public class XPathObjectNavigator : XPathNavigator
 		return true;
 	}
 
-	///
 	public override bool MoveToNextAttribute()
 	{
 		if (_type != XPathNodeType.Attribute)
@@ -357,11 +325,9 @@ public class XPathObjectNavigator : XPathNavigator
 		return true;
 	}
 
-	///
 	public override bool MoveToNextNamespace(XPathNamespaceScope namespaceScope) =>
 		false;
 
-	///
 	public override bool MoveToParent()
 	{
 		if (_type == XPathNodeType.Root)
@@ -381,7 +347,6 @@ public class XPathObjectNavigator : XPathNavigator
 		return true;
 	}
 
-	///
 	public override bool MoveToPrevious()
 	{
 		if (_type != XPathNodeType.Element)
@@ -404,11 +369,10 @@ public class XPathObjectNavigator : XPathNavigator
 		return true;
 	}
 
-	///
 	public override void MoveToRoot()
 	{
 		_type = XPathNodeType.Root;
-		_node = _root;
+		_node = _context.RootNode;
 		_index = -1;
 	}
 }

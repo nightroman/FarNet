@@ -88,3 +88,13 @@ Assert-Far $r.Count -eq 3
 $xp = $nav.Compile('//Item[@Type="DateTime" and compare(., "2024-01-01") < 0]')
 $r = @($nav.Select($xp))
 Assert-Far $r.Count -eq 1
+
+### Limit tree depth
+# values are returned but deeper elements are not
+
+$nav = [FarNet.Tools.XPathObjectNavigator]::new($root, 1)
+$xml = $nav.InnerXml
+Assert-Far ($xml.Contains('<Item Name="String" Type="String">bar</Item>'))
+Assert-Far ($xml.Contains('<Item Name="Any" Type="Any2"></Item>'))
+Assert-Far ($xml.Contains('<List Name="Collection" Type="Object[]"></List>'))
+Assert-Far ($xml.Contains('<List Name="Dictionary" Type="OrderedDictionary"></List>'))

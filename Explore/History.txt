@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.Explore
 
+= 5.1.1 =
+
+Requires FarNet 8.1.4
+
+New parameter -Exclude
+
 = 5.1.0 =
 
 Requires FarNet 8.1.0

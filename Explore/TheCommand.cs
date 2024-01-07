@@ -34,6 +34,7 @@ public class TheCommand : ModuleCommand
 			"-Bfs",
 			"-Depth",
 			"-Directory",
+			"-Exclude",
 			"-File",
 			"-XFile",
 			"-XPath",
@@ -56,10 +57,7 @@ public class TheCommand : ModuleCommand
 				if (!Far.Api.IsMaskValid(mask))
 					throw new ModuleException("Invalid mask.");
 
-				search.Filter = delegate (Explorer explorer, FarFile file)
-				{
-					return Far.Api.IsMaskMatch(file.Name, mask);
-				};
+				search.Filter = (explorer, file) => Far.Api.IsMaskMatch(file.Name, mask);
 				continue;
 			}
 
@@ -88,6 +86,18 @@ public class TheCommand : ModuleCommand
 							throw new ModuleException("Invalid -Depth.");
 
 						search.Depth = int.Parse(tokens[iToken]);
+						break;
+					}
+				case "-Exclude":
+					{
+						if (++iToken >= token.Length)
+							throw new ModuleException("Invalid -Exlude.");
+
+						var mask = tokens[iToken];
+						if (!Far.Api.IsMaskValid(mask))
+							throw new ModuleException("Invalid mask.");
+
+						search.Exclude = (explorer, file) => Far.Api.IsMaskMatch(file.Name, mask);
 						break;
 					}
 				case "-Directory":

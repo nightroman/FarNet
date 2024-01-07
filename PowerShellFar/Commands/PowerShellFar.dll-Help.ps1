@@ -194,6 +194,7 @@ See examples.
 	parameters = @{
 		Mask = 'Far Manager file mask including exclude and regular expression forms.'
 		Script = 'Filter script with $args[0] as file explorer and $args[1] as the file.'
+		Exclude = 'Mask or script which excludes directories from getting their files.'
 		Path = 'Specifies the root directory for the file system search.'
 		Directory = 'Tells to include only directories.'
 		File = 'Tells to include only files.'
@@ -209,10 +210,10 @@ See examples.
 			Search-FarFile README*
 
 			# find large files
-			Search-FarFile -Path $env:FARHOME -File {$args[1].Length -ge 5mb}
+			Search-FarFile -File -Exclude 'bin,obj' {$args[1].Length -ge 5mb}
 
 			# find empty directories
-			Search-FarFile -Directory {param($e, $f) !(Get-ChildItem -LiteralPath "$($e.Location)\$($f.name)") }
+			Search-FarFile -Directory {param($e, $f) !(Get-ChildItem -LiteralPath "$($e.Location)\$($f.name)")}
 		}
 	}
 }

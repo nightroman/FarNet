@@ -7,106 +7,90 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Reflection;
 
 namespace FarNet.Tools;
 
 abstract class XPathObjectNode
 {
-	protected static readonly XPathObjectNode[] _emptyElements = [];
-	protected readonly XPathObjectContext _context;
-	protected readonly int _depth;
+	protected static ValueGetter[] EmptyAttributes => [];
+	protected static XPathObjectNode[] EmptyElements => [];
 
-	readonly XPathObjectNode? _parent;
+	public XPathObjectNode? Parent { get; }
+	public int Depth { get; }
 
-	// Sibling list, elements of the parent (it keeps the weak reference alive).
+	// Index of this node in the sibling list for MoveToNext, MoveToPrevious.
+	public int Index { get; }
+
+	// Sibling list, elements of the parent, to keeps the weak reference alive.
 	readonly IList<XPathObjectNode>? _siblings;
 
-	// Index of this node in the sibling list, needed for MoveToNext, MoveToPrevious.
-	readonly int _index;
+	IList<ValueGetter>? _attributes;
+	readonly WeakReference _elements = new(null);
 
-	protected IList<ValueGetter>? _attributes;
-	protected readonly WeakReference _elements = new(null);
+	protected XPathObjectNode(XPathObjectNode? parent, IList<XPathObjectNode>? siblings, int index)
+	{
+		Parent = parent;
+		if (parent is not null)
+			Depth = parent.Depth + 1;
+
+		_siblings = siblings;
+		Index = index;
+	}
 
 	public abstract object Tag { get; }
+
 	public abstract string Name { get; }
-	protected abstract void ActivateAttributes();
-	protected abstract IList<XPathObjectNode> ActivateElements();
-
-	protected XPathObjectNode(XPathObjectContext context, XPathObjectNode? parent, IList<XPathObjectNode>? siblings, int index)
-	{
-		_context = context ?? throw new ArgumentNullException(nameof(context));
-		_parent = parent;
-		_siblings = siblings;
-		_index = index;
-
-		if (parent is not null)
-			_depth = parent._depth + 1;
-	}
-
-	public XPathObjectContext Context =>
-		_context;
-
-	public XPathObjectNode? Parent =>
-		_parent;
-
-	public int Index =>
-		_index;
-
-	public virtual string? Value =>
-		null;
-
-	public bool HasAttributes
-	{
-		get
-		{
-			if (_attributes is null)
-				ActivateAttributes();
-
-			return _attributes!.Count > 0;
-		}
-	}
-
-	public bool HasChildren
-	{
-		get
-		{
-			var elements = (_elements.Target as IList<XPathObjectNode>) ?? ActivateElements();
-			return elements.Count > 0 || HasText;
-		}
-	}
 
 	public virtual bool HasText =>
 		false;
 
-	public IList<ValueGetter> Attributes
+	public virtual string? Value =>
+		null;
+
+	protected virtual IList<ValueGetter> GetAttributes()
+		=> EmptyAttributes;
+
+	protected virtual IList<XPathObjectNode> GetElements()
+		=> EmptyElements;
+
+	public bool HasAttributes =>
+		Attributes.Count > 0;
+
+	public bool HasElements =>
+		Elements.Count > 0;
+
+	// Gets or uses ready attributes.
+	public IList<ValueGetter> Attributes =>
+		_attributes ??= GetAttributes();
+
+	// Gets or uses alive weak elements.
+	public IList<XPathObjectNode> Elements
 	{
 		get
 		{
-			if (_attributes is null)
-				ActivateAttributes();
+			if (_elements.Target is IList<XPathObjectNode> alive)
+				return alive;
 
-			return _attributes!;
+			alive = GetElements();
+			_elements.Target = alive;
+
+			return alive;
 		}
 	}
 
 	public string GetAttributeValue(string name)
 	{
-		if (_attributes is null)
-			ActivateAttributes();
-
-		foreach (var it in _attributes!)
+		foreach (var it in Attributes)
 		{
 			if (it.Name == name)
-				return LinearTypeToString(it.Value(Tag)) ?? string.Empty;
+				return LinearTypeToString(it.Value(Tag));
 		}
 
 		return string.Empty;
 	}
 
-	public IList<XPathObjectNode> Elements =>
-		(_elements.Target as IList<XPathObjectNode>) ?? ActivateElements();
-
-	internal static bool IsLinearType(object value)
+	public static bool IsLinearType(object value)
 	{
 		return
 			value is string ||
@@ -115,8 +99,14 @@ abstract class XPathObjectNode
 			value is CultureInfo;
 	}
 
-	internal static string? LinearTypeToString(object? value)
+	/// <summary>
+	/// Called for attributes and objects tested as linear.
+	/// </summary>
+	public static string LinearTypeToString(object? value)
 	{
+		if (value is null)
+			return string.Empty;
+
 		// string
 		if (value is string asString)
 			return asString;
@@ -131,15 +121,11 @@ abstract class XPathObjectNode
 			return formattable.ToString(null, CultureInfo.InvariantCulture);
 		}
 
-		// Boolean, 1/0 seems to be easier to use in XPath
+		// Boolean, 1/0 is easier to use in XPath
 		if (value is bool asBool)
 			return asBool ? "1" : "0";
 
-		// special types
-		if (value is CultureInfo)
-			return value.ToString();
-
-		// objects return null
-		return null;
+		// other types, e.g. CultureInfo
+		return value.ToString()!;
 	}
 }

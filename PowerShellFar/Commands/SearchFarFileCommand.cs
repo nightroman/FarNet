@@ -12,6 +12,8 @@ class SearchFarFileCommand : BaseCmdlet
 {
 	string? _Mask;
 	string? _Path;
+	string? _ExcludeMask;
+	ScriptBlock? _ExcludeScript;
 
 	[Parameter(Position = 0, ParameterSetName = "Mask")]
 	public string? Mask
@@ -36,6 +38,33 @@ class SearchFarFileCommand : BaseCmdlet
 			_Path = GetUnresolvedProviderPathFromPSPath(value);
 			if (!System.IO.Directory.Exists(_Path))
 				throw new PSArgumentException($"Directory not found: {value}");
+		}
+	}
+
+	[Parameter]
+	public object? Exclude
+	{
+		set
+		{
+			if (value is PSObject ps)
+				value = ps.BaseObject;
+
+			if (value is string mask)
+			{
+				if (!Far.Api.IsMaskValid(mask))
+					throw new PSArgumentException($"Invalid Exclude mask: {mask}");
+
+				_ExcludeMask = mask;
+				return;
+			}
+
+			if (value is ScriptBlock script)
+			{
+				_ExcludeScript = script;
+				return;
+			}
+
+			throw new PSArgumentException("Exclude must be String or ScriptBlock.");
 		}
 	}
 
@@ -86,20 +115,24 @@ class SearchFarFileCommand : BaseCmdlet
 			XFile = XFile,
 		};
 
-		// the filter
-		if (Mask is not null)
+		// exclude
+		if (_ExcludeMask is { })
 		{
-			search.Filter = (Explorer explorer, FarFile file) =>
-			{
-				return Far.Api.IsMaskMatch(file.Name, Mask, true);
-			};
+			search.Exclude = (explorer, file) => Far.Api.IsMaskMatch(file.Name, _ExcludeMask);
 		}
-		else if (Script is not null)
+		else if (_ExcludeScript is { })
 		{
-			search.Filter = (Explorer explorer, FarFile file) =>
-			{
-				return LanguagePrimitives.IsTrue(Script.InvokeReturnAsIs(explorer, file));
-			};
+			search.Exclude = (explorer, file) => LanguagePrimitives.IsTrue(_ExcludeScript.InvokeReturnAsIs(explorer, file));
+		}
+
+		// filter
+		if (Mask is { })
+		{
+			search.Filter = (explorer, file) => Far.Api.IsMaskMatch(file.Name, Mask);
+		}
+		else if (Script is { })
+		{
+			search.Filter = (explorer, file) => LanguagePrimitives.IsTrue(Script.InvokeReturnAsIs(explorer, file));
 		}
 
 		// go
