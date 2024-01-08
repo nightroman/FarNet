@@ -61,6 +61,11 @@ public class XPathObjectNavigator : XPathNavigator
 		return expression;
 	}
 
+	// Use before HasElements and Elements in MoveToFirstChild (places that activate elements).
+	// Why? To return valid text and attributes and complete navigation of activated elements.
+	bool IsCancellationRequested =>
+		_context.Depth >= 0 && _node.Depth >= _context.Depth || _context.CancellationToken.IsCancellationRequested;
+
 	void MoveNavigator(XPathObjectNode that)
 	{
 		_node = that;
@@ -79,7 +84,7 @@ public class XPathObjectNavigator : XPathNavigator
 
 	public override bool HasChildren => _type switch
 	{
-		XPathNodeType.Element => _node.HasText || _node.HasElements,
+		XPathNodeType.Element => _node.HasText || !IsCancellationRequested && _node.HasElements,
 		XPathNodeType.Root => true,
 		_ => false,
 	};
@@ -111,7 +116,7 @@ public class XPathObjectNavigator : XPathNavigator
 
 	public override string Value => _type switch
 	{
-		XPathNodeType.Attribute => XPathObjectNode.LinearTypeToString(_node.Attributes[_index].Value(UnderlyingObject)),
+		XPathNodeType.Attribute => XPathObjectNode.DataToString(_node.Attributes[_index].Value(UnderlyingObject)),
 		XPathNodeType.Element => _node.Value ?? string.Empty,
 		XPathNodeType.Text => _node.Value ?? string.Empty,
 		_ => throw new InvalidOperationException(UnexpectedNode)
@@ -173,19 +178,15 @@ public class XPathObjectNavigator : XPathNavigator
 		if (other is not XPathObjectNavigator that)
 			return false;
 
-		// if they're in different graphs, they're not the same
-		if (_context != that._context)
-			return false;
-
-		// if they're different node types, they can't be the same node!
-		if (_type != that._type)
-			return false;
-
-		// if they're different elements, they can't be the same node!
+		// different node? - no
 		if (_node != that._node)
 			return false;
 
-		// are they on different attributes?
+		// different types? - no
+		if (_type != that._type)
+			return false;
+
+		// on different attributes? - no
 		if (_type == XPathNodeType.Attribute && _index != that._index)
 			return false;
 
@@ -210,11 +211,10 @@ public class XPathObjectNavigator : XPathNavigator
 		if (_type != XPathNodeType.Element)
 			return false;
 
-		int index = -1;
-		foreach (var it in _node.Attributes)
+		var attributes = _node.Attributes;
+		for (int index = attributes.Count; --index >= 0;)
 		{
-			++index;
-			if (it.Name == localName)
+			if (attributes[index].Name == localName)
 			{
 				_type = XPathNodeType.Attribute;
 				_index = index;
@@ -225,17 +225,18 @@ public class XPathObjectNavigator : XPathNavigator
 		return false;
 	}
 
-	public override bool MoveToFirst() //? When is it called? Is it ever called on XPath scan?
+	// NB Not used in our XPath scans
+	public override bool MoveToFirst()
 	{
-		// The original code was wrong. We use the code similar to sdf.XPath.
+		// must be false on attributes
 		if (_type == XPathNodeType.Attribute)
 			return false;
 
-		// try the parent
+		// move to the parent
 		if (!MoveToParent())
 			return false;
 
-		// and then its child
+		// and its first child
 		return MoveToFirstChild();
 	}
 
@@ -246,40 +247,39 @@ public class XPathObjectNavigator : XPathNavigator
 
 		_type = XPathNodeType.Attribute;
 		_index = 0;
-
 		return true;
 	}
 
 	public override bool MoveToFirstChild()
 	{
+		// move to the root node
 		if (_type == XPathNodeType.Root)
 		{
-			// move to the document element
 			MoveNavigator(_context.RootNode);
 			return true;
 		}
 
+		// only element may have children
 		if (_type != XPathNodeType.Element)
 			return false;
 
-		// drop down to the text value (if any)
+		// move to the text
 		if (_node.HasText)
 		{
 			_type = XPathNodeType.Text;
 			_index = -1;
-
 			return true;
 		}
 
-		// depth and cancel test
-		if (_context.Depth >= 0 && _node.Depth >= _context.Depth || _context.CancellationToken.IsCancellationRequested)
+		// cancel?
+		if (IsCancellationRequested)
 			return false;
 
-		// drop down to the first element (if any)
-		var elems = _node.Elements;
-		if (elems.Count > 0)
+		// move to the first element
+		var elements = _node.Elements;
+		if (elements.Count > 0)
 		{
-			MoveNavigator(elems[0]);
+			MoveNavigator(elements[0]);
 			return true;
 		}
 
@@ -304,12 +304,12 @@ public class XPathObjectNavigator : XPathNavigator
 		if (parent is null)
 			return false;
 
-		var elems = parent.Elements;
-		int next = _node.Index + 1;
-		if (next >= elems.Count)
+		var elements = parent.Elements;
+		int index = _node.Index + 1;
+		if (index >= elements.Count)
 			return false;
 
-		MoveNavigator(elems[next]);
+		MoveNavigator(elements[index]);
 		return true;
 	}
 
@@ -352,20 +352,16 @@ public class XPathObjectNavigator : XPathNavigator
 		if (_type != XPathNodeType.Element)
 			return false;
 
-		if (_type != XPathNodeType.Element)
-			return false;
-
 		var parent = _node.Parent;
-
 		if (parent is null)
 			return false;
 
-		var elems = parent.Elements;
-		int prev = _node.Index - 1;
-		if (prev < 0)
+		var elements = parent.Elements;
+		int index = _node.Index - 1;
+		if (index < 0)
 			return false;
 
-		MoveNavigator(elems[prev]);
+		MoveNavigator(elements[index]);
 		return true;
 	}
 

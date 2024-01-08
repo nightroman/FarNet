@@ -1,7 +1,9 @@
-<#
+ï»¿<#
+	*** Run as script, not ib-task ***
+
 	The change
 		zg 15.08.2018 00:00:47 +0300 - build 5256
-		1. âñå âûçîâû ïëàãèíîâ çàùèùåíû ãëîáàëüíîé êðèòè÷åñêîé ñåêöèåé.
+		1. Ð²ÑÐµ Ð²Ñ‹Ð·Ð¾Ð²Ñ‹ Ð¿Ð»Ð°Ð³Ð¸Ð½Ð¾Ð² Ð·Ð°Ñ‰Ð¸Ñ‰ÐµÐ½Ñ‹ Ð³Ð»Ð¾Ð±Ð°Ð»ÑŒÐ½Ð¾Ð¹ ÐºÑ€Ð¸Ñ‚Ð¸Ñ‡ÐµÑÐºÐ¾Ð¹ ÑÐµÐºÑ†Ð¸ÐµÐ¹.
 	causes hangs in PowerShellFar 5.2.5.
 	PowerShellFar 5.2.6 deals with this.
 	Far 3.0.5260 reverts 5256 but we keep our change for other similar cases in Far.
@@ -16,6 +18,7 @@
 
 $editor = $Far.CreateEditor()
 $editor.Open()
+
 Assert-Far -Editor
 $Far.Editor.Close()
 Assert-Far -Panels
@@ -30,6 +33,8 @@ $ps = [PowerShell]::Create().AddScript({
 	$editor.Open()
 })
 $ps.Invoke()
+$ps.Dispose()
+
 Assert-Far -Editor
 $Far.Editor.Close()
 Assert-Far -Panels

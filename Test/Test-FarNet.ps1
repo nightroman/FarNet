@@ -27,7 +27,7 @@
 param(
 	$Tests = -1,
 	$ExpectedTaskCount = 206,
-	$ExpectedBasicsCount = 20,
+	$ExpectedBasicsCount = 17,
 	$ExpectedExtrasCount = 6,
 	[switch]$All,
 	[switch]$Quit
@@ -68,6 +68,9 @@ if (!$Tests) {
 		& $test.FullName
 		if ($global:Error) {throw "Errors after $($test.FullName)" }
 	}
+
+	#! IB tests after basics
+	Invoke-Build ** "$env:FarNetCode\Test\Basics"
 }
 
 ### Extra tests

@@ -8,8 +8,8 @@ namespace FarNet.Tools;
 /*
 	Type attributes contain actual value type names in non-null cases.
 	Nulls are represented as empty text elements where Type is:
-	- Property item: property type name
-	- List item: "Object"
+	- Member: member type name
+	- Other: "Object"
 */
 
 class XPathObjectNodeAny : XPathObjectNode
@@ -44,10 +44,18 @@ class XPathObjectNodeAny : XPathObjectNode
 		_type = type;
 		_key = key;
 
-		if (tag is IEnumerable && tag is not string)
-			_name = context.NameTable.Add("List");
+		if (IsData(_tag))
+		{
+			_name = _context.DataElementName;
+		}
+		else if (tag is IEnumerable)
+		{
+			_name = _context.ListElementName;
+		}
 		else
-			_name = context.NameTable.Add("Item");
+		{
+			_name = _context.ItemElementName;
+		}
 	}
 
 	public override object Tag => _tag;
@@ -55,37 +63,53 @@ class XPathObjectNodeAny : XPathObjectNode
 	public override string Name => _name;
 
 	public override bool HasText =>
-		IsLinearType(_tag);
+		Equals(_name, _context.DataElementName);
 
 	public override string? Value =>
-		LinearTypeToString(_tag);
+		DataToString(_tag);
 
 	protected override IList<ValueGetter> GetAttributes()
 	{
-		var attrType = new ValueGetter("Type", _ => _type is null ? _tag.GetType().Name : _type.Name);
+		var attrType = new ValueGetter("type", _ => _type is null ? _tag.GetType().Name : _type.Name);
 
 		if (string.IsNullOrEmpty(_key))
 			return new ValueGetter[] { attrType };
 
-		return new ValueGetter[] { new("Name", it => _key), attrType };
+		return new ValueGetter[] { new("name", it => _key), attrType };
 	}
 
 	protected override IList<XPathObjectNode> GetElements()
 	{
-		if (IsLinearType(_tag))
+		// data
+		if (Equals(_name, _context.DataElementName))
 			return EmptyElements;
 
-		List<XPathObjectNode> elements = _tag switch
+		// avoid infinite loops
+		if (_context.Depth < 0)
 		{
-			IDictionary dictionary => GetElementsOfDictionary(dictionary),
-			IEnumerable collection => GetElementsOfCollection(collection),
-			_ => GetElementsOfItem(),
-		};
+			for (var parent = Parent; parent is { }; parent = parent.Parent)
+			{
+				if (Equals(parent.Tag, _tag))
+					return EmptyElements;
+			}
+		}
 
-		if (elements.Count == 0)
-			return EmptyElements;
+		// item and two kind of lists
+		List<XPathObjectNode> elements;
+		if (Equals(_name, _context.ItemElementName))
+		{
+			elements = GetElementsOfItem();
+		}
+		else if (_tag is IDictionary dictionary)
+		{
+			elements = GetElementsOfDictionary(dictionary);
+		}
+		else
+		{
+			elements = GetElementsOfCollection((IEnumerable)_tag);
+		}
 
-		return elements;
+		return elements.Count == 0 ? EmptyElements : elements;
 	}
 
 	List<XPathObjectNode> GetElementsOfCollection(IEnumerable collection)

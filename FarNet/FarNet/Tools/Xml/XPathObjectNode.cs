@@ -7,7 +7,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Reflection;
 
 namespace FarNet.Tools;
 
@@ -84,13 +83,13 @@ abstract class XPathObjectNode
 		foreach (var it in Attributes)
 		{
 			if (it.Name == name)
-				return LinearTypeToString(it.Value(Tag));
+				return DataToString(it.Value(Tag));
 		}
 
 		return string.Empty;
 	}
 
-	public static bool IsLinearType(object value)
+	public static bool IsData(object value)
 	{
 		return
 			value is string ||
@@ -100,9 +99,9 @@ abstract class XPathObjectNode
 	}
 
 	/// <summary>
-	/// Called for attributes and objects tested as linear.
+	/// Called for attributes and objects tested as text.
 	/// </summary>
-	public static string LinearTypeToString(object? value)
+	public static string DataToString(object? value)
 	{
 		if (value is null)
 			return string.Empty;
