@@ -3,19 +3,19 @@
 	Test Panel-Process.ps1
 #>
 
-# start notepad and process panel
+# start SUT process and open process panel
 job {
-	$Data.Notepad = [System.Diagnostics.Process]::Start('Notepad')
+	$Data.SUT = [System.Diagnostics.Process]::Start('powershell', '-NoProfile Start-Sleep 9')
 	Panel-Process.ps1
 }
 
-# navigate to this notepad
+# navigate to SUT
 job {
-	Find-FarFile -Where {$_.Data.Id -eq $Data.Notepad.Id}
+	Find-FarFile -Where {$_.Data.Id -eq $Data.SUT.Id}
 	$ff = @(Get-FarItem -Selected)
 	Assert-Far @(
 		$ff.Count -eq 1
-		$ff[0].ProcessName -eq 'Notepad'
+		$ff[0].ProcessName -eq 'powershell'
 	)
 }
 
@@ -32,7 +32,7 @@ job {
 # exit properties by Esc
 keys Esc
 job {
-	Assert-Far -FileName 'notepad'
+	Assert-Far -FileName 'powershell'
 }
 
 # open WMI properties, go to CommandLine
@@ -44,7 +44,7 @@ job {
 # exit properties by ..
 macro 'Keys"Home Enter"'
 job {
-	Assert-Far -FileName 'notepad'
+	Assert-Far -FileName 'powershell'
 }
 
 # kill it
@@ -55,7 +55,7 @@ job {
 }
 keys Enter
 job {
-	Assert-Far $Data.Notepad.HasExited
+	Assert-Far $Data.SUT.HasExited
 }
 
 # exit
