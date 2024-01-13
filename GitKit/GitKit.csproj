@@ -12,8 +12,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="LibGit2Sharp" Version="0.28.0" />
-    <PackageReference Include="LibGit2Sharp.NativeBinaries" Version="2.0.320" />
+    <PackageReference Include="LibGit2Sharp" Version="0.29.0" />
+    <PackageReference Include="LibGit2Sharp.NativeBinaries" Version="2.0.321" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="ib publish -Configuration $(Configuration) -FarHome $(FarHome)" />

@@ -11,7 +11,7 @@ sealed class CloneCommand : AnyCommand
 
 	public CloneCommand(DbConnectionStringBuilder parameters)
 	{
-		_url = parameters.GetStringRequired(Parameter.Url);
+		_url = parameters.GetRequiredString(Parameter.Url);
 
 		_path = Host.GetFullPath(parameters.GetString(Parameter.Path, true));
 
@@ -19,8 +19,9 @@ sealed class CloneCommand : AnyCommand
 		{
 			IsBare = parameters.GetBool(Parameter.IsBare),
 			RecurseSubmodules = parameters.GetBool(Parameter.RecurseSubmodules),
-			CredentialsProvider = Host.GetCredentialsHandler()
 		};
+
+		_op.FetchOptions.CredentialsProvider = Host.GetCredentialsHandler();
 
 		if (parameters.GetBool(Parameter.NoCheckout))
 			_op.Checkout = false;

@@ -38,12 +38,11 @@ public class Command : ModuleCommand
 
 			if (parameters.Count > 0)
 			{
-				var message = $"""
+				throw new ModuleException($"""
 				Uknknown parameters
 				Subcommand: {subcommand}
 				Parameters: {string.Join(", ", parameters.Keys.Cast<string>())}
-				""";
-				throw new ModuleException(message);
+				""");
 			}
 
 			command.Invoke();

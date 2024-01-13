@@ -50,7 +50,7 @@ static class Parameters
 		}
 	}
 
-	public static string GetStringRequired(this DbConnectionStringBuilder parameters, string name, bool expand = false)
+	public static string GetRequiredString(this DbConnectionStringBuilder parameters, string name, bool expand = false)
 	{
 		return GetString(parameters, name, expand) ?? throw new ModuleException($"Missing required parameter '{name}'.");
 	}

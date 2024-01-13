@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 1.0.1 =
+
+LibGit2Sharp 0.29.0
+
 = 1.0.0 =
 
 Requires FarNet 8
