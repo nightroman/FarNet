@@ -68,8 +68,7 @@ task package version, markdown, {
 	remove z
 	$toModule = mkdir "z\tools\FarHome\FarNet\Modules\$ModuleName"
 
-	exec { robocopy $ModuleRoot $toModule /s /xf *.pdb } (0..2)
-	equals 10 (Get-ChildItem $toModule -Recurse -File).Count
+	exec { robocopy $ModuleRoot $toModule /s /xf *.pdb } 1
 
 	Copy-Item -Destination z @(
 		'README.md'
@@ -81,6 +80,30 @@ task package version, markdown, {
 		"History.txt"
 		"..\LICENSE"
 	)
+
+	$result = Get-ChildItem $toModule -Recurse -File -Name | Out-String
+	$sample = @'
+FolderChart.deps.json
+FolderChart.dll
+FolderChart.runtimeconfig.json
+History.txt
+LICENSE
+README.htm
+System.Configuration.ConfigurationManager.dll
+System.Data.OleDb.dll
+System.Data.SqlClient.dll
+System.Diagnostics.EventLog.dll
+System.Diagnostics.PerformanceCounter.dll
+System.Security.Cryptography.ProtectedData.dll
+System.Windows.Forms.DataVisualization.dll
+runtimes\win\lib\net8.0\System.Data.OleDb.dll
+runtimes\win\lib\net8.0\System.Diagnostics.EventLog.dll
+runtimes\win\lib\net8.0\System.Diagnostics.PerformanceCounter.dll
+runtimes\win\lib\netcoreapp2.1\System.Data.SqlClient.dll
+runtimes\win-x64\native\sni.dll
+runtimes\win-x86\native\sni.dll
+'@
+	Assert-SameFile.ps1 -Text $sample $result $env:MERGE
 }
 
 task nuget package, {

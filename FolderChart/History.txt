@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.FolderChart
 
+= 5.0.1 =
+
+Update packages
+
 = 5.0.0 =
 
 Requires FarNet 8
