@@ -562,59 +562,8 @@ extra or altering original features without changing the source code.
 
 [Contents]
 
-The best debugging tool is VSCode with PowerShell extension. Configure its
-debugger: in global or local `settings.json` add the following entry to
-`launch` / `configurations`:
-
-```json
-  {
-    "type": "PowerShell",
-    "request": "attach",
-    "name": "PowerShell attach",
-    "processId": "${command:PickPSHostProcess}",
-    "runspaceId": 1
-  }
-```
-
-Select this debugger as active and start (F5). In the shown list of processes
-hosting PowerShell select Far Manager. Assuming you have set some breakpoints
-(in Far Manager, not VSCode), run your PowerShellFar code. If breakpoints are
-hit then VSCode debugger opens the source code at the active breakpoint.
-
-[#4489]: https://github.com/PowerShell/vscode-powershell/issues/4489
-
-> With the latest VSCode and PowerShell breakpoints set in Far Manager are
-removed when VSCode debugger attaches. If you experience this issue, set
-breakpoints in VSCode instead. Hopefully, this issue will be fixed, [#4489].
-
-**Tips**
-
-(1) Consider running VSCode as admin, especially if Far runs as admin.
-Otherwise F5 may result in cryptic errors about `OmniSharp` issues.
-
-(2) On starting the debugger you may see the below message. PowerShell is not
-loaded yet, e.g. due to no .ps1 files in the workspace or loading in progress.
-Then try starting again in a few seconds. Or consider opening VSCode in
-workspaces / folders with some .ps1 files, e.g. subjects to debug.
-
-> Cannot debug or run a PowerShell script until the PowerShell session has
-started. Wait for the PowerShell session to finish starting and try again.
-
-(3) If VSCode is not an option for various reasons then use the script
-[Add-Debugger](https://www.powershellgallery.com/packages/Add-Debugger)
-and call it with a temp file for watching in a separate console:
-
-    ps: Add-Debugger $env:TEMP\debug.log
-
-This way looks unusual but debugging is surprisingly robust.
-Also, it works in some cases when usual debugging is tricky.
-For example Far task code started by `Start-FarTask`.
-
-With `Start-FarTask` you may use two debuggers at the same time:
-- Add-Debugger for task code (auto started on `-AddDebugger [-Step]`).
-- VSCode debugger for code in `job`, `ps:`, `run` (attach it manually).
-- Note, all breakpoints set in PowerShellFar work for both debuggers.
-  But each breakpoint usually works and makes sense for one of them.
+Debugging rules change rather frequently, so they are documented in Wiki
+[PowerShellFar debugging](https://github.com/nightroman/FarNet/wiki/PowerShellFar-debugging).
 
 *********************************************************************
 ## Interactive
