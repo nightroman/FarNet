@@ -80,11 +80,11 @@ static class Help
 			return;
 
 		var title = $"Help {token.Content}";
-		var script = "Get-Help $args[0] -Full > $args[1]";
+		var script = "Get-Help $args[0] -Full | Out-File -LiteralPath $args[1] -Width $args[2]";
 		var file = FarNet.Works.Kit.TempFileName("txt");
 		try
 		{
-			A.InvokeCode(script, token.Content, file);
+			A.InvokeCode(script, token.Content, file, Far.Api.UI.WindowSize.X - 2);
 			ShowHelpFile(file, title, openMode);
 		}
 		catch (RuntimeException)

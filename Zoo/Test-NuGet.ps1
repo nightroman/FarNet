@@ -18,19 +18,13 @@ function Build-TempFolder {
 }
 
 function Test-Diff {
-	$diff = Compare-Object $Actual $Sample -SyncWindow 1
-	if ($diff) {
-		$diff | Out-String
-		$Actual | Set-Content "$tempFarHome\actual.txt"
-		$Sample | Set-Content "$tempFarHome\sample.txt"
-		if ($env:MERGE) {
-			& $env:MERGE "$tempFarHome\actual.txt" "$tempFarHome\sample.txt"
-		}
-		Write-Error "Actual list is different from sample. See $tempFarHome\actual.txt and sample.txt"
+	try {
+		Assert-SameFile -Fail -Text ($Sample | Out-String) ($Result | Out-String) $env:MERGE
 	}
-	else {
-		Write-Host -ForegroundColor Green OK
+	catch {
+		Write-Error $_
 	}
+	Write-Host -ForegroundColor Green OK
 }
 
 function Test-DiffUpdate($SampleFileName, $ExtraItems) {
@@ -69,9 +63,7 @@ $pack2 = (Resolve-Path "$HOME\FarNet.PowerShellFar.$PowerShellFarVersion.nupkg")
 Write-Host -ForegroundColor Cyan "Testing FarNet package..."
 Build-TempFolder
 & 7z.exe x $pack1 '-ir!tools' "-o$tempFarHome" > $null
-Push-Location $tempFarHome\tools
-$Actual = Get-ChildItem -Recurse -Force -Name | Sort-Object
-Pop-Location
+$Result = Get-ChildItem -LiteralPath $tempFarHome\tools -Recurse -Force -Name | Sort-Object
 $Sample = Get-Content $PSScriptRoot\Test-NuGet-FarNet.txt
 Test-Diff
 
@@ -79,9 +71,7 @@ Test-Diff
 Write-Host -ForegroundColor Cyan "Testing PowerShellFar package..."
 Build-TempFolder
 & 7z.exe x $pack2 '-ir!tools' "-o$tempFarHome" > $null
-Push-Location $tempFarHome\tools
-$Actual = Get-ChildItem -Recurse -Force -Name | Sort-Object
-Pop-Location
+$Result = Get-ChildItem -LiteralPath $tempFarHome\tools -Recurse -Force -Name | Sort-Object
 $Sample = Get-Content $PSScriptRoot\Test-NuGet-PowerShellFar.txt
 Test-Diff
 
@@ -91,9 +81,7 @@ Build-TempFolder
 foreach($platform in 'x64', 'x86') {
 	Write-Host -ForegroundColor Cyan "Testing FarNet update $platform..."
 	Restore-FarPackage $pack1 -FarHome $tempFarHome -Platform $platform
-	Push-Location $tempFarHome
-	$Actual = Get-ChildItem -Recurse -Force -Name | Sort-Object
-	Pop-Location
+	$Result = Get-ChildItem -LiteralPath $tempFarHome -Recurse -Force -Name | Sort-Object
 	Test-DiffUpdate Test-NuGet-FarNet.txt Update.FarNet.info
 }
 
@@ -101,9 +89,7 @@ foreach($platform in 'x64', 'x86') {
 Write-Host -ForegroundColor Cyan "Testing PowerShellFar update..."
 Build-TempFolder
 Restore-FarPackage $pack2 -FarHome $tempFarHome
-Push-Location $tempFarHome
-$Actual = Get-ChildItem -Recurse -Force -Name | Sort-Object
-Pop-Location
+$Result = Get-ChildItem -LiteralPath $tempFarHome -Recurse -Force -Name | Sort-Object
 Test-DiffUpdate Test-NuGet-PowerShellFar.txt Update.FarNet.PowerShellFar.info
 
 # end

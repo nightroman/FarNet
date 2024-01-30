@@ -1,5 +1,13 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 8.1.3 =
+
+New script Go-Everything.ps1
+
+Format help shown in the editor with the window width.
+
+Move debugging help to https://github.com/nightroman/FarNet/wiki/PowerShellFar-debugging
+
 = 8.1.2 =
 
 Microsoft.PowerShell.SDK 7.4.1
