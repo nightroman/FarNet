@@ -13,6 +13,21 @@ $ModuleName = 'JavaScriptFar'
 $ModuleRoot = "$FarHome\FarNet\Modules\$ModuleName"
 $Description = 'JavaScript scripting in Far Manager.'
 
+task meta -Inputs $BuildFile, History.txt -Outputs Directory.Build.props -Jobs version, {
+	Set-Content Directory.Build.props @"
+<Project>
+	<PropertyGroup>
+		<Description>$Description</Description>
+		<Company>https://github.com/nightroman/FarNet</Company>
+		<Copyright>Copyright (c) Roman Kuzmin</Copyright>
+		<Product>FarNet.$ModuleName</Product>
+		<Version>$Version</Version>
+		<IncludeSourceRevisionInInformationalVersion>False</IncludeSourceRevisionInInformationalVersion>
+	</PropertyGroup>
+</Project>
+"@
+}
+
 task build meta, {
 	exec { dotnet build -c $Configuration -p:FarHome=$FarHome }
 }
@@ -43,44 +58,43 @@ task package markdown, {
 	$toModule = mkdir "z\tools\FarHome\FarNet\Modules\$ModuleName"
 
 	# module
-	exec { robocopy $ModuleRoot $toModule /s /xf *.pdb } (0..2)
-	equals 11 (Get-ChildItem $toModule -Recurse -File).Count
+	exec { robocopy $ModuleRoot $toModule /s /xf *.pdb } 1
 
-	# meta
+	# nuget
 	Copy-Item -Destination z @(
 		'README.md'
 		'..\Zoo\FarNetLogo.png'
 	)
 
-	# repo
+	# about
 	Copy-Item -Destination $toModule @(
 		'README.htm'
 		'History.txt'
 		'..\LICENSE'
 	)
-}
 
-task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props -Jobs version, {
-	Set-Content Directory.Build.props @"
-<Project>
-	<PropertyGroup>
-		<Description>$Description</Description>
-		<Company>https://github.com/nightroman/FarNet</Company>
-		<Copyright>Copyright (c) Roman Kuzmin</Copyright>
-		<Product>FarNet.$ModuleName</Product>
-		<Version>$Version</Version>
-	</PropertyGroup>
-</Project>
-"@
+	Assert-SameFile -Text -View $env:MERGE -Result (Get-ChildItem $toModule -Force -Recurse -File -Name | Out-String) -Sample @'
+ClearScript.Core.dll
+ClearScript.V8.dll
+ClearScript.V8.ICUData.dll
+ClearScript.Windows.Core.dll
+ClearScript.Windows.dll
+History.txt
+JavaScriptFar.deps.json
+JavaScriptFar.dll
+JavaScriptFar.runtimeconfig.json
+LICENSE
+Newtonsoft.Json.dll
+README.htm
+runtimes\win-x64\native\ClearScriptV8.win-x64.dll
+runtimes\win-x86\native\ClearScriptV8.win-x86.dll
+'@
 }
 
 task nuget package, version, {
-	# test versions
-	$dllPath = "$FarHome\FarNet\Modules\$ModuleName\$ModuleName.dll"
-	($dllVersion = (Get-Item $dllPath).VersionInfo.FileVersion.ToString())
-	assert $dllVersion.StartsWith("$Version.") 'Versions mismatch.'
+	$dllVersion = (Get-Item "$FarHome\FarNet\Modules\$ModuleName\$ModuleName.dll").VersionInfo.ProductVersion
+	equals $Version $dllVersion
 
-	# nuspec
 	Set-Content z\Package.nuspec @"
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
@@ -99,7 +113,7 @@ task nuget package, version, {
 	</metadata>
 </package>
 "@
-	# pack
+
 	exec { NuGet pack z\Package.nuspec }
 }
 
