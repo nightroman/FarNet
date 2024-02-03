@@ -1,6 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 8.1.6 =
+
+IEdit.History and IEdit.IsPath may be changed in Far dialogs or set in module dialogs after opening.
+This needs Far 3.0.6266
+
 = 8.1.5 =
 
 Amend XPath internals

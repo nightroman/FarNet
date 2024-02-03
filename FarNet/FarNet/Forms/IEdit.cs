@@ -35,9 +35,6 @@ public interface IEdit : IControl, IEditable, IDropDown
 	/// <summary>
 	/// Gets or sets the history name. It overrides <see cref="Mask"/> text if any.
 	/// </summary>
-	/// <remarks>
-	/// Setting after opening is not yet implemented, this can be done when needed.
-	/// </remarks>
 	string History { get; set; }
 
 	/// <summary>

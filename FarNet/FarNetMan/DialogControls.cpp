@@ -410,9 +410,20 @@ String^ FarEdit::History::get()
 
 void FarEdit::History::set(String^ value)
 {
-	//! We can DM_SETHISTORY but why?
 	if (_dialog->_hDlg != INVALID_HANDLE_VALUE)
-		throw gcnew NotImplementedException;
+	{
+		if (SS(value))
+		{
+			SetFlag(DIF_HISTORY, true);
+
+			CStr str = value;
+			Info.SendDlgMessage(_dialog->_hDlg, DM_SETHISTORY, Id, (void*)str);
+		}
+		else
+		{
+			SetFlag(DIF_HISTORY, false);
+		}
+	}
 
 	_history = value;
 }
