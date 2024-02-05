@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Updates Far Manager and standard plugins.
@@ -7,104 +6,106 @@
 .Description
 	The script updates Far Manager and standard plugins.
 
-	Requirements
-	7z.exe in the path or as a wrapper command.
+	Requires:
+	- 7z.exe in the path or as a wrapper command.
 
-	If Far Manager is running the script prompts you to exit running instances
-	and waits until this is done. That is why you should not run the script in
-	Far Manager. On the other hand it is still useful to start the script from
-	Far Manager (using 'start' command or [ShiftEnter] in the command line), in
-	this case you do not have to set the parameter FARHOME.
+	If Far Manager is running the script prompts to exit its running instances.
+	Thus, do not run the script in Far Manager. But it is still useful to start
+	the script from Far Manager using `start` command or [ShiftEnter] in the
+	command line. In this case you do not have to set the parameter FARHOME.
 
 	$HOME directory is the destination for downloaded archives. Old files are
-	not deleted. Keep at least the last downloaded archive there, the script
-	downloads only new archives, if any.
+	not deleted. Keep the last downloaded archive there, the script downloads
+	only newer archives.
 
-	The script gets the latest web archive name. If the file already exists the
-	script exits. Otherwise it downloads the archive and starts extraction. It
-	extracts everything to the home directory and then removes plugin folders
-	that did not exist before.
+	The script gets the latest web asset name. If the file already exists the
+	script exits else it downloads the archive and extracts everything to
+	FARHOME. Then it removes plugin folders that did not exist before.
 
-	Finally the script checks and shows extra user items which do not exist in
-	the archive, e.g. user plugins and files and standard files excluded now.
+	The script also shows some existing items not found in the archive.
 
 .Parameter FARHOME
 		Far Manager directory. Default: %FARHOME%.
+
 .Parameter Platform
 		Platform: x64 or x86|Win32. Default: from Far.exe file info.
-.Parameter Version
-		Major Far version: 3 (default) or 2.
+
 .Parameter Archive
 		Already downloaded archive to be used.
-.Parameter Stable
-		Download and update only stable builds.
 
 .Example
-	ps: Start-Process PowerShell.exe '-NoExit Update-FarManager'; $Far.Quit()
+	ps: Start-Process powershell '-NoExit Update-FarManager'; $Far.Quit()
 
 	Update the current Far Manager in a new console and close the current.
 #>
 
 [CmdletBinding()]
 param(
-	[string]
-	$FARHOME = $env:FARHOME,
-	[string][ValidateSet('x64', 'x86', 'Win32')]
-	$Platform,
-	[int][ValidateSet(2, 3)]
-	$Version = 3,
-	[string]
-	$Archive,
-	[switch]
-	$Stable
+	[string]$FARHOME = $env:FARHOME
+	,
+	[ValidateSet('x64', 'x86', 'Win32')]
+	[string]$Platform
+	,
+	[string]$Archive
 )
 
-# Files to be removed after updates if they are originally missing.
-$NotUsedFiles = '*.hlf', '*.lng', '*.cmd', 'File_id.diz', 'changelog_eng'
+Set-StrictMode -Version 3
+$ErrorActionPreference = 1
+if ($Host.Name -ne 'ConsoleHost') {
+	Write-Error "Please invoke by the console host."
+}
 
-Set-StrictMode -Version Latest
-$ErrorActionPreference = 'Stop'
-if ($Host.Name -ne 'ConsoleHost') {Write-Error "Please, invoke by the console host."}
+# Files to be removed after updates if they did not exist.
+$NotUsedFiles = '*.hlf', '*.lng', '*.cmd', 'changelog', 'File_id.diz'
 
 ### FARHOME
-if ($FARHOME) {$FARHOME = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($FARHOME)}
-if (![IO.Directory]::Exists($FARHOME)) {Write-Error "Parameter FARHOME: missing directory '$FARHOME'."}
+if ($FARHOME) {
+	$FARHOME = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($FARHOME)
+}
+if (![System.IO.Directory]::Exists($FARHOME)) {
+	Write-Error "Parameter FARHOME: missing directory '$FARHOME'."
+}
 
 ### Platform
 if (!$Platform) {
 	if (!($exe = Get-Item -LiteralPath "$FARHOME\Far.exe" -ErrorAction 0) -or ($exe.VersionInfo.FileVersion -notmatch '\b(x86|x64)\b')) {
-		Write-Error "Cannot get info from Far.exe. Specify parameter Platform."
+		Write-Error "Cannot get platform info from Far.exe.`nSpecify the parameter Platform."
 	}
-	$Platform = $matches[1]
+	$Platform = $Matches[1]
 }
 
-### download if not yet
-#! DownloadFile() depends on IE Tools > Internet Options > Connections > LAN settings
-if (!$Archive) {
-	### get URL: stable, platform
-	$URL = if ($Stable) {"https://www.farmanager.com/files/update$Version.php"} else {"https://www.farmanager.com/nightly/update$Version.php"}
-	$URL += if ($Platform -eq 'x64') {'?p=64'} else {'?p=32'}
+### download
+if ($Archive) {
+	$Archive = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($Archive)
+	if (![System.IO.File]::Exists($Archive)) {
+		Write-Error "Missing file: $Archive"
+	}
+}
+else {
+	Write-Host -ForegroundColor Cyan "Getting the latest from 'https://github.com/FarGroup/FarManager/releases'..."
+	$url = 'https://api.github.com/repos/FarGroup/FarManager/releases/latest'
+	$ProgressPreference = 0
 
-	### look for updates (request the archive name)
-	Write-Host -ForegroundColor Cyan "Looking for updates at '$URL'..."
+	# fetch asset meta
+	$res = Invoke-RestMethod -Uri $url
+	$bit = if ($Platform -eq 'x64') {'x64'} else {'x86'}
+	$asset = @($res.assets.where{ $_.name -match "^Far\.$bit\.\d+\.\d+\.\d+\.\d+\.\w+\.7z$" })
+	if ($asset.Count -ne 1) {
+		Write-Error "Cannot find expected download assets."
+	}
 
-	[System.Net.ServicePointManager]::SecurityProtocol = "$([System.Net.ServicePointManager]::SecurityProtocol),Tls11,Tls12"
-	$wc = New-Object Net.WebClient
-	$initext = $wc.DownloadString($URL)
-	if ($initext -notmatch 'arc="(Far[^"]+\.7z)"') {Write-Error "Cannot get archive name from '$ini'."}
-
-	### exit if the archive exists
-	$Name = $matches[1]
-	$Archive = "$HOME\$Name"
-	if ([IO.File]::Exists($Archive)) {
-		Write-Host -ForegroundColor Cyan "The archive '$Archive' already exists; use the parameter -Archive to update from it."
+	# check existing file
+	$fileName = $Matches[0]
+	$Archive = "$HOME\$fileName"
+	if ([System.IO.File]::Exists($Archive)) {
+		Write-Host -ForegroundColor Cyan "The archive exists: '$Archive'.`nUse it as the parameter Archive to extract."
 		return
 	}
 
-	### download the archive
-	$URL = $(if ($Stable) {"http://www.farmanager.com/files/$Name"} else {"http://www.farmanager.com/nightly/$Name"})
-	Write-Host -ForegroundColor Cyan "Downloading '$Archive' from $URL..."
-	$wc.DownloadFile($URL, $Archive)
+	# download
+	Write-Host -ForegroundColor Cyan "Downloading '$Archive'..."
+	$url = $asset.browser_download_url
+	Invoke-WebRequest -Uri $url -OutFile $Archive
 }
 
 ### exit running
@@ -114,14 +115,16 @@ Wait-Process Far -ErrorAction 0
 ### extract all
 Write-Host -ForegroundColor Cyan "Extracting from '$Archive'..."
 $plugins1 = [System.IO.Directory]::GetDirectories("$FARHOME\Plugins")
-$files1 = foreach($_ in $NotUsedFiles) { [System.IO.Directory]::GetFiles($FARHOME, $_) }
+$files1 = foreach ($_ in $NotUsedFiles) { [System.IO.Directory]::GetFiles($FARHOME, $_) }
 & 7z.exe x $Archive "-o$FARHOME" '-aoa'
-if ($LastExitCode) {Write-Error "Error on extracting files."}
+if ($LastExitCode) {
+	Write-Error "Error on extracting files."
+}
 
 ### remove not used plugins
 Write-Host -ForegroundColor Cyan "Removing not used plugins..."
 $plugins2 = [System.IO.Directory]::GetDirectories("$FARHOME\Plugins")
-foreach($plugin in $plugins2) {
+foreach ($plugin in $plugins2) {
 	if ($plugins1 -notcontains $plugin) {
 		Write-Host "Removing $plugin"
 		[System.IO.Directory]::Delete($plugin, $true)
@@ -130,8 +133,10 @@ foreach($plugin in $plugins2) {
 
 ### remove not used files
 Write-Host -ForegroundColor Cyan "Removing not used files..."
-$files2 = foreach($_ in $NotUsedFiles) { [System.IO.Directory]::GetFiles($FARHOME, $_) }
-foreach($file in $files2) {
+$files2 = foreach ($_ in $NotUsedFiles) {
+	[System.IO.Directory]::GetFiles($FARHOME, $_)
+}
+foreach ($file in $files2) {
 	if ($files1 -notcontains $file) {
 		Write-Host "Removing $file"
 		[System.IO.File]::Delete($file)
@@ -142,16 +147,16 @@ foreach($file in $files2) {
 Write-Host -ForegroundColor Cyan "Checking extra items..."
 $nExtra = 0
 $inArchive = @{}
-.{ & 7z.exe l $Archive '-slt' | .{process{ if ($_ -match '^Path = (.+)') { $inArchive.Add($matches[1], $null) } }} }
-.{
-	Get-ChildItem $FarHome -Force -Name -ErrorAction 0
-	Get-ChildItem "$FarHome\Plugins" -Force -Name -ErrorAction 0 | .{process{ "Plugins\$_" }}
-	foreach($key in $inArchive.Keys) {
-		if ($key -match '^Plugins\\\w+$|^[^\\]+$' -and $key -ne 'Plugins' -and [IO.Directory]::Exists("$FARHOME\$key")) {
-			Get-ChildItem "$FARHOME\$key" -Recurse -Force -Name -ErrorAction 0 | .{process{ "$key\$_" }}
+& 7z.exe l $Archive -slt | .{process{ if ($_ -match '^Path = (.+)') { $inArchive.Add($matches[1], $null) } }}
+@(
+	Get-ChildItem -LiteralPath $FARHOME -Force -Name -ErrorAction 0
+	Get-ChildItem -LiteralPath "$FARHOME\Plugins" -Force -Name -ErrorAction 0 | .{process{ "Plugins\$_" }}
+	foreach ($key in $inArchive.Keys) {
+		if ($key -match '^Plugins\\\w+$|^[^\\]+$' -and $key -ne 'Plugins' -and [System.IO.Directory]::Exists("$FARHOME\$key")) {
+			Get-ChildItem -LiteralPath "$FARHOME\$key" -Force -Recurse -Name -ErrorAction 0 | .{process{ "$key\$_" }}
 		}
 	}
-} | .{process{
+) | .{process{
 	if (!$inArchive.ContainsKey($_)) {
 		$_
 		++$nExtra

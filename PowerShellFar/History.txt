@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 8.1.4 =
+
+Update-FarManager.ps1
+- downloads from GitHub releases
+- removed parameters Version and Stable
+
 = 8.1.3 =
 
 New script Go-Everything.ps1

@@ -50,14 +50,14 @@ Set-Location "C:\Program Files\Far Manager"
 Import Far package functions
 
 ```powershell
-Invoke-Expression (Invoke-WebRequest https://raw.githubusercontent.com/nightroman/FarNet/main/web.ps1)
+iex (iwr https://raw.githubusercontent.com/nightroman/FarNet/main/web.ps1)
 ```
 
 If it fails on older systems, try
 
 ```powershell
 [Net.ServicePointManager]::SecurityProtocol = "Tls11,Tls12,$([Net.ServicePointManager]::SecurityProtocol)"
-Invoke-Expression (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/nightroman/FarNet/main/web.ps1')
+iex (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/nightroman/FarNet/main/web.ps1')
 ```
 
 Install FarNet
@@ -107,7 +107,7 @@ Close Far Manager, open PowerShell console, and invoke
 
 ```powershell
 Set-Location "C:\Program Files\Far Manager"
-Invoke-Expression (Invoke-WebRequest https://raw.githubusercontent.com/nightroman/FarNet/main/web.ps1)
+iex (iwr https://raw.githubusercontent.com/nightroman/FarNet/main/web.ps1)
 ```
 
 To update all packages, use
@@ -130,9 +130,7 @@ Uninstall-FarPackage FarNet.PowerShellFar
 
 ## Install packages manually
 
-Given a package `Bar`, download it as:
-
-    https://nuget.org/api/v2/package/Bar
+Given a package `Bar`, download it as <https://nuget.org/api/v2/package/Bar>
 
 The downloaded file name is `Bar.<version>.nupkg`. This is a zip archive, you
 may save it with the zip extension for easier unpacking.
@@ -143,10 +141,14 @@ may contain `FarHome.x64` and `FarHome.x86` folders.
 Copy `FarHome` items to the Far Manager home directory preserving the folder
 structure. For example, by this command in Far Manager:
 
-    robocopy FarHome "%FARHOME%" /s
+```cmd
+robocopy FarHome "%FARHOME%" /s
+```
 
 If `FarHome.x64` and `FarHome.x86` exist then, depending on x64 or x86, copy
 items of `FarHome.x64` or `FarHome.x86` to Far Manager:
 
-    robocopy FarHome.x64 "%FARHOME%" /s
-    robocopy FarHome.x86 "%FARHOME%" /s
+```cmd
+robocopy FarHome.x64 "%FARHOME%" /s
+robocopy FarHome.x86 "%FARHOME%" /s
+```
