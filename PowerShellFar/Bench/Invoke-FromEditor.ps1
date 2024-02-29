@@ -6,6 +6,10 @@
 .Description
 	Saves the editor file and invokes it depending on its type.
 
+	For PowerShell scripts: if $env:pwsh is defined then it is used as the executable.
+	Normally it is pwsh.exe, installed or downloaded from their repo releases page.
+	Otherwise powershell.exe is used.
+
 	*.build.ps1, *.test.ps1
 	The current task is invoked in a new console by Invoke-Build (https://github.com/nightroman/Invoke-Build).
 	Note that built-in [F5] invokes in the Far Manager console and PowerShellFar session.
@@ -38,7 +42,7 @@ $editor.Save()
 $path = [System.IO.Path]::GetFullPath($editor.FileName)
 $ext = [System.IO.Path]::GetExtension($path)
 
-### PowerShell
+### PowerShell or $env:pwsh
 if ($ext -eq '.ps1') {
 	if ($path -match '\.(?:build|test)\.ps1$') {
 		# Invoke-Build
@@ -88,7 +92,12 @@ if ($ext -eq '.ps1') {
 			$path.Replace("'", "''")
 		)
 	}
-	Start-Process powershell.exe $arg
+
+	if (!($pwsh = $env:pwsh)) {
+		$pwsh = 'powershell.exe'
+	}
+
+	Start-Process $pwsh $arg
 	return
 }
 
