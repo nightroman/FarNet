@@ -1,6 +1,7 @@
 ﻿[<RequireQualifiedAccess>]
 module FSharpFar.SourceText
 open System
+open System.Text
 open FSharp.Compiler.Text
 
 // FCS `SourceText.ofString` is used as the sample, which is less effective in line-based cases.
@@ -44,6 +45,39 @@ type private LinesSourceText(lines: string []) =
 
         member __.CopyTo(sourceIndex, destination, destinationIndex, count) =
             str.CopyTo(sourceIndex, destination, destinationIndex, count)
+
+        // see FSharp.Compiler.Text.StringText
+        member __.GetSubTextFromRange(range) =
+            let totalAmountOfLines = lines.Length
+            if range.StartLine = 0 && range.StartColumn = 0 && range.EndLine = 0 && range.EndColumn = 0 then
+                String.Empty
+            else
+
+            if range.StartLine < 1 || range.StartLine - 1 > totalAmountOfLines || range.EndLine < 1 || range.EndLine - 1 > totalAmountOfLines then
+                raise (ArgumentException("The range is outside the file boundaries", "range"))
+
+            let startLine = range.StartLine - 1
+            let sourceText = __ :> ISourceText
+            let line = sourceText.GetLineString(startLine)
+
+            if range.StartLine = range.EndLine then
+                let length = range.EndColumn - range.StartColumn
+                line.Substring(range.StartColumn, length)
+            else
+
+            let firstLineContent = line.Substring(range.StartColumn)
+            let sb = StringBuilder().AppendLine(firstLineContent)
+            let mutable lineNumber = range.StartLine
+            let length = range.EndLine - 2
+            if length >= lineNumber then
+                let mutable work = true
+                while work do
+                    sb.AppendLine(sourceText.GetLineString(lineNumber)) |> ignore
+                    lineNumber <- lineNumber + 1
+                    work <- lineNumber <> length + 1
+
+            let lastLine = sourceText.GetLineString(range.EndLine - 1)
+            sb.Append(lastLine.Substring(0, range.EndColumn)).ToString()
 
 /// Creates a source text from the lines.
 //! Suitable for our line-based scenarios.

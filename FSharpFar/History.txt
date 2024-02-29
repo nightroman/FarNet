@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 
+= 4.0.1 =
+
+FSharp.Core 8.0.200
+FSharp.Compiler.Service 43.8.200
+
 = 4.0.0 =
 
 Requires .NET 8.0, FarNet 8.0.0

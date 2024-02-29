@@ -41,8 +41,8 @@
       <HintPath>$(FarHome)\FarNet\FarNet.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <PackageReference Include="FSharp.Core" Version="8.0.100" />
-    <PackageReference Include="FSharp.Compiler.Service" Version="43.8.100" />
+    <PackageReference Include="FSharp.Core" Version="8.0.200" />
+    <PackageReference Include="FSharp.Compiler.Service" Version="43.8.200" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="ib publish -Configuration $(Configuration) -FarHome $(FarHome)" />
