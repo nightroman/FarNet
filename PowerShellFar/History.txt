@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 8.1.5 =
+
+Invoke-FromEditor.ps1
+- Use $env:pwsh for PS scripts, if defined.
+
 = 8.1.4 =
 
 Update-FarManager.ps1

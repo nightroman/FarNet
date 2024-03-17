@@ -17,6 +17,7 @@
 
 .Parameter Filter
 		Specifies the search filter used by Everything.
+		See: help Search-Everything -Parameter Filter
 
 .Parameter Limit
 		Specifies the maximum number of results.
