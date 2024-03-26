@@ -27,6 +27,7 @@ namespace HtmlToFarHelp
 		bool _br;
 		bool _started;
 		bool _needNewLine;
+		bool _internalHeading;
 		int _emphasis;
 		int _countTextInPara;
 		int _para;
@@ -351,6 +352,12 @@ namespace HtmlToFarHelp
 			if (_topicContentsId != null && (id == null || string.CompareOrdinal(tag, _options.TopicHeading) > 0))
 			{
 				// internal heading
+				_internalHeading = true;
+
+				// empty lines
+				for (int n = _options.EmptyLinesBeforeHeading; n > 1; --n)
+					_writer.WriteLine();
+
 				if (_options.CenterHeading)
 					_writer.Write("^");
 				else
@@ -375,6 +382,10 @@ namespace HtmlToFarHelp
 					if (!_topics.Add(id))
 						Throw(string.Format(ErrTwoTopics, id));
 
+					// empty lines
+					for (int n = _options.EmptyLinesBeforeTopic; n > 1; --n)
+						_writer.WriteLine();
+
 					_writer.WriteLine("@{0}", id);
 				}
 
@@ -393,10 +404,18 @@ namespace HtmlToFarHelp
 
 		void Heading2()
 		{
-			_emphasis = 0;
-
 			if (!_options.PlainHeading)
 				_writer.Write("#");
+
+			// empty lines
+			if (_internalHeading)
+			{
+				for (int n = _options.EmptyLinesAfterHeading; n > 1; --n)
+					_writer.WriteLine();
+			}
+
+			_emphasis = 0;
+			_internalHeading = false;
 		}
 
 		void Emphasis1()

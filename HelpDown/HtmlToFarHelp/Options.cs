@@ -21,6 +21,9 @@ namespace HtmlToFarHelp
 		public string Language { get; private set; }
 		public string PluginContents { get; private set; }
 		public string TopicHeading { get; private set; }
+		public int EmptyLinesBeforeTopic { get; private set; }
+		public int EmptyLinesAfterHeading { get; private set; }
+		public int EmptyLinesBeforeHeading { get; private set; }
 
 		public static Options CreateDefault()
 		{
@@ -31,7 +34,10 @@ namespace HtmlToFarHelp
 				IndentList = 2,
 				IndentQuote = 4,
 				Language = "English,English",
-				TopicHeading = "h6"
+				TopicHeading = "h6",
+				EmptyLinesBeforeTopic = 1,
+				EmptyLinesAfterHeading = 1,
+				EmptyLinesBeforeHeading = 1,
 			};
 		}
 
@@ -67,7 +73,10 @@ namespace HtmlToFarHelp
 						case "plainheading": options.PlainHeading = bool.Parse(value); break;
 						case "plugincontents": options.PluginContents = value; break;
 						case "topicheading": options.TopicHeading = ParseTopicHeading(value); break;
-						default: throw new FormatException($"Unknown option: 'it.Key'.");
+						case "emptylinesbeforetopic": options.EmptyLinesBeforeTopic = int.Parse(value); break;
+						case "emptylinesafterheading": options.EmptyLinesAfterHeading = int.Parse(value); break;
+						case "emptylinesbeforeheading": options.EmptyLinesBeforeHeading = int.Parse(value); break;
+						default: throw new FormatException($"Unknown option: '{it.Key}'.");
 					}
 				}
 			}

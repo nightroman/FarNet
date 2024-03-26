@@ -59,6 +59,9 @@ HTML. Here is the example with all available keys and default values:
         PlainCode = false;
         PlainHeading = false;
         CenterHeading = false;
+        EmptyLinesBeforeTopic = 1;
+        EmptyLinesAfterHeading = 1;
+        EmptyLinesBeforeHeading = 1;
     -->
 
 Global options should be defined before the first heading, `Language` and

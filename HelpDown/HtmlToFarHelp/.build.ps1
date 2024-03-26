@@ -21,18 +21,16 @@ param(
 	$Configuration = 'Release',
 	$TestHome = "$HOME\data\HelpDown"
 )
-Set-StrictMode -Version 2
+
+Set-StrictMode -Version 3
 
 function Get-Version {
 	switch -Regex -File Release-Notes.md { '##\s+v(\d+\.\d+\.\d+)' {return $Matches[1]} }
 }
 
-task meta @{
-	Inputs = '.build.ps1', 'Release-Notes.md'
-	Outputs = 'Directory.Build.props'
-	Jobs = {
-		$Version = Get-Version
-		Set-Content Directory.Build.props @"
+task meta -Inputs .build.ps1, Release-Notes.md -Outputs Directory.Build.props -Jobs {
+	$Version = Get-Version
+	Set-Content Directory.Build.props @"
 <Project>
 	<PropertyGroup>
 		<Company>https://github.com/nightroman/FarNet</Company>
@@ -43,7 +41,6 @@ task meta @{
 	</PropertyGroup>
 </Project>
 "@
-	}
 }
 
 task build {

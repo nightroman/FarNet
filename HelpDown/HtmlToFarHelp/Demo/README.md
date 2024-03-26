@@ -16,6 +16,9 @@ Use an empty set in order to reset options to global.
     CenterHeading = false;
     PlainCode = false;
     PlainHeading = false;
+    EmptyLinesBeforeTopic = 1;
+    EmptyLinesAfterHeading = 1;
+    EmptyLinesBeforeHeading = 1;
 -->
 
 <!--The first heading becomes the main help topic "Contents"-->

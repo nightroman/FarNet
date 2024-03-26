@@ -1,5 +1,9 @@
 # HtmlToFarHelp Release Notes
 
+## v1.3.8
+
+New options `EmptyLinesBeforeTopic`, `EmptyLinesAfterHeading`, `EmptyLinesBeforeHeading`
+
 ## v1.3.7
 
 Fix escaping in links.
