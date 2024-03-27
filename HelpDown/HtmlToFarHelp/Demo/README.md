@@ -584,3 +584,28 @@ line1\
     see [link](https://github.com/nightroman/FarNet/issues/44)
 
 *********************************************************************
+
+<!--HLF:
+    EmptyLinesBeforeTopic = 2;
+    EmptyLinesAfterHeading = 2;
+    EmptyLinesBeforeHeading = 2;
+-->
+
+## Custom empty lines
+### First internal heading
+
+some text
+
+### Heading after para
+### Heading after heading
+
+here we reset options to default
+
+<!--HLF:-->
+
+### Heading after para
+### Heading after heading
+
+some text
+
+*********************************************************************

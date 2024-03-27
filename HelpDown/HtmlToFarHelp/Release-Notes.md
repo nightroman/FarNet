@@ -1,5 +1,9 @@
 # HtmlToFarHelp Release Notes
 
+## v1.3.9
+
+Ignore `EmptyLinesBeforeHeading` for headings after headings.
+
 ## v1.3.8
 
 New options `EmptyLinesBeforeTopic`, `EmptyLinesAfterHeading`, `EmptyLinesBeforeHeading`

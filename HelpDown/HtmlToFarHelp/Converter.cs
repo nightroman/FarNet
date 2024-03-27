@@ -27,11 +27,11 @@ namespace HtmlToFarHelp
 		bool _br;
 		bool _started;
 		bool _needNewLine;
-		bool _internalHeading;
 		int _emphasis;
 		int _countTextInPara;
 		int _para;
 		int _quote;
+		int _internalHeadings;
 		readonly Stack<ListInfo> _list = new Stack<ListInfo>();
 		string _IndentCode_;
 		string IndentCode { get { return _quote == 0 ? _IndentCode_ : _IndentCode_ + "".PadRight(_quote * _options.IndentQuote, ' '); } }
@@ -236,8 +236,10 @@ namespace HtmlToFarHelp
 			}
 		}
 
+		bool _isLastElementHeading;
 		void EndElement()
 		{
+			_isLastElementHeading = false;
 			switch (_reader.Name)
 			{
 				case "blockquote": Quote2(); break;
@@ -251,7 +253,7 @@ namespace HtmlToFarHelp
 				case "h3":
 				case "h4":
 				case "h5":
-				case "h6": Heading2(); break;
+				case "h6": Heading2(); _isLastElementHeading = true; break;
 				case "kbd": Emphasis2(); break;
 				case "li": Item2(); break;
 				case "ol": List2(); break;
@@ -345,18 +347,20 @@ namespace HtmlToFarHelp
 		{
 			Start();
 
-			_writer.WriteLine();
-			_writer.WriteLine();
-
 			var id = _reader.GetAttribute("id");
 			if (_topicContentsId != null && (id == null || string.CompareOrdinal(tag, _options.TopicHeading) > 0))
 			{
 				// internal heading
-				_internalHeading = true;
+				++_internalHeadings;
 
 				// empty lines
-				for (int n = _options.EmptyLinesBeforeHeading; n > 1; --n)
-					_writer.WriteLine();
+				_writer.WriteLine();
+				_writer.WriteLine();
+				if (!_isLastElementHeading)
+				{
+					for (int n = _options.EmptyLinesBeforeHeading; n > 1; --n)
+						_writer.WriteLine();
+				}
 
 				if (_options.CenterHeading)
 					_writer.Write("^");
@@ -365,10 +369,15 @@ namespace HtmlToFarHelp
 			}
 			else
 			{
+				// new topic heading
+				_internalHeadings = 0;
+
 				if (_verbose)
 					Console.Out.WriteLine($"HeadingId={id}");
 
-				// new topic heading
+				_writer.WriteLine();
+				_writer.WriteLine();
+
 				if (_topicContentsId == null)
 				{
 					// first topic becomes "Contents"
@@ -408,14 +417,13 @@ namespace HtmlToFarHelp
 				_writer.Write("#");
 
 			// empty lines
-			if (_internalHeading)
+			if (_internalHeadings > 0)
 			{
 				for (int n = _options.EmptyLinesAfterHeading; n > 1; --n)
 					_writer.WriteLine();
 			}
 
 			_emphasis = 0;
-			_internalHeading = false;
 		}
 
 		void Emphasis1()
