@@ -43,7 +43,7 @@ task meta -Inputs .build.ps1, Release-Notes.md -Outputs Directory.Build.props -J
 "@
 }
 
-task build {
+task build meta, {
 	exec { dotnet build -c $Configuration }
 	Copy-Item -Destination $Bin -LiteralPath Bin\$Configuration\net472\HtmlToFarHelp.exe
 }

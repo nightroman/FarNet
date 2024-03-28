@@ -1,5 +1,9 @@
 # HtmlToFarHelp Release Notes
 
+## v1.3.10
+
+New options `HighlightListBullet`, `HighlightListNumber`
+
 ## v1.3.9
 
 Ignore `EmptyLinesBeforeHeading` for headings after headings.

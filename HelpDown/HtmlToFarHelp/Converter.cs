@@ -460,6 +460,12 @@ namespace HtmlToFarHelp
 			_writer.Write(IndentPara);
 		}
 
+		string GetListPrefixOrdered() =>
+			_options.HighlightListNumber ? "#{0}.# " : "{0}. ";
+
+		string GetListPrefixUnordered() =>
+			_options.HighlightListBullet ? "#•# " : "• ";
+
 		void Item1()
 		{
 			if (_list.Count == 0)
@@ -482,10 +488,10 @@ namespace HtmlToFarHelp
 			switch (list.Kind)
 			{
 				case ListKind.Ordered:
-					_writer.Write("{0}. " + ArgWrap, list.ItemCount);
+					_writer.Write(GetListPrefixOrdered() + ArgWrap, list.ItemCount);
 					break;
 				case ListKind.Unordered:
-					_writer.Write("• " + ArgWrap);
+					_writer.Write(GetListPrefixUnordered() + ArgWrap);
 					break;
 				case ListKind.Definition:
 					_writer.Write("  " + ArgWrap);

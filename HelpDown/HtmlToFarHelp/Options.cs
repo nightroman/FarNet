@@ -11,8 +11,13 @@ namespace HtmlToFarHelp
 	struct Options
 	{
 		public bool CenterHeading { get; private set; }
+		public bool HighlightListBullet { get; private set; }
+		public bool HighlightListNumber { get; private set; }
 		public bool PlainCode { get; private set; }
 		public bool PlainHeading { get; private set; }
+		public int EmptyLinesAfterHeading { get; private set; }
+		public int EmptyLinesBeforeHeading { get; private set; }
+		public int EmptyLinesBeforeTopic { get; private set; }
 		public int IndentCode { get; private set; }
 		public int IndentList { get; private set; }
 		public int IndentPara { get; private set; }
@@ -21,9 +26,6 @@ namespace HtmlToFarHelp
 		public string Language { get; private set; }
 		public string PluginContents { get; private set; }
 		public string TopicHeading { get; private set; }
-		public int EmptyLinesBeforeTopic { get; private set; }
-		public int EmptyLinesAfterHeading { get; private set; }
-		public int EmptyLinesBeforeHeading { get; private set; }
 
 		public static Options CreateDefault()
 		{
@@ -63,6 +65,11 @@ namespace HtmlToFarHelp
 					switch (it.Key.ToString())
 					{
 						case "centerheading": options.CenterHeading = bool.Parse(value); break;
+						case "emptylinesafterheading": options.EmptyLinesAfterHeading = int.Parse(value); break;
+						case "emptylinesbeforeheading": options.EmptyLinesBeforeHeading = int.Parse(value); break;
+						case "emptylinesbeforetopic": options.EmptyLinesBeforeTopic = int.Parse(value); break;
+						case "highlightlistbullet": options.HighlightListBullet = bool.Parse(value); break;
+						case "highlightlistnumber": options.HighlightListNumber = bool.Parse(value); break;
 						case "indentcode": options.IndentCode = int.Parse(value); break;
 						case "indentlist": options.IndentList = int.Parse(value); break;
 						case "indentpara": options.IndentPara = int.Parse(value); break;
@@ -73,9 +80,6 @@ namespace HtmlToFarHelp
 						case "plainheading": options.PlainHeading = bool.Parse(value); break;
 						case "plugincontents": options.PluginContents = value; break;
 						case "topicheading": options.TopicHeading = ParseTopicHeading(value); break;
-						case "emptylinesbeforetopic": options.EmptyLinesBeforeTopic = int.Parse(value); break;
-						case "emptylinesafterheading": options.EmptyLinesAfterHeading = int.Parse(value); break;
-						case "emptylinesbeforeheading": options.EmptyLinesBeforeHeading = int.Parse(value); break;
 						default: throw new FormatException($"Unknown option: '{it.Key}'.");
 					}
 				}
