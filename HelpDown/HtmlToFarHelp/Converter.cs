@@ -460,11 +460,26 @@ namespace HtmlToFarHelp
 			_writer.Write(IndentPara);
 		}
 
-		string GetListPrefixOrdered() =>
-			_options.HighlightListNumber ? "#{0}.# " : "{0}. ";
+		string GetListPrefixOrdered()
+		{
+			return _options.HighlightListNumber ? "#{0}.# " : "{0}. ";
+		}
 
-		string GetListPrefixUnordered() =>
-			_options.HighlightListBullet ? $"#{_options.ListBullet}# " : $"{_options.ListBullet} ";
+		string GetListPrefixUnordered()
+		{
+			string bullet;
+			if (_options.ListBullet is null)
+			{
+				bullet = Options.DefaultBullet;
+			}
+			else
+			{
+				var index = _list.Count <= _options.ListBullet.Length ? _list.Count - 1 : _options.ListBullet.Length - 1;
+				bullet = _options.ListBullet[index];
+			}
+
+			return _options.HighlightListBullet ? $"#{bullet}# " : $"{bullet} ";
+		}
 
 		void Item1()
 		{

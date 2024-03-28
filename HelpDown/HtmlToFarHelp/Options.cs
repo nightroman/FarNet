@@ -24,9 +24,12 @@ namespace HtmlToFarHelp
 		public int IndentQuote { get; private set; }
 		public int Margin { get; private set; }
 		public string Language { get; private set; }
-		public string ListBullet { get; private set; }
 		public string PluginContents { get; private set; }
 		public string TopicHeading { get; private set; }
+		public string[] ListBullet { get; private set; }
+
+		public const string DefaultBullet = "•";
+		static readonly char[] BulletSeparator = new char[] { ' ' };
 
 		public static Options CreateDefault()
 		{
@@ -39,7 +42,6 @@ namespace HtmlToFarHelp
 				IndentList = 2,
 				IndentQuote = 4,
 				Language = "English,English",
-				ListBullet = "•",
 				Margin = 1,
 				TopicHeading = "h6",
 			};
@@ -50,6 +52,12 @@ namespace HtmlToFarHelp
 			if (value.Length != 2 || value[0] != 'h' || value[1] < '1' || value[1] > '6')
 				throw new InvalidOperationException("TopicHeading must be h1 - h6");
 			return value;
+		}
+
+		static string[] ParseListBullet(string value)
+		{
+			var parts = value.Split(BulletSeparator, StringSplitOptions.RemoveEmptyEntries);
+			return parts.Length > 0 ? parts : null;
 		}
 
 		public static Options Parse(Options options, string optionString)
@@ -77,7 +85,7 @@ namespace HtmlToFarHelp
 						case "indentpara": options.IndentPara = int.Parse(value); break;
 						case "indentquote": options.IndentQuote = int.Parse(value); break;
 						case "language": options.Language = value; break;
-						case "listbullet": options.ListBullet = value; break;
+						case "listbullet": options.ListBullet = ParseListBullet(value); break;
 						case "margin": options.Margin = int.Parse(value); break;
 						case "plaincode": options.PlainCode = bool.Parse(value); break;
 						case "plainheading": options.PlainHeading = bool.Parse(value); break;

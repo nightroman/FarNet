@@ -370,18 +370,19 @@ para 2.1
 <!--HLF:
     HighlightListBullet = true;
     HighlightListNumber = true;
-    ListBullet = ⚠️
+    ListBullet = ⚠️ ☕ ;
 -->
-
-### HighlightListBullet
-
-* Item 1.
-* Item 2.
 
 ### HighlightListNumber
 
 1. Apples
 1. Pears
+
+### ListBullet and HighlightListBullet
+
+* Item 1.
+    * Item 2.
+        * Item 3.
 
 <!--HLF:-->
 

@@ -88,6 +88,10 @@ Example:
     <!--reset options to global-->
     <!--HLF:-->
 
+`ListBullet` is one one more space separated strings used as list item bullet
+symbols. Positions correspond to list item depths. The last string is used for
+all deeper levels.
+
 ### Headings and topics
 
 The first heading, any of `h1` - `h6`, with or without identifier, becomes the
