@@ -64,6 +64,7 @@ HTML. Here is the example with all available keys and default values:
         EmptyLinesBeforeHeading = 1;
         HighlightListBullet = false;
         HighlightListNumber = false;
+        ListBullet = ;
     -->
 
 Global options should be defined before the first heading, `Language` and

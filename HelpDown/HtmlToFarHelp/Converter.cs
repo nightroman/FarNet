@@ -464,7 +464,7 @@ namespace HtmlToFarHelp
 			_options.HighlightListNumber ? "#{0}.# " : "{0}. ";
 
 		string GetListPrefixUnordered() =>
-			_options.HighlightListBullet ? "#•# " : "• ";
+			_options.HighlightListBullet ? $"#{_options.ListBullet}# " : $"{_options.ListBullet} ";
 
 		void Item1()
 		{

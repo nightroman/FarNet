@@ -21,6 +21,7 @@ Use an empty set in order to reset options to global.
     EmptyLinesBeforeHeading = 1;
     HighlightListBullet = false;
     HighlightListNumber = false;
+    ListBullet = ;
 -->
 
 <!--The first heading becomes the main help topic "Contents"-->
@@ -369,6 +370,7 @@ para 2.1
 <!--HLF:
     HighlightListBullet = true;
     HighlightListNumber = true;
+    ListBullet = ⚠️
 -->
 
 ### HighlightListBullet

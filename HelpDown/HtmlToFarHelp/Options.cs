@@ -24,6 +24,7 @@ namespace HtmlToFarHelp
 		public int IndentQuote { get; private set; }
 		public int Margin { get; private set; }
 		public string Language { get; private set; }
+		public string ListBullet { get; private set; }
 		public string PluginContents { get; private set; }
 		public string TopicHeading { get; private set; }
 
@@ -31,15 +32,16 @@ namespace HtmlToFarHelp
 		{
 			return new Options()
 			{
-				Margin = 1,
+				EmptyLinesAfterHeading = 1,
+				EmptyLinesBeforeHeading = 1,
+				EmptyLinesBeforeTopic = 1,
 				IndentCode = 4,
 				IndentList = 2,
 				IndentQuote = 4,
 				Language = "English,English",
+				ListBullet = "•",
+				Margin = 1,
 				TopicHeading = "h6",
-				EmptyLinesBeforeTopic = 1,
-				EmptyLinesAfterHeading = 1,
-				EmptyLinesBeforeHeading = 1,
 			};
 		}
 
@@ -75,6 +77,7 @@ namespace HtmlToFarHelp
 						case "indentpara": options.IndentPara = int.Parse(value); break;
 						case "indentquote": options.IndentQuote = int.Parse(value); break;
 						case "language": options.Language = value; break;
+						case "listbullet": options.ListBullet = value; break;
 						case "margin": options.Margin = int.Parse(value); break;
 						case "plaincode": options.PlainCode = bool.Parse(value); break;
 						case "plainheading": options.PlainHeading = bool.Parse(value); break;

@@ -1,5 +1,9 @@
 # HtmlToFarHelp Release Notes
 
+## v1.3.11
+
+New option `ListBullet`
+
 ## v1.3.10
 
 New options `HighlightListBullet`, `HighlightListNumber`
