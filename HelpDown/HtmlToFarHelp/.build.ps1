@@ -24,12 +24,11 @@ param(
 
 Set-StrictMode -Version 3
 
-function Get-Version {
-	switch -Regex -File Release-Notes.md { '##\s+v(\d+\.\d+\.\d+)' {return $Matches[1]} }
+task version {
+	($Script:Version = switch -Regex -File Release-Notes.md { '##\s+v(\d+\.\d+\.\d+)' {$Matches[1]; break} })
 }
 
-task meta -Inputs .build.ps1, Release-Notes.md -Outputs Directory.Build.props -Jobs {
-	$Version = Get-Version
+task meta -Inputs .build.ps1, Release-Notes.md -Outputs Directory.Build.props -Jobs version, {
 	Set-Content Directory.Build.props @"
 <Project>
 	<PropertyGroup>
@@ -48,7 +47,7 @@ task build meta, {
 	Copy-Item -Destination $Bin -LiteralPath Bin\$Configuration\net472\HtmlToFarHelp.exe
 }
 
-# Convert markdown for packaging
+# Convert markdown
 task markdown {
 	exec { pandoc.exe README.md --output=README.htm --from=gfm --standalone --metadata=pagetitle:HtmlToFarHelp }
 	Demo\Convert-MarkdownToHelp.ps1
@@ -60,24 +59,28 @@ task clean {
 }
 
 # Make package in z\tools
-task package markdown, {
+task package markdown, version, {
+	equals (Get-Command HtmlToFarHelp.exe).FileVersionInfo.FileVersion "$Version.0"
+
 	# package folder
 	remove z
 	$null = mkdir z\tools\Demo
 
-	# copy files
-	Copy-Item -Destination z\tools LICENSE, README.htm, $Bin\HtmlToFarHelp.exe
-	Copy-Item -Destination z\tools\Demo Demo\*
+	# nuget files
+	Copy-Item -Destination z @(
+		'HtmlToFarHelp.png'
+		'README.md'
+	)
 
-	# icon
-	$null = mkdir z\images
-	Copy-Item HtmlToFarHelp.png z\images
-}
-
-# Get version
-task version {
-	($script:Version = Get-Version)
-	equals (Get-Command HtmlToFarHelp.exe).FileVersionInfo.FileVersion "$Version.0"
+	# main files
+	Copy-Item -Destination z\tools @(
+		'LICENSE'
+		'README.htm'
+		"$Bin\HtmlToFarHelp.exe"
+	)
+	Copy-Item -Destination z\tools\Demo @(
+		'Demo\*'
+	)
 }
 
 # Make NuGet package
@@ -89,24 +92,26 @@ topic anchors, valid topic links, and etc.
 
 The tool requires .NET Framework 4.7.2.
 '@
-	# NuGet file
+
 	Set-Content z\Package.nuspec @"
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
 		<id>HtmlToFarHelp</id>
 		<version>$Version</version>
-		<owners>Roman Kuzmin</owners>
 		<authors>Roman Kuzmin</authors>
-		<projectUrl>https://github.com/nightroman/FarNet/tree/main/HelpDown/HtmlToFarHelp</projectUrl>
-		<icon>images\HtmlToFarHelp.png</icon>
+		<owners>Roman Kuzmin</owners>
 		<license type="expression">Apache-2.0</license>
+		<icon>HtmlToFarHelp.png</icon>
+		<readme>README.md</readme>
+		<projectUrl>https://github.com/nightroman/FarNet/tree/main/HelpDown/HtmlToFarHelp</projectUrl>
 		<description>$description</description>
+		<releaseNotes>https://github.com/nightroman/FarNet/blob/main/HelpDown/HtmlToFarHelp/Release-Notes.md</releaseNotes>
 		<tags>FarManager Markdown HTML HLF</tags>
 	</metadata>
 </package>
 "@
-	# pack
+
 	exec { NuGet.exe pack z\Package.nuspec -NoPackageAnalysis }
 }
 

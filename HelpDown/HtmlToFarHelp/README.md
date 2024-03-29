@@ -14,7 +14,7 @@ The tool requires .NET Framework 4.7.2.
 Get the tool as the NuGet package [HtmlToFarHelp](https://www.nuget.org/packages/HtmlToFarHelp).
 You may download and unpack it to the current location by this PowerShell command:
 
-    Invoke-Expression "& {$((New-Object Net.WebClient).DownloadString('https://github.com/nightroman/PowerShelf/raw/main/Save-NuGetTool.ps1'))} HtmlToFarHelp"
+    iex "& {$(irm https://raw.githubusercontent.com/nightroman/PowerShelf/main/Save-NuGetTool.ps1)} HtmlToFarHelp"
 
 ## Syntax
 
