@@ -19,9 +19,10 @@ Use an empty set in order to reset options to global.
     EmptyLinesBeforeTopic = 1;
     EmptyLinesAfterHeading = 1;
     EmptyLinesBeforeHeading = 1;
+    ListBullet = ;
+    ListItemEmptyLine = false;
     HighlightListBullet = false;
     HighlightListNumber = false;
-    ListBullet = ;
 -->
 
 <!--The first heading becomes the main help topic "Contents"-->
@@ -368,17 +369,25 @@ para 1.1
 para 2.1
 
 <!--HLF:
+    ListBullet = ⚠️ ☕ ;
+    ListItemEmptyLine = true;
     HighlightListBullet = true;
     HighlightListNumber = true;
-    ListBullet = ⚠️ ☕ ;
 -->
 
-### HighlightListNumber
+### Extra list options
+
+    <!--HLF:
+        ListBullet = ⚠️ ☕ ;
+        ListItemEmptyLine = true;
+        HighlightListBullet = true;
+        HighlightListNumber = true;
+    -->
+
 
 1. Apples
 1. Pears
 
-### ListBullet and HighlightListBullet
 
 * Item 1.
     * Item 2.

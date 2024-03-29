@@ -494,7 +494,7 @@ namespace HtmlToFarHelp
 
 			_writer.WriteLine();
 
-			if (list.CountParaInItem > 0 && list.Kind != ListKind.Definition)
+			if ((list.CountParaInItem > 0 || _options.ListItemEmptyLine) && list.Kind != ListKind.Definition)
 				_writer.WriteLine();
 
 			list.CountParaInItem = 0;

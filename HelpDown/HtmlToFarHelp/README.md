@@ -62,9 +62,10 @@ HTML. Here is the example with all available keys and default values:
         EmptyLinesBeforeTopic = 1;
         EmptyLinesAfterHeading = 1;
         EmptyLinesBeforeHeading = 1;
+        ListBullet = ;
+        ListItemEmptyLine = false;
         HighlightListBullet = false;
         HighlightListNumber = false;
-        ListBullet = ;
     -->
 
 Global options should be defined before the first heading, `Language` and
@@ -91,6 +92,8 @@ Example:
 `ListBullet` is one one more space separated strings used as list item bullet
 symbols. Positions correspond to list item depths. The last string is used for
 all deeper levels.
+
+`ListItemEmptyLine` tells to use an empty line between list items.
 
 ### Headings and topics
 

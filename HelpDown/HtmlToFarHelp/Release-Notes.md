@@ -1,5 +1,9 @@
 # HtmlToFarHelp Release Notes
 
+## v1.3.13
+
+New option `ListItemEmptyLine`
+
 ## v1.3.12
 
 `ListBullet` supports one or more strings

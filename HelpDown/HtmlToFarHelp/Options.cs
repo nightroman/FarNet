@@ -13,6 +13,7 @@ namespace HtmlToFarHelp
 		public bool CenterHeading { get; private set; }
 		public bool HighlightListBullet { get; private set; }
 		public bool HighlightListNumber { get; private set; }
+		public bool ListItemEmptyLine { get; private set; }
 		public bool PlainCode { get; private set; }
 		public bool PlainHeading { get; private set; }
 		public int EmptyLinesAfterHeading { get; private set; }
@@ -86,6 +87,7 @@ namespace HtmlToFarHelp
 						case "indentquote": options.IndentQuote = int.Parse(value); break;
 						case "language": options.Language = value; break;
 						case "listbullet": options.ListBullet = ParseListBullet(value); break;
+						case "listitememptyline": options.ListItemEmptyLine = bool.Parse(value); break;
 						case "margin": options.Margin = int.Parse(value); break;
 						case "plaincode": options.PlainCode = bool.Parse(value); break;
 						case "plainheading": options.PlainHeading = bool.Parse(value); break;
