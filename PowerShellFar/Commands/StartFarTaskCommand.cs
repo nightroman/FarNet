@@ -93,14 +93,27 @@ param($Script, $Data, $Arguments)
 
 	[Parameter]
 	[ValidateNotNull]
-	public string[] Data
+	public object[] Data
 	{
 		set
 		{
-			foreach (var name in value)
+			foreach (var item in value)
 			{
-				var variable = SessionState.PSVariable.Get(name) ?? throw new PSArgumentException($"Variable {name} is not found.");
-				_data.Add(variable.Name, variable.Value);
+				var nameOrData = PS2.BaseObject(item);
+				if (nameOrData is string name)
+				{
+					var variable = SessionState.PSVariable.Get(name) ?? throw new PSArgumentException($"Variable {name} is not found.");
+					_data.Add(variable.Name, variable.Value);
+				}
+				else if (nameOrData is IDictionary data)
+				{
+					foreach (DictionaryEntry kv in data)
+						_data[kv.Key] = kv.Value;
+				}
+				else
+				{
+					throw new PSArgumentNullException($"Invalid Data item type: {nameOrData?.GetType()}.");
+				}
 			}
 		}
 	}

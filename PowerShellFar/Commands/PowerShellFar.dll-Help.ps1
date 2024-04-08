@@ -647,8 +647,13 @@ Example: 'FullName' or {$_.FullName} tell to use a property FullName.
 		Script = 'Specifies the task as script file, block, or code.'
 		AsTask = 'Tells to return the started task.'
 		Data = @'
-Specifies variables to import from the current session to the task $Data.
-Notes: (1) specify variable names, not values; (2) variables must exist.
+The list of variable names or hashtables exposed as the task variable $Data.
+
+If an item is variable name then it is added to $Data as {name, value}.
+The variable must exist and its name must be unique as $Data key.
+
+If an item is hashtable then its entries are merged into $Data overriding
+existing with same names.
 '@
 		AddDebugger = @'
 Tells to use Add-Debugger.ps1 and specifies its parameters as dictionary.

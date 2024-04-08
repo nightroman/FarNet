@@ -1,5 +1,17 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 8.1.6 =
+
+Start-FarTask -Data may accept hashtables.
+
+New Bench scripts
+- Send-FarRedisTask.ps1
+- Register-FarRedisTask.ps1
+
+see Samples/FarRedisTask
+- Test-1.PingPong.far.ps1
+- Test-2.EditFile.far.ps1
+
 = 8.1.5 =
 
 Invoke-FromEditor.ps1

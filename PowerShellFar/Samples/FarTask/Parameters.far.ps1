@@ -1,20 +1,18 @@
 <#
 .Synopsis
-	How to pass variables in task script blocks.
+	How to pass variables or hastables in task script blocks.
 
 .Description
-	Use the parameter Data in order to import existing variables from the
-	current session to the task $Data. Note, unlike file scripts, script
-	blocks cannot be invoked with dynamic parameters.
+	Use -Data to expose variables and dictionaries as the special variable $Data.
 #>
 
 # variables in the current session
-$text1 = 'hello'
-$text2 = 'world'
+$variable1 = 'Hello'
+$hashtable1 = @{user = 'Joe'; id = 42}
 
-# start task with variables passed via $Data
-Start-FarTask -Data text1, text2 {
+# start task with the variable and hashtable exposed as $Data
+Start-FarTask -Data variable1, $hashtable1 {
 	job {
-		$Far.Message($Data.text1 + ' ' + $Data.text2)
+		$Far.Message($Data.variable1 + ' ' + $Data.user + ' (' + $Data.id + ')')
 	}
 }

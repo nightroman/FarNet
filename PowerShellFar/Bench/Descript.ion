@@ -31,6 +31,7 @@ Panel-Version.ps1 Shows file version information.
 Profile-Editor.ps1 Editor profile (example).
 Profile.ps1 Main profile (example).
 Reformat-Selection-.ps1 Reformats selected lines or the current line in the editor.
+Register-FarRedisTask.ps1 Subscribes to Far task messages from another Far.
 Reindent-Selection-.ps1 Reindents selected lines or the current line.
 Remove-EmptyString-.ps1 Removes empty strings from a list.
 Remove-EndSpace-.ps1 Removes end spaces from the input objects property Text
@@ -38,6 +39,7 @@ Rename-FarFile.ps1 Renames the current panel file or directory.
 Search-Regex.ps1 Searches for a regex in files and opens the result panel.
 Select-Bookmark-.ps1 Shows current editor bookmarks and goes to a selected one
 Select-FarFile-.ps1 Selects panel files by the specified filter.
+Send-FarRedisTask.ps1 Sends Far task messages to another Far.
 Set-Selection-.ps1 Sets selected text in the editor, command line or dialog editbox.
 Show-EditorColor-.ps1 Shows color information for the current editor.
 Show-History-.ps1 Shows command, folder, or editor history.

@@ -194,7 +194,7 @@ Test.Add("ParametersScriptBlock", async {
     do! job { PSFar.Invoke(getFarTask "Parameters.far.ps1") |> ignore }
     do! Assert.Wait Window.IsDialog
     do! job {
-        Assert.Equal("hello world", far.Dialog[1].Text)
+        Assert.Equal("Hello Joe (42)", far.Dialog[1].Text)
     }
     do! Jobs.Keys "Esc"
 })
