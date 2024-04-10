@@ -6,18 +6,18 @@
 	Sending tasks between two paired Far instances.
 #>
 
-# send the task from this (1) to another started Far (2)
+# send from this Far 1 to another Far 2
 Send-FarRedisTask {
 	# show ping message in Far 2
 	job {
-		Show-FarMessage "Ping to $($Data._sub) from $($Data._pub)"
+		Show-FarMessage Ping
 	}
 
-	# send the task from Far 2 back to Far 1
+	# send from Far 2 to Far 1
 	Send-FarRedisTask {
 		# show pong message in Far 1
 		job {
-			Show-FarMessage "Pong to $($Data._sub) from $($Data._pub)"
+			Show-FarMessage Pong
 		}
 	}
 

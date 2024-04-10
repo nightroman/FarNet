@@ -4,52 +4,41 @@
 	Author: Roman Kuzmin
 
 .Description
-	This script should be in the path for using by Send-FarRedisTask.ps1.
-
-.Parameter Unregister
-		Tells to unregister this subscription.
+	See Send-FarRedisTask.ps1
 #>
 
-[CmdletBinding()]
-param(
-	[switch]$Unregister
-)
-
-Set-StrictMode -Version 3
 $ErrorActionPreference = 1
 
-Import-Module FarNet.Redis
-$db = Open-Redis localhost:3278
-
 if ([FarNet.User]::Data['FarRedisSub']) {
-	if ($Unregister) {
-		Unregister-RedisSub FarRedisSub ([FarNet.User]::Data['FarRedisSub'])
-		[FarNet.User]::Data['FarRedisSub'] = $null
-		[FarNet.User]::Data['FarRedisProcess'] = $null
-	}
 	return
 }
 
-[FarNet.User]::Data['FarRedisSub'] = Register-RedisSub FarRedisSub {
+Import-Module $env:FARHOME\FarNet\Lib\FarNet.Redis\FarNet.Redis.psd1
+[FarNet.User]::Data['FarRedisDB'] = Open-Redis localhost:3278
+
+[FarNet.User]::Data['FarRedisSub'] = Register-RedisSub FarRedisSub:$PID -Database ([FarNet.User]::Data['FarRedisDB']) {
 	param($channel, $message)
+	$id = 0
+	if ([int]::TryParse($message, [ref]$id)) {
+		[FarNet.User]::Data['FarRedisPair'] = Get-Process -Id $id
 
-	$data = ConvertFrom-Json $message -AsHashtable
+		$data = [FarNet.User]::Data['FarRedisData']
+		[FarNet.User]::Data['FarRedisData'] = $null
 
-	if ($data._pub -eq $PID -or $data._sub -ne $PID) {
-		return
+		$null = [FarNet.User]::Data['FarRedisDB'].Publish(
+			"FarRedisSub:$id",
+			($data | ConvertTo-Json -Depth 99 -Compress)
+		)
 	}
-
-	Start-FarTask -Data $data ([scriptblock]::Create($data._task))
+	else {
+		$data = ConvertFrom-Json $message -AsHashtable
+		Start-FarTask -Data $data ([scriptblock]::Create($data._task))
+	}
 }
 
-if ($pid2 = $env:FAR_REDIS_PROCESS) {
-	$env:FAR_REDIS_PROCESS = $null
-
-	$far2 = Get-Process -Id $pid2 -ErrorAction Ignore
-	if (!$far2 -or $far2.HasExited) {
-		return
-	}
-
-	[FarNet.User]::Data['FarRedisProcess'] = $far2
-	Set-RedisString far:RedisProcess $PID -Expiry ([timespan]::FromSeconds(20))
+if ($pid2 = $env:FAR_REDIS_PAIR) {
+	$env:FAR_REDIS_PAIR = $null
+	$far2 = Get-Process -Id $pid2
+	[FarNet.User]::Data['FarRedisPair'] = $far2
+	$null = [FarNet.User]::Data['FarRedisDB'].Publish("FarRedisSub:$($far2.Id)", $PID)
 }

@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 8.1.7 =
+
+New Bench script Edit-FarFileSync.ps1 for editing in two Far instances.
+
+Rework FarRedisTask scripts.
+
 = 8.1.6 =
 
 Start-FarTask -Data may accept hashtables.
