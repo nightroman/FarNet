@@ -92,11 +92,13 @@ param($Script, $Data, $Arguments)
 	}
 
 	[Parameter]
-	[ValidateNotNull]
 	public object[] Data
 	{
 		set
 		{
+			if (value is null)
+				return;
+
 			foreach (var item in value)
 			{
 				var nameOrData = PS2.BaseObject(item);

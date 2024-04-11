@@ -3,7 +3,7 @@
 	How to use Send-FarRedisTask.ps1
 
 .Description
-	Sending tasks between two paired Far instances.
+	Sending tasks between two paired Far instances without data.
 #>
 
 # send from this Far 1 to another Far 2

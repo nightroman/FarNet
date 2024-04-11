@@ -32,7 +32,7 @@ Import-Module $env:FARHOME\FarNet\Lib\FarNet.Redis\FarNet.Redis.psd1
 	}
 	else {
 		$data = ConvertFrom-Json $message -AsHashtable
-		Start-FarTask -Data $data ([scriptblock]::Create($data._task))
+		Start-FarTask -Data $data.Data ([scriptblock]::Create($data.Task))
 	}
 }
 

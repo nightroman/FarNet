@@ -3,12 +3,12 @@
 	How to use Send-FarRedisTask.ps1
 
 .Description
-	Scenario:
-	- edit file in a new Far, make it non-modal and with panels available
-	- close Far when the editor closes but only if nothing else is opened
-	- send some task back to the first Far when the editor closes
+	Sending tasks between two paired Far instances with some data.
 
-	For more advanced scenario see Bench/Edit-FarFileSync.ps1
+	Scenario:
+	- edit file in a new Far as non-modal and with panels available
+	- when the editor closes, send some task back to the first Far
+	- quit if nothing else is opened
 #>
 
 # get the cursor file in editor, viewer, panel

@@ -15,9 +15,11 @@
 		Specifies the Far task to be sent to another Far.
 
 .Parameter Data
-		Optional data to be sent as JSON and then used by Start-FarTask.
-		The Task script uses $Data containing the original and meta data.
-		Meta key names start with underscore, avoid using such keys in Data.
+		Optional data sent as JSON and then converted back to hashtable.
+		The received hashtable is provided for the Task script as $Data.
+
+.Parameter SkipExited
+		Tells to immediately return true if the pair process has exited.
 #>
 
 [CmdletBinding()]
@@ -27,24 +29,26 @@ param(
 	,
 	[Parameter(Position=1)]
 	[hashtable]$Data
+	,
+	[switch]$SkipExited
 )
 
 $ErrorActionPreference = 1
-
-# message data
-$Data = $Data ? @{} + $Data : @{}
-$Data._task = $Task.ToString()
-
-# subscribe to messages
-if (![FarNet.User]::Data['FarRedisSub'] -and ([runspace]::DefaultRunspace.Id -eq 1)) {
-	Register-FarRedisTask
-}
 
 # check pair Far
 if ([FarNet.User]::Data['FarRedisPair']) {
 	if ([FarNet.User]::Data['FarRedisPair'].HasExited) {
 		[FarNet.User]::Data['FarRedisPair'] = $null
+		if ($SkipExited) {
+			return $true
+		}
 	}
+}
+
+# message data
+$Data = [ordered]@{
+	Data = $Data
+	Task = $Task.ToString()
 }
 
 if ([FarNet.User]::Data['FarRedisPair']) {
@@ -55,7 +59,12 @@ if ([FarNet.User]::Data['FarRedisPair']) {
 	)
 }
 else {
+	# subscribe to messages
+	if (![FarNet.User]::Data['FarRedisSub']) {
+		Register-FarRedisTask
+	}
+
 	# keep data and start pair Far
 	[FarNet.User]::Data['FarRedisData'] = $Data
-	Start-Far ps:Register-FarRedisTask -Environment @{FAR_REDIS_PAIR = $PID}
+	Start-Far ps:Register-FarRedisTask $Far.CurrentDirectory -Environment @{FAR_REDIS_PAIR = $PID}
 }

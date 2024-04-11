@@ -1,5 +1,12 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 8.1.8 =
+
+Tweak Far tasks and FarRedisTask scripts.
+
+Edit-FarFileSync.ps1
+- open with the current frame
+
 = 8.1.7 =
 
 New Bench script Edit-FarFileSync.ps1 for editing in two Far instances.
