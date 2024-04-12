@@ -29,8 +29,8 @@ deleting by words, and etc. Example: Visual Studio, Word, WordPad, etc.
 How to install and update FarNet and modules:\
 <https://github.com/nightroman/FarNet#readme>
 
-After installing the module copy the macro file
-*RightControl.macro.lua* to *%FARPROFILE%\Macros\scripts*.
+After installing use for examples or copy the macro file:\
+*RightControl.macro.lua* to *%FARPROFILE%\Macros\scripts*
 
 *********************************************************************
 ## Commands
@@ -52,6 +52,11 @@ The module works by commands called from macros associated with keys:
 
 - `go-to-smart-home ~ [Home]`
 - `select-to-smart-home ~ [ShiftHome]`
+
+Smart home deals with:
+
+- Editors ~ leading spaces
+- Command lines ~ prefix and spaces
 
 *********************************************************************
 ## Settings

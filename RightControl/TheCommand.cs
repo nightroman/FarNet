@@ -15,6 +15,9 @@ public partial class TheCommand : ModuleCommand
 	[GeneratedRegex(@"^(\s+)")]
 	private static partial Regex RegexSpaces();
 
+	[GeneratedRegex(@"^(\s*\w+:\s*)")]
+	private static partial Regex RegexPrefix();
+
 	public override void Invoke(object sender, ModuleCommandEventArgs e)
 	{
 		ILine line = null;
@@ -397,7 +400,8 @@ public partial class TheCommand : ModuleCommand
 		int home = 0;
 		int caret = line.Caret;
 		string text = line.Text;
-		Match match = RegexSpaces().Match(text);
+		var regex = line.WindowKind == WindowKind.Panels ? RegexPrefix() : RegexSpaces();
+		Match match = regex.Match(text);
 		if (match.Success)
 			home = match.Groups[1].Length;
 

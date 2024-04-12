@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 8.1.9 =
+
+Microsoft.PowerShell.SDK 7.4.2
+
 = 8.1.8 =
 
 Tweak Far tasks and FarRedisTask scripts.

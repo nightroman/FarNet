@@ -40,31 +40,30 @@ task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props -Jobs v
   <PropertyGroup>
     <Company>https://github.com/nightroman/FarNet</Company>
     <Copyright>Copyright (c) Roman Kuzmin</Copyright>
+    <Description>$Description</Description>
     <Product>FarNet.$ModuleName</Product>
     <Version>$Version</Version>
-    <Description>$Description</Description>
+    <IncludeSourceRevisionInInformationalVersion>False</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 </Project>
 "@
 }
 
 task markdown {
-	assert (Test-Path $env:MarkdownCss)
-	exec {
-		pandoc.exe @(
-			'README.md'
-			'--output=README.htm'
-			'--from=gfm'
-			'--embed-resources'
-			'--standalone'
-			"--css=$env:MarkdownCss"
-			'--metadata=pagetitle:FarNet'
-		)
-	}
+	requires -Path $env:MarkdownCss
+	exec { pandoc.exe @(
+		'README.md'
+		'--output=README.htm'
+		'--from=gfm'
+		'--embed-resources'
+		'--standalone'
+		"--css=$env:MarkdownCss"
+		'--metadata=pagetitle:FarNet'
+	)}
 }
 
 task package markdown, version, {
-	equals "$Version.0" (Get-Item $ModuleRoot\$ModuleName.dll).VersionInfo.FileVersion
+	equals $Version (Get-Item $ModuleRoot\$ModuleName.dll).VersionInfo.ProductVersion
 	$toModule = "z\tools\FarHome\FarNet\Modules\$ModuleName"
 
 	remove z

@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.RightControl
 
+= 5.1.0 =
+
+Commands "go-to-smart-home" and "select-to-smart-home" may be used in command lines
+with prefixes. See RightControl.macro.lua
+
 = 5.0.0 =
 
 Requires FarNet 8
