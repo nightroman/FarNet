@@ -14,7 +14,7 @@ if ([FarNet.User]::Data['FarRedisSub']) {
 }
 
 Import-Module $env:FARHOME\FarNet\Lib\FarNet.Redis\FarNet.Redis.psd1
-[FarNet.User]::Data['FarRedisDB'] = Open-Redis localhost:3278
+[FarNet.User]::Data['FarRedisDB'] = Open-Redis 127.0.0.1:3278
 
 [FarNet.User]::Data['FarRedisSub'] = Register-RedisSub FarRedisSub:$PID -Database ([FarNet.User]::Data['FarRedisDB']) {
 	param($channel, $message)

@@ -108,7 +108,7 @@ public sealed class Meta : FarColumn
 	/// Get-ChildItem | Out-FarPanel Name, @{ e='Length'; w=15; a='Right' }
 	/// </code>
 	/// </example>
-	public Alignment Alignment { get; private set; }
+	public Alignment Alignment { get; set; }
 
 	/// <summary>
 	/// Format string.

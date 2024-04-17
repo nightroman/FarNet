@@ -5,6 +5,7 @@
 using System;
 using System.Collections;
 using System.Globalization;
+using System.Linq;
 using System.Management.Automation;
 using System.Text;
 
@@ -70,6 +71,16 @@ static class Converter
 			return true;
 
 		return false;
+	}
+
+	/// <summary>
+	/// Any IGrouping.
+	/// </summary>
+	public static bool IsGrouping(Type type)
+	{
+		return type.GetInterfaces()
+			.Where(i => i.IsGenericType)
+			.Any(i => i.GetGenericTypeDefinition() == typeof(IGrouping<,>));
 	}
 
 	/// <summary>
@@ -351,4 +362,3 @@ static class Cast<T> where T : class
 			return obj as T;
 	}
 }
-

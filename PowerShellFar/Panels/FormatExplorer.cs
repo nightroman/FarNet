@@ -4,6 +4,7 @@
 
 using FarNet;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Management.Automation;
@@ -119,12 +120,15 @@ public abstract class FormatExplorer : TableExplorer
 
 			// Check some special cases and try to get the common type.
 			// _100309_121508 Linear type case
-			Type? theType;
-			if (Converter.IsLinearType(values[0].BaseObject.GetType()) ||
-				values[0].BaseObject is System.Collections.IEnumerable ||
-				null == (theType = A.FindCommonType(values)))
+			Type? commonType;
+			var sample = values[0].BaseObject;
+			var sampleType = sample.GetType();
+
+			// case: use panel columns Index, Value, Type
+			if (Converter.IsLinearType(sampleType) ||
+				sample is IEnumerable && !Converter.IsGrouping(sampleType) ||
+				null == (commonType = A.FindCommonType(values)))
 			{
-				// use index, value, type mode
 				panel?.BuildPlan(Format.BuildFilesMixed(Cache, values));
 				return Cache;
 			}
@@ -132,19 +136,29 @@ public abstract class FormatExplorer : TableExplorer
 			Meta[]? metas = null;
 
 			// MatchInfo of Select-String
-			if (theType.FullName == Res.MatchInfoTypeName)
+			if (commonType.FullName == Res.MatchInfoTypeName)
 			{
-				metas = [new("Path"), new("Line")];
+				metas = [
+					new("Path"),
+					new("Line"),
+				];
+			}
+			else if (Converter.IsGrouping(commonType))
+			{
+				metas = [
+					new("Count") { Kind = "S", Width = 7, Alignment = Alignment.Right },
+					new("Key"),
+				];
 			}
 			else
 			{
 				// try to get format
-				if (theType != typeof(PSCustomObject))
+				if (commonType != typeof(PSCustomObject))
 					metas = Format.TryFormatByTableControl(values[0], panel is null ? 80 : panel.Window.Width); //???? avoid formatting at all
 			}
 
 			// use members
-			metas ??= Format.TryFormatByMembers(values, theType != null && theType == values[0].BaseObject.GetType());
+			metas ??= Format.TryFormatByMembers(values, commonType != null && commonType == values[0].BaseObject.GetType());
 
 			if (metas is null)
 			{

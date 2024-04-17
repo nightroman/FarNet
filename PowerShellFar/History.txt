@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 8.1.10 =
+
+Use 127.0.0.1:3278 in FarRedisTask, faster than localhost.
+
+Handle System.Linq.Grouping in object panel.
+
 = 8.1.9 =
 
 Microsoft.PowerShell.SDK 7.4.2
