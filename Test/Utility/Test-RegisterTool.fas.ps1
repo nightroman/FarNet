@@ -6,7 +6,7 @@ run {
 
 job {
 	# info dialog?
-	Assert-Far ($Far.Dialog[1].Text -match "^Test tool is registered")
+	Assert-Far $Far.Dialog[1].Text -eq "Tool 'PSF test tool' is registered. Try it in F11 menus, e.g. now."
 }
 
 macro 'Keys("F11") Menu.Select("PSF test tool", 2) Keys("Enter") -- invoke from menu'
@@ -24,14 +24,6 @@ job {
 }
 
 run {
-	# unregister tool
-	& "$env:PSF\Samples\Tests\Test-RegisterTool.far.ps1"
+	# unregister
+	$Far.GetModuleAction('f2a1fc38-35d0-4546-b67c-13d8bb93fa2e').Unregister()
 }
-
-job {
-	# info dialog?
-	Assert-Far $Far.Dialog[1].Text -eq "Test tool is unregistered"
-}
-
-# exit dialog
-keys Esc

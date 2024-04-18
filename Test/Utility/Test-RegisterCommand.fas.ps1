@@ -6,7 +6,7 @@ run {
 
 job {
 	# info dialog?
-	Assert-Far ($Far.Dialog[1].Text -match "^Command is registered")
+	Assert-Far $Far.Dialog[1].Text -eq 'Command prefix "mycmd:" is registered.'
 	$Far.Dialog.Close()
 }
 
@@ -28,12 +28,6 @@ job {
 }
 
 run {
-	# unregister command
-	& "$env:PSF\Samples\Tests\Test-RegisterCommand.far.ps1"
-}
-
-job {
-	# info dialog?
-	Assert-Far $Far.Dialog[1].Text -eq "Command is unregistered"
-	$Far.Dialog.Close()
+	# unregister
+	$Far.GetModuleAction('053a9a98-db98-415c-9c80-88eee2f336ae').Unregister()
 }

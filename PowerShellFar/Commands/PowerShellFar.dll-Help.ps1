@@ -684,3 +684,79 @@ Tells to set breakpoints for stopping at each step: `job`, `ps:`, `run`, `keys`,
 		@{ text = 'Samples -- https://github.com/nightroman/FarNet/tree/main/PowerShellFar/Samples/FarTask' }
 	)
 }
+
+$BaseRegister = @{
+	parameters = @{
+		Id = 'The action GUID.'
+		Name = 'The name for UI.'
+	}
+}
+
+### Register-FarCommand
+Merge-Helps $BaseRegister @{
+	command = 'Register-FarCommand'
+	synopsis = 'Registers the command handler invoked from the command line by its prefix.'
+	description = @'
+	This command wraps IModuleManager.RegisterCommand, see FarNet API.
+'@
+	parameters = @{
+		Prefix = @'
+		Specifies the command prefix.
+'@
+		Handler = @'
+		Processes the command which text is provided as `$_.Command`.
+'@
+	}
+	links = @(
+		@{ text = 'https://github.com/nightroman/FarNet/blob/main/PowerShellFar/Samples/Tests/Test-RegisterCommand.far.ps1' }
+	)
+}
+
+### Register-FarDrawer
+Merge-Helps $BaseRegister @{
+	command = 'Register-FarDrawer'
+	synopsis = 'Registers the editor drawer handler.'
+	description = @'
+	This command wraps IModuleManager.RegisterDrawer, see FarNet API.
+'@
+	parameters = @{
+		Mask = @'
+		Specifies the Far Manager file mask.
+'@
+		Priority = @'
+		Specifies color priority.
+'@
+		Handler = @'
+		Processes text rendering events with:
+		$this - current editor [FarNet.IEditor]
+		$_ [FarNet.ModuleDrawerEventArgs]:
+		$_.Colors - result color collection
+		$_.Lines - lines to get colors for
+		$_.StartChar - the first character
+		$_.EndChar - after the last character
+'@
+	}
+	links = @(
+		@{ text = 'https://github.com/nightroman/FarNet/blob/main/PowerShellFar/Samples/Tests/Test-RegisterDrawer.far.ps1' }
+	)
+}
+
+### Register-FarTool
+Merge-Helps $BaseRegister @{
+	command = 'Register-FarTool'
+	synopsis = 'Registers the tool handler invoked from one of Far menus.'
+	description = @'
+	This command wraps IModuleManager.RegisterTool, see FarNet API.
+'@
+	parameters = @{
+		Options = @'
+		The tool options with at least one target area specified.
+'@
+		Handler = @'
+		Processes the command which text is provided as `$_.Command`.
+'@
+	}
+	links = @(
+		@{ text = 'https://github.com/nightroman/FarNet/blob/main/PowerShellFar/Samples/Tests/Test-RegisterTool.far.ps1' }
+	)
+}

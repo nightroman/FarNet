@@ -7,7 +7,7 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="powershell">
 <annotation><documentation><![CDATA[
 
-powershell.hrc by Roman Kuzmin, aka nightroman, 2022-12-03
+powershell.hrc by Roman Kuzmin, aka nightroman, 2024-04-18
 visual.hrd is recommended as optimized for powershell.hrc
 
 Regex syntax in strings after regex operators, [regex], and <#regex#>
@@ -100,11 +100,11 @@ SQL syntax in here-strings after <#sql#>
 </scheme>
 
 <entity name="numexp" value="(?:[Ee][\-+]?\d+)"/>
-<entity name="numsuf" value="(?:[DdLl]?(?:[KkMmGgTtPp][Bb])?)"/>
+<entity name="numsuf" value="(?:(?:Y|UY|S|US|L|U|UL|N|D)?(?:KB|MB|GB|TB|PB)?)"/>
 <entity name="real" value="(?{NumberFloat}\B\.?~1\.\d+%numexp;?%numsuf;\b|\b\d+(?:\.\.?!\d*(?:%numexp;?%numsuf;\b|\B)|%numexp;%numsuf;\b))"/>
 <entity name="int" value="\b(?:(?{NumberDec}\d+%numsuf;)|(?{NumberHex}0[Xx][\dA-Fa-f]+%numsuf;))\b"/>
 <scheme name="number">
-    <regexp match="/%real;|%int;/"/>
+    <regexp match="/%real;|%int;/i"/>
 </scheme>
 
 <scheme name="attribute-argument">
@@ -606,6 +606,11 @@ SQL syntax in here-strings after <#sql#>
         <symb name="*"/>
         <symb name="/"/>
         <symb name="%"/>
+        <symb name="??="/>
+        <symb name="??"/>
+        <symb name="?"/>
+        <symb name="::"/>
+        <symb name=":"/>
     </keywords>
 </scheme>
 

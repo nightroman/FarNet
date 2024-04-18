@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 8.1.11 =
+
+New cmdlets Register-FarCommand, Register-FarDrawer, Register-FarTool.
+See PowerShellFar/Samples/Tests
+
 = 8.1.10 =
 
 Use 127.0.0.1:3278 in FarRedisTask, faster than localhost.

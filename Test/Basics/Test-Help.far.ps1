@@ -36,7 +36,6 @@ if ($toBuild) {
 ### test synopsis for each *-Far* cmdlet
 
 Get-Command *-Far* -CommandType cmdlet | Get-Help | .{process{
-	# V2 - 1st line; V3 - all text
 	$lines = $_.Synopsis -split '\r?\n'
 	if (!$lines) {throw 'Empty synopsis.'}
 	if (!$lines[0].EndsWith('.')) {throw "Unexpected synopsis in $($_.Name)"}

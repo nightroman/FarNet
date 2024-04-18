@@ -43,11 +43,12 @@ param(
 
 #requires -Version 7.4 -Modules PSEverything
 $ErrorActionPreference = 1
-if ($Host.Name -ne 'FarHost') {
-	Write-Error 'Please run with FarNet.PowerShellFar.'
-}
+trap { $PSCmdlet.ThrowTerminatingError($_) }
+if ($Host.Name -ne 'FarHost') {throw 'Requires FarHost.'}
 
 ### Get items
+
+$Filter = $Filter -replace '(?<=\w+:)\s+'
 
 if ($All) {
 	$PathExclude = $null
@@ -89,7 +90,7 @@ else {
 	}
 
 	if ($Path -eq '<Panel>') {
-		$Items | Out-FarPanel -Title $Filter
+		$Items | Out-FarPanel -Title Everything -Columns @{n=$Filter; e={$_}}
 		return
 	}
 }

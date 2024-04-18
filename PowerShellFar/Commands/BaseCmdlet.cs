@@ -8,7 +8,7 @@ using System.Management.Automation.Runspaces;
 namespace PowerShellFar.Commands;
 
 /// <summary>
-/// PowerShellFar base cmdlet.
+/// PowerShellFar cmdlet.
 /// </summary>
 class BaseCmdlet : PSCmdlet
 {
@@ -19,7 +19,8 @@ class BaseCmdlet : PSCmdlet
 	/// </summary>
 	internal static void AddCmdlets(InitialSessionState state)
 	{
-		state.Commands.Add(new SessionStateCmdletEntry[] {
+		state.Commands.Add(new SessionStateCmdletEntry[]
+		{
 			new(AssertFarCommand.MyName, typeof(AssertFarCommand), Help),
 			new("Find-FarFile", typeof(FindFarFileCommand), Help),
 			new("Get-FarItem", typeof(GetFarItemCommand), Help),
@@ -35,6 +36,9 @@ class BaseCmdlet : PSCmdlet
 			new("Open-FarViewer", typeof(OpenFarViewerCommand), Help),
 			new("Out-FarList", typeof(OutFarListCommand), Help),
 			new("Out-FarPanel", typeof(OutFarPanelCommand), Help),
+			new("Register-FarCommand", typeof(RegisterFarCommandCommand), Help),
+			new("Register-FarDrawer", typeof(RegisterFarDrawerCommand), Help),
+			new("Register-FarTool", typeof(RegisterFarToolCommand), Help),
 			new("Search-FarFile", typeof(SearchFarFileCommand), Help),
 			new("Show-FarMessage", typeof(ShowFarMessageCommand), Help),
 			new("Start-FarJob", typeof(StartFarJobCommand), Help),
