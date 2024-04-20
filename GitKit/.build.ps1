@@ -94,6 +94,20 @@ task package win32, help, markdown, {
 	equals 7 @(Get-ChildItem $toModule -Recurse -File).Count
 	equals 1 @(Get-ChildItem $toModule64 -Recurse -File).Count
 	equals 1 @(Get-ChildItem $toModule86 -Recurse -File).Count
+
+	$result = Get-ChildItem z\tools -Recurse -File -Name | Out-String
+	$sample = @'
+FarHome\FarNet\Modules\GitKit\GitKit.dll
+FarHome\FarNet\Modules\GitKit\GitKit.hlf
+FarHome\FarNet\Modules\GitKit\History.txt
+FarHome\FarNet\Modules\GitKit\LibGit2Sharp.dll
+FarHome\FarNet\Modules\GitKit\LibGit2Sharp.xml
+FarHome\FarNet\Modules\GitKit\LICENSE
+FarHome\FarNet\Modules\GitKit\README.htm
+FarHome.x64\FarNet\Modules\GitKit\git2-a418d9d.dll
+FarHome.x86\FarNet\Modules\GitKit\git2-a418d9d.dll
+'@
+	Assert-SameFile.ps1 -Text $sample $result $env:MERGE
 }
 
 task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props -Jobs version, {
