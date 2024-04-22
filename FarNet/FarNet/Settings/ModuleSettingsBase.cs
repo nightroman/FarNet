@@ -135,9 +135,11 @@ public abstract class ModuleSettingsBase
 		//! use CodePage, we get XML from editor and possible BOM garbage on wrong CodePage is an issue
 		var editor = Far.Api.CreateEditor();
 		editor.FileName = FileName;
-		editor.Title = $"{GetType().FullName} - {FileName}";
 		editor.DisableHistory = true;
 		editor.CodePage = 65001;
+
+		// set title, mind raw types used by scripts
+		editor.Title = $"{_type.FullName} - {FileName}";
 
 		editor.Saving += (sender, args) =>
 		{
@@ -170,7 +172,7 @@ public abstract class ModuleSettingsBase
 
 			var answer = Far.Api.Message(
 				DifferentXml,
-				GetType().FullName!,
+				_type.FullName!,
 				MessageOptions.YesNo | MessageOptions.LeftAligned);
 
 			if (answer != 0)

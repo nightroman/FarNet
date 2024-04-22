@@ -4,9 +4,7 @@
 
 .Description
 	This script defines and uses its own settings.
-
-	[XmlRoot("Data")] is not really needed, just testing.
-	System.Xml.ReaderWriter is only needed for XML attributes.
+	See also Go-Everything.ps1 for real example.
 
 .Parameter Settings
 		Tells to open the settings editor.
@@ -16,22 +14,17 @@ param(
 	[switch]$Settings
 )
 
-Add-Type -ReferencedAssemblies $env:FARHOME\FarNet\FarNet.dll, System.Xml.ReaderWriter @'
-using System;
+Add-Type -ReferencedAssemblies System.Xml.ReaderWriter @'
 using System.Xml.Serialization;
-
-public class MySettings(string path) : FarNet.ModuleSettings<MySettings.Data>(path)
+[XmlRoot("Data")]
+public class MySettings
 {
-	[XmlRoot("Data")]
-	public class Data
-	{
-		public string Name = "qwerty";
-		public int Age;
-	}
+	public string Name = "qwerty";
+	public int Age;
 }
 '@
 
-$sets = [MySettings]::new("$env:TEMP\MySettings.xml")
+$sets = [FarNet.ModuleSettings[MySettings]]::new("$env:TEMP\MySettings.xml")
 if ($Settings) {
 	$sets.Edit()
 	return

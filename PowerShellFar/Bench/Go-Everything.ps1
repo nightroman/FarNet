@@ -12,8 +12,12 @@
 	- Everything running, https://www.voidtools.com
 	- PSEverything installed, https://www.powershellgallery.com/packages/PSEverything
 
-	Use $env:EVERYTHING_PATH_EXCLUDE to define paths to exclude.
-	Use the switch All to ignore this variable if it is defined.
+	Without Filter, opens GoEverythingSettings.xml
+	- Limit
+		The default Limit. Default: 9999
+	- PathExclude
+		Semicolon separated paths to exclude from search, with environment
+		variables expanded. Default: %TEMP%
 
 .Parameter Filter
 		Specifies the search filter used by Everything.
@@ -21,20 +25,20 @@
 
 .Parameter Limit
 		Specifies the maximum number of results.
-		Default: 9999
+		Default: Settings/Limit
 
 .Parameter Here
 		Tells to search in the current location.
 
 .Parameter All
-		Tells to ignore exclude paths defined by $env:EVERYTHING_PATH_EXCLUDE.
+		Tells to ignore Settings/PathExclude.
 #>
 
+[CmdletBinding()]
 param(
-	[Parameter(Mandatory=1)]
 	[string]$Filter
 	,
-	[int]$Limit = 9999
+	[int]$Limit
 	,
 	[switch]$Here
 	,
@@ -46,17 +50,55 @@ $ErrorActionPreference = 1
 trap { $PSCmdlet.ThrowTerminatingError($_) }
 if ($Host.Name -ne 'FarHost') {throw 'Requires FarHost.'}
 
+### Settings
+
+$sets = [FarNet.User]::GetOrAdd('GoEverything', {
+	Add-Type -ReferencedAssemblies System.Xml.ReaderWriter @'
+using System.Xml.Serialization;
+[XmlRoot("Data")]
+public class GoEverything
+{
+	public int Limit = 9999;
+	public string PathExclude = "%TEMP%";
+
+	public static int GetMatchRank(string s1, string s2) {
+		int i = 0;
+		while (i < s1.Length && i < s2.Length && s1[i] == s2[i]) {
+			++i;
+		}
+		return -i;
+	}
+}
+'@
+	[FarNet.ModuleSettings[GoEverything]]::new("$env:FARPROFILE\FarNet\PowerShellFar\GoEverythingSettings.xml")
+})
+
+if (!$Filter) {
+	return $sets.Edit()
+}
+
+$data = $sets.GetData()
+
 ### Get items
 
-$Filter = $Filter -replace '(?<=\w+:)\s+'
+# set Filter
+while($Filter.Contains(': ')) {
+	$Filter = $Filter.Replace(': ', ':')
+}
 
+# set Limit
+if (!$Limit) {
+	$Limit = $data.Limit
+}
+
+# set PathExclude
 if ($All) {
 	$PathExclude = $null
 }
 else {
-	$PathExclude = $env:EVERYTHING_PATH_EXCLUDE
+	$PathExclude = $data.PathExclude
 	if ($PathExclude) {
-		$PathExclude = $PathExclude -split ';'
+		$PathExclude = [System.Environment]::ExpandEnvironmentVariables($PathExclude) -split ';'
 	}
 }
 
@@ -67,16 +109,8 @@ if (!$Items) {
 
 ### Sort items
 
-function Get-MatchLength($1, $2) {
-	$i = 0
-	while ($i -lt $1.Length -and $i -lt $2.Length -and $1[$i] -eq $2[$i]) {
-		++$i
-	}
-	$i
-}
-
-$root = "$PWD\"
-$Items = @($Items | Sort-Object {- (Get-MatchLength $root $_)}, {$_})
+$root = $Far.CurrentDirectory + '\'
+$Items = @($Items | Sort-Object {[GoEverything]::GetMatchRank($root, $_)}, {$_})
 
 ### Select
 

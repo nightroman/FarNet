@@ -240,7 +240,7 @@ public sealed partial class Actor
 		}
 	}
 
-	// Sets the current provider location to the user expected.
+	// Sets the current location to predictable and expected.
 	// Used in operations which potentially invoke user code.
 	internal void SyncPaths()
 	{
@@ -248,34 +248,17 @@ public sealed partial class Actor
 		if (IsRunning)
 			return;
 
-		// skip no panels
-		var panel = Far.Api.Panel;
-		if (panel is null)
+		var currentDirectory = Far.Api.CurrentDirectory;
+
+		//! avoid rather expensive SetLocation
+		var pathIntrinsics = Engine.SessionState.Path;
+		if (pathIntrinsics.CurrentLocation.Path == currentDirectory)
 			return;
-
-		// try get the panel location
-		string? location = null;
-		if (panel is Panel plugin)
-		{
-			if (plugin is ItemPanel itemPanel)
-			{
-				location = itemPanel.Explorer.Location;
-			}
-			else if (plugin is FolderTree)
-			{
-				location = panel.CurrentDirectory;
-				if (location == "*") //_130117_234326
-					location = Far.Api.CurrentDirectory;
-			}
-		}
-
-		// set yet unknown to the far current
-		location ??= Far.Api.CurrentDirectory;
 
 		// Set the current location. Note, PS Core works fine with long paths.
 		// So do not catch, we should know why it fails and how to handle this.
-		//! Parameter is wildcard. Test: enter into a container "[]" and invoke a command.
-		Engine.SessionState.Path.SetLocation(Kit.EscapeWildcard(location));
+		// Parameter is wildcard. Test: enter into a folder "[]" and invoke a command.
+		pathIntrinsics.SetLocation(Kit.EscapeWildcard(currentDirectory));
 	}
 	#endregion
 

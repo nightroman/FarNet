@@ -11,7 +11,7 @@
 	When you save the file in any of these editors, another Far reopens it.
 
 .Parameter Setup
-		Internal.
+		INTERNAL
 #>
 
 [CmdletBinding()]
@@ -19,34 +19,32 @@ param(
 	[switch]$Setup
 )
 
-if (![FarNet.User]::Data['EditFarFileSyncSaving']) {
-	[FarNet.User]::Data['EditFarFileSyncSaving'] = [System.EventHandler[FarNet.EditorSavingEventArgs]]{
-		$exited = Send-FarRedisTask -SkipExited -Data @{FileName = $this.FileName} {
-			job {
-				$FileName = $Data.FileName
-				foreach($Editor in $Far.Editors()) {
-					if ($Editor.FileName -eq $FileName) {
-						if ($Editor.IsModified) {
-							if (0 -ne (Show-FarMessage "The file is modified.`nReload anyway?" -Buttons YesNo)) {
-								return
-							}
+$null = [FarNet.User]::GetOrAdd('EditFarFileSyncSaving', {[System.EventHandler[FarNet.EditorSavingEventArgs]]{
+	$exited = Send-FarRedisTask -SkipExited -Data @{FileName = $this.FileName} {
+		job {
+			$FileName = $Data.FileName
+			foreach($Editor in $Far.Editors()) {
+				if ($Editor.FileName -eq $FileName) {
+					if ($Editor.IsModified) {
+						if (0 -ne (Show-FarMessage "The file is modified.`nReload anyway?" -Buttons YesNo)) {
+							return
 						}
-						$Editor.Close()
-						$Editor = $Far.CreateEditor()
-						$Editor.FileName = $FileName
-						$Editor.Open()
-						$Editor.add_Saving([FarNet.User]::Data['EditFarFileSyncSaving'])
-						$Editor.Data.EditFarFileSyncSaving = 1
 					}
+					$Editor.Close()
+					$Editor = $Far.CreateEditor()
+					$Editor.FileName = $FileName
+					$Editor.Open()
+					$Editor.add_Saving([FarNet.User]::Data.EditFarFileSyncSaving)
+					$Editor.Data.EditFarFileSyncSaving = 1
 				}
 			}
 		}
-		if ($exited) {
-			$this.remove_Saving([FarNet.User]::Data['EditFarFileSyncSaving'])
-			$this.Data.EditFarFileSyncSaving = $null
-		}
 	}
-}
+	if ($exited) {
+		$this.remove_Saving([FarNet.User]::Data.EditFarFileSyncSaving)
+		$this.Data.EditFarFileSyncSaving = $null
+	}
+}})
 
 if ($Setup) {
 	return
@@ -57,7 +55,7 @@ if (!$Editor) {return}
 
 $Editor.Save()
 if (!$Editor.Data['EditFarFileSyncSaving']) {
-	$Editor.add_Saving([FarNet.User]::Data['EditFarFileSyncSaving'])
+	$Editor.add_Saving([FarNet.User]::Data.EditFarFileSyncSaving)
 	$Editor.Data.EditFarFileSyncSaving = 1
 }
 
@@ -76,7 +74,7 @@ Send-FarRedisTask -Data @{FileName = $Editor.FileName; CaretLine = $Frame.CaretL
 		if (![FarNet.User]::Data['EditFarFileSyncSaving']) {
 			Edit-FarFileSync -Setup
 		}
-		$Editor.add_Saving([FarNet.User]::Data['EditFarFileSyncSaving'])
+		$Editor.add_Saving([FarNet.User]::Data.EditFarFileSyncSaving)
 		$Editor.Data.EditFarFileSyncSaving = 1
 	}
 }

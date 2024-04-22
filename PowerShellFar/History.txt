@@ -1,5 +1,13 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 8.1.12 =
+
+Requires FarNet 8.1.7
+
+Optimize setting current locations on invoking commands.
+
+Go-Everything.ps1 uses settings instead of env variables.
+
 = 8.1.11 =
 
 New cmdlets Register-FarCommand, Register-FarDrawer, Register-FarTool.

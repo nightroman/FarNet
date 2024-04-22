@@ -36,9 +36,9 @@ param(
 $ErrorActionPreference = 1
 
 # check pair Far
-if ([FarNet.User]::Data['FarRedisPair']) {
-	if ([FarNet.User]::Data['FarRedisPair'].HasExited) {
-		[FarNet.User]::Data['FarRedisPair'] = $null
+if ($FarRedisPair = [FarNet.User]::Data['FarRedisPair']) {
+	if ($FarRedisPair.HasExited) {
+		[FarNet.User]::Remove('FarRedisPair')
 		if ($SkipExited) {
 			return $true
 		}
@@ -51,10 +51,10 @@ $Data = [ordered]@{
 	Task = $Task.ToString()
 }
 
-if ([FarNet.User]::Data['FarRedisPair']) {
+if ($FarRedisPair = [FarNet.User]::Data['FarRedisPair']) {
 	# send data
 	$null = [FarNet.User]::Data['FarRedisDB'].Publish(
-		"FarRedisSub:$([FarNet.User]::Data['FarRedisPair'].Id)",
+		"FarRedisSub:$($FarRedisPair.Id)",
 		($Data | ConvertTo-Json -Depth 99 -Compress)
 	)
 }
@@ -65,6 +65,6 @@ else {
 	}
 
 	# keep data and start pair Far
-	[FarNet.User]::Data['FarRedisData'] = $Data
+	[FarNet.User]::Data.FarRedisData = $Data
 	Start-Far ps:Register-FarRedisTask $Far.CurrentDirectory -Environment @{FAR_REDIS_PAIR = $PID}
 }

@@ -57,7 +57,7 @@ run {
 job {
 	# diff detected
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'FarNet.Demo.Settings'
+	Assert-Far $Far.Dialog[0].Text -eq 'FarNet.Demo.Settings+Data'
 }
 keys Esc
 job {

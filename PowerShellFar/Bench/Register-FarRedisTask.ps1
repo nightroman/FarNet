@@ -14,18 +14,18 @@ if ([FarNet.User]::Data['FarRedisSub']) {
 }
 
 Import-Module $env:FARHOME\FarNet\Lib\FarNet.Redis\FarNet.Redis.psd1
-[FarNet.User]::Data['FarRedisDB'] = Open-Redis 127.0.0.1:3278
+[FarNet.User]::Data.FarRedisDB = Open-Redis 127.0.0.1:3278
 
-[FarNet.User]::Data['FarRedisSub'] = Register-RedisSub FarRedisSub:$PID -Database ([FarNet.User]::Data['FarRedisDB']) {
+[FarNet.User]::Data.FarRedisSub = Register-RedisSub FarRedisSub:$PID -Database ([FarNet.User]::Data.FarRedisDB) {
 	param($channel, $message)
 	$id = 0
 	if ([int]::TryParse($message, [ref]$id)) {
-		[FarNet.User]::Data['FarRedisPair'] = Get-Process -Id $id
+		[FarNet.User]::Data.FarRedisPair = Get-Process -Id $id
 
 		$data = [FarNet.User]::Data['FarRedisData']
-		[FarNet.User]::Data['FarRedisData'] = $null
+		[FarNet.User]::Remove('FarRedisData')
 
-		$null = [FarNet.User]::Data['FarRedisDB'].Publish(
+		$null = [FarNet.User]::Data.FarRedisDB.Publish(
 			"FarRedisSub:$id",
 			($data | ConvertTo-Json -Depth 99 -Compress)
 		)
@@ -39,6 +39,6 @@ Import-Module $env:FARHOME\FarNet\Lib\FarNet.Redis\FarNet.Redis.psd1
 if ($pid2 = $env:FAR_REDIS_PAIR) {
 	$env:FAR_REDIS_PAIR = $null
 	$far2 = Get-Process -Id $pid2
-	[FarNet.User]::Data['FarRedisPair'] = $far2
-	$null = [FarNet.User]::Data['FarRedisDB'].Publish("FarRedisSub:$($far2.Id)", $PID)
+	[FarNet.User]::Data.FarRedisPair = $far2
+	$null = [FarNet.User]::Data.FarRedisDB.Publish("FarRedisSub:$($far2.Id)", $PID)
 }
