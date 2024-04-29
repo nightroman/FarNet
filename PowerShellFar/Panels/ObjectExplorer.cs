@@ -97,7 +97,7 @@ public sealed class ObjectExplorer : FormatExplorer
 		}
 
 		// MatchInfo of Select-String
-		var obj = PS2.BaseObject(data);
+		var obj = data.ToBaseObject();
 		if (obj!.GetType().FullName == Res.MatchInfoTypeName)
 		{
 			var dynamo = (dynamic)obj;

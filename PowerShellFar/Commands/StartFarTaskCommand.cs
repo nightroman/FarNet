@@ -53,7 +53,7 @@ param($Script, $Data, $Arguments)
 	{
 		set
 		{
-			value = PS2.BaseObject(value)!;
+			value = value.ToBaseObject();
 
 			if (value is ScriptBlock block)
 			{
@@ -101,7 +101,7 @@ param($Script, $Data, $Arguments)
 
 			foreach (var item in value)
 			{
-				var nameOrData = PS2.BaseObject(item);
+				var nameOrData = item.ToBaseObject();
 				if (nameOrData is string name)
 				{
 					var variable = SessionState.PSVariable.Get(name) ?? throw new PSArgumentException($"Variable {name} is not found.");

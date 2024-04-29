@@ -5,6 +5,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace System.Management.Automation;
 
@@ -13,7 +14,8 @@ static class PS2
 	/// <summary>
 	/// Gets BaseObject of PSObject or the original object.
 	/// </summary>
-	public static object? BaseObject(object? value)
+	[return: NotNullIfNotNull(nameof(value))]
+	public static object? ToBaseObject(this object? value)
 	{
 		return value is PSObject ps ? ps.BaseObject : value;
 	}
@@ -21,7 +23,8 @@ static class PS2
 	/// <summary>
 	/// Gets BaseObject of PSObject, unless PSCustomObject, or the original object.
 	/// </summary>
-	public static object? BaseObject(object? value, out PSObject? custom)
+	[return: NotNullIfNotNull(nameof(value))]
+	public static object? BaseObject(this object? value, out PSObject? custom)
 	{
 		if (value is not PSObject ps)
 		{

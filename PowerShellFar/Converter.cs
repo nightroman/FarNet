@@ -131,7 +131,7 @@ static class Converter
 
 	public static string? ValueToLine(object? value)
 	{
-		value = PS2.BaseObject(value);
+		value = value.ToBaseObject();
 
 		// skip null and not linear
 		if (value is null || !IsLinearType(value.GetType()))
