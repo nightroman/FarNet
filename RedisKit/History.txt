@@ -1,5 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet.RedisKit
 
+= 0.0.2 =
+
+Keys panel
+- `ShiftF5` clones the cursor key
+
 = 0.0.1 =
 
 - Keys panel with some operations

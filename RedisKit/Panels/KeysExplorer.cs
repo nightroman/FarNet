@@ -67,12 +67,55 @@ class KeysExplorer : BaseExplorer
 
 	public override void CloneFile(CloneFileEventArgs args)
 	{
-		//CloneBranch(args, false);
+		var (key, newName) = ((RedisKey, string))args.Data!;
+		var key2 = new RedisKey(newName);
+
+		var type = Database.KeyType(key);
+		switch (type)
+		{
+			case RedisType.String:
+				var str = (string?)Database.StringGet(key);
+				if (str == null)
+					return;
+
+				Database.KeyDelete(key2);
+				Database.StringSet(key2, str);
+				break;
+
+			case RedisType.Hash:
+				var hash = Database.HashGetAll(key);
+				if (hash.Length == 0)
+					return;
+
+				Database.KeyDelete(key2);
+				Database.HashSet(key2, hash);
+				break;
+
+			case RedisType.List:
+				var list = Database.ListRange(key);
+				if (list.Length == 0)
+					return;
+
+				Database.KeyDelete(key2);
+				Database.ListRightPush(key2, list);
+				break;
+
+			case RedisType.Set:
+				var set = Database.SetMembers(key);
+				if (set.Length == 0)
+					return;
+
+				Database.KeyDelete(key2);
+				Database.SetAdd(key2, set);
+				break;
+
+			default:
+				throw new ModuleException($"Not yet implemented for {type}.");
+		}
 	}
 
 	public override void CreateFile(CreateFileEventArgs args)
 	{
-		//CloneBranch(args, true);
 	}
 
 	public override void DeleteFiles(DeleteFilesEventArgs args)

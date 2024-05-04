@@ -44,12 +44,11 @@ How to install and update FarNet and modules\
 
 RedisKit commands start with `rk:`. Commands are invoked in the command line or
 using F11 / FarNet / Invoke or defined in the user menu and file associations.
-Command parameters are key=value pairs separated by semicolons, using the
-connection string format
+Command parameters are key=value pairs using the connection string format
 
 ```
 rk: <mask>
-rk:subcommand [key=value] [; key=value] ...
+rk:subcommand [key=value;] ...
 ```
 
 **Common parameters**
@@ -70,7 +69,6 @@ rk:subcommand [key=value] [; key=value] ...
     Opens the [Keys panel](#keys-panel).
 
 *********************************************************************
-
 ## Panels
 
 [Contents]
@@ -110,7 +108,7 @@ Keys and actions
 
 - `ShiftF5`
 
-    TODO: Creates a new key from the cursor key.
+    Clones the cursor key with a new name.
 
 - `ShiftF6`
 
@@ -142,7 +140,6 @@ Keys and actions
 
 F11 / FarNet / Settings / RedisKit Settings and Workings
 
-*********************************************************************
 **Settings/Configurations**
 
 Specifies Redis configurations, environment variables are expanded.
@@ -156,7 +153,6 @@ Example:
   </Configurations>
 ```
 
-*********************************************************************
 **Workings/Configuration**
 
 Specifies the default configuration name.
