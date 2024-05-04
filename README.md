@@ -78,6 +78,7 @@ Install-FarPackage FarNet.FSharpFar
 Install-FarPackage FarNet.GitKit
 Install-FarPackage FarNet.JavaScriptFar
 Install-FarPackage FarNet.PowerShellFar
+Install-FarPackage FarNet.RedisKit
 Install-FarPackage FarNet.RightControl
 Install-FarPackage FarNet.RightWords
 Install-FarPackage FarNet.Vessel

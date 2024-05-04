@@ -37,13 +37,15 @@
 
 [CmdletBinding()]
 param(
-	[string]$FileName,
-	[string]$Topic,
+	[string]$FileName
+	,
+	[string]$Topic
+	,
 	[switch]$Help
 )
 
 $ErrorActionPreference = 1
-trap {Write-Error -ErrorRecord $_}
+trap {$PSCmdlet.ThrowTerminatingError($_)}
 
 ### get file name and editor
 if ($FileName) {

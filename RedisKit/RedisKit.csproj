@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <FarHome Condition="'$(FarHome)' == ''">C:\Bin\Far\x64</FarHome>
+    <OutDir>$(FarHome)\FarNet\Modules\$(AssemblyName)</OutDir>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="$(FarHome)\FarNet\FarNet.dll">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="$(FarHome)\FarNet\Lib\FarNet.Redis\FarNet.Redis.dll">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="$(FarHome)\FarNet\Lib\FarNet.Redis\StackExchange.Redis.dll">
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="ib publish -Configuration $(Configuration) -FarHome $(FarHome)" />
+  </Target>
+</Project>

@@ -1,0 +1,5 @@
+﻿https://www.nuget.org/packages/FarNet.RedisKit
+
+= 0.0.1 =
+
+- Keys panel with some operations
