@@ -11,7 +11,7 @@ class KeysExplorer : BaseExplorer
 	public static Guid MyTypeId = new("5b2529ff-5482-46e5-b730-f9bdecaab8cc");
     readonly string? _pattern;
 
-    public KeysExplorer(IDatabase repository, string? mask) : base(repository, MyTypeId)
+    public KeysExplorer(IDatabase repository, string? fix, string? mask) : base(repository, MyTypeId)
 	{
 		CanCloneFile = true;
 		CanCreateFile = true;
@@ -20,9 +20,29 @@ class KeysExplorer : BaseExplorer
 		CanGetContent = true;
 		CanSetText = true;
 
-		if (mask is { })
+		if (fix is { })
+		{
+			Prefix = fix;
+			_pattern = fix.Replace("\\", "\\\\") + '*';
+		}
+		else if (mask?.Length > 0)
+		{
 			_pattern = mask.Contains('[') || mask.Contains(']') ? mask : mask.Replace("\\", "\\\\");
+		}
 	}
+
+	public string? Prefix { get; }
+
+	public override string ToString()
+	{
+		return Prefix ?? _pattern ?? Database.Multiplexer.Configuration;
+	}
+
+	RedisKey ToKey(string name) =>
+		Prefix is null ? name : Prefix + name;
+
+	string ToFileName(RedisKey key) =>
+		Prefix is null ? (string)key! : ((string)key!).Substring(Prefix.Length);
 
 	public override Panel CreatePanel()
 	{
@@ -39,7 +59,7 @@ class KeysExplorer : BaseExplorer
 		{
 			var file = new SetFile
             {
-                Name = (string)key!,
+                Name = ToFileName(key!),
                 Data = key,
             };
 
@@ -67,8 +87,8 @@ class KeysExplorer : BaseExplorer
 
 	public override void CloneFile(CloneFileEventArgs args)
 	{
-		var (key, newName) = ((RedisKey, string))args.Data!;
-		var key2 = new RedisKey(newName);
+		var key = (RedisKey)args.File.Data!;
+		var key2 = ToKey((string)args.Data!);
 
 		var type = Database.KeyType(key);
 		switch (type)
@@ -139,9 +159,9 @@ class KeysExplorer : BaseExplorer
     public override void RenameFile(RenameFileEventArgs args)
 	{
         var key = (RedisKey)args.File.Data!;
-        var newName = (string)args.Data!;
-        Database.KeyRename(key, newName);
-        args.PostName = newName;
+        var key2 = ToKey((string)args.Data!);
+        Database.KeyRename(key, key2);
+        args.PostName = key2;
     }
 
     public override void GetContent(GetContentEventArgs args)

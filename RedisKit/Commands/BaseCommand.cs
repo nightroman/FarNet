@@ -17,7 +17,7 @@ abstract class BaseCommand : AnyCommand
 
     protected BaseCommand(DbConnectionStringBuilder parameters)
 	{
-		Database = OpenDatabase(GetRedisConfiguration(parameters.GetString("Redis")));
+		Database = OpenDatabase(GetRedisConfiguration(parameters.GetString(Host.Param.Redis)));
 	}
 
 	static IDatabase OpenDatabase(string configuration)

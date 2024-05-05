@@ -53,7 +53,7 @@ rk:subcommand [key=value;] ...
 
 **Common parameters**
 
-- `Redis=<configuration>`
+- `redis=<configuration>`
 
     Specifies the Redis configuration string or name.
     Default: `Workings/Configuration` from `Settings/Configurations`
@@ -90,11 +90,25 @@ The panel is opened by
 
 ```
 rk: [<mask>]
-rk:keys [Mask=<mask>;] [Redis=<configuration>;]
+rk:keys [fix=<prefix>;] [mask=<mask>;] [redis=<configuration>;]
 ```
 
-If `<mask>` contains `[` or `]` then it is treated as Redis pattern.
-Otherwise it is a simple wildcard with special symbols `*` and `?`.
+Parameters
+
+- `fix=<prefix>`
+
+    Tells to fix the specified prefix and use in all key operations.
+    The panel shows keys without the prefix but works with actual keys.
+
+    `<prefix>` should not contain these characters: `*`, `?`, `[`, `]`.
+
+- `mask=<mask>`
+
+    Specifies the keys search pattern or wildcard. If `<mask>` contains `[` or
+    `]` then it is treated as Redis pattern. Otherwise it is a simple wildcard
+    with special symbols `*` and `?`, other characters are literal.
+
+    When `fix` is specified, `mask` is ignored.
 
 Keys and actions
 

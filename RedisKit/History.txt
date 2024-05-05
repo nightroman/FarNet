@@ -1,5 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet.RedisKit
 
+= 0.0.3 =
+
+rk:keys fix=<prefix>
+- special "fixed prefix" mode
+
 = 0.0.2 =
 
 Keys panel
