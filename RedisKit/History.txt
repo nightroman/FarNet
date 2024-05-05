@@ -1,5 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet.RedisKit
 
+= 0.0.4 =
+
+rk:keys
+- remove parameter `fix`, use `mask` types instead
+
 = 0.0.3 =
 
 rk:keys fix=<prefix>

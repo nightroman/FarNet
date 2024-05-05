@@ -8,7 +8,6 @@ public class Host : ModuleHost
 	internal static class Param
 	{
 		public const string
-			Fix = "fix",
 			Mask = "mask",
 			Redis = "redis";
 	}

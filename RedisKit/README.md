@@ -90,25 +90,23 @@ The panel is opened by
 
 ```
 rk: [<mask>]
-rk:keys [fix=<prefix>;] [mask=<mask>;] [redis=<configuration>;]
+rk:keys [mask=<mask>;] [redis=<configuration>;]
 ```
 
 Parameters
 
-- `fix=<prefix>`
-
-    Tells to fix the specified prefix and use in all key operations.
-    The panel shows keys without the prefix but works with actual keys.
-
-    `<prefix>` should not contain these characters: `*`, `?`, `[`, `]`.
-
 - `mask=<mask>`
 
-    Specifies the keys search pattern or wildcard. If `<mask>` contains `[` or
-    `]` then it is treated as Redis pattern. Otherwise it is a simple wildcard
-    with special symbols `*` and `?`, other characters are literal.
+    Specifies either the search pattern, or wildcard, or fixed prefix.
 
-    When `fix` is specified, `mask` is ignored.
+    (1) If the mask contains `[` or `]` then it is treated as Redis pattern.
+    See: <https://redis.io/docs/latest/commands/keys>
+
+    (2) If the mask contains `*` or `?` then it is treated as wildcard with
+    special symbols `*` and `?` and other characters literal.
+
+    (3) Otherwise the mask is used as the fixed literal prefix. Keys are shown
+    without this prefix but all operations work on actual keys with the prefix.
 
 Keys and actions
 

@@ -11,7 +11,7 @@ class KeysExplorer : BaseExplorer
 	public static Guid MyTypeId = new("5b2529ff-5482-46e5-b730-f9bdecaab8cc");
     readonly string? _pattern;
 
-    public KeysExplorer(IDatabase repository, string? fix, string? mask) : base(repository, MyTypeId)
+    public KeysExplorer(IDatabase repository, string? mask) : base(repository, MyTypeId)
 	{
 		CanCloneFile = true;
 		CanCreateFile = true;
@@ -20,14 +20,21 @@ class KeysExplorer : BaseExplorer
 		CanGetContent = true;
 		CanSetText = true;
 
-		if (fix is { })
+		if (mask is { })
 		{
-			Prefix = fix;
-			_pattern = fix.Replace("\\", "\\\\") + '*';
-		}
-		else if (mask?.Length > 0)
-		{
-			_pattern = mask.Contains('[') || mask.Contains(']') ? mask : mask.Replace("\\", "\\\\");
+			if (mask.Contains('[') || mask.Contains(']'))
+			{
+				_pattern = mask;
+			}
+			else if (mask.Contains('*') || mask.Contains('?'))
+			{
+				_pattern = mask.Replace("\\", "\\\\");
+			}
+			else
+			{
+				Prefix = mask;
+				_pattern = mask.Replace("\\", "\\\\") + '*';
+			}
 		}
 	}
 
