@@ -35,6 +35,9 @@ abstract class AnyPanel(Explorer explorer) : Panel(explorer)
 			case KeyCode.F1 when key.Is():
 				ShowHelp();
 				return true;
+
+			case KeyCode.A when key.IsCtrl():
+				return true;
 		}
 
 		return base.UIKeyPressed(key);

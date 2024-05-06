@@ -32,6 +32,6 @@ public class Workings : ModuleSettings<Workings.Data>
 
 	public class Data
 	{
-		public string Configuration { get; set; } = "Main";
+		public string Configuration { get; set; } = string.Empty;
 	}
 }

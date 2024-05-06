@@ -29,12 +29,16 @@ public class Command : ModuleCommand
 				command = subcommand switch
 				{
 					"keys" => new KeysCommand(parameters),
-					_ => throw new ModuleException($"Unknown command 'rk:{subcommand}'.")
+					"edit" => new EditCommand(parameters),
+					"hash" => new HashCommand(parameters),
+					"list" => new ListCommand(parameters),
+					"set" => new SetCommand(parameters),
+					_ => throw new InvalidOperationException($"Unknown command 'rk:{subcommand}'.")
 				};
 
 				if (parameters.Count > 0)
 				{
-					throw new ModuleException($"""
+					throw new InvalidOperationException($"""
 					Uknknown parameters
 					Subcommand: {subcommand}
 					Parameters: {string.Join(", ", parameters.Keys.Cast<string>())}

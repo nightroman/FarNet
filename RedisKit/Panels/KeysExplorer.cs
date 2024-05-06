@@ -73,15 +73,18 @@ class KeysExplorer : BaseExplorer
 			var type = Database.KeyType(key);
 			switch(type)
 			{
-                case RedisType.Set:
-                    file.Owner = "S";
-                    break;
-                case RedisType.List:
-                    file.Owner = "L";
-                    break;
-                case RedisType.Hash:
-                    file.Owner = "H";
-                    break;
+				case RedisType.String:
+					file.Owner = "*";
+					break;
+				case RedisType.Hash:
+					file.Owner = "H";
+					break;
+				case RedisType.List:
+					file.Owner = "L";
+					break;
+				case RedisType.Set:
+					file.Owner = "S";
+					break;
             }
 
             var ttl = Database.KeyTimeToLive(key);
@@ -137,7 +140,7 @@ class KeysExplorer : BaseExplorer
 				break;
 
 			default:
-				throw new ModuleException($"Not yet implemented for {type}.");
+				throw new ModuleException($"Not implemented for {type}.");
 		}
 	}
 
@@ -190,4 +193,27 @@ class KeysExplorer : BaseExplorer
         var key = (RedisKey)args.File.Data!;
 		Database.StringSet(key, args.Text);
     }
+
+	public override Explorer? ExploreDirectory(ExploreDirectoryEventArgs args)
+	{
+		var key = (RedisKey)args.File.Data!;
+		var type = Database.KeyType(key);
+		switch (type)
+		{
+			case RedisType.Hash:
+				return new HashExplorer(Database, key);
+
+			case RedisType.List:
+				return new ListExplorer(Database, key);
+
+			case RedisType.Set:
+				return new SetExplorer(Database, key);
+
+			case RedisType.String:
+				return null;
+
+			default:
+				throw new ModuleException($"Not implemented for {type}.");
+		}
+	}
 }

@@ -6,8 +6,11 @@ Far Manager Redis helpers based on FarNet.Redis
 
 - [About](#about)
 - [Install](#install)
-- [Panels](#panels)
-    - [Keys panel](#keys-panel)
+- [Commands](#commands)
+- [Keys panel](#keys-panel)
+- [Hash panel](#hash-panel)
+- [List panel](#list-panel)
+- [Set panel](#set-panel)
 - [Menu](#menu)
 - [Settings](#settings)
 
@@ -55,36 +58,49 @@ rk:subcommand [key=value;] ...
 
 - `redis=<configuration>`
 
-    Specifies the Redis configuration string or name.
-    Default: `Workings/Configuration` from `Settings/Configurations`
+    Specifies the Redis configuration string or name.\
+    Default: see [Settings](#settings).
 
-**Panel commands**
+**Commands**
 
 - `rk:`
 
-    Opens the [Keys panel](#keys-panel).
+    Opens the [Keys panel](#keys-panel) with the default Redis configuration
+    and an optional key mask specified with a space after the command prefix.
+
+
+- `rk:edit`
+
+    Opens the editor with String key value.
+
 
 - `rk:keys`
 
     Opens the [Keys panel](#keys-panel).
 
-*********************************************************************
-## Panels
 
-[Contents]
+- `rk:hash`
 
-RedisKit provides panels for browsing and operating
+    Opens the [Hash panel](#hash-panel).
 
-- [Keys panel](#keys-panel)
+
+- `rk:list`
+
+    Opens the [List panel](#list-panel).
+
+
+- `rk:set`
+
+    Opens the [Set panel](#set-panel).
+
 
 *********************************************************************
 ## Keys panel
 
 [Contents]
 
-This panel shows keys, with object types and end-of-life dates.
-
-Object marks: `H` Hash, `L` List, `S` Set.
+This panel shows keys, value types and end-of-life dates.
+Type marks: `*` String, `H` Hash, `L` List, `S` Set.
 
 The panel is opened by
 
@@ -112,11 +128,11 @@ Keys and actions
 
 - `Enter`
 
-    TODO: Opens the content panel for Hash, List, Set keys.
+    Opens panels for Hash, List, Set keys.
 
 - `F4`
 
-    Opens the editor for string keys.
+    Opens the editor for string key values.
 
 - `ShiftF5`
 
@@ -134,7 +150,92 @@ Keys and actions
 
     Deletes the selected keys.
 
-- See also [Panels](#panels) and [Menu](#menu).
+*********************************************************************
+## Hash panel
+
+[Contents]
+
+This panel shows hash entries, fields and values. It is opened from the keys
+panel or by this command:
+
+```
+rk:hash key=<name>; [redis=<configuration>;]
+```
+
+Parameters
+
+- `key=<name>`
+
+    Specifies the hash key. If the key does not exist, a new hash will be
+    created. If the key type does not match, it's an error.
+
+Keys and actions
+
+- `F4`
+
+    Opens the editor for editing values.
+
+- `ShiftF5`
+
+    Clones the cursor entry.
+
+- `ShiftF6`
+
+    Renames the cursor field.
+
+- `F7`
+
+    Creates a new entry.
+
+- `F8`, `Del`
+
+    Deletes the selected entries.
+
+*********************************************************************
+## List panel
+
+[Contents]
+
+This panel shows list items. It is opened from the keys panel or by this
+command:
+
+```
+rk:list key=<name>; [redis=<configuration>;]
+```
+
+Parameters
+
+- `key=<name>`
+
+    Specifies the list key. If the key does not exist, a new list will be
+    created. If the key type does not match, it's an error.
+
+Keys and actions
+
+    TODO
+
+*********************************************************************
+## Set panel
+
+[Contents]
+
+This panel shows set members. It is opened from the keys panel or by this
+command:
+
+```
+rk:set key=<name>; [redis=<configuration>;]
+```
+
+Parameters
+
+- `key=<name>`
+
+    Specifies the set key. If the key does not exist, a new set will be
+    created. If the key type does not match, it's an error.
+
+Keys and actions
+
+    TODO
 
 *********************************************************************
 ## Menu
@@ -155,6 +256,7 @@ F11 / FarNet / Settings / RedisKit Settings and Workings
 **Settings/Configurations**
 
 Specifies Redis configurations, environment variables are expanded.
+The default configuration name is specified by `Workings/Configuration`.
 
 Example:
 
@@ -167,7 +269,8 @@ Example:
 
 **Workings/Configuration**
 
-Specifies the default configuration name.
+Specifies the current default configuration name.
+The name must exist in `Settings/Configurations`.
 
 Example:
 

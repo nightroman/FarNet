@@ -37,11 +37,21 @@ abstract class BaseCommand : AnyCommand
 		if (string.IsNullOrWhiteSpace(configuration))
 		{
 			// get from settings
+			var configurations = Settings.Default.GetData().Configurations;
 			var name = Workings.Default.GetData().Configuration;
-			configuration = Settings.Default.GetData().Configurations
-				.FirstOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
-				?.Text
-				?? throw new ModuleException($"Cannot find Redis configuration '{name}' in settings.");
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				// get the head
+				configuration = configurations.FirstOrDefault()?.Text;
+			}
+			else
+			{
+				// find by name
+				configuration = configurations
+					.FirstOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+					?.Text
+					?? throw new ModuleException($"Cannot find Redis configuration '{name}' in settings.");
+			}
 		}
 		else
 		{

@@ -1,6 +1,4 @@
-﻿using FarNet;
-using System.Data.Common;
-using System.Linq;
+﻿using System.Data.Common;
 
 namespace RedisKit;
 
