@@ -1471,8 +1471,8 @@ This example profile covers the following events:
 Keyboard events:
 
 - `[F1]`
-    - .hlf files: save and show the current topic help using *Show-Hlf-.ps1*.
-    - .md and .text files: save and show the current topic help using *Show-Markdown-.ps1*.
+    - .hlf files: save and show the current topic help using *Show-Hlf.ps1*.
+    - .md and .text files: save and show the current topic help using *Show-Markdown.ps1*.
 
 Mouse events:
 

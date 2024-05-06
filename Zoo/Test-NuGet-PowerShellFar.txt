@@ -51,10 +51,10 @@ FarHome\FarNet\Modules\PowerShellFar\Bench\Send-FarRedisTask.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Set-Selection-.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Show-EditorColor-.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Show-History-.ps1
-FarHome\FarNet\Modules\PowerShellFar\Bench\Show-Hlf-.ps1
+FarHome\FarNet\Modules\PowerShellFar\Bench\Show-Hlf.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Show-Image.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Show-KeyName-.ps1
-FarHome\FarNet\Modules\PowerShellFar\Bench\Show-Markdown-.ps1
+FarHome\FarNet\Modules\PowerShellFar\Bench\Show-Markdown.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Snippet.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Start-Far.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Update-FarManager.ps1

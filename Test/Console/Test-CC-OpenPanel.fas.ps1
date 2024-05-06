@@ -9,7 +9,7 @@ job {
 }
 keys Enter
 job {
-	Assert-Far -ExplorerTypeId 07e4dde7-e113-4622-b2e9-81cf3cda927a
+	Assert-Far -ExplorerTypeId ([PowerShellFar.Guids]::ObjectExplorer)
 	Find-FarFile 42
 }
 keys Esc

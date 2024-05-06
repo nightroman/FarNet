@@ -15,11 +15,8 @@ namespace PowerShellFar;
 /// </summary>
 public sealed class ItemExplorer : FormatExplorer
 {
-	const string TypeIdString = "07e4dde7-e113-4622-b2e9-81cf3cda927a";
-
 	/// <param name="location">The provider path.</param>
-	public ItemExplorer(string location)
-		: base(new Guid(TypeIdString))
+	public ItemExplorer(string location) : base(new Guid(Guids.ItemExplorer))
 	{
 		Location = location;
 		Functions =
@@ -32,8 +29,7 @@ public sealed class ItemExplorer : FormatExplorer
 			ExplorerFunctions.RenameFile;
 	}
 
-	internal ItemExplorer(PathInfoEx info)
-		: this(info.Path)
+	internal ItemExplorer(PathInfoEx info) : this(info.Path)
 	{
 		_Info_ = info;
 	}
@@ -63,7 +59,8 @@ public sealed class ItemExplorer : FormatExplorer
 		// that source
 		if (args.Explorer is not ItemExplorer)
 		{
-			if (args.UI) A.Message(Res.UnknownFileSource);
+			if (args.UI)
+				A.Message(Res.UnknownFileSource);
 			args.Result = JobResult.Ignore;
 			return;
 		}
@@ -72,7 +69,8 @@ public sealed class ItemExplorer : FormatExplorer
 		if (!My.ProviderInfoEx.IsNavigation(Provider))
 		{
 			//! Actually e.g. functions can be copied, see UICopyHere
-			if (args.UI) A.Message(Res.NotSupportedByProvider);
+			if (args.UI)
+				A.Message(Res.NotSupportedByProvider);
 			args.Result = JobResult.Ignore;
 			return;
 		}

@@ -23,7 +23,7 @@
 	Note that built-in [F5] invokes in the PowerShellFar session.
 
 	*.md, *.markdown, *.text
-	Markdown files are opened by Show-Markdown-.ps1
+	Markdown files are opened by Show-Markdown.ps1
 
 	*.bat, *.cmd
 	Batch file are invoked in a new console by cmd.
@@ -103,7 +103,7 @@ if ($ext -eq '.ps1') {
 
 ### Markdown
 if ('.md', '.markdown', '.text' -contains $ext) {
-	Show-Markdown-.ps1
+	Show-Markdown.ps1
 	return
 }
 

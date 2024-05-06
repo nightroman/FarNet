@@ -44,10 +44,10 @@ Send-FarRedisTask.ps1 Sends Far task messages to another Far.
 Set-Selection-.ps1 Sets selected text in the editor, command line or dialog editbox.
 Show-EditorColor-.ps1 Shows color information for the current editor.
 Show-History-.ps1 Shows command, folder, or editor history.
-Show-Hlf-.ps1 Shows .hlf help file.
+Show-Hlf.ps1 Shows .hlf help file.
 Show-Image.ps1 Shows one or more images in a GUI window.
 Show-KeyName-.ps1 Shows internal names of pressed keys.
-Show-Markdown-.ps1 Shows markdown as HTML or Far help file.
+Show-Markdown.ps1 Shows markdown as HTML or Far help file.
 Snippet.ps1 Inserts VSCode snippets to the editor.
 Start-Far.ps1 Starts Far with the command, panels, options.
 Update-FarManager.ps1 Updates Far Manager and standard plugins.

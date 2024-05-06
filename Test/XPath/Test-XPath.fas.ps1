@@ -9,7 +9,7 @@ job {
 /*/File[equals(@Name, $Name)]
 '@
 	$res = $search.Invoke()
-	Assert-Far 13 -eq @($res).Count
+	Assert-Far 14 -eq @($res).Count
 }
 
 job {

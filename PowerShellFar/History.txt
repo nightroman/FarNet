@@ -1,5 +1,14 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 8.1.13 =
+
+ItemExplorer
+- replace copy/pasted guid with unique
+
+Tweak and rename
+- Show-Hlf-.ps1 -> Show-Hlf.ps1
+- Show-Markdown-.ps1 -> Show-Markdown.ps1
+
 = 8.1.12 =
 
 Requires FarNet 8.1.7
