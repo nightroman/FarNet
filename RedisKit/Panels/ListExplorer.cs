@@ -35,11 +35,14 @@ class ListExplorer : BaseExplorer
 	public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 	{
 		var list = Database.ListRange(_key);
+		var index = -1;
 		foreach (RedisValue item in list)
 		{
+			++index;
 			var file = new SetFile
             {
                 Name = (string)item!,
+				Length = index,
                 Data = item,
             };
 

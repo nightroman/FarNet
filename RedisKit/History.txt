@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.RedisKit
 
+= 0.1.2 =
+
+List panel: show unsorted, with indexes
+
 = 0.1.1 =
 
 Requires FarNet 8.1.8

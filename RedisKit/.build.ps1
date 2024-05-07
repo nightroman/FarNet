@@ -58,10 +58,8 @@ task package help, markdown, {
 	exec { robocopy $ModuleRoot $toModule /s /xf *.pdb } 1
 
 	# meta
-	Copy-Item -Destination z @(
-		'README.md'
-		'..\Zoo\FarNetLogo.png'
-	)
+	Copy-Item ..\Zoo\FarNetLogo.png z
+	(Get-Content README.md).Where{!$_.Contains('[Contents]')} | Set-Content z\README.md
 
 	# repo
 	Copy-Item -Destination $toModule @(

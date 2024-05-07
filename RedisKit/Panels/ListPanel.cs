@@ -7,12 +7,13 @@ class ListPanel : BasePanel<ListExplorer>
 	public ListPanel(ListExplorer explorer) : base(explorer)
 	{
 		Title = explorer.ToString();
-		SortMode = PanelSortMode.Name;
+		SortMode = PanelSortMode.Unsorted;
 		ViewMode = 0;
 
+		var cs = new SetColumn { Kind = "S", Name = "#", Width = 5 };
 		var cn = new SetColumn { Kind = "N", Name = "Item" };
 
-		var plan0 = new PanelPlan { Columns = [cn] };
+		var plan0 = new PanelPlan { Columns = [cs, cn] };
 		SetPlan(0, plan0);
 
 		var plan9 = plan0.Clone();

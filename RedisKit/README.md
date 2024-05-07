@@ -113,7 +113,7 @@ Parameters
 
 - `mask=<mask>`
 
-    Specifies either the search pattern, or wildcard, or fixed prefix.
+    Specifies the search pattern or wildcard or fixed prefix.
 
     (1) If the mask contains `[` or `]` then it is treated as Redis pattern.
     See: <https://redis.io/docs/latest/commands/keys>
@@ -132,7 +132,7 @@ Keys and actions
 
 - `F4`
 
-    Opens the editor for string key values.
+    Opens the cursor string value editor.
 
 - `ShiftF5`
 
@@ -173,7 +173,7 @@ Keys and actions
 
 - `F4`
 
-    Opens the editor for editing values.
+    Opens the cursor hash value editor.
 
 - `ShiftF5`
 
@@ -237,7 +237,7 @@ Keys and actions
 
 - `F4`
 
-    Opens the member editor.
+    Opens the cursor member editor.
 
 - `ShiftF5`
 
