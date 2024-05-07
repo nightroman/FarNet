@@ -235,7 +235,25 @@ Parameters
 
 Keys and actions
 
-    TODO
+- `F4`
+
+    Opens the member editor.
+
+- `ShiftF5`
+
+    Creates a new member.
+
+- `ShiftF6`
+
+    Renames the member.
+
+- `F7`
+
+    Creates a new member.
+
+- `F8`, `Del`
+
+    Deletes the selected members.
 
 *********************************************************************
 ## Menu

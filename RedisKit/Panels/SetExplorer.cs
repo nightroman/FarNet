@@ -2,6 +2,7 @@
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RedisKit;
 
@@ -49,25 +50,46 @@ class SetExplorer : BaseExplorer
 
 	public override void CloneFile(CloneFileEventArgs args)
 	{
+		var newName = (string)args.Data!;
+		Database.SetAdd(_key, newName);
 	}
 
 	public override void CreateFile(CreateFileEventArgs args)
 	{
+		var newName = (string)args.Data!;
+		Database.SetAdd(_key, newName);
+		args.PostName = newName;
 	}
 
 	public override void DeleteFiles(DeleteFilesEventArgs args)
 	{
-    }
+		var names = args.Files.Select(f => new RedisValue(f.Name)).ToArray();
+		long res = Database.SetRemove(_key, names);
+		if (res != names.Length)
+			args.Result = JobResult.Incomplete;
+	}
 
-    public override void RenameFile(RenameFileEventArgs args)
+	public override void RenameFile(RenameFileEventArgs args)
 	{
-    }
+		var newName = (string)args.Data!;
+		Database.SetAdd(_key, newName);
+		Database.SetRemove(_key, args.File.Name);
+		args.PostName = newName;
+	}
 
-    public override void GetContent(GetContentEventArgs args)
+	public override void GetContent(GetContentEventArgs args)
     {
-    }
+		var item = (RedisValue)args.File.Data!;
+		var text = (string?)item;
 
-    public override void SetText(SetTextEventArgs args)
+		args.CanSet = true;
+		args.UseText = text;
+	}
+
+	public override void SetText(SetTextEventArgs args)
     {
-    }
+		var item = (RedisValue)args.File.Data!;
+		Database.SetAdd(_key, args.Text);
+		Database.SetRemove(_key, item);
+	}
 }

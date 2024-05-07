@@ -35,4 +35,9 @@ public class EditTextArgs
 	/// Called when the editor is opened.
 	/// </summary>
 	public EventHandler? EditorOpened { get; set; }
+
+	/// <summary>
+	/// Called when the editor is saving.
+	/// </summary>
+	public EventHandler<EditorSavingEventArgs>? EditorSaving { get; set; }
 }

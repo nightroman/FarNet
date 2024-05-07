@@ -38,8 +38,10 @@ public static class EditorTools
 			editor.Title = args.Title;
 		if (args.IsLocked)
 			editor.IsLocked = true;
-		if (args.EditorOpened != null)
+		if (args.EditorOpened is { })
 			editor.Opened += args.EditorOpened;
+		if (args.EditorSaving is { })
+			editor.Saving += args.EditorSaving;
 
 		//? unlikely throws
 		if (!string.IsNullOrEmpty(args.Text))

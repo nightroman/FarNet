@@ -1,5 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet.RedisKit
 
+= 0.1.1 =
+
+Requires FarNet 8.1.8
+
+Set panel: add basic operations.
+
 = 0.1.0 =
 
 New panels: Hash, List, Set.

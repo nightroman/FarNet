@@ -70,8 +70,4 @@ abstract class BaseCommand : AnyCommand
 
 		return configuration;
 	}
-
-	protected override void Dispose(bool disposing)
-	{
-	}
 }

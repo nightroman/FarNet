@@ -66,9 +66,9 @@ class HashExplorer : BaseExplorer
 
 	public override void DeleteFiles(DeleteFilesEventArgs args)
 	{
-		var fields = args.Files.Select(f => new RedisValue(f.Name)).ToArray();
-		long res = Database.HashDelete(_key, fields);
-		if (res != fields.Length)
+		var names = args.Files.Select(f => new RedisValue(f.Name)).ToArray();
+		long res = Database.HashDelete(_key, names);
+		if (res != names.Length)
 			args.Result = JobResult.Incomplete;
     }
 
@@ -78,6 +78,7 @@ class HashExplorer : BaseExplorer
 		var item = (HashEntry)args.File.Data!;
 		Database.HashSet(_key, newName, item.Value);
 		Database.HashDelete(_key, item.Name);
+		args.PostName = newName;
 	}
 
 	public override void GetContent(GetContentEventArgs args)

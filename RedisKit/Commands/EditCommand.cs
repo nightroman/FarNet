@@ -20,13 +20,10 @@ sealed class EditCommand(DbConnectionStringBuilder parameters) : BaseCommand(par
 		{
 			Text = text,
 			Title = _key,
-			EditorOpened = (s, e) =>
+			EditorSaving = (s, e) =>
 			{
-				((IEditor)s!).Saving += (s, e) =>
-				{
-					var text = ((IEditor)s!).GetText();
-					Database.StringSet(_key, text);
-				};
+				var text = ((IEditor)s!).GetText();
+				Database.StringSet(_key, text);
 			}
 		};
 		Far.Api.AnyEditor.EditTextAsync(args);
