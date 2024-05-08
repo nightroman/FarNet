@@ -8,7 +8,6 @@ class HashPanel : BasePanel<HashExplorer>
 {
 	public HashPanel(HashExplorer explorer) : base(explorer)
 	{
-		Title = explorer.ToString();
 		SortMode = PanelSortMode.Name;
 		ViewMode = 0;
 

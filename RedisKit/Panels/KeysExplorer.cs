@@ -20,7 +20,7 @@ class KeysExplorer : BaseExplorer
 		CanGetContent = true;
 		CanSetText = true;
 
-		if (mask is { })
+		if (!string.IsNullOrEmpty(mask))
 		{
 			if (mask.Contains('[') || mask.Contains(']'))
 			{
@@ -42,7 +42,8 @@ class KeysExplorer : BaseExplorer
 
 	public override string ToString()
 	{
-		return Prefix ?? _pattern ?? Database.Multiplexer.Configuration;
+		var info = Prefix ?? _pattern ?? Database.Multiplexer.Configuration;
+		return $"Keys {info}";
 	}
 
 	RedisKey ToKey(string name) =>

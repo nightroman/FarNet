@@ -1,4 +1,5 @@
 ﻿using FarNet;
+using System.Linq;
 
 namespace RedisKit;
 
@@ -6,7 +7,6 @@ class ListPanel : BasePanel<ListExplorer>
 {
 	public ListPanel(ListExplorer explorer) : base(explorer)
 	{
-		Title = explorer.ToString();
 		SortMode = PanelSortMode.Unsorted;
 		ViewMode = 0;
 
@@ -29,17 +29,60 @@ class ListPanel : BasePanel<ListExplorer>
 
 	public override void UICloneFile(CloneFileEventArgs args)
 	{
+		var name = args.File.Name;
+		var newName = Far.Api.Input("New item", "Item", $"Clone '{name}'", name);
+		if (newName is null)
+		{
+			args.Result = JobResult.Ignore;
+			return;
+		}
+
+		args.Data = newName;
+		Explorer.CloneFile(args);
 	}
 
 	public override void UICreateFile(CreateFileEventArgs args)
 	{
+		var newName = Far.Api.Input("New item", "Item", "Append new item");
+		if (newName is null)
+		{
+			args.Result = JobResult.Ignore;
+			return;
+		}
+
+		args.Data = newName;
+		Explorer.CreateFile(args);
 	}
 
 	public override void UIDeleteFiles(DeleteFilesEventArgs args)
 	{
+		var text = $"Delete items ({args.Files.Count}):\n{string.Join("\n", args.Files.Select(x => x.Name))}";
+		var op = MessageOptions.YesNo | MessageOptions.LeftAligned;
+		if (0 != Far.Api.Message(text, Host.MyName, op))
+		{
+			args.Result = JobResult.Ignore;
+			return;
+		}
+
+		Explorer.DeleteFiles(args);
 	}
 
 	public override void UIRenameFile(RenameFileEventArgs args)
 	{
+		var newName = Far.Api.Input("New name", "Item", "Rename item", args.File.Name);
+		if (newName is null)
+		{
+			args.Result = JobResult.Ignore;
+			return;
+		}
+
+		args.Data = newName;
+		Explorer.RenameFile(args);
+	}
+
+	public override void UISetText(SetTextEventArgs args)
+	{
+		base.UISetText(args);
+		Update(true);
 	}
 }

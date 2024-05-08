@@ -1,8 +1,13 @@
 ﻿https://www.nuget.org/packages/FarNet.RedisKit
 
+= 0.1.3 =
+
+List panel: add basic operations.
+Set panel: fix bugs.
+
 = 0.1.2 =
 
-List panel: show unsorted, with indexes
+List panel: show unsorted, with indexes.
 
 = 0.1.1 =
 

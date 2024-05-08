@@ -7,7 +7,6 @@ class SetPanel : BasePanel<SetExplorer>
 {
 	public SetPanel(SetExplorer explorer) : base(explorer)
 	{
-		Title = explorer.ToString();
 		SortMode = PanelSortMode.Name;
 		ViewMode = 0;
 

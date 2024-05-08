@@ -212,7 +212,25 @@ Parameters
 
 Keys and actions
 
-    TODO
+- `F4`
+
+    Opens the cursor item editor.
+
+- `ShiftF5`
+
+    Creates a new item before the cursor.
+
+- `ShiftF6`
+
+    Renames the item.
+
+- `F7`
+
+    Creates a new item at the tail.
+
+- `F8`, `Del`
+
+    Deletes the selected items.
 
 *********************************************************************
 ## Set panel

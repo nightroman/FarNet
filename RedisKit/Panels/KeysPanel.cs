@@ -7,7 +7,6 @@ class KeysPanel : BasePanel<KeysExplorer>
 {
 	public KeysPanel(KeysExplorer explorer) : base(explorer)
 	{
-		Title = $"Keys {explorer}";
 		SortMode = PanelSortMode.Name;
 		ViewMode = 0;
 

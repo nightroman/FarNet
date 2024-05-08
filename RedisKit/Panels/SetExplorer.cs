@@ -71,25 +71,25 @@ class SetExplorer : BaseExplorer
 
 	public override void RenameFile(RenameFileEventArgs args)
 	{
+		var value = (RedisValue)args.File.Data!;
 		var newName = (string)args.Data!;
+
+		Database.SetRemove(_key, value);
 		Database.SetAdd(_key, newName);
-		Database.SetRemove(_key, args.File.Name);
 		args.PostName = newName;
 	}
 
 	public override void GetContent(GetContentEventArgs args)
     {
-		var item = (RedisValue)args.File.Data!;
-		var text = (string?)item;
-
+		var value = (RedisValue)args.File.Data!;
 		args.CanSet = true;
-		args.UseText = text;
+		args.UseText = (string?)value;
 	}
 
 	public override void SetText(SetTextEventArgs args)
     {
-		var item = (RedisValue)args.File.Data!;
+		var value = (RedisValue)args.File.Data!;
+		Database.SetRemove(_key, value);
 		Database.SetAdd(_key, args.Text);
-		Database.SetRemove(_key, item);
 	}
 }

@@ -2,11 +2,16 @@
 
 namespace RedisKit;
 
-abstract class AnyPanel(Explorer explorer) : Panel(explorer)
+abstract class AnyPanel : Panel
 {
 	protected abstract string HelpTopic { get; }
 
-	internal abstract void AddMenu(IMenu menu);
+	public AnyPanel(Explorer explorer) : base(explorer)
+    {
+		Title = explorer.ToString()!;
+    }
+
+    internal abstract void AddMenu(IMenu menu);
 
 	protected (TData?, TData?) GetSelectedDataRange<TData>()
 	{
