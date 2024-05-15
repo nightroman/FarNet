@@ -24,7 +24,7 @@ line2
 	Assert-Far $Editor.Line.Text -eq 'line1'
 }
 job {
-	Reindent-Selection-.ps1
+	Reindent-Selection.ps1
 	Assert-Far @(
 		$Editor[0].Text -eq "{"
 		$Editor[1].Text -eq "`tline1"
@@ -41,7 +41,7 @@ job {
 	$Editor.SelectText(0, 1, -1, 3)
 }
 job {
-	Reindent-Selection-.ps1
+	Reindent-Selection.ps1
 	Assert-Far @(
 		$Editor[0].Text -eq "{"
 		$Editor[1].Text -eq "`tline1"
@@ -68,7 +68,7 @@ job {
 	$Editor.SelectAllText()
 }
 job {
-	Reindent-Selection-.ps1
+	Reindent-Selection.ps1
 	Assert-Far $Editor.GetText() -eq @'
 {
 	2

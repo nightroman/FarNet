@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="us-ascii"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <hrc version="take5"
 xmlns="http://colorer.sf.net/2003/hrc"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -7,11 +7,12 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="markdown">
 <annotation><documentation><![CDATA[
 
-markdown.hrc by Roman Kuzmin, aka NightRoman, 2020-01-20
+markdown.hrc by Roman Kuzmin, aka NightRoman, 2024-05-13
 
+* Use markdown2 for extensions.
 * Inline HTML should be valid XML.
 * Opened spans are always colored.
-* Blockquotes are only partialy parsed.
+* Blockquotes are partially parsed.
 * List levels 4: only items are parsed.
 * List levels 5+: all is colored as code.
 * Indentation: 4/8/12 spaces, 1/2/3 tabs.
@@ -131,7 +132,7 @@ markdown.hrc by Roman Kuzmin, aka NightRoman, 2020-01-20
   start="/(?{start}\*)[^\s*]?=/" end="/[^\s*]?#1(?{end}\*)|%PEnd;/"/>
 
   <block scheme="PStrongSpan" region="EmText"
-  start="/(?:^|\s?#1)(?{start}_)[^\s_]?=/" end="/[^\s_]?#1(?{end}_)(?:$|\s?=)|%PEnd;/"/>
+  start="/(?:^|\s?#1)(?{start}_)[^\s_]?=/" end="/[^\s_]?#1(?{end}_)(?:$|\W?=)|%PEnd;/"/>
 
   <inherit scheme="Base"/>
 </scheme>
@@ -267,6 +268,9 @@ markdown.hrc by Roman Kuzmin, aka NightRoman, 2020-01-20
 </scheme>
 
 <scheme name="markdown">
+  <!--user extensions-->
+  <inherit scheme="markdown2:markdown2" />
+
   <regexp match="/^(?{Rule}%Rule;)/"/>
 
   <block scheme="Head" region="HeadText"
@@ -279,7 +283,7 @@ markdown.hrc by Roman Kuzmin, aka NightRoman, 2020-01-20
   start="/(?{start}^ {4,}|\t+)\S.*/" end="/(?{end})\M%i3;\S/"/>
 
   <block scheme="def:empty" region="Code"
-  start="/(?{start}^%FenceMark;).*$/" end="/(?{end}^(?{FenceMark}\y{FenceMark})).*$/"/>
+  start="/(?{start}^%FenceMark;).*$/" end="/(?{end}^(?{FenceMark}\y{FenceMark}))\s*$/"/>
 
   <regexp match="/^(?{Reference}%Ref;.*)/"/>
 

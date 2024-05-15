@@ -119,4 +119,8 @@ task nuget package, version, {
 	exec { NuGet pack z\Package.nuspec }
 }
 
+task test {
+	Start-Far "ps: Test.far.ps1 * -Quit" Tests -ReadOnly -Title $PSScriptRoot
+}
+
 task . build, help, clean

@@ -103,8 +103,10 @@ sealed class AssertFarCommand : BaseCmdlet
 		// case: Eq
 		if (ParameterSetName == PSEq)
 		{
-			if (!PSEquals(Value, Eq))
-				AssertDialog(Message ?? EqualsFailMessage(Value, Eq));
+			var a = Value.BaseObject(out _);
+			var b = Eq.BaseObject(out _);
+			if (!Equals(a, b))
+				AssertDialog(Message ?? EqualsFailMessage(a, b));
 			return;
 		}
 
@@ -208,13 +210,6 @@ sealed class AssertFarCommand : BaseCmdlet
 			if (FileOwner != null && FileOwner != file.Owner)
 				AssertDialog(Message ?? $"The current file owner is not '{FileOwner}'.");
 		}
-	}
-
-	static bool PSEquals(object? a, object? b)
-	{
-		a = PS2.BaseObject(a, out _);
-		b = PS2.BaseObject(b, out _);
-		return Equals(a, b);
 	}
 
 	static string EqualsFailMessage(object? a, object? b)

@@ -9,7 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace System.Management.Automation;
 
-static class PS2
+static class PowerShellExtensions
 {
 	/// <summary>
 	/// Gets BaseObject of PSObject or the original object.
@@ -41,7 +41,10 @@ static class PS2
 		custom = ps;
 		return ps;
 	}
+}
 
+static class PS2
+{
 	/// <summary>
 	/// Gets true if the object type is the specified by template parameter.
 	/// </summary>

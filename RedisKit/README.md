@@ -144,7 +144,7 @@ Keys and actions
 
 - `F7`
 
-    TODO: Creates a new key.
+    Creates a new string key.
 
 - `F8`, `Del`
 

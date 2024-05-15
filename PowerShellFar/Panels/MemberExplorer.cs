@@ -127,7 +127,7 @@ public sealed class MemberExplorer : Explorer
 					};
 
 					//_211231_2g mind custom objects
-					value = PS2.BaseObject(value, out _);
+					value = value.BaseObject(out _);
 
 					// value
 					file.Description = Converter.FormatValue(value, Settings.Default.FormatEnumerationLimit);

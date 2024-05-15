@@ -1,5 +1,12 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 8.1.14 =
+
+Amend message on `Assert-Far -eq` check failure.
+
+Rename Reindent-Selection-.ps1 to Reindent-Selection.ps1
+Handle line comments after ( and {.
+
 = 8.1.13 =
 
 ItemExplorer

@@ -44,6 +44,15 @@ class KeysPanel : BasePanel<KeysExplorer>
 
 	public override void UICreateFile(CreateFileEventArgs args)
 	{
+		var newName = Far.Api.Input("New key name", "Key", $"New String", null);
+		if (newName is null)
+		{
+			args.Result = JobResult.Ignore;
+			return;
+		}
+
+		args.Data = newName;
+		Explorer.CreateFile(args);
 	}
 
 	public override void UIDeleteFiles(DeleteFilesEventArgs args)

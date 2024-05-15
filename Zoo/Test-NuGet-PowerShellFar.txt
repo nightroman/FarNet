@@ -40,7 +40,7 @@ FarHome\FarNet\Modules\PowerShellFar\Bench\Profile.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Profile-Editor.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Reformat-Selection-.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Register-FarRedisTask.ps1
-FarHome\FarNet\Modules\PowerShellFar\Bench\Reindent-Selection-.ps1
+FarHome\FarNet\Modules\PowerShellFar\Bench\Reindent-Selection.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Remove-EmptyString-.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Remove-EndSpace-.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Rename-FarFile.ps1

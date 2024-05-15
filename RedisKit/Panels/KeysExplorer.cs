@@ -147,6 +147,10 @@ class KeysExplorer : BaseExplorer
 
 	public override void CreateFile(CreateFileEventArgs args)
 	{
+		var newName = (string)args.Data!;
+		var newKey = ToKey(newName);
+		Database.StringSet(newKey, string.Empty);
+		args.PostName = newName;
 	}
 
 	public override void DeleteFiles(DeleteFilesEventArgs args)

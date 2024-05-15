@@ -71,6 +71,7 @@ $Far.AnyEditor.add_MouseClick({
 				New-FarItem 'Cut' { $Far.CopyToClipboard($Editor.GetSelectedText()); $Editor.DeleteText() } -Disabled:(!$SelectionExists)
 				New-FarItem 'Copy' { $Far.CopyToClipboard($Editor.GetSelectedText()) } -Disabled:(!$SelectionExists)
 				New-FarItem 'Paste' { if ($SelectionExists) { $Editor.DeleteText() } $Editor.InsertText($Far.PasteFromClipboard()) }
+				New-FarItem 'Copy base' { $Far.CopyToClipboard([IO.Path]::GetFileNameWithoutExtension($Editor.FileName)) }
 				New-FarItem 'Copy name' { $Far.CopyToClipboard([IO.Path]::GetFileName($Editor.FileName)) }
 				New-FarItem 'Copy path' { $Far.CopyToClipboard($Editor.FileName) }
 			)
