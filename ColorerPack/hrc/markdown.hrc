@@ -7,7 +7,7 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="markdown">
 <annotation><documentation><![CDATA[
 
-markdown.hrc by Roman Kuzmin, aka NightRoman, 2024-05-13
+markdown.hrc by Roman Kuzmin, aka NightRoman, 2024-05-19
 
 * Use markdown2 for extensions.
 * Inline HTML should be valid XML.
@@ -122,7 +122,7 @@ markdown.hrc by Roman Kuzmin, aka NightRoman, 2024-05-13
   start="/(?{start}\*)[^\s*]?=/" end="/[^\s*]?#1(?{end}\*)|%LEnd;/"/>
 
   <block scheme="StrongSpan" region="EmText"
-  start="/(?:^|\s?#1)(?{start}_)[^\s_]?=/" end="/[^\s_]?#1(?{end}_)(?:$|\s?=)|%LEnd;/"/>
+  start="/(?:^|\s?#1)(?{start}_)[^\s_]?=/" end="/[^\s_]?#1(?{end}_)(?:$|\W?=)|%LEnd;/"/>
 
   <inherit scheme="Base"/>
 </scheme>
@@ -142,7 +142,7 @@ markdown.hrc by Roman Kuzmin, aka NightRoman, 2024-05-13
   start="/(?{start}\*{2,3})[^\s*]?=/" end="/[^\s*]?#1(?{end}\y{start})|%LEnd;/"/>
 
   <block scheme="EmSpan" region="StrongText"
-  start="/(?:^|\s?#1)(?{start}_{2,3})[^\s_]?=/" end="/[^\s_]?#1(?{end}\y{start})(?:$|\s?=)|%LEnd;/"/>
+  start="/(?:^|\s?#1)(?{start}_{2,3})[^\s_]?=/" end="/[^\s_]?#1(?{end}\y{start})(?:$|\W?=)|%LEnd;/"/>
 
   <inherit scheme="Base"/>
 </scheme>
@@ -152,7 +152,7 @@ markdown.hrc by Roman Kuzmin, aka NightRoman, 2024-05-13
   start="/(?{start}\*{2,3})[^\s*]?=/" end="/[^\s*]?#1(?{end}\y{start})|%PEnd;/"/>
 
   <block scheme="PEmSpan" region="StrongText"
-  start="/(?:^|\s?#1)(?{start}_{2,3})[^\s_]?=/" end="/[^\s_]?#1(?{end}\y{start})(?:$|\s?=)|%PEnd;/"/>
+  start="/(?:^|\s?#1)(?{start}_{2,3})[^\s_]?=/" end="/[^\s_]?#1(?{end}\y{start})(?:$|\W?=)|%PEnd;/"/>
 
   <inherit scheme="Base"/>
 </scheme>
