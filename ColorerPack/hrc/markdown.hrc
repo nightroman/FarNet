@@ -7,7 +7,7 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="markdown">
 <annotation><documentation><![CDATA[
 
-markdown.hrc by Roman Kuzmin, aka NightRoman, 2024-05-19
+markdown.hrc by Roman Kuzmin, aka NightRoman, 2024-05-22
 
 * Use markdown2 for extensions.
 * Inline HTML should be valid XML.
@@ -107,6 +107,7 @@ markdown.hrc by Roman Kuzmin, aka NightRoman, 2024-05-19
 </scheme>
 
 <scheme name="Base">
+  <inherit scheme="Wrap"/>
   <inherit scheme="Escape"/>
   <inherit scheme="CodeSpan"/>
   <inherit scheme="LinkSpan"/>
@@ -168,7 +169,6 @@ markdown.hrc by Roman Kuzmin, aka NightRoman, 2024-05-19
 </scheme>
 
 <scheme name="Text">
-  <inherit scheme="Wrap"/>
   <inherit scheme="Base"/>
   <inherit scheme="EmSpan"/>
   <inherit scheme="StrongSpan"/>
@@ -187,9 +187,12 @@ markdown.hrc by Roman Kuzmin, aka NightRoman, 2024-05-19
   <regexp match="/(?{HeadMark}#*\s*)?(?{Anchor}\{#%ID;\})(?{HeadMark}\s*#*\s*)$/"/>
   <regexp match="/(?{HeadMark}#+\s*)$/"/>
 
-  <inherit scheme="Base"/>
-  <inherit scheme="EmSpan"/>
-  <inherit scheme="StrongSpan"/>
+  <inherit scheme="EmSpan">
+    <virtual scheme="Wrap" subst-scheme="def:empty"/>
+  </inherit>
+  <inherit scheme="StrongSpan">
+    <virtual scheme="Wrap" subst-scheme="def:empty"/>
+  </inherit>
 </scheme>
 
 <scheme name="Item3">
@@ -285,7 +288,7 @@ markdown.hrc by Roman Kuzmin, aka NightRoman, 2024-05-19
   <block scheme="def:empty" region="Code"
   start="/(?{start}^%FenceMark;).*$/" end="/(?{end}^(?{FenceMark}\y{FenceMark}))\s*$/"/>
 
-  <regexp match="/^(?{Reference}%Ref;.*)/"/>
+  <regexp match="/^(?{def:Outlined}(?{Reference}%Ref;.*))/"/>
 
   <regexp match="/^(?{Abbreviation}%Abbr;.*)/"/>
 
