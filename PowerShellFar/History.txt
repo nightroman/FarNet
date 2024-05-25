@@ -1,5 +1,12 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 8.1.15 =
+
+Fix NRE on CtrlC in prompts.
+
+Open-TextLink.ps1
+- amend opening obsidian-like links
+
 = 8.1.14 =
 
 Amend message on `Assert-Far -eq` check failure.

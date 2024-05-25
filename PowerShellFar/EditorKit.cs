@@ -555,10 +555,12 @@ static class EditorKit
 	public static void InvokeTaskFromEditor(IEditor editor)
 	{
 		var fileName = editor.FileName;
+
 		void GoToError(RuntimeException ex, bool redraw)
 		{
-			var ii = ex.ErrorRecord.InvocationInfo;
-			if (string.Equals(fileName, ii.ScriptName, StringComparison.OrdinalIgnoreCase))
+			//! InvocationInfo null on CtrlC in prompts
+			if (ex.ErrorRecord.InvocationInfo is { } ii &&
+				string.Equals(fileName, ii.ScriptName, StringComparison.OrdinalIgnoreCase))
 			{
 				editor.GoTo(ii.OffsetInLine - 1, ii.ScriptLineNumber - 1);
 				if (redraw)
