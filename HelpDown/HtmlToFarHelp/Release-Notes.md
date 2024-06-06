@@ -1,5 +1,9 @@
 # HtmlToFarHelp Release Notes
 
+## v1.3.15
+
+Fix `br` issue #57
+
 ## v1.3.14
 
 NuGet package tweaks

@@ -58,7 +58,8 @@ See also its raw Markdown for useful details including HTML comments.
 * [Escape ~, #, @ in HLF](#escape----in-hlf)
 * [Emphasis of "#"](#emphasis-of-)
 * [Eaten spaces](#eaten-spaces)
-* [Line breaks issue 44](#line-breaks-issue-44)
+* [Line break issues](#line-break-issues)
+* [Custom empty lines](#custom-empty-lines)
 
 *********************************************************************
 <!--Other topics are headings less than or equal to `TopicHeading`-->
@@ -588,7 +589,7 @@ need space
 *space*
 
 *********************************************************************
-## Line breaks issue 44
+## Line break issues
 
 line1\
 line2
@@ -613,6 +614,9 @@ line1\
 
     issue 44\
     see [link](https://github.com/nightroman/FarNet/issues/44)
+
+issue 57\
+[should-have-space-after](#Contents) `should-have-space-before`
 
 *********************************************************************
 

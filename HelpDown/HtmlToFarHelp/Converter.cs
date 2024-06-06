@@ -262,6 +262,12 @@ namespace HtmlToFarHelp
 				case "ul": List2(); break;
 			}
 
+			EndElement2();
+		}
+
+		// Some resets after processing end elements.
+		void EndElement2()
+		{
 			//! Pandoc produces `<dd>XYZ\r\n</dd>` with unwanted `\r\n` which leaves _needNewLine=true.
 			//! This affects the next item and gives `\r\n \r\nXYZ` instead of `\r\n XYZ`.
 			//! Ultimate solution: reset _needNewLine on each EndElement.
@@ -319,6 +325,9 @@ namespace HtmlToFarHelp
 			ReadA(_sbA);
 			var text = Kit.FixNewLine(_sbA.ToString());
 			_writer.Write("~{0}~@{1}@", Escape(text), href.Replace("@", "@@").Replace("#", "##"));
+
+			//! because normal EndElement is not called, we have read it
+			EndElement2();
 		}
 
 		// https://github.com/nightroman/FarNet/issues/44
