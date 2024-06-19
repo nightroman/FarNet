@@ -616,7 +616,7 @@ line1\
     see [link](https://github.com/nightroman/FarNet/issues/44)
 
 issue 57\
-[should-have-space-after](#Contents) `should-have-space-before`
+[should-have-space-after](https://github.com/nightroman/FarNet/issues/57) `should-have-space-before`
 
 *********************************************************************
 
