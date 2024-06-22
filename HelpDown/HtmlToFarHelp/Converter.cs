@@ -324,6 +324,11 @@ namespace HtmlToFarHelp
 			_sbA.Length = 0;
 			ReadA(_sbA);
 			var text = Kit.FixNewLine(_sbA.ToString());
+
+			// (1) last written text could have the deferred end new line, write it, #58
+			NewLine();
+
+			// (2) write the link
 			_writer.Write("~{0}~@{1}@", Escape(text), href.Replace("@", "@@").Replace("#", "##"));
 
 			//! because normal EndElement is not called, we have read it

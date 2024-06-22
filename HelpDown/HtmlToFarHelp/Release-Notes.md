@@ -1,5 +1,9 @@
 # HtmlToFarHelp Release Notes
 
+## v1.3.16
+
+Fix new line before a link, #58
+
 ## v1.3.15
 
 Fix `br` issue #57
