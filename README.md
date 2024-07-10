@@ -93,6 +93,7 @@ Install-FarPackage FarNet.FSharp.PowerShell
 Install-FarPackage FarNet.FSharp.Unquote
 Install-FarPackage FarNet.Redis
 Install-FarPackage FarNet.ScottPlot
+Install-FarPackage FarNet.Stateless
 Install-FarPackage FarNet.SQLite
 ```
 

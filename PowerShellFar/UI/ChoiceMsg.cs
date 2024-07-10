@@ -14,7 +14,6 @@ static class ChoiceMsg
 	static void ShowHelpForChoices(Collection<ChoiceDescription> choices)
 	{
 		var sb = new StringBuilder();
-		sb.AppendLine("Escape - more options, e.g. to halt the command.");
 		foreach (ChoiceDescription choice in choices)
 		{
 			int a = choice.Label.IndexOf('&');
@@ -30,6 +29,7 @@ static class ChoiceMsg
 			else
 				sb.AppendLine();
 		}
+		sb.AppendLine("Escape - stop the pipeline.");
 		Far.Api.AnyViewer.ViewText(sb.ToString(), "Help", OpenMode.Modal);
 	}
 

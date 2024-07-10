@@ -191,6 +191,11 @@ public abstract class IUserInterface
 	public abstract void SaveUserScreen();
 
 	/// <summary>
+	/// INTERNAL
+	/// </summary>
+	public abstract void SaveUserScreen2();
+
+	/// <summary>
 	/// Copies the current user screen buffer to console screen
 	/// (which is displayed when the panels are switched off).
 	/// </summary>
@@ -199,6 +204,11 @@ public abstract class IUserInterface
 	/// Note: try to avoid these low level operations.
 	/// </remarks>
 	public abstract void ShowUserScreen();
+
+	/// <summary>
+	/// INTERNAL
+	/// </summary>
+	public abstract void ShowUserScreen2();
 
 	/// <summary>
 	/// Writes text to the console with the current colors.

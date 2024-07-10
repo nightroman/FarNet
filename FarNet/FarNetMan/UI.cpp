@@ -613,6 +613,11 @@ void FarUI::ShowUserScreen()
 	++_UserScreenCount;
 }
 
+void FarUI::ShowUserScreen2()
+{
+	::GetUserScreen();
+}
+
 void FarUI::SaveUserScreen()
 {
 	// only if done, assuming paired calls
@@ -622,6 +627,11 @@ void FarUI::SaveUserScreen()
 	// update but keep positive for reset
 	if (_UserScreenCount > 0)
 		--_UserScreenCount;
+}
+
+void FarUI::SaveUserScreen2()
+{
+	::SetUserScreen();
 }
 
 void FarUI::ResetUserScreen()

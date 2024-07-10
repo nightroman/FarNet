@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 8.1.17 =
+
+Requires FarNet 8.1.9
+
+Amend PS host ReadLine and PromptForChoice.
+
 = 8.1.16 =
 
 Microsoft.PowerShell.SDK 7.4.3

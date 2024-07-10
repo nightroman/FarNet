@@ -233,6 +233,11 @@ class FarUI : UniformUI
 
 			var text = ui.Out;
 
+			// new line
+			var lineText = Far.Api.UI.GetBufferLineText(Far.Api.UI.BufferCursor.Y).Trim();
+			if (lineText.Length > 0)
+				WriteLine();
+
 			// echo
 			WriteLine(TextPromptSuffix + ui.Out);
 

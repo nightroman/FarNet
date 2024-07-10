@@ -73,14 +73,14 @@ class ReadLine
 	// If we do not hide panels the dialog is not prominent enough.
 	public bool Show()
 	{
-		Far.Api.UI.ShowUserScreen();
+		Far.Api.UI.ShowUserScreen2();
 		try
 		{
 			return Dialog.Show();
 		}
 		finally
 		{
-			Far.Api.UI.SaveUserScreen();
+			Far.Api.UI.SaveUserScreen2();
 		}
 	}
 

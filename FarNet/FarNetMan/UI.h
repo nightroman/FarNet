@@ -40,6 +40,7 @@ public:
 	virtual void Redraw() override;
 	virtual void RestoreScreen(IntPtr screen) override;
 	virtual void SaveUserScreen() override;
+	virtual void SaveUserScreen2() override;
 	virtual void SetProgressFlash() override;
 	virtual void SetProgressState(TaskbarProgressBarState state) override;
 	virtual void SetProgressValue(int currentValue, int maximumValue) override;
@@ -47,6 +48,7 @@ public:
 	virtual void SetBufferContents(Place rectangle, Works::BufferCell fill) override;
 	virtual void SetBufferContents(Point origin, array<Works::BufferCell, 2>^ contents) override;
 	virtual void ShowUserScreen() override;
+	virtual void ShowUserScreen2() override;
 	virtual void Write(String^ text) override;
 	virtual void Write(String^ text, ConsoleColor foregroundColor) override;
 	virtual void Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgroundColor) override;
