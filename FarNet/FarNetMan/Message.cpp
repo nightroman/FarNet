@@ -156,18 +156,22 @@ int Message::ShowDialog(int maxTextWidth, bool needButtonList)
 	
 	// dialog width
 	int w = _header->Length;
+
 	// text lines
 	for each(String^ s in _body)
 		if (s->Length > w)
 			w = s->Length;
+
 	// each button line
 	if (needButtonList)
 	{
+		// extra for possible vertical scroll, to avoid >>
+		const int extra = 1;
 		for each(String^ s in _buttons)
 		{
-			if (s->Length > w)
+			if (s->Length + extra > w)
 			{
-				w = s->Length;
+				w = s->Length + extra;
 				if (w > maxTextWidth)
 				{
 					w = maxTextWidth;
@@ -181,6 +185,7 @@ int Message::ShowDialog(int maxTextWidth, bool needButtonList)
 	{
 		w = _buttonLineLength;
 	}
+
 	// 10 = 2 * (3 dialog<->box + 1 box + 1 box<->button)
 	w += 10;
 

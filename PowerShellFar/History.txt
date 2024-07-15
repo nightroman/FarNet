@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 8.1.18 =
+
+`PromptForChoice`: trim end of caption and message.
+
 = 8.1.17 =
 
 Requires FarNet 8.1.9

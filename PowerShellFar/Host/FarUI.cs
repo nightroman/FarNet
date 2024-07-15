@@ -199,6 +199,10 @@ class FarUI : UniformUI
 		if (choices == null || choices.Count == 0) throw new ArgumentOutOfRangeException(nameof(choices));
 		if (defaultChoice < -1 || defaultChoice >= choices.Count) throw new ArgumentOutOfRangeException(nameof(defaultChoice));
 
+		// PS trims, e.g. message "\n" is discarded
+		caption = caption is null? string.Empty : caption.TrimEnd();
+		message = message is null? string.Empty : message.TrimEnd();
+
 		if (!IsConsole())
 		{
 			int choice = UI.ChoiceMsg.Show(caption, message, choices);
@@ -209,9 +213,9 @@ class FarUI : UniformUI
 		}
 
 		WriteLine();
-		if (!string.IsNullOrEmpty(caption))
+		if (caption.Length > 0)
 			WriteLine(PromptColor, BackgroundColor, caption);
-		if (!string.IsNullOrEmpty(message))
+		if (message.Length > 0)
 			WriteLine(message);
 
 		BuildHotkeysAndPlainLabels(choices, out string[,] hotkeysAndPlainLabels);
