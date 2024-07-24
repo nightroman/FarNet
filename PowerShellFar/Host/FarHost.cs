@@ -21,11 +21,11 @@ class FarHost : PSHost
 	// Original current culture.
 	readonly CultureInfo _CurrentCulture = Thread.CurrentThread.CurrentCulture;
 
-	// User interface object.
+	// Injected UI.
 	readonly PSHostUserInterface _UI;
 
-	// Nested prompt editor.
-	IEditor? _nested;
+	// Current nested prompt.
+	IEditor? _nestedPromptEditor;
 
 	/// <summary>
 	/// Construct an instance of this PSHost implementation.
@@ -75,15 +75,14 @@ class FarHost : PSHost
 	public override void EnterNestedPrompt()
 	{
 		// push the last
-		IEditor? keepNested = _nested;
+		IEditor? keepNested = _nestedPromptEditor;
 
 		try
 		{
 			//! Far used to crash: Test-CallStack-.ps1 \ suspend \ type exit + enter
 			//! This exception from Open() was removed, so don't try\catch all in here.
 			//! SVN tag 4.2.26
-			var console = Interactive.Create(false)!;
-			_nested = console.Editor;
+			_nestedPromptEditor = Interactive.Create(true).Editor;
 
 			// Enter the modal editor. There are two ways to exit.
 			// 1) User exits the editor ([Esc]/[F10]). _nested should be this editor, not null.
@@ -92,13 +91,13 @@ class FarHost : PSHost
 			// 2) User types 'exit' in the editor. Then ExitNestedPrompt() is called first,
 			// it sets _nested to null and closes the editor. Control gets here with null
 			// _nested, so we do nothing but restoring the very first _nested.
-			_nested.Open(OpenMode.Modal);
+			_nestedPromptEditor.Open(OpenMode.Modal);
 
 			// If _nested is not null then a user has closed the editor via UI, not by 'exit'.
 			// Thus, we have to exit the nested prompt. IsRunning check is added for V3 CTP2.
 			// It works fine in V2, too. Meaning: if there is no running pipeline (stepper)
 			// then there is nothing to exit, so do not exit. Exit nothing hangs in V3 CTP2.
-			if (_nested != null && A.Psf.IsRunning)
+			if (_nestedPromptEditor != null && A.Psf.IsRunning)
 			{
 				using var ps = A.Psf.NewPowerShell();
 				ps.AddScript("exit").Invoke();
@@ -107,7 +106,7 @@ class FarHost : PSHost
 		finally
 		{
 			// pop the last
-			_nested = keepNested;
+			_nestedPromptEditor = keepNested;
 		}
 	}
 
@@ -116,10 +115,10 @@ class FarHost : PSHost
 	/// </summary>
 	public override void ExitNestedPrompt()
 	{
-		if (_nested != null)
+		if (_nestedPromptEditor != null)
 		{
-			var nested = _nested;
-			_nested = null;
+			var nested = _nestedPromptEditor;
+			_nestedPromptEditor = null;
 			if (nested.IsOpened)
 				nested.Close();
 		}

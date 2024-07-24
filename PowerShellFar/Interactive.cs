@@ -6,6 +6,7 @@ using FarNet;
 using FarNet.Tools;
 using System;
 using System.IO;
+using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Threading.Tasks;
@@ -22,6 +23,7 @@ class Interactive : InteractiveEditor
 	Runspace? Runspace;
 	PowerShell? PowerShell;
 	bool _doneTabExpansion;
+	readonly bool _isNestedPrompt;
 
 	static readonly HistoryLog _history = new(Entry.LocalData + "\\InteractiveHistory.log", Settings.Default.MaximumHistoryCount);
 
@@ -33,27 +35,8 @@ class Interactive : InteractiveEditor
 	/// <summary>
 	/// Creates an interactive.
 	/// </summary>
-	/// <remarks>
-	/// With prompt may return null if a user cancels.
-	/// </remarks>
-	public static Interactive? Create(bool prompt)
+	public static Interactive Create(bool isNestedPrompt = false)
 	{
-		int mode = 0;
-		if (prompt)
-		{
-			IMenu menu = Far.Api.CreateMenu();
-			menu.Title = "Open interactive";
-			menu.Add("&1. Main session");
-			menu.Add("&2. New local session");
-			menu.Add("&3. New remote session");
-			menu.HelpTopic = Entry.Instance.GetHelpTopic(HelpTopic.InteractiveMenu);
-
-			if (!menu.Show())
-				return null;
-
-			mode = menu.Selected;
-		}
-
 		// editor
 		var editor = Far.Api.CreateEditor();
 		editor.FileName = GetFilePath();
@@ -63,15 +46,17 @@ class Interactive : InteractiveEditor
 		editor.DeleteSource = DeleteSource.File;
 
 		// create interactive and attach it as the host to avoid conflicts
-		Interactive interactive = new(editor, mode) { AutoSave = true };
+		Interactive interactive = new(editor, 0, isNestedPrompt) { AutoSave = true };
 		editor.Host = interactive;
 		return interactive;
 	}
 
-	public Interactive(IEditor editor) : this(editor, 0) { }
+	public Interactive(IEditor editor) : this(editor, 0, false) { }
 
-	public Interactive(IEditor editor, int mode) : base(editor, _history, "<#<", ">#>", "<##>")
+	public Interactive(IEditor editor, int mode, bool isNestedPrompt) : base(editor, _history, "<#<", ">#>", "<##>")
 	{
+		_isNestedPrompt = isNestedPrompt;
+
 		switch (mode)
 		{
 			case 0:
@@ -83,6 +68,38 @@ class Interactive : InteractiveEditor
 			case 2:
 				OpenRemoteSession();
 				break;
+		}
+
+		if (isNestedPrompt)
+			Editor.Opened += (_, _) => DoPrompt();
+	}
+
+	void DoPrompt()
+	{
+		var rs = Runspace ?? A.Psf.Runspace;
+
+		using var ps = rs.CreateNestedPipeline("prompt", false);
+		var res = ps.Invoke();
+
+		var text = string.Join('\n', res.Select(x => x.ToString()));
+		var lines = FarNet.Works.Kit.SplitLines(text);
+		var n = lines.Length;
+
+		while (n > 0)
+		{
+			var line = lines[n - 1].Trim();
+			if (line.Length == 0 || line == ">")
+				--n;
+			else
+				break;
+		}
+
+		if (n > 0)
+		{
+			for (int i = 0; i < n; ++i)
+				Editor.Add($"# {lines[i]}");
+
+			Editor.Save();
 		}
 	}
 
@@ -255,6 +272,8 @@ class Interactive : InteractiveEditor
 		{
 			EditorOutputWriter2 writer = new(Editor);
 			A.Psf.Run(new RunArgs(code) { Writer = writer });
+			if (_isNestedPrompt)
+				DoPrompt();
 			return;
 		}
 

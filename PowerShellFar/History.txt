@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 8.1.19 =
+
+Microsoft.PowerShell.SDK 7.4.4
+
+Support `prompt` in nested prompt editor consoles.
+
 = 8.1.18 =
 
 `PromptForChoice`: trim end of caption and message.
