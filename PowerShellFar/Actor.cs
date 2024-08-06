@@ -226,8 +226,8 @@ public sealed partial class Actor
 
 		try
 		{
-			// complete the task
-			task.GetAwaiter().GetResult();
+			// complete
+			task.Await();
 		}
 		finally
 		{

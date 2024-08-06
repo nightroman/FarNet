@@ -11,11 +11,31 @@ using System.Threading.Tasks;
 namespace FarNet;
 
 /// <summary>
-/// Async helpers for jobs.
+/// Helpers for tasks and jobs.
 /// Jobs are actions and functions called by the core when it gets control.
 /// </summary>
 public static class Tasks
 {
+	/// <summary>
+	/// In special cases, waits for the task completion.
+	/// </summary>
+	/// <param name="task">The task.</param>
+	public static void Await(this Task task)
+	{
+		task.ConfigureAwait(false).GetAwaiter().GetResult();
+	}
+
+	/// <summary>
+	/// In special cases, waits for the task result.
+	/// </summary>
+	/// <typeparam name="T">The task result type.</typeparam>
+	/// <param name="task">The task.</param>
+	/// <returns>The result.</returns>
+	public static T AwaitResult<T>(this Task<T> task)
+	{
+		return task.ConfigureAwait(false).GetAwaiter().GetResult();
+	}
+
 	/// <summary>
 	/// Starts a task with the specified function job.
 	/// </summary>

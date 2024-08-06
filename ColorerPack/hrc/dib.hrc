@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hrc version="take5"
+xmlns="http://colorer.sf.net/2003/hrc"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hrc.xsd">
+
+<type name="dib">
+
+<region name="Cell" parent="def:LabelStrong"/>
+<region name="Directive" parent="def:Directive"/>
+
+<region name="start" parent="def:PairStart"/>
+<region name="end" parent="def:PairEnd"/>
+
+<entity name="magic" value="(?:about|connect|i|import|lsmagic|r|set|share|time|value|whos?)\b"/>
+<entity name="end" value="^(#!(%magic;)?!)?="/>
+
+<scheme name="directive">
+    <regexp match="/(?{Directive}^#!%magic;.*)/"/>
+</scheme>
+
+<scheme name="meta_cell">
+    <block scheme="json:json" content-priority="low"
+    start="/^(?{start}(?{Cell}#!meta))$/" end="/^(?{end}%end;)/"/>
+</scheme>
+
+<scheme name="markdown_cell">
+    <block scheme="markdown:markdown" content-priority="low"
+    start="/^(?{start}(?{Cell}#!markdown))$/" end="/^(?{end}%end;)/"/>
+</scheme>
+
+<scheme name="pwsh_body">
+    <inherit scheme="directive"/>
+    <inherit scheme="powershell:powershell"/>
+</scheme>
+<scheme name="pwsh_cell">
+    <block scheme="pwsh_body" content-priority="low"
+    start="/^(?{start}(?{Cell}#!(?:pwsh|powershell)))$/" end="/^(?{end}%end;)/"/>
+</scheme>
+
+<scheme name="csharp_body">
+    <inherit scheme="directive"/>
+    <inherit scheme="csharp:csharp"/>
+</scheme>
+<scheme name="csharp_cell">
+    <block scheme="csharp_body" content-priority="low"
+    start="/^(?{start}(?{Cell}#!(?:csharp|c#|C#)))$/" end="/^(?{end}%end;)/"/>
+</scheme>
+
+<scheme name="fsharp_body">
+    <inherit scheme="directive"/>
+    <inherit scheme="fsharp:fsharp"/>
+</scheme>
+<scheme name="fsharp_cell">
+    <block scheme="fsharp_body" content-priority="low"
+    start="/^(?{start}(?{Cell}#!(?:fsharp|f#|F#)))$/" end="/^(?{end}%end;)/"/>
+</scheme>
+
+<scheme name="html_body">
+    <inherit scheme="directive"/>
+    <inherit scheme="html:html"/>
+</scheme>
+<scheme name="html_cell">
+    <block scheme="html_body" content-priority="low"
+    start="/^(?{start}(?{Cell}#!html))$/" end="/^(?{end}%end;)/"/>
+</scheme>
+
+<scheme name="javascript_body">
+    <inherit scheme="directive"/>
+    <inherit scheme="jScript:jScript"/>
+</scheme>
+<scheme name="javascript_cell">
+    <block scheme="javascript_body" content-priority="low"
+    start="/^(?{start}(?{Cell}#!(?:javascript|js)))$/" end="/^(?{end}%end;)/"/>
+</scheme>
+
+<scheme name="sql_body">
+    <inherit scheme="directive"/>
+    <inherit scheme="sql:sql"/>
+</scheme>
+<scheme name="sql_cell">
+    <block scheme="sql_body" content-priority="low"
+    start="/^(?{start}(?{Cell}#!sql))$/" end="/^(?{end}%end;)/"/>
+</scheme>
+
+<scheme name="zoo_body">
+    <inherit scheme="directive"/>
+    <inherit scheme="text:text"/>
+</scheme>
+<scheme name="zoo_cell">
+    <block scheme="zoo_body" content-priority="low"
+    start="/^(?{start}(?{Cell}#!\w+))$/" end="/^(?{end}%end;)/"/>
+</scheme>
+
+<scheme name="dib">
+    <inherit scheme="meta_cell"/>
+    <inherit scheme="markdown_cell"/>
+    <inherit scheme="pwsh_cell"/>
+    <inherit scheme="csharp_cell"/>
+    <inherit scheme="fsharp_cell"/>
+    <inherit scheme="html_cell"/>
+    <inherit scheme="javascript_cell"/>
+    <inherit scheme="sql_cell"/>
+    <inherit scheme="zoo_cell"/>
+</scheme>
+</type>
+</hrc>

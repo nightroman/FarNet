@@ -1,6 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 8.1.11 =
+
+New task methods for internal use.
+
 = 8.1.10 =
 
 Fix width in Message with many buttons.

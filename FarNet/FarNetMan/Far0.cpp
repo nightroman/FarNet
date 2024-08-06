@@ -1031,7 +1031,7 @@ Task^ Far0::WaitSteps()
 	if (task)
 		return task->Task;
 	else
-		return Task::FromResult<Object^>(nullptr);
+		return Task::CompletedTask;
 }
 
 //! must be sync call, so we use the queue, first posted/added will be first signaled/removed

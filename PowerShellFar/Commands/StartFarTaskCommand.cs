@@ -17,6 +17,8 @@ namespace PowerShellFar.Commands;
 [OutputType(typeof(Task<object[]>))]
 sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 {
+	const string KeyData = "Data";
+
 	// tasks initial state
 	static readonly InitialSessionState _iss;
 
@@ -27,26 +29,26 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 	ScriptBlock _script = null!;
 	Exception? _scriptError;
 	Dictionary<string, ParameterMetadata>? _scriptParameters;
-	readonly RuntimeDefinedParameterDictionary _paramDynamic = [];
+	RuntimeDefinedParameterDictionary? _dynamicParameters;
 	static readonly HashSet<string> _paramExclude = CommonParameters;
 	static readonly string[] _paramInvalid = [nameof(Script), nameof(Data), nameof(AsTask), nameof(AddDebugger), nameof(Step)];
 
 	// sets step breaks
-	const string CodeStep = @"
-Set-PSBreakpoint -Command job, ps:, run, keys, macro
-";
+	const string CodeStep = """
+	Set-PSBreakpoint -Command job, ps:, run, keys, macro
+	""";
 
 	// invokes task scripts in the new session
-	const string CodeTask = @"
-param($Script, $Data, $Parameters)
-. $Script.GetNewClosure() @Parameters
-";
+	const string CodeTask = """
+	param($Script, $Data, $Parameters)
+	. $Script.GetNewClosure() @Parameters
+	""";
 
 	// invokes job scripts in the main session
-	const string CodeJob = @"
-param($Script, $Data, $Arguments)
-. $Script.GetNewClosure() @Arguments
-";
+	const string CodeJob = """
+	param($Script, $Data, $Arguments)
+	. $Script.GetNewClosure() @Arguments
+	""";
 
 	[Parameter(Position = 0, Mandatory = true)]
 	public object Script
@@ -138,12 +140,13 @@ param($Script, $Data, $Arguments)
 	public object? GetDynamicParameters()
 	{
 		//! throw later, avoid bad error info
-		if (_scriptError != null)
+		if (_scriptError is { })
 			return null;
 
-		if (_scriptParameters is null)
-			return _paramDynamic;
+		if (_scriptParameters is null || _scriptParameters.Count == 0)
+			return null;
 
+		_dynamicParameters = [];
 		foreach (var p in _scriptParameters.Values)
 		{
 			if (!_paramExclude.Contains(p.Name))
@@ -151,20 +154,18 @@ param($Script, $Data, $Arguments)
 				if (_paramInvalid.Contains(p.Name, StringComparer.OrdinalIgnoreCase))
 					throw new InvalidOperationException($"Task script cannot use parameter: {string.Join(", ", _paramInvalid)}");
 
-				_paramDynamic.Add(p.Name, new RuntimeDefinedParameter(p.Name, p.ParameterType, p.Attributes));
+				_dynamicParameters.Add(p.Name, new RuntimeDefinedParameter(p.Name, p.ParameterType, p.Attributes));
 			}
 		}
-		return _paramDynamic;
+		return _dynamicParameters;
 	}
 
 	// jobs and macros base
 	public class BaseCommand : PSCmdlet
 	{
-		protected StartFarTaskCommand Self { get; private set; } = null!;
-
-		protected override void BeginProcessing()
+		protected Hashtable GetData()
 		{
-			Self = (StartFarTaskCommand)GetVariableValue(nameof(StartFarTaskCommand));
+			return (Hashtable)GetVariableValue(KeyData);
 		}
 	}
 
@@ -179,7 +180,6 @@ param($Script, $Data, $Arguments)
 
 		protected override void BeginProcessing()
 		{
-			base.BeginProcessing();
 			if (Script == null)
 				throw new PSArgumentNullException(nameof(Script));
 		}
@@ -190,7 +190,7 @@ param($Script, $Data, $Arguments)
 	{
 		protected override void BeginProcessing()
 		{
-			base.BeginProcessing();
+			var data = GetData();
 
 			// post the job as task
 			var task = Tasks.Job(() =>
@@ -198,7 +198,7 @@ param($Script, $Data, $Arguments)
 				// invoke script block in the main session
 				var ps = A.Psf.NewPowerShell();
 
-				ps.AddScript(CodeJob, true).AddArgument(Script).AddArgument(Self._data).AddArgument(Arguments);
+				ps.AddScript(CodeJob, true).AddArgument(Script).AddArgument(data).AddArgument(Arguments);
 				var output = ps.Invoke();
 
 				//! Assert-Far may stop by PipelineStoppedException
@@ -209,13 +209,13 @@ param($Script, $Data, $Arguments)
 			});
 
 			// await
-			var result = task.GetAwaiter().GetResult();
-			FarNet.Works.Far2.Api.WaitSteps().GetAwaiter().GetResult();
+			var result = task.AwaitResult();
+			FarNet.Works.Far2.Api.WaitSteps().Await();
 
 			//! if the job returns a task, await and return
 			if (result.Count == 1 && result[0]?.BaseObject is Task task2)
 			{
-				task2.GetAwaiter().GetResult();
+				task2.Await();
 
 				var result2 = task2.GetType().GetProperty("Result")?.GetValue(task2);
 				if (result2 != null)
@@ -234,7 +234,7 @@ param($Script, $Data, $Arguments)
 	{
 		protected override void BeginProcessing()
 		{
-			base.BeginProcessing();
+			var data = GetData();
 
 			Exception? reason = null;
 
@@ -246,15 +246,15 @@ param($Script, $Data, $Arguments)
 					Writer = new ConsoleOutputWriter(),
 					NoOutReason = true,
 					UseLocalScope = true,
-					Arguments = [Script, Self._data, Arguments]
+					Arguments = [Script, data, Arguments]
 				};
 				A.Psf.Run(args);
 				reason = args.Reason;
 			});
 
 			// await
-			task.GetAwaiter().GetResult();
-			FarNet.Works.Far2.Api.WaitSteps().GetAwaiter().GetResult();
+			task.Await();
+			FarNet.Works.Far2.Api.WaitSteps().Await();
 			if (reason != null)
 				throw reason;
 		}
@@ -265,13 +265,13 @@ param($Script, $Data, $Arguments)
 	{
 		protected override void BeginProcessing()
 		{
-			base.BeginProcessing();
+			var data = GetData();
 
 			// post the job as task
 			var task = Tasks.Run(() =>
 			{
 				var ps = A.Psf.NewPowerShell();
-				ps.AddScript(CodeJob, true).AddArgument(Script).AddArgument(Self._data).AddArgument(Arguments);
+				ps.AddScript(CodeJob, true).AddArgument(Script).AddArgument(data).AddArgument(Arguments);
 				ps.Invoke();
 
 				//! Assert-Far may stop by PipelineStoppedException
@@ -280,8 +280,8 @@ param($Script, $Data, $Arguments)
 			});
 
 			// await
-			task.GetAwaiter().GetResult();
-			FarNet.Works.Far2.Api.WaitSteps().GetAwaiter().GetResult();
+			task.Await();
+			FarNet.Works.Far2.Api.WaitSteps().Await();
 		}
 	}
 
@@ -293,15 +293,13 @@ param($Script, $Data, $Arguments)
 
 		protected override void BeginProcessing()
 		{
-			base.BeginProcessing();
-
 			if (Keys is null || Keys.Length == 0)
 				throw new PSArgumentNullException(nameof(Keys));
 
 			var keys = string.Join(" ", Keys);
 
-			Tasks.Keys(keys).GetAwaiter().GetResult();
-			FarNet.Works.Far2.Api.WaitSteps().GetAwaiter().GetResult();
+			Tasks.Keys(keys).Await();
+			FarNet.Works.Far2.Api.WaitSteps().Await();
 		}
 	}
 
@@ -313,13 +311,11 @@ param($Script, $Data, $Arguments)
 
 		protected override void BeginProcessing()
 		{
-			base.BeginProcessing();
-
 			if (Macro == null)
 				throw new PSArgumentNullException(nameof(Macro));
 
-			Tasks.Macro(Macro).GetAwaiter().GetResult();
-			FarNet.Works.Far2.Api.WaitSteps().GetAwaiter().GetResult();
+			Tasks.Macro(Macro).Await();
+			FarNet.Works.Far2.Api.WaitSteps().Await();
 		}
 	}
 
@@ -334,7 +330,7 @@ param($Script, $Data, $Arguments)
 		_iss = InitialSessionState.CreateDefault();
 
 		// add commands
-		_iss.Commands.Add(new SessionStateCommandEntry[] {
+		_iss.Commands.Add([
 			new SessionStateAliasEntry("job", NameInvokeTaskJob),
 			new SessionStateAliasEntry("ps:", NameInvokeTaskCmd),
 			new SessionStateAliasEntry("run", NameInvokeTaskRun),
@@ -345,7 +341,7 @@ param($Script, $Data, $Arguments)
 			new SessionStateCmdletEntry(NameInvokeTaskRun, typeof(InvokeTaskRun), string.Empty),
 			new SessionStateCmdletEntry(NameInvokeTaskKeys, typeof(InvokeTaskKeys), string.Empty),
 			new SessionStateCmdletEntry(NameInvokeTaskMacro, typeof(InvokeTaskMacro), string.Empty),
-		});
+		]);
 	}
 
 	void ValidateAddDebugger()
@@ -367,14 +363,17 @@ param($Script, $Data, $Arguments)
 		// open session and set extra variables
 		var rs = RunspaceFactory.CreateRunspace(_iss);
 		rs.Open();
-		rs.SessionStateProxy.PSVariable.Set(nameof(StartFarTaskCommand), this);
+		rs.SessionStateProxy.PSVariable.Set(KeyData, _data);
 		rs.SessionStateProxy.PSVariable.Set("ErrorActionPreference", ActionPreference.Stop);
 
 		// parameters
 		var parameters = new Hashtable();
-		foreach (var p in _paramDynamic.Values)
-			if (p.IsSet)
-				parameters[p.Name] = p.Value;
+		if (_dynamicParameters is { })
+		{
+			foreach (var p in _dynamicParameters.Values)
+				if (p.IsSet)
+					parameters[p.Name] = p.Value;
+		}
 
 		// make live script block to invoke asyncronously in the new session
 		var ps = PowerShell.Create();
