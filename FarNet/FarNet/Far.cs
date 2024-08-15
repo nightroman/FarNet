@@ -223,21 +223,13 @@ public abstract class IFar
 	public abstract IViewer? Viewer { get; }
 
 	/// <summary>
-	/// Gets the list of all editors. Use it sparingly.
+	/// Gets the list of all editors.
 	/// </summary>
-	/// <remarks>
-	/// Work on not current editor instances is strongly not recommended.
-	/// Still, this list provides access to them all, so be careful.
-	/// </remarks>
 	public abstract IEditor[] Editors();
 
 	/// <summary>
-	/// Gets the list of all viewers. Use it sparingly.
+	/// Gets the list of all viewers.
 	/// </summary>
-	/// <remarks>
-	/// Work on not current viewer instances is strongly not recommended.
-	/// Still, this list provides access to them all, so be careful.
-	/// </remarks>
 	public abstract IViewer[] Viewers();
 
 	/// <summary>

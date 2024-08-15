@@ -1,6 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 8.1.12 =
+
+Auto-select in menu "Editors".
+
 = 8.1.11 =
 
 New task methods for internal use.

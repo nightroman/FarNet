@@ -125,19 +125,34 @@ public static class EditorTools
 
 	public static void ShowEditorsMenu()
 	{
+		var editors = Far.Api.Editors();
+
+		int head = Far.Api.Window.Kind == WindowKind.Editor ? 1 : 0;
+		int tail = editors.Length - 1;
+
+		if (head > tail)
+			return;
+
+		if (head == tail)
+		{
+			editors[head].Activate();
+			return;
+		}
+
 		var menu = Far.Api.CreateMenu();
 		menu.HelpTopic = "editors-menu";
 		menu.Title = "Editors";
 
 		int index = -1;
-		foreach (var it in Far.Api.Editors())
+		for (int i = head; i <= tail; ++i)
 		{
 			++index;
+			var editor = editors[i];
 			var name = string.Format(
 				MenuItemFormat,
 				index < MenuHotkeys.Length ? MenuHotkeys.Substring(index, 1) : " ",
-				it.Title);
-			menu.Add(name).Data = it;
+				editor.Title);
+			menu.Add(name).Data = editor;
 		}
 
 		if (menu.Show())
