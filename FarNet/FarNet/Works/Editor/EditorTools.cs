@@ -120,11 +120,14 @@ public static class EditorTools
 		viewer.Open(mode);
 	}
 
-	const string MenuHotkeys = "0123456789abcdefghijklmnopqrstuvwxyz";
+	const string MenuHotkeys = "1234567890abcdefghijklmnopqrstuvwxyz";
 	const string MenuItemFormat = "&{0}. {1}";
 
 	public static void ShowEditorsMenu()
 	{
+		if (Far.Api.Window.IsModal)
+			return;
+
 		var editors = Far.Api.Editors();
 
 		int head = Far.Api.Window.Kind == WindowKind.Editor ? 1 : 0;
@@ -161,19 +164,37 @@ public static class EditorTools
 
 	public static void ShowViewersMenu()
 	{
+		if (Far.Api.Window.IsModal)
+			return;
+
+		var viewers = Far.Api.Viewers();
+
+		int head = Far.Api.Window.Kind == WindowKind.Viewer ? 1 : 0;
+		int tail = viewers.Length - 1;
+
+		if (head > tail)
+			return;
+
+		if (head == tail)
+		{
+			viewers[head].Activate();
+			return;
+		}
+
 		var menu = Far.Api.CreateMenu();
 		menu.HelpTopic = "viewers-menu";
 		menu.Title = "Viewers";
 
 		int index = -1;
-		foreach (var it in Far.Api.Viewers())
+		for (int i = head; i <= tail; ++i)
 		{
 			++index;
+			var viewer = viewers[i];
 			var name = string.Format(
 				MenuItemFormat,
 				index < MenuHotkeys.Length ? MenuHotkeys.Substring(index, 1) : " ",
-				it.FileName);
-			menu.Add(name).Data = it;
+				viewer.FileName);
+			menu.Add(name).Data = viewer;
 		}
 
 		if (menu.Show())
