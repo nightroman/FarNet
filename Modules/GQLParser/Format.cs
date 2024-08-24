@@ -12,8 +12,11 @@ namespace GQLParser;
 /// <summary>
 /// GraphQL formatting methods.
 /// </summary>
-public static class Format
+public static partial class Format
 {
+	[GeneratedRegex(@"(?m:^\s*(?:\r?\n|\r)+)")]
+	private static partial Regex MyRegexEmptyLines();
+
 	/// <summary>
 	/// Formats the specified or cursor file.
 	/// </summary>
@@ -130,29 +133,34 @@ public static class Format
 
 		if (sort)
 		{
-			document.Definitions = document.Definitions
+			document.Definitions = [.. document.Definitions
 				.OrderBy(NodeSortCode)
 				.ThenBy(x => x.Kind)
-				.ThenBy(x => x is INamedNode named ? named.Name.StringValue : null)
-				.ToList();
+				.ThenBy(x => x is INamedNode named ? named.Name.StringValue : null)];
 		}
 
 		var printer = new SDLPrinter(new SDLPrinterOptions
 		{
 			PrintComments = true,
 			EachDirectiveLocationOnNewLine = directiveNewLine,
-			EachUnionMemberOnNewLine = unionMemberNewLine
+			EachUnionMemberOnNewLine = unionMemberNewLine,
 		});
+
 		var writer = new StringWriter();
 		await printer.PrintAsync(document, writer);
 
-		if (text.EndsWith('\n'))
-			writer.WriteLine();
+		// remove unwanted end new lines
+		var sb = writer.GetStringBuilder();
+		if (!text.EndsWith('\n'))
+		{
+			for(int i = sb.Length - 1; i >= 0 && sb[i] < 32; --i)
+				sb.Length = i;
+		}
 
-		var result = writer.ToString();
-
+		// remove empty lines
+		var result = sb.ToString();
 		if (noEmptyLine)
-			result = Regex.Replace(result, @"(?m:^\s*(?:\r?\n|\r)+)", string.Empty);
+			result = MyRegexEmptyLines().Replace(result, string.Empty);
 
 		return result;
 	}
