@@ -31,7 +31,7 @@ Panel-SQLite.ps1 Opens SQLite database panel.
 Panel-Version.ps1 Shows file version information.
 Profile-Editor.ps1 Editor profile (example).
 Profile.ps1 Main profile (example).
-Reformat-Selection-.ps1 Reformats selected lines or the current line in the editor.
+Reformat-Selection.ps1 Reformats selected lines or the current line in the editor.
 Register-FarRedisTask.ps1 Subscribes to Far task messages from another Far.
 Reindent-Selection.ps1 Re-indents selected lines or the current line.
 Remove-EmptyString-.ps1 Removes empty strings from a list.

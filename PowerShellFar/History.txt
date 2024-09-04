@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 8.1.22 =
+
+Rename Reformat-Selection-.ps1 to Reformat-Selection.ps1
+Improve Reformat-Selection.ps1 algorithm.
+
 = 8.1.21 =
 
 Microsoft.PowerShell.SDK 7.4.5

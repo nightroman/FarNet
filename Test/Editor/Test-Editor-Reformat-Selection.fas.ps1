@@ -1,4 +1,8 @@
 ﻿
+ps: {
+	Invoke-Build * $PSScriptRoot\Reformat-Selection.test.ps1
+}
+
 job {
 	Open-FarEditor Test-Editor-Reformat-Selection..ps1.tmp
 }
@@ -17,7 +21,7 @@ job {
 	Assert-Far $Editor.Caret.Y -eq 0
 
 	# test with margins and tabulation
-	Reformat-Selection-.ps1 79 4
+	Reformat-Selection.ps1 79 4
 
 	# 3 lines, 2 reformatted, 2nd is current
 	Assert-Far @(
@@ -52,7 +56,7 @@ job {
 }
 job {
 	# test
-	Reformat-Selection-.ps1 20
+	Reformat-Selection.ps1 20
 }
 job {
 	$Caret = $Editor.Caret
