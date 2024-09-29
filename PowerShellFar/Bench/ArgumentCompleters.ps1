@@ -106,7 +106,7 @@ Register-ResultCompleter {
 		if ($m1.Index + $m1.Length -eq $positionOfCursor.ColumnNumber - 1) {
 			$result.ReplacementIndex = $positionOfCursor.Offset - $m1.Length
 			$result.ReplacementLength = $m1.Length
-			foreach($_ in @('Equals(', 'GetType()', 'ToString()', 'ForEach{', 'Where{') -match "^$m1") {
+			foreach($_ in @('Equals(', 'GetType()', 'ToString()', 'ForEach(', 'Where(') -match "^$m1") {
 				$result.CompletionMatches.Add([System.Management.Automation.CompletionResult]::new($_, $_, 'Method', $_))
 			}
 			break
