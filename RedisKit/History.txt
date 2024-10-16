@@ -1,5 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet.RedisKit
 
+= 0.1.5 =
+
+String editors use `ext` as file type for keys like `*.ext`.
+File types are recognized by Colorer and some other tools.
+
 = 0.1.4 =
 
 Keys panel: F7 creates a new string key.

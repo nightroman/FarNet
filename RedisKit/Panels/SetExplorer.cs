@@ -11,7 +11,7 @@ class SetExplorer : BaseExplorer
 	public static Guid MyTypeId = new("75bbcfef-c464-4c80-a602-83b15bf404f9");
     readonly RedisKey _key;
 
-    public SetExplorer(IDatabase repository, RedisKey key) : base(repository, MyTypeId)
+    public SetExplorer(IDatabase database, RedisKey key) : base(database, MyTypeId)
 	{
 		CanCloneFile = true;
 		CanCreateFile = true;

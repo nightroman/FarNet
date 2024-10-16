@@ -71,7 +71,7 @@ rk:subcommand [key=value;] ...
 
 - `rk:edit`
 
-    Opens the editor with String key value.
+    Opens the string editor, see [Edit string](#edit-string).
 
 
 - `rk:keys`
@@ -93,6 +93,25 @@ rk:subcommand [key=value;] ...
 
     Opens the [Set panel](#set-panel).
 
+
+*********************************************************************
+## Edit string
+
+[Contents]
+
+This command opens the string editor
+
+```
+rk:edit key=<key>
+```
+
+Parameters
+
+- `key=<key>`
+
+    Specifies the existing or new string key.
+
+The editor is usually not modal. Saving commits the string to Redis.
 
 *********************************************************************
 ## Keys panel

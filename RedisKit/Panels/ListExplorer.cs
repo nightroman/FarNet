@@ -13,7 +13,7 @@ class ListExplorer : BaseExplorer
 
 	readonly RedisKey _key;
 
-	public ListExplorer(IDatabase repository, RedisKey key) : base(repository, MyTypeId)
+	public ListExplorer(IDatabase database, RedisKey key) : base(database, MyTypeId)
 	{
 		CanCloneFile = true;
 		CanCreateFile = true;

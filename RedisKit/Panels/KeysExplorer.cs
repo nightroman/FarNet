@@ -11,7 +11,7 @@ class KeysExplorer : BaseExplorer
 	public static Guid MyTypeId = new("5b2529ff-5482-46e5-b730-f9bdecaab8cc");
     readonly string? _pattern;
 
-    public KeysExplorer(IDatabase repository, string? mask) : base(repository, MyTypeId)
+    public KeysExplorer(IDatabase database, string? mask) : base(database, MyTypeId)
 	{
 		CanCloneFile = true;
 		CanCreateFile = true;
@@ -191,7 +191,8 @@ class KeysExplorer : BaseExplorer
 
 		args.CanSet = true;
 		args.UseText = text;
-    }
+		args.UseFileExtension = EditCommand.GetFileExtension(key.ToString());
+	}
 
     public override void SetText(SetTextEventArgs args)
     {
