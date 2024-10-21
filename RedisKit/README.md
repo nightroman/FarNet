@@ -51,7 +51,7 @@ Command parameters are key=value pairs using the connection string format
 
 ```
 rk: <mask>
-rk:subcommand [key=value;] ...
+rk:subcommand key=value; ...
 ```
 
 **Common parameters**
@@ -111,7 +111,7 @@ rk:edit key=<key>
 
 Parameters
 
-- `key=<key>`
+- `key=<key>` (required)
 
     Specifies the existing or new string key.
 
@@ -128,14 +128,14 @@ Type marks: `*` String, `H` Hash, `L` List, `S` Set.
 The panel is opened by
 
 ```
-rk: [<mask>]
-rk:keys [mask=<mask>;] [redis=<configuration>;]
-rk:tree [root=<root>;] [colon=<string>;] [redis=<configuration>;]
+rk: <mask>
+rk:keys mask=<mask>
+rk:tree root=<root>; colon=<string>
 ```
 
 Parameters
 
-- `mask=<mask>`
+- `mask=<mask>` (optional)
 
     Specifies the search pattern or wildcard or fixed prefix.
 
@@ -148,21 +148,21 @@ Parameters
     (3) Otherwise the mask is used as the fixed literal prefix. Keys are shown
     without this prefix but all operations work on actual keys with the prefix.
 
-- `root=<root>`
+- `root=<root>` (optional)
 
-    Specifies the root key part for `rk:tree`.
-    The trailing separator is removed, if any.
+    Specifies the root key prefix for `rk:tree`.\
+    The trailing separator (colon) is optional.
 
-- `colon=<string>`
+- `colon=<string>` (optional)
 
-    Specifies the folder separator for `rk:tree`.
+    Specifies the folder separator for `rk:tree`.\
     The default is traditional Redis colon (:).
 
 Keys and actions
 
 - `Enter`
 
-    Opens panels for Hash, List, Set keys and key folders.
+    Opens panels for Hash, List, Set keys and key folders.\
     Use `Esc` in order to return to the keys panel.
 
 - `F4`
@@ -183,12 +183,12 @@ Keys and actions
 
 - `F8`, `Del`
 
-    Deletes the selected keys and key folders.
+    Deletes the selected keys and key folders.\
     (!) Take special care on deleting folders.
 
 - `CtrlPgDn`, `CtrlPgUp`, `CtrlBackSlash`
 
-    These keys may be used but not recommended for `rk:tree` folder navigation.
+    These keys may be used but not recommended for `rk:tree` folder navigation.\
     Consider using `Enter` and `Esc` for simple folder open / back operations.
 
 *********************************************************************
@@ -200,12 +200,12 @@ This panel shows hash entries, fields and values. It is opened from the keys
 panel or by this command:
 
 ```
-rk:hash key=<name>; [redis=<configuration>;]
+rk:hash key=<name>
 ```
 
 Parameters
 
-- `key=<name>`
+- `key=<name>` (required)
 
     Specifies the hash key. If the key does not exist, a new hash will be
     created. If the key type does not match, it's an error.
@@ -241,12 +241,12 @@ This panel shows list items. It is opened from the keys panel or by this
 command:
 
 ```
-rk:list key=<name>; [redis=<configuration>;]
+rk:list key=<name>
 ```
 
 Parameters
 
-- `key=<name>`
+- `key=<name>` (required)
 
     Specifies the list key. If the key does not exist, a new list will be
     created. If the key type does not match, it's an error.
@@ -282,12 +282,12 @@ This panel shows set members. It is opened from the keys panel or by this
 command:
 
 ```
-rk:set key=<name>; [redis=<configuration>;]
+rk:set key=<name>
 ```
 
 Parameters
 
-- `key=<name>`
+- `key=<name>` (required)
 
     Specifies the set key. If the key does not exist, a new set will be
     created. If the key type does not match, it's an error.

@@ -10,8 +10,8 @@ class KeysExplorer : BaseExplorer
 	public static Guid MyTypeId = new("5b2529ff-5482-46e5-b730-f9bdecaab8cc");
     readonly string? _pattern;
 
-	public string? Prefix { get; }
 	public string? Colon { get; }
+	public string? Prefix { get; }
 
 	public KeysExplorer(IDatabase database, string? mask) : this(database)
 	{
@@ -33,16 +33,16 @@ class KeysExplorer : BaseExplorer
 		}
 	}
 
-	public KeysExplorer(IDatabase database, string colon, string? root) : this(database)
+	public KeysExplorer(IDatabase database, string colon, string? prefix) : this(database)
 	{
 		if (colon.Length == 0)
 			throw new ArgumentException("Colon cannot be empty.");
 
 		Colon = colon;
 
-		if (root is { })
+		if (prefix is { })
 		{
-			Prefix = root + colon;
+			Prefix = prefix;
 			_pattern = ConvertPrefixToPattern(Prefix);
 		}
 	}
@@ -72,7 +72,7 @@ class KeysExplorer : BaseExplorer
 		Prefix is null ? name : Prefix + name;
 
 	string ToFileName(RedisKey key) =>
-		Prefix is null ? (string)key! : ((string)key!).Substring(Prefix.Length);
+		Prefix is null ? (string)key! : ((string)key!)[Prefix.Length..];
 
 	public override string ToString()
 	{
@@ -104,11 +104,11 @@ class KeysExplorer : BaseExplorer
 				int index = name.IndexOf(Colon);
 				if (index >= 0)
 				{
-					var folder = name[..index];
-					if (folders!.TryGetValue(folder, out int count))
-						folders[folder] = count + 1;
+					var nameAndColon = name[..(index + Colon.Length)];
+					if (folders!.TryGetValue(nameAndColon, out int count))
+						folders[nameAndColon] = count + 1;
 					else
-						folders.Add(folder, 1);
+						folders.Add(nameAndColon, 1);
 					continue;
 				}
 			}
@@ -146,15 +146,14 @@ class KeysExplorer : BaseExplorer
 
 		if (folders is { })
 		{
-			foreach (var folder in folders)
+			foreach (var (nameAndColon, count) in folders)
 			{
-				var name = folder.Key;
 				yield return new SetFile
 				{
 					IsDirectory = true,
-					Name = $"{name}{Colon} ({folder.Value})",
-					Data = Prefix + name,
-					Length = folder.Value,
+					Name = $"{nameAndColon} ({count})",
+					Data = Prefix + nameAndColon,
+					Length = count,
 				};
 			}
 		}
@@ -164,8 +163,8 @@ class KeysExplorer : BaseExplorer
 	{
 		if (args.File.IsDirectory)
 		{
-			var path = (string)args.File.Data!;
-			return new KeysExplorer(Database, Colon!, path);
+			var prefix = (string)args.File.Data!;
+			return new KeysExplorer(Database, Colon!, prefix);
 		}
 
 		var key = (RedisKey)args.File.Data!;
@@ -202,7 +201,7 @@ class KeysExplorer : BaseExplorer
 		if (index < 0)
 			return new KeysExplorer(Database, Colon, null);
 
-		return new KeysExplorer(Database, Colon, Prefix[..index]);
+		return new KeysExplorer(Database, Colon, Prefix[..(index + Colon.Length)]);
 	}
 
 	public override Explorer? ExploreRoot(ExploreRootEventArgs args)
@@ -288,7 +287,7 @@ class KeysExplorer : BaseExplorer
 				if (server is null)
 					server = Database.Multiplexer.GetServers()[Database.Database];
 
-				var prefix = (string)file.Data! + Colon;
+				var prefix = (string)file.Data!;
 				var pattern = ConvertPrefixToPattern(prefix);
 				keys.AddRange(server.Keys(Database.Database, pattern));
 			}

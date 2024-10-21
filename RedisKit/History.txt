@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.RedisKit
 
+= 0.2.1 =
+
+rk:tree minor tweaks.
+
 = 0.2.0 =
 
 New command `rk:tree` uses the specified separator or ":" in order to infer the
