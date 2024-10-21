@@ -11,14 +11,6 @@ public class Tool : ModuleTool
 		menu.Title = Host.MyName;
 		menu.HelpTopic = GetHelpTopic("menu");
 
-		if (Far.Api.Panel is AnyPanel panel)
-		{
-			panel.AddMenu(menu);
-		}
-		else
-		{
-		}
-
 		menu.Add("Help", (s, e) => Host.Instance.ShowHelpTopic(string.Empty));
 
 		menu.Show();

@@ -23,10 +23,6 @@ class ListPanel : BasePanel<ListExplorer>
 
 	protected override string HelpTopic => "list-panel";
 
-	internal override void AddMenu(IMenu menu)
-	{
-	}
-
 	public override void UICloneFile(CloneFileEventArgs args)
 	{
 		var name = args.File.Name;

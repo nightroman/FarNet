@@ -29,6 +29,7 @@ public class Command : ModuleCommand
 				command = subcommand switch
 				{
 					"keys" => new KeysCommand(parameters),
+					"tree" => new TreeCommand(parameters),
 					"edit" => new EditCommand(parameters),
 					"hash" => new HashCommand(parameters),
 					"list" => new ListCommand(parameters),

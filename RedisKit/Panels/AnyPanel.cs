@@ -8,10 +8,7 @@ abstract class AnyPanel : Panel
 
 	public AnyPanel(Explorer explorer) : base(explorer)
     {
-		Title = explorer.ToString()!;
     }
-
-    internal abstract void AddMenu(IMenu menu);
 
 	protected (TData?, TData?) GetSelectedDataRange<TData>()
 	{

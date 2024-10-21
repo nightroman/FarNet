@@ -2,7 +2,6 @@
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace RedisKit;
 
@@ -11,15 +10,11 @@ class KeysExplorer : BaseExplorer
 	public static Guid MyTypeId = new("5b2529ff-5482-46e5-b730-f9bdecaab8cc");
     readonly string? _pattern;
 
-    public KeysExplorer(IDatabase database, string? mask) : base(database, MyTypeId)
-	{
-		CanCloneFile = true;
-		CanCreateFile = true;
-		CanDeleteFiles = true;
-		CanRenameFile = true;
-		CanGetContent = true;
-		CanSetText = true;
+	public string? Prefix { get; }
+	public string? Colon { get; }
 
+	public KeysExplorer(IDatabase database, string? mask) : this(database)
+	{
 		if (!string.IsNullOrEmpty(mask))
 		{
 			if (mask.Contains('[') || mask.Contains(']'))
@@ -38,12 +33,39 @@ class KeysExplorer : BaseExplorer
 		}
 	}
 
-	public string? Prefix { get; }
-
-	public override string ToString()
+	public KeysExplorer(IDatabase database, string colon, string? root) : this(database)
 	{
-		var info = Prefix ?? _pattern ?? Database.Multiplexer.Configuration;
-		return $"Keys {info}";
+		if (colon.Length == 0)
+			throw new ArgumentException("Colon cannot be empty.");
+
+		Colon = colon;
+
+		if (root is { })
+		{
+			Prefix = root + colon;
+			_pattern = ConvertPrefixToPattern(Prefix);
+		}
+	}
+
+	KeysExplorer(IDatabase database) : base(database, MyTypeId)
+	{
+		CanCloneFile = true;
+		CanCreateFile = true;
+		CanDeleteFiles = true;
+		CanRenameFile = true;
+		CanGetContent = true;
+		CanSetText = true;
+	}
+
+	static string ConvertPrefixToPattern(string root)
+	{
+		return root
+			.Replace("\\", "\\\\")
+			.Replace("*", "\\*")
+			.Replace("?", "\\?")
+			.Replace("[", "\\[")
+			.Replace("]", "\\]")
+			+ '*';
 	}
 
 	RedisKey ToKey(string name) =>
@@ -51,6 +73,13 @@ class KeysExplorer : BaseExplorer
 
 	string ToFileName(RedisKey key) =>
 		Prefix is null ? (string)key! : ((string)key!).Substring(Prefix.Length);
+
+	public override string ToString()
+	{
+		var name = Colon is { } ? "Tree" : "Keys";
+		var info = Prefix ?? _pattern ?? Database.Multiplexer.Configuration;
+		return $"{name} {info}";
+	}
 
 	public override Panel CreatePanel()
 	{
@@ -63,16 +92,36 @@ class KeysExplorer : BaseExplorer
 		var keys = server.Keys(Database.Database, _pattern);
 		var now = DateTime.Now;
 
+		var folders = Colon is { } ? new Dictionary<string, int>() : null;
+
 		foreach (RedisKey key in keys)
 		{
+			var name = ToFileName(key!);
+
+			// folder?
+			if (Colon is { })
+			{
+				int index = name.IndexOf(Colon);
+				if (index >= 0)
+				{
+					var folder = name[..index];
+					if (folders!.TryGetValue(folder, out int count))
+						folders[folder] = count + 1;
+					else
+						folders.Add(folder, 1);
+					continue;
+				}
+			}
+
 			var file = new SetFile
-            {
-                Name = ToFileName(key!),
-                Data = key,
-            };
+			{
+				Name = ToFileName(key!),
+				Data = key,
+				Length = 1,
+			};
 
 			var type = Database.KeyType(key);
-			switch(type)
+			switch (type)
 			{
 				case RedisType.String:
 					file.Owner = "*";
@@ -86,18 +135,92 @@ class KeysExplorer : BaseExplorer
 				case RedisType.Set:
 					file.Owner = "S";
 					break;
-            }
+			}
 
-            var ttl = Database.KeyTimeToLive(key);
+			var ttl = Database.KeyTimeToLive(key);
 			if (ttl.HasValue)
 				file.LastWriteTime = now + ttl.Value;
 
 			yield return file;
 		}
+
+		if (folders is { })
+		{
+			foreach (var folder in folders)
+			{
+				var name = folder.Key;
+				yield return new SetFile
+				{
+					IsDirectory = true,
+					Name = $"{name}{Colon} ({folder.Value})",
+					Data = Prefix + name,
+					Length = folder.Value,
+				};
+			}
+		}
+	}
+
+	public override Explorer? ExploreDirectory(ExploreDirectoryEventArgs args)
+	{
+		if (args.File.IsDirectory)
+		{
+			var path = (string)args.File.Data!;
+			return new KeysExplorer(Database, Colon!, path);
+		}
+
+		var key = (RedisKey)args.File.Data!;
+		var type = Database.KeyType(key);
+		switch (type)
+		{
+			case RedisType.Hash:
+				return new HashExplorer(Database, key);
+
+			case RedisType.List:
+				return new ListExplorer(Database, key);
+
+			case RedisType.Set:
+				return new SetExplorer(Database, key);
+
+			case RedisType.String:
+				return null;
+
+			default:
+				throw new ModuleException($"Not implemented for {type}.");
+		}
+	}
+
+	public override Explorer? ExploreParent(ExploreParentEventArgs args)
+	{
+		if (Colon is null || Prefix is null)
+			return null;
+
+		var startIndex = Prefix.Length - Colon.Length - Colon.Length;
+		if (startIndex < 0)
+			return new KeysExplorer(Database, Colon, null);
+
+		var index = Prefix.LastIndexOf(Colon, startIndex);
+		if (index < 0)
+			return new KeysExplorer(Database, Colon, null);
+
+		return new KeysExplorer(Database, Colon, Prefix[..index]);
+	}
+
+	public override Explorer? ExploreRoot(ExploreRootEventArgs args)
+	{
+		if (Colon is null || Prefix is null)
+			return null;
+
+		return new KeysExplorer(Database, Colon, null);
 	}
 
 	public override void CloneFile(CloneFileEventArgs args)
 	{
+		if (args.File.IsDirectory)
+		{
+			args.Result = JobResult.Ignore;
+			return;
+		}
+
 		var key = (RedisKey)args.File.Data!;
 		var key2 = ToKey((string)args.Data!);
 
@@ -155,12 +278,31 @@ class KeysExplorer : BaseExplorer
 
 	public override void DeleteFiles(DeleteFilesEventArgs args)
 	{
-		var keys = args.Files.Select(x => (RedisKey)x.Data!).ToArray();
+		IServer? server = null;
+
+		var keys = new List<RedisKey>();
+		foreach (var file in args.Files)
+		{
+			if (file.IsDirectory)
+			{
+				if (server is null)
+					server = Database.Multiplexer.GetServers()[Database.Database];
+
+				var prefix = (string)file.Data! + Colon;
+				var pattern = ConvertPrefixToPattern(prefix);
+				keys.AddRange(server.Keys(Database.Database, pattern));
+			}
+			else
+			{
+				keys.Add((RedisKey)file.Data!);
+			}
+		}
+
         try
         {
-            long res = Database.KeyDelete(keys);
-			if (res != keys.Length)
-				throw new Exception($"Deleted {res} of {keys.Length} keys.");
+            long res = Database.KeyDelete([.. keys]);
+			if (res != keys.Count)
+				throw new Exception($"Deleted {res} of {keys.Count} keys.");
         }
 		catch (Exception ex)
 		{
@@ -173,6 +315,9 @@ class KeysExplorer : BaseExplorer
 
     public override void RenameFile(RenameFileEventArgs args)
 	{
+		if (args.File.IsDirectory)
+			throw new NotImplementedException("Renaming folders is not yet implemented.");
+
         var key = (RedisKey)args.File.Data!;
         var key2 = ToKey((string)args.Data!);
         Database.KeyRename(key, key2);
@@ -199,27 +344,4 @@ class KeysExplorer : BaseExplorer
         var key = (RedisKey)args.File.Data!;
 		Database.StringSet(key, args.Text);
     }
-
-	public override Explorer? ExploreDirectory(ExploreDirectoryEventArgs args)
-	{
-		var key = (RedisKey)args.File.Data!;
-		var type = Database.KeyType(key);
-		switch (type)
-		{
-			case RedisType.Hash:
-				return new HashExplorer(Database, key);
-
-			case RedisType.List:
-				return new ListExplorer(Database, key);
-
-			case RedisType.Set:
-				return new SetExplorer(Database, key);
-
-			case RedisType.String:
-				return null;
-
-			default:
-				throw new ModuleException($"Not implemented for {type}.");
-		}
-	}
 }

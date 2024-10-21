@@ -94,6 +94,10 @@ rk:subcommand [key=value;] ...
     Opens the [Set panel](#set-panel).
 
 
+- `rk:tree`
+
+    Opens the [Keys panel](#keys-panel) with the folder tree.
+
 *********************************************************************
 ## Edit string
 
@@ -118,7 +122,7 @@ The editor is usually not modal. Saving commits the string to Redis.
 
 [Contents]
 
-This panel shows keys, value types and end-of-life dates.
+This panel shows key folders, keys, value types and end-of-life dates.
 Type marks: `*` String, `H` Hash, `L` List, `S` Set.
 
 The panel is opened by
@@ -126,6 +130,7 @@ The panel is opened by
 ```
 rk: [<mask>]
 rk:keys [mask=<mask>;] [redis=<configuration>;]
+rk:tree [root=<root>;] [colon=<string>;] [redis=<configuration>;]
 ```
 
 Parameters
@@ -143,11 +148,22 @@ Parameters
     (3) Otherwise the mask is used as the fixed literal prefix. Keys are shown
     without this prefix but all operations work on actual keys with the prefix.
 
+- `root=<root>`
+
+    Specifies the root key part for `rk:tree`.
+    The trailing separator is removed, if any.
+
+- `colon=<string>`
+
+    Specifies the folder separator for `rk:tree`.
+    The default is traditional Redis colon (:).
+
 Keys and actions
 
 - `Enter`
 
-    Opens panels for Hash, List, Set keys.
+    Opens panels for Hash, List, Set keys and key folders.
+    Use `Esc` in order to return to the keys panel.
 
 - `F4`
 
@@ -167,7 +183,13 @@ Keys and actions
 
 - `F8`, `Del`
 
-    Deletes the selected keys.
+    Deletes the selected keys and key folders.
+    (!) Take special care on deleting folders.
+
+- `CtrlPgDn`, `CtrlPgUp`, `CtrlBackSlash`
+
+    These keys may be used but not recommended for `rk:tree` folder navigation.
+    Consider using `Enter` and `Esc` for simple folder open / back operations.
 
 *********************************************************************
 ## Hash panel

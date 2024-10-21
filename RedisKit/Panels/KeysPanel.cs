@@ -24,12 +24,14 @@ class KeysPanel : BasePanel<KeysExplorer>
 
 	protected override string HelpTopic => "keys-panel";
 
-	internal override void AddMenu(IMenu menu)
-	{
-	}
-
 	public override void UICloneFile(CloneFileEventArgs args)
 	{
+		if (args.File.IsDirectory)
+		{
+			args.Result = JobResult.Ignore;
+			return;
+		}
+
 		var name = args.File.Name;
 		var newName = Far.Api.Input("New key name", "Key", $"Clone '{name}'", name);
 		if (newName is null)
@@ -57,7 +59,19 @@ class KeysPanel : BasePanel<KeysExplorer>
 
 	public override void UIDeleteFiles(DeleteFilesEventArgs args)
 	{
-		var text = $"Delete keys ({args.Files.Count}):\n{string.Join("\n", args.Files.Select(x => x.Name))}";
+		string message;
+		if (Explorer.Colon is { })
+		{
+			var n1 = args.Files.Count(x => x.IsDirectory);
+			var n2 = args.Files.Count(x => !x.IsDirectory);
+			message = $"Delete {n1} folder(s), {n2} key(s):";
+		}
+		else
+		{
+			message = $"Delete {args.Files.Count}) key(s):";
+		}
+
+		var text = $"{message}\n{string.Join("\n", args.Files.Select(x => x.Name))}";
 		var op = MessageOptions.YesNo | MessageOptions.LeftAligned;
 		if (0 != Far.Api.Message(text, Host.MyName, op))
 		{
@@ -70,6 +84,12 @@ class KeysPanel : BasePanel<KeysExplorer>
 
 	public override void UIRenameFile(RenameFileEventArgs args)
 	{
+		if (args.File.IsDirectory)
+		{
+			args.Result = JobResult.Ignore;
+			return;
+		}
+
 		var newName = Far.Api.Input("New name", "Key", "Rename key", args.File.Name);
 		if (newName is null)
 		{
@@ -87,7 +107,7 @@ class KeysPanel : BasePanel<KeysExplorer>
 		if (file is null)
 			return;
 
-		var args = new ExploreDirectoryEventArgs( ExplorerModes.None, file);
+		var args = new ExploreDirectoryEventArgs(ExplorerModes.None, file);
 		var explorer2 = Explorer.ExploreDirectory(args);
 		if (explorer2 is null)
 			return;

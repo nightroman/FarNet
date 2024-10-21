@@ -1,5 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet.RedisKit
 
+= 0.2.0 =
+
+New command `rk:tree` uses the specified separator or ":" in order to infer the
+key folder tree and opens the keys panel with folders.
+
 = 0.1.5 =
 
 String editors use `ext` as file type for keys like `*.ext`.

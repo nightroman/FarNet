@@ -24,10 +24,6 @@ class HashPanel : BasePanel<HashExplorer>
 
 	protected override string HelpTopic => "hash-panel";
 
-	internal override void AddMenu(IMenu menu)
-	{
-	}
-
 	public override void UICloneFile(CloneFileEventArgs args)
 	{
 		var name = args.File.Name;
