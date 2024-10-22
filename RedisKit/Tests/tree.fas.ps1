@@ -101,7 +101,8 @@ job {
 }
 keys Esc
 job {
-	Find-FarFile 'test-tree: (5)'
+	#! file name changed but PostData helps finding it
+	Assert-Far -FileName 'test-tree: (5)'
 }
 keys Del
 job {
@@ -110,4 +111,3 @@ job {
 	Assert-Far $Far.Dialog[2].Text -eq 'test-tree: (5)'
 }
 keys Enter Esc
-

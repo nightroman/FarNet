@@ -193,6 +193,8 @@ class KeysExplorer : BaseExplorer
 		if (Colon is null || Prefix is null)
 			return null;
 
+		args.PostData = Prefix;
+
 		var startIndex = Prefix.Length - Colon.Length - Colon.Length;
 		if (startIndex < 0)
 			return new KeysExplorer(Database, Colon, null);

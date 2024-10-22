@@ -186,10 +186,18 @@ Keys and actions
     Deletes the selected keys and key folders.\
     (!) Take special care on deleting folders.
 
-- `CtrlPgDn`, `CtrlPgUp`, `CtrlBackSlash`
+- `CtrlPgDn`, `CtrlPgUp`, `BS`, `CtrlBackSlash`
 
-    These keys may be used but not recommended for `rk:tree` folder navigation.\
-    Consider using `Enter` and `Esc` for simple folder open / back operations.
+    These navigation keys may be used but not recommended for `rk:tree` folder
+    navigation. Consider using `Enter` and `Esc` for simple folder open / back
+    operations.
+
+    `Enter` opens the child panel and keeps the parent in the stack. `Esc`
+    closes the current panel and opens the parent from the stack.
+
+    In contrast to `Enter` and `Esc`, navigation keys do not open or close
+    panels. They change the current panel explorer and show its new data in
+    the same panel.
 
 *********************************************************************
 ## Hash panel

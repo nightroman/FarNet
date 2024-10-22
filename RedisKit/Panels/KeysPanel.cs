@@ -112,6 +112,10 @@ class KeysPanel : BasePanel<KeysExplorer>
 		if (explorer2 is null)
 			return;
 
+		// For folders file name is not stable, `(n)` may change, so use data.
+		// And for files RedisKey data is better because it is case sensitive.
+		PostData(file.Data!);
+
 		explorer2.OpenPanelChild(this);
 	}
 
