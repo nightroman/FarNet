@@ -1,7 +1,7 @@
 ﻿using FarNet;
 using System.Linq;
 
-namespace RedisKit;
+namespace RedisKit.Panels;
 
 class KeysPanel : BasePanel<KeysExplorer>
 {
@@ -40,7 +40,7 @@ class KeysPanel : BasePanel<KeysExplorer>
 			return;
 		}
 
-		args.Data = newName;
+		args.Data = new Files.ArgsDataName(newName);
 		Explorer.CloneFile(args);
 	}
 
@@ -53,7 +53,7 @@ class KeysPanel : BasePanel<KeysExplorer>
 			return;
 		}
 
-		args.Data = newName;
+		args.Data = new Files.ArgsDataName(newName);
 		Explorer.CreateFile(args);
 	}
 
@@ -85,49 +85,19 @@ class KeysPanel : BasePanel<KeysExplorer>
 	public override void UIRenameFile(RenameFileEventArgs args)
 	{
 		if (args.File.IsDirectory)
-		{
-			args.Result = JobResult.Ignore;
 			return;
-		}
 
-		var newName = Far.Api.Input("New name", "Key", "Rename key", args.File.Name);
+		var newName = args.File.IsDirectory ?
+			Far.Api.Input("New folder name", "Folder", "Rename folder", args.File.DataFolder().Prefix) :
+			Far.Api.Input("New key name", "Key", "Rename key", args.File.Name);
+
 		if (newName is null)
 		{
 			args.Result = JobResult.Ignore;
 			return;
 		}
 
-		args.Data = newName;
+		args.Data = new Files.ArgsDataName(newName);
 		Explorer.RenameFile(args);
-	}
-
-	void DoEnter()
-	{
-		var file = CurrentFile;
-		if (file is null)
-			return;
-
-		var args = new ExploreDirectoryEventArgs(ExplorerModes.None, file);
-		var explorer2 = Explorer.ExploreDirectory(args);
-		if (explorer2 is null)
-			return;
-
-		// For folders file name is not stable, `(n)` may change, so use data.
-		// And for files RedisKey data is better because it is case sensitive.
-		PostData(file.Data!);
-
-		explorer2.OpenPanelChild(this);
-	}
-
-	public override bool UIKeyPressed(KeyInfo key)
-	{
-		switch (key.VirtualKeyCode)
-		{
-			case KeyCode.Enter when key.Is():
-				DoEnter();
-				return true;
-		}
-
-		return base.UIKeyPressed(key);
 	}
 }

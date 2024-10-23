@@ -2,14 +2,13 @@
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
-namespace RedisKit;
+namespace RedisKit.Panels;
 
 class ListExplorer : BaseExplorer
 {
 	public static Guid MyTypeId = new("be46affb-dd5c-436b-99c3-197dfd6e9d1f");
-	static RedisValue s_deleted = "<DELETED>";
+	static readonly RedisValue s_deleted = "<DELETED>";
 
 	readonly RedisKey _key;
 

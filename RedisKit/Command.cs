@@ -1,4 +1,5 @@
 ﻿using FarNet;
+using RedisKit.Commands;
 using System;
 using System.Linq;
 
@@ -9,9 +10,9 @@ public class Command : ModuleCommand
 {
 	public override void Invoke(object sender, ModuleCommandEventArgs e)
 	{
-        AnyCommand? command = null;
-        try
-        {
+		AnyCommand? command = null;
+		try
+		{
 			var (subcommand, parameters) = Parameters.Parse(e.Command);
 
 			if (subcommand == null)
@@ -20,12 +21,12 @@ public class Command : ModuleCommand
 			}
 			else
 			{
-                if (parameters == null)
-                {
-                    Host.Instance.ShowHelpTopic("commands");
-                    return;
-                }
-                
+				if (parameters == null)
+				{
+					Host.Instance.ShowHelpTopic("commands");
+					return;
+				}
+
 				command = subcommand switch
 				{
 					"keys" => new KeysCommand(parameters),

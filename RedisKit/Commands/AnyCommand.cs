@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RedisKit;
+namespace RedisKit.Commands;
 
 abstract class AnyCommand : IDisposable
 {

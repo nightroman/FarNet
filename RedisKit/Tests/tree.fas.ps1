@@ -10,7 +10,7 @@ job {
 	$Far.InvokeCommand('rk:tree root=:')
 }
 job {
-	Assert-Far -FileName test-tree-file-in-empty-folder-name
+	Find-FarFile test-tree-file-in-empty-folder-name
 	$Far.Panel.Close()
 }
 
@@ -29,7 +29,7 @@ job {
 	Assert-Far $files.Count -eq 1
 	Assert-Far $files[0].Name -eq test-tree-file-in-empty-folder-name
 }
-keys Esc
+keys Enter # dots
 job {
 	Assert-Far -FileName ': (1)'
 }
@@ -65,7 +65,7 @@ job {
 	Assert-Far $files[1].Name -eq 'file-in-empty-1'
 	Assert-Far $files[2].Name -eq 'file-in-empty-2'
 }
-keys Esc
+keys CtrlPgUp
 job {
 	Assert-Far -FileName ': (3)'
 
@@ -91,7 +91,7 @@ keys Enter
 job {
 	Assert-Far $Far.Panel.GetFiles().Count -eq 0
 }
-keys Esc
+keys CtrlPgUp
 job {
 	$files = $Far.Panel.GetFiles()
 	Assert-Far $files.Count -eq 3
@@ -99,7 +99,7 @@ job {
 	Assert-Far $files[1].Name -eq 'file-in-root-1'
 	Assert-Far $files[2].Name -eq 'file-in-root-2'
 }
-keys Esc
+keys CtrlPgUp
 job {
 	#! file name changed but PostData helps finding it
 	Assert-Far -FileName 'test-tree: (5)'

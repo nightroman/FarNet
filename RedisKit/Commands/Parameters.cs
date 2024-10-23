@@ -2,7 +2,7 @@
 using System;
 using System.Data.Common;
 
-namespace RedisKit;
+namespace RedisKit.Commands;
 
 static class Parameters
 {
@@ -52,12 +52,12 @@ static class Parameters
 
 	public static string GetRequiredString(this DbConnectionStringBuilder parameters, string name, bool expand = false)
 	{
-		return GetString(parameters, name, expand) ?? throw new ModuleException($"Missing required parameter '{name}'.");
+		return parameters.GetString(name, expand) ?? throw new ModuleException($"Missing required parameter '{name}'.");
 	}
 
 	public static bool GetBool(this DbConnectionStringBuilder parameters, string name)
 	{
-		var string1 = GetString(parameters, name);
+		var string1 = parameters.GetString(name);
 		if (string1 == null)
 			return false;
 
@@ -78,7 +78,7 @@ static class Parameters
 
 	public static T GetValue<T>(this DbConnectionStringBuilder parameters, string name)
 	{
-		var string1 = GetString(parameters, name);
+		var string1 = parameters.GetString(name);
 		if (string1 == null)
 			return default!;
 

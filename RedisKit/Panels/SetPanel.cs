@@ -1,7 +1,7 @@
 ﻿using FarNet;
 using System.Linq;
 
-namespace RedisKit;
+namespace RedisKit.Panels;
 
 class SetPanel : BasePanel<SetExplorer>
 {

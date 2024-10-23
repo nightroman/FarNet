@@ -162,8 +162,10 @@ Keys and actions
 
 - `Enter`
 
-    Opens panels for Hash, List, Set keys and key folders.\
+    For Hash, List, Set keys opens their panels.\
     Use `Esc` in order to return to the keys panel.
+
+    For folders enters the caret folder.
 
 - `F4`
 
@@ -186,18 +188,9 @@ Keys and actions
     Deletes the selected keys and key folders.\
     (!) Take special care on deleting folders.
 
-- `CtrlPgDn`, `CtrlPgUp`, `BS`, `CtrlBackSlash`
+- `CtrlPgDn`, `CtrlPgUp`, `Enter` "dots", `CtrlBackSlash`
 
-    These navigation keys may be used but not recommended for `rk:tree` folder
-    navigation. Consider using `Enter` and `Esc` for simple folder open / back
-    operations.
-
-    `Enter` opens the child panel and keeps the parent in the stack. `Esc`
-    closes the current panel and opens the parent from the stack.
-
-    In contrast to `Enter` and `Esc`, navigation keys do not open or close
-    panels. They change the current panel explorer and show its new data in
-    the same panel.
+    Folders navigation keys for `rk:tree` panel.
 
 *********************************************************************
 ## Hash panel

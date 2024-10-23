@@ -1,14 +1,10 @@
 ﻿using FarNet;
 
-namespace RedisKit;
+namespace RedisKit.Panels;
 
-abstract class AnyPanel : Panel
+abstract class AnyPanel(Explorer explorer) : Panel(explorer)
 {
 	protected abstract string HelpTopic { get; }
-
-	public AnyPanel(Explorer explorer) : base(explorer)
-    {
-    }
 
 	protected (TData?, TData?) GetSelectedDataRange<TData>()
 	{

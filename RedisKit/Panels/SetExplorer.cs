@@ -4,14 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace RedisKit;
+namespace RedisKit.Panels;
 
 class SetExplorer : BaseExplorer
 {
 	public static Guid MyTypeId = new("75bbcfef-c464-4c80-a602-83b15bf404f9");
-    readonly RedisKey _key;
+	readonly RedisKey _key;
 
-    public SetExplorer(IDatabase database, RedisKey key) : base(database, MyTypeId)
+	public SetExplorer(IDatabase database, RedisKey key) : base(database, MyTypeId)
 	{
 		CanCloneFile = true;
 		CanCreateFile = true;
@@ -39,10 +39,10 @@ class SetExplorer : BaseExplorer
 		foreach (RedisValue item in set)
 		{
 			var file = new SetFile
-            {
-                Name = (string)item!,
-                Data = item,
-            };
+			{
+				Name = (string)item!,
+				Data = item,
+			};
 
 			yield return file;
 		}
@@ -80,14 +80,14 @@ class SetExplorer : BaseExplorer
 	}
 
 	public override void GetContent(GetContentEventArgs args)
-    {
+	{
 		var value = (RedisValue)args.File.Data!;
 		args.CanSet = true;
 		args.UseText = (string?)value;
 	}
 
 	public override void SetText(SetTextEventArgs args)
-    {
+	{
 		var value = (RedisValue)args.File.Data!;
 		Database.SetRemove(_key, value);
 		Database.SetAdd(_key, args.Text);

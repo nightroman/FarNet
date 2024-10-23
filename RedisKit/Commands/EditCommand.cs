@@ -4,11 +4,11 @@ using System;
 using System.Data.Common;
 using System.IO;
 
-namespace RedisKit;
+namespace RedisKit.Commands;
 
 sealed class EditCommand(DbConnectionStringBuilder parameters) : BaseCommand(parameters)
 {
-    readonly string _key = parameters.GetRequiredString(Host.Param.Key);
+	readonly string _key = parameters.GetRequiredString(Host.Param.Key);
 
 	public override void Invoke()
 	{

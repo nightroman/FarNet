@@ -1,6 +1,7 @@
-﻿using System.Data.Common;
+﻿using RedisKit.Panels;
+using System.Data.Common;
 
-namespace RedisKit;
+namespace RedisKit.Commands;
 
 sealed class TreeCommand : BaseCommand
 {
@@ -8,7 +9,7 @@ sealed class TreeCommand : BaseCommand
 	readonly string? _prefix;
 
 	public TreeCommand(DbConnectionStringBuilder parameters) : base(parameters)
-    {
+	{
 		_colon = parameters.GetString(Host.Param.Colon) ?? ":";
 		_prefix = parameters.GetString(Host.Param.Root);
 
@@ -20,7 +21,7 @@ sealed class TreeCommand : BaseCommand
 		}
 	}
 
-    public override void Invoke()
+	public override void Invoke()
 	{
 		new KeysExplorer(Database, _colon, _prefix)
 			.CreatePanel()

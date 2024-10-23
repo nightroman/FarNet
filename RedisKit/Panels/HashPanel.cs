@@ -1,8 +1,7 @@
 ﻿using FarNet;
-using System;
 using System.Linq;
 
-namespace RedisKit;
+namespace RedisKit.Panels;
 
 class HashPanel : BasePanel<HashExplorer>
 {

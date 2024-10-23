@@ -4,14 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace RedisKit;
+namespace RedisKit.Panels;
 
 class HashExplorer : BaseExplorer
 {
 	public static Guid MyTypeId = new("29ae0735-2a00-43be-896b-9e2e8a67d658");
-    readonly RedisKey _key;
+	readonly RedisKey _key;
 
-    public HashExplorer(IDatabase database, RedisKey key) : base(database, MyTypeId)
+	public HashExplorer(IDatabase database, RedisKey key) : base(database, MyTypeId)
 	{
 		CanCloneFile = true;
 		CanCreateFile = true;
@@ -40,11 +40,11 @@ class HashExplorer : BaseExplorer
 		foreach (HashEntry item in hash)
 		{
 			var file = new SetFile
-            {
-                Name = (string)item.Name!,
+			{
+				Name = (string)item.Name!,
 				Description = (string?)item.Value,
-                Data = item,
-            };
+				Data = item,
+			};
 
 			yield return file;
 		}
@@ -70,9 +70,9 @@ class HashExplorer : BaseExplorer
 		long res = Database.HashDelete(_key, names);
 		if (res != names.Length)
 			args.Result = JobResult.Incomplete;
-    }
+	}
 
-    public override void RenameFile(RenameFileEventArgs args)
+	public override void RenameFile(RenameFileEventArgs args)
 	{
 		var newName = (string)args.Data!;
 		var item = (HashEntry)args.File.Data!;
@@ -82,7 +82,7 @@ class HashExplorer : BaseExplorer
 	}
 
 	public override void GetContent(GetContentEventArgs args)
-    {
+	{
 		var item = (HashEntry)args.File.Data!;
 		var text = (string?)item.Value;
 
@@ -91,7 +91,7 @@ class HashExplorer : BaseExplorer
 	}
 
 	public override void SetText(SetTextEventArgs args)
-    {
+	{
 		var item = (HashEntry)args.File.Data!;
 		Database.HashSet(_key, item.Name, args.Text);
 	}

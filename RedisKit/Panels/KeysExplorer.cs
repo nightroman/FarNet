@@ -1,14 +1,15 @@
 ﻿using FarNet;
+using RedisKit.Commands;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 
-namespace RedisKit;
+namespace RedisKit.Panels;
 
 class KeysExplorer : BaseExplorer
 {
 	public static Guid MyTypeId = new("5b2529ff-5482-46e5-b730-f9bdecaab8cc");
-    readonly string? _pattern;
+	readonly string? _pattern;
 
 	public string? Colon { get; }
 	public string? Prefix { get; }
@@ -53,6 +54,7 @@ class KeysExplorer : BaseExplorer
 		CanCreateFile = true;
 		CanDeleteFiles = true;
 		CanRenameFile = true;
+		CanOpenFile = true;
 		CanGetContent = true;
 		CanSetText = true;
 	}
@@ -86,9 +88,17 @@ class KeysExplorer : BaseExplorer
 		return new KeysPanel(this);
 	}
 
+	public override void EnterPanel(Panel panel)
+	{
+		base.EnterPanel(panel);
+
+		if (Colon is { } && Prefix is { })
+			panel.DotsMode = PanelDotsMode.Dots;
+	}
+
 	public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 	{
-		var server = Database.Multiplexer.GetServers()[Database.Database];
+		var server = GetServer();
 		var keys = server.Keys(Database.Database, _pattern);
 		var now = DateTime.Now;
 
@@ -116,8 +126,8 @@ class KeysExplorer : BaseExplorer
 			var file = new SetFile
 			{
 				Name = ToFileName(key!),
-				Data = key,
 				Length = 1,
+				Data = new Files.FileDataKey(key),
 			};
 
 			var type = Database.KeyType(key);
@@ -150,42 +160,33 @@ class KeysExplorer : BaseExplorer
 			{
 				yield return new SetFile
 				{
-					IsDirectory = true,
 					Name = $"{nameAndColon} ({count})",
-					Data = Prefix + nameAndColon,
+					IsDirectory = true,
 					Length = count,
+					Data = new Files.FileDataFolder(Prefix + nameAndColon),
 				};
 			}
 		}
 	}
 
+	public override Explorer? OpenFile(OpenFileEventArgs args)
+	{
+		var key = args.File.DataKey().Key;
+		var type = Database.KeyType(key);
+		return type switch
+		{
+			RedisType.Hash => new HashExplorer(Database, key),
+			RedisType.List => new ListExplorer(Database, key),
+			RedisType.Set => new SetExplorer(Database, key),
+			RedisType.String => null,
+			_ => throw new ModuleException($"Not implemented for {type}."),
+		};
+	}
+
 	public override Explorer? ExploreDirectory(ExploreDirectoryEventArgs args)
 	{
-		if (args.File.IsDirectory)
-		{
-			var prefix = (string)args.File.Data!;
-			return new KeysExplorer(Database, Colon!, prefix);
-		}
-
-		var key = (RedisKey)args.File.Data!;
-		var type = Database.KeyType(key);
-		switch (type)
-		{
-			case RedisType.Hash:
-				return new HashExplorer(Database, key);
-
-			case RedisType.List:
-				return new ListExplorer(Database, key);
-
-			case RedisType.Set:
-				return new SetExplorer(Database, key);
-
-			case RedisType.String:
-				return null;
-
-			default:
-				throw new ModuleException($"Not implemented for {type}.");
-		}
+		var prefix = args.File.DataFolder().Prefix;
+		return new KeysExplorer(Database, Colon!, prefix);
 	}
 
 	public override Explorer? ExploreParent(ExploreParentEventArgs args)
@@ -193,7 +194,7 @@ class KeysExplorer : BaseExplorer
 		if (Colon is null || Prefix is null)
 			return null;
 
-		args.PostData = Prefix;
+		args.PostData = new Files.FileDataFolder(Prefix);
 
 		var startIndex = Prefix.Length - Colon.Length - Colon.Length;
 		if (startIndex < 0)
@@ -222,8 +223,8 @@ class KeysExplorer : BaseExplorer
 			return;
 		}
 
-		var key = (RedisKey)args.File.Data!;
-		var key2 = ToKey((string)args.Data!);
+		var key = args.File.DataKey().Key;
+		var key2 = ToKey(args.DataName().Name);
 
 		var type = Database.KeyType(key);
 		switch (type)
@@ -271,7 +272,7 @@ class KeysExplorer : BaseExplorer
 
 	public override void CreateFile(CreateFileEventArgs args)
 	{
-		var newName = (string)args.Data!;
+		var newName = args.DataName().Name;
 		var newKey = ToKey(newName);
 		Database.StringSet(newKey, string.Empty);
 		args.PostName = newName;
@@ -286,25 +287,24 @@ class KeysExplorer : BaseExplorer
 		{
 			if (file.IsDirectory)
 			{
-				if (server is null)
-					server = Database.Multiplexer.GetServers()[Database.Database];
+				server ??= GetServer();
 
-				var prefix = (string)file.Data!;
+				var prefix = file.DataFolder().Prefix;
 				var pattern = ConvertPrefixToPattern(prefix);
 				keys.AddRange(server.Keys(Database.Database, pattern));
 			}
 			else
 			{
-				keys.Add((RedisKey)file.Data!);
+				keys.Add(file.DataKey().Key);
 			}
 		}
 
-        try
-        {
-            long res = Database.KeyDelete([.. keys]);
+		try
+		{
+			long res = Database.KeyDelete([.. keys]);
 			if (res != keys.Count)
 				throw new Exception($"Deleted {res} of {keys.Count} keys.");
-        }
+		}
 		catch (Exception ex)
 		{
 			if (args.UI)
@@ -312,24 +312,28 @@ class KeysExplorer : BaseExplorer
 
 			args.Result = JobResult.Incomplete;
 		}
-    }
+	}
 
-    public override void RenameFile(RenameFileEventArgs args)
+	public override void RenameFile(RenameFileEventArgs args)
 	{
 		if (args.File.IsDirectory)
-			throw new NotImplementedException("Renaming folders is not yet implemented.");
+		{
+			return;
+		}
+		else
+		{
+			var key1 = args.File.DataKey().Key;
+			var key2 = ToKey(args.DataName().Name);
+			Database.KeyRename(key1, key2);
+			args.PostName = key2;
+		}
+	}
 
-        var key = (RedisKey)args.File.Data!;
-        var key2 = ToKey((string)args.Data!);
-        Database.KeyRename(key, key2);
-        args.PostName = key2;
-    }
-
-    public override void GetContent(GetContentEventArgs args)
-    {
-        var key = (RedisKey)args.File.Data!;
-		var text = (string)Database.StringGet(key)!;
-		if (text == null)
+	public override void GetContent(GetContentEventArgs args)
+	{
+		var key = args.File.DataKey().Key;
+		var text = (string?)Database.StringGet(key);
+		if (text is null)
 		{
 			args.Result = JobResult.Ignore;
 			return;
@@ -340,9 +344,9 @@ class KeysExplorer : BaseExplorer
 		args.UseFileExtension = EditCommand.GetFileExtension(key.ToString());
 	}
 
-    public override void SetText(SetTextEventArgs args)
-    {
-        var key = (RedisKey)args.File.Data!;
+	public override void SetText(SetTextEventArgs args)
+	{
+		var key = args.File.DataKey().Key;
 		Database.StringSet(key, args.Text);
-    }
+	}
 }

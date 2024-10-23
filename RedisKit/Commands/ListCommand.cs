@@ -1,12 +1,13 @@
-﻿using StackExchange.Redis;
+﻿using RedisKit.Panels;
+using StackExchange.Redis;
 using System;
 using System.Data.Common;
 
-namespace RedisKit;
+namespace RedisKit.Commands;
 
 sealed class ListCommand(DbConnectionStringBuilder parameters) : BaseCommand(parameters)
 {
-    readonly RedisKey _key = parameters.GetRequiredString(Host.Param.Key);
+	readonly RedisKey _key = parameters.GetRequiredString(Host.Param.Key);
 
 	public override void Invoke()
 	{
