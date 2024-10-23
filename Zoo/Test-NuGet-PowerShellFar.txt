@@ -59,7 +59,7 @@ FarHome\FarNet\Modules\PowerShellFar\Bench\Snippet.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Start-Far.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Update-FarManager.ps1
 FarHome\FarNet\Modules\PowerShellFar\History.txt
-FarHome\FarNet\Modules\PowerShellFar\JetBrains.Annotations.dll
+FarHome\FarNet\Modules\PowerShellFar\Humanizer.dll
 FarHome\FarNet\Modules\PowerShellFar\Json.More.dll
 FarHome\FarNet\Modules\PowerShellFar\JsonPointer.Net.dll
 FarHome\FarNet\Modules\PowerShellFar\JsonSchema.Net.dll
@@ -347,6 +347,7 @@ FarHome\FarNet\Modules\PowerShellFar\System.IO.Ports.dll
 FarHome\FarNet\Modules\PowerShellFar\System.Management.dll
 FarHome\FarNet\Modules\PowerShellFar\System.Net.Http.WinHttpHandler.dll
 FarHome\FarNet\Modules\PowerShellFar\System.Private.ServiceModel.dll
+FarHome\FarNet\Modules\PowerShellFar\System.Private.Windows.Core.dll
 FarHome\FarNet\Modules\PowerShellFar\System.Reflection.Context.dll
 FarHome\FarNet\Modules\PowerShellFar\System.Runtime.Caching.dll
 FarHome\FarNet\Modules\PowerShellFar\System.Security.Cryptography.Pkcs.dll

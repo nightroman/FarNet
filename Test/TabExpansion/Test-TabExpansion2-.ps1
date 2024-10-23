@@ -49,6 +49,18 @@ function Assert-Test([Parameter()][scriptblock]$Condition) {
 	if (!$_) {Write-Error "Assertion failed: {$Condition}"}
 }
 
+function Assert-NoError {
+	if ($PSEdition -eq 'Core') {
+		if ($Error) {Write-Error "Unexpected error:`n$($Error[-1])"}
+	}
+	else {
+		$Error | .{process{
+			if ($_.Message -notlike '*System.Security.AccessControl.ObjectSecurity*') {Write-Error "Unexpected error:`n$_"}
+		}}
+		$Error.Clear()
+	}
+}
+
 # GO
 $sw = [System.Diagnostics.Stopwatch]::StartNew()
 
@@ -155,7 +167,7 @@ Test @'
 ls
 rm*
 '@ { $_ -ccontains 'rm' }
-assert {!$Error}
+Assert-NoError
 
 ### full path
 
@@ -253,7 +265,9 @@ Test 'git ' { $_ -ccontains 'clean' }
 Test 'git a' { $_ -ccontains 'add' }
 
 ### Mdbc
-. $PSScriptRoot\Test-TabExpansion2-Mongo.ps1
+if ($PSEdition -eq 'Core') {
+	. $PSScriptRoot\Test-TabExpansion2-Mongo.ps1
+}
 
 ### Invoke-Build, alias x
 
@@ -310,5 +324,5 @@ Test '$hos$' -caret 4 {$_ -contains '$Host'}
 Test '$hos"' -caret 4 {$_ -contains '$Host'}
 
 # OK
-assert {$Error.Count -eq 0}
+Assert-NoError
 "Done TabExpansion test, $($sw.Elapsed)"

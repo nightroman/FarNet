@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 8.1.23 =
+
+Microsoft.PowerShell.SDK 7.4.6
+
+Amend `ArgumentCompleters.ps1` magic ForEach, Where
+
 = 8.1.22 =
 
 Rename Reformat-Selection-.ps1 to Reformat-Selection.ps1
