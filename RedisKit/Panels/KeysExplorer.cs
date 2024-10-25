@@ -83,6 +83,15 @@ class KeysExplorer : BaseExplorer
 		return $"{name} {info}";
 	}
 
+	public Files.KeyInput GetNameInput(FarFile file)
+	{
+		string name = file.IsDirectory ? file.DataFolder().Prefix : (string)file.DataKey().Key!;
+		if (Prefix is { })
+			name = name[Prefix.Length..];
+
+		return new(name, Prefix);
+	}
+
 	public override Panel CreatePanel()
 	{
 		return new KeysPanel(this);
@@ -92,8 +101,13 @@ class KeysExplorer : BaseExplorer
 	{
 		base.EnterPanel(panel);
 
-		if (Colon is { } && Prefix is { })
-			panel.DotsMode = PanelDotsMode.Dots;
+		if (Colon is { })
+		{
+			if (Prefix is { })
+				panel.DotsMode = PanelDotsMode.Dots;
+			else
+				panel.DotsMode = PanelDotsMode.Auto;
+		}
 	}
 
 	public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
@@ -224,7 +238,7 @@ class KeysExplorer : BaseExplorer
 		}
 
 		var key = args.File.DataKey().Key;
-		var key2 = ToKey(args.DataName().Name);
+		var key2 = new RedisKey(args.DataName().Name);
 
 		var type = Database.KeyType(key);
 		switch (type)
@@ -272,10 +286,9 @@ class KeysExplorer : BaseExplorer
 
 	public override void CreateFile(CreateFileEventArgs args)
 	{
-		var newName = args.DataName().Name;
-		var newKey = ToKey(newName);
-		Database.StringSet(newKey, string.Empty);
-		args.PostName = newName;
+		var key = new RedisKey(args.DataName().Name);
+		Database.StringSet(key, string.Empty);
+		args.PostData = new Files.FileDataKey(key);
 	}
 
 	public override void DeleteFiles(DeleteFilesEventArgs args)
@@ -318,14 +331,63 @@ class KeysExplorer : BaseExplorer
 	{
 		if (args.File.IsDirectory)
 		{
-			return;
+			var prefix1 = args.File.DataFolder().Prefix;
+			var prefix2 = args.DataName().Name;
+			if (prefix1 == prefix2)
+			{
+				args.Result = JobResult.Ignore;
+				return;
+			}
+
+			var server = GetServer();
+			var keys = server.Keys(Database.Database, ConvertPrefixToPattern(prefix1));
+			var keyPairs = new List<(RedisKey, RedisKey)>();
+			int countExisting = 0;
+			foreach (var key1 in keys)
+			{
+				var name1 = (string)key1!;
+				var name2 = prefix2 + name1[prefix1.Length..];
+				var key2 = new RedisKey(name2);
+				if (Database.KeyExists(key2))
+					++countExisting;
+
+				keyPairs.Add((key1, key2));
+			}
+
+			if (countExisting > 0 && args.Mode != ExplorerModes.Silent)
+			{
+				if (0 != Far.Api.Message(
+					$"Found {countExisting} existing keys.\nContinue renaming?",
+					$"Renaming {keyPairs.Count} keys",
+					MessageOptions.YesNo))
+				{
+					args.Result = JobResult.Ignore;
+					return;
+				}
+			}
+
+			int countDone = 0;
+			foreach (var (key1, key2) in keyPairs)
+			{
+				if (Database.KeyRename(key1, key2))
+					++countDone;
+			}
+
+			if (countDone != keyPairs.Count && args.Mode != ExplorerModes.Silent)
+			{
+				Far.Api.Message(
+					$"Renamed {countDone}/{keyPairs.Count} keys.",
+					"Renaming keys");
+			}
+
+			args.PostData = new Files.FileDataFolder(prefix2);
 		}
 		else
 		{
 			var key1 = args.File.DataKey().Key;
-			var key2 = ToKey(args.DataName().Name);
+			var key2 = new RedisKey(args.DataName().Name);
 			Database.KeyRename(key1, key2);
-			args.PostName = key2;
+			args.PostData = new Files.FileDataKey(key2);
 		}
 	}
 

@@ -1,7 +1,7 @@
 ﻿using FarNet;
 using StackExchange.Redis;
 
-namespace RedisKit;
+namespace RedisKit.Panels;
 
 static class Files
 {
@@ -13,4 +13,6 @@ static class Files
 
 	public record ArgsDataName(string Name);
 	public static ArgsDataName DataName(this ExplorerEventArgs args) => (ArgsDataName)args.Data!;
+
+	public record KeyInput(string Name, string? Prefix);
 }

@@ -165,7 +165,7 @@ Keys and actions
     For Hash, List, Set keys opens their panels.\
     Use `Esc` in order to return to the keys panel.
 
-    For folders enters the caret folder.
+    For folders enters the cursor folder.
 
 - `F4`
 
@@ -177,7 +177,8 @@ Keys and actions
 
 - `ShiftF6`
 
-    Renames the cursor key.
+    Renames the cursor key or key folder.\
+    (!) Take special care on renaming folders.
 
 - `F7`
 

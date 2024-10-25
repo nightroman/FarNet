@@ -1,5 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet.RedisKit
 
+= 0.2.4 =
+
+Use name and prefix fields in keys panel input dialogs.
+
+Support renaming rk:tree folders.
+
 = 0.2.3 =
 
 Rework navigation in rk:tree panel.

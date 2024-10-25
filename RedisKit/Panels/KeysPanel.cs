@@ -1,4 +1,5 @@
 ﻿using FarNet;
+using RedisKit.UI;
 using System.Linq;
 
 namespace RedisKit.Panels;
@@ -32,28 +33,48 @@ class KeysPanel : BasePanel<KeysExplorer>
 			return;
 		}
 
-		var name = args.File.Name;
-		var newName = Far.Api.Input("New key name", "Key", $"Clone '{name}'", name);
-		if (newName is null)
+		var input = Explorer.GetNameInput(args.File);
+
+		var ui = new InputBox2
+		{
+			Title = $"Clone '{args.File.Name}'",
+			Text1 = input.Name,
+			Text2 = input.Prefix,
+			Prompt1 = "Key name",
+			Prompt2 = "Prefix",
+			History1 = Host.History.Key,
+			History2 = Host.History.Prefix,
+		};
+
+		if (!ui.Show())
 		{
 			args.Result = JobResult.Ignore;
 			return;
 		}
 
-		args.Data = new Files.ArgsDataName(newName);
+		args.Data = new Files.ArgsDataName($"{ui.Text2}{ui.Text1}");
 		Explorer.CloneFile(args);
 	}
 
 	public override void UICreateFile(CreateFileEventArgs args)
 	{
-		var newName = Far.Api.Input("New key name", "Key", $"New String", null);
-		if (newName is null)
+		var ui = new InputBox2
+		{
+			Title = "Create String",
+			Text2 = Explorer.Prefix,
+			Prompt1 = "Key name",
+			Prompt2 = "Prefix",
+			History1 = Host.History.Key,
+			History2 = Host.History.Prefix,
+		};
+
+		if (!ui.Show())
 		{
 			args.Result = JobResult.Ignore;
 			return;
 		}
 
-		args.Data = new Files.ArgsDataName(newName);
+		args.Data = new Files.ArgsDataName($"{ui.Text2}{ui.Text1}");
 		Explorer.CreateFile(args);
 	}
 
@@ -68,7 +89,7 @@ class KeysPanel : BasePanel<KeysExplorer>
 		}
 		else
 		{
-			message = $"Delete {args.Files.Count}) key(s):";
+			message = $"Delete {args.Files.Count} key(s):";
 		}
 
 		var text = $"{message}\n{string.Join("\n", args.Files.Select(x => x.Name))}";
@@ -84,20 +105,35 @@ class KeysPanel : BasePanel<KeysExplorer>
 
 	public override void UIRenameFile(RenameFileEventArgs args)
 	{
+		var input = Explorer.GetNameInput(args.File);
+
+		var ui = new InputBox2
+		{
+			Text1 = input.Name,
+			Text2 = input.Prefix,
+			Prompt2 = "Prefix",
+			History1 = Host.History.Key,
+			History2 = Host.History.Prefix,
+		};
+
 		if (args.File.IsDirectory)
-			return;
+		{
+			ui.Title = "Rename folder";
+			ui.Prompt1 = "New folder";
+		}
+		else
+		{
+			ui.Title = "Rename key";
+			ui.Prompt1 = "New key";
+		}
 
-		var newName = args.File.IsDirectory ?
-			Far.Api.Input("New folder name", "Folder", "Rename folder", args.File.DataFolder().Prefix) :
-			Far.Api.Input("New key name", "Key", "Rename key", args.File.Name);
-
-		if (newName is null)
+		if (!ui.Show())
 		{
 			args.Result = JobResult.Ignore;
 			return;
 		}
 
-		args.Data = new Files.ArgsDataName(newName);
+		args.Data = new Files.ArgsDataName($"{ui.Text2}{ui.Text1}");
 		Explorer.RenameFile(args);
 	}
 }
