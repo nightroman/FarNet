@@ -1,9 +1,10 @@
 ﻿using FarNet;
+using GitKit.Commands;
 using LibGit2Sharp;
 using System.IO;
 using System.Linq;
 
-namespace GitKit;
+namespace GitKit.Panels;
 
 class CommitsPanel : BasePanel<CommitsExplorer>
 {

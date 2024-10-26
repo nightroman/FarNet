@@ -1,6 +1,7 @@
-﻿using LibGit2Sharp;
+﻿using GitKit.Extras;
+using LibGit2Sharp;
 
-namespace GitKit;
+namespace GitKit.Panels;
 
 abstract class BasePanel<T> : AnyPanel where T : BaseExplorer
 {

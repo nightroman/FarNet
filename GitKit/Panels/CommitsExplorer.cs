@@ -1,10 +1,11 @@
 ﻿using FarNet;
+using GitKit.Extras;
 using LibGit2Sharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace GitKit;
+namespace GitKit.Panels;
 
 class CommitsExplorer : BaseExplorer
 {

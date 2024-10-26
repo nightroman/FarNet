@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GitKit;
+namespace GitKit.Commands;
 
 abstract class AnyCommand : IDisposable
 {

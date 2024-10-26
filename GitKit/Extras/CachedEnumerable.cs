@@ -1,4 +1,8 @@
-﻿namespace System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+
+namespace GitKit.Extras;
 
 // https://stackoverflow.com/a/34633464/323582
 sealed class CachedEnumerable<T>(IEnumerable<T> enumerable) : IEnumerable<T>, IDisposable

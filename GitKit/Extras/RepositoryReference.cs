@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace GitKit;
+namespace GitKit.Extras;
 
 /// <summary>
 /// Maintains repository instances and reference counting.

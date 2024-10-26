@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace GitKit;
+namespace GitKit.Panels;
 
 class ChangesPanel : BasePanel<ChangesExplorer>
 {
@@ -106,7 +106,7 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 			case KeyCode.Enter when key.Is():
 				if (CurrentFile?.Data is TreeEntryChanges changes)
 				{
-					if (changes.Mode == Mode.NonExecutableFile || (changes.Mode == Mode.Nonexistent && changes.OldMode == Mode.NonExecutableFile))
+					if (changes.Mode == Mode.NonExecutableFile || changes.Mode == Mode.Nonexistent && changes.OldMode == Mode.NonExecutableFile)
 						ShowDiff(changes);
 				}
 				return true;

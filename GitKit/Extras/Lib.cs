@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace GitKit;
+namespace GitKit.Extras;
 
 public static class Lib
 {

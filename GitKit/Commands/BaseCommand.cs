@@ -1,10 +1,11 @@
 ﻿using FarNet;
+using GitKit.Extras;
 using LibGit2Sharp;
 using System;
 using System.Data.Common;
 using System.IO;
 
-namespace GitKit;
+namespace GitKit.Commands;
 
 abstract class BaseCommand : AnyCommand
 {

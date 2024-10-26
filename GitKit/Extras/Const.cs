@@ -1,4 +1,4 @@
-﻿namespace GitKit;
+﻿namespace GitKit.Extras;
 
 static class Parameter
 {

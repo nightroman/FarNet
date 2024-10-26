@@ -1,11 +1,12 @@
 ﻿using FarNet;
+using GitKit.Panels;
 using LibGit2Sharp;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
 using System.Linq;
 
-namespace GitKit;
+namespace GitKit.Commands;
 
 sealed class BlameCommand : BaseCommand
 {
@@ -61,11 +62,11 @@ sealed class BlameCommand : BaseCommand
 						break;
 
 					if (n == 0)
-						writer.Write($"{sha} {date} {author, -AuthorNameMax}");
+						writer.Write($"{sha} {date} {author,-AuthorNameMax}");
 					else
 						writer.Write(white);
 
-					writer.WriteLine($" {i + 1, 4} {lines[i]}");
+					writer.WriteLine($" {i + 1,4} {lines[i]}");
 				}
 			}
 		}

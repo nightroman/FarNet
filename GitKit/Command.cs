@@ -1,4 +1,5 @@
 ﻿using FarNet;
+using GitKit.Commands;
 using LibGit2Sharp;
 using System.Linq;
 

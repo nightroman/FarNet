@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 1.0.3 =
+
+Set cursor to the current branch.
+
 = 1.0.2 =
 
 LibGit2Sharp 0.30.0

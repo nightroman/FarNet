@@ -1,10 +1,9 @@
 ﻿using FarNet;
+using GitKit.Panels;
 using LibGit2Sharp;
-using System;
 using System.Data.Common;
-using System.IO;
 
-namespace GitKit;
+namespace GitKit.Commands;
 
 sealed class CommitsCommand : BaseCommand
 {

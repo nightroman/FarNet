@@ -1,7 +1,8 @@
-﻿using LibGit2Sharp;
+﻿using GitKit.Extras;
+using LibGit2Sharp;
 using System.Data.Common;
 
-namespace GitKit;
+namespace GitKit.Commands;
 
 sealed class CloneCommand : AnyCommand
 {

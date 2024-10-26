@@ -1,9 +1,11 @@
 ﻿using FarNet;
+using GitKit.Commands;
+using GitKit.Extras;
 using LibGit2Sharp;
 using System;
 using System.Linq;
 
-namespace GitKit;
+namespace GitKit.Panels;
 
 class BranchesPanel : BasePanel<BranchesExplorer>
 {
@@ -78,7 +80,7 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 
 		// checkout local branch
 		if (!Repository.Info.IsBare)
-			Commands.Checkout(Repository, branch);
+			LibGit2Sharp.Commands.Checkout(Repository, branch);
 
 		Update(true);
 		Redraw();

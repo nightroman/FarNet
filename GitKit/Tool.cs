@@ -1,4 +1,7 @@
 ﻿using FarNet;
+using GitKit.Commands;
+using GitKit.Extras;
+using GitKit.Panels;
 using System.Data.Common;
 
 namespace GitKit;

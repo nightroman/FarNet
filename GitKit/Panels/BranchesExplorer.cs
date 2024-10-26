@@ -1,10 +1,11 @@
 ﻿using FarNet;
+using GitKit.Extras;
 using LibGit2Sharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace GitKit;
+namespace GitKit.Panels;
 
 class BranchesExplorer : BaseExplorer
 {
@@ -21,6 +22,11 @@ class BranchesExplorer : BaseExplorer
 	public override Panel CreatePanel()
 	{
 		return new BranchesPanel(this);
+	}
+
+	public override void EnterPanel(Panel panel)
+	{
+		panel.PostName(Repository.Head?.FriendlyName);
 	}
 
 	static char GetTipsMark(Commit tip1, Commit tip2)
@@ -90,7 +96,7 @@ class BranchesExplorer : BaseExplorer
 			var newBranch = Repository.CreateBranch(newName, branch.Tip);
 
 			if (checkout && !Repository.Info.IsBare)
-				Commands.Checkout(Repository, newBranch);
+				LibGit2Sharp.Commands.Checkout(Repository, newBranch);
 
 			args.PostName = newName;
 		}

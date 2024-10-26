@@ -1,11 +1,12 @@
 ﻿using FarNet;
+using GitKit.Extras;
 using LibGit2Sharp;
 using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace GitKit;
+namespace GitKit.Commands;
 
 sealed class CommitCommand : BaseCommand
 {
@@ -66,7 +67,7 @@ sealed class CommitCommand : BaseCommand
 			var changes = Lib.CompareTree(
 				Repository,
 				tip.Tree,
-				_All ? (DiffTargets.Index | DiffTargets.WorkingDirectory) : DiffTargets.Index);
+				_All ? DiffTargets.Index | DiffTargets.WorkingDirectory : DiffTargets.Index);
 
 			foreach (var change in changes)
 				sb.AppendLine($"{_CommentaryChar}\t{change.Status}:\t{change.Path}");
@@ -125,7 +126,7 @@ sealed class CommitCommand : BaseCommand
 		{
 			try
 			{
-				Commands.Stage(Repository, "*");
+				LibGit2Sharp.Commands.Stage(Repository, "*");
 			}
 			catch (LibGit2SharpException ex)
 			{

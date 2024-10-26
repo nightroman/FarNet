@@ -1,8 +1,9 @@
 ﻿using FarNet;
+using GitKit.Extras;
 using System.Data.Common;
 using System.IO;
 
-namespace GitKit;
+namespace GitKit.Commands;
 
 sealed class CDCommand : BaseCommand
 {

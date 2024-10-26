@@ -2,7 +2,7 @@
 using LibGit2Sharp;
 using System;
 
-namespace GitKit;
+namespace GitKit.Panels;
 
 abstract class BaseExplorer : Explorer
 {

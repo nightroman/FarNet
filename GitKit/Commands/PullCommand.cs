@@ -1,14 +1,11 @@
-﻿using LibGit2Sharp;
+﻿using GitKit.Extras;
+using LibGit2Sharp;
 using System.Data.Common;
 
-namespace GitKit;
+namespace GitKit.Commands;
 
-sealed class PullCommand : BaseCommand
+sealed class PullCommand(DbConnectionStringBuilder parameters) : BaseCommand(parameters)
 {
-	public PullCommand(DbConnectionStringBuilder parameters) : base(parameters)
-	{
-	}
-
 	public override void Invoke()
 	{
 		Pull(Repository);
@@ -27,7 +24,7 @@ sealed class PullCommand : BaseCommand
 		};
 
 		var sig = Lib.BuildSignature(repo);
-		Commands.Pull(repo, sig, pull);
+		LibGit2Sharp.Commands.Pull(repo, sig, pull);
 
 		Host.UpdatePanels();
 	}

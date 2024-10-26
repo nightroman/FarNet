@@ -1,7 +1,9 @@
 ﻿using FarNet;
+using GitKit.Extras;
+using GitKit.Panels;
 using System.Data.Common;
 
-namespace GitKit;
+namespace GitKit.Commands;
 
 sealed class ChangesCommand : BaseCommand
 {

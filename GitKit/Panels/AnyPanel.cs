@@ -1,6 +1,6 @@
 ﻿using FarNet;
 
-namespace GitKit;
+namespace GitKit.Panels;
 
 abstract class AnyPanel(Explorer explorer) : Panel(explorer)
 {

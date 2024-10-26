@@ -3,8 +3,9 @@ using LibGit2Sharp;
 using System.Linq;
 using System;
 using System.Data.Common;
+using GitKit.Extras;
 
-namespace GitKit;
+namespace GitKit.Commands;
 
 sealed class StatusCommand : BaseCommand
 {

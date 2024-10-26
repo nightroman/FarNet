@@ -1,4 +1,5 @@
 ﻿using FarNet;
+using GitKit.Panels;
 using LibGit2Sharp;
 using LibGit2Sharp.Handlers;
 using System;

@@ -1,13 +1,10 @@
-﻿using System.Data.Common;
+﻿using GitKit.Panels;
+using System.Data.Common;
 
-namespace GitKit;
+namespace GitKit.Commands;
 
-sealed class BranchesCommand : BaseCommand
+sealed class BranchesCommand(DbConnectionStringBuilder parameters) : BaseCommand(parameters)
 {
-	public BranchesCommand(DbConnectionStringBuilder parameters) : base(parameters)
-	{
-	}
-
 	public override void Invoke()
 	{
 		new BranchesExplorer(Repository)

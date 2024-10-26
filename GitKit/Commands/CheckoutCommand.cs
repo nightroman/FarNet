@@ -1,17 +1,13 @@
 ﻿using FarNet;
+using GitKit.Extras;
 using LibGit2Sharp;
 using System.Data.Common;
 
-namespace GitKit;
+namespace GitKit.Commands;
 
-sealed class CheckoutCommand : BaseCommand
+sealed class CheckoutCommand(DbConnectionStringBuilder parameters) : BaseCommand(parameters)
 {
-	readonly string? _branchName;
-
-	public CheckoutCommand(DbConnectionStringBuilder parameters) : base(parameters)
-	{
-		_branchName = parameters.GetString(Parameter.Branch);
-	}
+	readonly string? _branchName = parameters.GetString(Parameter.Branch);
 
 	public override void Invoke()
 	{
@@ -43,7 +39,7 @@ sealed class CheckoutCommand : BaseCommand
 
 		if (!repo.Info.IsBare)
 		{
-			Commands.Checkout(repo, branch);
+			LibGit2Sharp.Commands.Checkout(repo, branch);
 			Host.UpdatePanels();
 		}
 	}
