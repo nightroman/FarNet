@@ -9,6 +9,8 @@ public class Settings : ModuleSettings<Settings.Data>
 
 	public class Data
 	{
+		public string FolderSymbols { get; set; } = "_.-";
+
 		public Configuration[] Configurations { get; set; } = [new()];
 	}
 

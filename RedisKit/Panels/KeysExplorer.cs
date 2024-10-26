@@ -9,10 +9,24 @@ namespace RedisKit.Panels;
 class KeysExplorer : BaseExplorer
 {
 	public static Guid MyTypeId = new("5b2529ff-5482-46e5-b730-f9bdecaab8cc");
+
+	// Means folders mode and defines the folder separator.
+	readonly string? _colon;
+
+	// When folders, stops folder navigation up.
+	readonly string? _root;
+
+	// The folder prefix or fixed prefix.
+	readonly string? _prefix;
+
+	// The key scan pattern.
 	readonly string? _pattern;
 
-	public string? Colon { get; }
-	public string? Prefix { get; }
+	// Read once setting.
+	string? _folderSymbols;
+
+	internal string? Colon => _colon;
+	internal string? Prefix => _prefix;
 
 	public KeysExplorer(IDatabase database, string? mask) : this(database)
 	{
@@ -28,23 +42,25 @@ class KeysExplorer : BaseExplorer
 			}
 			else
 			{
-				Prefix = mask;
+				_prefix = Location = mask;
 				_pattern = mask.Replace("\\", "\\\\") + '*';
 			}
 		}
 	}
 
-	public KeysExplorer(IDatabase database, string colon, string? prefix) : this(database)
+	public KeysExplorer(IDatabase database, string colon, string? root, string? prefix) : this(database)
 	{
 		if (colon.Length == 0)
 			throw new ArgumentException("Colon cannot be empty.");
 
-		Colon = colon;
+		_colon = colon;
 
-		if (prefix is { })
+		_root = root;
+		_prefix = prefix ?? root;
+		if (_prefix is { })
 		{
-			Prefix = prefix;
-			_pattern = ConvertPrefixToPattern(Prefix);
+			Location = _prefix;
+			_pattern = ConvertPrefixToPattern(_prefix);
 		}
 	}
 
@@ -70,26 +86,37 @@ class KeysExplorer : BaseExplorer
 			+ '*';
 	}
 
-	RedisKey ToKey(string name) =>
-		Prefix is null ? name : Prefix + name;
-
 	string ToFileName(RedisKey key) =>
-		Prefix is null ? (string)key! : ((string)key!)[Prefix.Length..];
+		_prefix is null ? (string)key! : ((string)key!)[_prefix.Length..];
 
 	public override string ToString()
 	{
-		var name = Colon is { } ? "Tree" : "Keys";
-		var info = Prefix ?? _pattern ?? Database.Multiplexer.Configuration;
+		var name = _colon is { } ? "Tree" : "Keys";
+		var info = _prefix ?? _pattern ?? Database.Multiplexer.Configuration;
 		return $"{name} {info}";
 	}
 
 	public Files.KeyInput GetNameInput(FarFile file)
 	{
 		string name = file.IsDirectory ? file.DataFolder().Prefix : (string)file.DataKey().Key!;
-		if (Prefix is { })
-			name = name[Prefix.Length..];
+		if (_prefix is { })
+			name = name[_prefix.Length..];
 
-		return new(name, Prefix);
+		return new(name, _prefix);
+	}
+
+	bool IsFolderName(string name, int endIndex)
+	{
+		for (int i = endIndex; --i >= 0;)
+		{
+			if (char.IsLetterOrDigit(name[i]))
+				continue;
+
+			_folderSymbols ??= Settings.Default.GetData().FolderSymbols;
+			if (_folderSymbols.IndexOf(name[i]) < 0)
+				return false;
+		}
+		return true;
 	}
 
 	public override Panel CreatePanel()
@@ -101,9 +128,9 @@ class KeysExplorer : BaseExplorer
 	{
 		base.EnterPanel(panel);
 
-		if (Colon is { })
+		if (_colon is { })
 		{
-			if (Prefix is { })
+			if (_prefix is { } && _prefix != _root)
 				panel.DotsMode = PanelDotsMode.Dots;
 			else
 				panel.DotsMode = PanelDotsMode.Auto;
@@ -116,19 +143,19 @@ class KeysExplorer : BaseExplorer
 		var keys = server.Keys(Database.Database, _pattern);
 		var now = DateTime.Now;
 
-		var folders = Colon is { } ? new Dictionary<string, int>() : null;
+		var folders = _colon is { } ? new Dictionary<string, int>() : null;
 
 		foreach (RedisKey key in keys)
 		{
 			var name = ToFileName(key!);
 
 			// folder?
-			if (Colon is { })
+			if (_colon is { })
 			{
-				int index = name.IndexOf(Colon);
-				if (index >= 0)
+				int index = name.IndexOf(_colon);
+				if (index >= 0 && IsFolderName(name, index))
 				{
-					var nameAndColon = name[..(index + Colon.Length)];
+					var nameAndColon = name[..(index + _colon.Length)];
 					if (folders!.TryGetValue(nameAndColon, out int count))
 						folders[nameAndColon] = count + 1;
 					else
@@ -177,7 +204,7 @@ class KeysExplorer : BaseExplorer
 					Name = $"{nameAndColon} ({count})",
 					IsDirectory = true,
 					Length = count,
-					Data = new Files.FileDataFolder(Prefix + nameAndColon),
+					Data = new Files.FileDataFolder(_prefix + nameAndColon),
 				};
 			}
 		}
@@ -200,33 +227,33 @@ class KeysExplorer : BaseExplorer
 	public override Explorer? ExploreDirectory(ExploreDirectoryEventArgs args)
 	{
 		var prefix = args.File.DataFolder().Prefix;
-		return new KeysExplorer(Database, Colon!, prefix);
+		return new KeysExplorer(Database, _colon!, _root, prefix);
 	}
 
 	public override Explorer? ExploreParent(ExploreParentEventArgs args)
 	{
-		if (Colon is null || Prefix is null)
+		if (_colon is null || _prefix is null || _prefix == _root)
 			return null;
 
-		args.PostData = new Files.FileDataFolder(Prefix);
+		args.PostData = new Files.FileDataFolder(_prefix);
 
-		var startIndex = Prefix.Length - Colon.Length - Colon.Length;
+		var startIndex = _prefix.Length - _colon.Length - _colon.Length;
 		if (startIndex < 0)
-			return new KeysExplorer(Database, Colon, null);
+			return new KeysExplorer(Database, _colon, _root, null);
 
-		var index = Prefix.LastIndexOf(Colon, startIndex);
+		var index = _prefix.LastIndexOf(_colon, startIndex);
 		if (index < 0)
-			return new KeysExplorer(Database, Colon, null);
+			return new KeysExplorer(Database, _colon, _root, null);
 
-		return new KeysExplorer(Database, Colon, Prefix[..(index + Colon.Length)]);
+		return new KeysExplorer(Database, _colon, _root, _prefix[..(index + _colon.Length)]);
 	}
 
 	public override Explorer? ExploreRoot(ExploreRootEventArgs args)
 	{
-		if (Colon is null || Prefix is null)
+		if (_colon is null || _prefix is null || _prefix == _root)
 			return null;
 
-		return new KeysExplorer(Database, Colon, null);
+		return new KeysExplorer(Database, _colon, _root, null);
 	}
 
 	public override void CloneFile(CloneFileEventArgs args)

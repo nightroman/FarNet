@@ -6,24 +6,21 @@ namespace RedisKit.Commands;
 sealed class TreeCommand : BaseCommand
 {
 	readonly string _colon;
-	readonly string? _prefix;
+	readonly string? _root;
 
 	public TreeCommand(DbConnectionStringBuilder parameters) : base(parameters)
 	{
 		_colon = parameters.GetString(Host.Param.Colon) ?? ":";
-		_prefix = parameters.GetString(Host.Param.Root);
+		_root = parameters.GetString(Host.Param.Root);
 
-		// root -> prefix
-		if (_prefix is { })
-		{
-			if (!_prefix.EndsWith(_colon))
-				_prefix += _colon;
-		}
+		// ensure root ends with colon
+		if (_root is { } && !_root.EndsWith(_colon))
+			_root += _colon;
 	}
 
 	public override void Invoke()
 	{
-		new KeysExplorer(Database, _colon, _prefix)
+		new KeysExplorer(Database, _colon, _root, null)
 			.CreatePanel()
 			.Open();
 	}

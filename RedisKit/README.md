@@ -191,7 +191,9 @@ Keys and actions
 
 - `CtrlPgDn`, `CtrlPgUp`, `Enter` "dots", `CtrlBackSlash`
 
-    Folders navigation keys for `rk:tree` panel.
+    Folder navigation keys for `rk:tree` panel.
+
+    If `root` is specified then navigating up stops at it.
 
 *********************************************************************
 ## Hash panel
@@ -332,7 +334,12 @@ Keys and actions
 
 F11 / FarNet / Settings / RedisKit Settings and Workings
 
-**Settings/Configurations**
+**Settings / FolderSymbols**
+
+Specifies valid folder symbols in addition to letters and digits.
+They are used by `rk:tree` for inferring folder names.
+
+**Settings / Configurations**
 
 Specifies Redis configurations, environment variables are expanded.
 The default configuration name is specified by `Workings/Configuration`.
@@ -346,7 +353,7 @@ Example:
   </Configurations>
 ```
 
-**Workings/Configuration**
+**Workings / Configuration**
 
 Specifies the current default configuration name.
 The name must exist in `Settings/Configurations`.

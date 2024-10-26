@@ -14,6 +14,32 @@ job {
 	$Far.Panel.Close()
 }
 
+### test some navigation and stopping at `root`
+
+job {
+	#! cover omitted colon
+	$Far.InvokeCommand('rk:tree root=test-tree')
+}
+job {
+	Assert-Far -FileName ': (3)'
+	Assert-Far $Far.Panel.CurrentDirectory -eq test-tree:
+}
+keys CtrlPgUp CtrlBackSlash # should have no effect
+job {
+	Assert-Far -FileName ': (3)'
+	Assert-Far $Far.Panel.CurrentDirectory -eq test-tree:
+}
+keys Enter
+job {
+	Assert-Far $Far.Panel.CurrentDirectory -eq test-tree::
+	Assert-Far $Far.Panel.CurrentFile -eq $null
+}
+keys CtrlBackSlash
+job {
+	Assert-Far -FileName ': (3)'
+	Assert-Far $Far.Panel.CurrentDirectory -eq test-tree:
+}
+
 ### test-tree-file-in-empty-folder-name
 
 job {
@@ -29,7 +55,7 @@ job {
 	Assert-Far $files.Count -eq 1
 	Assert-Far $files[0].Name -eq test-tree-file-in-empty-folder-name
 }
-keys Enter # dots
+keys Enter #! cover Enter dots
 job {
 	Assert-Far -FileName ': (1)'
 }

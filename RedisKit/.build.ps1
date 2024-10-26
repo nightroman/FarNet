@@ -94,6 +94,11 @@ task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props -Jobs v
 "@
 }
 
+task make_test_tree {
+	Import-Module .\Tests\zoo.psm1
+	make_test_tree
+}
+
 task nuget package, version, {
 	equals $Version (Get-Item "$ModuleRoot\$ModuleName.dll").VersionInfo.ProductVersion
 

@@ -1,5 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet.RedisKit
 
+= 0.2.5 =
+
+rk:tree
+- Add `FolderSymbols` to settings
+- Respect `root` on navigating up
+
 = 0.2.4 =
 
 Use name and prefix fields in keys panel input dialogs.
