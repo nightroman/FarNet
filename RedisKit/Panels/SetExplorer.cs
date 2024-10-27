@@ -9,7 +9,9 @@ namespace RedisKit.Panels;
 class SetExplorer : BaseExplorer
 {
 	public static Guid MyTypeId = new("75bbcfef-c464-4c80-a602-83b15bf404f9");
+
 	readonly RedisKey _key;
+	internal RedisKey Key => _key;
 
 	public SetExplorer(IDatabase database, RedisKey key) : base(database, MyTypeId)
 	{

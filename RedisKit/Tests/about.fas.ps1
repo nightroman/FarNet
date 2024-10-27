@@ -1,6 +1,6 @@
 ﻿
 job {
-	$Far.InvokeCommand('rk:')
+	$Far.InvokeCommand('rk:keys')
 }
 
 job {

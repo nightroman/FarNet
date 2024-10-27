@@ -7,10 +7,11 @@ Far Manager Redis helpers based on FarNet.Redis
 - [About](#about)
 - [Install](#install)
 - [Commands](#commands)
-- [Keys panel](#keys-panel)
-- [Hash panel](#hash-panel)
-- [List panel](#list-panel)
-- [Set panel](#set-panel)
+    - [Keys panel](#keys-panel)
+    - [Hash panel](#hash-panel)
+    - [List panel](#list-panel)
+    - [Set panel](#set-panel)
+    - [Edit string](#edit-string)
 - [Menu](#menu)
 - [Settings](#settings)
 
@@ -50,72 +51,40 @@ using F11 / FarNet / Invoke or defined in the user menu and file associations.
 Command parameters are key=value pairs using the connection string format
 
 ```
-rk: <mask>
-rk:subcommand key=value; ...
+rk:command key=value; ...
 ```
 
 **Common parameters**
 
-- `redis=<configuration>`
+- `redis=<string>`
 
-    Specifies the Redis configuration string or name.\
-    Default: see [Settings](#settings).
+    Specifies Redis configuration string or name from [Settings](#settings).
 
 **Commands**
 
-- `rk:`
-
-    Opens the [Keys panel](#keys-panel) with the default Redis configuration
-    and an optional key mask specified with a space after the command prefix.
-
-
-- `rk:edit`
-
-    Opens the string editor, see [Edit string](#edit-string).
-
-
 - `rk:keys`
 
-    Opens the [Keys panel](#keys-panel).
+    Opens the [Keys panel](#keys-panel) with the key pattern.
 
+- `rk:tree`
+
+    Opens the [Keys panel](#keys-panel) with inferred folders.
 
 - `rk:hash`
 
     Opens the [Hash panel](#hash-panel).
 
-
 - `rk:list`
 
     Opens the [List panel](#list-panel).
-
 
 - `rk:set`
 
     Opens the [Set panel](#set-panel).
 
+- `rk:edit`
 
-- `rk:tree`
-
-    Opens the [Keys panel](#keys-panel) with the folder tree.
-
-*********************************************************************
-## Edit string
-
-[Contents]
-
-This command opens the string editor
-
-```
-rk:edit key=<key>
-```
-
-Parameters
-
-- `key=<key>` (required)
-
-    Specifies the existing or new string key.
-
-The editor is usually not modal. Saving commits the string to Redis.
+    Opens the string editor, see [Edit string](#edit-string).
 
 *********************************************************************
 ## Keys panel
@@ -128,16 +97,15 @@ Type marks: `*` String, `H` Hash, `L` List, `S` Set.
 The panel is opened by
 
 ```
-rk: <mask>
-rk:keys mask=<mask>
-rk:tree root=<root>; colon=<string>
+rk:keys mask=<string>
+rk:tree root=<string>; colon=<string>
 ```
 
 Parameters
 
-- `mask=<mask>` (optional)
+- `mask=<string>` (optional)
 
-    Specifies the search pattern or wildcard or fixed prefix.
+    Specifies the search pattern or wildcard or fixed prefix for `rk:keys`.
 
     (1) If the mask contains `[` or `]` then it is treated as Redis pattern.
     See: <https://redis.io/docs/latest/commands/keys>
@@ -148,7 +116,7 @@ Parameters
     (3) Otherwise the mask is used as the fixed literal prefix. Keys are shown
     without this prefix but all operations work on actual keys with the prefix.
 
-- `root=<root>` (optional)
+- `root=<string>` (optional)
 
     Specifies the root key prefix for `rk:tree`.\
     The trailing separator (colon) is optional.
@@ -204,12 +172,12 @@ This panel shows hash entries, fields and values. It is opened from the keys
 panel or by this command:
 
 ```
-rk:hash key=<name>
+rk:hash key=<string>
 ```
 
 Parameters
 
-- `key=<name>` (required)
+- `key=<string>` (required)
 
     Specifies the hash key. If the key does not exist, a new hash will be
     created. If the key type does not match, it's an error.
@@ -245,12 +213,12 @@ This panel shows list items. It is opened from the keys panel or by this
 command:
 
 ```
-rk:list key=<name>
+rk:list key=<string>
 ```
 
 Parameters
 
-- `key=<name>` (required)
+- `key=<string>` (required)
 
     Specifies the list key. If the key does not exist, a new list will be
     created. If the key type does not match, it's an error.
@@ -286,12 +254,12 @@ This panel shows set members. It is opened from the keys panel or by this
 command:
 
 ```
-rk:set key=<name>
+rk:set key=<string>
 ```
 
 Parameters
 
-- `key=<name>` (required)
+- `key=<string>` (required)
 
     Specifies the set key. If the key does not exist, a new set will be
     created. If the key type does not match, it's an error.
@@ -319,9 +287,32 @@ Keys and actions
     Deletes the selected members.
 
 *********************************************************************
+## Edit string
+
+[Contents]
+
+This command opens the string editor
+
+```
+rk:edit key=<string>
+```
+
+Parameters
+
+- `key=<string>` (required)
+
+    Specifies the existing or new string key.
+
+The editor is usually not modal. Saving commits the string to Redis.
+
+*********************************************************************
 ## Menu
 
 [Contents]
+
+- **Copy key to clipboard**
+
+    Copies the current key name to clipboard.
 
 - **Help**
 

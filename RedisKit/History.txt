@@ -1,5 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet.RedisKit
 
+= 0.2.6 =
+
+Add menu item "Copy key to clipboard".
+
+Remove `rk:`, to avoid misuse. Use `rk:keys` instead.
+
 = 0.2.5 =
 
 rk:tree

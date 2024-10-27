@@ -9,7 +9,9 @@ namespace RedisKit.Panels;
 class HashExplorer : BaseExplorer
 {
 	public static Guid MyTypeId = new("29ae0735-2a00-43be-896b-9e2e8a67d658");
+
 	readonly RedisKey _key;
+	internal RedisKey Key => _key;
 
 	public HashExplorer(IDatabase database, RedisKey key) : base(database, MyTypeId)
 	{

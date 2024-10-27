@@ -15,39 +15,31 @@ public class Command : ModuleCommand
 		{
 			var (subcommand, parameters) = Parameters.Parse(e.Command);
 
-			if (subcommand == null)
+			command = subcommand switch
 			{
-				command = new KeysCommand(e.Command.Trim());
-			}
-			else
+				"keys" => new KeysCommand(parameters),
+				"tree" => new TreeCommand(parameters),
+				"edit" => new EditCommand(parameters),
+				"hash" => new HashCommand(parameters),
+				"list" => new ListCommand(parameters),
+				"set" => new SetCommand(parameters),
+				_ => throw new ModuleException($"Unknown command 'rk:{subcommand}'.")
+			};
+
+			if (parameters.Count > 0)
 			{
-				if (parameters == null)
-				{
-					Host.Instance.ShowHelpTopic("commands");
-					return;
-				}
-
-				command = subcommand switch
-				{
-					"keys" => new KeysCommand(parameters),
-					"tree" => new TreeCommand(parameters),
-					"edit" => new EditCommand(parameters),
-					"hash" => new HashCommand(parameters),
-					"list" => new ListCommand(parameters),
-					"set" => new SetCommand(parameters),
-					_ => throw new InvalidOperationException($"Unknown command 'rk:{subcommand}'.")
-				};
-
-				if (parameters.Count > 0)
-				{
-					throw new InvalidOperationException($"""
-					Uknknown parameters
-					Subcommand: {subcommand}
-					Parameters: {string.Join(", ", parameters.Keys.Cast<string>())}
-					""");
-				}
+				throw new ModuleException($"""
+				Uknknown parameters
+				Subcommand: {subcommand}
+				Parameters: {string.Join(", ", parameters.Keys.Cast<string>())}
+				""");
 			}
+
 			command.Invoke();
+		}
+		catch (ModuleException)
+		{
+			throw;
 		}
 		catch (Exception ex)
 		{

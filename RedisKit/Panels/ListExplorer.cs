@@ -11,6 +11,7 @@ class ListExplorer : BaseExplorer
 	static readonly RedisValue s_deleted = "<DELETED>";
 
 	readonly RedisKey _key;
+	internal RedisKey Key => _key;
 
 	public ListExplorer(IDatabase database, RedisKey key) : base(database, MyTypeId)
 	{

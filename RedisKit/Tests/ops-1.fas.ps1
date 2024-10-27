@@ -1,9 +1,9 @@
-﻿# rk: simple operations
+﻿# rk:keys simple operations
 
 ### create
 
 job {
-	$Far.InvokeCommand('rk:')
+	$Far.InvokeCommand('rk:keys')
 }
 keys F7
 job {

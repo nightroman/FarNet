@@ -1,11 +1,11 @@
-﻿# rk: prefix operations
+﻿# rk:keys prefix operations
 
 ### create
 
 job {
 	Remove-RedisKey (Search-RedisKey test-ops-2:*)
 	Set-RedisString test-ops-2:dummy 1
-	$Far.InvokeCommand('rk: test-ops-2:')
+	$Far.InvokeCommand('rk:keys mask=test-ops-2:')
 }
 keys F7
 job {

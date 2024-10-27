@@ -6,7 +6,7 @@ namespace RedisKit.Commands;
 
 static class Parameters
 {
-	public static (string?, DbConnectionStringBuilder?) Parse(string command)
+	public static (string?, DbConnectionStringBuilder) Parse(string command)
 	{
 		int index = 0;
 		while (index < command.Length && !char.IsWhiteSpace(command[index]))
@@ -14,7 +14,7 @@ static class Parameters
 
 		var subcommand = command[0..index];
 		if (subcommand.Length == 0)
-			return (null, null);
+			return (null, null!);
 
 		while (index < command.Length && char.IsWhiteSpace(command[index]))
 			++index;
