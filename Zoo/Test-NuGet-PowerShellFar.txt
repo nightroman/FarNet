@@ -347,7 +347,6 @@ FarHome\FarNet\Modules\PowerShellFar\System.IO.Ports.dll
 FarHome\FarNet\Modules\PowerShellFar\System.Management.dll
 FarHome\FarNet\Modules\PowerShellFar\System.Net.Http.WinHttpHandler.dll
 FarHome\FarNet\Modules\PowerShellFar\System.Private.ServiceModel.dll
-FarHome\FarNet\Modules\PowerShellFar\System.Private.Windows.Core.dll
 FarHome\FarNet\Modules\PowerShellFar\System.Reflection.Context.dll
 FarHome\FarNet\Modules\PowerShellFar\System.Runtime.Caching.dll
 FarHome\FarNet\Modules\PowerShellFar\System.Security.Cryptography.Pkcs.dll

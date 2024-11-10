@@ -7,6 +7,8 @@
     <WarningLevel>5</WarningLevel>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <!--2024-11-10-0906-->
+    <NoWarn>NU1605</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Bench\**" />
@@ -15,6 +17,8 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.4.6" />
+    <!--2024-11-10-0906 or else it comes with problematic 9.*-->
+    <PackageReference Include="System.Drawing.Common" Version="8.0.10" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FarNet\FarNet\FarNet.csproj">

@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 8.1.24 =
+
+Fix System.Drawing https://github.com/PowerShell/PowerShell/discussions/24562
+
 = 8.1.23 =
 
 Microsoft.PowerShell.SDK 7.4.6

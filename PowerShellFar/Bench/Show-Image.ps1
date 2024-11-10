@@ -1,17 +1,16 @@
-
 <#
 .Synopsis
 	Shows one or more images in a GUI window.
 	Author: Roman Kuzmin
 
 .Description
-	This script shows pictures in a GUI window. No extra software is needed. It
-	is a standard PowerShell script but it may be easier to use in Far Manager
-	via file associations or user menu commands, see examples.
+	This script shows pictures in a GUI window. It is a standard PowerShell
+	script but it may be easier to use in Far Manager via file associations
+	or user menu commands, see examples.
 
-	The script can be called directly but in this case its modal dialog blocks
-	the calling thread. To avoid this the script should be called as a job or
-	by starting a separate PowerShell process in a hidden window.
+	The script may be called directly. In this case its modal dialog blocks
+	the calling thread. To avoid this the script may be called as a job or a
+	separate PowerShell process with a hidden window.
 
 	For a single image its window is resizable, [Enter] switches maximized and
 	normal state. Several images are placed from left to right and scaled, if
@@ -23,30 +22,34 @@
 	Image file paths are passed in as arguments or piped. If there is no input
 	then all image files from the current location are taken.
 
-	NOTE: do not open too much images at once, this script may fail due to out
-	of memory exception.
+.Example
+	> Start-FarJob -Hidden Show-Image (Get-FarPath)
+
+	Far Manager association: internal way: faster but picture windows will be
+	closed together with the Far window on exit.
 
 .Example
-	# Far Manager association: internal way: faster but picture windows will be
-	# closed together with the Far window on exit.
-	ps: Start-FarJob -Hidden Show-Image (Get-FarPath) #
-
-.Example
-	# Far Manager association: external way: slower but picture windows will be
-	# opened even after closing the Far window.
 	start /min powershell -WindowStyle Hidden -File C:\PS\Show-Image.ps1 "!\!.!"
 
-.Example
-	# Far Manager user menu: internal way: show selected images
-	ps: Start-FarJob -Hidden Show-Image (Get-FarPath -Selected) #
+	Far Manager association: external way: slower but picture windows will be
+	opened even after closing the Far window.
 
 .Example
-	# Far Manager user menu: external way: show all images here
-	start /min powershell -WindowStyle Hidden Show-Image
+	> Start-FarJob -Hidden Show-Image (Get-FarPath -Selected)
+
+	Far Manager user menu: internal way: show selected images.
+
+.Example
+	> start /min powershell -WindowStyle Hidden Show-Image
+
+	Far Manager user menu: external way: show all images here.
 #>
 
-param([switch]$Internal)
-Set-StrictMode -Version 2
+param(
+	[switch]$Internal
+)
+
+Set-StrictMode -Version 3
 Add-Type -AssemblyName System.Windows.Forms
 
 ### input, create bitmaps, get total width and height
@@ -56,11 +59,11 @@ if (!$files) {
 }
 $width = 0
 $height = 0
-$images = New-Object System.Collections.ArrayList
+$images = [System.Collections.ArrayList]::new()
 foreach($file in $files) {
 	try {
 		$path = $file.ToString()
-		$bitmap = New-Object System.Drawing.Bitmap $path
+		$bitmap = [System.Drawing.Bitmap]::new($path)
 		$width += $bitmap.Size.Width
 		if ($height -lt $bitmap.Size.Height) {
 			$height = $bitmap.Size.Height
@@ -74,7 +77,7 @@ if ($images.Count -eq 0) {
 }
 
 ### create a form
-$form = New-Object System.Windows.Forms.Form
+$form = [System.Windows.Forms.Form]::new()
 $form.Text = ($images | .{process{ [System.IO.Path]::GetFileName($_.Path) }}) -join ', '
 $form.BackColor = [System.Drawing.Color]::FromArgb(0, 0, 0)
 $form.add_Shown({ $form.Activate() })
@@ -111,13 +114,13 @@ if ($height -gt $maxheight) {
 	$width *= $scale2
 	$height *= $scale2
 }
-$form.ClientSize = New-Object System.Drawing.Size $width, $height
+$form.ClientSize = [System.Drawing.Size]::new($width, $height)
 
 ### create and add picture boxes
 $left = 0
 foreach($image in $images) {
 	$bitmap = $image.Bitmap
-	$box = New-Object System.Windows.Forms.PictureBox
+	$box = [System.Windows.Forms.PictureBox]::new()
 	if ($images.Count -eq 1) {
 		$box.Dock = 'Fill'
 	}
@@ -132,7 +135,7 @@ foreach($image in $images) {
 	}
 	$box.Image = $bitmap
 	$box.SizeMode = 'Zoom'
-	$box.Size = New-Object System.Drawing.Size ($bitmap.Size.Width * $scale), ($bitmap.Size.Height * $scale)
+	$box.Size = [System.Drawing.Size]::new(($bitmap.Size.Width * $scale), ($bitmap.Size.Height * $scale))
 	$box.Left = $left
 	$left = $box.Right
 	$form.Controls.Add($box)

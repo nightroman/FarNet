@@ -81,11 +81,6 @@ $data = $sets.GetData()
 
 ### Get items
 
-# set Filter
-while($Filter.Contains(': ')) {
-	$Filter = $Filter.Replace(': ', ':')
-}
-
 # set Limit
 if (!$Limit) {
 	$Limit = $data.Limit
