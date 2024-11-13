@@ -5,8 +5,8 @@
 
 .Description
 	Requires:
-	- FarNet.Redis library and Garnet/Redis server, port 3278.
-	- Register-FarRedisTask.ps1 and Start-Far.ps1 in the path.
+	- FarNet.Redis library, $env:FARNET_REDIS_CONFIGURATION
+	- Register-FarRedisTask.ps1 and Start-Far.ps1 in the path
 
 	The script uses Redis pub/sub in order to pair two Far instances and send
 	messages between them. The second Far is started automatically when needed.
@@ -35,7 +35,7 @@ param(
 
 $ErrorActionPreference = 1
 
-# check pair Far
+# check the pair
 if ($FarRedisPair = [FarNet.User]::Data['FarRedisPair']) {
 	if ($FarRedisPair.HasExited) {
 		[FarNet.User]::Remove('FarRedisPair')
@@ -45,26 +45,24 @@ if ($FarRedisPair = [FarNet.User]::Data['FarRedisPair']) {
 	}
 }
 
-# message data
+# task message data
 $Data = [ordered]@{
 	Data = $Data
 	Task = $Task.ToString()
 }
 
 if ($FarRedisPair = [FarNet.User]::Data['FarRedisPair']) {
-	# send data
-	$null = [FarNet.User]::Data['FarRedisDB'].Publish(
-		"FarRedisSub:$($FarRedisPair.Id)",
-		($Data | ConvertTo-Json -Depth 99 -Compress)
-	)
+	#: we are paired, send the task message to the pair
+	Send-RedisMessage "FarRedisHandler:$($FarRedisPair.Id)" ($Data | ConvertTo-Json -Depth 99 -Compress) -Database ([FarNet.User]::Data['FarRedisDB'])
 }
 else {
-	# subscribe to messages
-	if (![FarNet.User]::Data['FarRedisSub']) {
+	#: not yet paired, subscribe to messages
+	if (![FarNet.User]::Data['FarRedisHandler']) {
+		# here we will receive the pair message
 		Register-FarRedisTask
 	}
 
-	# keep data and start pair Far
+	# keep data and start the pair, data will be send when we receive the pair message
 	[FarNet.User]::Data.FarRedisData = $Data
 	Start-Far ps:Register-FarRedisTask $Far.CurrentDirectory -Environment @{FAR_REDIS_PAIR = $PID}
 }

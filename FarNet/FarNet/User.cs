@@ -37,4 +37,11 @@ public static class User
 	/// <param name="key">The key.</param>
 	//! ConcurrentDictionary has no PS friendly Remove.
 	public static void Remove(string key) => Data.TryRemove(key, out _);
+
+	/// <summary>
+	/// Gets and removes the specified object from <see cref="Data"/>.
+	/// </summary>
+	/// <param name="key">The key.</param>
+	/// <returns>The removed object or null.</returns>
+	public static object? Pop(string key) => Data.TryRemove(key, out object? value) ? value : null;
 }

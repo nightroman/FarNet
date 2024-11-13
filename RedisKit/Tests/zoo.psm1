@@ -7,6 +7,10 @@ function make_test_tree {
 	Set-RedisString test-tree:file-in-root-1 1
 	Set-RedisString test-tree:file-in-root-2 2
 
+	# dupe key, delete 1/2 message
+	Set-RedisString test-tree:delete-me:dupe 1
+	Set-RedisList test-tree:delete-me:dupe 1
+
 	# empty folder name, empty file name, 2 normal files
 	Set-RedisString test-tree:: empty-file-name
 	Set-RedisString test-tree::file-in-empty-1 1

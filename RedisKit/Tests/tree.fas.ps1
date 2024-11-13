@@ -40,6 +40,31 @@ job {
 	Assert-Far $Far.Panel.CurrentDirectory -eq test-tree:
 }
 
+### incomplete delete
+
+job {
+	$Far.InvokeCommand('rk:tree root=test-tree')
+}
+job {
+	Find-FarFile 'delete-me: (2)'
+}
+keys Del
+job {
+	Assert-Far -Dialog
+	Assert-Far $Far.Dialog[1].Text -eq 'Delete 1 folder(s), 0 key(s):'
+	Assert-Far $Far.Dialog[2].Text -eq 'delete-me: (2)'
+}
+keys Enter
+job {
+	Assert-Far -Dialog
+	Assert-Far $Far.Dialog[1].Text -eq 'Deleted 1 of 2 keys.'
+}
+keys Esc
+job {
+	Assert-Far (($_ = $Far.Panel.CurrentFile) -and $_.Name -notlike 'delete-me:*')
+	$Far.Panel.Close()
+}
+
 ### test-tree-file-in-empty-folder-name
 
 job {

@@ -1,6 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 8.1.14 =
+
+FarNet.User: new helper Pop
+
 = 8.1.13 =
 
 Auto-select in menu "Viewers".

@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 8.1.25 =
+
+FarNet 8.1.14
+
+Tweaks in Redis scripts.
+
 = 8.1.24 =
 
 Fix System.Drawing https://github.com/PowerShell/PowerShell/discussions/24562

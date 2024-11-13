@@ -4,7 +4,7 @@
 
 .Description
 	Requires:
-	- FarNet.Redis library and Garnet/Redis server, port 3278.
+	- FarNet.Redis library, $env:FARNET_REDIS_CONFIGURATION
 	- Send-FarRedisTask.ps1, Register-FarRedisTask.ps1, Start-Far.ps1
 
 	Call this from the Far editor in order to edit the file in another Far.
@@ -51,7 +51,9 @@ if ($Setup) {
 }
 
 $Editor = $Far.Editor
-if (!$Editor) {return}
+if (!$Editor) {
+	return
+}
 
 $Editor.Save()
 if (!$Editor.Data['EditFarFileSyncSaving']) {

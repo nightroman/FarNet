@@ -9,36 +9,36 @@
 
 $ErrorActionPreference = 1
 
-if ([FarNet.User]::Data['FarRedisSub']) {
+if ([FarNet.User]::Data['FarRedisHandler']) {
 	return
 }
 
 Import-Module $env:FARHOME\FarNet\Lib\FarNet.Redis\FarNet.Redis.psd1
-[FarNet.User]::Data.FarRedisDB = Open-Redis 127.0.0.1:3278
+[FarNet.User]::Data.FarRedisDB = $db = Open-Redis
 
-[FarNet.User]::Data.FarRedisSub = Register-RedisSub FarRedisSub:$PID -Database ([FarNet.User]::Data.FarRedisDB) {
+[FarNet.User]::Data.FarRedisHandler = Add-RedisHandler FarRedisHandler:$PID {
 	param($channel, $message)
-	$id = 0
-	if ([int]::TryParse($message, [ref]$id)) {
-		[FarNet.User]::Data.FarRedisPair = Get-Process -Id $id
+	$pairId = 0
+	if ([int]::TryParse($message, [ref]$pairId)) {
+		#: pair message, keep the pair process
+		[FarNet.User]::Data.FarRedisPair = Get-Process -Id $pairId
 
-		$data = [FarNet.User]::Data['FarRedisData']
-		[FarNet.User]::Remove('FarRedisData')
+		# pop the pending task message data
+		$data = [FarNet.User]::Pop('FarRedisData')
 
-		$null = [FarNet.User]::Data.FarRedisDB.Publish(
-			"FarRedisSub:$id",
-			($data | ConvertTo-Json -Depth 99 -Compress)
-		)
+		# send the task message to the pair
+		Send-RedisMessage "FarRedisHandler:$pairId" ($data | ConvertTo-Json -Depth 99 -Compress) -Database ([FarNet.User]::Data.FarRedisDB)
 	}
 	else {
+		#: task message
 		$data = ConvertFrom-Json $message -AsHashtable
 		Start-FarTask -Data $data.Data ([scriptblock]::Create($data.Task))
 	}
 }
 
-if ($pid2 = $env:FAR_REDIS_PAIR) {
+if ($pairId = $env:FAR_REDIS_PAIR) {
+	#: started as pair, send this pair id to that pair
 	$env:FAR_REDIS_PAIR = $null
-	$far2 = Get-Process -Id $pid2
-	[FarNet.User]::Data.FarRedisPair = $far2
-	$null = [FarNet.User]::Data.FarRedisDB.Publish("FarRedisSub:$($far2.Id)", $PID)
+	[FarNet.User]::Data.FarRedisPair = Get-Process -Id $pairId
+	Send-RedisMessage "FarRedisHandler:$pairId" $PID
 }
