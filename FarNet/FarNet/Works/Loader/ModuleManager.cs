@@ -220,13 +220,11 @@ sealed partial class ModuleManager : IModuleManager
 		var deps = Path.ChangeExtension(AssemblyPath, "deps.json");
 		if (File.Exists(deps))
 		{
-			Log.Source.TraceInformation("Module modern {0}", AssemblyPath);
 			var loadContext = new AssemblyLoadContext2(AssemblyPath);
 			_AssemblyInstance = loadContext.LoadFromAssemblyPath(AssemblyPath);
 		}
 		else
 		{
-			Log.Source.TraceInformation("Module simple {0}", AssemblyPath);
 			_AssemblyInstance = Assembly.LoadFrom(AssemblyPath);
 		}
 

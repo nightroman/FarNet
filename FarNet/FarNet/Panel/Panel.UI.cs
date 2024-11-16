@@ -62,7 +62,6 @@ public partial class Panel
 			return null;
 
 		// export file
-		Log.Source.TraceInformation("ExportFile");
 		var args = new GetContentEventArgs(mode, file, fileName);
 		panel.UIGetContent(args);
 		if (args.Result != JobResult.Done)
@@ -424,7 +423,6 @@ public partial class Panel
 				editorTemp.Saving += delegate
 				{
 					var xImportTextArgs = new SetTextEventArgs(ExplorerModes.Edit, file, editorTemp.GetText());
-					Log.Source.TraceInformation("ImportText");
 					try
 					{
 						timeError = DateTime.MinValue;
@@ -452,7 +450,6 @@ public partial class Panel
 						return;
 
 					var xImportFileArgs = new SetFileEventArgs(ExplorerModes.Edit, file, temp);
-					Log.Source.TraceInformation("ImportFile");
 					try
 					{
 						UISetFile(xImportFileArgs);

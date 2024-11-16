@@ -58,8 +58,6 @@ int Viewer0::AsProcessViewerEvent(const ProcessViewerEventInfo* info)
 	{
 	case VE_READ:
 		{
-			Log::Source->TraceInformation("VE_READ");
-
 			// get info
 			ViewerInfo vi; vi.StructSize = sizeof(vi);
 			Info.ViewerControl(-1, VCTL_GETINFO, 0, &vi);
@@ -101,21 +99,13 @@ int Viewer0::AsProcessViewerEvent(const ProcessViewerEventInfo* info)
 
 			// event
 			if (_anyViewer._Opened)
-			{
-				Log::Source->TraceInformation("Opened");
 				_anyViewer._Opened(viewer, nullptr);
-			}
 			if (viewer->_Opened)
-			{
-				Log::Source->TraceInformation("Opened");
 				viewer->_Opened(viewer, nullptr);
-			}
 		}
 		break;
 	case VE_CLOSE:
 		{
-			Log::Source->TraceInformation("VE_CLOSE");
-
 			// get registered, close and unregister
 			intptr_t id = info->ViewerID;
 			Viewer^ viewer = nullptr;
@@ -137,15 +127,9 @@ int Viewer0::AsProcessViewerEvent(const ProcessViewerEventInfo* info)
 
 			// event, after the above
 			if (_anyViewer._Closed)
-			{
-				Log::Source->TraceInformation("Closed");
 				_anyViewer._Closed(viewer, nullptr);
-			}
 			if (viewer->_Closed)
-			{
-				Log::Source->TraceInformation("Closed");
 				viewer->_Closed(viewer, nullptr);
-			}
 
 			// delete the file after all
 			DeleteSourceOptional(viewer->_FileName, viewer->DeleteSource);

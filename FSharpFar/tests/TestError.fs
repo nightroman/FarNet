@@ -31,7 +31,7 @@ Test.Add("testMacroError", async {
     do! Assert.Wait(fun () ->
         Window.IsDialog()
         && far.Dialog[0].Text = "ArgumentException"
-        && far.Dialog[3].Text = "Macro: bar (Parameter 'macro')"
+        && far.Dialog[3].Text = "Macro: bar"
     )
     do! Jobs.Keys "Esc"
     do! job { Assert.NativePanel() }

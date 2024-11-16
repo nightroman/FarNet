@@ -27,7 +27,6 @@ public static class AssemblyResolver
 		var root = $"{Environment.GetEnvironmentVariable("FARHOME")}\\FarNet\\";
 		AddAssemblyCache(root + "Modules");
 		AddAssemblyCache(root + "Lib");
-		Log.Source.TraceInformation("Assembly cache {0}", s_cache.Count);
 	}
 
 	static void AddAssemblyCache(string root)
@@ -157,8 +156,6 @@ public static class AssemblyResolver
 	// 2) System.Data.OleDb.dll in Lib\FarNet.FSharp.Charting (2) Modules\FolderChart (2) Modules\PowerShellFar (2)
 	public static Assembly? ResolveAssembly(string name, ResolveEventArgs args)
 	{
-		Log.Source.TraceInformation("LoadFrom {0}", name);
-
 		// skip missing in FarNet
 		if (!s_cache.TryGetValue(name, out string? pathsString))
 			return null;
@@ -223,7 +220,6 @@ public static class AssemblyResolver
 				return assembly;
 		}
 
-		Log.Source.TraceInformation("Cannot load {0}", name);
 		return null;
 	}
 }

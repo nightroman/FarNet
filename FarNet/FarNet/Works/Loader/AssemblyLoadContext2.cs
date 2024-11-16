@@ -18,7 +18,6 @@ class AssemblyLoadContext2(string pluginPath, bool isCollectible = false) : Asse
 		if (assemblyPath is null)
 			return null;
 
-		Log.Source.TraceInformation("Load managed {0}", assemblyPath);
 		return LoadFromAssemblyPath(assemblyPath);
 	}
 

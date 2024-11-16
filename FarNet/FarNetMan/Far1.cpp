@@ -371,15 +371,23 @@ void Far1::PostMacro(String^ macro, bool enableOutput, bool disablePlugins)
 	auto arg2 = (MacroParseResult*)data.get();
 	arg2->StructSize = sizeof(MacroParseResult);
 	Info.MacroControl(&MainGuid, MCTL_GETLASTERROR, size, arg2);
-	String^ err = String::Format(
-		"Error message: {0}\n"
-		"Position: {1}, {2}\n"
-		"Macro: {3}",
-		gcnew String(arg2->ErrSrc),
-		arg2->ErrPos.Y,
-		arg2->ErrPos.X,
-		macro);
-	throw gcnew ArgumentException(err, "macro");
+
+	StringBuilder sb;
+
+	sb.Append("Error message: ");
+	sb.Append(gcnew String(arg2->ErrSrc));
+	sb.AppendLine();
+
+	sb.Append("Position: ");
+	sb.Append(arg2->ErrPos.Y);
+	sb.Append(", ");
+	sb.Append(arg2->ErrPos.X);
+	sb.AppendLine();
+
+	sb.Append("Macro: ");
+	sb.Append(macro);
+
+	throw gcnew ArgumentException(sb.ToString());
 }
 
 void Far1::Quit()

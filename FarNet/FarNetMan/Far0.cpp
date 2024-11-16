@@ -97,9 +97,6 @@ void Far0::Start()
 {
 	try
 	{
-		Log::Source->TraceInformation("Start..");
-		auto sw = Stopwatch::StartNew();
-
 		// inject
 		Far::Api = gcnew Far1();
 		Works::Far2::Api = gcnew Far2();
@@ -110,8 +107,6 @@ void Far0::Start()
 
 		// load modules
 		Works::ModuleLoader().LoadModules(path);
-
-		Log::Source->TraceInformation("Started {0}", sw->Elapsed);
 	}
 	catch (Exception^ ex)
 	{
@@ -300,7 +295,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 	}
 
 	// type
-	switch(windowKind)
+	switch((WINDOWINFO_TYPE)windowKind)
 	{
 	case WTYPE_DIALOG:
 	case WTYPE_VMENU:
@@ -486,7 +481,6 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 		}
 
 		// normal command
-		Log::Source->TraceInformation("OPEN_FROMMACRO");
 		if (InvokeCommand(command, OPEN_FROMMACRO))
 			return (HANDLE)1;
 		else
@@ -501,7 +495,6 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 		{
 		case OPEN_COMMANDLINE:
 			{
-				Log::Source->TraceInformation("OPEN_COMMANDLINE");
 				InvokeCommand(((OpenCommandLineInfo*)info->Data)->CommandLine, OPEN_COMMANDLINE);
 
 				if (Works::Test::IsTestCommand)
@@ -511,7 +504,6 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 		case OPEN_LEFTDISKMENU:
 		case OPEN_RIGHTDISKMENU:
 			{
-				Log::Source->TraceInformation("OPEN_DISKMENU");
 				IModuleTool^ tool = (IModuleTool^)Far::Api->GetModuleAction(FromGUID(*info->Guid));
 				ModuleToolEventArgs e;
 				e.From = ModuleToolOptions::Disk;
@@ -528,8 +520,6 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 					break;
 				}
 
-				Log::Source->TraceInformation("OPEN_PLUGINSMENU");
-
 				IModuleTool^ tool = (IModuleTool^)Far::Api->GetModuleAction(guid);
 				ModuleToolEventArgs e;
 				e.From = ModuleToolOptions::Panels;
@@ -545,7 +535,6 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 					break;
 				}
 
-				Log::Source->TraceInformation("OPEN_EDITOR");
 				IModuleTool^ tool = (IModuleTool^)Far::Api->GetModuleAction(guid);
 				ModuleToolEventArgs e;
 				e.From = ModuleToolOptions::Editor;
@@ -565,7 +554,6 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 				if (Far::Api->Window->Kind == WindowKind::Panels)
 					break;
 
-				Log::Source->TraceInformation("OPEN_VIEWER");
 				IModuleTool^ tool = (IModuleTool^)Far::Api->GetModuleAction(guid);
 				ModuleToolEventArgs e;
 				e.From = ModuleToolOptions::Viewer;
@@ -582,7 +570,6 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 					break;
 				}
 
-				Log::Source->TraceInformation("OPEN_DIALOG");
 				IModuleTool^ tool = (IModuleTool^)Far::Api->GetModuleAction(guid);
 				ModuleToolEventArgs e;
 				e.From = ModuleToolOptions::Dialog;

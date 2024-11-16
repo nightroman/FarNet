@@ -115,8 +115,8 @@ String^ ShelveInfoModule::Title::get()
 // _110313_054719 Still does not support passive.
 void ShelveInfoModule::PopWork(bool active)
 {
-	Log::Source->TraceInformation(__FUNCTION__);
-	if (!active) throw gcnew NotSupportedException("Passive panel is not supported");
+	if (!active)
+		throw gcnew NotSupportedException("Passive panel is not supported");
 	
 	_panel->Open();
 	_panel->_postSelected = GetSelectedIndexes();

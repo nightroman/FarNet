@@ -231,7 +231,6 @@ public class SuperExplorer : Explorer
 		bool toUpdate = false;
 		foreach (var xTypeId in dicTypeId)
 		{
-			Log.Source.TraceInformation("AcceptFiles TypeId='{0}'", xTypeId.Key);
 			object? codata = null;
 			foreach (var kv in xTypeId.Value)
 			{
@@ -243,7 +242,6 @@ public class SuperExplorer : Explorer
 					filesToAccept.Add(file.File);
 
 				// accept, mind co-data
-				Log.Source.TraceInformation("AcceptFiles Count='{0}' Location='{1}'", filesToAccept.Count, explorer.Location);
 				var argsAccept = new AcceptFilesEventArgs(ExplorerModes.None, filesToAccept, move, explorer)
 				{
 					Data = codata
@@ -336,7 +334,6 @@ public class SuperExplorer : Explorer
 			efilesToDelete.Add(file.File);
 
 		// delete, mind co-data
-		Log.Source.TraceInformation("DeleteFiles Count='{0}' Location='{1}'", efilesToDelete.Count, explorer.Location);
 		var argsDelete = new DeleteFilesEventArgs(mode, efilesToDelete, force)
 		{
 			Data = codata
@@ -393,7 +390,6 @@ public class SuperExplorer : Explorer
 		int nIncomplete = 0;
 		foreach (var xTypeId in dicTypeId)
 		{
-			Log.Source.TraceInformation("DeleteFiles TypeId='{0}'", xTypeId.Key);
 			object? codata = null;
 			foreach (var kv in xTypeId.Value)
 			{
@@ -421,7 +417,6 @@ public class SuperExplorer : Explorer
 
 		foreach (var xTypeId in dicTypeId)
 		{
-			Log.Source.TraceInformation("ExportFiles TypeId='{0}'", xTypeId.Key);
 			object? codata = null;
 			foreach (var kv in xTypeId.Value)
 			{
@@ -433,7 +428,6 @@ public class SuperExplorer : Explorer
 					filesToExport.Add(file.File);
 
 				// export, mind co-data
-				Log.Source.TraceInformation("ExportFiles Count='{0}' Location='{1}' DirectoryName='{2}'", filesToExport.Count, explorer.Location, args.DirectoryName);
 				var argsExport = new ExportFilesEventArgs(ExplorerModes.None, filesToExport, args.Move, args.DirectoryName)
 				{
 					Data = codata

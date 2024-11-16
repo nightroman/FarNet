@@ -16,12 +16,7 @@ public static class Log
 	/// <summary>
 	/// INTERNAL
 	/// </summary>
-	public static TraceSource Source { get; } = new("FarNet", DefaultSourceLevels());
-	static SourceLevels DefaultSourceLevels()
-	{
-		var str = Environment.GetEnvironmentVariable("FarNet:TraceLevel");
-		return str is not null && Enum.TryParse(str, out SourceLevels value) ? value : SourceLevels.Warning;
-	}
+	public static TraceSource Source { get; } = new("FarNet", SourceLevels.Warning);
 
 	/// <summary>
 	/// INTERNAL, consider using variant with writer
@@ -50,21 +45,18 @@ public static class Log
 		// get an error record
 		if (error.GetType().FullName!.StartsWith("System.Management.Automation."))
 		{
-			var errorRecord = GetPropertyValue(error, "ErrorRecord");
-			if (errorRecord != null)
+			if (GetPropertyValue(error, "ErrorRecord") is { } errorRecord)
 			{
 				// process the error record
-				var ii = GetPropertyValue(errorRecord, "InvocationInfo");
-				if (ii != null)
+				if (GetPropertyValue(errorRecord, "InvocationInfo") is { } ii)
 				{
-					var pm = GetPropertyValue(ii, "PositionMessage");
-					if (pm != null)
+					if (GetPropertyValue(ii, "PositionMessage") is { } pm)
 						writer.WriteLine(pm.ToString());
 				}
 			}
 		}
 
-		if (error.InnerException != null)
+		if (error.InnerException is { })
 		{
 			writer.WriteLine();
 			writer.WriteLine("InnerException:");
@@ -87,7 +79,7 @@ public static class Log
 	/// <param name="error">.</param>
 	public static void TraceException(Exception error)
 	{
-		if (error != null && Source.Switch.ShouldTrace(TraceEventType.Error))
+		if (error is { } && Source.Switch.ShouldTrace(TraceEventType.Error))
 			Source.TraceEvent(TraceEventType.Error, 0, FormatException(error));
 	}
 

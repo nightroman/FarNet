@@ -237,12 +237,6 @@ The following environment variables are used:
     Tells to disable GUI features.
     Value: any.
 
-* `FarNet:TraceLevel`
-
-    Tracing level.
-    Default: `Warning`.
-    Values: see `System.Diagnostics.SourceLevels` enum.
-
 *********************************************************************
 ## Problems and solutions
 

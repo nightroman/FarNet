@@ -19,9 +19,6 @@ int Panel0::AsGetFindData(GetFindDataInfo* info)
 
 void Panel0::AsFreeFindData(const FreeFindDataInfo* info)
 {
-	Panel2^ pp = HandleToPanel(info->hPanel); //???? need? can it be static managed by Address -> Data map including Panel2^
-	Log::Source->TraceInformation("FreeFindDataW Address='{0:x}' Location='{1}'", (long)(__int64)info->PanelItem, pp->CurrentLocation);
-
 	for(int i = (int)info->ItemsNumber; --i >= 0;)
 	{
 		PluginPanelItem& item = info->PanelItem[i];
@@ -71,8 +68,6 @@ int Panel0::AsGetFiles(GetFilesInfo* info)
 
 	Panel2^ pp = HandleToPanel(info->hPanel);
 	ExplorerModes mode = (ExplorerModes)info->OpMode;
-
-	Log::Source->TraceInformation("GetFilesW Mode='{0}'", mode);
 
 	Explorer^ explorer = pp->Host->Explorer;
 	if (!explorer->CanGetContent)
@@ -153,8 +148,6 @@ int Panel0::AsPutFiles(PutFilesInfo* info)
 	Panel2^ pp = HandleToPanel(info->hPanel);
 	ExplorerModes mode = (ExplorerModes)info->OpMode;
 
-	Log::Source->TraceInformation("PutFilesW Mode='{0}'", mode);
-
 	if (!pp->Host->Explorer->CanImportFiles)
 		return 0;
 
@@ -201,8 +194,6 @@ int Panel0::AsDeleteFiles(const DeleteFilesInfo* info)
 	Panel2^ pp = HandleToPanel(info->hPanel);
 	ExplorerModes mode = (ExplorerModes)info->OpMode;
 
-	Log::Source->TraceInformation("DeleteFilesW Mode='{0}'", mode);
-
 	Explorer^ explorer = pp->Host->Explorer;
 	if (!explorer->CanDeleteFiles)
 		return 0;
@@ -215,8 +206,6 @@ int Panel0::AsDeleteFiles(const DeleteFilesInfo* info)
 
 void Panel0::AsClosePanel(const ClosePanelInfo* info)
 {
-	Log::Source->TraceInformation("ClosePluginW");
-
 	// disconnect
 	Panel2^ pp = HandleToPanel(info->hPanel);
 	pp->Free();
@@ -274,15 +263,11 @@ int Panel0::AsProcessPanelEvent(const ProcessPanelEventInfo* info)
 	{
 	case FE_BREAK:
 		{
-			Log::Source->TraceInformation("FE_BREAK");
-
 			pp->Host->UICtrlBreak();
 		}
 		break;
 	case FE_CLOSE:
 		{
-			Log::Source->TraceInformation("FE_CLOSE");
-
 			// stop timer //_210630_hi
 			if (pp->_timerInstance)
 			{
@@ -300,12 +285,9 @@ int Panel0::AsProcessPanelEvent(const ProcessPanelEventInfo* info)
 		break;
 	case FE_COMMAND:
 		{
-			Log::Source->TraceInformation("FE_COMMAND");
-
 			if (pp->Host->WorksInvokingCommand(nullptr))
 			{
 				CommandLineEventArgs e(gcnew String((const wchar_t*)info->Param));
-				Log::Source->TraceInformation("InvokingCommand: {0}", e.Command);
 
 				//! Try\catch in order to return exactly what the module returns.
 				try
@@ -328,8 +310,6 @@ int Panel0::AsProcessPanelEvent(const ProcessPanelEventInfo* info)
 		break;
 	case FE_CHANGEVIEWMODE:
 		{
-			Log::Source->TraceInformation("FE_CHANGEVIEWMODE");
-
 			ViewChangedEventArgs e(gcnew String((const wchar_t*)info->Param));
 			pp->Host->UIViewChanged(%e);
 		}
@@ -467,7 +447,7 @@ int Panel0::AsProcessPanelInput(const ProcessPanelInputInfo* info)
 
 	// args, log
 	KeyEventArgs e(KeyInfoFromInputRecord(ir));
-	Log::Source->TraceEvent(TraceEventType::Information, 0, "KeyPressed {0}", %e);
+	//Log::Source->TraceEvent(TraceEventType::Information, 0, "KeyPressed {0}", %e);
 
 	// 1. event; handlers work first of all
 	pp->Host->WorksKeyPressed(%e);

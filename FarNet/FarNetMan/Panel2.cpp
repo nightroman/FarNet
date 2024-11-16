@@ -197,9 +197,8 @@ void Panel2::Push()
 // close and restore the shelved
 void Panel2::Close()
 {
-	Log::Source->TraceInformation(__FUNCTION__);
 	if (_ActiveInfo)
-		_ActiveInfo->PopWork(IsActive); //
+		_ActiveInfo->PopWork(IsActive);
 	else
 		Panel1::Close();
 }
@@ -861,14 +860,11 @@ int Panel2::AsGetFindData(GetFindDataInfo* info)
 	ExplorerModes mode = (ExplorerModes)info->OpMode;
 	const bool canExploreLocation = explorer->CanExploreLocation;
 
-	Log::Source->TraceInformation("GetFindDataW Mode='{0}' Location='{1}'", mode, CurrentLocation);
-
 	try
 	{
 		// fake empty panel needed on switching modes, for example
 		if (_voidUpdateFiles)
 		{
-			Log::Source->TraceInformation("GetFindDataW fake empty panel");
 			info->ItemsNumber = 0;
 			info->PanelItem = 0;
 			return 1;
@@ -924,7 +920,6 @@ int Panel2::AsGetFindData(GetFindDataInfo* info)
 		// alloc all
 		info->PanelItem = new PluginPanelItem[nItem];
 		memset(info->PanelItem, 0, nItem * sizeof(PluginPanelItem));
-		Log::Source->TraceInformation("GetFindDataW Address='{0:x}'", (long)(__int64)info->PanelItem);
 
 		// add dots
 		int itemIndex = -1, fileIndex = -1;
@@ -1024,8 +1019,6 @@ int Panel2::AsSetDirectory(const SetDirectoryInfo* info)
 {
 	ExplorerModes mode = (ExplorerModes)info->OpMode;
 	String^ directory = gcnew String(info->Dir);
-
-	Log::Source->TraceInformation("SetDirectoryW Mode='{0}' Name='{1}'", mode, directory);
 
 	const bool canExploreLocation = Host->Explorer->CanExploreLocation;
 
