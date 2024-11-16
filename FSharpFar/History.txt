@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 
+= 4.1.0 =
+
+F# 9
+FSharp.Core 9.0.100
+FSharp.Compiler.Service 43.9.100
+
 = 4.0.1 =
 
 FSharp.Core 8.0.200
