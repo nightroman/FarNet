@@ -22,9 +22,9 @@ job {
 # open properties, go to Id
 keys CtrlPgDn
 job {
-	# Exception getting "CommandLine": "The type initializer for 'Microsoft.Management.Infrastructure.Native.OperationCallbacks' threw an exception."
-	Assert-Far ($global:Error -and "$($global:Error[0])" -like '*Microsoft.Management.Infrastructure.Native.OperationCallbacks*')
-	$global:Error.Clear()
+	# 2024-11-18-1917 Used to be `Exception getting "CommandLine":...` due to CIM cmdlets problems.
+	# In PS 7.5 these problems are really bad, so we just heuristically return null for this.
+	Assert-Far $global:Error.Count -eq 0
 
 	Find-FarFile 'Id'
 }

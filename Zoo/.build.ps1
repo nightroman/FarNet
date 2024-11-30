@@ -7,7 +7,7 @@ task release {
 
 # Synopsis: Pack FarNet assets.
 task nuget {
-	Invoke-Build nuget $env:FarNetCode\.build.ps1
+	Invoke-Build nuget ..
 }
 
 # Synopsis: Test FarNet assets.
@@ -17,7 +17,7 @@ task testNuGet {
 
 # Synopsis: Zip FarDev sources on release.
 task zipFarDev {
-	. $env:FarNetCode\Get-Version.ps1
+	. ..\Get-Version.ps1
 	$zip = "FarDev.$FarNetVersion-$PowerShellFarVersion.7z"
 
 	Set-Location ..\..\..

@@ -8,8 +8,6 @@ module private Key =
     let config = "F# config"
     let session = "F# session"
     let errors = "F# errors"
-    let autoTips = "F# auto tips"
-    let autoCheck = "F# auto check"
     let checking = "F# checking"
 
 type IEditor with

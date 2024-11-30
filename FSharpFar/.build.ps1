@@ -134,7 +134,7 @@ task test_tasks {
 }
 
 task test_fsx {
-	Invoke-Build Test src\fsx\.build.ps1
+	Invoke-Build test src\fsx
 }
 
 task test test_tasks, test_tests, test_testing, test_fsx

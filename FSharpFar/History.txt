@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 
+= 5.0.0 =
+
+Requires .NET 9.0, FarNet 9.0.0
+
 = 4.1.0 =
 
 F# 9

@@ -86,7 +86,7 @@ public static class AssemblyResolver
 			//   Microsoft.PowerShell.Commands.Utility
 			//   Microsoft.PowerShell.Commands.Management
 			//   Microsoft.PowerShell.Security
-			var path = root + "\\runtimes\\win\\lib\\net8.0\\" + dllName;
+			var path = root + "\\runtimes\\win\\lib\\net9.0\\" + dllName;
 			if (File.Exists(path))
 				return Assembly.LoadFrom(path);
 		}
@@ -100,10 +100,10 @@ public static class AssemblyResolver
 				return Assembly.LoadFrom(path);
 		}
 
-		if (caller.StartsWith("Microsoft.PowerShell.Commands.Management"))
+		// Microsoft.PowerShell.Commands.Management ->
+		// System.Management.Automation ->
+		//   Microsoft.Management.Infrastructure
 		{
-			// Microsoft.PowerShell.Commands.Management ->
-			//   Microsoft.Management.Infrastructure
 			var win10_x64 = System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier;
 			var path = root + "\\runtimes\\" + win10_x64 + "\\lib\\netstandard1.6\\" + dllName;
 			if (File.Exists(path))

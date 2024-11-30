@@ -48,17 +48,19 @@ task installBin {
 	Remove-Item "$ModuleHome\PowerShellFar.deps.json"
 
 	# move `ref` folder to "expected" location or cannot compile C# in PS
-	# ~ cannot find '...\PowerShellFar\runtimes\win\lib\net7.0\ref'.
-	exec { robocopy "$ModuleHome\ref" "$ModuleHome\runtimes\win\lib\net8.0\ref" /s } (0..2)
-	Remove-Item -LiteralPath "$ModuleHome\ref" -Force -Recurse
+	exec { robocopy "$ModuleHome\ref" "$ModuleHome\runtimes\win\lib\net9.0\ref" /s /move } (0..2)
 
 	# prune resources, to keep our dll cache cleaner
 	Set-Location $ModuleHome
 	remove cs, de, es, fr, it, ja, ko, pl, pt-BR, ru, tr, zh-Hans, zh-Hant
 
 	# unused
-	Set-Location runtimes
-	remove freebsd, illumos, ios, linux*, osx*, solaris, tvos, unix, win-arm*
+	Set-Location "$ModuleHome\runtimes"
+	remove android*, freebsd, illumos, ios, linux*, maccatalyst*, osx*, solaris, tvos, unix, win-arm*
+
+	# 2024-11-18-1917 remove CIM, avoid bad issues
+	Set-Location "$ModuleHome\runtimes\win\lib\net9.0"
+	remove Modules\CimCmdlets, Microsoft.Management.Infrastructure.CimCmdlets.dll
 }
 
 task installRes {

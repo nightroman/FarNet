@@ -1,6 +1,14 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 9.0.0 =
+
+Requires .NET 9.0
+
+Existing net8.0 modules do not have to be upgraded.
+The API (FarNet.dll) is still net8.0, for a while.
+But gradual migration to net9.0 is recommended.
+
 = 8.1.15 =
 
 Remove excessive tracing.

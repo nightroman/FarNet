@@ -99,7 +99,7 @@ let showTempFile file title =
         )
     editor.Open()
 
-let showTempText text title =
+let showTempText (text: string) (title: string) =
     let file = far.TempName("F#") + ".txt"
     File.WriteAllText(file, text)
     showTempFile file title

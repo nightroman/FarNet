@@ -12,6 +12,8 @@ param(
 )
 
 Set-Alias ask Confirm-Build
+$Root = $env:FarNetCode
+requires -Path $Root
 
 task setVersion -If {
 	ask @'
@@ -19,7 +21,7 @@ Edit Get-Version.ps1 to set versions.
 What you change is what you are about to push.
 '@
 } {
-	Start-Process Far.exe /e, $env:FarNetCode\Get-Version.ps1 -Wait
+	Start-Process Far.exe /e, $Root\Get-Version.ps1 -Wait
 }
 
 task chooseToPush {
@@ -31,7 +33,7 @@ Choose to push:
 
 '@) -notmatch '^(1|2|3)$') {}
 
-	. $env:FarNetCode\Get-Version.ps1
+	. $Root\Get-Version.ps1
 	$script:Tags = switch($Push) {
 		1 {"FarNet.$FarNetVersion", "PowerShellFar.$PowerShellFarVersion"}
 		2 {"FarNet.$FarNetVersion"}
@@ -53,13 +55,13 @@ task buildFarNet -If {
 task buildPsfHelp -If {
 	$env:FarNetToBuildPowerShellFarHelp -and (ask 'Build PowerShellFar help')
 } {
-	Start-Far -Test 0 'ps: Invoke-Build help' -Panel1 $env:FarNetCode\PowerShellFar -Title buildPsfHelp
+	Start-Far -Test 0 'ps: Invoke-Build help' -Panel1 $Root\PowerShellFar -Title buildPsfHelp
 }
 
 task buildDocs -If {
 	($Push -ne 3) -and (ask 'Build FarNet CHM help')
 } {
-	Invoke-Build build, install, clean $env:FarNetCode\Docs\FarNetAPI.build.ps1
+	Invoke-Build build, install, clean $Root\Docs
 }
 
 task nugetAndTest -If {
@@ -88,14 +90,14 @@ task pushPackages -If {
 task commitSource -If {
 	ask "Start git gui to commit/amend changes for [$Tags]?"
 } {
-	Set-Location $env:FarNetCode
+	Set-Location $Root
 	git gui
 }
 
 task pushSource -If {
 	ask "Push commits and tags [$Tags]?"
 } {
-	Set-Location $env:FarNetCode
+	Set-Location $Root
 
 	# push changes
 	exec { git push }

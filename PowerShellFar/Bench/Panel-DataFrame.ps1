@@ -205,10 +205,7 @@ function global:DFConvertColumn {
 
 function global:DFAssertScottPlot {
 	try {
-		Add-Type -Path @(
-			"$env:FARHOME\FarNet\Lib\FarNet.ScottPlot\FarNet.ScottPlot.dll"
-			"$env:FARHOME\FarNet\Lib\FarNet.ScottPlot\ScottPlot.dll"
-		)
+		Add-Type -Path "$env:FARHOME\FarNet\Lib\FarNet.ScottPlot\FarNet.ScottPlot.dll"
 	}
 	catch {
 		throw "Cannot load FarNet.ScottPlot, is it installed?"
@@ -229,10 +226,10 @@ function global:DFShowColumnScatter {
 	$xs = [double[]]$Column1
 	$ys = [double[]]$Column2
 
-	$plot = [FarNet.ScottPlot.FormPlot]::new("$($Column1.Name) -> $($Column2.Name)")
-	$set1 = $plot.AddScatter($xs, $ys, $null, 0)
-	$null = $plot.XAxis.Label($Column1.Name)
-	$null = $plot.YAxis.Label($Column2.Name)
+	$plot = [ScottPlot.FarPlot]::new("$($Column1.Name) -> $($Column2.Name)")
+	$plot.XLabel($Column1.Name)
+	$plot.YLabel($Column2.Name)
+	$null = $plot.Add.ScatterPoints($xs, $ys)
 	$plot.Show()
 }
 
@@ -244,24 +241,30 @@ function global:DFShowColumnHistogram {
 
 	DFAssertScottPlot
 
-	$N = 50
+	$N = 20
 	$min = $Column.Min()
 	$max = $Column.Max()
 	$values = [double[]]$Column
 
-	$hist = [ScottPlot.Statistics.Histogram]::new($min, $max, $N)
-	$hist.AddRange($values)
+	$plot = [ScottPlot.FarPlot]::new($Column.Name)
+	$plot.YLabel('Count')
+	$plot.Axes.Right.Label.Text = 'Probability'
 
-	$plot = [FarNet.ScottPlot.FormPlot]::new($Column.Name)
-	$set1 = $plot.AddBar($hist.Counts, $hist.Bins)
-	$set1.BarWidth = ($max - $min) / $N
-	$set2 = $plot.AddFunction($hist.GetProbabilityCurve($values), 'Green', 2, 'Dash')
-	$set2.YAxisIndex = 1
-	$null = $plot.YAxis.Label('Count')
-	$null = $plot.YAxis2.Label('Probability')
-	$plot.YAxis2.Ticks($true)
-	$plot.SetAxisLimits($null, $null, 0.0, $null, 0, 0)
-	$plot.SetAxisLimits($null, $null, 0.0, 1.1, 0, 1)
+	$hist = [ScottPlot.Statistics.Histogram]::WithBinCount($N, $values)
+
+	$set1 = $plot.Add.Bars($hist.Bins, $hist.Counts)
+	foreach($_ in $set1.Bars) {$_.Size = $hist.FirstBinSize * 0.8}
+
+	$pd = [ScottPlot.Statistics.ProbabilityDensity]::new($values)
+	[double[]] $xs = [ScottPlot.Generate]::RangeWithCount($min, $max, $N * 2);
+	[double[]] $ys = $pd.GetYs($xs, 1)
+
+	$set2 = $plot.Add.ScatterLine($xs, $ys)
+	$set2.Axes.YAxis = $plot.Axes.Right
+	$set2.LineWidth = 2
+	$set2.LineColor = [ScottPlot.Colors]::Black
+	$set2.LinePattern = [ScottPlot.LinePattern]::DenselyDashed
+
 	$plot.Show()
 }
 
@@ -292,11 +295,17 @@ function global:DFShowColumnCounts {
 	[double[]]$values = $df['Counts']
 	[string[]]$labels = $df['Values'].ForEach{"$_"}.ForEach{$_.Substring(0, [Math]::Min($_.Length, 25))}
 
-	$plot = [FarNet.ScottPlot.FormPlot]::new($Column.Name)
-	$set1 = $plot.AddBar($values, $null)
-	$plot.XTicks($labels)
-	$plot.XAxis.TickLabelStyle($null, $null, $null, $null, 60)
+	$plot = [ScottPlot.FarPlot]::new($Column.Name)
 	$plot.YLabel('Count')
+	$style = [ScottPlot.LabelStyle]::new()
+	$style.Rotation = -60
+	$style.Alignment = 'MiddleRight'
+	$plot.Axes.Bottom.TickLabelStyle = $style
+	$plot.Axes.Bottom.MinimumSize = 100
+
+	$null = $plot.Add.Bars($values)
+	$plot.Axes.Bottom.SetTicks([ScottPlot.Generate]::Consecutive($labels.Count), $labels)
+
 	$plot.Show()
 }
 

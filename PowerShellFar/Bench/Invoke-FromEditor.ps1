@@ -107,6 +107,12 @@ if ('.md', '.markdown', '.text' -contains $ext) {
 	return
 }
 
+### FSharp
+if ($ext -eq '.fsx') {
+	Start-Process fsx.exe "--nologo --use:`"$path`""
+	return
+}
+
 ### Batch
 if ('.bat', '.cmd' -contains $ext) {
 	cmd.exe /c start cmd /k "`"$path`""

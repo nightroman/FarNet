@@ -5,7 +5,7 @@
     <MyOutDir>$(FarHome)\FarNet\Modules\FSharpFar</MyOutDir>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net9.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <WarningLevel>5</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>

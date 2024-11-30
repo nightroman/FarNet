@@ -18,8 +18,6 @@ let prepare root =
         if not (_cache.TryAdd(key, path)) then
             _cache[key] <- null
 
-    System.Diagnostics.Debug.WriteLine($"fsx: {root} {_cache.Count}")
-
 let private assemblyNameToDllName (name: string) =
     name.Substring(0, name.IndexOf(',')) + ".dll"
 
@@ -47,7 +45,7 @@ let resolvePowerShellFar (root: string) (args: ResolveEventArgs) =
     //   Microsoft.PowerShell.Security
     let assembly =
         if caller.StartsWith("System.Management.Automation") then
-            let path = root + "\\runtimes\\win\\lib\\net8.0\\" + dllName
+            let path = root + "\\runtimes\\win\\lib\\net9.0\\" + dllName
             if File.Exists(path) then
                 Assembly.LoadFrom(path)
             else
@@ -73,15 +71,13 @@ let resolvePowerShellFar (root: string) (args: ResolveEventArgs) =
     if not (isNull assembly) then assembly
     else
 
-    if caller.StartsWith("Microsoft.PowerShell.Commands.Management") then
-        // Microsoft.PowerShell.Commands.Management ->
-        //   Microsoft.Management.Infrastructure
-        let win10_x64 = System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier
-        let path = root + "\\runtimes\\" + win10_x64 + "\\lib\\netstandard1.6\\" + dllName
-        if File.Exists(path) then
-            Assembly.LoadFrom(path)
-        else
-            null
+    // Microsoft.PowerShell.Commands.Management ->
+    // System.Management.Automation ->
+    //   Microsoft.Management.Infrastructure
+    let win10_x64 = System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier
+    let path = root + "\\runtimes\\" + win10_x64 + "\\lib\\netstandard1.6\\" + dllName
+    if File.Exists(path) then
+        Assembly.LoadFrom(path)
     else
         null
 

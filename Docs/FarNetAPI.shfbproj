@@ -113,7 +113,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Management.Automation">
-      <HintPath>$(FarHome)\FarNet\Modules\PowerShellFar\runtimes\win\lib\net8.0\System.Management.Automation.dll</HintPath>
+      <HintPath>$(FarHome)\FarNet\Modules\PowerShellFar\runtimes\win\lib\net9.0\System.Management.Automation.dll</HintPath>
     </Reference>
   </ItemGroup>
   <!-- Import the SHFB build targets -->

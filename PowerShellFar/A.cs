@@ -413,8 +413,12 @@ Out-String -Width $args[1]
 		InvokeCode("Disable-PSBreakpoint -Breakpoint $args[0]", breakpoint);
 	}
 
-	internal static object SafePropertyValue(PSPropertyInfo pi)
+	internal static object? SafePropertyValue(PSPropertyInfo pi)
 	{
+		//: 2024-11-18-1917 CIM cmdlets problems, especially bad in PS 7.5
+		if (pi.Name == "CommandLine" && pi is PSScriptProperty scriptProperty && scriptProperty.GetterScript.ToString().Contains("Get-CimInstance"))
+			return null;
+
 		//! exceptions, e.g. exit code of running process
 		try
 		{

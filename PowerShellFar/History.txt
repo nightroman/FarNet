@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.0 =
+
+Requires .NET 9.0 and FarNet 9.0.0
+
+Uses Microsoft.PowerShell.SDK 7.5.0-rc.1
+
 = 8.1.25 =
 
 FarNet 8.1.14

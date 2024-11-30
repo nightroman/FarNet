@@ -79,9 +79,9 @@ if ($All) {
 		Get-Item "$env:FarNetCode\Test\TabExpansion\Test-TabExpansion2-.ps1"
 		{ & "$env:FarNetCode\Test\TabExpansion\Test-TabExpansion2.ps1" pwsh }
 		{ & "$env:FarNetCode\Test\TabExpansion\Test-TabExpansion2.ps1" powershell }
-		{ Invoke-Build test "$env:FarNetCode\GitKit\.build.ps1" }
-		{ Invoke-Build test "$env:FarNetCode\FSharpFar\.build.ps1" }
-		{ Invoke-Build test "$env:FarNetCode\JavaScriptFar\.build.ps1" }
+		{ Invoke-Build test "$env:FarNetCode\GitKit" }
+		{ Invoke-Build test "$env:FarNetCode\FSharpFar" }
+		{ Invoke-Build test "$env:FarNetCode\JavaScriptFar" }
 	)
 	Assert-Far $extras.Count -eq $ExpectedExtrasCount
 	foreach($test in $extras) {
