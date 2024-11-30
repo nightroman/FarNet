@@ -258,7 +258,7 @@ static class A
 
 		try
 		{
-			return Psf.Engine.InvokeProvider.ChildItem.Get(new string[] { literalPath }, false, true, true);
+			return Psf.Engine.InvokeProvider.ChildItem.Get([literalPath], false, true, true);
 		}
 		catch (Exception ex)
 		{

@@ -11,20 +11,13 @@ namespace PowerShellFar;
 /// <summary>
 /// Formatted table panel.
 /// </summary>
-public abstract class FormatPanel : TablePanel
+/// <param name="explorer">The panel explorer.</param>
+public abstract class FormatPanel(FormatExplorer explorer) : TablePanel(explorer)
 {
 	/// <summary>
 	/// Gets the panel explorer.
 	/// </summary>
 	public new FormatExplorer Explorer => (FormatExplorer)base.Explorer;
-
-	/// <summary>
-	/// New format panel.
-	/// </summary>
-	/// <param name="explorer">The panel explorer.</param>
-	protected FormatPanel(FormatExplorer explorer) : base(explorer)
-	{
-	}
 
 	/// <summary>
 	/// Gets a list of ready files or a collection of PS objects.

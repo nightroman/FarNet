@@ -62,7 +62,7 @@ void EditorBookmark::ClearSessionBookmarks()
 
 void EditorBookmark::RemoveSessionBookmarkAt(int index)
 {
-	if (!Info.EditorControl(-1, ECTL_DELETESESSIONBOOKMARK, 0, (void*)(__int64)index))
+	if (!Info.EditorControl(-1, ECTL_DELETESESSIONBOOKMARK, 0, (void*)index))
 		throw gcnew InvalidOperationException("ECTL_DELETESESSIONBOOKMARK");
 }
 

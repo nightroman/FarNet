@@ -44,7 +44,7 @@ sealed class GetFarItemCommand : BaseFileCmdlet
 		}
 
 		// get and convert paths to items
-		IList<FarFile> filesToProcess;
+		FarFile[] filesToProcess;
 		if (All)
 		{
 			filesToProcess = panel.GetFiles();
@@ -62,7 +62,7 @@ sealed class GetFarItemCommand : BaseFileCmdlet
 		//! Bug [_090116_085532]
 		// Count is 0, e.g. when nothing is selected and the current item is dots;
 		// then Get-Item -LiteralPath fails: cannot bind an empty array to LiteralPath.
-		if (filesToProcess.Count > 0)
+		if (filesToProcess.Length > 0)
 		{
 			//! @($args[0])
 			using IEnumerator<string> it = new PathEnumerator(filesToProcess, panel.CurrentDirectory, panel.RealNames, false);

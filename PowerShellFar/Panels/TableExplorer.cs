@@ -10,13 +10,9 @@ namespace PowerShellFar;
 /// <summary>
 /// Abstract table explorer.
 /// </summary>
-public abstract class TableExplorer : PowerExplorer
+/// <inheritdoc/>
+public abstract class TableExplorer(Guid typeId) : PowerExplorer(typeId)
 {
-	/// <inheritdoc/>
-	protected TableExplorer(Guid typeId) : base(typeId)
-	{
-	}
-
 	/// <include file='doc.xml' path='doc/Columns/*'/>
 	internal virtual object[]? Columns { get; set; }
 }

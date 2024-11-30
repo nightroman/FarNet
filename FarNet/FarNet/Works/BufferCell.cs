@@ -38,6 +38,6 @@ public struct BufferCell(char character, ConsoleColor foreground, ConsoleColor b
 
 	public override readonly string ToString()
 	{
-		return string.Format(null, "'{0}' {1} {2} {3}", new object[] { Character, ForegroundColor, BackgroundColor, BufferCellType });
+		return $"'{Character}' {ForegroundColor} {BackgroundColor} {BufferCellType}";
 	}
 }

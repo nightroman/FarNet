@@ -12,7 +12,6 @@ namespace FarNet;
 /// <param name="key">Key data.</param>
 public sealed class KeyEventArgs(KeyInfo key) : EventArgs
 {
-
 	/// <summary>
 	/// Key data.
 	/// </summary>

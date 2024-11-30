@@ -124,7 +124,7 @@ int FarControl::GetSelected()
 void FarControl::SetSelected(int value)
 {
 	if (_dialog->_hDlg != INVALID_HANDLE_VALUE)
-		Info.SendDlgMessage(_dialog->_hDlg, DM_SETCHECK, Id, (void*)(__int64)value);
+		Info.SendDlgMessage(_dialog->_hDlg, DM_SETCHECK, Id, (void*)value);
 	else
 		_selected = value;
 }

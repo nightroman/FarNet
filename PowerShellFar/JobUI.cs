@@ -4,12 +4,13 @@
 
 using System.IO;
 using System.Text;
+using System.Threading;
 
 namespace PowerShellFar;
 
 class JobUI : UniformUI
 {
-	readonly object _lock = new();
+	readonly Lock _lock = new();
 
 	// Output writers
 	StreamWriter? _writer;

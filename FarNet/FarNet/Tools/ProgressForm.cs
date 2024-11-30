@@ -33,7 +33,7 @@ public sealed class ProgressForm : Form, IProgress
 {
 	const int DefaultTimerInterval = 200;
 
-	readonly object _lock = new();
+	readonly Lock _lock = new();
 	int _LineCount = 1;
 	bool _isCompleted;
 	bool _isCanceled;

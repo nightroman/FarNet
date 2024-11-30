@@ -2,13 +2,13 @@
   <PropertyGroup>
     <FarHome Condition="'$(FarHome)' == ''">C:\Bin\Far\x64</FarHome>
     <OutDir>$(FarHome)\FarNet\Scripts\$(AssemblyName)</OutDir>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="$(FarHome)\FarNet\FarNet.dll">
       <Private>False</Private>
     </Reference>
-    <Reference Include="$(FarHome)\FarNet\Modules\PowerShellFar\runtimes\win\lib\net8.0\System.Management.Automation.dll">
+    <Reference Include="$(FarHome)\FarNet\Modules\PowerShellFar\runtimes\win\lib\net9.0\System.Management.Automation.dll">
       <Private>False</Private>
     </Reference>
   </ItemGroup>

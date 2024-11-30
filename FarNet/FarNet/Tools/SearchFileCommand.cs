@@ -129,7 +129,7 @@ public class SearchFileCommand
 	int ProcessedDirectoryCount { get; set; }
 
 	List<FarFile>? _filesAsync;
-	readonly object _lock = new();
+	readonly Lock _lock = new();
 
 	// Just turns stopping on.
 	void OnPanelClosed(object? sender, EventArgs e)

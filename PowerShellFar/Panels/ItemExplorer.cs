@@ -204,12 +204,11 @@ public sealed class ItemExplorer : FormatExplorer
 		[..] --> error; it is rather PS issue though...
 		*/
 		var path = Location;
-		// 090814 use ":\\" instead of "\\", [_090814_130836]
 		if (path.EndsWith(":\\", StringComparison.Ordinal))
 			return null;
 
-		// 090814 [_090814_130836] PS V2 may get paths with extra '\' in the end
-		path = path.TrimEnd(['\\']);
+		// just in case, e.g. PS v2 had extra '\'
+		path = path.TrimEnd('\\');
 
 		// find name
 		int iSlash = path.LastIndexOf('\\');

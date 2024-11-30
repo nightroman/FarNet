@@ -11,22 +11,17 @@ namespace FarNet;
 /// <summary>
 /// Common arguments of batch file methods.
 /// </summary>
-public abstract class ExplorerFilesEventArgs : ExplorerEventArgs
+/// <param name="mode">See <see cref="ExplorerEventArgs.Mode"/></param>
+/// <param name="files">See <see cref="Files"/></param>
+public abstract class ExplorerFilesEventArgs(ExplorerModes mode, IList<FarFile> files) : ExplorerEventArgs(mode)
 {
-	/// <param name="mode">See <see cref="ExplorerEventArgs.Mode"/></param>
-	/// <param name="files">See <see cref="Files"/></param>
-	protected ExplorerFilesEventArgs(ExplorerModes mode, IList<FarFile> files) : base(mode)
-	{
-		Files = files;
-	}
-
 	/// <summary>
 	/// Gets the files to be processed.
 	/// </summary>
 	/// <remarks>
 	/// Explorers must not change the list unless this is allowed.
 	/// </remarks>
-	public IList<FarFile> Files { get; }
+	public IList<FarFile> Files => files;
 
 	/// <summary>
 	/// Gets data attached to <see cref="Files"/>.

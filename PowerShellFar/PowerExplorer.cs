@@ -21,9 +21,9 @@ public class PowerExplorer(Guid typeId) : Explorer(typeId)
 	public IList<FarFile> Cache
 	{
 		get => _Cache;
-		internal set => _Cache = value ?? new List<FarFile>();
+		internal set => _Cache = value ?? [];
 	}
-	IList<FarFile> _Cache = new List<FarFile>();
+	IList<FarFile> _Cache = [];
 
 	/// <summary>
 	/// Gets or sets the user data object.

@@ -61,7 +61,7 @@ public sealed class Job : IDisposable
 	/// <summary>
 	/// Gets available jobs.
 	/// </summary>
-	public static IList<Job> Jobs => JobList.ToArray();
+	public static IList<Job> Jobs => [.. JobList];
 
 	// UI job list controlled by a user
 	static readonly List<Job> JobList = [];

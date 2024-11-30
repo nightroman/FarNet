@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace FarNet.Tools;
 
@@ -19,7 +20,7 @@ namespace FarNet.Tools;
 public class SuperPanel : Panel
 {
 	const string Name = "Super Panel";
-	readonly object _lock = new();
+	readonly Lock _lock = new();
 	List<FarFile>? _idleFiles;
 
 	/// <summary>

@@ -166,7 +166,7 @@ public abstract class ListPanel : AnyPanel
 
 	internal override void UIApply()
 	{
-		A.InvokePipelineForEach(new PSObject[] { Target });
+		A.InvokePipelineForEach([Target]);
 	}
 
 	internal override void HelpMenuInitItems(HelpMenuItems items, PanelMenuEventArgs e)

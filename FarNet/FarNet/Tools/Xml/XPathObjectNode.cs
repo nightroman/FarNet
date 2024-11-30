@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Globalization;
 
 namespace FarNet.Tools;
+#pragma warning disable IDE0052
 
 abstract class XPathObjectNode
 {

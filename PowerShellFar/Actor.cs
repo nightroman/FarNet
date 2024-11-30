@@ -150,10 +150,10 @@ public sealed partial class Actor
 		Commands.BaseCmdlet.AddCmdlets(state);
 
 		// add variables
-		state.Variables.Add(new SessionStateVariableEntry[] {
+		state.Variables.Add([
 			new("Far", Far.Api, "Exposes FarNet.", ScopedItemOptions.AllScope | ScopedItemOptions.Constant),
 			new("Psf", this, "Exposes PowerShellFar.", ScopedItemOptions.AllScope | ScopedItemOptions.Constant),
-		});
+		]);
 
 		// open runspace
 		Runspace = RunspaceFactory.CreateRunspace(FarHost, state);

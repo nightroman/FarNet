@@ -34,7 +34,7 @@ internal:
 	{
 		--_lastFileKey;
 		_files.Add(_lastFileKey, file);
-		panelItem.UserData.Data = (void*)(__int64)_lastFileKey;
+		panelItem.UserData.Data = (void*)_lastFileKey;
 		panelItem.UserData.FreeData = FarPanelItemFreeCallback;
 	}
 };
@@ -849,9 +849,6 @@ void Panel2::OpenExplorer(Explorer^ explorer, ExploreEventArgs^ args)
 	newPanel->OpenChild(oldPanel);
 }
 
-//! 090712. Allocation by chunks was originally used. But it turns out it does not improve
-//! performance much (tested for 200000+ files). On the other hand allocation of large chunks
-//! may fail due to memory fragmentation more frequently.
 int Panel2::AsGetFindData(GetFindDataInfo* info)
 {
 	info->StructSize = sizeof(*info);
@@ -862,7 +859,7 @@ int Panel2::AsGetFindData(GetFindDataInfo* info)
 
 	try
 	{
-		// fake empty panel needed on switching modes, for example
+		// fake empty panel needed on switching modes
 		if (_voidUpdateFiles)
 		{
 			info->ItemsNumber = 0;
@@ -870,7 +867,7 @@ int Panel2::AsGetFindData(GetFindDataInfo* info)
 			return 1;
 		}
 
-		// the Find mode //???????
+		// the Find mode
 		const bool isFind = 0 != (info->OpMode & OPM_FIND);
 		const bool isSpecialFind = isFind && !canExploreLocation;
 
@@ -885,9 +882,8 @@ int Panel2::AsGetFindData(GetFindDataInfo* info)
 			_Files_ = dynamic_cast<IList<FarFile^>^>(files);
 			if (_Files_ == nullptr)
 			{
-				//! Do not let exceptions out:
-				//! - get and show at least files before exceptions
-				//! - error message boxes may trigger getting files again -> stack overflow
+				//! - get and add files one by one, to show at least some files before exception
+				//! - do not let exceptions out, message boxes may trigger getting files again
 				_Files_ = gcnew List<FarFile^>();
 				try
 				{
@@ -929,7 +925,7 @@ int Panel2::AsGetFindData(GetFindDataInfo* info)
 			wchar_t* dots = new wchar_t[3];
 			dots[0] = dots[1] = '.'; dots[2] = '\0';
 			PluginPanelItem& p = info->PanelItem[0];
-			p.UserData.Data = (void*)(-1); //???????
+			p.UserData.Data = (void*)(-1);
 			p.FileName = dots;
 			p.FileAttributes = FILE_ATTRIBUTE_DIRECTORY;
 			p.Description = NewChars(Host->DotsDescription);
@@ -965,10 +961,10 @@ int Panel2::AsGetFindData(GetFindDataInfo* info)
 			}
 
 			// other
-			if (isSpecialFind) //???????
+			if (isSpecialFind)
 				FileStore::AddFile(p, file);
 			else
-				p.UserData.Data = (void*)(__int64)(canExploreLocation ? -1 : fileIndex + 1);
+				p.UserData.Data = (void*)(canExploreLocation ? -1 : fileIndex + 1);
 			p.FileAttributes = (DWORD)file->Attributes;
 			p.FileSize = file->Length;
 			p.CreationTime = DateTimeToFileTime(file->CreationTime);
@@ -1023,7 +1019,7 @@ int Panel2::AsSetDirectory(const SetDirectoryInfo* info)
 	const bool canExploreLocation = Host->Explorer->CanExploreLocation;
 
 	//! Silent but not Find is possible on CtrlQ scan
-	if (!canExploreLocation && 0 != (info->OpMode & (OPM_FIND | OPM_SILENT))) //???????
+	if (!canExploreLocation && 0 != (info->OpMode & (OPM_FIND | OPM_SILENT)))
 		return 0;
 
 	Explorer^ explorer2;

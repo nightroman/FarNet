@@ -29,17 +29,9 @@ namespace FarNet;
 /// if these data are not changed in the virtual file system.
 /// </para>
 /// </remarks>
-public abstract class Explorer
+/// <param name="typeId">The explorer type ID.</param>
+public abstract class Explorer(Guid typeId)
 {
-	/// <summary>
-	/// New explorer with its type ID.
-	/// </summary>
-	/// <param name="typeId">The explorer type ID.</param>
-	protected Explorer(Guid typeId)
-	{
-		TypeId = typeId;
-	}
-
 	/// <summary>
 	/// Gets the explorer type ID.
 	/// </summary>
@@ -47,7 +39,7 @@ public abstract class Explorer
 	/// The core distinguishes explorer types by their type IDs, not by their class types.
 	/// Thus, if a few classes share the same type ID then all of them are treated by the core as the same explorer type.
 	/// </remarks>
-	public Guid TypeId { get; }
+	public Guid TypeId => typeId;
 
 	/// <summary>
 	/// Gets or sets the location assigned to this explorer.

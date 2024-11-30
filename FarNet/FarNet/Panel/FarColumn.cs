@@ -56,7 +56,7 @@ public class FarColumn
 	/// Default column kind sequence: "N", "Z", "O", "C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9".
 	/// </summary>
 	public static ReadOnlyCollection<string> DefaultColumnKinds { get; } =
-		new ReadOnlyCollection<string>(new string[] { "N", "Z", "O", "C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9" });
+		new ReadOnlyCollection<string>(["N", "Z", "O", "C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9"]);
 
 	/// <summary>
 	/// Only for derived classes.

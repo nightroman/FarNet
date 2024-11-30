@@ -3,7 +3,7 @@
     <FarHome Condition="'$(FarHome)' == ''">C:\Bin\Far\x64</FarHome>
     <OutDir>$(FarHome)\FarNet\Scripts\$(AssemblyName)</OutDir>
     <EnableDynamicLoading>true</EnableDynamicLoading>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GraphQL-Parser" Version="9.5.0" />

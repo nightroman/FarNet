@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.1 =
+
+Used some new net9.0 features internally.
+
 = 9.0.0 =
 
 Requires .NET 9.0 and FarNet 9.0.0

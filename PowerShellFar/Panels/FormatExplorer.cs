@@ -14,15 +14,11 @@ namespace PowerShellFar;
 /// <summary>
 /// Formatted table explorer.
 /// </summary>
-public abstract class FormatExplorer : TableExplorer
+/// <inheritdoc/>
+public abstract class FormatExplorer(Guid typeId) : TableExplorer(typeId)
 {
 	internal FileMap? Map { get; private set; } // internal ???
 	internal Meta[]? Metas { get; private set; } // internal ???
-
-	/// <inheritdoc/>
-	protected FormatExplorer(Guid typeId) : base(typeId)
-	{
-	}
 
 	/// <include file='doc.xml' path='doc/Columns/*'/>
 	internal sealed override object[]? Columns

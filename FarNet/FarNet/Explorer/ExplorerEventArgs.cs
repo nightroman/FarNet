@@ -9,18 +9,13 @@ namespace FarNet;
 /// <summary>
 /// Common explorer method arguments.
 /// </summary>
-public abstract class ExplorerEventArgs : EventArgs
+/// <param name="mode">See <see cref="Mode"/></param>
+public abstract class ExplorerEventArgs(ExplorerModes mode) : EventArgs
 {
-	/// <param name="mode">See <see cref="Mode"/></param>
-	protected ExplorerEventArgs(ExplorerModes mode)
-	{
-		Mode = mode;
-	}
-
 	/// <summary>
 	/// Gets the explorer mode.
 	/// </summary>
-	public ExplorerModes Mode { get; }
+	public ExplorerModes Mode => mode;
 
 	/// <summary>
 	/// Gets or sets the parameter to be used by the explorer.

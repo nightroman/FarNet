@@ -7,6 +7,7 @@
     <WarningLevel>5</WarningLevel>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <NoWarn>IDE0079;IDE0130</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Bench\**" />
