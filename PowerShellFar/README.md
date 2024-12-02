@@ -1502,9 +1502,9 @@ All you need is to call the script once, normally in a host profile.
 
 [Contents]
 
-The script searches for the specified regex or simple match in the input files
-and sends found matches to the panel, where you can open the editor at the
-found matches selected.
+The script searches for the specified regex or simple match in the input
+files and sends found matches to the panel, where you can open the editor
+with the caret at the found match.
 
 The search is performed in the background and results are sent to the panel.
 You may work with results immediately even with the search still running.
@@ -1533,6 +1533,8 @@ with other options.
     Extra helper options: `SimpleMatch/sm` tells that the pattern is literal
     string, `WholeWord/ww` tells to search for word bounds, i.e. `\b...\b`.
 
+    Note that the option `Singleline/s` implies "All text".
+
 - Input
 
     Any command returning file paths or file system items.
@@ -1543,7 +1545,7 @@ with other options.
     Tells to read and process files as whole strings, not lines. In this case
     the options `Multiline` and `Singleline` may be useful as well. Results are
     processed in the same way but found matches are not selected in the editor,
-    only the caret is set at the beginning.
+    only the caret is set at the match.
 
 - Background input
 

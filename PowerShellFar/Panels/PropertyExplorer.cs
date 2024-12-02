@@ -71,14 +71,14 @@ public sealed class PropertyExplorer : Explorer
 			Collection<PSObject> bag = A.Psf.Engine.InvokeProvider.Property.Get(Kit.EscapeWildcard(ItemPath), null);
 
 			// filter
-			var filter = new List<string>(5)
-			{
+			List<string> filter =
+			[
 				"PSChildName",
 				"PSDrive",
 				"PSParentPath",
 				"PSPath",
 				"PSProvider"
-			};
+			];
 
 			// add
 			foreach (PSObject o in bag)

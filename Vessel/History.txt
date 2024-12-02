@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.Vessel
 
+= 6.1.0 =
+
+Requires FarNet 9, uses .NET 9.
+
+Use some new dotnet features.
+
 = 6.0.0 =
 
 Requires FarNet 8

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace FarNet.Works;
 #pragma warning disable 1591
@@ -43,10 +44,11 @@ public static class AssemblyResolver
 
 			var key = Path.GetFileNameWithoutExtension(path);
 
-			if (s_cache.TryGetValue(key, out string? value))
-				s_cache[key] = $"{value}|{path}";
+			ref string? value = ref CollectionsMarshal.GetValueRefOrAddDefault(s_cache, key, out bool found);
+			if (found)
+				value = $"{value}|{path}";
 			else
-				s_cache.Add(key, path);
+				value = path;
 		}
 	}
 

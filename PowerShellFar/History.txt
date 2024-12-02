@@ -1,5 +1,13 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.2 =
+
+Object panel: tweak format cache.
+
+Search-Regex.ps1
+- option Singleline/s implies AllText
+- some tweaks
+
 = 9.0.1 =
 
 Used some new net9.0 features internally.

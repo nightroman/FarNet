@@ -12,11 +12,15 @@
 		dialog is opened where you can define this and other parameters.
 
 		If the regex defines capturing groups then each group is treated as a
-		match and gets selected on opening. Groups are ignored on "All text".
+		match and gets selected on opening.
+
+		With AllText editor selection is not used and groups are ignored.
 
 .Parameter Options
 		Regular expression options and extra options. It is used when Regex is
 		not a regex instance. See SearchRegexOptions here for available values.
+
+		The option Singleline/s implies AllText true.
 
 .Parameter InputObject
 		Strings (file paths) and IO.FileInfo (from Get-*Item) as ready input or
@@ -28,7 +32,10 @@
 		* Get-EditorHistory - files from editor history excluding network paths
 
 .Parameter AllText
-		Tells to search in all text, not in separate lines.
+		Tells to search in all text, not in separate lines. The editor opens
+		without selection with the caret at the found match.
+
+		The option Singleline/s implies AllText true.
 
 .Example
 	> ps: Start-Far.ps1 ps:Search-Regex -Hidden
@@ -224,6 +231,10 @@ try {
 	if (!$InputObject -and !$parameters.Script) {
 		throw "There is no input to search in."
 	}
+
+	if ($Regex.Options -band [System.Text.RegularExpressions.RegexOptions]::Singleline) {
+		$AllText = $true
+	}
 }
 catch {
 	Write-Error -ErrorAction Stop $_
@@ -268,39 +279,39 @@ $job = Start-FarJob -Output -Parameters:$parameters {
 			if ($item -and !$item.PSIsContainer) {
 				++$Out.Total
 				if ($AllText) {
-					$text = [System.IO.File]::ReadAllText($item.FullName, [System.Text.Encoding]::Default)
+					$text = [System.IO.File]::ReadAllText($item.FullName)
 					if ($text -match $re) {
 						for($m = $re.Match($text); $m.Success; $m = $m.NextMatch()) {
 							$s = $text.Substring(0, $m.Index)
-							$n = [regex]::Split($s, '[^\n]+')
+							$n = [regex]::Count($s, '\n')
 							$null = $s -match '\n?([^\n]*)$'
-							New-Object FarNet.SetFile $item, $true -Property @{
-								Data = @($matches[1].Length, 0)
-								Description = '{0,4:d}: {1}' -f ($n.Count - 1), $m.Value
-							}
+							$file = [FarNet.SetFile]::new($item, $true)
+							$file.Data = @($Matches[1].Length, 0)
+							$file.Description = '{0,4:d}: {1}' -f ($n + 1), $m.Value
+							$file
 						}
 					}
 				}
 				else {
 					$no = 0
-					foreach($line in [System.IO.File]::ReadAllLines($item.FullName, [System.Text.Encoding]::Default)) {
+					foreach($line in [System.IO.File]::ReadAllLines($item.FullName)) {
 						++$no
 						if ($line -match $re) {
 							for($m = $re.Match($line); $m.Success; $m = $m.NextMatch()) {
 								if ($m.Groups.Count -gt 1) {
 									for($gi = 1; $gi -lt $m.Groups.Count; ++$gi) {
 										$g = $m.Groups[$gi]
-										New-Object FarNet.SetFile $item, $true -Property @{
-											Data = @($g.Index, $g.Length)
-											Description = '{0,4:d}: {1}' -f $no, $line.Trim()
-										}
+										$file = [FarNet.SetFile]::new($item, $true)
+										$file.Data = @($g.Index, $g.Length)
+										$file.Description = '{0,4:d}: {1}' -f $no, $line.Trim()
+										$file
 									}
 								}
 								else {
-									New-Object FarNet.SetFile $item, $true -Property @{
-										Data = @($m.Index, $m.Length)
-										Description = '{0,4:d}: {1}' -f $no, $line.Trim()
-									}
+									$file = [FarNet.SetFile]::new($item, $true)
+									$file.Data = @($m.Index, $m.Length)
+									$file.Description = '{0,4:d}: {1}' -f $no, $line.Trim()
+									$file
 								}
 							}
 						}
@@ -374,18 +385,20 @@ $Panel.add_KeyPressed({
 			return
 		}
 		$_.Ignore = $true
-		$editor = New-FarEditor $file.Name ($matches[1]) -DisableHistory
+		$editor = New-FarEditor $file.Name ($Matches[1]) -DisableHistory
 		$frame = $editor.Frame
 		$editor.Open()
-		$match = $file.Data
-		$frame.CaretColumn = $match[0] + $match[1]
+		$index, $length = $file.Data
+		$frame.CaretColumn = $index + $length
 		$frame.VisibleLine = $frame.CaretLine - $Host.UI.RawUI.WindowSize.Height / 3
 		$editor.Frame = $frame
-		$line = $editor.Line # can be null if a file is already opened
-		if ($match[1] -and $line) {
-			$line.SelectText($match[0], $frame.CaretColumn)
-			$editor.Redraw()
+		if ($length) {
+			# null if a file is already opened
+			if ($line = $editor.Line) {
+				$line.SelectText($index, $frame.CaretColumn)
+			}
 		}
+		$editor.Redraw()
 		return
 	}
 	### [F1] opens Search-Regex help topic

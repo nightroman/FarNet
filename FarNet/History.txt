@@ -1,6 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 9.0.2 =
+
+Tweak assembly cache on loading.
+
 = 9.0.1 =
 
 Complete net9.0 migration, including FarNet.dll, the API.

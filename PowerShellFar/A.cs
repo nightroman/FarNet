@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace PowerShellFar;
@@ -219,15 +220,11 @@ static class A
 	// Finds an available table control.
 	public static TableControl? FindTableControl(string typeName)
 	{
-		// make/try cache
-		if (_CacheTableControl is null)
-		{
-			_CacheTableControl = [];
-		}
-		else if (_CacheTableControl.TryGetValue(typeName, out TableControl? result))
-		{
+		_CacheTableControl ??= [];
+
+		ref TableControl? result = ref CollectionsMarshal.GetValueRefOrAddDefault(_CacheTableControl, typeName, out bool found);
+		if (found)
 			return result;
-		}
 
 		// extended type definitions:
 		foreach (var pso in InvokeCode("Get-FormatData -TypeName $args[0] -PowerShellVersion $PSVersionTable.PSVersion", typeName))
@@ -238,14 +235,13 @@ static class A
 				// if it's table, cache and return it
 				if (viewDef.Control is TableControl table)
 				{
-					_CacheTableControl.Add(typeName, table);
+					result = table;
 					return table;
 				}
 			}
 		}
 
-		// nothing, cache anyway and return null
-		_CacheTableControl.Add(typeName, null);
+		// nothing, cached anyway as null
 		return null;
 	}
 

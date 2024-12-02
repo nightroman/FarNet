@@ -21,7 +21,7 @@ public class VesselHost : ModuleHost
 	public override void Connect()
 	{
 		var dir = Manager.GetFolderPath(SpecialFolder.LocalData, true);
-		LogPath = new string[] { Path.Combine(dir, NameLogFile1), Path.Combine(dir, NameLogFile2), Path.Combine(dir, NameLogFile3) };
+		LogPath = [Path.Combine(dir, NameLogFile1), Path.Combine(dir, NameLogFile2), Path.Combine(dir, NameLogFile3)];
 
 		// ensure logs
 		if (!File.Exists(LogPath[0]))

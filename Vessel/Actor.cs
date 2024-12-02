@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace Vessel;
@@ -100,14 +101,15 @@ public partial class Actor
 		var farHistory = GetFarHistory();
 		foreach (var item in farHistory)
 		{
-			if (map.TryGetValue(item.Name, out Record info))
+			ref Record info = ref CollectionsMarshal.GetValueRefOrAddDefault(map, item.Name, out bool found);
+			if (found)
 			{
 				if (item.Time > info.Time)
 					info.Time = item.Time;
 			}
 			else
 			{
-				map.Add(item.Name, new Record(item.Time, string.Empty, item.Name));
+				info = new Record(item.Time, string.Empty, item.Name);
 			}
 		}
 	}
