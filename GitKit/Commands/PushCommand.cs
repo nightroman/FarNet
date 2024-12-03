@@ -5,12 +5,8 @@ using System.Data.Common;
 
 namespace GitKit.Commands;
 
-sealed class PushCommand : BaseCommand
+sealed class PushCommand(DbConnectionStringBuilder parameters) : BaseCommand(parameters)
 {
-	public PushCommand(DbConnectionStringBuilder parameters) : base(parameters)
-	{
-	}
-
 	public override void Invoke()
 	{
 		PushBranch(Repository, Repository.Head);

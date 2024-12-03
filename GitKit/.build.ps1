@@ -26,8 +26,8 @@ task publish {
 
 	$bit = if ($FarHome -match 'x64') {'win-x64'} elseif ($FarHome -match 'Win32') {'win-x86'} else {throw}
 	Copy-Item -Destination $ModuleRoot @(
-		"$HOME\.nuget\packages\LibGit2Sharp\$ver1\lib\net6.0\LibGit2Sharp.dll"
-		"$HOME\.nuget\packages\LibGit2Sharp\$ver1\lib\net6.0\LibGit2Sharp.xml"
+		"$HOME\.nuget\packages\LibGit2Sharp\$ver1\lib\net8.0\LibGit2Sharp.dll"
+		"$HOME\.nuget\packages\LibGit2Sharp\$ver1\lib\net8.0\LibGit2Sharp.xml"
 		"$HOME\.nuget\packages\LibGit2Sharp.NativeBinaries\$ver2\runtimes\$bit\native\*.dll"
 	)
 
@@ -91,10 +91,6 @@ task package win32, help, markdown, {
 	Copy-Item $ModuleRoot\git2*.dll $toModule64
 	Copy-Item C:\Bin\Far\Win32\FarNet\Modules\GitKit\git2*.dll $toModule86
 
-	equals 7 @(Get-ChildItem $toModule -Recurse -File).Count
-	equals 1 @(Get-ChildItem $toModule64 -Recurse -File).Count
-	equals 1 @(Get-ChildItem $toModule86 -Recurse -File).Count
-
 	$result = Get-ChildItem z\tools -Recurse -File -Name | Out-String
 	$sample = @'
 FarHome\FarNet\Modules\GitKit\GitKit.dll
@@ -104,8 +100,8 @@ FarHome\FarNet\Modules\GitKit\LibGit2Sharp.dll
 FarHome\FarNet\Modules\GitKit\LibGit2Sharp.xml
 FarHome\FarNet\Modules\GitKit\LICENSE
 FarHome\FarNet\Modules\GitKit\README.htm
-FarHome.x64\FarNet\Modules\GitKit\git2-a418d9d.dll
-FarHome.x86\FarNet\Modules\GitKit\git2-a418d9d.dll
+FarHome.x64\FarNet\Modules\GitKit\git2-3f4182d.dll
+FarHome.x86\FarNet\Modules\GitKit\git2-3f4182d.dll
 '@
 	Assert-SameFile.ps1 -Text $sample $result $env:MERGE
 }

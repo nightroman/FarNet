@@ -222,6 +222,11 @@ Parameters
     Specifies the local path to clone into.\
     Default: the current panel directory.
 
+- `Depth=<int>`
+
+    Specifies the cloning depth.\
+    Default: 0 (full clone).
+
 - `IsBare=<bool>`
 
     Tells to clone a bare repository.

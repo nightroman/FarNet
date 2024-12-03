@@ -4,16 +4,10 @@ using System.Data.Common;
 
 namespace GitKit.Commands;
 
-sealed class InitCommand : AnyCommand
+sealed class InitCommand(DbConnectionStringBuilder parameters) : AnyCommand
 {
-	readonly string _path;
-	readonly bool _isBare;
-
-	public InitCommand(DbConnectionStringBuilder parameters)
-	{
-		_path = Host.GetFullPath(parameters.GetString(Parameter.Path, true));
-		_isBare = parameters.GetBool(Parameter.IsBare);
-	}
+	readonly string _path = Host.GetFullPath(parameters.GetString(Parameter.Path, true));
+	readonly bool _isBare = parameters.GetBool(Parameter.IsBare);
 
 	public override void Invoke()
 	{

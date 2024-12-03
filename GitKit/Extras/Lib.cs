@@ -22,7 +22,7 @@ public static class Lib
 	public static IEnumerable<Branch> GetBranchesContainingCommit(Repository repo, Commit commit)
 	{
 		var heads = repo.Refs;
-		var headsContainingCommit = repo.Refs.ReachableFrom(heads, new[] { commit });
+		var headsContainingCommit = repo.Refs.ReachableFrom(heads, [commit]);
 		return headsContainingCommit
 			.Select(branchRef => repo.Branches[branchRef.CanonicalName]);
 	}

@@ -1,5 +1,13 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 1.1.0 =
+
+Requires FarNet 9, .NET 9.0
+LibGit2Sharp 0.31.0
+
+gk:clone
+- new parameter Depth
+
 = 1.0.3 =
 
 Set cursor to the current branch.

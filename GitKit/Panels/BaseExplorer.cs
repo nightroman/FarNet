@@ -4,12 +4,7 @@ using System;
 
 namespace GitKit.Panels;
 
-abstract class BaseExplorer : Explorer
+abstract class BaseExplorer(Repository repository, Guid typeId) : Explorer(typeId)
 {
-	public Repository Repository { get; }
-
-	public BaseExplorer(Repository repository, Guid typeId) : base(typeId)
-	{
-		Repository = repository;
-	}
+	public Repository Repository { get; } = repository;
 }

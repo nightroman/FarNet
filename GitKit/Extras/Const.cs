@@ -7,6 +7,7 @@ static class Parameter
 	public const string AmendPreviousCommit = "AmendPreviousCommit";
 	public const string Branch = "Branch";
 	public const string CommentaryChar = "CommentaryChar";
+	public const string Depth = "Depth";
 	public const string IsBare = "IsBare";
 	public const string IsGitPath = "IsGitPath";
 	public const string Kind = "Kind";

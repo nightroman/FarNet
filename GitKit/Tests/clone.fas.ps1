@@ -1,12 +1,12 @@
 ﻿
-### clone normally
+### clone shallow
 
 job {
 	if (Test-Path c:\temp\z) {
 		Remove-Item c:\temp\z -Force -Recurse
 	}
 
-	$Far.InvokeCommand("gk:clone path=c:\temp\z; url=https://gist.github.com/95d318d6a34927f74eba.git")
+	$Far.InvokeCommand("gk:clone path=c:\temp\z; depth=1; url=https://gist.github.com/95d318d6a34927f74eba.git")
 }
 
 job {

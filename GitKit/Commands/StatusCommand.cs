@@ -7,14 +7,9 @@ using GitKit.Extras;
 
 namespace GitKit.Commands;
 
-sealed class StatusCommand : BaseCommand
+sealed class StatusCommand(DbConnectionStringBuilder parameters) : BaseCommand(parameters)
 {
-	readonly bool _showFiles;
-
-	public StatusCommand(DbConnectionStringBuilder parameters) : base(parameters)
-	{
-		_showFiles = parameters.GetBool("ShowFiles");
-	}
+	readonly bool _showFiles = parameters.GetBool("ShowFiles");
 
 	void WriteChanges()
 	{

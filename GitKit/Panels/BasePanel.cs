@@ -3,16 +3,11 @@ using LibGit2Sharp;
 
 namespace GitKit.Panels;
 
-abstract class BasePanel<T> : AnyPanel where T : BaseExplorer
+abstract class BasePanel<T>(T explorer) : AnyPanel(explorer) where T : BaseExplorer
 {
-	public Repository Repository { get; }
+	public Repository Repository { get; } = explorer.Repository;
 
 	public new T Explorer => (T)base.Explorer;
-
-	public BasePanel(T explorer) : base(explorer)
-	{
-		Repository = explorer.Repository;
-	}
 
 	public override void Open()
 	{

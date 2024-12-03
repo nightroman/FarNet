@@ -20,6 +20,10 @@ sealed class CloneCommand : AnyCommand
 		{
 			IsBare = parameters.GetBool(Parameter.IsBare),
 			RecurseSubmodules = parameters.GetBool(Parameter.RecurseSubmodules),
+			FetchOptions =
+			{
+				Depth = parameters.GetValue<int>(Parameter.Depth)
+			}
 		};
 
 		_op.FetchOptions.CredentialsProvider = Host.GetCredentialsHandler();

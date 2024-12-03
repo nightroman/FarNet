@@ -101,7 +101,7 @@ class CommitsExplorer : BaseExplorer
 					if (heads.Count > 0)
 					{
 						mark = "#";
-						hasCommitMark = commit => Repository.Refs.ReachableFrom(heads, new[] { commit }).Any();
+						hasCommitMark = commit => Repository.Refs.ReachableFrom(heads, [commit]).Any();
 					}
 				}
 				else

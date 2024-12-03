@@ -5,14 +5,9 @@ using System.IO;
 
 namespace GitKit.Commands;
 
-sealed class CDCommand : BaseCommand
+sealed class CDCommand(DbConnectionStringBuilder parameters) : BaseCommand(parameters)
 {
-	readonly string _path;
-
-	public CDCommand(DbConnectionStringBuilder parameters) : base(parameters)
-	{
-		_path = parameters.GetString(Parameter.Path, true) ?? string.Empty;
-	}
+	readonly string _path = parameters.GetString(Parameter.Path, true) ?? string.Empty;
 
 	public override void Invoke()
 	{

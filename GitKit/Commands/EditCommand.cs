@@ -5,14 +5,9 @@ using System.Data.Common;
 
 namespace GitKit.Commands;
 
-sealed class EditCommand : BaseCommand
+sealed class EditCommand(DbConnectionStringBuilder parameters) : BaseCommand(parameters)
 {
-	readonly string? _path;
-
-	public EditCommand(DbConnectionStringBuilder parameters) : base(parameters)
-	{
-		_path = parameters.GetString(Parameter.Path, true);
-	}
+	readonly string? _path = parameters.GetString(Parameter.Path, true);
 
 	string? InputPath()
 	{

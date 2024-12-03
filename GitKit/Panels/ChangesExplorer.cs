@@ -158,7 +158,7 @@ class ChangesExplorer : BaseExplorer
 		else
 		{
 			// other files including changed not committed (no new blob)
-			var patch = Repository.Diff.Compare<Patch>(new string[] { changes.Path }, true, null, compareOptions);
+			var patch = Repository.Diff.Compare<Patch>([changes.Path], true, null, compareOptions);
 			text = patch.Content;
 		}
 
