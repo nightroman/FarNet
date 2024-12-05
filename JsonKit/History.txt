@@ -1,0 +1,7 @@
+﻿https://www.nuget.org/packages/FarNet.JsonKit
+
+= 0.0.1 =
+
+jk:open
+- array panel
+- object panel

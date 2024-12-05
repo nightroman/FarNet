@@ -1,0 +1,15 @@
+﻿// object
+{
+  "null": null,
+  "true": true,
+  "false": false,
+  "int": 42,
+  "double": 3.14,
+  "string": "текст",
+  "array": [
+    "текст"
+  ],
+  "object": {
+    "string": "текст", // comma
+  }, // comma
+}
