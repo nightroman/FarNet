@@ -11,9 +11,15 @@ using System.Text.RegularExpressions;
 
 namespace FarNet.RightWords;
 
-static class Actor
+static partial class Actor
 {
 	public static readonly List<DictionaryInfo> Dictionaries = [];
+
+	[GeneratedRegex(@"^\p{Ll}{2,}$")]
+	internal static partial Regex MyRegex1();
+
+	[GeneratedRegex(@"^\p{Lu}\p{Ll}+$")]
+	internal static partial Regex MyRegex2();
 
 	static Actor()
 	{
@@ -301,9 +307,9 @@ static class Actor
 	{
 		string word2;
 
-		if (Regex.IsMatch(word, @"^\p{Ll}{2,}$"))
+		if (MyRegex1().IsMatch(word))
 			word2 = string.Concat(word[..1].ToUpper(CultureInfo.CurrentCulture), word.AsSpan(1));
-		else if (Regex.IsMatch(word, @"^\p{Lu}\p{Ll}+$"))
+		else if (MyRegex2().IsMatch(word))
 			word2 = word.ToLower(CultureInfo.CurrentCulture);
 		else
 			return [word];
@@ -377,7 +383,7 @@ static class Actor
 				// append to the language dictionary
 				var path = GetUserDictionaryPath(language, true);
 				var line = stem2.Length == 0 ? stem1 : $"{stem1} {stem2}";
-				File.AppendAllLines(path, new[] { line });
+				File.AppendAllLines(path, [line]);
 
 				// read the updated user words
 				var sb = new StringBuilder();

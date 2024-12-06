@@ -61,13 +61,14 @@ task version {
 task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props -Jobs version, {
 	Set-Content Directory.Build.props @"
 <Project>
-  <PropertyGroup>
-    <Company>https://github.com/nightroman/FarNet</Company>
-    <Copyright>Copyright (c) Roman Kuzmin</Copyright>
-    <Product>FarNet.$ModuleName</Product>
-    <Version>$Version</Version>
-    <Description>$Description</Description>
-  </PropertyGroup>
+	<PropertyGroup>
+		<Description>$Description</Description>
+		<Company>https://github.com/nightroman/FarNet</Company>
+		<Copyright>Copyright (c) Roman Kuzmin</Copyright>
+		<Product>FarNet.$ModuleName</Product>
+		<Version>$Version</Version>
+		<IncludeSourceRevisionInInformationalVersion>False</IncludeSourceRevisionInInformationalVersion>
+	</PropertyGroup>
 </Project>
 "@
 }
@@ -86,10 +87,6 @@ task markdown {
 }
 
 task package markdown, version, {
-	$dll = Get-Item "$ModuleRoot\RightWords.dll"
-	assert ($dll.VersionInfo.FileVersion -match '^(\d+\.\d+\.\d+)\.0$')
-	equals ($matches[1]) $script:Version
-
 	remove z
 	$toModule = mkdir "z\tools\FarHome\FarNet\Modules\$ModuleName"
 
@@ -110,9 +107,27 @@ task package markdown, version, {
 		"..\LICENSE"
 		"RightWords.macro.lua"
 	)
+
+	$result = Get-ChildItem $toModule -Recurse -File -Name | Out-String
+	$sample = @'
+History.txt
+LICENSE
+README.htm
+RightWords.deps.json
+RightWords.dll
+RightWords.hlf
+RightWords.macro.lua
+RightWords.resources
+RightWords.ru.resources
+RightWords.runtimeconfig.json
+WeCantSpell.Hunspell.dll
+'@
+	Assert-SameFile.ps1 -Text $sample $result $env:MERGE
 }
 
 task nuget package, version, {
+	equals $Script:Version (Get-Item "$ModuleRoot\$ModuleName.dll").VersionInfo.ProductVersion
+
 	Set-Content z\Package.nuspec @"
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">

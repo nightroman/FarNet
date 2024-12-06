@@ -91,9 +91,7 @@ sealed class MultiSpell
 
 	static void MoveItem<T>(List<T> list, int index)
 	{
-		var tmp = list[index];
-		list[index] = list[index - 1];
-		list[index - 1] = tmp;
+		(list[index - 1], list[index]) = (list[index], list[index - 1]);
 	}
 
 	public bool Check(string word)
