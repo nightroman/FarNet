@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.RedisKit
 
+= 0.3.0 =
+
+Requires FarNet 9.0.3, uses .NET 9.0, common CommandParameters
+
 = 0.2.6 =
 
 Add menu item "Copy key to clipboard".

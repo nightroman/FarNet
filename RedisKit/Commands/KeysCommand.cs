@@ -1,5 +1,5 @@
-﻿using RedisKit.Panels;
-using System.Data.Common;
+﻿using FarNet;
+using RedisKit.Panels;
 
 namespace RedisKit.Commands;
 
@@ -7,7 +7,7 @@ sealed class KeysCommand : BaseCommand
 {
 	readonly string? _mask;
 
-	public KeysCommand(DbConnectionStringBuilder parameters) : base(parameters)
+	public KeysCommand(CommandParameters parameters) : base(parameters)
 	{
 		_mask = parameters.GetString(Host.Param.Mask);
 	}

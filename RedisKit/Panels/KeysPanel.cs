@@ -9,7 +9,6 @@ class KeysPanel : BasePanel<KeysExplorer>
 	public KeysPanel(KeysExplorer explorer) : base(explorer)
 	{
 		SortMode = PanelSortMode.Name;
-		ViewMode = 0;
 
 		var co = new SetColumn { Kind = "O", Name = "Type", Width = 1 };
 		var cn = new SetColumn { Kind = "N", Name = "Key" };
@@ -18,9 +17,7 @@ class KeysPanel : BasePanel<KeysExplorer>
 		var plan0 = new PanelPlan { Columns = [co, cn, cm] };
 		SetPlan(0, plan0);
 
-		var plan9 = plan0.Clone();
-		plan9.IsFullScreen = true;
-		SetPlan((PanelViewMode)9, plan9);
+		SetView(plan0);
 	}
 
 	protected override string HelpTopic => "keys-panel";

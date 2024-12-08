@@ -1,11 +1,11 @@
-﻿using RedisKit.Panels;
+﻿using FarNet;
+using RedisKit.Panels;
 using StackExchange.Redis;
 using System;
-using System.Data.Common;
 
 namespace RedisKit.Commands;
 
-sealed class ListCommand(DbConnectionStringBuilder parameters) : BaseCommand(parameters)
+sealed class ListCommand(CommandParameters parameters) : BaseCommand(parameters)
 {
 	readonly RedisKey _key = parameters.GetRequiredString(Host.Param.Key);
 

@@ -6,6 +6,15 @@ abstract class AnyPanel(Explorer explorer) : Panel(explorer)
 {
 	protected abstract string HelpTopic { get; }
 
+	protected void SetView(PanelPlan plan0)
+	{
+		ViewMode = Far.Api.Panel is AnyPanel panel && 9 == (int)panel.ViewMode ? (PanelViewMode)9 : 0;
+
+		var plan9 = plan0.Clone();
+		plan9.IsFullScreen = true;
+		SetPlan((PanelViewMode)9, plan9);
+	}
+
 	protected (TData?, TData?) GetSelectedDataRange<TData>()
 	{
 		var files = GetSelectedFiles();

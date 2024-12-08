@@ -1,6 +1,7 @@
 ﻿using FarNet;
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text.Json.Nodes;
 
 namespace JsonKit.Panels;
@@ -16,15 +17,18 @@ class ObjectExplorer : AbcExplorer
 		_target = target;
 
 		_files = [];
-		foreach (var (propertyName, node) in _target)
+		int index = -1;
+		CollectionsMarshal.SetCount(_files, _target.Count);
+		var span = CollectionsMarshal.AsSpan(_files);
+		foreach (var kv in _target)
 		{
-			var file = new SetFile
+			++index;
+			span[index] = new SetFile
 			{
-				Name = propertyName,
-				Description = node is null ? "null" : node.ToJsonString(_jsonSerializerOptions1),
-				Data = node,
+				Name = kv.Key,
+				Description = kv.Value is null ? "null" : kv.Value.ToJsonString(_jsonSerializerOptions1),
+				Data = kv.Value,
 			};
-			_files.Add(file);
 		}
 	}
 

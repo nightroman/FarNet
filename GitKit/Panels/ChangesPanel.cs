@@ -12,13 +12,14 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 	public ChangesPanel(ChangesExplorer explorer) : base(explorer)
 	{
 		SortMode = PanelSortMode.Unsorted;
-		ViewMode = 0;
 
 		var cn = new SetColumn { Kind = "N", Name = "Path" };
 		var cd = new SetColumn { Kind = "Z", Name = "Status", Width = 10 };
 
 		var plan0 = new PanelPlan { Columns = [cd, cn] };
 		SetPlan(0, plan0);
+
+		SetView(plan0);
 	}
 
 	protected override string HelpTopic => "changes-panel";

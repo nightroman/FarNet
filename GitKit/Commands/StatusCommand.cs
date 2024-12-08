@@ -1,13 +1,12 @@
 ﻿using FarNet;
-using LibGit2Sharp;
-using System.Linq;
-using System;
-using System.Data.Common;
 using GitKit.Extras;
+using LibGit2Sharp;
+using System;
+using System.Linq;
 
 namespace GitKit.Commands;
 
-sealed class StatusCommand(DbConnectionStringBuilder parameters) : BaseCommand(parameters)
+sealed class StatusCommand(CommandParameters parameters) : BaseCommand(parameters)
 {
 	readonly bool _showFiles = parameters.GetBool("ShowFiles");
 

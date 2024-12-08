@@ -1,7 +1,6 @@
 ﻿using FarNet;
 using StackExchange.Redis;
 using System;
-using System.Data.Common;
 using System.Linq;
 
 namespace RedisKit.Commands;
@@ -15,7 +14,7 @@ abstract class BaseCommand : AnyCommand
 		Database = OpenDatabase(GetRedisConfiguration());
 	}
 
-	protected BaseCommand(DbConnectionStringBuilder parameters)
+	protected BaseCommand(CommandParameters parameters)
 	{
 		Database = OpenDatabase(GetRedisConfiguration(parameters.GetString(Host.Param.Redis)));
 	}

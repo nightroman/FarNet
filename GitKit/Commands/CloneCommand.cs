@@ -1,6 +1,6 @@
-﻿using GitKit.Extras;
+﻿using FarNet;
+using GitKit.Extras;
 using LibGit2Sharp;
-using System.Data.Common;
 
 namespace GitKit.Commands;
 
@@ -10,7 +10,7 @@ sealed class CloneCommand : AnyCommand
 	readonly string _path;
 	readonly CloneOptions _op;
 
-	public CloneCommand(DbConnectionStringBuilder parameters)
+	public CloneCommand(CommandParameters parameters)
 	{
 		_url = parameters.GetRequiredString(Parameter.Url);
 

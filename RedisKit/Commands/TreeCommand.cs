@@ -1,5 +1,5 @@
-﻿using RedisKit.Panels;
-using System.Data.Common;
+﻿using FarNet;
+using RedisKit.Panels;
 
 namespace RedisKit.Commands;
 
@@ -8,7 +8,7 @@ sealed class TreeCommand : BaseCommand
 	readonly string _colon;
 	readonly string? _root;
 
-	public TreeCommand(DbConnectionStringBuilder parameters) : base(parameters)
+	public TreeCommand(CommandParameters parameters) : base(parameters)
 	{
 		_colon = parameters.GetString(Host.Param.Colon) ?? ":";
 		_root = parameters.GetString(Host.Param.Root);

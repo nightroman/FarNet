@@ -11,20 +11,17 @@ class CommitsPanel : BasePanel<CommitsExplorer>
 	public CommitsPanel(CommitsExplorer explorer) : base(explorer)
 	{
 		SortMode = PanelSortMode.Unsorted;
-		ViewMode = 0;
 
 		var settings = Settings.Default.GetData();
 		PageLimit = settings.CommitsPageLimit;
 
 		var cn = new SetColumn { Kind = "N", Name = "Commit" };
-		var cm = new SetColumn { Kind = "DM", Name = "Date" };
 		var co = new SetColumn { Kind = "O", Name = " ", Width = 1 };
 
 		var plan0 = new PanelPlan { Columns = [co, cn] };
 		SetPlan(0, plan0);
 
-		var plan9 = new PanelPlan { Columns = [co, cn, cm] };
-		SetPlan((PanelViewMode)9, plan9);
+		SetView(plan0);
 	}
 
 	protected override string HelpTopic => "commits-panel";

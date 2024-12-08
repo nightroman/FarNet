@@ -1,8 +1,6 @@
 ﻿using FarNet;
 using GitKit.Commands;
-using GitKit.Extras;
 using GitKit.Panels;
-using System.Data.Common;
 
 namespace GitKit;
 
@@ -21,7 +19,7 @@ public class Tool : ModuleTool
 		}
 		else
 		{
-			menu.Add("Commit log", CommitLog);
+			menu.Add("Commit log", (_, _) => CommitLog());
 		}
 
 		menu.Add("Help", (s, e) => Host.Instance.ShowHelpTopic(string.Empty));
@@ -29,9 +27,9 @@ public class Tool : ModuleTool
 		menu.Show();
 	}
 
-	void CommitLog(object? sender, MenuEventArgs e)
+	static void CommitLog()
 	{
-		var parameters = new DbConnectionStringBuilder { { Parameter.Path, "?" } };
+		var parameters = CommandParameters.Parse("commits path=?");
 		using var command = new CommitsCommand(parameters);
 		command.Invoke();
 	}

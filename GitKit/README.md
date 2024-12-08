@@ -68,8 +68,6 @@ connection string format
 gk:subcommand [key=value] [; key=value] ...
 ```
 
-> If you have nothing or spaces after `gk:` then this help topic is shown.
-
 **Common parameters**
 
 - `Repo=<path>`

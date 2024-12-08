@@ -1,10 +1,20 @@
 ﻿using FarNet;
+using System.Numerics;
 
 namespace JsonKit.Panels;
 
 abstract class AbcPanel(AbcExplorer explorer) : Panel(explorer)
 {
 	protected abstract string HelpTopic { get; }
+
+	protected void SetView(PanelPlan plan0)
+	{
+		ViewMode = Far.Api.Panel is AbcPanel panel && 9 == (int)panel.ViewMode ? (PanelViewMode)9: 0;
+
+		var plan9 = plan0.Clone();
+		plan9.IsFullScreen = true;
+		SetPlan((PanelViewMode)9, plan9);
+	}
 
 	void ShowHelp()
 	{

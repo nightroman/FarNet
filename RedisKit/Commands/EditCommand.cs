@@ -1,12 +1,11 @@
 ﻿using FarNet;
 using StackExchange.Redis;
 using System;
-using System.Data.Common;
 using System.IO;
 
 namespace RedisKit.Commands;
 
-sealed class EditCommand(DbConnectionStringBuilder parameters) : BaseCommand(parameters)
+sealed class EditCommand(CommandParameters parameters) : BaseCommand(parameters)
 {
 	readonly string _key = parameters.GetRequiredString(Host.Param.Key);
 

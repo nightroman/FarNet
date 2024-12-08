@@ -1,7 +1,6 @@
 ﻿using FarNet;
 using GitKit.Panels;
 using LibGit2Sharp;
-using System.Data.Common;
 
 namespace GitKit.Commands;
 
@@ -9,7 +8,7 @@ sealed class CommitsCommand : BaseCommand
 {
 	readonly string? _path;
 
-	public CommitsCommand(DbConnectionStringBuilder parameters) : base(parameters)
+	public CommitsCommand(CommandParameters parameters) : base(parameters)
 	{
 		_path = GetGitPathOrPath(
 			parameters,

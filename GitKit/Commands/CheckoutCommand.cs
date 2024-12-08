@@ -1,11 +1,10 @@
 ﻿using FarNet;
 using GitKit.Extras;
 using LibGit2Sharp;
-using System.Data.Common;
 
 namespace GitKit.Commands;
 
-sealed class CheckoutCommand(DbConnectionStringBuilder parameters) : BaseCommand(parameters)
+sealed class CheckoutCommand(CommandParameters parameters) : BaseCommand(parameters)
 {
 	readonly string? _branchName = parameters.GetString(Parameter.Branch);
 

@@ -1,7 +1,6 @@
 ﻿using FarNet;
 using GitKit.Extras;
 using LibGit2Sharp;
-using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -15,7 +14,7 @@ sealed class CommitCommand : BaseCommand
 	readonly bool _All;
 	readonly char _CommentaryChar;
 
-	public CommitCommand(DbConnectionStringBuilder parameters) : base(parameters)
+	public CommitCommand(CommandParameters parameters) : base(parameters)
 	{
 		_message = parameters.GetString(Parameter.Message);
 

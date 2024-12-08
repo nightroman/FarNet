@@ -1,7 +1,6 @@
 ﻿using FarNet;
 using GitKit.Extras;
 using GitKit.Panels;
-using System.Data.Common;
 
 namespace GitKit.Commands;
 
@@ -9,7 +8,7 @@ sealed class ChangesCommand : BaseCommand
 {
 	readonly ChangesExplorer.Kind _kind;
 
-	public ChangesCommand(DbConnectionStringBuilder parameters) : base(parameters)
+	public ChangesCommand(CommandParameters parameters) : base(parameters)
 	{
 		var kind = parameters.GetString(Parameter.Kind);
 		_kind = kind switch

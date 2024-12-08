@@ -2,7 +2,6 @@
 using GitKit.Panels;
 using LibGit2Sharp;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.IO;
 using System.Linq;
 
@@ -13,7 +12,7 @@ sealed class BlameCommand : BaseCommand
 	const int AuthorNameMax = 15;
 	readonly string? _path;
 
-	public BlameCommand(DbConnectionStringBuilder parameters) : base(parameters)
+	public BlameCommand(CommandParameters parameters) : base(parameters)
 	{
 		_path = GetGitPathOrPath(
 			parameters,

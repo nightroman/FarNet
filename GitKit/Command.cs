@@ -1,7 +1,6 @@
 ﻿using FarNet;
 using GitKit.Commands;
-using LibGit2Sharp;
-using System.Linq;
+using System;
 
 namespace GitKit;
 
@@ -10,16 +9,10 @@ public class Command : ModuleCommand
 {
 	public override void Invoke(object sender, ModuleCommandEventArgs e)
 	{
-		var (subcommand, parameters) = Parameters.Parse(e.Command);
-		if (subcommand is null || parameters is null)
-		{
-			Host.Instance.ShowHelpTopic("commands");
-			return;
-		}
-
 		try
 		{
-			using AnyCommand command = subcommand switch
+			var parameters = CommandParameters.Parse(e.Command);
+			using AnyCommand command = parameters.Command switch
 			{
 				"blame" => new BlameCommand(parameters),
 				"branches" => new BranchesCommand(parameters),
@@ -34,21 +27,13 @@ public class Command : ModuleCommand
 				"pull" => new PullCommand(parameters),
 				"push" => new PushCommand(parameters),
 				"status" => new StatusCommand(parameters),
-				_ => throw new ModuleException($"Unknown command 'gk:{subcommand}'.")
+				_ => throw new ModuleException($"Unknown command '{parameters.Command}'.")
 			};
 
-			if (parameters.Count > 0)
-			{
-				throw new ModuleException($"""
-				Uknknown parameters
-				Subcommand: {subcommand}
-				Parameters: {string.Join(", ", parameters.Keys.Cast<string>())}
-				""");
-			}
-
+			parameters.ThrowUnknownParameters();
 			command.Invoke();
 		}
-		catch (LibGit2SharpException ex)
+		catch (Exception ex)
 		{
 			throw new ModuleException(ex.Message, ex);
 		}

@@ -15,9 +15,12 @@ public static class ErrorDialog
 		// unwrap
 		error = Kit.UnwrapAggregateException(error);
 
-		// special treatment of module error
+		// for module exceptions show just [OK]
 		var moduleError = error as ModuleException;
-		string[] buttons = moduleError != null && moduleError.InnerException == null ? ["OK"] : ["OK", "More"];
+		string[] buttons =
+			moduleError is { } && (moduleError.InnerException is null || moduleError.InnerException is ModuleException) ?
+			["OK"] :
+			["OK", "More"];
 
 		// resolve title
 		if (string.IsNullOrEmpty(title))

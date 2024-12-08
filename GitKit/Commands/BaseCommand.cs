@@ -2,7 +2,6 @@
 using GitKit.Extras;
 using LibGit2Sharp;
 using System;
-using System.Data.Common;
 using System.IO;
 
 namespace GitKit.Commands;
@@ -12,7 +11,7 @@ abstract class BaseCommand : AnyCommand
 	protected RepositoryReference Reference { get; }
 	protected Repository Repository { get; }
 
-	protected BaseCommand(DbConnectionStringBuilder parameters)
+	protected BaseCommand(CommandParameters parameters)
 	{
 		Reference = RepositoryReference.GetReference(Host.GetFullPath(parameters.GetString(Parameter.Repo, true)));
 		Repository = Reference.Instance;
@@ -30,7 +29,7 @@ abstract class BaseCommand : AnyCommand
 	}
 
 	protected string? GetGitPathOrPath(
-		DbConnectionStringBuilder parameters,
+		CommandParameters parameters,
 		Func<string?, string?> validate,
 		bool returnNullIfRoot = false)
 	{

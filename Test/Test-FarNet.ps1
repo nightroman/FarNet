@@ -28,7 +28,7 @@ param(
 	$Tests = -1,
 	$ExpectedTaskCount = 207,
 	$ExpectedBasicsCount = 18,
-	$ExpectedExtrasCount = 6,
+	$ExpectedExtrasCount = 8,
 	[switch]$All,
 	[switch]$Quit
 )
@@ -82,6 +82,8 @@ if ($All) {
 		{ Invoke-Build test "$env:FarNetCode\GitKit" }
 		{ Invoke-Build test "$env:FarNetCode\FSharpFar" }
 		{ Invoke-Build test "$env:FarNetCode\JavaScriptFar" }
+		{ Invoke-Build test "$env:FarNetCode\JsonKit" }
+		{ Invoke-Build test "$env:FarNetCode\RedisKit" }
 	)
 	Assert-Far $extras.Count -eq $ExpectedExtrasCount
 	foreach($test in $extras) {

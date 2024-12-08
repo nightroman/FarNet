@@ -2,24 +2,19 @@
 using JsonKit.About;
 using JsonKit.Panels;
 using System;
-using System.Data.Common;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace JsonKit.Commands;
 
-sealed class OpenCommand(DbConnectionStringBuilder parameters) : AnyCommand
+sealed class OpenCommand(CommandParameters parameters) : AnyCommand
 {
-	readonly string _path = parameters.GetRequiredString(Host.Param.File);
+	readonly string _path = parameters.GetRequiredString(Host.Param.File, expandVariables: true, resolveFullPath: true);
 
 	public override void Invoke()
 	{
-		var fullPath = Environment.ExpandEnvironmentVariables(_path);
-		if (!Path.IsPathRooted(fullPath))
-			fullPath = Path.Join(Far.Api.CurrentDirectory, fullPath);
-
-		var bytes = File.ReadAllBytes(fullPath);
+		var bytes = File.ReadAllBytes(_path);
 		var index = bytes.Length >= 3 && bytes[0] == 0xEF && bytes[1] == 0xBB && bytes[2] == 0xBF ? 3 : 0;
 		var span = bytes.AsSpan(index);
 

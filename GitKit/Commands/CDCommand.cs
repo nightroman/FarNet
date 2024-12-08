@@ -1,11 +1,10 @@
 ﻿using FarNet;
 using GitKit.Extras;
-using System.Data.Common;
 using System.IO;
 
 namespace GitKit.Commands;
 
-sealed class CDCommand(DbConnectionStringBuilder parameters) : BaseCommand(parameters)
+sealed class CDCommand(CommandParameters parameters) : BaseCommand(parameters)
 {
 	readonly string _path = parameters.GetString(Parameter.Path, true) ?? string.Empty;
 

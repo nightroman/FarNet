@@ -13,7 +13,6 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 	{
 		Title = $"Branches {explorer.Repository.Info.WorkingDirectory}";
 		SortMode = PanelSortMode.Unsorted;
-		ViewMode = 0;
 
 		var co = new SetColumn { Kind = "O", Name = " ", Width = 2 };
 		var cn = new SetColumn { Kind = "N", Name = "Branch" };
@@ -21,6 +20,8 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 
 		var plan0 = new PanelPlan { Columns = [co, cn, cd] };
 		SetPlan(0, plan0);
+
+		SetView(plan0);
 	}
 
 	protected override string HelpTopic => "branches-panel";

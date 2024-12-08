@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 1.1.1 =
+
+Requires FarNet 9.0.3, uses common CommandParameters
+
 = 1.1.0 =
 
 Requires FarNet 9, .NET 9.0
