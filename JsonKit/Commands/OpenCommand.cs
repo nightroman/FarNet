@@ -25,21 +25,21 @@ sealed class OpenCommand(CommandParameters parameters) : AnyCommand
 
 		if (nodes.Count == 1 && nodes[0] is JsonArray jsonArray)
 		{
-			ArrayExplorer explorer = new(jsonArray);
+			ArrayExplorer explorer = new(jsonArray, null, filePath: _path);
 			explorer.OpenPanel();
 			return;
 		}
 
 		if (nodes.Count == 1 && nodes[0] is JsonObject jsonObject)
 		{
-			ObjectExplorer explorer = new(jsonObject);
+			ObjectExplorer explorer = new(jsonObject, null, filePath: _path);
 			explorer.OpenPanel();
 			return;
 		}
 
 		{
 			jsonArray = new JsonArray([.. nodes]);
-			ArrayExplorer explorer = new(jsonArray, true);
+			ArrayExplorer explorer = new(jsonArray, null, filePath: _path);
 			explorer.OpenPanel();
 		}
 	}

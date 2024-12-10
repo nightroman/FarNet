@@ -8,6 +8,10 @@ Far Manager JSON helpers
 - [Install](#install)
 - [Commands](#commands)
     - [jk:open](#jkopen)
+- [Panels](#panels)
+    - [Array panel](#array-panel)
+    - [Object panel](#object-panel)
+- [Editing](#editing)
 
 *********************************************************************
 ## About
@@ -72,6 +76,16 @@ Parameters
     Specifies the JSON file path. Environment variables are expanded.
 
 *********************************************************************
+## Panels
+
+[Contents]
+
+Panels used for browsing and editing JSON
+
+- [Array panel](#array-panel)
+- [Object panel](#object-panel)
+
+*********************************************************************
 ## Array panel
 
 [Contents]
@@ -87,6 +101,18 @@ Keys and actions
 - `F4`
 
     Opens the cursor value editor.
+
+- `Del`, `F8`
+
+    Removes selected items.
+
+- `ShiftDel`, `ShiftF8`
+
+    Sets nulls to selected items.
+
+- `CtrlS`
+
+    Saves JSON to the source file.
 
 *********************************************************************
 ## Object panel
@@ -104,5 +130,43 @@ Keys and actions
 - `F4`
 
     Opens the cursor value editor.
+
+- `Del`, `F8`
+
+    Removes selected items.
+
+- `ShiftDel`, `ShiftF8`
+
+    Sets nulls to selected items.
+
+- `CtrlS`
+
+    Saves JSON to the source file.
+
+*********************************************************************
+## Editing
+
+[Contents]
+
+In array and object panels, use the following keys for editing:
+
+- `F4` to edit the cursor item in the editor
+- `Del`, `F8` to remove selected items
+- `ShiftDel`, `ShiftF8` to set nulls
+
+String values are opened in the editor as plain text. Strings cannot be changed
+to other JSON types in the editor. But you can set a string to null (`ShiftDel`,
+`ShiftF8`) in a panel and then edit this null.
+
+Other values are opened in the editor as formatted JSON. This includes null,
+true, false, number, array, and object. Change this JSON to any valid JSON
+value, same type or not.
+
+Saving in the editor updates JSON nodes in panels but does not save the file.
+You may have several node edits before saving the file.
+
+Use `CtrlS` in panels in order to save the file. If you do not save manually
+then you are prompted to save when the root panel is about to close and JSON
+contains not saved changes.
 
 *********************************************************************

@@ -11,5 +11,11 @@
   ],
   "object": {
     "string": "текст", // comma
+  },
+  "nest1": {
+    "nest2": {
+      "id": 1,
+      "name": "Joe",
+    }
   }, // comma
 }
