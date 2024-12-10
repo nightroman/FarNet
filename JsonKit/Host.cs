@@ -11,7 +11,7 @@ public class Host : ModuleHost
 		public const string File = "file";
 	}
 
-	public static Host Instance { get; private set; } = null!;
+	internal static Host Instance { get; private set; } = null!;
 
 	public Host()
 	{

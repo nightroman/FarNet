@@ -55,13 +55,13 @@ abstract class AbcExplorer : Explorer
 		_isDirty = false;
 	}
 
-	protected void ParentResetFile(JsonNode? node)
+	protected abstract void UpdateFile(SetFile file, JsonNode? node);
+
+	protected void UpdateParent(JsonNode? node)
 	{
 		SetIsDirty(true);
-		_parent?.Explorer.ResetFile(_parent.File, node);
+		_parent?.Explorer.UpdateFile(_parent.File, node);
 	}
-
-	protected abstract void ResetFile(SetFile file, JsonNode? node);
 
 	internal static readonly JsonSerializerOptions OptionsEditor = new()
 	{
@@ -120,12 +120,12 @@ abstract class AbcExplorer : Explorer
 		}
 
 		var file = (SetFile)args.File;
-		ResetFile(file, node2);
+		UpdateFile(file, node2);
 	}
 
 	public override void DeleteFiles(DeleteFilesEventArgs args)
 	{
 		foreach(var file in args.Files)
-			ResetFile((SetFile)file, null);
+			UpdateFile((SetFile)file, null);
 	}
 }

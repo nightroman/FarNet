@@ -15,15 +15,24 @@ class ObjectExplorer(JsonObject target, Parent? parent, string? filePath = null)
 
 	public override JsonNode JsonNode => _target;
 
-	protected override void ResetFile(SetFile file, JsonNode? node)
+	protected override void UpdateFile(SetFile file, JsonNode? node)
 	{
+		// ensure the file is live
+		if (_files?.Contains(file) != true)
+			throw Errors.CannotFindSource();
+
+		// ensure the property exists
+		if (!_target.ContainsKey(file.Name))
+			throw Errors.CannotFindSource();
+
+		// set by property name
+		_target[file.Name] = node;
+
+		// update the file in place
 		file.Description = node is null ? "null" : node.ToJsonString(OptionsPanel);
 		file.Data = node;
 
-		if (node?.Parent is null)
-			_target[file.Name] = node;
-
-		ParentResetFile(_target);
+		UpdateParent(_target);
 	}
 
 	public override string ToString()
@@ -70,6 +79,6 @@ class ObjectExplorer(JsonObject target, Parent? parent, string? filePath = null)
 			_target.Remove(file.Name);
 
 		_files = null;
-		ParentResetFile(_target);
+		UpdateParent(_target);
 	}
 }

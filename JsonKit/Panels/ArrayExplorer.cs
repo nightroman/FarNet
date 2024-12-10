@@ -16,15 +16,44 @@ class ArrayExplorer(JsonArray target, Parent? parent, string? filePath = null)
 
 	public override JsonNode JsonNode => _target;
 
-	protected override void ResetFile(SetFile file, JsonNode? node)
+	protected override void UpdateFile(SetFile file, JsonNode? node)
 	{
+		// ensure the file is live
+		if (_files?.Contains(file) != true)
+			throw Errors.CannotFindSource();
+
+		// set by the last node index
+		var last = (JsonNode?)file.Data;
+		if (last is null)
+		{
+			// ensure the last index node is still null
+			int index = (int)file.Length;
+			if (index >= _target.Count || _target[index] is { })
+				throw Errors.CannotFindSource();
+
+			_target[index] = node;
+		}
+		else if (node?.Parent is { } parent)
+		{
+			// noop if new node parent is this target
+			if (parent != _target)
+				throw Errors.CannotFindSource();
+		}
+		else
+		{
+			// set new node by the index of old
+			int index = _target.IndexOf(last);
+			if (index < 0)
+				throw Errors.CannotFindSource();
+
+			_target[index] = node;
+		}
+
+		// update the file in place
 		file.Name = node is null ? "null" : node.ToJsonString(OptionsPanel);
 		file.Data = node;
 
-		if (node?.Parent is null)
-			_target[(int)file.Length] = node;
-
-		ParentResetFile(_target);
+		UpdateParent(_target);
 	}
 
 	public override string ToString()
@@ -70,6 +99,6 @@ class ArrayExplorer(JsonArray target, Parent? parent, string? filePath = null)
 			_target.RemoveAt((int)file.Length);
 
 		_files = null;
-		ParentResetFile(_target);
+		UpdateParent(_target);
 	}
 }

@@ -169,4 +169,14 @@ Use `CtrlS` in panels in order to save the file. If you do not save manually
 then you are prompted to save when the root panel is about to close and JSON
 contains not saved changes.
 
+**Notes**
+
+Editors are not modal, you may have several values edited at the same time.
+You may keep value editors opened after closing source panels. But if you
+plan saving changes in editors then do so before closing source panels,
+because JSON files are saved from panels.
+
+Note that removing items in array and object panels detaches their opened
+editors from the source. Saving changes in these editors is not possible.
+
 *********************************************************************
