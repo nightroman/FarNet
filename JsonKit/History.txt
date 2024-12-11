@@ -1,16 +1,22 @@
 ﻿https://www.nuget.org/packages/FarNet.JsonKit
 
+= 0.1.2 =
+
+Show JSON paths in panel titles.
+
+Rework panel files.
+
 = 0.1.1 =
 
-Amend editing and saving
+Amend editing and saving.
 
 = 0.1.0 =
 
-JSON editing and saving
+JSON editing and saving.
 
 = 0.0.2 =
 
-Requires FarNet 9.0.3, uses common CommandParameters
+Requires FarNet 9.0.3, uses common CommandParameters.
 
 = 0.0.1 =
 

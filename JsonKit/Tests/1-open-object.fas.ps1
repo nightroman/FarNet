@@ -5,7 +5,7 @@ job {
 
 job {
 	Assert-Far -Plugin
-	Assert-Far $Far.Panel.Title -eq 'Object'
+	Assert-Far $Far.Panel.Title -eq 'Object $'
 }
 
 ### string

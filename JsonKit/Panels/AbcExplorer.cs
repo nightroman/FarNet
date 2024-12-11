@@ -55,7 +55,7 @@ abstract class AbcExplorer : Explorer
 		_isDirty = false;
 	}
 
-	protected abstract void UpdateFile(SetFile file, JsonNode? node);
+	protected abstract void UpdateFile(NodeFile file, JsonNode? node);
 
 	protected void UpdateParent(JsonNode? node)
 	{
@@ -69,7 +69,7 @@ abstract class AbcExplorer : Explorer
 		WriteIndented = true,
 	};
 
-	protected static readonly JsonSerializerOptions OptionsPanel = new()
+	internal static readonly JsonSerializerOptions OptionsPanel = new()
 	{
 		Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
 	};
@@ -81,20 +81,22 @@ abstract class AbcExplorer : Explorer
 
 	public sealed override Explorer? OpenFile(OpenFileEventArgs args)
 	{
-		var node = args.File.Data;
+		var file = (NodeFile)args.File;
+		var node = file.Node;
 
 		if (node is JsonArray jsonArray)
-			return new ArrayExplorer(jsonArray, new(this, (SetFile)args.File));
+			return new ArrayExplorer(jsonArray, new(this, file));
 
 		if (node is JsonObject jsonObject)
-			return new ObjectExplorer(jsonObject, new(this, (SetFile)args.File));
+			return new ObjectExplorer(jsonObject, new(this, file));
 
 		return null;
 	}
 
 	public sealed override void GetContent(GetContentEventArgs args)
 	{
-		var node = (JsonNode?)args.File.Data;
+		var file = (NodeFile)args.File;
+		var node = file.Node;
 
 		args.UseText = node is JsonValue ? node.ToString() : node is { } ? node.ToJsonString(OptionsEditor) : "null";
 		args.UseFileExtension = node is JsonValue ? "txt" : "json";
@@ -103,7 +105,8 @@ abstract class AbcExplorer : Explorer
 
 	public override void SetText(SetTextEventArgs args)
 	{
-		var node1 = (JsonNode?)args.File.Data;
+		var file = (NodeFile)args.File;
+		var node1 = file.Node;
 
 		JsonNode? node2;
 		if (node1 is null || node1.GetValueKind() != JsonValueKind.String)
@@ -119,13 +122,12 @@ abstract class AbcExplorer : Explorer
 			node2 = JsonValue.Create(args.Text);
 		}
 
-		var file = (SetFile)args.File;
 		UpdateFile(file, node2);
 	}
 
 	public override void DeleteFiles(DeleteFilesEventArgs args)
 	{
 		foreach(var file in args.Files)
-			UpdateFile((SetFile)file, null);
+			UpdateFile((NodeFile)file, null);
 	}
 }

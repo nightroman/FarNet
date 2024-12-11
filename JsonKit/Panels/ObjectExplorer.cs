@@ -1,7 +1,7 @@
 ﻿using FarNet;
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
+using System.Linq;
 using System.Text.Json.Nodes;
 
 namespace JsonKit.Panels;
@@ -11,11 +11,11 @@ class ObjectExplorer(JsonObject target, Parent? parent, string? filePath = null)
 {
 	public static Guid MyTypeId = new("2dfece07-d75b-41cc-bf81-c6fcccf8b63e");
 	readonly JsonObject _target = target;
-	List<FarFile>? _files;
+	FarFile[]? _files;
 
 	public override JsonNode JsonNode => _target;
 
-	protected override void UpdateFile(SetFile file, JsonNode? node)
+	protected override void UpdateFile(NodeFile file, JsonNode? node)
 	{
 		// ensure the file is live
 		if (_files?.Contains(file) != true)
@@ -28,16 +28,15 @@ class ObjectExplorer(JsonObject target, Parent? parent, string? filePath = null)
 		// set by property name
 		_target[file.Name] = node;
 
-		// update the file in place
-		file.Description = node is null ? "null" : node.ToJsonString(OptionsPanel);
-		file.Data = node;
+		// reset in place
+		file.SetNode(node);
 
 		UpdateParent(_target);
 	}
 
 	public override string ToString()
 	{
-		return "Object";
+		return $"Object {_target.GetPath()}";
 	}
 
 	public override Panel CreatePanel()
@@ -49,19 +48,12 @@ class ObjectExplorer(JsonObject target, Parent? parent, string? filePath = null)
 	{
 		if (_files is null)
 		{
-			_files = [];
+			_files = new FarFile[_target.Count];
 			int index = -1;
-			CollectionsMarshal.SetCount(_files, _target.Count);
-			var span = CollectionsMarshal.AsSpan(_files);
 			foreach (var kv in _target)
 			{
 				++index;
-				span[index] = new SetFile
-				{
-					Name = kv.Key,
-					Description = kv.Value is null ? "null" : kv.Value.ToJsonString(OptionsPanel),
-					Data = kv.Value,
-				};
+				_files[index] = new NodeFile(kv.Value, kv.Key);
 			}
 		}
 		return _files;

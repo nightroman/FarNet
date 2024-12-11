@@ -51,7 +51,7 @@ Command parameters are key=value pairs using the connection string format
 jk:command key=value; ...
 ```
 
-**Commands**
+Commands
 
 - [jk:open](#jkopen)
 
@@ -148,7 +148,7 @@ Keys and actions
 
 [Contents]
 
-In array and object panels, use the following keys for editing:
+In array and object panels, use the following keys for editing
 
 - `F4` to edit the cursor item in the editor
 - `Del`, `F8` to remove selected items
@@ -158,12 +158,12 @@ String values are opened in the editor as plain text. Strings cannot be changed
 to other JSON types in the editor. But you can set a string to null (`ShiftDel`,
 `ShiftF8`) in a panel and then edit this null.
 
-Other values are opened in the editor as formatted JSON. This includes null,
-true, false, number, array, and object. Change this JSON to any valid JSON
-value, same type or not.
+Other nodes are opened in the editor as formatted JSON. This includes null,
+true, false, number, array, and object. Change this JSON to any valid JSON,
+same type or not.
 
-Saving in the editor updates JSON nodes in panels but does not save the file.
-You may have several node edits before saving the file.
+Saving in the editor updates nodes in panels but does not yet save the file.
+You may have several nodes edited before saving the file.
 
 Use `CtrlS` in panels in order to save the file. If you do not save manually
 then you are prompted to save when the root panel is about to close and JSON
@@ -171,12 +171,12 @@ contains not saved changes.
 
 **Notes**
 
-Editors are not modal, you may have several values edited at the same time.
-You may keep value editors opened after closing source panels. But if you
-plan saving changes in editors then do so before closing source panels,
-because JSON files are saved from panels.
+Editors are not modal, you may have several nodes edited at the same time.
+You may keep editors after closing source panels. But if you plan saving
+changes in editors then do so before closing source panels, because JSON
+files are saved from panels.
 
-Note that removing items in array and object panels detaches their opened
-editors from the source. Saving changes in these editors is not possible.
+Removing items in array and object panels detaches opened editors from the
+source. Saving changes in these editors is not possible.
 
 *********************************************************************

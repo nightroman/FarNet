@@ -5,7 +5,7 @@ job {
 
 job {
 	Assert-Far -Plugin
-	Assert-Far $Far.Panel.Title -eq 'Array'
+	Assert-Far $Far.Panel.Title -eq 'Array $'
 }
 
 job {
