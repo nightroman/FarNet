@@ -20,7 +20,8 @@ task build meta, {
 }
 
 task publish {
-	remove "$ModuleRoot\JsonKit.deps.json"
+	Set-Location $ModuleRoot
+	remove JsonKit.deps.json, JsonKit.runtimeconfig.json
 }
 
 task help -Inputs README.md -Outputs $ModuleRoot\JsonKit.hlf {
@@ -71,8 +72,10 @@ task package help, markdown, {
 	$result = Get-ChildItem $toModule -Recurse -File -Name | Out-String
 	$sample = @'
 History.txt
+Json.More.dll
 JsonKit.dll
 JsonKit.hlf
+JsonPath.Net.dll
 LICENSE
 README.htm
 '@

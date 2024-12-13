@@ -6,8 +6,8 @@ using System.Text.Json.Nodes;
 
 namespace JsonKit.Panels;
 
-class ArrayExplorer(JsonArray target, Parent? parent, string? filePath = null)
-	: AbcExplorer(MyTypeId, parent, filePath)
+class ArrayExplorer(JsonArray target, ExplorerArgs args)
+	: AbcExplorer(MyTypeId, args)
 {
 	public static Guid MyTypeId = new("f457df2e-85f9-430a-9ac3-3e3c69d3e027");
 	readonly JsonArray _target = target;

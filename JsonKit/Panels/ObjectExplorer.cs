@@ -6,8 +6,8 @@ using System.Text.Json.Nodes;
 
 namespace JsonKit.Panels;
 
-class ObjectExplorer(JsonObject target, Parent? parent, string? filePath = null)
-	: AbcExplorer(MyTypeId, parent, filePath)
+class ObjectExplorer(JsonObject target, ExplorerArgs args)
+	: AbcExplorer(MyTypeId, args)
 {
 	public static Guid MyTypeId = new("2dfece07-d75b-41cc-bf81-c6fcccf8b63e");
 	readonly JsonObject _target = target;

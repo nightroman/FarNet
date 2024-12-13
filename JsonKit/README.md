@@ -22,9 +22,13 @@ JsonKit is the FarNet module for JSON operations in Far Manager.
 
 **Project FarNet**
 
-* Wiki: <https://github.com/nightroman/FarNet/wiki>
-* Site: <https://github.com/nightroman/FarNet>
-* Author: Roman Kuzmin
+- Wiki: <https://github.com/nightroman/FarNet/wiki>
+- Site: <https://github.com/nightroman/FarNet>
+- Author: Roman Kuzmin
+
+**Credits**
+
+- [JsonPath.Net](https://www.nuget.org/packages/JsonPath.Net)
 
 *********************************************************************
 ## Install
@@ -66,14 +70,28 @@ The file may have several JSON values separated by spaces, tabs, new lines.
 Syntax
 
 ```
-jk:open file=<string>
+jk:open file=<string>; select=<string>
 ```
 
 Parameters
 
-- `file=<string>` (required)
+- `file=<string>` (optional)
 
-    Specifies the JSON file path. Environment variables are expanded.
+    Specifies the JSON source file. Environment variables are expanded.
+
+    If the parameter is omitted:
+
+    - in file panels the panel cursor file is used
+    - in JSON panels the panel root object is used for `select`
+
+<!---->
+
+- `select=<string>` (optional)
+
+    Specifies the JSON path expression for selecting nodes.
+    Result nodes are shown in the array panel.
+
+    JSON path features: <https://docs.json-everything.net/path/basics>
 
 *********************************************************************
 ## Panels

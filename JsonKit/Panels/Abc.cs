@@ -14,6 +14,12 @@ sealed class Parent(AbcExplorer explorer, NodeFile file)
 	public NodeFile File => file;
 }
 
+record ExplorerArgs
+{
+	public string? FilePath { get; init; }
+	public Parent? Parent { get; init; }
+}
+
 // Represents an array item or object property.
 sealed class NodeFile : FarFile
 {

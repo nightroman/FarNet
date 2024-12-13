@@ -1,5 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet.JsonKit
 
+= 0.2.0 =
+
+jk:open
+- new parameter `select`: JSON path expression for selecting nodes
+- parameter `file`: the panel cursor file is used by default
+
 = 0.1.2 =
 
 Show JSON paths in panel titles.

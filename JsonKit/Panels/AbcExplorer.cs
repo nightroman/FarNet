@@ -9,14 +9,12 @@ namespace JsonKit.Panels;
 
 abstract class AbcExplorer : Explorer
 {
-	readonly string? _filePath;
-	readonly Parent? _parent;
+	readonly ExplorerArgs _args;
 	bool _isDirty;
 
-	public AbcExplorer(Guid typeId, Parent? parent, string? filePath = null) : base(typeId)
+	public AbcExplorer(Guid typeId, ExplorerArgs args) : base(typeId)
 	{
-		_parent = parent;
-		_filePath = filePath;
+		_args = args;
 
 		CanDeleteFiles = true;
 		CanGetContent = true;
@@ -26,30 +24,26 @@ abstract class AbcExplorer : Explorer
 
 	public abstract JsonNode JsonNode { get; }
 
-	public Parent? Parent => _parent;
+	public ExplorerArgs Args => _args;
 
 	public bool IsDirty()
 	{
-		return _isDirty || (_parent is { } && _parent.Explorer.IsDirty());
+		return _isDirty || (_args.Parent is { } parent && parent.Explorer.IsDirty());
 	}
 
 	public void SetIsDirty(bool isDirty)
 	{
 		_isDirty = isDirty;
-		if (_parent is { })
-			_parent.Explorer.SetIsDirty(isDirty);
+		if (_args.Parent is { } parent)
+			parent.Explorer.SetIsDirty(isDirty);
 	}
 
 	public void SaveData()
 	{
-		if (_filePath is { })
+		if (_args.FilePath is { } filePath)
 		{
 			var text = JsonNode.ToJsonString(OptionsEditor);
-			File.WriteAllText(_filePath, text);
-		}
-		else
-		{
-			_parent!.Explorer.SaveData();
+			File.WriteAllText(filePath, text);
 		}
 
 		_isDirty = false;
@@ -60,7 +54,8 @@ abstract class AbcExplorer : Explorer
 	protected void UpdateParent(JsonNode? node)
 	{
 		SetIsDirty(true);
-		_parent?.Explorer.UpdateFile(_parent.File, node);
+		if (_args.Parent is { } parent)
+			parent.Explorer.UpdateFile(parent.File, node);
 	}
 
 	internal static readonly JsonSerializerOptions OptionsEditor = new()
@@ -85,10 +80,10 @@ abstract class AbcExplorer : Explorer
 		var node = file.Node;
 
 		if (node is JsonArray jsonArray)
-			return new ArrayExplorer(jsonArray, new(this, file));
+			return new ArrayExplorer(jsonArray, _args with { Parent = new(this, file) });
 
 		if (node is JsonObject jsonObject)
-			return new ObjectExplorer(jsonObject, new(this, file));
+			return new ObjectExplorer(jsonObject, _args with { Parent = new(this, file) });
 
 		return null;
 	}
@@ -127,7 +122,7 @@ abstract class AbcExplorer : Explorer
 
 	public override void DeleteFiles(DeleteFilesEventArgs args)
 	{
-		foreach(var file in args.Files)
+		foreach (var file in args.Files)
 			UpdateFile((NodeFile)file, null);
 	}
 }

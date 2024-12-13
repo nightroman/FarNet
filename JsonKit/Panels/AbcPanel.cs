@@ -1,11 +1,12 @@
 ﻿using FarNet;
-using System.Linq;
 
 namespace JsonKit.Panels;
 
 abstract class AbcPanel(AbcExplorer explorer) : Panel(explorer)
 {
 	protected abstract string HelpTopic { get; }
+
+	internal AbcExplorer MyExplorer => (AbcExplorer)Explorer;
 
 	protected void SetView(PanelPlan plan0)
 	{
@@ -64,14 +65,21 @@ abstract class AbcPanel(AbcExplorer explorer) : Panel(explorer)
 
 	protected override bool CanClose()
 	{
-		var explorer = (AbcExplorer)Explorer;
+		var explorer = MyExplorer;
+
+		// has no file? nothing to save
+		if (explorer.Args.FilePath is null)
+			return true;
+
+		// has parent? parent will save
+		if (explorer.Args.Parent is { })
+			return true;
+
+		// no changes?
 		if (!explorer.IsDirty())
 			return true;
 
-		if (explorer.Parent is { })
-			return true;
-
-		int res = Far.Api.Message("JSON has been modified. Save?", "JsonKit", MessageOptions.YesNoCancel | MessageOptions.Warning);
+		int res = Far.Api.Message("JSON has been modified. Save?", Host.MyName, MessageOptions.YesNoCancel | MessageOptions.Warning);
 		if (res == 0)
 		{
 			explorer.SaveData();
@@ -86,11 +94,19 @@ abstract class AbcPanel(AbcExplorer explorer) : Panel(explorer)
 
 	public override bool SaveData()
 	{
-		int res = Far.Api.Message("Save JSON?", "JsonKit", MessageOptions.YesNo);
+		var explorer = MyExplorer;
+
+		// has no file? nothing to save
+		if (explorer.Args.FilePath is null)
+		{
+			Far.Api.Message("There is no source file.", Host.MyName);
+			return false;
+		}
+
+		int res = Far.Api.Message("Save JSON?", Host.MyName, MessageOptions.YesNo);
 		if (res != 0)
 			return false;
 
-		var explorer = (AbcExplorer)Explorer;
 		explorer.SaveData();
 		return true;
 	}
