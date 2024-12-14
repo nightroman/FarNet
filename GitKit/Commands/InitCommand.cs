@@ -1,13 +1,12 @@
 ﻿using FarNet;
-using GitKit.Extras;
 using LibGit2Sharp;
 
 namespace GitKit.Commands;
 
 sealed class InitCommand(CommandParameters parameters) : AnyCommand
 {
-	readonly string _path = Host.GetFullPath(parameters.GetString(Parameter.Path, true));
-	readonly bool _isBare = parameters.GetBool(Parameter.IsBare);
+	readonly string _path = parameters.GetPathOrCurrentDirectory(Param.Path);
+	readonly bool _isBare = parameters.GetBool(Param.IsBare);
 
 	public override void Invoke()
 	{

@@ -25,14 +25,6 @@ public class Host : ModuleHost
 		Instance = this;
 	}
 
-	public static string GetFullPath(string? path)
-	{
-		if (string.IsNullOrEmpty(path))
-			return Far.Api.CurrentDirectory;
-
-		return Path.GetFullPath(Path.IsPathRooted(path) ? path : Path.Combine(Far.Api.CurrentDirectory, path));
-	}
-
 	public static object[] InvokeScript(string script, object[] args)
 	{
 		var func = s_invokeScriptArguments.Value ?? throw new ModuleException("This operation requires FarNet.PowerShellFar");

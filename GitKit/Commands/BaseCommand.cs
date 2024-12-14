@@ -13,7 +13,7 @@ abstract class BaseCommand : AnyCommand
 
 	protected BaseCommand(CommandParameters parameters)
 	{
-		Reference = RepositoryReference.GetReference(Host.GetFullPath(parameters.GetString(Parameter.Repo, true)));
+		Reference = RepositoryReference.GetReference(parameters.GetPathOrCurrentDirectory(Param.Repo));
 		Repository = Reference.Instance;
 	}
 
@@ -33,8 +33,8 @@ abstract class BaseCommand : AnyCommand
 		Func<string?, string?> validate,
 		bool returnNullIfRoot = false)
 	{
-		var path = parameters.GetString(Parameter.Path, true);
-		var isGitPath = parameters.GetBool(Parameter.IsGitPath);
+		var path = parameters.GetString(Param.Path, ParameterOptions.ExpandVariables);
+		var isGitPath = parameters.GetBool(Param.IsGitPath);
 		if (isGitPath)
 			return path;
 
@@ -42,11 +42,7 @@ abstract class BaseCommand : AnyCommand
 		if (path is null)
 			return null;
 
-		if (!Path.IsPathRooted(path))
-			path = Path.Combine(Far.Api.CurrentDirectory, path);
-
-		// normalize
-		path = Path.GetFullPath(path);
+		path = Far.Api.FS.GetFullPath(path);
 
 		//! LibGit2 gets it with trailing backslash
 		var workdir = Repository.Info.WorkingDirectory;

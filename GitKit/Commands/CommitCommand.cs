@@ -16,15 +16,15 @@ sealed class CommitCommand : BaseCommand
 
 	public CommitCommand(CommandParameters parameters) : base(parameters)
 	{
-		_message = parameters.GetString(Parameter.Message);
+		_message = parameters.GetString(Param.Message);
 
-		_All = parameters.GetBool(Parameter.All);
+		_All = parameters.GetBool(Param.All);
 
-		op.AmendPreviousCommit = parameters.GetBool(Parameter.AmendPreviousCommit);
-		op.AllowEmptyCommit = parameters.GetBool(Parameter.AllowEmptyCommit);
+		op.AmendPreviousCommit = parameters.GetBool(Param.AmendPreviousCommit);
+		op.AllowEmptyCommit = parameters.GetBool(Param.AllowEmptyCommit);
 
-		var PrettifyMessage = parameters.GetBool(Parameter.PrettifyMessage);
-		_CommentaryChar = parameters.GetValue<char>(Parameter.CommentaryChar);
+		var PrettifyMessage = parameters.GetBool(Param.PrettifyMessage);
+		_CommentaryChar = parameters.GetValue<char>(Param.CommentaryChar);
 		if (_CommentaryChar == 0)
 		{
 			op.PrettifyMessage = PrettifyMessage;

@@ -1,12 +1,11 @@
 ﻿using FarNet;
-using GitKit.Extras;
 using LibGit2Sharp;
 
 namespace GitKit.Commands;
 
 sealed class CheckoutCommand(CommandParameters parameters) : BaseCommand(parameters)
 {
-	readonly string? _branchName = parameters.GetString(Parameter.Branch);
+	readonly string? _branchName = parameters.GetString(Param.Branch);
 
 	public override void Invoke()
 	{

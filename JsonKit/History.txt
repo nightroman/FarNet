@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.JsonKit
 
+= 0.2.1 =
+
+Requires FarNet 9.0.4, internal tweaks.
+
 = 0.2.0 =
 
 jk:open

@@ -11,15 +11,14 @@ using System.Text.Json.Nodes;
 
 namespace JsonKit.Commands;
 
-sealed class OpenCommand(CommandParameters parameters) : AnyCommand
+sealed class OpenCommand(CommandParameters parameters) : AbcCommand
 {
-	readonly string? _file = parameters.GetString(Host.Param.File, expandVariables: true, resolveFullPath: true);
-	readonly string? _select = parameters.GetString(Host.Param.Select);
+	readonly string? _file = parameters.GetPath(Param.File, ParameterOptions.UseCursorFile);
+	readonly string? _select = parameters.GetString(Param.Select);
 
 	public override void Invoke()
 	{
-		var file = _file ?? Far.Api.FS.CursorFile?.FullName;
-		if (file is null)
+		if (_file is null)
 		{
 			if (_select is { } && Far.Api.Panel is AbcPanel panel)
 			{
@@ -27,10 +26,10 @@ sealed class OpenCommand(CommandParameters parameters) : AnyCommand
 				return;
 			}
 
-			throw new ModuleException("The panel cursor should be a file.");
+			throw parameters.ParameterError(Param.File, "Omitted requires the panel cursor file.");
 		}
 
-		var bytes = File.ReadAllBytes(file);
+		var bytes = File.ReadAllBytes(_file);
 		var index = bytes.Length >= 3 && bytes[0] == 0xEF && bytes[1] == 0xBB && bytes[2] == 0xBF ? 3 : 0;
 		var span = bytes.AsSpan(index);
 

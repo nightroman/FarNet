@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 1.1.2 =
+
+Requires FarNet 9.0.4, internal tweaks.
+
 = 1.1.1 =
 
 Requires FarNet 9.0.3, uses common CommandParameters

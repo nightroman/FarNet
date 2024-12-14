@@ -1,5 +1,4 @@
 ﻿using FarNet;
-using GitKit.Extras;
 using LibGit2Sharp;
 
 namespace GitKit.Commands;
@@ -12,23 +11,23 @@ sealed class CloneCommand : AnyCommand
 
 	public CloneCommand(CommandParameters parameters)
 	{
-		_url = parameters.GetRequiredString(Parameter.Url);
+		_url = parameters.GetRequiredString(Param.Url);
 
-		_path = Host.GetFullPath(parameters.GetString(Parameter.Path, true));
+		_path = parameters.GetPathOrCurrentDirectory(Param.Path);
 
 		_op = new CloneOptions
 		{
-			IsBare = parameters.GetBool(Parameter.IsBare),
-			RecurseSubmodules = parameters.GetBool(Parameter.RecurseSubmodules),
+			IsBare = parameters.GetBool(Param.IsBare),
+			RecurseSubmodules = parameters.GetBool(Param.RecurseSubmodules),
 			FetchOptions =
 			{
-				Depth = parameters.GetValue<int>(Parameter.Depth)
+				Depth = parameters.GetValue<int>(Param.Depth)
 			}
 		};
 
 		_op.FetchOptions.CredentialsProvider = Host.GetCredentialsHandler();
 
-		if (parameters.GetBool(Parameter.NoCheckout))
+		if (parameters.GetBool(Param.NoCheckout))
 			_op.Checkout = false;
 	}
 
