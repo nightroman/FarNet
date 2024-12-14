@@ -22,7 +22,7 @@ sealed class OpenCommand(CommandParameters parameters) : AbcCommand
 		{
 			if (_select is { } && Far.Api.Panel is AbcPanel panel)
 			{
-				CreateArrayExplorer(panel.MyExplorer.JsonNode, _select).OpenPanelChild(panel);
+				CreateAbcExplorer(panel.MyExplorer.JsonNode, _select).OpenPanelChild(panel);
 				return;
 			}
 
@@ -47,7 +47,7 @@ sealed class OpenCommand(CommandParameters parameters) : AbcCommand
 			}
 			else
 			{
-				explorer = CreateArrayExplorer(jsonObject, _select);
+				explorer = CreateAbcExplorer(jsonObject, _select);
 			}
 		}
 		else
@@ -61,18 +61,32 @@ sealed class OpenCommand(CommandParameters parameters) : AbcCommand
 			}
 			else
 			{
-				explorer = CreateArrayExplorer(jsonArray, _select);
+				explorer = CreateAbcExplorer(jsonArray, _select);
 			}
 		}
 
 		explorer.OpenPanel();
 	}
 
-	static ArrayExplorer CreateArrayExplorer(JsonNode root, string select)
+	static AbcExplorer CreateAbcExplorer(JsonNode root, string select)
 	{
 		var jsonPath = JsonPath.Parse(select);
 		var res = jsonPath.Evaluate(root);
-		var jsonArray = res.Matches.Select(x => x.Value).ToJsonArray();
-		return new ArrayExplorer(jsonArray, new());
+
+		//: singular array or object
+		if (jsonPath.IsSingular && res.Matches.Count == 1)
+		{
+			var node = res.Matches[0].Value;
+			if (node is JsonArray jsonArray)
+				return new ArrayExplorer(jsonArray, new());
+			if (node is JsonObject jsonObject)
+				return new ObjectExplorer(jsonObject, new());
+		}
+
+		//: treat results as array
+		{
+			var jsonArray = res.Matches.Select(x => x.Value).ToJsonArray();
+			return new ArrayExplorer(jsonArray, new());
+		}
 	}
 }

@@ -89,7 +89,7 @@ Parameters
 - `select=<string>` (optional)
 
     Specifies the JSON path expression for selecting nodes.
-    Result nodes are shown in the array panel.
+    Selected nodes are shown in array or object panels.
 
     JSON path features: <https://docs.json-everything.net/path/basics>
 

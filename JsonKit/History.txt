@@ -1,5 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet.JsonKit
 
+= 0.2.2 =
+
+Open JSON path results in array or object panels depending on the expression
+kind (singular or not) and the result kind (single array/object or not).
+
 = 0.2.1 =
 
 Requires FarNet 9.0.4, internal tweaks.
