@@ -42,7 +42,7 @@ abstract class AbcExplorer : Explorer
 	{
 		if (_args.FilePath is { } filePath)
 		{
-			var text = JsonNode.ToJsonString(OptionsEditor);
+			var text = JsonNode.Root.ToJsonString(OptionsEditor);
 			File.WriteAllText(filePath, text);
 		}
 

@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.JsonKit
 
+= 0.2.4 =
+
+Fix saving wrong nodes in nested panels.
+
 = 0.2.3 =
 
 Add menu operation "Open from clipboard".
