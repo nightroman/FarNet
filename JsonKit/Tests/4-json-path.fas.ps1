@@ -42,8 +42,7 @@ job {
 	$Far.InvokeCommand('jk:open select=$.nest1')
 }
 job {
-	Assert-Far $Far.Panel.Title -eq 'Object $.nest1'
-	Assert-Far $Far.Panel.CurrentFile -eq $null
+	Assert-Far $Far.Panel.Title -eq 'Object $'
 	Assert-Far $Far.Panel.Files[1].Name -eq nest2
 }
 keys CtrlS
@@ -54,7 +53,7 @@ job {
 }
 job {
 	Assert-Far -Plugin
-	Assert-Far $Far.Panel.Title -eq 'Object $.nest1'
+	Assert-Far $Far.Panel.Files[1].Name -eq nest2
 }
 keys Esc
 job {

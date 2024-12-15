@@ -97,13 +97,14 @@ abstract class AbcPanel(AbcExplorer explorer) : Panel(explorer)
 		var explorer = MyExplorer;
 
 		// has no file? nothing to save
-		if (explorer.Args.FilePath is null)
+		var filePath = explorer.Args.FilePath;
+		if (filePath is null)
 		{
 			Far.Api.Message("There is no source file.", Host.MyName);
 			return false;
 		}
 
-		int res = Far.Api.Message("Save JSON?", Host.MyName, MessageOptions.YesNo);
+		int res = Far.Api.Message($"Save JSON?\n{filePath}", Host.MyName, MessageOptions.YesNo);
 		if (res != 0)
 			return false;
 

@@ -18,11 +18,12 @@ sealed class OpenCommand(CommandParameters parameters) : AbcCommand
 
 	public override void Invoke()
 	{
+		//: try select from json panel or fail
 		if (_file is null)
 		{
 			if (_select is { } && Far.Api.Panel is AbcPanel panel)
 			{
-				CreateAbcExplorer(panel.MyExplorer.JsonNode, _select).OpenPanelChild(panel);
+				CreateAbcExplorer(panel.MyExplorer.JsonNode, _select, true).OpenPanelChild(panel);
 				return;
 			}
 
@@ -68,7 +69,7 @@ sealed class OpenCommand(CommandParameters parameters) : AbcCommand
 		explorer.OpenPanel();
 	}
 
-	static AbcExplorer CreateAbcExplorer(JsonNode root, string select)
+	static AbcExplorer CreateAbcExplorer(JsonNode root, string select, bool clone = false)
 	{
 		var jsonPath = JsonPath.Parse(select);
 		var res = jsonPath.Evaluate(root);
@@ -78,9 +79,9 @@ sealed class OpenCommand(CommandParameters parameters) : AbcCommand
 		{
 			var node = res.Matches[0].Value;
 			if (node is JsonArray jsonArray)
-				return new ArrayExplorer(jsonArray, new());
+				return new ArrayExplorer(clone ? (JsonArray)jsonArray.DeepClone() : jsonArray, new());
 			if (node is JsonObject jsonObject)
-				return new ObjectExplorer(jsonObject, new());
+				return new ObjectExplorer(clone ? (JsonObject)jsonObject.DeepClone() : jsonObject, new());
 		}
 
 		//: treat results as array

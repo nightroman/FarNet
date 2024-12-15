@@ -12,6 +12,7 @@ Far Manager JSON helpers
     - [Array panel](#array-panel)
     - [Object panel](#object-panel)
 - [Editing](#editing)
+- [Menu](#menu)
 
 *********************************************************************
 ## About
@@ -196,5 +197,18 @@ files are saved from panels.
 
 Removing items in array and object panels detaches opened editors from the
 source. Saving changes in these editors is not possible.
+
+*********************************************************************
+## Menu
+
+[Contents]
+
+- Open from clipboard
+
+    Opens JSON text or a file path like ".json" pasted from the clipboard.
+
+- Help
+
+    Shows JsonKit help.
 
 *********************************************************************

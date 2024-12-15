@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.JsonKit
 
+= 0.2.3 =
+
+Add menu operation "Open from clipboard".
+
 = 0.2.2 =
 
 Open JSON path results in array or object panels depending on the expression
