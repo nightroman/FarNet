@@ -1,4 +1,6 @@
 ﻿using FarNet;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace JsonKit.Panels;
@@ -6,6 +8,20 @@ namespace JsonKit.Panels;
 static class Errors
 {
 	public static ModuleException CannotFindSource() => new("Cannot find the source.");
+}
+
+static class JsonOptions
+{
+	public static readonly JsonSerializerOptions Editor = new()
+	{
+		Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+		WriteIndented = true,
+	};
+
+	public static readonly JsonSerializerOptions Panel = new()
+	{
+		Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+	};
 }
 
 sealed class Parent(AbcExplorer explorer, NodeFile file)
@@ -52,7 +68,13 @@ sealed class NodeFile : FarFile
 	// Array item index.
 	public int Index => _index;
 
-	// Sets a new node.
+	// Resets the old node.
+	public void Reset()
+	{
+		_json = null;
+	}
+
+	// Sets the new node.
 	public void SetNode(JsonNode? node)
 	{
 		_node = node;
@@ -60,7 +82,7 @@ sealed class NodeFile : FarFile
 	}
 
 	string GetJson() =>
-		_json ??= _node is null ? "null" : _node.ToJsonString(AbcExplorer.OptionsPanel);
+		_json ??= _node is null ? "null" : _node.ToJsonString(JsonOptions.Panel);
 
 	public override string Name =>
 		_name is null ? GetJson() : _name;

@@ -60,13 +60,12 @@ Commands
 
 - [jk:open](#jkopen)
 
-    Opens JSON file in [Array panel](#array-panel) or [Object panel](#object-panel).
+    Opens JSON in [Array panel](#array-panel) or [Object panel](#object-panel).
 
 *********************************************************************
 ## jk:open
 
-Opens JSON file in [Array panel](#array-panel) or [Object panel](#object-panel).
-The file may have several JSON values separated by spaces, tabs, new lines.
+Opens JSON in [Array panel](#array-panel) or [Object panel](#object-panel).
 
 Syntax
 
@@ -83,7 +82,7 @@ Parameters
     If the parameter is omitted:
 
     - in file panels the panel cursor file is used
-    - in JSON panels the panel root object is used for `select`
+    - in JSON panels the panel JSON node is used for `select`
 
 <!---->
 
@@ -93,6 +92,11 @@ Parameters
     Selected nodes are shown in array or object panels.
 
     JSON path features: <https://docs.json-everything.net/path/basics>
+
+**Notes**
+
+Input files may have several JSON values separated by spaces, tabs, new lines.
+Such values are opened as an array without source, you cannot save changes.
 
 *********************************************************************
 ## Panels

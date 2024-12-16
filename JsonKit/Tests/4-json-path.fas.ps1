@@ -42,15 +42,15 @@ job {
 	$Far.InvokeCommand('jk:open select=$.nest1')
 }
 job {
-	Assert-Far $Far.Panel.Title -eq 'Object $'
+	Assert-Far $Far.Panel.Title -eq 'Object $.nest1'
 	Assert-Far $Far.Panel.Files[1].Name -eq nest2
 }
 keys CtrlS
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[1].Text -eq 'There is no source file.'
-	$Far.Dialog.Close()
+	Assert-Far $Far.Dialog[1].Text -eq 'Save JSON?'
 }
+keys Esc
 job {
 	Assert-Far -Plugin
 	Assert-Far $Far.Panel.Files[1].Name -eq nest2

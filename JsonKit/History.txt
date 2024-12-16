@@ -1,5 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet.JsonKit
 
+= 0.3.0 =
+
+Improve node change/update/save operations.
+
+JSON path select panels inherit source files when possible.
+
 = 0.2.4 =
 
 Fix saving wrong nodes in nested panels.

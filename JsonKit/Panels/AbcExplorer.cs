@@ -1,7 +1,8 @@
 ﻿using FarNet;
 using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Text.Encodings.Web;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -9,8 +10,10 @@ namespace JsonKit.Panels;
 
 abstract class AbcExplorer : Explorer
 {
+	static readonly HashSet<JsonNode> _dirty = [];
+
 	readonly ExplorerArgs _args;
-	bool _isDirty;
+	protected NodeFile[]? _files;
 
 	public AbcExplorer(Guid typeId, ExplorerArgs args) : base(typeId)
 	{
@@ -22,56 +25,65 @@ abstract class AbcExplorer : Explorer
 		CanOpenFile = true;
 	}
 
-	public abstract JsonNode JsonNode { get; }
-
+	public abstract JsonNode Node { get; }
 	public ExplorerArgs Args => _args;
 
 	public bool IsDirty()
 	{
-		return _isDirty || (_args.Parent is { } parent && parent.Explorer.IsDirty());
+		return _dirty.Contains(Node.Root);
 	}
 
-	public void SetIsDirty(bool isDirty)
+	void SetDirty()
 	{
-		_isDirty = isDirty;
+		_dirty.Add(Node.Root);
+		ResetParentFile();
+	}
+
+	void ResetParentFile()
+	{
 		if (_args.Parent is { } parent)
-			parent.Explorer.SetIsDirty(isDirty);
+		{
+			parent.File.Reset();
+			parent.Explorer.ResetParentFile();
+		}
 	}
 
 	public void SaveData()
 	{
 		if (_args.FilePath is { } filePath)
 		{
-			var text = JsonNode.Root.ToJsonString(OptionsEditor);
+			var text = Node.Root.ToJsonString(JsonOptions.Editor);
 			File.WriteAllText(filePath, text);
 		}
 
-		_isDirty = false;
+		_dirty.Remove(Node.Root);
 	}
 
-	protected abstract void UpdateFile(NodeFile file, JsonNode? node);
+	protected abstract void UpdateNode(NodeFile file, JsonNode? node);
 
-	protected void UpdateParent(JsonNode? node)
+	void UpdateFile(NodeFile file, JsonNode? node)
 	{
-		SetIsDirty(true);
-		if (_args.Parent is { } parent)
-			parent.Explorer.UpdateFile(parent.File, node);
+		// ensure the file is live (vs lost on deleting nodes)
+		if (_files?.Contains(file) != true)
+			throw Errors.CannotFindSource();
+
+		// update the node
+		UpdateNode(file, node);
+
+		// reset in place
+		file.SetNode(node);
 	}
-
-	internal static readonly JsonSerializerOptions OptionsEditor = new()
-	{
-		Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-		WriteIndented = true,
-	};
-
-	internal static readonly JsonSerializerOptions OptionsPanel = new()
-	{
-		Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-	};
 
 	public override void EnterPanel(Panel panel)
 	{
 		panel.Title = ToString()!;
+		panel.Closed += Panel_Closed;
+	}
+
+	void Panel_Closed(object? sender, EventArgs e)
+	{
+		if (_args.Parent is null)
+			_dirty.Remove(Node.Root);
 	}
 
 	public sealed override Explorer? OpenFile(OpenFileEventArgs args)
@@ -93,7 +105,7 @@ abstract class AbcExplorer : Explorer
 		var file = (NodeFile)args.File;
 		var node = file.Node;
 
-		args.UseText = node is JsonValue ? node.ToString() : node is { } ? node.ToJsonString(OptionsEditor) : "null";
+		args.UseText = node is JsonValue ? node.ToString() : node is { } ? node.ToJsonString(JsonOptions.Editor) : "null";
 		args.UseFileExtension = node is JsonValue ? "txt" : "json";
 		args.CanSet = true;
 	}
@@ -117,12 +129,39 @@ abstract class AbcExplorer : Explorer
 			node2 = JsonValue.Create(args.Text);
 		}
 
+		SetDirty();
 		UpdateFile(file, node2);
 	}
 
-	public override void DeleteFiles(DeleteFilesEventArgs args)
+	protected abstract void DeleteFiles2(DeleteFilesEventArgs args);
+
+	public sealed override void DeleteFiles(DeleteFilesEventArgs args)
 	{
-		foreach (var file in args.Files)
-			UpdateFile((NodeFile)file, null);
+		SetDirty();
+
+		if (args.Force)
+		{
+			foreach (var file in args.Files.Cast<NodeFile>())
+				UpdateFile(file, null);
+		}
+		else
+		{
+			DeleteFiles2(args);
+			_files = null;
+		}
+	}
+
+	internal NodeFile? FindFileByNodeParents(JsonNode node)
+	{
+		if (_files is null)
+			throw new InvalidOperationException("Unexpected null files.");
+
+		for (var parent = node; parent is { }; parent = parent.Parent)
+		{
+			if (_files.FirstOrDefault(x => x.Node == parent) is { } file)
+				return file;
+		}
+
+		return null;
 	}
 }
