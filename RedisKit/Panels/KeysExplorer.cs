@@ -3,6 +3,7 @@ using RedisKit.Commands;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace RedisKit.Panels;
 
@@ -143,7 +144,10 @@ class KeysExplorer : BaseExplorer
 		var keys = server.Keys(Database.Database, _pattern);
 		var now = DateTime.Now;
 
-		var folders = _colon is { } ? new Dictionary<string, int>() : null;
+		Dictionary<string, int>? folders = null;
+		Dictionary<string, int>.AlternateLookup<ReadOnlySpan<char>> lookup;
+		if (_colon is { })
+			lookup = (folders = []).GetAlternateLookup<ReadOnlySpan<char>>();
 
 		foreach (RedisKey key in keys)
 		{
@@ -155,11 +159,8 @@ class KeysExplorer : BaseExplorer
 				int index = name.IndexOf(_colon);
 				if (index >= 0 && IsFolderName(name, index))
 				{
-					var nameAndColon = name[..(index + _colon.Length)];
-					if (folders!.TryGetValue(nameAndColon, out int count))
-						folders[nameAndColon] = count + 1;
-					else
-						folders.Add(nameAndColon, 1);
+					var nameAndColon = name.AsSpan(0, index + _colon.Length);
+					++CollectionsMarshal.GetValueRefOrAddDefault(lookup, nameAndColon, out _);
 					continue;
 				}
 			}

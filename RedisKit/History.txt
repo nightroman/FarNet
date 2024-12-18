@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.RedisKit
 
+= 0.3.2 =
+
+Tweak rk:tree getting files.
+
 = 0.3.1 =
 
 Requires FarNet 9.0.4, internal tweaks.

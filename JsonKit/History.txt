@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.JsonKit
 
+= 0.3.1 =
+
+Add error "Path should have selectors".
+
 = 0.3.0 =
 
 Improve node change/update/save operations.

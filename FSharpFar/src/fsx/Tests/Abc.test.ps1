@@ -1,7 +1,4 @@
 
-$Version = $PSVersionTable.PSVersion
-$7_3_0 = [version]'7.3.0'
-
 task test_01_same_dir_fsx {
 	Set-Location test_01
 	($r = exec {fsx Test.fsx})
@@ -31,26 +28,20 @@ task test_01_diff_dir_ini {
 	equals $r[1] 'fsx: [|"test_01\Test.fsx"|]'
 }
 
-task test_01_arguments {
+task test_01_arguments_fsx {
 	Set-Location test_01
 	($r = exec {fsx Test.fsx 1 'a a' '"b"' '\"c\"'})
-	if ($Version -ge $7_3_0) {
-		equals $r[0] 'fs: [|"Test.fsx"; "1"; "a a"; ""b""; "\"c\""|]'
-	}
-	else {
-		equals $r[0] 'fs: [|"Test.fsx"; "1"; "a a"; "b"; ""c""|]'
-	}
+	equals $r[0] 'fs: [|"Test.fsx"; "1"; "a a"; ""b""; "\"c\""|]'
 }
 
 task test_01_arguments_fsi {
 	Set-Location test_01
 	($r = exec {& dotnet fsi Abc.fs Test.fsx 1 'a a' '"b"' '\"c\"'})
-	if ($Version -ge $7_3_0) {
-		equals $r[0] 'fs: [|"Test.fsx"; "1"; "a a"; ""b""; "\"c\""|]'
-	}
-	else {
-		equals $r[0] 'fs: [|"Test.fsx"; "1"; "a a"; "b"; ""c""|]'
-	}
+	#! depends on env
+	assert ($r[0] -in @(
+		'fs: [|"Test.fsx"; "1"; "a a"; ""b""; "\"c\""|]'
+		'fs: [|"Test.fsx"; "1"; "a a"; ""b""; "\"c\""; "--preferreduilang:en-US"|]'
+	))
 }
 
 task sample1 {

@@ -38,7 +38,6 @@ public static class AssemblyResolver
 		foreach (var path in Directory.EnumerateFiles(root, "*.dll", SearchOption.AllDirectories))
 		{
 			if (path.Contains("\\native\\") ||
-				path.Contains("\\unix\\") ||
 				path.EndsWith(".resources.dll"))
 				continue;
 
@@ -106,7 +105,7 @@ public static class AssemblyResolver
 		// System.Management.Automation ->
 		//   Microsoft.Management.Infrastructure
 		{
-			var win10_x64 = System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier;
+			var win10_x64 = RuntimeInformation.RuntimeIdentifier;
 			var path = root + "\\runtimes\\" + win10_x64 + "\\lib\\netstandard1.6\\" + dllName;
 			if (File.Exists(path))
 				return Assembly.LoadFrom(path);
@@ -115,7 +114,7 @@ public static class AssemblyResolver
 		return null;
 	}
 
-	static int GetSamePrefixLength(string path1, string path2)
+	static int GetSamePrefixLength(string path1, ReadOnlySpan<char> path2)
 	{
 		int index = 0;
 		while (index < path1.Length && index < path2.Length && char.ToUpperInvariant(path1[index]) == char.ToUpperInvariant(path2[index]))
@@ -123,20 +122,20 @@ public static class AssemblyResolver
 		return index;
 	}
 
-	static string FindBestPath(string path, string[] paths)
+	static string FindBestPath(string path, string paths)
 	{
-		string? bestPath = null;
+		Range bestPath = default;
 		int maxPrefixLength = -1;
-		foreach (var path2 in paths)
+		foreach (var range in MemoryExtensions.Split(paths, '|'))
 		{
-			int length = GetSamePrefixLength(path, path2);
+			int length = GetSamePrefixLength(path, paths[range]);
 			if (length > maxPrefixLength)
 			{
-				bestPath = path2;
+				bestPath = range;
 				maxPrefixLength = length;
 			}
 		}
-		return bestPath!;
+		return paths[bestPath];
 	}
 
 	static Assembly? LoadFromLastRoots(string dllName)
@@ -159,18 +158,16 @@ public static class AssemblyResolver
 	public static Assembly? ResolveAssembly(string name, ResolveEventArgs args)
 	{
 		// skip missing in FarNet
-		if (!s_cache.TryGetValue(name, out string? pathsString))
+		if (!s_cache.TryGetValue(name, out string? paths))
 			return null;
 
 		// unique in FarNet, load
-		var paths = pathsString.Split('|');
-		if (paths.Length == 1)
+		if (paths.IndexOf('|') < 0)
 		{
-			var location = paths[0];
-			var assembly = Assembly.LoadFrom(location);
+			var assembly = Assembly.LoadFrom(paths);
 
-			if (IsRoot(location))
-				AddRoot(Path.GetDirectoryName(location)!);
+			if (IsRoot(paths))
+				AddRoot(Path.GetDirectoryName(paths)!);
 
 			return assembly;
 		}

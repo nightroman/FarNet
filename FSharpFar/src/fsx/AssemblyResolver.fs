@@ -4,6 +4,7 @@ open System
 open System.IO
 open System.Collections.Generic
 open System.Reflection
+open System.Runtime.InteropServices
 
 let private _cache = Dictionary<string, obj>(StringComparer.OrdinalIgnoreCase)
 let private _roots = LinkedList<string>()
@@ -15,8 +16,10 @@ let prepare root =
         let key = Path.GetFileNameWithoutExtension(path)
 
         // add, if 2+ null it
-        if not (_cache.TryAdd(key, path)) then
-            _cache[key] <- null
+        let mutable exists = Unchecked.defaultof<_>
+        let r = &CollectionsMarshal.GetValueRefOrAddDefault(_cache, key, &exists);
+        if exists then
+            r <- null
 
 let private assemblyNameToDllName (name: string) =
     name.Substring(0, name.IndexOf(',')) + ".dll"

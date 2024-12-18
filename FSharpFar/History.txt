@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 
+= 5.0.1 =
+
+Tweak fsx loading.
+
 = 5.0.0 =
 
 Requires .NET 9.0, FarNet 9.0.0

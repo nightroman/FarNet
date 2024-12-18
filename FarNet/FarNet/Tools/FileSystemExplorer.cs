@@ -46,7 +46,11 @@ public class FileSystemExplorer : Explorer
 		panel.Title = $"({Location})";
 	}
 
-	/// <inheritdoc/>
+	//! SCHB v2024.12.15.0 is confused by inheritdoc
+	/// <summary>
+	/// Returns the files.
+	/// </summary>
+	/// <param name="args">.</param>
 	public override IList<FarFile> GetFiles(GetFilesEventArgs args)
 	{
 		string[] directories;

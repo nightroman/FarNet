@@ -27,8 +27,17 @@ sealed class OpenCommand : AbcCommand
 
 		if (parameters.GetString(Param.Select) is { } select)
 		{
-			try { _select = JsonPath.Parse(select); }
-			catch (Exception ex) { throw parameters.ParameterError(Param.Select, ex.Message); }
+			try
+			{
+				_select = JsonPath.Parse(select);
+
+				if (_select.Segments.Length == 0)
+					throw new ModuleException("Path should have selectors.");
+			}
+			catch (Exception ex)
+			{
+				throw parameters.ParameterError(Param.Select, ex.Message);
+			}
 		}
 
 		if (_file is null)
