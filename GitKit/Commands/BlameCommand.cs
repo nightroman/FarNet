@@ -7,27 +7,29 @@ using System.Linq;
 
 namespace GitKit.Commands;
 
-sealed class BlameCommand : BaseCommand
+sealed class BlameCommand(CommandParameters parameters) : BaseCommand(parameters)
 {
 	const int AuthorNameMax = 15;
-	readonly string? _path;
-
-	public BlameCommand(CommandParameters parameters) : base(parameters)
-	{
-		_path = GetGitPathOrPath(
-			parameters,
-			path => path is null or "?" ? Far.Api.FS.CursorFile?.FullName : path);
-	}
+	string? _path = parameters.GetString(Param.Path, ParameterOptions.ExpandVariables);
+	readonly bool _isGitPath = parameters.GetBool(Param.IsGitPath);
 
 	public override void Invoke()
 	{
+		using var repo = new Repository(GitRoot);
+
+		_path = GetGitPathOrPath(
+			repo,
+			_path,
+			_isGitPath,
+			path => path ?? Far.Api.FS.CursorFile?.FullName);
+
 		if (_path is null)
 			return;
 
 		// get lines from the blob to ensure the same content as used by blame
 		var lines = new List<string>();
 		{
-			var blob = Repository.Head.Tip?.Tree[_path]?.Target as Blob
+			var blob = repo.Head.Tip?.Tree[_path]?.Target as Blob
 				?? throw new ModuleException($"Cannot find '{_path}' in the tree.");
 
 			using var stream = blob.GetContentStream();
@@ -38,7 +40,7 @@ sealed class BlameCommand : BaseCommand
 		}
 
 		// blame
-		var hunks = Repository.Blame(_path);
+		var hunks = repo.Blame(_path);
 
 		// write annotated temp file
 		var settings = Settings.Default.GetData();
@@ -80,8 +82,6 @@ sealed class BlameCommand : BaseCommand
 		editor.IsLocked = true;
 
 		editor.KeyDown += Editor_KeyDown;
-		editor.Opened += (s, e) => Reference.AddRef();
-		editor.Closed += (s, e) => Reference.Dispose();
 
 		editor.Open();
 	}
@@ -99,6 +99,8 @@ sealed class BlameCommand : BaseCommand
 
 	void OpenChangesPanel(IEditor editor)
 	{
+		using var repo = new Repository(GitRoot);
+
 		string? sha = null;
 		for (int i = editor.Caret.Y; i >= 0 && sha is null; --i)
 		{
@@ -117,18 +119,18 @@ sealed class BlameCommand : BaseCommand
 		if (sha is null)
 			return;
 
-		var newCommit = Repository.Lookup<Commit>(sha);
+		var newCommit = repo.Lookup<Commit>(sha);
 		if (newCommit is null)
 			return;
 
 		var oldCommit = newCommit.Parents.FirstOrDefault();
 
 		// open changes panel
-		var explorer = new ChangesExplorer(Repository, new ChangesExplorer.Options
+		var explorer = new ChangesExplorer(GitRoot, new ChangesExplorer.Options
 		{
 			Kind = ChangesExplorer.Kind.CommitsRange,
-			NewCommit = newCommit,
-			OldCommit = oldCommit,
+			NewCommitSha = newCommit.Sha,
+			OldCommitSha = oldCommit?.Sha,
 			IsSingleCommit = true,
 			Path = _path,
 		});

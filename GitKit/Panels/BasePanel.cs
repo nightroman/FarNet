@@ -1,35 +1,28 @@
-﻿using GitKit.Extras;
-using LibGit2Sharp;
+﻿using FarNet;
 
 namespace GitKit.Panels;
 
-abstract class BasePanel<T>(T explorer) : AnyPanel(explorer) where T : BaseExplorer
+abstract class BasePanel<T>(T explorer) : AbcPanel(explorer) where T : BaseExplorer
 {
-	public Repository Repository { get; } = explorer.Repository;
+	public string GitRoot => explorer.GitRoot;
 
 	public new T Explorer => (T)base.Explorer;
 
-	public override void Open()
+	protected void CompareCommits(string oldCommitSha, string newCommitSha)
 	{
-		base.Open();
-		RepositoryReference.AddRef(Repository);
-	}
-
-	public override void UIClosed()
-	{
-		RepositoryReference.Release(Repository);
-		base.UIClosed();
-	}
-
-	protected void CompareCommits(Commit oldCommit, Commit newCommit)
-	{
-		new ChangesExplorer(Repository, new ChangesExplorer.Options
+		new ChangesExplorer(GitRoot, new ChangesExplorer.Options
 		{
 			Kind = ChangesExplorer.Kind.CommitsRange,
-			NewCommit = newCommit,
-			OldCommit = oldCommit,
+			NewCommitSha = newCommitSha,
+			OldCommitSha = oldCommitSha,
 		})
 			.CreatePanel()
 			.OpenChild(this);
+	}
+
+	protected static void CopySha(string commitSha)
+	{
+		if (0 == Far.Api.Message(commitSha, Host.MyName, MessageOptions.Ok))
+			Far.Api.CopyToClipboard(commitSha);
 	}
 }

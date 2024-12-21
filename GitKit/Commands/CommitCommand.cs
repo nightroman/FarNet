@@ -1,5 +1,5 @@
 ﻿using FarNet;
-using GitKit.Extras;
+using GitKit.About;
 using LibGit2Sharp;
 using System.IO;
 using System.Linq;
@@ -38,7 +38,9 @@ sealed class CommitCommand : BaseCommand
 
 	string GetMessage()
 	{
-		Commit? tip = Repository.Head.Tip;
+		using var repo = new Repository(GitRoot);
+
+		Commit? tip = repo.Head.Tip;
 
 		var message = string.Empty;
 		if (op.AmendPreviousCommit && tip is not null)
@@ -52,7 +54,7 @@ sealed class CommitCommand : BaseCommand
 		sb.AppendLine();
 
 		// warning about overriding remote commit
-		if (op.AmendPreviousCommit && Repository.Head.TrackedBranch is not null && Repository.Head.TrackedBranch.Tip == tip)
+		if (op.AmendPreviousCommit && repo.Head.TrackedBranch is not null && repo.Head.TrackedBranch.Tip == tip)
 		{
 			sb.AppendLine($"{_CommentaryChar} WARNING:");
 			sb.AppendLine($"{_CommentaryChar}\tThe remote commit will be amended.");
@@ -64,7 +66,7 @@ sealed class CommitCommand : BaseCommand
 			sb.AppendLine($"{_CommentaryChar} Changes to be committed:");
 
 			var changes = Lib.CompareTree(
-				Repository,
+				repo,
 				tip.Tree,
 				_All ? DiffTargets.Index | DiffTargets.WorkingDirectory : DiffTargets.Index);
 
@@ -78,7 +80,7 @@ sealed class CommitCommand : BaseCommand
 			sb.AppendLine();
 			sb.AppendLine($"{_CommentaryChar} Changes to be amended:");
 
-			TreeChanges changes = Lib.CompareTrees(Repository, tip.Parents.FirstOrDefault()?.Tree, tip.Tree);
+			TreeChanges changes = Lib.CompareTrees(repo, tip.Parents.FirstOrDefault()?.Tree, tip.Tree);
 
 			foreach (var change in changes)
 				sb.AppendLine($"{_CommentaryChar}\t{change.Status}:\t{change.Path}");
@@ -89,9 +91,11 @@ sealed class CommitCommand : BaseCommand
 
 	string EditMessage()
 	{
+		using var repo = new Repository(GitRoot);
+
 		var message = GetMessage();
 
-		var file = Path.Combine(Repository.Info.Path, "COMMIT_EDITMSG");
+		var file = Path.Combine(repo.Info.Path, "COMMIT_EDITMSG");
 		File.WriteAllText(file, message);
 
 		var editor = Far.Api.CreateEditor();
@@ -99,7 +103,7 @@ sealed class CommitCommand : BaseCommand
 		editor.CodePage = 65001;
 		editor.DisableHistory = true;
 		editor.Caret = new Point(0, 0);
-		editor.Title = (op.AmendPreviousCommit ? "Amend commit" : "Commit") + $" on branch {Repository.Head.FriendlyName} -- empty message aborts the commit";
+		editor.Title = (op.AmendPreviousCommit ? "Amend commit" : "Commit") + $" on branch {repo.Head.FriendlyName} -- empty message aborts the commit";
 		editor.Open(OpenMode.Modal);
 
 		message = File.ReadAllText(file);
@@ -114,6 +118,8 @@ sealed class CommitCommand : BaseCommand
 
 	public override void Invoke()
 	{
+		using var repo = new Repository(GitRoot);
+
 		var message = _message ?? EditMessage();
 		if (message.Length == 0)
 		{
@@ -125,7 +131,7 @@ sealed class CommitCommand : BaseCommand
 		{
 			try
 			{
-				LibGit2Sharp.Commands.Stage(Repository, "*");
+				LibGit2Sharp.Commands.Stage(repo, "*");
 			}
 			catch (LibGit2SharpException ex)
 			{
@@ -133,8 +139,8 @@ sealed class CommitCommand : BaseCommand
 			}
 		}
 
-		var sig = Lib.BuildSignature(Repository);
-		Repository.Commit(message, sig, sig, op);
+		var sig = Lib.BuildSignature(repo);
+		repo.Commit(message, sig, sig, op);
 
 		Host.UpdatePanels();
 	}

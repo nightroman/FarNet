@@ -4,21 +4,25 @@ using LibGit2Sharp;
 
 namespace GitKit.Commands;
 
-sealed class CommitsCommand : BaseCommand
+sealed class CommitsCommand(CommandParameters parameters) : BaseCommand(parameters)
 {
-	readonly string? _path;
-
-	public CommitsCommand(CommandParameters parameters) : base(parameters)
-	{
-		_path = GetGitPathOrPath(
-			parameters,
-			returnNullIfRoot: true,
-			validate: path => path == "?" ? Far.Api.FS.CursorPath ?? Far.Api.CurrentDirectory : path);
-	}
+	string? _path = parameters.GetString(Param.Path, ParameterOptions.ExpandVariables);
+	readonly bool _isGitPath = parameters.GetBool(Param.IsGitPath);
 
 	public override void Invoke()
 	{
-		var explorer = _path is null ? new CommitsExplorer(Repository, Repository.Head) : new CommitsExplorer(Repository, _path);
+		using var repo = new Repository(GitRoot);
+
+		_path = GetGitPathOrPath(
+			repo,
+			_path,
+			_isGitPath,
+			returnNullIfRoot: true,
+			validate: path => path == "?" ? Far.Api.FS.CursorPath ?? Far.Api.CurrentDirectory : path);
+
+		var explorer = _path is null ?
+			new CommitsExplorer(GitRoot, repo.Head.FriendlyName, false) :
+			new CommitsExplorer(GitRoot, _path, true);
 
 		explorer
 			.CreatePanel()

@@ -5,34 +5,36 @@ namespace GitKit.Commands;
 
 sealed class CheckoutCommand(CommandParameters parameters) : BaseCommand(parameters)
 {
-	readonly string? _branchName = parameters.GetString(Param.Branch);
+	readonly string? _checkoutBranchName = parameters.GetString(Param.Branch);
 
 	public override void Invoke()
 	{
-		var branchName = _branchName ?? Far.Api.Input(
+		using var repo = new Repository(GitRoot);
+
+		var checkoutBranchName = _checkoutBranchName ?? Far.Api.Input(
 			"Branch name",
 			"GitBranch",
-			$"Checkout branch from {Repository.Head.FriendlyName}",
-			Repository.Head.FriendlyName);
+			$"Checkout branch from {repo.Head.FriendlyName}",
+			repo.Head.FriendlyName);
 
-		if (branchName is null)
+		if (checkoutBranchName is null)
 			return;
 
-		CheckoutBranch(Repository, branchName);
+		CheckoutBranch(repo, checkoutBranchName);
 	}
 
-	static void CheckoutBranch(Repository repo, string branchName)
+	static void CheckoutBranch(Repository repo, string chekoutBranchName)
 	{
-		var branch = repo.Branches[branchName];
+		var branch = repo.Branches[chekoutBranchName];
 		if (branch is null)
 		{
 			if (0 != Far.Api.Message(
-				$"Create branch '{branchName}' from '{repo.Head.FriendlyName}'?",
+				$"Create branch '{chekoutBranchName}' from '{repo.Head.FriendlyName}'?",
 				Host.MyName,
 				MessageOptions.YesNo))
 				return;
 
-			branch = repo.CreateBranch(branchName, repo.Head.Tip);
+			branch = repo.CreateBranch(chekoutBranchName, repo.Head.Tip);
 		}
 
 		if (!repo.Info.IsBare)

@@ -1,5 +1,5 @@
 ﻿using FarNet;
-using GitKit.Extras;
+using GitKit.About;
 using LibGit2Sharp;
 
 namespace GitKit.Commands;
@@ -8,7 +8,9 @@ sealed class PushCommand(CommandParameters parameters) : BaseCommand(parameters)
 {
 	public override void Invoke()
 	{
-		PushBranch(Repository, Repository.Head);
+		using var repo = new Repository(GitRoot);
+
+		PushBranch(repo, repo.Head);
 	}
 
 	public static void PushBranch(Repository repo, Branch branch)

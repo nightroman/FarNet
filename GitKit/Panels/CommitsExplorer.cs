@@ -1,5 +1,5 @@
 ﻿using FarNet;
-using GitKit.Extras;
+using GitKit.About;
 using LibGit2Sharp;
 using System;
 using System.Collections.Generic;
@@ -7,107 +7,91 @@ using System.Linq;
 
 namespace GitKit.Panels;
 
-class CommitsExplorer : BaseExplorer
+class CommitsExplorer(string gitRoot, string name, bool isPath) : BaseExplorer(gitRoot, MyTypeId)
 {
 	public static Guid MyTypeId = new("80354846-50a0-4675-a418-e177f6747d30");
 
-	public ICommits Data { get; private set; }
-
-	public CommitsExplorer(Repository repository, Branch branch) : base(repository, MyTypeId)
-	{
-		Data = new BranchCommits(
-			repository,
-			branch,
-			branch.IsCurrentRepositoryHead && Repository.Info.IsHeadDetached);
-	}
-
-	public CommitsExplorer(Repository repository, string path) : base(repository, MyTypeId)
-	{
-		Data = new PathCommits(repository, path);
-	}
+	public ICommits Commits { get; } = isPath ?
+		new PathCommits(gitRoot, name) :
+		new BranchCommits(gitRoot, name);
 
 	public override Panel CreatePanel()
 	{
+		using var repo = new Repository(GitRoot);
+
 		return new CommitsPanel(this)
 		{
-			Title = $"{Data.Title} {Repository.Info.WorkingDirectory}"
+			Title = $"{Commits.Title} {repo.Info.WorkingDirectory}"
 		};
 	}
 
 	public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 	{
-		if (Data is BranchCommits data)
-		{
-			//! get fresh instance, e.g. important for marks after push
-			//! it may have pseudo name (no branch), case bare repo
-			var branch = data.IsHead ? Repository.Head : Repository.Branches[data.Branch.CanonicalName] ?? data.Branch;
-			Data = data with { Branch = branch };
-		}
-
-		return Data.GetFiles(args);
+		return Commits.GetFiles(args);
 	}
 
 	public override Explorer? ExploreDirectory(ExploreDirectoryEventArgs args)
 	{
-		var newCommit = (Commit)args.File.Data!;
+		using var repo = new Repository(GitRoot);
+
+		var file = (CommitFile)args.File;
+		var newCommitSha = file.CommitSha;
+		var newCommit = repo.Lookup<Commit>(newCommitSha);
 
 		//! null for the first commit
 		var oldCommit = newCommit.Parents.FirstOrDefault();
 
-		return new ChangesExplorer(Repository, new ChangesExplorer.Options
+		return new ChangesExplorer(GitRoot, new ChangesExplorer.Options
 		{
 			Kind = ChangesExplorer.Kind.CommitsRange,
-			NewCommit = newCommit,
-			OldCommit = oldCommit,
+			NewCommitSha = newCommitSha,
+			OldCommitSha = oldCommit?.Sha,
 			IsSingleCommit = true,
-			Path = (Data as PathCommits)?.Path
+			Path = (Commits as PathCommits)?.Path
 		});
 	}
 
-	static SetFile CreateFile(Commit commit, int shaPrefixLength)
+	static CommitFile CreateFile(Commit commit, string? mark, int shaPrefixLength)
 	{
-		return new SetFile
-		{
-			Name = $"{commit.Sha[..shaPrefixLength]} {commit.Author.When:yyyy-MM-dd} {commit.Author.Name}: {commit.MessageShort}",
-			LastWriteTime = commit.Author.When.DateTime,
-			Data = commit,
-			IsDirectory = true,
-		};
+		var commitSha = commit.Sha;
+		return new CommitFile(
+			$"{commitSha[..shaPrefixLength]} {commit.Author.When:yyyy-MM-dd} {commit.Author.Name}: {commit.MessageShort}",
+			mark,
+			commit.Author.When.DateTime,
+			commitSha);
 	}
 
-	public interface ICommits
+	public class BranchCommits(string gitRoot, string branchName) : ICommits
 	{
-		string Title { get; }
-		IEnumerable<FarFile> GetFiles(GetFilesEventArgs args);
-	}
-
-	public record BranchCommits(Repository Repository, Branch Branch, bool IsHead) : ICommits
-	{
-		public string Title => $"{Branch.FriendlyName} branch";
+		public string BranchName => branchName;
+		public string Title => $"{branchName} branch";
 
 		public IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 		{
-			IEnumerable<Commit> commits = Branch.Commits;
+			using var repo = new Repository(gitRoot);
+
+			var branch = repo.MyBranch(BranchName);
+			IEnumerable<Commit> commits = branch.Commits;
 			if (args.Limit > 0)
 				commits = commits.Skip(args.Offset).Take(args.Limit);
 
 			string? mark = null;
 			Func<Commit, bool>? hasCommitMark = null;
-			if (!Branch.IsRemote && args.Offset == 0)
+			if (!branch.IsRemote && args.Offset == 0)
 			{
-				if (Branch.TrackedBranch?.Tip is null)
+				if (branch.TrackedBranch?.Tip is null)
 				{
-					var heads = Repository.Refs.Where(x => x.IsLocalBranch && x.CanonicalName != Branch.CanonicalName).ToList();
+					var heads = repo.Refs.Where(x => x.IsLocalBranch && x.CanonicalName != branch.CanonicalName).ToList();
 					if (heads.Count > 0)
 					{
 						mark = "#";
-						hasCommitMark = commit => Repository.Refs.ReachableFrom(heads, [commit]).Any();
+						hasCommitMark = commit => repo.Refs.ReachableFrom(heads, [commit]).Any();
 					}
 				}
 				else
 				{
 					mark = "=";
-					var trackedTip = Branch.TrackedBranch.Tip;
+					var trackedTip = branch.TrackedBranch.Tip;
 					hasCommitMark = commit => commit == trackedTip;
 				}
 			}
@@ -115,57 +99,43 @@ class CommitsExplorer : BaseExplorer
 			var settings = Settings.Default.GetData();
 			foreach (var commit in commits)
 			{
-				var file = CreateFile(commit, settings.ShaPrefixLength);
+				string? commitMark = null;
 				if (hasCommitMark is not null)
 				{
 					if (hasCommitMark(commit))
 					{
-						file.Owner = mark;
+						commitMark = mark;
 						hasCommitMark = null;
 					}
 				}
 
-				yield return file;
+				yield return CreateFile(commit, commitMark, settings.ShaPrefixLength);
 			}
 		}
 	}
 
-	public class PathCommits : ICommits
+	public class PathCommits(string gitRoot, string path) : ICommits
 	{
-		public Repository Repository { get; }
-		public string Path { get; }
-
-		readonly CachedEnumerable<LogEntry> _commits;
-
+		public string Path => path;
 		public string Title => System.IO.Path.GetFileName(Path);
 
-		public PathCommits(Repository repository, string path)
+		public IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 		{
-			Repository = repository;
-			Path = path;
+			using var repo = new Repository(gitRoot);
 
 			//! FirstParentOnly=true avoids missing key exceptions and broken GetFiles in some cases (Colorer-schemes) but fails in others.
 			//! Use topological sort, it works in so far known cases. https://github.com/libgit2/libgit2sharp/issues/1520
 			var filter = new CommitFilter { SortBy = CommitSortStrategies.Topological };
 
-			_commits = new(repository.Commits.QueryBy(path, filter));
-		}
-
-		public IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
-		{
-			IEnumerable<LogEntry> logs = _commits;
+			IEnumerable<LogEntry> logs = repo.Commits.QueryBy(Path, filter);
 			if (args.Limit > 0)
 				logs = logs.Skip(args.Offset).Take(args.Limit);
 
 			var settings = Settings.Default.GetData();
 			foreach (var log in logs)
 			{
-				var file = CreateFile(log.Commit, settings.ShaPrefixLength);
-
-				if (log.Path != Path)
-					file.Owner = "n";
-
-				yield return file;
+				var mark = log.Path == Path ? null : "n";
+				yield return CreateFile(log.Commit, mark, settings.ShaPrefixLength);
 			}
 		}
 	}

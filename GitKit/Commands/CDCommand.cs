@@ -1,5 +1,6 @@
 ﻿using FarNet;
-using GitKit.Extras;
+using GitKit.About;
+using LibGit2Sharp;
 using System.IO;
 
 namespace GitKit.Commands;
@@ -13,7 +14,9 @@ sealed class CDCommand(CommandParameters parameters) : BaseCommand(parameters)
 		if (Far.Api.Window.Kind != WindowKind.Panels)
 			Far.Api.Window.SetCurrentAt(-1);
 
-		string path = Lib.ResolveRepositoryItemPath(Repository, _path);
+		using var repo = new Repository(GitRoot);
+
+		string path = Lib.ResolveRepositoryItemPath(repo, _path);
 
 		if (File.Exists(path))
 			Far.Api.Panel!.GoToPath(path);

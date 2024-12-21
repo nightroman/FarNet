@@ -12,7 +12,7 @@ public class Command : ModuleCommand
 		try
 		{
 			var parameters = CommandParameters.Parse(e.Command);
-			using AnyCommand command = parameters.Command switch
+			AbcCommand command = parameters.Command switch
 			{
 				"blame" => new BlameCommand(parameters),
 				"branches" => new BranchesCommand(parameters),

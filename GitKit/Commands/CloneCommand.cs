@@ -3,7 +3,7 @@ using LibGit2Sharp;
 
 namespace GitKit.Commands;
 
-sealed class CloneCommand : AnyCommand
+sealed class CloneCommand : AbcCommand
 {
 	readonly string _url;
 	readonly string _path;

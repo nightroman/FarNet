@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 
+= 5.0.2 =
+
+Rework fsx assembly resolution.
+
 = 5.0.1 =
 
 Tweak fsx loading.

@@ -1,5 +1,5 @@
 ﻿using FarNet;
-using GitKit.Extras;
+using GitKit.About;
 using LibGit2Sharp;
 using System;
 using System.Collections.Generic;
@@ -16,8 +16,8 @@ class ChangesExplorer : BaseExplorer
 	internal class Options
 	{
 		public Kind Kind;
-		public Commit? NewCommit;
-		public Commit? OldCommit;
+		public string? NewCommitSha;
+		public string? OldCommitSha;
 		public bool IsSingleCommit;
 		public string? Path;
 	}
@@ -32,7 +32,7 @@ class ChangesExplorer : BaseExplorer
 		Last,
 	}
 
-	public ChangesExplorer(Repository repository, Options op) : base(repository, MyTypeId)
+	public ChangesExplorer(string gitRoot, Options op) : base(gitRoot, MyTypeId)
 	{
 		_op = op;
 		CanGetContent = true;
@@ -54,50 +54,52 @@ class ChangesExplorer : BaseExplorer
 
 	public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 	{
+		using var repo = new Repository(GitRoot);
+
 		TreeChanges changes;
 		string title;
 		switch (_op.Kind)
 		{
 			case Kind.NotCommitted:
 				{
-					changes = Lib.GetChanges(Repository);
-					title = $"Not committed changes {Repository.Info.WorkingDirectory}";
+					changes = Lib.GetChanges(repo);
+					title = $"Not committed changes {repo.Info.WorkingDirectory}";
 				}
 				break;
 
 			case Kind.NotStaged:
 				{
-					changes = Repository.Diff.Compare<TreeChanges>();
-					title = $"Not staged changes {Repository.Info.WorkingDirectory}";
+					changes = repo.Diff.Compare<TreeChanges>();
+					title = $"Not staged changes {repo.Info.WorkingDirectory}";
 				}
 				break;
 
 			case Kind.Staged:
 				{
-					changes = Repository.Diff.Compare<TreeChanges>(Repository.Head.Tip?.Tree, DiffTargets.Index);
-					title = $"Staged changes {Repository.Info.WorkingDirectory}";
+					changes = repo.Diff.Compare<TreeChanges>(repo.Head.Tip?.Tree, DiffTargets.Index);
+					title = $"Staged changes {repo.Info.WorkingDirectory}";
 				}
 				break;
 
 			case Kind.Head:
 				{
-					var tip = Repository.Head.Tip;
-					changes = Lib.CompareTrees(Repository, tip?.Parents.FirstOrDefault()?.Tree, tip?.Tree);
+					var tip = repo.Head.Tip;
+					changes = Lib.CompareTrees(repo, tip?.Parents.FirstOrDefault()?.Tree, tip?.Tree);
 					title = $"Head commit: {tip?.MessageShort}";
 				}
 				break;
 
 			case Kind.Last:
 				{
-					changes = Lib.GetChanges(Repository);
+					changes = Lib.GetChanges(repo);
 					if (changes.Count > 0)
 					{
-						title = $"Last not committed {Repository.Info.WorkingDirectory}";
+						title = $"Last not committed {repo.Info.WorkingDirectory}";
 					}
 					else
 					{
-						var tip = Repository.Head.Tip;
-						changes = Lib.CompareTrees(Repository, tip?.Parents.FirstOrDefault()?.Tree, tip?.Tree);
+						var tip = repo.Head.Tip;
+						changes = Lib.CompareTrees(repo, tip?.Parents.FirstOrDefault()?.Tree, tip?.Tree);
 						title = $"Last commit: {tip?.MessageShort}";
 					}
 				}
@@ -105,17 +107,20 @@ class ChangesExplorer : BaseExplorer
 
 			case Kind.CommitsRange:
 				{
-					changes = Lib.CompareTrees(Repository, _op.OldCommit?.Tree, _op.NewCommit?.Tree);
+					var newCommit = _op.NewCommitSha is null ? null : repo.Lookup<Commit>(_op.NewCommitSha);
+					var oldCommit = _op.OldCommitSha is null ? null : repo.Lookup<Commit>(_op.OldCommitSha);
+
+					changes = Lib.CompareTrees(repo, oldCommit?.Tree, newCommit?.Tree);
 					var settings = Settings.Default.GetData();
-					var newId = _op.NewCommit is null ? "?" : _op.NewCommit.Sha[0..settings.ShaPrefixLength];
+					var newId = _op.NewCommitSha is null ? "?" : _op.NewCommitSha[0..settings.ShaPrefixLength];
 					if (_op.IsSingleCommit)
 					{
-						title = $"{newId}: {_op.NewCommit?.MessageShort}";
+						title = $"{newId}: {newCommit?.MessageShort}";
 					}
 					else
 					{
-						var oldId = _op.OldCommit is null ? "?" : _op.OldCommit.Sha[0..settings.ShaPrefixLength];
-						title = $"{newId}/{oldId} {Repository.Info.WorkingDirectory}";
+						var oldId = _op.OldCommitSha is null ? "?" : _op.OldCommitSha[0..settings.ShaPrefixLength];
+						title = $"{newId}/{oldId} {repo.Info.WorkingDirectory}";
 					}
 				}
 				break;
@@ -131,34 +136,32 @@ class ChangesExplorer : BaseExplorer
 		//! Keep Name, it is useful as is. Use [CtrlA] to see old names.
 		foreach (var change in changes)
 		{
-			yield return new SetFile
-			{
-				Name = change.Path,
-				Description = change.Status.ToString(),
-				Data = change,
-			};
+			yield return new ChangeFile(change.Path, change.Status.ToString(), change);
 		}
 	}
 
 	public override void GetContent(GetContentEventArgs args)
 	{
+		using var repo = new Repository(GitRoot);
+
 		var compareOptions = new CompareOptions { ContextLines = 3 };
 
-		var changes = (TreeEntryChanges)args.File.Data!;
-		var newBlob = Repository.Lookup<Blob>(changes.Oid);
+		var file = (ChangeFile)args.File;
+		var change = file.Change;
+		var newBlob = repo.Lookup<Blob>(change.Oid);
 
 		string text;
-		if (newBlob is not null || changes.Mode == Mode.Nonexistent)
+		if (newBlob is not null || change.Mode == Mode.Nonexistent)
 		{
 			// changed committed files (new blob) or deleted files (old blob, no new blob)
-			var oldBlob = Repository.Lookup<Blob>(changes.OldOid);
-			var diff = Repository.Diff.Compare(oldBlob, newBlob, compareOptions);
+			var oldBlob = repo.Lookup<Blob>(change.OldOid);
+			var diff = repo.Diff.Compare(oldBlob, newBlob, compareOptions);
 			text = diff.Patch;
 		}
 		else
 		{
 			// other files including changed not committed (no new blob)
-			var patch = Repository.Diff.Compare<Patch>([changes.Path], true, null, compareOptions);
+			var patch = repo.Diff.Compare<Patch>([change.Path], true, null, compareOptions);
 			text = patch.Content;
 		}
 

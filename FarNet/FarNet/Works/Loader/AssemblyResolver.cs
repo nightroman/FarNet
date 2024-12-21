@@ -4,56 +4,44 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace FarNet.Works;
 #pragma warning disable 1591
 
-// Tempted to append to assembly cache dynamically on each module loading from
-// its directory and skip ALC modules at all. This is not good, e.g. modules
-// may refer to FSharp.Core from FSF; they fail if FSF is not in the cache,
-// skipped for any reason (ALC or not yet loaded).
-// -- So for now keep loading all (Modules, Lib) to the cache.
-
 public static class AssemblyResolver
 {
 	const int MaxLastRoots = 4;
-	static readonly LinkedList<string> s_lastRoots = new();
-	static readonly Dictionary<string, string> s_cache = new(StringComparer.OrdinalIgnoreCase);
+	const string Win64 = "win-x64";
+	const string Win86 = "win-x86";
+
+	static readonly string _win_this;
+	static readonly string _win_skip;
+	static readonly string[] _folders;
+	static readonly LinkedList<string> _lastRoots = [];
 
 	static AssemblyResolver()
 	{
+		_win_this = RuntimeInformation.RuntimeIdentifier;
+		_win_skip = _win_this switch { Win64 => Win86, Win86 => Win64, _ => throw new Exception("Unknown runtime.") };
+
 		var root = $"{Environment.GetEnvironmentVariable("FARHOME")}\\FarNet\\";
-		AddAssemblyCache(root + "Modules");
-		AddAssemblyCache(root + "Lib");
-	}
-
-	static void AddAssemblyCache(string root)
-	{
-		if (!Directory.Exists(root))
-			return;
-
-		foreach (var path in Directory.EnumerateFiles(root, "*.dll", SearchOption.AllDirectories))
+		var folders = new List<string>(2);
 		{
-			if (path.Contains("\\native\\") ||
-				path.EndsWith(".resources.dll"))
-				continue;
-
-			var key = Path.GetFileNameWithoutExtension(path);
-
-			ref string? value = ref CollectionsMarshal.GetValueRefOrAddDefault(s_cache, key, out bool found);
-			if (found)
-				value = $"{value}|{path}";
-			else
-				value = path;
+			var dir = root + "Modules";
+			if (Directory.Exists(dir))
+				folders.Add(dir);
 		}
-	}
-
-	static string AssemblyNameToDllName(string name)
-	{
-		return name[..name.IndexOf(',')] + ".dll";
+		{
+			var dir = root + "Lib";
+			if (Directory.Exists(dir))
+				folders.Add(dir);
+		}
+		_folders = [.. folders];
 	}
 
 	static bool IsRoot(string name)
@@ -63,21 +51,18 @@ public static class AssemblyResolver
 
 	static void AddRoot(string name)
 	{
-		if (s_lastRoots.First?.Value == name)
+		if (_lastRoots.First?.Value == name)
 			return;
 
-		s_lastRoots.Remove(name);
-		s_lastRoots.AddFirst(name);
-		while (s_lastRoots.Count > MaxLastRoots)
-			s_lastRoots.RemoveLast();
+		_lastRoots.Remove(name);
+		_lastRoots.AddFirst(name);
+		while (_lastRoots.Count > MaxLastRoots)
+			_lastRoots.RemoveLast();
 	}
 
-	static Assembly? ResolvePowerShellFar(string root, ResolveEventArgs args)
+	static Assembly? ResolvePowerShellFar(ReadOnlySpan<char> root, string dllName, string callerFullName)
 	{
-		var caller = args.RequestingAssembly!.FullName!;
-		var dllName = AssemblyNameToDllName(args.Name);
-
-		if (caller.StartsWith("System.Management.Automation") || caller.StartsWith("PowerShellFar"))
+		if (callerFullName.StartsWith("System.Management.Automation") || callerFullName.StartsWith("PowerShellFar"))
 		{
 			// most frequent
 			// PowerShellFar ->
@@ -87,16 +72,16 @@ public static class AssemblyResolver
 			//   Microsoft.PowerShell.Commands.Utility
 			//   Microsoft.PowerShell.Commands.Management
 			//   Microsoft.PowerShell.Security
-			var path = root + "\\runtimes\\win\\lib\\net9.0\\" + dllName;
+			var path = $"{root}\\runtimes\\win\\lib\\net9.0\\{dllName}";
 			if (File.Exists(path))
 				return Assembly.LoadFrom(path);
 		}
 
-		if (caller.StartsWith("System.Management.Automation"))
+		if (callerFullName.StartsWith("System.Management.Automation"))
 		{
 			// System.Management.Automation ->
 			//   System.Management
-			var path = root + "\\" + dllName;
+			var path = $"{root}\\{dllName}";
 			if (File.Exists(path))
 				return Assembly.LoadFrom(path);
 		}
@@ -105,8 +90,7 @@ public static class AssemblyResolver
 		// System.Management.Automation ->
 		//   Microsoft.Management.Infrastructure
 		{
-			var win10_x64 = RuntimeInformation.RuntimeIdentifier;
-			var path = root + "\\runtimes\\" + win10_x64 + "\\lib\\netstandard1.6\\" + dllName;
+			var path = $"{root}\\runtimes\\{_win_this}\\lib\\netstandard1.6\\{dllName}";
 			if (File.Exists(path))
 				return Assembly.LoadFrom(path);
 		}
@@ -122,27 +106,27 @@ public static class AssemblyResolver
 		return index;
 	}
 
-	static string FindBestPath(string path, string paths)
+	static string FindBestPath(string path, List<string> paths)
 	{
-		Range bestPath = default;
+		string? bestPath = null;
 		int maxPrefixLength = -1;
-		foreach (var range in MemoryExtensions.Split(paths, '|'))
+		foreach (var path2 in paths)
 		{
-			int length = GetSamePrefixLength(path, paths[range]);
+			int length = GetSamePrefixLength(path, path2);
 			if (length > maxPrefixLength)
 			{
-				bestPath = range;
+				bestPath = path2;
 				maxPrefixLength = length;
 			}
 		}
-		return paths[bestPath];
+		return bestPath!;
 	}
 
 	static Assembly? LoadFromLastRoots(string dllName)
 	{
-		foreach (var root in s_lastRoots)
+		foreach (var root in _lastRoots)
 		{
-			var path = root + "\\" + dllName;
+			var path = $"{root}\\{dllName}";
 			if (File.Exists(path))
 			{
 				AddRoot(root);
@@ -155,20 +139,38 @@ public static class AssemblyResolver
 	// examples used to have issues:
 	// 1) Microsoft.Bcl.AsyncInterfaces in Lib\FarNet.CsvHelper, Modules\PowerShellFar
 	// 2) System.Data.OleDb.dll in Lib\FarNet.FSharp.Charting (2) Modules\FolderChart (2) Modules\PowerShellFar (2)
-	public static Assembly? ResolveAssembly(string name, ResolveEventArgs args)
+	public static Assembly? ResolveAssembly(ResolveEventArgs args)
 	{
-		// skip missing in FarNet
-		if (!s_cache.TryGetValue(name, out string? paths))
+		// e.g. XmlSerializers
+		if (args.RequestingAssembly is null)
 			return null;
 
-		// unique in FarNet, load
-		if (paths.IndexOf('|') < 0)
+		var name = args.Name.AsSpan(0, args.Name.IndexOf(','));
+		if (name.EndsWith(".resources"))
+			return null;
+
+		var dllName = $"{name}.dll";
+		var paths = _folders.SelectMany(x => Directory.EnumerateFiles(x, dllName, SearchOption.AllDirectories)).ToList();
+
+		// skip missing in FarNet
+		if (paths.Count == 0)
+			return null;
+
+		Debug.WriteLine($"## ResolveAssembly {name}");
+
+		if (paths.Count > 1)
+			paths.RemoveAll(x => x.Contains(_win_skip));
+
+		// one in FarNet
+		if (paths.Count == 1)
 		{
-			var assembly = Assembly.LoadFrom(paths);
+			var path = paths[0];
+			var assembly = Assembly.LoadFrom(path);
 
-			if (IsRoot(paths))
-				AddRoot(Path.GetDirectoryName(paths)!);
+			if (IsRoot(path))
+				AddRoot(Path.GetDirectoryName(path)!);
 
+			Debug.WriteLine($"## -> one {assembly.Location}");
 			return assembly;
 		}
 
@@ -177,8 +179,7 @@ public static class AssemblyResolver
 		// Microsoft.CodeAnalysis issue
 		// - InferKit scripts should work
 		// - Test\Debugger\Debug-Assert-Far-1.fas.ps1 should work
-		string? dllName = null;
-		if (!args.RequestingAssembly!.IsDynamic)
+		if (!args.RequestingAssembly.IsDynamic)
 		{
 			var callerLocation = args.RequestingAssembly.Location;
 
@@ -187,20 +188,25 @@ public static class AssemblyResolver
 			int index = callerLocation.LastIndexOf("\\PowerShellFar\\");
 			if (index > 0)
 			{
-				var assembly = ResolvePowerShellFar(callerLocation[..(index + 14)], args);
-				if (assembly != null)
+				var assembly = ResolvePowerShellFar(callerLocation.AsSpan(0, index + 14), dllName, args.RequestingAssembly.FullName!);
+				if (assembly is { })
+				{
+					Debug.WriteLine($"## -> psf {assembly.Location}");
 					return assembly;
+				}
 			}
 
 			// try: same folder as last roots
 			// why before best? weird, but on running InferKit scripts on loading
 			// Microsoft.CodeAnalysis the RequestingAssembly is one of PowerShell
 			// instead of some InferKit assembly
-			dllName ??= AssemblyNameToDllName(args.Name);
 			{
 				var assembly = LoadFromLastRoots(dllName);
-				if (assembly != null)
+				if (assembly is { })
+				{
+					Debug.WriteLine($"## -> roots-1 {assembly.Location}");
 					return assembly;
+				}
 			}
 
 			// finally: use the best candidate
@@ -208,15 +214,18 @@ public static class AssemblyResolver
 			if (IsRoot(location))
 				AddRoot(Path.GetDirectoryName(location)!);
 
+			Debug.WriteLine($"## -> best-path {location}");
 			return Assembly.LoadFrom(location);
 		}
 
 		// try: same folder as last roots
-		dllName ??= AssemblyNameToDllName(args.Name);
 		{
 			var assembly = LoadFromLastRoots(dllName);
-			if (assembly != null)
+			if (assembly is { })
+			{
+				Debug.WriteLine($"## -> roots-2 {assembly.Location}");
 				return assembly;
+			}
 		}
 
 		return null;

@@ -12,6 +12,5 @@ public:
 	static void Init();
 private:
 	static Assembly^ AssemblyResolve(Object^ sender, ResolveEventArgs^ args);
-	static Assembly^ _FarNet;
 };
 }

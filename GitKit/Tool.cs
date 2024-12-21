@@ -13,12 +13,13 @@ public class Tool : ModuleTool
 		menu.Title = Host.MyName;
 		menu.HelpTopic = GetHelpTopic("menu");
 
-		if (Far.Api.Panel is AnyPanel panel)
+		if (Far.Api.Panel is AbcPanel panel)
 		{
 			panel.AddMenu(menu);
 		}
 		else
 		{
+			menu.Add("Blame file", (_, _) => BlameFile());
 			menu.Add("Commit log", (_, _) => CommitLog());
 		}
 
@@ -27,10 +28,13 @@ public class Tool : ModuleTool
 		menu.Show();
 	}
 
+	static void BlameFile()
+	{
+		new BlameCommand(CommandParameters.Parse("blame")).Invoke();
+	}
+
 	static void CommitLog()
 	{
-		var parameters = CommandParameters.Parse("commits path=?");
-		using var command = new CommitsCommand(parameters);
-		command.Invoke();
+		new CommitsCommand(CommandParameters.Parse("commits path=?")).Invoke();
 	}
 }

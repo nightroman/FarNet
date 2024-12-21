@@ -1,4 +1,5 @@
 ﻿using FarNet;
+using GitKit.About;
 using LibGit2Sharp;
 using System;
 using System.Diagnostics;
@@ -26,24 +27,30 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 
 	void EditChangeFile()
 	{
-		if (CurrentFile?.Data is not TreeEntryChanges change || !change.Exists || Repository.Info.WorkingDirectory is not string workdir)
+		if (CurrentFile is not ChangeFile file || !file.Change.Exists)
+			return;
+
+		using var repo = new Repository(GitRoot);
+
+		if (repo.Info.WorkingDirectory is not { } gitWork)
 			return;
 
 		var editor = Far.Api.CreateEditor();
-		editor.FileName = Path.Combine(workdir, change.Path);
+		editor.FileName = Path.Join(gitWork, file.Change.Path);
 		editor.Open();
 	}
 
 	void OpenCommitLog()
 	{
-		if (CurrentFile?.Data is not TreeEntryChanges change)
+		if (CurrentFile is not ChangeFile file)
 			return;
 
+		var change = file.Change;
 		var path = change.Exists ? change.Path : change.OldExists ? change.OldPath : null;
 		if (path is null)
 			return;
 
-		new CommitsExplorer(Repository, path)
+		new CommitsExplorer(GitRoot, path, true)
 			.CreatePanel()
 			.OpenChild(this);
 	}
@@ -53,10 +60,12 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 		if (!exists)
 			return (string.Empty, false);
 
-		var blob = Repository.Lookup<Blob>(oid);
+		using var repo = new Repository(GitRoot);
+
+		var blob = repo.Lookup<Blob>(oid);
 		if (blob is null)
 		{
-			var file = Path.Combine(Repository.Info.WorkingDirectory, path);
+			var file = Path.Combine(repo.Info.WorkingDirectory, path);
 			if (File.Exists(file))
 				return (file, false);
 			else
@@ -105,10 +114,11 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 		switch (key.VirtualKeyCode)
 		{
 			case KeyCode.Enter when key.Is():
-				if (CurrentFile?.Data is TreeEntryChanges changes)
+				if (CurrentFile is ChangeFile file)
 				{
-					if (changes.Mode == Mode.NonExecutableFile || changes.Mode == Mode.Nonexistent && changes.OldMode == Mode.NonExecutableFile)
-						ShowDiff(changes);
+					var change = file.Change;
+					if (change.Mode == Mode.NonExecutableFile || change.Mode == Mode.Nonexistent && change.OldMode == Mode.NonExecutableFile)
+						ShowDiff(change);
 				}
 				return true;
 		}

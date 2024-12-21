@@ -7,7 +7,7 @@ sealed class BranchesCommand(CommandParameters parameters) : BaseCommand(paramet
 {
 	public override void Invoke()
 	{
-		new BranchesExplorer(Repository)
+		new BranchesExplorer(GitRoot)
 			.CreatePanel()
 			.Open();
 	}

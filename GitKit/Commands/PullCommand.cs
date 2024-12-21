@@ -1,5 +1,5 @@
 ﻿using FarNet;
-using GitKit.Extras;
+using GitKit.About;
 using LibGit2Sharp;
 
 namespace GitKit.Commands;
@@ -8,7 +8,9 @@ sealed class PullCommand(CommandParameters parameters) : BaseCommand(parameters)
 {
 	public override void Invoke()
 	{
-		Pull(Repository);
+		using var repo = new Repository(GitRoot);
+
+		Pull(repo);
 	}
 
 	public static void Pull(Repository repo)

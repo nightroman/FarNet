@@ -348,7 +348,8 @@ Parameters
 
 - `Path=<string>`
 
-    Specifies the file to blame. For the cursor file omit the parameter or use "?".
+    Specifies the file to blame.
+    Default: the cursor file.
 
 - `IsGitPath=<bool>`
 
@@ -467,8 +468,8 @@ Parameters
 
 - `Path=<string>`
 
-    Tells to show commits including the specified file system or git path. Use
-    "?" for the panel cursor file or directory.
+    Tells to show commits including the specified file system or git path.
+    Use "?" for the panel cursor file or directory.
 
     When `Path` is omitted, the head branch commits are shown.
 
@@ -535,6 +536,10 @@ Keys and actions
 
 [Contents]
 
+- **Copy SHA-1** (branches panel, commits panel)
+
+    Copies the branch tip commit or cursor commit SHA-1 to the clipboard.
+
 - **Push branch** (branches panel, commits panel)
 
     Branches panel: Pushes the cursor branch, with a confirmation dialog.
@@ -559,13 +564,17 @@ Keys and actions
     Compares the cursor commit with the selected commit and opens the changes panel.
     If nothing is selected then the tip commit is used.
 
-- **Commit log**
-
-    Opens the panel with commits including the cursor file or directory path.
-
 - **Edit file** (changes panel)
 
     If the cursor change file exists, opens this file in the editor.
+
+- **Blame file**
+
+    Shows the cursor file line commits in the editor, see [Blame command](#blame-command).
+
+- **Commit log**
+
+    Opens the panel with commits including the cursor file or directory path.
 
 - **Help**
 

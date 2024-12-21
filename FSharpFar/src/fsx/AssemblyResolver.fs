@@ -1,28 +1,23 @@
 module AssemblyResolver
 
 open System
+open System.Diagnostics
 open System.IO
 open System.Collections.Generic
 open System.Reflection
 open System.Runtime.InteropServices
 
-let private _cache = Dictionary<string, obj>(StringComparer.OrdinalIgnoreCase)
+let [<Literal>] private MaxLastRoots = 4
+let [<Literal>] private Win64 = "win-x64"
+let [<Literal>] private Win86 = "win-x86"
+
+let mutable private _folders : string[] = Array.empty
 let private _roots = LinkedList<string>()
+let private _win_this = RuntimeInformation.RuntimeIdentifier
+let private _win_skip = match _win_this with Win64 -> Win86 | Win86 -> Win64 | _ -> failwith "Unknown runtime."
 
-let prepare root =
-    for path in Directory.EnumerateFiles(root, "*.dll", SearchOption.AllDirectories) do
-        if path.Contains("\\native\\") then ()
-        else
-        let key = Path.GetFileNameWithoutExtension(path)
-
-        // add, if 2+ null it
-        let mutable exists = Unchecked.defaultof<_>
-        let r = &CollectionsMarshal.GetValueRefOrAddDefault(_cache, key, &exists);
-        if exists then
-            r <- null
-
-let private assemblyNameToDllName (name: string) =
-    name.Substring(0, name.IndexOf(',')) + ".dll"
+let init (folders : string seq) =
+    _folders <- Seq.toArray folders
 
 let private isRoot (name: string) =
     (name.Contains("\\FarNet\\Modules") || name.Contains("\\FarNet\\Lib")) && not (name.Contains("\\runtimes"))
@@ -33,13 +28,10 @@ let private addRoot (name: string) =
 
     _roots.Remove(name) |> ignore
     _roots.AddFirst(name) |> ignore
-    while _roots.Count > 4 do
+    while _roots.Count > MaxLastRoots do
         _roots.RemoveLast()
 
-let resolvePowerShellFar (root: string) (args: ResolveEventArgs) =
-    let caller = args.RequestingAssembly.FullName
-    let dllName = assemblyNameToDllName args.Name
-
+let resolvePowerShellFar (root: string) (dllName: string) (callerFullName: string) =
     // most frequent
     // System.Management.Automation ->
     //   Microsoft.PowerShell.ConsoleHost
@@ -47,8 +39,8 @@ let resolvePowerShellFar (root: string) (args: ResolveEventArgs) =
     //   Microsoft.PowerShell.Commands.Management
     //   Microsoft.PowerShell.Security
     let assembly =
-        if caller.StartsWith("System.Management.Automation") then
-            let path = root + "\\runtimes\\win\\lib\\net9.0\\" + dllName
+        if callerFullName.StartsWith("System.Management.Automation") then
+            let path = $"{root}\\runtimes\\win\\lib\\net9.0\\{dllName}"
             if File.Exists(path) then
                 Assembly.LoadFrom(path)
             else
@@ -60,10 +52,10 @@ let resolvePowerShellFar (root: string) (args: ResolveEventArgs) =
     else
 
     let assembly =
-        if caller.StartsWith("System.Management.Automation") then
+        if callerFullName.StartsWith("System.Management.Automation") then
             // System.Management.Automation ->
             //   System.Management
-            let path = root + "\\" + dllName
+            let path = $"{root}\\{dllName}"
             if File.Exists(path) then
                 Assembly.LoadFrom(path)
             else
@@ -77,15 +69,15 @@ let resolvePowerShellFar (root: string) (args: ResolveEventArgs) =
     // Microsoft.PowerShell.Commands.Management ->
     // System.Management.Automation ->
     //   Microsoft.Management.Infrastructure
-    let win10_x64 = System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier
-    let path = root + "\\runtimes\\" + win10_x64 + "\\lib\\netstandard1.6\\" + dllName
+    let win_x = RuntimeInformation.RuntimeIdentifier
+    let path = $"{root}\\runtimes\\{win_x}\\lib\\netstandard1.6\\{dllName}"
     if File.Exists(path) then
         Assembly.LoadFrom(path)
     else
         null
 
 let assemblyResolve _ (args: ResolveEventArgs) =
-    // e.g. .XmlSerializers
+    // e.g. XmlSerializers
     if isNull args.RequestingAssembly then null
     else
 
@@ -96,43 +88,37 @@ let assemblyResolve _ (args: ResolveEventArgs) =
     if name.EndsWith(".resources") then null
     else
 
-    // skip missing in cache
-    match _cache.TryGetValue(name) with
-    | false, _ -> null
-    | _, value ->
+    // skip missing in folders
+    let dllName = $"{name}.dll"
+    let paths = ResizeArray(_folders |> Seq.collect (fun x -> Directory.EnumerateFiles(x, dllName, SearchOption.AllDirectories)))
 
-    System.Diagnostics.Debug.WriteLine($"fsx: {name}")
-
-    // unique in FarNet, load once
-    if not (isNull value) then
-        match value with
-        | :? string as path ->
-            let assembly = Assembly.LoadFrom(path)
-            _cache[name] <- assembly
-            assembly
-        | _ ->
-            let assembly = value :?> Assembly
-            let location = assembly.Location
-            if isRoot location then
-                addRoot (Path.GetDirectoryName(location))
-            assembly
+    if paths.Count = 0 then null
     else
 
-    let dllName = lazy (assemblyNameToDllName args.Name)
+    Debug.WriteLine($"## assemblyResolve {name}")
+
+    if paths.Count > 1 then
+        paths.RemoveAll(fun x -> x.Contains(_win_skip)) |> ignore
+
+    // one in folders
+    if paths.Count = 1 then
+        Assembly.LoadFrom(paths[0])
+    else
+
     let assembly =
         if args.RequestingAssembly.IsDynamic then
             null
         else
-            let callerFile = args.RequestingAssembly.Location
+            let callerLocation = args.RequestingAssembly.Location
 
             // case: PowerShellFar
-            let index = callerFile.LastIndexOf("\\PowerShellFar\\")
+            let index = callerLocation.LastIndexOf("\\PowerShellFar\\")
             if index > 0 then
-                resolvePowerShellFar (callerFile.Substring(0, index + 14)) args
+                resolvePowerShellFar (callerLocation.Substring(0, index + 14)) dllName args.RequestingAssembly.FullName
             else
                 // case: same folder as the caller
-                let callerRoot = Path.GetDirectoryName(callerFile)
-                let path = callerRoot + "\\" + dllName.Value
+                let callerRoot = Path.GetDirectoryName(callerLocation)
+                let path = callerRoot + "\\" + dllName
                 if File.Exists(path) then
                     if isRoot callerRoot then
                         addRoot callerRoot
@@ -146,7 +132,7 @@ let assemblyResolve _ (args: ResolveEventArgs) =
     // case: same folder as last roots
     _roots
     |> Seq.tryPick (fun root ->
-        let path = root + "\\" + dllName.Value;
+        let path = root + "\\" + dllName;
         if File.Exists(path) then
             addRoot root
             Some (Assembly.LoadFrom(path))

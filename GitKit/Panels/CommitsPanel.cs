@@ -1,4 +1,5 @@
 ﻿using FarNet;
+using GitKit.About;
 using GitKit.Commands;
 using LibGit2Sharp;
 using System.IO;
@@ -26,49 +27,70 @@ class CommitsPanel : BasePanel<CommitsExplorer>
 
 	protected override string HelpTopic => "commits-panel";
 
-	public Branch Branch => ((CommitsExplorer.BranchCommits)Explorer.Data).Branch;
+	public string BranchName => ((CommitsExplorer.BranchCommits)Explorer.Commits).BranchName;
 
 	void PushBranch()
 	{
-		PushCommand.PushBranch(Repository, Branch);
+		if (BranchName == Const.NoBranchName)
+			throw new ModuleException($"Cannot push {Const.NoBranchName}.");
+
+		using var repo = new Repository(GitRoot);
+
+		var branch = repo.Branches[BranchName];
+		PushCommand.PushBranch(repo, branch);
 	}
 
 	void CompareCommits()
 	{
-		var (data1, data2) = GetSelectedDataRange<Commit>();
-		if (data2 is null)
+		var (commitSha1, commitSha2) = GetSelectedDataRange(x => (x as CommitFile)?.CommitSha);
+		if (commitSha2 is null)
 			return;
 
-		data1 ??= Branch.Tip;
+		using var repo = new Repository(GitRoot);
 
-		var commits = new Commit[] { data1, data2 }.OrderBy(x => x.Author.When).ToArray();
+		var branch = repo.MyBranch(BranchName);
 
-		CompareCommits(commits[0], commits[1]);
+		var commit1 = commitSha1 is null ? branch.Tip : repo.Lookup<Commit>(commitSha1);
+		var commit2 = repo.Lookup<Commit>(commitSha2);
+
+		var commits = new Commit[] { commit1, commit2 }.OrderBy(x => x.Author.When).ToArray();
+
+		CompareCommits(commits[0].Sha, commits[1].Sha);
 	}
 
 	void CreateBranch()
 	{
-		if (CurrentFile?.Data is not Commit commit)
+		if (CurrentFile is not CommitFile file)
 			return;
 
-		var friendlyName = Branch.FriendlyName;
 		var settings = Settings.Default.GetData();
-		var hash = commit.Sha[0..settings.ShaPrefixLength];
+		var hash = file.CommitSha[0..settings.ShaPrefixLength];
 		var newName = Far.Api.Input(
 			"New branch name",
 			"GitBranch",
-			$"Create new branch from {friendlyName} {hash}",
-			$"{Path.GetFileName(friendlyName)}-{hash}");
+			$"Create new branch from {BranchName} {hash}",
+			$"{Path.GetFileName(BranchName)}-{hash}");
 
 		if (string.IsNullOrEmpty(newName))
 			return;
 
-		Repository.CreateBranch(newName, commit);
+		using var repo = new Repository(GitRoot);
+
+		var commit = repo.Lookup<Commit>(file.CommitSha);
+		repo.CreateBranch(newName, commit);
+	}
+
+	void CopySha()
+	{
+		if (CurrentFile is CommitFile { CommitSha: { } commitSha })
+			CopySha(commitSha);
 	}
 
 	internal override void AddMenu(IMenu menu)
 	{
-		if (Explorer.Data is CommitsExplorer.BranchCommits)
+		menu.Add("Copy SHA-1", (s, e) => CopySha());
+
+		if (Explorer.Commits is CommitsExplorer.BranchCommits)
 		{
 			menu.Add("Push branch", (s, e) => PushBranch());
 			menu.Add("Create branch", (s, e) => CreateBranch());

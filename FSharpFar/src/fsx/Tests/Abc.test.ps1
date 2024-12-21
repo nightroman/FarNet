@@ -31,7 +31,11 @@ task test_01_diff_dir_ini {
 task test_01_arguments_fsx {
 	Set-Location test_01
 	($r = exec {fsx Test.fsx 1 'a a' '"b"' '\"c\"'})
-	equals $r[0] 'fs: [|"Test.fsx"; "1"; "a a"; ""b""; "\"c\""|]'
+	#! depends on env
+	assert ($r[0] -in @(
+		'fs: [|"Test.fsx"; "1"; "a a"; ""b""; "\"c\""|]'
+		'fs: [|"Test.fsx"; "1"; "a a"; "b"; ""c""|]'
+	))
 }
 
 task test_01_arguments_fsi {
@@ -39,6 +43,7 @@ task test_01_arguments_fsi {
 	($r = exec {& dotnet fsi Abc.fs Test.fsx 1 'a a' '"b"' '\"c\"'})
 	#! depends on env
 	assert ($r[0] -in @(
+		'fs: [|"Test.fsx"; "1"; "a a"; "b"; ""c""|]'
 		'fs: [|"Test.fsx"; "1"; "a a"; ""b""; "\"c\""|]'
 		'fs: [|"Test.fsx"; "1"; "a a"; ""b""; "\"c\""; "--preferreduilang:en-US"|]'
 	))

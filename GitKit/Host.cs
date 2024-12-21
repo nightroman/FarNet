@@ -50,7 +50,7 @@ public class Host : ModuleHost
 
 	static void UpdatePanel(IPanel? panel)
 	{
-		if (panel is AnyPanel)
+		if (panel is AbcPanel)
 		{
 			panel.Update(true);
 			panel.Redraw();
