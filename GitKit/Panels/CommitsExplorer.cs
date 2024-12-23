@@ -70,7 +70,11 @@ class CommitsExplorer(string gitRoot, string name, bool isPath) : BaseExplorer(g
 		{
 			using var repo = new Repository(gitRoot);
 
+			// branch may be null in a new repo
 			var branch = repo.MyBranch(BranchName);
+			if (branch is null)
+				yield break;
+
 			IEnumerable<Commit> commits = branch.Commits;
 			if (args.Limit > 0)
 				commits = commits.Skip(args.Offset).Take(args.Limit);

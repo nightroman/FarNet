@@ -28,13 +28,17 @@ sealed class CheckoutCommand(CommandParameters parameters) : BaseCommand(paramet
 		var branch = repo.Branches[chekoutBranchName];
 		if (branch is null)
 		{
+			// tip may be null in a new repo
+			var tip = repo.Head.Tip ??
+				throw new ModuleException("Cannot create a branch without commits.");
+
 			if (0 != Far.Api.Message(
 				$"Create branch '{chekoutBranchName}' from '{repo.Head.FriendlyName}'?",
 				Host.MyName,
 				MessageOptions.YesNo))
 				return;
 
-			branch = repo.CreateBranch(chekoutBranchName, repo.Head.Tip);
+			branch = repo.CreateBranch(chekoutBranchName, tip);
 		}
 
 		if (!repo.Info.IsBare)

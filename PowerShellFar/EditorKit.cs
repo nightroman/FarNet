@@ -164,15 +164,16 @@ static class EditorKit
 				.Invoke()[0].BaseObject;
 
 			// results
-			var matches = result.CompletionMatches;
 			int replacementIndex = result.ReplacementIndex;
 			int replacementLength = result.ReplacementLength;
 			replacementIndex -= lineOffset;
 			if (replacementIndex < 0 || replacementLength < 0)
 				return;
 
-			// original or joined list
-			IReadOnlyList<CompletionResult> words = matches;
+			// original or joined list // mind null matches
+			IReadOnlyList<CompletionResult> words = result.CompletionMatches;
+			if (words is null)
+				return;
 
 			// variables from the current editor
 			if (editLine.WindowKind == WindowKind.Editor)

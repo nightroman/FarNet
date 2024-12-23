@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 1.2.1 =
+
+Fix minor issues with a just created repo.
+
 = 1.2.0 =
 
 Rework repository handling, avoid file locks.

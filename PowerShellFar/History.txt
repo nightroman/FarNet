@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.3 =
+
+Fix completion on null matches.
+
 = 9.0.2 =
 
 Object panel: tweak format cache.
