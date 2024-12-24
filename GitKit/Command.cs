@@ -22,6 +22,7 @@ public class Command : ModuleCommand
 				"clone" => new CloneCommand(parameters),
 				"commit" => new CommitCommand(parameters),
 				"commits" => new CommitsCommand(parameters),
+				"config" => new ConfigCommand(parameters),
 				"edit" => new EditCommand(parameters),
 				"init" => new InitCommand(parameters),
 				"pull" => new PullCommand(parameters),

@@ -8,7 +8,7 @@ sealed class PullCommand(CommandParameters parameters) : BaseCommand(parameters)
 {
 	public override void Invoke()
 	{
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		Pull(repo);
 	}

@@ -7,17 +7,17 @@ using System.Linq;
 
 namespace GitKit.Panels;
 
-class CommitsExplorer(string gitRoot, string name, bool isPath) : BaseExplorer(gitRoot, MyTypeId)
+class CommitsExplorer(string gitDir, string name, bool isPath) : BaseExplorer(gitDir, MyTypeId)
 {
 	public static Guid MyTypeId = new("80354846-50a0-4675-a418-e177f6747d30");
 
 	public ICommits Commits { get; } = isPath ?
-		new PathCommits(gitRoot, name) :
-		new BranchCommits(gitRoot, name);
+		new PathCommits(gitDir, name) :
+		new BranchCommits(gitDir, name);
 
 	public override Panel CreatePanel()
 	{
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		return new CommitsPanel(this)
 		{
@@ -32,7 +32,7 @@ class CommitsExplorer(string gitRoot, string name, bool isPath) : BaseExplorer(g
 
 	public override Explorer? ExploreDirectory(ExploreDirectoryEventArgs args)
 	{
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		var file = (CommitFile)args.File;
 		var newCommitSha = file.CommitSha;
@@ -41,7 +41,7 @@ class CommitsExplorer(string gitRoot, string name, bool isPath) : BaseExplorer(g
 		//! null for the first commit
 		var oldCommit = newCommit.Parents.FirstOrDefault();
 
-		return new ChangesExplorer(GitRoot, new ChangesExplorer.Options
+		return new ChangesExplorer(GitDir, new ChangesExplorer.Options
 		{
 			Kind = ChangesExplorer.Kind.CommitsRange,
 			NewCommitSha = newCommitSha,
@@ -61,14 +61,14 @@ class CommitsExplorer(string gitRoot, string name, bool isPath) : BaseExplorer(g
 			commitSha);
 	}
 
-	public class BranchCommits(string gitRoot, string branchName) : ICommits
+	public class BranchCommits(string gitDir, string branchName) : ICommits
 	{
 		public string BranchName => branchName;
 		public string Title => $"{branchName} branch";
 
 		public IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 		{
-			using var repo = new Repository(gitRoot);
+			using var repo = new Repository(gitDir);
 
 			// branch may be null in a new repo
 			var branch = repo.MyBranch(BranchName);
@@ -118,14 +118,14 @@ class CommitsExplorer(string gitRoot, string name, bool isPath) : BaseExplorer(g
 		}
 	}
 
-	public class PathCommits(string gitRoot, string path) : ICommits
+	public class PathCommits(string gitDir, string path) : ICommits
 	{
 		public string Path => path;
 		public string Title => System.IO.Path.GetFileName(Path);
 
 		public IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 		{
-			using var repo = new Repository(gitRoot);
+			using var repo = new Repository(gitDir);
 
 			//! FirstParentOnly=true avoids missing key exceptions and broken GetFiles in some cases (Colorer-schemes) but fails in others.
 			//! Use topological sort, it works in so far known cases. https://github.com/libgit2/libgit2sharp/issues/1520

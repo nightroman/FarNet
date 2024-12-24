@@ -11,7 +11,7 @@ class BranchesExplorer : BaseExplorer
 {
 	public static Guid MyTypeId = new("75a5d4a6-85b7-4bab-974c-f3a3eb21c992");
 
-	public BranchesExplorer(string gitRoot) : base(gitRoot, MyTypeId)
+	public BranchesExplorer(string gitDir) : base(gitDir, MyTypeId)
 	{
 		CanCloneFile = true;
 		CanCreateFile = true;
@@ -26,7 +26,7 @@ class BranchesExplorer : BaseExplorer
 
 	public override void EnterPanel(Panel panel)
 	{
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		panel.PostName(repo.Head?.FriendlyName);
 	}
@@ -55,7 +55,7 @@ class BranchesExplorer : BaseExplorer
 
 	public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 	{
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		if (repo.Info.IsHeadDetached)
 		{
@@ -76,12 +76,12 @@ class BranchesExplorer : BaseExplorer
 	public override Explorer? ExploreDirectory(ExploreDirectoryEventArgs args)
 	{
 		var branchName = args.File.Name;
-		return new CommitsExplorer(GitRoot, branchName, false);
+		return new CommitsExplorer(GitDir, branchName, false);
 	}
 
 	void CloneBranch(ExplorerEventArgs args, bool checkout)
 	{
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		var (branchName, newName) = ((string, string))args.Data!;
 		var branch = repo.MyBranch(branchName);
@@ -120,7 +120,7 @@ class BranchesExplorer : BaseExplorer
 
 	void DeleteRemoteBranch(Branch branch)
 	{
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		var op = new PushOptions
 		{
@@ -133,7 +133,7 @@ class BranchesExplorer : BaseExplorer
 
 	public override void DeleteFiles(DeleteFilesEventArgs args)
 	{
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		foreach (var file in args.Files)
 		{
@@ -181,7 +181,7 @@ class BranchesExplorer : BaseExplorer
 
 	public override void RenameFile(RenameFileEventArgs args)
 	{
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		var branchName = args.File.Name;
 		var newName = (string)args.Data!;

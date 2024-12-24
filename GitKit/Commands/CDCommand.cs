@@ -14,7 +14,7 @@ sealed class CDCommand(CommandParameters parameters) : BaseCommand(parameters)
 		if (Far.Api.Window.Kind != WindowKind.Panels)
 			Far.Api.Window.SetCurrentAt(-1);
 
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		string path = Lib.ResolveRepositoryItemPath(repo, _path);
 

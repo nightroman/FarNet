@@ -56,7 +56,7 @@ sealed class StatusCommand(CommandParameters parameters) : BaseCommand(parameter
 
 	public override void Invoke()
 	{
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		// tip is null: empty repository, fresh orphan branch ~ both "unborn"
 		Commit? tip = repo.Head.Tip;

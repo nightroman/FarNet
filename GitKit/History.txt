@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 1.3.0 =
+
+New command gk:config
+
 = 1.2.1 =
 
 Fix minor issues with a just created repo.

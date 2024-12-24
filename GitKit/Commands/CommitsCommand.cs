@@ -11,7 +11,7 @@ sealed class CommitsCommand(CommandParameters parameters) : BaseCommand(paramete
 
 	public override void Invoke()
 	{
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		_path = GetGitPathOrPath(
 			repo,
@@ -21,8 +21,8 @@ sealed class CommitsCommand(CommandParameters parameters) : BaseCommand(paramete
 			validate: path => path == "?" ? Far.Api.FS.CursorPath ?? Far.Api.CurrentDirectory : path);
 
 		var explorer = _path is null ?
-			new CommitsExplorer(GitRoot, repo.Head.FriendlyName, false) :
-			new CommitsExplorer(GitRoot, _path, true);
+			new CommitsExplorer(GitDir, repo.Head.FriendlyName, false) :
+			new CommitsExplorer(GitDir, _path, true);
 
 		explorer
 			.CreatePanel()

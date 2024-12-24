@@ -15,7 +15,7 @@ sealed class BlameCommand(CommandParameters parameters) : BaseCommand(parameters
 
 	public override void Invoke()
 	{
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		_path = GetGitPathOrPath(
 			repo,
@@ -94,12 +94,15 @@ sealed class BlameCommand(CommandParameters parameters) : BaseCommand(parameters
 				OpenChangesPanel((IEditor)sender!);
 				e.Ignore = true;
 				break;
+			case KeyCode.L when e.Key.IsCtrl():
+				e.Ignore = true;
+				break;
 		}
 	}
 
 	void OpenChangesPanel(IEditor editor)
 	{
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		string? sha = null;
 		for (int i = editor.Caret.Y; i >= 0 && sha is null; --i)
@@ -126,7 +129,7 @@ sealed class BlameCommand(CommandParameters parameters) : BaseCommand(parameters
 		var oldCommit = newCommit.Parents.FirstOrDefault();
 
 		// open changes panel
-		var explorer = new ChangesExplorer(GitRoot, new ChangesExplorer.Options
+		var explorer = new ChangesExplorer(GitDir, new ChangesExplorer.Options
 		{
 			Kind = ChangesExplorer.Kind.CommitsRange,
 			NewCommitSha = newCommit.Sha,

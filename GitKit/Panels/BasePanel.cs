@@ -4,13 +4,13 @@ namespace GitKit.Panels;
 
 abstract class BasePanel<T>(T explorer) : AbcPanel(explorer) where T : BaseExplorer
 {
-	public string GitRoot => explorer.GitRoot;
+	public string GitDir => explorer.GitDir;
 
 	public new T Explorer => (T)base.Explorer;
 
 	protected void CompareCommits(string oldCommitSha, string newCommitSha)
 	{
-		new ChangesExplorer(GitRoot, new ChangesExplorer.Options
+		new ChangesExplorer(GitDir, new ChangesExplorer.Options
 		{
 			Kind = ChangesExplorer.Kind.CommitsRange,
 			NewCommitSha = newCommitSha,

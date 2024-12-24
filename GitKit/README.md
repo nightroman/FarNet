@@ -8,16 +8,20 @@ Far Manager git helpers based on LibGit2Sharp
 - [About](#about)
 - [Install](#install)
 - [Commands](#commands)
-    - [cd command](#cd-command)
-    - [Edit command](#edit-command)
-    - [Init command](#init-command)
-    - [Clone command](#clone-command)
-    - [Commit command](#commit-command)
-    - [Checkout command](#checkout-command)
-    - [Pull command](#pull-command)
-    - [Push command](#push-command)
-    - [Blame command](#blame-command)
-    - [Status command](#status-command)
+    - [gk:blame](#gkblame)
+    - [gk:branches](#gkbranches)
+    - [gk:cd](#gkcd)
+    - [gk:changes](#gkchanges)
+    - [gk:checkout](#gkcheckout)
+    - [gk:clone](#gkclone)
+    - [gk:commit](#gkcommit)
+    - [gk:commits](#gkcommits)
+    - [gk:config](#gkconfig)
+    - [gk:edit](#gkedit)
+    - [gk:init](#gkinit)
+    - [gk:pull](#gkpull)
+    - [gk:push](#gkpush)
+    - [gk:status](#gkstatus)
 - [Panels](#panels)
     - [Branches panel](#branches-panel)
     - [Commits panel](#commits-panel)
@@ -49,7 +53,6 @@ Git may be optionally used for getting credentials.
 - Far Manager
 - Package [FarNet](https://www.nuget.org/packages/FarNet/)
 - Package [FarNet.GitKit](https://www.nuget.org/packages/FarNet.GitKit/)
-- Optional package [FarNet.PowerShellFar](https://www.nuget.org/packages/FarNet.PowerShellFar/)
 
 How to install and update FarNet and modules\
 <https://github.com/nightroman/FarNet#readme>
@@ -65,7 +68,7 @@ Command parameters are key=value pairs separated by semicolons, using the
 connection string format
 
 ```
-gk:subcommand [key=value] [; key=value] ...
+gk:command [key=value] [; key=value] ...
 ```
 
 **Common parameters**
@@ -75,141 +78,115 @@ gk:subcommand [key=value] [; key=value] ...
     Specifies the existing repository path.\
     Default: the current panel directory.
 
-**Panel commands**
+**All commands**
 
-- `gk:branches`
-
-    Opens the [Branches panel](#branches-panel).
-
-- `gk:commits`
-
-    Opens the [Commits panel](#commits-panel).
-
-- `gk:changes`
-
-    Opens the [Changes panel](#changes-panel).
-
-**Operation commands**
-
-- `gk:cd`
-
-    Navigates to the repository path, see [cd command](#cd-command)
-
-- `gk:edit`
-
-    Opens a file in the editor, see [Edit command](#edit-command)
-
-- `gk:init`
-
-    Creates repository, see [Init command](#init-command).
-
-- `gk:clone`
-
-    Clones repository, see [Clone command](#clone-command).
-
-- `gk:commit`
-
-    Commits changes, see [Commit command](#commit-command).
-
-- `gk:checkout`
-
-    Checkouts branch, see [Checkout command](#checkout-command).
-
-- `gk:pull`
-
-    Pulls the head branch, see [Pull command](#pull-command).
-
-- `gk:push`
-
-    Pushes the head branch, see [Push command](#push-command).
-
-- `gk:blame`
-
-    Analyses file line commits, see [Blame command](#blame-command).
-
-- `gk:status`
-
-    Prints the repository status, see [Status command](#status-command).
+- [gk:blame](#gkblame)
+- [gk:branches](#gkbranches)
+- [gk:cd](#gkcd)
+- [gk:changes](#gkchanges)
+- [gk:checkout](#gkcheckout)
+- [gk:clone](#gkclone)
+- [gk:commit](#gkcommit)
+- [gk:commits](#gkcommits)
+- [gk:config](#gkconfig)
+- [gk:edit](#gkedit)
+- [gk:init](#gkinit)
+- [gk:pull](#gkpull)
+- [gk:push](#gkpush)
+- [gk:status](#gkstatus)
 
 *********************************************************************
-## cd command
+## gk:blame
 
 [Contents]
 
-Use this command to navigate to a repository directory or file
+Shows the specified file line commits in the special editor.
 
-```
-gk:cd
-```
-
-Parameters
+**Parameters**
 
 - `Path=<string>`
 
-    Specifies the repository path relative to the root.\
-    Default: the repository root.
+    Specifies the file to blame.
+    Default: the cursor file.
+
+- `IsGitPath=<bool>`
+
+    Tells to treat `Path` as git path.
+
+**Keys and actions**
+
+- `Enter`
+
+    Opens the changes panel for the caret line commit.
+
+*********************************************************************
+## gk:branches
+
+[Contents]
+
+This command opens [Branches panel](#branches-panel).
+
+*********************************************************************
+## gk:cd
+
+[Contents]
+
+This command navigates to the specified repository item, directory or file.
+
+**Parameters**
+
+- `Path=<string>`
+
+    Specifies the path relative to the working tree directory.\
+    Default: the working tree directory.
 
     If the path specifies an existing file then the command navigates to its
     directory panel and sets the cursor to this file.
 
 *********************************************************************
-## Edit command
+## gk:changes
 
 [Contents]
 
-Use this command to edit the specified repository file
+This command opens [Changes panel](#changes-panel).
 
-```
-gk:edit
-```
+**Parameters**
 
-Parameters
+- `Kind=<enum>`
 
-- `Path=<string>`
+    Specifies the changes kind
 
-    Specifies the repository file path relative to the root.\
-    Default: you are prompted to enter.
-
-    Examples
-
-    - `README.md` - the root `README.md`
-    - `.git\config` - the local configuration file
-    - `.git\COMMIT_EDITMSG` - the last edited commit message
+    - `NotCommitted`: includes all not committed changes, i.e. `NotStaged` and `Staged`
+    - `NotStaged`: not staged changes (git working directory)
+    - `Staged`: staged changes (git index)
+    - `Head`: last committed changes
+    - `Last`: (default) `NotCommitted` changes if any, or else `Head` changes
 
 *********************************************************************
-## Init command
+## gk:checkout
 
 [Contents]
 
-Use this command in order to create a repository
+This command switches to the specified branch.
 
-```
-gk:init
-```
+**Parameters**
 
-Parameters
+- `Branch=<string>`
 
-- `Path=<string>`
+    The branch name to switch to.\
+    Default: input dialog.
 
-    Specifies the new repository directory.\
-    Default: the current panel directory.
-
-- `IsBare=<bool>`
-
-    Tells to create a bare repository.
+    If the branch does not exists then it is automatically created from the
+    head branch, with a confirmation dialog.
 
 *********************************************************************
-## Clone command
+## gk:clone
 
 [Contents]
 
-Use this command in order to clone a repository
+This command clones the specified repository.
 
-```
-gk:clone
-```
-
-Parameters
+**Parameters**
 
 - `Url=<string>` (required)
 
@@ -238,17 +215,13 @@ Parameters
     Tells to recursively clone submodules.
 
 *********************************************************************
-## Commit command
+## gk:commit
 
 [Contents]
 
-Use this command in order to commit changes
+This command commits changes.
 
-```
-gk:commit
-```
-
-Parameters
+**Parameters**
 
 - `Message=<string>`
 
@@ -280,100 +253,134 @@ Parameters
     If set (usually to "#"), all lines starting with this char will be removed.
     `CommentaryChar` implies `PrettifyMessage=true`.
 
-Examples
+**Examples**
+
+Commit all changes, compose a new message in the editor
 
 ```
-# commit all changes, compose a new message in the editor
 gk:commit All=true; CommentaryChar=#
+```
 
-# amend with all changes, modify the old message in the editor
+Amend with all changes, modify the old message in the editor
+
+```
 gk:commit All=true; CommentaryChar=#; AmendPreviousCommit=true
 ```
 
 *********************************************************************
-## Checkout command
+## gk:commits
 
 [Contents]
 
-Use this command in order to checkout the specified branch
+This command opens [Commits panel](#commits-panel).
 
-```
-gk:checkout
-```
-
-Parameters
-
-- `Branch=<string>`
-
-    The branch to checkout. If it is omitted you are prompted to input the
-    branch name.
-
-    If the specified branch does not exists, it is created from the head
-    branch, with a confirmation dialog.
-
-*********************************************************************
-## Pull command
-
-[Contents]
-
-Use this command in order to pull the head branch
-
-```
-gk:pull
-```
-
-*********************************************************************
-## Push command
-
-[Contents]
-
-Use this command in order to push the head branch, with a confirmation dialog
-
-```
-gk:push
-```
-
-*********************************************************************
-## Blame command
-
-[Contents]
-
-Use this command in order to view the specified file line commits in the editor
-
-```
-gk:blame
-```
-
-Parameters
+**Parameters**
 
 - `Path=<string>`
 
-    Specifies the file to blame.
-    Default: the cursor file.
+    Tells to show commits including the specified file system or git path.
+    Use "?" for the panel cursor file or directory.
+
+    When `Path` is omitted, the head branch commits are shown.
 
 - `IsGitPath=<bool>`
 
     Tells to treat `Path` as git path.
 
-Keys and actions
-
-- `Enter`
-
-    Opens the changes panel for the caret line commit.
-
 *********************************************************************
-## Status command
+## gk:config
 
 [Contents]
 
-Use this command in order to print the repository status information like
-change summary, commit hash, head branch, similar branches, commit message
+This command shows all config values (global, local) in the special editor.
+
+**Keys and actions**
+
+- `Enter`
+
+    Shows the input box for changing the caret line value.
+
+- `Ins`
+
+    Shows the input box for a new config value.
+
+- `Del`
+
+    Deletes the caret line config value.
+
+**Notes**
+
+Git config supports multivalued keys and GitKit shows them in the editor.
+But changes are limited to single value keys. In other cases edit config
+files directly.
+
+For example, open the local config directly
 
 ```
-gk:status
+gk:edit path=.git/config
 ```
 
-Parameters
+*********************************************************************
+## gk:edit
+
+[Contents]
+
+This command opens the specified repository file in the editor.
+
+**Parameters**
+
+- `Path=<string>`
+
+    Specifies the repository file path relative to the root.\
+    Default: input dialog.
+
+    Examples
+
+    - `README.md` - the root `README.md`
+    - `.git\config` - the local configuration file
+    - `.git\COMMIT_EDITMSG` - the last edited commit message
+
+*********************************************************************
+## gk:init
+
+[Contents]
+
+This command creates a new repository.
+
+**Parameters**
+
+- `Path=<string>`
+
+    Specifies the new repository directory.\
+    Default: the current panel directory.
+
+- `IsBare=<bool>`
+
+    Tells to create a bare repository.
+
+*********************************************************************
+## gk:pull
+
+[Contents]
+
+This command pulls the head branch.
+
+*********************************************************************
+## gk:push
+
+[Contents]
+
+This command pushes the head branch, with a confirmation dialog.
+
+*********************************************************************
+## gk:status
+
+[Contents]
+
+This command prints the repository information like change summary, commit
+hash, head branch, similar branches, commit message.
+
+**Parameters**
 
 - `ShowFiles=<bool>`
 
@@ -390,13 +397,6 @@ GitKit provides several panels for browsing and operating
 - [Commits panel](#commits-panel)
 - [Changes panel](#changes-panel)
 
-Common panel keys and actions
-
-- `CtrlA`
-
-    Opens the cursor item property panel.
-    This operation requires `FarNet.PowerShellFar`.
-
 *********************************************************************
 ## Branches panel
 
@@ -405,13 +405,9 @@ Common panel keys and actions
 This panel shows the repository branches, local and remote.
 Branch marks: `*` head, `r` remote, `=` tracked same as remote, `<` tracked older, `>` tracked newer, `?` tracked orphan.
 
-The panel is opened by
+The panel is opened by the command [gk:branches](#gkbranches).
 
-```
-gk:branches
-```
-
-Keys and actions
+**Keys and actions**
 
 - `Enter`
 
@@ -448,7 +444,7 @@ Keys and actions
 
     Forcedly deletes the selected local and remote branches.
 
-- See also [Panels](#panels) and [Menu](#menu).
+- See also [Menu](#menu).
 
 *********************************************************************
 ## Commits panel
@@ -458,26 +454,9 @@ Keys and actions
 This panel shows branch or path commits.
 Commits are shown by pages of `CommitsPageLimit`, see [Settings](#settings).
 
-The panel is opened from the branches panel or by the command
+The panel is opened from the branches panel or by the command [gk:commits](#gkcommits).
 
-```
-gk:commits
-```
-
-Parameters
-
-- `Path=<string>`
-
-    Tells to show commits including the specified file system or git path.
-    Use "?" for the panel cursor file or directory.
-
-    When `Path` is omitted, the head branch commits are shown.
-
-- `IsGitPath=<bool>`
-
-    Tells to treat `Path` as git path.
-
-Keys and actions
+**Keys and actions**
 
 - `Enter`
 
@@ -491,7 +470,7 @@ Keys and actions
 
     At the first shown commit, loads the previous page commits.
 
-- See also [Panels](#panels) and [Menu](#menu).
+- See also [Menu](#menu).
 
 *********************************************************************
 ## Changes panel
@@ -500,26 +479,10 @@ Keys and actions
 
 This panel shows changed files.
 
-The panel is opened from the commits panel or by the menu commands "Compare
-branches" and "Compare commits" or by the command
+The panel is opened from the commits panel or by the menu "Compare
+branches" and "Compare commits" or by the command [gk:changes](#gkchanges).
 
-```
-gk:changes
-```
-
-Parameters
-
-- `Kind=<enum>`
-
-    Specifies the changes kind
-
-    - `NotCommitted`: includes all not committed changes, i.e. `NotStaged` and `Staged`
-    - `NotStaged`: not staged changes (git working directory)
-    - `Staged`: staged changes (git index)
-    - `Head`: last committed changes
-    - `Last`: (default) `NotCommitted` changes if any, or else `Head` changes
-
-Keys and actions
+**Keys and actions**
 
 - `Enter`
 
@@ -529,7 +492,7 @@ Keys and actions
 
     Opens the diff patch in the viewer or editor.
 
-- See also [Panels](#panels) and [Menu](#menu).
+- See also [Menu](#menu).
 
 *********************************************************************
 ## Menu
@@ -570,7 +533,7 @@ Keys and actions
 
 - **Blame file**
 
-    Shows the cursor file line commits in the editor, see [Blame command](#blame-command).
+    Shows the cursor file line commits in the editor, see [gk:blame](#gkblame).
 
 - **Commit log**
 

@@ -9,7 +9,7 @@ namespace GitKit.About;
 
 public static class Lib
 {
-	public static string GetGitRoot(string path)
+	public static string GetGitDir(string path)
 	{
 		return Repository.Discover(path) ?? throw new ModuleException($"Not a git repository: {path}");
 	}

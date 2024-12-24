@@ -9,7 +9,7 @@ sealed class CheckoutCommand(CommandParameters parameters) : BaseCommand(paramet
 
 	public override void Invoke()
 	{
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		var checkoutBranchName = _checkoutBranchName ?? Far.Api.Input(
 			"Branch name",

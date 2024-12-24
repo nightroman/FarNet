@@ -16,7 +16,7 @@ sealed class EditCommand(CommandParameters parameters) : BaseCommand(parameters)
 
 	public override void Invoke()
 	{
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		string? path = _path ?? InputPath(repo);
 		if (path is null)

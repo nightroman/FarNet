@@ -11,7 +11,7 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 {
 	public BranchesPanel(BranchesExplorer explorer) : base(explorer)
 	{
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		Title = $"Branches {repo.Info.WorkingDirectory}";
 		SortMode = PanelSortMode.Unsorted;
@@ -34,7 +34,7 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 		if (index < 0)
 			return branchName == Const.NoBranchName ? string.Empty : branchName;
 
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		var branch = repo.Branches[branchName];
 		if (!branch.IsRemote)
@@ -71,7 +71,7 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 		if (branchName is null)
 			return;
 
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		var branch = repo.MyBranch(branchName);
 		if (branch.IsCurrentRepositoryHead)
@@ -107,7 +107,7 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 		if (branchName2 is null)
 			return;
 
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		var branch1 = branchName1 is null ? repo.Head : repo.MyBranch(branchName1);
 		var branch2 = repo.MyBranch(branchName2);
@@ -123,7 +123,7 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 		if (branchName is null)
 			return;
 
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		if (repo.Info.IsHeadDetached)
 			return;
@@ -154,7 +154,7 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 		if (branchName == Const.NoBranchName)
 			throw new ModuleException($"Cannot push {Const.NoBranchName}.");
 
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		var branch = repo.Branches[branchName];
 		PushCommand.PushBranch(repo, branch);
@@ -166,7 +166,7 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 		if (branchName is null)
 			return;
 
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		var branch = repo.MyBranch(branchName);
 		CopySha(branch.Tip.Sha);
@@ -188,7 +188,7 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 
 	public override void UICreateFile(CreateFileEventArgs args)
 	{
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		var branch = repo.Head;
 		CloneBranch(args, branch.FriendlyName, () => Explorer.CreateFile(args));
@@ -219,7 +219,7 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 			return;
 		}
 
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		var branch = repo.Branches[branchName];
 		if (branch.IsRemote)

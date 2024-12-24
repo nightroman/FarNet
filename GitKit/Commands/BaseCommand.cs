@@ -7,11 +7,11 @@ namespace GitKit.Commands;
 
 abstract class BaseCommand : AbcCommand
 {
-	protected string GitRoot { get; }
+	protected string GitDir { get; }
 
 	protected BaseCommand(CommandParameters parameters)
 	{
-		try { GitRoot = Lib.GetGitRoot(parameters.GetPathOrCurrentDirectory(Param.Repo)); }
+		try { GitDir = Lib.GetGitDir(parameters.GetPathOrCurrentDirectory(Param.Repo)); }
 		catch (Exception ex) { throw parameters.ParameterError(Param.Repo, ex.Message); }
 	}
 

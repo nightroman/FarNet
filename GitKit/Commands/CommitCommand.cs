@@ -38,7 +38,7 @@ sealed class CommitCommand : BaseCommand
 
 	string GetMessage()
 	{
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		Commit? tip = repo.Head.Tip;
 
@@ -91,7 +91,7 @@ sealed class CommitCommand : BaseCommand
 
 	string EditMessage()
 	{
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		var message = GetMessage();
 
@@ -118,7 +118,7 @@ sealed class CommitCommand : BaseCommand
 
 	public override void Invoke()
 	{
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		var message = _message ?? EditMessage();
 		if (message.Length == 0)

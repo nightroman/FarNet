@@ -23,7 +23,7 @@ sealed class ChangesCommand : BaseCommand
 
 	public override void Invoke()
 	{
-		new ChangesExplorer(GitRoot, new ChangesExplorer.Options { Kind = _kind })
+		new ChangesExplorer(GitDir, new ChangesExplorer.Options { Kind = _kind })
 			.CreatePanel()
 			.Open();
 	}

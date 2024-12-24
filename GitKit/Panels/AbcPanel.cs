@@ -38,27 +38,12 @@ abstract class AbcPanel(Explorer explorer) : Panel(explorer)
 		Host.Instance.ShowHelpTopic(HelpTopic);
 	}
 
-	void OpenMemberPanel()
-	{
-		var data = CurrentFile?.Data;
-		if (data is not null)
-		{
-			Host.InvokeScript(
-				"[PowerShellFar.MemberExplorer]::new($args[0]).CreatePanel().OpenChild($args[1])",
-				[data, this]);
-		}
-	}
-
 	public override bool UIKeyPressed(KeyInfo key)
 	{
 		switch (key.VirtualKeyCode)
 		{
 			case KeyCode.F1 when key.Is():
 				ShowHelp();
-				return true;
-
-			case KeyCode.A when key.IsCtrl():
-				OpenMemberPanel();
 				return true;
 		}
 

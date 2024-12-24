@@ -3,7 +3,7 @@ using System;
 
 namespace GitKit.Panels;
 
-abstract class BaseExplorer(string gitRoot, Guid typeId) : Explorer(typeId)
+abstract class BaseExplorer(string gitDir, Guid typeId) : Explorer(typeId)
 {
-	public string GitRoot => gitRoot;
+	public string GitDir => gitDir;
 }

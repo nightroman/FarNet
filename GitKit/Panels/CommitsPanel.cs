@@ -34,7 +34,7 @@ class CommitsPanel : BasePanel<CommitsExplorer>
 		if (BranchName == Const.NoBranchName)
 			throw new ModuleException($"Cannot push {Const.NoBranchName}.");
 
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		var branch = repo.Branches[BranchName];
 		PushCommand.PushBranch(repo, branch);
@@ -46,7 +46,7 @@ class CommitsPanel : BasePanel<CommitsExplorer>
 		if (commitSha2 is null)
 			return;
 
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		var branch = repo.MyBranch(BranchName);
 
@@ -74,7 +74,7 @@ class CommitsPanel : BasePanel<CommitsExplorer>
 		if (string.IsNullOrEmpty(newName))
 			return;
 
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		var commit = repo.Lookup<Commit>(file.CommitSha);
 		repo.CreateBranch(newName, commit);

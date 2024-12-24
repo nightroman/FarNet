@@ -30,7 +30,7 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 		if (CurrentFile is not ChangeFile file || !file.Change.Exists)
 			return;
 
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		if (repo.Info.WorkingDirectory is not { } gitWork)
 			return;
@@ -50,7 +50,7 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 		if (path is null)
 			return;
 
-		new CommitsExplorer(GitRoot, path, true)
+		new CommitsExplorer(GitDir, path, true)
 			.CreatePanel()
 			.OpenChild(this);
 	}
@@ -60,7 +60,7 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 		if (!exists)
 			return (string.Empty, false);
 
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		var blob = repo.Lookup<Blob>(oid);
 		if (blob is null)

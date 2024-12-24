@@ -32,7 +32,7 @@ class ChangesExplorer : BaseExplorer
 		Last,
 	}
 
-	public ChangesExplorer(string gitRoot, Options op) : base(gitRoot, MyTypeId)
+	public ChangesExplorer(string gitDir, Options op) : base(gitDir, MyTypeId)
 	{
 		_op = op;
 		CanGetContent = true;
@@ -54,7 +54,7 @@ class ChangesExplorer : BaseExplorer
 
 	public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 	{
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		TreeChanges changes;
 		string title;
@@ -142,7 +142,7 @@ class ChangesExplorer : BaseExplorer
 
 	public override void GetContent(GetContentEventArgs args)
 	{
-		using var repo = new Repository(GitRoot);
+		using var repo = new Repository(GitDir);
 
 		var compareOptions = new CompareOptions { ContextLines = 3 };
 
