@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace RedisKit.Commands;
 
-abstract class BaseCommand : AnyCommand
+abstract class BaseCommand : AbcCommand
 {
 	protected IDatabase Database { get; }
 
@@ -16,7 +16,7 @@ abstract class BaseCommand : AnyCommand
 
 	protected BaseCommand(CommandParameters parameters)
 	{
-		Database = OpenDatabase(GetRedisConfiguration(parameters.GetString(Host.Param.Redis)));
+		Database = OpenDatabase(GetRedisConfiguration(parameters.GetString(Param.Redis)));
 	}
 
 	static IDatabase OpenDatabase(string configuration)

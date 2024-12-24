@@ -7,7 +7,7 @@ namespace RedisKit.Commands;
 
 sealed class EditCommand(CommandParameters parameters) : BaseCommand(parameters)
 {
-	readonly string _key = parameters.GetRequiredString(Host.Param.Key);
+	readonly string _key = parameters.GetRequiredString(Param.Key);
 
 	public override void Invoke()
 	{

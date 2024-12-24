@@ -12,7 +12,7 @@ public class Tool : ModuleTool
 		menu.Title = Host.MyName;
 		menu.HelpTopic = GetHelpTopic("menu");
 
-		if (Far.Api.Panel is AnyPanel panel)
+		if (Far.Api.Panel is AbcPanel panel)
 			menu.Add("Copy key to clipboard", (s, e) => CopyKey(panel));
 
 		menu.Add("Help", (s, e) => Host.Instance.ShowHelpTopic(string.Empty));
@@ -20,7 +20,7 @@ public class Tool : ModuleTool
 		menu.Show();
 	}
 
-	static void CopyKey(AnyPanel panel)
+	static void CopyKey(AbcPanel panel)
 	{
 		var file = panel.CurrentFile;
 		switch (panel)

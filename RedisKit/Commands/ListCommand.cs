@@ -7,7 +7,7 @@ namespace RedisKit.Commands;
 
 sealed class ListCommand(CommandParameters parameters) : BaseCommand(parameters)
 {
-	readonly RedisKey _key = parameters.GetRequiredString(Host.Param.Key);
+	readonly RedisKey _key = parameters.GetRequiredString(Param.Key);
 
 	public override void Invoke()
 	{

@@ -2,7 +2,7 @@
 
 namespace RedisKit.Panels;
 
-abstract class BasePanel<T>(T explorer) : AnyPanel(explorer) where T : BaseExplorer
+abstract class BasePanel<T>(T explorer) : AbcPanel(explorer) where T : BaseExplorer
 {
 	public IDatabase Database { get; } = explorer.Database;
 

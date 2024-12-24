@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.RedisKit
 
+= 0.3.3 =
+
+Minor tweaks in help and code.
+
 = 0.3.2 =
 
 Tweak rk:tree getting files.

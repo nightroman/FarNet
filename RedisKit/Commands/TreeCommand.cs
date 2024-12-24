@@ -10,8 +10,8 @@ sealed class TreeCommand : BaseCommand
 
 	public TreeCommand(CommandParameters parameters) : base(parameters)
 	{
-		_colon = parameters.GetString(Host.Param.Colon) ?? ":";
-		_root = parameters.GetString(Host.Param.Root);
+		_colon = parameters.GetString(Param.Colon) ?? ":";
+		_root = parameters.GetString(Param.Root);
 
 		// ensure root ends with colon
 		if (_root is { } && !_root.EndsWith(_colon))

@@ -2,13 +2,13 @@
 
 namespace RedisKit.Panels;
 
-abstract class AnyPanel(Explorer explorer) : Panel(explorer)
+abstract class AbcPanel(Explorer explorer) : Panel(explorer)
 {
 	protected abstract string HelpTopic { get; }
 
 	protected void SetView(PanelPlan plan0)
 	{
-		ViewMode = Far.Api.Panel is AnyPanel panel && 9 == (int)panel.ViewMode ? (PanelViewMode)9 : 0;
+		ViewMode = Far.Api.Panel is AbcPanel panel && 9 == (int)panel.ViewMode ? (PanelViewMode)9 : 0;
 
 		var plan9 = plan0.Clone();
 		plan9.IsFullScreen = true;

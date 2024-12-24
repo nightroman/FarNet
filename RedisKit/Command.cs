@@ -12,14 +12,14 @@ public class Command : ModuleCommand
 		try
 		{
 			var parameters = CommandParameters.Parse(e.Command);
-			using AnyCommand command = parameters.Command switch
+			AbcCommand command = parameters.Command switch
 			{
-				"keys" => new KeysCommand(parameters),
-				"tree" => new TreeCommand(parameters),
 				"edit" => new EditCommand(parameters),
 				"hash" => new HashCommand(parameters),
+				"keys" => new KeysCommand(parameters),
 				"list" => new ListCommand(parameters),
 				"set" => new SetCommand(parameters),
+				"tree" => new TreeCommand(parameters),
 				_ => throw new ModuleException($"Unknown command '{parameters.Command}'.")
 			};
 
