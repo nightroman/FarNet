@@ -1,6 +1,12 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 9.0.7 =
+
+New property GetFilesEventArgs.Panel.
+
+Panel.DefaultTitle is called after getting files.
+
 = 9.0.6 =
 
 Rework assembly resolution.

@@ -21,8 +21,8 @@ sealed class CommitsCommand(CommandParameters parameters) : BaseCommand(paramete
 			validate: path => path == "?" ? Far.Api.FS.CursorPath ?? Far.Api.CurrentDirectory : path);
 
 		var explorer = _path is null ?
-			new CommitsExplorer(GitDir, repo.Head.FriendlyName, false) :
-			new CommitsExplorer(GitDir, _path, true);
+			new CommitsExplorer(GitDir, repo.Head.FriendlyName, null) :
+			new CommitsExplorer(GitDir, null, _path);
 
 		explorer
 			.CreatePanel()

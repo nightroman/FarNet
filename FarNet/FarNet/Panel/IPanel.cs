@@ -182,10 +182,10 @@ public interface IPanel //! think twice when convert to abstract class (see Pane
 	/// Closes the plugin panel and opens a file panel with the specified path.
 	/// </summary>
 	/// <param name="path">
-	/// Name of the directory that will be set in the panel after closing the panel (or {null|empty}).
-	/// If the path doesn't exist the core shows an error message box always.
+	/// The directory to be set current after closing, if not null or empty.
+	/// Note that Far shows an error message box if the path does not exist.
 	/// </param>
-	void Close(string path);
+	void Close(string? path);
 
 	/// <summary>
 	/// Sets the specified item current by name, if it exists.
@@ -245,20 +245,20 @@ public interface IPanel //! think twice when convert to abstract class (see Pane
 	/// <summary>
 	/// Selects shown items by their indexes.
 	/// </summary>
-	/// <param name="indexes">Indexes of items to be selected. Null is OK.</param>
+	/// <param name="indexes">Indexes of items to be selected.</param>
 	/// <remarks>
 	/// Call <see cref="Redraw()"/> after that.
 	/// </remarks>
-	void SelectAt(int[] indexes);
+	void SelectAt(int[]? indexes);
 
 	/// <summary>
 	/// Unselects shown items by their indexes. See <see cref="Redraw()"/>.
 	/// </summary>
-	/// <param name="indexes">Indexes of items to be unselected. Null os OK.</param>
+	/// <param name="indexes">Indexes of items to be unselected.</param>
 	/// <remarks>
 	/// Call <see cref="Redraw()"/> after that.
 	/// </remarks>
-	void UnselectAt(int[] indexes);
+	void UnselectAt(int[]? indexes);
 
 	/// <include file='doc.xml' path='doc/SelectNames/*'/>
 	void SelectNames(IEnumerable names);

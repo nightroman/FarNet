@@ -24,13 +24,6 @@ class BranchesExplorer : BaseExplorer
 		return new BranchesPanel(this);
 	}
 
-	public override void EnterPanel(Panel panel)
-	{
-		using var repo = new Repository(GitDir);
-
-		panel.PostName(repo.Head?.FriendlyName);
-	}
-
 	static char GetTipsMark(Commit tip1, Commit tip2)
 	{
 		if (tip1 is null || tip2 is null)
@@ -57,10 +50,17 @@ class BranchesExplorer : BaseExplorer
 	{
 		using var repo = new Repository(GitDir);
 
+		// init panel
+		if (args.Panel is { } panel && panel.Title is null)
+		{
+			panel.PostName(repo.Head?.FriendlyName);
+			panel.Title = $"Branches {repo.Info.WorkingDirectory}";
+		}
+
 		if (repo.Info.IsHeadDetached)
 		{
-			var branch = repo.Head;
-			yield return new BranchFile(branch.FriendlyName, branch.Tip.MessageShort);
+			if (repo.Head is { } branch)
+				yield return new BranchFile(branch.FriendlyName, branch.Tip.MessageShort);
 		}
 
 		var branches = repo.Branches
@@ -76,7 +76,7 @@ class BranchesExplorer : BaseExplorer
 	public override Explorer? ExploreDirectory(ExploreDirectoryEventArgs args)
 	{
 		var branchName = args.File.Name;
-		return new CommitsExplorer(GitDir, branchName, false);
+		return new CommitsExplorer(GitDir, branchName, null);
 	}
 
 	void CloneBranch(ExplorerEventArgs args, bool checkout)

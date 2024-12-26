@@ -8,7 +8,7 @@ sealed class EditCommand(CommandParameters parameters) : BaseCommand(parameters)
 {
 	readonly string? _path = parameters.GetString(Param.Path, ParameterOptions.ExpandVariables);
 
-	string? InputPath(Repository repo)
+	static string? InputPath(Repository repo)
 	{
 		var path = Far.Api.Input("Git file path", "GitFile", $"Edit in {repo.Info.WorkingDirectory ?? repo.Info.Path}");
 		return string.IsNullOrEmpty(path) ? null : path;

@@ -65,12 +65,12 @@ public static class Lib
 		else if (path.StartsWith(".git/") || path.StartsWith(@".git\"))
 		{
 			path = path[5..].TrimStart('\\').TrimStart('/');
-			path = Path.Combine(info.Path, path);
+			path = Path.Join(info.Path, path);
 		}
 		else
 		{
 			path = path.TrimStart('\\').TrimStart('/');
-			path = Path.Combine(info.WorkingDirectory ?? info.Path, path);
+			path = Path.Join(info.WorkingDirectory ?? info.Path, path);
 		}
 		return Path.GetFullPath(Path.TrimEndingDirectorySeparator(path));
 	}

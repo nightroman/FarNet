@@ -129,13 +129,13 @@ sealed class BlameCommand(CommandParameters parameters) : BaseCommand(parameters
 		var oldCommit = newCommit.Parents.FirstOrDefault();
 
 		// open changes panel
-		var explorer = new ChangesExplorer(GitDir, new ChangesExplorer.Options
+		var explorer = new ChangesExplorer(GitDir, new()
 		{
 			Kind = ChangesExplorer.Kind.CommitsRange,
 			NewCommitSha = newCommit.Sha,
 			OldCommitSha = oldCommit?.Sha,
 			IsSingleCommit = true,
-			Path = _path,
+			ItemPath = _path,
 		});
 		var panel = explorer.CreatePanel();
 		panel.Open();

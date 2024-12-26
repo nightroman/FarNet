@@ -95,7 +95,7 @@ sealed class CommitCommand : BaseCommand
 
 		var message = GetMessage();
 
-		var file = Path.Combine(repo.Info.Path, "COMMIT_EDITMSG");
+		var file = Path.Join(repo.Info.Path, "COMMIT_EDITMSG");
 		File.WriteAllText(file, message);
 
 		var editor = Far.Api.CreateEditor();

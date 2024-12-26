@@ -11,7 +11,6 @@ class ChangesExplorer : BaseExplorer
 {
 	public static Guid MyTypeId = new("7b4c229a-949e-4100-856e-45c17d516d25");
 	readonly Options _op;
-	Panel? _panel;
 
 	internal class Options
 	{
@@ -19,7 +18,7 @@ class ChangesExplorer : BaseExplorer
 		public string? NewCommitSha;
 		public string? OldCommitSha;
 		public bool IsSingleCommit;
-		public string? Path;
+		public string? ItemPath;
 	}
 
 	internal enum Kind
@@ -43,41 +42,46 @@ class ChangesExplorer : BaseExplorer
 		return new ChangesPanel(this);
 	}
 
-	public override void EnterPanel(Panel panel)
-	{
-		_panel = panel;
-
-		panel.PostName(_op.Path);
-
-		base.EnterPanel(panel);
-	}
-
 	public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 	{
 		using var repo = new Repository(GitDir);
 
+		// init panel
+		ChangesPanel? panel = null;
+		if (args.Panel is ChangesPanel test && test.Title is null)
+		{
+			panel = test;
+			panel.PostName(_op.ItemPath);
+			panel.GitWork = repo.Info.WorkingDirectory;
+		}
+
 		TreeChanges changes;
-		string title;
 		switch (_op.Kind)
 		{
 			case Kind.NotCommitted:
 				{
 					changes = Lib.GetChanges(repo);
-					title = $"Not committed changes {repo.Info.WorkingDirectory}";
+
+					if (panel is { })
+						panel.Title = $"Not committed changes {panel.GitWork}";
 				}
 				break;
 
 			case Kind.NotStaged:
 				{
 					changes = repo.Diff.Compare<TreeChanges>();
-					title = $"Not staged changes {repo.Info.WorkingDirectory}";
+
+					if (panel is { })
+						panel.Title = $"Not staged changes {panel.GitWork}";
 				}
 				break;
 
 			case Kind.Staged:
 				{
 					changes = repo.Diff.Compare<TreeChanges>(repo.Head.Tip?.Tree, DiffTargets.Index);
-					title = $"Staged changes {repo.Info.WorkingDirectory}";
+
+					if (panel is { })
+						panel.Title = $"Staged changes {panel.GitWork}";
 				}
 				break;
 
@@ -85,22 +89,28 @@ class ChangesExplorer : BaseExplorer
 				{
 					var tip = repo.Head.Tip;
 					changes = Lib.CompareTrees(repo, tip?.Parents.FirstOrDefault()?.Tree, tip?.Tree);
-					title = $"Head commit: {tip?.MessageShort}";
+
+					if (panel is { })
+						panel.Title = $"Head commit: {tip?.MessageShort}";
 				}
 				break;
 
 			case Kind.Last:
 				{
 					changes = Lib.GetChanges(repo);
+
 					if (changes.Count > 0)
 					{
-						title = $"Last not committed {repo.Info.WorkingDirectory}";
+						if (panel is { })
+							panel.Title = $"Last not committed {panel.GitWork}";
 					}
 					else
 					{
 						var tip = repo.Head.Tip;
 						changes = Lib.CompareTrees(repo, tip?.Parents.FirstOrDefault()?.Tree, tip?.Tree);
-						title = $"Last commit: {tip?.MessageShort}";
+
+						if (panel is { })
+							panel.Title = $"Last commit: {tip?.MessageShort}";
 					}
 				}
 				break;
@@ -111,16 +121,20 @@ class ChangesExplorer : BaseExplorer
 					var oldCommit = _op.OldCommitSha is null ? null : repo.Lookup<Commit>(_op.OldCommitSha);
 
 					changes = Lib.CompareTrees(repo, oldCommit?.Tree, newCommit?.Tree);
-					var settings = Settings.Default.GetData();
-					var newId = _op.NewCommitSha is null ? "?" : _op.NewCommitSha[0..settings.ShaPrefixLength];
-					if (_op.IsSingleCommit)
+
+					if (panel is { })
 					{
-						title = $"{newId}: {newCommit?.MessageShort}";
-					}
-					else
-					{
-						var oldId = _op.OldCommitSha is null ? "?" : _op.OldCommitSha[0..settings.ShaPrefixLength];
-						title = $"{newId}/{oldId} {repo.Info.WorkingDirectory}";
+						var settings = Settings.Default.GetData();
+						var newId = _op.NewCommitSha is null ? "?" : _op.NewCommitSha[0..settings.ShaPrefixLength];
+						if (_op.IsSingleCommit)
+						{
+							panel.Title = $"{newId}: {newCommit?.MessageShort}";
+						}
+						else
+						{
+							var oldId = _op.OldCommitSha is null ? "?" : _op.OldCommitSha[0..settings.ShaPrefixLength];
+							panel.Title = $"{newId}/{oldId} {panel.GitWork}";
+						}
 					}
 				}
 				break;
@@ -128,9 +142,6 @@ class ChangesExplorer : BaseExplorer
 			default:
 				throw null!;
 		}
-
-		if (_panel is not null)
-			_panel.Title = title;
 
 		//! Used to set renamed Name = new << old. This breaks `PostName`.
 		//! Keep Name, it is useful as is. Use [CtrlA] to see old names.

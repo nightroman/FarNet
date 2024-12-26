@@ -5,6 +5,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FarNet;
 
@@ -34,7 +35,7 @@ namespace FarNet;
 /// </para>
 /// <para>
 /// Most of <c>UI*</c> methods should not be called directly, they are called by the core on user interaction.
-/// Many of them can be overriden in derived classes but this should be done only if explorer methods are not enough.
+/// Many of them can be overridden in derived classes but this should be done only if explorer methods are not enough.
 /// </para>
 /// <para>
 /// All <c>Works*</c> members are for internal use only.
@@ -46,15 +47,27 @@ public partial class Panel : IPanel
 	/// Gets or sets the flag telling that files should be refreshed, reloaded, etc.
 	/// </summary>
 	/// <remarks>
-	/// The flag is set by the core on opening a panel and when a user presses [CtrlR] or [PgDn]/[PgUp] on paging.
-	/// Modules also can set it after some panel or data changes before calling the <see cref="Update"/>.
-	/// The core drops the flag automatically after panel updates.
+	/// This flag is true on opening the panel and after user [CtrlR] or [PgDn]/[PgUp] on paging.
+	/// Modules may set it to true before calling the <see cref="Update"/>.
+	/// The core sets it to false after panel updates.
 	/// <para>
 	/// The flag is passed in <see cref="GetFilesEventArgs"/> and used by explorers that cache their data
 	/// but still allow them to be refreshed (e.g. on [CtrlR]) or even completely changed (e.g. on paging).
 	/// </para>
 	/// </remarks>
-	public bool NeedsNewFiles { get; set; } = true;
+	public bool NeedsNewFiles
+	{
+		get => _NeedsNewFiles;
+		set
+		{
+			_NeedsNewFiles = value;
+
+			//! set the default title when done by core (false)
+			if (string.IsNullOrEmpty(Title) && value == false)
+				Title = DefaultTitle;
+		}
+	}
+	bool _NeedsNewFiles = true;
 
 	/// <summary>
 	/// Gets or sets the maximum number of files for paging. The default is 0, paging is not used.
@@ -129,16 +142,25 @@ public partial class Panel : IPanel
 	public Panel? Parent => _Parent;
 
 	/// <summary>
-	/// Gets the default panel title to be set on show.
+	/// Gets the default panel title.
 	/// </summary>
+	/// <remarks>
+	/// It is called after getting files in order to set <see cref="Title"/>, if it is null or empty.
+	/// </remarks>
 	protected virtual string DefaultTitle => GetType().Name;
 
 	/// <summary>
-	/// Gets or sets the panel header.
+	/// Gets or sets the panel title.
 	/// </summary>
+	/// <remarks>
+	/// If not set, the title is null before getting files.
+	/// On getting files, the explorer may set the title in <see cref="GetFilesEventArgs.Panel"/>.
+	/// After getting files, if the title is null or empty then it is set to <see cref="DefaultTitle"/>.
+	/// </remarks>
+	[AllowNull]
 	public string Title
 	{
-		get => _Panel.Title;
+		get => _Panel.Title!; //! keep null, explorers may check for null for lazy assignment
 		set => _Panel.Title = value;
 	}
 
@@ -196,10 +218,6 @@ public partial class Panel : IPanel
 		if (area != WindowKind.Panels && area != WindowKind.Desktop && Far.Api.Window.IsModal)
 			throw new ModuleException("Cannot open panel from modal window.");
 
-		// set the title to default
-		if (string.IsNullOrEmpty(Title))
-			Title = DefaultTitle;
-
 		// | open as child
 		if (_Parent != null) //_201216_d3 do not PostStep, it's just replacing panels ??
 		{
@@ -209,10 +227,7 @@ public partial class Panel : IPanel
 
 		if (area == WindowKind.Panels)
 		{
-			Far.Api.PostStep(() => //_201216_d3
-			{
-				Open2();
-			});
+			Far.Api.PostStep(Open2); //_201216_d3
 			return;
 		}
 
@@ -245,7 +260,7 @@ public partial class Panel : IPanel
 	/// <summary>
 	/// Opens this panel as a child of the parent panel.
 	/// </summary>
-	/// <param name="parent">The opend parent panel. Null tells to use the active module panel, if any.</param>
+	/// <param name="parent">The opened parent panel. Null tells to use the active module panel, if any.</param>
 	/// <remarks>
 	/// When this panel is opened as a child of the parent panel, the parent is hidden, not closed.
 	/// When the child closes itself later then the parent is shown again and its state is restored.
@@ -644,7 +659,7 @@ public partial class Panel : IPanel
 	/// Tells to convert timestamps to FAT format for the Compare folders operation.
 	/// </summary>
 	/// <remarks>
-	/// Set this flag if the panel file system doesn't provide time accuracy necessary for standard comparison operations.
+	/// Set this flag if the panel file system does not provide time accuracy necessary for standard comparison operations.
 	/// </remarks>
 	public bool CompareFatTime
 	{
@@ -776,10 +791,10 @@ public partial class Panel : IPanel
 	/// Closes the module panel and all parents and opens the original file panel with the specified path.
 	/// </summary>
 	/// <param name="path">
-	/// Name of the directory that will be set in the panel after closing the panel (or {null|empty}).
-	/// If the path doesn't exist the core shows an error message box always.
+	/// The directory to be set current after closing, if not null or empty.
+	/// Note that Far shows an error message box if the path does not exist.
 	/// </param>
-	public void Close(string path) => _Panel.Close(path);
+	public void Close(string? path) => _Panel.Close(path);
 
 	/// <summary>
 	/// Sets the specified item current by name, if it exists.
@@ -839,20 +854,20 @@ public partial class Panel : IPanel
 	/// <summary>
 	/// Selects shown items by their indexes.
 	/// </summary>
-	/// <param name="indexes">Indexes of items to be selected. Null is OK.</param>
+	/// <param name="indexes">Indexes of items to be selected.</param>
 	/// <remarks>
 	/// Call <see cref="Redraw()"/> after that.
 	/// </remarks>
-	public void SelectAt(int[] indexes) => _Panel.SelectAt(indexes);
+	public void SelectAt(int[]? indexes) => _Panel.SelectAt(indexes);
 
 	/// <summary>
 	/// Unselects shown items by their indexes. See <see cref="Redraw()"/>.
 	/// </summary>
-	/// <param name="indexes">Indexes of items to be unselected. Null os OK.</param>
+	/// <param name="indexes">Indexes of items to be unselected.</param>
 	/// <remarks>
 	/// Call <see cref="Redraw()"/> after that.
 	/// </remarks>
-	public void UnselectAt(int[] indexes) => _Panel.UnselectAt(indexes);
+	public void UnselectAt(int[]? indexes) => _Panel.UnselectAt(indexes);
 
 	/// <include file='doc.xml' path='doc/SelectNames/*'/>
 	public void SelectNames(IEnumerable names) => _Panel.SelectNames(names);
@@ -884,12 +899,11 @@ public partial class Panel : IPanel
 	/// Called when the panel has been closed.
 	/// </summary>
 	/// <remarks>
-	/// The method releases panel resources. It should not do anything else, the panel has gone.
 	/// <para>
-	/// Overriden methods must call the base. Consider to use try/finally and call the base from finally.
+	/// The method releases panel resources. Overridden methods should always call the base, e.g. from finally.
 	/// </para>
 	/// <para>
-	/// The base method triggers the <see cref="Closed"/> event and then disposes the <see cref="Garbage"/>.
+	/// The base method triggers <see cref="Closed"/> and then disposes <see cref="Garbage"/>.
 	/// </para>
 	/// </remarks>
 	public virtual void UIClosed()
@@ -1047,7 +1061,7 @@ public partial class Panel : IPanel
 	/// Gets or sets the base file of emulated file system.
 	/// </summary>
 	/// <remarks>
-	/// If the panel doesn't emulate a file system based on files it should be empty.
+	/// If the panel does not emulate a file system based on files it should be empty.
 	/// </remarks>
 	public string HostFile
 	{

@@ -18,7 +18,7 @@ public interface IPanelWorks : IPanel
 
 	string StartDirectory { get; }
 
-	string Title { get; set; }
+	string? Title { get; set; }
 
 	Panel TargetPanel { get; }
 	#endregion

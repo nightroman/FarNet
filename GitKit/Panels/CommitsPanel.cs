@@ -2,6 +2,7 @@
 using GitKit.About;
 using GitKit.Commands;
 using LibGit2Sharp;
+using System;
 using System.IO;
 using System.Linq;
 
@@ -27,20 +28,18 @@ class CommitsPanel : BasePanel<CommitsExplorer>
 
 	protected override string HelpTopic => "commits-panel";
 
-	public string BranchName => ((CommitsExplorer.BranchCommits)Explorer.Commits).BranchName;
-
-	void PushBranch()
+	void PushBranch(string branchName)
 	{
-		if (BranchName == Const.NoBranchName)
+		if (branchName == Const.NoBranchName)
 			throw new ModuleException($"Cannot push {Const.NoBranchName}.");
 
 		using var repo = new Repository(GitDir);
 
-		var branch = repo.Branches[BranchName];
+		var branch = repo.Branches[branchName];
 		PushCommand.PushBranch(repo, branch);
 	}
 
-	void CompareCommits()
+	void CompareCommits(string branchName)
 	{
 		var (commitSha1, commitSha2) = GetSelectedDataRange(x => (x as CommitFile)?.CommitSha);
 		if (commitSha2 is null)
@@ -48,7 +47,7 @@ class CommitsPanel : BasePanel<CommitsExplorer>
 
 		using var repo = new Repository(GitDir);
 
-		var branch = repo.MyBranch(BranchName);
+		var branch = repo.MyBranch(branchName);
 
 		var commit1 = commitSha1 is null ? branch.Tip : repo.Lookup<Commit>(commitSha1);
 		var commit2 = repo.Lookup<Commit>(commitSha2);
@@ -58,7 +57,7 @@ class CommitsPanel : BasePanel<CommitsExplorer>
 		CompareCommits(commits[0].Sha, commits[1].Sha);
 	}
 
-	void CreateBranch()
+	void CreateBranch(string branchName)
 	{
 		if (CurrentFile is not CommitFile file)
 			return;
@@ -68,8 +67,8 @@ class CommitsPanel : BasePanel<CommitsExplorer>
 		var newName = Far.Api.Input(
 			"New branch name",
 			"GitBranch",
-			$"Create new branch from {BranchName} {hash}",
-			$"{Path.GetFileName(BranchName)}-{hash}");
+			$"Create new branch from {branchName} {hash}",
+			$"{Path.GetFileName(branchName)}-{hash}");
 
 		if (string.IsNullOrEmpty(newName))
 			return;
@@ -90,11 +89,11 @@ class CommitsPanel : BasePanel<CommitsExplorer>
 	{
 		menu.Add("Copy SHA-1", (s, e) => CopySha());
 
-		if (Explorer.Commits is CommitsExplorer.BranchCommits)
+		if (MyExplorer.BranchName is { } branchName)
 		{
-			menu.Add("Push branch", (s, e) => PushBranch());
-			menu.Add("Create branch", (s, e) => CreateBranch());
-			menu.Add("Compare commits", (s, e) => CompareCommits());
+			menu.Add("Push branch", (s, e) => PushBranch(branchName));
+			menu.Add("Create branch", (s, e) => CreateBranch(branchName));
+			menu.Add("Compare commits", (s, e) => CompareCommits(branchName));
 		}
 	}
 }

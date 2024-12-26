@@ -1,7 +1,6 @@
 ﻿using FarNet;
 using LibGit2Sharp;
 using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace GitKit.About;
@@ -9,12 +8,6 @@ namespace GitKit.About;
 static class Const
 {
 	public const string NoBranchName = "(no branch)";
-}
-
-interface ICommits
-{
-	string Title { get; }
-	IEnumerable<FarFile> GetFiles(GetFilesEventArgs args);
 }
 
 /// <summary>

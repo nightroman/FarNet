@@ -10,6 +10,11 @@ namespace GitKit.Panels;
 
 class ChangesPanel : BasePanel<ChangesExplorer>
 {
+	/// <summary>
+	/// Set on getting files, null for bare repo.
+	/// </summary>
+	internal string? GitWork { get; set; }
+
 	public ChangesPanel(ChangesExplorer explorer) : base(explorer)
 	{
 		SortMode = PanelSortMode.Unsorted;
@@ -27,16 +32,11 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 
 	void EditChangeFile()
 	{
-		if (CurrentFile is not ChangeFile file || !file.Change.Exists)
-			return;
-
-		using var repo = new Repository(GitDir);
-
-		if (repo.Info.WorkingDirectory is not { } gitWork)
+		if (CurrentFile is not ChangeFile file || !file.Change.Exists || GitWork is null)
 			return;
 
 		var editor = Far.Api.CreateEditor();
-		editor.FileName = Path.Join(gitWork, file.Change.Path);
+		editor.FileName = Path.Join(GitWork, file.Change.Path);
 		editor.Open();
 	}
 
@@ -50,9 +50,7 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 		if (path is null)
 			return;
 
-		new CommitsExplorer(GitDir, path, true)
-			.CreatePanel()
-			.OpenChild(this);
+		new CommitsExplorer(GitDir, null, path).CreatePanel().OpenChild(this);
 	}
 
 	(string, bool) GetBlobFile(ObjectId oid, string path, bool exists)
@@ -65,7 +63,10 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 		var blob = repo.Lookup<Blob>(oid);
 		if (blob is null)
 		{
-			var file = Path.Combine(repo.Info.WorkingDirectory, path);
+			if (GitWork is null)
+				return (string.Empty, false);
+
+			var file = Path.Join(GitWork, path);
 			if (File.Exists(file))
 				return (file, false);
 			else
@@ -73,7 +74,7 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 		}
 		else
 		{
-			var file = Path.Combine(Path.GetTempPath(), Path.ChangeExtension(oid.Sha, Path.GetExtension(path)));
+			var file = Path.Join(Path.GetTempPath(), Path.ChangeExtension(oid.Sha, Path.GetExtension(path)));
 			using var stream = File.OpenWrite(file);
 			blob.GetContentStream().CopyTo(stream);
 			return (file, true);

@@ -11,9 +11,6 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 {
 	public BranchesPanel(BranchesExplorer explorer) : base(explorer)
 	{
-		using var repo = new Repository(GitDir);
-
-		Title = $"Branches {repo.Info.WorkingDirectory}";
 		SortMode = PanelSortMode.Unsorted;
 
 		var co = new SetColumn { Kind = "O", Name = " ", Width = 2 };

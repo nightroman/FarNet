@@ -875,7 +875,7 @@ int Panel2::AsGetFindData(GetFindDataInfo* info)
 		if (!_skipUpdateFiles)
 		{
 			// call
-			GetFilesEventArgs args(mode, Host->PageOffset, Host->PageLimit, Host->NeedsNewFiles);
+			GetFilesEventArgs args(mode, Host, Host->PageOffset, Host->PageLimit, Host->NeedsNewFiles);
 			IEnumerable<FarFile^>^ files = Host->UIGetFiles(% args);
 
 			// store IList or copy IEnumerable

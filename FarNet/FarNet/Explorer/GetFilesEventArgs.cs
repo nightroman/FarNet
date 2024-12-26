@@ -15,15 +15,22 @@ public class GetFilesEventArgs : ExplorerEventArgs
 	}
 
 	/// <param name="mode">See <see cref="ExplorerEventArgs.Mode"/></param>
+	/// <param name="panel">The calling panel.</param>
 	/// <param name="offset">See <see cref="Offset"/></param>
 	/// <param name="limit">See <see cref="Limit"/></param>
 	/// <param name="newFiles">See <see cref="NewFiles"/></param>
-	public GetFilesEventArgs(ExplorerModes mode, int offset, int limit, bool newFiles) : base(mode)
+	public GetFilesEventArgs(ExplorerModes mode, Panel? panel, int offset, int limit, bool newFiles) : base(mode)
 	{
+		Panel = panel;
 		Limit = limit;
 		Offset = offset;
 		NewFiles = newFiles;
 	}
+
+	/// <summary>
+	/// The calling panel.
+	/// </summary>
+	public Panel? Panel { get; }
 
 	/// <summary>
 	/// Gets the maximum number of files to get on paging.

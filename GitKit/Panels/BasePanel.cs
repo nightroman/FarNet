@@ -6,18 +6,18 @@ abstract class BasePanel<T>(T explorer) : AbcPanel(explorer) where T : BaseExplo
 {
 	public string GitDir => explorer.GitDir;
 
-	public new T Explorer => (T)base.Explorer;
+	public T MyExplorer => (T)Explorer;
 
 	protected void CompareCommits(string oldCommitSha, string newCommitSha)
 	{
-		new ChangesExplorer(GitDir, new ChangesExplorer.Options
+		new ChangesExplorer(GitDir, new()
 		{
 			Kind = ChangesExplorer.Kind.CommitsRange,
 			NewCommitSha = newCommitSha,
 			OldCommitSha = oldCommitSha,
 		})
-			.CreatePanel()
-			.OpenChild(this);
+		.CreatePanel()
+		.OpenChild(this);
 	}
 
 	protected static void CopySha(string commitSha)
