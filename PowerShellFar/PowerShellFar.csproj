@@ -10,6 +10,9 @@
     <NoWarn>IDE0079;IDE0130</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <EmbeddedResource Include="PowerShellFar.ps1" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Remove="Bench\**" />
     <Compile Remove="Modules\**" />
     <Compile Remove="Samples\**" />

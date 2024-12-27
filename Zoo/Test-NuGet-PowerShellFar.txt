@@ -78,7 +78,6 @@ FarHome\FarNet\Modules\PowerShellFar\PowerShellFar.dll
 FarHome\FarNet\Modules\PowerShellFar\PowerShellFar.dll-Help.xml
 FarHome\FarNet\Modules\PowerShellFar\PowerShellFar.hlf
 FarHome\FarNet\Modules\PowerShellFar\PowerShellFar.macro.lua
-FarHome\FarNet\Modules\PowerShellFar\PowerShellFar.ps1
 FarHome\FarNet\Modules\PowerShellFar\PowerShellFar.xml
 FarHome\FarNet\Modules\PowerShellFar\runtimes
 FarHome\FarNet\Modules\PowerShellFar\runtimes\win

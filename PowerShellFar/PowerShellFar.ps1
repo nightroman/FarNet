@@ -1,7 +1,5 @@
-<#
-.Synopsis
-	The internal profile.
-#>
+Set-Alias Start-Transcript Start-FarTranscript
+Set-Alias Stop-Transcript Stop-FarTranscript
 
 <#
 .Synopsis
@@ -25,11 +23,7 @@ function help {
 .Synopsis
 	PSF Get-History.
 #>
-function Get-History(
-	[Parameter()][int]
-	$Count = [int]::MaxValue
-)
-{
+function Get-History([Parameter()][int]$Count = [int]::MaxValue) {
 	$Psf.GetHistory($Count)
 }
 
@@ -47,11 +41,7 @@ function Invoke-History {
 .Parameter Internal
 		Tells to show in the internal viewer.
 #>
-function Show-FarTranscript(
-	[Parameter()]
-	[switch]$Internal
-)
-{
+function Show-FarTranscript([Parameter()][switch]$Internal) {
 	trap { $PSCmdlet.ThrowTerminatingError($_) }
 	[PowerShellFar.Zoo]::ShowTranscript($Internal)
 }
@@ -62,12 +52,10 @@ function Show-FarTranscript(
 #>
 function Stop-FarTranscript {
 	[CmdletBinding()]
-	param(
-	)
+	param()
 	trap { $PSCmdlet.ThrowTerminatingError($_) }
 	[PowerShellFar.Zoo]::StopTranscript($false)
 }
-Set-Alias Stop-Transcript Stop-FarTranscript
 
 <#
 .ForwardHelpTargetName Start-Transcript
@@ -108,4 +96,3 @@ function Start-FarTranscript {
 	}
 	[PowerShellFar.Zoo]::StartTranscript($LiteralPath, $Append, $Force, $NoClobber)
 }
-Set-Alias Start-Transcript Start-FarTranscript

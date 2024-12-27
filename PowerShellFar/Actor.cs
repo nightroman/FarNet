@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -181,7 +182,12 @@ public sealed partial class Actor
 		using var ps = NewPowerShell();
 
 		// internal profile
-		ps.AddCommand($"{A.Psf.AppHome}\\PowerShellFar.ps1", false).Invoke();
+		{
+			using var stream = typeof(Actor).Assembly.GetManifestResourceStream("PowerShellFar.PowerShellFar.ps1");
+			using var reader = new StreamReader(stream!, Encoding.UTF8);
+			var code = reader.ReadToEnd();
+			ps.AddScript(code, false).Invoke();
+		}
 
 		// user profile, run separately for better errors
 		var profile = Entry.RoamingData + "\\Profile.ps1";

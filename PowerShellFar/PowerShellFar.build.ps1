@@ -64,7 +64,7 @@ task installBin {
 }
 
 task installRes {
-	exec { robocopy . $ModuleHome PowerShellFar.ps1 TabExpansion2.ps1 } (0..2)
+	Copy-Item -Destination $ModuleHome TabExpansion2.ps1
 }
 
 # Build PowerShell help if FarHost else Write-Warning.

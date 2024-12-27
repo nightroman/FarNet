@@ -47,7 +47,7 @@ public class FolderChartTool : ModuleTool
 		if (index > 0)
 			sorted.RemoveRange(0, index);
 		if (sumHiddenSizes > 0)
-			sorted.Insert(0, new FolderItem() { Name = string.Empty, Size = sumHiddenSizes });
+			sorted.Insert(0, new() { Name = string.Empty, Size = sumHiddenSizes });
 
 		var errors = run.GetErrors();
 		if (errors.Length > 0)

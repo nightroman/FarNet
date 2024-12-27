@@ -39,6 +39,7 @@ class SizeRun
 		long size = 0;
 		try
 		{
+			// skip junctions and similar links
 			if (folder.LinkTarget is not null)
 				return 0;
 
@@ -52,6 +53,7 @@ class SizeRun
 
 			foreach (var file in folder.EnumerateFiles())
 			{
+				// skip sparse files
 				if ((file.Attributes & FileAttributes.SparseFile) == 0)
 					size += file.Length;
 			}
@@ -75,7 +77,7 @@ class SizeRun
 				{
 					Check();
 					var info = new DirectoryInfo(folder);
-					_Result.Add(new FolderItem() { Name = info.Name, Size = CalculateFolderSize(info) });
+					_Result.Add(new() { Name = info.Name, Size = CalculateFolderSize(info) });
 					_progress.SetProgressValue(_Result.Count, folders.Count);
 				});
 			}
@@ -91,7 +93,7 @@ class SizeRun
 					try
 					{
 						var info = new FileInfo(file);
-						_Result.Add(new FolderItem() { Name = info.Name, Size = info.Length });
+						_Result.Add(new() { Name = info.Name, Size = info.Length });
 					}
 					catch (Exception ex)
 					{
@@ -116,10 +118,11 @@ class SizeRun
 
 		try
 		{
-			task.Wait();
+			task.ConfigureAwait(false).GetAwaiter().GetResult();
 		}
-		catch (AggregateException)
-		{ }
+		catch
+		{
+		}
 
 		return task.Status == TaskStatus.RanToCompletion;
 	}
