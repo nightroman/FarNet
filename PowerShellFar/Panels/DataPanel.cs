@@ -1,7 +1,3 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -218,7 +214,7 @@ public sealed class DataPanel : TablePanel, IDisposable
 	}
 
 	///
-	protected override string DefaultTitle { get { return string.IsNullOrEmpty(Table!.TableName) ? "Data Table" : "Table " + Table.TableName; } }
+	protected override string DefaultTitle => string.IsNullOrEmpty(Table!.TableName) ? "Data Table" : "Table " + Table.TableName;
 
 	/// <summary>
 	/// Fills data table and shows the panel.
@@ -703,7 +699,7 @@ public sealed class DataPanel : TablePanel, IDisposable
 	void OpenFileActor(FarFile file)
 	{
 		var memberPanel = OpenFileMembers(file)!;
-		memberPanel.Explorer.CanDeleteFiles = false;
+		memberPanel.MyExplorer.SkipDeleteFiles = true;
 	}
 
 	void OnSort()

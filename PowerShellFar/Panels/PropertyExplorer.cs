@@ -1,7 +1,3 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
 using System;
 using System.Collections;
@@ -14,7 +10,7 @@ namespace PowerShellFar;
 /// <summary>
 /// Explorer of a provider item properties.
 /// </summary>
-public sealed class PropertyExplorer : Explorer
+public sealed class PropertyExplorer : ListExplorer
 {
 	const string TypeIdString = "19f5261b-4f82-4a0a-93c0-1741f6715752";
 
@@ -36,16 +32,22 @@ public sealed class PropertyExplorer : Explorer
 		_ThePath = new PathInfoEx(itemPath);
 
 		Functions =
+			ExplorerFunctions.DeleteFiles |
 			ExplorerFunctions.GetContent |
 			ExplorerFunctions.SetText;
 
 		if (My.ProviderInfoEx.HasDynamicProperty(Provider))
-			Functions |= (
+		{
+			Functions |=
 				ExplorerFunctions.AcceptFiles |
-				ExplorerFunctions.DeleteFiles |
 				ExplorerFunctions.CloneFile |
 				ExplorerFunctions.CreateFile |
-				ExplorerFunctions.RenameFile);
+				ExplorerFunctions.RenameFile;
+		}
+		else
+		{
+			SkipDeleteFiles = true;
+		}
 	}
 
 	/// <inheritdoc/>

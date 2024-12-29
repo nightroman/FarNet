@@ -1,7 +1,3 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
 using System;
 using System.Data;
@@ -18,7 +14,7 @@ public sealed class MemberPanel : ListPanel
 	/// <summary>
 	/// Gets the panel explorer.
 	/// </summary>
-	public new MemberExplorer Explorer => (MemberExplorer)base.Explorer;
+	public MemberExplorer MyExplorer => (MemberExplorer)Explorer;
 
 	/// <summary>
 	/// New member panel with the member explorer.
@@ -26,15 +22,12 @@ public sealed class MemberPanel : ListPanel
 	/// <param name="explorer">The panel explorer.</param>
 	public MemberPanel(MemberExplorer explorer) : base(explorer)
 	{
-		// panel info
+		Title = "Members: " + Target.BaseObject.GetType().Name;
 		CurrentLocation = "*";
 		SortMode = PanelSortMode.Unsorted;
 	}
 
-	///
-	protected override string DefaultTitle => "Members: " + Target.BaseObject.GetType().Name;
-
-	internal sealed override PSObject Target => Explorer.Value;
+	internal sealed override PSObject Target => MyExplorer.Value;
 
 	/// <summary>
 	/// Gets or sets data modification flag.
@@ -86,12 +79,13 @@ public sealed class MemberPanel : ListPanel
 	}
 
 	/// <summary>
-	/// Changes modes: properties, members, static
+	/// Switches modes: properties, members.
 	/// </summary>
 	internal override void UIMode()
 	{
-		if (++Explorer.MemberMode > 1) // don't use static for now
-			Explorer.MemberMode = 0;
+		if (++MyExplorer.MemberMode > 1)
+			MyExplorer.MemberMode = 0;
+
 		UpdateRedraw(false, 0, 0);
 	}
 

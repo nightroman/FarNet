@@ -404,8 +404,9 @@ public abstract class Explorer(Guid typeId)
 	IEqualityComparer<FarFile>? _FileComparer;
 
 	/// <summary>
-	/// Opens the explorer in a panel.
+	/// .
 	/// </summary>
+	[Obsolete("Use CreatePanel().Open()")]
 	public void OpenPanel()
 	{
 		var panel = CreatePanel();
@@ -413,9 +414,10 @@ public abstract class Explorer(Guid typeId)
 	}
 
 	/// <summary>
-	/// Opens the explorer in a panel that is a child of the specified panel.
+	/// .
 	/// </summary>
-	/// <param name="parent">The parent panel.</param>
+	/// <param name="parent">.</param>
+	[Obsolete("Use CreatePanel().OpenChild(parent)")]
 	public void OpenPanelChild(Panel parent)
 	{
 		var panel = CreatePanel();

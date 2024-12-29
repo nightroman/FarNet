@@ -59,12 +59,6 @@ public interface IPanelWorks : IPanel
 	void PostName(string? name);
 	#endregion
 
-	#region Other Info
-	string FormatName { get; set; }
-
-	string HostFile { get; set; }
-	#endregion
-
 	DataItem[] InfoItems { get; set; }
 
 	void SetKeyBars(KeyBar[] bars);

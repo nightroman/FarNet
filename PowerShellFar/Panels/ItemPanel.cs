@@ -1,7 +1,3 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 /*
 _090929_061740 Far 2.0.1145 does not sync the current directory with the panel path.
 	//! Empty provider path: open item panel, do 'cd \\DEV-RKUZ9400-SWK'
@@ -85,7 +81,7 @@ public sealed class ItemPanel : FormatPanel
 
 		// open property panel
 		var file = CurrentFile;
-		new PropertyExplorer(file is null ? Explorer.Location : My.PathEx.Combine(Explorer.Location, file.Name)).OpenPanelChild(this);
+		new PropertyExplorer(file is null ? Explorer.Location : My.PathEx.Combine(Explorer.Location, file.Name)).CreatePanel().OpenChild(this);
 	}
 
 	internal override bool UICopyMoveCan(bool move)

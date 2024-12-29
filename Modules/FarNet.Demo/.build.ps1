@@ -15,10 +15,12 @@ task build {
 	exec { dotnet build -c Release -p:FarHome=$FarHome -p:FarNetModules=$FarNetModules }
 }
 
-task publish resgen
+task publish resgen, {
+	remove $ModuleRoot\FarNet.Demo.deps.json
+}
 
 task clean {
-	remove bin, obj
+	remove obj
 }
 
 # https://github.com/nightroman/PowerShelf/blob/main/Invoke-Environment.ps1
@@ -28,7 +30,7 @@ task resgen @{
 	Partial = $true
 	Jobs = {
 		begin {
-			$VsDevCmd = @(Get-Item "$env:ProgramFiles\Microsoft Visual Studio\2022\*\Common7\Tools\VsDevCmd.bat")
+			$VsDevCmd = @(Get-Item "$env:ProgramFiles\Microsoft Visual Studio\*\*\Common7\Tools\VsDevCmd.bat")
 			Invoke-Environment.ps1 -File ($VsDevCmd[0])
 		}
 		process {

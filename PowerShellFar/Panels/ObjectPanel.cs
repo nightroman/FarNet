@@ -1,7 +1,3 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
 using System.Collections.Generic;
 using System.Management.Automation;
@@ -24,6 +20,7 @@ public class ObjectPanel : FormatPanel
 	/// <param name="explorer">The panel explorer.</param>
 	public ObjectPanel(ObjectExplorer explorer) : base(explorer)
 	{
+		Title = "Objects";
 		CurrentLocation = "*";
 		SortMode = PanelSortMode.Unsorted;
 	}
@@ -32,9 +29,6 @@ public class ObjectPanel : FormatPanel
 	public ObjectPanel() : this(new ObjectExplorer())
 	{
 	}
-
-	/// <inheritdoc/>
-	protected override string DefaultTitle => "Objects";
 
 	/// <summary>
 	/// Adds a single objects to the panel as it is.

@@ -33,7 +33,7 @@ $parent = { job {
 			$Panel.Garbage.Add(([TestPanelClosed]{ $Data.Output += "Parent-Disposed." }))
 			$Panel
 		}
-	}).OpenPanel()
+	}).CreatePanel().Open()
 }}
 
 $child = { job {
@@ -47,7 +47,7 @@ $child = { job {
 			$Panel.Garbage.Add(([TestPanelClosed]{ $Data.Output += "Child-Disposed." }))
 			$Panel
 		}
-	}).OpenPanelChild($Far.Panel)
+	}).CreatePanel().OpenChild($Far.Panel)
 }}
 
 ### open parent

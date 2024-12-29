@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.5 =
+
+Refactor panels.
+
 = 9.0.4 =
 
 Use embedded internal profile.

@@ -1,7 +1,3 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
 using System;
 using System.Collections;
@@ -103,8 +99,6 @@ public partial class AnyPanel : Panel
 	/// </remarks>
 	protected override bool CanOpenAsChild(Panel parent)
 	{
-		ArgumentNullException.ThrowIfNull(parent);
-
 		if (Lookup is null)
 			return true;
 
@@ -150,7 +144,7 @@ public partial class AnyPanel : Panel
 	{
 	}
 
-	internal virtual bool UICopyMoveCan(bool move) //?????
+	internal virtual bool UICopyMoveCan(bool move)
 	{
 		return !move && TargetPanel is ObjectPanel;
 	}
@@ -225,10 +219,10 @@ public partial class AnyPanel : Panel
 		if (Far.Api.Panel is TablePanel tablePanel)
 		{
 			if (!string.IsNullOrEmpty(tablePanel.ExcludeMemberPattern))
-				panel.Explorer.ExcludeMemberPattern = tablePanel.ExcludeMemberPattern;
+				panel.MyExplorer.ExcludeMemberPattern = tablePanel.ExcludeMemberPattern;
 
 			if (!string.IsNullOrEmpty(tablePanel.HideMemberPattern))
-				panel.Explorer.HideMemberPattern = tablePanel.HideMemberPattern;
+				panel.MyExplorer.HideMemberPattern = tablePanel.HideMemberPattern;
 		}
 
 		//! use null as parent: this panel can be not open now
@@ -331,16 +325,12 @@ public partial class AnyPanel : Panel
 	/// <inheritdoc/>
 	public override bool UIKeyPressed(KeyInfo key)
 	{
-		ArgumentNullException.ThrowIfNull(key);
-
 		UserWants = UserAction.None;
 		try
 		{
 			switch (key.VirtualKeyCode)
 			{
-				case KeyCode.Enter:
-
-					if (key.Is())
+				case KeyCode.Enter when key.Is():
 					{
 						var file = CurrentFile;
 						if (file is null)
@@ -354,98 +344,53 @@ public partial class AnyPanel : Panel
 						UIOpenFile(file);
 						return true;
 					}
-
-					if (key.IsShift())
+				case KeyCode.Enter when key.IsShift():
 					{
 						UIAttributes();
 						return true;
 					}
-
-					break;
-
-				case KeyCode.F1:
-
-					if (key.Is())
+				case KeyCode.F1 when key.Is():
 					{
 						UIHelp();
 						return true;
 					}
-
-					break;
-
-				case KeyCode.F3:
-
-					if (key.Is())
+				case KeyCode.F3 when key.Is() && CurrentFile is null:
 					{
-						if (CurrentFile is null)
-						{
-							UIViewAll();
-							return true;
-						}
-						break;
+						UIViewAll();
+						return true;
 					}
-
-					if (key.IsShift())
+				case KeyCode.F3 when key.IsShift():
 					{
 						ShowMenu();
 						return true;
 					}
-
-					break;
-
-				case KeyCode.PageDown:
-
-					if (key.IsCtrl())
+				case KeyCode.PageDown when key.IsCtrl():
 					{
 						UIOpenFileMembers();
 						return true;
 					}
-
-					break;
-
-				case KeyCode.A:
-
-					if (key.IsCtrl())
+				case KeyCode.A when key.IsCtrl():
 					{
 						UIAttributes();
 						return true;
 					}
-
-					break;
-
-				case KeyCode.G:
-
-					if (key.IsCtrl())
+				case KeyCode.G when key.IsCtrl():
 					{
 						UIApply();
 						return true;
 					}
-
-					break;
-
-				case KeyCode.M:
-
-					if (key.IsCtrlShift())
+				case KeyCode.M when key.IsCtrlShift():
 					{
 						UIMode();
 						return true;
 					}
-
-					break;
-
-				case KeyCode.S:
-
-					//! Mantis#2635 Ignore if auto-completion menu is opened
-					if (key.IsCtrl() && Far.Api.Window.Kind != WindowKind.Menu)
+				//! Mantis#2635, mind auto-completion menu
+				case KeyCode.S when key.IsCtrl() && Far.Api.Window.Kind == WindowKind.Panels:
 					{
 						SaveData();
 						return true;
 					}
-
-					break;
 			}
-
-			// base
 			return base.UIKeyPressed(key);
 		}
 		finally
@@ -460,8 +405,6 @@ public partial class AnyPanel : Panel
 	/// </remarks>
 	public override void UICloneFile(CloneFileEventArgs args)
 	{
-		ArgumentNullException.ThrowIfNull(args);
-
 		// prompt
 		IInputBox input = Far.Api.CreateInputBox();
 		input.EmptyEnabled = true;
@@ -485,8 +428,6 @@ public partial class AnyPanel : Panel
 	/// <inheritdoc/>
 	public override void UIRenameFile(RenameFileEventArgs args)
 	{
-		ArgumentNullException.ThrowIfNull(args);
-
 		// prompt
 		IInputBox input = Far.Api.CreateInputBox();
 		input.EmptyEnabled = true;

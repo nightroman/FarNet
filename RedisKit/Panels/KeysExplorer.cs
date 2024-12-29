@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 
 namespace RedisKit.Panels;
 
-class KeysExplorer : BaseExplorer
+sealed class KeysExplorer : BaseExplorer
 {
 	public static Guid MyTypeId = new("5b2529ff-5482-46e5-b730-f9bdecaab8cc");
 
@@ -90,13 +90,6 @@ class KeysExplorer : BaseExplorer
 	string ToFileName(RedisKey key) =>
 		_prefix is null ? (string)key! : ((string)key!)[_prefix.Length..];
 
-	public override string ToString()
-	{
-		var name = _colon is { } ? "Tree" : "Keys";
-		var info = _prefix ?? _pattern ?? Database.Multiplexer.Configuration;
-		return $"{name} {info}";
-	}
-
 	public Files.KeyInput GetNameInput(FarFile file)
 	{
 		string name = file.IsDirectory ? file.DataFolder().Prefix : (string)file.DataKey().Key!;
@@ -123,6 +116,13 @@ class KeysExplorer : BaseExplorer
 	public override Panel CreatePanel()
 	{
 		return new KeysPanel(this);
+	}
+
+	protected override string PanelTitle()
+	{
+		var name = _colon is { } ? "Tree" : "Keys";
+		var info = _prefix ?? _pattern ?? Database.Multiplexer.Configuration;
+		return $"{name} {info}";
 	}
 
 	public override void EnterPanel(Panel panel)

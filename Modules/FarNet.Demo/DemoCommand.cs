@@ -7,8 +7,8 @@ using System.Linq;
 namespace FarNet.Demo;
 
 /// <summary>
-/// Command invoked from the command line by the "Demo:" prefix.
-/// It prints some data depending on the command text after the prefix.
+/// Command invoked from the command line as "demo: [subcommand]".
+/// Subcommand may be empty, process, assembly, resources.
 /// </summary>
 [ModuleCommand(Name = "FarNet.Demo Command", Prefix = "demo", Id = "e3b61c33-a71f-487d-bad3-5542aed112d6")]
 public class DemoCommand : ModuleCommand
@@ -31,7 +31,7 @@ public class DemoCommand : ModuleCommand
 	}
 
 	/// <summary>
-	/// Prints some useful process information.
+	/// Prints some process information.
 	/// </summary>
 	static void DoProcess()
 	{
@@ -49,7 +49,7 @@ Managed memory : {3,7:n0} kb
 	}
 
 	/// <summary>
-	/// Shows loaded .NET assembly paths in the viewer.
+	/// Shows loaded assembly paths in the viewer.
 	/// </summary>
 	static void DoAssembly()
 	{
@@ -74,19 +74,16 @@ Managed memory : {3,7:n0} kb
 	}
 
 	/// <summary>
-	/// Opens the current panel file as a .resources file.
+	/// Opens the cursor panel .resources file, e.g. "FarNet.Demo.resources" or
+	/// "FarNet.Demo.ru.resources" from the demo module directory.
 	/// </summary>
 	static void DoResources()
 	{
-		var file = Far.Api.Panel.CurrentFile;
+		var file = Far.Api.FS.CursorFile;
 		if (file == null)
 			return;
 
-		var path = Path.Combine(Far.Api.Panel.CurrentDirectory, file.Name);
-		if (!File.Exists(path))
-			return;
-
-		(new DemoExplorer(path)).OpenPanel();
+		new DemoExplorer(file.FullName).CreatePanel().Open();
 	}
 
 	/// <summary>

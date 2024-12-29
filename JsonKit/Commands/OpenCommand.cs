@@ -56,7 +56,7 @@ sealed class OpenCommand : AbcCommand
 		{
 			var (panel, select) = _panel;
 			var exp = panel.MyExplorer;
-			CreateAbcExplorer(exp.Node, select, exp.Args.FilePath, exp).OpenPanelChild(panel);
+			CreateAbcExplorer(exp.Node, select, exp.Args.FilePath, exp).CreatePanel().OpenChild(panel);
 			return;
 		}
 
@@ -110,7 +110,7 @@ sealed class OpenCommand : AbcCommand
 			}
 		}
 
-		explorer.OpenPanel();
+		explorer.CreatePanel().Open();
 	}
 
 	static AbcExplorer CreateAbcExplorer(

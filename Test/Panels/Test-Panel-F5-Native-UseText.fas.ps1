@@ -11,7 +11,7 @@ job {
 		AsDeleteFiles = { param($0, $_) foreach($4 in $_.Files) { $0.Data.Remove($4.Name) } }
 	}
 	$explorer.Data = [Collections.ArrayList](('A:', 'file1'))
-	$explorer.OpenPanel()
+	$explorer.CreatePanel().Open()
 }
 job {
 	# open z at the passive panel

@@ -5,7 +5,7 @@ using System.Text.Json.Nodes;
 
 namespace JsonKit.Panels;
 
-class ObjectExplorer(JsonObject node, ExplorerArgs args)
+sealed class ObjectExplorer(JsonObject node, ExplorerArgs args)
 	: AbcExplorer(MyTypeId, args)
 {
 	public static Guid MyTypeId = new("2dfece07-d75b-41cc-bf81-c6fcccf8b63e");
@@ -17,11 +17,6 @@ class ObjectExplorer(JsonObject node, ExplorerArgs args)
 	{
 		// set by property name
 		_node[file.Name] = node;
-	}
-
-	public override string ToString()
-	{
-		return $"Object {_node.GetPath()}";
 	}
 
 	public override Panel CreatePanel()

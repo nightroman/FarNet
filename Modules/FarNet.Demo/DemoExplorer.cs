@@ -44,10 +44,7 @@ class DemoExplorer : Explorer
 	{
 		var panel = new Panel(this)
 		{
-			HostFile = FileName,
 			Title = Path.GetFileName(FileName),
-
-			// Set sort and view modes
 			SortMode = PanelSortMode.Name,
 			ViewMode = PanelViewMode.AlternativeFull
 		};
@@ -55,11 +52,11 @@ class DemoExplorer : Explorer
 		// Define the panel columns
 		var plan = new PanelPlan
 		{
-			Columns = new FarColumn[]
-			{
+			Columns =
+			[
 				new SetColumn() { Kind = "N", Name = "Name" },
 				new SetColumn() { Kind = "Z", Name = "Value" }
-			}
+			]
 		};
 		panel.SetPlan(PanelViewMode.AlternativeFull, plan);
 

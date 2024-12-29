@@ -133,7 +133,7 @@ job {
 		AsGetFiles = {
 			New-FarFile -Name Name1 -Description Description1 -Owner Owner1
 		}
-	}).OpenPanel()
+	}).CreatePanel().Open()
 }
 job {
 	# check all

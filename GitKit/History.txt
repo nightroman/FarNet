@@ -1,5 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 1.3.2 =
+
+Changes panel
+- set location to repo directory, useful for copying paths
+
 = 1.3.1 =
 
 Requires FarNet 9.0.7, panel work improvements.

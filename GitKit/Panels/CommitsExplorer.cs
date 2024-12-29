@@ -23,10 +23,10 @@ class CommitsExplorer(string gitDir, string? branchName, string? itemPath) : Bas
 	public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 	{
 		if (BranchName is { })
-			return GetFilesBranchName(GitDir, BranchName, args);
+			return GetFilesByBranchName(GitDir, BranchName, args);
 
 		if (ItemPath is { })
-			return GetFilesItemPath(GitDir, ItemPath, args);
+			return GetFilesByItemPath(GitDir, ItemPath, args);
 
 		throw null!;
 	}
@@ -62,7 +62,7 @@ class CommitsExplorer(string gitDir, string? branchName, string? itemPath) : Bas
 			commitSha);
 	}
 
-	static IEnumerable<FarFile> GetFilesBranchName(string gitDir, string branchName, GetFilesEventArgs args)
+	static IEnumerable<FarFile> GetFilesByBranchName(string gitDir, string branchName, GetFilesEventArgs args)
 	{
 		using var repo = new Repository(gitDir);
 
@@ -117,7 +117,7 @@ class CommitsExplorer(string gitDir, string? branchName, string? itemPath) : Bas
 		}
 	}
 
-	static IEnumerable<FarFile> GetFilesItemPath(string gitDir, string itemPath, GetFilesEventArgs args)
+	static IEnumerable<FarFile> GetFilesByItemPath(string gitDir, string itemPath, GetFilesEventArgs args)
 	{
 		using var repo = new Repository(gitDir);
 

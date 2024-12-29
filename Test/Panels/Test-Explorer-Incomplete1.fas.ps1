@@ -13,7 +13,7 @@ job {
 	# panel with 10 files
 	$Explorer = New-TestExplorerIncomplete
 	0..9 | %{ $Explorer.Cache.Add((New-FarFile $_)) }
-	$Explorer.OpenPanel()
+	$Explorer.CreatePanel().Open()
 }
 job {
 	# select 5 files
@@ -37,7 +37,7 @@ job {
 	# another panel with 4 files
 	$Explorer = New-TestExplorerIncomplete
 	11..16 | %{ $Explorer.Cache.Add((New-FarFile $_)) }
-	$Explorer.OpenPanel()
+	$Explorer.CreatePanel().Open()
 }
 job {
 	# select all

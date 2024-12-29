@@ -21,11 +21,11 @@ job {
 	31..35 | %{ $explorer3.Cache.Add((New-FarFile $_)) }
 
 	### Super explorer, add super files, open panel
-	$explorer = New-Object FarNet.Tools.SuperExplorer
+	$explorer = [FarNet.Tools.SuperExplorer]::new()
 	$explorer1.Cache | % { $explorer.Cache.Add((New-Object FarNet.Tools.SuperFile $explorer1, $_)) }
 	$explorer2.Cache | % { $explorer.Cache.Add((New-Object FarNet.Tools.SuperFile $explorer2, $_)) }
 	$explorer3.Cache | % { $explorer.Cache.Add((New-Object FarNet.Tools.SuperFile $explorer3, $_)) }
-	$explorer.OpenPanel()
+	$explorer.CreatePanel().Open()
 }
 job {
 	# select source files
@@ -41,7 +41,7 @@ job {
 		Functions = 'AcceptFiles'
 		AsAcceptFiles = Get-AsAcceptFiles-Half-ToStay-ToDelete
 	}
-	$explorer.OpenPanel()
+	$explorer.CreatePanel().Open()
 }
 job {
 	Assert-Far -ExplorerTypeId 9fcb682b-171b-438e-8226-07968ad78da4

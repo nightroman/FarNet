@@ -20,7 +20,7 @@ job {
 
 # open yet another panel; NOTE: the current panel has gone
 job {
-	([PowerShellFar.PowerExplorer][guid]'f8e30845-abb4-4a51-9c08-e07c602f3610').OpenPanel()
+	[PowerShellFar.PowerExplorer]::new('f8e30845-abb4-4a51-9c08-e07c602f3610').CreatePanel().Open()
 }
 job {
 	Assert-Far -ExplorerTypeId f8e30845-abb4-4a51-9c08-e07c602f3610

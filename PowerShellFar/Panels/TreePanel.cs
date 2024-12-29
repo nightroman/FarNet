@@ -1,7 +1,3 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using System;
 using System.Collections.Generic;
 using FarNet;
@@ -86,8 +82,6 @@ public class TreePanel : AnyPanel
 	/// <inheritdoc/>
 	public override bool UIKeyPressed(KeyInfo key)
 	{
-		ArgumentNullException.ThrowIfNull(key);
-
 		switch (key.VirtualKeyCode)
 		{
 			case KeyCode.LeftArrow:
@@ -153,8 +147,6 @@ public class TreePanel : AnyPanel
 					return true;
 				}
 		}
-
-		// base
 		return base.UIKeyPressed(key);
 	}
 

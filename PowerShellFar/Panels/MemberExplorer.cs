@@ -1,7 +1,3 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,7 +12,7 @@ namespace PowerShellFar;
 /// <summary>
 /// Explorer of an object members (properties by default or all members).
 /// </summary>
-public sealed class MemberExplorer : Explorer
+public sealed class MemberExplorer : ListExplorer
 {
 	const string TypeIdString = "be8984d6-fc4d-466d-9e5b-dede881f2232";
 
@@ -42,6 +38,9 @@ public sealed class MemberExplorer : Explorer
 
 	internal readonly PSObject Value;
 
+	/// <summary>
+	/// 0: properties; 1: members.
+	/// </summary>
 	internal int MemberMode { get; set; }
 
 	/// <summary>
@@ -60,8 +59,8 @@ public sealed class MemberExplorer : Explorer
 			throw new ArgumentNullException(nameof(instance));
 
 		Functions =
-			ExplorerFunctions.DeleteFiles |
 			ExplorerFunctions.CreateFile |
+			ExplorerFunctions.DeleteFiles |
 			ExplorerFunctions.GetContent |
 			ExplorerFunctions.SetText;
 	}

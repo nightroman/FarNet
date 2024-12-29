@@ -18,11 +18,7 @@ task build meta, {
 }
 
 task publish {
-	$null = mkdir $ModuleRoot -Force
-	Copy-Item -Destination $ModuleRoot @(
-		"bin\$Configuration\net8.0\$ModuleName.dll"
-		"bin\$Configuration\net8.0\$ModuleName.pdb"
-	)
+	remove $ModuleRoot\Explore.deps.json
 }
 
 task clean {
@@ -31,7 +27,6 @@ task clean {
 
 task version {
 	($script:Version = switch -regex -file History.txt {'^= (\d+\.\d+\.\d+) =$' {$matches[1]; break}})
-	assert $script:Version
 }
 
 task markdown {
@@ -53,20 +48,19 @@ task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props -Jobs v
 	Set-Content Directory.Build.props @"
 <Project>
 	<PropertyGroup>
+		<Description>$Description</Description>
 		<Company>https://github.com/nightroman/FarNet</Company>
 		<Copyright>Copyright (c) Roman Kuzmin</Copyright>
-		<Description>$Description</Description>
 		<Product>FarNet.$ModuleName</Product>
 		<Version>$Version</Version>
-		<FileVersion>$Version</FileVersion>
-		<AssemblyVersion>$Version</AssemblyVersion>
+		<IncludeSourceRevisionInInformationalVersion>False</IncludeSourceRevisionInInformationalVersion>
 	</PropertyGroup>
 </Project>
 "@
 }
 
 task package markdown, version, {
-	equals $Version (Get-Item $ModuleRoot\$ModuleName.dll).VersionInfo.FileVersion
+	equals $Version (Get-Item $ModuleRoot\$ModuleName.dll).VersionInfo.ProductVersion
 	$toModule = "z\tools\FarHome\FarNet\Modules\$ModuleName"
 
 	remove z

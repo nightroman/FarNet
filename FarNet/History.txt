@@ -1,6 +1,13 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 9.0.8 =
+
+Refactor panels, retire not used properties FormatName, HostFile.
+
+Explorer methods OpenPanel and OpenPanelChild will be removed.
+Use CreatePanel().Open() and CreatePanel().OpenChild() instead.
+
 = 9.0.7 =
 
 New property GetFilesEventArgs.Panel.

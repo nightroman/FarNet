@@ -20,7 +20,7 @@ job {
 			$_.DotsMode = 'Dots'
 		}
 	}
-	$explorer.OpenPanel()
+	$explorer.CreatePanel().Open()
 }
 
 macro 'Keys"Enter" -- enter on dots'

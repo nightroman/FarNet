@@ -11,8 +11,10 @@ abstract class BaseExplorer(IDatabase database, Guid typeId) : Explorer(typeId)
 	public IServer GetServer() =>
 		Database.Multiplexer.GetServers()[Database.Database];
 
+	protected abstract string PanelTitle();
+
 	public override void EnterPanel(Panel panel)
 	{
-		panel.Title = ToString()!;
+		panel.Title = PanelTitle();
 	}
 }

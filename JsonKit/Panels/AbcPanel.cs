@@ -22,7 +22,13 @@ abstract class AbcPanel(AbcExplorer explorer) : Panel(explorer)
 		Host.Instance.ShowHelpTopic(HelpTopic);
 	}
 
-	public override bool UIKeyPressed(KeyInfo key)
+	public sealed override void UIClosed()
+	{
+		base.UIClosed();
+		MyExplorer.PanelClosed();
+	}
+
+	public sealed override bool UIKeyPressed(KeyInfo key)
 	{
 		switch (key.VirtualKeyCode)
 		{
@@ -33,8 +39,8 @@ abstract class AbcPanel(AbcExplorer explorer) : Panel(explorer)
 			case KeyCode.A when key.IsCtrl():
 				return true;
 
-			//! Mantis#2635 Ignore if auto-completion menu is opened
-			case KeyCode.S when key.IsCtrl() && Far.Api.Window.Kind != WindowKind.Menu:
+			//! Mantis#2635, mind auto-completion menu
+			case KeyCode.S when key.IsCtrl() && Far.Api.Window.Kind == WindowKind.Panels:
 				SaveData();
 				return true;
 		}
@@ -42,7 +48,7 @@ abstract class AbcPanel(AbcExplorer explorer) : Panel(explorer)
 		return base.UIKeyPressed(key);
 	}
 
-	public override void UIDeleteFiles(DeleteFilesEventArgs args)
+	public sealed override void UIDeleteFiles(DeleteFilesEventArgs args)
 	{
 		var text = args.Force ?
 			$"Set nulls ({args.Files.Count})?" :
@@ -57,13 +63,13 @@ abstract class AbcPanel(AbcExplorer explorer) : Panel(explorer)
 		Explorer.DeleteFiles(args);
 	}
 
-	public override void UISetText(SetTextEventArgs args)
+	public sealed override void UISetText(SetTextEventArgs args)
 	{
 		base.UISetText(args);
 		Update(true);
 	}
 
-	protected override bool CanClose()
+	protected sealed override bool CanClose()
 	{
 		var explorer = MyExplorer;
 
@@ -92,7 +98,7 @@ abstract class AbcPanel(AbcExplorer explorer) : Panel(explorer)
 		return false;
 	}
 
-	public override bool SaveData()
+	public sealed override bool SaveData()
 	{
 		var explorer = MyExplorer;
 

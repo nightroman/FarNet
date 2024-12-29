@@ -20,7 +20,7 @@ job {
 		}
 	}
 
-	$Data.Explorer.OpenPanel()
+	$Data.Explorer.CreatePanel().Open()
 }
 
 #! Start-Sleep hangs, use mf.sleep

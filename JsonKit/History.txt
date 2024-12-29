@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.JsonKit
 
+= 0.3.2 =
+
+Refactor panels.
+
 = 0.3.1 =
 
 Add error "Path should have selectors".

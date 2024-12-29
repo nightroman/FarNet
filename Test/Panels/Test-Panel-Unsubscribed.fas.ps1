@@ -1,6 +1,6 @@
 ﻿
 job {
-	(New-Object PowerShellFar.PowerExplorer 'f8872f07-f878-4e63-9981-5984c193e620').OpenPanel()
+	[PowerShellFar.PowerExplorer]::new('f8872f07-f878-4e63-9981-5984c193e620').CreatePanel().Open()
 }
 job {
 	Assert-Far -Panels -Plugin

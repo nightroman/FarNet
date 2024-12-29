@@ -1,14 +1,11 @@
-
-// FarNet module Explore
-// Copyright (c) Roman Kuzmin
-
+using FarNet;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace FarNet.Explore;
+namespace Explore;
 
 public static class Parser
 {

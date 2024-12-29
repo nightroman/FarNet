@@ -1,37 +1,34 @@
-# Explore
+# FarNet.Explore
 
 FarNet module Explore for Far Manager
 
-* [Synopsis](#synopsis)
-* [Installation](#installation)
+* [About](#about)
+* [Install](#install)
 * [Command syntax](#command-syntax)
 * [Result panel](#result-panel)
 * [Examples](#examples)
 
 *********************************************************************
-## Synopsis
+## About
 
 The command `explore:` searches for files using the current FarNet panel
 explorer or the default file system explorer and opens the result panel.
 It is similar to FarNet.PowerShellFar `Search-FarFile`.
 
-**Project**
+**Project FarNet**
 
- * Source: <https://github.com/nightroman/FarNet/tree/main/Explore>
- * Author: Roman Kuzmin
+* Wiki: <https://github.com/nightroman/FarNet/wiki>
+* Site: <https://github.com/nightroman/FarNet>
+* Author: Roman Kuzmin
 
 *********************************************************************
-## Installation
+## Install
 
-**Requirements**
+- Far Manager
+- Package [FarNet](https://www.nuget.org/packages/FarNet)
+- Package [FarNet.Explore](https://www.nuget.org/packages/FarNet.Explore)
 
- * Far Manager
- * Package FarNet
- * Package FarNet.Explore
-
-**Instructions**
-
-How to install and update FarNet and modules:\
+How to install and update FarNet and modules\
 <https://github.com/nightroman/FarNet#readme>
 
 *********************************************************************

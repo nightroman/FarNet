@@ -7,7 +7,7 @@ job {
 
 job {
 	# open panel 1
-	[PowerShellFar.PowerExplorer]::new('598a8d01-5d6c-4ef7-9645-322463d018cc').OpenPanel()
+	[PowerShellFar.PowerExplorer]::new('598a8d01-5d6c-4ef7-9645-322463d018cc').CreatePanel().Open()
 }
 job {
 	Assert-Far -Plugin
@@ -16,7 +16,7 @@ job {
 
 job {
 	# open panel 2 over panel 1
-	[PowerShellFar.PowerExplorer]::new('714fa571-9e6e-42d4-84b7-b6b58f68fb97').OpenPanel()
+	[PowerShellFar.PowerExplorer]::new('714fa571-9e6e-42d4-84b7-b6b58f68fb97').CreatePanel().Open()
 }
 job {
 	Assert-Far -ExplorerTypeId 714fa571-9e6e-42d4-84b7-b6b58f68fb97

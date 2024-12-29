@@ -29,11 +29,11 @@ job {
 	31..35 | %{ $explorer3.Cache.Add((New-FarFile $_)) }
 
 	### Super explorer, add super files, open panel
-	$explorer = New-Object FarNet.Tools.SuperExplorer
+	$explorer = [FarNet.Tools.SuperExplorer]::new()
 	$explorer1.Cache | % { $explorer.Cache.Add((New-Object FarNet.Tools.SuperFile $explorer1, $_)) }
 	$explorer2.Cache | % { $explorer.Cache.Add((New-Object FarNet.Tools.SuperFile $explorer2, $_)) }
 	$explorer3.Cache | % { $explorer.Cache.Add((New-Object FarNet.Tools.SuperFile $explorer3, $_)) }
-	$explorer.OpenPanel()
+	$explorer.CreatePanel().Open()
 }
 job {
 	# select files to delete

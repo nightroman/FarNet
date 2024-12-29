@@ -115,18 +115,15 @@ task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props -Jobs v
 		<Copyright>Copyright (c) Roman Kuzmin</Copyright>
 		<Product>FarNet.$ModuleName</Product>
 		<Version>$Version</Version>
+		<IncludeSourceRevisionInInformationalVersion>False</IncludeSourceRevisionInInformationalVersion>
 	</PropertyGroup>
 </Project>
 "@
 }
 
 task nuget package, version, {
-	# test versions
-	$dllPath = "$FarHome\FarNet\Modules\$ModuleName\$ModuleName.dll"
-	($dllVersion = (Get-Item $dllPath).VersionInfo.FileVersion.ToString())
-	assert $dllVersion.StartsWith("$Version.") 'Versions mismatch.'
+	equals $Version (Get-Item "$ModuleRoot\$ModuleName.dll").VersionInfo.ProductVersion
 
-	# nuspec
 	Set-Content z\Package.nuspec @"
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
@@ -145,7 +142,7 @@ task nuget package, version, {
 	</metadata>
 </package>
 "@
-	# pack
+
 	exec { NuGet pack z\Package.nuspec }
 }
 

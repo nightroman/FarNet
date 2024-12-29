@@ -243,4 +243,4 @@ function global:New-TestLocationExplorer($Path) {
 }
 
 ### Open the explorer panel
-(New-TestRootExplorer).OpenPanel()
+(New-TestRootExplorer).CreatePanel().Open()

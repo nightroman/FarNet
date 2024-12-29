@@ -2,10 +2,11 @@
 
 namespace JsonKit.Panels;
 
-class ObjectPanel : AbcPanel
+sealed class ObjectPanel : AbcPanel
 {
 	public ObjectPanel(ObjectExplorer explorer) : base(explorer)
 	{
+		Title = $"Object {explorer.Node.GetPath()}";
 		SortMode = PanelSortMode.Unsorted;
 
 		var cn = new SetColumn { Kind = "N", Name = "Name", Width = -40 };

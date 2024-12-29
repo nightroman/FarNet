@@ -2,14 +2,13 @@
 # https://forum.farmanager.com/viewtopic.php?f=8&t=11965#p158120
 
 job {
-	$Explorer = New-Object PowerShellFar.ObjectExplorer -Property @{
-		AsGetData = {
-			[PSCustomObject]@{_id = 1; name = 'name1'}
-			[PSCustomObject]@{_id = 2; name = 'name2'}
-			[PSCustomObject]@{_id = 3}
-		}
+	$Explorer = [PowerShellFar.ObjectExplorer]::new()
+	$Explorer.AsGetData = {
+		[PSCustomObject]@{_id = 1; name = 'name1'}
+		[PSCustomObject]@{_id = 2; name = 'name2'}
+		[PSCustomObject]@{_id = 3}
 	}
-	$Explorer.OpenPanel()
+	$Explorer.CreatePanel().Open()
 }
 job {
 	# current item is ".."

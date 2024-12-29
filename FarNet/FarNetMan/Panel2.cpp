@@ -642,11 +642,9 @@ OpenPanelInfo& Panel2::Make()
 
 	m->StartSortMode = (OPENPANELINFO_SORTMODES)_FarStartSortMode;
 	m->StartSortOrder = _FarStartSortOrder;
-	m->StartPanelMode = int(_StartViewMode) + 0x30;
+	m->StartPanelMode = intptr_t(_StartViewMode) + 0x30;
 
 	m->CurDir = NewChars(_CurrentLocation);
-	m->Format = NewChars(_FormatName);
-	m->HostFile = NewChars(_HostFile);
 	m->PanelTitle = NewChars(_Title);
 
 	SetKeyBars(_keyBars);
@@ -665,8 +663,6 @@ void Panel2::Free()
 	if (m)
 	{
 		delete[] m->CurDir;
-		delete[] m->Format;
-		delete[] m->HostFile;
 		delete[] m->PanelTitle;
 
 		DeleteInfoLines();
@@ -679,7 +675,7 @@ void Panel2::Free()
 		}
 
 		delete m;
-		m = 0;
+		m = nullptr;
 	}
 }
 

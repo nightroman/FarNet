@@ -61,10 +61,38 @@ roaming or local, optionally not browsable.
     </section>
 
     <section>
+      <title>Module panels</title>
+      <content>
+        <para>
+To create a module panel, implement its explorer and panel classes.
+        </para>
+        <list class="bullet">
+          <listItem>
+            <para>
+              <codeEntityReference>T:FarNet.Explorer</codeEntityReference>
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              <codeEntityReference>T:FarNet.Panel</codeEntityReference>
+            </para>
+          </listItem>
+        </list>
+        <para>
+The explorer is responsible for getting files (<codeEntityReference>T:FarNet.FarFile</codeEntityReference>),
+virtual file system navigation, and operations on files.
+        </para>
+        <para>
+The panel is responsible for presenting files as the Far Manager plugin panel and all user interactions.
+        </para>
+      </content>
+    </section>
+
+    <section>
       <title>Far Manager API</title>
       <content>
         <para>
-Main parts of Far Manager API are exposed as members of <codeEntityReference>T:FarNet.IFar</codeEntityReference>.
+Far Manager API parts are exposed as members of <codeEntityReference>T:FarNet.IFar</codeEntityReference>.
         </para>
 <code language="c#">
 using FarNet;

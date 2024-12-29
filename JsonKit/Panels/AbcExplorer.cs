@@ -74,13 +74,7 @@ abstract class AbcExplorer : Explorer
 		file.SetNode(node);
 	}
 
-	public override void EnterPanel(Panel panel)
-	{
-		panel.Title = ToString()!;
-		panel.Closed += Panel_Closed;
-	}
-
-	void Panel_Closed(object? sender, EventArgs e)
+	internal void PanelClosed()
 	{
 		if (_args.Parent is null)
 			_dirty.Remove(Node.Root);
@@ -110,7 +104,7 @@ abstract class AbcExplorer : Explorer
 		args.CanSet = true;
 	}
 
-	public override void SetText(SetTextEventArgs args)
+	public sealed override void SetText(SetTextEventArgs args)
 	{
 		var file = (NodeFile)args.File;
 		var node1 = file.Node;

@@ -2,12 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text.Json.Nodes;
 
 namespace JsonKit.Panels;
 
-class ArrayExplorer(JsonArray node, ExplorerArgs args)
+sealed class ArrayExplorer(JsonArray node, ExplorerArgs args)
 	: AbcExplorer(MyTypeId, args)
 {
 	public static Guid MyTypeId = new("f457df2e-85f9-430a-9ac3-3e3c69d3e027");
@@ -19,11 +18,6 @@ class ArrayExplorer(JsonArray node, ExplorerArgs args)
 	{
 		// set by the node index
 		_node[file.Index] = node;
-	}
-
-	public override string ToString()
-	{
-		return $"Array {_node.GetPath()}";
 	}
 
 	public override Panel CreatePanel()

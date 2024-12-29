@@ -8,7 +8,7 @@ job {
 
 	# open empty panel
 	$Explorer = New-TestExplorerIncomplete
-	$Explorer.OpenPanel()
+	$Explorer.CreatePanel().Open()
 }
 
 # go to FARHOME, select files

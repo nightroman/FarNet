@@ -1047,29 +1047,6 @@ public partial class Panel : IPanel
 	public virtual void UILosingFocus() => LosingFocus?.Invoke(this, EventArgs.Empty);
 	#endregion
 
-	#region Other Info
-	/// <summary>
-	/// Gets or sets the format name (shown in the file copy dialog).
-	/// </summary>
-	public string FormatName
-	{
-		get => _Panel.FormatName;
-		set => _Panel.FormatName = value;
-	}
-
-	/// <summary>
-	/// Gets or sets the base file of emulated file system.
-	/// </summary>
-	/// <remarks>
-	/// If the panel does not emulate a file system based on files it should be empty.
-	/// </remarks>
-	public string HostFile
-	{
-		get => _Panel.HostFile;
-		set => _Panel.HostFile = value;
-	}
-	#endregion
-
 	/// <summary>
 	/// Gets or sets info panel item array.
 	/// </summary>

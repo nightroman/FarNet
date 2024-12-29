@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace RedisKit.Panels;
 
-class HashExplorer : BaseExplorer
+sealed class HashExplorer : BaseExplorer
 {
 	public static Guid MyTypeId = new("29ae0735-2a00-43be-896b-9e2e8a67d658");
 
@@ -25,14 +25,14 @@ class HashExplorer : BaseExplorer
 		_key = key;
 	}
 
-	public override string ToString()
-	{
-		return $"Hash {_key}";
-	}
-
 	public override Panel CreatePanel()
 	{
 		return new HashPanel(this);
+	}
+
+	protected override string PanelTitle()
+	{
+		return $"Hash {_key}";
 	}
 
 	public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)

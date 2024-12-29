@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace RedisKit.Panels;
 
-class ListExplorer : BaseExplorer
+sealed class ListExplorer : BaseExplorer
 {
 	public static Guid MyTypeId = new("be46affb-dd5c-436b-99c3-197dfd6e9d1f");
 	static readonly RedisValue s_deleted = "<DELETED>";
@@ -25,14 +25,14 @@ class ListExplorer : BaseExplorer
 		_key = key;
 	}
 
-	public override string ToString()
-	{
-		return $"List {_key}";
-	}
-
 	public override Panel CreatePanel()
 	{
 		return new ListPanel(this);
+	}
+
+	protected override string PanelTitle()
+	{
+		return $"List {_key}";
 	}
 
 	public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)

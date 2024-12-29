@@ -69,8 +69,6 @@ public partial class Panel
 	/// <param name="args">.</param>
 	public virtual void UISetFile(SetFileEventArgs args)
 	{
-		ArgumentNullException.ThrowIfNull(args);
-
 		Explorer.SetFile(args);
 
 		if (args.Result != JobResult.Ignore)
@@ -83,8 +81,6 @@ public partial class Panel
 	/// <param name="args">.</param>
 	public virtual void UISetText(SetTextEventArgs args)
 	{
-		ArgumentNullException.ThrowIfNull(args);
-
 		Explorer.SetText(args);
 
 		if (args.Result != JobResult.Ignore)
@@ -97,8 +93,6 @@ public partial class Panel
 	/// <param name="args">.</param>
 	public virtual void UIAcceptFiles(AcceptFilesEventArgs args)
 	{
-		ArgumentNullException.ThrowIfNull(args);
-
 		Explorer.AcceptFiles(args);
 
 		if (args.Result != JobResult.Ignore)
@@ -111,8 +105,6 @@ public partial class Panel
 	/// <param name="args">.</param>
 	public virtual void UIDeleteFiles(DeleteFilesEventArgs args)
 	{
-		ArgumentNullException.ThrowIfNull(args);
-
 		Explorer.DeleteFiles(args);
 
 		if (args.Result != JobResult.Ignore)
@@ -125,8 +117,6 @@ public partial class Panel
 	/// <param name="args">.</param>
 	public virtual void UIExportFiles(ExportFilesEventArgs args)
 	{
-		ArgumentNullException.ThrowIfNull(args);
-
 		Explorer.ExportFiles(args);
 
 		if (args.Result != JobResult.Ignore && args.Move)
@@ -139,8 +129,6 @@ public partial class Panel
 	/// <param name="args">.</param>
 	public virtual void UIImportFiles(ImportFilesEventArgs args)
 	{
-		ArgumentNullException.ThrowIfNull(args);
-
 		Explorer.ImportFiles(args);
 
 		if (args.Result != JobResult.Ignore)
@@ -153,8 +141,6 @@ public partial class Panel
 	/// <param name="args">.</param>
 	public virtual void UICloneFile(CloneFileEventArgs args)
 	{
-		ArgumentNullException.ThrowIfNull(args);
-
 		Explorer.CloneFile(args);
 
 		if (args.Result != JobResult.Ignore)
@@ -167,8 +153,6 @@ public partial class Panel
 	/// <param name="args">.</param>
 	public virtual void UICreateFile(CreateFileEventArgs args)
 	{
-		ArgumentNullException.ThrowIfNull(args);
-
 		Explorer.CreateFile(args);
 
 		if (args.Result != JobResult.Ignore)
@@ -190,8 +174,6 @@ public partial class Panel
 	/// <param name="args">.</param>
 	public virtual void UIRenameFile(RenameFileEventArgs args)
 	{
-		ArgumentNullException.ThrowIfNull(args);
-
 		Explorer.RenameFile(args);
 		
 		if (args.Result != JobResult.Ignore)

@@ -53,6 +53,7 @@ class ChangesExplorer : BaseExplorer
 			panel = test;
 			panel.PostName(_op.ItemPath);
 			panel.GitWork = repo.Info.WorkingDirectory;
+			panel.CurrentLocation = panel.GitWork ?? "*";
 		}
 
 		TreeChanges changes;

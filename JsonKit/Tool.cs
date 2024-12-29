@@ -44,7 +44,7 @@ public class Tool : ModuleTool
 				_ => throw new ModuleException("Unexpected node type.")
 			};
 
-			explorer.OpenPanel();
+			explorer.CreatePanel().Open();
 		}
 		catch (Exception ex)
 		{

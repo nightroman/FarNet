@@ -22,7 +22,7 @@ private: Type _##Name
 #define FPPI_TEXT(Name, Data)\
 public: virtual property String^ Name {\
 	String^ get() { return _##Name; }\
-	void set(String^ value) { _##Name = value; if (m) { delete[] m->Data; m->Data = NewChars(value); } }\
+	void set(String^ value) { if (m && value != _##Name) { delete[] m->Data; m->Data = NewChars(value); } _##Name = value; }\
 }\
 private: String^ _##Name
 
@@ -61,8 +61,6 @@ public: // IPanelWorks
 	FPPI_FLAG(PanelHighlighting, Highlighting,);
 	FPPI_PROP(PanelViewMode, StartViewMode, m->StartPanelMode = int(_StartViewMode) + 0x30);
 	FPPI_TEXT(CurrentLocation, CurDir);
-	FPPI_TEXT(FormatName, Format);
-	FPPI_TEXT(HostFile, HostFile);
 	FPPI_TEXT(Title, PanelTitle);
 public:
 	virtual property array<DataItem^>^ InfoItems { array<DataItem^>^ get() { return _InfoItems; } void set(array<DataItem^>^ value); }

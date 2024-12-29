@@ -14,7 +14,7 @@ job {
 		AsGetContent = { param($0, $_) $_.UseFileName = "c:\temp\z\files\$($_.File.Name)" }
 		AsDeleteFiles = { param($0, $_) foreach($4 in $_.Files) { Remove-Item -LiteralPath "c:\temp\z\files\$($4.Name)" } }
 	}
-	$explorer.OpenPanel()
+	$explorer.CreatePanel().Open()
 }
 job {
 	# open z at the passive panel
