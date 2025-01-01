@@ -1,6 +1,6 @@
 ﻿
 job {
-	$Far.InvokeCommand("fs: exec: file=$env:FarNetCode\FSharpFar\samples\PowerShellFar\PanelObjects.fsx")
+	$Far.InvokeCommand("fs:exec file=$env:FarNetCode\FSharpFar\samples\PowerShellFar\PanelObjects.fsx")
 }
 job {
 	Assert-Far -Plugin

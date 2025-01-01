@@ -19,7 +19,12 @@ type FarCommand() =
         // first write warnings and errors
         for w in r.Warnings do
             let color = match w.Severity with FSharpDiagnosticSeverity.Error -> ConsoleColor.Red | _ -> ConsoleColor.Yellow
-            far.UI.WriteLine(FSharpDiagnostic.strErrorFull w, color)
+            let message = FSharpDiagnostic.strErrorFull w
+            far.UI.WriteLine(message, color)
+
+            //! 2024-12-30-0920 fail on testing or it will formally pass
+            if FarNet.Works.Test.IsTestCommand && isNull r.Exception then
+                failwith message
 
         // then throw an exception (do not write or the caller has no way to know and handle it)
         // exceptions may be due to compile errors (written above) and runtime exceptions
@@ -87,7 +92,7 @@ type FarCommand() =
                 showText exn.Message "Cannot start code.cmd"
 
     let commandExec command (args: Command.ExecArgs) =
-        //! fs: exec: ;; TryPanelFSharp.run () // must pick up the root config
+        //! fs:exec ;; TryPanelFSharp.run () // must pick up the root config
         let ses =
             match args.With, args.File with
             | Some configPath, _ -> configPath
@@ -132,35 +137,35 @@ type FarCommand() =
         | _ ->
             ()
 
-    let invoke command =
-        match Command.parse command with
-
-        | Command.Code code ->
-            use _ = new FarNet.FSharp.Works.FarStdWriter()
-            echo command
-            commandCode code
-
-        | Command.Compile args ->
-            use _ = new Progress "Compiling..."
-            commandCompile args
-
-        | Command.Exec args ->
-            use _ = new FarNet.FSharp.Works.FarStdWriter()
-            commandExec command args
-
-        | Command.Open args ->
-            commandOpen args
-
-        | Command.Project args ->
-            commandProject args
-
-        | Command.Quit ->
-            commandQuit ()
-
     override _.Invoke(_, e) =
+        let command = e.Command
         try
-            invoke e.Command
+            match Command.parse (command.AsSpan()) with
+
+            | Command.Code code ->
+                use _ = new FarNet.FSharp.Works.FarStdWriter()
+                echo command
+                commandCode code
+
+            | Command.Compile args ->
+                use _ = new Progress "Compiling..."
+                commandCompile args
+
+            | Command.Exec args ->
+                use _ = new FarNet.FSharp.Works.FarStdWriter()
+                commandExec command args
+
+            | Command.Open args ->
+                commandOpen args
+
+            | Command.Project args ->
+                commandProject args
+
+            | Command.Quit ->
+                commandQuit ()
 
         with
         | :? FsiCompilationException as ex ->
             raise (ModuleException(ex.Message, Source = "F# compiler"))
+        | ex ->
+            raise (ModuleException(ex.Message, ex))

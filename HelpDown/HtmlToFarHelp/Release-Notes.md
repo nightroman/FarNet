@@ -1,5 +1,9 @@
 # HtmlToFarHelp Release Notes
 
+## v1.3.17
+
+Fix missing space after link (pandoc without `--wrap=preserve`).
+
 ## v1.3.16
 
 Fix new line before a link, #58

@@ -5,7 +5,9 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Text;
 
 namespace FarNet;
 
@@ -22,55 +24,124 @@ namespace FarNet;
 /// Then call <see cref="ThrowUnknownParameters"/>.
 /// </para>
 /// </remarks>
-public class CommandParameters
+[Experimental("FarNet250101")]
+public readonly ref struct CommandParameters
 {
 	readonly DbConnectionStringBuilder _parameters;
 
 	/// <summary>
 	/// Gets the command name.
 	/// </summary>
-	public string Command { get; }
+	public ReadOnlySpan<char> Command { get; }
 
-	private CommandParameters(string command, DbConnectionStringBuilder parameters)
+	/// <summary>
+	/// Gets the separated text.
+	/// </summary>
+	public ReadOnlySpan<char> Text { get; }
+
+	CommandParameters(ReadOnlySpan<char> command, ReadOnlySpan<char> text, DbConnectionStringBuilder parameters)
 	{
 		Command = command;
+		Text = text;
 		_parameters = parameters;
 	}
 
 	/// <summary>
-	/// Parses the command line with parameters.
+	/// Parses parameters.
 	/// </summary>
-	/// <param name="commandLine">Command line with parameters.</param>
-	/// <returns>Parsed command with parameters.</returns>
-	public static CommandParameters Parse(string commandLine)
+	/// <param name="parameters">Parameters string.</param>
+	/// <returns>Parsed parameters string builder.</returns>
+	public static DbConnectionStringBuilder ParseParameters(string parameters)
 	{
-		int index = 0;
-		while (index < commandLine.Length && !char.IsWhiteSpace(commandLine[index]))
-			++index;
-
-		if (index == 0)
-			return new(string.Empty, []);
-
-		var command = commandLine[0..index];
-
-		while (index < commandLine.Length && char.IsWhiteSpace(commandLine[index]))
-			++index;
-
-		var parameters = commandLine[index..];
-
 		try
 		{
-			return new(command, new DbConnectionStringBuilder { ConnectionString = parameters });
+			return new DbConnectionStringBuilder { ConnectionString = parameters };
 		}
 		catch (Exception ex)
 		{
 			throw new ModuleException($"""
-			Invalid parameters syntax.
-			Command: {command}
-			Parameters: {parameters}
+			Invalid parameters: {parameters}
 			{ex.Message}
 			""");
 		}
+	}
+
+	/// <summary>
+	/// Parses command with parameters.
+	/// </summary>
+	/// <param name="commandLine">Command line with parameters.</param>
+	/// <returns>Parsed parameters and command.</returns>
+	public static CommandParameters Parse(ReadOnlySpan<char> commandLine)
+	{
+		return Parse(commandLine, true, null);
+	}
+
+	/// <summary>
+	/// Parses parameters with optional command and optional text.
+	/// </summary>
+	/// <param name="commandLine">Command line with parameters.</param>
+	/// <param name="hasCommand">Tells to separate the leading command.</param>
+	/// <param name="textSeparator">Tells to separate the trailing text.</param>
+	/// <returns>Parsed parameters.</returns>
+	public static CommandParameters Parse(ReadOnlySpan<char> commandLine, bool hasCommand, string? textSeparator)
+	{
+		ReadOnlySpan<char> command;
+		if (hasCommand)
+		{
+			int index = 0;
+			while (index < commandLine.Length && !char.IsWhiteSpace(commandLine[index]))
+				++index;
+
+			if (index == 0)
+				return new(default, commandLine.TrimStart(), null!);
+
+			command = commandLine[0..index];
+			commandLine = commandLine[index..].TrimStart();
+		}
+		else
+		{
+			command = default;
+		}
+
+		ReadOnlySpan<char> parameters;
+		ReadOnlySpan<char> text;
+		if (textSeparator is { })
+		{
+			var index = commandLine.IndexOf(textSeparator);
+			if (index < 0)
+			{
+				parameters = commandLine;
+				text = default;
+			}
+			else
+			{
+				parameters = commandLine[0..index];
+				text = commandLine[(index + textSeparator.Length)..].TrimStart();
+			}
+		}
+		else
+		{
+			parameters = commandLine;
+			text = default;
+		}
+
+		try
+		{
+			return new(command, text, ParseParameters(parameters.ToString()));
+		}
+		catch (Exception ex)
+		{
+			throw new ModuleException(ErrorBuilder(command)
+				.Append(ex.Message).ToString());
+		}
+	}
+
+	static StringBuilder ErrorBuilder(ReadOnlySpan<char> command)
+	{
+		var sb = new StringBuilder();
+		if (command.Length > 0)
+			sb.Append("Command: ").Append(command).AppendLine();
+		return sb;
 	}
 
 	/// <summary>
@@ -81,10 +152,8 @@ public class CommandParameters
 	/// <returns></returns>
 	public ModuleException ParameterError(string name, string message)
 	{
-		return new ModuleException($"""
-			Parameter '{name}': {message}
-			Command: {Command}
-			""");
+		return new ModuleException(ErrorBuilder(Command)
+			.Append("Parameter '").Append(name).Append("': ").Append(message).ToString());
 	}
 
 	/// <summary>
@@ -197,11 +266,7 @@ public class CommandParameters
 				return false;
 		}
 
-		throw new ModuleException($"""
-		Invalid parameter '{name}={string1}'.
-		Command: {Command}
-		Valid values are true, false, 1, 0.
-		""");
+		throw ParameterError(name, $"Invalid value '{string1}': valid values: true, false, 1, 0.");
 	}
 
 	/// <summary>
@@ -213,7 +278,7 @@ public class CommandParameters
 	public T GetValue<T>(string name)
 	{
 		var string1 = GetString(name);
-		if (string1 == null)
+		if (string1 is null)
 			return default!;
 
 		try
@@ -222,11 +287,7 @@ public class CommandParameters
 		}
 		catch (Exception ex)
 		{
-			throw new ModuleException($"""
-			Invalid parameter '{name}={string1}'.
-			Command: {Command}
-			{ex.Message}
-			""");
+			throw ParameterError(name, $"Invalid value '{string1}': {ex.Message}");
 		}
 	}
 
@@ -237,10 +298,8 @@ public class CommandParameters
 	{
 		if (_parameters.Count > 0)
 		{
-			throw new ModuleException($"""
-				Uknknown parameters: {string.Join(", ", _parameters.Keys.Cast<string>())}
-				Command: {Command}
-				""");
+			throw new ModuleException(ErrorBuilder(Command)
+				.Append("Uknknown parameters: ").Append(string.Join(", ", _parameters.Keys.Cast<string>())).ToString());
 		}
 	}
 }

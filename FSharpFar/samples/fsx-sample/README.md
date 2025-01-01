@@ -1,11 +1,10 @@
 # Using fsx.exe and FSharpFar
 
-Suppose we have an F# source file [Module1.fs](Module1.fs) (or it could be some
-*Lib.dll*) and it does not depend on FarNet. Let's see how it may be called by
-fsx and FSharpFar.
+Suppose we have a source file [Module1.fs](Module1.fs) (or some `Lib.dll`) and
+it does not depend on FarNet. How to call it by fsx and FSharpFar?
 
 Create the configuration [.fs.ini](.fs.ini) and add *Module1.fs* to its `[fsc]`
-section (for an assembly it would be some `-r:.\bin\Lib.dll`).
+section (for `Lib.dll` it would be some `-r:.\bin\Lib.dll`).
 
 ## Sample 1: fsi.CommandLineArgs
 
@@ -25,13 +24,13 @@ We do not need a script for this task:
 
 or, without interactive output:
 
-    fs: exec: ;; Module1.hello "John"
+    fs:exec ;; Module1.hello "John"
 
 ## Sample 2: conditional compilation
 
 **Task:** Run the function `Module1.hello` with interactive input.
 
-Create the script [App2.fsx](App2.fsx) which defines input UI using conditional compilation:
+Create the script [App2.fsx](App2.fsx) with UI using conditional compilation:
 
 ```fsharp
 #if FARNET
@@ -47,4 +46,4 @@ Create the script [App2.fsx](App2.fsx) which defines input UI using conditional 
 
 **Run by FSharpFar**
 
-    fs: exec: file=App2.fsx
+    fs:exec file=App2.fsx

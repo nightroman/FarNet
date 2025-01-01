@@ -1,11 +1,5 @@
-﻿
-// JavaScriptFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using FarNet;
+﻿using FarNet;
 using System;
-using System.Data.Common;
-using System.IO;
 
 namespace JavaScriptFar;
 
@@ -14,50 +8,41 @@ public class JavaScriptCommand : ModuleCommand
 {
 	public override void Invoke(object sender, ModuleCommandEventArgs e)
 	{
-		var text = e.Command.Trim();
-		var args = new ExecuteArgs();
-
-		// task?
-		if (text.StartsWith("task:"))
+		try
 		{
-			args.IsTask = true;
-			text = text[5..].TrimStart();
-		}
+			var text = e.Command.AsSpan().Trim();
+			var args = new ExecuteArgs();
 
-		// args?
-		int index = text.IndexOf("::");
-		if (index >= 0)
-		{
-			var connectionString = text[(index + 2)..].TrimStart();
-			try
+			// task?
+			if (text.StartsWith("task:"))
 			{
-				args.Parameters = new DbConnectionStringBuilder() { ConnectionString = connectionString };
-			}
-			catch (Exception ex)
-			{
-				throw new ModuleException($"Error in parameters:\n{connectionString}\n{ex.Message}");
+				args.IsTask = true;
+				text = text[5..].TrimStart();
 			}
 
-			text = text[0..index].TrimEnd();
-		}
+			// args?
+			int index = text.IndexOf("::");
+			if (index >= 0)
+			{
+				args.Parameters = CommandParameters.ParseParameters(text[(index + 2)..].TrimStart().ToString());
+				text = text[0..index].TrimEnd();
+			}
 
-		// document?
-		if (text.StartsWith('@'))
+			// document?
+			if (text.StartsWith('@'))
+			{
+				args.Document = Far.Api.FS.GetFullPath(Environment.ExpandEnvironmentVariables(text[1..].TrimStart().ToString()));
+			}
+			else
+			{
+				args.Command = text.ToString();
+			}
+
+			Actor.Execute(args);
+		}
+		catch (Exception ex)
 		{
-			text = text[1..].TrimStart();
-
-			text = Environment.ExpandEnvironmentVariables(text);
-
-			if (!Path.IsPathRooted(text))
-				text = Path.GetFullPath(Path.Combine(Far.Api.CurrentDirectory, text));
-
-			args.Document = text;
+			throw new ModuleException(ex.Message, ex);
 		}
-		else
-		{
-			args.Command = text;
-		}
-
-		Actor.Execute(args);
 	}
 }

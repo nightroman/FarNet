@@ -1,5 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 1.3.3 =
+
+Requires FarNet 9.0.9, command refactoring.
+
+Remove BOM from diff patches, fix editor odd effects.
+
 = 1.3.2 =
 
 Changes panel

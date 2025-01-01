@@ -16,19 +16,6 @@ public static class Kit
 {
 	static readonly string[] SplitLineSeparators = ["\r\n", "\r", "\n"];
 
-	// Parses parameters string in connection string format, wraps exceptions.
-	public static DbConnectionStringBuilder ParseParameters(string parameters)
-	{
-		try
-		{
-			return new DbConnectionStringBuilder { ConnectionString = parameters };
-		}
-		catch (Exception ex)
-		{
-			throw new ArgumentException($"Invalid parameters (connection string format):\r\n{parameters}\r\n{ex.Message}");
-		}
-	}
-
 	// Joins two strings with a space. Either string may be null or empty.
 	public static string JoinText(string? head, string? tail)
 	{

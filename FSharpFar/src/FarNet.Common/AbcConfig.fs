@@ -53,8 +53,12 @@ module Config =
             else
                 KeyValueLine(line.Substring(0, i).TrimEnd(), line.Substring(i + 1).TrimStart())
 
-    // Expands variables and for some keys resolves full paths.
-    let private resolveKeyValue root key value =
+    // Used by FarNet.FSharp.Charting.ini
+    let [<Literal>] private EnvironmentVersion = "%$Version%"
+
+    // Expands variables and resolves full paths.
+    let private resolveKeyValue (root: string) (key: string) (value: string) =
+        let value = if value.Contains(EnvironmentVersion) then value.Replace(EnvironmentVersion, Environment.Version.ToString()) else value
         let value = Environment.ExpandEnvironmentVariables(value).Replace("__SOURCE_DIRECTORY__", root)
         match key with
         | "-r" | "--reference" ->

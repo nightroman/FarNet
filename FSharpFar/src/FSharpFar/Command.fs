@@ -1,24 +1,23 @@
 ﻿[<RequireQualifiedAccess>]
 module FSharpFar.Command
 open System
-open System.Data.Common
-open System.Text.RegularExpressions
+open FarNet
 
 type ProjectOpenBy = VS|VSCode with
     static member Parse(s) =
-        let s = defaultArg s "VS"
         match s with
+        | null -> VS
         | "VS" -> VS
         | "VSCode" -> VSCode
-        | _ -> failwith $"Invalid value '{s}'. Valid values: VS|VSCode."
+        | _ -> failwith $"Invalid value '{s}'. Valid values: VS, VSCode."
 
 type ProjectOutput = Normal|Script with
     static member Parse(s) =
-        let s = defaultArg s "Normal"
         match s with
+        | null -> Normal
         | "Normal" -> Normal
         | "Script" -> Script
-        | _ -> failwith $"Invalid value '{s}'. Valid values: Normal|Script."
+        | _ -> failwith $"Invalid value '{s}'. Valid values: Normal, Script."
 
 type Data =
     | Quit
@@ -40,61 +39,51 @@ and ProjectArgs =
 and ExecArgs =
     { With : string option; File : string option; Code : string option }
 
-let private tryPopString key (sb: DbConnectionStringBuilder) =
-    match sb.TryGetValue key with 
-    | true, value ->
-        sb.Remove key |> ignore
-        Some(value :?> string)
-    | _ ->
+let private tryPath key (parameters: CommandParameters) =
+    match parameters.GetPath(key) with 
+    | null ->
         None
-
-let private command name rest sb =
-    match name with
-    | "open" ->
-        Open {
-            With = tryPopString "with" sb |> Option.map farResolvePath
-        }
-    | "exec" ->
-        Exec {
-            With = tryPopString "with" sb |> Option.map farResolvePath
-            File = tryPopString "file" sb |> Option.map farResolvePath
-            Code = if String.IsNullOrWhiteSpace rest then None else Some rest
-        }
-    | "compile" ->
-        Compile {
-            With = tryPopString "with" sb |> Option.map farResolvePath
-        }
-    | "project" ->
-        Project {
-            With = tryPopString "with" sb |> Option.map farResolvePath
-            Open = tryPopString "open" sb |> ProjectOpenBy.Parse
-            Type = tryPopString "type" sb |> ProjectOutput.Parse
-        }
-    | _ ->
-        failwithf "Unknown command '%s'." name
-
-let private reCommand = Regex @"^\s*(?<name>\w+):\s*(?<rest>.*)"
-let private reQuit = Regex @"^\s*#quit\b"
+    | value ->
+        Some value
 
 /// Parses the module command "fs:".
-/// Failure ~ user error.
 let parse text =
-    let matchCommand = reCommand.Match text
-    if matchCommand.Success then
-        let commandName = matchCommand.Groups["name"].Value
-        let rest = matchCommand.Groups["rest"].Value
+    let parameters = CommandParameters.Parse(text, true, ";;")
+    let command = parameters.Command
+    let text = parameters.Text
 
-        let index = rest.IndexOf ";;"
-        let part1, part2 = if index < 0 then rest, "" else rest.Substring(0, index), rest.Substring(index + 2)
-
-        let sb = FarNet.Works.Kit.ParseParameters(part1)
-
-        let r = command commandName part2 sb
-
-        if sb.Count > 0 then
-            failwithf "Unknown '%s' keys: %O" (r.GetType().Name.ToLower()) sb
-        r
-    elif reQuit.IsMatch text then
-        Quit
+    if parameters.Command.Length = 0 then
+        if text.StartsWith "#quit" then
+            Quit
+        else
+            Code (text.ToString())
     else
-        Code text
+    let command =
+        if command.SequenceEqual "exec" then
+            Exec {
+                With = tryPath "with" parameters
+                File = tryPath "file" parameters
+                Code = if text.Length = 0 then None else Some (text.ToString())
+            }
+        else
+        if command.SequenceEqual "project" then
+            Project {
+                With = tryPath "with" parameters
+                Open = try parameters.GetString "open" |> ProjectOpenBy.Parse with ex -> raise (parameters.ParameterError("open", ex.Message))
+                Type = try parameters.GetString "type" |> ProjectOutput.Parse with ex -> raise (parameters.ParameterError("type", ex.Message))
+            }
+        else
+        if command.SequenceEqual "compile" then
+            Compile {
+                With = tryPath "with" parameters
+            }
+        else
+        if command.SequenceEqual "open" then
+            Open {
+                With = tryPath "with" parameters
+            }
+        else
+            raise (ModuleException $"Unknown command '{command.ToString()}'.")
+
+    parameters.ThrowUnknownParameters()
+    command

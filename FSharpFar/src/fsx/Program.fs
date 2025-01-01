@@ -14,8 +14,6 @@ do ()
 [<STAThread()>]
 [<LoaderOptimization(LoaderOptimization.MultiDomainHost)>]
 let main _ =
-    Environment.SetEnvironmentVariable("$Version", Environment.Version.ToString());
-
     // FARHOME may be missing if we start from cmd.
     let home = AppDomain.CurrentDomain.BaseDirectory
     let farHome = Path.GetFullPath(home + @"\..\..\..")

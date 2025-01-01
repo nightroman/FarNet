@@ -1,5 +1,13 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 
+= 5.1.0 =
+
+Requires FarNet 9.0.9, command refactoring.
+
+Breaking change:
+Use new commands: `fs:exec`, `fs:open`, `fs:compile`, `fs:project`
+instead of old: `fs: exec:`, `fs: open:`, `fs: compile:`, `fs: project:`
+
 = 5.0.2 =
 
 Rework fsx assembly resolution.

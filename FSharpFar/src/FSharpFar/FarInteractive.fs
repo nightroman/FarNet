@@ -17,12 +17,8 @@ type FarInteractive(session: Session) =
 
     let session = session
 
-    let isQuit code =
-        try
-            Command.parse code = Command.Quit
-        with
-            Failure error ->
-                raise (ModuleException(error, Source = "F# command"))
+    let isQuit (code: string) =
+        code.AsSpan().TrimStart().StartsWith("#quit");
 
     override x.Invoke(code, area) =
         if area.FirstLineIndex = area.LastLineIndex && isQuit code then
@@ -62,7 +58,7 @@ type FarInteractive(session: Session) =
             )
 
         // Open. Post, to avoid modal. Use case:
-        // - open session by `fs: open:`
+        // - open session by `fs:open`
         // - it writes echo -> user screen
         // - opening from user screen is modal
         far.PostJob(fun () ->

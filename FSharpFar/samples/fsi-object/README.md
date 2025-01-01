@@ -22,7 +22,7 @@ it to a configuration file as
 (1) Either invoke *fsi.fsx* in any session or open the interactive session with
 *Fsi.fs.ini* which is configured to load *fsi.fsx*
 
-    fs: open: with=Fsi.fs.ini
+    fs:open with=Fsi.fs.ini
 
 (2) In any interactive session editor type `[1..200]` (a list with 200 items)
 and press `[ShiftEnter]`. As a result, you can see that

@@ -5,7 +5,7 @@ job {
 }
 
 job {
-	$Far.InvokeCommand('fs: exec: file=TryPanelFSharp.fs ;; TryPanelFSharp.run ()')
+	$Far.InvokeCommand('fs:exec file=TryPanelFSharp.fs ;; TryPanelFSharp.run ()')
 }
 
 job {

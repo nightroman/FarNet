@@ -169,6 +169,9 @@ class ChangesExplorer : BaseExplorer
 			var oldBlob = repo.Lookup<Blob>(change.OldOid);
 			var diff = repo.Diff.Compare(oldBlob, newBlob, compareOptions);
 			text = diff.Patch;
+
+			// remove BOM converted to "Zero Width No-Break Space", looks odd in editor
+			text = text.Replace("\uFEFF", string.Empty);
 		}
 		else
 		{

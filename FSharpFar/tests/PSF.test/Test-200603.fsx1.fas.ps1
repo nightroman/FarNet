@@ -1,7 +1,7 @@
 ﻿
 job {
 	# open empty session
-	$Far.InvokeCommand("fs: open: with=$env:FarNetCode\FSharpFar\samples\fsx-sample\.fs.ini")
+	$Far.InvokeCommand("fs:open with=$env:FarNetCode\FSharpFar\samples\fsx-sample\.fs.ini")
 }
 
 job {

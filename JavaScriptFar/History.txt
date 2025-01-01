@@ -1,6 +1,12 @@
 ﻿https://www.nuget.org/packages/FarNet.JavaScriptFar
 https://github.com/microsoft/ClearScript/releases
 
+= 2.1.0 =
+
+Requires FarNet 9.0.9, uses .NET 9.
+
+Command refactoring.
+
 = 2.0.2 =
 
 Microsoft.ClearScript 7.4.5

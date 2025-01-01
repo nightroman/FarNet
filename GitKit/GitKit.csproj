@@ -3,8 +3,9 @@
     <FarHome Condition="'$(FarHome)' == ''">C:\Bin\Far\x64</FarHome>
     <OutDir>$(FarHome)\FarNet\Modules\$(AssemblyName)</OutDir>
     <TargetFramework>net9.0</TargetFramework>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>FarNet250101</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="$(FarHome)\FarNet\FarNet.dll">

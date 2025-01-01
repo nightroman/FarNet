@@ -1,7 +1,7 @@
 
 job {
 	# open empty session
-	$Far.InvokeCommand("fs: open: with=$PSScriptRoot\Vanilla\Vanilla.fs.ini")
+	$Far.InvokeCommand("fs:open with=$PSScriptRoot\Vanilla\Vanilla.fs.ini")
 }
 
 job {

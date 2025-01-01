@@ -12,11 +12,11 @@ How to create a panel with files which content may be edited.
 
 To start, run
 
-    fs: exec: file = App1.fsx
+    fs:exec file = App1.fsx
 
 or, the same
 
-    fs: exec: ;; PanelEditFile.run ()
+    fs:exec ;; PanelEditFile.run ()
 
 This opens the panel with some files with two columns, Name and Description.
 

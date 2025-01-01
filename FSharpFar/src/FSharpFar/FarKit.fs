@@ -42,11 +42,6 @@ let defaultCompilerArgs =
         "-r:" + dir + @"\FarNet\Modules\FSharpFar\FSharpFar.dll"
     |]
 
-/// Expands environment variables and makes the full path based on the active panel.
-let farResolvePath path =
-    let path = Environment.ExpandEnvironmentVariables path
-    Path.GetFullPath(if Path.IsPathRooted path then path else Path.Combine(far.CurrentDirectory, path))
-
 /// Completes an edit line. In an editor callers should Redraw().
 let completeLine (editLine: ILine) replacementIndex replacementLength words =
     let count = Array.length words

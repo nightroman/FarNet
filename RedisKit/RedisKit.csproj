@@ -5,6 +5,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>FarNet250101</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="$(FarHome)\FarNet\FarNet.dll">

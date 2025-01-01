@@ -20,21 +20,21 @@ The sample creates and opens a plugin panel with the following features
 Use one of these commands:
 
     fs: TryPanelFSharp.run ()
-    fs: exec: ;; TryPanelFSharp.run ()
+    fs:exec ;; TryPanelFSharp.run ()
 
 The first simpler command is rather for development, with interactive info output.
 The second command omits the interactive info, it is more suitable for final use.
 
 To run from any directory, specify the configuration file:
 
-    fs: exec: with=.\TryPanelFSharp.fs.ini ;; TryPanelFSharp.run ()
+    fs:exec with=...\TryPanelFSharp.fs.ini ;; TryPanelFSharp.run ()
 
 ### Using as FarNet script
 
 Use one of these commands in order to make and open a temp project:
 
-    fs: project: type=Script; open=VS
-    fs: project: type=Script; open=VSCode
+    fs:project type=Script; open=VS
+    fs:project type=Script; open=VSCode
 
 Build the project in VS or VSCode, this creates `%FARHOME%\FarNet\Scripts\TryPanelFSharp\TryPanelFSharp.dll`.
 Then open the demo panel by this FarNet command:
@@ -45,7 +45,7 @@ Notes:
 
 - You may start or attach VS or VSCode debugger and debug `TryPanelFSharp.fs`.
 - FarNet script does not need `Module.fs` and the configuration section `[out]`.
-- Another way is to remove `[out]` and use `fs: compile` to compile the script.
+- Another way is to remove `[out]` and use `fs:compile` to compile the script.
 
 ### Using as FarNet module
 
@@ -73,12 +73,12 @@ the module directory name should be the same as the assembly name.
 
 You may build the module by this command:
 
-    fs: compile:
+    fs:compile
 
 Alternatively, make and open a temp project and build in VS or VSCode
 
-    fs: project: open=VS
-    fs: project: open=VSCode
+    fs:project open=VS
+    fs:project open=VSCode
 
 Use this project in order to edit sources, build, run, debug.
 

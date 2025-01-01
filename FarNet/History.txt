@@ -1,6 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 9.0.9 =
+
+Rework CommandParameters and add Experimental attribute.
+
 = 9.0.8 =
 
 Refactor panels, retire not used properties FormatName, HostFile.

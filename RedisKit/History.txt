@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.RedisKit
 
+= 0.3.5 =
+
+Requires FarNet 9.0.9, command refactoring.
+
 = 0.3.4 =
 
 Refactor panels.

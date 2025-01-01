@@ -32,11 +32,12 @@ task meta -Inputs .build.ps1, Release-Notes.md -Outputs Directory.Build.props -J
 	Set-Content Directory.Build.props @"
 <Project>
 	<PropertyGroup>
+		<Description>"HtmlToFarHelp - converts HTML to Far Manager help"</Description>
 		<Company>https://github.com/nightroman/FarNet</Company>
 		<Copyright>Copyright (c) Roman Kuzmin</Copyright>
 		<Product>HtmlToFarHelp</Product>
 		<Version>$Version</Version>
-		<Description>"HtmlToFarHelp - converts HTML to Far Manager help"</Description>
+		<IncludeSourceRevisionInInformationalVersion>False</IncludeSourceRevisionInInformationalVersion>
 	</PropertyGroup>
 </Project>
 "@
@@ -60,8 +61,6 @@ task clean {
 
 # Make package in z\tools
 task package markdown, version, {
-	equals (Get-Command HtmlToFarHelp.exe).FileVersionInfo.FileVersion "$Version.0"
-
 	# package folder
 	remove z
 	$null = mkdir z\tools\Demo
@@ -85,6 +84,8 @@ task package markdown, version, {
 
 # Make NuGet package
 task nuget package, version, {
+	equals (Get-Command HtmlToFarHelp.exe).FileVersionInfo.ProductVersion $Version
+
 	$description = @'
 HtmlToFarHelp.exe converts HTML files with compatible structure to HLF,
 Far Manager help format. It also performs some sanity checks for unique
@@ -126,8 +127,8 @@ class TestCase {
 	$Root
 }
 
-# Test conversions and compare results.
-task test {
+# Synopsis: Test conversions and compare results.
+task test_main {
 	$SampleHome2 = "$TestHome\2" # pandoc markdown_phpextra
 	$SampleHome3 = "$TestHome\3" # pandoc gfm
 	$null = mkdir $SampleHome2 -Force
@@ -185,5 +186,12 @@ function Test-File([TestCase]$Test) {
 	Assert-SameFile $hlf2 $hlf $env:MERGE
 	Remove-Item -LiteralPath $htm, $hlf
 }
+
+# Synopsis: Test more specific cases.
+task test_case {
+	Invoke-Build ** Test
+}
+
+task test test_case, test_main
 
 task . build, test, clean

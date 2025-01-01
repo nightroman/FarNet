@@ -32,6 +32,7 @@ namespace HtmlToFarHelp
 		int _para;
 		int _quote;
 		int _internalHeadings;
+		string _lastNodeName;
 		readonly Stack<ListInfo> _list = new Stack<ListInfo>();
 		string _IndentCode_;
 		string IndentCode { get { return _quote == 0 ? _IndentCode_ : _IndentCode_ + "".PadRight(_quote * _options.IndentQuote, ' '); } }
@@ -196,7 +197,8 @@ namespace HtmlToFarHelp
 
 		void Element()
 		{
-			switch (_reader.Name)
+			var nodeName = _reader.Name;
+			switch (nodeName)
 			{
 				case "a": A1(); break;
 				case "blockquote": Quote1(); break;
@@ -234,6 +236,7 @@ namespace HtmlToFarHelp
 					Throw(string.Format(ErrUnexpectedElement, _reader.Name));
 					break;
 			}
+			_lastNodeName = nodeName;
 		}
 
 		bool _isLastElementHeading;
@@ -630,6 +633,7 @@ namespace HtmlToFarHelp
 			++_countTextInPara;
 			var text = Kit.FixNewLine(_reader.Value);
 
+			bool mayNeedSpace = text[0] == '\r' && !_needNewLine;
 			NewLine();
 
 			// trim new lines
@@ -638,7 +642,10 @@ namespace HtmlToFarHelp
 				var len1 = text.Length;
 				text = Kit.TrimStartNewLine(text);
 				if (len1 != text.Length && _countTextInPara > 1 && !_br)
+				{
 					_writer.WriteLine();
+					mayNeedSpace = false;
+				}
 
 				var len2 = text.Length;
 				text = Kit.TrimEndNewLine(text);
@@ -658,6 +665,10 @@ namespace HtmlToFarHelp
 
 			if (_br)
 				text = Kit.TrimStartNewLine(text);
+
+			// 2024-12-31-0758 pandoc without --wrap=preserve uses new line after <a> instead of space
+			if (mayNeedSpace && !char.IsWhiteSpace(text[0]) && _lastNodeName == "a")
+				_writer.Write(' ');
 
 			_writer.Write(text);
 		}

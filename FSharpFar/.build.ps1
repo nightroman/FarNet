@@ -47,11 +47,12 @@ task meta -Inputs .build.ps1, History.txt -Outputs src/Directory.Build.props -Jo
 	Set-Content src/Directory.Build.props @"
 <Project>
 	<PropertyGroup>
+		<Description>$Description</Description>
 		<Company>https://github.com/nightroman/FarNet</Company>
 		<Copyright>Copyright (c) Roman Kuzmin</Copyright>
-		<Description>$Description</Description>
 		<Product>FarNet.FSharpFar</Product>
 		<Version>$Version</Version>
+		<IncludeSourceRevisionInInformationalVersion>False</IncludeSourceRevisionInInformationalVersion>
 	</PropertyGroup>
 </Project>
 "@
@@ -93,12 +94,8 @@ task package markdown, {
 }
 
 task nuget package, version, {
-	# test versions
-	$dllPath = "$ModuleRoot\$ModuleName.dll"
-	($dllVersion = (Get-Item $dllPath).VersionInfo.FileVersion.ToString())
-	assert $dllVersion.StartsWith("$Version.") 'Versions mismatch.'
+	equals (Get-Item "$ModuleRoot\$ModuleName.dll").VersionInfo.ProductVersion "$Version.0"
 
-	# nuspec
 	Set-Content z\Package.nuspec @"
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
@@ -117,26 +114,30 @@ task nuget package, version, {
 	</metadata>
 </package>
 "@
-	# pack
+
 	exec { NuGet pack z\Package.nuspec }
 }
 
+task test_psf_ib {
+	Start-Far 'ps: Invoke-Build ** tests\PSF.test' -Test 500
+}
+
+task test_psf_fas {
+	Start-Far "ps: Test.far.ps1 * -Quit" $env:FarNetCode\FSharpFar\tests\PSF.test -ReadOnly
+}
+
 task test_testing {
-	Start-Far "fs: exec: file=$env:FarNetCode\FSharpFar\samples\Testing\App1.fsx" -ReadOnly -Title Testing -Environment @{QuitFarAfterTests=1}
+	Start-Far "fs:exec file=$env:FarNetCode\FSharpFar\samples\Testing\App1.fsx" -ReadOnly -Environment @{QuitFarAfterTests=1}
 }
 
 task test_tests {
-	Start-Far "fs: exec: file=$env:FarNetCode\FSharpFar\tests\App1.fsx" -ReadOnly -Title Tests -Environment @{QuitFarAfterTests=1}
-}
-
-task test_tasks {
-	Start-Far "ps: Test.far.ps1 * -Quit" $env:FarNetCode\FSharpFar\tests\PSF.test -ReadOnly -Title FSharpFar\PSF.test
+	Start-Far "fs:exec file=$env:FarNetCode\FSharpFar\tests\App1.fsx" -ReadOnly -Environment @{QuitFarAfterTests=1}
 }
 
 task test_fsx {
 	Invoke-Build test src\fsx
 }
 
-task test test_tasks, test_tests, test_testing, test_fsx
+task test test_psf_ib, test_psf_fas, test_testing, test_tests, test_fsx
 
 task . build, clean
