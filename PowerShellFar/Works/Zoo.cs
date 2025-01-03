@@ -1,8 +1,4 @@
-﻿
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using FarNet;
+﻿using FarNet;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,36 +17,6 @@ public static class Zoo
 	public static Meta[] TablePanelSetupColumns(object[] columns)
 	{
 		return Format.SetupColumns(columns);
-	}
-
-	/// <summary>
-	/// Key: prefix with spaces or spaces.
-	/// Value: command with no leading spaces.
-	/// Public for Test-SplitCommandWithPrefix-.ps1
-	/// </summary>
-	public static KeyValuePair<string, string> SplitCommandWithPrefix(string text)
-	{
-		var match = MyRegex.CommandWithPrefix().Match(text);
-
-		int index;
-		var prefix = match.Groups[2].Value;
-		if (prefix.Length == 0 ||
-			prefix.Equals(Entry.CommandInvoke1.Prefix, StringComparison.OrdinalIgnoreCase) ||
-			prefix.Equals(Entry.CommandInvoke2.Prefix, StringComparison.OrdinalIgnoreCase))
-		{
-			//: no prefix | ps: | vps:
-			index = match.Length;
-		}
-		else
-		{
-			//: unknown prefix
-			index = match.Groups[1].Length;
-		}
-
-		if (index > 0)
-			return new(text[..index], text[index..]);
-		else
-			return new(string.Empty, text);
 	}
 
 	///

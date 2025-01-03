@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.6 =
+
+Requires FarNet 9.0.10, refactoring.
+
 = 9.0.5 =
 
 Refactor panels.

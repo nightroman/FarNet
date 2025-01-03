@@ -1,7 +1,3 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
 using System;
 using System.Collections;
@@ -378,20 +374,22 @@ class FarUI : UniformUI
 		for (int i = 0; i < choices.Count; i++)
 		{
 			hotkeysAndPlainLabels[0, i] = string.Empty;
-			int num = choices[i].Label.IndexOf('&');
+			var label = choices[i].Label;
+			int num = label.IndexOf('&');
 			if (num >= 0)
 			{
-				StringBuilder stringBuilder = new(choices[i].Label[..num], choices[i].Label.Length);
-				if (num + 1 < choices[i].Label.Length)
+				StringBuilder stringBuilder = new(label.Length);
+				stringBuilder.Append(label.AsSpan(0, num));
+				if (num + 1 < label.Length)
 				{
-					stringBuilder.Append(choices[i].Label[(num + 1)..]);
-					hotkeysAndPlainLabels[0, i] = choices[i].Label.Substring(num + 1, 1).Trim().ToUpper(CultureInfo.CurrentCulture);
+					stringBuilder.Append(label.AsSpan(num + 1));
+					hotkeysAndPlainLabels[0, i] = CultureInfo.CurrentCulture.TextInfo.ToUpper(label.AsSpan(num + 1, 1).Trim().ToString());
 				}
 				hotkeysAndPlainLabels[1, i] = stringBuilder.ToString().Trim();
 			}
 			else
 			{
-				hotkeysAndPlainLabels[1, i] = choices[i].Label;
+				hotkeysAndPlainLabels[1, i] = label;
 			}
 			if (hotkeysAndPlainLabels[0, i] == "?")
 				throw new InvalidOperationException("Invalid hotkey '?'.");

@@ -4,9 +4,6 @@ namespace PowerShellFar;
 
 static partial class MyRegex
 {
-	[GeneratedRegex(@"(\s*)(?:(\w+):)?\s*")]
-	public static partial Regex CommandWithPrefix();
-
 	[GeneratedRegex(@"^(.*[!;\(\{\|""'']*)\$(global:|script:|private:)?(\w*)$", RegexOptions.IgnoreCase)]
 	public static partial Regex CompleteVariable();
 

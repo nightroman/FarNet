@@ -3,9 +3,10 @@
 // Copyright (c) Roman Kuzmin
 
 using System;
+using System.Buffers;
 using System.Collections;
+using System.Collections.Frozen;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -118,16 +119,28 @@ public static class Kit
 	}
 
 	// Gets true if a string is not a valid file system file name.
-	public static bool IsInvalidFileName(string name)
+	public static bool IsInvalidFileName(string? name)
 	{
 		if (string.IsNullOrEmpty(name))
 			return true;
 
-		_invalidName ??= new Regex("[" + Regex.Escape(new string(Path.GetInvalidFileNameChars())) + @"]|[\s.]$|^(?:CON|PRN|AUX|NUL|(?:COM|LPT)[1-9])$", RegexOptions.IgnoreCase);
+		if (name[^1] == '.' || char.IsWhiteSpace(name[^1]))
+			return true;
 
-		return _invalidName.IsMatch(name);
+		_invalidFileNameChars ??= Path.GetInvalidFileNameChars();
+		if (name.IndexOfAny(_invalidFileNameChars) >= 0)
+			return true;
+
+		_invalidNames ??= FrozenSet.Create(StringComparer.OrdinalIgnoreCase, [
+			"CON", "PRN", "AUX", "NUL",
+			"COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
+			"LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"
+		]);
+
+		return _invalidNames.Contains(name);
 	}
-	static Regex? _invalidName;
+	static char[]? _invalidFileNameChars;
+	static FrozenSet<string>? _invalidNames;
 
 	// Interactively fixes an invalid file name.
 	// name An invalid file name.
@@ -149,4 +162,49 @@ public static class Kit
 
 	// Gets or sets the default macro output mode.
 	public static bool MacroOutput { get; set; }
+
+	/// <summary>
+	/// Splits the command line to prefix and command.
+	/// </summary>
+	/// <param name="commandLine">Input.</param>
+	/// <param name="prefix">Prefix with all around spaces or just spaces.</param>
+	/// <param name="command">Command text with trimmed start.</param>
+	/// <param name="isPrefix">Prefix filter.</param>
+	public static void SplitCommandWithPrefix(
+		ReadOnlySpan<char> commandLine,
+		out ReadOnlySpan<char> prefix,
+		out ReadOnlySpan<char> command,
+		Predicate<ReadOnlySpan<char>> isPrefix)
+	{
+		// skip spaces
+		int index1 = 0;
+		while (index1 < commandLine.Length && char.IsWhiteSpace(commandLine[index1]))
+			++index1;
+
+		// skip word
+		int index2 = index1;
+		while (index2 < commandLine.Length && char.IsLetterOrDigit(commandLine[index2]))
+			++index2;
+
+		// has prefix?
+		if (index2 > 0 && index2 < commandLine.Length && commandLine[index2] == ':')
+		{
+			prefix = commandLine[index1..index2];
+			if (isPrefix(prefix))
+			{
+				// skip spaces after ':'
+				++index2;
+				while (index2 < commandLine.Length && char.IsWhiteSpace(commandLine[index2]))
+					++index2;
+
+				prefix = commandLine[0..index2];
+				command = commandLine[index2..];
+				return;
+			}
+		}
+
+		// unknown or no prefix
+		prefix = commandLine[0..index1];
+		command = commandLine[index1..];
+	}
 }

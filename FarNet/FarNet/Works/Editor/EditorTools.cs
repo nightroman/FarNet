@@ -153,7 +153,7 @@ public static class EditorTools
 			var editor = editors[i];
 			var name = string.Format(
 				MenuItemFormat,
-				index < MenuHotkeys.Length ? MenuHotkeys.Substring(index, 1) : " ",
+				index < MenuHotkeys.Length ? MenuHotkeys[index] : ' ',
 				editor.Title);
 			menu.Add(name).Data = editor;
 		}
@@ -192,7 +192,7 @@ public static class EditorTools
 			var viewer = viewers[i];
 			var name = string.Format(
 				MenuItemFormat,
-				index < MenuHotkeys.Length ? MenuHotkeys.Substring(index, 1) : " ",
+				index < MenuHotkeys.Length ? MenuHotkeys[index] : ' ',
 				viewer.FileName);
 			menu.Add(name).Data = viewer;
 		}

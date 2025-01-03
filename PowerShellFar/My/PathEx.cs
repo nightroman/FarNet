@@ -1,8 +1,4 @@
-﻿
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
+﻿using System;
 using System.IO;
 using System.Management.Automation;
 
@@ -29,7 +25,7 @@ static class PathEx
 	/// </summary>
 	public static bool IsFSPath(string name)
 	{
-		return name.StartsWith("\\\\", StringComparison.Ordinal) || (name.Length > 3 && name[1] == ':');
+		return name.StartsWith("\\\\") || (name.Length > 3 && name[1] == ':');
 	}
 
 	public static string Combine(string path, string file)
@@ -42,7 +38,7 @@ static class PathEx
 			return path + file;
 
 		// 090824
-		if (path.EndsWith("::", StringComparison.Ordinal))
+		if (path.EndsWith("::"))
 			return path + file;
 		else
 			return path + "\\" + file;
@@ -74,13 +70,13 @@ static class PathEx
 	public static string? TryGetFilePath(object? value) //_091202_073429
 	{
 		var fileInfo = PowerShellFar.Cast<FileInfo>.From(value);
-		if (fileInfo != null)
+		if (fileInfo is { })
 			return fileInfo.FullName;
 
 		if (LanguagePrimitives.TryConvertTo(value, out string path))
 		{
 			// looks like a full path
-			if (path.Length > 3 && path.Substring(1, 2) == ":\\" || path.StartsWith("\\\\", StringComparison.OrdinalIgnoreCase))
+			if (path.Length > 3 && path.AsSpan(1, 2).SequenceEqual(":\\") || path.StartsWith("\\\\"))
 			{
 				if (File.Exists(path))
 					return path;
@@ -98,13 +94,13 @@ static class PathEx
 	public static string? TryGetDirectoryPath(object value)
 	{
 		var directoryInfo = PowerShellFar.Cast<DirectoryInfo>.From(value);
-		if (directoryInfo != null)
+		if (directoryInfo is { })
 			return directoryInfo.FullName;
 
 		if (LanguagePrimitives.TryConvertTo(value, out string path))
 		{
 			// looks like a full path
-			if (path.Length > 3 && path.Substring(1, 2) == ":\\" || path.StartsWith("\\\\", StringComparison.OrdinalIgnoreCase))
+			if (path.Length > 3 && path.AsSpan(1, 2).SequenceEqual(":\\") || path.StartsWith("\\\\"))
 			{
 				if (Directory.Exists(path))
 					return path;

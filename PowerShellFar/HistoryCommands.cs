@@ -1,8 +1,4 @@
-﻿
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using FarNet;
+﻿using FarNet;
 using FarNet.Tools;
 using System;
 using System.Collections.Generic;
@@ -20,15 +16,10 @@ class HistoryCommands : HistoryStore
 		return line.StartsWith(_prefix1, StringComparison.OrdinalIgnoreCase) || line.StartsWith(_prefix2, StringComparison.OrdinalIgnoreCase);
 	}
 
-	public string RemovePrefix(string line)
+	public static string RemovePrefix(string line)
 	{
-		if (line.StartsWith(_prefix1, StringComparison.OrdinalIgnoreCase))
-			return line[_prefix1.Length..].Trim();
-
-		if (line.StartsWith(_prefix2, StringComparison.OrdinalIgnoreCase))
-			return line[_prefix2.Length..].Trim();
-
-		return line.Trim();
+		FarNet.Works.Kit.SplitCommandWithPrefix(line, out var prefix, out var command, Entry.IsMyPrefix);
+		return prefix.Length == 0 ? line : command.ToString();
 	}
 
 	public override string[] ReadLines()

@@ -35,7 +35,7 @@ public readonly ref struct CommandParameters
 	public ReadOnlySpan<char> Command { get; }
 
 	/// <summary>
-	/// Gets the separated text.
+	/// Gets the separated trimmed text.
 	/// </summary>
 	public ReadOnlySpan<char> Text { get; }
 
@@ -93,7 +93,7 @@ public readonly ref struct CommandParameters
 				++index;
 
 			if (index == 0)
-				return new(default, commandLine.TrimStart(), null!);
+				return new(default, commandLine.Trim(), null!);
 
 			command = commandLine[0..index];
 			commandLine = commandLine[index..].TrimStart();
@@ -116,7 +116,7 @@ public readonly ref struct CommandParameters
 			else
 			{
 				parameters = commandLine[0..index];
-				text = commandLine[(index + textSeparator.Length)..].TrimStart();
+				text = commandLine[(index + textSeparator.Length)..].Trim();
 			}
 		}
 		else
@@ -274,7 +274,7 @@ public readonly ref struct CommandParameters
 	/// </summary>
 	/// <param name="name">Parameter name.</param>
 	/// <returns>Gets the value or T default.</returns>
-	/// <typeparam name="T">A type suitable for <c>Convert.ChangeType</c> from string.</typeparam>
+	/// <typeparam name="T">Enum or primitive suitable for <c>Convert.ChangeType</c>.</typeparam>
 	public T GetValue<T>(string name)
 	{
 		var string1 = GetString(name);
@@ -283,7 +283,10 @@ public readonly ref struct CommandParameters
 
 		try
 		{
-			return (T)Convert.ChangeType(string1, typeof(T));
+			if (typeof(T).IsEnum)
+				return (T)Enum.Parse(typeof(T), string1);
+			else
+				return (T)Convert.ChangeType(string1, typeof(T));
 		}
 		catch (Exception ex)
 		{
@@ -299,7 +302,7 @@ public readonly ref struct CommandParameters
 		if (_parameters.Count > 0)
 		{
 			throw new ModuleException(ErrorBuilder(Command)
-				.Append("Uknknown parameters: ").Append(string.Join(", ", _parameters.Keys.Cast<string>())).ToString());
+				.Append("Unknown parameters: ").Append(string.Join(", ", _parameters.Keys.Cast<string>())).ToString());
 		}
 	}
 }

@@ -1,8 +1,4 @@
-﻿
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using FarNet;
+﻿using FarNet;
 using FarNet.Tools;
 using System;
 
@@ -55,7 +51,7 @@ static class History
 			return null;
 		}
 
-		code = _history.RemovePrefix(code);
+		code = HistoryCommands.RemovePrefix(code);
 		switch (Far.Api.Window.Kind)
 		{
 			case WindowKind.Editor:

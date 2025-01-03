@@ -1,7 +1,3 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
 using System;
 using System.Collections.ObjectModel;
@@ -26,8 +22,8 @@ static class Help
 		else
 		{
 			// mind prefix to avoid parsing problems
-			var split = Zoo.SplitCommandWithPrefix(line.Text);
-			ShowHelpForText(split.Value, line.Caret - split.Key.Length, defaultTopic);
+			FarNet.Works.Kit.SplitCommandWithPrefix(line.Text, out var prefix, out var text, Entry.IsMyPrefix);
+			ShowHelpForText(text, line.Caret - prefix.Length, defaultTopic);
 		}
 	}
 
@@ -47,7 +43,7 @@ static class Help
 	}
 
 	internal static void ShowHelpForText(
-		string text,
+		ReadOnlySpan<char> text,
 		int pos,
 		string? defaultTopic,
 		OpenMode openMode = OpenMode.None)
@@ -64,7 +60,7 @@ static class Help
 		}
 
 		// find the token
-		Collection<PSToken> tokens = PSParser.Tokenize(text, out _);
+		Collection<PSToken> tokens = PSParser.Tokenize(text.ToString(), out _);
 		var token = tokens.FirstOrDefault(token => pos >= (token.StartColumn - 1) && pos <= token.EndColumn);
 		if (token is null)
 			return;

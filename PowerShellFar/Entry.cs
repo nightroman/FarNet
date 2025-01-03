@@ -1,8 +1,4 @@
-﻿
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using FarNet;
+﻿using FarNet;
 using System;
 using System.Management.Automation;
 
@@ -17,8 +13,8 @@ public sealed class Entry : ModuleHost
 {
 	internal static Entry Instance { get; private set; } = null!;
 	internal static string LocalData { get; private set; } = null!;
-	internal static string RoamingData { get; private set; } = null!; 
-	internal static IModuleCommand CommandInvoke1 { get; private set; } = null!; 
+	internal static string RoamingData { get; private set; } = null!;
+	internal static IModuleCommand CommandInvoke1 { get; private set; } = null!;
 	internal static IModuleCommand CommandInvoke2 { get; private set; } = null!;
 
 	public Entry()
@@ -87,23 +83,25 @@ public sealed class Entry : ModuleHost
 	}
 	bool IsInvokingCalled;
 
+	internal static bool IsMyPrefix(ReadOnlySpan<char> prefix)
+	{
+		return
+			prefix.Equals(CommandInvoke1.Prefix, StringComparison.OrdinalIgnoreCase) ||
+			prefix.Equals(CommandInvoke2.Prefix, StringComparison.OrdinalIgnoreCase);
+	}
+
 	void OnCommandInvoke1(object? sender, ModuleCommandEventArgs e)
 	{
 		A.Psf.SyncPaths();
 
 		// if ends with `#` then omit echo else make echo with prefix
-		var echo = e.Command.TrimEnd();
-		if (echo.EndsWith('#'))
-		{
-			echo = null;
-		}
+		Func<string>? getEcho;
+		if (e.Command.AsSpan().TrimEnd().EndsWith('#'))
+			getEcho = null;
 		else
-		{
-			var colon = e.Command.Length > 0 && char.IsWhiteSpace(e.Command[0]) ? ":" : ": ";
-			echo = CommandInvoke1.Prefix + colon + e.Command;
-		}
+			getEcho = () => CommandInvoke1.Prefix + ':' + e.Command;
 
-		var ok = A.Psf.Run(new RunArgs(e.Command) { Writer = new ConsoleOutputWriter(echo) });
+		var ok = A.Psf.Run(new RunArgs(e.Command) { Writer = new ConsoleOutputWriter(getEcho) });
 		e.Ignore = !ok;
 	}
 

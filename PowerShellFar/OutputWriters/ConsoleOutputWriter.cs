@@ -1,35 +1,31 @@
-﻿
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
+﻿using System;
 using FarNet;
 
 namespace PowerShellFar;
 
 sealed class ConsoleOutputWriter : OutputWriter
 {
-	string? _echo;
+	Func<string>? _getEcho;
 
 	public ConsoleOutputWriter()
 	{
 	}
 
-	public ConsoleOutputWriter(string? echo)
+	public ConsoleOutputWriter(Func<string>? getEcho)
 	{
-		_echo = echo;
+		_getEcho = getEcho;
 	}
 
 	void Writing()
 	{
 		// write and drop echo
-		if (_echo != null)
+		if (_getEcho is { })
 		{
-			var echo2 = _echo + Environment.NewLine;
-			Far.Api.UI.Write(echo2, Settings.Default.CommandForegroundColor);
-			_echo = null;
+			var echo = _getEcho() + Environment.NewLine;
+			Far.Api.UI.Write(echo, Settings.Default.CommandForegroundColor);
+			_getEcho = null;
 
-			A.Psf.Transcript?.WriteLine(Environment.NewLine + echo2);
+			A.Psf.Transcript?.WriteLine(Environment.NewLine + echo);
 		}
 	}
 

@@ -1,8 +1,4 @@
-﻿
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
+﻿using System;
 using System.Globalization;
 
 namespace PowerShellFar;

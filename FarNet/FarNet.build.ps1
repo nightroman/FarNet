@@ -17,7 +17,7 @@ $script:Builds = @(
 
 function do-clean {
 	foreach($_ in $Builds) { Invoke-Build clean $_ }
-	remove z, FarNet.sdf, About-FarNet.htm
+	remove z, FarNet.sdf, About-FarNet.htm, FarNetTest\bin, FarNetTest\obj
 }
 
 task clean {
@@ -151,4 +151,12 @@ task nuget package, version, {
 "@
 
 	exec { NuGet.exe pack z\Package.nuspec }
+}
+
+task test {
+	Set-Location FarNetTest
+	Use-BuildEnv @{FarNetTest = 1} {
+		exec { dotnet run }
+	}
+	remove bin, obj
 }

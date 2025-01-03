@@ -1,7 +1,3 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
 using FarNet.Forms;
 using System;
@@ -132,10 +128,13 @@ class ReadCommand
 		// get code, allow empty to refresh prompt
 		bool fromEditor = TextFromEditor != null;
 		var code = (fromEditor ? TextFromEditor! : Edit.Text).TrimEnd();
-		bool toEcho = !fromEditor || code.IndexOf('\n') < 0;
 
-		//! use original prompt (transcript, analysis, etc.)
-		var echo = PromptOriginal + (toEcho ? code : "...");
+		string echo()
+		{
+			//! use original prompt (transcript, analysis, etc.)
+			bool showCode = !fromEditor || code.IndexOf('\n') < 0;
+			return PromptOriginal + (showCode ? code : "...");
+		}
 
 		// result
 		Out = new RunArgs(code) { Writer = new ConsoleOutputWriter(echo) };

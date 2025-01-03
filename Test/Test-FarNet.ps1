@@ -27,8 +27,8 @@
 param(
 	$Tests = -1,
 	$ExpectedTaskCount = 207,
-	$ExpectedBasicsCount = 18,
-	$ExpectedExtrasCount = 8,
+	$ExpectedBasicsCount = 16,
+	$ExpectedExtrasCount = 9,
 	[switch]$All,
 	[switch]$Quit
 )
@@ -74,8 +74,9 @@ if (!$Tests) {
 }
 
 ### Extra tests
-if ($All) {
-	$extras = @(
+$extras = @(
+	if ($All) {
+		{ Invoke-Build test "$env:FarNetCode\FarNet" }
 		Get-Item "$env:FarNetCode\Test\TabExpansion\Test-TabExpansion2-.ps1"
 		{ & "$env:FarNetCode\Test\TabExpansion\Test-TabExpansion2.ps1" pwsh }
 		{ & "$env:FarNetCode\Test\TabExpansion\Test-TabExpansion2.ps1" powershell }
@@ -84,13 +85,15 @@ if ($All) {
 		{ Invoke-Build test "$env:FarNetCode\JavaScriptFar" }
 		{ Invoke-Build test "$env:FarNetCode\JsonKit" }
 		{ Invoke-Build test "$env:FarNetCode\RedisKit" }
-	)
-	Assert-Far $extras.Count -eq $ExpectedExtrasCount
-	foreach($test in $extras) {
-		[Diagnostics.Trace]::TraceInformation($test)
-		& $test
-		if ($global:Error) {throw "Errors after extra test: $test" }
 	}
+)
+if ($All) {
+	Assert-Far $extras.Count -eq $ExpectedExtrasCount
+}
+foreach($test in $extras) {
+	[Diagnostics.Trace]::TraceInformation($test)
+	& $test
+	if ($global:Error) {throw "Errors after extra test: $test" }
 }
 
 ### Main tests

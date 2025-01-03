@@ -538,6 +538,7 @@ public abstract class IFar
 			{
 				WindowKind.Editor => new FSContextSingle(Editor!.FileName),
 				WindowKind.Viewer => new FSContextSingle(Viewer!.FileName),
+				WindowKind.None => new FSContext(),
 				_ => new FSContextPanel(Panel),
 			};
 		}

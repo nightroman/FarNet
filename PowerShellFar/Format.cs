@@ -1,8 +1,4 @@
-﻿
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -148,7 +144,7 @@ static class Format
 			SetBestType(metas, maximum, "O", Word.Value, Word.Status);
 	}
 
-	static bool SetBestType(Meta[] metas, int maximum, string type, params string[] patterns)
+	static bool SetBestType(Meta[] metas, int maximum, string type, params ReadOnlySpan<string> patterns)
 	{
 		int iBestPattern = patterns.Length;
 		int iBestMeta = -1;
@@ -160,13 +156,13 @@ static class Format
 				continue;
 
 			bool done = false;
-			string name = meta.Name;
+			var name = meta.Name.AsSpan();
 			for (int iPattern = 0; iPattern < iBestPattern; ++iPattern)
 			{
 				string pattern = patterns[iPattern];
 				if (pattern[0] == '*')
 				{
-					if (name.EndsWith(patterns[iPattern][1..], StringComparison.OrdinalIgnoreCase))
+					if (name.EndsWith(patterns[iPattern].AsSpan(1..), StringComparison.OrdinalIgnoreCase))
 					{
 						iBestMeta = iMeta;
 						iBestPattern = iPattern;
@@ -174,7 +170,7 @@ static class Format
 				}
 				else
 				{
-					if (string.Equals(name, patterns[iPattern], StringComparison.OrdinalIgnoreCase))
+					if (name.Equals(patterns[iPattern], StringComparison.OrdinalIgnoreCase))
 					{
 						iBestMeta = iMeta;
 						if (iPattern == 0)

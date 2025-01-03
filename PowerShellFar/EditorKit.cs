@@ -1,7 +1,3 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
 using FarNet.Forms;
 using FarNet.Tools;
@@ -67,10 +63,10 @@ static class EditorKit
 			}
 		}
 
+		ReadOnlySpan<char> prefix = default;
+		ReadOnlySpan<char> inputScript;
 		int lineOffset = 0;
-		string inputScript;
 		int cursorColumn;
-		var prefix = string.Empty;
 
 		IEditor? editor = null;
 		InteractiveArea? area;
@@ -128,16 +124,13 @@ static class EditorKit
 			inputScript = editLine.Text;
 			cursorColumn = editLine.Caret;
 
-			//_200805_i3 Deal with auto complete selection.
-			// use selection start as cursor column
+			// 2020-08-05-0001 mind auto complete selection, use selection start as cursor column
 			var selectionSpan = editLine.SelectionSpan;
 			if (cursorColumn == selectionSpan.End)
 				cursorColumn = selectionSpan.Start;
 
 			// process prefix, used to be just for panels but it is needed in dialogs, too
-			var split = Zoo.SplitCommandWithPrefix(inputScript);
-			prefix = split.Key;
-			inputScript = split.Value;
+			FarNet.Works.Kit.SplitCommandWithPrefix(inputScript, out prefix, out inputScript, Entry.IsMyPrefix);
 
 			// correct caret
 			cursorColumn -= prefix.Length;
@@ -159,7 +152,7 @@ static class EditorKit
 
 			var result = (CommandCompletion)ps
 				.AddCommand("TabExpansion2", true)
-				.AddArgument(inputScript)
+				.AddArgument(inputScript.ToString())
 				.AddArgument(cursorColumn)
 				.Invoke()[0].BaseObject;
 
@@ -179,7 +172,7 @@ static class EditorKit
 			if (editLine.WindowKind == WindowKind.Editor)
 			{
 				// replaced text
-				var lastWord = inputScript.Substring(lineOffset + replacementIndex, replacementLength);
+				var lastWord = inputScript.Slice(lineOffset + replacementIndex, replacementLength).ToString();
 
 				//! as TabExpansion.ps1 but ends with \$(\w*)$
 				var matchVar = MyRegex.CompleteVariable().Match(lastWord);
@@ -223,7 +216,9 @@ static class EditorKit
 			// expand
 			ExpandText(editLine, replacementIndex + prefix.Length, replacementLength, words);
 		}
-		catch (RuntimeException) { }
+		catch (RuntimeException)
+		{
+		}
 	}
 
 	public static void ExpandText(ILine editLine, int replacementIndex, int replacementLength, IReadOnlyList<CompletionResult> words)
@@ -275,22 +270,18 @@ static class EditorKit
 			word = (string)menu.Items[menu.Selected].Data!;
 		}
 
-		// get original text and custom mode
-		var text = editLine.Text;
+		// line text and head to keep
+		var text = editLine.Text.AsSpan();
+		var head = text[..replacementIndex];
 
-		//_200805_i3 Deal with auto complete selection.
-		// remove selected text before replacement
+		// 2020-08-05-0001 mind auto complete selection, skip selected text
 		var selectionSpan = editLine.SelectionSpan;
-		if (selectionSpan.Start == replacementIndex + replacementLength)
-			text = string.Concat(text.AsSpan(0, selectionSpan.Start), text.AsSpan(selectionSpan.End, text.Length - selectionSpan.End));
-
-		// replace
-
-		// head before replaced part
-		string head = text[..replacementIndex];
+		var tail = selectionSpan.Start == replacementIndex + replacementLength ?
+			text[selectionSpan.End..] :
+			text[(replacementIndex + replacementLength)..];
 
 		// set new text = old head + expanded + old tail
-		editLine.Text = string.Concat(head, word, text.AsSpan(replacementIndex + replacementLength));
+		editLine.Text = string.Concat(head, word, tail);
 
 		// set caret
 		editLine.Caret = head.Length + word.Length;
@@ -482,8 +473,8 @@ static class EditorKit
 				code = line.Text;
 		}
 
-		var split = Zoo.SplitCommandWithPrefix(code);
-		A.Psf.Run(new RunArgs(split.Value));
+		FarNet.Works.Kit.SplitCommandWithPrefix(code, out _, out var command, Entry.IsMyPrefix);
+		A.Psf.Run(new RunArgs(command.ToString()));
 	}
 
 	// PSF sets the current directory and location to the script directory.
