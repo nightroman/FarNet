@@ -3,7 +3,9 @@
 // Copyright (c) Roman Kuzmin
 
 using FarNet.Forms;
+using FarNet.Works;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 
 namespace FarNet;
@@ -30,9 +32,39 @@ public abstract class ILine
 	/// <summary>
 	/// Gets or sets the line text.
 	/// </summary>
-	/// <seealso cref="ActiveText"/>
-	/// <seealso cref="SelectedText"/>
 	public abstract string Text { get; set; }
+
+	/// <summary>
+	/// Experimental("FarNet250103") Gets or sets the line text.
+	/// </summary>
+	//! Cannot be nicely done in C++ for command line without challenges:
+	//! FCTL_GETCMDLINE copies data to our temp buffer, it is not clear how to free it after returning.
+	//! FCTL_SETCMDLINE takes zero terminated strings, spans may not have it, we have to create strings.
+	[Experimental("FarNet250103")]
+	public unsafe ReadOnlySpan<char> Text2
+	{
+		get
+		{
+			if (WindowKind == WindowKind.Panels)
+				return Text.AsSpan();
+
+			var (p, n) = Far2.Api.ILineText(this);
+			return new((char*)p, n);
+		}
+		set
+		{
+			if (WindowKind == WindowKind.Panels)
+			{
+				Text = value.ToString();
+				return;
+			}
+
+			fixed (char* p = value)
+			{
+				Far2.Api.ILineText(this, (IntPtr)p, value.Length);
+			}
+		}
+	}
 
 	/// <summary>
 	/// Gets or sets (replaces) the selected text.
@@ -121,12 +153,11 @@ public abstract class ILine
 	/// <summary>
 	/// Gets the match for the current caret position.
 	/// </summary>
-	/// <param name="regex">Regular expression that defines "words".</param>
-	/// <returns>The found match or null if the caret is not at any "word".</returns>
+	/// <param name="regex">Regular expression defining "words".</param>
+	/// <returns>The found match or null if the caret is not "word".</returns>
 	/// <remarks>
-	/// This methods is useful for the common task of getting the current "word".
-	/// In the editor it should be called on the current line only.
-	/// "Words" to look for are defined by a regular expression.
+	/// Use this method in order to get the caret "word".
+	/// In the editor, use only for the current line.
 	/// </remarks>
 	public Match? MatchCaret(Regex regex)
 	{
@@ -138,6 +169,42 @@ public abstract class ILine
 				return caret < match.Index ? null : match;
 
 		return null;
+	}
+
+	/// <summary>
+	/// Experimental("FarNet250104") Gets the match for the current caret position.
+	/// </summary>
+	/// <param name="regex">Regular expression defining "words".</param>
+	/// <param name="index">The found match index or -1.</param>
+	/// <returns>The found word if the caret is "word".</returns>
+	/// <remarks>
+	/// Use this method in order to get the caret "word".
+	/// In the editor, use only for the current line.
+	/// </remarks>
+	[Experimental("FarNet250104")]
+	public ReadOnlySpan<char> MatchCaret2(Regex regex, out int index)
+	{
+		ArgumentNullException.ThrowIfNull(regex);
+
+		var text = Text2;
+		int caret = Caret;
+		index = -1;
+
+		var matches = regex.EnumerateMatches(text);
+		while (matches.MoveNext())
+		{
+			var match = matches.Current;
+			if (caret <= match.Index + match.Length)
+			{
+				if (caret < match.Index)
+					return default;
+
+				index = match.Index;
+				return text.Slice(match.Index, match.Length);
+			}
+		}
+
+		return default;
 	}
 
 	/// <summary>

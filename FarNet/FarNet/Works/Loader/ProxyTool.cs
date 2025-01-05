@@ -70,12 +70,12 @@ sealed class ProxyTool : ProxyAction, IModuleTool
 		set
 		{
 			// unregister the current
-			Host.Instance.UnregisterProxyTool(this);
+			Far2.Api.UnregisterProxyTool(this);
 
 			_Options = value;
 
 			// register new
-			Host.Instance.RegisterProxyTool(this);
+			Far2.Api.RegisterProxyTool(this);
 		}
 	}
 

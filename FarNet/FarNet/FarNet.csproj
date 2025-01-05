@@ -4,11 +4,12 @@
     <MyOutDir>$(FarHome)\FarNet</MyOutDir>
     <Description>FarNet API</Description>
     <TargetFramework>net9.0</TargetFramework>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <Nullable>enable</Nullable>
     <WarningLevel>5</WarningLevel>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <NoWarn>IDE0130;FarNet250101</NoWarn>
+    <NoWarn>IDE0130;FarNet250101;FarNet250103</NoWarn>
   </PropertyGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <ItemGroup>

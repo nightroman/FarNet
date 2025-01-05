@@ -1,23 +1,28 @@
-﻿
-// FarNet module RightWords
-// Copyright (c) Roman Kuzmin
-
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace FarNet.RightWords;
+namespace RightWords;
 
 static class KnownWords
 {
 	/// <summary>
 	/// User selected words to ignore in this session.
 	/// </summary>
-	static readonly HashSet<string> s_IgnoreWords = [];
+	static readonly HashSet<string> _IgnoreWords;
+	static readonly HashSet<string>.AlternateLookup<ReadOnlySpan<char>> _IgnoreWordsLookup;
 
 	/// <summary>
 	/// Cache of the common dictionary words.
 	/// </summary>
-	static HashSet<string> s_CommonWords_;
+	static HashSet<string>? _CommonWords_;
+	static HashSet<string>.AlternateLookup<ReadOnlySpan<char>> _CommonWordsLookup_;
+
+	static KnownWords()
+	{
+		_IgnoreWords = [];
+		_IgnoreWordsLookup = _IgnoreWords.GetAlternateLookup<ReadOnlySpan<char>>();
+	}
 
 	/// <summary>
 	/// Get the current version of known words.
@@ -35,9 +40,9 @@ static class KnownWords
 	/// <summary>
 	/// Gets true if the word is known and should be ignored.
 	/// </summary>
-	public static bool Contains(string word)
+	public static bool Contains(ReadOnlySpan<char> word)
 	{
-		return s_IgnoreWords.Contains(word) || GetCommonWords(false).Contains(word);
+		return _IgnoreWordsLookup.Contains(word) || GetCommonWordsLookup(false).Contains(word);
 	}
 
 	/// <summary>
@@ -46,7 +51,7 @@ static class KnownWords
 	public static void AddIgnoreWord(string word)
 	{
 		++Version;
-		s_IgnoreWords.Add(word);
+		_IgnoreWords.Add(word);
 	}
 
 	/// <summary>
@@ -76,17 +81,35 @@ static class KnownWords
 	/// <param name="force">Tells to read from the file and refresh the cache.</param>
 	static HashSet<string> GetCommonWords(bool force)
 	{
-		if (s_CommonWords_ != null && !force)
-			return s_CommonWords_;
+		if (_CommonWords_ is { } && !force)
+			return _CommonWords_;
 
-		s_CommonWords_ = [];
+		_CommonWords_ = [];
 		var path = Path.Combine(Actor.GetUserDictionaryDirectory(false), Settings.UserFile);
 		if (File.Exists(path))
 		{
 			foreach (string line in File.ReadAllLines(path))
-				s_CommonWords_.Add(line);
+				_CommonWords_.Add(line);
 		}
 
-		return s_CommonWords_;
+		_CommonWordsLookup_ = _CommonWords_.GetAlternateLookup<ReadOnlySpan<char>>();
+		return _CommonWords_;
+	}
+
+	static HashSet<string>.AlternateLookup<ReadOnlySpan<char>> GetCommonWordsLookup(bool force)
+	{
+		if (_CommonWords_ is { } && !force)
+			return _CommonWordsLookup_;
+
+		_CommonWords_ = [];
+		var path = Path.Combine(Actor.GetUserDictionaryDirectory(false), Settings.UserFile);
+		if (File.Exists(path))
+		{
+			foreach (string line in File.ReadAllLines(path))
+				_CommonWords_.Add(line);
+		}
+
+		_CommonWordsLookup_ = _CommonWords_.GetAlternateLookup<ReadOnlySpan<char>>();
+		return _CommonWordsLookup_;
 	}
 }

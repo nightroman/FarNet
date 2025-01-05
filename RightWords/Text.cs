@@ -1,12 +1,8 @@
-﻿
-// FarNet module RightWords
-// Copyright (c) Roman Kuzmin
-
-namespace FarNet.RightWords;
+﻿namespace RightWords;
 
 static class Text
 {
-	static string GetString(string name) => TheHost.Instance.GetString(name);
+	static string GetString(string name) => TheHost.Instance.GetString(name)!;
 
 	public static string AddToDictionary => GetString("AddToDictionary");
 	public static string DoIgnore => GetString("DoIgnore");

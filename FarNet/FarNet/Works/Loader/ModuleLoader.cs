@@ -146,28 +146,28 @@ public class ModuleLoader
 						{
 							var it = (ProxyCommand)action;
 							it.LoadConfig(module);
-							Host.Instance.RegisterProxyCommand(it);
+							Far2.Api.RegisterProxyCommand(it);
 						}
 						break;
 					case ModuleItemKind.Drawer:
 						{
 							var it = (ProxyDrawer)action;
 							it.LoadConfig(module);
-							Host.Instance.RegisterProxyDrawer(it);
+							Far2.Api.RegisterProxyDrawer(it);
 						}
 						break;
 					case ModuleItemKind.Editor:
 						{
 							var it = (ProxyEditor)action;
 							it.LoadConfig(module);
-							Host.Instance.RegisterProxyEditor(it);
+							Far2.Api.RegisterProxyEditor(it);
 						}
 						break;
 					case ModuleItemKind.Tool:
 						{
 							var it = (ProxyTool)action;
 							it.LoadConfig(module);
-							Host.Instance.RegisterProxyTool(it);
+							Far2.Api.RegisterProxyTool(it);
 						}
 						break;
 					default:
@@ -204,7 +204,7 @@ public class ModuleLoader
 		{
 			var it = new ProxyCommand(manager, type);
 			it.LoadConfig(config);
-			Host.Instance.RegisterProxyCommand(it);
+			Far2.Api.RegisterProxyCommand(it);
 			action = it;
 		}
 		// drawer
@@ -212,7 +212,7 @@ public class ModuleLoader
 		{
 			var it = new ProxyDrawer(manager, type);
 			it.LoadConfig(config);
-			Host.Instance.RegisterProxyDrawer(it);
+			Far2.Api.RegisterProxyDrawer(it);
 			action = it;
 		}
 		// editor
@@ -220,7 +220,7 @@ public class ModuleLoader
 		{
 			var it = new ProxyEditor(manager, type);
 			it.LoadConfig(config);
-			Host.Instance.RegisterProxyEditor(it);
+			Far2.Api.RegisterProxyEditor(it);
 			action = it;
 		}
 		// tool
@@ -228,7 +228,7 @@ public class ModuleLoader
 		{
 			var it = new ProxyTool(manager, type);
 			it.LoadConfig(config);
-			Host.Instance.RegisterProxyTool(it);
+			Far2.Api.RegisterProxyTool(it);
 			action = it;
 		}
 		// host
@@ -279,7 +279,7 @@ public class ModuleLoader
 
 		// 1) gather its actions
 		var actions = new List<ProxyAction>();
-		foreach (IModuleAction action in Host.Actions.Values)
+		foreach (IModuleAction action in Far2.Actions.Values)
 			if (ReferenceEquals(action.Manager, manager))
 				actions.Add((ProxyAction)action);
 
@@ -296,7 +296,7 @@ public class ModuleLoader
 			_Managers.Values[0].Unregister();
 
 		// actions are removed
-		Debug.Assert(Host.Actions.Count == 0);
+		Debug.Assert(Far2.Actions.Count == 0);
 	}
 
 	public static IModuleManager GetModuleManager(string name)

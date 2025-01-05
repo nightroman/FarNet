@@ -8,7 +8,7 @@
 #include "Wrappers.h"
 
 namespace FarNet
-{;
+{
 DialogLine::DialogLine(HANDLE hDlg, int id)
 : _hDlg(hDlg)
 , _id(id)
@@ -51,6 +51,20 @@ void DialogLine::Text::set(String^ value)
 {
 	PIN_NE(pin, value);
 	Info.SendDlgMessage(_hDlg, DM_SETTEXTPTR, _id, (wchar_t*)pin);
+}
+
+ValueTuple<IntPtr, int> DialogLine::GetText()
+{
+	auto sz = (const wchar_t*)Info.SendDlgMessage(_hDlg, DM_GETCONSTTEXTPTR, _id, 0);
+	return ValueTuple::Create((IntPtr)(intptr_t)sz, (int)wcslen(sz));
+}
+
+void DialogLine::SetText(wchar_t* p, int n)
+{
+	FarDialogItemData di = { sizeof(di) };
+	di.PtrData = p;
+	di.PtrLength = n;
+	Info.SendDlgMessage(_hDlg, DM_SETTEXT, _id, &di);
 }
 
 Span DialogLine::SelectionSpan::get()

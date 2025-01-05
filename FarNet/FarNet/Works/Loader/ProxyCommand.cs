@@ -71,7 +71,7 @@ sealed class ProxyCommand : ProxyAction, IModuleCommand
 			if (string.IsNullOrEmpty(value))
 				value = Attribute.Prefix;
 
-			Host.Instance.InvalidateProxyCommand();
+			Far2.Api.InvalidateProxyCommand();
 			_Prefix = value;
 		}
 	}

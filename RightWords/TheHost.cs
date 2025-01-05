@@ -1,12 +1,10 @@
-﻿
-// FarNet module RightWords
-// Copyright (c) Roman Kuzmin
+﻿using FarNet;
 
-namespace FarNet.RightWords;
+namespace RightWords;
 
 public class TheHost : ModuleHost
 {
-	public static TheHost Instance { get; private set; }
+	public static TheHost Instance { get; private set; } = null!;
 
 	public TheHost()
 	{

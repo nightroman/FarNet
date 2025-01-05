@@ -22,6 +22,8 @@ public:
 	virtual void UnselectText() override;
 internal:
 	DialogLine(HANDLE hDlg, int id);
+	ValueTuple<IntPtr, int> GetText();
+	void SetText(wchar_t* p, int n);
 private:
 	HANDLE _hDlg;
 	int _id;

@@ -32,7 +32,7 @@ String^ Far1::CurrentDirectory::get()
 IModuleAction^ Far1::GetModuleAction(Guid id)
 {
 	IModuleAction^ action;
-	if (!Works::Host::Actions->TryGetValue(id, action))
+	if (!Works::Far2::Actions->TryGetValue(id, action))
 		return nullptr;
 
 	return action;

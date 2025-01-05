@@ -1,10 +1,8 @@
-﻿
-// FarNet module Drawer
-// Copyright (c) Roman Kuzmin
-
+﻿using FarNet;
 using System;
+using System.Text.RegularExpressions;
 
-namespace FarNet.Drawer;
+namespace Drawer;
 
 public sealed class Settings : ModuleSettings<Settings.Data>
 {
@@ -17,11 +15,16 @@ public sealed class Settings : ModuleSettings<Settings.Data>
 
 	public static Settings Default { get; } = new();
 
-	public class Data
+	public class Data : IValidate
 	{
 		public CurrentWord CurrentWord { get; set; } = new();
 		public FixedColumn FixedColumn { get; set; } = new();
 		public Tabs Tabs { get; set; } = new();
+
+		public void Validate()
+		{
+			CurrentWord.Validate();
+		}
 	}
 
 	public class CurrentWord
@@ -33,6 +36,17 @@ public sealed class Settings : ModuleSettings<Settings.Data>
 		public ConsoleColor ColorForeground { get; set; } = ConsoleColor.Black;
 
 		public ConsoleColor ColorBackground { get; set; } = ConsoleColor.Gray;
+
+		internal Regex WordRegex2 { get; private set; } = null!;
+
+		internal void Validate()
+		{
+			if (string.IsNullOrWhiteSpace(WordRegex))
+				throw new ModuleException("CurrentWord/WordRegex cannot be empty.");
+
+			try { WordRegex2 = new Regex(WordRegex.Value.Trim()); }
+			catch (Exception ex) { throw new ModuleException($"CurrentWord/WordRegex: {ex.Message}"); }
+		}
 	}
 
 	public class FixedColumn

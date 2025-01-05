@@ -135,7 +135,7 @@ sealed partial class ModuleManager : IModuleManager
 		var config = Config.Default.GetData();
 		it.LoadConfig(config.GetModule(ModuleName));
 
-		Host.Instance.RegisterProxyCommand(it);
+		Far2.Api.RegisterProxyCommand(it);
 		return it;
 	}
 
@@ -152,7 +152,7 @@ sealed partial class ModuleManager : IModuleManager
 		var config = Config.Default.GetData();
 		it.LoadConfig(config.GetModule(ModuleName));
 
-		Host.Instance.RegisterProxyDrawer(it);
+		Far2.Api.RegisterProxyDrawer(it);
 		return it;
 	}
 
@@ -169,7 +169,7 @@ sealed partial class ModuleManager : IModuleManager
 		var config = Config.Default.GetData();
 		it.LoadConfig(config.GetModule(ModuleName));
 
-		Host.Instance.RegisterProxyTool(it);
+		Far2.Api.RegisterProxyTool(it);
 		return it;
 	}
 
@@ -356,7 +356,7 @@ sealed partial class ModuleManager : IModuleManager
 		SaveConfig(module);
 
 		// save action data
-		foreach (var action in Host.Actions.Values)
+		foreach (var action in Far2.Actions.Values)
 		{
 			if (action.Manager != this)
 				continue;

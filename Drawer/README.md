@@ -1,29 +1,23 @@
-﻿# Drawer
+﻿# FarNet.Drawer
 
 FarNet module Drawer for Far Manager
 
-*********************************************************************
-## Synopsis
+The module provides a few editor color highlighting tools (drawers).
 
-The module provides a few editor color tools (drawers).
+**Project FarNet**
 
-**Project**
-
- * Source: <https://github.com/nightroman/FarNet/tree/main/Drawer>
- * Author: Roman Kuzmin
+* Wiki: <https://github.com/nightroman/FarNet/wiki>
+* Site: <https://github.com/nightroman/FarNet>
+* Author: Roman Kuzmin
 
 *********************************************************************
-## Installation
+## Install
 
-**Requirements**
+- Far Manager
+- Package [FarNet](https://www.nuget.org/packages/FarNet)
+- Package [FarNet.Drawer](https://www.nuget.org/packages/FarNet.Drawer)
 
- * Far Manager
- * Package FarNet
- * Package FarNet.Drawer
-
-**Instructions**
-
-How to install and update FarNet and modules:\
+How to install and update FarNet and modules\
 <https://github.com/nightroman/FarNet#readme>
 
 *********************************************************************
@@ -31,42 +25,49 @@ How to install and update FarNet and modules:\
 
 The module provides the following editor color drawers:
 
-* `Current word` - colors occurrences of the current word.
-* `Fixed column` - colors custom columns (80, 120 by default).
-* `Tabs` - colors tabs.
+- `Current word` - colors occurrences of the current word.
+- `Fixed column` - colors custom columns (80, 120 by default).
+- `Tabs` - colors tabs.
 
-In order to turn a drawer on and off use the menu: `[F11] | FarNet | Drawers`
+In order to turn a drawer on and off, use the menu: `[F11] / FarNet / Drawers`.
 
-### Options
+*********************************************************************
+## Options
 
-`Options | Plugin configuration | FarNet | Drawers`
+`F9 / Options / Plugin configuration / FarNet / Drawers`
 
-* `Mask` - mask of files where the drawer is turned on automatically.
-* `Priority` - drawer color priority.
+- `Mask` - mask of files where the drawer is turned on automatically.
+- `Priority` - drawer color priority.
 
-### Settings
+*********************************************************************
+## Settings
 
-Module settings: `[F11] | FarNet | Settings | Drawer`
+Module settings: `F11 / FarNet / Settings / Drawer`
 
 - `CurrentWord/WordRegex`
 
-    Defines the regular expression pattern for "words".
-    Default pattern: `\w[-\w]*`
+    The regular expression for "words".
+
+    Default: `\w[-\w]*`
 
 - `CurrentWord/ExcludeCurrent`
 
-    Tells to color word occurrences excluding the current.
+    Tells to not color the current word.
+
     Default: false
 
 - `FixedColumn/ColumnNumbers`
 
     Defines the numbers of highlighted columns.
-    Default columns: 80, 120
+
+    Default: 80, 120
 
 - `.../ColorForeground`, `.../ColorBackground`
 
     Valid colors: Black, DarkBlue, DarkGreen, DarkCyan, DarkRed, DarkMagenta,
     DarkYellow, Gray, DarkGray, Blue, Green, Cyan, Red, Magenta, Yellow, White.
 
-    With the plugin FarColorer `Current word` does not use the settings.
+    With the plugin FarColorer `Current word` does not use these values.
     It uses yellow background and mostly preserves original foreground.
+
+*********************************************************************

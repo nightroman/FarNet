@@ -1,12 +1,8 @@
-﻿
-// FarNet module Drawer
-// Copyright (c) Roman Kuzmin
-
+﻿using FarNet;
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 
-namespace FarNet.Drawer;
+namespace Drawer;
 
 // `Priority = 2` because e.g. PowerShell breakpoints use 1.
 [ModuleDrawer(Name = Settings.CurrentWordName, Priority = 2, Id = Settings.CurrentWordGuid)]
@@ -31,15 +27,13 @@ public class CurrentWordDrawer : ModuleDrawer
 
 	public override void Invoke(IEditor editor, ModuleDrawerEventArgs e)
 	{
-		var sets = Settings.Default.GetData().CurrentWord;
+		var settings = Settings.Default.GetData().CurrentWord;
 
 		// get current word
-		var regex = new Regex(sets.WordRegex);
-		var match = editor.Line.MatchCaret(regex);
-		if (match == null)
+		var word = editor.Line.MatchCaret2(settings.WordRegex2, out int index);
+		if (index < 0)
 			return;
 
-		var word = match.Value;
 		var caret = editor.Caret;
 
 		// color occurrences
@@ -47,13 +41,13 @@ public class CurrentWordDrawer : ModuleDrawer
 		bool hasColorer = editor.HasColorer();
 		foreach (var line in e.Lines)
 		{
-			var text = line.Text;
+			var text = line.Text2;
 			if (text.Length == 0 || text.IndexOf(word, StringComparison.OrdinalIgnoreCase) < 0)
 				continue;
 
 			// find line words
-			match = regex.Match(text);
-			if (!match.Success)
+			var matches = settings.WordRegex2.EnumerateMatches(text);
+			if (!matches.MoveNext())
 				continue;
 
 			// get original colors
@@ -61,10 +55,13 @@ public class CurrentWordDrawer : ModuleDrawer
 				editor.GetColors(line.Index, colors);
 
 			// line word matches
-			for (; match.Success; match = match.NextMatch())
+			for (bool next = true; next; next = matches.MoveNext())
 			{
+				var match = matches.Current;
+				var value = text.Slice(match.Index, match.Length);
+
 				// skip different words
-				if (!match.Value.Equals(word, StringComparison.OrdinalIgnoreCase))
+				if (!value.Equals(word, StringComparison.OrdinalIgnoreCase))
 					continue;
 
 				// the match position
@@ -72,7 +69,7 @@ public class CurrentWordDrawer : ModuleDrawer
 				var myEnd = match.Index + match.Length;
 
 				// skip current word at the caret
-				if (sets.ExcludeCurrent && line.Index == caret.Y)
+				if (settings.ExcludeCurrent && line.Index == caret.Y)
 				{
 					if (caret.X >= myStart && caret.X <= myEnd)
 						continue;
@@ -129,8 +126,8 @@ public class CurrentWordDrawer : ModuleDrawer
 						line.Index,
 						myStart,
 						myEnd,
-						sets.ColorForeground,
-						sets.ColorBackground));
+						settings.ColorForeground,
+						settings.ColorBackground));
 				}
 			}
 		}

@@ -23,29 +23,19 @@ task publish {
 help,
 resgen
 
-task help @{
-	Inputs = 'README.md'
-	Outputs = "$ModuleRoot\RightWords.hlf"
-	Jobs = {
-		exec { pandoc.exe README.md --output=z.htm --from=gfm }
-		exec { HtmlToFarHelp from=z.htm to=$ModuleRoot\RightWords.hlf }
-		remove z.htm
-	}
+task help -Inputs README.md -Outputs $ModuleRoot\RightWords.hlf {
+	exec { pandoc.exe README.md --output=$env:TEMP\help.htm --from=gfm --no-highlight }
+	exec { HtmlToFarHelp from=$env:TEMP\help.htm to=$ModuleRoot\RightWords.hlf }
 }
 
 # https://github.com/nightroman/PowerShelf/blob/main/Invoke-Environment.ps1
-task resgen @{
-	Inputs = 'RightWords.restext', 'RightWords.ru.restext'
-	Outputs = "$ModuleRoot\RightWords.resources", "$ModuleRoot\RightWords.ru.resources"
-	Partial = $true
-	Jobs = {
-		begin {
-			$VsDevCmd = @(Get-Item "$env:ProgramFiles\Microsoft Visual Studio\2022\*\Common7\Tools\VsDevCmd.bat")
-			Invoke-Environment.ps1 -File ($VsDevCmd[0])
-		}
-		process {
-			exec {resgen.exe $_ $2}
-		}
+task resgen -Partial -Inputs RightWords.restext, RightWords.ru.restext -Outputs $ModuleRoot\RightWords.resources, $ModuleRoot\RightWords.ru.resources {
+	begin {
+		$VsDevCmd = @(Get-Item "$env:ProgramFiles\Microsoft Visual Studio\2022\*\Common7\Tools\VsDevCmd.bat")
+		Invoke-Environment.ps1 -File ($VsDevCmd[0])
+	}
+	process {
+		exec { resgen.exe $_ $2 }
 	}
 }
 

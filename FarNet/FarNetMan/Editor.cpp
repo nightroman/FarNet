@@ -13,7 +13,6 @@
 
 namespace FarNet
 {
-;
 String^ AnyEditor::EditText(EditTextArgs^ args)
 {
 	return Works::EditorTools::EditText(args);
@@ -1322,6 +1321,26 @@ void Editor::InvokeDrawers()
 
 		WorksSetColors(it->Id, it->Priority, % colors);
 	}
+}
+
+ValueTuple<IntPtr, int> Editor::GetLineText(intptr_t id, int line)
+{
+	EditorGetString egs = { sizeof(egs) };
+	EditorControl_ECTL_GETSTRING(egs, id, line);
+	return ValueTuple::Create((IntPtr)(intptr_t)egs.StringText, (int)egs.StringLength);
+}
+
+void Editor::SetLineText(intptr_t id, int line, const wchar_t* p, int n)
+{
+	EditorGetString egs = { sizeof(egs) };
+	EditorControl_ECTL_GETSTRING(egs, id, line);
+
+	EditorSetString ess = { sizeof(ess) };
+	ess.StringEOL = egs.StringEOL;
+	ess.StringNumber = line;
+	ess.StringText = p;
+	ess.StringLength = n;
+	EditorControl_ECTL_SETSTRING(id, ess);
 }
 
 }

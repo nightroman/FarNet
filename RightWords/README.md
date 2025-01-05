@@ -1,57 +1,64 @@
-﻿[Contents]: #rightwords
+﻿[Contents]: #farnetrightwords
 
-# RightWords
+# FarNet.RightWords
 
 RightWords is the FarNet module for Far Manager. It provides the spell-checker
 based on `WeCantSpell.Hunspell`. Hunspell dictionaries are used by OpenOffice
 and may be found on OpenOffice.org.
 
-* [Installation](#installation)
-* [Options](#options)
-* [Settings](#settings)
+- [Install](#install)
+- [Options](#options)
+- [Settings](#settings)
 
-Interface
+**Interface**
 
-* [Main menu](#main-menu)
-* [Correction list](#correction-list)
-* [Add to Dictionary](#add-to-dictionary)
+- [Main menu](#main-menu)
+- [Correction list](#correction-list)
+- [Add to Dictionary](#add-to-dictionary)
 
-Project
+**Project**
 
-* Source: <https://github.com/nightroman/FarNet/tree/main/RightWords>
-* Author: Roman Kuzmin
+- Wiki: <https://github.com/nightroman/FarNet/wiki>
+- Site: <https://github.com/nightroman/FarNet>
+- Author: Roman Kuzmin
 
-Credits
+**Credits**
 
 WeCantSpell.Hunspell - A port of Hunspell for .NET
 <https://github.com/aarondandy/WeCantSpell.Hunspell>
 
 *********************************************************************
-## Installation
+## Install
 
 [Contents]
 
-How to install and update FarNet and modules:
+- Far Manager
+- Package [FarNet](https://www.nuget.org/packages/FarNet)
+- Package [FarNet.RightWords](https://www.nuget.org/packages/FarNet.RightWords)
+
+How to install and update FarNet and modules\
 <https://github.com/nightroman/FarNet#readme>
 
-OpenOffice dictionaries:
-<http://wiki.services.openoffice.org/wiki/Dictionaries>
+OpenOffice dictionaries: <http://wiki.services.openoffice.org/wiki/Dictionaries>\
+(get and maintain your own dictionary files, the module does not provide them)
 
-**Dictionary structure (example):**
+**Dictionary files structure (example)**
 
-    %FARPROFILE%\FarNet\RightWords\
+```
+%FARPROFILE%\FarNet\RightWords\
 
-        English\
-            en_GB.aff  (Hunspell affix file)
-            en_GB.dic  (Hunspell words file)
+    English\
+        en_GB.aff  (Hunspell affix file)
+        en_GB.dic  (Hunspell words file)
 
-        Russian\
-            ru_RU.aff  (Hunspell affix file)
-            ru_RU.dic  (Hunspell words file)
+    Russian\
+        ru_RU.aff  (Hunspell affix file)
+        ru_RU.dic  (Hunspell words file)
 
-        RightWords.dic          (user common words)
-        RightWords.English.dic  (user words for English)
-        RightWords.Russian.dic  (user words for Russian)
+    RightWords.dic          (user common words)
+    RightWords.English.dic  (user words for English)
+    RightWords.Russian.dic  (user words for Russian)
+```
 
 Language dictionaries are up to a user. Directories may have any names, e.g.
 above `English`, `Russian`. These names are used in the dictionary menu and
@@ -59,7 +66,6 @@ as suffixes in user dictionary names (`English` ~ `RightWords.English.dic`).
 
 **Encoding (UTF-8 is recommended)**
 
-FarNet 6 and .NET Core do not support so much encodings as .NET Framework.
 UTF-8 is recommended for all dictionaries. How to convert dictionaries in
 Far Manager editor:
 
@@ -77,7 +83,7 @@ Switches "Spelling mistakes" highlighting in the current editor.
 
 `Options \ Plugin configuration \ FarNet \ Drawers \ Spelling mistakes`
 
-The dialog with permanent options:
+The dialog with saved options:
 
 - `Mask`
 
@@ -94,36 +100,64 @@ The dialog with permanent options:
 
 Module settings: `[F11] \ FarNet \ Settings \ RightWords`
 
-**WordPattern**
+*********************************************************************
+**WordRegex**
 
-Defines the regular expression pattern for word recognition in texts.
+The regular expression for words recognition.
 
-The default pattern: `[\p{Lu}\p{Ll}]\p{Ll}+` (words with 2+ letters,
-"RightWords" is treated as "Right" and "Words")
+The default is `[\p{Lu}\p{Ll}]\p{Ll}+` ~ words with two or more letters, with
+joined words like "RightWords" treated as separate words "Right" and "Words".
 
-All capturing groups `(...)` are removed from the word before spell-checking.
-This is used for checking spelling of words with embedded "noise" parts, like
-the hotkey markers `&` in *.lng* or *.restext* files. Use not capturing groups
-`(?:)` in all other cases where grouping is needed.
+*********************************************************************
+**SkipRegex**
 
-Nested capturing groups are not supported and they are not really needed.
+The regular expression for text areas excluded from checks.
 
-Example pattern for *.lng* and *.restext* files:
-`[\p{Lu}\p{Ll}](?:\p{Ll}|(&))+`
+The default is none, empty.
 
-**SkipPattern**
+Example:
 
-Defines the regular expression pattern for text areas to be ignored. The
-default pattern is null (not specified, nothing is ignored).
+```xml
+  <SkipRegex><![CDATA[
+  (?x:
+    # words with digits
+    \w+\d | \d\w+
+    |
+    # quoted paths
+    "(?:\w+:|\.+)?[\\/][^"]+"
+    |
+    # simple paths
+    (?:\w+:|\.+)?[\\/][^\s]+
+  )
+  ]]></SkipRegex>
+```
 
-Sample pattern (using `(?x:)` for comments and ignored white spaces):
+*********************************************************************
+**RemoveRegex**
 
-    (?x:
-        \w*\d\w* # words with digits
-        | "(?:\w+:|\.+)?[\\/][^"]+" # quoted path-like text
-        | (?:\w+:|\.+)?[\\/][^\s]+ # simple path-like text
-    )
+The regular expression for areas removed from words found by `WordRegex`.
 
+The default is none, empty, assuming `WordRegex` defines exact words.
+
+Example `WordRegex` and `RemoveRegex` for words with ampersands:
+
+```xml
+  <WordRegex><![CDATA[
+  (?x:
+    # words with ampersands
+    [\p{Lu}\p{Ll}](?:\p{Ll}|&)+
+  )
+  ]]></WordRegex>
+
+  <RemoveRegex><![CDATA[
+  (?x:
+    # ampersands
+    [&]+
+  )
+  ]]></RemoveRegex>
+```
+
+*********************************************************************
 **HighlightingBackgroundColor**\
 **HighlightingForegroundColor**
 
@@ -131,15 +165,22 @@ Highlighting colors: Black, DarkBlue, DarkGreen, DarkCyan, DarkRed,
 DarkMagenta, DarkYellow, Gray, DarkGray, Blue, Green, Cyan, Red, Magenta,
 Yellow, White.
 
+The default is Black on Yellow.
+
+*********************************************************************
 **UserDictionaryDirectory**
 
-The custom directory of user dictionaries. Environment variables are expanded.
-The default is the module roaming directory.
+The custom directory of user dictionaries, expanding environment variables.
 
+The default is `%FARPROFILE%\FarNet\RightWords`.
+
+*********************************************************************
 **MaximumLineLength**
 
-If it is set to a positive value then it tells to not check too long lines and
-highlight them all. Otherwise too long lines may cause lags on highlighting.
+Tells to skip checking too long lines and instead just highlight them.
+Otherwise, too long lines may cause lags on highlighting.
+
+The default is 0, no limit.
 
 *********************************************************************
 ## Main menu

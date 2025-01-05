@@ -1,10 +1,7 @@
-﻿
-// FarNet module Drawer
-// Copyright (c) Roman Kuzmin
-
+﻿using FarNet;
 using System;
 
-namespace FarNet.Drawer;
+namespace Drawer;
 
 [ModuleDrawer(Name = Settings.TabsName, Priority = 1, Id = Settings.TabsGuid)]
 public class TabsDrawer : ModuleDrawer
@@ -13,7 +10,7 @@ public class TabsDrawer : ModuleDrawer
 	{
 		foreach (var line in e.Lines)
 		{
-			var text = line.Text;
+			var text = line.Text2;
 			for (int index = line.Length - 1; index >= 0;)
 			{
 				// skip not tabs

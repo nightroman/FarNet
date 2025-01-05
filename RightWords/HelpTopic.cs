@@ -1,8 +1,4 @@
-﻿
-// FarNet module RightWords
-// Copyright (c) Roman Kuzmin
-
-namespace FarNet.RightWords;
+﻿namespace RightWords;
 
 static class HelpTopic
 {

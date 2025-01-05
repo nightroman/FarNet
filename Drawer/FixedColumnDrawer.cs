@@ -1,8 +1,6 @@
-﻿
-// FarNet module Drawer
-// Copyright (c) Roman Kuzmin
+﻿using FarNet;
 
-namespace FarNet.Drawer;
+namespace Drawer;
 
 [ModuleDrawer(Name = Settings.FixedColumnName, Priority = 1, Id = Settings.FixedColumnGuid)]
 public class FixedColumnDrawer : ModuleDrawer

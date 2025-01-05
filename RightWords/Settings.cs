@@ -1,11 +1,8 @@
-﻿
-// FarNet module RightWords
-// Copyright (c) Roman Kuzmin
-
+﻿using FarNet;
 using System;
 using System.Text.RegularExpressions;
 
-namespace FarNet.RightWords;
+namespace RightWords;
 
 public sealed class Settings : ModuleSettings<Settings.Data>
 {
@@ -20,40 +17,37 @@ public sealed class Settings : ModuleSettings<Settings.Data>
 
 		public XmlCData SkipRegex { get; set; }
 
+		public XmlCData RemoveRegex { get; set; }
+
 		public ConsoleColor HighlightingForegroundColor { get; set; } = ConsoleColor.Black;
 
 		public ConsoleColor HighlightingBackgroundColor { get; set; } = ConsoleColor.Yellow;
 
-		public string UserDictionaryDirectory { get; set; }
+		public string? UserDictionaryDirectory { get; set; }
 
 		public int MaximumLineLength { get; set; } = 0;
 
-		internal Regex WordRegex2 { get; private set; }
-		internal Regex SkipRegex2 { get; private set; }
+		internal Regex WordRegex2 { get; private set; } = null!;
+		internal Regex? SkipRegex2 { get; private set; }
+		internal Regex? RemoveRegex2 { get; private set; }
 		public void Validate()
 		{
 			if (string.IsNullOrWhiteSpace(WordRegex))
 				throw new ModuleException("WordRegex cannot be empty.");
 
-			try
-			{
-				WordRegex2 = new Regex(WordRegex);
-			}
-			catch (ArgumentException ex)
-			{
-				throw new ModuleException($"WordRegex: {ex.Message}");
-			}
+			try { WordRegex2 = new Regex(WordRegex.Value.Trim()); }
+			catch (Exception ex) { throw new ModuleException($"WordRegex: {ex.Message}"); }
 
 			if (!string.IsNullOrWhiteSpace(SkipRegex))
 			{
-				try
-				{
-					SkipRegex2 = new Regex(SkipRegex);
-				}
-				catch (ArgumentException ex)
-				{
-					throw new ModuleException($"SkipRegex: {ex.Message}");
-				}
+				try { SkipRegex2 = new Regex(SkipRegex.Value.Trim()); }
+				catch (Exception ex) { throw new ModuleException($"SkipRegex: {ex.Message}"); }
+			}
+
+			if (!string.IsNullOrWhiteSpace(RemoveRegex))
+			{
+				try { RemoveRegex2 = new Regex(RemoveRegex.Value.Trim()); }
+				catch (Exception ex) { throw new ModuleException($"RemoveRegex: {ex.Message}"); }
 			}
 		}
 	}

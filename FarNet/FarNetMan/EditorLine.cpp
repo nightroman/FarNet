@@ -7,7 +7,7 @@
 #include "Wrappers.h"
 
 namespace FarNet
-{;
+{
 EditorLine::EditorLine(intptr_t editorId, int index)
 : _EditorId(editorId)
 , _Index(index)
@@ -68,8 +68,11 @@ void EditorLine::Text::set(String^ value)
 
 	EditorGetString egs = {sizeof(egs)};
 	EditorControl_ECTL_GETSTRING(egs, _EditorId, _Index);
-	EditorSetString ess = GetEss();
+
 	PIN_NE(pin, value);
+
+	EditorSetString ess = { sizeof(ess) };
+	ess.StringNumber = _Index;
 	ess.StringText = pin;
 	ess.StringEOL = egs.StringEOL;
 	ess.StringLength = value->Length;
@@ -180,13 +183,6 @@ void EditorLine::UnselectText()
 	EditorSelect es = {sizeof(es)};
 	es.BlockType = BTYPE_NONE;
 	EditorControl_ECTL_SELECT(_EditorId, es);
-}
-
-EditorSetString EditorLine::GetEss()
-{
-	EditorSetString ess = {sizeof(ess)};
-	ess.StringNumber = _Index;
-	return ess;
 }
 
 bool EditorLine::IsReadOnly::get()

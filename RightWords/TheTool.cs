@@ -1,8 +1,6 @@
-﻿
-// FarNet module RightWords
-// Copyright (c) Roman Kuzmin
+﻿using FarNet;
 
-namespace FarNet.RightWords;
+namespace RightWords;
 
 [ModuleTool(Name = Settings.ModuleName, Options = ModuleToolOptions.Dialog | ModuleToolOptions.Editor | ModuleToolOptions.Panels, Id = "ca7ecdc0-f446-4bff-a99d-06c90fe0a3a9")]
 public class TheTool : ModuleTool

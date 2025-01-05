@@ -1,17 +1,13 @@
-﻿
-// FarNet module RightWords
-// Copyright (c) Roman Kuzmin
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using WeCantSpell.Hunspell;
 
-namespace FarNet.RightWords;
+namespace RightWords;
 
 sealed class MultiSpell
 {
-	static MultiSpell _instance;
+	static MultiSpell? _instance;
 	readonly List<DictionaryInfo> _dictionaries;
 
 	public static MultiSpell Get()
@@ -40,13 +36,12 @@ sealed class MultiSpell
 		}
 	}
 
-	public static WordList ReadUserWords(string filePath, WordList wordList, Action<string> writeWarning)
+	public static WordList ReadUserWords(string filePath, WordList wordList, Action<string>? writeWarning)
 	{
 		var builder = new WordList.Builder(wordList.Affix);
 		using (var reader = File.OpenText(filePath))
 		{
-			string line;
-			while ((line = reader.ReadLine()) != null)
+			while (reader.ReadLine() is { } line)
 			{
 				var words = line.Split(' ');
 				if (words.Length == 1)
@@ -59,7 +54,7 @@ sealed class MultiSpell
 					if (details.Length == 0)
 					{
 						builder.Add(words[0]);
-						if (writeWarning is not null)
+						if (writeWarning is { })
 							writeWarning($"No forms of {words[1]} in '{line}' at '{filePath}'.");
 					}
 					else
@@ -82,9 +77,25 @@ sealed class MultiSpell
 		var result = new List<string>();
 
 		foreach (var dic in _dictionaries)
-			foreach (var suggestion in dic.WordList.Suggest(word))
+			foreach (var suggestion in dic.WordList!.Suggest(word))
 				if (!result.Contains(suggestion))
 					result.Add(suggestion);
+
+		return result;
+	}
+
+	public List<string> Suggest(ReadOnlySpan<char> word)
+	{
+		var result = new List<string>();
+
+		foreach (var dic in _dictionaries)
+		{
+			foreach (var suggestion in dic.WordList!.Suggest(word))
+			{
+				if (!result.Contains(suggestion))
+					result.Add(suggestion);
+			}
+		}
 
 		return result;
 	}
@@ -94,14 +105,14 @@ sealed class MultiSpell
 		(list[index - 1], list[index]) = (list[index], list[index - 1]);
 	}
 
-	public bool Check(string word)
+	public bool Check(ReadOnlySpan<char> word)
 	{
 		for (int i = 0; i < _dictionaries.Count; ++i)
 		{
 			var dic = _dictionaries[i];
 
 			// wrong word or dictionary
-			if (!dic.WordList.Check(word) && (dic.UserList is null || !dic.UserList.Check(word)))
+			if (!dic.WordList!.Check(word) && (dic.UserList is null || !dic.UserList.Check(word)))
 				continue;
 
 			// update the hit count and move the winner

@@ -1,5 +1,15 @@
 https://www.nuget.org/packages/FarNet.RightWords
 
+= 5.2.0 =
+
+Requires FarNet 9.0.11, uses new FarNet methods.
+
+String to span refactoring for better performance.
+
+Settings changes:
+- `WordRegex` capturing groups are not used for removing "noise".
+- `RemoveRegex` is used instead to remove "noise" from found words.
+
 = 5.1.0 =
 
 Requires FarNet 9, uses .NET 9.0, WeCantSpell.Hunspell 5.2.1

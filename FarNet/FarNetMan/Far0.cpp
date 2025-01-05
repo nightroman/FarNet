@@ -9,6 +9,7 @@
 #include "stdafx.h"
 #include "Far0.h"
 #include "Far1.h"
+#include "Far2.h"
 #include "Dialog.h"
 #include "Editor.h"
 #include "Panel0.h"
@@ -24,58 +25,6 @@ static PluginMenuItem _Disk;
 static PluginMenuItem _Editor;
 static PluginMenuItem _Panels;
 static PluginMenuItem _Viewer;
-
-// Works::Host::Instance instance.
-ref class Host : Works::Host
-{
-public:
-	virtual void RegisterProxyCommand(IModuleCommand^ info) override
-	{
-		Far0::RegisterProxyCommand(info);
-	}
-	virtual void RegisterProxyDrawer(IModuleDrawer^ info) override
-	{
-		Far0::RegisterProxyDrawer(info);
-	}
-	virtual void RegisterProxyEditor(IModuleEditor^ info) override
-	{
-		Far0::RegisterProxyEditor(info);
-	}
-	virtual void RegisterProxyTool(IModuleTool^ info) override
-	{
-		Far0::RegisterProxyTool(info);
-	}
-	virtual void UnregisterProxyAction(IModuleAction^ action) override
-	{
-		Far0::UnregisterProxyAction(action);
-	}
-	virtual void UnregisterProxyTool(IModuleTool^ tool) override
-	{
-		Far0::UnregisterProxyTool(tool);
-	}
-	virtual void InvalidateProxyCommand() override
-	{
-		Far0::InvalidateProxyCommand();
-	}
-};
-
-// Works::Far2::Api instance.
-ref class Far2 : Works::Far2
-{
-public:
-	virtual FarNet::Works::IPanelWorks^ CreatePanel(Panel^ panel, Explorer^ explorer) override
-	{
-		return gcnew Panel2(panel, explorer);
-	}
-	virtual Task^ WaitSteps() override
-	{
-		return Far0::WaitSteps();
-	}
-	virtual WaitHandle^ PostMacroWait(String^ macro) override
-	{
-		return Far0::PostMacroWait(macro);
-	}
-};
 
 void Far0::FreePluginMenuItem(PluginMenuItem& p)
 {
@@ -100,7 +49,6 @@ void Far0::Start()
 		// inject
 		Far::Api = gcnew Far1();
 		Works::Far2::Api = gcnew Far2();
-		Works::Host::Instance = gcnew Host();
 
 		// module folder
 		auto path = Environment::ExpandEnvironmentVariables("%FARHOME%\\FarNet\\Modules");
@@ -141,7 +89,7 @@ void Far0::UnregisterProxyAction(IModuleAction^ action)
 		}
 	}
 
-	Works::Host::Actions->Remove(action->Id);
+	Works::Far2::Actions->Remove(action->Id);
 
 	{
 		IModuleCommand^ it = dynamic_cast<IModuleCommand^>(action);
@@ -173,7 +121,7 @@ void Far0::UnregisterProxyAction(IModuleAction^ action)
 
 void Far0::UnregisterProxyTool(IModuleTool^ tool)
 {
-	Works::Host::Actions->Remove(tool->Id);
+	Works::Far2::Actions->Remove(tool->Id);
 
 	InvalidateProxyTool(tool->Options);
 }
@@ -219,7 +167,7 @@ void Far0::InvalidateProxyTool(ModuleToolOptions options)
 
 void Far0::RegisterProxyCommand(IModuleCommand^ info)
 {
-	Works::Host::Actions->Add(info->Id, info);
+	Works::Far2::Actions->Add(info->Id, info);
 
 	_registeredCommand.Add(info);
 	delete _prefixes;
@@ -228,21 +176,21 @@ void Far0::RegisterProxyCommand(IModuleCommand^ info)
 
 void Far0::RegisterProxyDrawer(IModuleDrawer^ info)
 {
-	Works::Host::Actions->Add(info->Id, info);
+	Works::Far2::Actions->Add(info->Id, info);
 
 	_registeredDrawer.Add(info);
 }
 
 void Far0::RegisterProxyEditor(IModuleEditor^ info)
 {
-	Works::Host::Actions->Add(info->Id, info);
+	Works::Far2::Actions->Add(info->Id, info);
 
 	_registeredEditor.Add(info);
 }
 
 void Far0::RegisterProxyTool(IModuleTool^ info)
 {
-	Works::Host::Actions->Add(info->Id, info);
+	Works::Far2::Actions->Add(info->Id, info);
 
 	InvalidateProxyTool(info->Options);
 }
@@ -273,7 +221,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 	{
 		if (!_toolConfig)
 		{
-			_toolConfig = Works::Host::GetTools(ModuleToolOptions::Config);
+			_toolConfig = Works::Far2::GetTools(ModuleToolOptions::Config);
 
 			_Config.Count = _toolConfig->Length + 1;
 			GUID* guids = new GUID[_Config.Count];
@@ -302,7 +250,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 		{
 			if (!_toolDialog)
 			{
-				_toolDialog = Works::Host::GetTools(ModuleToolOptions::Dialog);
+				_toolDialog = Works::Far2::GetTools(ModuleToolOptions::Dialog);
 
 				_Dialog.Count = _toolDialog->Length + 1;
 				GUID* guids = new GUID[_Dialog.Count];
@@ -326,7 +274,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 		{
 			if (!_toolEditor)
 			{
-				_toolEditor = Works::Host::GetTools(ModuleToolOptions::Editor);
+				_toolEditor = Works::Far2::GetTools(ModuleToolOptions::Editor);
 
 				_Editor.Count = _toolEditor->Length + 1;
 				GUID* guids = new GUID[_Editor.Count];
@@ -350,7 +298,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 		{
 			if (!_toolViewer)
 			{
-				_toolViewer = Works::Host::GetTools(ModuleToolOptions::Viewer);
+				_toolViewer = Works::Far2::GetTools(ModuleToolOptions::Viewer);
 
 				_Viewer.Count = _toolViewer->Length + 1;
 				GUID* guids = new GUID[_Viewer.Count];
@@ -375,7 +323,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 		{
 			if (!_toolPanels)
 			{
-				_toolPanels = Works::Host::GetTools(ModuleToolOptions::Panels);
+				_toolPanels = Works::Far2::GetTools(ModuleToolOptions::Panels);
 
 				_Panels.Count = _toolPanels->Length + 1;
 				GUID* guids = new GUID[_Panels.Count];
@@ -398,7 +346,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 		{
 			if (!_toolDisk)
 			{
-				_toolDisk = Works::Host::GetTools(ModuleToolOptions::Disk);
+				_toolDisk = Works::Far2::GetTools(ModuleToolOptions::Disk);
 				if (_toolDisk->Length > 0)
 				{
 					_Disk.Count = _toolDisk->Length;
@@ -608,7 +556,7 @@ void Far0::OpenConfig() //config//
 	menu->HelpTopic = "config-menu";
 	menu->Title = "Modules configuration";
 
-	auto tools = Works::Host::ListTools();
+	auto tools = Works::Far2::ListTools();
 
 	String^ format = "{0,-10} : {1,2}";
 	menu->Add(String::Format(format, Res::ModuleCommands, _registeredCommand.Count));

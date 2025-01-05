@@ -5,7 +5,7 @@
 #pragma once
 
 namespace FarNet
-{;
+{
 ref class EditorLine sealed : ILine
 {
 public:
@@ -23,9 +23,7 @@ public:
 	virtual void UnselectText() override;
 internal:
 	EditorLine(intptr_t editorId, int index);
-private:
-	EditorSetString GetEss();
-private:
+internal:
 	const intptr_t _EditorId;
 	const int _Index;
 };

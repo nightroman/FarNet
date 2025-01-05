@@ -116,6 +116,6 @@ abstract class ProxyAction : IModuleAction
 
 	public virtual void Unregister()
 	{
-		Host.Instance.UnregisterProxyAction(this);
+		Far2.Api.UnregisterProxyAction(this);
 	}
 }

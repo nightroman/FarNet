@@ -31,10 +31,10 @@ task publish {
 		"$HOME\.nuget\packages\LibGit2Sharp.NativeBinaries\$ver2\runtimes\$bit\native\*.dll"
 	)
 
-	remove "$ModuleRoot\GitKit.deps.json"
+	remove "$ModuleRoot\$ModuleName.deps.json"
 }
 
-task help -Inputs README.md -Outputs $ModuleRoot\GitKit.hlf {
+task help -Inputs README.md -Outputs $ModuleRoot\$ModuleName.hlf {
 	exec { pandoc.exe $Inputs --output=README.htm --from=gfm --no-highlight }
 	exec { HtmlToFarHelp from=README.htm to=$Outputs }
 	remove README.htm
@@ -147,7 +147,7 @@ task nuget package, version, {
 }
 
 task test {
-	Start-Far "ps: Test.far.ps1 * -Quit" $env:FarNetCode\$ModuleName\Tests -ReadOnly -Title GitKit\test
+	Start-Far "ps: Test.far.ps1 * -Quit" $env:FarNetCode\$ModuleName\Tests -ReadOnly
 }
 
 task . build, help, clean

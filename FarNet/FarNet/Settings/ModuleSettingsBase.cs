@@ -167,6 +167,9 @@ public abstract class ModuleSettingsBase
 			docNew.LoadXml(writer.ToString());
 			var xmlNew = docNew.DocumentElement!.OuterXml;
 
+			//! ensure same line ends
+			xmlOld = xmlOld.Replace("\r\n", "\n");
+			xmlNew = xmlNew.Replace("\r\n", "\n");
 			if (xmlOld == xmlNew)
 				return;
 

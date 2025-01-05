@@ -1,12 +1,10 @@
-﻿
-// FarNet module RightWords
-// Copyright (c) Roman Kuzmin
-
+﻿using FarNet;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 
-namespace FarNet.RightWords;
+namespace RightWords;
 
 [ModuleDrawer(Name = "Spelling mistakes", Mask = "*.hlf;*.htm;*.html;*.lng;*.restext", Priority = 1, Id = "bbed2ef1-97d1-4ba2-ac56-9de56bc8030c")]
 public class Highlighter : ModuleDrawer
@@ -29,20 +27,20 @@ public class Highlighter : ModuleDrawer
 	/// </summary>
 	class LineData
 	{
-		public string Text;
-		public ValueTuple<int, int>[] Spans;
+		public string? Text;
+		public (int, int)[]? Spans;
 	}
 
 	/// <summary>
 	/// Finds the cached data by the line hint index and text.
 	/// </summary>
-	LineData FindLineData(int index, string text)
+	LineData? FindLineData(int index, ReadOnlySpan<char> text)
 	{
 		// if the frame is not changed (arrows without scrolling or typing in the same line)
 		// then many not changed lines are in the same positions, check the hint index first
 		if (index < _lastData.Length)
 		{
-			if (_lastData[index]?.Text == text)
+			if (text.SequenceEqual(_lastData[index]?.Text))
 				return _lastData[index];
 		}
 
@@ -55,9 +53,9 @@ public class Highlighter : ModuleDrawer
 			bool ok2 = k >= 0 && k < _lastData.Length;
 			if (!ok1 && !ok2)
 				break;
-			if (ok1 && _lastData[j]?.Text == text)
+			if (ok1 && text.SequenceEqual(_lastData[j]?.Text))
 				return _lastData[j];
-			if (ok2 && _lastData[k]?.Text == text)
+			if (ok2 && text.SequenceEqual(_lastData[k]?.Text))
 				return _lastData[k];
 		}
 
@@ -66,7 +64,14 @@ public class Highlighter : ModuleDrawer
 
 	public override void Invoke(IEditor editor, ModuleDrawerEventArgs e)
 	{
+#if DEBUG
+		// New strings should be 0 on moving caret without scrolling and 0-1 on line scrolling.
+		var sw = Stopwatch.StartNew();
+		int newStrings = 0;
+#endif
+
 		var settings = Settings.Default.GetData();
+		var lineSpans = new List<(int, int)>();
 
 		// if known words changed then drop the cache
 		if (_knownWordsVersion != KnownWords.Version)
@@ -79,11 +84,10 @@ public class Highlighter : ModuleDrawer
 		var newData = new LineData[e.Lines.Count];
 
 		int newDataIndex = -1;
-		var lineSpans = new List<ValueTuple<int, int>>();
 		foreach (var line in e.Lines)
 		{
 			++newDataIndex;
-			var text = line.Text;
+			var text = line.Text2.TrimEnd();
 			if (text.Length == 0)
 				continue;
 
@@ -100,12 +104,11 @@ public class Highlighter : ModuleDrawer
 			}
 
 			// try get the cached line data
-			var data = FindLineData(line.Index - topLineIndex, text);
-			if (data != null)
+			if (FindLineData(line.Index - topLineIndex, text) is { } data)
 			{
 				// keep it as new and add colors
 				newData[newDataIndex] = data;
-				if (data.Spans != null)
+				if (data.Spans is { })
 				{
 					foreach (var item in data.Spans)
 						e.Colors.Add(new EditorColor(
@@ -118,13 +121,20 @@ public class Highlighter : ModuleDrawer
 				continue;
 			}
 
+#if DEBUG
+			++newStrings;
+#endif
+
 			// parse and check words, collect color spans
 			lineSpans.Clear();
-			MatchCollection skip = null;
-			for (var match = settings.WordRegex2.Match(text); match.Success; match = match.NextMatch())
+			MatchCollection? skip = null;
+			var textString = text.ToString();
+			var matches = settings.WordRegex2.EnumerateMatches(text);
+			while (matches.MoveNext())
 			{
 				// the target word
-				var word = Actor.MatchToWord(match);
+				var match = matches.Current;
+				var word = Actor.MatchToWord2(text, match, settings.RemoveRegex2);
 
 				// check cheap skip lists
 				if (KnownWords.Contains(word))
@@ -135,7 +145,7 @@ public class Highlighter : ModuleDrawer
 					continue;
 
 				// expensive skip pattern
-				if (Actor.HasMatch(skip ??= Actor.GetMatches(settings.SkipRegex2, text), match))
+				if (Actor.HasMatch(skip ??= Actor.GetMatches(settings.SkipRegex2, textString), match.Index, match.Length))
 					continue;
 
 				// add the span
@@ -145,11 +155,11 @@ public class Highlighter : ModuleDrawer
 			// cache the data and add colors if any
 			if (lineSpans.Count == 0)
 			{
-				newData[newDataIndex] = new LineData { Text = text };
+				newData[newDataIndex] = new LineData { Text = textString };
 			}
 			else
 			{
-				newData[newDataIndex] = new LineData { Text = text, Spans = [.. lineSpans] };
+				newData[newDataIndex] = new LineData { Text = textString, Spans = [.. lineSpans] };
 
 				foreach (var span in lineSpans)
 					e.Colors.Add(new EditorColor(
@@ -163,5 +173,9 @@ public class Highlighter : ModuleDrawer
 
 		// update cache
 		_lastData = newData;
+
+#if DEBUG
+		Debug.WriteLine($"##rw {sw.Elapsed} {newStrings}");
+#endif
 	}
 }

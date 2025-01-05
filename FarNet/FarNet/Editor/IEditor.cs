@@ -5,7 +5,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using FarNet.Works;
 
 namespace FarNet;
 
@@ -755,6 +757,31 @@ public abstract class IEditor : IEditorBase
 				Far.Api.Window.SetCurrentAt(i);
 				return;
 			}
+		}
+	}
+
+	/// <summary>
+	/// Experimental("FarNet250102") Gets the line text.
+	/// </summary>
+	/// <param name="line">Line index.</param>
+	[Experimental("FarNet250102")]
+	public unsafe ReadOnlySpan<char> GetLineText2(int line)
+	{
+		var (p, n) = Far2.Api.IEditorLineText(Id, line);
+		return new((char*)p, n);
+	}
+
+	/// <summary>
+	/// Experimental("FarNet250102") Sets the line text.
+	/// </summary>
+	/// <param name="line">Line index.</param>
+	/// <param name="text">Line text.</param>
+	[Experimental("FarNet250102")]
+	public unsafe void SetLineText2(int line, ReadOnlySpan<char> text)
+	{
+		fixed (char* p = text)
+		{
+			Far2.Api.IEditorLineText(Id, line, (IntPtr)p, text.Length);
 		}
 	}
 }
