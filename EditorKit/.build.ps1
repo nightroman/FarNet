@@ -19,6 +19,7 @@ task build meta, {
 
 task publish {
 	exec { dotnet publish "$ModuleName.csproj" -c $Configuration -o $ModuleRoot --no-build }
+	remove $ModuleRoot\$ModuleName.deps.json
 }
 
 task clean {
@@ -46,13 +47,12 @@ task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props -Jobs v
 	Set-Content Directory.Build.props @"
 <Project>
 	<PropertyGroup>
+		<Description>$Description</Description>
 		<Company>https://github.com/nightroman/FarNet</Company>
 		<Copyright>Copyright (c) Roman Kuzmin</Copyright>
-		<Description>$Description</Description>
 		<Product>FarNet.$ModuleName</Product>
 		<Version>$Version</Version>
-		<FileVersion>$Version</FileVersion>
-		<AssemblyVersion>$Version</AssemblyVersion>
+		<IncludeSourceRevisionInInformationalVersion>False</IncludeSourceRevisionInInformationalVersion>
 	</PropertyGroup>
 </Project>
 "@
@@ -64,7 +64,6 @@ task package markdown, {
 
 	# module
 	exec { robocopy $ModuleRoot $toModule /s /xf *.pdb } (0..2)
-	equals 4 (Get-ChildItem $toModule -Recurse -File).Count
 
 	# meta
 	Copy-Item -Destination z @(
@@ -78,15 +77,21 @@ task package markdown, {
 		'History.txt'
 		'..\LICENSE'
 	)
+
+	$result = Get-ChildItem $toModule -Recurse -File -Name | Out-String
+	$sample = @'
+EditorConfig.Core.dll
+EditorKit.dll
+History.txt
+LICENSE
+README.htm
+'@
+	Assert-SameFile.ps1 -Text $sample $result $env:MERGE
 }
 
 task nuget package, version, {
-	# test versions
-	$dllPath = "$FarHome\FarNet\Modules\$ModuleName\$ModuleName.dll"
-	($dllVersion = (Get-Item $dllPath).VersionInfo.FileVersion.ToString())
-	equals $dllVersion $Version
+	equals $Version (Get-Item "$ModuleRoot\$ModuleName.dll").VersionInfo.ProductVersion
 
-	# nuspec
 	Set-Content z\Package.nuspec @"
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
@@ -105,7 +110,7 @@ task nuget package, version, {
 	</metadata>
 </package>
 "@
-	# pack
+
 	exec { NuGet pack z\Package.nuspec }
 }
 

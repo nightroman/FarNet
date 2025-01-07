@@ -137,8 +137,6 @@ int Viewer0::AsProcessViewerEvent(const ProcessViewerEventInfo* info)
 		break;
 	case VE_GOTFOCUS:
 		{
-			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "VE_GOTFOCUS");
-
 			// get registered
 			intptr_t id = info->ViewerID;
 			Viewer^ viewer = nullptr;
@@ -159,23 +157,15 @@ int Viewer0::AsProcessViewerEvent(const ProcessViewerEventInfo* info)
 			if (viewer == nullptr)
 				break;
 
-			// event
 			if (_anyViewer._GotFocus)
-			{
-				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "GotFocus");
 				_anyViewer._GotFocus(viewer, nullptr);
-			}
+
 			if (viewer->_GotFocus)
-			{
-				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "GotFocus");
 				viewer->_GotFocus(viewer, nullptr);
-			}
 		}
 		break;
 	case VE_KILLFOCUS:
 		{
-			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "VE_KILLFOCUS");
-
 			// get registered
 			intptr_t id = info->ViewerID;
 			Viewer^ viewer = nullptr;
@@ -191,17 +181,11 @@ int Viewer0::AsProcessViewerEvent(const ProcessViewerEventInfo* info)
 			if (viewer == nullptr)
 				break;
 
-			// event
 			if (_anyViewer._LosingFocus)
-			{
-				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "LosingFocus");
 				_anyViewer._LosingFocus(viewer, nullptr);
-			}
+
 			if (viewer->_LosingFocus)
-			{
-				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "LosingFocus");
 				viewer->_LosingFocus(viewer, nullptr);
-			}
 		}
 		break;
 	}

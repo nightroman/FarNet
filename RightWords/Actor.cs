@@ -38,37 +38,6 @@ static partial class Actor
 		}
 	}
 
-	public static Match? MatchCaret(Regex regex, string input, int caret)
-	{
-		Match match = regex.Match(input);
-		while (match.Success)
-		{
-			if (caret > match.Index + match.Length)
-				match = match.NextMatch();
-			else if (caret < match.Index)
-				return match;
-			else
-				break;
-		}
-		return match.Success ? match : null;
-	}
-
-	public static ValueMatch MatchCaret2(Regex regex, ReadOnlySpan<char> input, int caret)
-	{
-		var matches = regex.EnumerateMatches(input);
-		while (matches.MoveNext())
-		{
-			var match = matches.Current;
-			if (caret > match.Index + match.Length)
-				continue;
-			else if (caret < match.Index)
-				return default;
-			else
-				return match;
-		}
-		return default;
-	}
-
 	public static void CorrectWord()
 	{
 		ILine line;
@@ -92,12 +61,12 @@ static partial class Actor
 
 		// search for the current word
 		var settings = Settings.Default.GetData();
-		var match = MatchCaret2(settings.WordRegex2, text, line.Caret);
+		var match = Kit.MatchCaret(settings.WordRegex2, text, line.Caret);
 		if (match.Length == 0)
 			return;
 
 		// the caret word
-		var word = MatchToWord2(text, match, settings.RemoveRegex2);
+		var word = Kit.CleanWord(text.Slice(match.Index, match.Length), settings.RemoveRegex2);
 
 		// get suggestions with check
 		List<string>? words = null;
@@ -144,25 +113,6 @@ static partial class Actor
 		line.Caret = match.Index + wordString.Length;
 	}
 
-	public static bool HasMatch(MatchCollection? matches, int index, int length)
-	{
-		if (matches is { })
-		{
-			foreach (Match m in matches)
-			{
-				if (index >= m.Index && index + length <= m.Index + m.Length)
-					return true;
-			}
-		}
-
-		return false;
-	}
-
-	public static MatchCollection? GetMatches(Regex? regex, string text)
-	{
-		return regex?.Matches(text);
-	}
-
 	public static void CorrectText()
 	{
 		var settings = Settings.Default.GetData();
@@ -197,10 +147,11 @@ static partial class Actor
 
 				// the line and its text now
 				var line = editor[iLine];
-				var text = line.Text;
+				var text = line.Text2;
+				var textString = text.ToString();
 
 				// the first word
-				var match = MatchCaret(settings.WordRegex2, text, line.Caret);
+				var match = Kit.MatchCaretOrNext(settings.WordRegex2, textString, line.Caret);
 				if (match is null)
 					goto NextLine;
 
@@ -209,7 +160,7 @@ static partial class Actor
 				for (; match.Success; match = match.NextMatch())
 				{
 					// the target word
-					var word = MatchToWord(match, settings.RemoveRegex2);
+					var word = Kit.CleanWord(text.Slice(match.Index, match.Length), settings.RemoveRegex2);
 
 					// check cheap skip lists
 					if (KnownWords.Contains(word))
@@ -220,7 +171,7 @@ static partial class Actor
 						continue;
 
 					// expensive skip pattern
-					if (HasMatch(skip ??= GetMatches(settings.SkipRegex2, text), match.Index, match.Length))
+					if (Kit.HasMatch(skip ??= Kit.GetMatches(settings.SkipRegex2, textString), match.Index, match.Length))
 						continue;
 
 					// check spelling and get suggestions
@@ -246,8 +197,9 @@ static partial class Actor
 					editor.Redraw();
 
 					// menu
+					var wordString = word.ToString();
 					var point = editor.ConvertPointEditorToScreen(new Point(column, iLine));
-					var menu = new UIWordMenu(words, word, point.X, point.Y + 1);
+					var menu = new UIWordMenu(words, wordString, point.X, point.Y + 1);
 
 					// cancel:
 					if (!menu.Show())
@@ -260,14 +212,14 @@ static partial class Actor
 					// ignore all:
 					if (menu.IsIgnoreAll)
 					{
-						KnownWords.AddIgnoreWord(word);
+						KnownWords.AddIgnoreWord(wordString);
 						continue;
 					}
 
 					// add to dictionary:
 					if (menu.IsAddToDictionary)
 					{
-						AddRightWord(word);
+						AddRightWord(wordString);
 						continue;
 					}
 
@@ -414,25 +366,5 @@ static partial class Actor
 				return;
 			}
 		}
-	}
-
-	public static string MatchToWord(Match match, Regex? remove)
-	{
-		if (remove is null)
-			return match.Value;
-		else
-			return remove.Replace(match.Value, string.Empty);
-	}
-
-	public static ReadOnlySpan<char> MatchToWord2(ReadOnlySpan<char> text, ValueMatch match, Regex? remove)
-	{
-		var word = text.Slice(match.Index, match.Length);
-		if (remove is null)
-			return word;
-
-		if (!remove.IsMatch(word))
-			return word;
-
-		return remove.Replace(word.ToString(), string.Empty);
 	}
 }

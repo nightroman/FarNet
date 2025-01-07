@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.RightWords
 
+= 5.2.1 =
+
+Requires FarNet 9.0.12
+
+Use colors from cache on no changes.
+
 = 5.2.0 =
 
 Requires FarNet 9.0.11, uses new FarNet methods.

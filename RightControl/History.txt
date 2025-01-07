@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.RightControl
 
+= 5.2.0 =
+
+Requires FarNet 9.0.12, uses .NET 9.
+
 = 5.1.0 =
 
 Commands "go-to-smart-home" and "select-to-smart-home" may be used in command lines

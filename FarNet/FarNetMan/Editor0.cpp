@@ -147,13 +147,12 @@ namespace FarNet
 		break;
 		case EE_CHANGE:
 		{
-			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "EE_CHANGE");
-
 			Editor^ editor = _editors[FindEditor(info->EditorID)];
+
+			++editor->_ChangeCount;
 
 			if (_anyEditor._Changed || editor->_Changed)
 			{
-				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "Changed");
 				EditorChange* ec = (EditorChange*)info->Param;
 				EditorChangedEventArgs ea((EditorChangeKind)ec->Type, (int)ec->StringNumber);
 				if (_anyEditor._Changed)
@@ -165,8 +164,6 @@ namespace FarNet
 		break;
 		case EE_REDRAW:
 		{
-			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "EE_REDRAW");
-
 			// Far 3.0.4027 EE_REDRAW is called before EE_READ
 			int index = FindEditor(info->EditorID);
 			if (index < 0)
@@ -175,11 +172,12 @@ namespace FarNet
 
 			if (_anyEditor._Redrawing || editor->_Redrawing || editor->_drawers)
 			{
-				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "Redrawing");
 				if (_anyEditor._Redrawing)
 					_anyEditor._Redrawing(editor, nullptr);
+
 				if (editor->_Redrawing)
 					editor->_Redrawing(editor, nullptr);
+
 				if (editor->_drawers)
 					editor->InvokeDrawers();
 			}
@@ -187,8 +185,6 @@ namespace FarNet
 		break;
 		case EE_GOTFOCUS:
 		{
-			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "EE_GOTFOCUS");
-
 			int index = FindEditor(info->EditorID);
 			Editor^ editor = index < 0 ? nullptr : _editors[index];
 
@@ -211,27 +207,18 @@ namespace FarNet
 					break;
 			}
 
-			// sync
 			if (editor->_output)
 				editor->Sync();
 
-			// event
 			if (_anyEditor._GotFocus)
-			{
-				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "GotFocus");
 				_anyEditor._GotFocus(editor, nullptr);
-			}
+
 			if (editor->_GotFocus)
-			{
-				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "GotFocus");
 				editor->_GotFocus(editor, nullptr);
-			}
 		}
 		break;
 		case EE_KILLFOCUS:
 		{
-			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "EE_KILLFOCUS");
-
 			int index = FindEditor(info->EditorID);
 			Editor^ editor = index < 0 ? nullptr : _editors[index];
 
@@ -244,15 +231,10 @@ namespace FarNet
 			}
 
 			if (_anyEditor._LosingFocus)
-			{
-				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "LosingFocus");
 				_anyEditor._LosingFocus(editor, nullptr);
-			}
+
 			if (editor->_LosingFocus)
-			{
-				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "LosingFocus");
 				editor->_LosingFocus(editor, nullptr);
-			}
 		}
 		break;
 		}

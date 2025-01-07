@@ -1,11 +1,8 @@
-﻿
-// FarNet module RightControl
-// Copyright (c) Roman Kuzmin
-
+﻿using FarNet;
 using System;
 using System.Text.RegularExpressions;
 
-namespace FarNet.RightControl;
+namespace RightControl;
 
 public sealed class Settings : ModuleSettings<Settings.Data>
 {
@@ -17,29 +14,23 @@ public sealed class Settings : ModuleSettings<Settings.Data>
 
 		public XmlCData RegexRight { get; set; } = @"(?x: ^ | $ | (?<=\b|\s)\S )";
 
-		internal Regex RegexLeft2 { get; private set; }
+		internal Regex RegexLeft2 { get; private set; } = null!;
 
-		internal Regex RegexRight2 { get; private set; }
+		internal Regex RegexRight2 { get; private set; } = null!;
 
 		public void Validate()
 		{
-			try
-			{
-				RegexLeft2 = new Regex(RegexLeft);
-			}
-			catch (Exception ex)
-			{
-				throw new ModuleException($"RegexLeft: {ex.Message}", ex);
-			}
+			if (string.IsNullOrWhiteSpace(RegexLeft))
+				throw new ModuleException("RegexLeft cannot be empty.");
 
-			try
-			{
-				RegexRight2 = new Regex(RegexRight);
-			}
-			catch (Exception ex)
-			{
-				throw new ModuleException($"RegexRight: {ex.Message}", ex);
-			}
+			if (string.IsNullOrWhiteSpace(RegexRight))
+				throw new ModuleException("RegexRight cannot be empty.");
+
+			try { RegexLeft2 = new Regex(RegexLeft.Value.Trim()); }
+			catch (Exception ex) { throw new ModuleException($"RegexLeft: {ex.Message}"); }
+
+			try { RegexRight2 = new Regex(RegexRight.Value.Trim()); }
+			catch (Exception ex) { throw new ModuleException($"RegexRight: {ex.Message}"); }
 		}
 	}
 }

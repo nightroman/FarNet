@@ -232,7 +232,6 @@ void Panel0::AsClosePanel(const ClosePanelInfo* info)
 //! It is called too often, log Verbose
 void Panel0::AsGetOpenPanelInfo(OpenPanelInfo* info)
 {
-	Log::Source->TraceEvent(TraceEventType::Verbose, 0, "GetOpenPluginInfoW");
 	info->StructSize = sizeof(*info);
 
 	// plugin panel
@@ -245,10 +244,7 @@ void Panel0::AsGetOpenPanelInfo(OpenPanelInfo* info)
 
 	// trigger - to update info before making it for Far
 	if (!State::GetPanelInfo)
-	{
-		Log::Source->TraceEvent(TraceEventType::Verbose, 0, "UpdateInfo");
 		pp->Host->UIUpdateInfo();
-	}
 
 	// make info
 	*info = pp->Make();
@@ -316,22 +312,16 @@ int Panel0::AsProcessPanelEvent(const ProcessPanelEventInfo* info)
 		break;
 	case FE_GOTFOCUS:
 		{
-			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "FE_GOTFOCUS");
-
 			pp->Host->UIGotFocus();
 		}
 		break;
 	case FE_KILLFOCUS:
 		{
-			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "FE_KILLFOCUS");
-
 			pp->Host->UILosingFocus();
 		}
 		break;
 	case FE_REDRAW:
 		{
-			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "FE_REDRAW");
-
 			// 090411 Data are shown now. Drop this flag to allow normal processing.
 			pp->_skipUpdateFiles = false;
 
@@ -445,9 +435,8 @@ int Panel0::AsProcessPanelInput(const ProcessPanelInputInfo* info)
 	if (!pp)
 		return 0;
 
-	// args, log
+	// args
 	KeyEventArgs e(KeyInfoFromInputRecord(ir));
-	//Log::Source->TraceEvent(TraceEventType::Information, 0, "KeyPressed {0}", %e);
 
 	// 1. event; handlers work first of all
 	pp->Host->WorksKeyPressed(%e);

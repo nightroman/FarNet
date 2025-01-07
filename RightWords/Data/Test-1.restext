@@ -1,6 +1,6 @@
-﻿= SkipPattern works =
+﻿= Skip works =
 
-zz words with digits: 8zz zz zz8zz zz zz8 zz
+zz with digits: 5zz zz zz5zz zz zz5 zz
 zz "zz:\zz\zz zz" zz "zz:/zz/zz zz" zz
 zz "Z:\zz\zz zz" zz "Z:/zz/zz zz" zz
 zz ".\zz\zz zz" zz "./zz/zz zz" zz
@@ -10,13 +10,13 @@ zz Z:\zz\zz zz Z:/zz/zz zz
 zz .\zz\zz zz ./zz/zz zz
 zz \zz\zz zz /zz/zz zz
 
-= SkipPattern does not work =
+= Skip does not work =
 
 _zz_zz_
 
 = Misc =
 
-12345 головомошка favorit
+12345 головомошка favorit ГоловомошкаFavorit
 !"£$% голmove favorit
 ежик ёжик
 
@@ -26,7 +26,7 @@ _zz_zz_
 
 = With ampersand =
 
-Ampe&rsand
+Ampe&rsand and Ampe&&rsands
 
 = Long line =
 

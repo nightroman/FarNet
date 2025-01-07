@@ -251,6 +251,11 @@ void Editor::Overtype::set(bool value)
 	Edit_SetOvertype(_id, value);
 }
 
+int Editor::ChangeCount::get()
+{
+	return _ChangeCount;
+}
+
 int Editor::CodePage::get()
 {
 	if (!IsOpened)

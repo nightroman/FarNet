@@ -784,4 +784,10 @@ public abstract class IEditor : IEditorBase
 			Far2.Api.IEditorLineText(Id, line, (IntPtr)p, text.Length);
 		}
 	}
+
+	/// <summary>
+	/// [Experimental("FarNet250106")] Gets the number of change events.
+	/// </summary>
+	[Experimental("FarNet250106")]
+	public abstract int ChangeCount { get; }
 }

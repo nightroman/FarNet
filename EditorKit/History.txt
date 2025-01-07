@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.EditorKit
 
+= 2.1.0 =
+
+Requires FarNet 9.0.12, uses .NET 9.
+
+Tweak trim_trailing_whitespace code.
+
 = 2.0.1 =
 
 editorconfig 0.15.0

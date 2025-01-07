@@ -1,8 +1,4 @@
-﻿
-// FarNet module EditorKit
-// Copyright (c) Roman Kuzmin
-
-using EditorConfig.Core;
+﻿using EditorConfig.Core;
 using FarNet;
 using System;
 using System.Collections.Generic;
@@ -39,7 +35,7 @@ public class Config : ModuleEditor
 		{
 			// get the profile configurations to use with the amended file
 			var defaults = GetProfileConfigurations(ref fileName);
-			if (defaults == null)
+			if (defaults is null)
 				return;
 
 			configurations = defaults;
@@ -117,18 +113,18 @@ public class Config : ModuleEditor
 	}
 
 	// Trims lines, etc.
-	void OnSaving(object sender, EventArgs e)
+	void OnSaving(object? sender, EventArgs e)
 	{
-		var editor = (IEditor)sender;
+		var editor = (IEditor)sender!;
 
 		if (do_trim_trailing_whitespace)
 		{
 			foreach (ILine line in editor.Lines)
 			{
-				string s1 = line.Text;
-				string s2 = s1.TrimEnd();
-				if (!ReferenceEquals(s1, s2))
-					line.Text = s2;
+				var s1 = line.Text2;
+				var s2 = s1.TrimEnd();
+				if (s1.Length != s2.Length)
+					line.Text2 = s2;
 			}
 		}
 
@@ -145,7 +141,7 @@ public class Config : ModuleEditor
 	}
 
 	// Gets profile configurations and alters the file name.
-	IList<EditorConfigFile> GetProfileConfigurations(ref string fileName)
+	IList<EditorConfigFile>? GetProfileConfigurations(ref string fileName)
 	{
 		var root = Manager.GetFolderPath(SpecialFolder.RoamingData, false);
 		var path = Path.Combine(root, ".editorconfig");

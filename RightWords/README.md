@@ -121,7 +121,7 @@ Example:
   <SkipRegex><![CDATA[
   (?x:
     # words with digits
-    \w+\d | \d\w+
+    \w*\d+\w*
     |
     # quoted paths
     "(?:\w+:|\.+)?[\\/][^"]+"

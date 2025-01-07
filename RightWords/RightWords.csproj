@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>FarNet250103</NoWarn>
+    <NoWarn>FarNet250103;FarNet250106</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="WeCantSpell.Hunspell" Version="5.2.1" />

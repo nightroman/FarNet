@@ -18,11 +18,7 @@ task build meta, {
 }
 
 task publish {
-	$null = mkdir $ModuleRoot -Force
-	Copy-Item -Destination $ModuleRoot @(
-		"bin\$Configuration\net8.0\$ModuleName.dll"
-		"bin\$Configuration\net8.0\$ModuleName.pdb"
-	)
+	remove "$ModuleRoot\$ModuleName.deps.json"
 }
 
 task clean {
@@ -31,7 +27,6 @@ task clean {
 
 task version {
 	($script:Version = switch -Regex -File History.txt {'=\s*(\d+\.\d+\.\d+)\s*=' {$Matches[1]; break}})
-	assert $script:Version
 }
 
 task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props -Jobs version, {

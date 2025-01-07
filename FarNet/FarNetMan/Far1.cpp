@@ -241,10 +241,6 @@ void Far1::ShowError(String^ title, Exception^ error)
 	FarNet::MacroState macro = MacroState;
 	if (macro == FarNet::MacroState::Executing || macro == FarNet::MacroState::ExecutingCommon)
 	{
-		// log
-		msgMacro = "A macro was stopped.";
-		Log::Source->TraceEvent(TraceEventType::Warning, 0, msgMacro);
-
 		// stop
 		UI->Break();
 	}
