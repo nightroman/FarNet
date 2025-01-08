@@ -499,9 +499,9 @@ branches" and "Compare commits" or by the command [gk:changes](#gkchanges).
 
 [Contents]
 
-- **Copy SHA-1** (branches panel, commits panel)
+- **Copy SHA-1** (main menu, branches panel, commits panel)
 
-    Copies the branch tip commit or cursor commit SHA-1 to the clipboard.
+    Copies the branch or cursor commit SHA-1 or info to the clipboard.
 
 - **Push branch** (branches panel, commits panel)
 

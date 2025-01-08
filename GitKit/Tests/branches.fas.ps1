@@ -12,7 +12,7 @@ job {
 macro 'Keys "F11" if Menu.Select("GitKit", 2) > 0 then Keys "Enter" if Menu.Select("Copy SHA-1", 2) > 0 then Keys "Enter" end end'
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[1].Text.Length -eq 40
+	Assert-Far ($Far.Dialog[1].Text -match '^\w+ \d\d\d\d-\d\d-\d\d ')
 }
 keys Esc
 
@@ -27,7 +27,7 @@ keys Down
 macro 'Keys "F11" if Menu.Select("GitKit", 2) > 0 then Keys "Enter" if Menu.Select("Copy SHA-1", 2) > 0 then Keys "Enter" end end'
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[1].Text.Length -eq 40
+	Assert-Far ($Far.Dialog[1].Text -match '^\w+ \d\d\d\d-\d\d-\d\d ')
 }
 keys Esc
 

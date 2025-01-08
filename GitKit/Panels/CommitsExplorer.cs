@@ -54,12 +54,11 @@ class CommitsExplorer(string gitDir, string? branchName, string? itemPath) : Bas
 
 	static CommitFile CreateFile(Commit commit, string? mark, int shaPrefixLength)
 	{
-		var commitSha = commit.Sha;
 		return new CommitFile(
-			$"{commitSha[..shaPrefixLength]} {commit.Author.When:yyyy-MM-dd} {commit.Author.Name}: {commit.MessageShort}",
+			Lib.FormatCommit(commit, shaPrefixLength),
 			mark,
 			commit.Author.When.DateTime,
-			commitSha);
+			commit.Sha);
 	}
 
 	static IEnumerable<FarFile> GetFilesByBranchName(string gitDir, string branchName, GetFilesEventArgs args)

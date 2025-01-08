@@ -166,15 +166,16 @@ class BranchesPanel : BasePanel<BranchesExplorer>
 		using var repo = new Repository(GitDir);
 
 		var branch = repo.MyBranch(branchName);
-		CopySha(branch.Tip.Sha);
+		if (branch.Tip is { } tip)
+			UI.CopySha(tip);
 	}
 
 	internal override void AddMenu(IMenu menu)
 	{
-		menu.Add("Copy SHA-1", (s, e) => CopySha());
-		menu.Add("Push branch", (s, e) => PushBranch());
-		menu.Add("Merge branch", (s, e) => MergeBranch());
-		menu.Add("Compare branches", (s, e) => CompareBranches());
+		menu.Add(Const.CopySha, (s, e) => CopySha());
+		menu.Add(Const.PushBranch, (s, e) => PushBranch());
+		menu.Add(Const.MergeBranch, (s, e) => MergeBranch());
+		menu.Add(Const.CompareBranches, (s, e) => CompareBranches());
 	}
 
 	public override void UICloneFile(CloneFileEventArgs args)

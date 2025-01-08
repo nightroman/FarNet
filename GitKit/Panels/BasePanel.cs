@@ -19,10 +19,4 @@ abstract class BasePanel<T>(T explorer) : AbcPanel(explorer) where T : BaseExplo
 		.CreatePanel()
 		.OpenChild(this);
 	}
-
-	protected static void CopySha(string commitSha)
-	{
-		if (0 == Far.Api.Message(commitSha, Host.MyName, MessageOptions.Ok))
-			Far.Api.CopyToClipboard(commitSha);
-	}
 }

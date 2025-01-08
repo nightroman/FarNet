@@ -9,6 +9,9 @@ namespace GitKit.About;
 
 public static class Lib
 {
+	/// <summary>
+	/// Discovers the Git directory if any or fails.
+	/// </summary>
 	public static string GetGitDir(string path)
 	{
 		return Repository.Discover(path) ?? throw new ModuleException($"Not a git repository: {path}");
@@ -33,6 +36,11 @@ public static class Lib
 		var headsContainingCommit = repo.Refs.ReachableFrom(heads, [commit]);
 		return headsContainingCommit
 			.Select(branchRef => repo.Branches[branchRef.CanonicalName]);
+	}
+
+	public static string FormatCommit(Commit commit, int shaPrefixLength)
+	{
+		return $"{commit.Sha[..shaPrefixLength]} {commit.Author.When:yyyy-MM-dd} {commit.Author.Name}: {commit.MessageShort}";
 	}
 
 	public static Commit GetExistingTip(Repository repo)

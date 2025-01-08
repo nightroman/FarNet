@@ -1,5 +1,13 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 1.3.4 =
+
+"Copy SHA-1"
+- Add to main menu
+- Add "Info" button
+
+Show "Cannot show diff" when needed.
+
 = 1.3.3 =
 
 Requires FarNet 9.0.9, command refactoring.

@@ -1,6 +1,9 @@
 ﻿using FarNet;
+using GitKit.About;
 using GitKit.Commands;
 using GitKit.Panels;
+using LibGit2Sharp;
+using System;
 
 namespace GitKit;
 
@@ -19,13 +22,28 @@ public class Tool : ModuleTool
 		}
 		else
 		{
-			menu.Add("Blame file", (_, _) => BlameFile());
-			menu.Add("Commit log", (_, _) => CommitLog());
+			menu.Add(Const.CopySha, (s, e) => CopySha());
+			menu.Add(Const.BlameFile, (_, _) => BlameFile());
+			menu.Add(Const.CommitLog, (_, _) => CommitLog());
 		}
 
-		menu.Add("Help", (s, e) => Host.Instance.ShowHelpTopic(string.Empty));
+		menu.Add(Const.Help, (s, e) => Host.Instance.ShowHelpTopic(string.Empty));
 
 		menu.Show();
+	}
+
+	static void CopySha()
+	{
+		try
+		{
+			using var repo = new Repository(Lib.GetGitDir(Far.Api.CurrentDirectory));
+
+			UI.CopySha(Lib.GetExistingTip(repo));
+		}
+		catch (Exception ex)
+		{
+			throw new ModuleException(ex.Message);
+		}
 	}
 
 	static void BlameFile()

@@ -28,17 +28,6 @@ class CommitsPanel : BasePanel<CommitsExplorer>
 
 	protected override string HelpTopic => "commits-panel";
 
-	void PushBranch(string branchName)
-	{
-		if (branchName == Const.NoBranchName)
-			throw new ModuleException($"Cannot push {Const.NoBranchName}.");
-
-		using var repo = new Repository(GitDir);
-
-		var branch = repo.Branches[branchName];
-		PushCommand.PushBranch(repo, branch);
-	}
-
 	void CompareCommits(string branchName)
 	{
 		var (commitSha1, commitSha2) = GetSelectedDataRange(x => (x as CommitFile)?.CommitSha);
@@ -55,6 +44,12 @@ class CommitsPanel : BasePanel<CommitsExplorer>
 		var commits = new Commit[] { commit1, commit2 }.OrderBy(x => x.Author.When).ToArray();
 
 		CompareCommits(commits[0].Sha, commits[1].Sha);
+	}
+
+	void CopySha()
+	{
+		if (CurrentFile is CommitFile file)
+			UI.CopySha(file.CommitSha, file.Name);
 	}
 
 	void CreateBranch(string branchName)
@@ -79,21 +74,26 @@ class CommitsPanel : BasePanel<CommitsExplorer>
 		repo.CreateBranch(newName, commit);
 	}
 
-	void CopySha()
+	void PushBranch(string branchName)
 	{
-		if (CurrentFile is CommitFile { CommitSha: { } commitSha })
-			CopySha(commitSha);
+		if (branchName == Const.NoBranchName)
+			throw new ModuleException($"Cannot push {Const.NoBranchName}.");
+
+		using var repo = new Repository(GitDir);
+
+		var branch = repo.Branches[branchName];
+		PushCommand.PushBranch(repo, branch);
 	}
 
 	internal override void AddMenu(IMenu menu)
 	{
-		menu.Add("Copy SHA-1", (s, e) => CopySha());
+		menu.Add(Const.CopySha, (s, e) => CopySha());
 
 		if (MyExplorer.BranchName is { } branchName)
 		{
-			menu.Add("Push branch", (s, e) => PushBranch(branchName));
-			menu.Add("Create branch", (s, e) => CreateBranch(branchName));
-			menu.Add("Compare commits", (s, e) => CompareCommits(branchName));
+			menu.Add(Const.PushBranch, (s, e) => PushBranch(branchName));
+			menu.Add(Const.CreateBranch, (s, e) => CreateBranch(branchName));
+			menu.Add(Const.CompareCommits, (s, e) => CompareCommits(branchName));
 		}
 	}
 }

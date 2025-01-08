@@ -106,24 +106,16 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 
 	internal override void AddMenu(IMenu menu)
 	{
-		menu.Add("Commit log", (s, e) => OpenCommitLog());
-		menu.Add("Edit file", (s, e) => EditChangeFile());
+		menu.Add(Const.CommitLog, (s, e) => OpenCommitLog());
+		menu.Add(Const.EditFile, (s, e) => EditChangeFile());
 	}
 
-	public override bool UIKeyPressed(KeyInfo key)
+	public override void UIOpenFile(FarFile file)
 	{
-		switch (key.VirtualKeyCode)
-		{
-			case KeyCode.Enter when key.Is():
-				if (CurrentFile is ChangeFile file)
-				{
-					var change = file.Change;
-					if (change.Mode == Mode.NonExecutableFile || change.Mode == Mode.Nonexistent && change.OldMode == Mode.NonExecutableFile)
-						ShowDiff(change);
-				}
-				return true;
-		}
-
-		return base.UIKeyPressed(key);
+		var change = ((ChangeFile)file).Change;
+		if (change.Mode == Mode.NonExecutableFile || change.Mode == Mode.Nonexistent && change.OldMode == Mode.NonExecutableFile)
+			ShowDiff(change);
+		else
+			Far.Api.Message($"Cannot show diff {change.OldMode} -> {change.Mode}", Host.MyName);
 	}
 }

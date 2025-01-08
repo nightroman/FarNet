@@ -35,6 +35,7 @@ class ChangesExplorer : BaseExplorer
 	{
 		_op = op;
 		CanGetContent = true;
+		CanOpenFile = true;
 	}
 
 	public override Panel CreatePanel()
