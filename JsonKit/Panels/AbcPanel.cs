@@ -135,19 +135,17 @@ abstract class AbcPanel(AbcExplorer explorer) : Panel(explorer)
 			Title = array.GetPath(),
 			EditorSaving = (s, e) =>
 			{
+				//! do not smart check anything, apply always
 				var strings = ((IEditor)s!).Strings.ToList();
-				var text2 = string.Join('\n', strings);
-				if (text2 != text)
-				{
-					var array2 = new JsonArray();
-					foreach (var item in strings)
-						array2.Add(item);
 
-					MyExplorer.SetDirty();
-					MyExplorer.UpdateFile(file, array2);
+				var array2 = new JsonArray();
+				foreach (var item in strings)
+					array2.Add(item);
 
-					Update(true);
-				}
+				MyExplorer.SetDirty();
+				MyExplorer.UpdateFile(file, array2);
+
+				Update(true);
 			}
 		});
 	}

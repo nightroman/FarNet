@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.JsonKit
 
+= 0.4.1 =
+
+Amend "Edit array of strings" saving.
+
 = 0.4.0 =
 
 Add menu "Edit array of strings".
