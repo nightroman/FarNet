@@ -1,5 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet.JsonKit
 
+= 0.4.0 =
+
+Add menu "Edit array of strings".
+
+JsonPath.Net 2.1.0
+
 = 0.3.3 =
 
 Requires FarNet 9.0.9, command refactoring.

@@ -207,6 +207,10 @@ source. Saving changes in these editors is not possible.
 
 [Contents]
 
+- Edit array of strings (array panel, object panel)
+
+    If the cursor item is array of strings, edits it as text in the editor.
+
 - Open from clipboard
 
     Opens JSON text or a file path like ".json" pasted from the clipboard.

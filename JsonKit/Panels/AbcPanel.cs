@@ -1,4 +1,6 @@
 ﻿using FarNet;
+using System.Linq;
+using System.Text.Json.Nodes;
 
 namespace JsonKit.Panels;
 
@@ -116,5 +118,45 @@ abstract class AbcPanel(AbcExplorer explorer) : Panel(explorer)
 
 		explorer.SaveData();
 		return true;
+	}
+
+	void EditStringArray(NodeFile file)
+	{
+		if (file.Node is not JsonArray array || array.Any(x => x is not JsonValue value || !value.TryGetValue<string>(out _)))
+		{
+			Far.Api.Message("This is not array of strings.", Host.MyName);
+			return;
+		}
+
+		var text = string.Join('\n', array.Select(x => x!.ToString()));
+		Far.Api.AnyEditor.EditTextAsync(new()
+		{
+			Text = text,
+			Title = array.GetPath(),
+			EditorSaving = (s, e) =>
+			{
+				var strings = ((IEditor)s!).Strings.ToList();
+				var text2 = string.Join('\n', strings);
+				if (text2 != text)
+				{
+					var array2 = new JsonArray();
+					foreach (var item in strings)
+						array2.Add(item);
+
+					MyExplorer.SetDirty();
+					MyExplorer.UpdateFile(file, array2);
+
+					Update(true);
+				}
+			}
+		});
+	}
+
+	internal void AddMenu(IMenu menu)
+	{
+		if (CurrentFile is NodeFile file)
+		{
+			menu.Add("Edit array of &strings", (s, e) => EditStringArray(file));
+		}
 	}
 }

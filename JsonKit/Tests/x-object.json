@@ -9,6 +9,9 @@
   "array": [
     "текст"
   ],
+  "arrayOfInt": [
+    1
+  ],
   "object": {
     "string": "текст", // comma
   },

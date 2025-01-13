@@ -16,9 +16,12 @@ public class Tool : ModuleTool
 		menu.Title = Host.MyName;
 		menu.HelpTopic = GetHelpTopic("menu");
 
-		bool isModal = Far.Api.Window.IsModal;
+		if (e.From == ModuleToolOptions.Panels && Far.Api.Panel is AbcPanel panel)
+		{
+			panel.AddMenu(menu);
+		}
 
-		if (!isModal)
+		if (!Far.Api.Window.IsModal)
 		{
 			menu.Add("Open from &clipboard", (s, e) => OpenFromClipboard());
 		}

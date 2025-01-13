@@ -33,7 +33,7 @@ abstract class AbcExplorer : Explorer
 		return _dirty.Contains(Node.Root);
 	}
 
-	void SetDirty()
+	internal void SetDirty()
 	{
 		_dirty.Add(Node.Root);
 		ResetParentFile();
@@ -61,7 +61,7 @@ abstract class AbcExplorer : Explorer
 
 	protected abstract void UpdateNode(NodeFile file, JsonNode? node);
 
-	void UpdateFile(NodeFile file, JsonNode? node)
+	internal void UpdateFile(NodeFile file, JsonNode? node)
 	{
 		// ensure the file is live (vs lost on deleting nodes)
 		if (_files?.Contains(file) != true)
