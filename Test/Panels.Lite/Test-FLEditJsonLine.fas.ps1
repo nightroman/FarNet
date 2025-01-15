@@ -66,6 +66,7 @@ job {
 }
 
 ### test in create (F7)
+#!(1) Also covers why we call EditorControl_ECTL_GETSTRING for EOL to use it on setting strings.
 keys F7
 job {
 	Assert-Far -Editor
@@ -88,6 +89,7 @@ job {
 macro 'Keys"Esc Enter" -- exit, save'
 job {
 	# changed
+	#!(1) because it's the last line, without EOL (using null/default), result would be `"p1": "new value 2\r\n"`
 	Assert-Far $Far.Editor.Line.Text -eq '  "p1": "new value 2"'
 }
 macro 'Keys"Esc n" -- exit, no save'

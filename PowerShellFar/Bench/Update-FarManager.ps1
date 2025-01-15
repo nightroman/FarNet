@@ -145,23 +145,24 @@ foreach ($file in $files2) {
 
 ### check extra items
 Write-Host -ForegroundColor Cyan "Checking extra items..."
-$nExtra = 0
-$inArchive = @{}
-& 7z.exe l $Archive -slt | .{process{ if ($_ -match '^Path = (.+)') { $inArchive.Add($matches[1], $null) } }}
-@(
+$pathsInArchive = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+& 7z.exe l $Archive -slt | .{process{ if ($_ -match '^Path = (.+)') { $null = $pathsInArchive.Add($matches[1]) } }}
+$pathsInFar = @(
 	Get-ChildItem -LiteralPath $FARHOME -Force -Name -ErrorAction 0
 	Get-ChildItem -LiteralPath "$FARHOME\Plugins" -Force -Name -ErrorAction 0 | .{process{ "Plugins\$_" }}
-	foreach ($key in $inArchive.Keys) {
-		if ($key -match '^Plugins\\\w+$|^[^\\]+$' -and $key -ne 'Plugins' -and [System.IO.Directory]::Exists("$FARHOME\$key")) {
-			Get-ChildItem -LiteralPath "$FARHOME\$key" -Force -Recurse -Name -ErrorAction 0 | .{process{ "$key\$_" }}
+	foreach ($path in $pathsInArchive) {
+		if ($path -match '^Plugins\\\w+$|^[^\\]+$' -and $path -ne 'Plugins' -and [System.IO.Directory]::Exists("$FARHOME\$path")) {
+			Get-ChildItem -LiteralPath "$FARHOME\$path" -Force -Recurse -Name -ErrorAction 0 | .{process{ "$path\$_" }}
 		}
 	}
-) | .{process{
-	if (!$inArchive.ContainsKey($_)) {
-		$_
+)
+$nExtra = 0
+foreach($_ in $pathsInFar) {
+	if (!$pathsInArchive.Contains($_) -and $_ -notmatch '\.chw$') {
+		Write-Host $_
 		++$nExtra
 	}
-}}
+}
 
 Write-Host -ForegroundColor Cyan "$nExtra extra items."
 Write-Host -ForegroundColor Green "Update succeeded."
