@@ -17,14 +17,6 @@ task build meta, {
 	exec { dotnet build -c $Configuration /p:FarHome=$FarHome }
 }
 
-task publish {
-	$null = mkdir $ModuleRoot -Force
-	Copy-Item -Destination $ModuleRoot @(
-		"bin\$Configuration\net8.0-windows\$ModuleName.dll"
-		"bin\$Configuration\net8.0-windows\$ModuleName.pdb"
-	)
-}
-
 task clean {
 	remove z, bin, obj, README.htm, FarNet.$ModuleName.*.nupkg
 }

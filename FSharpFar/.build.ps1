@@ -26,7 +26,7 @@ task publish {
 
 	# used to be deleted, now missing: runtimes\unix
 	Set-Location $ModuleRoot
-	remove *.deps.json, cs, de, es, fr, it, ja, ko, pl, pt-BR, ru, tr, zh-Hans, zh-Hant
+	remove cs, de, es, fr, it, ja, ko, pl, pt-BR, ru, tr, zh-Hans, zh-Hant
 }
 
 task clean {
@@ -76,8 +76,7 @@ task package markdown, {
 	$toModule = mkdir "z\tools\FarHome\FarNet\Modules\$ModuleName"
 
 	# module
-	exec { robocopy $ModuleRoot $toModule /s /xf *.pdb } (0..2)
-	equals 10 (Get-ChildItem $toModule -Recurse -File).Count
+	exec { robocopy $ModuleRoot $toModule /s /xf *.pdb } 1
 
 	# meta
 	Copy-Item -Destination z @(
@@ -91,6 +90,22 @@ task package markdown, {
 		'History.txt'
 		'..\LICENSE'
 	)
+
+	Assert-SameFile.ps1 -Text -View $env:MERGE -Result (Get-ChildItem $toModule -Recurse -File -Name) -Sample @'
+FarNet.FSharp.dll
+FarNet.FSharp.xml
+FSharp.Compiler.Service.dll
+FSharp.Core.dll
+FSharp.Core.xml
+FSharp.DependencyManager.Nuget.dll
+FSharpFar.dll
+fsx.dll
+fsx.exe
+fsx.runtimeconfig.json
+History.txt
+LICENSE
+README.htm
+'@
 }
 
 task nuget package, version, {

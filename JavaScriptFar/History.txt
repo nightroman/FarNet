@@ -1,6 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet.JavaScriptFar
 https://github.com/microsoft/ClearScript/releases
 
+= 2.1.1 =
+
+Remove `runtimeconfig.json` from the package.
+
 = 2.1.0 =
 
 Requires FarNet 9.0.9, uses .NET 9.

@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.RightWords
 
+= 5.2.2 =
+
+Make it a simple module, not ALC.
+
 = 5.2.1 =
 
 Requires FarNet 9.0.12

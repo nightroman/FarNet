@@ -73,7 +73,7 @@ task package markdown, {
 		'..\LICENSE'
 	)
 
-	Assert-SameFile -Text -View $env:MERGE -Result (Get-ChildItem $toModule -Force -Recurse -File -Name | Out-String) -Sample @'
+	Assert-SameFile -Text -View $env:MERGE -Result (Get-ChildItem $toModule -Force -Recurse -File -Name) -Sample @'
 ClearScript.Core.dll
 ClearScript.V8.dll
 ClearScript.V8.ICUData.dll
@@ -82,7 +82,6 @@ ClearScript.Windows.dll
 History.txt
 JavaScriptFar.deps.json
 JavaScriptFar.dll
-JavaScriptFar.runtimeconfig.json
 LICENSE
 Newtonsoft.Json.dll
 README.htm

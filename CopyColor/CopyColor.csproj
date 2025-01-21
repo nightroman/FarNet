@@ -1,7 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <FarHome Condition="'$(FarHome)' == ''">C:\Bin\Far\x64</FarHome>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <OutDir>$(FarHome)\FarNet\Modules\$(AssemblyName)</OutDir>
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+    <TargetFramework>net9.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
   <ItemGroup>
@@ -9,7 +11,4 @@
       <Private>False</Private>
     </Reference>
   </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="ib publish -Configuration $(Configuration) -FarHome $(FarHome)" />
-  </Target>
 </Project>

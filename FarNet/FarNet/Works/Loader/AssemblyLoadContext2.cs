@@ -3,6 +3,7 @@
 // Copyright (c) Roman Kuzmin
 
 using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.Loader;
 
@@ -17,6 +18,8 @@ class AssemblyLoadContext2(string pluginPath, bool isCollectible = false) : Asse
 		var assemblyPath = _resolver.ResolveAssemblyToPath(assemblyName);
 		if (assemblyPath is null)
 			return null;
+
+		Debug.WriteLine($"## ALC {assemblyPath}");
 
 		return LoadFromAssemblyPath(assemblyPath);
 	}

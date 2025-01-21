@@ -19,10 +19,6 @@ task build meta, {
 	exec { dotnet build -c $Configuration "-p:FarHome=$FarHome" }
 }
 
-task publish {
-	remove "$ModuleRoot\RedisKit.deps.json"
-}
-
 task help -Inputs README.md -Outputs $ModuleRoot\RedisKit.hlf {
 	exec { pandoc.exe $Inputs --output=README.htm --from=gfm --no-highlight }
 	exec { HtmlToFarHelp from=README.htm to=$Outputs }

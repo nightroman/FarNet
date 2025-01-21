@@ -1,8 +1,12 @@
 https://www.nuget.org/packages/FarNet.CopyColor
 
+= 5.1.0 =
+
+Requires FarNet 9, uses .NET 9.
+
 = 5.0.0 =
 
-Requires FarNet 8
+Requires FarNet 8, uses .NET 8.
 
 = 4.0.2 =
 

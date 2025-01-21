@@ -3,6 +3,7 @@
     <FarHome Condition="'$(FarHome)' == ''">C:\Bin\Far\x64</FarHome>
     <FarNetModules Condition="'$(FarNetModules)' == ''">$(FarHome)\FarNet\Modules</FarNetModules>
     <OutDir>$(FarNetModules)\$(AssemblyName)</OutDir>
+    <GenerateDependencyFile>false</GenerateDependencyFile>
     <TargetFramework>net9.0</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
@@ -20,6 +21,6 @@
     </None>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass Invoke-Build publish -FarHome $(FarHome) -FarNetModules $(FarNetModules)" />
+    <Exec Command="powershell -nop -exe Bypass Invoke-Build publish -FarHome $(FarHome) -FarNetModules $(FarNetModules)" />
   </Target>
 </Project>

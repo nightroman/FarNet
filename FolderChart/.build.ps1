@@ -81,11 +81,9 @@ task package version, markdown, {
 		"..\LICENSE"
 	)
 
-	$result = Get-ChildItem $toModule -Recurse -File -Name | Out-String
-	$sample = @'
+	Assert-SameFile.ps1 -Text -View $env:MERGE -Result (Get-ChildItem $toModule -Recurse -File -Name) -Sample @'
 FolderChart.deps.json
 FolderChart.dll
-FolderChart.runtimeconfig.json
 History.txt
 LICENSE
 README.htm
@@ -97,7 +95,6 @@ runtimes\win\lib\net9.0\System.Data.OleDb.dll
 runtimes\win-x64\native\sni.dll
 runtimes\win-x86\native\sni.dll
 '@
-	Assert-SameFile.ps1 -Text $sample $result $env:MERGE
 }
 
 task nuget package, {

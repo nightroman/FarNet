@@ -17,10 +17,6 @@ task build meta, {
 	exec { dotnet build -c $Configuration /p:FarHome=$FarHome }
 }
 
-task publish {
-	remove $ModuleRoot\Explore.deps.json
-}
-
 task clean {
 	remove z, bin, obj, README.htm, FarNet.$ModuleName.*.nupkg
 }

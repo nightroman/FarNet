@@ -30,8 +30,6 @@ task publish {
 		"$HOME\.nuget\packages\LibGit2Sharp\$ver1\lib\net8.0\LibGit2Sharp.xml"
 		"$HOME\.nuget\packages\LibGit2Sharp.NativeBinaries\$ver2\runtimes\$bit\native\*.dll"
 	)
-
-	remove "$ModuleRoot\$ModuleName.deps.json"
 }
 
 task help -Inputs README.md -Outputs $ModuleRoot\$ModuleName.hlf {

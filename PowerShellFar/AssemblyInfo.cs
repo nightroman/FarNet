@@ -1,8 +1,15 @@
 using System;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(false)]
+
+#if DEBUG
+[assembly: AssemblyDescription("PowerShell scripting for FarNet (DEBUG)")]
+#else
+[assembly: AssemblyDescription("PowerShell scripting for FarNet")]
+#endif
 
 namespace PowerShellFar;
 

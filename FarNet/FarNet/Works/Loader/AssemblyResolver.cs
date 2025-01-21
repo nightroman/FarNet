@@ -156,7 +156,7 @@ public static class AssemblyResolver
 		if (paths.Count == 0)
 			return null;
 
-		Debug.WriteLine($"## ResolveAssembly {name}");
+		Debug.WriteLine($"## ResolveAssembly {name} <-- {args.RequestingAssembly.Location}");
 
 		if (paths.Count > 1)
 			paths.RemoveAll(x => x.Contains(_win_skip));

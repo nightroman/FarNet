@@ -15,9 +15,7 @@ task build {
 	exec { dotnet build -c Release -p:FarHome=$FarHome -p:FarNetModules=$FarNetModules }
 }
 
-task publish resgen, {
-	remove $ModuleRoot\FarNet.Demo.deps.json
-}
+task publish resgen
 
 task clean {
 	remove obj

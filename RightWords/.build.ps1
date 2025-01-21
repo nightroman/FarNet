@@ -17,11 +17,7 @@ task build meta, {
 	exec { dotnet build -c $Configuration /p:FarHome=$FarHome }
 }
 
-task publish {
-	exec { dotnet publish "$ModuleName.csproj" -c $Configuration -o $ModuleRoot --no-build }
-},
-help,
-resgen
+task publish help, resgen
 
 task help -Inputs README.md -Outputs $ModuleRoot\RightWords.hlf {
 	exec { pandoc.exe README.md --output=$env:TEMP\help.htm --from=gfm --no-highlight }
@@ -82,7 +78,6 @@ task package markdown, version, {
 
 	# module
 	exec { robocopy $ModuleRoot $toModule /s /xf *.pdb } (0..2)
-	equals 7 (Get-ChildItem $toModule -Recurse -File).Count
 
 	# meta
 	Copy-Item -Destination z @(
@@ -98,21 +93,17 @@ task package markdown, version, {
 		"RightWords.macro.lua"
 	)
 
-	$result = Get-ChildItem $toModule -Recurse -File -Name | Out-String
-	$sample = @'
+	Assert-SameFile.ps1 -Text -View $env:MERGE -Result (Get-ChildItem $toModule -Recurse -File -Name) -Sample @'
 History.txt
 LICENSE
 README.htm
-RightWords.deps.json
 RightWords.dll
 RightWords.hlf
 RightWords.macro.lua
 RightWords.resources
 RightWords.ru.resources
-RightWords.runtimeconfig.json
 WeCantSpell.Hunspell.dll
 '@
-	Assert-SameFile.ps1 -Text $sample $result $env:MERGE
 }
 
 task nuget package, version, {

@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.FolderChart
 
+= 5.1.1 =
+
+Remove `runtimeconfig.json` from the package.
+
 = 5.1.0 =
 
 Requires FarNet 9, uses .NET 9.

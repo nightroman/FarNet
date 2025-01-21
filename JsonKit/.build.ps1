@@ -19,11 +19,6 @@ task build meta, {
 	exec { dotnet build -c $Configuration "-p:FarHome=$FarHome" }
 }
 
-task publish {
-	Set-Location $ModuleRoot
-	remove JsonKit.deps.json, JsonKit.runtimeconfig.json
-}
-
 task help -Inputs README.md -Outputs $ModuleRoot\JsonKit.hlf {
 	exec { pandoc.exe $Inputs --output=README.htm --from=gfm --no-highlight }
 	exec { HtmlToFarHelp from=README.htm to=$Outputs }

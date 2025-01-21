@@ -17,11 +17,6 @@ task build meta, {
 	exec { dotnet build "$ModuleName.csproj" "/p:FarHome=$FarHome" "/p:Configuration=$Configuration" }
 }
 
-task publish {
-	exec { dotnet publish "$ModuleName.csproj" -c $Configuration -o $ModuleRoot --no-build }
-	remove $ModuleRoot\$ModuleName.deps.json
-}
-
 task clean {
 	remove z, bin, obj, README.htm, Directory.Build.props, "*$ModuleName.*.nupkg"
 }

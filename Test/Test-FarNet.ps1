@@ -188,10 +188,13 @@ Start-FarTask -Data Tests, ExpectedTaskCount, All, SavedPanelPaths {
 				Start-FarJob { & "$env:PSF\Samples\Tests\Test-Job-.ps1" }
 			}
 
-			### Write summary
-			$colors = 'Yellow', 'Green'
-			Write-Host "Tasks: $($Data.TaskCount)/$($Data.ExpectedTaskCount)" -ForegroundColor ($colors[$Data.TaskCount -eq $Data.ExpectedTaskCount])
+			### Summary
+			Write-Host "Tasks: $($Data.TaskCount)/$($Data.ExpectedTaskCount)" -ForegroundColor ($Data.TaskCount -eq $Data.ExpectedTaskCount ? 'Green' : 'Yellow')
 			Write-Host "$($Data.Stopwatch.Elapsed)" -ForegroundColor Green
+
+			### DEBUG
+			if ((Get-Item $env:FARHOME\FarNet\FarNet.dll).VersionInfo.Comments -like '*DEBUG*') { Write-Host FN=DEBUG -ForegroundColor Red }
+			if ((Get-Item $env:FARHOME\FarNet\Modules\PowerShellFar\PowerShellFar.dll).VersionInfo.Comments -like '*DEBUG*') { Write-Host PS=DEBUG -ForegroundColor Red }
 		}
 	}
 }
