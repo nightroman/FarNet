@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.7 =
+
+Microsoft.PowerShell.SDK 7.5.0
+
+Edit-IB.ps1 - new parameter Task
+
 = 9.0.6 =
 
 Requires FarNet 9.0.10, refactoring.

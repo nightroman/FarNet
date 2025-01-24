@@ -47,6 +47,7 @@ task installBin {
 	exec { dotnet publish "$ModuleName.csproj" -c $Configuration -o $ModuleRoot --no-build }
 
 	# move `ref` folder to "expected" location or cannot compile C# in PS
+	remove "$ModuleRoot\runtimes\win\lib\net9.0\ref"
 	Move-Item "$ModuleRoot\ref" "$ModuleRoot\runtimes\win\lib\net9.0\ref"
 
 	# prune resources, to keep our dll cache cleaner

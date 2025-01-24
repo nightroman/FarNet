@@ -21,10 +21,7 @@ job {
 }
 
 #_090328_170110
-macro @'
-Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "7DEF4106-570A-41AB-8ECB-40605339E6F7")
-Keys"7"
-'@
+macro 'Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "7DEF4106-570A-41AB-8ECB-40605339E6F7") Keys"7"'
 job {
 	# TE dialog with a list box
 	Assert-Far $Far.Dialog[1].GetType().Name -eq 'FarListBox'
@@ -33,7 +30,8 @@ job {
 keys Esc
 job {
 	Assert-Far -Editor
-}
+	$Far.Editor.Close()
 
-# exit editor
-macro 'Keys"Esc n"'
+	# 7.5.0 started to have errors about CIM cmdlets not available
+	$Global:Error.Clear()
+}

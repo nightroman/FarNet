@@ -1,21 +1,20 @@
 ﻿<#
 .Synopsis
-	Finds and edits selected Invoke-Build task.
+	Opens Invoke-Build scripts in the editor.
 	Author: Roman Kuzmin
 
 .Description
 	Invoke-Build should be available, either module or script.
 	How to get it: https://github.com/nightroman/Invoke-Build
 
-	Invoke-Build looks for build scripts in the current and parent folders.
-	So you may call this script from any child folder of a build script root.
+	You may call this script from any child folder of a build script.
 
-	This script is usually called by FarNet.PowerShellFar. But you may call it
-	from PowerShell consoles, too. Then the script opens Far Manager and calls
-	itself. This requires Far.exe, Start-Far.ps1, and Edit-IB.ps1 in the path.
+	This script is usually called by PowerShellFar. But you may call it from
+	a console, too. Then the script opens Far Manager and calls itself. This
+	requires Far.exe, Start-Far.ps1, and Edit-IB.ps1 in the path.
 
 	If the build script is found then the list of its tasks is shown, including
-	`<new>`. Select a task. This opens the editor at the selected or added task.
+	*new*. Select a task. This opens the editor at the selected or added task.
 
 	If the build script is not found then a new `.build.ps1` is opened in the
 	editor and a new task is added. You may exit without saving or edit and
@@ -23,55 +22,75 @@
 
 	Tips:
 	- In the build script editor press [F5] to run the current task.
-	- After looking at its output press [Esc] to return the editor.
+	- After looking at the output press [Esc] to return to the editor.
+
+.Parameter Task
+		The optional selected task to edit right away.
 #>
 
-$ErrorActionPreference=1
-trap {Write-Error $_}
+[CmdletBinding()]
+param(
+	[string]$Task
+)
+
+$ErrorActionPreference = 1
+trap { $PSCmdlet.ThrowTerminatingError($_) }
 
 ### not far host? start new far
 if ($Host.Name -ne 'FarHost') {
-	Start-Far.ps1 ps:Edit-IB.ps1
-	return
+	return Start-Far.ps1 ($Task ? "ps:Edit-IB.ps1 $Task" : 'ps:Edit-IB.ps1')
 }
 
 ### dot-source Invoke-Build
+$_Task = $Task
 try {
 	. Invoke-Build
 }
 catch {
-	throw "Cannot use Invoke-Build: $_"
+	throw "Invoke-Build: $_"
 }
 
 ### find file, select task
 $file = Get-BuildFile $PWD
 if ($file) {
-	$fileName = [IO.Path]::GetFileName($file)
-	$task = $(
+	$fileName = [System.IO.Path]::GetFileName($file)
+
+	# all items
+	$items = $(
 		@{Name = $fileName}
 		(Invoke-Build ?? $file).Values
-		@{Name = '<new>'}
-	) |
-	Out-FarList -Title Tasks -Text {$_.Name}
-	if (!$task) {
-		return
+		@{Name = '*new*'}
+	)
+
+	# input task?
+	$item = $null
+	if ($_Task) {
+		$item = $items.Where({$_.Name -eq $_Task})
+	}
+
+	# select item
+	if (!$item) {
+		$item = $items | Out-FarList -Title Tasks -Text {$_.Name}
+		if (!$item) {
+			return
+		}
 	}
 }
 else {
 	$fileName = $null
 	$file = "$PWD\.build.ps1"
-	$task = @{Name = '<new>'}
+	$item = @{Name = '*new*'}
 }
 
 ### just edit file
-if ($task.Name -eq $fileName) {
+if ($item.Name -eq $fileName) {
 	Open-FarEditor $file
 	return
 }
 
 ### edit existing task
-if ($task.Name -ne '<new>') {
-	$ii = $task.InvocationInfo
+if ($item.Name -ne '*new*') {
+	$ii = $item.InvocationInfo
 	Open-FarEditor $file -LineNumber $ii.ScriptLineNumber
 	return
 }
