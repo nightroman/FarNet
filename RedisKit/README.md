@@ -63,7 +63,7 @@ rk:command [key=value] [; key=value] ...
 
 **Common parameters**
 
-- `Redis=<string>`
+- `Redis={string}`
 
     Specifies Redis configuration string or name from [Settings](#settings).
 
@@ -87,7 +87,7 @@ the same time, even after closing their source panels.
 
 **Parameters**
 
-- `Key=<string>` (required)
+- `Key={string}` (required)
 
     Specifies the existing or new string key.
 
@@ -100,10 +100,14 @@ This command opens [Hash panel](#hash-panel).
 
 **Parameters**
 
-- `Key=<string>` (required)
+- `Key={string}` (required)
 
     Specifies the hash key. If the key does not exist then a new hash will be
     created. If the key type does not match then the command throws an error.
+
+- `Eol={bool}` (optional)
+
+    Tells to show the EOL column with field end of live times.
 
 *********************************************************************
 ## rk:keys
@@ -114,7 +118,7 @@ This command opens [Keys panel](#keys-panel) with the key pattern.
 
 **Parameters**
 
-- `Mask=<string>` (optional)
+- `Mask={string}` (optional)
 
     Specifies the search pattern or wildcard or fixed prefix for `rk:keys`.
 
@@ -136,7 +140,7 @@ This command opens [List panel](#list-panel).
 
 **Parameters**
 
-- `Key=<string>` (required)
+- `Key={string}` (required)
 
     Specifies the list key. If the key does not exist then a new list will be
     created. If the key type does not match then the command throws an error.
@@ -150,7 +154,7 @@ This command opens [Set panel](#set-panel).
 
 **Parameters**
 
-- `Key=<string>` (required)
+- `Key={string}` (required)
 
     Specifies the set key. If the key does not exist then a new set will be
     created. If the key type does not match then the command throws an error.
@@ -164,12 +168,12 @@ This command opens [Keys panel](#keys-panel) with inferred folders.
 
 **Parameters**
 
-- `Root=<string>` (optional)
+- `Root={string}` (optional)
 
     Specifies the root key prefix for `rk:tree`.\
     The trailing separator (colon) is optional.
 
-- `Colon=<string>` (optional)
+- `Colon={string}` (optional)
 
     Specifies the folder separator for `rk:tree`.\
     The default is traditional Redis colon (:).

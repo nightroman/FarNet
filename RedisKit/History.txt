@@ -1,5 +1,14 @@
 ﻿https://www.nuget.org/packages/FarNet.RedisKit
 
+= 0.3.6 =
+
+rk:hash
+- new parameter Eol tells to show field end of life times.
+
+Requires Garnet 1.0.53 (if used as Redis).
+
+0.15.0
+
 = 0.3.5 =
 
 Requires FarNet 9.0.9, command refactoring.

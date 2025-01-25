@@ -1,21 +1,23 @@
 ﻿using FarNet;
 using RedisKit.Panels;
 using StackExchange.Redis;
-using System;
 
 namespace RedisKit.Commands;
 
-sealed class HashCommand(CommandParameters parameters) : BaseCommand(parameters)
+sealed class HashCommand : BaseCommand
 {
-	readonly RedisKey _key = parameters.GetRequiredString(Param.Key);
+	readonly RedisKey _key;
+	readonly bool _eol;
+
+	public HashCommand(CommandParameters parameters) : base(parameters)
+	{
+		_key = GetRequiredRedisKeyOfType(parameters, RedisType.Hash);
+		_eol = parameters.GetBool(Param.Eol);
+	}
 
 	public override void Invoke()
 	{
-		var type = Database.KeyType(_key);
-		if (type != RedisType.Hash && type != RedisType.None)
-			throw new InvalidOperationException($"Cannot open 'Hash', the key is '{type}'.");
-
-		new HashExplorer(Database, _key)
+		new HashExplorer(Database, _key, _eol)
 			.CreatePanel()
 			.Open();
 	}

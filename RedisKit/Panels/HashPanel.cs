@@ -12,7 +12,17 @@ class HashPanel : BasePanel<HashExplorer>
 		var cn = new SetColumn { Kind = "N", Name = "Field" };
 		var cz = new SetColumn { Kind = "Z", Name = "Value" };
 
-		var plan0 = new PanelPlan { Columns = [cn, cz] };
+		PanelPlan plan0;
+		if (Explorer.Eol)
+		{
+			var cm = new SetColumn { Kind = "DM", Name = "EOL" };
+			plan0 = new PanelPlan { Columns = [cn, cz, cm] };
+		}
+		else
+		{
+			plan0 = new PanelPlan { Columns = [cn, cz] };
+		}
+
 		SetPlan(0, plan0);
 
 		SetView(plan0);

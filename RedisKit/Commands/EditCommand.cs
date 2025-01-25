@@ -1,28 +1,26 @@
 ﻿using FarNet;
 using StackExchange.Redis;
-using System;
 using System.IO;
 
 namespace RedisKit.Commands;
 
-sealed class EditCommand(CommandParameters parameters) : BaseCommand(parameters)
+sealed class EditCommand : BaseCommand
 {
-	readonly string _key = parameters.GetRequiredString(Param.Key);
+	readonly RedisKey _key;
+
+	public EditCommand(CommandParameters parameters) : base(parameters)
+	{
+		_key = GetRequiredRedisKeyOfType(parameters, RedisType.String);
+	}
 
 	public override void Invoke()
 	{
-		RedisKey key = _key;
-
-		var type = Database.KeyType(key);
-		if (type != RedisType.String && type != RedisType.None)
-			throw new InvalidOperationException($"Expected 'String'. The actual key is '{type}'.");
-
-		var text = (string?)Database.StringGet(key);
+		var text = (string?)Database.StringGet(_key);
 		EditTextArgs args = new()
 		{
 			Text = text,
 			Title = _key,
-			Extension = GetFileExtension(_key),
+			Extension = GetFileExtension(_key.ToString()),
 			EditorSaving = (s, e) =>
 			{
 				var text = ((IEditor)s!).GetText();

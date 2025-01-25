@@ -12,11 +12,6 @@ sealed class KeysCommand : BaseCommand
 		_mask = parameters.GetString(Param.Mask);
 	}
 
-	public KeysCommand(string mask)
-	{
-		_mask = mask;
-	}
-
 	public override void Invoke()
 	{
 		new KeysExplorer(Database, _mask)

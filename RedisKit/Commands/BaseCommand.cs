@@ -9,14 +9,20 @@ abstract class BaseCommand : AbcCommand
 {
 	protected IDatabase Database { get; }
 
-	protected BaseCommand()
-	{
-		Database = OpenDatabase(GetRedisConfiguration());
-	}
-
 	protected BaseCommand(CommandParameters parameters)
 	{
 		Database = OpenDatabase(GetRedisConfiguration(parameters.GetString(Param.Redis)));
+	}
+
+	protected RedisKey GetRequiredRedisKeyOfType(CommandParameters parameters, RedisType expectedType)
+	{
+		RedisKey key = parameters.GetRequiredString(Param.Key);
+
+		var actualType = Database.KeyType(key);
+		if (actualType != expectedType && actualType != RedisType.None)
+			throw parameters.ParameterError(Param.Key, $"The existing key is '{actualType}', not '{expectedType}'.");
+
+		return key;
 	}
 
 	static IDatabase OpenDatabase(string configuration)

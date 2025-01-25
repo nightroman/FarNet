@@ -1,20 +1,20 @@
 ﻿using FarNet;
 using RedisKit.Panels;
 using StackExchange.Redis;
-using System;
 
 namespace RedisKit.Commands;
 
-sealed class SetCommand(CommandParameters parameters) : BaseCommand(parameters)
+sealed class SetCommand : BaseCommand
 {
-	readonly RedisKey _key = parameters.GetRequiredString(Param.Key);
+	readonly RedisKey _key;
+
+	public SetCommand(CommandParameters parameters) : base(parameters)
+	{
+		_key = GetRequiredRedisKeyOfType(parameters, RedisType.Set);
+	}
 
 	public override void Invoke()
 	{
-		var type = Database.KeyType(_key);
-		if (type != RedisType.Set && type != RedisType.None)
-			throw new InvalidOperationException($"Cannot open 'Set', the key is '{type}'.");
-
 		new SetExplorer(Database, _key)
 			.CreatePanel()
 			.Open();

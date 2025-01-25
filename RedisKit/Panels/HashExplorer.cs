@@ -11,9 +11,12 @@ sealed class HashExplorer : BaseExplorer
 	public static Guid MyTypeId = new("29ae0735-2a00-43be-896b-9e2e8a67d658");
 
 	readonly RedisKey _key;
-	internal RedisKey Key => _key;
+	readonly bool _eol;
 
-	public HashExplorer(IDatabase database, RedisKey key) : base(database, MyTypeId)
+	internal RedisKey Key => _key;
+	internal bool Eol => _eol;
+
+	public HashExplorer(IDatabase database, RedisKey key, bool eol=false) : base(database, MyTypeId)
 	{
 		CanCloneFile = true;
 		CanCreateFile = true;
@@ -23,6 +26,7 @@ sealed class HashExplorer : BaseExplorer
 		CanSetText = true;
 
 		_key = key;
+		_eol = eol;
 	}
 
 	public override Panel CreatePanel()
@@ -38,6 +42,7 @@ sealed class HashExplorer : BaseExplorer
 	public override IEnumerable<FarFile> GetFiles(GetFilesEventArgs args)
 	{
 		var hash = Database.HashGetAll(_key);
+		var now = DateTime.Now;
 
 		foreach (HashEntry item in hash)
 		{
@@ -47,6 +52,13 @@ sealed class HashExplorer : BaseExplorer
 				Description = (string?)item.Value,
 				Data = item,
 			};
+
+			if (_eol)
+			{
+				var ttl = Database.HashFieldGetTimeToLive(_key, [item.Name]);
+				if (ttl[0] > 0)
+					file.LastWriteTime = now.AddMilliseconds(ttl[0]);
+			}
 
 			yield return file;
 		}
