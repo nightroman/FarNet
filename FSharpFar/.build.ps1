@@ -138,7 +138,7 @@ task test_psf_ib {
 }
 
 task test_psf_fas {
-	Start-Far "ps: Test.far.ps1 * -Quit" $env:FarNetCode\FSharpFar\tests\PSF.test -ReadOnly
+	Start-Far "ps: ..\..\..\Test\Test-FarNet.ps1 * -Quit" .\tests\PSF.test -ReadOnly
 }
 
 task test_testing {

@@ -9,7 +9,7 @@ namespace Explore;
 
 public static class Parser
 {
-	public static IList<string> Tokenize(string text, params string[] lasts)
+	public static IList<string> Tokenize(string text, params ReadOnlySpan<string> lasts)
 	{
 		var list = new List<string>();
 		var reader = new StringReader(text);

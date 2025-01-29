@@ -25,8 +25,7 @@ job {
 	$ttl = ($file.LastWriteTime - [datetime]::Now).TotalSeconds
 	Assert-Far ($ttl -gt 50 -and $ttl -lt 60)
 
-	# remove f1 to see what happens when the last field f2 expires
-	Set-RedisHash temp:hash1 -Remove f1
+	Remove-RedisKey temp:hash1
 
 	$Far.Panel.Close()
 }

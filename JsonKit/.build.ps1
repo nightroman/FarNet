@@ -123,7 +123,7 @@ task nuget package, version, {
 }
 
 task test {
-	Start-Far "ps: Test.far.ps1 * -Quit" Tests -ReadOnly -Title $PSScriptRoot
+	Start-Far "ps: ..\..\Test\Test-FarNet.ps1 * -Quit" .\Tests -ReadOnly
 }
 
 task . build, help, clean
