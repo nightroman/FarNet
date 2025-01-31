@@ -1,7 +1,6 @@
 ﻿
 job {
-	$Global:db = Import-Module FarNet.Redis
-
+	Import-Module $PSScriptRoot\zoo.psm1
 	Remove-RedisKey temp:hash1
 
 	Set-RedisHash temp:hash1 f1 v1

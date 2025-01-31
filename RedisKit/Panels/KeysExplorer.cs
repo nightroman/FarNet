@@ -1,8 +1,6 @@
 ﻿using FarNet;
 using RedisKit.Commands;
 using StackExchange.Redis;
-using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace RedisKit.Panels;
@@ -422,7 +420,30 @@ sealed class KeysExplorer : BaseExplorer
 	public override void GetContent(GetContentEventArgs args)
 	{
 		var key = args.File.DataKey().Key;
-		var text = (string?)Database.StringGet(key);
+		var type = Database.KeyType(key);
+
+		string? text = null;
+		switch (type)
+		{
+			case RedisType.String:
+				{
+					text = Database.StringGet(key);
+				}
+				break;
+			case RedisType.List:
+				{
+					var res = Database.ListRange(key);
+					text = string.Join('\n', res.ToStringArray());
+				}
+				break;
+			case RedisType.Set:
+				{
+					var res = Database.SetMembers(key);
+					text = string.Join('\n', res.ToStringArray());
+				}
+				break;
+		}
+
 		if (text is null)
 		{
 			args.Result = JobResult.Ignore;
@@ -431,12 +452,40 @@ sealed class KeysExplorer : BaseExplorer
 
 		args.CanSet = true;
 		args.UseText = text;
-		args.UseFileExtension = EditCommand.GetFileExtension(key.ToString());
+		if (type == RedisType.String)
+			args.UseFileExtension = EditCommand.GetFileExtension(key.ToString());
 	}
 
 	public override void SetText(SetTextEventArgs args)
 	{
 		var key = args.File.DataKey().Key;
-		Database.StringSet(key, args.Text);
+		var type = Database.KeyType(key);
+
+		switch (type)
+		{
+			case RedisType.String:
+				{
+					Database.StringSet(key, args.Text);
+				}
+				break;
+			case RedisType.List:
+				{
+					var lines = FarNet.Works.Kit.SplitLines(args.Text);
+					Database.KeyDelete(key);
+					Database.ListRightPush(key, lines.ToRedisValueArray());
+				}
+				break;
+			case RedisType.Set:
+				{
+					var lines = FarNet.Works.Kit.SplitLines(args.Text);
+					Database.KeyDelete(key);
+					Database.SetAdd(key, lines.ToRedisValueArray());
+				}
+				break;
+			default:
+				{
+					throw new ModuleException($"Unexpected Redis key type: {type}.");
+				}
+		}
 	}
 }

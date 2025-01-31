@@ -1,6 +1,6 @@
 ﻿
 job {
-	$Global:db = Import-Module FarNet.Redis
+	Import-Module $PSScriptRoot\zoo.psm1
 	Remove-RedisKey test:hash
 
 	$Far.InvokeCommand('rk:hash key=test:hash')

@@ -1,4 +1,6 @@
-﻿
+﻿Import-Module FarNet.Redis
+$db = Open-Redis
+
 function make_test_tree {
 	Set-RedisString :test-tree-file-in-empty-folder-name 1
 	$null = Remove-RedisKey (Search-RedisKey test-tree:*)

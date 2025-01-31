@@ -1,7 +1,5 @@
 ﻿using FarNet;
 using StackExchange.Redis;
-using System;
-using System.Linq;
 
 namespace RedisKit.Commands;
 

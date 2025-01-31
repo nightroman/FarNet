@@ -1,6 +1,5 @@
 ﻿using FarNet;
 using RedisKit.Commands;
-using System;
 
 namespace RedisKit;
 

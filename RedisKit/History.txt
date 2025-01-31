@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.RedisKit
 
+= 0.4.0 =
+
+Keys panel and rk:edit command - support List and Set editing as text.
+
 = 0.3.6 =
 
 rk:hash

@@ -81,15 +81,18 @@ rk:command [key=value] [; key=value] ...
 
 [Contents]
 
-This command opens the string editor. Saving in the editor commits the string
-to Redis. String editors are not modal, you may have several strings edited at
-the same time, even after closing their source panels.
+This command opens String, List, Set editor. Saving in the editor commits
+to Redis. Editors are not modal, you may have several keys edited at the
+same time.
+
+List and Set editors join items as strings on opening and then treat each line
+as an item on saving. Mind empty lines including the last, they are items.
 
 **Parameters**
 
 - `Key={string}` (required)
 
-    Specifies the existing or new string key.
+    Specifies the existing String, List, Set key or a new String key.
 
 *********************************************************************
 ## rk:hash
@@ -211,7 +214,13 @@ It is opened by [rk:keys](#rkkeys) and [rk:tree](#rktree).
 
 - `F4`
 
-    Opens the cursor string value editor.
+    Opens the cursor String, List, Set editor. Saving in the editor commits to
+    Redis. Editors are not modal, you may have several keys edited at the same
+    time.
+
+    List and Set editors join items as strings on opening and then treat
+    each line as an item on saving. Mind empty lines including the last,
+    they are items.
 
 - `ShiftF5`
 

@@ -1,6 +1,5 @@
 ﻿using FarNet;
 using RedisKit.UI;
-using System.Linq;
 
 namespace RedisKit.Panels;
 
@@ -132,5 +131,11 @@ class KeysPanel : BasePanel<KeysExplorer>
 
 		args.Data = new Files.ArgsDataName($"{ui.Text2}{ui.Text1}");
 		Explorer.RenameFile(args);
+	}
+
+	public override void UISetText(SetTextEventArgs args)
+	{
+		base.UISetText(args);
+		Update(true);
 	}
 }

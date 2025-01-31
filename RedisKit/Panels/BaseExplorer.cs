@@ -1,6 +1,5 @@
 ﻿using FarNet;
 using StackExchange.Redis;
-using System;
 
 namespace RedisKit.Panels;
 
