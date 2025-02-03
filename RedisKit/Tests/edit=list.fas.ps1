@@ -10,7 +10,7 @@ job {
 job {
 	Assert-Far -Editor
 	$Editor = $Far.Editor
-	Assert-Far $Editor.Title -eq test:edit
+	Assert-Far $Editor.Title -eq 'List test:edit'
 	Assert-Far $Editor.GetText() -eq 'q1'
 
 	$Editor.SetText("q1`nq2")

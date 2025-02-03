@@ -2,7 +2,7 @@
 job {
 	Import-Module $PSScriptRoot\zoo.psm1
 	Remove-RedisKey test:edit
-	Set-RedisSet test:edit q1
+	Set-RedisHash test:edit f1 v1
 
 	$Far.InvokeCommand('rk:edit key=test:edit')
 }
@@ -10,14 +10,14 @@ job {
 job {
 	Assert-Far -Editor
 	$Editor = $Far.Editor
-	Assert-Far $Editor.Title -eq 'Set test:edit'
-	Assert-Far $Editor.GetText() -eq 'q1'
+	Assert-Far $Editor.Title -eq 'Hash test:edit'
+	Assert-Far ($Editor.Strings -join '|') -eq 'f1|v1|'
 
-	$Editor.SetText("q2`nq1`nq2")
+	$Editor[0].Text = 'f2'
 	$Editor.Save()
 
-	$r = (Get-RedisSet test:edit | Sort-Object) -join '#'
-	Assert-Far $r -eq q1#q2
+	$r = Get-RedisHash test:edit | ConvertTo-Json -Compress
+	Assert-Far $r -eq '{"f2":"v1"}'
 
 	$Editor.Close()
 }

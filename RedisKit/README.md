@@ -9,6 +9,7 @@ Far Manager Redis helpers based on FarNet.Redis
 - [Commands](#commands)
     - [rk:edit](#rkedit)
     - [rk:hash](#rkhash)
+    - [rk:json](#rkjson)
     - [rk:keys](#rkkeys)
     - [rk:list](#rklist)
     - [rk:set](#rkset)
@@ -18,6 +19,7 @@ Far Manager Redis helpers based on FarNet.Redis
     - [Hash panel](#hash-panel)
     - [List panel](#list-panel)
     - [Set panel](#set-panel)
+- [Editing as text](#editing-as-text)
 - [Menu](#menu)
 - [Settings](#settings)
 
@@ -81,18 +83,15 @@ rk:command [key=value] [; key=value] ...
 
 [Contents]
 
-This command opens String, List, Set editor. Saving in the editor commits
-to Redis. Editors are not modal, you may have several keys edited at the
-same time.
-
-List and Set editors join items as strings on opening and then treat each line
-as an item on saving. Mind empty lines including the last, they are items.
+This command opens the key value editor. Saving in the editor commits to Redis.
+Editors are not modal, you may have several keys edited at the same time.
+See [Editing as text](#editing-as-text) about the rules.
 
 **Parameters**
 
 - `Key={string}` (required)
 
-    Specifies the existing String, List, Set key or a new String key.
+    Specifies the existing key or a new String key.
 
 *********************************************************************
 ## rk:hash
@@ -113,6 +112,92 @@ This command opens [Hash panel](#hash-panel).
     Tells to show the EOL column with field end of live times.
 
 *********************************************************************
+## rk:json
+
+[Contents]
+
+This command opens the editor of keys exported as JSON. Saving in the editor
+imports JSON back to Redis. Editors are not modal, you may have several keys
+edited at the same time.
+
+**Parameters**
+
+- `Mask={string}` (required)
+
+    Specifies the search pattern or wildcard or key.
+
+    (1) If the mask contains `[` or `]` then it is used as Redis pattern.
+    See: <https://redis.io/docs/latest/commands/keys>
+
+    (2) If the mask contains `*` or `?` then it is used as wildcard with
+    special symbols `*` and `?`.
+
+    (3) Otherwise the mask is used as the key.
+
+Unlike editing as text, JSON supports end of life values, blobs as Base64
+strings, and complex type strings with new line characters.
+
+**JSON schema**
+
+```
+{
+  "{key}": {
+    "EOL": "{universal-date-time}",
+    "{type}": {value}
+  },
+  "{key}": ...
+}
+```
+
+- `{key}` - Redis keys
+- `{type}` - `Text`, `Blob`, `List`, `Set`, `Hash`
+- `"EOL"` - present or not depending on persistence
+- `{value}`
+    - `Text` - usual string
+    - `Blob` - Base64 string
+    - `List`, `Set`, `Hash` - see below
+
+**List and Set {value}**
+
+List and Set values are arrays of literal strings and blobs. Literal strings
+are usual JSON strings. Blobs are represented as arrays with one Base64 string.
+
+```
+{
+  "my-list": {
+    "List": [
+      "hello",
+      ["AIA="]
+    ]
+  }
+}
+```
+
+**Hash {value}**
+
+Hash values are objects where properties are hash field names and values are
+field values, persistent strings and blobs and expiring strings and blobs.
+
+```
+{
+  "my-hash": {
+    "Hash": {
+      "persistent-text": "42",
+      "persistent-blob": ["AIA="],
+      "expiring-text": {
+        "EOL": "2025-02-02",
+        "Text": "42"
+      },
+      "expiring-blob": {
+        "EOL": "2025-02-02",
+        "Blob": "AIA="
+      }
+    }
+  }
+}
+```
+
+*********************************************************************
 ## rk:keys
 
 [Contents]
@@ -123,16 +208,16 @@ This command opens [Keys panel](#keys-panel) with the key pattern.
 
 - `Mask={string}` (optional)
 
-    Specifies the search pattern or wildcard or fixed prefix for `rk:keys`.
+    Specifies the search pattern or wildcard or prefix.
 
-    (1) If the mask contains `[` or `]` then it is treated as Redis pattern.
+    (1) If the mask contains `[` or `]` then it is used as Redis pattern.
     See: <https://redis.io/docs/latest/commands/keys>
 
-    (2) If the mask contains `*` or `?` then it is treated as wildcard with
-    special symbols `*` and `?` and other characters literal.
+    (2) If the mask contains `*` or `?` then it is used as wildcard with
+    special symbols `*` and `?`.
 
-    (3) Otherwise the mask is used as the fixed literal prefix. Keys are shown
-    without this prefix but all operations work on actual keys with the prefix.
+    (3) Otherwise the mask is used as prefix. Keys are shown without the
+    prefix. But panel operations work with actual keys with the prefix.
 
 *********************************************************************
 ## rk:list
@@ -214,13 +299,9 @@ It is opened by [rk:keys](#rkkeys) and [rk:tree](#rktree).
 
 - `F4`
 
-    Opens the cursor String, List, Set editor. Saving in the editor commits to
-    Redis. Editors are not modal, you may have several keys edited at the same
-    time.
-
-    List and Set editors join items as strings on opening and then treat
-    each line as an item on saving. Mind empty lines including the last,
-    they are items.
+    Opens the cursor value editor. Saving in the editor commits to Redis.
+    Editors are not modal, you may have several keys edited at the same
+    time. See [Editing as text](#editing-as-text) about the rules.
 
 - `ShiftF5`
 
@@ -338,6 +419,40 @@ It is opened from the keys panel or by [rk:set](#rkset)
 - `F8`, `Del`
 
     Deletes the selected members.
+
+*********************************************************************
+## Editing as text
+
+[Contents]
+
+Editing Redis values as text is used by `rk:edit` and by file content
+operations in panels (`F4`, `F3`, `CtrlQ`).
+
+- String
+
+    Redis String can be edited as text if its value looks like UTF-8.
+
+- List
+
+    Redis List can be edited as text if its items look like UTF-8 and do not
+    contain new line characters. Editor lines, including empty, represent
+    items.
+
+- Set
+
+    Redis Set can be edited as text if its items look like UTF-8 and do not
+    contain new line characters. Editor lines, including empty, represent
+    items.
+
+- Hash
+
+    Redis Hash can be edited as text if its fields and values look like UTF-8
+    and do not contain new line characters. The Hash editor uses line triplets
+    (field, value, empty line) for representing hash entries.
+
+See also [rk:json](#rkjson) for the alternative way. Unlike editing as text,
+JSON supports end of life values, blobs as Base64 strings, and complex type
+strings with new line characters.
 
 *********************************************************************
 ## Menu

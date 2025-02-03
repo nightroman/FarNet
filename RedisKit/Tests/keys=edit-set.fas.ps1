@@ -24,7 +24,7 @@ keys F4
 job {
 	Assert-Far -Editor
 	$Editor = $Far.Editor
-	Assert-Far $Editor.Title -eq edit
+	Assert-Far $Editor.Title -eq 'Set test:edit'
 	Assert-Far $Editor.GetText() -eq 'q1'
 
 	$Editor.SetText("q2`nq1`nq2")

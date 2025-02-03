@@ -15,6 +15,7 @@ public class Command : ModuleCommand
 			{
 				"edit" => new EditCommand(parameters),
 				"hash" => new HashCommand(parameters),
+				"json" => new JsonCommand(parameters),
 				"keys" => new KeysCommand(parameters),
 				"list" => new ListCommand(parameters),
 				"set" => new SetCommand(parameters),

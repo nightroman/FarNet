@@ -9,7 +9,7 @@ job {
 job {
 	Assert-Far -Editor
 	$r = $Far.Editor
-	Assert-Far $r.Title -eq test:edit
+	Assert-Far $r.Title -eq 'None test:edit'
 	Assert-Far $r.GetText() -eq ''
 }
 

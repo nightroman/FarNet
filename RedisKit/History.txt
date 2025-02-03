@@ -1,5 +1,15 @@
 ﻿https://www.nuget.org/packages/FarNet.RedisKit
 
+= 0.5.0 =
+
+Requires FarNet.Redis 0.15.3
+
+Support Hash editing as text.
+
+New command rk:json for editing as JSON.
+
+Use rules on what can be represented as text.
+
 = 0.4.0 =
 
 Keys panel and rk:edit command - support List and Set editing as text.

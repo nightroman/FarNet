@@ -1,4 +1,5 @@
 ﻿using FarNet;
+using FarNet.Redis;
 using RedisKit.Commands;
 using StackExchange.Redis;
 using System.Runtime.InteropServices;
@@ -8,6 +9,11 @@ namespace RedisKit.Panels;
 sealed class KeysExplorer : BaseExplorer
 {
 	public static Guid MyTypeId = new("5b2529ff-5482-46e5-b730-f9bdecaab8cc");
+
+	const string RedisTypeString = "*";
+	const string RedisTypeHash = "H";
+	const string RedisTypeList = "L";
+	const string RedisTypeSet = "S";
 
 	// Means folders mode and defines the folder separator.
 	readonly string? _colon;
@@ -174,16 +180,16 @@ sealed class KeysExplorer : BaseExplorer
 			switch (type)
 			{
 				case RedisType.String:
-					file.Owner = "*";
+					file.Owner = RedisTypeString;
 					break;
 				case RedisType.Hash:
-					file.Owner = "H";
+					file.Owner = RedisTypeHash;
 					break;
 				case RedisType.List:
-					file.Owner = "L";
+					file.Owner = RedisTypeList;
 					break;
 				case RedisType.Set:
-					file.Owner = "S";
+					file.Owner = RedisTypeSet;
 					break;
 			}
 
@@ -419,73 +425,90 @@ sealed class KeysExplorer : BaseExplorer
 
 	public override void GetContent(GetContentEventArgs args)
 	{
-		var key = args.File.DataKey().Key;
-		var type = Database.KeyType(key);
-
-		string? text = null;
-		switch (type)
+		try
 		{
-			case RedisType.String:
-				{
-					text = Database.StringGet(key);
-				}
-				break;
-			case RedisType.List:
-				{
-					var res = Database.ListRange(key);
-					text = string.Join('\n', res.ToStringArray());
-				}
-				break;
-			case RedisType.Set:
-				{
-					var res = Database.SetMembers(key);
-					text = string.Join('\n', res.ToStringArray());
-				}
-				break;
-		}
+			var key = args.File.DataKey().Key;
+			var type = Database.KeyType(key);
 
-		if (text is null)
+			args.CanSet = true;
+			args.EditorOpened = (s, e) =>
+			{
+				var editor = (IEditor)s!;
+				editor.Title = $"{type} {key}";
+			};
+
+			switch (type)
+			{
+				case RedisType.String:
+					{
+						args.UseText = About.StringToText(Database, key);
+						args.UseFileExtension = EditCommand.GetFileExtension(key.ToString());
+					}
+					break;
+				case RedisType.Hash:
+					{
+						args.UseText = About.HashToText(Database, key);
+					}
+					break;
+				case RedisType.List:
+					{
+						args.UseText = About.ListToText(Database, key);
+					}
+					break;
+				case RedisType.Set:
+					{
+						args.UseText = About.SetToText(Database, key);
+					}
+					break;
+				default:
+					{
+						args.Result = JobResult.Ignore;
+					}
+					return;
+			}
+		}
+		catch (Exception)
 		{
 			args.Result = JobResult.Ignore;
-			return;
 		}
-
-		args.CanSet = true;
-		args.UseText = text;
-		if (type == RedisType.String)
-			args.UseFileExtension = EditCommand.GetFileExtension(key.ToString());
 	}
 
 	public override void SetText(SetTextEventArgs args)
 	{
 		var key = args.File.DataKey().Key;
-		var type = Database.KeyType(key);
 
-		switch (type)
+		switch (args.File.Owner)
 		{
-			case RedisType.String:
+			case RedisTypeString:
 				{
+					Database.KeyDelete(key);
 					Database.StringSet(key, args.Text);
 				}
 				break;
-			case RedisType.List:
+			case RedisTypeHash:
 				{
-					var lines = FarNet.Works.Kit.SplitLines(args.Text);
+					var items = About.TextToHash(FarNet.Works.Kit.SplitLines(args.Text));
+
 					Database.KeyDelete(key);
-					Database.ListRightPush(key, lines.ToRedisValueArray());
+					Database.HashSet(key, items);
 				}
 				break;
-			case RedisType.Set:
+			case RedisTypeList:
 				{
-					var lines = FarNet.Works.Kit.SplitLines(args.Text);
+					var items = FarNet.Works.Kit.SplitLines(args.Text).ToRedisValueArray();
+
 					Database.KeyDelete(key);
-					Database.SetAdd(key, lines.ToRedisValueArray());
+					Database.ListRightPush(key, items);
 				}
 				break;
-			default:
+			case RedisTypeSet:
 				{
-					throw new ModuleException($"Unexpected Redis key type: {type}.");
+					var items = FarNet.Works.Kit.SplitLines(args.Text).ToRedisValueArray();
+
+					Database.KeyDelete(key);
+					Database.SetAdd(key, items);
 				}
+				break;
 		}
 	}
 }
