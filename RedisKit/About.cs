@@ -39,6 +39,7 @@ static class About
 	public static string StringToText(IDatabase db, RedisKey key)
 	{
 		var res = db.StringGet(key);
+
 		var blob = AboutRedis.GetBlobOrText(res);
 		if (blob is string text)
 			return text;
@@ -49,6 +50,7 @@ static class About
 	public static string HashToText(IDatabase db, RedisKey key)
 	{
 		var res = db.HashGetAll(key);
+
 		var text = AboutRedis.HashToText(res);
 		if (text is { })
 			return text;
@@ -59,6 +61,7 @@ static class About
 	public static string ListToText(IDatabase db, RedisKey key)
 	{
 		var res = db.ListRange(key);
+
 		var text = AboutRedis.ValuesToText(res);
 		if (text is { })
 			return text;
@@ -68,7 +71,8 @@ static class About
 
 	public static string SetToText(IDatabase db, RedisKey key)
 	{
-		var res = db.SetMembers(key);
+		var res = db.SetMembers(key).Order();
+
 		var text = AboutRedis.ValuesToText(res);
 		if (text is { })
 			return text;
