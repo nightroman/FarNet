@@ -8,18 +8,18 @@ namespace GitKit.About;
 static class Const
 {
 	public const string
-		BlameFile = "Blame file",
-		CommitLog = "Commit log",
-		CompareBranches = "Compare branches",
-		CompareCommits = "Compare commits",
+		BlameFile = "&Blame file",
+		CommitLog = "Commit lo&g",
+		CompareBranches = "&Compare branches",
+		CompareCommits = "&Compare commits",
 		CopyCommit = "Copy commit to clipboard",
-		CopySha = "Copy SHA-1",
+		CopySha = "Copy SHA-&1",
 		CreateBranch = "Create branch",
-		EditFile = "Edit file",
+		EditFile = "&Edit file",
 		Help = "Help",
-		MergeBranch = "Merge branch",
+		MergeBranch = "&Merge branch",
 		NoBranchName = "(no branch)",
-		PushBranch = "Push branch";
+		PushBranch = "&Push branch";
 }
 
 /// <summary>
