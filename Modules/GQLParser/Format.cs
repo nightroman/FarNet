@@ -2,10 +2,7 @@
 using GraphQLParser;
 using GraphQLParser.AST;
 using GraphQLParser.Visitors;
-using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace GQLParser;
 
@@ -26,10 +23,10 @@ public static partial class Format
 	/// <param name="sort">Tells to sort definitions.</param>
 	/// <param name="noEmptyLine">Tells to remove empty lines.</param>
 	/// <example>
-	/// fn: script=GQLParser; method=GQLParser.Format.File
+	/// fn: script=GQLParser; method=.Format.File
 	/// </example>
 	public static async Task File(
-		string path,
+		string? path,
 		bool directiveNewLine,
 		bool unionMemberNewLine,
 		bool sort,
@@ -63,7 +60,7 @@ public static partial class Format
 	/// <param name="sort">Tells to sort definitions.</param>
 	/// <param name="noEmptyLine">Tells to remove empty lines.</param>
 	/// <example>
-	/// fn: script=GQLParser; method=GQLParser.Format.Editor
+	/// fn: script=GQLParser; method=.Format.Editor
 	/// </example>
 	public static async Task Editor(
 		bool directiveNewLine,

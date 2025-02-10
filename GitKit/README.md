@@ -69,6 +69,7 @@ connection string format
 
 ```
 gk:command [key=value] [; key=value] ...
+gk:@ <command file>
 ```
 
 **Common parameters**

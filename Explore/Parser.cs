@@ -1,15 +1,12 @@
 using FarNet;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text;
 
 namespace Explore;
 
 public static class Parser
 {
-	public static IList<string> Tokenize(string text, params ReadOnlySpan<string> lasts)
+	// 2025-02-09-1643
+	public static IList<string> Tokenize(string text, string? last = null)
 	{
 		var list = new List<string>();
 		var reader = new StringReader(text);
@@ -52,13 +49,10 @@ public static class Parser
 					list.Add(token);
 
 					// the last token? add the rest of text
-					foreach(var last in lasts)
+					if (string.Equals(token, last, StringComparison.OrdinalIgnoreCase))
 					{
-						if (string.Equals(token, last, StringComparison.OrdinalIgnoreCase))
-						{
-							list.Add(reader.ReadToEnd().Trim());
-							return list;
-						}
+						list.Add(reader.ReadToEnd().Trim());
+						return list;
 					}
 
 					// reset
@@ -101,6 +95,7 @@ public static class Parser
 		}
 	}
 
+	// 2025-02-09-1643
 	public static string? ResolveName(string part, string[] names)
 	{
 		var matches = names.Where(name => name.StartsWith(part, StringComparison.OrdinalIgnoreCase)).ToList();

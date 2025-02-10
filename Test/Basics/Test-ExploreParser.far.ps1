@@ -1,3 +1,4 @@
+# 2025-02-09-1643
 
 Add-Type -Path $env:FARHOME\FarNet\Modules\Explore\Explore.dll
 

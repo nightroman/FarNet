@@ -104,14 +104,16 @@ Use `[F11]` \ `FSharpFar` to open the module menu:
 *********************************************************************
 ## Commands
 
-The common command prefix is `fs:`. Commands like `fs:command` use parameters,
-key=value pairs separated by semicolons (connection string format).
+The common command prefix is `fs:`. Commands `fs:<space>...` run F# code.
+Commands `fs:<command> ...` run commands with parameters, key=value pairs
+separated by semicolons (connection string format). Commands `fs:@<file>`
+run commands read from files.
 
 *********************************************************************
 ### fs:
 
 This command evaluates F# expressions and directives with the default session.
-Note that a space is required after `fs:`.
+A space is required between `fs:` and code.
 
 ```
 fs: <code>

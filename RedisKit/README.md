@@ -61,6 +61,7 @@ connection string format
 
 ```
 rk:command [key=value] [; key=value] ...
+rk:@ <command file>
 ```
 
 **Common parameters**

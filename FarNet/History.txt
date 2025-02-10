@@ -1,6 +1,15 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 9.0.13 =
+
+Support command files (`prefix:@file` notation):
+- FarNet fn:@
+- GitKit gk:@
+- JsonKit jk:@
+- RedisKit rk:@
+- FSharpFar fs:@
+
 = 9.0.12 =
 
 New experimental IEditor.ChangeCount for caching, etc.

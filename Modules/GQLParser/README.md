@@ -6,11 +6,19 @@ See [Format.cs](Format.cs) for available parameters.
 **Format the specified or cursor file**
 
 ```
-fn: script=GQLParser; method=GQLParser.Format.File :: path=...
+fn: script=GQLParser; method=.Format.File :: path=...
 ```
 
 **Format the editor selected text**
 
 ```
-fn: script=GQLParser; method=GQLParser.Format.Editor
+fn: script=GQLParser; method=.Format.Editor
+```
+
+**Note**
+
+For complex commands use command files
+
+```
+fn:@ <file>
 ```

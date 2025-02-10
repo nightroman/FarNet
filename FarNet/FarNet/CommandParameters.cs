@@ -2,11 +2,9 @@
 // FarNet plugin for Far Manager
 // Copyright (c) Roman Kuzmin
 
-using System;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Text;
 
 namespace FarNet;
@@ -68,6 +66,7 @@ public readonly ref struct CommandParameters
 
 	/// <summary>
 	/// Parses command with parameters.
+	/// Use <c>@file</c> notation for reading from command files.
 	/// </summary>
 	/// <param name="commandLine">Command line with parameters.</param>
 	/// <returns>Parsed parameters and command.</returns>
@@ -78,6 +77,7 @@ public readonly ref struct CommandParameters
 
 	/// <summary>
 	/// Parses parameters with optional command and optional text.
+	/// Use <c>@file</c> notation for reading from command files.
 	/// </summary>
 	/// <param name="commandLine">Command line with parameters.</param>
 	/// <param name="hasCommand">Tells to separate the leading command.</param>
@@ -85,6 +85,13 @@ public readonly ref struct CommandParameters
 	/// <returns>Parsed parameters.</returns>
 	public static CommandParameters Parse(ReadOnlySpan<char> commandLine, bool hasCommand, string? textSeparator)
 	{
+		if (commandLine.StartsWith('@'))
+		{
+			var file = Far.Api.FS.GetFullPath(Environment.ExpandEnvironmentVariables(commandLine[1..].Trim().ToString()));
+			try { commandLine = File.ReadAllText(file); }
+			catch (Exception ex) { throw new ModuleException(ex.Message); }
+		}
+
 		ReadOnlySpan<char> command;
 		if (hasCommand)
 		{

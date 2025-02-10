@@ -103,6 +103,7 @@ Unlike modules, scripts may be optionally unloaded after invoking them.
 Scripts are invoked by the command `fn:` with the following format:
 
     fn: <script parameters> [:: <method parameters>]
+    fn:@ <command file>
 
 Parameters are `name=value` pairs separated by `;` (connection string format).
 
@@ -118,8 +119,8 @@ Parameters are `name=value` pairs separated by `;` (connection string format).
 
 - `method` (required)
 
-    The assembly method full name, `Namespace.Type.Method`. If `Namespace` is
-    the same as script or module name then `.Type.Method` is allowed as well.
+    The method full name `Namespace.Type.Method` or short `.Type.Method` if
+    `Namespace` is the assembly name.
 
     Methods are instance or static methods, with or without parameters.
     Parameter names correspond to the method parameters in commands.

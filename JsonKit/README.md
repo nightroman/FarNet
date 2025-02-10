@@ -54,6 +54,7 @@ Command parameters are key=value pairs using the connection string format
 
 ```
 jk:command key=value; ...
+jk:@ <command file>
 ```
 
 Commands
