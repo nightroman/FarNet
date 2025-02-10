@@ -4,31 +4,39 @@ using System.Management.Automation.Runspaces;
 
 namespace ScriptPS;
 
+/*
+	Example command:
+
+	fn: script=ScriptPS; method=.Demo.Message :: name=John Doe; age=42
+
+	Points of interest:
+
+	- How to get the PowerShellFar runspace once and use on calls.
+	- How to call some PowerShell code with passed parameters.
+	- How to get the result, optionally strongly typed.
+*/
+
 public static class Demo
 {
-    // Runs pure PowerShell code with arguments
-    // fn: script=ScriptPS; method=ScriptPS.Demo.Message; unload=true :: name=John Doe; age=42
-    public static void Message(string name = "unknown", int age = -1)
+	static readonly Runspace _runspace;
+
+	static Demo()
 	{
-		using var ps = PowerShell.Create();
-		var res = ps
-            .AddScript("'Hello {0}, {1}' -f $args[0], $args[1]")
-            .AddArgument(name)
-            .AddArgument(age)
-            .Invoke<string>();
-		Far.Api.Message(res[0]);
+		var manager = Far.Api.GetModuleManager("PowerShellFar");
+		_runspace = (Runspace)manager.Interop("Runspace", null);
 	}
 
-	// Runs PowerShell code in PowerShellFar main session
-	// fn: script=ScriptPS; method=ScriptPS.Demo.MessagePsf; unload=true
-	public static void MessagePsf()
-    {
-        var manager = Far.Api.GetModuleManager("PowerShellFar");
-        var runspace = (Runspace)manager.Interop("Runspace", null);
-        using var ps = PowerShell.Create();
-        ps.Runspace = runspace;
-        ps
-            .AddScript("$Far.Message('Hello from PowerShellFar')")
-            .Invoke();
-    }
+	public static void Message(string name = "unknown", int age = -1)
+	{
+		using var ps = PowerShell.Create();
+		ps.Runspace = _runspace;
+
+		var res = ps
+			.AddScript("""param($name, $age) $Far.Message("Hello $name, age $age.", 'ScriptPS', 'OkCancel')""")
+            .AddArgument(name)
+            .AddArgument(age)
+            .Invoke<int>();
+
+		Far.Api.Message(res[0] switch { 0 => "Ok", 1 => "Cancel", _ => "Escape" });
+	}
 }

@@ -1,19 +1,13 @@
 # FarNet script using PowerShell
 
-Requires `FarNet.PowerShellFar` either for pure PowerShell code or for using FarNet and PowerShellFar.
+Requires `FarNet.PowerShellFar` either for pure PowerShell or PowerShellFar sessions.
 
 The project file `ScriptPS.csproj` shows how to reference `System.Management.Automation.dll`.
 
-This sample provides two demo methods:
-
-- `ScriptPS.Demo.Message` runs pure PowerShell code with arguments
-- `ScriptPS.Demo.MessagePsf` runs PowerShell code in PowerShellFar main session
-
-FarNet commands for testing:
+FarNet command for testing
 
 ```
-fn: script=ScriptPS; method=ScriptPS.Demo.Message; unload=true :: name=John Doe; age=42
-fn: script=ScriptPS; method=ScriptPS.Demo.MessagePsf; unload=true
+fn: script=ScriptPS; method=.Demo.Message :: name=John Doe; age=42
 ```
 
 See also:
