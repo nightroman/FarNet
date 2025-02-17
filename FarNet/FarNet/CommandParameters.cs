@@ -87,7 +87,7 @@ public readonly ref struct CommandParameters
 	{
 		if (commandLine.StartsWith('@'))
 		{
-			var file = Far.Api.FS.GetFullPath(Environment.ExpandEnvironmentVariables(commandLine[1..].Trim().ToString()));
+			var file = Far.Api.GetFullPath(Environment.ExpandEnvironmentVariables(commandLine[1..].Trim().ToString()));
 			try { commandLine = File.ReadAllText(file); }
 			catch (Exception ex) { throw new ModuleException(ex.Message); }
 		}
@@ -180,7 +180,7 @@ public readonly ref struct CommandParameters
 				value = Environment.ExpandEnvironmentVariables(value);
 
 			if (options.HasFlag(ParameterOptions.GetFullPath))
-				value = Far.Api.FS.GetFullPath(value);
+				value = Far.Api.GetFullPath(value);
 
 			return value;
 		}

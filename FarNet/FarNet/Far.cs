@@ -4,9 +4,7 @@
 
 using FarNet.Forms;
 using FarNet.Works;
-using System;
 using System.Globalization;
-using System.IO;
 
 namespace FarNet;
 #pragma warning disable CA1822
@@ -542,6 +540,19 @@ public abstract class IFar
 				_ => new FSContextPanel(Panel),
 			};
 		}
+	}
+
+	/// <summary>
+	/// Gets absolute path using <see cref="CurrentDirectory"/>.
+	/// </summary>
+	/// <param name="path">Absolute or relative path.</param>
+	/// <returns>Absolute path.</returns>
+	public string GetFullPath(string path)
+	{
+		if (Path.IsPathFullyQualified(path))
+			return Path.GetFullPath(path);
+		else
+			return Path.GetFullPath(path, CurrentDirectory);
 	}
 }
 

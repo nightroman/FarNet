@@ -1,5 +1,4 @@
 ﻿using FarNet;
-using System;
 
 namespace JavaScriptFar;
 
@@ -31,7 +30,7 @@ public class JavaScriptCommand : ModuleCommand
 			// document?
 			if (text.StartsWith('@'))
 			{
-				args.Document = Far.Api.FS.GetFullPath(Environment.ExpandEnvironmentVariables(text[1..].TrimStart().ToString()));
+				args.Document = Far.Api.GetFullPath(Environment.ExpandEnvironmentVariables(text[1..].TrimStart().ToString()));
 			}
 			else
 			{

@@ -84,16 +84,14 @@ public class FSContext
 	public virtual string? CursorPath => null;
 
 	/// <summary>
-	/// Gets absolute path using <see cref="IFar.CurrentDirectory"/>.
+	/// OBSOLETE Use <see cref="IFar.GetFullPath"/>.
 	/// </summary>
-	/// <param name="path">Absolute or relative path.</param>
-	/// <returns>Absolute path.</returns>
+	/// <param name="path">.</param>
+	/// <returns>.</returns>
+	[Obsolete("Use Far.Api.GetFullPath")]
 	public virtual string GetFullPath(string path)
 	{
-		if (Path.IsPathFullyQualified(path))
-			return Path.GetFullPath(path);
-		else
-			return Path.GetFullPath(path, Far.Api.CurrentDirectory);
+		return Far.Api.GetFullPath(path);
 	}
 
 	/// <summary>

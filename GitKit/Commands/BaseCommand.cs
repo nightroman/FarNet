@@ -1,7 +1,6 @@
 ﻿using FarNet;
 using GitKit.About;
 using LibGit2Sharp;
-using System;
 
 namespace GitKit.Commands;
 
@@ -29,7 +28,7 @@ abstract class BaseCommand : AbcCommand
 		if (path is null)
 			return null;
 
-		path = Far.Api.FS.GetFullPath(path);
+		path = Far.Api.GetFullPath(path);
 
 		//! LibGit2 gets it with trailing backslash
 		var workdir = repo.Info.WorkingDirectory;

@@ -1,7 +1,5 @@
 ﻿using FarNet;
 using JsonKit.Panels;
-using System;
-using System.IO;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -70,7 +68,7 @@ public class Tool : ModuleTool
 
 		if (index2 >= index1 + 4 && MemoryExtensions.Equals(json.AsSpan(index2 - 4, 5), ".json", StringComparison.OrdinalIgnoreCase))
 		{
-			var path = Far.Api.FS.GetFullPath(json[index1..(index2 + 1)]);
+			var path = Far.Api.GetFullPath(json[index1..(index2 + 1)]);
 			if (File.Exists(path))
 			{
 				filePath = path;
