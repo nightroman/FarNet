@@ -15,7 +15,7 @@ static class UI
 
 	public static void CopySha(string sha, string info)
 	{
-		switch (Far.Api.Message(info, Const.CopyCommit, default, ["&SHA-1", "&Info", "Cancel"]))
+		switch (Far.Api.Message(info, Const.CopyCommit, default, ["SHA-&1", "&Info", "Cancel"]))
 		{
 			case 0:
 				Far.Api.CopyToClipboard(sha);

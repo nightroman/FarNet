@@ -2,10 +2,6 @@
 // FarNet plugin for Far Manager
 // Copyright (c) Roman Kuzmin
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-
 namespace FarNet;
 
 // _221023_0659:
@@ -82,17 +78,6 @@ public class FSContext
 	/// Gets the cursor full path, existing or not, or null.
 	/// </summary>
 	public virtual string? CursorPath => null;
-
-	/// <summary>
-	/// OBSOLETE Use <see cref="IFar.GetFullPath"/>.
-	/// </summary>
-	/// <param name="path">.</param>
-	/// <returns>.</returns>
-	[Obsolete("Use Far.Api.GetFullPath")]
-	public virtual string GetFullPath(string path)
-	{
-		return Far.Api.GetFullPath(path);
-	}
 
 	/// <summary>
 	/// Gets the selected paths, existing or not.
