@@ -1,6 +1,14 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 9.0.16 =
+
+Obsolete command line splitter `::` will be removed. Start using `;;` instead.
+This affects `fn:` commands.
+
+Obsolete CommandParameters.Parse() with the custom splitter will be removed.
+Use another Parse(), which uses the fixed splitter `;;`.
+
 = 9.0.15 =
 
 Removed obsolete Far.Api.FS.GetFullPath(), use Far.Api.GetFullPath().

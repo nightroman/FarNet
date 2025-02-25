@@ -16,9 +16,9 @@ This module implements and shows some features:
 
 FarNet modules, like FarNet scripts, may have methods for calls by the command `fn:`.
 
-Example: [DemoMethods.cs](DemoMethods.cs) method `Message` may be called as:
+Example: [Script.cs](Script.cs) method `Message` may be called as:
 
-    fn: module=FarNet.Demo; method=FarNet.Demo.DemoMethods.Message :: name=John Doe; age=42
+    fn: module=FarNet.Demo; method=Message ;; name=John Doe; age=42
 
 ## Module settings
 

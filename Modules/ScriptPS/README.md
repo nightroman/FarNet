@@ -7,7 +7,7 @@ The project file `ScriptPS.csproj` shows how to reference `System.Management.Aut
 FarNet command for testing
 
 ```
-fn: script=ScriptPS; method=.Demo.Message :: name=John Doe; age=42
+fn: script=ScriptPS; method=Message ;; name=John Doe; age=42
 ```
 
 See also:

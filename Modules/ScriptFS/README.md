@@ -6,7 +6,7 @@ Build and test by these commands:
 
 ```
 dotnet build
-fn: script=ScriptFS; method=ScriptFS.message; unload=true :: name=John Doe; age=42
+fn: script=ScriptFS; method=ScriptFS.message; unload=true ;; name=John Doe; age=42
 ```
 
 ## Notes

@@ -78,14 +78,20 @@ public static class Script
 		{
 			int index = method.LastIndexOf('.');
 			if (index < 0)
-				throw parameters.ParameterError(KeyMethod, "Invalid method name, expected dot notation.");
+			{
+				// no-dot shortcut, use script/module name + "Script" as type
+				res.TypeName = (res.ScriptName ?? res.ModuleName) + ".Script";
+				res.MethodName = method;
+			}
+			else
+			{
+				res.TypeName = method[..index];
+				res.MethodName = method[(index + 1)..];
 
-			res.TypeName = method[..index];
-			res.MethodName = method[(index + 1)..];
-
-			// dot shortcut, use script/module name as namespace
-			if (res.TypeName.StartsWith('.'))
-				res.TypeName = (res.ScriptName ?? res.ModuleName) + res.TypeName;
+				// dot shortcut, use script/module name as namespace
+				if (res.TypeName.StartsWith('.'))
+					res.TypeName = (res.ScriptName ?? res.ModuleName) + res.TypeName;
+			}
 		}
 
 		// unload

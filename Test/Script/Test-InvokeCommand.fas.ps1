@@ -12,7 +12,7 @@ Start-Sleep -Milliseconds 200
 job {
 	Assert-Far -DialogTypeId ([FarNet.Tools.InputBox]::DefaultTypeId)
 
-	$Far.Dialog[2].Text = 'fn: script=Script; method=Script.Demo.Message :: name="Joe"'
+	$Far.Dialog[2].Text = 'fn: script=Script; method=Message ;; name="Joe"'
 	$Far.Dialog.Close()
 }
 

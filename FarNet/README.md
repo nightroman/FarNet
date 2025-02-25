@@ -91,21 +91,22 @@ How to install and update FarNet and modules:\
 
 [Contents]
 
-In addition to modules, i.e. assemblies with special module types, FarNet
-supports script assemblies with methods designed for FarNet calls.
-
-For the moment script assemblies are built manually. In the future FarNet will
-provide tools for building from sources. Then FarNet scripts will be closer to
-what "scripts" usually mean.
+In addition to modules (assemblies with special classes), FarNet supports
+scripts (assemblies with special methods called from the command line).
 
 Unlike modules, scripts may be optionally unloaded after invoking them.
+This makes development and debugging much easier without restarts.
 
 Scripts are invoked by the command `fn:` with the following format:
 
-    fn: <script parameters> [:: <method parameters>]
+    fn: <script parameters> [;; <method parameters>]
     fn:@ <command file>
 
-Parameters are `name=value` pairs separated by `;` (connection string format).
+Double semicolon `;;` separates script parameters from method parameters.
+Parameters are `name=value` pairs separated by `;` (DB Connection String).
+
+Use `fn:@` notation for loading complex commands from `dbcs` files.
+Colorer scheme: [dbcs.hrc](https://github.com/nightroman/FarNet/blob/main/ColorerPack/hrc/dbcs.hrc)
 
 **Script parameters:**
 
@@ -119,8 +120,9 @@ Parameters are `name=value` pairs separated by `;` (connection string format).
 
 - `method` (required)
 
-    The method full name `Namespace.Type.Method` or short `.Type.Method` if
-    `Namespace` is the assembly name.
+    The method full name `Namespace.Class.Method`, or short `.Class.Method`
+    if `Namespace` is the assembly name, or just `Method` if `Namespace` is
+    the assembly name and `Class` is "Script".
 
     Methods are instance or static methods, with or without parameters.
     Parameter names correspond to the method parameters in commands.

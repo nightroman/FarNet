@@ -25,6 +25,8 @@ namespace FarNet;
 [Experimental("FarNet250101")]
 public readonly ref struct CommandParameters
 {
+	const string GlobalTextSeparator = ";;";
+
 	readonly DbConnectionStringBuilder _parameters;
 
 	/// <summary>
@@ -112,9 +114,12 @@ public readonly ref struct CommandParameters
 
 		ReadOnlySpan<char> parameters;
 		ReadOnlySpan<char> text;
-		if (textSeparator is { })
 		{
-			var index = commandLine.IndexOf(textSeparator);
+			textSeparator ??= GlobalTextSeparator;
+			int index = commandLine.IndexOf(GlobalTextSeparator);
+			if (index < 0 && textSeparator != GlobalTextSeparator)
+				index = commandLine.IndexOf(textSeparator);
+
 			if (index < 0)
 			{
 				parameters = commandLine;
@@ -125,11 +130,6 @@ public readonly ref struct CommandParameters
 				parameters = commandLine[0..index];
 				text = commandLine[(index + textSeparator.Length)..].Trim();
 			}
-		}
-		else
-		{
-			parameters = commandLine;
-			text = default;
 		}
 
 		try

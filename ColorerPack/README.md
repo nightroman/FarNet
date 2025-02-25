@@ -1,6 +1,6 @@
 # ColorerPack - syntax and color schemes for Colorer
 
-The following schemes included to Colorer are maintained:
+**Colorer schemes**
 
 - fsharp.hrc
 - graphql.hrc
@@ -8,6 +8,11 @@ The following schemes included to Colorer are maintained:
 - [powershell.hrc](#powershellhrc)
 - [r.hrc](#rhrc)
 - [visual.hrd](#visualhrd)
+
+**Extra schemes**
+
+- dbcs.hrc // DB Connection String
+- dib.hrc // Polyglot Notebook
 
 *********************************************************************
 ## powershell.hrc

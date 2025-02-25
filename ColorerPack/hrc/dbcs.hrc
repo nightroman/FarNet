@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hrc version="take5"
+xmlns="http://colorer.sf.net/2003/hrc"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hrc.xsd">
+
+<type name="dbcs">
+
+<region name="Key" parent="def:Parameter"/>
+<region name="Value" parent="def:String"/>
+<region name="Symbol" parent="def:Symbol"/>
+<region name="Escape" parent="def:StringContent"/>
+<region name="Splitter" parent="def:LabelStrong"/>
+<region name="StringEdge" parent="def:StringEdge"/>
+
+<region name="start" parent="def:PairStart"/>
+<region name="end" parent="def:PairEnd"/>
+
+<scheme name="SKey">
+  <block scheme="SKeyContent" region="Key"
+  start="/(\S)?=/" end="/(=)?=/"/>
+</scheme>
+
+<scheme name="SKeyContent">
+  <regexp match="/(?{Escape}==)/"/>
+</scheme>
+
+<scheme name="SValue">
+  <block scheme="SValueContent" region="Value"
+  start="/(?{start}(?{Symbol}=))/" end="/(?{end}\M;)/"/>
+</scheme>
+
+<scheme name="SAposContent">
+  <regexp match="/(?{Escape}&apos;&apos;)/"/>
+</scheme>
+
+<scheme name="SQuotContent">
+  <regexp match="/(?{Escape}&quot;&quot;)/"/>
+</scheme>
+
+<scheme name="SValueContent">
+  <block scheme="SAposContent" region="Value"
+  start="/(?{start}(?{StringEdge}&apos;))/" end="/(?{end}(?{StringEdge}&apos;))/"/>
+
+  <block scheme="SQuotContent" region="Value"
+  start="/(?{start}(?{StringEdge}&quot;))/" end="/(?{end}(?{StringEdge}&quot;))/"/>
+</scheme>
+
+<scheme name="dbcs">
+  <regexp match="/(?{Splitter};;+)/"/>
+  <regexp match="/(?{Symbol};)/"/>
+  <inherit scheme="SKey"/>
+  <inherit scheme="SValue"/>
+</scheme>
+</type>
+</hrc>

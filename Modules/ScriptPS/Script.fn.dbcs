@@ -1,6 +1,6 @@
 ﻿script=ScriptPS;
-method=.Demo.Message;
+method=Message;
 unload=true
-::
+;;
 name=John Doe;
 age=42
