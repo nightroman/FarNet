@@ -1,9 +1,5 @@
 ﻿using FarNet;
 using LibGit2Sharp;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace GitKit.About;
 
@@ -28,14 +24,6 @@ public static class Lib
 	public static Signature BuildSignature(Repository repo)
 	{
 		return repo.Config.BuildSignature(DateTimeOffset.UtcNow);
-	}
-
-	public static IEnumerable<Branch> GetBranchesContainingCommit(Repository repo, Commit commit)
-	{
-		var heads = repo.Refs;
-		var headsContainingCommit = repo.Refs.ReachableFrom(heads, [commit]);
-		return headsContainingCommit
-			.Select(branchRef => repo.Branches[branchRef.CanonicalName]);
 	}
 
 	public static string FormatCommit(Commit commit, int shaPrefixLength)

@@ -1,9 +1,6 @@
 ﻿using FarNet;
 using GitKit.About;
 using LibGit2Sharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace GitKit.Panels;
 
@@ -141,7 +138,7 @@ class BranchesExplorer : BaseExplorer
 			var branch = repo.MyBranch(branchName);
 			if (branch.IsCurrentRepositoryHead)
 			{
-				args.Result = JobResult.Incomplete;
+				CannotDelete(args, file, $"Cannot delete head branch '{branch.FriendlyName}'.");
 				continue;
 			}
 
@@ -153,10 +150,9 @@ class BranchesExplorer : BaseExplorer
 					continue;
 				}
 
-				var another = Lib.GetBranchesContainingCommit(repo, branch.Tip).FirstOrDefault(another => another != branch);
-				if (another is null)
+				if (!branch.IsTracking)
 				{
-					CannotDelete(args, file, $"Use [ShiftDel] to delete branch '{branch.FriendlyName}' with unique commits.");
+					CannotDelete(args, file, $"Use [ShiftDel] to delete non-tracking branch '{branch.FriendlyName}'.");
 					continue;
 				}
 			}
