@@ -39,7 +39,7 @@ and ProjectArgs =
 and ExecArgs =
     { With : string option; File : string option; Code : string option }
 
-let private tryPath key (parameters: CommandParameters) =
+let private tryPath key (parameters: inref<CommandParameters>) =
     match parameters.GetPath(key) with 
     | null ->
         None
@@ -48,7 +48,7 @@ let private tryPath key (parameters: CommandParameters) =
 
 /// Parses the module command "fs:".
 let parse text =
-    let parameters = CommandParameters.Parse(text, true, ";;")
+    let parameters = CommandParameters.Parse(text, true)
     let command = parameters.Command
     let text = parameters.Text
 
@@ -61,26 +61,26 @@ let parse text =
     let command =
         if command.SequenceEqual "exec" then
             Exec {
-                With = tryPath "with" parameters
-                File = tryPath "file" parameters
+                With = tryPath "with" &parameters
+                File = tryPath "file" &parameters
                 Code = if text.Length = 0 then None else Some (text.ToString())
             }
         else
         if command.SequenceEqual "project" then
             Project {
-                With = tryPath "with" parameters
+                With = tryPath "with" &parameters
                 Open = try parameters.GetString "open" |> ProjectOpenBy.Parse with ex -> raise (parameters.ParameterError("open", ex.Message))
                 Type = try parameters.GetString "type" |> ProjectOutput.Parse with ex -> raise (parameters.ParameterError("type", ex.Message))
             }
         else
         if command.SequenceEqual "compile" then
             Compile {
-                With = tryPath "with" parameters
+                With = tryPath "with" &parameters
             }
         else
         if command.SequenceEqual "open" then
             Open {
-                With = tryPath "with" parameters
+                With = tryPath "with" &parameters
             }
         else
             raise (ModuleException $"Unknown command '{command.ToString()}'.")

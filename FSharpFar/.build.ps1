@@ -14,12 +14,10 @@ $ModuleRoot = "$FarHome\FarNet\Modules\$ModuleName"
 $Description = 'F# scripting and interactive services in Far Manager.'
 
 task build meta, {
-	exec { dotnet build "src\$ModuleName.sln" -c $Configuration "/p:FarHome=$FarHome" }
+	exec { dotnet build -c $Configuration "/p:FarHome=$FarHome" }
 }
 
 task publish {
-	exec { dotnet publish "src\$ModuleName\$ModuleName.fsproj" -c $Configuration -o $ModuleRoot --no-build }
-
 	$xml = [xml](Get-Content "src\$ModuleName\$ModuleName.fsproj")
 	$node = $xml.SelectSingleNode('Project/ItemGroup/PackageReference[@Include="FSharp.Core"]')
 	Copy-Item "$HOME\.nuget\packages\FSharp.Core\$($node.Version)\lib\netstandard2.1\FSharp.Core.xml" $ModuleRoot

@@ -1,6 +1,13 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 9.0.17 =
+
+`fn:` commands now use `;;` as the text splitter.
+CommandParameters.Parse() uses the splitter `;;`.
+
+`fn:@` supports extra parameters as `fn@... ? ...`:
+
 = 9.0.16 =
 
 Obsolete command line splitter `::` will be removed. Start using `;;` instead.

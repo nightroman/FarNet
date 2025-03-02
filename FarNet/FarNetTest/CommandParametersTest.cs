@@ -46,7 +46,7 @@ public class CommandParametersTest : AbcTest
 	[InlineData("  p1 = v1  ")]
 	public void NoCommandNoText(string commandLine)
 	{
-		var parameters = CommandParameters.Parse(commandLine, false, null);
+		var parameters = CommandParameters.Parse(commandLine, false);
 		Assert.Equal("", parameters.Command);
 		Assert.Equal("", parameters.Text);
 		Assert.Equal("v1", parameters.GetRequiredString("p1"));
@@ -58,7 +58,7 @@ public class CommandParametersTest : AbcTest
 	[InlineData("  p1 = v1  ;;  text  ")]
 	public void NoCommandWithText(string commandLine)
 	{
-		var parameters = CommandParameters.Parse(commandLine, false, ";;");
+		var parameters = CommandParameters.Parse(commandLine, false);
 		Assert.Equal("", parameters.Command);
 		Assert.Equal("text", parameters.Text);
 		Assert.Equal("v1", parameters.GetRequiredString("p1"));
@@ -70,7 +70,7 @@ public class CommandParametersTest : AbcTest
 	[InlineData("bar p1 = v1  ;;  text  ")]
 	public void WithCommandWithText(string commandLine)
 	{
-		var parameters = CommandParameters.Parse(commandLine, true, ";;");
+		var parameters = CommandParameters.Parse(commandLine, true);
 		Assert.Equal("bar", parameters.Command);
 		Assert.Equal("text", parameters.Text);
 		Assert.Equal("v1", parameters.GetRequiredString("p1"));
@@ -137,5 +137,20 @@ public class CommandParametersTest : AbcTest
 		{
 			Assert.Equal("Command: bar\r\nParameter 'p2': Invalid value 'bad': Requested value 'bad' was not found.", ex.Message);
 		}
+	}
+
+	[Fact]
+	public void AtNotation()
+	{
+		var file = RepoRoot + @"\Modules\ScriptPS\Script.fn.dbcs ? age=33";
+
+		var parameters = CommandParameters.Parse($"@{file}", false);
+		Assert.Equal("ScriptPS", parameters.GetRequiredString("script"));
+		Assert.Equal("Message", parameters.GetRequiredString("method"));
+		Assert.True(parameters.GetValue<bool>("unload"));
+		parameters.ThrowUnknownParameters();
+
+		Assert.EndsWith("age=42", parameters.Text);
+		Assert.Equal("age=33", parameters.Text2);
 	}
 }

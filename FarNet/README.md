@@ -100,7 +100,7 @@ This makes development and debugging much easier without restarts.
 Scripts are invoked by the command `fn:` with the following format:
 
     fn: <script parameters> [;; <method parameters>]
-    fn:@ <command file>
+    fn:@ <command file> [? <more method parameters>]
 
 Double semicolon `;;` separates script parameters from method parameters.
 Parameters are `name=value` pairs separated by `;` (DB Connection String).

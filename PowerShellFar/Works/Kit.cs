@@ -39,13 +39,4 @@ static class Kit
 	{
 		return MyRegex.WildcardChar().Replace(literal, "`$1");
 	}
-
-	//?? _090901_055134 Check in V2 (bad for viewer and notepad)
-	/// <summary>
-	/// Formats a position message.
-	/// </summary>
-	public static string PositionMessage(string message)
-	{
-		return message.Trim().Replace("\n", "\r\n");
-	}
 }

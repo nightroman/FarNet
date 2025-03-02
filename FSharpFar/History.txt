@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 
+= 5.1.2 =
+
+Requires FarNet 9.0.17, refactoring.
+
 = 5.1.1 =
 
 FSharp.Core 9.0.101, FSharp.Compiler.Service 43.9.101

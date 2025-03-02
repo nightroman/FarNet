@@ -25,7 +25,7 @@ namespace FarNet;
 [Experimental("FarNet250101")]
 public readonly ref struct CommandParameters
 {
-	const string GlobalTextSeparator = ";;";
+	const string TextSeparator = ";;";
 
 	readonly DbConnectionStringBuilder _parameters;
 
@@ -35,14 +35,24 @@ public readonly ref struct CommandParameters
 	public ReadOnlySpan<char> Command { get; }
 
 	/// <summary>
-	/// Gets the separated trimmed text.
+	/// Gets the trimmed text after ";;".
 	/// </summary>
 	public ReadOnlySpan<char> Text { get; }
 
-	CommandParameters(ReadOnlySpan<char> command, ReadOnlySpan<char> text, DbConnectionStringBuilder parameters)
+	/// <summary>
+	/// With "@" notation, gets the trimmed text after "?".
+	/// </summary>
+	public ReadOnlySpan<char> Text2 { get; }
+
+	CommandParameters(
+		ReadOnlySpan<char> command,
+		ReadOnlySpan<char> text,
+		ReadOnlySpan<char> text2,
+		DbConnectionStringBuilder parameters)
 	{
 		Command = command;
 		Text = text;
+		Text2 = text2;
 		_parameters = parameters;
 	}
 
@@ -67,28 +77,35 @@ public readonly ref struct CommandParameters
 	}
 
 	/// <summary>
-	/// Parses command with parameters.
+	/// Parses parameters with command and text.
 	/// Use <c>@file</c> notation for reading from command files.
 	/// </summary>
 	/// <param name="commandLine">Command line with parameters.</param>
-	/// <returns>Parsed parameters and command.</returns>
+	/// <returns>Parsed parameters, command, text after ";;", text after "@...?".</returns>
 	public static CommandParameters Parse(ReadOnlySpan<char> commandLine)
 	{
-		return Parse(commandLine, true, null);
+		return Parse(commandLine, true);
 	}
 
 	/// <summary>
-	/// Parses parameters with optional command and optional text.
+	/// Parses parameters with command and text.
 	/// Use <c>@file</c> notation for reading from command files.
 	/// </summary>
 	/// <param name="commandLine">Command line with parameters.</param>
-	/// <param name="hasCommand">Tells to separate the leading command.</param>
-	/// <param name="textSeparator">Tells to separate the trailing text.</param>
-	/// <returns>Parsed parameters.</returns>
-	public static CommandParameters Parse(ReadOnlySpan<char> commandLine, bool hasCommand, string? textSeparator)
+	/// <param name="hasCommand">Tells to parse the command, then parameters.</param>
+	/// <returns>Parsed parameters, command (or empty), text after ";;", text after "@...?".</returns>
+	public static CommandParameters Parse(ReadOnlySpan<char> commandLine, bool hasCommand)
 	{
+		ReadOnlySpan<char> text2 = default;
 		if (commandLine.StartsWith('@'))
 		{
+			var index = commandLine.IndexOf('?');
+			if (index > 0)
+			{
+				text2 = commandLine[(index + 1)..].Trim();
+				commandLine = commandLine[0..index];
+			}
+
 			var file = Far.Api.GetFullPath(Environment.ExpandEnvironmentVariables(commandLine[1..].Trim().ToString()));
 			try { commandLine = File.ReadAllText(file); }
 			catch (Exception ex) { throw new ModuleException(ex.Message); }
@@ -102,7 +119,7 @@ public readonly ref struct CommandParameters
 				++index;
 
 			if (index == 0)
-				return new(default, commandLine.Trim(), null!);
+				return new(default, commandLine.Trim(), text2, null!);
 
 			command = commandLine[0..index];
 			commandLine = commandLine[index..].TrimStart();
@@ -115,11 +132,7 @@ public readonly ref struct CommandParameters
 		ReadOnlySpan<char> parameters;
 		ReadOnlySpan<char> text;
 		{
-			textSeparator ??= GlobalTextSeparator;
-			int index = commandLine.IndexOf(GlobalTextSeparator);
-			if (index < 0 && textSeparator != GlobalTextSeparator)
-				index = commandLine.IndexOf(textSeparator);
-
+			int index = commandLine.IndexOf(TextSeparator);
 			if (index < 0)
 			{
 				parameters = commandLine;
@@ -128,13 +141,13 @@ public readonly ref struct CommandParameters
 			else
 			{
 				parameters = commandLine[0..index];
-				text = commandLine[(index + textSeparator.Length)..].Trim();
+				text = commandLine[(index + TextSeparator.Length)..].Trim();
 			}
 		}
 
 		try
 		{
-			return new(command, text, ParseParameters(parameters.ToString()));
+			return new(command, text, text2, ParseParameters(parameters.ToString()));
 		}
 		catch (Exception ex)
 		{

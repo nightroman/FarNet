@@ -58,7 +58,7 @@ public static class Script
 		});
 	}
 
-	static ScriptParameters ParseScriptParameters(CommandParameters parameters)
+	static ScriptParameters ParseScriptParameters(in CommandParameters parameters)
 	{
 		// script and module
 		var res = new ScriptParameters
@@ -187,7 +187,7 @@ public static class Script
 	public static void InvokeScript(string command)
 	{
 		// get script parameters with separated text
-		var parameters = CommandParameters.Parse(command, false, "::");
+		var parameters = CommandParameters.Parse(command, false);
 		var scriptParameters = ParseScriptParameters(parameters);
 
 		// load assembly
@@ -223,7 +223,9 @@ public static class Script
 				?? throw new Exception($"Cannot find method '{scriptParameters.MethodName}'.");
 
 			// parse method parameters
-			var methodParameters = ParseMethodParameters(method, parameters.Text);
+			var methodParameters = ParseMethodParameters(
+				method,
+				parameters.Text2.Length == 0 ? parameters.Text : parameters.Text.ToString() + ';' + parameters.Text2.ToString());
 
 			// done with parsing, create an instance
 			object? instance;

@@ -23,6 +23,9 @@
 		Specifies the search filter used by Everything.
 		See: help Search-Everything -Parameter Filter
 
+		If the filter contains "edit:" then it is replaced with "file:" and
+		this script opens files in the editor instead of navigating to them.
+
 .Parameter Limit
 		Specifies the maximum number of results.
 		Default: Settings/Limit
@@ -77,6 +80,10 @@ if (!$Filter) {
 	return $sets.Edit()
 }
 
+if ($edit = $Filter.Contains('edit:')) {
+	$Filter = $Filter.Replace('edit:', 'file:')
+}
+
 $data = $sets.GetData()
 
 ### Get items
@@ -122,6 +129,11 @@ else {
 		$Items | Out-FarPanel -Title Everything -Columns @{n=$Filter; e={$_}}
 		return
 	}
+}
+
+if ($edit) {
+	Open-FarEditor $Path
+	return
 }
 
 if ($Far.Panel.IsPlugin) {

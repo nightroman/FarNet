@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.8 =
+
+Go-Everything.ps1
+- filter supports `edit:`
+
 = 9.0.7 =
 
 Microsoft.PowerShell.SDK 7.5.0

@@ -1,7 +1,3 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
 using System;
 using System.Collections;
@@ -70,7 +66,7 @@ static class A
 
 			var asErrorRecord = Cast<ErrorRecord>.From(error);
 			if (asErrorRecord != null && asErrorRecord.InvocationInfo != null)
-				writer.WriteLine(Kit.PositionMessage(asErrorRecord.InvocationInfo.PositionMessage));
+				writer.WriteLine(asErrorRecord.InvocationInfo.PositionMessage.AsSpan().Trim());
 		}
 	}
 
@@ -85,7 +81,7 @@ static class A
 		writer.WriteLine(ex.Message);
 
 		if (ex is RuntimeException asRuntimeException && asRuntimeException.ErrorRecord != null && asRuntimeException.ErrorRecord.InvocationInfo != null)
-			writer.WriteLine(Kit.PositionMessage(asRuntimeException.ErrorRecord.InvocationInfo.PositionMessage));
+			writer.WriteLine(asRuntimeException.ErrorRecord.InvocationInfo.PositionMessage.AsSpan().Trim());
 	}
 
 	// Sets an item content, shows errors.
