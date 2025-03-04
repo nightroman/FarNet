@@ -150,9 +150,9 @@ class BranchesExplorer : BaseExplorer
 					continue;
 				}
 
-				if (!branch.IsTracking)
+				if (branch.TrackedBranch is not { } tracked || tracked.Tip is not { } tip2 || tip2.Author.When < branch.Tip.Author.When)
 				{
-					CannotDelete(args, file, $"Use [ShiftDel] to delete non-tracking branch '{branch.FriendlyName}'.");
+					CannotDelete(args, file, $"Use [ShiftDel] to delete branch '{branch.FriendlyName}'.");
 					continue;
 				}
 			}

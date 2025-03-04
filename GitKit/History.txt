@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 1.3.9 =
+
+Amend tracking branch checks on deleting.
+
 = 1.3.8 =
 
 Simplify checks on deleting branches.
