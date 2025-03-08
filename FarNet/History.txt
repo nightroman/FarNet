@@ -1,6 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 9.0.18 =
+
+Retire ConfigureAwait.
+
 = 9.0.17 =
 
 `fn:` commands now use `;;` as the text splitter.

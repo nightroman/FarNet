@@ -1,6 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet.JavaScriptFar
 https://github.com/microsoft/ClearScript/releases
 
+= 2.1.3 =
+
+Microsoft.ClearScript 7.5.0
+
 = 2.1.2 =
 
 Requires FarNet 9.0.14, removes obsolete code.

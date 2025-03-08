@@ -3,10 +3,7 @@
 // Copyright (c) Roman Kuzmin
 
 using FarNet.Forms;
-using System;
 using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace FarNet;
 
@@ -22,7 +19,7 @@ public static class Tasks
 	/// <param name="task">The task.</param>
 	public static void Await(this Task task)
 	{
-		task.ConfigureAwait(false).GetAwaiter().GetResult();
+		task.GetAwaiter().GetResult();
 	}
 
 	/// <summary>
@@ -33,7 +30,7 @@ public static class Tasks
 	/// <returns>The result.</returns>
 	public static T AwaitResult<T>(this Task<T> task)
 	{
-		return task.ConfigureAwait(false).GetAwaiter().GetResult();
+		return task.GetAwaiter().GetResult();
 	}
 
 	/// <summary>
