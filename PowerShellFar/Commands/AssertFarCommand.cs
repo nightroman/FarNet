@@ -1,9 +1,4 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
-using System;
 using System.Collections;
 using System.Management.Automation;
 using System.Reflection;
@@ -18,7 +13,8 @@ sealed class AssertFarCommand : BaseCmdlet
 	const string
 		PSEq = "Eq",
 		PSConditions = "Conditions",
-		PSParameters = "Parameters";
+		PSParameters = "Parameters",
+		AddDebuggerAction = "Add-Debugger-Action";
 
 	[Parameter(ParameterSetName = PSEq, Position = 0)]
 	[Parameter(ParameterSetName = PSConditions, Position = 0)]
@@ -360,7 +356,15 @@ sealed class AssertFarCommand : BaseCmdlet
 							try
 							{
 								AddDebuggerKit.ValidateAvailable();
-								A.InvokeCode(@"Add-Debugger.ps1 $env:TEMP\Add-Debugger.log -Context 10");
+
+								//! use unique file to avoid conflicts
+								var logFile = Path.Join(Path.GetTempPath(), "Add-Debugger-Assert-Far.log");
+								File.Delete(logFile);
+								A.InvokeCode("Add-Debugger.ps1 $args[0]", logFile);
+
+								//! force the debugger action to "Quit"
+								Environment.SetEnvironmentVariable(AddDebuggerAction, "Quit");
+
 								isAddDebugger = true;
 								break;
 							}
@@ -392,9 +396,10 @@ sealed class AssertFarCommand : BaseCmdlet
 						}
 						finally
 						{
-							// remove variable and breakpoint
+							// clean
 							debugger.RemoveBreakpoint(bp);
 							SessionState.PSVariable.Remove(MyName);
+							Environment.SetEnvironmentVariable(AddDebuggerAction, null);
 						}
 					}
 					finally

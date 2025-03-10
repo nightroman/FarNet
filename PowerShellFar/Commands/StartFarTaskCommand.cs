@@ -1,16 +1,7 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
-using System.Threading.Tasks;
 
 namespace PowerShellFar.Commands;
 
@@ -344,17 +335,6 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 		]);
 	}
 
-	void ValidateAddDebugger()
-	{
-		AddDebuggerKit.ValidateAvailable();
-
-		foreach (DictionaryEntry kv in AddDebugger!)
-			if (string.Equals("Path", kv.Key?.ToString(), StringComparison.OrdinalIgnoreCase))
-				return;
-
-		throw new PSArgumentException("AddDebugger parameters dictionary must contain 'Path'.");
-	}
-
 	protected override void BeginProcessing()
 	{
 		if (_scriptError != null)
@@ -382,7 +362,7 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 		// debugging
 		if (AddDebugger is not null)
 		{
-			ValidateAddDebugger();
+			AddDebuggerKit.ValidateAvailable();
 
 			// import breakpoints
 			foreach (var bp in A.Psf.Runspace.Debugger.GetBreakpoints())

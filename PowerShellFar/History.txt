@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.9 =
+
+Start-FarTask and Assert-Far debugging features use Add-Debugger.ps1 2.4.0
+- Start-FarTask -AddDebugger supports @{} for all defaults.
+
 = 9.0.8 =
 
 Go-Everything.ps1

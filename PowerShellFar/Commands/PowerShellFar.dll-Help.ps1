@@ -657,11 +657,10 @@ existing with same names.
 '@
 		AddDebugger = @'
 Tells to use Add-Debugger.ps1 and specifies its parameters as dictionary.
-The parameter Path is required. Example:
+Use empty @{} for default or specify custom parameters. Example:
 
 	Start-FarTask ... -AddDebugger @{
-		Path = "$env:TEMP\debug.log"
-		Environment = 'AddDebugger'
+		Path = "$env:TEMP\debug-1.log"
 		Context = 10
 	}
 

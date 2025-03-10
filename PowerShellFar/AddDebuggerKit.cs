@@ -1,8 +1,3 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
 using System.Collections;
 using System.Management.Automation;
 
@@ -11,10 +6,10 @@ namespace PowerShellFar;
 static class AddDebuggerKit
 {
 	// just adds the debugger
-	const string CodeAddDebugger = @"
-param($Parameters)
-Add-Debugger.ps1 @Parameters
-";
+	const string CodeAddDebugger = """
+	param($Parameters)
+	Add-Debugger.ps1 @Parameters
+	""";
 
 	public static void ValidateAvailable()
 	{

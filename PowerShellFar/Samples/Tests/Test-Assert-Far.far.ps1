@@ -12,8 +12,7 @@
 	As a result, the script continues with the corrected state.
 
 	[1]
-	With this assert debugger, it does not matter how to continue:
-	`q` (quit), `c` (continue), `d` (detach), or even by stepping.
+	With this assert debugger, it does not matter how to continue.
 	The same assert dialog is shown again and you choose what to do.
 #>
 
