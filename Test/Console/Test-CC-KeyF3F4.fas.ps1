@@ -1,9 +1,6 @@
 <#
 .Synopsis
 	F3/F4 in command console.
-
-.Description
-	!! Do not `Start-FarTask -Confirm`
 #>
 
 ### init

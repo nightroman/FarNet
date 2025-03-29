@@ -12,8 +12,19 @@ There are two kind of scripts:
   then they call `Start-FarTask` with the task script and prepared data.
 
 - Scripts `*.fas.ps1` are task scripts. They are invoked by `Start-FarTask`,
-  for example by the association `ps: Start-FarTask (Get-FarPath) #`. Such
-  scripts work with FarNet using jobs and macros.
+  for example by the association `ps: Start-FarTask (Get-FarPath)`.
+  Such scripts work with FarNet using jobs and macros.
+
+How to run `*.fas.ps1` normally:
+
+    ps: Start-FarTask Basics.fas.ps1
+
+How to run `*.fas.ps1` by steps:
+
+    ps: Start-FarTask Basics.fas.ps1 -Step
+
+Keep clicking Continue and see steps in the debugger console and their actions in Far Manager.\
+Get `Add-Debugger.ps1` from PSGallery -- <https://www.powershellgallery.com/packages/Add-Debugger>
 
 [Basics.fas.ps1]: Basics.fas.ps1
 [NestedTasks.fas.ps1]: NestedTasks.fas.ps1

@@ -8,28 +8,11 @@ namespace PowerShellFar.Commands;
 [OutputType(typeof(Task<object[]>))]
 sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 {
-	const string KeyData = "Data";
+	const string
+		KeyData = "Data",
+		ScriptBlockFunction = "ScriptBlockFunction";
 
-	// tasks initial state
-	static readonly InitialSessionState _iss;
-
-	// $Data for scripts
-	readonly Hashtable _data = new(StringComparer.OrdinalIgnoreCase);
-
-	// task script
-	ScriptBlock _script = null!;
-	Exception? _scriptError;
-	Dictionary<string, ParameterMetadata>? _scriptParameters;
-	RuntimeDefinedParameterDictionary? _dynamicParameters;
-	static readonly HashSet<string> _paramExclude = CommonParameters;
-	static readonly string[] _paramInvalid = [nameof(Script), nameof(Data), nameof(AsTask), nameof(AddDebugger), nameof(Step)];
-
-	// sets step breaks
-	const string CodeStep = """
-	Set-PSBreakpoint -Command job, ps:, run, keys, macro
-	""";
-
-	// invokes task scripts in the new session
+	// invokes task scripts in a new session
 	const string CodeTask = """
 	param($Script, $Data, $Parameters)
 	. $Script.GetNewClosure() @Parameters
@@ -41,6 +24,24 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 	. $Script.GetNewClosure() @Arguments
 	""";
 
+	// sets step breaks
+	const string CodeStep = """
+	Set-PSBreakpoint -Command job, ps:, run, keys, macro
+	""";
+
+	// tasks initial state
+	static readonly InitialSessionState _iss;
+
+	// $Data for scripts
+	readonly Hashtable _data = new(StringComparer.OrdinalIgnoreCase);
+
+	// task script
+	ScriptBlock _script = null!;
+	bool _isScript;
+	Dictionary<string, ParameterMetadata>? _scriptParameters;
+	RuntimeDefinedParameterDictionary? _dynamicParameters;
+	static readonly string[] _paramInvalid = [nameof(Script), nameof(Data), nameof(AsTask), nameof(AddDebugger), nameof(Step)];
+
 	[Parameter(Position = 0, Mandatory = true)]
 	public object Script
 	{
@@ -51,34 +52,31 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 			if (value is ScriptBlock block)
 			{
 				_script = block;
+				_isScript = true;
+
+				SessionState.PSVariable.Set($"function:{ScriptBlockFunction}", block);
+				var info = (FunctionInfo)SessionState.InvokeCommand.GetCommand(ScriptBlockFunction, CommandTypes.Function);
+				_scriptParameters = info.Parameters;
+
 				return;
 			}
 
 			if (value is not string text)
-				throw new PSArgumentException("Invalid script type.");
+				throw new PSArgumentException("Invalid script, expected script block or file name or script code.");
 
-			//! used to `&& File.Exists` -- bad, on missing file it is treated as code -- not clear errors
 			if (text.EndsWith(".ps1", StringComparison.OrdinalIgnoreCase))
 			{
-				var path = GetUnresolvedProviderPathFromPSPath(text);
-				if (!File.Exists(path))
-					throw new PSArgumentException($"Missing script file '{path}'.");
+				//! do not resolve and test by File.Exists, use normal script resolution, including scripts in the path
+				var info = (ExternalScriptInfo)SessionState.InvokeCommand.GetCommand(text, CommandTypes.ExternalScript)
+					?? throw new PSArgumentException($"Cannot find the script '{text}'.");
 
-				try
-				{
-					var info = (ExternalScriptInfo)SessionState.InvokeCommand.GetCommand(path, CommandTypes.ExternalScript);
-					//! throws on syntax errors
-					_script = info.ScriptBlock;
-					_scriptParameters = info.Parameters;
-				}
-				catch (Exception exn)
-				{
-					//! throw later, avoid bad error info
-					_scriptError = exn;
-				}
+				//! throws on syntax errors
+				_script = info.ScriptBlock;
+				_scriptParameters = info.Parameters;
 			}
 			else
 			{
+				//! raw text for interop like FSharpFar
 				_script = ScriptBlock.Create(text);
 			}
 		}
@@ -116,11 +114,10 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 	[Parameter]
 	public SwitchParameter AsTask { get; set; }
 
-	[Parameter(ParameterSetName = "AddDebugger", Mandatory = true)]
-	[ValidateNotNull]
-	public IDictionary? AddDebugger { get; set; }
+	[Parameter]
+	public Hashtable? AddDebugger { get; set; }
 
-	[Parameter(ParameterSetName = "AddDebugger")]
+	[Parameter]
 	public SwitchParameter Step { get; set; }
 
 	static void ShowError(Exception exn)
@@ -130,23 +127,20 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 
 	public object? GetDynamicParameters()
 	{
-		//! throw later, avoid bad error info
-		if (_scriptError is { })
-			return null;
-
 		if (_scriptParameters is null || _scriptParameters.Count == 0)
 			return null;
 
 		_dynamicParameters = [];
+		var commonParameters = CommonParameters;
 		foreach (var p in _scriptParameters.Values)
 		{
-			if (!_paramExclude.Contains(p.Name))
-			{
-				if (_paramInvalid.Contains(p.Name, StringComparer.OrdinalIgnoreCase))
-					throw new InvalidOperationException($"Task script cannot use parameter: {string.Join(", ", _paramInvalid)}");
+			if (commonParameters.Contains(p.Name))
+				continue;
 
-				_dynamicParameters.Add(p.Name, new RuntimeDefinedParameter(p.Name, p.ParameterType, p.Attributes));
-			}
+			if (_paramInvalid.Contains(p.Name, StringComparer.OrdinalIgnoreCase))
+				throw new InvalidOperationException($"Task script cannot use parameter: {string.Join(", ", _paramInvalid)}");
+
+			_dynamicParameters.Add(p.Name, new RuntimeDefinedParameter(p.Name, p.ParameterType, p.Attributes));
 		}
 		return _dynamicParameters;
 	}
@@ -320,7 +314,10 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 	{
 		_iss = InitialSessionState.CreateDefault();
 
-		// add commands
+		_iss.Variables.Add([
+			new("ErrorActionPreference", ActionPreference.Stop, string.Empty)
+		]);
+
 		_iss.Commands.Add([
 			new SessionStateAliasEntry("job", NameInvokeTaskJob),
 			new SessionStateAliasEntry("ps:", NameInvokeTaskCmd),
@@ -337,30 +334,36 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 
 	protected override void BeginProcessing()
 	{
-		if (_scriptError != null)
-			throw new PSArgumentException($"Script error: {_scriptError.Message}", nameof(Script));
-
-		// open session and set extra variables
-		var rs = RunspaceFactory.CreateRunspace(_iss);
-		rs.Open();
-		rs.SessionStateProxy.PSVariable.Set(KeyData, _data);
-		rs.SessionStateProxy.PSVariable.Set("ErrorActionPreference", ActionPreference.Stop);
-
 		// parameters
 		var parameters = new Hashtable();
 		if (_dynamicParameters is { })
 		{
-			foreach (var p in _dynamicParameters.Values)
-				if (p.IsSet)
-					parameters[p.Name] = p.Value;
+			foreach (var parameter in _dynamicParameters.Values)
+			{
+				if (parameter.IsSet)
+				{
+					parameters[parameter.Name] = parameter.Value;
+					_data[parameter.Name] = parameter.Value;
+				}
+				else if (_isScript)
+				{
+					var variable = SessionState.PSVariable.Get(parameter.Name) ??
+						throw new PSArgumentException($"Parameter '{parameter.Name}' should be specified or variable '{parameter.Name}' should exist.");
+
+					_data[parameter.Name] = variable.Value;
+				}
+			}
 		}
 
+		// open session
+		var rs = RunspaceFactory.CreateRunspace(_iss);
+		rs.Open();
+
 		// make live script block to invoke asyncronously in the new session
-		var ps = PowerShell.Create();
-		ps.Runspace = rs;
+		var ps = PowerShell.Create(rs);
 
 		// debugging
-		if (AddDebugger is not null)
+		if (Step || AddDebugger is { })
 		{
 			AddDebuggerKit.ValidateAvailable();
 

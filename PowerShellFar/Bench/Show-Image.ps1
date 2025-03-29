@@ -8,49 +8,133 @@
 	script but it may be easier to use in Far Manager via file associations
 	or user menu commands, see examples.
 
-	The script may be called directly. In this case its modal dialog blocks
-	the calling thread. To avoid this the script may be called as a job or a
-	separate PowerShell process with a hidden window.
+	The script may be called directly. In this case its modal dialog blocks.
+	To avoid this, call the script as a task or a hidden window process.
 
-	For a single image its window is resizable, [Enter] switches maximized and
-	normal state. Several images are placed from left to right and scaled, if
-	needed; mouse click on a picture opens a window with this picture, [Enter]
-	opens the current picture, [Left] and [Right] changes the current picture.
-	[Escape] closes the window.
+	A single image window is resizable, [Enter] switches maximized and normal
+	state. Several images are placed from left to right and scaled, mouse
+	click on an image opens a window with this image, [Enter] opens the
+	current image, [Left] and [Right] changes the current image. [Escape]
+	closes the window.
 
 .Inputs
 	Image file paths are passed in as arguments or piped. If there is no input
 	then all image files from the current location are taken.
 
 .Example
-	> Start-FarJob -Hidden Show-Image (Get-FarPath)
+	Start-FarTask -File (Get-FarPath) { param($File) Show-Image.ps1 $File }
 
-	Far Manager association: internal way: faster but picture windows will be
-	closed together with the Far window on exit.
-
-.Example
-	start /min powershell -WindowStyle Hidden -File C:\PS\Show-Image.ps1 "!\!.!"
-
-	Far Manager association: external way: slower but picture windows will be
-	opened even after closing the Far window.
+	Shows the cursor image file using a task. Suitable for file associations.
+	The image window is closed if Far Manager exits.
 
 .Example
-	> Start-FarJob -Hidden Show-Image (Get-FarPath -Selected)
+	@start /min powershell -WindowStyle Hidden -Command Show-Image.ps1 "!\!.!"
 
-	Far Manager user menu: internal way: show selected images.
+	Shows the cursor image file using a hidden window process. Suitable for
+	file associations. The image window stays opened if Far Manager exits.
 
 .Example
-	> start /min powershell -WindowStyle Hidden Show-Image
+	@start /min powershell -WindowStyle Hidden -Command Show-Image.ps1
 
-	Far Manager user menu: external way: show all images here.
+	Shows all current directory images using a hidden window process. Suitable
+	for user menus. The image window stays opened if Far Manager exits.
 #>
 
 param(
 	[switch]$Internal
 )
 
-Set-StrictMode -Version 3
 Add-Type -AssemblyName System.Windows.Forms
+
+function on_KeyDown {
+	$$ = $_.KeyCode
+
+	if ($$ -eq 'Escape') {
+		$this.Close()
+		return
+	}
+
+	if ($$ -eq 'Left') {
+		if ($images.Count -ne 1) {
+			do_left
+		}
+		elseif ($Internal) {
+			$Action.Value = 'Left'
+			$WindowState.Value = $this.WindowState
+			$this.Close()
+		}
+		return
+	}
+
+	if ($$ -eq 'Right') {
+		if ($images.Count -ne 1) {
+			do_right
+		}
+		elseif ($Internal) {
+			$Action.Value = 'Right'
+			$WindowState.Value = $this.WindowState
+			$this.Close()
+		}
+		return
+	}
+
+	if ($$ -in 'Enter', 'Return') {
+		if ($images.Count -ne 1) {
+			show_current
+		}
+		else {
+			switch($this.WindowState) {
+				'Normal' { $this.WindowState = 'Maximized' }
+				'Maximized' { $this.WindowState = 'Normal' }
+			}
+		}
+	}
+}
+
+function do_left {
+	$index = $script:current - 1
+	if ($index -lt 0) {
+		$index = $images.Count - 1
+	}
+	. set_current $index
+}
+
+function do_right {
+	$index = $script:current + 1
+	if ($index -ge $images.Count) {
+		$index = 0
+	}
+	. set_current $index
+}
+
+function do_Click {
+	for($index = 0; $index -lt $images.Count; ++$index) {
+		if ($images[$index].Bitmap -eq $this.Image) {
+			break
+		}
+	}
+	. set_current $index
+	. show_current
+}
+
+function set_current($index) {
+	$script:mainform.Controls[$script:current].BorderStyle = 'None'
+	$script:mainform.Controls[$index].BorderStyle = 'Fixed3D'
+	$script:current = $index
+}
+
+function show_current {
+	$WindowState = [ref]'Normal'
+	for(;;) {
+		$Action = [ref]$null
+		Show-Image -Internal ($images[$script:current].Path)
+		switch($Action.Value) {
+			Left { do_left }
+			Right { do_right }
+			default { return }
+		}
+	}
+}
 
 ### input, create bitmaps, get total width and height
 $files = if ($args) { $args } else { $input }
@@ -59,16 +143,14 @@ if (!$files) {
 }
 $width = 0
 $height = 0
-$images = [System.Collections.ArrayList]::new()
+$images = [System.Collections.Generic.List[object]]::new()
 foreach($file in $files) {
 	try {
 		$path = $file.ToString()
 		$bitmap = [System.Drawing.Bitmap]::new($path)
 		$width += $bitmap.Size.Width
-		if ($height -lt $bitmap.Size.Height) {
-			$height = $bitmap.Size.Height
-		}
-		$null = $images.Add(@{ Path = $path; Bitmap = $bitmap })
+		$height = [System.Math]::Max($height, $bitmap.Size.Height)
+		$images.Add(@{ Path = $path; Bitmap = $bitmap })
 	}
 	catch {}
 }
@@ -81,7 +163,7 @@ $form = [System.Windows.Forms.Form]::new()
 $form.Text = ($images | .{process{ [System.IO.Path]::GetFileName($_.Path) }}) -join ', '
 $form.BackColor = [System.Drawing.Color]::FromArgb(0, 0, 0)
 $form.add_Shown({ $form.Activate() })
-$form.add_KeyDown({ . KeyDown })
+$form.add_KeyDown(${function:on_KeyDown})
 if ($images.Count -eq 1) {
 	$form.MaximizeBox = $true
 	$form.StartPosition = 'CenterScreen'
@@ -125,7 +207,7 @@ foreach($image in $images) {
 		$box.Dock = 'Fill'
 	}
 	else {
-		$box.add_Click({ . Click })
+		$box.add_Click(${function:do_Click})
 		if ($Left -eq 0) {
 			### init the current picture box
 			$box.BorderStyle = 'Fixed3D'
@@ -139,90 +221,6 @@ foreach($image in $images) {
 	$box.Left = $left
 	$left = $box.Right
 	$form.Controls.Add($box)
-}
-
-function KeyDown {
-	switch($_.KeyCode) {
-		'Escape' {
-			$this.Close()
-		}
-		'Return' {
-			if ($images.Count -ne 1) {
-				. ShowCurrent
-			}
-			else {
-				switch($this.WindowState) {
-					'Normal' { $this.WindowState = 'Maximized' }
-					'Maximized' { $this.WindowState = 'Normal' }
-				}
-			}
-		}
-		'Left' {
-			if ($images.Count -ne 1) {
-				. Left
-			}
-			elseif ($Internal) {
-				$Action.Value = 'Left'
-				$WindowState.Value = $this.WindowState
-				$this.Close()
-			}
-		}
-		'Right' {
-			if ($images.Count -ne 1) {
-				. Right
-			}
-			elseif ($Internal) {
-				$Action.Value = 'Right'
-				$WindowState.Value = $this.WindowState
-				$this.Close()
-			}
-		}
-	}
-}
-
-function Left {
-	$index = $script:current - 1
-	if ($index -lt 0) {
-		$index = $images.Count - 1
-	}
-	. SetCurrent $index
-}
-
-function Right {
-	$index = $script:current + 1
-	if ($index -ge $images.Count) {
-		$index = 0
-	}
-	. SetCurrent $index
-}
-
-function Click {
-	for($index = 0; $index -lt $images.Count; ++$index) {
-		if ($images[$index].Bitmap -eq $this.Image) {
-			break
-		}
-	}
-	. SetCurrent $index
-	. ShowCurrent
-}
-
-function SetCurrent($index) {
-	$script:mainform.Controls[$script:current].BorderStyle = 'None'
-	$script:mainform.Controls[$index].BorderStyle = 'Fixed3D'
-	$script:current = $index
-}
-
-function ShowCurrent {
-	$WindowState = [ref]'Normal'
-	for(;;) {
-		$Action = [ref]$null
-		Show-Image -Internal ($images[$script:current].Path)
-		switch($Action.Value) {
-			'Left' { . Left }
-			'Right' { . Right }
-			default { return }
-		}
-	}
 }
 
 ### show the modal dialog

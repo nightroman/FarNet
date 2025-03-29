@@ -33,6 +33,7 @@ DEF_PROP_FLAG(FarDialog, IsWarning, FDLG_WARNING);
 DEF_PROP_FLAG(FarDialog, KeepWindowTitle, FDLG_KEEPCONSOLETITLE);
 DEF_PROP_FLAG(FarDialog, NoPanel, FDLG_NODRAWPANEL);
 DEF_PROP_FLAG(FarDialog, NoShadow, FDLG_NODRAWSHADOW);
+DEF_PROP_FLAG(FarDialog, StayOnTop, FDLG_STAY_ON_TOP);
 
 // Native dialog wrapper
 FarDialog::FarDialog(HANDLE hDlg)

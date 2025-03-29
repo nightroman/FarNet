@@ -2,12 +2,9 @@
 // FarNet plugin for Far Manager
 // Copyright (c) Roman Kuzmin
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using FarNet.Works;
+using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FarNet;
 
@@ -761,7 +758,7 @@ public abstract class IEditor : IEditorBase
 	}
 
 	/// <summary>
-	/// Experimental("FarNet250102") Gets the line text.
+	/// Gets the line text.
 	/// </summary>
 	/// <param name="line">Line index.</param>
 	[Experimental("FarNet250102")]
@@ -772,7 +769,7 @@ public abstract class IEditor : IEditorBase
 	}
 
 	/// <summary>
-	/// Experimental("FarNet250102") Sets the line text.
+	/// Sets the line text.
 	/// </summary>
 	/// <param name="line">Line index.</param>
 	/// <param name="text">Line text.</param>
@@ -786,7 +783,7 @@ public abstract class IEditor : IEditorBase
 	}
 
 	/// <summary>
-	/// [Experimental("FarNet250106")] Gets the number of change events.
+	/// Gets the number of change events.
 	/// </summary>
 	[Experimental("FarNet250106")]
 	public abstract int ChangeCount { get; }

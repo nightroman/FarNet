@@ -10,7 +10,7 @@ using System.Text;
 namespace FarNet;
 
 /// <summary>
-/// Experimental("FarNet250101") Command with parameters using connection string syntax.
+/// Command with parameters using connection string syntax.
 /// </summary>
 /// <remarks>
 /// <para>

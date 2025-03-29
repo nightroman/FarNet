@@ -3,11 +3,11 @@
 	Tests for ..\Tests\Test-Dialog.far.ps1.
 
 .Description
-	How to start test steps from UI: run the test dialog Test-Dialog.far.ps1,
-	push the button [Test] and watch the steps one by one.
+	See README for how to run by Start-FarTask.
 
-	How to start from the command line:
-	ps: Start-FarTask Test-Dialog.fas.ps1 -Confirm
+	Or start test steps from UI:
+	- open the test dialog -- ps: .\Test-Dialog.far.ps1
+	- push the button [Test] and watch the steps one by one
 
 .Parameter TestOpened
 		Used to call this test from Test-Dialog.far.ps1 by [Test].

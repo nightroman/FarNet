@@ -18,13 +18,14 @@ param(
 )
 
 ### 1) create the progress form, do not show yet
-$Progress = New-Object FarNet.Tools.ProgressForm
+$Progress = [FarNet.Tools.ProgressForm]::new()
 $Progress.Title = "ProgressForm: CanCancel=$(!$NoCancel)"
 $Progress.CanCancel = !$NoCancel
 $Progress.LineCount = 4
 
 ### 2) start the task, give it the progress and other required data
-$task = Start-FarTask -AsTask -Data Progress, JobSeconds, JobSteps {
+$task = Start-FarTask -AsTask {
+	param($Progress, $JobSeconds, $JobSteps)
 	for($n = 1; $n -le $Data.JobSteps; ++$n) {
 		# exit if the progress is canceled
 		if ($Data.Progress.IsClosed) {

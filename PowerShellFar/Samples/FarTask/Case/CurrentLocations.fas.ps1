@@ -4,9 +4,8 @@
 
 .Description
 	How to run:
-	- make sure two panels have different locations
-	- run this demo step by step and see the output:
-	ps: Start-FarTask CurrentLocations.fas.ps1 -Confirm
+	(1) Ensure two panels have different locations
+	(2) ps: Start-FarTask CurrentLocations.fas.ps1
 #>
 
 # print initial current paths

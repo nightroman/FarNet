@@ -1,4 +1,4 @@
-﻿Basics.fas.ps1 Demo task file for tests.
+﻿Basics.fas.ps1 How to use script tasks for testing.
 ConsoleGitStatus.far.ps1 Prints brief git status when current directory changes.
 ConsoleOutputPause.far.ps1 Prints some data and waits for a key.
 DialogNonModalInput.fas.ps1 Non-modal dialog input demo.
@@ -6,7 +6,10 @@ InputEditorMessage.fas.ps1 Demo with input box, non-modal editor, message box.
 KeysAndMacro.fas.ps1 How to use `keys` and `macro` jobs in task scripts.
 NestedTasks.fas.ps1 How to combine task scripts.
 PanelSelectItem.fas.ps1 How to use a panel task for selecting an item.
-Parameters.far.ps1 How to pass variables in task script blocks.
+Parameters.far.ps1 How to pass variables or hashtables in task script blocks.
 Parameters.fas.ps1 How to pass parameters in task script files.
+Parameters=2-1.far.ps1 Script parameters specified as dynamic, v9.0.10.
+Parameters=2-2.far.ps1 Script parameters specified as variables, v9.0.10.
+Parameters=2-3.far.ps1 Undefined script parameter variable error, v9.0.10.
 Test-Dialog.fas.ps1 Tests for ..\Tests\Test-Dialog.far.ps1.
 WinFormChartFiles.fas.ps1 GUI chart with interaction and panel updates.

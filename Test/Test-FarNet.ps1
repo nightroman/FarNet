@@ -26,7 +26,7 @@
 [CmdletBinding()]
 param(
 	$Tests = -1,
-	$ExpectedTaskCount = 207,
+	$ExpectedTaskCount = 208,
 	$ExpectedBasicsCount = 16,
 	$ExpectedExtrasCount = 9,
 	[switch]$All,
@@ -57,14 +57,14 @@ else {
 
 ### Initialize
 $null = & $PSScriptRoot\About\Initialize-Test.far.ps1
-[Diagnostics.Trace]::WriteLine("$(Get-Date) Begin tests")
+[Diagnostics.Debug]::WriteLine("# $(Get-Date) Begin tests")
 
 ### Basic tests
 if (!$Tests) {
 	$basics = @(Get-ChildItem "$env:FarNetCode\Test\Basics" -Filter *.far.ps1)
 	Assert-Far $basics.Count -eq $ExpectedBasicsCount
 	foreach($test in $basics) {
-		[Diagnostics.Trace]::TraceInformation($test.FullName)
+		[Diagnostics.Debug]::WriteLine("# $($test.FullName)")
 		& $test.FullName
 		if ($global:Error) {throw "Errors after $($test.FullName)" }
 	}
@@ -91,7 +91,7 @@ if ($All) {
 	Assert-Far $extras.Count -eq $ExpectedExtrasCount
 }
 foreach($test in $extras) {
-	[Diagnostics.Trace]::TraceInformation($test)
+	[Diagnostics.Debug]::WriteLine("# $test")
 	& $test
 	if ($global:Error) {throw "Errors after extra test: $test" }
 }
@@ -120,7 +120,7 @@ Start-FarTask -Data Tests, ExpectedTaskCount, All, SavedPanelPaths {
 
 	### Run tests
 	foreach($test in $Data.Tests) {
-		[Diagnostics.Trace]::TraceInformation($test.FullName)
+		[Diagnostics.Debug]::WriteLine("# $($test.FullName)")
 
 		### Run current test
 		$result = job -Arguments $test.FullName {
@@ -162,7 +162,7 @@ Start-FarTask -Data Tests, ExpectedTaskCount, All, SavedPanelPaths {
 
 	### Finish
 	ps: {
-		[Diagnostics.Trace]::WriteLine("$(Get-Date) End tests")
+		[Diagnostics.Debug]::WriteLine("# $(Get-Date) End tests")
 		$r = Clear-Session -KeepError -Verbose
 		$r | Format-List
 		if ($r.RemovedVariableCount) {

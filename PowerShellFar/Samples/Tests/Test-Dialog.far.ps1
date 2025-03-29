@@ -4,10 +4,9 @@
 
 .Description
 	Run for manual tests, press [F1] for help:
-		ps: .\Test-Dialog.far.ps1
+	ps: .\Test-Dialog.far.ps1
 
-	Or run auto tests step by step:
-		ps: Start-FarTask ..\FarTask\Test-Dialog.fas.ps1 -Confirm
+	Or run tests or steps using "..\FarTask\Test-Dialog.fas.ps1"
 #>
 
 param(
@@ -234,7 +233,7 @@ $test.add_ButtonClicked({
 	$_.Ignore = $true
 
 	# start test steps
-	Start-FarTask "$PSScriptRoot\..\FarTask\Test-Dialog.fas.ps1" -AsTask -Confirm -TestOpened:$Locals
+	Start-FarTask "$PSScriptRoot\..\FarTask\Test-Dialog.fas.ps1" -AsTask -TestOpened:$Locals
 })
 
 ### [List] Test list controls

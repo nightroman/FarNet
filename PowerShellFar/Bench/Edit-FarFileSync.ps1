@@ -7,8 +7,8 @@
 	- FarNet.Redis library, $env:FARNET_REDIS_CONFIGURATION
 	- Send-FarRedisTask.ps1, Register-FarRedisTask.ps1, Start-Far.ps1
 
-	Call this from the Far editor in order to edit the file in another Far.
-	When you save the file in any of these editors, another Far reopens it.
+	Call this from the Far editor to edit the same file in another Far.
+	On saving the file in these editors, another Far updates its editor.
 
 .Parameter Setup
 		INTERNAL

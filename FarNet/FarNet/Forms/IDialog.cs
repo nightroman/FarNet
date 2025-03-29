@@ -2,9 +2,8 @@
 // FarNet plugin for Far Manager
 // Copyright (c) Roman Kuzmin
 
-using System;
 using System.Collections;
-using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FarNet.Forms;
 
@@ -159,6 +158,12 @@ public abstract class IDialog
 	/// Example: last <c>Top</c> is 5, then <c>AddBox(*, -1, *, 2, *)</c> is recalculated as <c>AddBox(*, 6, *, 8, *)</c>.
 	/// </remarks>
 	public abstract bool NoSmartCoordinates { get; set; }
+
+	/// <summary>
+	/// Tells the modeless fialog to stay on top.
+	/// </summary>
+	[Experimental("FarNet250326")]
+	public abstract bool StayOnTop { get; set; }
 
 	/// <include file='doc.xml' path='doc/HelpTopic/*'/>
 	public abstract string HelpTopic { get; set; }

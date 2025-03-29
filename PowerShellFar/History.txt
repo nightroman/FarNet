@@ -1,5 +1,20 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.10 =
+
+** Start-FarJob will be removed soon **
+https://github.com/nightroman/FarNet/discussions/64
+
+Improve and simplify Start-FarTask
+- script blocks support dynamic parameters as well as file scripts
+- use one parameter set with optional -AddDebugger and -Step
+
+Register-FarRedisTask.ps1 and Send-FarRedisTask.ps1
+- use default Redis database
+
+Show-Image.ps1
+- fix [Enter]
+
 = 9.0.9 =
 
 Start-FarTask and Assert-Far debugging features use Add-Debugger.ps1 2.4.0

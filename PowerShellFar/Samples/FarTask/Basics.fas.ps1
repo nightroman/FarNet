@@ -1,10 +1,6 @@
 ﻿<#
 .Synopsis
-	Demo task file for tests.
-
-.Description
-	Run step by step:
-	ps: Start-FarTask Basics.fas.ps1 -Confirm
+	How to use script tasks for testing.
 #>
 
 job {
@@ -102,6 +98,7 @@ run {
 job {
 	# insert some text (use SetText to test it)
 	$Far.Editor.SetText('Modal Editor')
+	$Far.Editor.Redraw() #! for steps
 }
 
 job {

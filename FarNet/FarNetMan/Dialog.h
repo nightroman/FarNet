@@ -26,7 +26,8 @@ public:
 	virtual property bool IsWarning { bool get() override; void set(bool value) override; }
 	virtual property bool KeepWindowTitle { bool get() override; void set(bool value) override; }
 	virtual property bool NoPanel { bool get() override; void set(bool value) override; }
-	virtual property bool NoShadow { bool get() override; void set(bool value) override; }
+	virtual property bool NoShadow{ bool get() override; void set(bool value) override; }
+	virtual property bool StayOnTop { bool get() override; void set(bool value) override; }
 	virtual property bool NoSmartCoordinates { bool get() override { return _NoSmartCoordinates; } void set(bool value) override { _NoSmartCoordinates = value; } }
 	virtual property Guid TypeId { Guid get() override; void set(Guid value) override; }
 	virtual property IButton^ Cancel { IButton^ get() override { return _Cancel; } void set(IButton^ value) override { _Cancel = value; } }

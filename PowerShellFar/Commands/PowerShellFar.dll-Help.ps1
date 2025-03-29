@@ -597,19 +597,22 @@ Example: 'FullName' or {$_.FullName} tell to use a property FullName.
 	command = 'Start-FarTask'
 	synopsis = 'Starts the script task.'
 	description = @'
-	This cmdlet starts the specified script task. File script parameters are
-	defined in the script and specified for Start-FarTask as its own. Known
-	issue: switch parameters must be specified after Script.
+	This cmdlet starts the script task. The script runs in a new session
+	asynchronously without blocking the main thread. It uses special job
+	blocks for accessing FarNet API in the main session.
 
-	If the script is a script block or code then parameters are not supported.
-	Use the parameter Data in order to import specified variables to the task
-	automatic hashtable $Data.
+	The task script and jobs may use the same automatic hashtable $Data.
 
-	The script is invoked in a new runspace asynchronously without blocking the
-	main thread. The code must not work with FarNet directly, it should use job
-	blocks instead. Jobs are invoked in the main session.
+	If Script uses parameters, they may be specified on Start-FarTask calls.
+	The specified parameters are also added to the shared hashtable $Data.
+	Known issue: switch parameters must be specified after Script.
 
-	The task and jobs may exchange data using the automatic hashtable $Data.
+	If Script is [scriptblock] then parameters not specified on Start-FarTask
+	must be defined as variables with same names before the call. Parameters
+	stay undefined but variables are added to $Data.
+
+	If Script is [string] (file name or script code) then parameters not
+	specified on Start-FarTask stay undefined and not added to $Data.
 
 	The cmdlet returns nothing by default and the script output is ignored. Use
 	the switch AsTask in order to return the started task. Use it in a calling
@@ -634,7 +637,7 @@ Example: 'FullName' or {$_.FullName} tell to use a property FullName.
 		This job is used to run modal UI without blocking the task.
 		It is useful for automation and tests. Output is ignored.
 
-	keys <keys> [<keys> [...]]
+	keys <key> [<key> ...]
 
 		This command invokes the specified keys.
 		Arguments are concatenated with spaces.
@@ -642,22 +645,30 @@ Example: 'FullName' or {$_.FullName} tell to use a property FullName.
 	macro <code>
 
 		This command invokes the specified macro.
+
+	DEBUGGING AND STEPPING
+
+	AddDebugger and Step enable debugging and require Add-Debugger.ps1 in the path.
+	Get Add-Debugger.ps1 -- https://www.powershellgallery.com/packages/Add-Debugger
 '@
 	parameters = @{
-		Script = 'Specifies the task as script file, block, or code.'
+		Script = @'
+Specifies the task as script block or file name or script code.
+
+File names should be full or relative paths or just names in the path.
+'@
 		AsTask = 'Tells to return the started task.'
 		Data = @'
-The list of variable names or hashtables exposed as the task variable $Data.
+The list of variable names or hashtables added to the shared hashtable $Data.
 
-If an item is variable name then it is added to $Data as {name, value}.
-The variable must exist and its name must be unique as $Data key.
+String items are existing variable names added to $Data as {name, value}.
 
-If an item is hashtable then its entries are merged into $Data overriding
-existing with same names.
+Hashtable items are added to $Data as they are.
 '@
 		AddDebugger = @'
-Tells to use Add-Debugger.ps1 and specifies its parameters as dictionary.
-Use empty @{} for default or specify custom parameters. Example:
+Tells to use Add-Debugger.ps1 and specifies its parameters hashtable.
+Omit this parameter or use $null or empty hashtable for defaults.
+Example:
 
 	Start-FarTask ... -AddDebugger @{
 		Path = "$env:TEMP\debug-1.log"
@@ -666,11 +677,10 @@ Use empty @{} for default or specify custom parameters. Example:
 
 Use Step in addition or set some breakpoints.
 Otherwise, the debugger is not going to stop.
-
-Get Add-Debugger.ps1 from PSGallery -- https://www.powershellgallery.com/packages/Add-Debugger
 '@
 		Step = @'
-Tells to set breakpoints for stopping at each step: `job`, `ps:`, `run`, `keys`, `macro`.
+Tells to use Add-Debugger.ps1 and sets breakpoints for stopping at each step:
+`job`, `ps:`, `run`, `keys`, `macro`.
 '@
 	}
 

@@ -1,6 +1,6 @@
 <#
 .Synopsis
-	How to pass variables or hastables in task script blocks.
+	How to pass variables or hashtables in task script blocks.
 
 .Description
 	Use -Data to expose variables and dictionaries as the special variable $Data.

@@ -4,7 +4,6 @@
 
 using FarNet.Forms;
 using FarNet.Works;
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 
@@ -35,7 +34,7 @@ public abstract class ILine
 	public abstract string Text { get; set; }
 
 	/// <summary>
-	/// Experimental("FarNet250103") Gets or sets the line text.
+	/// Gets or sets the line text.
 	/// </summary>
 	//! Cannot be nicely done in C++ for command line without challenges:
 	//! FCTL_GETCMDLINE copies data to our temp buffer, it is not clear how to free it after returning.
@@ -172,7 +171,7 @@ public abstract class ILine
 	}
 
 	/// <summary>
-	/// Experimental("FarNet250104") Gets the match for the current caret position.
+	/// Gets the match for the current caret position.
 	/// </summary>
 	/// <param name="regex">Regular expression defining "words".</param>
 	/// <param name="index">The found match index or -1.</param>

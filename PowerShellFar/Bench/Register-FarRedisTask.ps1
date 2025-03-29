@@ -14,7 +14,7 @@ if ([FarNet.User]::Data['FarRedisHandler']) {
 }
 
 Import-Module $env:FARHOME\FarNet\Lib\FarNet.Redis\FarNet.Redis.psd1
-[FarNet.User]::Data.FarRedisDB = $db = Open-Redis
+$db = Open-Redis
 
 [FarNet.User]::Data.FarRedisHandler = Add-RedisHandler FarRedisHandler:$PID {
 	param($channel, $message)
@@ -24,15 +24,16 @@ Import-Module $env:FARHOME\FarNet\Lib\FarNet.Redis\FarNet.Redis.psd1
 		[FarNet.User]::Data.FarRedisPair = Get-Process -Id $pairId
 
 		# pop the pending task message data
-		$data = [FarNet.User]::Pop('FarRedisData')
+		$taskMessageData = [FarNet.User]::Pop('FarRedisData')
 
 		# send the task message to the pair
-		Send-RedisMessage "FarRedisHandler:$pairId" ($data | ConvertTo-Json -Depth 99 -Compress) -Database ([FarNet.User]::Data.FarRedisDB)
+		$message = $taskMessageData | ConvertTo-Json -Depth 99 -Compress
+		Send-RedisMessage "FarRedisHandler:$pairId" $message
 	}
 	else {
-		#: task message
-		$data = ConvertFrom-Json $message -AsHashtable
-		Start-FarTask -Data $data.Data ([scriptblock]::Create($data.Task))
+		#: task message, decode and start the task
+		$taskMessageData = ConvertFrom-Json $message -AsHashtable
+		Start-FarTask -Data $taskMessageData.Data ([scriptblock]::Create($taskMessageData.Task))
 	}
 }
 

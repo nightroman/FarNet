@@ -12,11 +12,11 @@
 	messages between them. The second Far is started automatically when needed.
 
 .Parameter Task
-		Specifies the Far task to be sent to another Far.
+		The Far task script to send to another Far.
 
 .Parameter Data
 		Optional data sent as JSON and then converted back to hashtable.
-		The received hashtable is provided for the Task script as $Data.
+		The received hashtable is provided for the task script as $Data.
 
 .Parameter SkipExited
 		Tells to immediately return true if the pair process has exited.
@@ -45,15 +45,16 @@ if ($FarRedisPair = [FarNet.User]::Data['FarRedisPair']) {
 	}
 }
 
-# task message data
-$Data = [ordered]@{
+# Redis message data
+$taskMessageData = [ordered]@{
 	Data = $Data
 	Task = $Task.ToString()
 }
 
 if ($FarRedisPair = [FarNet.User]::Data['FarRedisPair']) {
 	#: we are paired, send the task message to the pair
-	Send-RedisMessage "FarRedisHandler:$($FarRedisPair.Id)" ($Data | ConvertTo-Json -Depth 99 -Compress) -Database ([FarNet.User]::Data['FarRedisDB'])
+	$message = $taskMessageData | ConvertTo-Json -Depth 99 -Compress
+	Send-RedisMessage "FarRedisHandler:$($FarRedisPair.Id)" $message
 }
 else {
 	#: not yet paired, subscribe to messages
@@ -63,6 +64,6 @@ else {
 	}
 
 	# keep data and start the pair, data will be send when we receive the pair message
-	[FarNet.User]::Data.FarRedisData = $Data
+	[FarNet.User]::Data.FarRedisData = $taskMessageData
 	Start-Far ps:Register-FarRedisTask $Far.CurrentDirectory -Environment @{FAR_REDIS_PAIR = $PID}
 }
