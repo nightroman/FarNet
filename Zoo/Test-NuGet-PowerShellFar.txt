@@ -21,7 +21,6 @@ FarHome\FarNet\Modules\PowerShellFar\Bench\Import-Panel-.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Indent-Selection-.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Invoke-FromEditor.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Invoke-Shortcut-.ps1
-FarHome\FarNet\Modules\PowerShellFar\Bench\Job-RemoveItem-.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Menu-Favorites-.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Menu-More.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Merge-Selected.ps1

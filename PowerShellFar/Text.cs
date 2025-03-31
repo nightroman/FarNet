@@ -1,7 +1,3 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 namespace PowerShellFar;
 
 /// <summary>
@@ -15,7 +11,6 @@ static class Res
 		// main menu
 		MenuInvokeCommands /**/ = "&1. Invoke commands",
 		MenuInvokeSelected /**/ = "&2. Invoke selected",
-		MenuBackgroundJobs /**/ = "&3. Background jobs",
 		MenuCommandHistory /**/ = "&4. Command history",
 		MenuInteractive /*   */ = "&5. Interactive",
 		MenuPowerPanel /*    */ = "&6. Power panel",

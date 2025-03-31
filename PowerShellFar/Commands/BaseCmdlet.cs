@@ -1,22 +1,12 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 
 namespace PowerShellFar.Commands;
 
-/// <summary>
-/// PowerShellFar cmdlet.
-/// </summary>
 class BaseCmdlet : PSCmdlet
 {
 	const string Help = "PowerShellFar.dll-Help.xml";
 
-	/// <summary>
-	/// Adds cmdlets to the initial state.
-	/// </summary>
 	internal static void AddCmdlets(InitialSessionState state)
 	{
 		state.Commands.Add(
@@ -41,7 +31,6 @@ class BaseCmdlet : PSCmdlet
 			new SessionStateCmdletEntry("Register-FarTool", typeof(RegisterFarToolCommand), Help),
 			new SessionStateCmdletEntry("Search-FarFile", typeof(SearchFarFileCommand), Help),
 			new SessionStateCmdletEntry("Show-FarMessage", typeof(ShowFarMessageCommand), Help),
-			new SessionStateCmdletEntry("Start-FarJob", typeof(StartFarJobCommand), Help),
 			new SessionStateCmdletEntry("Start-FarTask", typeof(StartFarTaskCommand), Help),
 		]);
 	}

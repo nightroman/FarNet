@@ -1,5 +1,4 @@
 ﻿using FarNet;
-using System;
 using System.Management.Automation;
 
 namespace PowerShellFar;
@@ -66,11 +65,6 @@ public sealed class Entry : ModuleHost
 		A.Psf.Disconnect();
 		A.Connect(null);
 		Instance = null!;
-	}
-
-	public override bool CanExit()
-	{
-		return A.Psf.CanExit();
 	}
 
 	public override void Invoking()

@@ -247,37 +247,6 @@ choice buttons and just shows a message.
 	}
 }
 
-### Start-FarJob
-@{
-	command = 'Start-FarJob'
-	synopsis = 'Starts a new background job (not native PowerShell job).'
-	description = @'
-It starts a new background job with the specified arguments or parameters.
-
-Far jobs run in separated workspaces in the same process. They take live input
-objects and may return live output. (Compare with PowerShell jobs: they run in
-separate processes and deal with serialized input and output.)
-'@
-	parameters = @{
-		Command = 'A command name or a script block.'
-		Parameters = 'Command parameters. IDictionary for named parameters, IList for arguments, or a single argument.'
-		Name = 'Job friendly name to display.'
-		Output = 'Tells to start and return the job with exposed Output. Dispose() has to called when the job is done.'
-		Return = 'Returns not yet started job with exposed Output. StartJob() and Dispose() are called explicitly.'
-		Hidden = 'Started job is not returned, not shown in the list, output is discarded and succeeded job is disposed.',
-		'If the job fails or finishes with errors it is included in the list so that errors can be investigated.',
-		'For a hidden job parameters Output, Return, and KeepSeconds are ignored.'
-		KeepSeconds = 'Tells to keep succeeded job only for specified number of seconds.',
-		'Set 0 to remove the succeeded job immediately.',
-		'Jobs with errors are not removed automatically, you should remove them from the list.',
-		'Stopwatch is started when the first job notification is shown in the console title.'
-	}
-	outputs = @{
-		type = 'PowerShellFar.Job'
-		description = 'A new not yet started job if the Return switch is used, otherwise nothing is returned.'
-	}
-}
-
 ### File Cmdlets
 $BaseFile = @{
 	parameters = @{
@@ -605,7 +574,7 @@ Example: 'FullName' or {$_.FullName} tell to use a property FullName.
 
 	If Script uses parameters, they may be specified on Start-FarTask calls.
 	The specified parameters are also added to the shared hashtable $Data.
-	Known issue: switch parameters must be specified after Script.
+	Known issue: avoid switch parameters or specify them after Script.
 
 	If Script is [scriptblock] then parameters not specified on Start-FarTask
 	must be defined as variables with same names before the call. Parameters

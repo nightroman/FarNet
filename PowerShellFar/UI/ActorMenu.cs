@@ -1,9 +1,4 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
-using System;
 
 namespace PowerShellFar.UI;
 
@@ -34,7 +29,6 @@ static class ActorMenu
 
 		AddTool(Res.MenuInvokeCommands, delegate { A.Psf.StartInvokeCommands(); }, ModuleToolOptions.F11Menus);
 		AddTool(Res.MenuInvokeSelected, delegate { A.Psf.InvokeSelectedCode(); }, ModuleToolOptions.Editor | ModuleToolOptions.Panels | ModuleToolOptions.Dialog);
-		AddTool(Res.MenuBackgroundJobs, delegate { A.Psf.ShowJobs(); }, ModuleToolOptions.F11Menus);
 		AddTool(Res.MenuCommandHistory, delegate { A.Psf.ShowHistory(); }, ModuleToolOptions.F11Menus);
 		AddTool(Res.MenuInteractive, delegate { A.Psf.ShowInteractive(OpenMode.None); }, ModuleToolOptions.F11Menus);
 		AddTool(Res.MenuPowerPanel, delegate { A.Psf.ShowPanel(); }, ModuleToolOptions.F11Menus);

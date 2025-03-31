@@ -97,7 +97,7 @@ foreach($test in $extras) {
 }
 
 ### Main tests
-Start-FarTask -Data Tests, ExpectedTaskCount, All, SavedPanelPaths {
+Start-FarTask -Data Tests, ExpectedTaskCount, SavedPanelPaths {
 	$Data.Stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
 	$Data.TaskCount = 0
 
@@ -172,21 +172,12 @@ Start-FarTask -Data Tests, ExpectedTaskCount, All, SavedPanelPaths {
 	job {
 		### Quit after tests?
 		if ($env:QuitFarAfterTests -eq 1) {
-			# clean jobs
-			while($job = @([PowerShellFar.Job]::Jobs)) {
-				$job[0].Dispose()
-			}
 			$Far.Quit()
 		}
 		else {
 			### Restore panels
 			$Far.Panel.CurrentDirectory = $Data.SavedPanelPaths[0]
 			$Far.Panel2.CurrentDirectory = $Data.SavedPanelPaths[1]
-
-			### Start job tests
-			if ($Data.All) {
-				Start-FarJob { & "$env:PSF\Samples\Tests\Test-Job-.ps1" }
-			}
 
 			### Summary
 			Write-Host "Tasks: $($Data.TaskCount)/$($Data.ExpectedTaskCount)" -ForegroundColor ($Data.TaskCount -eq $Data.ExpectedTaskCount ? 'Green' : 'Yellow')

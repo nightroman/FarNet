@@ -14,7 +14,6 @@ Import-Panel-.ps1 Imports objects from files and shows them in a panel.
 Indent-Selection-.ps1 Indents selected lines in the editor.
 Invoke-FromEditor.ps1 Invokes a file from the current editor.
 Invoke-Shortcut-.ps1 Opens a shortcut file (.lnk).
-Job-RemoveItem-.ps1 Job: remove the specified provider items.
 Menu-Favorites-.ps1 Shows Windows Favorites as a menu and invokes items.
 Menu-More.ps1 Example command menu created by a script.
 Merge-Selected.ps1 Invokes merge for two panels items.

@@ -2,9 +2,7 @@
 // FarNet plugin for Far Manager
 // Copyright (c) Roman Kuzmin
 
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 namespace FarNet;
@@ -914,10 +912,10 @@ public partial class Panel : IPanel
 		}
 		finally
 		{
-			if (_Garbage != null)
+			if (_Garbage is { })
 			{
 				foreach (var it in _Garbage)
-					it.Dispose();
+					it?.Dispose();
 
 				_Garbage = null;
 			}

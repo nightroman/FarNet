@@ -10,10 +10,10 @@
 
 		$this [FarNet.IEditor]
 		$_ [FarNet.ModuleDrawerEventArgs]
-		.Colors - result color collection
-		.Lines - lines to get colors for
-		.StartChar - the first character
-		.EndChar - after the last character
+		- .Colors - result color collection
+		- .Lines - lines to get colors for
+		- .StartChar - the first character
+		- .EndChar - after the last character
 #>
 
 # Register the drawer
@@ -34,5 +34,5 @@ Register-FarDrawer -Mask Colors -Priority 1 'Show text colors' 4ddb64b8-7954-41f
 	}
 ))
 
-# Edit the file with shown colours
+# Edit the file with shown colors
 Open-FarEditor -Path $env:TEMP\Colors -DeleteSource File -IsLocked -DisableHistory

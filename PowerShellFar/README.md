@@ -24,7 +24,6 @@ PowerShell FarNet module for Far Manager
 
 * [Debugging](#debugging)
 * [Commands output](#commands-output)
-* [Background jobs](#background-jobs)
 * [Frequently asked questions][FAQ]
 * [Command and macro examples][Examples]
 
@@ -158,8 +157,6 @@ Various event handlers can be added using the profiles or scripts. See
 - Local interactive
 - Remote interactive
 
-`[Del]` in the background job list stops running background jobs.
-
 It is not normally possible to stop commands started from event handlers.
 
 *********************************************************************
@@ -229,11 +226,6 @@ In the editor, dialog, or command line: invoke the selected or the current line
 text. The code is invoked in the global scope with output shown in the viewer.
 
 In the editor, to invoke the whole script or `Invoke-Build` task, use `[F5]`.
-
-**Background jobs**
-
-Shows the background jobs menu.
-See [Background jobs menu](#background-jobs-menu).
 
 **Command history**
 
@@ -372,45 +364,6 @@ The output is shown in the viewer.
 
     Shows this topic if the input line is empty.
     Otherwise shows the current command help.
-
-*********************************************************************
-## Background jobs menu
-
-[Contents]
-[Background jobs](#background-jobs)
-
-Shows the background jobs information. Job states:
-
-- Running (`[Del]` stops a job)
-- Stopped (e.g. by `[Del]`)
-- Errors (there is one or more not terminating errors)
-- Failed (there is a terminating error)
-- Completed (there are no errors)
-
-Other information: output data size and a job name or its command text (shortened).
-
-**Keys and actions**
-
-- `[Enter]`
-
-    If there are output data closes the menu and opens a viewer for the output.
-
-- `[F3]`
-
-    The same but you will return to the job menu when you close a viewer.
-
-- `[F5]`
-
-    Refreshes job data shown by this menu.
-
-- `[Del]`
-
-    For a running job, stops it. For a not running job, removes it from the
-    list, discards its output, errors, and deletes temp files, if any.
-
-- `[ShiftDel]`
-
-    Invokes `[Del]` action for each job in the list.
 
 *********************************************************************
 ## Command history
@@ -648,13 +601,10 @@ This editor is already used for commands output.
 
 **Local and remote sessions (asynchronous)**
 
-Each interactive opens a separate runspace with its private session state:
-provider locations, variables, functions, aliases, and etc.
-
-Commands are invoked asynchronously in background threads, so that console
-editors and Far itself are not blocked: you can switch to panels or another
-editors while a command is running. Moreover, you can open several async
-consoles, invoke parallel commands and still continue other work in Far.
+Each interactive opens a separate runspace with its own session state:
+provider locations, variables, functions, aliases, and etc. Commands are
+invoked asynchronously, UI is not blocked, you can switch to other windows
+while commands are running.
 
 Limitations of asynchronous interactives:
 
@@ -1324,38 +1274,6 @@ errors are ignored but collected in the global variable `$Error`. Warnings are
 ignored.
 
 *********************************************************************
-## Background jobs
-
-[Contents]
-
-Background jobs are started from the command line or scripts by the cmdlet
-`Start-FarJob`, see its help for details and *Test-Job-.ps1* for examples.
-
-**Rules**
-
-Objects `$Far` and `$Psf` are not exposed for jobs and they should not be
-accessed in other ways because this is not thread safe.
-
-Jobs should not rely on the process current directory, while they are working
-it can change externally. Jobs should not change the current directory, too.
-But the PowerShell current location is totally up to a job, i.e. the command
-`Set-Location` is safe and this job location is not used or changed outside.
-
-Jobs must not be interactive in any way. But you can perform the interactive
-part in the main session (data input and validation with error messages) and
-then, having all data ready, start the job. Example: *Job-RemoveItem-.ps1*
-
-**Notes**
-
-If you close Far and jobs still exist then for any job you are prompted to
-abort, wait for exit, view output or discard all jobs and output. It is done
-with GUI message boxes and external editors because on exiting Far UI is not
-available.
-
-If it is not enough then there is another way to choose how to proceed with
-jobs. The macro `[F10]` can get control of exit in panels: see [Examples].
-
-*********************************************************************
 ## Suffixes
 
 [Contents]
@@ -1523,7 +1441,7 @@ with other options.
 
 - Options
 
-    Comma delimited regular expression and extra options or their aliases.
+    Comma or space delimited regular expression options or their aliases.
 
     Standard .NET regular expression options and aliases:
     `None`, `IgnoreCase/ic`, `Multiline/m`, `ExplicitCapture/ec`, `Compiled`,
@@ -1547,15 +1465,7 @@ with other options.
     processed in the same way but found matches are not selected in the editor,
     only the caret is set at the match.
 
-- Background input
-
-    By default an input command is invoked in the main runspace, it can use
-    defined variables, commands, and etc. If a command actually does not need
-    this and it is going to take long time itself, `dir C:\ -Recurse -Include
-    *.txt`, then it is more effective to run it in the background by setting
-    this flag.
-
----
+***
 **Result panel keys**
 
 * `[Enter]` - open the editor at the selected match.
@@ -1567,53 +1477,37 @@ with other options.
 
 Search in .ps1 files in the current directory:
 
-    dir . -Include *.ps1
+    dir *.ps1
 
-The same but with all sub-directories:
+The same with sub-directories:
 
     dir . -Include *.ps1 -Recurse
 
-The above command are fine for background input, they do not use anything from
-the current session. Commands below cannot be used for background input. But
-they create some useful inputs using cmdlets and API.
-
-To search in all or selected panel items, especially useful in the temp panel:
+To search in all or selected panel items, useful in temp panels:
 
     Get-FarPath -All
     Get-FarPath -Selected
 
-To search in the editor history files:
-
-    $Far.History.Editor() | % Name
-
-The above command is just an example. Its improved version is provided by the
-script built-in utility `Get-EditorHistory` which returns recent files first
-and excludes network paths (the search may take ages if there are missing).
-In other words, use this command:
+To search in the editor history (recent files first, excluded network paths):
 
     Get-EditorHistory
 
----
+***
 **Command line mode**
 
 The script is started with no dialog if the parameter `Regex` is defined. In
 this case options are also defined in the command and input items are either
-piped to the script or specified by the parameter `InputObject`. If it is a
-script block then it is invoked in the background for getting input items.
+piped to the script or specified by `InputObject`.
 
 Example:
 
-    ls *.ps1 | Search-Regex.ps1 TODO IgnoreCase, WholeWord
+    dir *.ps1 | Search-Regex.ps1 TODO ic, ww
 
-Ditto but items are collected in the background:
-
-    Search-Regex.ps1 TODO IgnoreCase, WholeWord {ls *.ps1}
-
----
+***
 **Developer notes**
 
-The script demonstrates useful techniques of using background jobs for
-processing and panels for displaying results and further operations.
+The script demonstrates using `Start-FarTask` for background jobs and using
+panels for displaying job results and further operations on them.
 
 *********************************************************************
 ## Frequently asked questions

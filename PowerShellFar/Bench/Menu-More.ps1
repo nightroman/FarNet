@@ -35,11 +35,6 @@ New-FarMenu 'More' -Show -AutoAssignHotkeys -ChangeConsoleTitle $(
 		# Update synopsis descriptions (how to use module features).
 		New-FarItem "&d. Sync synopsis descriptions" { Import-Module FarDescription; Sync-FarDescriptionSynopsis $Far.Panel.CurrentDirectory }
 
-		# Job: Remove items (can be very time consuming, really good candidate for a job).
-		if ($SelectedItems) {
-			New-FarItem "&r. Job: Remove $($SelectedItems.Count) selected item(s)" { Job-RemoveItem-.ps1 $SelectedItems }
-		}
-
 		# Start BITS transfer job or just open a panel (i.e. on dots)
 		if ($SelectedItems) {
 			New-FarItem "&b. BITS: Transfer $($SelectedItems.Count) selected item(s)" { Panel-BitsTransfer.ps1 -Auto }

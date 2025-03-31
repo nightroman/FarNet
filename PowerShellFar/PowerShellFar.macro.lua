@@ -12,13 +12,6 @@ Macro {
 }
 
 Macro {
-  area="Shell"; key="F10"; description="PSF: Quit Far";
-  action=function()
-    if not Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", [[vps:$Far.Quit()]]) then Keys "F10" end
-  end;
-}
-
-Macro {
   area="Common"; key="AltF10"; description="PSF: Command history";
   action=function()
     Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", [[vps:$Psf.ShowHistory()]])

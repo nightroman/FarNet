@@ -1,18 +1,9 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
 using Microsoft.PowerShell;
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace PowerShellFar;
 #pragma warning disable CA1822
@@ -109,10 +100,6 @@ public sealed partial class Actor
 
 		// release menu
 		UI.ActorMenu.Close();
-
-		// kill remaining jobs
-		//! after menus, before PS
-		Job.StopJobsOnExit();
 
 		// kill host
 		if (FarHost != null)
@@ -324,20 +311,6 @@ public sealed partial class Actor
 	public string AppHome => Path.GetDirectoryName(typeof(Actor).Assembly.Location)!;
 
 	/// <summary>
-	/// Checks whether it is possible to exit the session safely (may require user interaction).
-	/// </summary>
-	/// <returns>true if exit is safe.</returns>
-	/// <remarks>
-	/// If there are background jobs this methods calls <see cref="ShowJobs"/>
-	/// so that you are prompted to remove jobs manually. If you do not remove all the jobs
-	/// then the method returns false.
-	/// <para>
-	/// It can be used to prevent closing of Far by [F10] with existing background jobs.
-	/// </para>
-	/// </remarks>
-	public bool CanExit() => Job.CanExit();
-
-	/// <summary>
 	/// Gets PowerShellFar commands from history.
 	/// </summary>
 	/// <remarks>
@@ -397,12 +370,6 @@ public sealed partial class Actor
 
 		panel.Open();
 	}
-
-	/// <summary>
-	/// Shows the background job list.
-	/// Called on "Background jobs" and by <see cref="CanExit"/>.
-	/// </summary>
-	public void ShowJobs() => Job.ShowJobs();
 
 	/// <summary>
 	/// Shows PowerShell command history.

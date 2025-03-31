@@ -1,9 +1,20 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.11 =
+
+** Retired Start-FarJob **
+https://github.com/nightroman/FarNet/discussions/64
+
+Search-Regex.ps1
+- Migrate from Start-FarJob to Start-FarTask
+
+Retired scripts
+- Bench/Job-RemoveItem-.ps1
+- Tests/Test-Job-.ps1
+
 = 9.0.10 =
 
 ** Start-FarJob will be removed soon **
-https://github.com/nightroman/FarNet/discussions/64
 
 Improve and simplify Start-FarTask
 - script blocks support dynamic parameters as well as file scripts

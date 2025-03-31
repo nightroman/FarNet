@@ -1,4 +1,3 @@
-
 (*
     Our config must be used on getting options from script. This test sets
     `--lib` in the config file -> `#r "PowerShellFar.dll"` should work.
@@ -10,4 +9,4 @@
 #r "PowerShellFar.dll"
 open PowerShellFar
 
-Job.Jobs
+Settings.Default.CommandForegroundColor
