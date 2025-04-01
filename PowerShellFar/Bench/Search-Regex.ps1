@@ -339,11 +339,10 @@ $Panel.add_Closed({
 })
 
 ### Start search task
-Start-FarTask -Panel $Panel -Root $PWD -InputObject $InputObject -Regex $Regex -AllText $AllText {
-	param($Panel, $Root, $InputObject, $Regex, $AllText)
+Start-FarTask -Panel $Panel -InputObject $InputObject -Regex $Regex -AllText $AllText {
+	param($Panel, $InputObject, $Regex, $AllText)
 
 	$ExplorerData = $Panel.Explorer.Data
-	Set-Location -LiteralPath $Root
 
 	job {
 		[FarNet.Tasks]::OpenPanel({ $Data.Panel.OpenChild($null) })

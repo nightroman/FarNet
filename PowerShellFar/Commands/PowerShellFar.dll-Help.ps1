@@ -570,7 +570,10 @@ Example: 'FullName' or {$_.FullName} tell to use a property FullName.
 	asynchronously without blocking the main thread. It uses special job
 	blocks for accessing FarNet API in the main session.
 
-	The task script and jobs may use the same automatic hashtable $Data.
+	INPUT
+
+	The task script and jobs may use the same automatic hashtable $Data. It is
+	set explicitly by the parameter Data and implicitly by script parameters.
 
 	If Script uses parameters, they may be specified on Start-FarTask calls.
 	The specified parameters are also added to the shared hashtable $Data.
@@ -578,14 +581,27 @@ Example: 'FullName' or {$_.FullName} tell to use a property FullName.
 
 	If Script is [scriptblock] then parameters not specified on Start-FarTask
 	must be defined as variables with same names before the call. Parameters
-	stay undefined but variables are added to $Data.
+	are not set but variables are added to $Data.
 
-	If Script is [string] (file name or script code) then parameters not
-	specified on Start-FarTask stay undefined and not added to $Data.
+	If Script is file name then parameters not specified on Start-FarTask are
+	not set and not added to $Data.
+
+	If Script is code string then its parameters are not supported.
+	Use the parameter Data in order to populate $Data with input.
+
+	OUTPUT
 
 	The cmdlet returns nothing by default and the script output is ignored. Use
 	the switch AsTask in order to return the started task. Use it in a calling
 	async scenario and get the script output as the task result, object[].
+
+	LOCATION
+
+	The task current location is the caller file system current location.
+	The task may change it, this does not affect anything else.
+
+	Task jobs current locations are the same main session current location.
+	Jobs should not change it without restoring the original.
 
 	JOBS AND MACROS
 

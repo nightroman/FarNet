@@ -28,6 +28,12 @@
 	The image window is closed if Far Manager exits.
 
 .Example
+	Start-FarTask -File (Get-FarPath -Selected) { param($File) Show-Image.ps1 $File }
+
+	Shows selected images or all (on dots) using using a task. Suitable for
+	user menus. The image window is closed if Far Manager exits.
+
+.Example
 	@start /min powershell -WindowStyle Hidden -Command Show-Image.ps1 "!\!.!"
 
 	Shows the cursor image file using a hidden window process. Suitable for

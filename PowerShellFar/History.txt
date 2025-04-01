@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.12 =
+
+Start-FarJob
+- task current location is set to the caller file system location
+
 = 9.0.11 =
 
 ** Retired Start-FarJob **

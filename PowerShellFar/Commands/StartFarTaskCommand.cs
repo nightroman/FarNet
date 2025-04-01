@@ -120,9 +120,9 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 	[Parameter]
 	public SwitchParameter Step { get; set; }
 
-	static void ShowError(Exception exn)
+	static void ShowError(Exception exception)
 	{
-		Far.Api.ShowError("FarTask error", exn);
+		Far.Api.ShowError("FarTask error", exception);
 	}
 
 	public object? GetDynamicParameters()
@@ -355,11 +355,14 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 			}
 		}
 
-		// open session
+		// open new session
 		var rs = RunspaceFactory.CreateRunspace(_iss);
 		rs.Open();
 
-		// make live script block to invoke asyncronously in the new session
+		// sync file system location
+		rs.SessionStateProxy.Path.SetLocation(SessionState.Path.CurrentFileSystemLocation.Path);
+
+		// PowerShell invoker
 		var ps = PowerShell.Create(rs);
 
 		// debugging
@@ -402,58 +405,41 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 		ps.AddScript(CodeTask).AddArgument(_script).AddArgument(_data).AddArgument(parameters);
 
 		// start
-		var task = AsTask ? new TaskCompletionSource<object[]>() : null;
-		ps.BeginInvoke<object>(null, null, asyncCallback, null);
+		var tcs = AsTask ? new TaskCompletionSource<object[]>() : null;
+		ps.BeginInvoke<object>(null, null, Callback, null);
 		if (AsTask)
-			WriteObject(task!.Task);
+			WriteObject(tcs!.Task);
 
-		void done()
+		void Callback(IAsyncResult asyncResult)
 		{
-			ps.Dispose();
-			rs.Dispose();
-		}
-
-		void asyncCallback(IAsyncResult asyncResult)
-		{
-			var reason = ps.InvocationStateInfo.Reason;
-			if (reason != null)
+			try
 			{
-				if (AsTask)
+				if (ps.InvocationStateInfo.Reason is { } ex)
 				{
-					task!.SetException(FarNet.Works.Kit.UnwrapAggregateException(reason));
+					if (AsTask)
+					{
+						tcs!.SetException(FarNet.Works.Kit.UnwrapAggregateException(ex));
+					}
+					else
+					{
+						Far.Api.PostJob(() =>
+						{
+							ShowError(ex);
+						});
+					}
 				}
 				else
 				{
-					Far.Api.PostJob(() =>
-					{
-						ShowError(reason);
-					});
-				}
-				done();
-				return;
-			}
-
-			//! post, to EndInvoke in the same thread
-			Far.Api.PostJob(() =>
-			{
-				try
-				{
 					var result = ps.EndInvoke(asyncResult);
 					if (AsTask)
-						task!.SetResult(PS2.UnwrapPSObject(result));
+						tcs!.SetResult(PS2.UnwrapPSObject(result));
 				}
-				catch (Exception exn)
-				{
-					if (AsTask)
-						task!.SetException(FarNet.Works.Kit.UnwrapAggregateException(exn));
-					else
-						ShowError(exn);
-				}
-				finally
-				{
-					done();
-				}
-			});
+			}
+			finally
+			{
+				ps.Dispose();
+				rs.Dispose();
+			}
 		}
 	}
 }
