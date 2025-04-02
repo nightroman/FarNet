@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.13 =
+
+** Start-FarTask new feature and breaking change **
+- jobs use $Var.<name> for getting or setting task variables
+- removed job parameters -Arguments, use $Var.<name> instead
+
 = 9.0.12 =
 
 Start-FarTask

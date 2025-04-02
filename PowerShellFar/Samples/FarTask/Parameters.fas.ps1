@@ -6,7 +6,7 @@
 	(1) Define parameters in the script file as usual.
 	(2) Specify them as dynamic parameters for Start-FarTask:
 		Start-FarTask Parameters.fas.ps1 -Param1 hi -Param2 there
-	(!) Switch parameters must be specified after the parameter Script.
+	(!) Avoid switch parameters or specify them after parameter Script.
 #>
 
 param(
@@ -14,6 +14,7 @@ param(
 	$Param2 = 'world'
 )
 
-job -Arguments $Param1, $Param2 {
-	$Far.Message($args[0] + ' ' + $args[1])
+# Jobs may access task variables as $Var.<name>
+job {
+	$Far.Message($Var.Param1 + ' ' + $Var.Param2)
 }

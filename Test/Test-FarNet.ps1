@@ -26,7 +26,7 @@
 [CmdletBinding()]
 param(
 	$Tests = -1,
-	$ExpectedTaskCount = 208,
+	$ExpectedTaskCount = 210,
 	$ExpectedBasicsCount = 16,
 	$ExpectedExtrasCount = 9,
 	[switch]$All,
@@ -119,44 +119,33 @@ Start-FarTask -Data Tests, ExpectedTaskCount, SavedPanelPaths {
 	}
 
 	### Run tests
-	foreach($test in $Data.Tests) {
-		[Diagnostics.Debug]::WriteLine("# $($test.FullName)")
+	foreach($item in $Data.Tests) {
+		++$Data.taskCount
+		$TestFile = $item.FullName
+		[Diagnostics.Debug]::WriteLine("# $TestFile")
 
 		### Run current test
-		$result = job -Arguments $test.FullName {
-			switch -Wildcard ($args[0]) {
-				*.fas.ps1 {
-					++$Data.taskCount
-					Start-FarTask $_ -AsTask
-					break
-				}
-				default {
-					throw "Unknown test file: $_"
-				}
-			}
+		$result = job {
+			Start-FarTask $Var.TestFile -AsTask
 		}
 
 		### Check test output
 		if ($result) {
-			throw "Unexpected test output:`r`n$($test.FullName)`r`n$result"
+			throw "$TestFile`nUnexpected test output:`n$result"
 		}
 
-		### Check after test
-		$result = job {
-			try {
+		### Check test effects
+		try {
+			job {
 				[FarNet.Works.Test]::AssertNormalState()
+
 				if ($global:Error) {
 					throw "Unexpected error after test: $($global:Error[-1])"
 				}
 			}
-			catch {
-				$_
-			}
 		}
-
-		### Show after test issues
-		if ($result) {
-			throw "$($test.FullName):`r`n$result"
+		catch {
+			throw "$TestFile`n$_"
 		}
 	}
 

@@ -13,7 +13,6 @@ There are two kind of scripts:
 
 - Scripts `*.fas.ps1` are task scripts. They are invoked by `Start-FarTask`,
   for example by the association `ps: Start-FarTask (Get-FarPath)`.
-  Such scripts work with FarNet using jobs and macros.
 
 How to run `*.fas.ps1` normally:
 
@@ -63,27 +62,15 @@ to the console, as if they are called from the command line.
 See [ConsoleGitStatus.far.ps1](ConsoleGitStatus.far.ps1), it prints some git
 info when the current panel directory changes.
 
-### Beware of unexpected current paths
+### Beware of various current paths
 
-Keep in mind, there are several different current paths in tasks and jobs and
-they all may be out of sync. Interesting paths:
+Keep in mind, there are various current paths in tasks and jobs and they may or
+may not be the same. Interesting paths:
 
-- Far Manager process current directory, `%FARHOME%`, it normally does not change
-- Far Manager internal current directory, it depends on the active panel path
-- Task current location, normally it is the start panel path, it may change
-- Job current location, it is the session current location, it may change
+- Far Manager process current directory, usually where it starts
+- Far Manager internal current directory, the active panel path
+- Task current location, usually where it starts, may change
+- Job current location, the main session current location
 
 See [CurrentLocations.fas.ps1](Case/CurrentLocations.fas.ps1), it shows how
 these paths change and may be same or different depending on actions.
-
-### Expose all task or job variables
-
-If a task or job creates many variables to be shared, then instead of saving
-them in `$Data` individually you may expose all variables:
-
-```powershell
-$Data.Var = $ExecutionContext.SessionState.PSVariable
-```
-
-Then later get variable values as `$Data.Var.GetValue('myVar')`.
-See [Case/PSVariable.fas.ps1](Case/PSVariable.fas.ps1)

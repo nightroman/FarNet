@@ -8,20 +8,17 @@ namespace PowerShellFar.Commands;
 [OutputType(typeof(Task<object[]>))]
 sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 {
-	const string
-		KeyData = "Data",
-		ScriptBlockFunction = "ScriptBlockFunction";
+	const string NameInvokeTaskJob = "Invoke-TaskJob";
+	const string NameInvokeTaskCmd = "Invoke-TaskCmd";
+	const string NameInvokeTaskRun = "Invoke-TaskRun";
+	const string NameInvokeTaskKeys = "Invoke-TaskKeys";
+	const string NameInvokeTaskMacro = "Invoke-TaskMacro";
+	const string ScriptBlockFunction = "ScriptBlockFunction";
 
-	// invokes task scripts in a new session
+	// invokes task scripts
 	const string CodeTask = """
 	param($Script, $Data, $Parameters)
 	. $Script.GetNewClosure() @Parameters
-	""";
-
-	// invokes job scripts in the main session
-	const string CodeJob = """
-	param($Script, $Data, $Arguments)
-	. $Script.GetNewClosure() @Arguments
 	""";
 
 	// sets step breaks
@@ -32,15 +29,15 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 	// tasks initial state
 	static readonly InitialSessionState _iss;
 
-	// $Data for scripts
+	// $Data for task scripts and jobs
 	readonly Hashtable _data = new(StringComparer.OrdinalIgnoreCase);
 
 	// task script
-	ScriptBlock _script = null!;
 	bool _isScript;
-	Dictionary<string, ParameterMetadata>? _scriptParameters;
+	ScriptBlock _script = null!;
 	RuntimeDefinedParameterDictionary? _dynamicParameters;
-	static readonly string[] _paramInvalid = [nameof(Script), nameof(Data), nameof(AsTask), nameof(AddDebugger), nameof(Step)];
+	Dictionary<string, ParameterMetadata>? _scriptParameters;
+	static readonly string[] s_paramInvalid = [nameof(Script), nameof(Data), nameof(AsTask), nameof(AddDebugger), nameof(Step)];
 
 	[Parameter(Position = 0, Mandatory = true)]
 	public object Script
@@ -76,7 +73,7 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 			}
 			else
 			{
-				//! raw text for interop like FSharpFar
+				//! code for interop like FSharpFar
 				_script = ScriptBlock.Create(text);
 			}
 		}
@@ -120,196 +117,6 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 	[Parameter]
 	public SwitchParameter Step { get; set; }
 
-	static void ShowError(Exception exception)
-	{
-		Far.Api.ShowError("FarTask error", exception);
-	}
-
-	public object? GetDynamicParameters()
-	{
-		if (_scriptParameters is null || _scriptParameters.Count == 0)
-			return null;
-
-		_dynamicParameters = [];
-		var commonParameters = CommonParameters;
-		foreach (var p in _scriptParameters.Values)
-		{
-			if (commonParameters.Contains(p.Name))
-				continue;
-
-			if (_paramInvalid.Contains(p.Name, StringComparer.OrdinalIgnoreCase))
-				throw new InvalidOperationException($"Task script cannot use parameter: {string.Join(", ", _paramInvalid)}");
-
-			_dynamicParameters.Add(p.Name, new RuntimeDefinedParameter(p.Name, p.ParameterType, p.Attributes));
-		}
-		return _dynamicParameters;
-	}
-
-	// jobs and macros base
-	public class BaseCommand : PSCmdlet
-	{
-		protected Hashtable GetData()
-		{
-			return (Hashtable)GetVariableValue(KeyData);
-		}
-	}
-
-	// jobs base
-	public class BaseJob : BaseCommand
-	{
-		[Parameter(Position = 0)]
-		public ScriptBlock Script { get; set; } = null!;
-
-		[Parameter(Position = 1)]
-		public object[] Arguments { get; set; } = null!;
-
-		protected override void BeginProcessing()
-		{
-			if (Script == null)
-				throw new PSArgumentNullException(nameof(Script));
-		}
-	}
-
-	// job {...}
-	public class InvokeTaskJob : BaseJob
-	{
-		protected override void BeginProcessing()
-		{
-			var data = GetData();
-
-			// post the job as task
-			var task = Tasks.Job(() =>
-			{
-				// invoke script block in the main session
-				var ps = A.Psf.NewPowerShell();
-
-				ps.AddScript(CodeJob, true).AddArgument(Script).AddArgument(data).AddArgument(Arguments);
-				var output = ps.Invoke();
-
-				//! Assert-Far may stop by PipelineStoppedException
-				if (ps.InvocationStateInfo.Reason != null)
-					throw ps.InvocationStateInfo.Reason;
-
-				return output;
-			});
-
-			// await
-			var result = task.AwaitResult();
-			FarNet.Works.Far2.Api.WaitSteps().Await();
-
-			//! if the job returns a task, await and return
-			if (result.Count == 1 && result[0]?.BaseObject is Task task2)
-			{
-				task2.Await();
-
-				var result2 = task2.GetType().GetProperty("Result")?.GetValue(task2);
-				if (result2 != null)
-					WriteObject(result2);
-			}
-			else
-			{
-				foreach (var it in result)
-					WriteObject(it);
-			}
-		}
-	}
-
-	// ps: {...}
-	public class InvokeTaskCmd : BaseJob
-	{
-		protected override void BeginProcessing()
-		{
-			var data = GetData();
-
-			Exception? reason = null;
-
-			// post the job as task
-			var task = Tasks.Job(() =>
-			{
-				var args = new RunArgs(CodeJob)
-				{
-					Writer = new ConsoleOutputWriter(),
-					NoOutReason = true,
-					UseLocalScope = true,
-					Arguments = [Script, data, Arguments]
-				};
-				A.Psf.Run(args);
-				reason = args.Reason;
-			});
-
-			// await
-			task.Await();
-			FarNet.Works.Far2.Api.WaitSteps().Await();
-			if (reason != null)
-				throw reason;
-		}
-	}
-
-	// run {...}
-	public class InvokeTaskRun : BaseJob
-	{
-		protected override void BeginProcessing()
-		{
-			var data = GetData();
-
-			// post the job as task
-			var task = Tasks.Run(() =>
-			{
-				var ps = A.Psf.NewPowerShell();
-				ps.AddScript(CodeJob, true).AddArgument(Script).AddArgument(data).AddArgument(Arguments);
-				ps.Invoke();
-
-				//! Assert-Far may stop by PipelineStoppedException
-				if (ps.InvocationStateInfo.Reason != null)
-					throw ps.InvocationStateInfo.Reason;
-			});
-
-			// await
-			task.Await();
-			FarNet.Works.Far2.Api.WaitSteps().Await();
-		}
-	}
-
-	// keys ...
-	public class InvokeTaskKeys : BaseCommand
-	{
-		[Parameter(ValueFromRemainingArguments = true)]
-		public string[] Keys { get; set; } = null!;
-
-		protected override void BeginProcessing()
-		{
-			if (Keys is null || Keys.Length == 0)
-				throw new PSArgumentNullException(nameof(Keys));
-
-			var keys = string.Join(" ", Keys);
-
-			Tasks.Keys(keys).Await();
-			FarNet.Works.Far2.Api.WaitSteps().Await();
-		}
-	}
-
-	// macro ...
-	public class InvokeTaskMacro : BaseCommand
-	{
-		[Parameter(Position = 0)]
-		public string Macro { get; set; } = null!;
-
-		protected override void BeginProcessing()
-		{
-			if (Macro == null)
-				throw new PSArgumentNullException(nameof(Macro));
-
-			Tasks.Macro(Macro).Await();
-			FarNet.Works.Far2.Api.WaitSteps().Await();
-		}
-	}
-
-	const string NameInvokeTaskJob = "Invoke-TaskJob";
-	const string NameInvokeTaskCmd = "Invoke-TaskCmd";
-	const string NameInvokeTaskRun = "Invoke-TaskRun";
-	const string NameInvokeTaskKeys = "Invoke-TaskKeys";
-	const string NameInvokeTaskMacro = "Invoke-TaskMacro";
-
 	static StartFarTaskCommand()
 	{
 		_iss = InitialSessionState.CreateDefault();
@@ -330,6 +137,31 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 			new SessionStateCmdletEntry(NameInvokeTaskKeys, typeof(InvokeTaskKeys), string.Empty),
 			new SessionStateCmdletEntry(NameInvokeTaskMacro, typeof(InvokeTaskMacro), string.Empty),
 		]);
+	}
+
+	static void ShowError(Exception exception)
+	{
+		Far.Api.ShowError("FarTask error", exception);
+	}
+
+	public object? GetDynamicParameters()
+	{
+		if (_scriptParameters is null || _scriptParameters.Count == 0)
+			return null;
+
+		_dynamicParameters = [];
+		var commonParameters = CommonParameters;
+		foreach (var p in _scriptParameters.Values)
+		{
+			if (commonParameters.Contains(p.Name))
+				continue;
+
+			if (s_paramInvalid.Contains(p.Name, StringComparer.OrdinalIgnoreCase))
+				throw new InvalidOperationException($"Task script cannot use parameters: {string.Join(", ", s_paramInvalid)}");
+
+			_dynamicParameters.Add(p.Name, new RuntimeDefinedParameter(p.Name, p.ParameterType, p.Attributes));
+		}
+		return _dynamicParameters;
 	}
 
 	protected override void BeginProcessing()
@@ -373,22 +205,17 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 			// import breakpoints
 			foreach (var bp in A.Psf.Runspace.Debugger.GetBreakpoints())
 			{
-				if (bp is CommandBreakpoint cbp)
+				switch (bp)
 				{
-					rs.Debugger.SetCommandBreakpoint(cbp.Command, cbp.Action, cbp.Script);
-					continue;
-				}
-
-				if (bp is LineBreakpoint lbp)
-				{
-					rs.Debugger.SetLineBreakpoint(lbp.Script, lbp.Line, lbp.Column, lbp.Action);
-					continue;
-				}
-
-				if (bp is VariableBreakpoint vbp)
-				{
-					rs.Debugger.SetVariableBreakpoint(vbp.Variable, vbp.AccessMode, vbp.Action, vbp.Script);
-					continue;
+					case CommandBreakpoint cbp:
+						rs.Debugger.SetCommandBreakpoint(cbp.Command, cbp.Action, cbp.Script);
+						break;
+					case LineBreakpoint lbp:
+						rs.Debugger.SetLineBreakpoint(lbp.Script, lbp.Line, lbp.Column, lbp.Action);
+						break;
+					case VariableBreakpoint vbp:
+						rs.Debugger.SetVariableBreakpoint(vbp.Variable, vbp.AccessMode, vbp.Action, vbp.Script);
+						break;
 				}
 			}
 
@@ -441,5 +268,133 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 				rs.Dispose();
 			}
 		}
+	}
+}
+
+file class BaseJob : PSCmdlet
+{
+	// invokes job scripts
+	protected const string CodeJob = """
+	param($Script, $Data, $Var)
+	. $Script.GetNewClosure()
+	""";
+
+	[Parameter(Position = 0, Mandatory = true)]
+	public ScriptBlock Script { get; set; } = null!;
+
+	protected Hashtable GetData() => (Hashtable)GetVariableValue("Data");
+
+	protected VarDictionary GetVars() => new(SessionState.PSVariable);
+}
+
+file class InvokeTaskJob : BaseJob
+{
+	protected override void BeginProcessing()
+	{
+		// post the job as task
+		var task = Tasks.Job(() =>
+		{
+			using var ps = A.Psf.NewPowerShell();
+			ps.AddScript(CodeJob, true).AddArgument(Script).AddArgument(GetData()).AddArgument(GetVars());
+			var output = ps.Invoke();
+
+			//! Assert-Far may stop by PipelineStoppedException
+			if (ps.InvocationStateInfo.Reason is { })
+				throw ps.InvocationStateInfo.Reason;
+
+			return output;
+		});
+
+		// await
+		var result = task.AwaitResult();
+		FarNet.Works.Far2.Api.WaitSteps().Await();
+
+		//! if the job returns a task, await and return
+		if (result.Count == 1 && result[0]?.BaseObject is Task task2)
+		{
+			task2.Await();
+
+			var result2 = task2.GetType().GetProperty("Result")?.GetValue(task2);
+			if (result2 is { })
+				WriteObject(result2);
+		}
+		else
+		{
+			foreach (var it in result)
+				WriteObject(it);
+		}
+	}
+}
+
+file class InvokeTaskCmd : BaseJob
+{
+	protected override void BeginProcessing()
+	{
+		// post the job as task
+		var task = Tasks.Job(() =>
+		{
+			var args = new RunArgs(CodeJob)
+			{
+				Writer = new ConsoleOutputWriter(),
+				NoOutReason = true,
+				UseLocalScope = true,
+				Arguments = [Script, GetData(), GetVars()]
+			};
+			A.Psf.Run(args);
+			return args.Reason;
+		});
+
+		// await
+		var reason = task.AwaitResult();
+		FarNet.Works.Far2.Api.WaitSteps().Await();
+		if (reason is { })
+			throw reason;
+	}
+}
+
+file class InvokeTaskRun : BaseJob
+{
+	protected override void BeginProcessing()
+	{
+		// post the job as task
+		var task = Tasks.Run(() =>
+		{
+			using var ps = A.Psf.NewPowerShell();
+			ps.AddScript(CodeJob, true).AddArgument(Script).AddArgument(GetData()).AddArgument(GetVars());
+			ps.Invoke();
+
+			//! Assert-Far may stop by PipelineStoppedException
+			if (ps.InvocationStateInfo.Reason is { })
+				throw ps.InvocationStateInfo.Reason;
+		});
+
+		// await
+		task.Await();
+		FarNet.Works.Far2.Api.WaitSteps().Await();
+	}
+}
+
+file class InvokeTaskKeys : PSCmdlet
+{
+	[Parameter(ValueFromRemainingArguments = true, Mandatory = true)]
+	public string[] Keys { get; set; } = null!;
+
+	protected override void BeginProcessing()
+	{
+		var keys = string.Join(" ", Keys);
+		Tasks.Keys(keys).Await();
+		FarNet.Works.Far2.Api.WaitSteps().Await();
+	}
+}
+
+file class InvokeTaskMacro : PSCmdlet
+{
+	[Parameter(Position = 0, Mandatory = true)]
+	public string Macro { get; set; } = null!;
+
+	protected override void BeginProcessing()
+	{
+		Tasks.Macro(Macro).Await();
+		FarNet.Works.Far2.Api.WaitSteps().Await();
 	}
 }

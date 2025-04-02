@@ -572,12 +572,12 @@ Example: 'FullName' or {$_.FullName} tell to use a property FullName.
 
 	INPUT
 
-	The task script and jobs may use the same automatic hashtable $Data. It is
-	set explicitly by the parameter Data and implicitly by script parameters.
+	The task script and jobs may use the shared hashtable $Data. It is set
+	explicitly by the parameter Data and implicitly by script parameters.
 
 	If Script uses parameters, they may be specified on Start-FarTask calls.
-	The specified parameters are also added to the shared hashtable $Data.
-	Known issue: avoid switch parameters or specify them after Script.
+	(Known issue: avoid switch parameters or specify them after Script.)
+	The specified parameters are added to the shared hashtable $Data.
 
 	If Script is [scriptblock] then parameters not specified on Start-FarTask
 	must be defined as variables with same names before the call. Parameters
@@ -586,41 +586,45 @@ Example: 'FullName' or {$_.FullName} tell to use a property FullName.
 	If Script is file name then parameters not specified on Start-FarTask are
 	not set and not added to $Data.
 
-	If Script is code string then its parameters are not supported.
-	Use the parameter Data in order to populate $Data with input.
+	If Script is code string then parameters are not supported.
+	Use the parameter Data in order to provide input as $Data.
 
 	OUTPUT
 
-	The cmdlet returns nothing by default and the script output is ignored. Use
-	the switch AsTask in order to return the started task. Use it in a calling
-	async scenario and get the script output as the task result, object[].
+	The cmdlet returns nothing by default and the task script output is
+	ignored. Use the switch AsTask in order to return the started task.
+	The task result is the script output presented as [object[]].
 
 	LOCATION
 
 	The task current location is the caller file system current location.
 	The task may change it, this does not affect anything else.
 
-	Task jobs current locations are the same main session current location.
+	Task jobs current locations are the main session current location.
 	Jobs should not change it without restoring the original.
 
 	JOBS AND MACROS
 
-	job [-Arguments ...] [-Script] {...}
+	job {...}
 
-		This job works with FarNet and may output data as usual. Special case:
-		if the output is a task then this task is awaited and its result is
-		returned instead.
+		This job may output data as usual. Special case: if the output is a
+		task then this task is awaited and its result is returned instead.
 
-	ps: [-Arguments ...] [-Script] {...}
+		Use $Var.<name> for getting or setting the task variables.
 
-		This job is used for console output as if its commands are invoked from
-		the command line. It returns nothing because the output is sent to the
-		console.
+	ps: {...}
 
-	run [-Arguments ...] [-Script] {...}
+		This job is used for console output of its commands, as if they are
+		invoked from the command line.
+
+		Use $Var.<name> for getting or setting the task variables.
+
+	run {...}
 
 		This job is used to run modal UI without blocking the task.
 		It is useful for automation and tests. Output is ignored.
+
+		Use $Var.<name> for getting or setting the task variables.
 
 	keys <key> [<key> ...]
 
@@ -648,7 +652,7 @@ The list of variable names or hashtables added to the shared hashtable $Data.
 
 String items are existing variable names added to $Data as {name, value}.
 
-Hashtable items are added to $Data as they are.
+Hashtable items are merged into $Data.
 '@
 		AddDebugger = @'
 Tells to use Add-Debugger.ps1 and specifies its parameters hashtable.
