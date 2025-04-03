@@ -107,8 +107,8 @@ Start-FarTask -Data Tests, ExpectedTaskCount, SavedPanelPaths {
 			# tests
 			Get-ChildItem $env:FarNetCode\Test -Force -Recurse -Include *.fas.ps1
 			# outer
-			Get-Item $env:FarNetCode\PowerShellFar\Samples\FarTask\Basics.fas.ps1
-			Get-Item $env:FarNetCode\PowerShellFar\Samples\FarTask\Test-Dialog.fas.ps1
+			Get-Item $env:FarNetCode\Samples\FarTask\Basics.fas.ps1
+			Get-Item $env:FarNetCode\Samples\FarTask\Test-Dialog.fas.ps1
 		)
 	}
 

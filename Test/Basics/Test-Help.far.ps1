@@ -9,12 +9,12 @@ param([switch]$Force)
 
 ### test up-to-date
 
-$helpScript = "$env:PSF\Commands\PowerShellFar.dll-Help.ps1"
+$helpScript = "$env:FarNetCode\PowerShellFar\Commands\PowerShellFar.dll-Help.ps1"
 $helpOutput = "$($Psf.AppHome)\PowerShellFar.dll-Help.xml"
 
 $toBuild = $Force -or (!(Test-Path $helpOutput))
 if (!$toBuild) {
-	$timeSource = Get-Item $helpScript, C:\ROM\APS\Do\Helps\*.*, $env:PSF\Commands\*.cs | Get-LastWriteTimeMaximum
+	$timeSource = Get-Item $helpScript, C:\ROM\APS\Do\Helps\*.*, $env:FarNetCode\PowerShellFar\Commands\*.cs | Get-LastWriteTimeMaximum
 	$timeOutput = (Get-Item $helpOutput).LastWriteTime
 	$toBuild = $timeSource -gt $timeOutput
 	@"

@@ -12,7 +12,7 @@ job {
 	function global:aaa3 {}
 
 	# open the panel
-	& "$env:PSF\Samples\Tests\Test-Explorer.far.ps1"
+	& "$env:FarNetCode\Samples\Tests\Test-Explorer.far.ps1"
 }
 job {
 	# title, no dots, the files
@@ -253,7 +253,7 @@ job {
 	Assert-Far -FileName Test-Explorer.fas.ps1
 }
 job {
-	& "$env:PSF\Samples\Tests\Test-Explorer.far.ps1"
+	& "$env:FarNetCode\Samples\Tests\Test-Explorer.far.ps1"
 }
 job {
 	Find-FarFile Tree

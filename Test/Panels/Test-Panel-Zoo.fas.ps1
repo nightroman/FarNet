@@ -30,7 +30,7 @@ function Get-Block-Delete
 
 # open data panel
 job {
-	& "$env:PSF\Samples\Tests\Test-Zoo-.ps1"
+	& "$env:FarNetCode\Samples\Tests\Test-Zoo-.ps1"
 	Remove-Item "$HOME\Test-Zoo.clixml"
 }
 keys Down

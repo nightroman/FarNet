@@ -11,7 +11,7 @@ run {
 	if ($global:Error) {throw 'Please remove errors.'}
 
 	# call the test, it opens the Inquire prompt on error
-	& "$env:PSF\Samples\Tests\Test-CallStack-.ps1"
+	& "$env:FarNetCode\Samples\Tests\Test-CallStack-.ps1"
 }
 
 job {

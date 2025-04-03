@@ -6,7 +6,7 @@ try {
 		Set-AddDebuggerIO
 
 		# this asserts
-		$r = & $env:FarNetCode\PowerShellFar\Samples\Tests\Test-Assert-Far.far.ps1
+		$r = & $env:FarNetCode\Samples\Tests\Test-Assert-Far.far.ps1
 
 		# but this is still called due to [Ignore]
 		$Data.result = $r

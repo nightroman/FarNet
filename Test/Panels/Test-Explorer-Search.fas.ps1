@@ -7,7 +7,7 @@
 
 job {
 	# open module panel
-	& "$env:PSF\Samples\Tests\Test-Explorer.far.ps1"
+	& "$env:FarNetCode\Samples\Tests\Test-Explorer.far.ps1"
 }
 job {
 	# open search panel

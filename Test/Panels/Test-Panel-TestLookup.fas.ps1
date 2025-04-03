@@ -3,7 +3,7 @@
 	Test Test-Panel-Lookup-
 #>
 
-job { & "$env:PSF\Samples\Tests\Test-Panel-Lookup-.ps1" }
+job { & "$env:FarNetCode\Samples\Tests\Test-Panel-Lookup-.ps1" }
 
 # 'Any'
 job { Find-FarFile 'Any' }

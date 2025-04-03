@@ -1,7 +1,7 @@
 ﻿
 run {
 	# register command
-	& "$env:PSF\Samples\Tests\Test-RegisterCommand.far.ps1"
+	& "$env:FarNetCode\Samples\Tests\Test-RegisterCommand.far.ps1"
 }
 
 job {

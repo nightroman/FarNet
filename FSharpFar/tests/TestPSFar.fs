@@ -3,7 +3,7 @@ open FarNet
 open FarNet.FSharp
 
 let getFarTask name =
-    __SOURCE_DIRECTORY__ + @"\..\..\PowerShellFar\Samples\FarTask\" + name
+    __SOURCE_DIRECTORY__ + @"\..\..\Samples\FarTask\" + name
 
 // PowerShellFar unwraps PSObject unless its BaseObject is PSCustomObject.
 // In this case the original PSObject is returned.
@@ -191,10 +191,10 @@ Test.Add("InputEditorMessage", async {
 })
 
 Test.Add("ParametersScriptBlock", async {
-    do! job { PSFar.Invoke(getFarTask "Parameters.far.ps1") |> ignore }
+    do! job { PSFar.Invoke(getFarTask "Parameters=1.far.ps1") |> ignore }
     do! Assert.Wait Window.IsDialog
     do! job {
-        Assert.Equal("Hello Joe (42)", far.Dialog[1].Text)
+        Assert.Equal("Hi Joe (42)", far.Dialog[1].Text)
     }
     do! Jobs.Keys "Esc"
 })
@@ -202,7 +202,7 @@ Test.Add("ParametersScriptBlock", async {
 Test.Add("ParametersScriptFile", async {
     let! _ =
         PSFar.StartTask(
-            getFarTask "Parameters.fas.ps1",
+            getFarTask "Parameters=3.fas.ps1",
             ["Param1", box "hi"; "Param2", box "there"]
         )
         |> Async.StartChild

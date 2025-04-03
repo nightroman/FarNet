@@ -1,7 +1,7 @@
 ﻿
 run {
 	# register tool
-	& "$env:PSF\Samples\Tests\Test-RegisterTool.far.ps1"
+	& "$env:FarNetCode\Samples\Tests\Test-RegisterTool.far.ps1"
 }
 
 job {

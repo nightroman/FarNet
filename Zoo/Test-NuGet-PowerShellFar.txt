@@ -11,7 +11,7 @@ FarHome\FarNet\Modules\PowerShellFar\Bench\Descript.ion
 FarHome\FarNet\Modules\PowerShellFar\Bench\Edit-FarDescription.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Edit-FarFileSync.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Edit-IB.ps1
-FarHome\FarNet\Modules\PowerShellFar\Bench\Generate-Dialog-.ps1
+FarHome\FarNet\Modules\PowerShellFar\Bench\Generate-Dialog.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Get-TextLink.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Go-Everything.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Go-Head-.ps1

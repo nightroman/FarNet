@@ -1,5 +1,14 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.14 =
+
+Start-FarTask
+- treat task script parameters the same way in all cases
+
+Misc
+- moved folder "Samples" to the repo root
+- renamed "Generate-Dialog-.ps1" -> "Generate-Dialog.ps1"
+
 = 9.0.13 =
 
 ** Start-FarTask new feature and breaking change **
@@ -172,7 +181,7 @@ Go-Everything.ps1 uses settings instead of env variables.
 = 8.1.11 =
 
 New cmdlets Register-FarCommand, Register-FarDrawer, Register-FarTool.
-See PowerShellFar/Samples/Tests
+See Samples/Tests
 
 = 8.1.10 =
 
@@ -936,7 +945,7 @@ ArgumentCompleters.ps1 ~ Equals, GetType, ToString.
 
 - add parameter Return to Out-FarPanel
 - add output type attributes to cmdlets
-- work on PowerShellFar/Samples/FarTask
+- work on Samples/FarTask
 
 = 5.3.8 =
 
@@ -962,8 +971,8 @@ Start-FarTask
 = 5.3.6 =
 
 Add Start-FarTask for async scripts with sync Far jobs and keys.
-Samples: https://github.com/nightroman/FarNet/tree/main/PowerShellFar/Samples/FarTask
-F# tests: https://github.com/nightroman/FarNet/blob/main/FSharpFar/tests/TestPSFar.fs
+Samples: Samples/FarTask
+F# tests: FSharpFar/tests/TestPSFar.fs
 
 = 5.3.5 =
 

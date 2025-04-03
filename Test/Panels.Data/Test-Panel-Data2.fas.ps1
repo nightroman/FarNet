@@ -6,7 +6,7 @@
 ### Test Test-Panel-DBNotes.far.ps1 (simple lookup)
 
 # open it
-job { & "$env:PSF\Samples\Tests\Test-Panel-DBNotes.far.ps1" }
+job { & "$env:FarNetCode\Samples\Tests\Test-Panel-DBNotes.far.ps1" }
 job { Assert-Far ($Far.Panel -is [PowerShellFar.DataPanel]) }
 
 # go to Note1
@@ -86,7 +86,7 @@ job { Assert-Far -Native }
 ### Test Test-Panel-DBNotes.far.ps1 (generic lookup)
 
 # open it
-job { & "$env:PSF\Samples\Tests\Test-Panel-DBNotes.far.ps1" -GenericLookup }
+job { & "$env:FarNetCode\Samples\Tests\Test-Panel-DBNotes.far.ps1" -GenericLookup }
 job { Assert-Far ($Far.Panel -is [PowerShellFar.DataPanel]) }
 
 # go to Note1

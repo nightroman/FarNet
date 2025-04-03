@@ -5,7 +5,7 @@
 
 job {
 	# open module panel
-	& "$env:PSF\Samples\Tests\Test-Panel.far.ps1"
+	& "$env:FarNetCode\Samples\Tests\Test-Panel.far.ps1"
 }
 
 job {

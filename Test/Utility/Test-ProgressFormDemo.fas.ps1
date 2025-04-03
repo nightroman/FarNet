@@ -5,8 +5,8 @@
 
 ### progress box
 job {
-	Set-Alias Test-ProgressBox "$env:PSF\Samples\Tests\Test-ProgressBox.far.ps1" -Scope global
-	Set-Alias Test-ProgressForm "$env:PSF\Samples\Tests\Test-ProgressForm.far.ps1" -Scope global
+	Set-Alias Test-ProgressBox "$env:FarNetCode\Samples\Tests\Test-ProgressBox.far.ps1" -Scope global
+	Set-Alias Test-ProgressForm "$env:FarNetCode\Samples\Tests\Test-ProgressForm.far.ps1" -Scope global
 
 	Test-ProgressBox -JobSeconds 1 -JobSteps 100
 }

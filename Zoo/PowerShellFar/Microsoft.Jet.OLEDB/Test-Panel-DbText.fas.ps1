@@ -15,7 +15,7 @@ catch { return }
 
 job {
 	# open panel
-	& "$env:PSF\Samples\Tests\Test-Panel-DbText-.ps1"
+	& "$env:FarNetCode\Samples\Tests\Test-Panel-DbText-.ps1"
 }
 job {
 	Assert-Far -Plugin

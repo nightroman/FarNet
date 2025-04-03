@@ -8,7 +8,7 @@ job {
 
 job {
 	# start panel
-	& "$env:PSF\Samples\Tests\Test-Panel-Tree-.ps1"
+	& "$env:FarNetCode\Samples\Tests\Test-Panel-Tree-.ps1"
 }
 
 job {
@@ -99,7 +99,7 @@ job {
 
 job {
 	# start panel
-	& "$env:PSF\Samples\Tests\Test-Panel-Tree-.ps1"
+	& "$env:FarNetCode\Samples\Tests\Test-Panel-Tree-.ps1"
 }
 
 # find

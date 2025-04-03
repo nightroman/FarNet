@@ -112,7 +112,7 @@ job {
 
 job {
 	# open FarNet panel
-	& "$env:PSF\Samples\Tests\Test-Panel.far.ps1"
+	& "$env:FarNetCode\Samples\Tests\Test-Panel.far.ps1"
 }
 job {
 	Assert-Far -Plugin
@@ -132,7 +132,7 @@ job {
 
 job {
 	# open FarNet panel
-	& "$env:PSF\Samples\Tests\Test-Panel.far.ps1"
+	& "$env:FarNetCode\Samples\Tests\Test-Panel.far.ps1"
 }
 job {
 	Assert-Far -Plugin

@@ -4,7 +4,7 @@
 #>
 
 job {
-	& "$env:PSF\Samples\Tests\Test-Panel-DBCategories.far.ps1"
+	& "$env:FarNetCode\Samples\Tests\Test-Panel-DBCategories.far.ps1"
 }
 job {
 	Find-FarFile Task

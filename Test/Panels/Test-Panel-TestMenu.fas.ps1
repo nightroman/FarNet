@@ -4,7 +4,7 @@
 #>
 
 # open panel, call menu, select item 1
-job { & "$env:PSF\Samples\Tests\Test-Panel-Menu-.ps1" }
+job { & "$env:FarNetCode\Samples\Tests\Test-Panel-Menu-.ps1" }
 macro 'Keys"ShiftF3 1"'
 
 # just call item 2

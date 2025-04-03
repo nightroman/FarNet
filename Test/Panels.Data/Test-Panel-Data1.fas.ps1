@@ -5,7 +5,7 @@
 
 job {
 	# make data and connect
-	& "$env:PSF\Samples\Tests\Initialize-Test.far.ps1"
+	& "$env:FarNetCode\Samples\Tests\Initialize-Test.far.ps1"
 }
 
 ### Test Panel-DBTable

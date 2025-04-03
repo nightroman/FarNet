@@ -24,7 +24,7 @@ function Test-Move {
 
 ### open panel 1
 job {
-	& "$env:PSF\Samples\Tests\Test-Panel.far.ps1"
+	& "$env:FarNetCode\Samples\Tests\Test-Panel.far.ps1"
 }
 job {
 	Assert-Far $Far.Panel.Title -eq "Test Panel"
@@ -142,7 +142,7 @@ job {
 ### open panel 2
 keys Tab
 job {
-	& "$env:PSF\Samples\Tests\Test-Panel.far.ps1" -NoDots
+	& "$env:FarNetCode\Samples\Tests\Test-Panel.far.ps1" -NoDots
 }
 job {
 	Assert-Far $Far.Panel.Title -eq "Test Panel"

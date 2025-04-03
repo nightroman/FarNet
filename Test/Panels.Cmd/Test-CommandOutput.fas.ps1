@@ -103,7 +103,7 @@ job {
 ### full output
 macro @"
  Keys("c l s Enter p s : Space")
- print("$("$env:PSF\Samples\Tests\Test-Write.ps1".Replace('\', '\\'))")
+ print("$("$env:FarNetCode\Samples\Tests\Test-Write.ps1".Replace('\', '\\'))")
  Keys("Enter")
 "@
 job {
@@ -122,7 +122,7 @@ job {
 	$buff = $Host.UI.RawUI.GetBufferContents($rect)
 	$buff | Select-Object Character, ForegroundColor | Export-Csv C:\TEMP\buffer.csv
 	$hash = (Get-FileHash C:\TEMP\buffer.csv).Hash
-	Assert-Far $hash -eq E92C1F41442A0CC3B44D17FF478C368F15B2C3ADEE94C3CF4BF55C1284784F85
+	Assert-Far $hash -eq CCE63D6CAF876DD90D4EA1751C1072FAFB22FB15B87F4506A3DF9F02629273F0
 	Remove-Item C:\TEMP\buffer.csv
 }
 

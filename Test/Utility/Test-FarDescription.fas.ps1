@@ -13,7 +13,7 @@ job {
 	1 > $4
 	$Far.Panel.GoToPath($4)
 	Assert-Far -FileName Edit-FarDescription.tmp
-	& $env:PSF\Bench\Edit-FarDescription.ps1
+	Edit-FarDescription.ps1
 	Assert-Far -Editor
 }
 # type 42, save, exit
@@ -33,7 +33,7 @@ job {
 	# open description editor from editor
 	Assert-Far -Editor
 	Assert-Far $Far.Editor[0].Text -eq '1'
-	& $env:PSF\Bench\Edit-FarDescription.ps1
+	Edit-FarDescription.ps1
 }
 job {
 	# text is 42
@@ -72,7 +72,7 @@ job {
 job {
 	# open description editor from viewer
 	Assert-Far -Viewer
-	& $env:PSF\Bench\Edit-FarDescription.ps1
+	Edit-FarDescription.ps1
 }
 job {
 	# text is empty

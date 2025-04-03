@@ -4,7 +4,6 @@ Complete-Word.ps1 Completes the current word in editors.
 Edit-FarDescription.ps1 Edits multiline Far descriptions in the editor.
 Edit-FarFileSync.ps1 Opens Far editor file in another Far for sync editing.
 Edit-IB.ps1 Opens Invoke-Build scripts in the editor.
-Generate-Dialog-.ps1 Generates template code for the current dialog.
 Get-TextLink.ps1 Gets a text link with the current editor line or selection.
 Go-Everything.ps1 Goes to file system items found by Everything.
 Go-Head-.ps1 Goes to the first panel file.
@@ -50,3 +49,4 @@ Show-Markdown.ps1 Shows markdown as HTML or Far help file.
 Snippet.ps1 Inserts VSCode snippets to the editor.
 Start-Far.ps1 Starts Far with the command, panels, options.
 Update-FarManager.ps1 Updates Far Manager and standard plugins.
+Generate-Dialog.ps1 Generates template code for the current dialog.

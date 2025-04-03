@@ -9,7 +9,7 @@
 
 ### open the panel
 job {
-	& $env:PSF\Samples\Tests\Test-Explorer.far.ps1
+	& $env:FarNetCode\Samples\Tests\Test-Explorer.far.ps1
 }
 job {
 	Assert-Far -Plugin -FileName Flat

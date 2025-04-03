@@ -33,7 +33,6 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 	readonly Hashtable _data = new(StringComparer.OrdinalIgnoreCase);
 
 	// task script
-	bool _isScript;
 	ScriptBlock _script = null!;
 	RuntimeDefinedParameterDictionary? _dynamicParameters;
 	Dictionary<string, ParameterMetadata>? _scriptParameters;
@@ -46,36 +45,36 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 		{
 			value = value.ToBaseObject();
 
-			if (value is ScriptBlock block)
+			if (value is string text)
+			{
+				if (text.EndsWith(".ps1", StringComparison.OrdinalIgnoreCase))
+				{
+					//! do not resolve and test by File.Exists, use normal script resolution, including scripts in the path
+					var scriptInfo = (ExternalScriptInfo)SessionState.InvokeCommand.GetCommand(text, CommandTypes.ExternalScript)
+						?? throw new PSArgumentException($"Cannot find the script '{text}'.");
+
+					//! throws on syntax errors
+					_script = scriptInfo.ScriptBlock;
+					_scriptParameters = scriptInfo.Parameters;
+
+					return;
+				}
+
+				// code for interop like FSharpFar
+				_script = ScriptBlock.Create(text);
+			}
+			else if (value is ScriptBlock block)
 			{
 				_script = block;
-				_isScript = true;
-
-				SessionState.PSVariable.Set($"function:{ScriptBlockFunction}", block);
-				var info = (FunctionInfo)SessionState.InvokeCommand.GetCommand(ScriptBlockFunction, CommandTypes.Function);
-				_scriptParameters = info.Parameters;
-
-				return;
-			}
-
-			if (value is not string text)
-				throw new PSArgumentException("Invalid script, expected script block or file name or script code.");
-
-			if (text.EndsWith(".ps1", StringComparison.OrdinalIgnoreCase))
-			{
-				//! do not resolve and test by File.Exists, use normal script resolution, including scripts in the path
-				var info = (ExternalScriptInfo)SessionState.InvokeCommand.GetCommand(text, CommandTypes.ExternalScript)
-					?? throw new PSArgumentException($"Cannot find the script '{text}'.");
-
-				//! throws on syntax errors
-				_script = info.ScriptBlock;
-				_scriptParameters = info.Parameters;
 			}
 			else
 			{
-				//! code for interop like FSharpFar
-				_script = ScriptBlock.Create(text);
+				throw new PSArgumentException("Invalid script, expected script block or file name or script code.");
 			}
+
+			SessionState.PSVariable.Set($"function:{ScriptBlockFunction}", _script);
+			var functionInfo = (FunctionInfo)SessionState.InvokeCommand.GetCommand(ScriptBlockFunction, CommandTypes.Function);
+			_scriptParameters = functionInfo.Parameters;
 		}
 	}
 
@@ -95,14 +94,14 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 					var variable = SessionState.PSVariable.Get(name) ?? throw new PSArgumentException($"Variable {name} is not found.");
 					_data.Add(variable.Name, variable.Value);
 				}
-				else if (nameOrData is IDictionary data)
+				else if (nameOrData is Hashtable data)
 				{
 					foreach (DictionaryEntry kv in data)
 						_data[kv.Key] = kv.Value;
 				}
 				else
 				{
-					throw new PSArgumentNullException($"Invalid Data item type: {nameOrData?.GetType()}.");
+					throw new PSArgumentNullException($"Invalid Data item type: {nameOrData?.GetType()}. Expected String or Hashtable.");
 				}
 			}
 		}
@@ -127,8 +126,8 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 
 		_iss.Commands.Add([
 			new SessionStateAliasEntry("job", NameInvokeTaskJob),
-			new SessionStateAliasEntry("ps:", NameInvokeTaskCmd),
 			new SessionStateAliasEntry("run", NameInvokeTaskRun),
+			new SessionStateAliasEntry("ps:", NameInvokeTaskCmd),
 			new SessionStateAliasEntry("keys", NameInvokeTaskKeys),
 			new SessionStateAliasEntry("macro", NameInvokeTaskMacro),
 			new SessionStateCmdletEntry(NameInvokeTaskJob, typeof(InvokeTaskJob), string.Empty),
@@ -176,13 +175,6 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 				{
 					parameters[parameter.Name] = parameter.Value;
 					_data[parameter.Name] = parameter.Value;
-				}
-				else if (_isScript)
-				{
-					var variable = SessionState.PSVariable.Get(parameter.Name) ??
-						throw new PSArgumentException($"Parameter '{parameter.Name}' should be specified or variable '{parameter.Name}' should exist.");
-
-					_data[parameter.Name] = variable.Value;
 				}
 			}
 		}
@@ -326,6 +318,28 @@ file class InvokeTaskJob : BaseJob
 	}
 }
 
+file class InvokeTaskRun : BaseJob
+{
+	protected override void BeginProcessing()
+	{
+		// post the job as task
+		var task = Tasks.Run(() =>
+		{
+			using var ps = A.Psf.NewPowerShell();
+			ps.AddScript(CodeJob, true).AddArgument(Script).AddArgument(GetData()).AddArgument(GetVars());
+			ps.Invoke();
+
+			//! Assert-Far may stop by PipelineStoppedException
+			if (ps.InvocationStateInfo.Reason is { })
+				throw ps.InvocationStateInfo.Reason;
+		});
+
+		// await
+		task.Await();
+		FarNet.Works.Far2.Api.WaitSteps().Await();
+	}
+}
+
 file class InvokeTaskCmd : BaseJob
 {
 	protected override void BeginProcessing()
@@ -349,28 +363,6 @@ file class InvokeTaskCmd : BaseJob
 		FarNet.Works.Far2.Api.WaitSteps().Await();
 		if (reason is { })
 			throw reason;
-	}
-}
-
-file class InvokeTaskRun : BaseJob
-{
-	protected override void BeginProcessing()
-	{
-		// post the job as task
-		var task = Tasks.Run(() =>
-		{
-			using var ps = A.Psf.NewPowerShell();
-			ps.AddScript(CodeJob, true).AddArgument(Script).AddArgument(GetData()).AddArgument(GetVars());
-			ps.Invoke();
-
-			//! Assert-Far may stop by PipelineStoppedException
-			if (ps.InvocationStateInfo.Reason is { })
-				throw ps.InvocationStateInfo.Reason;
-		});
-
-		// await
-		task.Await();
-		FarNet.Works.Far2.Api.WaitSteps().Await();
 	}
 }
 

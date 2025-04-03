@@ -576,24 +576,14 @@ Example: 'FullName' or {$_.FullName} tell to use a property FullName.
 	explicitly by the parameter Data and implicitly by script parameters.
 
 	If Script uses parameters, they may be specified on Start-FarTask calls.
-	(Known issue: avoid switch parameters or specify them after Script.)
-	The specified parameters are added to the shared hashtable $Data.
-
-	If Script is [scriptblock] then parameters not specified on Start-FarTask
-	must be defined as variables with same names before the call. Parameters
-	are not set but variables are added to $Data.
-
-	If Script is file name then parameters not specified on Start-FarTask are
-	not set and not added to $Data.
-
-	If Script is code string then parameters are not supported.
-	Use the parameter Data in order to provide input as $Data.
+	Known issue: avoid switch parameters or specify after parameter Script.
+	The specified parameters are also added to the shared hashtable $Data.
 
 	OUTPUT
 
 	The cmdlet returns nothing by default and the task script output is
 	ignored. Use the switch AsTask in order to return the started task.
-	The task result is the script output presented as [object[]].
+	The task result is the task script output presented as [object[]].
 
 	LOCATION
 
@@ -612,24 +602,22 @@ Example: 'FullName' or {$_.FullName} tell to use a property FullName.
 
 		Use $Var.<name> for getting or setting the task variables.
 
-	ps: {...}
+	run {...}
 
-		This job is used for console output of its commands, as if they are
-		invoked from the command line.
+		This job starts some modal UI as the last command and immediately
+		returns to the task with modal UI still running. Output is ignored.
 
 		Use $Var.<name> for getting or setting the task variables.
 
-	run {...}
+	ps: {...}
 
-		This job is used to run modal UI without blocking the task.
-		It is useful for automation and tests. Output is ignored.
+		This job prints its commands output to the console.
 
 		Use $Var.<name> for getting or setting the task variables.
 
 	keys <key> [<key> ...]
 
 		This command invokes the specified keys.
-		Arguments are concatenated with spaces.
 
 	macro <code>
 
@@ -644,9 +632,14 @@ Example: 'FullName' or {$_.FullName} tell to use a property FullName.
 		Script = @'
 Specifies the task as script block or file name or script code.
 
-File names should be full or relative paths or just names in the path.
+File names are full or relative paths or just names in the path. File names
+should end with ".ps1".  Strings not ending with ".ps1" are treated as code
+and compiled to script blocks.
 '@
-		AsTask = 'Tells to return the started task.'
+		AsTask = @'
+Tells to return the started task.
+The task result is the task script output presented as [object[]].
+'@
 		Data = @'
 The list of variable names or hashtables added to the shared hashtable $Data.
 
@@ -668,8 +661,8 @@ Use Step in addition or set some breakpoints.
 Otherwise, the debugger is not going to stop.
 '@
 		Step = @'
-Tells to use Add-Debugger.ps1 and sets breakpoints for stopping at each step:
-`job`, `ps:`, `run`, `keys`, `macro`.
+Tells to use Add-Debugger.ps1 and sets breakpoints at:
+`job`, `run`, `ps:`, `keys`, `macro`.
 '@
 	}
 
@@ -679,7 +672,7 @@ Tells to use Add-Debugger.ps1 and sets breakpoints for stopping at each step:
 	}
 
 	links = @(
-		@{ text = 'Samples -- https://github.com/nightroman/FarNet/tree/main/PowerShellFar/Samples/FarTask' }
+		@{ text = 'Samples -- https://github.com/nightroman/FarNet/tree/main/Samples/FarTask' }
 	)
 }
 
@@ -706,7 +699,7 @@ Merge-Helps $BaseRegister @{
 '@
 	}
 	links = @(
-		@{ text = 'https://github.com/nightroman/FarNet/blob/main/PowerShellFar/Samples/Tests/Test-RegisterCommand.far.ps1' }
+		@{ text = 'https://github.com/nightroman/FarNet/blob/main/Samples/Tests/Test-RegisterCommand.far.ps1' }
 	)
 }
 
@@ -735,7 +728,7 @@ Merge-Helps $BaseRegister @{
 '@
 	}
 	links = @(
-		@{ text = 'https://github.com/nightroman/FarNet/blob/main/PowerShellFar/Samples/Tests/Test-RegisterDrawer.far.ps1' }
+		@{ text = 'https://github.com/nightroman/FarNet/blob/main/Samples/Tests/Test-RegisterDrawer.far.ps1' }
 	)
 }
 
@@ -755,6 +748,6 @@ Merge-Helps $BaseRegister @{
 '@
 	}
 	links = @(
-		@{ text = 'https://github.com/nightroman/FarNet/blob/main/PowerShellFar/Samples/Tests/Test-RegisterTool.far.ps1' }
+		@{ text = 'https://github.com/nightroman/FarNet/blob/main/Samples/Tests/Test-RegisterTool.far.ps1' }
 	)
 }
