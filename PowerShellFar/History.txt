@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.15 =
+
+Panel-DataFrame.ps1 - support Parquet files.
+
+Start-FarTask - tweak help.
+
 = 9.0.14 =
 
 Start-FarTask

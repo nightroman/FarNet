@@ -1,6 +1,6 @@
 ﻿<#
 .Synopsis
-	Opens CSV file or DataFrame for browsing in the panel.
+	Opens data file or DataFrame for browsing in the panel.
 	Author: Roman Kuzmin
 
 .Description
@@ -21,15 +21,15 @@
 		- Scatter of two selected columns
 
 .Parameter Source
-		Specifies CSV file path or DataFrame instance.
+		Specifies CSV, .tsv, .parquet file or DataFrame.
 
 .Parameter Separator
 		Specifies the file separator.
-		Defaults to tab for .tsv, otherwise comma.
+		Default is tab for .tsv, otherwise comma.
 
 .Parameter RowCount
 		The maximum number of file rows to read.
-		Use -1 for no limit. Defaults to 100,000.
+		Use -1 for no limit. Default is 100,000.
 
 .Parameter NoHeader
 		Tells that the file has no header.
@@ -60,10 +60,15 @@ if ($Host.Name -ne 'FarHost') {
 
 if ($Source -is [string]) {
 	$title = [System.IO.Path]::GetFileName($Source)
-	if (!$Separator) {
-		$Separator = ([System.IO.Path]::GetExtension($Source) -eq '.tsv' ? 't' : 'c')
+	if ([System.IO.Path]::GetExtension($Source) -eq '.parquet') {
+		$df = Import-DataFrame -ParquetPath $Source
 	}
-	$df = Import-DataFrame $Source -GuessCount 10, 1e6, 1e7 -Separator $Separator -RowCount $RowCount -NoHeader:$NoHeader -IndexColumn:$IndexColumn -RenameColumn
+	else {
+		if (!$Separator) {
+			$Separator = ([System.IO.Path]::GetExtension($Source) -eq '.tsv' ? 't' : 'c')
+		}
+		$df = Import-DataFrame $Source -GuessCount 10, 1e6, 1e7 -Separator $Separator -RowCount $RowCount -NoHeader:$NoHeader -IndexColumn:$IndexColumn -RenameColumn
+	}
 }
 else {
 	$title = 'DataFrame'

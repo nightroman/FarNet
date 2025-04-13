@@ -1,9 +1,9 @@
 <#
 .Synopsis
-	Help script (https://github.com/nightroman/Helps)
+	Help script, https://github.com/nightroman/Helps
 #>
 
-Set-StrictMode -Version Latest
+Set-StrictMode -Version 3
 
 ### Assert-Far
 @{
@@ -630,39 +630,42 @@ Example: 'FullName' or {$_.FullName} tell to use a property FullName.
 '@
 	parameters = @{
 		Script = @'
-Specifies the task as script block or file name or script code.
+		Specifies the task as script block or file name or script code.
 
-File names are full or relative paths or just names in the path. File names
-should end with ".ps1".  Strings not ending with ".ps1" are treated as code
-and compiled to script blocks.
+		File names are full or relative paths or just names in the path.
+		File names should end with ".ps1".
+
+		Strings not ending with ".ps1" are treated as code and compiled to
+		script blocks.
 '@
 		AsTask = @'
-Tells to return the started task.
-The task result is the task script output presented as [object[]].
+		Tells to return the started task.
+		The task result is the task script output presented as [object[]].
 '@
 		Data = @'
-The list of variable names or hashtables added to the shared hashtable $Data.
+		The list of variable names or hashtables added to the shared hashtable $Data.
 
-String items are existing variable names added to $Data as {name, value}.
+		String items are names of existing variables added to $Data.
 
-Hashtable items are merged into $Data.
+		Other items are hashtables merged into $Data.
 '@
 		AddDebugger = @'
-Tells to use Add-Debugger.ps1 and specifies its parameters hashtable.
-Omit this parameter or use $null or empty hashtable for defaults.
-Example:
+		Tells to use Add-Debugger.ps1 and specifies its parameters hashtable.
+		Use null or empty hashtable for defaults.
+		Example:
 
-	Start-FarTask ... -AddDebugger @{
-		Path = "$env:TEMP\debug-1.log"
-		Context = 10
-	}
+			Start-FarTask ... -AddDebugger @{
+				Path = "$env:TEMP\debug-1.log"
+				Context = 10
+			}
 
-Use Step in addition or set some breakpoints.
-Otherwise, the debugger is not going to stop.
+		Ensure some breakpoints in the task script or use Wait-Debugger or
+		use Step to break at jobs and macros. Otherwise, the debugger will
+		not stop.
 '@
 		Step = @'
-Tells to use Add-Debugger.ps1 and sets breakpoints at:
-`job`, `run`, `ps:`, `keys`, `macro`.
+		Tells to use Add-Debugger.ps1 and sets breakpoints at jobs and macros:
+		`job`, `run`, `ps:`, `keys`, `macro`.
 '@
 	}
 
