@@ -50,10 +50,6 @@ task installBin {
 	remove "$ModuleRoot\runtimes\win\lib\net9.0\ref"
 	Move-Item "$ModuleRoot\ref" "$ModuleRoot\runtimes\win\lib\net9.0\ref"
 
-	# prune resources, to keep our dll cache cleaner
-	Set-Location $ModuleRoot
-	remove cs, de, es, fr, it, ja, ko, pl, pt-BR, ru, tr, zh-Hans, zh-Hant
-
 	# unused
 	Set-Location "$ModuleRoot\runtimes"
 	remove android*, freebsd, illumos, ios, linux*, maccatalyst*, osx*, solaris, tvos, unix, win-arm*

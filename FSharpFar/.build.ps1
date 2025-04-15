@@ -21,10 +21,6 @@ task publish {
 	$xml = [xml](Get-Content "src\$ModuleName\$ModuleName.fsproj")
 	$node = $xml.SelectSingleNode('Project/ItemGroup/PackageReference[@Include="FSharp.Core"]')
 	Copy-Item "$HOME\.nuget\packages\FSharp.Core\$($node.Version)\lib\netstandard2.1\FSharp.Core.xml" $ModuleRoot
-
-	# used to be deleted, now missing: runtimes\unix
-	Set-Location $ModuleRoot
-	remove cs, de, es, fr, it, ja, ko, pl, pt-BR, ru, tr, zh-Hans, zh-Hant
 }
 
 task clean {
@@ -50,6 +46,7 @@ task meta -Inputs .build.ps1, History.txt -Outputs src/Directory.Build.props -Jo
 		<Copyright>Copyright (c) Roman Kuzmin</Copyright>
 		<Product>FarNet.FSharpFar</Product>
 		<Version>$Version</Version>
+		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 		<IncludeSourceRevisionInInformationalVersion>False</IncludeSourceRevisionInInformationalVersion>
 	</PropertyGroup>
 </Project>

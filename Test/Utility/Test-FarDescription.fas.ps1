@@ -4,12 +4,12 @@
 #>
 
 # remove description file
-if (Test-Path "$env:TEMP\Descript.ion") {Remove-Item "$env:TEMP\Descript.ion" -Force}
+if (Test-Path "C:\TEMP\Descript.ion") {Remove-Item "C:\TEMP\Descript.ion" -Force}
 
 ### from panels
 job {
 	# new file
-	$global:4 = "$env:TEMP\Edit-FarDescription.tmp"
+	$global:4 = "C:\TEMP\Edit-FarDescription.tmp"
 	1 > $4
 	$Far.Panel.GoToPath($4)
 	Assert-Far -FileName Edit-FarDescription.tmp
@@ -18,6 +18,7 @@ job {
 }
 # type 42, save, exit
 macro 'Keys"4 2 F2 Esc"'
+Start-Sleep 1
 job {
 	# panels and the file description
 	$file = Get-Item $4
@@ -67,7 +68,7 @@ job {
 
 ### from viewer
 job {
-	Open-FarViewer "$env:TEMP\Edit-FarDescription.tmp" -DisableHistory
+	Open-FarViewer "C:\TEMP\Edit-FarDescription.tmp" -DisableHistory
 }
 job {
 	# open description editor from viewer
@@ -97,6 +98,6 @@ job {
 
 ### end
 job {
-	# end
-	Remove-Variable -Scope global 4
+	Remove-Item $4
+	Remove-Variable 4 -Scope Global
 }

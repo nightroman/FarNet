@@ -7,7 +7,6 @@ FarHome\FarNet\Modules\PowerShellFar\Bench
 FarHome\FarNet\Modules\PowerShellFar\Bench\ArgumentCompleters.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Clear-Session.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Complete-Word.ps1
-FarHome\FarNet\Modules\PowerShellFar\Bench\Descript.ion
 FarHome\FarNet\Modules\PowerShellFar\Bench\Edit-FarDescription.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Edit-FarFileSync.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Edit-IB.ps1
