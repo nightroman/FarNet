@@ -1,5 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet.RedisKit
 
+= 0.6.0 =
+
+Requires FarNet.Redis 0.16.0 and Garnet 1.0.63, if used.
+
+Support multiple databases, add parameter `db` to `rk:` commands.
+
 = 0.5.1 =
 
 Requires FarNet.Redis 0.15.4
@@ -25,7 +31,7 @@ Keys panel and rk:edit command - support List and Set editing as text.
 rk:hash
 - new parameter Eol tells to show field end of life times.
 
-Requires Garnet 1.0.53 (if used as Redis).
+Requires Garnet 1.0.53, if used.
 
 0.15.0
 

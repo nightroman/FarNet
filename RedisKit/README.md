@@ -70,6 +70,10 @@ rk:@ <command file>
 
     Specifies Redis configuration string or name from [Settings](#settings).
 
+- `DB={int}`
+
+    Specifies the database index.
+
 **All commands**
 
 - [rk:edit](#rkedit)

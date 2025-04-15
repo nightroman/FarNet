@@ -9,7 +9,9 @@ abstract class BaseCommand : AbcCommand
 
 	protected BaseCommand(CommandParameters parameters)
 	{
-		Database = OpenDatabase(GetRedisConfiguration(parameters.GetString(Param.Redis)));
+		var config = parameters.GetString(Param.Redis);
+		var index = parameters.GetValue<int>(Param.DB);
+		Database = OpenDatabase(GetRedisConfiguration(config), index);
 	}
 
 	protected RedisKey GetRequiredRedisKeyOfType(CommandParameters parameters, RedisType expectedType)
@@ -23,11 +25,11 @@ abstract class BaseCommand : AbcCommand
 		return key;
 	}
 
-	static IDatabase OpenDatabase(string configuration)
+	static IDatabase OpenDatabase(string configuration, int index)
 	{
 		try
 		{
-			return DB.Open(configuration);
+			return DB.Open(configuration, index);
 		}
 		catch (Exception ex)
 		{
