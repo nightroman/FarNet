@@ -1,5 +1,13 @@
 ﻿https://www.nuget.org/packages/FarNet.RedisKit
 
+= 0.6.1 =
+
+Requires FarNet 9.0.21.
+
+Amend parameter `db`, the default should be -1.
+
+Add menu "Configuration" for choosing the default from settings.
+
 = 0.6.0 =
 
 Requires FarNet.Redis 0.16.0 and Garnet 1.0.63, if used.

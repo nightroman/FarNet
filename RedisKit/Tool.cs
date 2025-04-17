@@ -15,9 +15,43 @@ public class Tool : ModuleTool
 		if (Far.Api.Panel is AbcPanel panel)
 			menu.Add("Copy key to clipboard", (s, e) => CopyKey(panel));
 
+		menu.Add("Configuration", (s, e) => SelectConfiguration());
+
 		menu.Add("Help", (s, e) => Host.Instance.ShowHelpTopic(string.Empty));
 
 		menu.Show();
+	}
+
+	public static string? SelectConfiguration()
+	{
+		var menu = Far.Api.CreateMenu();
+		menu.Title = "Select configuration";
+
+		var configurations = Settings.Default.GetData().Configurations;
+		if (configurations.Length == 0)
+			throw new ModuleException("Settings must have at least one configuration.");
+
+		var workings = Workings.Default;
+		var workingsData = workings.GetData();
+
+		var pad1 = configurations.Select(x => x.Name.Length).Max();
+		foreach (var it in configurations)
+		{
+			var item = new SetItem { Text = $"{it.Name.PadRight(pad1)} | {Environment.ExpandEnvironmentVariables(it.Text)}" };
+			menu.Items.Add(item);
+			if (it.Name.Equals(workingsData.Configuration, StringComparison.OrdinalIgnoreCase))
+				item.Checked = true;
+		}
+
+		if (!menu.Show())
+			return null;
+
+		var configurationName = configurations[menu.Selected].Name;
+
+		workingsData.Configuration = configurationName;
+		workings.Save();
+
+		return configurationName;
 	}
 
 	static void CopyKey(AbcPanel panel)

@@ -10,7 +10,7 @@ abstract class BaseCommand : AbcCommand
 	protected BaseCommand(CommandParameters parameters)
 	{
 		var config = parameters.GetString(Param.Redis);
-		var index = parameters.GetValue<int>(Param.DB);
+		var index = parameters.GetValue(Param.DB, -1);
 		Database = OpenDatabase(GetRedisConfiguration(config), index);
 	}
 
@@ -52,10 +52,11 @@ abstract class BaseCommand : AbcCommand
 			else
 			{
 				// find by name
-				configuration = configurations
-					.FirstOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
-					?.Text
-					?? throw new ModuleException($"Cannot find Redis configuration '{name}' in settings.");
+				configuration = configurations.FirstOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))?.Text
+					?? throw new ModuleException($"""
+					Cannot find Redis configuration '{name}' in settings.
+					Select existing using F11 / RedisKit / Configuration.
+					""");
 			}
 		}
 		else

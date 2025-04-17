@@ -68,11 +68,13 @@ rk:@ <command file>
 
 - `Redis={string}`
 
-    Specifies Redis configuration string or name from [Settings](#settings).
+    Specifies Redis configuration string or its name from [Settings](#settings).
+    See <https://stackexchange.github.io/StackExchange.Redis/Configuration>
 
 - `DB={int}`
 
-    Specifies the database index.
+    Specifies the database index. The default -1 implies the default database
+    if it is specified by Redis configuration, otherwise it is 0.
 
 **All commands**
 
@@ -493,8 +495,9 @@ Example:
 
 ```
   <Configurations>
-    <Configuration Name="Main">%FARNET_REDIS_CONFIGURATION%</Configuration>
-    <Configuration Name="Local">127.0.0.1:3278</Configuration>
+    <Configuration Name="main">%FARNET_REDIS_CONFIGURATION%</Configuration>
+    <Configuration Name="db0">127.0.0.1:3278</Configuration>
+    <Configuration Name="db1">127.0.0.1:3278,defaultDatabase=1</Configuration>
   </Configurations>
 ```
 
@@ -506,7 +509,7 @@ The name must exist in `Settings/Configurations`.
 Example:
 
 ```
-  <Configuration>Local</Configuration>
+  <Configuration>main</Configuration>
 ```
 
 *********************************************************************

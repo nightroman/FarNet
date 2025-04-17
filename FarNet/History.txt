@@ -1,6 +1,12 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 9.0.21 =
+
+CommandParameter.GetValue() has new parameter, the default value.
+
+Update GitKit and RedisKit, if used.
+
 = 9.0.20 =
 
 Fix errors on nulls in Panel.Garbage.

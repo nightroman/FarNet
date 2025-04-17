@@ -1,4 +1,5 @@
 ﻿using FarNet;
+using FarNet.Redis;
 using StackExchange.Redis;
 
 namespace RedisKit.Panels;
@@ -8,7 +9,7 @@ abstract class BaseExplorer(IDatabase database, Guid typeId) : Explorer(typeId)
 	public IDatabase Database { get; } = database;
 
 	public IServer GetServer() =>
-		Database.Multiplexer.GetServers()[0];
+		AboutRedis.GetServer(Database.Multiplexer);
 
 	protected abstract string PanelTitle();
 

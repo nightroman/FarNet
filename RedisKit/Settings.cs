@@ -17,7 +17,7 @@ public class Settings : ModuleSettings<Settings.Data>
 	public class Configuration
 	{
 		[XmlAttribute]
-		public string Name { get; set; } = "Main";
+		public string Name { get; set; } = "main";
 
 		[XmlText]
 		public string Text { get; set; } = "%FARNET_REDIS_CONFIGURATION%";
@@ -34,6 +34,6 @@ public class Workings : ModuleSettings<Workings.Data>
 
 	public class Data
 	{
-		public string Configuration { get; set; } = string.Empty;
+		public string Configuration { get; set; } = "main";
 	}
 }

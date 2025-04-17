@@ -293,13 +293,14 @@ public readonly ref struct CommandParameters
 	/// Get the optional T value (or T default) and removes it.
 	/// </summary>
 	/// <param name="name">Parameter name.</param>
-	/// <returns>Gets the value or T default.</returns>
+	/// <param name="value">Default value.</param>
+	/// <returns>Gets the value or default.</returns>
 	/// <typeparam name="T">Enum or primitive suitable for <c>Convert.ChangeType</c>.</typeparam>
-	public T GetValue<T>(string name)
+	public T GetValue<T>(string name, T value = default!)
 	{
 		var string1 = GetString(name);
 		if (string1 is null)
-			return default!;
+			return value;
 
 		try
 		{
