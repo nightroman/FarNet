@@ -73,15 +73,13 @@ task package markdown, {
 		'..\LICENSE'
 	)
 
-	$result = Get-ChildItem $toModule -Recurse -File -Name | Out-String
-	$sample = @'
+	Assert-SameFile.ps1 -Result (Get-ChildItem $toModule -Recurse -File -Name) -Text -View $env:MERGE @'
 EditorConfig.Core.dll
 EditorKit.dll
 History.txt
 LICENSE
 README.htm
 '@
-	Assert-SameFile.ps1 -Text $sample $result $env:MERGE
 }
 
 task nuget package, version, {

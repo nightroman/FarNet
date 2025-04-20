@@ -64,8 +64,7 @@ task package help, markdown, {
 		'..\LICENSE'
 	)
 
-	$result = Get-ChildItem $toModule -Recurse -File -Name | Out-String
-	$sample = @'
+	Assert-SameFile.ps1 -Result (Get-ChildItem $toModule -Recurse -File -Name) -Text -View $env:MERGE @'
 History.txt
 Json.More.dll
 JsonKit.dll
@@ -74,7 +73,6 @@ JsonPath.Net.dll
 LICENSE
 README.htm
 '@
-	Assert-SameFile.ps1 -Text $sample $result $env:MERGE
 }
 
 task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props -Jobs version, {

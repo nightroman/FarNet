@@ -64,15 +64,13 @@ task package help, markdown, {
 		'..\LICENSE'
 	)
 
-	$result = Get-ChildItem z\tools -Recurse -File -Name | Out-String
-	$sample = @'
+	Assert-SameFile.ps1 -Result (Get-ChildItem z\tools -Recurse -File -Name) -Text -View $env:MERGE @'
 FarHome\FarNet\Modules\RedisKit\History.txt
 FarHome\FarNet\Modules\RedisKit\LICENSE
 FarHome\FarNet\Modules\RedisKit\README.htm
 FarHome\FarNet\Modules\RedisKit\RedisKit.dll
 FarHome\FarNet\Modules\RedisKit\RedisKit.hlf
 '@
-	Assert-SameFile.ps1 -Text $sample $result $env:MERGE
 }
 
 task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props -Jobs version, {

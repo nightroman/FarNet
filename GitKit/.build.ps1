@@ -89,8 +89,7 @@ task package win32, help, markdown, {
 	Copy-Item $ModuleRoot\git2*.dll $toModule64
 	Copy-Item C:\Bin\Far\Win32\FarNet\Modules\GitKit\git2*.dll $toModule86
 
-	$result = Get-ChildItem z\tools -Recurse -File -Name | Out-String
-	$sample = @'
+	Assert-SameFile.ps1 -Result (Get-ChildItem z\tools -Recurse -File -Name) -Text -View $env:MERGE @'
 FarHome\FarNet\Modules\GitKit\GitKit.dll
 FarHome\FarNet\Modules\GitKit\GitKit.hlf
 FarHome\FarNet\Modules\GitKit\History.txt
@@ -101,7 +100,6 @@ FarHome\FarNet\Modules\GitKit\README.htm
 FarHome.x64\FarNet\Modules\GitKit\git2-3f4182d.dll
 FarHome.x86\FarNet\Modules\GitKit\git2-3f4182d.dll
 '@
-	Assert-SameFile.ps1 -Text $sample $result $env:MERGE
 }
 
 task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props -Jobs version, {

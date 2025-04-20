@@ -1,14 +1,14 @@
 ﻿
 job {
 	Import-Module $PSScriptRoot\zoo.psm1
-	Remove-RedisKey temp:hash1
+	Remove-RedisKey zoo:hash1
 
-	Set-RedisHash temp:hash1 f1 v1
+	Set-RedisHash zoo:hash1 f1 v1
 
-	Set-RedisHash temp:hash1 f2 v2
-	Set-RedisHash temp:hash1 -Persist f2 -TimeToLive 0:1:0
+	Set-RedisHash zoo:hash1 f2 v2
+	Set-RedisHash zoo:hash1 -Persist f2 -TimeToLive 0:1:0
 
-	$Far.InvokeCommand('rk:hash key=temp:hash1; eol=1')
+	$Far.InvokeCommand('rk:hash key=zoo:hash1; eol=1')
 }
 
 job {
@@ -24,7 +24,7 @@ job {
 	$ttl = ($file.LastWriteTime - [datetime]::Now).TotalSeconds
 	Assert-Far ($ttl -gt 50 -and $ttl -lt 60)
 
-	Remove-RedisKey temp:hash1
+	Remove-RedisKey zoo:hash1
 
 	$Far.Panel.Close()
 }
