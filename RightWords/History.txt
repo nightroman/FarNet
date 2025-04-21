@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.RightWords
 
+= 5.2.4 =
+
+Amend 5.2.3
+
 = 5.2.3 =
 
 WeCantSpell.Hunspell 6.0.0

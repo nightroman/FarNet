@@ -118,6 +118,7 @@ public class Highlighter : ModuleDrawer
 		// process input lines, find some cached and parse new
 		for (int iInputLine = 0; iInputLine < N; ++iInputLine)
 		{
+			newData[iInputLine] = default;
 			var line = e.Lines[iInputLine];
 			var text = line.Text2.TrimEnd();
 
