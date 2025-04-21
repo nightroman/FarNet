@@ -12,19 +12,21 @@ public sealed class Settings : ModuleSettings<Settings.Data>
 
 	public class Data : IValidate
 	{
+		public ConsoleColor HighlightingForegroundColor { get; set; } = ConsoleColor.Black;
+
+		public ConsoleColor HighlightingBackgroundColor { get; set; } = ConsoleColor.Yellow;
+
+		public int MaximumLineLength { get; set; } = 0;
+
 		public XmlCData WordRegex { get; set; } = @"[\p{Lu}\p{Ll}]\p{Ll}+";
 
 		public XmlCData SkipRegex { get; set; }
 
 		public XmlCData RemoveRegex { get; set; }
 
-		public ConsoleColor HighlightingForegroundColor { get; set; } = ConsoleColor.Black;
-
-		public ConsoleColor HighlightingBackgroundColor { get; set; } = ConsoleColor.Yellow;
+		public string[] Prefixes { get; set; } = ["sub", "un"];
 
 		public string? UserDictionaryDirectory { get; set; }
-
-		public int MaximumLineLength { get; set; } = 0;
 
 		internal Regex WordRegex2 { get; private set; } = null!;
 		internal Regex? SkipRegex2 { get; private set; }

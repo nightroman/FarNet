@@ -109,16 +109,16 @@ public class Highlighter : ModuleDrawer
 			return;
 		}
 
-		// new lines cache, reuse old with same size (likely)
-		var newData = _lastData.Length == N ? _lastData : new LineData[N];
+		// new lines cache
+		var newData = new LineData[N];
 
 		// to use for all lines
 		var lineSpans = new List<(int, int)>();
 
 		// process input lines, find some cached and parse new
+		var prefixes = settings.Prefixes;
 		for (int iInputLine = 0; iInputLine < N; ++iInputLine)
 		{
-			newData[iInputLine] = default;
 			var line = e.Lines[iInputLine];
 			var text = line.Text2.TrimEnd();
 
@@ -175,6 +175,23 @@ public class Highlighter : ModuleDrawer
 				// check spelling, expensive but better before the skip pattern
 				if (_spell.Check(word))
 					continue;
+
+				// try prefixes
+				string? prefix = null;
+				for (int i = prefixes.Length; --i >= 0;)
+				{
+					if (word.StartsWith(prefixes[i], StringComparison.OrdinalIgnoreCase))
+					{
+						prefix = prefixes[i];
+						break;
+					}
+				}
+				if (prefix is { } && word.Length - prefix.Length > 2)
+				{
+					var word2 = word[prefix.Length..];
+					if (_spell.Check(word2))
+						continue;
+				}
 
 				// expensive skip pattern
 				if (Kit.HasMatch(skip ??= Kit.GetMatches(settings.SkipRegex2, textString), match.Index, match.Length))

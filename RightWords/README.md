@@ -158,6 +158,20 @@ Example `WordRegex` and `RemoveRegex` for words with ampersands:
 ```
 
 *********************************************************************
+**Prefixes**
+
+The list of word prefixes for spell-checking unprefixed words.
+
+Example:
+
+```xml
+  <Prefixes>
+    <string>sub</string>
+    <string>un</string>
+  </Prefixes>
+```
+
+*********************************************************************
 **HighlightingBackgroundColor**\
 **HighlightingForegroundColor**
 
