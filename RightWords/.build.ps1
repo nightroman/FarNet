@@ -40,8 +40,7 @@ task clean {
 }
 
 task version {
-	($script:Version = switch -regex -file History.txt {'^= (\d+\.\d+\.\d+) =$' {$matches[1]; break}})
-	assert $script:Version
+	($Script:Version = switch -regex -file History.txt {'^= (\d+\.\d+\.\d+) =$' {$matches[1]; break}})
 }
 
 task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props -Jobs version, {
@@ -77,7 +76,7 @@ task package markdown, version, {
 	$toModule = mkdir "z\tools\FarHome\FarNet\Modules\$ModuleName"
 
 	# module
-	exec { robocopy $ModuleRoot $toModule /s /xf *.pdb } (0..2)
+	exec { robocopy $ModuleRoot $toModule /s /xf *.pdb } 1
 
 	# meta
 	Copy-Item -Destination z @(
@@ -89,11 +88,11 @@ task package markdown, version, {
 	Copy-Item -Destination $toModule @(
 		"README.htm"
 		"History.txt"
-		"..\LICENSE"
 		"RightWords.macro.lua"
+		"..\LICENSE"
 	)
 
-	Assert-SameFile.ps1 -Text -View $env:MERGE -Result (Get-ChildItem $toModule -Recurse -File -Name) -Sample @'
+	Assert-SameFile.ps1 -Result (Get-ChildItem $toModule -Recurse -File -Name) -Text -View $env:MERGE @'
 History.txt
 LICENSE
 README.htm
@@ -107,14 +106,14 @@ WeCantSpell.Hunspell.dll
 }
 
 task nuget package, version, {
-	equals $Script:Version (Get-Item "$ModuleRoot\$ModuleName.dll").VersionInfo.ProductVersion
+	equals $Version (Get-Item "$ModuleRoot\$ModuleName.dll").VersionInfo.ProductVersion
 
 	Set-Content z\Package.nuspec @"
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
 		<id>FarNet.RightWords</id>
-		<version>$script:Version</version>
+		<version>$Version</version>
 		<authors>Roman Kuzmin</authors>
 		<owners>Roman Kuzmin</owners>
 		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>

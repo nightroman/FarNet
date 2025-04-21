@@ -29,8 +29,7 @@ task clean {
 }
 
 task version {
-	($script:Version = switch -regex -file History.txt { '^= (\d+\.\d+\.\d+) =$' { $matches[1]; break } })
-	assert $script:Version
+	($Script:Version = switch -regex -file History.txt { '^= (\d+\.\d+\.\d+) =$' { $matches[1]; break } })
 }
 
 task markdown {

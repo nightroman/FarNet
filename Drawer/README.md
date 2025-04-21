@@ -67,7 +67,7 @@ Module settings: `F11 / FarNet / Settings / Drawer`
     Valid colors: Black, DarkBlue, DarkGreen, DarkCyan, DarkRed, DarkMagenta,
     DarkYellow, Gray, DarkGray, Blue, Green, Cyan, Red, Magenta, Yellow, White.
 
-    With the plugin FarColorer `Current word` does not use these values.
-    It uses yellow background and mostly preserves original foreground.
+    With the plugin FarColorer `Current word` uses `ColorBackground` and
+    preserves the foreground if possible, else uses `ColorForeground`.
 
 *********************************************************************

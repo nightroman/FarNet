@@ -1,6 +1,4 @@
 ﻿using FarNet;
-using System;
-using System.Collections.Generic;
 
 namespace Drawer;
 
@@ -8,23 +6,6 @@ namespace Drawer;
 [ModuleDrawer(Name = Settings.CurrentWordName, Priority = 2, Id = Settings.CurrentWordGuid)]
 public class CurrentWordDrawer : ModuleDrawer
 {
-	static EditorColor NewColorKeepForeground(int lineIndex, int start, int end, ConsoleColor fg, ConsoleColor bg)
-	{
-		if (bg == ConsoleColor.Yellow)
-		{
-			bg = ConsoleColor.Gray;
-			if (fg == ConsoleColor.Gray)
-				fg = ConsoleColor.Black;
-		}
-		else
-		{
-			bg = ConsoleColor.Yellow;
-			if (fg == ConsoleColor.Yellow || fg == ConsoleColor.White)
-				fg = ConsoleColor.Black;
-		}
-		return new EditorColor(lineIndex, start, end, fg, bg);
-	}
-
 	public override void Invoke(IEditor editor, ModuleDrawerEventArgs e)
 	{
 		var settings = Settings.Default.GetData().CurrentWord;
@@ -75,52 +56,8 @@ public class CurrentWordDrawer : ModuleDrawer
 						continue;
 				}
 
-				if (hasColorer)
-				{
-					foreach (var color in colors)
-					{
-						// case: color totally covers the match
-						if (color.Start <= myStart && color.End >= myEnd)
-						{
-							e.Colors.Add(NewColorKeepForeground(
-								line.Index,
-								myStart,
-								myEnd,
-								color.Foreground,
-								color.Background));
-							continue;
-						}
-
-						// 1 of 2: color starts after the match, handle the left part of match
-						if (color.Start > myStart && color.Start < myEnd)
-						{
-							var st = color.Start;
-							var en = Math.Min(color.End, myEnd);
-							if (st < en)
-								e.Colors.Add(NewColorKeepForeground(
-									line.Index,
-									st,
-									en,
-									color.Foreground,
-									color.Background));
-						}
-
-						// 2 of 2: color ends before the match, handle the right part of match
-						if (color.End < myEnd && color.End > myStart)
-						{
-							var st = Math.Max(color.Start, myStart);
-							var en = color.End;
-							if (st < en)
-								e.Colors.Add(NewColorKeepForeground(
-									line.Index,
-									st,
-									en,
-									color.Foreground,
-									color.Background));
-						}
-					}
-				}
-				else
+				//: without Colorer use user colors
+				if (!hasColorer)
 				{
 					e.Colors.Add(new EditorColor(
 						line.Index,
@@ -128,6 +65,39 @@ public class CurrentWordDrawer : ModuleDrawer
 						myEnd,
 						settings.ColorForeground,
 						settings.ColorBackground));
+					continue;
+				}
+
+				var background = settings.ColorBackground;
+				foreach (var color in colors)
+				{
+					// keep original foreground if possible
+					var foreground = color.Foreground == background ? settings.ColorForeground : color.Foreground;
+
+					// case: color totally covers the match
+					if (color.Start <= myStart && color.End >= myEnd)
+					{
+						e.Colors.Add(new(line.Index, myStart, myEnd, foreground, background));
+						continue;
+					}
+
+					// 1 of 2: color starts after the match, handle the left part of match
+					if (color.Start > myStart && color.Start < myEnd)
+					{
+						var st = color.Start;
+						var en = Math.Min(color.End, myEnd);
+						if (st < en)
+							e.Colors.Add(new(line.Index, st, en, foreground, background));
+					}
+
+					// 2 of 2: color ends before the match, handle the right part of match
+					if (color.End < myEnd && color.End > myStart)
+					{
+						var st = Math.Max(color.Start, myStart);
+						var en = color.End;
+						if (st < en)
+							e.Colors.Add(new(line.Index, st, en, foreground, background));
+					}
 				}
 			}
 		}

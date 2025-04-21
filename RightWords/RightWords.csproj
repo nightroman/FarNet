@@ -5,12 +5,13 @@
     <GenerateDependencyFile>false</GenerateDependencyFile>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>FarNet250103;FarNet250106</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="WeCantSpell.Hunspell" Version="5.2.1" />
+    <PackageReference Include="WeCantSpell.Hunspell" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FarNet">
@@ -19,6 +20,6 @@
     </Reference>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="ib publish -Configuration $(Configuration) -FarHome $(FarHome)" />
+    <Exec Command="pwsh -NoProfile -Command Invoke-Build publish -Configuration $(Configuration) -FarHome $(FarHome)" />
   </Target>
 </Project>

@@ -1,10 +1,8 @@
 ﻿using FarNet;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
-using LineData = (string? Text, (int, int)[]? Spans);
 using DataStamp = (int ChangeCount, int LineCount, int TopLineIndex);
+using LineData = (string? Text, (int, int)[]? Spans);
 
 namespace RightWords;
 
@@ -111,8 +109,8 @@ public class Highlighter : ModuleDrawer
 			return;
 		}
 
-		// new lines cache
-		var newData = new LineData[N];
+		// new lines cache, reuse old with same size (likely)
+		var newData = _lastData.Length == N ? _lastData : new LineData[N];
 
 		// to use for all lines
 		var lineSpans = new List<(int, int)>();

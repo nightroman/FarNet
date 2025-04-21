@@ -1,5 +1,4 @@
 ﻿using FarNet;
-using System.Collections.Generic;
 
 namespace RightWords;
 

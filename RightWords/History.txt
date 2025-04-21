@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.RightWords
 
+= 5.2.3 =
+
+WeCantSpell.Hunspell 6.0.0
+
+Avoid some allocations.
+
 = 5.2.2 =
 
 Make it a simple module, not ALC.
