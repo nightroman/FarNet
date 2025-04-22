@@ -36,9 +36,10 @@ This is line 1. And this is line 2.
 '@
 
 	(19..22).ForEach{
-		($1, $2 = do_text $text $_)
+		($1, $2, $3 = do_text $text $_)
 		equals $1 'This is line 1.'
 		equals $2 'And this is line 2.'
+		equals $3 ''
 	}
 }
 
@@ -61,14 +62,16 @@ task best-index-4-margin-75 {
 
 task markdown-list {
 	$text = 'Please let us know when the same change should be applied to UAT. Eventually, when discovery service is "stabilized" we use it instead.'
-	($1, $2 = do_text $text (79 - 2) '- ' 'md')
+	($1, $2, $3 = do_text $text (79 - 2) '- ' 'md')
 	equals $1 '- Please let us know when the same change should be applied to UAT. Eventually,'
   	equals $2 '  when discovery service is "stabilized" we use it instead.'
+	equals $3 ''
 }
 
 task line-comment {
 	$text = 'Please let us know when the same change should be applied to UAT. Eventually, when discovery service is "stabilized" we use it instead.'
-	($1, $2 = do_text $text (79 - 4) ' ## ')
+	($1, $2, $3 = do_text $text (79 - 4) ' ## ')
 	equals $1 ' ## Please let us know when the same change should be applied to UAT.'
   	equals $2 ' ## Eventually, when discovery service is "stabilized" we use it instead.'
+	equals $3 ''
 }

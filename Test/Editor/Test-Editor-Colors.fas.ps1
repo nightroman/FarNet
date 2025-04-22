@@ -12,10 +12,10 @@ job {
 job {
 	Assert-Far -Editor
 	Assert-Far $Far.Editor.IsLocked
-	$data = Show-EditorColor-.ps1
 
-	#! dump size; NB: it is larger is call manually (why?)
-	#! the number maybe different depending on planets
+	#! go to same last line or CurrentWord may change colors
+	$Far.Editor.GoToLine(($Far.Editor.Count - 1))
+	$data = Show-EditorColor.ps1
 	Assert-Far 290 -eq $data.Count
 
 	# from Colorer

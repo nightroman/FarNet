@@ -28,7 +28,7 @@ job {
 		$Editor.Count -eq 3
 		$Editor[0].Text -eq "`t" * 10 + '///  This is a single line to be'
 		$Editor[1].Text -eq "`t" * 10 + '///  reformatted as two lines'
-		$Editor.Caret.Y -eq 1
+		$Editor.Caret.Y -eq 2
 	)
 
 	# the caret is at the end

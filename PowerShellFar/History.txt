@@ -1,5 +1,16 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.16 =
+
+Merge-Selected.ps1
+- predefined tools, VSCode and WinMerge
+
+Reformat-Selection.ps1
+- without selection use current paragraph
+
+Renamed
+- Show-EditorColor-.ps1 -> Show-EditorColor.ps1
+
 = 9.0.15 =
 
 Panel-DataFrame.ps1 - support Parquet files.

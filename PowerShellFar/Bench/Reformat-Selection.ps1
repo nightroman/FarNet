@@ -1,6 +1,6 @@
 <#
 .Synopsis
-	Reformats selected lines or the current line in the editor.
+	Reformats selected lines or current paragraph in editor.
 	Author: Roman Kuzmin
 
 .Description
@@ -29,7 +29,6 @@ param(
 )
 
 [char[]]$_splitters = @(' ', "`t")
-$_debug = $env:ReformatSelectionDebug
 
 # split and format text
 function split_text([string]$text, [int]$len, [string]$pref, [string]$type) {
@@ -91,13 +90,16 @@ function split_text([string]$text, [int]$len, [string]$pref, [string]$type) {
 function do_text([string]$text, [int]$len, [string]$pref, [string]$type) {
 	$res = split_text $text $len $pref $type
 	if ($res -is [string] -or $res.Count -eq 2) {
-		return $res
+		$res
+		''
+		return
 	}
 	$res2 = split_text $text ($len - 1) $pref $type
 	$res3 = split_text $text ($len - 2) $pref $type
 	$res4 = split_text $text ($len - 3) $pref $type
 	$res5 = split_text $text ($len - 4) $pref $type
 	do_best $res $res2 $res3 $res4 $res5
+	''
 }
 
 # get formatted lines penalty
@@ -119,10 +121,6 @@ function do_best {
 		}
 	}
 	$cases = $cases | Sort-Object penalty, index
-	if ($_debug) {
-		$str = $cases.ForEach{"[$($_.index)/$($_.penalty)]"} -join ' '
-		[System.Diagnostics.Debug]::WriteLine($str)
-	}
 	$cases[0].lines
 }
 
@@ -147,12 +145,39 @@ switch -regex ([System.IO.Path]::GetExtension($Editor.FileName)) {
 	default { $pattern = '(?://+|;+)' }
 }
 
-# get selected lines or current line
+# get selected lines or current paragraph
 $lines = $Editor.SelectedLines
-if (!$lines.Count) {
-	$line = $Editor.Line
-	$line.SelectText(0, $line.Length)
-	$lines = @($line)
+if ($lines.Count -eq 0) {
+	$index1 = $index2 = $Editor.Caret.Y
+
+	# find first line
+	for($$ = $index1 - 1; $$ -ge 0; --$$) {
+		if ($Editor[$$].Text.Trim().Length) {
+			$index1 = $$
+		}
+		else {
+			break
+		}
+	}
+
+	# find last line
+	$n = $Editor.Count
+	for($$ = $index2 + 1; $$ -lt $n; ++$$) {
+		if ($Editor[$$].Text.Trim().Length) {
+			$index2 = $$
+		}
+		else {
+			break
+		}
+	}
+
+	# select and get lines
+	$Editor.SelectText(0, $index1, -1, $index2 + 1)
+	$lines = @(
+		for($$ = $index1; $$ -le $index2; ++$$) {
+			$Editor[$$]
+		}
+	)
 }
 if ($lines[0] -notmatch "^(\s*)($pattern)?(\s*)\S") {
 	return
@@ -183,11 +208,8 @@ foreach($line in $lines) {
 }
 
 # split, insert
-$res = do_text $text $len $pref $type
-if ($lines.Count -ge 2) {
-	$res += ''
-}
+$strings = do_text $text $len $pref $type
 $Editor.BeginUndo()
 $Editor.DeleteText()
-$Editor.InsertText(($res -join "`r"))
+$Editor.InsertText(($strings -join "`n"))
 $Editor.EndUndo()
