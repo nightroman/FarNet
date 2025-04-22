@@ -5,6 +5,7 @@
     <GenerateDependencyFile>false</GenerateDependencyFile>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>FarNet250103</NoWarn>
@@ -13,8 +14,7 @@
     <PackageReference Include="editorconfig" Version="0.15.0" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="FarNet">
-      <HintPath>$(FarHome)\FarNet\FarNet.dll</HintPath>
+    <Reference Include="$(FarHome)\FarNet\FarNet.dll">
       <Private>False</Private>
     </Reference>
   </ItemGroup>

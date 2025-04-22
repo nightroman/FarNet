@@ -26,8 +26,7 @@
     <PackageReference Include="FSharp.Core" Version="9.0.101" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="FarNet">
-      <HintPath>$(FarHome)\FarNet\FarNet.dll</HintPath>
+    <Reference Include="$(FarHome)\FarNet\FarNet.dll">
       <Private>False</Private>
     </Reference>
   </ItemGroup>

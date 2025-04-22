@@ -8,8 +8,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FarNet">
-      <HintPath>$(FarHome)\FarNet\FarNet.dll</HintPath>
+    <Reference Include="$(FarHome)\FarNet\FarNet.dll">
       <Private>False</Private>
     </Reference>
   </ItemGroup>

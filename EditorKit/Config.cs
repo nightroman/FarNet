@@ -1,8 +1,5 @@
 ﻿using EditorConfig.Core;
 using FarNet;
-using System;
-using System.Collections.Generic;
-using System.IO;
 
 namespace EditorKit;
 
@@ -18,15 +15,30 @@ public class Config : ModuleEditor
 	bool do_trim_trailing_whitespace;
 	bool do_insert_final_newline;
 
-	// Called by the core when a file matching Mask is opened in the editor.
+	static void Extras(IEditor editor, string fileName)
+	{
+		var settings = Settings.Default.GetData();
+
+		var colorerType = settings.ColorerTypes.FirstOrDefault(x => Far.Api.IsMaskMatch(fileName, x.Mask));
+		if (colorerType is { })
+			editor.Opened += (s, e) => SetColorerType(colorerType.Type);
+	}
+
+	static void SetColorerType(string colorerType)
+	{
+		if (colorerType.Any(x => !Char.IsLetterOrDigit(x)))
+			throw new ModuleException($"Invalid Colorer type: '{colorerType}'.");
+
+		Far.Api.PostMacro($"Plugin.Call('D2F36B62-A470-418d-83A3-ED7A3710E5B5', 'Types', 'Set', '{colorerType}')");
+	}
+
 	public override void Invoke(IEditor editor, ModuleEditorEventArgs e)
 	{
 		// get the file name, it may be amended
 		var fileName = editor.FileName;
 
-		// ?NewFile?
-		if (fileName.Contains('?'))
-			return;
+		// apply extras from settings
+		Extras(editor, fileName);
 
 		// get the usual configurations
 		var parser = new EditorConfigParser();
@@ -144,11 +156,11 @@ public class Config : ModuleEditor
 	IList<EditorConfigFile>? GetProfileConfigurations(ref string fileName)
 	{
 		var root = Manager.GetFolderPath(SpecialFolder.RoamingData, false);
-		var path = Path.Combine(root, ".editorconfig");
+		var path = Path.Join(root, ".editorconfig");
 		if (!File.Exists(path))
 			return null;
 
-		fileName = Path.Combine(root, Path.GetFileName(fileName));
+		fileName = Path.Join(root, Path.GetFileName(fileName));
 
 		var parser = new EditorConfigParser();
 		return parser.GetConfigurationFilesTillRoot(fileName);

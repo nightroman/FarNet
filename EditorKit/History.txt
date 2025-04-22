@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.EditorKit
 
+= 2.2.0 =
+
+Support Colorer types set by masks from settings.
+
 = 2.1.0 =
 
 Requires FarNet 9.0.12, uses .NET 9.

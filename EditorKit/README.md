@@ -15,8 +15,8 @@ https://github.com/nightroman/FarNet#readme
 
 ## Description
 
-EditorKit uses `.editorconfig` files, see [EditorConfig], and applies their
-supported settings to the Far Manager editor.
+EditorKit uses `.editorconfig` files (see [EditorConfig]) and its own settings
+for extras (see [Module settings](#module-settings)).
 
 What is EditorConfig?
 
@@ -34,9 +34,9 @@ indent_size = <number>
 charset = utf-8 | utf-8-bom | utf-16le | utf-16be
 ```
 
-If a file opened in the editor does not have some settings or they are set to
-unsupported values, deliberately or by mistake, then the module does nothing
-and the Far Manager current settings apply.
+If a file opened in editor does not have some settings or they are set to
+unsupported values then the module does nothing and Far Manager current
+settings apply.
 
 ### Profile settings
 
@@ -47,3 +47,16 @@ Profile settings may be specified in this configuration file:
 It is used when the usual `.editorconfig` files are not found.
 
 The profile should set `root = true` to ensure that just this file is used.
+
+## Module settings
+
+F11 / FarNet / Settings / EditorKit
+
+***
+**Colorer types set by file masks**
+
+```xml
+  <ColorerTypes>
+    <ColorerType Type="json" Mask="*.canvas" />
+  </ColorerTypes>
+```
