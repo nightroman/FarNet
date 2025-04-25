@@ -138,43 +138,48 @@ $type = ''
 switch -regex ([System.IO.Path]::GetExtension($Editor.FileName)) {
 	'\.(?:md|markdown|text)$' { $pattern = ' {0,3}(?:>|(?:[*+\-:]|\d+\.)\s+)'; $type = 'md'; break }
 	'\.(?:txt|hlf)' { $pattern = '$'; break }
-	'\.(?:ps1|psd1|psm1|pl|pls|py|pyw|pys|R|rb|rbw|ruby|rake|php\d?)$' { $pattern = '#+'; break }
+	'\.(?:ps1|psd1|psm1)$' { $pattern = '#+'; $type = 'ps'; break }
+	'\.(?:pl|pls|py|pyw|pys|R|rb|rbw|ruby|rake|php\d?)$' { $pattern = '#+'; break }
 	'\.(?:bat|cmd)$' { $pattern = '::+|rem\s'; break }
 	'\.(?:sql|lua)$' { $pattern = '--+'; break }
 	'\.(?:vb|vbs|bas|vbp|frm|cls)$' { $pattern = "'+"; break }
 	default { $pattern = '(?://+|;+)' }
 }
 
-# get selected lines or current paragraph
-$lines = $Editor.SelectedLines
-if ($lines.Count -eq 0) {
-	$index1 = $index2 = $Editor.Caret.Y
-
-	# find first line
-	for($$ = $index1 - 1; $$ -ge 0; --$$) {
-		if ($Editor[$$].Text.Trim().Length) {
-			$index1 = $$
-		}
-		else {
-			break
-		}
+### get selected or paragraph
+$lines = @($Editor.SelectedLines)
+if (!$lines) {
+	# empty current line?
+	if (!$Editor.Line.Text.Trim()) {
+		return
 	}
 
-	# find last line
-	$n = $Editor.Count
-	for($$ = $index2 + 1; $$ -lt $n; ++$$) {
-		if ($Editor[$$].Text.Trim().Length) {
-			$index2 = $$
-		}
-		else {
+	# paragraph head and tail
+	$y1 = $y2 = $Editor.Caret.Y
+
+	# find head
+	for($$ = $y1 - 1; $$ -ge 0; --$$) {
+		$text = $Editor[$$].Text.Trim()
+		if (!$text -or ($type -eq 'ps' -and $text -match '^\.|^<#|@[''"]$')) {
 			break
 		}
+		$y1 = $$
+	}
+
+	# find tail
+	$n = $Editor.Count
+	for($$ = $y2 + 1; $$ -lt $n; ++$$) {
+		$text = $Editor[$$].Text.Trim()
+		if (!$text -or ($type -eq 'ps' -and $text -match '^#>|^[''"]@')) {
+			break
+		}
+		$y2 = $$
 	}
 
 	# select and get lines
-	$Editor.SelectText(0, $index1, -1, $index2 + 1)
+	$Editor.SelectText(0, $y1, -1, $y2 + 1)
 	$lines = @(
-		for($$ = $index1; $$ -le $index2; ++$$) {
+		for($$ = $y1; $$ -le $y2; ++$$) {
 			$Editor[$$]
 		}
 	)
@@ -213,3 +218,7 @@ $Editor.BeginUndo()
 $Editor.DeleteText()
 $Editor.InsertText(($strings -join "`n"))
 $Editor.EndUndo()
+
+# go to last string end
+$y = $Editor.Caret.Y - 1
+$Editor.GoTo($Editor[$y].Length, $y)

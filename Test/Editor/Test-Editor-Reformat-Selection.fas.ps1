@@ -4,11 +4,11 @@ ps: {
 }
 
 job {
-	Open-FarEditor Test-Editor-Reformat-Selection..ps1.tmp
+	Open-FarEditor Test-Reformat-Selection.ps1.tmp
 }
 job {
 	$global:Editor = $Far.Editor
-	Assert-Far -EditorFileName *\Test-Editor-Reformat-Selection..ps1.tmp
+	Assert-Far -EditorFileName *\Test-Reformat-Selection.ps1.tmp
 }
 
 ### one line
@@ -28,7 +28,7 @@ job {
 		$Editor.Count -eq 3
 		$Editor[0].Text -eq "`t" * 10 + '///  This is a single line to be'
 		$Editor[1].Text -eq "`t" * 10 + '///  reformatted as two lines'
-		$Editor.Caret.Y -eq 2
+		$Editor.Caret.Y -eq 1
 	)
 
 	# the caret is at the end
@@ -60,16 +60,15 @@ job {
 }
 job {
 	$Caret = $Editor.Caret
-	Assert-Far @(
-		$Caret.X -eq 0
-		$Caret.Y -eq 4
-		$Editor.GetText() -eq @"
+	Assert-Far $Caret.X -eq 16
+	Assert-Far $Caret.Y -eq 3
+	Assert-Far $Editor.GetText() -eq @"
 ` /// 12345 12345
 ` /// 12345 12345
 ` /// 12345 12345
 ` /// 12345 12345
 ` /// </para>
-"@)
+"@
 }
 
 # exit

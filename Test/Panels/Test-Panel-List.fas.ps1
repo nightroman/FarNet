@@ -60,7 +60,7 @@ keys Esc
 ### PropertyPanel
 
 job {
-	Panel-Property-  (Get-Item "$env:TEMP\Test-List+\File 1")
+	Panel-ItemProperty "$env:TEMP\Test-List+\File 1"
 }
 
 # the current is the last

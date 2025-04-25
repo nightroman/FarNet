@@ -1,14 +1,14 @@
 ﻿<#
 .Synopsis
-	Test Go-Selection-.ps1
+	Test-Go-Selection.ps1
 #>
 
 job {
-	Open-FarEditor 'Test-Editor-Go-Selection..ps1.tmp'
+	Open-FarEditor 'Test-Go-Selection.ps1.tmp'
 }
 job {
 	$global:Editor = $Far.Editor
-	Assert-Far -EditorFileName *\Test-Editor-Go-Selection..ps1.tmp
+	Assert-Far -EditorFileName *\Test-Go-Selection.ps1.tmp
 }
 
 ### one line, to start
@@ -23,7 +23,7 @@ job {
 	)
 }
 job {
-	Go-Selection-
+	& $env:FarNetCode\Samples\Tests\Test-Go-Selection.ps1
 	Assert-Far @(
 		!$Editor.SelectionExists
 		$Editor.Caret.X -eq 3
@@ -42,7 +42,7 @@ job {
 	)
 }
 job {
-	Go-Selection- -End
+	& $env:FarNetCode\Samples\Tests\Test-Go-Selection.ps1 -End
 	Assert-Far @(
 		!$Editor.SelectionExists
 		$Editor.Caret.X -eq 8

@@ -5,9 +5,8 @@
     <GenerateDependencyFile>false</GenerateDependencyFile>
     <TargetFramework>net9.0</TargetFramework>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <WarningLevel>5</WarningLevel>
+    <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <NoWarn>IDE0130;FarNet250101;FarNet250103</NoWarn>

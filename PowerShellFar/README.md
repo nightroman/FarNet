@@ -904,8 +904,8 @@ current panel item names without full paths.
 ---
 **How to open item or property panel at some location**
 
-If you want to open a panel at the specified location from a script you may use
-scripts *Go-To.ps1* (not for *FileSystem*) and *Panel-Property-.ps1* (for any
+If you want to open a panel at the specified location from a script you may
+use scripts *Go-To.ps1* (not *FileSystem*) and *Panel-ItemProperty.ps1* (any
 provider). See comments and examples there.
 
 *********************************************************************
