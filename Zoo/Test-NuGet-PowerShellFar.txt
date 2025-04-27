@@ -16,14 +16,13 @@ FarHome\FarNet\Modules\PowerShellFar\Bench\Go-Everything.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Go-HeadFile.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Go-To.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Import-Panel-.ps1
-FarHome\FarNet\Modules\PowerShellFar\Bench\Indent-Selection-.ps1
+FarHome\FarNet\Modules\PowerShellFar\Bench\Indent-Selection.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Invoke-FromEditor.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Invoke-Shortcut-.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Menu-Favorites-.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Menu-More.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Merge-Selected.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Open-TextLink.ps1
-FarHome\FarNet\Modules\PowerShellFar\Bench\Open-TODO-.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-BitsTransfer.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-DataFrame.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-DBData.ps1
@@ -32,6 +31,7 @@ FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-History.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-ItemProperty.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-Process.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-SQLite.ps1
+FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-TODO.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-Version.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Profile.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Profile-Editor.ps1

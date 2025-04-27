@@ -1,5 +1,13 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.18 =
+
+When calling apps, avoid user screen for vps:, interactive editor, F5 in script editor, etc.
+
+Bench
+- Indent-Selection-.ps1 -> Indent-Selection.ps1
+- Open-TODO-.ps1 -> Panel-TODO.ps1
+
 = 9.0.17 =
 
 Reformat-Selection.ps1

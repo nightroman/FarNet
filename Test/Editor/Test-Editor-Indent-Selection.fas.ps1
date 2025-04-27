@@ -21,7 +21,7 @@ job {
 	$Editor.SelectText(0, 0, 0, 3)
 }
 job {
-	Indent-Selection-.ps1
+	Indent-Selection.ps1
 	Assert-Far $Editor.GetText() -eq @'
 	{
 	 2
@@ -30,7 +30,7 @@ job {
 '@
 }
 job {
-	Indent-Selection-.ps1 -Back
+	Indent-Selection.ps1 -Back
 	Assert-Far $Editor.GetText() -eq @'
 {
  2
@@ -39,7 +39,7 @@ job {
 '@
 }
 job {
-	Indent-Selection-.ps1 -Back
+	Indent-Selection.ps1 -Back
 	Assert-Far $Editor.GetText() -eq @'
 {
 2

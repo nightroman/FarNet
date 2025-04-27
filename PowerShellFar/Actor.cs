@@ -479,23 +479,34 @@ public sealed partial class Actor
 			FarUI.PushWriter(args.Writer);
 		}
 
+		FarHost.IgnoreApplications? ignoreApplications = null;
 		try
 		{
 			// progress
 			FarUI.IsProgressStarted = false;
 			Far.Api.UI.SetProgressState(TaskbarProgressBarState.Indeterminate);
 
+			// output and apps
+			Command output;
+			if (FarUI.Writer is ConsoleOutputWriter)
+			{
+				output = A.OutDefaultCommand;
+			}
+			else
+			{
+				output = A.OutHostCommand;
+				ignoreApplications = new();
+			}
+
 			// invoke command
 			using var ps = NewPowerShell();
 			_myCommand = code;
 			var command = ps.Commands.AddScript(code, args.UseLocalScope);
-			if (args.Arguments != null)
+			if (args.Arguments is { } arguments)
 			{
-				foreach (var arg in args.Arguments)
-					command.AddArgument(arg);
+				for (int i = 0; i < arguments.Length; ++i)
+					command.AddArgument(arguments[i]);
 			}
-
-			var output = FarUI.Writer is ConsoleOutputWriter ? A.OutDefaultCommand : A.OutHostCommand;
 			command.AddCommand(output);
 			ps.Invoke();
 			args.Reason = ps.InvocationStateInfo.Reason;
@@ -537,7 +548,10 @@ public sealed partial class Actor
 		}
 		finally
 		{
-			// progress
+			// restore apps
+			ignoreApplications?.Dispose();
+
+			// restore progress
 			FarUI.IsProgressStarted = false;
 			Far.Api.UI.SetProgressState(TaskbarProgressBarState.NoProgress);
 

@@ -1,11 +1,7 @@
 using FarNet;
 using FarNet.Forms;
 using FarNet.Tools;
-using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.IO;
-using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Text;
@@ -48,7 +44,7 @@ static class EditorKit
 	/// <seealso cref="Actor.ExpandCode"/>
 	public static void ExpandCode(ILine? editLine, Runspace? runspace)
 	{
-		using var IgnoreApplications = new FarHost.IgnoreApplications();
+		using FarHost.IgnoreApplications ignoreApplications = new();
 
 		InitTabExpansion();
 

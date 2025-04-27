@@ -1,9 +1,6 @@
 using FarNet;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Runtime.InteropServices;
@@ -140,14 +137,14 @@ static class A
 
 	// Command for formatted output friendly for apps with interaction and colors.
 	// "Out-Host" is not suitable for apps with interaction, e.g. more.com, git.exe.
-	public static Command OutDefaultCommand => new("Out-Default")
+	public static Command OutDefaultCommand { get; } = new("Out-Default")
 	{
 		MergeUnclaimedPreviousCommandResults = PipelineResultTypes.Output | PipelineResultTypes.Error
 	};
 
 	// Command for formatted output of everything.
 	// "Out-Default" is not suitable for external apps, output goes to console.
-	public static Command OutHostCommand => new("Out-Host")
+	public static Command OutHostCommand { get; } = new("Out-Host")
 	{
 		MergeUnclaimedPreviousCommandResults = PipelineResultTypes.Output | PipelineResultTypes.Error
 	};

@@ -1,10 +1,4 @@
-﻿
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-
-namespace PowerShellFar;
+﻿namespace PowerShellFar;
 
 class RunArgs(string code)
 {
