@@ -1,5 +1,13 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.19 =
+
+Search-Regex.ps1
+- input shortcut "*..."
+
+Snippet.ps1
+- fix here-string indent
+
 = 9.0.18 =
 
 When calling apps, avoid user screen for vps:, interactive editor, F5 in script editor, etc.

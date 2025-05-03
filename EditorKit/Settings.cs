@@ -19,5 +19,8 @@ public class Settings : ModuleSettings<Settings.Data>
 
 		[XmlAttribute]
 		public required string Mask { get; set; }
+
+		[XmlAttribute]
+		public bool Full { get; set; }
 	}
 }

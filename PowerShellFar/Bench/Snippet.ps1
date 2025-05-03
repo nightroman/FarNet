@@ -299,6 +299,10 @@ try {
 				break
 			}
 		}
+		elseif ($text -match '@[''"]\s*$') {
+			# drop indent for here-strings
+			$indent = ''
+		}
 
 		$iof = $text.IndexOf('$0')
 		if ($iof -ge 0) {

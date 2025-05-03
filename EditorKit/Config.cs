@@ -19,7 +19,7 @@ public class Config : ModuleEditor
 	{
 		var settings = Settings.Default.GetData();
 
-		var colorerType = settings.ColorerTypes.FirstOrDefault(x => Far.Api.IsMaskMatch(fileName, x.Mask));
+		var colorerType = settings.ColorerTypes.FirstOrDefault(x => Far.Api.IsMaskMatch(fileName, x.Mask, x.Full));
 		if (colorerType is { })
 			editor.Opened += (s, e) => SetColorerType(colorerType.Type);
 	}

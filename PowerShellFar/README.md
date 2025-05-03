@@ -1458,12 +1458,14 @@ with other options.
     Any command returning file paths or file system items.
     Missing paths and directory paths or items are ignored.
 
+    If the text starts with `*` then it is translated as
+    `"Get-ChildItem . -Force -Recurse -Include $text"`
+
 - All text
 
     Tells to read and process files as whole strings, not lines. In this case
-    the options `Multiline` and `Singleline` may be useful as well. Results are
-    processed in the same way but found matches are not selected in the editor,
-    only the caret is set at the match.
+    options `Multiline` and `Singleline` may be useful. Found matches are not
+    selected in the editor, just the caret set to starts.
 
 ***
 **Result panel keys**

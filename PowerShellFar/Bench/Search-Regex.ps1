@@ -1,24 +1,23 @@
 <#
 .Synopsis
-	Searches for a regex in files and opens the result panel.
+	Searches files and panel found results.
 	Author: Roman Kuzmin
 
 .Description
-	See help (run this and press [F1]) for more information about input, dialog
+	See help (run this and [F1]) for more information about input, dialog
 	controls and result panel keys.
 
 .Parameter Regex
-		Regular expression pattern or instance. If it is omitted then a
+		Regular expression [string] or [regex]. If it is omitted then a
 		dialog is opened where you can define this and other parameters.
 
-		If the regex defines capturing groups then each group is treated as a
-		match and gets selected on opening.
+		Regex capturing groups are treated as separate found matches.
 
 		With AllText editor selection is not used and groups are ignored.
 
 .Parameter Options
-		Regular expression options and extra options. It is used when Regex is
-		not a regex instance. See SearchRegexOptions here for available values.
+		Regular expression options and extra options, when Regex is [string].
+		See SearchRegexOptions here for available values.
 
 		The option Singleline/s implies AllText.
 
@@ -32,8 +31,8 @@
 		* Get-EditorHistory - files from history excluding network paths
 
 .Parameter AllText
-		Tells to search in all text, not in separate lines. The editor opens
-		without selection with the caret at the found match.
+		Tells to read and process files as whole strings, not lines.
+		Found matches are not selected in the editor.
 
 		The option Singleline/s implies AllText.
 #>
@@ -45,9 +44,11 @@ param(
 	[switch]$AllText
 )
 
+#requires -Version 7.4
 $ErrorActionPreference = 1
-trap { Write-Error $_ -ErrorAction Stop }
+trap {Write-Error $_ -ErrorAction Stop}
 if ($args) {throw "Invalid arguments: $args"}
+if ($Host.Name -ne 'FarHost') {throw 'Requires FarHost.'}
 
 [Flags()]
 enum SearchRegexOptions {
@@ -86,7 +87,7 @@ elseif ($MyInvocation.ExpectingInput) {
 
 ### Regex dialog
 if (!$Regex) {
-	$dialog = $Far.CreateDialog(-1, -1, 77, $(if ($InputObject) { 10 } else { 11 }))
+	$dialog = $Far.CreateDialog(-1, -1, 77, ($InputObject ? 10 : 11))
 	$dialog.TypeId = 'DA462DD5-7767-471E-9FC8-64A227BEE2B1'
 	$dialog.HelpTopic = "<$($Psf.AppHome)\\>search-regexps1"
 	[void]$dialog.AddBox(3, 1, 0, 0, 'Search-Regex')
@@ -173,7 +174,13 @@ if (!$Regex) {
 
 		try {
 			# parse input
-			if (!($text = $eInput.Text.Trim())) { $text = 'Get-ChildItem' }
+			$text = $eInput.Text.Trim()
+			if (!$text) {
+				$text = 'Get-ChildItem -File -Force'
+			}
+			elseif ($text.StartsWith('*')) {
+				$text = "Get-ChildItem . -File -Force -Recurse -Include $text"
+			}
 			$sb = [scriptblock]::Create($text)
 
 			# invoke input
@@ -201,7 +208,7 @@ if (!$Regex) {
 ### Validate input and set job data
 if ($Regex -isnot [regex]) {
 	$Regex = "$Regex"
-	$Options = if ($Options) {[SearchRegexOptions]$Options} else {0}
+	$Options = $Options ? [SearchRegexOptions]$Options : 0
 	if ([int]$Options -band [SearchRegexOptions]::SimpleMatch) {
 		$Regex = [regex]::Escape($Regex)
 	}
@@ -240,7 +247,7 @@ $Panel.RealNames = $true
 $Panel.RightAligned = $true
 $Panel.SortMode = 'Unsorted'
 $Panel.Title = 'Searching...'
-$Panel.ViewMode = if ($Far.Panel.IsVisible) {'Descriptions'} else {'LongDescriptions'}
+$Panel.ViewMode = $Far.Panel.IsVisible ? 'Descriptions' : 'LongDescriptions'
 
 ### Plan
 # 'Descriptions'

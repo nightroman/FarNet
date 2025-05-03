@@ -25,7 +25,7 @@ param(
 Set-StrictMode -Version 3
 
 task version {
-	($Script:Version = switch -Regex -File Release-Notes.md { '##\s+v(\d+\.\d+\.\d+)' {$Matches[1]; break} })
+	($Script:Version = Get-BuildVersion Release-Notes.md '##\s+v(\d+\.\d+\.\d+)')
 }
 
 task meta -Inputs .build.ps1, Release-Notes.md -Outputs Directory.Build.props -Jobs version, {
