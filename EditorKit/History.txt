@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.EditorKit
 
+= 2.2.2 =
+
+Docs.
+
 = 2.2.1 =
 
 Support full path masks, optionally.

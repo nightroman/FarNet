@@ -59,6 +59,6 @@ F11 / FarNet / Settings / EditorKit
   <ColorerTypes>
     <ColorerType Type="config" Mask="*.env" Full="false" />
     <ColorerType Type="json" Mask="*.canvas" Full="false" />
-    <ColorerType Type="jScript" Mask="*\templates\*.md" Full="true" />
+    <ColorerType Type="text" Mask="*\logs\*.*" Full="true" />
   </ColorerTypes>
 ```

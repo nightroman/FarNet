@@ -9,13 +9,17 @@
 
 .Parameter File
 		Specifies the HRC file path.
+
 .Parameter Output
 		The output file path and format specified by extension. For available
 		formats simply use unlikely supported one and check the error message.
-		The default is "$env:TEMP\Graphviz.pdf".
+
+		Default is $env:TEMP\Graphviz.svg
+
 .Parameter Code
 		Custom DOT code added to the graph definition, see Graphviz manuals.
 		The default 'graph [rankdir=TB]' tells edges to go from top to bottom.
+
 .Parameter NoShow
 		Tells not to show the graph after creation.
 #>
@@ -24,7 +28,7 @@ param(
 	[Parameter(Position=0, Mandatory=1)]
 	[string]$File,
 	[Parameter(Position=1)]
-	[string]$Output = "$env:TEMP\Graphviz.pdf",
+	[string]$Output = "$env:TEMP\Graphviz.svg",
 	[string]$Code = 'graph [rankdir=TB]',
 	[switch]$NoShow
 )
