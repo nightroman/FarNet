@@ -7,7 +7,7 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="markdown">
 <annotation><documentation><![CDATA[
 
-markdown.hrc by Roman Kuzmin (nightroman), 2025-05-04
+markdown.hrc by Roman Kuzmin (nightroman), 2025-05-09
 
 * Use markdown2 for extensions.
 * Opened spans are always colored.
@@ -126,8 +126,8 @@ Inline JavaScript
 
 <scheme name="Template">
   <block scheme="Template2"
-    start="/(?{start}(?{TemplateStart}&lt;%[*\-_]?))/"
-    end="/(?{end}(?{TemplateEnd}[\-_]?%&gt;))/"
+    start="/(?{start}(?{TemplateStart}&lt;%(?:\*|_\*?|-\*?)?))/"
+    end="/(?{end}(?{TemplateEnd}[_\-]?%&gt;))/"
   />
 </scheme>
 

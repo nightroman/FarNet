@@ -23,8 +23,9 @@
 		Specifies the search filter used by Everything.
 		See: help Search-Everything -Parameter Filter
 
-		If the filter contains "edit:" then it is replaced with "file:" and
-		this script opens files in the editor instead of navigating to them.
+		If Filter contains "edit:" or ends with ":edit" (or just ":") then
+		this string is removed, "file:" is used instead and the found file
+		is opened in editor.
 
 .Parameter Limit
 		Specifies the maximum number of results.
@@ -49,9 +50,7 @@ param(
 )
 
 #requires -Version 7.4 -Modules PSEverything
-$ErrorActionPreference = 1
-trap { $PSCmdlet.ThrowTerminatingError($_) }
-if ($Host.Name -ne 'FarHost') {throw 'Requires FarHost.'}
+$ErrorActionPreference = 1; trap {$PSCmdlet.ThrowTerminatingError($_)}; if ($Host.Name -ne 'FarHost') {throw 'Requires FarHost.'}
 
 ### Settings
 
@@ -80,7 +79,14 @@ if (!$Filter) {
 	return $sets.Edit()
 }
 
-if ($edit = $Filter.Contains('edit:')) {
+### Edit?
+$isEdit = $false
+if ($Filter -match '(^.*):e?d?i?t?\s*$') {
+	$isEdit = $true
+	$Filter = 'file:' + $Matches[1]
+}
+elseif ($Filter -match '\bedit:') {
+	$isEdit = $true
 	$Filter = $Filter.Replace('edit:', 'file:')
 }
 
@@ -131,7 +137,7 @@ else {
 	}
 }
 
-if ($edit) {
+if ($isEdit) {
 	Open-FarEditor $Path
 	return
 }

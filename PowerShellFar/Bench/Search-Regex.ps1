@@ -87,25 +87,27 @@ elseif ($MyInvocation.ExpectingInput) {
 
 ### Regex dialog
 if (!$Regex) {
-	$dialog = $Far.CreateDialog(-1, -1, 77, ($InputObject ? 10 : 11))
+	[int]$w1 = $Far.UI.WindowSize.X * 0.8
+	[int]$w2 = $w1 - 6
+	$dialog = $Far.CreateDialog(-1, -1, $w1, ($InputObject ? 10 : 11))
 	$dialog.TypeId = 'DA462DD5-7767-471E-9FC8-64A227BEE2B1'
 	$dialog.HelpTopic = "<$($Psf.AppHome)\\>search-regexps1"
 	[void]$dialog.AddBox(3, 1, 0, 0, 'Search-Regex')
 	$x = 13
 
 	[void]$dialog.AddText(5, -1, 0, '&Pattern')
-	$eRegex = $dialog.AddEdit($x, 0, 71, '')
+	$eRegex = $dialog.AddEdit($x, 0, $w2, '')
 	$eRegex.History = 'SearchText'
 	$eRegex.UseLastHistory = $true
 
 	[void]$dialog.AddText(5, -1, 0, '&Options')
-	$eOptions = $dialog.AddEdit($x, 0, 71, $Options)
+	$eOptions = $dialog.AddEdit($x, 0, $w2, $Options)
 	$eOptions.History = 'RegexOptions'
 	$eOptions.UseLastHistory = $true
 
 	if (!$InputObject) {
 		[void]$dialog.AddText(5, -1, 0, '&Input')
-		$eInput = $dialog.AddEdit($x, 0, 71, '')
+		$eInput = $dialog.AddEdit($x, 0, $w2, '')
 		$eInput.History = 'PowerShellItems'
 		$eInput.UseLastHistory = $true
 	}

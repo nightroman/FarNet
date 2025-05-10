@@ -1,5 +1,19 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.20 =
+
+Microsoft.PowerShell.SDK 7.5.1
+
+Go-Everything.ps1
+- parameter Filter: support ":edit" suffix in addition to substring "edit:"
+
+Search-Regex.ps1
+- use wider dialog
+
+Update-FarManager.ps1
+- support *.map as unused files
+- support not used files in subfolders
+
 = 9.0.19 =
 
 Search-Regex.ps1

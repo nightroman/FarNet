@@ -50,26 +50,23 @@ param(
 )
 
 Set-StrictMode -Version 3
-$ErrorActionPreference = 1
-if ($Host.Name -ne 'ConsoleHost') {
-	Write-Error "Please invoke by the console host."
-}
+$ErrorActionPreference = 1; trap {$PSCmdlet.ThrowTerminatingError($_)}; if ($Host.Name -ne 'ConsoleHost') {throw "Requires console host."}
 
 # Files to be removed after updates if they did not exist.
-$NotUsedFiles = '*.hlf', '*.lng', '*.cmd', 'changelog', 'File_id.diz'
+$UnusedFiles = '*.hlf', '*.lng', '*.cmd', '*.map', 'changelog', 'File_id.diz'
 
 ### FARHOME
 if ($FARHOME) {
 	$FARHOME = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($FARHOME)
 }
 if (![System.IO.Directory]::Exists($FARHOME)) {
-	Write-Error "Parameter FARHOME: missing directory '$FARHOME'."
+	throw "Parameter FARHOME: missing directory '$FARHOME'."
 }
 
 ### Platform
 if (!$Platform) {
 	if (!($exe = Get-Item -LiteralPath "$FARHOME\Far.exe" -ErrorAction 0) -or ($exe.VersionInfo.FileVersion -notmatch '\b(x86|x64)\b')) {
-		Write-Error "Cannot get platform info from Far.exe.`nSpecify the parameter Platform."
+		throw "Cannot get platform info from Far.exe.`nSpecify the parameter Platform."
 	}
 	$Platform = $Matches[1]
 }
@@ -78,7 +75,7 @@ if (!$Platform) {
 if ($Archive) {
 	$Archive = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($Archive)
 	if (![System.IO.File]::Exists($Archive)) {
-		Write-Error "Missing file: $Archive"
+		throw "Missing file: $Archive"
 	}
 }
 else {
@@ -91,7 +88,7 @@ else {
 	$bit = if ($Platform -eq 'x64') {'x64'} else {'x86'}
 	$asset = @($res.assets.where{ $_.name -match "^Far\.$bit\.\d+\.\d+\.\d+\.\d+\.\w+\.7z$" })
 	if ($asset.Count -ne 1) {
-		Write-Error "Cannot find expected download assets."
+		throw "Cannot find expected download assets."
 	}
 
 	# check existing file
@@ -115,16 +112,14 @@ Wait-Process Far -ErrorAction 0
 ### extract all
 Write-Host -ForegroundColor Cyan "Extracting from '$Archive'..."
 $plugins1 = [System.IO.Directory]::GetDirectories("$FARHOME\Plugins")
-$files1 = foreach ($_ in $NotUsedFiles) { [System.IO.Directory]::GetFiles($FARHOME, $_) }
+$files1 = Get-ChildItem $FARHOME -Force -Recurse -File -Name -Include $UnusedFiles
 & 7z.exe x $Archive "-o$FARHOME" '-aoa'
-if ($LastExitCode) {
-	Write-Error "Error on extracting files."
-}
+if ($LASTEXITCODE) {throw "Error on extracting files."}
 
 ### remove not used plugins
 Write-Host -ForegroundColor Cyan "Removing not used plugins..."
 $plugins2 = [System.IO.Directory]::GetDirectories("$FARHOME\Plugins")
-foreach ($plugin in $plugins2) {
+foreach($plugin in $plugins2) {
 	if ($plugins1 -notcontains $plugin) {
 		Write-Host "Removing $plugin"
 		[System.IO.Directory]::Delete($plugin, $true)
@@ -133,13 +128,11 @@ foreach ($plugin in $plugins2) {
 
 ### remove not used files
 Write-Host -ForegroundColor Cyan "Removing not used files..."
-$files2 = foreach ($_ in $NotUsedFiles) {
-	[System.IO.Directory]::GetFiles($FARHOME, $_)
-}
-foreach ($file in $files2) {
+$files2 = Get-ChildItem $FARHOME -Force -Recurse -File -Name -Include $UnusedFiles
+foreach($file in $files2) {
 	if ($files1 -notcontains $file) {
 		Write-Host "Removing $file"
-		[System.IO.File]::Delete($file)
+		[System.IO.File]::Delete("$FARHOME\$file")
 	}
 }
 
@@ -150,7 +143,7 @@ $pathsInArchive = [System.Collections.Generic.HashSet[string]]::new([System.Stri
 $pathsInFar = @(
 	Get-ChildItem -LiteralPath $FARHOME -Force -Name -ErrorAction 0
 	Get-ChildItem -LiteralPath "$FARHOME\Plugins" -Force -Name -ErrorAction 0 | .{process{ "Plugins\$_" }}
-	foreach ($path in $pathsInArchive) {
+	foreach($path in $pathsInArchive) {
 		if ($path -match '^Plugins\\\w+$|^[^\\]+$' -and $path -ne 'Plugins' -and [System.IO.Directory]::Exists("$FARHOME\$path")) {
 			Get-ChildItem -LiteralPath "$FARHOME\$path" -Force -Recurse -Name -ErrorAction 0 | .{process{ "$path\$_" }}
 		}
