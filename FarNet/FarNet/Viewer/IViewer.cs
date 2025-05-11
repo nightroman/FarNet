@@ -2,8 +2,6 @@
 // FarNet plugin for Far Manager
 // Copyright (c) Roman Kuzmin
 
-using System;
-
 namespace FarNet;
 
 /// <summary>
@@ -148,6 +146,11 @@ public abstract class IViewer : IViewerBase
 	/// Gets or sets the word wrap mode in the current editor (~ [ShiftF2]).
 	/// </summary>
 	public abstract bool WordWrapMode { get; set; }
+
+	/// <summary>
+	/// Gets the got focus time of the instance.
+	/// </summary>
+	public abstract DateTime TimeOfGotFocus { get; }
 
 	/// <summary>
 	/// Gets the opening time of the instance.

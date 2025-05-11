@@ -145,17 +145,14 @@ int Viewer0::AsProcessViewerEvent(const ProcessViewerEventInfo* info)
 				if (_viewers[i]->_id == id)
 				{
 					viewer = _viewers[i];
-					if (i > 0)
-					{
-						_viewers.RemoveAt(i);
-						_viewers.Insert(0, viewer);
-					}
 					break;
 				}
 			}
 
 			if (viewer == nullptr)
 				break;
+
+			viewer->_TimeOfGotFocus = DateTime::Now;
 
 			if (_anyViewer._GotFocus)
 				_anyViewer._GotFocus(viewer, nullptr);

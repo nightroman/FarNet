@@ -1,6 +1,15 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 9.0.22 =
+
+FarNet menu
+- "Windows" replaces "Editors" and "Viewers"
+
+Retired FarNet commands "::prefix:"
+- use ":prefix:" commands instead
+- use IFar.PostStep() on issues
+
 = 9.0.21 =
 
 CommandParameter.GetValue() has new parameter, the default value.

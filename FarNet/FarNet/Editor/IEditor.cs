@@ -690,6 +690,11 @@ public abstract class IEditor : IEditorBase
 	public abstract IEditorBookmark Bookmark { get; }
 
 	/// <summary>
+	/// Gets the got focus time of the instance.
+	/// </summary>
+	public abstract DateTime TimeOfGotFocus { get; }
+
+	/// <summary>
 	/// Gets the opening time of the instance.
 	/// </summary>
 	public abstract DateTime TimeOfOpen { get; }

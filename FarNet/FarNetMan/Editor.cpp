@@ -1194,6 +1194,11 @@ IEditorBookmark^ Editor::Bookmark::get()
 	return % EditorBookmark::Instance;
 }
 
+DateTime Editor::TimeOfGotFocus::get()
+{
+	return _TimeOfGotFocus;
+}
+
 DateTime Editor::TimeOfOpen::get()
 {
 	return _TimeOfOpen;

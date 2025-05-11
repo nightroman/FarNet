@@ -322,6 +322,11 @@ void Viewer::CodePage::set(int value)
 	_CodePage = value;
 }
 
+DateTime Viewer::TimeOfGotFocus::get()
+{
+	return _TimeOfGotFocus;
+}
+
 DateTime Viewer::TimeOfOpen::get()
 {
 	return _TimeOfOpen;

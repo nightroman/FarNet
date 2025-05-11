@@ -188,13 +188,6 @@ namespace FarNet
 			int index = FindEditor(info->EditorID);
 			Editor^ editor = index < 0 ? nullptr : _editors[index];
 
-			// make the editor first in the list
-			if (index > 0)
-			{
-				_editors.RemoveAt(index);
-				_editors.Insert(0, editor);
-			}
-
 			//_110624_153138 rare case
 			if (!editor)
 			{
@@ -206,6 +199,8 @@ namespace FarNet
 				if ((intptr_t)editor->Id != info->EditorID)
 					break;
 			}
+
+			editor->_TimeOfGotFocus = DateTime::Now;
 
 			if (editor->_output)
 				editor->Sync();

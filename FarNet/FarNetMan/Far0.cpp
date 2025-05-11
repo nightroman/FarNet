@@ -724,8 +724,7 @@ void Far0::ShowMenu(ModuleToolOptions from)
 	String^ sInvoke = "&Invoke";
 	String^ sPanels = "&Panels";
 	String^ sDrawers = "&Drawers";
-	String^ sEditors = "&Editors";
-	String^ sViewers = "&Viewers";
+	String^ sWindows = "&Windows";
 	String^ sConsole = "&Console";
 	String^ sSettings = "&Settings";
 
@@ -741,13 +740,11 @@ void Far0::ShowMenu(ModuleToolOptions from)
 		menu->Add(sPanels);
 
 	// Editors
-	// Viewers
 	if (from != ModuleToolOptions::Dialog)
 	{
 		if (from == ModuleToolOptions::Editor)
 			menu->Add(sDrawers);
-		menu->Add(sEditors);
-		menu->Add(sViewers);
+		menu->Add(sWindows);
 	}
 
 	// Console
@@ -765,10 +762,8 @@ void Far0::ShowMenu(ModuleToolOptions from)
 		Works::SettingsUI::ShowSettings(Works::ModuleLoader::GatherModuleManagers());
 	else if (Object::ReferenceEquals(text, sPanels))
 		Works::PanelTools::ShowPanelsMenu();
-	else if (Object::ReferenceEquals(text, sEditors))
-		Works::EditorTools::ShowEditorsMenu();
-	else if (Object::ReferenceEquals(text, sViewers))
-		Works::EditorTools::ShowViewersMenu();
+	else if (Object::ReferenceEquals(text, sWindows))
+		Works::EditorTools::ShowWindowsMenu();
 	else if (Object::ReferenceEquals(text, sDrawers))
 		ShowDrawersMenu();
 	else if (Object::ReferenceEquals(text, sInvoke))
@@ -885,19 +880,16 @@ bool Far0::InvokeCommand(const wchar_t* command, OPENFROM from)
 	bool isAsync = command[0] == ':';
 	if (isAsync)
 		++command;
-	bool isAsync2 = command[0] == ':';
-	if (isAsync2)
-		++command;
 
 	// find the colon
 	const wchar_t* colon = wcschr(command, ':');
 
-	// missing colon is possible from macro or input
-	if (!colon)
-		throw gcnew InvalidOperationException("Commands should start with prefixes.");
-
-	// get the prefix
+	// command prefix
 	auto prefix = gcnew String(command, 0, (int)(colon - command));
+	if (!prefix->Length)
+		throw gcnew InvalidOperationException("Command should start with `prefix:` (sync) or `:prefix:` (async).");
+
+	// command text
 	auto text = gcnew String(colon + 1);
 
 	// case: script
@@ -921,10 +913,7 @@ bool Far0::InvokeCommand(const wchar_t* command, OPENFROM from)
 		if (isAsync)
 		{
 			Action^ handler = gcnew Action(gcnew CommandJob(it, e), &CommandJob::Invoke);
-			if (isAsync2)
-				Far::Api->PostStep(handler);
-			else
-				Far::Api->PostJob(handler);
+			Far::Api->PostJob(handler);
 			return true;
 		}
 

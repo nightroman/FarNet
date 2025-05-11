@@ -12,7 +12,7 @@ namespace FarNet.Works;
 
 public static class SettingsUI
 {
-	internal const string HelpSettings = "module-settings";
+	internal const string HelpSettings = "settings";
 
 	public static void ShowSettings(IEnumerable<IModuleManager> managers)
 	{
@@ -27,7 +27,7 @@ public static class SettingsUI
 
 		var menu = Far.Api.CreateMenu();
 		menu.AutoAssignHotkeys = true;
-		menu.Title = "Module settings";
+		menu.Title = "Settings";
 		menu.HelpTopic = HelpSettings;
 
 		var maxModuleName = list.Max(x => x.Key.ModuleName.Length);

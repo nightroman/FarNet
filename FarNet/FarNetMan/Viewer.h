@@ -28,6 +28,7 @@ public:
 	virtual property ViewerViewMode ViewMode { ViewerViewMode get() override; void set(ViewerViewMode value) override; }
 	virtual property bool WrapMode { bool get() override; void set(bool value) override; }
 	virtual property bool WordWrapMode { bool get() override; void set(bool value) override; }
+	virtual property DateTime TimeOfGotFocus{ DateTime get() override; }
 	virtual property DateTime TimeOfOpen { DateTime get() override; }
 	virtual property FarNet::DeleteSource DeleteSource { FarNet::DeleteSource get() override; void set(FarNet::DeleteSource value) override; }
 	virtual property int CodePage { int get() override; void set(int value) override; }
@@ -50,6 +51,7 @@ internal:
 internal:
 	intptr_t _id;
 	String^ _FileName;
+	DateTime _TimeOfGotFocus;
 	DateTime _TimeOfOpen;
 private:
 	void AssertClosed();

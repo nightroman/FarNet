@@ -1,4 +1,4 @@
-﻿<!--HLF:
+<!--HLF:
     PluginContents = FarNet;
 -->
 
@@ -154,49 +154,44 @@ command line or create user menu or file association items with FarNet commands.
 
 **FarNet menu "Invoke" with command input box**
 
-Use the menu `F11` \ `FarNet` \ `Invoke`. It shows the command input box for
+Use the menu `F11` / `FarNet` / `Invoke`. It shows the command input box for
 typing and invoking FarNet commands.
 
 **Far Manager macros**
 
-FarNet commands may be called from macros by `Plugin.Call()` with two parameters.
-The first parameter is the FarNet GUID. Its second parameter is a FarNet command
-with prefix. For asynchronous jobs and steps the prefix starts with one and two
-colons respectively.
+FarNet commands are called from macros by `Plugin.Call()` or `Plugin.SyncCall`
+with two parameters. The first parameter is FarNet GUID, the second is FarNet
+command with `prefix:` or `:prefix:` and `text`.
 
 **Syntax**
 
-Synchronous command:
+Synchronous FarNet command:
 
-    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "Prefix:Command")
+    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "prefix:text")
+    Plugin.SyncCall("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "prefix:text")
 
-Asynchronous job (`IFar.PostJob()`)
+Asynchronous FarNet command:
 
-    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":Prefix:Command")
-
-Asynchronous step (`IFar.PostStep()`)
-
-    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "::Prefix:Command")
+    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":prefix:text")
+    Plugin.SyncCall("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":prefix:text")
 
 **Notes**
 
-- Synchronous calls are for simple actions, usually with no UI.
-- Asynchronous commands normally should be the last in macros.
-- Asynchronous steps are used for opening module panels.
+- Synchronous calls are for simple actions without UI.
+- Asynchronous calls are for UI and opening module panels.
 
 **Examples**
 
-Synchronous. *RightControl* changes the caret position:
+Synchronous: `PowerShellFar` shows files as console output:
 
-    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:step-left")
+    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "ps: Get-ChildItem")
 
-Asynchronous job. *PowerShellFar* shows a dialog:
+Asynchronous: *PowerShellFar* shows files as module panel:
 
-    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":ps: $Psf.InvokeInputCode()")
+    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":vps: Get-ChildItem | Out-FarPanel")
 
-Asynchronous step. *PowerShellFar* opens a panel:
-
-    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "::ps: Get-Process | Out-FarPanel")
+NB `PowerShellFar` uses prefix `ps:` for commands with expected or possible
+console output and `vps:` for commands with output to viewer or no output.
 
 *********************************************************************
 ## Technical information
@@ -280,10 +275,9 @@ The main plugin menu shows the following items:
 * [Invoke](#invoke-command)
 * [Panels](#panels-menu)
 * [Drawers](#drawers-menu)
-* [Editors](#editors-menu)
-* [Viewers](#viewers-menu)
+* [Windows](#windows-menu)
 * [Console](#console-menu)
-* [Settings](#module-settings)
+* [Settings](#settings)
 
 *********************************************************************
 ## Invoke command
@@ -347,6 +341,26 @@ The panels menu shows commands dealing with the panel.
     ignored if the selected item is not a shelved panel.
 
 *********************************************************************
+## Drawers menu
+
+[Contents]
+
+This menu is available in editors. It shows the list of registered drawers.
+Menu items of drawers which are already added to the current editor are
+checked. Selecting an added drawer removes it from the current editor.
+Selecting a not added drawer adds it to the current editor.
+
+*********************************************************************
+## Windows menu
+
+[Contents]
+
+This command shows the list of opened windows (editors and viewers) for
+switching to the selected. If the choice is obvious then the window is
+automatically selected and activated. Otherwise, the menu is shown for
+manual selection.
+
+*********************************************************************
 ## Console menu
 
 [Contents]
@@ -368,34 +382,6 @@ Example mouse macros for the Common area:
     F11 $If (Menu.Select("FarNet", 2) > 0) Enter c i $End
 
 *********************************************************************
-## Drawers menu
-
-[Contents]
-
-This menu is available in editors. It shows the list of registered drawers.
-Menu items of drawers which are already added to the current editor are
-checked. Selecting an added drawer removes it from the current editor.
-Selecting a not added drawer adds it to the current editor.
-
-*********************************************************************
-## Editors menu
-
-[Contents]
-
-This command makes the list of opened editors for selecting one of them. If the
-choice is obvious then the editor is automatically selected and activated.
-Otherwise, the menu is shown for manual selection.
-
-*********************************************************************
-## Viewers menu
-
-[Contents]
-
-This command makes the list of opened viewers for selecting one of them. If the
-choice is obvious then the viewer is automatically selected and activated.
-Otherwise, the menu is shown for manual selection.
-
-*********************************************************************
 ## Config menu
 
 [Contents]
@@ -415,10 +401,10 @@ These settings are *system settings*. They exist for all modules and their
 tools. In addition to them there are *user settings* panels opened from the
 plugin menu in panels. User settings exist only if they are implemented by
 modules.
-See [Module settings](#module-settings) (`[F11] \ FarNet \ Settings`).
+See [Settings](#settings) (`[F11]` / `FarNet` / `Settings`).
 
 Of course, modules may provide other settings dialogs and even other ways to
-configure settings (registry, config files, etc.).
+configure settings (registry, configuration files, etc.).
 
 *********************************************************************
 ## Configure commands
@@ -570,7 +556,7 @@ This list shows the history of used items, for example commands.
 - [List menu keys](#list-menu)
 
 *********************************************************************
-## Module settings
+## Settings
 
 [Contents]
 
@@ -598,6 +584,6 @@ validation errors may be discovered later.
 
 These settings are *user settings* provided by modules. In addition to them
 modules may also have *system settings* menus and dialogs shown by the core.
-See [Config menu](#config-menu) (`Options \ Plugin configuration \ FarNet`).
+See [Config menu](#config-menu) (`Options` / `Plugin configuration` / `FarNet`).
 
 *********************************************************************

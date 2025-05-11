@@ -56,7 +56,7 @@ macro 'Keys"Down End RCtrl0"'
 job {
 	# select bookmark 1
 	$Far.PostMacro('Keys("1")')
-	Select-Bookmark-.ps1
+	Go-Bookmark.ps1
 }
 
 job {
@@ -72,7 +72,7 @@ job {
 job {
 	# select bookmark 0
 	$Far.PostMacro('Keys("0")')
-	Select-Bookmark-.ps1
+	Go-Bookmark.ps1
 }
 
 job {
@@ -167,7 +167,7 @@ job {
 job {
 	# select bookmark 'line #4'
 	$Far.PostMacro('Keys("4")')
-	Select-Bookmark-.ps1
+	Go-Bookmark.ps1
 }
 job {
 	Assert-Far $Far.Editor.Caret.Y -eq 3
