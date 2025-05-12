@@ -45,6 +45,9 @@ job {
 
 job {
 	Open-FarViewer "$env:FarHome\FarEng.lng"
+
+	#! used to be null
+	Assert-Far $Far.Viewer.Title -eq $Far.Viewer.FileName
 }
 job {
 	# IsModal

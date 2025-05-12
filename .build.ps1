@@ -102,7 +102,7 @@ task build meta, {
 
 # Synopsis: Build and install API docs.
 task docs {
-	Invoke-Build build, install, clean .\Docs\.build.ps1
+	Invoke-Build build, install, clean .\Docs
 }
 
 # Synopsis: Copy files to FarHome.

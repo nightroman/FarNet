@@ -140,9 +140,17 @@ void Viewer::FileName::set(String^ value)
 	_FileName = value;
 }
 
+//! Viewer does not have VCTL_GETTITLE
 String^ Viewer::Title::get()
 {
-	return _Title;
+	return String::IsNullOrEmpty(_Title) ? _FileName : _Title;
+}
+
+//! Viewer does not have VCTL_SETTITLE
+void Viewer::Title::set(String^ value)
+{
+	AssertClosed();
+	_Title = value;
 }
 
 Int64 Viewer::FileSize::get()
@@ -164,12 +172,6 @@ Point Viewer::WindowSize::get()
 		r.Y = (int)vi.WindowSizeY;
 	}
 	return r;
-}
-
-void Viewer::Title::set(String^ value)
-{
-	AssertClosed();
-	_Title = value;
 }
 
 Place Viewer::Window::get()

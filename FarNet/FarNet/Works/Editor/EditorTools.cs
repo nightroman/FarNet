@@ -156,7 +156,7 @@ public static class EditorTools
 			var name = string.Format(
 				MenuItemFormat,
 				index < MenuHotkeys.Length ? MenuHotkeys[index] : ' ',
-				window is IEditor e ? $"Edit: {e.Title}" : $"View: {((IViewer)window).FileName}");
+				window is IEditor e ? $"Edit: {e.Title}" : $"View: {((IViewer)window).Title}");
 			menu.Add(name).Data = window;
 		}
 

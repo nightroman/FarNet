@@ -1,13 +1,13 @@
 ﻿<#
 .Synopsis
-	Test TabExpansion UI
+	Test TabExpansion UI. Accept any prefix, any area, any file.
 #>
 
-### TE in the command line
+### TE in command line
 
 job {
-	# set cmdline
-	$Far.CommandLine.Text = '$Far.Co'
+	# set command line
+	$Far.CommandLine.Text = 'bar: $Far.Co'
 }
 
 # expand (NB macro does not work)
@@ -47,13 +47,13 @@ job {
 keys Enter
 job {
 	# expanded?
-	Assert-Far $Far.CommandLine.Text -eq '$Far.CopyToClipboard('
+	Assert-Far $Far.CommandLine.Text -eq 'bar: $Far.CopyToClipboard('
 
 	# set cmdline
 	$Far.CommandLine.Text = ''
 }
 
-### TE in 'Invoke input code' dialog
+### TE in "Invoke commands" dialog
 
 run {
 	# show dialog
@@ -61,10 +61,10 @@ run {
 }
 
 # type
-macro 'Keys"$ F a r . C o"'
+macro 'Keys"b a r : space $ F a r . C o"'
 job {
 	# check
-	Assert-Far $Far.Dialog[2].Text -eq '$Far.Co'
+	Assert-Far $Far.Dialog[2].Text -eq 'bar: $Far.Co'
 }
 
 # expand
@@ -81,19 +81,20 @@ job {
 	Assert-Far $Far.Dialog[1].Text -eq 'Invoke commands'
 
 	# expanded?
-	Assert-Far $Far.Dialog[2].Text -eq '$Far.CommandLine'
+	Assert-Far $Far.Dialog[2].Text -eq 'bar: $Far.CommandLine'
 }
 
 # exit dialog
 keys Esc
-### TE in a standard dialog editbox
+
+### TE in standard dialog editboxes
 
 # show dialog
 keys CtrlG
 # type
-macro 'Keys"$ F a r . C o"'
+macro 'Keys"b a r : space $ F a r . C o"'
 job {
-	Assert-Far $Far.Dialog[2].Text -eq '$Far.Co'
+	Assert-Far $Far.Dialog[2].Text -eq 'bar: $Far.Co'
 }
 
 # expand
@@ -113,23 +114,24 @@ job {
 	Assert-Far $Far.Dialog[0].Text -eq 'Apply command'
 
 	# expanded?
-	Assert-Far $Far.Dialog[2].Text -eq '$Far.CommandLine'
+	Assert-Far $Far.Dialog[2].Text -eq 'bar: $Far.CommandLine'
 }
 
 # exit dialog
 keys Esc
-### TE in the editor with a .ps1 file
+
+### TE in editor with any file
 
 job {
 	# open editor
-	Open-FarEditor 'tmp.ps1'
+	Open-FarEditor tmp.txt
 }
 job {
 	Assert-Far -Editor
 }
 
 # type
-macro 'Keys"$ F a r . C o"'
+macro 'Keys"b a r : space $ F a r . C o"'
 
 # expand
 # [_090328_170110] Tab is not working, why?
@@ -149,7 +151,7 @@ job {
 	Assert-Far -Editor
 
 	# expanded?
-	Assert-Far $Far.Editor.GetText() -eq '$Far.CommandLine'
+	Assert-Far $Far.Editor.GetText() -eq 'bar: $Far.CommandLine'
 }
 
 # exit editor

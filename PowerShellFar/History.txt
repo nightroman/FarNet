@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.22 =
+
+Allow code completion with any `prefix:`.
+
 = 9.0.21 =
 
 New script Edit-Gcm.ps1

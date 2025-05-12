@@ -62,8 +62,8 @@ public abstract class IViewer : IViewerBase
 	public abstract Point WindowSize { get; }
 
 	/// <summary>
-	/// Gets or sets the window title.
-	/// Set it before opening.
+	/// Gets or sets the window title. Set it before opening.
+	/// If not set, gets <see cref="FileName"/>.
 	/// </summary>
 	public abstract string? Title { get; set; }
 

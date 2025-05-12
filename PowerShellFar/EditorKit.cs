@@ -125,8 +125,8 @@ static class EditorKit
 			if (cursorColumn == selectionSpan.End)
 				cursorColumn = selectionSpan.Start;
 
-			// process prefix, used to be just for panels but it is needed in dialogs, too
-			FarNet.Works.Kit.SplitCommandWithPrefix(inputScript, out prefix, out inputScript, Entry.IsMyPrefix);
+			// process prefix, accepts any
+			FarNet.Works.Kit.SplitCommandWithPrefix(inputScript, out prefix, out inputScript, (_) => true);
 
 			// correct caret
 			cursorColumn -= prefix.Length;
