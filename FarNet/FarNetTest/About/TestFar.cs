@@ -35,6 +35,9 @@ public class TestFar : IFar
 	public override string CurrentDirectory => AbcTest.TestRoot;
 
 	readonly IWindow _Window = new TestWindow();
+
+	public override event EventHandler<QuittingEventArgs> Quitting = delegate { };
+
 	public override IWindow Window => _Window;
 
 	public override IUserInterface UI => throw new NotImplementedException();

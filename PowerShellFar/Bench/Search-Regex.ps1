@@ -257,10 +257,12 @@ $col1 = [FarNet.SetColumn]@{ Kind = 'NR'; Name = 'File' }
 $col2 = [FarNet.SetColumn]@{ Kind = 'Z'; Name = 'Match' }
 $plan = [FarNet.PanelPlan]@{ Columns = $col1, $col2; StatusColumns = $col2 }
 $Panel.SetPlan('Descriptions', $plan)
+$Panel.SetPlan(0, $plan)
 # 'LongDescriptions'
 $plan = $plan.Clone()
 $plan.IsFullScreen = $true
 $Panel.SetPlan('LongDescriptions', $plan)
+$Panel.SetPlan(9, $plan)
 
 ### Timer: check new data and update
 $Panel.TimerInterval = 2000

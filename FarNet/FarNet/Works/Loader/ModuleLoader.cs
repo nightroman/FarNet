@@ -1,14 +1,6 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
 using System.Reflection;
-using System.Xml.Linq;
 
 namespace FarNet.Works;
 #pragma warning disable 1591
@@ -256,8 +248,10 @@ public class ModuleLoader
 	{
 		foreach (ModuleManager manager in _Managers.Values)
 		{
-			if (manager.GetLoadedModuleHost() != null && !manager.GetLoadedModuleHost().CanExit())
+#pragma warning disable 0618
+			if (manager.GetLoadedModuleHost() is { } host && !host.CanExit())
 				return false;
+#pragma warning restore 0618
 		}
 
 		return true;

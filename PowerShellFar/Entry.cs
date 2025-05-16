@@ -88,14 +88,16 @@ public sealed class Entry : ModuleHost
 	{
 		A.Psf.SyncPaths();
 
-		// if ends with `#` then omit echo else make echo with prefix
+		var command = e.Command;
+
+		// echo / no echo
 		Func<string>? getEcho;
-		if (e.Command.AsSpan().TrimEnd().EndsWith('#'))
+		if (!command.StartsWith(' ') || command.EndsWith('#'))
 			getEcho = null;
 		else
-			getEcho = () => CommandInvoke1.Prefix + ':' + e.Command;
+			getEcho = () => CommandInvoke1.Prefix + ':' + command;
 
-		var ok = A.Psf.Run(new RunArgs(e.Command) { Writer = new ConsoleOutputWriter(getEcho) });
+		var ok = A.Psf.Run(new RunArgs(command) { Writer = new ConsoleOutputWriter(getEcho) });
 		e.Ignore = !ok;
 	}
 

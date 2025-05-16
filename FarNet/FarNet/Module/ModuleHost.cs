@@ -1,10 +1,4 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-
-namespace FarNet;
+﻿namespace FarNet;
 
 /// <summary>
 /// The module host. At most one public descendant can be implemented by a module.
@@ -78,19 +72,9 @@ public abstract class ModuleHost : BaseModuleItem
 	}
 
 	/// <summary>
-	/// Can the module exit now?
+	/// Use <see cref="IFar.Quitting"/> instead.
 	/// </summary>
-	/// <remarks>
-	/// This method is normally called internally by the <see cref="IFar.Quit"/>.
-	/// The module can override this to perform preliminary checks before exit.
-	/// Note that final exit actions should be performed in <see cref="Disconnect"/>.
-	/// <para>
-	/// It is allowed to return false but this option should be used sparingly,
-	/// there must be really good reasons to disturb normal exiting process.
-	/// The most important reason is that a user really wants that.
-	/// </para>
-	/// </remarks>
-	/// <returns>True if the module is ready to exit.</returns>
+	[Obsolete("Use IFar.Quitting instead.")]
 	public virtual bool CanExit()
 	{
 		return true;

@@ -36,8 +36,6 @@ FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-Process.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-SQLite.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-TODO.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-Version.ps1
-FarHome\FarNet\Modules\PowerShellFar\Bench\Profile.ps1
-FarHome\FarNet\Modules\PowerShellFar\Bench\Profile-Editor.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Reformat-Selection.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Register-FarRedisTask.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Reindent-Selection.ps1

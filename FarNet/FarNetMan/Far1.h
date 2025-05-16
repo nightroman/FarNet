@@ -1,14 +1,11 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 #pragma once
 
 namespace FarNet
-{;
+{
 // Far::Api instance.
 ref class Far1 sealed : IFar
 {
+public: DEF_EVENT_ARGS2(Quitting, _Quitting, QuittingEventArgs);
 public:
 	virtual property FarNet::MacroArea MacroArea { FarNet::MacroArea get() override; }
 	virtual property FarNet::MacroState MacroState { FarNet::MacroState get() override; }

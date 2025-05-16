@@ -224,6 +224,8 @@ public sealed partial class Actor
 		}
 		finally
 		{
+			FarHost.Init();
+
 			//! set default runspace for handlers
 			//! it has to be done in main thread
 			Runspace.DefaultRunspace = Runspace;

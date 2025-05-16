@@ -9,6 +9,7 @@
 
 .Parameter Command
 		Used as `Get-Command -Command`, supports wildcards.
+		Default is "*".
 
 .Example
 	>
@@ -35,8 +36,8 @@
 
 [CmdletBinding()]
 param(
-	[Parameter(Mandatory=1)]
-	[string]$Command
+	[ValidateNotNullOrEmpty()]
+	[string]$Command = '*'
 )
 
 Set-StrictMode -Version 3
@@ -76,7 +77,7 @@ $list = @(
 		### Application
 		if ($cmd.CommandType -eq 'Application') {
 			$path = $cmd.Path
-			if ($path -notlike '*.exe') {
+			if ($path -notmatch '\.(?:exe|com|cpl|msc)$') {
 				$path
 			}
 			continue
@@ -102,7 +103,7 @@ if ($list.Count -eq 1) {
 }
 else {
 	$get_text = {
-		$_ -is [string] ? $_ : "$($_.ScriptBlock.File) $($_.Name)"
+		$_ -is [string] ? $_ : "$($_.ScriptBlock.File) function $($_.Name)"
 	}
 	$list = $list | Sort-Object $get_text -Unique
 	$item = $list | Out-FarList -Title "Command: $Command" -Text $get_text

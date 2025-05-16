@@ -4,14 +4,9 @@ using System.Management.Automation.Host;
 
 namespace PowerShellFar;
 
-/// <summary>
-/// PowerShellFar host implementation.
-/// </summary>
+// Host implementation.
 class FarHost : PSHost
 {
-	// This instance ID.
-	static readonly Guid _InstanceId = Guid.NewGuid();
-
 	// Original current culture.
 	readonly CultureInfo _CurrentCulture = Thread.CurrentThread.CurrentCulture;
 
@@ -21,51 +16,39 @@ class FarHost : PSHost
 	// Current nested prompt.
 	IEditor? _nestedPromptEditor;
 
-	/// <summary>
-	/// Construct an instance of this PSHost implementation.
-	/// Keep a reference to the hosting application object.
-	/// </summary>
-	/// <param name="ui">Host UI.</param>
+	// Construct an instance of this PSHost implementation.
+	// Keep a reference to the hosting application object.
 	internal FarHost(PSHostUserInterface ui)
 	{
 		_UI = ui;
 	}
 
+	internal static void Init()
+	{
+		s_ignoreApplications = false;
+	}
+
 	#region PSHost
-	/// <summary>
-	/// The host name: FarHost
-	/// </summary>
+	// The host name.
 	public override string Name => "FarHost";
 
-	/// <summary>
-	/// Gets the current culture to use.
-	/// </summary>
+	// Gets the current culture to use.
 	public override CultureInfo CurrentCulture => _CurrentCulture;
 
-	/// <summary>
-	/// Gets the current UI culture to use.
-	/// </summary>
+	// Gets the current UI culture to use.
 	public override CultureInfo CurrentUICulture => A.Psf.Manager.CurrentUICulture;
 
-	/// <summary>
-	/// Gets the GUID generated once.
-	/// </summary>
-	public override Guid InstanceId => _InstanceId;
+	// Gets the ID.
+	public override Guid InstanceId { get; } = Guid.NewGuid();
 
-	/// <summary>
-	/// Gets the UI instance.
-	/// </summary>
+	// Gets the UI instance.
 	public override PSHostUserInterface UI => _UI;
 
-	/// <summary>
-	/// Gets the assembly version.
-	/// </summary>
+	// Gets the assembly version.
 	public override Version Version => typeof(Actor).Assembly.GetName().Version!;
 
-	/// <summary>
-	/// Instructs the host to interrupt the currently running pipeline and start a new nested input loop.
-	/// An input loop is the cycle of prompt, input, and execute.
-	/// </summary>
+	// Instructs the host to interrupt the currently running pipeline and start a new nested input loop.
+	// An input loop is the cycle of prompt, input, and execute.
 	public override void EnterNestedPrompt()
 	{
 		// push the last
@@ -104,9 +87,7 @@ class FarHost : PSHost
 		}
 	}
 
-	/// <summary>
-	/// Instructs the host to exit the currently running input loop.
-	/// </summary>
+	// Instructs the host to exit the currently running input loop.
 	public override void ExitNestedPrompt()
 	{
 		if (_nestedPromptEditor != null)
@@ -118,42 +99,35 @@ class FarHost : PSHost
 		}
 	}
 
-	/// <summary>
-	/// Called before an external application process is started.
-	/// It is used to save state that the child process may alter
-	/// so the parent can restore that state when the child exits.
-	/// </summary>
+	// Called before an external application process is started.
+	// It is used to save state that the child process may alter
+	// so the parent can restore that state when the child exits.
 	public override void NotifyBeginApplication()
 	{
 		if (!s_ignoreApplications)
 			Far.Api.UI.ShowUserScreen();
 	}
 
-	/// <summary>
-	/// Called after an external application process finishes.
-	/// It is used to restore state that the child process may have altered.
-	/// </summary>
+	// Called after an external application process finishes.
+	// It is used to restore state that the child process may have altered.
 	public override void NotifyEndApplication()
 	{
 		if (!s_ignoreApplications)
 			Far.Api.UI.SaveUserScreen();
 	}
 
-	/// <summary>
-	/// Indicates to the host that an exit has been requested.
-	/// It passes the exit code that the host should use when exiting the process.
-	/// </summary>
+	// Indicates to the host that an exit has been requested.
+	// It passes the exit code that the host should use when exiting the process.
 	public override void SetShouldExit(int exitCode)
 	{
 	}
 	#endregion
 
 	#region IgnoreApplications
-	static bool s_ignoreApplications;
+	//! Default is true for profile loading.
+	static bool s_ignoreApplications = true;
 
-	/// <summary>
-	/// Use this object with `using` to disable/enable Notify*Application().
-	/// </summary>
+	// Use with `using` to disable/restore Notify*Application().
 	internal sealed class IgnoreApplications : IDisposable
 	{
 		readonly bool _old = s_ignoreApplications;

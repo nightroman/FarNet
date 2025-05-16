@@ -89,19 +89,18 @@ The white background color scheme *visual.hrd* was designed with PowerShell in m
 
 [Contents]
 
-There are many ways of invoking PowerShell commands in Far Manager, you can
-type and invoke commands at any moment in almost any current context.
+Several ways to invoke PowerShell commands in Far Manager:
 
 **Command line**
 
-Use the Far Manager command line to type and invoke commands with the prefixes
-`ps:` and `vps:`, see [Command line](#command-line).
+Use command line to invoke commands with the prefixes `ps:` and `vps:`, see
+[Command line](#command-line).
 
 **Invoke commands**
 
 Prompts for PowerShell commands: `[F11] \ PowerShellFar \ Invoke commands`.
-In panels: [Command console dialog](#command-console-dialog).
-In other areas: [Invoke commands dialog](#invoke-commands-dialog).
+Panels: [Command console dialog](#command-console-dialog).
+Other areas: [Invoke commands dialog](#invoke-commands-dialog).
 
 **Selected code**
 
@@ -197,11 +196,10 @@ Commands with no output and input may use any prefix:
 
 See more [Examples].
 
-**Command echo**
+**Command echo rule**
 
-Commands with screen output are printed to the screen before output (echo). But
-if a command ends with "#" then it is not printed. Use this trick in user menu
-and file association commands when echo is not needed.
+Commands with console output print (echo) their text before output if the
+text starts with a space and does not end with "#".
 
 *********************************************************************
 ## Menu commands
@@ -1159,32 +1157,25 @@ There are three main objects defined as global variables.
 
 [Contents]
 
-PowerShellFar is configured via profiles with special names in the directory
-*%FARPROFILE%\FarNet\PowerShellFar*. Each profile is invoked on the relevant
-event, once for its session. Profiles are invoked in a session global scope.
+PowerShellFar is configured by profiles in `%FARPROFILE%\FarNet\PowerShellFar`.
+Profile are invoked once per their session, when needed, in the global scope.
 
-Supported profiles:
+Used profiles:
 
-- *Profile.ps1*
-- *Profile-Editor.ps1*
-- *Profile-Local.ps1*
-- *Profile-Remote.ps1*
+- `Profile.ps1`
+- `Profile-Editor.ps1`
+- `Profile-Local.ps1`
+- `Profile-Remote.ps1`
 
 ---
 **Profile.ps1**
 
-It is the main session profile invoked once on loading PowerShellFar.
+It is the main session profile invoked on loading. A separate thread is used
+to make loading faster. This introduces some limitations:
 
-For faster startup, this profile is invoked in the background.
-This introduces some limitations, actually easy to deal with:
-
-* Do not call `$Far`. The profile is only for initialisation of the session,
-  not for doing any work.
-* Do not add editor event handlers in the main profile, use the editor profile
-  *Profile-Editor.ps1*.
-* Profile errors are not shown on loading (background). Terminating error are
-  shown on the first command. For non-terminating errors examine the variable
-  `$Error` after loading.
+- FarNet API calls except some basic thread safe should be avoided.
+- Terminating errors are not shown until any command run after loading.
+- For non-terminating errors examine the variable `$Error` after loading.
 
 Example: [Profile.ps1](#profileps1)
 
@@ -1203,7 +1194,7 @@ They are session profiles invoked on opening local and remote interactives,
 once per each new session. The remote profile code is taken from the local
 script but it is invoked in a remote workspace.
 
-Non terminating profile errors are not shown. A terminating error is shown in a
+Non-terminating profile errors are not shown. A terminating error is shown in a
 standard message box with a bare error message. Examine the variable `$Error`
 in opened interactives for full error information.
 
@@ -1325,19 +1316,26 @@ one of the associated commands.
 
 [Contents]
 
-The main session profile: *%FARPROFILE%\FarNet\PowerShellFar\Profile.ps1*
+The main session profile: `%FARPROFILE%\FarNet\PowerShellFar\Profile.ps1`
 
-*Bench\Profile.ps1* is an example, use it as the base for your own.
+Example: [Profile.ps1](https://github.com/nightroman/FarNet/blob/main/PowerShellFar/Profile.ps1)
 
-**Profile details**
+---
+
+    # Macros
+    doskey ib=ps:Invoke-Build
+    doskey ?=ps:Invoke-Build ?
+
+Define convenient doskey macros.
 
 ---
 
     # Aliases
-    Set-Alias pp Get-FarPath -Description 'Get panel paths'
+    Set-Alias op Out-FarPanel
+    Set-Alias pp Get-FarPath
     ...
 
-Define some convenient command aliases.
+Define convenient command aliases.
 
 ---
 
@@ -1360,10 +1358,9 @@ properties `Providers` (class `Actor`), `Columns` (class `ItemPanel`).
 
 [Contents]
 
-The editor profile: *%FARPROFILE%\FarNet\PowerShellFar\Profile-Editor.ps1*.
+The editor profile: `%FARPROFILE%\FarNet\PowerShellFar\Profile-Editor.ps1`
 
-*Bench\Profile-Editor.ps1* is an example, use it as the base for your own.
-Do not just copy this script, it may not work well in your environment.
+Example: [Profile-Editor.ps1](https://github.com/nightroman/FarNet/blob/main/PowerShellFar/Profile-Editor.ps1)
 
 The author uses this profile to set some editor event handlers even when macros
 might work better. This is done deliberately in order to be sure that handlers

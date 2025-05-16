@@ -1,5 +1,19 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.23 =
+
+FarNet 9.0.24
+
+Allow calling apps from "Profile.ps1", e.g. for doskey macros.
+
+Treat space after `ps:` as echo / no echo.
+
+Edit-Gcm.ps1
+- exclude .com, .cpl, .msc
+
+Misc
+- exclude example profile scripts from "Bench"
+
 = 9.0.22 =
 
 Allow code completion with any `prefix:`.
