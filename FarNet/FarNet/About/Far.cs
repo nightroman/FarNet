@@ -19,11 +19,6 @@ namespace FarNet;
 public abstract class IFar
 {
 	/// <summary>
-	/// Called on <see cref="Quit"/>.
-	/// </summary>
-	public abstract event EventHandler<QuittingEventArgs> Quitting;
-
-	/// <summary>
 	/// Gets a module action by its ID. Null is returned if the ID is not found.
 	/// </summary>
 	/// <param name="id">The module action ID.</param>
@@ -430,8 +425,8 @@ public abstract class IFar
 	/// Tells Far to exit if possible.
 	/// </summary>
 	/// <remarks>
-	/// It triggers <see cref="Quitting"/> first and checks for its <see cref="QuittingEventArgs.Ignore"/>.
-	/// If it is false then Far is called to exit. Far may stay, e.g. in an editor with not saved changes
+	/// It calls <see cref="User.RegisterQuitting"/> handlers first and then checks for <see cref="QuittingEventArgs.Ignore"/>.
+	/// If it is not set then Far is called to exit. Far may stay, e.g. in an editor with not saved changes
 	/// a user may cancel closing the editor and exiting.
 	/// </remarks>
 	public abstract void Quit();

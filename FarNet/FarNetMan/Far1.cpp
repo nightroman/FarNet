@@ -384,16 +384,11 @@ void Far1::PostMacro(String^ macro, bool enableOutput, bool disablePlugins)
 
 void Far1::Quit()
 {
-	if (!Works::ModuleLoader::CanExit())
-		return;
+	QuittingEventArgs ea;
 
-	if (_Quitting)
-	{
-		QuittingEventArgs ea;
-		_Quitting(this, % ea);
-		if (ea.Ignore)
-			return;
-	}
+	FarNet::Works::Far2::Api->OnQuit(% ea);
+	if (ea.Ignore)
+		return;
 
 	Info.AdvControl(&MainGuid, ACTL_QUIT, 0, 0);
 }

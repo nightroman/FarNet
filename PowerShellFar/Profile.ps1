@@ -11,10 +11,10 @@
 
 ### Macros
 doskey ib=ps:Invoke-Build
-doskey ?=ps:Invoke-Build ?
 
 ### Aliases
 Set-Alias ff Find-FarFile
+Set-Alias fm Show-FarMessage
 Set-Alias goto Go-To.ps1
 Set-Alias op Out-FarPanel
 Set-Alias pp Get-FarPath

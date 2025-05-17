@@ -160,7 +160,7 @@ if (!$lines) {
 	# find head
 	for($$ = $y1 - 1; $$ -ge 0; --$$) {
 		$text = $Editor[$$].Text.Trim()
-		if (!$text -or ($type -eq 'ps' -and $text -match '^\.|^<#|@[''"]$')) {
+		if (!$text -or ($type -eq 'ps' -and $text -match '^(\s*#*\s*)\.|^<#|@[''"]$')) {
 			break
 		}
 		$y1 = $$

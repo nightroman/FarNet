@@ -1,13 +1,4 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace FarNet.Works;
+﻿namespace FarNet.Works;
 #pragma warning disable 1591
 
 public abstract class Far2
@@ -19,6 +10,10 @@ public abstract class Far2
 		get => _Host!;
 		set => _Host = _Host == null ? value : throw new InvalidOperationException();
 	}
+
+	public event EventHandler<QuittingEventArgs>? Quitting;
+
+	public void OnQuit(QuittingEventArgs e) => Quitting?.Invoke(null, e);
 
 	#region Modules
 	public static Dictionary<Guid, IModuleAction> Actions { get; } = [];

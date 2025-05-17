@@ -1,7 +1,7 @@
 ﻿namespace FarNet;
 
 /// <summary>
-/// <see cref="IFar.Quitting"/> arguments.
+/// Quitting arguments.
 /// </summary>
 public sealed class QuittingEventArgs : EventArgs
 {

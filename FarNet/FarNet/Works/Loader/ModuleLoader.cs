@@ -244,19 +244,6 @@ public class ModuleLoader
 		_Cache.Set(manager.AssemblyPath, manager);
 	}
 
-	public static bool CanExit()
-	{
-		foreach (ModuleManager manager in _Managers.Values)
-		{
-#pragma warning disable 0618
-			if (manager.GetLoadedModuleHost() is { } host && !host.CanExit())
-				return false;
-#pragma warning restore 0618
-		}
-
-		return true;
-	}
-
 	public static List<IModuleManager> GatherModuleManagers()
 	{
 		var result = new List<IModuleManager>(_Managers.Count);

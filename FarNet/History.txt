@@ -1,11 +1,17 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 9.0.25 =
+
+Retire obsolete `CanExit()`. Modules and scripts should use
+`FarNet.User.RegisterQuitting()` instead. See samples:
+
+https://github.com/nightroman/FarNet/tree/main/Samples/Quit
+
 = 9.0.24 =
 
 Add new event `IFar.Quitting` replacing `CanExit()`.
 Obsolete `CanExit()` will be removed next.
-Modules should use the new event.
 
 = 9.0.23 =
 

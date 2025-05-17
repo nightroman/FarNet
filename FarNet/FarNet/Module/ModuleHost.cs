@@ -72,15 +72,6 @@ public abstract class ModuleHost : BaseModuleItem
 	}
 
 	/// <summary>
-	/// Use <see cref="IFar.Quitting"/> instead.
-	/// </summary>
-	[Obsolete("Use IFar.Quitting instead.")]
-	public virtual bool CanExit()
-	{
-		return true;
-	}
-
-	/// <summary>
 	/// Provides cross-module operations without strongly typed interfaces.
 	/// </summary>
 	/// <param name="command">The command provided by the module.</param>

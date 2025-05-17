@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.24 =
+
+FarNet 9.0.25, use new quitting helpers.
+
+Added samples: https://github.com/nightroman/FarNet/tree/main/Samples/Quit
+
 = 9.0.23 =
 
 FarNet 9.0.24

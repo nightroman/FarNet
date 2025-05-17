@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using FarNet.Works;
+using System.Collections.Concurrent;
 
 namespace FarNet;
 
@@ -39,4 +40,37 @@ public static class User
 	/// <param name="key">The key.</param>
 	/// <returns>The removed object or null.</returns>
 	public static object? Pop(string key) => Data.TryRemove(key, out object? value) ? value : null;
+
+	/// <summary>
+	/// Registers the handler of events triggered by <see cref="IFar.Quit"/>.
+	/// </summary>
+	/// <param name="handler">
+	/// The quitting handler. It is invoked in the main thread.
+	/// It may set <see cref="QuittingEventArgs.Ignore"/> to cancel quitting.
+	/// If the input value is true then quitting is already cancelled by others.
+	/// </param>
+	/// <returns>Disposable to unregister the handler when needed.</returns>
+	public static Disposable RegisterQuitting(EventHandler<QuittingEventArgs> handler)
+	{
+		QuittingDisposable registration = new(handler);
+		Far2.Api.Quitting += registration.Invoke;
+		return registration;
+	}
+
+	sealed class QuittingDisposable(EventHandler<QuittingEventArgs> handler) : Disposable
+	{
+		internal void Invoke(object? sender, QuittingEventArgs e)
+		{
+			handler(sender, e);
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (!IsDisposed)
+			{
+				Far2.Api.Quitting -= Invoke;
+				IsDisposed = true;
+			}
+		}
+	}
 }

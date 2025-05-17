@@ -36,8 +36,6 @@ public class TestFar : IFar
 
 	readonly IWindow _Window = new TestWindow();
 
-	public override event EventHandler<QuittingEventArgs> Quitting = delegate { };
-
 	public override IWindow Window => _Window;
 
 	public override IUserInterface UI => throw new NotImplementedException();
