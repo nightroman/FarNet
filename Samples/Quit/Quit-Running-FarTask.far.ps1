@@ -54,8 +54,7 @@ Task is running. Choice?
 	$_.Ignore = $true
 }.GetNewClosure())
 
-# Start task, pass $Info by variable name, used as $Data.Info.
-# `job
+# Start task, pass $Info by variable name, use as `$Data.Info`.
 print "Task-$($Info.Id) start steps"
 Start-FarTask -Data Info {
 	for($$ = 0; $$ -lt 10; ++$$) {

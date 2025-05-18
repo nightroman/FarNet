@@ -56,7 +56,7 @@ class FarHost : PSHost
 
 		try
 		{
-			//! Far used to crash: Test-CallStack-.ps1 \ suspend \ type exit + enter
+			//! Far used to crash: Test-CallStack.ps1 \ suspend \ type exit + enter
 			//! This exception from Open() was removed, so don't try\catch all in here.
 			//! SVN tag 4.2.26
 			_nestedPromptEditor = Interactive.Create(true).Editor;

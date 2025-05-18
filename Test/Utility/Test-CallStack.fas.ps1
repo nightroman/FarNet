@@ -1,6 +1,7 @@
 ﻿<#
 .Synopsis
 	PromptForChoice dialog and nested prompt.
+	!! 2025-05-18-1148
 
 .Description
 	It is called 'CallStack' historically. It still can be used to play with
@@ -8,10 +9,10 @@
 #>
 
 run {
-	if ($global:Error) {throw 'Please remove errors.'}
+	if ($Error) {throw 'Please remove errors.'}
 
 	# call the test, it opens the Inquire prompt on error
-	& "$env:FarNetCode\Samples\Tests\Test-CallStack-.ps1"
+	& "$env:FarNetCode\Samples\Tests\Test-CallStack.ps1"
 }
 
 job {
@@ -40,13 +41,7 @@ keys h
 job {
 	Assert-Far -Panels
 
-	# Check the error if any (V2). V3 CTP2 does not generate the error.
-	if ($global:Error) {
-		$r = $global:Error[0].ToString()
-		Assert-Far (
-			($r -eq 'Command execution stopped because the user selected the Halt option.') -or
-			($r -eq 'The running command stopped because the user selected the Stop option.') # v4.0
-		)
-		$global:Error.RemoveAt(0)
-	}
+	Assert-Far $Error.Count -eq 1
+	Assert-Far "$($Error[0])" -eq 'The running command stopped because the user selected the Stop option.'
+	$Error.Clear()
 }

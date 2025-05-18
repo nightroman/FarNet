@@ -1,9 +1,6 @@
 ﻿
 $Data.log = ''
 job {
-	# expose variables
-	$Data.dialog = $ExecutionContext.SessionState.PSVariable
-
 	# dialog
 	$d = $Far.CreateDialog(-1, -1, 52, 4)
 	$t = $d.AddText(1, 1, 50, '_170930_060119')
@@ -36,10 +33,9 @@ job {
 }
 macro 'Keys"CtrlDown Enter" -- open combo, pick first'
 job {
-	$e = $Data.dialog.GetValue('e')
-	Assert-Far @(
-		$e.Text -and $e.Text -ne '' #! if it is '' in CtrlG, alas, remove this ''
-		$Data.log -ceq '+Opening+Closed'
-	)
+	#! if it is '' in CtrlG, alas, remove this '' as last in history and repeat
+	Assert-Far $Far.Dialog[1].Text
+
+	Assert-Far $Data.log -eq '+Opening+Closed'
 }
 macro 'Keys"Esc" -- exit dialog'

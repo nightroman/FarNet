@@ -1,10 +1,19 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.25 =
+
+Start-FarTask
+- rework task and job script invocations
+- https://github.com/nightroman/FarNet/blob/main/Samples/FarTask/Undocumented.far.ps1
+
+Misc
+- Remove-EmptyString-.ps1 -> Remove-EmptyString.ps1
+- Remove-EndSpace-.ps1 -> Samples/Tests/Test-TrimEnd.ps1
+
 = 9.0.24 =
 
 FarNet 9.0.25, use new quitting helpers.
-
-Added samples: https://github.com/nightroman/FarNet/tree/main/Samples/Quit
+https://github.com/nightroman/FarNet/tree/main/Samples/Quit
 
 = 9.0.23 =
 

@@ -43,14 +43,14 @@ job {
 }
 job {
 	### Remove end spaces from selected
-	$Data.Editor.SelectedLines | Remove-EndSpace-
+	$Data.Editor.SelectedLines | & "$env:FarNetCode\Samples\Tests\Test-TrimEnd.ps1"
 	Assert-Far $Data.Editor.GetSelectedText() -eq @"
 "йцу\кен"`r`n
 "@
 }
 job {
 	### Remove end spaces from all text
-	$Data.Editor.Lines | Remove-EndSpace-
+	$Data.Editor.Lines | & "$env:FarNetCode\Samples\Tests\Test-TrimEnd.ps1"
 	Assert-Far $Data.Editor.GetText() -eq @"
 `r`n`r`n"йцу\кен"`r`n`r`n`r`n"!№;%:?*"`r`n
 "@
@@ -58,7 +58,7 @@ job {
 job {
 	### Remove double empty lines from selected
 	$Data.Editor.SelectText(0, 2, -1, 6)
-	Remove-EmptyString- $Data.Editor.SelectedLines 2
+	Remove-EmptyString.ps1 $Data.Editor.SelectedLines 2
 	Assert-Far $Data.Editor.GetSelectedText() -eq @"
 "йцу\кен"`r`n`r`n"!№;%:?*"`r`n
 "@
@@ -66,7 +66,7 @@ job {
 job {
 	### Remove empty lines from all text
 	$Data.Editor.UnselectText()
-	Remove-EmptyString- $Data.Editor.Lines
+	Remove-EmptyString.ps1 $Data.Editor.Lines
 	Assert-Far $Data.Editor.GetText() -eq @"
 "йцу\кен"`r`n"!№;%:?*"
 "@

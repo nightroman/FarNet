@@ -18,14 +18,12 @@ New-FarMenu 'More' -Show -AutoAssignHotkeys -ChangeConsoleTitle $(
 		if ($editor.SelectionExists) {
 			New-FarItem '&e. Escape \," with \' { Set-Selection-.ps1 -Replace '([\\"])', '\$1' }
 			New-FarItem '&u. Unescape \\,\"' { Set-Selection-.ps1 -Replace '\\([\\"])', '$1' }
-			New-FarItem '.. Remove end spaces in selection' { $editor.SelectedLines | Remove-EndSpace-.ps1 }
-			New-FarItem '.. Remove empty lines in selection' { Remove-EmptyString-.ps1 $editor.SelectedLines }
+			New-FarItem '.. Remove empty lines in selection' { Remove-EmptyString.ps1 $editor.SelectedLines }
 			New-FarItem -IsSeparator
 		}
 
 		### Other editor commands
-		New-FarItem '&s. Remove end spaces (all text)' { $editor.Lines | Remove-EndSpace-.ps1 }
-		New-FarItem '&d. Remove double empty lines (all text)' { Remove-EmptyString-.ps1 $editor.Lines 2 }
+		New-FarItem '&d. Remove double empty lines (all text)' { Remove-EmptyString.ps1 $editor.Lines 2 }
 		New-FarItem '&f. Invoke a file from editor' { Invoke-FromEditor.ps1 }
 	}
 	### Panel actions

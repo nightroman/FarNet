@@ -5,9 +5,6 @@
 .Notes
 	$Data.Input = $null is only needed in the strict mode.
 	But it is self-documenting and safe on Set-StrictMode.
-
-	GetNewClosure is not needed in Closed, unlike in sync cases
-	(170929_054555), because GetNewClosure is called internally.
 #>
 
 # init task data
@@ -24,7 +21,7 @@ job {
 		if ($_.Control) {
 			$Data.Input = $edit.Text
 		}
-	})
+	}.GetNewClosure())
 
 	[FarNet.Tasks]::Dialog($dialog)
 }

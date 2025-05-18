@@ -33,6 +33,8 @@ $ErrorActionPreference=1
 
 # keep these variables
 $keepVariables = @(
+	'Data' # FarTask
+	'Var' # FarTask
 	'VSSetupVersionTable' # module VSSetup
 	'$'
 	'?'

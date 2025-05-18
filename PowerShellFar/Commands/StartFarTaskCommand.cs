@@ -1,6 +1,7 @@
 using FarNet;
 using System.Collections;
 using System.Management.Automation;
+using System.Management.Automation.Language;
 using System.Management.Automation.Runspaces;
 
 namespace PowerShellFar.Commands;
@@ -8,28 +9,29 @@ namespace PowerShellFar.Commands;
 [OutputType(typeof(Task<object[]>))]
 sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 {
-	const string NameInvokeTaskJob = "Invoke-TaskJob";
-	const string NameInvokeTaskCmd = "Invoke-TaskCmd";
-	const string NameInvokeTaskRun = "Invoke-TaskRun";
-	const string NameInvokeTaskKeys = "Invoke-TaskKeys";
-	const string NameInvokeTaskMacro = "Invoke-TaskMacro";
-	const string ScriptBlockFunction = "ScriptBlockFunction";
+	internal const string
+		NameData = "Data",
+		NameVar = "Var",
+		NameInvokeTaskJob = "Invoke-TaskJob",
+		NameInvokeTaskCmd = "Invoke-TaskCmd",
+		NameInvokeTaskRun = "Invoke-TaskRun",
+		NameInvokeTaskKeys = "Invoke-TaskKeys",
+		NameInvokeTaskMacro = "Invoke-TaskMacro",
+		ScriptBlockFunction = "ScriptBlockFunction";
 
 	// invokes task scripts
-	const string CodeTask = """
-	param($Script, $Data, $Parameters)
-	. $Script.GetNewClosure() @Parameters
-	""";
+	const string CodeTask = "param($_) . $args[0] @_";
+
+	// invokes run and ps: blocks
+	internal const string CodeJob = "& $args[0]";
 
 	// sets step breaks
-	const string CodeStep = """
-	Set-PSBreakpoint -Command job, ps:, run, keys, macro
-	""";
+	const string CodeStep = "Set-PSBreakpoint -Command job, ps:, run, keys, macro";
 
 	// tasks initial state
 	static readonly InitialSessionState _iss;
 
-	// $Data for task scripts and jobs
+	// $Data for scripts
 	readonly Hashtable _data = new(StringComparer.OrdinalIgnoreCase);
 
 	// task script
@@ -60,12 +62,14 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 					return;
 				}
 
-				// code for interop like FSharpFar
+				//! code for interop like FSharpFar
+				//! script from text is unbound
 				_script = ScriptBlock.Create(text);
 			}
 			else if (value is ScriptBlock block)
 			{
-				_script = block;
+				//! ensure unbound script, to use task session
+				_script = ((ScriptBlockAst)block.Ast).GetScriptBlock();
 			}
 			else
 			{
@@ -183,6 +187,9 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 		var rs = RunspaceFactory.CreateRunspace(_iss);
 		rs.Open();
 
+		// $Data for scripts
+		rs.SessionStateProxy.SetVariable(NameData, _data);
+
 		// sync file system location
 		rs.SessionStateProxy.Path.SetLocation(SessionState.Path.CurrentFileSystemLocation.Path);
 
@@ -215,13 +222,13 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 			AddDebuggerKit.AddDebugger(ps, AddDebugger);
 			if (Step)
 			{
-				ps.AddScript(CodeStep).Invoke();
+				ps.AddScript(CodeStep, true).Invoke();
 				ps.Commands.Clear();
 			}
 		}
 
 		// add task script
-		ps.AddScript(CodeTask).AddArgument(_script).AddArgument(_data).AddArgument(parameters);
+		ps.AddScript(CodeTask, true).AddArgument(parameters).AddArgument(_script);
 
 		// start
 		var tcs = AsTask ? new TaskCompletionSource<object[]>() : null;
@@ -265,16 +272,16 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 
 file class BaseJob : PSCmdlet
 {
-	// invokes job scripts
-	protected const string CodeJob = """
-	param($Script, $Data, $Var)
-	. $Script.GetNewClosure()
-	""";
-
 	[Parameter(Position = 0, Mandatory = true)]
-	public ScriptBlock Script { get; set; } = null!;
+	public ScriptBlock Script
+	{
+		//! make unbound script
+		set => _Script = ((ScriptBlockAst)value.Ast).GetScriptBlock();
+		get => _Script;
+	}
+	ScriptBlock _Script = null!;
 
-	protected Hashtable GetData() => (Hashtable)GetVariableValue("Data");
+	protected Hashtable GetData() => (Hashtable)GetVariableValue(StartFarTaskCommand.NameData);
 
 	protected VarDictionary GetVars() => new(SessionState.PSVariable);
 }
@@ -286,14 +293,9 @@ file class InvokeTaskJob : BaseJob
 		// post the job as task
 		var task = Tasks.Job(() =>
 		{
-			using var ps = A.Psf.NewPowerShell();
-			ps.AddScript(CodeJob, true).AddArgument(Script).AddArgument(GetData()).AddArgument(GetVars());
-			var output = ps.Invoke();
-
-			//! Assert-Far may stop by PipelineStoppedException
-			if (ps.InvocationStateInfo.Reason is { })
-				throw ps.InvocationStateInfo.Reason;
-
+			A.Psf.Engine.SessionState.PSVariable.Set(StartFarTaskCommand.NameData, GetData());
+			A.Psf.Engine.SessionState.PSVariable.Set(StartFarTaskCommand.NameVar, GetVars());
+			var output = Script.Invoke();
 			return output;
 		});
 
@@ -325,8 +327,12 @@ file class InvokeTaskRun : BaseJob
 		// post the job as task
 		var task = Tasks.Run(() =>
 		{
+			A.Psf.Engine.SessionState.PSVariable.Set(StartFarTaskCommand.NameData, GetData());
+			A.Psf.Engine.SessionState.PSVariable.Set(StartFarTaskCommand.NameVar, GetVars());
+
+			//!! 2025-05-18-1148 Test-CallStack.fas.ps1 -- nested pipeline issues if we use `Script.Invoke()` like `job`.
 			using var ps = A.Psf.NewPowerShell();
-			ps.AddScript(CodeJob, true).AddArgument(Script).AddArgument(GetData()).AddArgument(GetVars());
+			ps.AddScript(StartFarTaskCommand.CodeJob, false).AddArgument(Script);
 			ps.Invoke();
 
 			//! Assert-Far may stop by PipelineStoppedException
@@ -347,12 +353,15 @@ file class InvokeTaskCmd : BaseJob
 		// post the job as task
 		var task = Tasks.Job(() =>
 		{
-			var args = new RunArgs(CodeJob)
+			A.Psf.Engine.SessionState.PSVariable.Set(StartFarTaskCommand.NameData, GetData());
+			A.Psf.Engine.SessionState.PSVariable.Set(StartFarTaskCommand.NameVar, GetVars());
+
+			var args = new RunArgs(StartFarTaskCommand.CodeJob)
 			{
 				Writer = new ConsoleOutputWriter(),
 				NoOutReason = true,
-				UseLocalScope = true,
-				Arguments = [Script, GetData(), GetVars()]
+				UseLocalScope = false,
+				Arguments = [Script]
 			};
 			A.Psf.Run(args);
 			return args.Reason;

@@ -157,9 +157,8 @@ public sealed partial class Actor
 		if (!modulePathNow.Contains(modulePathAdd))
 			Environment.SetEnvironmentVariable(Word.PSModulePath, modulePathAdd + modulePathNow);
 
-		//_090315_091325
 		// Get engine once to avoid this: "A pipeline is already executing. Concurrent SessionStateProxy method call is not allowed."
-		// Looks like a hack, but it works fine. Problem case: run Test-CallStack-.ps1, Esc -> the error above.
+		// Looks like a hack, but it works fine. Problem case: run Test-CallStack.ps1, Esc -> the error above.
 		_engine_ = Runspace.SessionStateProxy.PSVariable.GetValue(Word.ExecutionContext) as EngineIntrinsics;
 
 		//? set instead of adding to initial state
