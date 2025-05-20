@@ -7,8 +7,8 @@
 	This feature is not officially documented, it may change or be removed.
 
 	How to use this demo. Run this script to start a task and follow shown
-	instructions on how stop this task. It's fine to start several tasks at
-	first and then start stopping them (kind of randomly).
+	instructions on how to stop it. It's fine to start several tasks and
+	then start stopping them, kind of randomly.
 
 	$Data and $Var are useful for debugging, even without a debugger when a job
 	shows some modal UI. Use "Invoke commands" input box and use `$Data.Key` or

@@ -1,10 +1,16 @@
 using System.Collections;
 using System.Management.Automation;
+using System.Reflection;
 
 namespace PowerShellFar;
 
 static class AddDebuggerKit
 {
+	public static bool HasAnyDebugger(Debugger debugger)
+	{
+		return typeof(Debugger).GetField("DebuggerStop", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(debugger) is Delegate;
+	}
+
 	public static void ValidateAvailable()
 	{
 		if (0 == A.InvokeCode("Get-Command Add-Debugger.ps1 -Type ExternalScript -ErrorAction 0").Count)

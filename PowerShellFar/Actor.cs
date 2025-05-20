@@ -620,11 +620,27 @@ public sealed partial class Actor
 		EditorKit.InvokeScriptFromEditor(null);
 	}
 
+	bool _isFirstBreakpoint = true;
 	HashSet<LineBreakpoint>? _breakpoints_;
 	internal HashSet<LineBreakpoint> Breakpoints => _breakpoints_ ??= [];
 
 	void OnBreakpointUpdated(object? sender, BreakpointUpdatedEventArgs e)
 	{
+		if (_isFirstBreakpoint)
+		{
+			_isFirstBreakpoint = false;
+
+			if (!AddDebuggerKit.HasAnyDebugger(A.Psf.Runspace.Debugger))
+			{
+				var res = Far.Api.Message("There is no debugger. Use Add-Debugger?", "Debug", MessageOptions.YesNo);
+				if (res == 0)
+				{
+					AddDebuggerKit.ValidateAvailable();
+					A.InvokeCode("Add-Debugger.ps1");
+				}
+			}
+		}
+
 		if (!string.IsNullOrEmpty(e.Breakpoint.Script))
 		{
 			if (e.Breakpoint is LineBreakpoint bp)

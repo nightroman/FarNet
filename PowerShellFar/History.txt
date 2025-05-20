@@ -1,5 +1,14 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.26 =
+
+Debugger
+- on first added breakpoint and no debugger ask to use Add-Debugger
+
+Update-FarManager.ps1
+- support both "msi" and "7z" package types
+- default is "msi", to use built-in msiexec
+
 = 9.0.25 =
 
 Start-FarTask

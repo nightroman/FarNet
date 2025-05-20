@@ -1,7 +1,6 @@
 using FarNet;
 using System.Collections;
 using System.Management.Automation;
-using System.Reflection;
 using System.Text;
 
 namespace PowerShellFar.Commands;
@@ -344,7 +343,7 @@ sealed class AssertFarCommand : BaseCmdlet
 					// ask to attach a debugger
 					bool isAddDebugger = false;
 					var debugger = A.Psf.Runspace.Debugger;
-					while (typeof(Debugger).GetField("DebuggerStop", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(debugger) is not Delegate)
+					while (!AddDebuggerKit.HasAnyDebugger(debugger))
 					{
 						var buttonsAttachDebugger = new[] { BtnOK, BtnAddDebugger, BtnCancel };
 						var res = Far.Api.Message("Attach a debugger and continue.", "Debug", 0, buttonsAttachDebugger);
