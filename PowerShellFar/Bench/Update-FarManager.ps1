@@ -1,3 +1,14 @@
+<#PSScriptInfo
+.DESCRIPTION Updates Far Manager and standard plugins.
+.VERSION 1.0.0
+.AUTHOR Roman Kuzmin
+.COPYRIGHT (c) Roman Kuzmin
+.TAGS Download Update FarManager
+.GUID 184e65a5-08bc-4cfa-b1b4-fe659e62ed66
+.PROJECTURI https://github.com/nightroman/FarNet
+.LICENSEURI https://github.com/nightroman/FarNet/blob/main/LICENSE
+#>
+
 <#
 .Synopsis
 	Updates Far Manager and standard plugins.
@@ -13,8 +24,8 @@
 	"start" or [ShiftEnter] in the command line. In this case parameter FarHome
 	may be omitted, $env:FARHOME is used.
 
-	$HOME is used for downloaded files. Old files are not deleted. Keep the
-	last downloaded file there, the script downloads only newer files.
+	$HOME is used for downloaded archives. Old versions are not deleted by
+	default, use MaxVersions in order to change.
 
 	The script gets the latest web asset name. If the file already exists the
 	script stops. Otherwise the file is downloaded and extracted to FarHome.
@@ -44,6 +55,14 @@
 .Parameter PackageType
 		Package file type: "msi" or "7z".
 		Default: "msi" for downloads, else Archive file extension.
+
+.Parameter MaxVersions
+		Tells how many latest archive versions per the specified Platform
+		and PackageType to keep in $HOME. Default: [int]::MaxValue, keep
+		all versions.
+
+		0 tells to remove all downloaded archives, not recommended, you lose
+		the ability of auto-updates, i.e. downloading only newer versions.
 #>
 
 [CmdletBinding()]
@@ -57,12 +76,44 @@ param(
 	,
 	[ValidateSet('msi', '7z')]
 	[string]$PackageType
+	,
+	[ValidateRange(0, [int]::MaxValue)]
+	[int]$MaxVersions = [int]::MaxValue
 )
 
+Set-StrictMode -Version 3
 $ErrorActionPreference = 1; trap {$PSCmdlet.ThrowTerminatingError($_)}
 
 ### Files to remove after updates if they did not exist.
 $UnusedFiles = '*.hlf', '*.lng', '*.cmd', '*.map', 'changelog', 'File_id.diz'
+
+function archive_pattern([string]$Platform, [string]$PackageType) {
+	"^Far\.$Platform\.(\d+\.\d+\.\d+\.\d+)\.\w+\.$PackageType$"
+}
+
+function get_archives([string]$Platform, [string]$PackageType) {
+	$pattern = archive_pattern $Platform $PackageType
+	foreach($_ in Get-ChildItem $HOME -File) {
+		if ($_.Name -match $pattern) {
+			[PSCustomObject]@{
+				File = $_
+				Version = [version]$Matches[1]
+			}
+		}
+	}
+}
+
+function get_old_versions([string]$Platform, [string]$PackageType, [int]$MaxVersions) {
+	$files = @(get_archives $Platform $PackageType)
+	$nRemove = $files.Count - $MaxVersions
+	if ($nRemove -ge 1) {
+		$files | Sort-Object Version | Select-Object -First $nRemove
+	}
+}
+
+if ($MyInvocation.InvocationName -eq '.') {
+	return
+}
 
 ### FarHome
 if ($FarHome) {
@@ -99,8 +150,9 @@ else {
 
 	# fetch asset meta
 	$res = Invoke-RestMethod -Uri $url
-	$bit = if ($Platform -eq 'x64') {'x64'} else {'x86'}
-	$asset = @($res.assets.Where({ $_.name -match "^Far\.$bit\.\d+\.\d+\.\d+\.\d+\.\w+\.$PackageType$" }))
+	$Platform = if ($Platform -eq 'x64') {'x64'} else {'x86'}
+	$pattern = archive_pattern $Platform $PackageType
+	$asset = @($res.assets.Where({ $_.name -match $pattern }))
 	if ($asset.Count -ne 1) {
 		throw "Cannot find expected download assets."
 	}
@@ -171,6 +223,12 @@ foreach($file in $files2) {
 	}
 }
 
+### clean versions
+if ($versions = @(get_old_versions -Platform $Platform -PackageType $PackageType -MaxVersions $MaxVersions)) {
+	Write-Host -ForegroundColor Cyan "Removing old versions ($($versions.Count))..."
+	$versions | Select-Object -ExpandProperty File | Remove-Item
+}
+
 ### check extra items
 Write-Host -ForegroundColor Cyan "Checking extra items..."
 $fromNames = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
@@ -195,6 +253,6 @@ foreach($_ in $toNames) {
 ### clean
 Remove-Item -LiteralPath $extractDir -Force -Recurse
 
-### done
+### summary
 Write-Host -ForegroundColor Cyan "$nExtra extra items."
 Write-Host -ForegroundColor Green "Update succeeded."
