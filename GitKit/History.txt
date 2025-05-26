@@ -1,5 +1,12 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 1.3.11 =
+
+Remove `--wait` from VSCode DiffTool default settings.
+
+Changes panel
+- [AltF4] - edit current file
+
 = 1.3.10 =
 
 Requires FarNet 9.0.21.

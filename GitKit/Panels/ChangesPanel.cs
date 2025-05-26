@@ -1,10 +1,7 @@
 ﻿using FarNet;
 using GitKit.About;
 using LibGit2Sharp;
-using System;
 using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace GitKit.Panels;
 
@@ -117,5 +114,17 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 			ShowDiff(change);
 		else
 			Far.Api.Message($"Cannot show diff {change.OldMode} -> {change.Mode}", Host.MyName);
+	}
+
+	public override bool UIKeyPressed(KeyInfo key)
+	{
+		switch (key.VirtualKeyCode)
+		{
+			case KeyCode.F4 when key.IsAlt():
+				EditChangeFile();
+				return true;
+		}
+
+		return base.UIKeyPressed(key);
 	}
 }

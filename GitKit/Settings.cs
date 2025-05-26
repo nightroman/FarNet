@@ -9,7 +9,7 @@ public class Settings : ModuleSettings<Settings.Data>
 	public class Data
 	{
 		public string DiffTool { get; set; } = @"%LOCALAPPDATA%\Programs\Microsoft VS Code\bin\code.cmd";
-		public string DiffToolArguments { get; set; } = "--wait --diff \"%1\" \"%2\"";
+		public string DiffToolArguments { get; set; } = "--diff \"%1\" \"%2\"";
 
 		public bool UseGitCredentials { get; set; }
 

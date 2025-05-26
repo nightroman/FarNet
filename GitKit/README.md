@@ -492,6 +492,10 @@ branches" and "Compare commits" or by the command [gk:changes](#gkchanges).
 
     Opens the diff patch in the viewer or editor.
 
+- `AltF4`
+
+    If the cursor change file exists, opens this file in the editor.
+
 - See also [Menu](#menu).
 
 *********************************************************************
@@ -560,7 +564,7 @@ Environment variables are expanded.
 VSCode is used as the default diff tool
 
     %LOCALAPPDATA%\Programs\Microsoft VS Code\bin\code.cmd
-    --wait --diff "%1" "%2"
+    --diff "%1" "%2"
 
 *********************************************************************
 **UseGitCredentials**
