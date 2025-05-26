@@ -52,25 +52,9 @@ public static class User
 	/// <returns>Disposable to unregister the handler when needed.</returns>
 	public static Disposable RegisterQuitting(EventHandler<QuittingEventArgs> handler)
 	{
-		QuittingDisposable registration = new(handler);
-		Far2.Api.Quitting += registration.Invoke;
-		return registration;
-	}
-
-	sealed class QuittingDisposable(EventHandler<QuittingEventArgs> handler) : Disposable
-	{
-		internal void Invoke(object? sender, QuittingEventArgs e)
-		{
-			handler(sender, e);
-		}
-
-		protected override void Dispose(bool disposing)
-		{
-			if (!IsDisposed)
-			{
-				Far2.Api.Quitting -= Invoke;
-				IsDisposed = true;
-			}
-		}
+		return new DisposableEventHandler<QuittingEventArgs>(
+			handler,
+			handler => Far2.Api.Quitting += handler,
+			handler => Far2.Api.Quitting -= handler);
 	}
 }

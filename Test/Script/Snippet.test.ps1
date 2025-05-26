@@ -61,4 +61,6 @@ task labels {
 	catch {
 		equals "$_" 'Not supported label: bad ${2:placeholder'
 	}
+
+	$Error.Clear()
 }

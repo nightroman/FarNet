@@ -27,7 +27,8 @@
 param(
 	$Tests = -1,
 	$ExpectedTaskCount = 209,
-	$ExpectedBasicsCount = 16,
+	$ExpectedIBTestCount = 5,
+	$ExpectedBasicsCount = 15,
 	$ExpectedExtrasCount = 9,
 	[switch]$All,
 	[switch]$Quit
@@ -59,18 +60,22 @@ else {
 $null = & $PSScriptRoot\About\Initialize-Test.far.ps1
 [Diagnostics.Debug]::WriteLine("# $(Get-Date) Begin tests")
 
-### Basic tests
+### Basic tests first
 if (!$Tests) {
-	$basics = @(Get-ChildItem "$env:FarNetCode\Test\Basics" -Filter *.far.ps1)
-	Assert-Far $basics.Count -eq $ExpectedBasicsCount
-	foreach($test in $basics) {
+	$items = @(Get-ChildItem "$env:FarNetCode\Test\Basics" -Filter *.far.ps1)
+	Assert-Far $items.Count -eq $ExpectedBasicsCount
+	foreach($test in $items) {
 		[Diagnostics.Debug]::WriteLine("# $($test.FullName)")
 		& $test.FullName
 		if ($global:Error) {throw "Errors after $($test.FullName)" }
 	}
+}
 
-	#! IB tests after basics
-	Invoke-Build ** "$env:FarNetCode\Test\Basics"
+### Then IB tests
+if (!$Tests) {
+	$items = @(Get-ChildItem $env:FarNetCode\Test -Recurse -Include *.test.ps1)
+	Assert-Far $items.Count -eq $ExpectedIBTestCount
+	Invoke-Build ** $env:FarNetCode\Test
 }
 
 ### Extra tests

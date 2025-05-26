@@ -86,7 +86,7 @@ $regexTextLink = [regex]@'
 |
 (?<SS> ^>?\s*(?<File>.+?\.\w+):(?<Line>\d+):(?<Text>.*) )
 |
-(?<PS> (?<File>(?:\b\w:|%\w+%)[\\\/][^:]+):(?:line\s)?(?<Line>\d+)(?:\s+\w+:(?<Char>\d+))? )
+(?<PS> (?<File>(?:\b\w:|%\w+%)[\\\/][^:]+):\s*(?:line\s+)?(?<Line>\d+)(?:\s+\w+:(?<Char>\d+))? )
 '@
 
 # Processes $matches of the text link regex

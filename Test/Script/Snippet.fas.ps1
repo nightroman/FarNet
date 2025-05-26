@@ -3,11 +3,6 @@
 	Tests Snippet.ps1 indent, tabs, escaping.
 #>
 
-ps: {
-	Invoke-Build * $PSScriptRoot\Snippet.test.ps1
-	$Global:Error.Clear()
-}
-
 job {
 	Open-FarEditor "$env:TEMP\$([guid]::NewGuid()).ps1" -DisableHistory -DeleteSource File
 }

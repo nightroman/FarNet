@@ -1,5 +1,12 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.27 =
+
+Use FarNet 9.0.26
+
+Open-TextLink.ps1
+- fix PS script call stack links
+
 = 9.0.26 =
 
 Debugger
