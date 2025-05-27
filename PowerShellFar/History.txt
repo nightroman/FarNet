@@ -1,12 +1,14 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
-= 9.0.29 =
+= 9.0.30 =
 
-Add session history for Enter-mode commands.
+Enter-mode
+- select the command part
+- add command to session history
 
 = 9.0.28 =
 
-"Enter-mode"
+"Enter-mode" experimental feature
 - loop of PowerShell commands, keeping command line content
 - use special prefix "ps:;" and special macro [Enter] in panels
 - see https://github.com/nightroman/FarNet/blob/main/PowerShellFar/PowerShellFar.macro.lua

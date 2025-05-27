@@ -471,7 +471,25 @@ static class EditorKit
 			writer = new ConsoleOutputWriter();
 		}
 
+		// command
 		FarNet.Works.Kit.SplitCommandWithPrefix(code, out _, out var command, Entry.IsMyPrefix);
+
+		// Enter-mode
+		if (from == WindowKind.Panels && command.StartsWith(';'))
+		{
+			// add history
+			HistoryCommands.AddSessionLine(command.ToString());
+
+			// select command
+			var span = command[1..].TrimStart();
+			var line = Far.Api.CommandLine;
+			if (line.SelectionSpan.Length < 0)
+			{
+				int len = line.Length;
+				line.Caret = len;
+				line.SelectText(len - span.Length, len);
+			}
+		}
 
 		A.Psf.SyncPaths();
 		A.Psf.Run(new RunArgs(command.ToString()) { Writer = writer });
