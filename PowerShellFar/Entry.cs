@@ -16,6 +16,10 @@ public sealed class Entry : ModuleHost
 	internal static IModuleCommand CommandInvoke1 { get; private set; } = null!;
 	internal static IModuleCommand CommandInvoke2 { get; private set; } = null!;
 
+	internal static string Prefix1 { get; private set; } = null!;
+	internal static string Prefix2 { get; private set; } = null!;
+	internal static string PrefixEnterMode { get; private set; } = null!;
+
 	public Entry()
 	{
 		if (Instance != null)
@@ -50,6 +54,11 @@ public sealed class Entry : ModuleHost
 		Manager.RegisterTool(
 			new ModuleToolAttribute { Name = Res.Me, Options = ModuleToolOptions.F11Menus, Id = "7def4106-570a-41ab-8ecb-40605339e6f7" },
 			(s, e) => UI.ActorMenu.Show(e));
+
+		// prefixes
+		Prefix1 = CommandInvoke1.Prefix + ':';
+		Prefix2 = CommandInvoke2.Prefix + ':';
+		PrefixEnterMode = Prefix1 + ';';
 
 		// subscribe to editors
 		Far.Api.AnyEditor.FirstOpening += EditorKit.OnEditorFirstOpening;
@@ -86,9 +95,38 @@ public sealed class Entry : ModuleHost
 
 	void OnCommandInvoke1(object? sender, ModuleCommandEventArgs e)
 	{
-		A.Psf.SyncPaths();
-
 		var command = e.Command;
+
+		// Invoke
+		if (command.StartsWith("#invoke"))
+		{
+			EditorKit.InvokeSelectedCode();
+			return;
+		}
+
+		// Enter
+		if (command.StartsWith("#enter"))
+		{
+			EditorKit.PlayNativeEnter();
+			return;
+		}
+
+		// Complete
+		if (command.StartsWith("#complete"))
+		{
+			EditorKit.ExpandCode(null, null);
+			return;
+		}
+
+		// History
+		if (command.StartsWith("#history"))
+		{
+			A.Psf.ShowHistory();
+			return;
+		}
+
+		// Code
+		A.Psf.SyncPaths();
 
 		// echo / no echo
 		Func<string>? getEcho;

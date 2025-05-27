@@ -1,9 +1,6 @@
 using FarNet;
 using FarNet.Forms;
-using System;
-using System.IO;
 using System.Management.Automation;
-using System.Threading.Tasks;
 
 namespace PowerShellFar.UI;
 
@@ -255,7 +252,7 @@ class ReadCommand
 					if (Far.Api.Panel!.IsVisible || Far.Api.Panel2!.IsVisible)
 						RunKeyInPanelsAsync(e.Key, true);
 					else
-						Edit.Text = History.GetNextCommand(e.Key.VirtualKeyCode == KeyCode.UpArrow, Edit.Text);
+						Edit.Text = HistoryKit.GetNextCommand(e.Key.VirtualKeyCode == KeyCode.UpArrow, Edit.Text);
 				}
 				return;
 			case KeyCode.E:
@@ -263,7 +260,7 @@ class ReadCommand
 				if (e.Key.IsCtrl())
 				{
 					e.Ignore = true;
-					Edit.Text = History.GetNextCommand(true, Edit.Text);
+					Edit.Text = HistoryKit.GetNextCommand(true, Edit.Text);
 				}
 				return;
 			case KeyCode.X:
@@ -271,7 +268,7 @@ class ReadCommand
 				if (e.Key.IsCtrl() && Edit.Line.SelectionSpan.Length < 0)
 				{
 					e.Ignore = true;
-					Edit.Text = History.GetNextCommand(false, Edit.Text);
+					Edit.Text = HistoryKit.GetNextCommand(false, Edit.Text);
 				}
 				return;
 			case KeyCode.F1:
@@ -374,7 +371,7 @@ class ReadCommand
 		return Task.Run(async () =>
 		{
 			await Tasks.Dialog(Dialog);
-			History.ResetNavigation();
+			HistoryKit.ResetNavigation();
 			return Out;
 		});
 	}

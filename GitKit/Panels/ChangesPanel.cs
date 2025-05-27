@@ -50,7 +50,7 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 		new CommitsExplorer(GitDir, null, path).CreatePanel().OpenChild(this);
 	}
 
-	(string, bool) GetBlobFile(ObjectId oid, string path, bool exists)
+	(string, bool) GetBlobFile(ObjectId oid, string path, bool exists, int shaPrefixLength)
 	{
 		if (!exists)
 			return (string.Empty, false);
@@ -71,7 +71,8 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 		}
 		else
 		{
-			var file = Path.Join(Path.GetTempPath(), Path.ChangeExtension(oid.Sha, Path.GetExtension(path)));
+			var name = Path.GetFileNameWithoutExtension(path) + '.' + oid.Sha[0..shaPrefixLength] + Path.GetExtension(path);
+			var file = Path.Join(Path.GetTempPath(), name);
 			using var stream = File.OpenWrite(file);
 			blob.GetContentStream().CopyTo(stream);
 			return (file, true);
@@ -86,8 +87,8 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 		if (string.IsNullOrEmpty(diffTool) || string.IsNullOrEmpty(diffToolArguments))
 			throw new ModuleException($"Please define settings '{nameof(settings.DiffTool)}' and '{nameof(settings.DiffToolArguments)}'.");
 
-		var (file1, kill1) = GetBlobFile(changes.OldOid, changes.OldPath, changes.OldExists);
-		var (file2, kill2) = GetBlobFile(changes.Oid, changes.Path, changes.Exists);
+		var (file1, kill1) = GetBlobFile(changes.OldOid, changes.OldPath, changes.OldExists, settings.ShaPrefixLength);
+		var (file2, kill2) = GetBlobFile(changes.Oid, changes.Path, changes.Exists, settings.ShaPrefixLength);
 
 		diffToolArguments = diffToolArguments.Replace("%1", file1).Replace("%2", file2);
 		var process = Process.Start(diffTool, diffToolArguments);

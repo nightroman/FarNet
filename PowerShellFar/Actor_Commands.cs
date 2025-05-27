@@ -1,10 +1,4 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
-using System;
-using System.Threading.Tasks;
 
 namespace PowerShellFar;
 #pragma warning disable CA1822
@@ -69,17 +63,10 @@ public sealed partial class Actor
 	/// </summary>
 	public async void StartInvokeCommands()
 	{
-		if (Far.Api.Window.Kind == WindowKind.Panels)
-		{
-			StartCommandConsole();
-		}
-		else
-		{
-			var ui = CreateCodeDialog();
-			var code = await ui.ShowAsync();
-			if (!string.IsNullOrEmpty(code))
-				await Tasks.Job(() => Run(new RunArgs(code)));
-		}
+		var ui = CreateCodeDialog();
+		var code = await ui.ShowAsync();
+		if (!string.IsNullOrEmpty(code))
+			await Tasks.Job(() => Run(new RunArgs(code)));
 	}
 
 	/// <summary>

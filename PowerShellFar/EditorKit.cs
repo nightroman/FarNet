@@ -445,6 +445,7 @@ static class EditorKit
 		string code;
 		var from = Far.Api.Window.Kind;
 
+		OutputWriter? writer = null;
 		if (from == WindowKind.Editor)
 		{
 			var editor = Far.Api.Editor!;
@@ -467,10 +468,30 @@ static class EditorKit
 			code = line.SelectedText;
 			if (string.IsNullOrEmpty(code))
 				code = line.Text;
+			writer = new ConsoleOutputWriter();
 		}
 
 		FarNet.Works.Kit.SplitCommandWithPrefix(code, out _, out var command, Entry.IsMyPrefix);
-		A.Psf.Run(new RunArgs(command.ToString()));
+
+		A.Psf.SyncPaths();
+		A.Psf.Run(new RunArgs(command.ToString()) { Writer = writer });
+	}
+
+	internal static void PlayNativeEnter()
+	{
+		var text = Far.Api.CommandLine.Text;
+		var caret = Far.Api.CommandLine.Caret;
+		var span = Far.Api.CommandLine.SelectionSpan;
+
+		Far.Api.CommandLine.Text = string.Empty;
+		Far.Api.PostMacro("Keys 'Enter'");
+		Far.Api.PostJob(() =>
+		{
+			Far.Api.CommandLine.Text = text;
+			Far.Api.CommandLine.Caret = caret;
+			if (span.Length >= 0)
+				Far.Api.CommandLine.SelectText(span.Start, span.End);
+		});
 	}
 
 	// PSF sets the current directory and location to the script directory.

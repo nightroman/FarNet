@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 1.3.12 =
+
+Use original file names with short hashes for temp diff files.
+
 = 1.3.11 =
 
 Remove `--wait` from VSCode DiffTool default settings.

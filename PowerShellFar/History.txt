@@ -1,5 +1,24 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.28 =
+
+"Enter-mode"
+- loop of PowerShell commands, keeping command line content
+- use special prefix "ps:;" and special macro [Enter] in panels
+- see https://github.com/nightroman/FarNet/blob/main/PowerShellFar/PowerShellFar.macro.lua
+
+	ps:; <keep typing commands and pressing Enter>
+
+New helper "hash-commands"
+- ps:#invoke -- Invoke selected
+- ps:#history -- Command history
+- ps:#complete -- Complete
+- ps:#enter -- [Enter] in "Enter-mode"
+
+Menu
+- "1. Invoke commands" now shows same dialog in any area
+- "3. Command console" comes back again, for panels only
+
 = 9.0.27 =
 
 Use FarNet 9.0.26

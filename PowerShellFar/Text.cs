@@ -11,6 +11,7 @@ static class Res
 		// main menu
 		MenuInvokeCommands /**/ = "&1. Invoke commands",
 		MenuInvokeSelected /**/ = "&2. Invoke selected",
+		MenuCommandConsole /**/ = "&3. Command console",
 		MenuCommandHistory /**/ = "&4. Command history",
 		MenuInteractive /*   */ = "&5. Interactive",
 		MenuPowerPanel /*    */ = "&6. Power panel",

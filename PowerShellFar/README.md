@@ -163,11 +163,20 @@ It is not normally possible to stop commands started from event handlers.
 
 [Contents]
 
-Commands with prefixes are used in the command line, user menu, and file
-associations. Command prefixes are:
+Commands with prefixes are used in the command line, user menu, file
+associations, and macros.
+
+Main commands for invoking PowerShell code:
 
 - `ps:` console output and console input
 - `vps:` viewer output and input dialogs
+
+Helper pairs for menu commands:
+
+- `ps:#invoke` -- "Invoke selected"
+- `ps:#history` -- "Command history"
+- `ps:#complete` -- "Complete"
+- `ps:#enter` -- usual Enter but keeping command line
 
 Console output may be transcribed to a file, use `Start-Transcript` and
 `Stop-Transcript` for starting and stopping and `Show-FarTranscript` for

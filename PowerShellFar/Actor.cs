@@ -326,7 +326,7 @@ public sealed partial class Actor
 	/// <param name="count">Number of last commands to be returned. 0: all commands.</param>
 	public IList<string> GetHistory(int count)
 	{
-		var lines = History.ReadLines();
+		var lines = HistoryKit.ReadLines();
 		if (count <= 0 || count >= lines.Length)
 			return lines;
 
@@ -383,7 +383,7 @@ public sealed partial class Actor
 	/// <seealso cref="GetHistory"/>
 	public void ShowHistory()
 	{
-		var code = History.ShowHistory();
+		var code = HistoryKit.ShowHistory();
 		if (code != null)
 			InvokeInputCodePrivate(code);
 	}
