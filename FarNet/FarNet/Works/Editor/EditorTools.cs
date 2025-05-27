@@ -1,7 +1,4 @@
 ﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 namespace FarNet.Works;
 #pragma warning disable 1591
 
@@ -145,8 +142,8 @@ public static class EditorTools
 		}
 
 		var menu = Far.Api.CreateMenu();
-		menu.HelpTopic = "editors-menu";
-		menu.Title = "Editors";
+		menu.HelpTopic = "windows-menu";
+		menu.Title = "Windows";
 
 		int index = -1;
 		for (int i = head; i <= tail; ++i)

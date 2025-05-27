@@ -1,6 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 9.0.27 =
+
+Minor fixes.
+
 = 9.0.26 =
 
 Expose `DisposableEventHandler` for experiments.

@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.29 =
+
+Add session history for Enter-mode commands.
+
 = 9.0.28 =
 
 "Enter-mode"

@@ -43,15 +43,22 @@ static class HistoryKit
 		// case: panels, preserve the prefix
 		if (Far.Api.Window.Kind == WindowKind.Panels)
 		{
-			bool isEnterMode = Far.Api.CommandLine.Text2.StartsWith(Entry.PrefixEnterMode, StringComparison.OrdinalIgnoreCase);
-
-			if (!HistoryCommands.HasPrefix(code))
+			if (code.StartsWith(';'))
 			{
-				code = (isEnterMode ? Entry.PrefixEnterMode : Entry.Prefix1) + " " + code;
+				code = Entry.Prefix1 + code;
 			}
-			else if (isEnterMode)
+			else
 			{
-				code = Entry.PrefixEnterMode + " " + HistoryCommands.RemovePrefix(code);
+				bool isEnterMode = Far.Api.CommandLine.Text2.StartsWith(Entry.PrefixEnterMode, StringComparison.OrdinalIgnoreCase);
+
+				if (!HistoryCommands.HasPrefix(code))
+				{
+					code = (isEnterMode ? Entry.PrefixEnterMode : Entry.Prefix1) + " " + code;
+				}
+				else if (isEnterMode)
+				{
+					code = Entry.PrefixEnterMode + " " + HistoryCommands.RemovePrefix(code);
+				}
 			}
 
 			Far.Api.CommandLine.Text = code;

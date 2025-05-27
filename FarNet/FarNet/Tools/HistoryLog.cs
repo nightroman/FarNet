@@ -1,14 +1,7 @@
 ﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 // Encoding: UTF8 with no BOM (same as in logging tools, BinaryFormatter, etc).
 // Text line history files are rather logs, not text files for an editor.
 // IO.File methods by default work in this way.
-
-using System;
-using System.Collections.Generic;
-using System.IO;
 
 namespace FarNet.Tools;
 
@@ -16,13 +9,22 @@ namespace FarNet.Tools;
 /// Reads, writes, and cleans file history logs.
 /// </summary>
 /// <seealso cref="HistoryMenu"/>.
-/// <param name="fileName">History log file name.</param>
-/// <param name="maximumCount">Maximum number of history records.</param>
-public sealed class HistoryLog(string fileName, int maximumCount) : HistoryStore
+public sealed class HistoryLog : HistoryStore
 {
-	readonly string _fileName = fileName;
-	readonly int _maximumCount = maximumCount;
+	readonly string _fileName;
+	readonly int _maximumCount;
 	string? _lastLine;
+
+	/// <summary>
+	/// .
+	/// </summary>
+	/// <param name="fileName">History log file name.</param>
+	/// <param name="maximumCount">Maximum number of history records.</param>
+	public HistoryLog(string fileName, int maximumCount)
+	{
+		_fileName = fileName;
+		_maximumCount = maximumCount;
+	}
 
 	void WriteLines(string[] lines)
 	{

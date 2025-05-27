@@ -125,6 +125,10 @@ public sealed class Entry : ModuleHost
 			return;
 		}
 
+		// Enter-mode, add history
+		if (command.StartsWith(';'))
+			HistoryCommands.AddSessionLine(command);
+
 		// Code
 		A.Psf.SyncPaths();
 

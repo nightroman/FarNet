@@ -1,7 +1,4 @@
 
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 // _110628_192511 Open from a quick view panel issue
 // The `from` == OPEN_VIEWER. But the menu has been created for `window` == WTYPE_PANELS.
 // The `item` is related to the panel handlers. But technically it is strange to call them for not really a panel.
@@ -739,13 +736,12 @@ void Far0::ShowMenu(ModuleToolOptions from)
 	if (from == ModuleToolOptions::Panels)
 		menu->Add(sPanels);
 
-	// Editors
-	if (from != ModuleToolOptions::Dialog)
-	{
-		if (from == ModuleToolOptions::Editor)
-			menu->Add(sDrawers);
-		menu->Add(sWindows);
-	}
+	// Drawers
+	if (from == ModuleToolOptions::Editor)
+		menu->Add(sDrawers);
+
+	// Windows
+	menu->Add(sWindows);
 
 	// Console
 	menu->Add(sConsole);
