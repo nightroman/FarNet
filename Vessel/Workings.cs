@@ -1,9 +1,5 @@
 ﻿
-// FarNet module Vessel
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
-using System;
 using System.ComponentModel;
 
 namespace Vessel;

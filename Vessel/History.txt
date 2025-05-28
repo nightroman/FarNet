@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.Vessel
 
+= 6.1.1 =
+
+Fix Lua escaping on deleting a history item.
+
 = 6.1.0 =
 
 Requires FarNet 9, uses .NET 9.

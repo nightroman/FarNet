@@ -1,7 +1,4 @@
 ﻿
-// FarNet module Vessel
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
 
 namespace Vessel;

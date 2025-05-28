@@ -1,10 +1,4 @@
 ﻿
-// FarNet module Vessel
-// Copyright (c) Roman Kuzmin
-
-using System;
-using System.IO;
-
 namespace Vessel;
 
 public enum Mode
@@ -56,8 +50,9 @@ static class Lua
 {
 	public static string StringLiteral(string value)
 	{
-		value = value.Replace(@"\", @"\\").Replace(@"'", @"\'");
-		return $"'{value}'";
+		int n = value.Count(c => c == '=');
+		var eq = "".PadLeft(n + 1, '=');
+		return $"[{eq}[{value}]{eq}]";
 	}
 }
 

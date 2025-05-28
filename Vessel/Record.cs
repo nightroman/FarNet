@@ -1,10 +1,4 @@
 ﻿
-// FarNet module Vessel
-// Copyright (c) Roman Kuzmin
-
-using System;
-using System.Collections.Generic;
-
 namespace Vessel;
 
 /// <summary>

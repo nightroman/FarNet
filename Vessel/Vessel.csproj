@@ -4,6 +4,7 @@
     <OutDir>$(FarHome)\FarNet\Modules\$(AssemblyName)</OutDir>
     <GenerateDependencyFile>false</GenerateDependencyFile>
     <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
