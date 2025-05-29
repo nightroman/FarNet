@@ -93,14 +93,19 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 
 		diffToolArguments = diffToolArguments.Replace("%1", file1).Replace("%2", file2);
 		var process = Process.Start(diffTool, diffToolArguments);
-		Task.Run(async () =>
+
+		if (kill1 || kill2)
 		{
-			await process.WaitForExitAsync();
-			if (kill1)
-				File.Delete(file1);
-			if (kill2)
-				File.Delete(file2);
-		});
+			Task.Run(async () =>
+			{
+				await process.WaitForExitAsync();
+				await Task.Delay(2000);
+				if (kill1)
+					File.Delete(file1);
+				if (kill2)
+					File.Delete(file2);
+			});
+		}
 	}
 
 	internal override void AddMenu(IMenu menu)
