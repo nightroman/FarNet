@@ -1,9 +1,7 @@
-﻿using FarNet;
+﻿
+using FarNet;
 using GitKit.About;
 using LibGit2Sharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace GitKit.Panels;
 
@@ -37,6 +35,14 @@ class ChangesExplorer : BaseExplorer
 		CanGetContent = true;
 		CanOpenFile = true;
 	}
+
+	internal bool IsLast => _op.Kind switch
+	{
+		Kind.NotCommitted => true,
+		Kind.NotStaged => true,
+		Kind.Last => true,
+		_ => false
+	};
 
 	public override Panel CreatePanel()
 	{

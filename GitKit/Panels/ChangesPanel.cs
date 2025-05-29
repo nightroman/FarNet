@@ -1,4 +1,5 @@
-﻿using FarNet;
+﻿
+using FarNet;
 using GitKit.About;
 using LibGit2Sharp;
 using System.Diagnostics;
@@ -50,7 +51,7 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 		new CommitsExplorer(GitDir, null, path).CreatePanel().OpenChild(this);
 	}
 
-	(string, bool) GetBlobFile(ObjectId oid, string path, bool exists, int shaPrefixLength)
+	(string, bool) GetBlobFile(ObjectId oid, string path, bool exists, int shaPrefixLength, bool useCurrent)
 	{
 		if (!exists)
 			return (string.Empty, false);
@@ -58,7 +59,7 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 		using var repo = new Repository(GitDir);
 
 		var blob = repo.Lookup<Blob>(oid);
-		if (blob is null)
+		if (blob is null || useCurrent)
 		{
 			if (GitWork is null)
 				return (string.Empty, false);
@@ -87,8 +88,8 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 		if (string.IsNullOrEmpty(diffTool) || string.IsNullOrEmpty(diffToolArguments))
 			throw new ModuleException($"Please define settings '{nameof(settings.DiffTool)}' and '{nameof(settings.DiffToolArguments)}'.");
 
-		var (file1, kill1) = GetBlobFile(changes.OldOid, changes.OldPath, changes.OldExists, settings.ShaPrefixLength);
-		var (file2, kill2) = GetBlobFile(changes.Oid, changes.Path, changes.Exists, settings.ShaPrefixLength);
+		var (file1, kill1) = GetBlobFile(changes.OldOid, changes.OldPath, changes.OldExists, settings.ShaPrefixLength, false);
+		var (file2, kill2) = GetBlobFile(changes.Oid, changes.Path, changes.Exists, settings.ShaPrefixLength, MyExplorer.IsLast);
 
 		diffToolArguments = diffToolArguments.Replace("%1", file1).Replace("%2", file2);
 		var process = Process.Start(diffTool, diffToolArguments);
