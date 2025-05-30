@@ -1,4 +1,5 @@
-﻿using FarNet;
+﻿
+using FarNet;
 using FarNet.Tools;
 
 namespace PowerShellFar;
@@ -31,41 +32,38 @@ static class HistoryKit
 	}
 
 	/// <summary>
-	/// For Actor. Inserts code to known targets and returns null or returns the code.
+	/// Invokes or inserts code to known targets.
 	/// </summary>
-	public static string? ShowHistory()
+	public static void ShowHistory()
 	{
 		var ui = new UI.CommandHistoryMenu(_history, string.Empty);
 		string? code = ui.Show();
 		if (code is null)
-			return null;
+			return;
+
+		bool run = ui.Menu.Key.Is(KeyCode.Enter);
 
 		// case: panels, preserve the prefix
 		if (Far.Api.Window.Kind == WindowKind.Panels)
 		{
-			if (code.StartsWith(';'))
-			{
-				code = Entry.Prefix1 + code;
-			}
-			else
-			{
-				bool isEnterMode = Far.Api.CommandLine.Text2.StartsWith(Entry.PrefixEnterMode, StringComparison.OrdinalIgnoreCase);
-
-				if (!HistoryCommands.HasPrefix(code))
-				{
-					code = (isEnterMode ? Entry.PrefixEnterMode : Entry.Prefix1) + " " + code;
-				}
-				else if (isEnterMode)
-				{
-					code = Entry.PrefixEnterMode + " " + HistoryCommands.RemovePrefix(code);
-				}
-			}
+			if (!HistoryCommands.HasPrefix(code))
+				code = Entry.Prefix1 + ' ' + code;
 
 			Far.Api.CommandLine.Text = code;
-			return null;
+
+			if (run)
+				Far.Api.PostMacro("Keys 'Enter'");
+
+			return;
 		}
 
 		code = HistoryCommands.RemovePrefix(code);
+		if (run)
+		{
+			A.Psf.Run(new RunArgs(code));
+			return;
+		}
+
 		switch (Far.Api.Window.Kind)
 		{
 			case WindowKind.Editor:
@@ -75,7 +73,7 @@ static class HistoryKit
 				editor.GoToEnd(true);
 				editor.InsertText(code);
 				editor.Redraw();
-				return null;
+				return;
 			case WindowKind.Dialog:
 				var dialog = Far.Api.Dialog!;
 				var typeId = dialog.TypeId;
@@ -85,9 +83,9 @@ static class HistoryKit
 				if (line is null || line.IsReadOnly)
 					break;
 				line.Text = code;
-				return null;
+				return;
 		}
 
-		return code;
+		A.Psf.InvokeInputCodePrivate(code);
 	}
 }

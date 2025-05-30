@@ -31,6 +31,7 @@ public class BreakpointDrawer : ModuleDrawer
 				if (bp.Line != line.Index + 1)
 					continue;
 
+				var background = bp.Enabled ? ConsoleColor.Yellow : ConsoleColor.Gray;
 				if (hasColorer)
 				{
 					// foreground: keep original but replace yellow and white with black
@@ -43,7 +44,7 @@ public class BreakpointDrawer : ModuleDrawer
 						color.Start,
 						color.End,
 						(color.Foreground == ConsoleColor.Yellow || color.Foreground == ConsoleColor.White) ? ConsoleColor.Black : color.Foreground,
-						ConsoleColor.Yellow));
+						background));
 					}
 				}
 				else
@@ -54,7 +55,7 @@ public class BreakpointDrawer : ModuleDrawer
 						e.StartChar,
 						e.EndChar,
 						ConsoleColor.Black,
-						ConsoleColor.Yellow));
+						background));
 				}
 
 				// with 2+ bp per line coloring one is enough, we color whole line for simplicity

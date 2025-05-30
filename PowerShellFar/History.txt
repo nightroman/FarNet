@@ -1,25 +1,35 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.31 =
+
+"Enter-loop" feature, v2
+- loop of commands keeping command line: with caret inside text, use special macro [Enter]
+- see https://github.com/nightroman/FarNet/blob/main/PowerShellFar/PowerShellFar.macro.lua
+
+New macro helper
+- ps:#line-breakpoint -- sets line breakpoint
+
+Command history, like Far "History"
+- [Enter] invokes, [CtrlEnter] inserts
+
 = 9.0.30 =
 
-Enter-mode
+Enter-loop
 - select the command part
 - add command to session history
 
 = 9.0.28 =
 
-"Enter-mode" experimental feature
-- loop of PowerShell commands, keeping command line content
+"Enter-loop" experimental feature
 - use special prefix "ps:;" and special macro [Enter] in panels
-- see https://github.com/nightroman/FarNet/blob/main/PowerShellFar/PowerShellFar.macro.lua
 
-	ps:; <keep typing commands and pressing Enter>
+	ps:; ...
 
 New helper "hash-commands"
 - ps:#invoke -- Invoke selected
 - ps:#history -- Command history
 - ps:#complete -- Complete
-- ps:#enter -- [Enter] in "Enter-mode"
+- ps:#enter -- [Enter] in "Enter-loop"
 
 Menu
 - "1. Invoke commands" now shows same dialog in any area

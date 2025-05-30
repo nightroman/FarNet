@@ -1,3 +1,4 @@
+
 using FarNet;
 
 namespace PowerShellFar;
@@ -38,7 +39,7 @@ public sealed partial class Actor
 		InvokeInputCodePrivate(null);
 	}
 
-	void InvokeInputCodePrivate(string? input)
+	internal void InvokeInputCodePrivate(string? input)
 	{
 		var ui = CreateCodeDialog();
 		if (input != null)

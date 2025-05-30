@@ -9,6 +9,7 @@
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <NoWarn>IDE0079;IDE0130;FarNet250103</NoWarn>
+    <CopyRetryCount>0</CopyRetryCount>
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="PowerShellFar.ps1" />

@@ -1,3 +1,4 @@
+
 using FarNet;
 using System.Collections;
 using System.Management.Automation;
@@ -199,7 +200,7 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 		// debugging
 		if (Step || AddDebugger is { })
 		{
-			AddDebuggerKit.ValidateAvailable();
+			DebuggerKit.ValidateAvailable();
 
 			// import breakpoints
 			foreach (var bp in A.Psf.Runspace.Debugger.GetBreakpoints())
@@ -219,7 +220,7 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 			}
 
 			// load debugger assets
-			AddDebuggerKit.AddDebugger(ps, AddDebugger);
+			DebuggerKit.AddDebugger(ps, AddDebugger);
 			if (Step)
 			{
 				ps.AddScript(CodeStep, true).Invoke();

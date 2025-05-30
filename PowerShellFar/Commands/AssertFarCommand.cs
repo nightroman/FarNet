@@ -1,3 +1,4 @@
+
 using FarNet;
 using System.Collections;
 using System.Management.Automation;
@@ -343,7 +344,7 @@ sealed class AssertFarCommand : BaseCmdlet
 					// ask to attach a debugger
 					bool isAddDebugger = false;
 					var debugger = A.Psf.Runspace.Debugger;
-					while (!AddDebuggerKit.HasAnyDebugger(debugger))
+					while (!DebuggerKit.HasAnyDebugger(debugger))
 					{
 						var buttonsAttachDebugger = new[] { BtnOK, BtnAddDebugger, BtnCancel };
 						var res = Far.Api.Message("Attach a debugger and continue.", "Debug", 0, buttonsAttachDebugger);
@@ -354,7 +355,7 @@ sealed class AssertFarCommand : BaseCmdlet
 						{
 							try
 							{
-								AddDebuggerKit.ValidateAvailable();
+								DebuggerKit.ValidateAvailable();
 
 								//! use unique file to avoid conflicts
 								var logFile = Path.Join(Path.GetTempPath(), "Add-Debugger-Assert-Far.log");

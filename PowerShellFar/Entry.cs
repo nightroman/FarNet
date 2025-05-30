@@ -1,4 +1,5 @@
-﻿using FarNet;
+﻿
+using FarNet;
 using System.Management.Automation;
 
 namespace PowerShellFar;
@@ -18,7 +19,6 @@ public sealed class Entry : ModuleHost
 
 	internal static string Prefix1 { get; private set; } = null!;
 	internal static string Prefix2 { get; private set; } = null!;
-	internal static string PrefixEnterMode { get; private set; } = null!;
 
 	public Entry()
 	{
@@ -58,7 +58,6 @@ public sealed class Entry : ModuleHost
 		// prefixes
 		Prefix1 = CommandInvoke1.Prefix + ':';
 		Prefix2 = CommandInvoke2.Prefix + ':';
-		PrefixEnterMode = Prefix1 + ';';
 
 		// subscribe to editors
 		Far.Api.AnyEditor.FirstOpening += EditorKit.OnEditorFirstOpening;
@@ -97,31 +96,10 @@ public sealed class Entry : ModuleHost
 	{
 		var command = e.Command;
 
-		// Invoke
-		if (command.StartsWith("#invoke"))
+		// helper commands
+		if (command.StartsWith('#'))
 		{
-			EditorKit.InvokeSelectedCode();
-			return;
-		}
-
-		// Enter
-		if (command.StartsWith("#enter"))
-		{
-			EditorKit.PlayNativeEnter();
-			return;
-		}
-
-		// Complete
-		if (command.StartsWith("#complete"))
-		{
-			EditorKit.ExpandCode(null, null);
-			return;
-		}
-
-		// History
-		if (command.StartsWith("#history"))
-		{
-			A.Psf.ShowHistory();
+			InvokeHelpers(command);
 			return;
 		}
 
@@ -161,5 +139,29 @@ public sealed class Entry : ModuleHost
 
 			_ => throw new ArgumentException("Unknown command.", nameof(command)),
 		};
+	}
+
+	static void InvokeHelpers(ReadOnlySpan<char> command)
+	{
+		switch (command.TrimEnd())
+		{
+			case "#invoke":
+				EditorKit.InvokeSelectedCode();
+				return;
+			case "#complete":
+				EditorKit.ExpandCode(null, null);
+				return;
+			case "#history":
+				A.Psf.ShowHistory();
+				return;
+			case "#enter":
+				EditorKit.PlayNativeEnter();
+				return;
+			case "#line-breakpoint":
+				DebuggerKit.OnLineBreakpoint();
+				return;
+			default:
+				throw new ModuleException($"Invalid command: '{command}'.");
+		}
 	}
 }

@@ -166,17 +166,18 @@ It is not normally possible to stop commands started from event handlers.
 Commands with prefixes are used in the command line, user menu, file
 associations, and macros.
 
-Main commands for invoking PowerShell code:
+Main commands invoking code:
 
 - `ps:` console output and console input
 - `vps:` viewer output and input dialogs
 
-Helper pairs for menu commands:
+Helper commands for macros:
 
-- `ps:#invoke` -- "Invoke selected"
-- `ps:#history` -- "Command history"
-- `ps:#complete` -- "Complete"
-- `ps:#enter` -- usual Enter but keeping command line
+- `ps:#invoke` calls "Invoke selected"
+- `ps:#history` calls "Command history"
+- `ps:#complete` calls "Complete"
+- `ps:#enter` sends `[Enter]` and keeps command line
+- `ps:#line-breakpoint` sets line breakpoint in the editor
 
 Console output may be transcribed to a file, use `Start-Transcript` and
 `Stop-Transcript` for starting and stopping and `Show-FarTranscript` for
@@ -217,22 +218,24 @@ text starts with a space and does not end with "#".
 
 **Invoke commands**
 
-You are prompted to enter PowerShell commands.
-
-In panels it works like console with the prompt at the bottom. The prompt is
-shown repeatedly after each command. The output is written to the console.
-See [Command console dialog](#command-console-dialog).
-
-In other areas the enhanced input box is used.
-The output is shown in the viewer.
+Invoke commands from the command box.
+Show the output in viewer.
 See [Invoke commands dialog](#invoke-commands-dialog).
 
 **Invoke selected**
 
-In the editor, dialog, or command line: invoke the selected or the current line
-text. The code is invoked in the global scope with output shown in the viewer.
+In editor, dialog, command line: invoke selected or current line text.
+Show output in viewer or print to console.
 
-In the editor, to invoke the whole script or `Invoke-Build` task, use `[F5]`.
+Editor: to invoke the whole script or `Invoke-Build` task, use `[F5]`.
+
+Command line: commands are added to session history but not saved.
+
+**Command console**
+
+Invoke commands from the bottom console-like prompt box.
+Print the output to console and show the prompt again.
+See [Command console dialog](#command-console-dialog).
 
 **Command history**
 
@@ -384,6 +387,10 @@ The history includes Far Manager command and PowerShellFar input dialog historie
 **Keys and actions**
 
 - `[Enter]`
+
+    Invokes the selected command right away.
+
+- `[CtrlEnter]`
 
     Inserts the command to the input line (panels, interactive, command box) or
     shows a new dialog *Invoke commands* dialog with the command text inserted.

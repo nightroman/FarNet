@@ -1,23 +1,19 @@
---[[
-    Helper macros for some PowerShellFar commands.
-    *USE YOUR OWN MACROS, THIS IS JUST AN EXAMPLE*
-]]
 
--- Insert prefix "ps:" to empty command line
+-- Insert "ps: " to empty command line
 Macro {
   key="Space"; description="PSF: Easy prefix";
   area="Shell"; flags="EmptyCommandLine";
   action=function()
-    Keys "p s :"
+    Keys "p s : Space"
   end;
 }
 
--- With prefix "ps:;" keep typing command and invoking by [Enter]
+-- With "ps:" and caret inside, invoke and keep command
 Macro {
-  key="Enter"; description="PSF: Invoke selected in Enter-mode";
-  area="Shell ShellAutoCompletion Info QView Tree";
+  key="Enter"; description="PSF: Invoke and keep command";
+  area="Shell ShellAutoCompletion Info QView Tree"; flags="NotEmptyCommandLine";
   condition=function()
-    return CmdLine.Value:sub(1, 4) == "ps:;"
+    return not CmdLine.Eof and CmdLine.Value:sub(1, 3) == "ps:"
   end;
   action=function()
     if Area.ShellAutoCompletion then Keys "Esc" end
@@ -25,32 +21,7 @@ Macro {
   end;
 }
 
--- With prefix "ps:;" clear command and keep this prefix
-Macro {
-  key="Esc"; description="PSF: [Esc] in Enter-mode";
-  area="Shell Info QView Tree";
-  condition=function()
-    return CmdLine.Value:sub(1, 4) == "ps:;" and CmdLine.ItemCount > 4
-  end;
-  action=function()
-    panel.SetCmdLine(nil, "ps:;")
-  end;
-}
-
--- With prefix "ps:;" do usual [Enter] and keep command line
-Macro {
-  key="ShiftEsc"; description="PSF: [Enter] in Enter-mode";
-  area="Shell ShellAutoCompletion Info QView Tree";
-  condition=function()
-    return CmdLine.Value:sub(1, 4) == "ps:;"
-  end;
-  action=function()
-    if Area.ShellAutoCompletion then Keys "Esc" end
-    Plugin.SyncCall("10435532-9BB3-487B-A045-B0E6ECAAB6BC", [[ps:#enter]])
-  end;
-}
-
--- Show PowerShell command history list
+-- PowerShell command history
 Macro {
   key="AltF10"; description="PSF: Command history";
   area="Common";
@@ -60,7 +31,16 @@ Macro {
   end;
 }
 
--- Complete PowerShell code in editors
+-- PowerShell line breakpoint
+Macro {
+  key="F9"; description="PSF: Line breakpoint";
+  area="Editor"; filemask = "*.ps1,*.psm1";
+  action=function()
+    Plugin.SyncCall("10435532-9BB3-487B-A045-B0E6ECAAB6BC", [[ps:#line-breakpoint]])
+  end;
+}
+
+-- Complete PowerShell code
 Macro {
   key="CtrlSpace"; description="PSF: Complete";
   area="Dialog Editor Shell QView Tree Info DialogAutoCompletion ShellAutoCompletion";
@@ -73,9 +53,9 @@ Macro {
   end;
 }
 
--- Invoke PowerShell script "Complete-Word.ps1" in editors
+-- Invoke "Complete-Word.ps1"
 Macro {
-  key="F9"; description="PSF: Complete-Word.ps1";
+  key="CtrlShiftSpace"; description="PSF: Complete-Word.ps1";
   area="Dialog Editor Shell QView Tree Info DialogAutoCompletion ShellAutoCompletion";
   condition=function()
     return Area.Dialog or Area.Editor or Area.DialogAutoCompletion or Area.ShellAutoCompletion or not CmdLine.Empty
@@ -83,5 +63,15 @@ Macro {
   action=function()
     if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys "Esc" end
     Plugin.SyncCall("10435532-9BB3-487B-A045-B0E6ECAAB6BC", [[vps:Complete-Word.ps1]])
+  end;
+}
+
+-- Clear, enter, restore
+Macro {
+  key="ShiftEsc"; description="PSF: Clear, enter, restore";
+  area="Shell ShellAutoCompletion Info QView Tree"; flags="NotEmptyCommandLine";
+  action=function()
+    if Area.ShellAutoCompletion then Keys "Esc" end
+    Plugin.SyncCall("10435532-9BB3-487B-A045-B0E6ECAAB6BC", [[ps:#enter]])
   end;
 }

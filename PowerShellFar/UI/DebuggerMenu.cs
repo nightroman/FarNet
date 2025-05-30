@@ -1,9 +1,5 @@
 ﻿
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
-using System;
 using System.Collections.ObjectModel;
 using System.Management.Automation;
 
@@ -78,74 +74,8 @@ class DebuggerMenu
 
 	void OnLineBreakpoint(object? sender, EventArgs e)
 	{
-		if (_menu.Key.VirtualKeyCode != 0)
-			return;
-
-		string? file = null;
-		int line = 0;
-
-		LineBreakpoint? bpFound = null;
-		if (_editor != null)
-		{
-			// location
-			file = _editor.FileName;
-			line = _editor.Caret.Y + 1;
-
-			// find
-			foreach (PSObject o in _breakpoints!)
-			{
-				if (o.BaseObject is LineBreakpoint lbp && lbp.Action is null && line == lbp.Line && Kit.Equals(file, lbp.Script))
-				{
-					bpFound = lbp;
-					break;
-				}
-			}
-
-			// found?
-			if (bpFound != null)
-			{
-				switch (Far.Api.Message("Breakpoint exists",
-					"Line breakpoint",
-					MessageOptions.None,
-					[
-						"&Remove",
-						bpFound.Enabled ? "&Disable" : "&Enable",
-						"&Modify",
-						"&Add",
-						"&Cancel",
-					]))
-				{
-					case 0:
-						A.RemoveBreakpoint(bpFound);
-						return;
-					case 1:
-						if (bpFound.Enabled)
-							A.DisableBreakpoint(bpFound);
-						else
-							A.InvokeCode("Enable-PSBreakpoint -Breakpoint $args[0]", bpFound);
-						return;
-					case 2:
-						break;
-					case 3:
-						bpFound = null;
-						break;
-					default:
-						return;
-				}
-			}
-		}
-
-		// go
-		var ui = new BreakpointDialog(0, file, line);
-		if (!ui.Show())
-			return;
-
-		// remove old
-		if (bpFound != null)
-			A.RemoveBreakpoint(bpFound);
-
-		// set new
-		A.SetBreakpoint(ui.Script, int.Parse(ui.Matter, null), ui.Action);
+		if (_menu.Key.VirtualKeyCode == 0)
+			DebuggerKit.OnLineBreakpoint(_editor, _breakpoints!);
 	}
 
 	void OnCommandBreakpoint(object? sender, EventArgs e)

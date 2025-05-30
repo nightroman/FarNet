@@ -39,7 +39,7 @@ job {
 }
 
 # insert into the cmdline
-keys Enter
+keys CtrlEnter
 job {
 	Assert-Far -Panels
 	Assert-Far $Far.CommandLine.Text -eq 'ps:1+1'

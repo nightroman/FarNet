@@ -1,3 +1,4 @@
+
 using FarNet;
 using Microsoft.PowerShell;
 using System.Collections;
@@ -377,15 +378,12 @@ public sealed partial class Actor
 	/// Called on "Command history".
 	/// </summary>
 	/// <remarks>
-	/// The selected command is inserted to available known editors.
-	/// Otherwise a new command input box is shown with this command.
+	/// The selected command is invoked or inserted to known editors or command box.
 	/// </remarks>
 	/// <seealso cref="GetHistory"/>
 	public void ShowHistory()
 	{
-		var code = HistoryKit.ShowHistory();
-		if (code != null)
-			InvokeInputCodePrivate(code);
+		HistoryKit.ShowHistory();
 	}
 
 	/// <summary>
@@ -630,14 +628,10 @@ public sealed partial class Actor
 		{
 			_isFirstBreakpoint = false;
 
-			if (!AddDebuggerKit.HasAnyDebugger(A.Psf.Runspace.Debugger))
+			if (!DebuggerKit.HasAnyDebugger(A.Psf.Runspace.Debugger))
 			{
-				var res = Far.Api.Message("There is no debugger. Use Add-Debugger?", "Debug", MessageOptions.YesNo);
-				if (res == 0)
-				{
-					AddDebuggerKit.ValidateAvailable();
-					A.InvokeCode("Add-Debugger.ps1");
-				}
+				DebuggerKit.ValidateAvailable();
+				A.InvokeCode("Add-Debugger.ps1");
 			}
 		}
 
