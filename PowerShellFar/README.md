@@ -457,6 +457,9 @@ See also [Breakpoint dialog](#breakpoint-dialog).
     line then you are prompted to remove, enable/disable, modify the existing
     breakpoint or add a new one at the same line.
 
+    NOTE In editor, to set line breakpoints by a key, bind the macro calling
+    `ps:#line-breakpoint`, see `PowerShellFar.macro.lua`.
+
 * Command breakpoint...
 
     Opens a dialog to create a new command breakpoint.

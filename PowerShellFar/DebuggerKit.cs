@@ -21,8 +21,9 @@ static class DebuggerKit
 		if (res.Count == 0)
 		{
 			throw new ModuleException("""
-				Cannot find the required script Add-Debugger.ps1.
-				Get Add-Debugger.ps1 -- https://www.powershellgallery.com/packages/Add-Debugger
+				Found no attached debugger, breakpoints with no actions will not be hit.
+				Tried to add and could not find the recommended default Add-Debugger.ps1.
+				See PSGallery -- https://www.powershellgallery.com/packages/Add-Debugger
 				""");
 		}
 	}
@@ -53,7 +54,7 @@ static class DebuggerKit
 		int line = 0;
 
 		LineBreakpoint? bpFound = null;
-		if (editor != null)
+		if (editor is { })
 		{
 			// location
 			file = editor.FileName;
@@ -70,9 +71,9 @@ static class DebuggerKit
 			}
 
 			// found?
-			if (bpFound != null)
+			if (bpFound is { })
 			{
-				switch (Far.Api.Message("Breakpoint exists",
+				switch (Far.Api.Message(bpFound.ToString(),
 					"Line breakpoint",
 					MessageOptions.None,
 					[
@@ -106,7 +107,7 @@ static class DebuggerKit
 		if (noUI)
 		{
 			// remove old
-			if (bpFound != null)
+			if (bpFound is { })
 				A.RemoveBreakpoint(bpFound);
 
 			// set new
@@ -121,7 +122,7 @@ static class DebuggerKit
 			return;
 
 		// remove old
-		if (bpFound != null)
+		if (bpFound is { })
 			A.RemoveBreakpoint(bpFound);
 
 		// set new

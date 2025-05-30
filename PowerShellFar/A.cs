@@ -387,9 +387,17 @@ Out-String -Width $args[1]
 	internal static void SetBreakpoint(string? script, int line, ScriptBlock? action)
 	{
 		string code = "Set-PSBreakpoint -Script $args[0] -Line $args[1]";
-		if (action != null)
+		if (action is { })
 			code += " -Action $args[2]";
-		InvokeCode(code, script, line, action);
+
+		try
+		{
+			InvokeCode(code, script, line, action);
+		}
+		catch (CmdletInvocationException ex) when (ex.InnerException is { } ex2)
+		{
+			throw ex2;
+		}
 	}
 
 	internal static void RemoveBreakpoint(object breakpoint)

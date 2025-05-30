@@ -624,17 +624,7 @@ public sealed partial class Actor
 
 	void OnBreakpointUpdated(object? sender, BreakpointUpdatedEventArgs e)
 	{
-		if (_isFirstBreakpoint)
-		{
-			_isFirstBreakpoint = false;
-
-			if (!DebuggerKit.HasAnyDebugger(A.Psf.Runspace.Debugger))
-			{
-				DebuggerKit.ValidateAvailable();
-				A.InvokeCode("Add-Debugger.ps1");
-			}
-		}
-
+		//! update first
 		if (!string.IsNullOrEmpty(e.Breakpoint.Script))
 		{
 			if (e.Breakpoint is LineBreakpoint bp)
@@ -643,6 +633,18 @@ public sealed partial class Actor
 					Breakpoints.Remove(bp);
 				else
 					Breakpoints.Add(bp);
+			}
+		}
+
+		//! then this with possible exceptions
+		if (_isFirstBreakpoint && e.Breakpoint.Action is null)
+		{
+			_isFirstBreakpoint = false;
+
+			if (!DebuggerKit.HasAnyDebugger(A.Psf.Runspace.Debugger))
+			{
+				DebuggerKit.ValidateAvailable();
+				A.InvokeCode("Add-Debugger.ps1");
 			}
 		}
 	}
