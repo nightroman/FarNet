@@ -1,3 +1,4 @@
+
 using FarNet;
 using FarNet.Tools;
 using System.Management.Automation;
@@ -235,7 +236,6 @@ class Interactive : InteractiveEditor
 					{
 						if (CommandArea() != null && EditorKit.NeedsTabExpansion(Editor))
 						{
-							InitTabExpansion();
 							EditorKit.ExpandCode(currentLine, Runspace);
 							Editor.Redraw();
 							return true;

@@ -566,6 +566,10 @@ VSCode is used as the default diff tool
     %LOCALAPPDATA%\Programs\Microsoft VS Code\bin\code.cmd
     --diff "%1" "%2"
 
+File revisions for diff are created in "%TEMP%\FarNet.GitKit".
+To avoid ceremonies and some known issues, files are not deleted.
+As a result, files are reused instead of creating again and again.
+
 *********************************************************************
 **UseGitCredentials**
 

@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.33 =
+
+Sync path before invoking scripts on completion.
+
 = 9.0.32 =
 
 Debugger and breakpoints UX improvements.

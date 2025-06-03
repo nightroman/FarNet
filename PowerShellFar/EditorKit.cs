@@ -1,3 +1,4 @@
+
 using FarNet;
 using FarNet.Forms;
 using FarNet.Tools;
@@ -47,6 +48,7 @@ static class EditorKit
 		using FarHost.IgnoreApplications ignoreApplications = new();
 
 		InitTabExpansion();
+		A.Psf.SyncPaths();
 
 		// hot line
 		if (editLine is null)

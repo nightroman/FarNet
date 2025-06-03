@@ -51,10 +51,10 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 		new CommitsExplorer(GitDir, null, path).CreatePanel().OpenChild(this);
 	}
 
-	(string, bool) GetBlobFile(ObjectId oid, string path, bool exists, int shaPrefixLength, bool useCurrent)
+	string GetBlobFile(ObjectId oid, string path, bool exists, int shaPrefixLength, bool useCurrent)
 	{
 		if (!exists)
-			return (string.Empty, false);
+			return string.Empty;
 
 		using var repo = new Repository(GitDir);
 
@@ -62,21 +62,32 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 		if (blob is null || useCurrent)
 		{
 			if (GitWork is null)
-				return (string.Empty, false);
+				return string.Empty;
 
 			var file = Path.Join(GitWork, path);
 			if (File.Exists(file))
-				return (file, false);
+				return file;
 			else
-				return (string.Empty, false);
+				return string.Empty;
 		}
 		else
 		{
+			var dir = Directory.CreateDirectory(Path.Join(Path.GetTempPath(), "FarNet.GitKit"));
+
 			var name = Path.GetFileNameWithoutExtension(path) + '.' + oid.Sha[0..shaPrefixLength] + Path.GetExtension(path);
-			var file = Path.Join(Path.GetTempPath(), name);
-			using var stream = File.OpenWrite(file);
-			blob.GetContentStream().CopyTo(stream);
-			return (file, true);
+			var file = new FileInfo(Path.Join(dir.FullName, name));
+
+			// get cached
+			if (file.Exists && file.Attributes.HasFlag(FileAttributes.ReadOnly))
+				return file.FullName;
+
+			// make new
+			{
+				using var stream = file.OpenWrite();
+				blob.GetContentStream().CopyTo(stream);
+			}
+			file.Attributes = FileAttributes.ReadOnly;
+			return file.FullName;
 		}
 	}
 
@@ -88,24 +99,11 @@ class ChangesPanel : BasePanel<ChangesExplorer>
 		if (string.IsNullOrEmpty(diffTool) || string.IsNullOrEmpty(diffToolArguments))
 			throw new ModuleException($"Please define settings '{nameof(settings.DiffTool)}' and '{nameof(settings.DiffToolArguments)}'.");
 
-		var (file1, kill1) = GetBlobFile(changes.OldOid, changes.OldPath, changes.OldExists, settings.ShaPrefixLength, false);
-		var (file2, kill2) = GetBlobFile(changes.Oid, changes.Path, changes.Exists, settings.ShaPrefixLength, MyExplorer.IsLast);
+		var file1 = GetBlobFile(changes.OldOid, changes.OldPath, changes.OldExists, settings.ShaPrefixLength, false);
+		var file2 = GetBlobFile(changes.Oid, changes.Path, changes.Exists, settings.ShaPrefixLength, MyExplorer.IsLast);
 
 		diffToolArguments = diffToolArguments.Replace("%1", file1).Replace("%2", file2);
-		var process = Process.Start(diffTool, diffToolArguments);
-
-		if (kill1 || kill2)
-		{
-			Task.Run(async () =>
-			{
-				await process.WaitForExitAsync();
-				await Task.Delay(2000);
-				if (kill1)
-					File.Delete(file1);
-				if (kill2)
-					File.Delete(file2);
-			});
-		}
+		Process.Start(diffTool, diffToolArguments);
 	}
 
 	internal override void AddMenu(IMenu menu)
