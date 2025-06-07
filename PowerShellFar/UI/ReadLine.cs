@@ -1,10 +1,6 @@
 
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
 using FarNet.Forms;
-using System;
 
 namespace PowerShellFar.UI;
 
@@ -60,6 +56,8 @@ class ReadLine
 		{
 			Edit = Dialog.AddEdit(pos.EditLeft, pos.EditTop, pos.EditRight, string.Empty);
 			Edit.History = args.History!;
+			Edit.DropDownOpening += Edit_DropDownOpening;
+			Edit.DropDownClosed += Edit_DropDownClosed;
 		}
 		Edit.Coloring += Events.Coloring_EditAsConsole;
 		Edit.KeyPressed += Edit_KeyPressed;
@@ -112,6 +110,16 @@ class ReadLine
 		Edit.Rect = new Place(pos.EditLeft, pos.EditTop, pos.EditRight, pos.EditTop);
 		if (Text != null)
 			Text.Rect = new Place(pos.TextLeft, pos.TextTop, pos.TextRight, pos.TextTop);
+	}
+
+	void Edit_DropDownOpening(object? sender, DropDownOpeningEventArgs e)
+	{
+		Far.Api.UI.ShowUserScreen();
+	}
+
+	void Edit_DropDownClosed(object? sender, DropDownClosedEventArgs e)
+	{
+		Far.Api.UI.SaveUserScreen();
 	}
 
 	void Edit_KeyPressed(object? sender, KeyPressedEventArgs e)

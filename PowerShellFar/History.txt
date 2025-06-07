@@ -1,5 +1,14 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.34 =
+
+[F5] in Invoke-Build script editor
+- Improve actions on redefined tasks
+- Do not invoke dot-tasks implicitly
+
+Console-like ReadLine input box
+- Fix user screen defects on auto-complete
+
 = 9.0.33 =
 
 Sync path before invoking scripts on completion.

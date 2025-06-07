@@ -2,6 +2,7 @@
 using FarNet;
 using FarNet.Forms;
 using FarNet.Tools;
+using System.Collections;
 using System.Collections.Specialized;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
@@ -567,16 +568,22 @@ static class EditorKit
 		}
 	}
 
-	//! Use PowerShell for getting tasks, script block fails with weird NRE on exit.
+	// !! Use PS for getting tasks, script block fails with odd NRE on exit.
+
+	// !! The task must be in the same file and strictly above or at the caret,
+	// that is avoid unexpected redefined tasks below the caret and do not run
+	// implicit dot-tasks as we used to.
+
 	public static void InvokeTaskFromEditor(IEditor editor)
 	{
+		const string MyTitle = "Invoke-Build task";
+
 		var fileName = editor.FileName;
 
 		void GoToError(RuntimeException ex, bool redraw)
 		{
-			//! InvocationInfo null on CtrlC in prompts
-			if (ex.ErrorRecord.InvocationInfo is { } ii &&
-				string.Equals(fileName, ii.ScriptName, StringComparison.OrdinalIgnoreCase))
+			//! InvocationInfo is null on CtrlC in prompts
+			if (ex.ErrorRecord.InvocationInfo is { } ii && fileName.Equals(ii.ScriptName, StringComparison.OrdinalIgnoreCase))
 			{
 				editor.GoTo(ii.OffsetInLine - 1, ii.ScriptLineNumber - 1);
 				if (redraw)
@@ -584,35 +591,111 @@ static class EditorKit
 			}
 		}
 
-		try
+		var caretLineNumber = editor.Caret.Y + 1;
+		(string?, int) FindCaretTask(ICollection tasks)
 		{
-			// get tasks
-			var ps = A.Psf.NewPowerShell();
-			ps.AddScript("Invoke-Build ?? $args[0]").AddArgument(fileName);
-			var tasks = (OrderedDictionary)ps.Invoke()[0].BaseObject;
-
-			// find the caret task
-			var taskName = ".";
-			var lineIndex = editor.Caret.Y;
-			foreach (PSObject pso in tasks.Values)
+			PSObject? bestMatch = null;
+			int bestMatchLineNumber = -1;
+			foreach (PSObject pso in tasks)
 			{
 				var ii = (InvocationInfo)pso.Properties["InvocationInfo"].Value;
+
+				// skip different file
 				if (!string.Equals(fileName, ii.ScriptName, StringComparison.OrdinalIgnoreCase))
 					continue;
 
-				if ((ii.ScriptLineNumber - 1) > lineIndex)
+				// stop on any task below the caret
+				if (ii.ScriptLineNumber > caretLineNumber)
 					break;
 
-				taskName = (string)pso.Properties["Name"].Value;
+				// keep the best match
+				bestMatch = pso;
+				bestMatchLineNumber = ii.ScriptLineNumber;
+			}
+			return ((string?)bestMatch?.Properties["Name"].Value, bestMatchLineNumber);
+		}
+
+		try
+		{
+			// get tasks
+			using var ps = A.Psf.NewPowerShell().AddScript("""
+				Invoke-Build ?? $args[0] -Result:Result
+				, $Result.Redefined
+				""")
+				.AddArgument(fileName);
+
+			var res = ps.Invoke();
+			if (res.Count != 2)
+				throw new InvalidOperationException($"Unexpected result count: {res.Count}");
+
+			var goodTasksDic = (OrderedDictionary)res[0].BaseObject;
+			var goodTasks = goodTasksDic.Values;
+			var (goodTaskName, goodTaskLineNumber) = FindCaretTask(goodTasks);
+
+			var dupeTasks = (object[])res[1].BaseObject;
+			var (dupeTaskName, dupeTaskLineNumber) = FindCaretTask(dupeTasks);
+
+			// no dupe or good task?
+			if (dupeTaskName is null && goodTaskName is null)
+			{
+				Far.Api.Message(
+					"Move the caret to a task to invoke.",
+					MyTitle,
+					MessageOptions.LeftAligned);
+
+				return;
 			}
 
+			// dupe task and no good task better than dupe?
+			if (dupeTaskName is { } && goodTaskLineNumber < dupeTaskLineNumber)
+			{
+				// find redefined task
+				var pso = goodTasksDic[dupeTaskName]!.BaseObject(out var custom);
+				var ii = (InvocationInfo)custom!.Properties["InvocationInfo"].Value;
+
+				// go to or invoke?
+				var answer = Far.Api.Message($"""
+					The task '{dupeTaskName}' is redefined at
+					{ii.ScriptName}:{ii.ScriptLineNumber}
+					""",
+					MyTitle,
+					MessageOptions.LeftAligned,
+					["&Go to redefined", "&Invoke redefined"]);
+
+				switch (answer)
+				{
+					case 0:
+						if (fileName.Equals(ii.ScriptName, StringComparison.OrdinalIgnoreCase))
+						{
+							// go to same file
+							editor.GoTo(ii.OffsetInLine - 1, ii.ScriptLineNumber - 1);
+							editor.Redraw();
+						}
+						else
+						{
+							// open another file
+							editor = Far.Api.CreateEditor();
+							editor.FileName = ii.ScriptName;
+							editor.GoTo(ii.OffsetInLine - 1, ii.ScriptLineNumber - 1);
+							editor.Open();
+						}
+						return;
+					case 1:
+						goodTaskName = dupeTaskName;
+						break;
+					default:
+						return;
+				}
+			}
+
+			// invoke task with console output and wait for Esc
 			Far.Api.UI.ShowUserScreen();
 			try
 			{
 				// invoke task
 				var args = new RunArgs("Invoke-Build $args[0] $args[1]")
 				{
-					Arguments = [taskName, fileName],
+					Arguments = [goodTaskName!, fileName],
 					Writer = new ConsoleOutputWriter()
 				};
 				A.Psf.Run(args);
@@ -641,7 +724,10 @@ static class EditorKit
 		{
 			// it is a build script issue more likely, go to its position and redraw, show the simple message
 			GoToError(ex, true);
-			Far.Api.Message(ex.Message, "Invoke-Build task", MessageOptions.Warning | MessageOptions.LeftAligned);
+			Far.Api.Message(
+				ex.Message,
+				MyTitle,
+				MessageOptions.LeftAligned | MessageOptions.Warning);
 		}
 	}
 
