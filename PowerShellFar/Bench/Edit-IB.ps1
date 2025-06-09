@@ -108,7 +108,7 @@ if ($item.Name -eq $fileName) {
 ### edit existing task
 if ($item.Name -ne '*new*') {
 	$ii = $item.InvocationInfo
-	return Open-FarEditor $file -LineNumber $ii.ScriptLineNumber
+	return Open-FarEditor $ii.ScriptName -LineNumber $ii.ScriptLineNumber
 }
 
 ### edit a new task

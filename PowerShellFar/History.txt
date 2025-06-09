@@ -1,5 +1,12 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.35 =
+
+FarNet 9.0.28
+
+Edit-IB.ps1
+- Fix opening tasks from dot-sourced files.
+
 = 9.0.34 =
 
 [F5] in Invoke-Build script editor

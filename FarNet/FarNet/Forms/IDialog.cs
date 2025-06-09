@@ -1,7 +1,4 @@
 
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
@@ -85,9 +82,27 @@ public abstract class IDialog
 	public abstract event EventHandler<MouseClickedEventArgs> MouseClicked;
 
 	/// <summary>
+	/// Called before <see cref="MouseClicked"/>.
+	/// </summary>
+	/// <remarks>
+	/// Set <see cref="EnableInputEvents"/> to true to receive this event.
+	/// </remarks>
+	[Experimental("FarNet250404")]
+	public abstract event EventHandler<MouseClickedEventArgs> MouseClicking;
+
+	/// <summary>
 	/// Called when a key is pressed in the dialog and the active control does not handle the key.
 	/// </summary>
 	public abstract event EventHandler<KeyPressedEventArgs> KeyPressed;
+
+	/// <summary>
+	/// Called before <see cref="KeyPressed"/>.
+	/// </summary>
+	/// <remarks>
+	/// Set <see cref="EnableInputEvents"/> to true to receive this event.
+	/// </remarks>
+	[Experimental("FarNet250404")]
+	public abstract event EventHandler<KeyPressedEventArgs> KeyPressing;
 
 	/// <summary>
 	/// Called when the console window size has changed, e.g. on [AltF9].
@@ -164,6 +179,12 @@ public abstract class IDialog
 	/// </summary>
 	[Experimental("FarNet250326")]
 	public abstract bool StayOnTop { get; set; }
+
+	/// <summary>
+	/// Tells to enable <see cref="MouseClicking"/> and <see cref="KeyPressing"/>.
+	/// </summary>
+	[Experimental("FarNet250404")]
+	public abstract bool EnableInputEvents { get; set; }
 
 	/// <include file='doc.xml' path='doc/HelpTopic/*'/>
 	public abstract string HelpTopic { get; set; }

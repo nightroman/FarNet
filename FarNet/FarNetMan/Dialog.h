@@ -1,12 +1,8 @@
 
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 #pragma once
 
 namespace FarNet
 {
-;
 ref class Far;
 ref class FarControl;
 
@@ -20,8 +16,11 @@ public: DEF_EVENT_ARGS2(Closing, _Closing, ClosingEventArgs);
 public: DEF_EVENT_ARGS2(ConsoleSizeChanged, _ConsoleSizeChanged, SizeEventArgs);
 public: DEF_EVENT_ARGS2(Initialized, _Initialized, InitializedEventArgs);
 public: DEF_EVENT_ARGS2(KeyPressed, _KeyPressed, KeyPressedEventArgs);
+public: DEF_EVENT_ARGS2(KeyPressing, _KeyPressing, KeyPressedEventArgs);
 public: DEF_EVENT_ARGS2(MouseClicked, _MouseClicked, MouseClickedEventArgs);
+public: DEF_EVENT_ARGS2(MouseClicking, _MouseClicking, MouseClickedEventArgs);
 public:
+	virtual property bool EnableInputEvents { bool get() override { return _EnableInputEvents; } void set(bool value) override { _EnableInputEvents = value; } }
 	virtual property bool IsSmall { bool get() override; void set(bool value) override; }
 	virtual property bool IsWarning { bool get() override; void set(bool value) override; }
 	virtual property bool KeepWindowTitle { bool get() override; void set(bool value) override; }
@@ -79,13 +78,14 @@ private:
 	void Free();
 private:
 	int _flags;
+	bool _EnableInputEvents;
 	bool _NoModal;
+	bool _NoSmartCoordinates;
 	Place _rect;
 	FarControl^ _default;
 	FarControl^ _focused;
 	FarControl^ _selected;
 	Guid _typeId;
-	bool _NoSmartCoordinates;
 	IButton^ _Cancel;
 	String^ _HelpTopic;
 	FarDialogItem* _farItems;

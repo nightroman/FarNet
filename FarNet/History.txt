@@ -1,6 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 9.0.28 =
+
+Experimental
+- New dialog members to support FDLG_STAY_ON_TOP
+
 = 9.0.27 =
 
 Minor fixes.
