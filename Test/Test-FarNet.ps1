@@ -82,7 +82,7 @@ if (!$Tests) {
 $extras = @(
 	if ($All) {
 		{ Invoke-Build test "$env:FarNetCode\FarNet" }
-		Get-Item "$env:FarNetCode\Test\TabExpansion\Test-TabExpansion2-.ps1"
+		Get-Item "$env:FarNetCode\Test\TabExpansion\Test-TabExpansion2.far.ps1"
 		{ & "$env:FarNetCode\Test\TabExpansion\Test-TabExpansion2.ps1" pwsh }
 		{ & "$env:FarNetCode\Test\TabExpansion\Test-TabExpansion2.ps1" powershell }
 		{ Invoke-Build test "$env:FarNetCode\GitKit" }

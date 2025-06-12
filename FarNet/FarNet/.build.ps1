@@ -5,8 +5,7 @@
 
 param(
 	$FarHome = (property FarHome C:\Bin\Far\x64),
-	$Configuration = (property Configuration Release),
-	$TargetFramework = (property TargetFramework net9.0)
+	$Configuration = (property Configuration Release)
 )
 
 task clean {

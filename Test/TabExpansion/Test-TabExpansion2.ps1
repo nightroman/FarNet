@@ -1,6 +1,6 @@
 ﻿<#
 .Synopsis
-	Test-TabExpansion2-.ps1 in pwsh and powershell.
+	Test-TabExpansion2.far.ps1 in pwsh and powershell.
 #>
 
 [CmdletBinding()]
@@ -22,7 +22,7 @@ try {
 		}
 		'-NoProfile',
 		'-Command',
-		'.\Test-TabExpansion2-.ps1'
+		'.\Test-TabExpansion2.far.ps1'
 	)
 	$process = Start-Process $Shell -ArgumentList $param -WorkingDirectory $PSScriptRoot -PassThru -Wait:(!$NoExit)
 	if (!$NoExit -and $process.ExitCode) {

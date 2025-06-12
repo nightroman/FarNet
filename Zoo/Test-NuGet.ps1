@@ -19,7 +19,7 @@ function Build-TempFolder {
 
 function Test-Diff {
 	try {
-		Assert-SameFile -Fail -Text ($Sample | Out-String) ($Result | Out-String) $env:MERGE
+		Assert-SameFile -Fail -Text $Sample $Result $env:MERGE
 	}
 	catch {
 		Write-Error $_

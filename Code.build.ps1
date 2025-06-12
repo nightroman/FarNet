@@ -4,17 +4,16 @@
 #>
 
 param(
+	[ValidateScript({"FN::.\FarNet\FarNet.build.ps1", "PS::.\PowerShellFar\PowerShellFar.build.ps1"})]
+	$Extends,
 	$Platform = (property Platform x64),
-	$Configuration = (property Configuration Release),
-	$TargetFramework = (property TargetFramework net8.0)
+	$Configuration = (property Configuration Release)
 )
 
-$FarHome = "C:\Bin\Far\$Platform"
-
-$Builds = @(
-	'FarNet\FarNet.build.ps1'
-	'PowerShellFar\PowerShellFar.build.ps1'
-)
+Enter-Build {
+	$ProgressPreference = 0
+	$FarHome = "C:\Bin\Far\$Platform"
+}
 
 # Synopsis: Uninstall and clean.
 # Use to build after Visual Studio.
@@ -23,13 +22,12 @@ task reset {
 }
 
 # Synopsis: Remove temp files.
-task clean {
-	foreach($_ in $Builds) { Invoke-Build clean $_ }
+task clean FN::clean, PS::clean, {
 	Invoke-Build clean .\FSharpFar\.build.ps1
 }
 
 # Synopsis: Generate or update meta files.
-task meta -Inputs .build.ps1, Get-Version.ps1 -Outputs @(
+task meta -Inputs $BuildFile, Get-Version.ps1 -Outputs @(
 	'FarNet\Directory.Build.props'
 	'FarNet\FarNetMan\Active.h'
 	'FarNet\FarNetMan\AssemblyMeta.h'
@@ -96,33 +94,20 @@ task build meta, {
 		"/p:Platform=$Platform"
 		"/p:Configuration=$Configuration"
 	)}
-
-	Invoke-Build help, markdown .\PowerShellFar\PowerShellFar.build.ps1
-}
+}, PS::help, PS::markdown
 
 # Synopsis: Build and install API docs.
 task docs {
 	Invoke-Build build, install, clean .\Docs
 }
 
-# Synopsis: Copy files to FarHome.
-task install {
-	assert (!(Get-Process [F]ar)) 'Please exit Far.'
-	foreach($_ in $Builds) { Invoke-Build install $_ }
-}
-
 # Synopsis: Remove files from FarHome.
-task uninstall {
-	foreach($_ in $Builds) { Invoke-Build uninstall $_ }
-}
+task uninstall FN::uninstall, PS::uninstall
 
 # Synopsis: Make the NuGet packages at $Home.
-task nuget {
+task nuget FN::nuget, PS::nuget, {
 	# Test build of the sample modules, make sure they are alive
 	Invoke-Build testBuild .\Modules\Modules.build.ps1
-
-	# Call
-	foreach($_ in $Builds) { Invoke-Build nuget, clean $_ }
 
 	# Move result archives
 	Move-Item FarNet\FarNet.*.nupkg, PowerShellFar\FarNet.PowerShellFar.*.nupkg $Home -Force
@@ -157,3 +142,5 @@ buildFarDescription
 task buildFarDescription {
 	Invoke-Build build, help, clean ..\..\DEV\FarDescription\.build.ps1
 }
+
+task . clean

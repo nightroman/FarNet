@@ -1,6 +1,6 @@
 
-#! invoke by Test-TabExpansion2-.ps1
-if ($MyInvocation.ScriptName -notlike '*Test-TabExpansion2-.ps1') {throw}
+#! invoke by Test-TabExpansion2.far.ps1
+if ($MyInvocation.ScriptName -notlike '*Test-TabExpansion2.far.ps1') {throw}
 
 #! skip old Windows
 if ([System.Environment]::OSVersion.Version.Major -lt 10) {
