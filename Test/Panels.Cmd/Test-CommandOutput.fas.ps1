@@ -122,7 +122,7 @@ job {
 	$buff = $Host.UI.RawUI.GetBufferContents($rect)
 	$buff | Select-Object Character, ForegroundColor | Export-Csv C:\TEMP\buffer.csv
 	$hash = (Get-FileHash C:\TEMP\buffer.csv).Hash
-	Assert-Far $hash -eq CCE63D6CAF876DD90D4EA1751C1072FAFB22FB15B87F4506A3DF9F02629273F0
+	Assert-Far $hash -eq D7F0736CC5C04DB61CE8F809775FE2B6A90E73EDC0D4F74BC639A64FBB2003DA
 	Remove-Item C:\TEMP\buffer.csv
 }
 

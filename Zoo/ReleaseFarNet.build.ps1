@@ -4,7 +4,7 @@
 #>
 
 param(
-	[ValidateScript({"RR::..\Code.build.ps1", "DC::..\Docs\Docs.build.ps1"})]
+	[ValidateScript({"GH::..\Code.build.ps1", "DC::..\Docs\Docs.build.ps1"})]
 	$Extends,
 	# persistent data
 	$Push,
@@ -65,7 +65,7 @@ task nugetAndTest -If {
 Make last changes in docs and notes.
 Create and test NuGet packages?
 '@
-} RR::nuget, {
+} GH::nuget, {
 	.\Test-NuGet.ps1
 }
 
