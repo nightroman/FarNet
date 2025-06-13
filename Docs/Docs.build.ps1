@@ -1,9 +1,12 @@
+<#
+.Synopsis
+	Build script, https://github.com/nightroman/Invoke-Build
+#>
 
 param(
-	$Platform = (property Platform x64)
+	$Platform = (property Platform x64),
+	$FarHome = (property FarHome "C:\Bin\Far\$Platform")
 )
-
-$FarHome = "C:\Bin\Far\$Platform"
 
 task build {
 	Set-Alias MSBuild (Resolve-MSBuild)

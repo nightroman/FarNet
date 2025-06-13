@@ -4,35 +4,20 @@
 #>
 
 param(
+	[ValidateScript({"FA::FarNet\FarNetApi.build.ps1", "FM::FarNetMan\FarNetMan.build.ps1"})]
+	$Extends,
 	$Platform = (property Platform x64),
+	$FarHome = (property FarHome "C:\Bin\Far\$Platform"),
 	$Configuration = (property Configuration Release)
 )
-$FarHome = "C:\Bin\Far\$Platform"
 
-$script:Builds = @(
-	'FarNet\.build.ps1'
-	'FarNetMan\.build.ps1'
-)
-
-function do-clean {
-	foreach($_ in $Builds) { Invoke-Build clean $_ }
-	remove z, FarNet.sdf, About-FarNet.htm, FarNetTest\bin, FarNetTest\obj
+task clean FA::clean, FM::clean, {
+	remove z, About-FarNet.htm, FarNetTest\bin, FarNetTest\obj
 }
 
-task clean {
-	do-clean
-}
+task install FA::install, FM::install, helpHLF
 
-task install {
-	foreach($_ in $Builds) {
-		Invoke-Build install $_
-	}
-},
-helpHLF
-
-task uninstall {
-	foreach($_ in $Builds) { Invoke-Build uninstall $_ }
-}
+task uninstall FA::uninstall, FM::uninstall
 
 # Make HLF, called by Build (Install), depends on x64/x86
 task helpHLF -If ($Configuration -eq 'Release') {

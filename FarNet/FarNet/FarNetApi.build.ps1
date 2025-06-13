@@ -4,9 +4,12 @@
 #>
 
 param(
-	$FarHome = (property FarHome C:\Bin\Far\x64),
+	$Platform = (property Platform x64),
+	$FarHome = (property FarHome "C:\Bin\Far\$Platform"),
 	$Configuration = (property Configuration Release)
 )
+
+$To_FarNet = "$FarHome\FarNet"
 
 task clean {
 	remove bin, obj
@@ -15,5 +18,5 @@ task clean {
 task install
 
 task uninstall {
-	remove $FarHome\FarNet\FarNet.dll, $FarHome\FarNet\FarNet.xml
+	remove "$To_FarNet\FarNet.dll", "$To_FarNet\FarNet.xml"
 }

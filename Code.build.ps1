@@ -7,12 +7,12 @@ param(
 	[ValidateScript({"FN::.\FarNet\FarNet.build.ps1", "PS::.\PowerShellFar\PowerShellFar.build.ps1"})]
 	$Extends,
 	$Platform = (property Platform x64),
+	$FarHome = (property FarHome "C:\Bin\Far\$Platform"),
 	$Configuration = (property Configuration Release)
 )
 
 Enter-Build {
 	$ProgressPreference = 0
-	$FarHome = "C:\Bin\Far\$Platform"
 }
 
 # Synopsis: Uninstall and clean.

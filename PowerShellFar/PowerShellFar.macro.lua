@@ -33,7 +33,7 @@ Macro {
 
 -- PowerShell line breakpoint
 Macro {
-  key="F9"; description="PSF: Line breakpoint";
+  key="CtrlF9"; description="PSF: Line breakpoint";
   area="Editor"; filemask = "*.ps1,*.psm1";
   action=function()
     Plugin.SyncCall("10435532-9BB3-487B-A045-B0E6ECAAB6BC", [[ps:#line-breakpoint]])
@@ -42,7 +42,7 @@ Macro {
 
 -- Complete PowerShell code
 Macro {
-  key="CtrlSpace"; description="PSF: Complete";
+  key="F9"; description="PSF: Complete";
   area="Dialog Editor Shell QView Tree Info DialogAutoCompletion ShellAutoCompletion";
   condition=function()
     return Area.Dialog or Area.Editor or Area.DialogAutoCompletion or Area.ShellAutoCompletion or not CmdLine.Empty
@@ -55,7 +55,7 @@ Macro {
 
 -- Invoke "Complete-Word.ps1"
 Macro {
-  key="CtrlShiftSpace"; description="PSF: Complete-Word.ps1";
+  key="CtrlSpace"; description="PSF: Complete-Word.ps1";
   area="Dialog Editor Shell QView Tree Info DialogAutoCompletion ShellAutoCompletion";
   condition=function()
     return Area.Dialog or Area.Editor or Area.DialogAutoCompletion or Area.ShellAutoCompletion or not CmdLine.Empty
