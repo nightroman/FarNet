@@ -9,6 +9,7 @@ TestResults
 z
 
 z.*
+*.clixml
 *.opendb
 *.opensdf
 *.sdf

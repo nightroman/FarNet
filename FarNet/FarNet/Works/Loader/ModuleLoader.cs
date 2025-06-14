@@ -22,8 +22,12 @@ public class ModuleLoader
 		// config
 		var config = Config.Default.GetData();
 
-		// directories
-		foreach (string dir in Directory.GetDirectories(rootPath))
+		// get directories, ignore missing
+		string[] directories;
+		try { directories = Directory.GetDirectories(rootPath); } catch (DirectoryNotFoundException) { return; }
+
+		// load directories
+		foreach (string dir in directories)
 		{
 			try
 			{

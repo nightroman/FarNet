@@ -121,14 +121,5 @@ task zipFarDev -If {
 	assert (Test-Path FarDev)
 
 	if (Test-Path $zip) { Remove-Item $zip -Confirm }
-	exec { & 7z.exe a $zip FarDev '-xr!.vs' '-xr!bin' '-xr!obj' '-xr!packages' }
-}
-
-# Synopsis: All steps with checkpoints.
-#! Save outside or the file gets to zip.
-task . {
-	Build-Checkpoint -Auto "$HOME\z.ReleaseFarNet.clixml" @{
-		File = $BuildFile
-		Task = ${*}.All.Values.ForEach({if ($_.InvocationInfo.ScriptName -eq $BuildFile -and $_.Name -ne '.') {$_.Name}})
-	}
+	exec { & 7z.exe a z.7z FarDev '-xr!.vs' '-xr!bin' '-xr!obj' '-xr!packages' '-xr!*.clixml' }
 }
