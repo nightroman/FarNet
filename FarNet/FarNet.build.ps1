@@ -42,22 +42,22 @@ task markdown {
 	}
 }
 
-# Test config and make another platform before packaging
-task beginPackage {
-	# make another platform
-	$bit = if ($Platform -eq 'Win32') {'x64'} else {'Win32'}
+# Synopsis: Make Win32 files.
+task buildWin32 {
+	equals $Platform x64
 
-	#! build just FarNetMan, PowerShellFar is not needed and causes locked files...
+	#! build just FarNetMan
 	exec { & (Resolve-MSBuild) @(
 		"..\FarNet.sln"
 		"/t:restore,FarNetMan"
-		"/p:Platform=$bit"
+		"/p:Platform=Win32"
+		"/p:FarHome=$(Split-Path $FarHome)\Win32"
 		"/p:Configuration=Release"
 	)}
 }
 
 # Make package files
-task package beginPackage, markdown, {
+task package buildWin32, markdown, {
 	# folders
 	remove z
 	$null = mkdir `

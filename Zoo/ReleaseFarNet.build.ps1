@@ -121,5 +121,5 @@ task zipFarDev -If {
 	assert (Test-Path FarDev)
 
 	if (Test-Path $zip) { Remove-Item $zip -Confirm }
-	exec { & 7z.exe a z.7z FarDev '-xr!.vs' '-xr!bin' '-xr!obj' '-xr!packages' '-xr!*.clixml' }
+	exec { & 7z.exe a $zip FarDev '-xr!.vs' '-xr!bin' '-xr!obj' '-xr!packages' '-xr!*.clixml' }
 }

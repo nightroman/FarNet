@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
+    <FarHome Condition="'$(FarHome)' == ''">C:\Bin\Far\$(Platform)</FarHome>
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{A5F07EDB-2242-4A92-BFD1-48396007C625}</ProjectGuid>
     <TargetFramework>net9.0</TargetFramework>
@@ -283,7 +284,7 @@
   </ImportGroup>
   <ItemDefinitionGroup>
     <PostBuildEvent>
-      <Command>ib Install $(SolutionDir)\FarNet\FarNet.build.ps1 -Platform $(Platform) -Configuration $(Configuration)</Command>
+      <Command>pwsh -NoProfile -Command Invoke-Build install $(SolutionDir)\FarNet\FarNet.build.ps1 -Platform $(Platform) -FarHome $(FarHome) -Configuration $(Configuration)</Command>
     </PostBuildEvent>
     <ClCompile>
       <AdditionalOptions>/Wv:18 %(AdditionalOptions)</AdditionalOptions>
