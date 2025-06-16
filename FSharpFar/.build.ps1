@@ -54,7 +54,7 @@ task meta -Inputs .build.ps1, History.txt -Outputs src/Directory.Build.props -Jo
 }
 
 task markdown {
-	assert (Test-Path $env:MarkdownCss)
+	requires -Path $env:MarkdownCss
 	exec { pandoc.exe @(
 		'README.md'
 		'--output=README.htm'

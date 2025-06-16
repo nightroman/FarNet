@@ -1,14 +1,20 @@
 <#
 .Synopsis
-	Release steps.
+	Interactive steps to release FarNet and FarNet.PowerShellFar.
+
+	# simple
+	Invoke-Build *
+
+	# persistent
+	Build-Checkpoint
 #>
 
 param(
 	[ValidateScript({"GH::..\Code.build.ps1", "DC::..\Docs\Docs.build.ps1"})]
 	$Extends,
 	# persistent data
-	$Push,
-	$Tags
+	[Parameter(DontShow=1)]$Push,
+	[Parameter(DontShow=1)]$Tags
 )
 
 Set-Alias ask Confirm-Build
@@ -110,16 +116,20 @@ task pushSource -If {
 	exec { git gc --prune=now }
 }
 
-# Synopsis: Zip FarDev sources on release.
+# before zip
+task clean GH::clean
+
 task zipFarDev -If {
-	ask 'Zip FarDev (checkpoint all)?'
+	ask 'Zip FarDev? // checkpoint Code and maybe related extras'
 } {
 	. ..\Get-Version.ps1
 	$zip = "FarDev.$FarNetVersion-$PowerShellFarVersion.7z"
 
 	Set-Location ..\..\..
-	assert (Test-Path FarDev)
+	requires -Path FarDev
 
 	if (Test-Path $zip) { Remove-Item $zip -Confirm }
 	exec { & 7z.exe a $zip FarDev '-xr!.vs' '-xr!bin' '-xr!obj' '-xr!packages' '-xr!*.clixml' }
 }
+
+task .

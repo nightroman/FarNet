@@ -28,7 +28,7 @@ task helpHLF -If ($Configuration -eq 'Release') {
 
 # Make markdown
 task markdown {
-	assert (Test-Path $env:MarkdownCss)
+	requires -Path $env:MarkdownCss
 	exec {
 		pandoc.exe @(
 			'README.md'

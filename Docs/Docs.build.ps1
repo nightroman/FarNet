@@ -15,7 +15,7 @@ task build {
 test
 
 task install {
-	assert (Test-Path Help\FarNetAPI.chm) "Please, invoke Build."
+	requires -Path Help\FarNetAPI.chm # build first
 	remove $FarHome\FarNet\FarNetAPI.*
 	Copy-Item Help\FarNetAPI.chm $FarHome\FarNet
 }

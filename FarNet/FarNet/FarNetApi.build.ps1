@@ -9,7 +9,7 @@ param(
 	$Configuration = (property Configuration Release)
 )
 
-$To_FarNet = "$FarHome\FarNet"
+$fa_outdir = "$FarHome\FarNet"
 
 task clean {
 	remove bin, obj
@@ -18,5 +18,5 @@ task clean {
 task install
 
 task uninstall {
-	remove "$To_FarNet\FarNet.dll", "$To_FarNet\FarNet.xml"
+	remove "$fa_outdir\FarNet.dll", "$fa_outdir\FarNet.xml"
 }

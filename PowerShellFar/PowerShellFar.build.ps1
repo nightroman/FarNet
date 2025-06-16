@@ -29,7 +29,7 @@ task markdown {
 	exec { HtmlToFarHelp from=About-PowerShellFar.htm to=$ModuleRoot\PowerShellFar.hlf }
 
 	# HTM
-	assert (Test-Path $env:MarkdownCss)
+	requires -Path $env:MarkdownCss
 	exec {
 		pandoc.exe @(
 			'README.md'

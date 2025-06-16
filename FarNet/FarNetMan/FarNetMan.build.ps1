@@ -9,16 +9,17 @@ param(
 	$Configuration = (property Configuration Release)
 )
 
-$To_Plugins_FarNet = "$FarHome\Plugins\FarNet"
+$fm_outdir = "$FarHome\Plugins\FarNet"
 
 task clean {
 	remove Debug, Release, FarNetMan.vcxproj.user
 }
 
 task install {
+	$null = mkdir $fm_outdir -Force
+
 	Set-Location .\$Configuration\$Platform
-	$null = mkdir $To_Plugins_FarNet -Force
-	Copy-Item -Destination $To_Plugins_FarNet @(
+	Copy-Item -Destination $fm_outdir @(
 		"FarNetMan.dll"
 		"FarNetMan.pdb"
 		"FarNetMan.runtimeconfig.json"
@@ -27,5 +28,5 @@ task install {
 }
 
 task uninstall {
-	remove $To_Plugins_FarNet
+	remove $fm_outdir
 }
