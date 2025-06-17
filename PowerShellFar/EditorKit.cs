@@ -705,15 +705,8 @@ static class EditorKit
 				if (args.Reason is RuntimeException ex)
 					GoToError(ex, false);
 
-				Far.Api.UI.SetProgressState(TaskbarProgressBarState.Paused);
-				Far.Api.UI.WindowTitle = "Press Esc to continue...";
-				while (true)
-				{
-					var key = Far.Api.UI.ReadKey(ReadKeyOptions.IncludeKeyDown | ReadKeyOptions.IncludeKeyUp);
-					if (key.VirtualKeyCode == KeyCode.Escape)
-						break;
-				}
-				Far.Api.UI.SetProgressState(TaskbarProgressBarState.NoProgress);
+				// like `pause`
+				new UI.ReadLine(new() { Prompt = "Press Enter to continue..." }).Show();
 			}
 			finally
 			{

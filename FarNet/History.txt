@@ -1,6 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 9.0.31 =
+
+[F5] in *.build.ps1 editors
+- less blocking ending pause
+
 = 9.0.30 =
 
 Ignore missing "Modules" folder, #66
