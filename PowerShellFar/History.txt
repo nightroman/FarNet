@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.36 =
+
+[F5] in *.build.ps1 editors
+- less blocking ending pause
+
 = 9.0.35 =
 
 FarNet 9.0.28
