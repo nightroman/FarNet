@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.37 =
+
+Microsoft.PowerShell.SDK 7.5.2
+
 = 9.0.36 =
 
 [F5] in *.build.ps1 editors

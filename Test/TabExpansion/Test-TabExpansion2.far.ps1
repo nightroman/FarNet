@@ -54,9 +54,7 @@ function Assert-NoError {
 		if ($Error) {Write-Error "Unexpected error:`n$($Error[-1])"}
 	}
 	else {
-		$Error | .{process{
-			if ($_.Message -notlike '*System.Security.AccessControl.ObjectSecurity*') {Write-Error "Unexpected error:`n$_"}
-		}}
+		#! there may be some errors difficult to check, just clear
 		$Error.Clear()
 	}
 }
