@@ -1,11 +1,4 @@
 ﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace FarNet.Works;
 #pragma warning disable 1591
 
@@ -26,7 +19,7 @@ public static class Test
 		if (_exitDelay > 0)
 		{
 			// let the command finish normally, e.g. to show an error, so run as task
-			Task.Run(async () =>
+			_ = Task.Run(async () =>
 			{
 				await Task.Delay(_exitDelay);
 				exit();

@@ -1,8 +1,4 @@
 ﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
 using System.Globalization;
 using System.Xml.XPath;
 using System.Xml.Xsl;
@@ -47,8 +43,9 @@ class XsltContextVariable : IXsltContextVariable
 					_value = Convert.ToDouble(value, CultureInfo.InvariantCulture);
 					VariableType = XPathResultType.Number;
 				}
-				catch
+				catch (Exception ex)
 				{
+					Log.TraceException(ex);
 					VariableType = XPathResultType.Any;
 				}
 			}

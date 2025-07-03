@@ -1,3 +1,4 @@
+
 namespace FarNet;
 
 // _221023_0659:
@@ -101,8 +102,9 @@ public class FSContext
 				var res = new DirectoryInfo(path);
 				return res.Exists ? res : null;
 			}
-			catch
+			catch (Exception ex)
 			{
+				Log.TraceException(ex);
 				return null;
 			}
 		}
@@ -124,8 +126,9 @@ public class FSContext
 				var res = new FileInfo(path);
 				return res.Exists ? res : null;
 			}
-			catch
+			catch (Exception ex)
 			{
+				Log.TraceException(ex);
 				return null;
 			}
 		}
@@ -152,8 +155,9 @@ public class FSContext
 
 				return null;
 			}
-			catch
+			catch (Exception ex)
 			{
+				Log.TraceException(ex);
 				return null;
 			}
 		}
@@ -175,8 +179,9 @@ public class FSContext
 				if (Directory.Exists(path))
 					res.Add(new DirectoryInfo(path));
 			}
-			catch
+			catch (Exception ex)
 			{
+				Log.TraceException(ex);
 			}
 		}
 
@@ -199,8 +204,9 @@ public class FSContext
 				if (File.Exists(path))
 					res.Add(new FileInfo(path));
 			}
-			catch
+			catch (Exception ex)
 			{
+				Log.TraceException(ex);
 			}
 		}
 
@@ -225,8 +231,9 @@ public class FSContext
 				else if (Directory.Exists(path))
 					res.Add(new DirectoryInfo(path));
 			}
-			catch
+			catch (Exception ex)
 			{
+				Log.TraceException(ex);
 			}
 		}
 
@@ -252,8 +259,9 @@ public class FSContextSingle(string? path) : FSContext
 			{
 				return !string.IsNullOrWhiteSpace(_path) && Path.IsPathFullyQualified(_path) ? _path : null;
 			}
-			catch
+			catch (Exception ex)
 			{
+				Log.TraceException(ex);
 				return null;
 			}
 		}
@@ -295,8 +303,9 @@ public class FSContextPanel(IPanel? panel) : FSContext
 
 				return null;
 			}
-			catch
+			catch (Exception ex)
 			{
+				Log.TraceException(ex);
 				return null;
 			}
 		}
@@ -341,8 +350,9 @@ public class FSContextPanel(IPanel? panel) : FSContext
 
 				res.Add(Path.Combine(path, file.Name));
 			}
-			catch
+			catch (Exception ex)
 			{
+				Log.TraceException(ex);
 			}
 		}
 

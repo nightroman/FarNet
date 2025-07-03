@@ -28,32 +28,34 @@ if (!$word) {
 	return
 }
 
-$skip = $match.Value
-$pref = if ($match.Index) {[string]$text[$match.Index - 1]}
+$Pref = if ($match.Index) {[string]$text[$match.Index - 1]}
 
 # collect matching words in editor or history
-$words = @{}
+$words = [hashtable]::new()
 $re = [regex]::new("(^|\W)($word[-\w]+)", 'IgnoreCase')
 
-filter CollectWords
-{
+class CompleteWordInfo {
+	[string]$Name
+	[string]$Pref
+	[int]$Count
+}
+
+filter collect_words {
 	for($m = $re.Match($_); $m.Success; $m = $m.NextMatch()) {
 		$w = $m.Groups[2].Value
-		if ($w -eq $skip) {
-			continue
-		}
 
-		$p = $m.Groups[1].Value
-		if ($words.Contains($w)) {
-			if ($p -eq $pref) {
-				$words[$w] = $pref
-			}
-		}
-		elseif ($p -eq $pref) {
-			$words.Add($w, $pref)
+		$info = $words[$w]
+		if ($info) {
+			++$info.Count
 		}
 		else {
-			$words.Add($w, $null)
+			$info = [CompleteWordInfo]::new()
+			$info.Name = $w
+			$words.Add($w, $info)
+		}
+
+		if ($Pref -and $Pref -eq $m.Groups[1].Value) {
+			$info.Pref = $Pref
 		}
 	}
 }
@@ -62,19 +64,19 @@ filter CollectWords
 switch($Line.WindowKind) {
 	Editor {
 		$Editor = $Far.Editor
-		$Editor.Lines | CollectWords
+		$Editor.Lines | collect_words
 		if ($Editor.FileName -like '*.interactive.ps1') {
-			$Psf.GetHistory(0) | CollectWords
+			$Psf.GetHistory(0) | collect_words
 		}
 	}
 	Dialog {
 		$control = $Far.Dialog.Focused
 		if ($control.History) {
-			$Far.History.Dialog($control.History) | .{process{ $_.Name }} | CollectWords
+			$Far.History.Dialog($control.History).ForEach('Name') | collect_words
 		}
 	}
 	default {
-		$Far.History.Command() | .{process{ $_.Name }} | CollectWords
+		$Far.History.Command().ForEach('Name') | collect_words
 	}
 }
 
@@ -84,23 +86,25 @@ if ($words.get_Count() -eq 0) {
 
 # select a word
 if ($words.get_Count() -eq 1) {
-	$w = @($words.get_Keys())[0]
+	$selected = @($words.get_Keys())[0]
 }
 else {
 	# select from list
+	$sort = @{Expression='Count'; Descending=$true}, 'Name'
 	$cursor = $Far.UI.WindowCursor
-	$w = .{
-		$words.GetEnumerator() | .{process{ if ($_.Value) { $_.Key } }} | Sort-Object
-		$words.GetEnumerator() | .{process{ if (!$_.Value) { $_.Key } }} | Sort-Object
-	} |
-	Out-FarList -Popup -IncrementalOptions 'Prefix' -Incremental "$word*" -X $cursor.X -Y $cursor.Y
-	if (!$w) {
+	$info = $(
+		$words.get_Values().Where({$_.Pref}) | Sort-Object $sort
+		$words.get_Values().Where({!$_.Pref}) | Sort-Object $sort
+	) |
+	Out-FarList -Text Name -Popup -IncrementalOptions Prefix -Incremental "$word*" -X $cursor.X -Y $cursor.Y
+	if (!$info) {
 		return
 	}
+	$selected = $info.Name
 }
 
 # complete by the selected word
-$Line.InsertText($w.Substring($word.Length))
+$Line.InsertText($selected.Substring($word.Length))
 if ($Line.WindowKind -eq 'Editor') {
 	$Editor.Redraw()
 }

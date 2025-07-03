@@ -1,10 +1,4 @@
 ﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using FarNet.Forms;
 
 namespace FarNet.Tools;
@@ -231,7 +225,7 @@ public sealed class ProgressForm : Form, IProgress
 	{
 		// start watching the task
 		Exception? error = null;
-		Task.Run(async () =>
+		_ = Task.Run(async () =>
 		{
 			try
 			{

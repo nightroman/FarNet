@@ -1,7 +1,5 @@
 
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
+using FarNet;
 using System.Diagnostics;
 
 namespace My;
@@ -28,8 +26,10 @@ static class ProcessEx
 		{
 			Process.Start(url);
 		}
-		catch
+		catch (Exception ex)
 		{
+			Log.TraceException(ex);
+
 			// hack because of this: https://github.com/dotnet/corefx/issues/10361
 			url = url.Replace("&", "^&");
 			Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });

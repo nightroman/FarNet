@@ -68,9 +68,12 @@ job {
 		$list -is [FarNet.Forms.IListBox]
 		$list.Items.Count -eq 3
 		$list.Selected -eq 0
+		# 1st group
 		$list.Items[0].Text -eq 'pz'
-		$list.Items[1].Text -eq 'powershell'
-		$list.Items[2].Text -eq 'powershell2'
+		# 2nd group, count 2, first
+		$list.Items[1].Text -eq 'powershell2'
+		# 2nd group, count 1, after
+		$list.Items[2].Text -eq 'powershell'
 	)
 }
 

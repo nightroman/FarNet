@@ -197,7 +197,7 @@ public sealed partial class Actor
 		{
 			var path1 = Environment.GetEnvironmentVariable("FARNET_PSF_START_PANEL1");
 			var path2 = Environment.GetEnvironmentVariable("FARNET_PSF_START_PANEL2");
-			Tasks.ExecuteAndCatch(
+			_ = Tasks.ExecuteAndCatch(
 				() => StartScriptAsync(script, path1, path2),
 				ex => Far.Api.ShowError("Start script error", ex));
 		}

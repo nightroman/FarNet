@@ -1,13 +1,7 @@
-﻿// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
+﻿
 using FarNet.Tools;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace FarNet.Works;
 #pragma warning disable 1591
@@ -33,7 +27,7 @@ public static class Script
 
 	public static void InvokeCommand()
 	{
-		Task.Run(async () =>
+		_ = Task.Run(async () =>
 		{
 			var ui = new InputBox("Command", "FarNet command");
 			ui.Edit.History = "FarNet command";
@@ -199,7 +193,7 @@ public static class Script
 			if (loader != null)
 			{
 				loader.Unload();
-				Task.Run(() =>
+				_ = Task.Run(() =>
 				{
 					var weakRef = new WeakReference(loader, true);
 					for (int i = 0; weakRef.IsAlive && i < 10; i++)
@@ -252,7 +246,7 @@ public static class Script
 				if (res is Task task)
 				{
 					doFinallyComplete = false;
-					Task.Run(async () =>
+					_ = Task.Run(async () =>
 					{
 						try
 						{

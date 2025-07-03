@@ -12,4 +12,7 @@
     <NoWarn>IDE0130;FarNet250101;FarNet250103</NoWarn>
     <CopyRetryCount>0</CopyRetryCount>
   </PropertyGroup>
+  <ItemGroup Condition="'$(ErrorProne)' == '1'">
+    <PackageReference Include="ErrorProne.NET.CoreAnalyzers" Version="0.7.0-beta.22" />
+  </ItemGroup>
 </Project>

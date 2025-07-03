@@ -1,3 +1,4 @@
+
 using FarNet;
 using System.Collections;
 using System.Collections.ObjectModel;
@@ -421,9 +422,10 @@ Out-String -Width $args[1]
 		{
 			return pi.Value;
 		}
-		catch (GetValueException e)
+		catch (Exception ex)
 		{
-			return string.Format(null, "<ERROR: {0}>", e.Message);
+			Log.TraceException(ex);
+			return $"<ERROR: {ex.Message}>";
 		}
 	}
 
@@ -436,9 +438,10 @@ Out-String -Width $args[1]
 		{
 			return value.ToString()!;
 		}
-		catch (Exception e)
+		catch (Exception ex)
 		{
-			return string.Format(null, "<ERROR: {0}>", e.Message);
+			Log.TraceException(ex);
+			return $"<ERROR: {ex.Message}>";
 		}
 	}
 }

@@ -62,7 +62,7 @@ public sealed partial class Actor
 	/// Prompts for PowerShell commands.
 	/// Called on "Invoke commands".
 	/// </summary>
-	public async void StartInvokeCommands()
+	public async Task StartInvokeCommands()
 	{
 		var ui = CreateCodeDialog();
 		var code = await ui.ShowAsync();

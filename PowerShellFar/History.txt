@@ -1,5 +1,16 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.38 =
+
+Use FarNet 9.0.31, fix some ErrorProne issues.
+
+Complete-Word.ps1
+- case sensitive
+- use frequency
+
+ColorerPack
+- powershell.hrc
+
 = 9.0.37 =
 
 Microsoft.PowerShell.SDK 7.5.2

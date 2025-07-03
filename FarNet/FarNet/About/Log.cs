@@ -1,3 +1,4 @@
+
 using System.Diagnostics;
 
 namespace FarNet;
@@ -85,8 +86,9 @@ public static class Log
 			var meta = obj.GetType().GetProperty(name);
 			return meta?.GetValue(obj);
 		}
-		catch
+		catch (Exception ex)
 		{
+			TraceException(ex);
 			return null;
 		}
 	}

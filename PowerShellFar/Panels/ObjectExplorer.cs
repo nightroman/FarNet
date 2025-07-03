@@ -1,11 +1,6 @@
 ﻿
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Management.Automation;
@@ -101,7 +96,9 @@ public sealed class ObjectExplorer : FormatExplorer
 		if (obj!.GetType().FullName == Res.MatchInfoTypeName)
 		{
 			var dynamo = (dynamic)obj;
-			filePath = (string)dynamo.Path;
+#pragma warning disable EPC20
+			filePath = dynamo.Path;
+#pragma warning restore EPC20
 			args.UseFileName = filePath;
 
 			var lineIndex = (int)dynamo.LineNumber - 1;

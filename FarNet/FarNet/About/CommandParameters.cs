@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿
+using System.Data;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
@@ -65,6 +66,8 @@ public readonly ref struct CommandParameters
 		}
 		catch (Exception ex)
 		{
+			Log.TraceException(ex);
+
 			throw new ModuleException($"""
 			Invalid parameters: {parameters}
 			{ex.Message}
@@ -103,8 +106,15 @@ public readonly ref struct CommandParameters
 			}
 
 			var file = Far.Api.GetFullPath(Environment.ExpandEnvironmentVariables(commandLine[1..].Trim().ToString()));
-			try { commandLine = File.ReadAllText(file); }
-			catch (Exception ex) { throw new ModuleException(ex.Message); }
+			try
+			{
+				commandLine = File.ReadAllText(file);
+			}
+			catch (Exception ex)
+			{
+				Log.TraceException(ex);
+				throw new ModuleException(ex.Message);
+			}
 		}
 
 		ReadOnlySpan<char> command;
@@ -147,8 +157,8 @@ public readonly ref struct CommandParameters
 		}
 		catch (Exception ex)
 		{
-			throw new ModuleException(ErrorBuilder(command)
-				.Append(ex.Message).ToString());
+			Log.TraceException(ex);
+			throw new ModuleException(ErrorBuilder(command).Append(ex.Message).ToString());
 		}
 	}
 
@@ -307,6 +317,7 @@ public readonly ref struct CommandParameters
 		}
 		catch (Exception ex)
 		{
+			Log.TraceException(ex);
 			throw ParameterError(name, $"Invalid value '{string1}': {ex.Message}");
 		}
 	}

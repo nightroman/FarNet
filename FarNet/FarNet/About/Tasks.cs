@@ -1,4 +1,5 @@
-﻿using FarNet.Forms;
+﻿
+using FarNet.Forms;
 using System.Diagnostics;
 
 namespace FarNet;
@@ -9,6 +10,28 @@ namespace FarNet;
 /// </summary>
 public static class Tasks
 {
+	/// <summary>
+	/// Creates it with asynchronous continuations.
+	/// </summary>
+	/// <typeparam name="T">Task result type.</typeparam>
+	/// <returns>.</returns>
+	public static TaskCompletionSource<T> CreateAsyncTaskCompletionSource<T>()
+	{
+		return new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
+	}
+
+	/// <summary>
+	/// Creates it with synchronous continuations.
+	/// </summary>
+	/// <typeparam name="T">Task result type.</typeparam>
+	/// <returns>.</returns>
+	public static TaskCompletionSource<T> CreateSyncTaskCompletionSource<T>()
+	{
+#pragma warning disable EPC32
+		return new TaskCompletionSource<T>();
+#pragma warning restore EPC32
+	}
+
 	/// <summary>
 	/// In special cases, waits for the task completion.
 	/// </summary>
@@ -37,19 +60,21 @@ public static class Tasks
 	/// <returns>The task which completes when the function job completes.</returns>
 	public static Task<T> Job<T>(Func<T> job)
 	{
-		var task = new TaskCompletionSource<T>();
+		var tcs = CreateSyncTaskCompletionSource<T>();
+
 		Far.Api.PostJob(() =>
 		{
 			try
 			{
-				task.SetResult(job());
+				tcs.SetResult(job());
 			}
-			catch (Exception exn)
+			catch (Exception ex)
 			{
-				task.SetException(exn);
+				tcs.SetException(ex);
 			}
 		});
-		return task.Task;
+
+		return tcs.Task;
 	}
 
 	/// <summary>
@@ -63,20 +88,22 @@ public static class Tasks
 	/// </remarks>
 	public static Task Job(Action job)
 	{
-		var task = new TaskCompletionSource<object>();
+		var tcs = CreateSyncTaskCompletionSource<object>();
+
 		Far.Api.PostJob(() =>
 		{
 			try
 			{
 				job();
-				task.SetResult(null!);
+				tcs.SetResult(null!);
 			}
-			catch (Exception exn)
+			catch (Exception ex)
 			{
-				task.SetException(exn);
+				tcs.SetException(ex);
 			}
 		});
-		return task.Task;
+
+		return tcs.Task;
 	}
 
 	/// <summary>
@@ -94,23 +121,25 @@ public static class Tasks
 	/// </remarks>
 	public static Task Run(Action job)
 	{
-		var task = new TaskCompletionSource<object>();
+		var tcs = CreateSyncTaskCompletionSource<object>();
+
 		Far.Api.PostJob(() =>
 		{
 			try
 			{
 				//! try because the job may fail before UI
-				Far.Api.PostJob(() => task.TrySetResult(null!));
+				Far.Api.PostJob(() => tcs.TrySetResult(null!));
 				job();
 			}
-			catch (Exception exn)
+			catch (Exception ex)
 			{
 				//! try because the task may complete on UI and the job may fail after
-				if (!task.TrySetException(exn))
+				if (!tcs.TrySetException(ex))
 					throw;
 			}
 		});
-		return task.Task;
+
+		return tcs.Task;
 	}
 
 	/// <summary>
@@ -118,20 +147,20 @@ public static class Tasks
 	/// </summary>
 	/// <param name="task">The task function.</param>
 	/// <param name="error">The optional exception handler.</param>
-	public static async void ExecuteAndCatch(Func<Task> task, Action<Exception>? error = null)
+	public static async Task ExecuteAndCatch(Func<Task> task, Action<Exception>? error = null)
 	{
 		try
 		{
 			await task();
 		}
-		catch (Exception exn)
+		catch (Exception ex)
 		{
 			await Job(() =>
 			{
 				if (error is null)
-					Far.Api.ShowError(null, exn);
+					Far.Api.ShowError(null, ex);
 				else
-					error(exn);
+					error(ex);
 			});
 		}
 	}
@@ -153,7 +182,8 @@ public static class Tasks
 	/// <returns>The task which completes when the macro completes.</returns>
 	public static Task Macro(string text)
 	{
-		var task = new TaskCompletionSource<object>();
+		var tcs = CreateSyncTaskCompletionSource<object>();
+
 		Far.Api.PostJob(() =>
 		{
 			try
@@ -163,16 +193,17 @@ public static class Tasks
 				{
 					wait.WaitOne();
 					wait.Dispose();
-					task.SetResult(null!);
+					tcs.SetResult(null!);
 				});
 			}
-			catch (Exception exn)
+			catch (Exception ex)
 			{
-				task.SetException(exn);
+				tcs.SetException(ex);
 				return;
 			}
 		});
-		return task.Task;
+
+		return tcs.Task;
 	}
 
 	/// <summary>
@@ -182,12 +213,12 @@ public static class Tasks
 	/// <returns>The task which completes when the editor closes.</returns>
 	public static Task Editor(IEditor editor)
 	{
-		var task = new TaskCompletionSource<object>();
+		var tcs = CreateSyncTaskCompletionSource<object>();
 
 		void onClosed(object? sender, EventArgs e)
 		{
 			editor.Closed -= onClosed;
-			task.SetResult(null!);
+			tcs.SetResult(null!);
 		}
 
 		Far.Api.PostJob(() =>
@@ -198,14 +229,14 @@ public static class Tasks
 				if (!editor.IsOpened)
 					editor.Open();
 			}
-			catch (Exception exn)
+			catch (Exception ex)
 			{
 				editor.Closed -= onClosed;
-				task.SetException(exn);
+				tcs.SetException(ex);
 			}
 		});
 
-		return task.Task;
+		return tcs.Task;
 	}
 
 	/// <summary>
@@ -215,12 +246,12 @@ public static class Tasks
 	/// <returns>The task which completes when the viewer closes.</returns>
 	public static Task Viewer(IViewer viewer)
 	{
-		var task = new TaskCompletionSource<object>();
+		var tcs = CreateSyncTaskCompletionSource<object>();
 
 		void onClosed(object? sender, EventArgs e)
 		{
 			viewer.Closed -= onClosed;
-			task.SetResult(null!);
+			tcs.SetResult(null!);
 		}
 
 		Far.Api.PostJob(() =>
@@ -231,14 +262,14 @@ public static class Tasks
 				if (!viewer.IsOpened)
 					viewer.Open();
 			}
-			catch (Exception exn)
+			catch (Exception ex)
 			{
 				viewer.Closed -= onClosed;
-				task.SetException(exn);
+				tcs.SetException(ex);
 			}
 		});
 
-		return task.Task;
+		return tcs.Task;
 	}
 
 	/// <summary>
@@ -248,12 +279,12 @@ public static class Tasks
 	/// <returns>The task which completes when the dialog closes.</returns>
 	public static Task Dialog(IDialog dialog)
 	{
-		var task = new TaskCompletionSource<object>();
+		var tcs = CreateSyncTaskCompletionSource<object>();
 
 		void onClosed(object? sender, AnyEventArgs e)
 		{
 			dialog.Closed -= onClosed;
-			task.SetResult(null!);
+			tcs.SetResult(null!);
 		}
 
 		Far.Api.PostJob(() =>
@@ -263,14 +294,14 @@ public static class Tasks
 				dialog.Closed += onClosed;
 				dialog.Open();
 			}
-			catch (Exception exn)
+			catch (Exception ex)
 			{
 				dialog.Closed -= onClosed;
-				task.SetException(exn);
+				tcs.SetException(ex);
 			}
 		});
 
-		return task.Task;
+		return tcs.Task;
 	}
 
 	/// <summary>
@@ -287,7 +318,7 @@ public static class Tasks
 	/// </remarks>
 	public static Task<T> Dialog<T>(IDialog dialog, Func<ClosingEventArgs, T> closing)
 	{
-		var task = new TaskCompletionSource<T>();
+		var tcs = CreateSyncTaskCompletionSource<T>();
 
 		void onClosing(object? sender, ClosingEventArgs e)
 		{
@@ -298,12 +329,12 @@ public static class Tasks
 					return;
 
 				dialog.Closing -= onClosing;
-				task.SetResult(res);
+				tcs.SetResult(res);
 			}
-			catch (Exception exn)
+			catch (Exception ex)
 			{
 				dialog.Closing -= onClosing;
-				task.SetException(exn);
+				tcs.SetException(ex);
 			}
 		}
 
@@ -314,14 +345,14 @@ public static class Tasks
 				dialog.Closing += onClosing;
 				dialog.Open();
 			}
-			catch (Exception exn)
+			catch (Exception ex)
 			{
 				dialog.Closing -= onClosing;
-				task.SetException(exn);
+				tcs.SetException(ex);
 			}
 		});
 
-		return task.Task;
+		return tcs.Task;
 	}
 
 	/// <summary>
@@ -413,25 +444,26 @@ public static class Tasks
 	/// <returns>The task which completes when the panel is closed.</returns>
 	public static Task WaitPanelClosed(Panel panel)
 	{
-		var task = new TaskCompletionSource<object>();
+		var tcs = CreateSyncTaskCompletionSource<object>();
+
 		//! post to avoid race for IsOpened
 		Far.Api.PostJob(() =>
 		{
 			if (!panel.IsOpened)
 			{
-				task.SetResult(null!);
+				tcs.SetResult(null!);
 				return;
 			}
 
 			void onClosed(object? sender, EventArgs e)
 			{
 				panel.Closed -= onClosed;
-				task.SetResult(null!);
+				tcs.SetResult(null!);
 			}
 
 			panel.Closed += onClosed;
 		});
-		return task.Task;
+		return tcs.Task;
 	}
 
 	/// <summary>
@@ -443,7 +475,8 @@ public static class Tasks
 	/// <returns>The task which completes when the panel is closed and gets the closing result.</returns>
 	public static Task<T> WaitPanelClosing<T>(Panel panel, Func<PanelEventArgs, T> closing)
 	{
-		var task = new TaskCompletionSource<T>();
+		var tcs = CreateSyncTaskCompletionSource<T>();
+
 		//! post to avoid race for IsOpened
 		Far.Api.PostJob(() =>
 		{
@@ -451,7 +484,7 @@ public static class Tasks
 
 			if (!panel.IsOpened)
 			{
-				task.SetResult(result!);
+				tcs.SetResult(result!);
 				return;
 			}
 
@@ -463,9 +496,9 @@ public static class Tasks
 					if (!e.Ignore)
 						result = r;
 				}
-				catch (Exception exn)
+				catch (Exception ex)
 				{
-					task.SetException(exn);
+					tcs.SetException(ex);
 				}
 			}
 
@@ -473,13 +506,13 @@ public static class Tasks
 			{
 				panel.Closing -= onClosing;
 				panel.Closed -= onClosed;
-				task.TrySetResult(result!);
+				tcs.TrySetResult(result!);
 			}
 
 			panel.Closing += onClosing;
 			panel.Closed += onClosed;
 		});
-		return task.Task;
+		return tcs.Task;
 	}
 
 	/// <summary>

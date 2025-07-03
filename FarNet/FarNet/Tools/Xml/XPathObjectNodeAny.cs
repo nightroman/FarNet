@@ -1,6 +1,5 @@
-﻿using System;
+﻿
 using System.Collections;
-using System.Collections.Generic;
 using System.Reflection;
 
 namespace FarNet.Tools;
@@ -175,8 +174,9 @@ class XPathObjectNodeAny : XPathObjectNode
 			{
 				value = info.GetValue(_tag, null);
 			}
-			catch
+			catch (Exception ex)
 			{
+				Log.TraceException(ex);
 				value = null;
 			}
 

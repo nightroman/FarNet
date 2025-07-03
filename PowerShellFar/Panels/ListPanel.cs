@@ -1,9 +1,8 @@
-using System;
+
+using FarNet;
 using System.Collections;
-using System.Collections.Generic;
 using System.Data;
 using System.Management.Automation;
-using FarNet;
 
 namespace PowerShellFar;
 
@@ -195,6 +194,7 @@ public abstract class ListPanel : AnyPanel
 				}
 				catch (Exception ex)
 				{
+					Log.TraceException(ex);
 					throw new ModuleException($"Cannot null '{file.Name}': {ex.Message}");
 				}
 			}

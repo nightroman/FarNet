@@ -232,7 +232,7 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 		ps.AddScript(CodeTask, true).AddArgument(parameters).AddArgument(_script);
 
 		// start
-		var tcs = AsTask ? new TaskCompletionSource<object[]>() : null;
+		var tcs = AsTask ? Tasks.CreateAsyncTaskCompletionSource<object[]>() : null;
 		ps.BeginInvoke<object>(null, null, Callback, null);
 		if (AsTask)
 			WriteObject(tcs!.Task);

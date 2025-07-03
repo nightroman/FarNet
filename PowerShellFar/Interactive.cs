@@ -15,7 +15,6 @@ class Interactive : InteractiveEditor
 	FarHost? FarHost;
 	Runspace? Runspace;
 	PowerShell? PowerShell;
-	bool _doneTabExpansion;
 	readonly bool _isNestedPrompt;
 
 	static readonly HistoryLog _history = new(Entry.LocalData + "\\InteractiveHistory.log", Settings.Default.MaximumHistoryCount);
@@ -201,17 +200,10 @@ class Interactive : InteractiveEditor
 			{
 				PowerShell.Stop();
 			}
-			catch
-			{ }
-		}
-	}
-
-	void InitTabExpansion()
-	{
-		if (!_doneTabExpansion)
-		{
-			_doneTabExpansion = true;
-			EditorKit.InitTabExpansion(Runspace);
+			catch (Exception ex)
+			{
+				Log.TraceException(ex);
+			}
 		}
 	}
 
@@ -276,7 +268,7 @@ class Interactive : InteractiveEditor
 		PowerShell = PowerShell.Create();
 		PowerShell.Runspace = Runspace;
 		PowerShell.Commands.AddScript(code).AddCommand(A.OutHostCommand);
-		Task.Run(() =>
+		_ = Task.Run(() =>
 		{
 			try
 			{

@@ -1,3 +1,4 @@
+
 using FarNet;
 using FarNet.Forms;
 using System.Management.Automation;
@@ -188,7 +189,7 @@ class ReadCommand
 				{
 					// hide/show panels
 					e.Ignore = true;
-					RunKeyInPanelsAsync(e.Key, true);
+					_ = RunKeyInPanelsAsync(e.Key, true);
 				}
 				return;
 			case KeyCode.Enter:
@@ -240,7 +241,7 @@ class ReadCommand
 					if (Edit.Line.Length > 0)
 						EditorKit.ExpandCode(Edit.Line, null);
 					else
-						RunKeyInPanelsAsync(e.Key, true);
+						_ = RunKeyInPanelsAsync(e.Key, true);
 				}
 				return;
 			case KeyCode.UpArrow:
@@ -250,7 +251,7 @@ class ReadCommand
 				{
 					e.Ignore = true;
 					if (Far.Api.Panel!.IsVisible || Far.Api.Panel2!.IsVisible)
-						RunKeyInPanelsAsync(e.Key, true);
+						_ = RunKeyInPanelsAsync(e.Key, true);
 					else
 						Edit.Text = HistoryKit.GetNextCommand(e.Key.VirtualKeyCode == KeyCode.UpArrow, Edit.Text);
 				}
@@ -284,7 +285,7 @@ class ReadCommand
 				{
 					// view panel file
 					e.Ignore = true;
-					Task.Run(async () =>
+					_ = Task.Run(async () =>
 					{
 						await RunKeyInPanelsAsync(e.Key, false);
 						var viewer = Far.Api.Viewer;
@@ -301,7 +302,7 @@ class ReadCommand
 				{
 					// edit panel file
 					e.Ignore = true;
-					Task.Run(async () =>
+					_ = Task.Run(async () =>
 					{
 						await RunKeyInPanelsAsync(e.Key, false);
 						var editor = Far.Api.Editor;
@@ -328,7 +329,7 @@ class ReadCommand
 				if (e.Key.Is())
 				{
 					e.Ignore = true;
-					RunKeyInPanelsAsync(e.Key, true);
+					_ = RunKeyInPanelsAsync(e.Key, true);
 				}
 				return;
 		}
@@ -376,60 +377,65 @@ class ReadCommand
 		});
 	}
 
-	public static async Task StartAsync()
+    public static async Task StartAsync()
+    {
+        try
+        {
+            // already started? activate
+            if (Instance != null)
+            {
+                await Instance.ActivateAsync();
+                return;
+            }
+
+            // must be panels
+            if (Far.Api.Window.Kind != WindowKind.Panels)
+                throw new ModuleException("Command console should start from panels.");
+
+            // hide key bar (hack)
+            bool visibleKeyBar = Console.CursorTop - Console.WindowTop == Console.WindowHeight - 2;
+            if (visibleKeyBar)
+                await Tasks.Macro("Keys'CtrlB'");
+
+            try
+            {
+                // REPL
+                for (; ; )
+                {
+                    // read
+                    Instance = await Tasks.Job(() => new ReadCommand());
+                    var res = await Instance.ReadAsync();
+                    if (res is null)
+                        return;
+
+                    // run
+                    var obj = await Tasks.Command(() => A.Psf.Run(res));
+
+                    // switch to opened panel, come back on exit
+                    if (obj is Panel panel)
+                    {
+						panel.Closed += Panel_Closed;
+                        return;
+                    }
+                }
+            }
+            finally
+            {
+                Instance = null;
+
+                // restore key bar (may not work with jobs)
+                if (visibleKeyBar)
+                    await Tasks.Macro("Keys'CtrlB'");
+            }
+        }
+        catch (Exception ex)
+        {
+            _ = Tasks.Job(() => Far.Api.ShowError("Command console", ex));
+        }
+    }
+
+	static void Panel_Closed(object? sender, EventArgs e)
 	{
-		try
-		{
-			// already started? activate
-			if (Instance != null)
-			{
-				await Instance.ActivateAsync();
-				return;
-			}
-
-			// must be panels
-			if (Far.Api.Window.Kind != WindowKind.Panels)
-				throw new ModuleException("Command console should start from panels.");
-
-			// hide key bar (hack)
-			bool visibleKeyBar = Console.CursorTop - Console.WindowTop == Console.WindowHeight - 2;
-			if (visibleKeyBar)
-				await Tasks.Macro("Keys'CtrlB'");
-
-			try
-			{
-				// REPL
-				for (; ; )
-				{
-					// read
-					Instance = await Tasks.Job(() => new ReadCommand());
-					var res = await Instance.ReadAsync();
-					if (res is null)
-						return;
-
-					// run
-					var obj = await Tasks.Command(() => A.Psf.Run(res));
-
-					// switch to opened panel, come back on exit
-					if (obj is Panel panel)
-					{
-						panel.Closed += (_, _) => _ = StartAsync();
-						return;
-					}
-				}
-			}
-			finally
-			{
-				Instance = null;
-
-				// restore key bar (may not work with jobs)
-				if (visibleKeyBar)
-					await Tasks.Macro("Keys'CtrlB'");
-			}
-		}
-		catch (Exception ex)
-		{
-			_ = Tasks.Job(() => Far.Api.ShowError("Command console", ex));
-		}
+		_ = StartAsync();
 	}
 }

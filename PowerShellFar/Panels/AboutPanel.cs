@@ -1,12 +1,6 @@
 ﻿
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Text;
 
 namespace PowerShellFar;
@@ -90,8 +84,10 @@ internal static class AboutPanel
 				File.Delete(it.Path);
 				cache.Remove(it.File);
 			}
-			catch
+			catch (Exception ex)
 			{
+				Log.TraceException(ex);
+
 				args.Result = JobResult.Incomplete;
 				args.FilesToStay.Add(it.File);
 			}
@@ -141,8 +137,10 @@ internal static class AboutPanel
 				it.Process.Kill();
 				cache.Remove(it.File);
 			}
-			catch
+			catch (Exception ex)
 			{
+				Log.TraceException(ex);
+
 				args.Result = JobResult.Incomplete;
 				args.FilesToStay.Add(it.File);
 			}

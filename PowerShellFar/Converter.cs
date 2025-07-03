@@ -1,11 +1,7 @@
 
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
+using FarNet;
 using System.Collections;
 using System.Globalization;
-using System.Linq;
 using System.Management.Automation;
 using System.Text;
 
@@ -313,7 +309,7 @@ static class Converter
 		{
 			// (ConvertFrom-Markdown -Path $env:FarNetCode\PowerShellFar\README.md).Tokens.foreach{$_.Lines}
 			// "Object reference not set to an instance of an object."
-
+			Log.TraceException(ex);
 			return $"<{ex.Message}>";
 		}
 	}
