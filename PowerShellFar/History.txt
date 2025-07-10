@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.39 =
+
+Handle empty paths in StartScriptAsync.
+
 = 9.0.38 =
 
 Use FarNet 9.0.31, fix some ErrorProne issues.

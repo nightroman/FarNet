@@ -1,11 +1,5 @@
 
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
-using System;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace PowerShellFar;
 
@@ -16,7 +10,7 @@ public sealed partial class Actor
 		var panel1 = Far.Api.Panel;
 		var panel2 = Far.Api.Panel2;
 
-		if (panel1 is not null && (path1 is not null || path2 is not null))
+		if (panel1 is not null && (!string.IsNullOrEmpty(path1) || !string.IsNullOrEmpty(path2)))
 		{
 			await Tasks.Job(() =>
 			{
@@ -40,7 +34,7 @@ public sealed partial class Actor
 
 	static void SetPanel(IPanel? panel, string? path)
 	{
-		if (panel is not null && path is not null)
+		if (panel is not null && !string.IsNullOrEmpty(path))
 		{
 			if (Directory.Exists(path))
 			{
