@@ -1,4 +1,5 @@
-﻿namespace FarNet;
+﻿
+namespace FarNet;
 
 /// <summary>
 /// Disposable event handler.
@@ -26,13 +27,9 @@ public sealed class DisposableEventHandler<TEventArgs> : Disposable where TEvent
 	}
 
 	/// <inheritdoc/>
-	protected override void Dispose(bool disposing)
+	protected override void Disposing()
 	{
-		if (!IsDisposed)
-		{
-			_remove(Invoke);
-			IsDisposed = true;
-		}
+		_remove(Invoke);
 	}
 
 	void Invoke(object? sender, TEventArgs e)

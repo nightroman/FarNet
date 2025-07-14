@@ -1,26 +1,33 @@
-﻿namespace FarNet;
+﻿
+namespace FarNet;
 
 /// <summary>
-/// Disposable with known disposed state.
+/// Disposable object with <see cref="IsDisposed"/>.
 /// </summary>
 public abstract class Disposable : IDisposable
 {
-	/// <summary>
-	/// Gets true if disposed.
-	/// </summary>
-	public bool IsDisposed { get; protected set; }
+	bool _IsDisposed;
 
 	/// <summary>
-	/// Disposes this.
+	/// Gets the disposed state.
+	/// </summary>
+	public bool IsDisposed => IsDisposed;
+
+	/// <summary>
+	/// Disposes this object.
 	/// </summary>
 	public void Dispose()
 	{
-		Dispose(true);
-		GC.SuppressFinalize(this);
+		if (!_IsDisposed)
+		{
+			Disposing();
+			_IsDisposed = true;
+			GC.SuppressFinalize(this);
+		}
 	}
 
 	/// <summary>
-	/// Protected disposing.
+	/// Implements disposing.
 	/// </summary>
-	protected abstract void Dispose(bool disposing);
+	protected abstract void Disposing();
 }
