@@ -33,6 +33,7 @@ FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-DBTable.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-History.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-ItemProperty.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-Process.ps1
+FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-README.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-SQLite.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-TODO.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-Version.ps1
@@ -46,11 +47,11 @@ FarHome\FarNet\Modules\PowerShellFar\Bench\Select-FarFile-.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Send-FarRedisTask.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Set-Selection-.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Show-EditorColor.ps1
+FarHome\FarNet\Modules\PowerShellFar\Bench\Show-FarMarkdown.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Show-History-.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Show-Hlf.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Show-Image.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Show-KeyName-.ps1
-FarHome\FarNet\Modules\PowerShellFar\Bench\Show-Markdown.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Snippet.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Start-Far.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Update-FarManager.ps1

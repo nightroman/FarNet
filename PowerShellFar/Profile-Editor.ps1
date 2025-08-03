@@ -24,7 +24,7 @@ $Far.AnyEditor.add_Opened({
 		$this.add_KeyDown({
 			if ($_.Key.Is([FarNet.KeyCode]::F1)) {
 				$_.Ignore = $true
-				Show-Markdown.ps1 -Help
+				Show-FarMarkdown.ps1 -Help
 			}
 		})
 	}

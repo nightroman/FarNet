@@ -20,6 +20,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.5.2" />
+    <PackageReference Include="ErrorProne.NET.CoreAnalyzers" Version="0.8.1-beta.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FarNet\FarNet\FarNet.csproj">

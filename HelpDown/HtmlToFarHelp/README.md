@@ -174,7 +174,7 @@ The package directory *Demo* contains:
 
 The FarNet module PowerShellFar comes with HLF utility scripts:
 
-- *Show-Markdown.ps1* is used for opening the HLF viewer at the current topic
+- *Show-FarMarkdown.ps1* is used for opening the HLF viewer at the current topic
   from the editor with .md or .text files. In other words, on composing HLF in
   Markdown you may preview result help topics.
 - *Show-Hlf.ps1* is used for opening the HLF viewer at the current topic from

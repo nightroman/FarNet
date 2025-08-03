@@ -1,5 +1,15 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.40 =
+
+Bench/Show-Markdown.ps1 -> Show-FarMarkdown.ps1
+- Rename to avoid conflict with `Microsoft.PowerShell.Utility\Show-Markdown`.
+- Remove $env:MarkdownBrowser, it was a workaround now done differently.
+- Use Show-FarMarkdown.* for temp files.
+
+New Bench/Panel-README.ps1
+- Shows folder tree for exploring README.md files.
+
 = 9.0.39 =
 
 Handle empty paths in StartScriptAsync.
