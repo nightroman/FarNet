@@ -67,7 +67,7 @@ How to install and update FarNet and modules:\
 
 **Documentation**
 
-- *About-PowerShellFar.htm* - this documentation
+- *About-PowerShellFar.html* - this documentation
 - *History.txt* - the change log
 
 **Bench scripts**

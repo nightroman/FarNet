@@ -6,7 +6,7 @@
 	"$env:FARPROFILE\FarNet\PowerShellFar\Profile.ps1"
 
 	See "FarNetAPI.chm" PowerShellFar.Actor ($Psf)
-	See "About-PowerShellFar.htm" Profile.ps1, Global objects
+	See "About-PowerShellFar.html" Profile.ps1, Global objects
 #>
 
 ### Macros

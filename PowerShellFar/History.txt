@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.41 =
+
+Bench/Show-FarMarkdown.ps1
+- Simplify navigation to the current editor heading in the browser.
+
 = 9.0.40 =
 
 Bench/Show-Markdown.ps1 -> Show-FarMarkdown.ps1

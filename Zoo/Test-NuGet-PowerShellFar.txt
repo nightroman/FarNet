@@ -2,7 +2,7 @@ FarHome
 FarHome\FarNet
 FarHome\FarNet\Modules
 FarHome\FarNet\Modules\PowerShellFar
-FarHome\FarNet\Modules\PowerShellFar\About-PowerShellFar.htm
+FarHome\FarNet\Modules\PowerShellFar\About-PowerShellFar.html
 FarHome\FarNet\Modules\PowerShellFar\Bench
 FarHome\FarNet\Modules\PowerShellFar\Bench\ArgumentCompleters.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Clear-Session.ps1

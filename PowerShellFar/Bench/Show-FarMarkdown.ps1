@@ -124,29 +124,6 @@ else {
 	$Format = 'gfm'
 }
 
-### ensure template
-$template = "$env:TEMP\Show-FarMarkdown.template-1.html"
-if (![System.IO.File]::Exists($template)) {
-	[System.IO.File]::WriteAllText($template, @'
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<title>$title$</title>
-$if(css)$
-<link rel="stylesheet" href="$css$">
-$endif$
-</head>
-<body>
-$body$
-<script>
-window.location.hash = "$my-topic$"
-</script>
-</body>
-</html>
-'@)
-}
-
 ### convert to HTML
 $html = "$env:TEMP\Show-FarMarkdown.html"
 $param = $(
@@ -162,13 +139,12 @@ $param = $(
 		$more = [System.IO.Path]::GetFileName($root)
 		'--standalone'
 		'--embed-resources'
-		"--template=$template"
 		"--resource-path=$root"
-		"--variable=title=$name - $more"
+		"--metadata=pagetitle:$name - $more"
 
 		# topic to open
 		if ($Topic) {
-			"--variable=my-topic=$Topic"
+			"--variable=include-after=<script>window.location.hash = '$Topic'</script>"
 		}
 
 		# CSS, URI for Firefox
