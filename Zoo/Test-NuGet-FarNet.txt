@@ -10,7 +10,7 @@ FarHome.x86\Plugins\FarNet
 FarHome.x86\Plugins\FarNet\FarNetMan.dll
 FarHome.x86\Plugins\FarNet\Ijwhost.dll
 FarHome\FarNet
-FarHome\FarNet\About-FarNet.htm
+FarHome\FarNet\About-FarNet.html
 FarHome\FarNet\FarNet.dll
 FarHome\FarNet\FarNet.xml
 FarHome\FarNet\FarNetAPI.chm

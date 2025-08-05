@@ -26,7 +26,7 @@ task publish {
 task clean {
 	remove @(
 		'z'
-		'README.htm'
+		'README.html'
 		"FarNet.$ModuleName.*.nupkg"
 		"src\*\bin"
 		"src\*\obj"
@@ -57,7 +57,7 @@ task markdown {
 	requires -Path $env:MarkdownCss
 	exec { pandoc.exe @(
 		'README.md'
-		'--output=README.htm'
+		'--output=README.html'
 		'--from=gfm'
 		'--embed-resources'
 		'--standalone'
@@ -81,7 +81,7 @@ task package markdown, {
 
 	# repo
 	Copy-Item -Destination $toModule @(
-		'README.htm'
+		'README.html'
 		'History.txt'
 		'..\LICENSE'
 	)
@@ -99,7 +99,7 @@ fsx.exe
 fsx.runtimeconfig.json
 History.txt
 LICENSE
-README.htm
+README.html
 '@
 }
 

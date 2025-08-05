@@ -1254,10 +1254,6 @@ Show-Markdown-.ps1
 Search-Regex-.ps1
 - built-in command Get-EditorHistory, to search in editor history files
 
-About-PowerShellFar
-- reworked some pieces, including out of date
-- GitHub like CSS in About-PowerShellFar.htm
-
 Module
 - fixed removal of finished background jobs
 
@@ -2231,10 +2227,6 @@ Select-Bookmark-.ps1 adapted to FarNet changes.
 Search-FarFile checks masks for validity.
 
 = 5.0.15 =
-
-* About
-- Replaced "Readme.txt" with "About-PowerShellFar.htm" which is generated from
-the same source as "PowerShellFar.hlf".
 
 * Markdown & markdown help tools
 - Requires HelpDown

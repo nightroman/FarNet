@@ -20,8 +20,8 @@ task build meta, {
 task publish help, resgen
 
 task help -Inputs README.md -Outputs $ModuleRoot\RightWords.hlf {
-	exec { pandoc.exe README.md --output=$env:TEMP\help.htm --from=gfm --no-highlight }
-	exec { HtmlToFarHelp from=$env:TEMP\help.htm to=$ModuleRoot\RightWords.hlf }
+	exec { pandoc.exe README.md "--output=$env:TEMP\z.html" --from=gfm --no-highlight }
+	exec { HtmlToFarHelp.exe "from=$env:TEMP\z.html" "to=$ModuleRoot\RightWords.hlf" }
 }
 
 # https://github.com/nightroman/PowerShelf/blob/main/Invoke-Environment.ps1
@@ -36,7 +36,7 @@ task resgen -Partial -Inputs RightWords.restext, RightWords.ru.restext -Outputs 
 }
 
 task clean {
-	remove z, bin, obj, README.htm, *.nupkg
+	remove z, bin, obj, README.html, *.nupkg
 }
 
 task version {
@@ -62,7 +62,7 @@ task markdown {
 	requires -Path $env:MarkdownCss
 	exec { pandoc.exe @(
 		'README.md'
-		'--output=README.htm'
+		'--output=README.html'
 		'--from=gfm'
 		'--embed-resources'
 		'--standalone'
@@ -86,7 +86,7 @@ task package markdown, version, {
 
 	# module
 	Copy-Item -Destination $toModule @(
-		"README.htm"
+		"README.html"
 		"History.txt"
 		"RightWords.macro.lua"
 		"..\LICENSE"
@@ -95,7 +95,7 @@ task package markdown, version, {
 	Assert-SameFile.ps1 -Result (Get-ChildItem $toModule -Recurse -File -Name) -Text -View $env:MERGE @'
 History.txt
 LICENSE
-README.htm
+README.html
 RightWords.dll
 RightWords.hlf
 RightWords.macro.lua

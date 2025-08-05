@@ -18,7 +18,7 @@ task build meta, {
 }
 
 task clean {
-	remove z, bin, obj, README.htm, FarNet.$ModuleName.*.nupkg
+	remove z, bin, obj, README.html, FarNet.$ModuleName.*.nupkg
 }
 
 task version {
@@ -40,23 +40,18 @@ task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props version
 }
 
 task markdown {
-	# HLF
-	exec { pandoc.exe README.md --output=README.htm --from=gfm }
-	exec { HtmlToFarHelp "from=README.htm" "to=$ModuleRoot\Vessel.hlf" }
-
-	# HTM
 	requires -Path $env:MarkdownCss
-	exec {
-		pandoc.exe @(
-			'README.md'
-			'--output=README.htm'
-			'--from=gfm'
-			'--embed-resources'
-			'--standalone'
-			"--css=$env:MarkdownCss"
-			"--metadata=pagetitle:$ModuleName"
-		)
-	}
+	exec { pandoc.exe @(
+		'README.md'
+		'--output=README.html'
+		'--from=gfm'
+		'--standalone'
+		'--embed-resources'
+		"--css=$env:MarkdownCss"
+		'--metadata=lang:en'
+		"--metadata=pagetitle:$ModuleName"
+	)}
+	exec { HtmlToFarHelp.exe "from=README.html" "to=$ModuleRoot\Vessel.hlf" }
 }
 
 task package markdown, {
@@ -65,7 +60,7 @@ task package markdown, {
 
 	# main
 	Copy-Item -Destination $toModule @(
-		'README.htm'
+		'README.html'
 		'History.txt'
 		'..\LICENSE'
 		'Vessel.macro.lua'

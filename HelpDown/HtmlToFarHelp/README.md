@@ -30,8 +30,8 @@ Input:
 
 Example:
 
-    HtmlToFarHelp from=Manual.htm to=Manual.hlf
-    HtmlToFarHelp "to = Manual.hlf; from = Manual.htm"
+    HtmlToFarHelp from=Manual.html to=Manual.hlf
+    HtmlToFarHelp "to = Manual.hlf; from = Manual.html"
 
 ## Description
 
@@ -118,7 +118,7 @@ headings change `TopicHeading`. For example, if it is set to `h2` then headings
 
 HTML may be produced by this command:
 
-    pandoc MyHelp.md --output MyHelp.htm --from=gfm
+    pandoc MyHelp.md --output MyHelp.html --from=gfm
 
 To keep line breaks similar to source, use `--wrap=preserve`. This should not
 affect HLF help rendering but may be useful for HLF inspection in the editor.
@@ -153,7 +153,7 @@ available at that time.
 
 The recommended converter is [Pandoc]:
 
-    pandoc MyHelp.md --output MyHelp.htm --from=markdown_phpextra
+    pandoc MyHelp.md --output MyHelp.html --from=markdown_phpextra
 
 Pandoc `markdown_phpextra` comparison with obsolete MarkdownDeep:
 
@@ -166,8 +166,8 @@ Pandoc `markdown_phpextra` comparison with obsolete MarkdownDeep:
 The package directory *Demo* contains:
 
 - *README.md*: Markdown sample with features and test cases.
-- *README.htm*: HTML file created from *README.md* by *Pandoc*.
-- *README.hlf*: HLF file created from *README.htm* by *HtmlToFarHelp*.
+- *README.html*: HTML file created from *README.md* by *Pandoc*.
+- *README.hlf*: HLF file created from *README.html* by *HtmlToFarHelp*.
 - *Convert-MarkdownToHelp.ps1*: Demo script used for the above conversions.
 
 ## Tools
@@ -183,7 +183,6 @@ The FarNet module PowerShellFar comes with HLF utility scripts:
 ## See also
 
 - [HtmlToFarHelp Release Notes](https://github.com/nightroman/FarNet/blob/main/HelpDown/HtmlToFarHelp/Release-Notes.md)
-<!---->
 - [GitHub Flavored Markdown](https://github.github.com/gfm/)
 - [PHP Markdown Extra](https://michelf.ca/projects/php-markdown/extra/)
 - [Pandoc User's Guide](https://pandoc.org/MANUAL.html)

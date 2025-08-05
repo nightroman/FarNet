@@ -17,7 +17,7 @@ z.*
 *.user
 *.VC.db
 
-*.htm
+*.htm*
 *.nupkg
 Active.h
 AssemblyInfo.cs

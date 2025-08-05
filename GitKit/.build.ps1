@@ -33,13 +33,13 @@ task publish {
 }
 
 task help -Inputs README.md -Outputs $ModuleRoot\$ModuleName.hlf {
-	exec { pandoc.exe $Inputs --output=README.htm --from=gfm --no-highlight }
-	exec { HtmlToFarHelp from=README.htm to=$Outputs }
-	remove README.htm
+	exec { pandoc.exe $Inputs --output=README.html --from=gfm --no-highlight }
+	exec { HtmlToFarHelp from=README.html to=$Outputs }
+	remove README.html
 }
 
 task clean {
-	remove z, obj, README.htm, *.nupkg
+	remove z, obj, README.html, *.nupkg
 }
 
 task version {
@@ -50,7 +50,7 @@ task markdown {
 	requires -Path $env:MarkdownCss
 	exec { pandoc.exe @(
 		'README.md'
-		'--output=README.htm'
+		'--output=README.html'
 		'--from=gfm'
 		'--embed-resources'
 		'--standalone'
@@ -80,7 +80,7 @@ task package win32, help, markdown, {
 
 	# repo
 	Copy-Item -Destination $toModule @(
-		'README.htm'
+		'README.html'
 		'History.txt'
 		'..\LICENSE'
 	)
@@ -96,7 +96,7 @@ FarHome\FarNet\Modules\GitKit\History.txt
 FarHome\FarNet\Modules\GitKit\LibGit2Sharp.dll
 FarHome\FarNet\Modules\GitKit\LibGit2Sharp.xml
 FarHome\FarNet\Modules\GitKit\LICENSE
-FarHome\FarNet\Modules\GitKit\README.htm
+FarHome\FarNet\Modules\GitKit\README.html
 FarHome.x64\FarNet\Modules\GitKit\git2-3f4182d.dll
 FarHome.x86\FarNet\Modules\GitKit\git2-3f4182d.dll
 '@

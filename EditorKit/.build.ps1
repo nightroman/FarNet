@@ -18,14 +18,14 @@ task build meta, {
 }
 
 task clean {
-	remove z, bin, obj, README.htm, Directory.Build.props, "*$ModuleName.*.nupkg"
+	remove z, bin, obj, README.html, Directory.Build.props, "*$ModuleName.*.nupkg"
 }
 
 task markdown {
 	requires -Path $env:MarkdownCss
 	exec { pandoc.exe @(
 		'README.md'
-		'--output=README.htm'
+		'--output=README.html'
 		'--from=gfm'
 		'--embed-resources'
 		'--standalone'
@@ -68,7 +68,7 @@ task package markdown, {
 
 	# module
 	Copy-Item -Destination $toModule @(
-		'README.htm'
+		'README.html'
 		'History.txt'
 		'..\LICENSE'
 	)
@@ -78,7 +78,7 @@ EditorConfig.Core.dll
 EditorKit.dll
 History.txt
 LICENSE
-README.htm
+README.html
 '@
 }
 

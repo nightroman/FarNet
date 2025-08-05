@@ -18,7 +18,7 @@ task build meta, {
 }
 
 task clean {
-	remove z, bin, obj, README.htm, FarNet.$ModuleName.*.nupkg
+	remove z, bin, obj, README.html, FarNet.$ModuleName.*.nupkg
 }
 
 task version {
@@ -30,7 +30,7 @@ task markdown {
 	exec {
 		pandoc.exe @(
 			'README.md'
-			'--output=README.htm'
+			'--output=README.html'
 			'--from=gfm'
 			'--embed-resources'
 			'--standalone'
@@ -70,7 +70,7 @@ task package markdown, version, {
 
 	# module
 	Copy-Item -Destination $toModule @(
-		'README.htm'
+		'README.html'
 		'History.txt'
 		'..\LICENSE'
 		"$ModuleRoot\$ModuleName.dll"

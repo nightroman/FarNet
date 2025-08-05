@@ -24,23 +24,18 @@ task uninstall {
 }
 
 task markdown {
-	# HLF
-	exec { pandoc.exe README.md --output=About-PowerShellFar.html --from=gfm --no-highlight }
-	exec { HtmlToFarHelp from=About-PowerShellFar.html to=$ModuleRoot\PowerShellFar.hlf }
-
-	# HTM
 	requires -Path $env:MarkdownCss
-	exec {
-		pandoc.exe @(
-			'README.md'
-			'--output=About-PowerShellFar.html'
-			'--from=gfm'
-			'--embed-resources'
-			'--standalone'
-			"--css=$env:MarkdownCss"
-			'--metadata=pagetitle:PowerShellFar'
-		)
-	}
+	exec { pandoc.exe @(
+		'README.md'
+		'--output=About-PowerShellFar.html'
+		'--from=gfm'
+		'--standalone'
+		'--embed-resources'
+		"--css=$env:MarkdownCss"
+		'--metadata=lang:en'
+		'--metadata=pagetitle:PowerShellFar'
+	)}
+	exec { HtmlToFarHelp.exe from=About-PowerShellFar.html "to=$ModuleRoot\PowerShellFar.hlf" }
 }
 
 task installBin {

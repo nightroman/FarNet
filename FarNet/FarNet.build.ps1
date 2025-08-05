@@ -12,18 +12,17 @@ param(
 )
 
 task clean FA::clean, FM::clean, {
-	remove z, About-FarNet.htm, FarNetTest\bin, FarNetTest\obj
+	remove z, About-FarNet.html, FarNetTest\bin, FarNetTest\obj
 }
 
-task install FA::install, FM::install, helpHLF
+task install FA::install, FM::install, help
 
 task uninstall FA::uninstall, FM::uninstall
 
-# Make HLF, called by Build (Install), depends on x64/x86
-task helpHLF -If ($Configuration -eq 'Release') {
-	exec { pandoc.exe README.md --output=z.htm --from=gfm }
-	exec { HtmlToFarHelp from=z.htm to=$FarHome\Plugins\FarNet\FarNetMan.hlf }
-	remove z.htm
+# Make HLF
+task help -If ($Configuration -eq 'Release') {
+	exec { pandoc.exe README.md "--output=$env:TEMP\z.html" --from=gfm }
+	exec { HtmlToFarHelp.exe "from=$env:TEMP\z.html" "to=$FarHome\Plugins\FarNet\FarNetMan.hlf" }
 }
 
 # Make markdown
@@ -32,7 +31,7 @@ task markdown {
 	exec {
 		pandoc.exe @(
 			'README.md'
-			'--output=About-FarNet.htm'
+			'--output=About-FarNet.html'
 			'--from=gfm'
 			'--embed-resources'
 			'--standalone'
@@ -69,7 +68,7 @@ task package buildWin32, markdown, {
 	# copy
 	[System.IO.File]::Delete("$FarHome\FarNet\FarNetAPI.chw")
 	Copy-Item -Destination z\tools\FarHome\FarNet $(
-		'About-FarNet.htm'
+		'About-FarNet.html'
 		'History.txt'
 		'..\LICENSE'
 		"$FarHome\FarNet\FarNet.dll"

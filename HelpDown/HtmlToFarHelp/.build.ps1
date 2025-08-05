@@ -50,13 +50,13 @@ task build meta, {
 
 # Convert markdown
 task markdown {
-	exec { pandoc.exe README.md --output=README.htm --from=gfm --standalone --metadata=pagetitle:HtmlToFarHelp }
+	exec { pandoc.exe README.md --output=README.html --from=gfm --standalone --metadata=pagetitle:HtmlToFarHelp }
 	Demo\Convert-MarkdownToHelp.ps1
 }
 
 # Remove temp files
 task clean {
-	remove z, bin, obj, README.htm, *.nupkg, Demo\README.htm, Demo\README.hlf
+	remove z, bin, obj, README.html, *.nupkg, Demo\README.html, Demo\README.hlf
 }
 
 # Make package in z\tools
@@ -74,7 +74,7 @@ task package markdown, version, {
 	# main files
 	Copy-Item -Destination z\tools @(
 		'LICENSE'
-		'README.htm'
+		'README.html'
 		"$Bin\HtmlToFarHelp.exe"
 	)
 	Copy-Item -Destination z\tools\Demo @(
@@ -167,24 +167,24 @@ task test_main {
 	}
 }
 
-# Make HTM and HLF in .Root, compare with sample, remove the same.
+# Make HTML and HLF in .Root, compare with sample, remove the same.
 function Test-File([TestCase]$Test) {
-	$htm = '{0}\{1}.htm' -f $Test.Root, $Test.Name
-	$hlf = '{0}\{1}.hlf' -f $Test.Root, $Test.Name
+	$html = '{0}\{1}.html' -f $Test.Root, $Test.Name
+	$hlf1 = '{0}\{1}.1.hlf' -f $Test.Root, $Test.Name
 	$hlf2 = '{0}\{1}.2.hlf' -f $Test.Root, $Test.Name
 
 	# HTML
 	switch($Test.Mode) {
-		2 { exec { pandoc.exe $Test.File --output=$htm --from=markdown_phpextra --wrap=preserve } }
-		3 { exec { pandoc.exe $Test.File --output=$htm --from=gfm --wrap=preserve --no-highlight } }
+		2 { exec { pandoc.exe $Test.File --output=$html --from=markdown_phpextra --wrap=preserve } }
+		3 { exec { pandoc.exe $Test.File --output=$html --from=gfm --wrap=preserve --no-highlight } }
 	}
 
 	# HLF
-	exec { HtmlToFarHelp.exe from=$htm to=$hlf }
+	exec { HtmlToFarHelp.exe from=$html to=$hlf1 }
 
 	# compare
-	Assert-SameFile $hlf2 $hlf $env:MERGE
-	Remove-Item -LiteralPath $htm, $hlf
+	Assert-SameFile $hlf2 $hlf1 $env:MERGE
+	Remove-Item -LiteralPath $html, $hlf1
 }
 
 # Synopsis: Test more specific cases.

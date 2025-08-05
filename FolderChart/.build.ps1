@@ -25,7 +25,7 @@ task publish {
 }
 
 task clean {
-	remove z, bin, obj, README.htm, *.nupkg
+	remove z, bin, obj, README.html, *.nupkg
 }
 
 task version {
@@ -36,7 +36,7 @@ task markdown {
 	requires -Path $env:MarkdownCss
 	exec { pandoc.exe @(
 		'README.md'
-		'--output=README.htm'
+		'--output=README.html'
 		'--from=gfm'
 		'--embed-resources'
 		'--standalone'
@@ -75,7 +75,7 @@ task package version, markdown, {
 	)
 
 	Copy-Item -Destination $toModule @(
-		"README.htm"
+		"README.html"
 		"History.txt"
 		"..\LICENSE"
 	)
@@ -85,7 +85,7 @@ FolderChart.deps.json
 FolderChart.dll
 History.txt
 LICENSE
-README.htm
+README.html
 System.Data.OleDb.dll
 System.Data.SqlClient.dll
 System.Windows.Forms.DataVisualization.dll

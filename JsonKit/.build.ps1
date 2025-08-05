@@ -20,13 +20,13 @@ task build meta, {
 }
 
 task help -Inputs README.md -Outputs $ModuleRoot\JsonKit.hlf {
-	exec { pandoc.exe $Inputs --output=README.htm --from=gfm --no-highlight }
-	exec { HtmlToFarHelp from=README.htm to=$Outputs }
-	remove README.htm
+	exec { pandoc.exe $Inputs --output=README.html --from=gfm --no-highlight }
+	exec { HtmlToFarHelp from=README.html to=$Outputs }
+	remove README.html
 }
 
 task clean {
-	remove z, obj, README.htm, *.nupkg
+	remove z, obj, README.html, *.nupkg
 }
 
 task version {
@@ -37,7 +37,7 @@ task markdown {
 	requires -Path $env:MarkdownCss
 	exec { pandoc.exe @(
 		'README.md'
-		'--output=README.htm'
+		'--output=README.html'
 		'--from=gfm'
 		'--embed-resources'
 		'--standalone'
@@ -59,7 +59,7 @@ task package help, markdown, {
 
 	# repo
 	Copy-Item -Destination $toModule @(
-		'README.htm'
+		'README.html'
 		'History.txt'
 		'..\LICENSE'
 	)
@@ -71,7 +71,7 @@ JsonKit.dll
 JsonKit.hlf
 JsonPath.Net.dll
 LICENSE
-README.htm
+README.html
 '@
 }
 
