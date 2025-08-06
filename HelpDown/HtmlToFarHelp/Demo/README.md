@@ -198,6 +198,14 @@ Write-Host $x
 
 <!--HLF:-->
 
+***
+### Syntax highlighting
+
+```powershell
+# rem
+$var = "42"
+```
+
 *********************************************************************
 ## Blockquotes
 

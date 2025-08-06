@@ -36,16 +36,15 @@ Example:
 ## Description
 
 The tool is supposed to be used with Markdown converters like [Pandoc]. Compose
-manuals in Markdown, convert to HTML by a converter and then convert to HLF by
-HtmlToFarHelp.
+in Markdown, convert it to HTML and then convert HTML to HLF by HtmlToFarHelp.
 
 It is fine to compose in HTML and convert to HLF. But this is not recommended
-due to the limited subset of supported HTML and not documented or stable rules.
+due to some HTML elements not supported and not documented or stable rules.
 
 ### Conversion options
 
 Conversion options are specified as HTML comments in the source Markdown or
-HTML. Here is the example with all available keys and default values:
+HTML. The example with all available keys and default values:
 
     <!--HLF:
         Language = English,English;
@@ -89,9 +88,9 @@ Example:
     <!--reset options to global-->
     <!--HLF:-->
 
-`ListBullet` is one one more space separated strings used as list item bullet
-symbols. Positions correspond to list item depths. The last string is used for
-all deeper levels.
+`ListBullet` is one or more space separated strings used as list bullets.
+Positions correspond to list item depths. The last string is used for all
+deeper levels.
 
 `ListItemEmptyLine` tells to use an empty line between list items.
 
@@ -123,12 +122,13 @@ HTML may be produced by this command:
 To keep line breaks similar to source, use `--wrap=preserve`. This should not
 affect HLF help rendering but may be useful for HLF inspection in the editor.
 
-Use `--no-highlight` to disable syntax highlighting for code blocks, if you use
-language attributes. HtmlToFarHelp does not support syntax highlighted blocks.
+For making just HLF use `--no-highlight` to disable code blocks syntax
+highlighting as not needed. For making HTML and HLF highlighting may be
+preserved.
 
-To make HTML for documentation, use `--standalone` and define the page title as
-`--metadata=pagetitle:MyHelp`. If code blocks have language attributes, a
-separate command without `--no-highlight` is needed.
+To make HTML for documentation, use `--standalone` and set the page title
+`--metadata=pagetitle:MyTitle`. If this HTML is used for HLF then set
+language `--metadata=lang:en` to fix invalid XML in some cases.
 
 GFM advantages:
 

@@ -1,7 +1,4 @@
 ﻿
-// Copyright (c) Roman Kuzmin
-// http://www.apache.org/licenses/LICENSE-2.0
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -60,7 +57,6 @@ namespace HtmlToFarHelp
 		readonly XmlReader _reader;
 		readonly StreamWriter _writer;
 		readonly bool _verbose;
-		readonly StringBuilder _sbA = new StringBuilder();
 
 		public Converter(string inputFileName, XmlReader reader, StreamWriter writer, bool verbose)
 		{
@@ -225,6 +221,7 @@ namespace HtmlToFarHelp
 				// break
 				case "body":
 				case "html":
+				case "div":
 					break;
 				// skip
 				case "head":
@@ -281,33 +278,41 @@ namespace HtmlToFarHelp
 		}
 
 		// Reads just text, https://github.com/nightroman/FarNet/issues/45
-		void ReadA(StringBuilder sb)
+		string ReadText(string name, bool readWhitespace)
 		{
-			if (_reader.NodeType == XmlNodeType.Element)
+			var sb = new StringBuilder();
+			for (; ;_reader.Read() )
 			{
-				_reader.MoveToContent();
-				_reader.Read();
-				ReadA(sb);
-				return;
-			}
+				if (_reader.NodeType == XmlNodeType.Element)
+				{
+					_reader.MoveToContent();
+					continue;
+				}
 
-			if (_reader.NodeType == XmlNodeType.Text)
-			{
-				sb.Append(_reader.Value);
-				_reader.Read();
-				ReadA(sb);
-				return;
-			}
+				if (_reader.NodeType == XmlNodeType.Text)
+				{
+					sb.Append(_reader.Value);
+					continue;
+				}
 
-			if (_reader.NodeType == XmlNodeType.EndElement)
-			{
-				if (_reader.Name == "a")
-					return;
+				if (_reader.NodeType == XmlNodeType.Whitespace)
+				{
+					if (readWhitespace)
+						sb.Append(Kit.FixNewLine(_reader.Value));
+					continue;
+				}
 
-				_reader.Read();
-				ReadA(sb);
-				return;
+				if (_reader.NodeType == XmlNodeType.EndElement)
+				{
+					if (_reader.Name == name)
+						break;
+
+					continue;
+				}
+
+				throw new InvalidOperationException($"Unexpected node type '{_reader.NodeType}'.");
 			}
+			return sb.ToString();
 		}
 
 		void A1()
@@ -324,9 +329,7 @@ namespace HtmlToFarHelp
 				_links.Add(href);
 			}
 
-			_sbA.Length = 0;
-			ReadA(_sbA);
-			var text = Kit.FixNewLine(_sbA.ToString());
+			var text = Kit.FixNewLine(ReadText("a", false));
 
 			// (1) last written text could have the deferred end new line, write it, #58
 			NewLine();
@@ -602,7 +605,7 @@ namespace HtmlToFarHelp
 			if (_reader.NodeType != XmlNodeType.Element || _reader.Name != "code")
 				Throw(ErrPreCode);
 
-			var code = _reader.ReadElementContentAsString().TrimEnd();
+			var code = ReadText("code", true).TrimEnd();
 			var lines = Kit.TextToLines(code);
 
 			_writer.WriteLine();
