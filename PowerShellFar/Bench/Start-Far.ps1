@@ -4,11 +4,10 @@
 	Author: Roman Kuzmin
 
 .Description
-	The script starts Far in a new console with shown or hidden panels with
+	This script starts a new Far console with shown or hidden panels with
 	optional paths and invokes the specified command in the active panel.
 
-	Parameters Test and Timeout are useful for running FarNet commands as tools
-	or tests. Note that they automatically set ReadOnly and Wait to true.
+	Use Test or Timeout in order to run FarNet commands as tools or tests.
 
 .Parameter Command
 		Specifies the command to be invoked in the active panel.
@@ -21,7 +20,7 @@
 
 .Parameter Panel2
 		Specifies the passive panel directory or file.
-		Default: the active panel directory or file.
+		Default: the Panel1 path.
 
 .Parameter Title
 		Specifies the window title.
@@ -38,28 +37,26 @@
 		Tells to start with read only profile data.
 
 .Parameter Wait
-		Tells to wait for exit, check for the exit code, and fail if it is not 0.
+		Tells to wait for exit, check for the exit code, fail if it is not 0.
 
 .Parameter Quit
 		Tells to quit Far when the command completes.
 
 .Parameter Test
-		Tells to invoke the command as a test or tool and exit after the
-		specified time in milliseconds. Exit code: 0 (success) or 1 (failure).
+		Tells to invoke the FarNet command as a tool (synchronous and non
+		interactive) and exit after the specified time in milliseconds.
+		Exit code: 0 (success) or 1 (failure).
 
 		Use 0 for immediate exit or some positive value in order to pause for
 		seeing the command results or errors.
 
-		This parameter only works for FarNet commands.
-		Commands must be synchronous and non interactive.
-
-		With Test, switches ReadOnly, Wait, Enter are set to true.
+		Test implies ReadOnly, Wait, Enter.
 
 .Parameter Timeout
 		Tells to exit if the command runs longer than the specifies time in
 		milliseconds. The exit code is set to the timeout value.
 
-		With Timeout, switches ReadOnly, Wait are set to true.
+		Timeout implies ReadOnly, Wait.
 
 .Parameter Environment
 		Specifies the environment variables dictionary.
@@ -88,11 +85,10 @@ param(
 	[System.Diagnostics.ProcessWindowStyle]$WindowStyle = 'Normal'
 )
 
-trap {$PSCmdlet.ThrowTerminatingError($_)}
-$ErrorActionPreference = 1
+$ErrorActionPreference = 1; trap {$PSCmdlet.ThrowTerminatingError($_)}
 
 if ($Command) {
-	### Normal call for starting Far with the command
+	### Normal call to start Far
 
 	$Panel1 = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($Panel1)
 	$Panel2 = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($Panel2)
@@ -101,8 +97,6 @@ if ($Command) {
 
 	$Environment = if ($Environment) {[hashtable]::new($Environment)} else {@{}}
 	$Environment.FARNET_PSF_START_SCRIPT = "Start-FarTask '$($MyInvocation.MyCommand.Path.Replace("'", "''"))'"
-	$Environment.FARNET_PSF_START_PANEL1 = $Panel1
-	$Environment.FARNET_PSF_START_PANEL2 = $Panel2
 	$Environment.FAR_START_COMMAND = $Command
 	$Environment.FAR_START_ENTER = if ($Enter -or $Test -ge 0) {1} else {$null}
 	$Environment.FAR_START_QUIT = if ($Quit) {1} else {$null}
@@ -127,6 +121,8 @@ if ($Command) {
 				'/set:Panel.Left.Visible=true'
 				'/set:Panel.Right.Visible=true'
 			}
+			"`"$Panel1`""
+			"`"$Panel2`""
 		)
 		$p = Start-Process $exe $arg -WindowStyle $WindowStyle -PassThru
 		if ($Wait) {
@@ -144,21 +140,20 @@ if ($Command) {
 	}
 }
 else {
-	### Internall call in started Far by Start-FarTask
+	### Internal call by Start-FarTask
 
 	if (!$env:FAR_START_COMMAND) {
 		throw 'Please specify the command or use ":" for void.'
 	}
 
-	if ($env:FAR_START_TEST) {
-		[FarNet.Works.Test]::SetTestCommand($env:FAR_START_TEST)
+	if ($_ = $env:FAR_START_TEST) {
+		[FarNet.Works.Test]::SetTestCommand($_)
 	}
 
-	if ($env:FAR_START_TIMEOUT) {
-		[FarNet.Works.Test]::SetTimeout($env:FAR_START_TIMEOUT)
+	if ($_ = $env:FAR_START_TIMEOUT) {
+		[FarNet.Works.Test]::SetTimeout($_)
 	}
 
-	# invoke command
 	if ($env:FAR_START_COMMAND -ne ':') {
 		if ($env:FAR_START_ENTER) {
 			job {
@@ -173,7 +168,6 @@ else {
 		}
 	}
 
-	# quit
 	if ($env:FAR_START_QUIT) {
 		job {
 			$Far.Quit()

@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.42 =
+
+Start-Far.ps1
+- Set panels by native Far arguments, avoid unwanted effects.
+
 = 9.0.41 =
 
 Bench/Show-FarMarkdown.ps1

@@ -192,13 +192,10 @@ public sealed partial class Actor
 		}
 
 		// start script
-		var script = Environment.GetEnvironmentVariable("FARNET_PSF_START_SCRIPT");
-		if (script is not null)
+		if (Environment.GetEnvironmentVariable("FARNET_PSF_START_SCRIPT") is { } script)
 		{
-			var path1 = Environment.GetEnvironmentVariable("FARNET_PSF_START_PANEL1");
-			var path2 = Environment.GetEnvironmentVariable("FARNET_PSF_START_PANEL2");
 			_ = Tasks.ExecuteAndCatch(
-				() => StartScriptAsync(script, path1, path2),
+				() => StartScriptAsync(script),
 				ex => Far.Api.ShowError("Start script error", ex));
 		}
 	}
