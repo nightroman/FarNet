@@ -7,8 +7,6 @@
 	This script starts a new Far console with shown or hidden panels with
 	optional paths and invokes the specified command in the active panel.
 
-	Use Test or Timeout in order to run FarNet commands as tools or tests.
-
 .Parameter Command
 		Specifies the command to be invoked in the active panel.
 		By default commands are treated as FarNet commands.
@@ -43,18 +41,15 @@
 		Tells to quit Far when the command completes.
 
 .Parameter Test
-		Tells to invoke the FarNet command as a tool (synchronous and non
-		interactive) and exit after the specified time in milliseconds.
-		Exit code: 0 (success) or 1 (failure).
-
-		Use 0 for immediate exit or some positive value in order to pause for
-		seeing the command results or errors.
+		Tells to invoke FarNet command as a tool, i.e. exit after completion,
+		and specifies the exit delay in milliseconds, e.g. to see errors.
 
 		Test implies ReadOnly, Wait, Enter.
+		Exit code: 0 (success) or 1 (failure).
 
 .Parameter Timeout
-		Tells to exit if the command runs longer than the specifies time in
-		milliseconds. The exit code is set to the timeout value.
+		Tells to exit after the specifies time in milliseconds.
+		The exit code is set to this timeout value.
 
 		Timeout implies ReadOnly, Wait.
 
@@ -147,7 +142,7 @@ else {
 	}
 
 	if ($_ = $env:FAR_START_TEST) {
-		[FarNet.Works.Test]::SetTestCommand($_)
+		[FarNet.Works.Test]::SetTest($_)
 	}
 
 	if ($_ = $env:FAR_START_TIMEOUT) {
@@ -158,8 +153,8 @@ else {
 		if ($env:FAR_START_ENTER) {
 			job {
 				$Far.CommandLine.Text = $env:FAR_START_COMMAND
+				$Far.PostMacro('Keys "Enter"')
 			}
-			keys Enter
 		}
 		else {
 			job {

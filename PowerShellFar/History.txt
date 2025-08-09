@@ -1,5 +1,12 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.43 =
+
+Use FarNet 9.0.33
+
+Start-Far.ps1
+- Tweaks and docs.
+
 = 9.0.42 =
 
 Start-Far.ps1

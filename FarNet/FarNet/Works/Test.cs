@@ -4,7 +4,7 @@ namespace FarNet.Works;
 
 public static class Test
 {
-	// Set by SetTestCommand usually called by Start-Far.
+	// Set by SetTest, usually by Start-Far.
 	// Used by command runners for altering their work.
 	public static bool IsTestCommand { get; private set; }
 
@@ -16,20 +16,16 @@ public static class Test
 	{
 		_timerTimeout?.Dispose();
 
-		if (_exitDelay > 0)
-		{
-			// let the command finish normally, e.g. to show an error, so run as task
-			_ = Task.Run(async () =>
-			{
-				await Task.Delay(_exitDelay);
-				exit();
-			});
-		}
-		else
-		{
-			// exit immediately
+		// exit immediately
+		if (_exitDelay <= 0)
 			exit();
-		}
+
+		// exit after delay
+		_ = Task.Run(async () =>
+		{
+			await Task.Delay(_exitDelay);
+			exit();
+		});
 
 		void exit()
 		{
@@ -42,7 +38,7 @@ public static class Test
 	}
 
 	// Used by Start-Far.ps1
-	public static void SetTestCommand(int milliseconds)
+	public static void SetTest(int milliseconds)
 	{
 		IsTestCommand = true;
 		_exitDelay = milliseconds;
@@ -54,10 +50,10 @@ public static class Test
 		if (milliseconds > 0)
 		{
 			_timerTimeout ??= new Timer(s =>
-			{
-				Log.TraceError("Timeout exit.");
-				Environment.Exit(milliseconds);
-			},
+				{
+					Log.TraceError("Timeout exit.");
+					Environment.Exit(milliseconds);
+				},
 				null,
 				milliseconds,
 				Timeout.Infinite);
