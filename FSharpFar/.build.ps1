@@ -129,19 +129,19 @@ task nuget package, version, {
 }
 
 task test_psf_ib {
-	Start-Far 'ps: Invoke-Build ** tests\PSF.test' -Test 500
+	Start-Far 'ps: Invoke-Build ** tests\PSF.test' -Exit 999
 }
 
 task test_psf_fas {
-	Start-Far "ps: ..\..\..\Test\Test-FarNet.ps1 * -Quit" .\tests\PSF.test -ReadOnly
+	Start-Far "ps: Test-FarNet *" .\tests\PSF.test -Exit 999
 }
 
 task test_testing {
-	Start-Far "fs:exec file=$env:FarNetCode\FSharpFar\samples\Testing\App1.fsx" -ReadOnly -Environment @{QuitFarAfterTests=1}
+	Start-Far "fs:exec file=$env:FarNetCode\FSharpFar\samples\Testing\App1.fsx" -Exit 999
 }
 
 task test_tests {
-	Start-Far "fs:exec file=$env:FarNetCode\FSharpFar\tests\App1.fsx" -ReadOnly -Environment @{QuitFarAfterTests=1}
+	Start-Far "fs:exec file=$env:FarNetCode\FSharpFar\tests\App1.fsx" -Exit 999
 }
 
 task test_fsx {

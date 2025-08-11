@@ -1,5 +1,15 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.44 =
+
+Use FarNet 9.0.34
+
+Rework Bench/Start-Far.ps1
+- Processed by FarNet, PSF is not not needed.
+- Replaced Test, Timeout, Quit with new Exit.
+- Renamed Panel1 -> Path, Panel2 -> Path2.
+- New parameter Active (Left/Right).
+
 = 9.0.43 =
 
 Use FarNet 9.0.33

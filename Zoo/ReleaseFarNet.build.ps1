@@ -48,7 +48,7 @@ Choose to push:
 	}
 }
 
-task build buildFarNet, buildPsfHelp, buildDocs
+task build buildFarNet, buildHelp, buildDocs
 
 task buildFarNet -If {
 	ask 'Build FarNet projects'
@@ -58,10 +58,10 @@ task buildFarNet -If {
 }
 
 #! run when push=2 as well, or help file is missing -> assert
-task buildPsfHelp -If {
-	$env:FarNetToBuildPowerShellFarHelp -and (ask 'Build PowerShellFar help')
+task buildHelp -If {
+	$env:FarNetToBuildPowerShellFarHelp -and (ask 'Build PSF help')
 } {
-	Start-Far -Test 0 'ps: Invoke-Build help' -Panel1 $RepoRoot\PowerShellFar -Title buildPsfHelp
+	Start-Far 'ps: Invoke-Build help' $RepoRoot\PowerShellFar -Exit 0
 }
 
 task buildDocs -If {($Push -ne 3) -and (ask 'Build FarNet CHM help')} DC::make

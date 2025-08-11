@@ -441,9 +441,6 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 		case OPEN_COMMANDLINE:
 			{
 				InvokeCommand(((OpenCommandLineInfo*)info->Data)->CommandLine, OPEN_COMMANDLINE);
-
-				if (Works::Test::IsTestCommand)
-					Works::Test::Exit(nullptr);
 			}
 			break;
 		case OPEN_LEFTDISKMENU:
@@ -532,13 +529,6 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 
 		// no panel
 		return nullptr;
-	}
-	catch (Exception^ ex)
-	{
-		if (info->OpenFrom == OPEN_COMMANDLINE && Works::Test::IsTestCommand)
-			Works::Test::Exit(ex);
-
-		throw;
 	}
 	finally
 	{

@@ -1,3 +1,4 @@
+
 namespace FarNet.FSharp
 open FarNet
 open System
@@ -60,6 +61,8 @@ type Test =
 
         // run async tests
         async {
+            Works.ExitManager.BeginJobs()
+
             for it in Tests.async do
                 do! Jobs.Job(fun () -> outTest $"fs: run \"{it.Key}\"")
                 do! it.Value
@@ -67,8 +70,6 @@ type Test =
             // summary
             do! Jobs.Job(fun () -> far.UI.WriteLine($"Done {Tests.getCount ()} tests {sw.Elapsed}", ConsoleColor.Green))
 
-            // exit? (if we have some tests else something is wrong)
-            if Tests.getCount () > 0 && Environment.GetEnvironmentVariable("QuitFarAfterTests") = "1" then
-                do! Jobs.Job(far.Quit)
+            Works.ExitManager.EndJobs()
         }
         |> Jobs.Start

@@ -121,7 +121,7 @@ task nuget package, version, {
 }
 
 task test {
-	Start-Far "ps: ..\..\Test\Test-FarNet.ps1 * -Quit" .\Tests -ReadOnly
+	Start-Far "ps: Test-FarNet *" .\Tests -Exit 999
 }
 
 task . build, help, clean

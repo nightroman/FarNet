@@ -23,7 +23,7 @@ type FarCommand() =
             far.UI.WriteLine(message, color)
 
             //! 2024-12-30-0920 fail on testing or it will formally pass
-            if FarNet.Works.Test.IsTestCommand && isNull r.Exception then
+            if Works.ExitManager.IsExiting && isNull r.Exception then
                 failwith message
 
         // then throw an exception (do not write or the caller has no way to know and handle it)

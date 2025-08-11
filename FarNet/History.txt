@@ -1,6 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 9.0.34 =
+
+Bench/Start-Far.ps1
+- move processing from PSF to FarNet
+
 = 9.0.33 =
 
 Tweaks for Start-Far.ps1

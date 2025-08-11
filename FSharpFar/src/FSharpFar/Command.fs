@@ -1,7 +1,10 @@
-﻿[<RequireQualifiedAccess>]
+﻿
+[<RequireQualifiedAccess>]
 module FSharpFar.Command
 open System
 open FarNet
+
+#nowarn "57"
 
 type ProjectOpenBy = VS|VSCode with
     static member Parse(s) =

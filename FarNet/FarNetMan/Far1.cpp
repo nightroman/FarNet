@@ -1,3 +1,4 @@
+
 #include "stdafx.h"
 #include "Far1.h"
 #include "CommandLine.h"
@@ -231,6 +232,10 @@ void Far1::ShowError(String^ title, Exception^ error)
 	// 091028 Do not throw on null, just ignore.
 	if (!error)
 		return;
+
+	// post immediate or delayed exit
+	if (Works::ExitManager::IsExiting)
+		Works::ExitManager::Exit(error);
 
 	// stop running macros
 	String^ msgMacro = nullptr;

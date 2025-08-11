@@ -9,19 +9,35 @@
 
 .Parameter Command
 		Specifies the command to be invoked in the active panel.
-		By default commands are treated as FarNet commands.
+		By default commands are invoked as FarNet commands.
 		Use the switch Enter for other commands.
 
-.Parameter Panel1
+.Parameter Path
 		Specifies the active panel directory or file.
 		Default: the current location.
 
-.Parameter Panel2
+.Parameter Path2
 		Specifies the passive panel directory or file.
-		Default: the Panel1 path.
+		Default: the same as Path.
+
+.Parameter Active
+		Sets the active panel "Left" or "Right".
 
 .Parameter Title
 		Specifies the window title.
+
+.Parameter Exit
+		Tells to exit after the command completion with the delay or after
+		the timeout, whatever happens first. Specifies one or two numbers:
+		delay and timeout in milliseconds. Implies ReadOnly and Wait.
+
+		Exit codes: 0: success, 1: failure, N: timeout value.
+
+.Parameter Environment
+		Specifies the environment variables dictionary.
+
+.Parameter WindowStyle
+		Specifies the value for Start-Process -WindowStyle.
 
 .Parameter Enter
 		Tells to enter the command as typed manually.
@@ -35,137 +51,112 @@
 		Tells to start with read only profile data.
 
 .Parameter Wait
-		Tells to wait for exit, check for the exit code, fail if it is not 0.
-
-.Parameter Quit
-		Tells to quit Far when the command completes.
-
-.Parameter Test
-		Tells to invoke FarNet command as a tool, i.e. exit after completion,
-		and specifies the exit delay in milliseconds, e.g. to see errors.
-
-		Test implies ReadOnly, Wait, Enter.
-		Exit code: 0 (success) or 1 (failure).
-
-.Parameter Timeout
-		Tells to exit after the specifies time in milliseconds.
-		The exit code is set to this timeout value.
-
-		Timeout implies ReadOnly, Wait.
-
-.Parameter Environment
-		Specifies the environment variables dictionary.
-
-.Parameter WindowStyle
-		Specifies the value for Start-Process -WindowStyle.
+		Tells to wait for exit and fail if the exit code is not 0.
 
 .Example
-	> ps: Start-Far 'ps:$Psf.StartCommandConsole()' -Hidden
+	># PowerShellFar REPL
+	Start-Far 'ps:$Psf.StartCommandConsole()' -Hidden
+
+.Example
+	># Far Manager folders
+	Start-Far '' $env:FARHOME $env:FARPROFILE -Active Left
 #>
 
 [CmdletBinding()]
 param(
-	[string]$Command,
-	[string]$Panel1 = '.',
-	[string]$Panel2 = $Panel1,
-	[string]$Title,
-	[switch]$Enter,
-	[switch]$Hidden,
-	[switch]$ReadOnly,
-	[switch]$Wait,
-	[switch]$Quit,
-	[int]$Test = -1,
-	[int]$Timeout = -1,
-	[hashtable]$Environment,
+	[Parameter(Position=0)]
+	[string]$Command
+	,
+	[Parameter(Position=1)]
+	[string]$Path = '.'
+	,
+	[Parameter(Position=2)]
+	[string]$Path2
+	,
+	[ValidateSet('Left', 'Right')]
+	[string]$Active
+	,
+	[string]$Title
+	,
+	[ValidateCount(1, 2)]
+	[int[]]$Exit
+	,
+	[hashtable]$Environment
+	,
 	[System.Diagnostics.ProcessWindowStyle]$WindowStyle = 'Normal'
+	,
+	[switch]$Enter
+	,
+	[switch]$Hidden
+	,
+	[switch]$ReadOnly
+	,
+	[switch]$Wait
 )
 
 $ErrorActionPreference = 1; trap {$PSCmdlet.ThrowTerminatingError($_)}
 
-if ($Command) {
-	### Normal call to start Far
+$Path = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($Path)
+if (!(Test-Path -LiteralPath $Path)) {throw "Missing Path: '$Path'."}
 
-	$Panel1 = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($Panel1)
-	$Panel2 = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($Panel2)
-	if (!(Test-Path -LiteralPath $Panel1)) {throw "Missing path 1: '$Panel1'."}
-	if (!(Test-Path -LiteralPath $Panel2)) {throw "Missing path 2: '$Panel2'."}
+if ($Path2) {
+	$Path2 = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($Path2)
+	if (!(Test-Path -LiteralPath $Path2)) {throw "Missing Path2: '$Path2'."}
+}
+else {
+	$Path2 = $Path
+}
 
-	$Environment = if ($Environment) {[hashtable]::new($Environment)} else {@{}}
-	$Environment.FARNET_PSF_START_SCRIPT = "Start-FarTask '$($MyInvocation.MyCommand.Path.Replace("'", "''"))'"
-	$Environment.FAR_START_COMMAND = $Command
-	$Environment.FAR_START_ENTER = if ($Enter -or $Test -ge 0) {1} else {$null}
-	$Environment.FAR_START_QUIT = if ($Quit) {1} else {$null}
-	$Environment.FAR_START_TEST = if ($Test -ge 0) {$ReadOnly = $Wait = $true; $Test} else {$null}
-	$Environment.FAR_START_TIMEOUT = if ($Timeout -ge 1) {$ReadOnly = $Wait = $true; $Timeout} else {$null}
-	$oldEnvironment = @{}
-	foreach($_ in $Environment.GetEnumerator()) {
-		$oldEnvironment.Add($_.Key, [System.Environment]::GetEnvironmentVariable($_.Key))
-		[System.Environment]::SetEnvironmentVariable($_.Key, $_.Value)
-	}
+if ($null -eq $Exit) {
+	$Delay = $Timeout = -1
+}
+else {
+	$ReadOnly = $Wait = $true
+	$Delay = $Exit[0]
+	$Timeout = if ($Exit.Length -ge 2) {$Exit[1]} else {-1}
+}
 
-	try {
-		$exe = if ($env:FARHOME) {"$env:FARHOME\Far.exe"} else {'Far.exe'}
-		$arg = $(
-			if ($Title) {"/title:`"$Title`""}
-			if ($ReadOnly) {'/ro'}
-			if ($Hidden) {
-				'/set:Panel.Left.Visible=false'
-				'/set:Panel.Right.Visible=false'
-			}
-			else {
-				'/set:Panel.Left.Visible=true'
-				'/set:Panel.Right.Visible=true'
-			}
-			"`"$Panel1`""
-			"`"$Panel2`""
-		)
-		$p = Start-Process $exe $arg -WindowStyle $WindowStyle -PassThru
-		if ($Wait) {
-			$p.WaitForExit()
-			$global:LASTEXITCODE = $p.ExitCode
-			if ($global:LASTEXITCODE) {
-				throw "Command exited with code $global:LASTEXITCODE -- $Command"
-			}
+$Environment = if ($Environment) {[hashtable]::new($Environment)} else {@{}}
+$Environment.FAR_START_COMMAND = if ($Command) {$Command}
+$Environment.FAR_START_ENTER = if ($Enter) {1}
+$Environment.FAR_START_DELAY = if ($Delay -ge 0) {$Delay}
+$Environment.FAR_START_TIMEOUT = if ($Timeout -ge 1) {$Timeout}
+$oldEnvironment = @{}
+foreach($_ in $Environment.GetEnumerator()) {
+	$oldEnvironment.Add($_.Key, [System.Environment]::GetEnvironmentVariable($_.Key))
+	[System.Environment]::SetEnvironmentVariable($_.Key, $_.Value)
+}
+
+try {
+	$exe = if ($env:FARHOME) {"$env:FARHOME\Far.exe"} else {'Far.exe'}
+	$arguments = $(
+		if ($Title) {"/title:`"$Title`""}
+		if ($ReadOnly) {'/ro'}
+		if ($Hidden) {
+			'/set:Panel.Left.Visible=false'
+			'/set:Panel.Right.Visible=false'
 		}
-	}
-	finally {
-		foreach($_ in $oldEnvironment.GetEnumerator()) {
-			[System.Environment]::SetEnvironmentVariable($_.Key, $_.Value)
+		else {
+			'/set:Panel.Left.Visible=true'
+			'/set:Panel.Right.Visible=true'
+		}
+		if ($Active) {
+			"/set:Panel.LeftFocus=$(if ($Active -eq 'Left') {'true'} else {'false'})"
+		}
+		"`"$Path`""
+		"`"$Path2`""
+	)
+	$process = Start-Process $exe $arguments -WindowStyle $WindowStyle -PassThru
+	if ($Wait) {
+		$process.WaitForExit()
+		$global:LASTEXITCODE = $process.ExitCode
+		if ($global:LASTEXITCODE) {
+			throw "Command exited with code $global:LASTEXITCODE -- $Command"
 		}
 	}
 }
-else {
-	### Internal call by Start-FarTask
-
-	if (!$env:FAR_START_COMMAND) {
-		throw 'Please specify the command or use ":" for void.'
-	}
-
-	if ($_ = $env:FAR_START_TEST) {
-		[FarNet.Works.Test]::SetTest($_)
-	}
-
-	if ($_ = $env:FAR_START_TIMEOUT) {
-		[FarNet.Works.Test]::SetTimeout($_)
-	}
-
-	if ($env:FAR_START_COMMAND -ne ':') {
-		if ($env:FAR_START_ENTER) {
-			job {
-				$Far.CommandLine.Text = $env:FAR_START_COMMAND
-				$Far.PostMacro('Keys "Enter"')
-			}
-		}
-		else {
-			job {
-				$Far.InvokeCommand($env:FAR_START_COMMAND)
-			}
-		}
-	}
-
-	if ($env:FAR_START_QUIT) {
-		job {
-			$Far.Quit()
-		}
+finally {
+	foreach($_ in $oldEnvironment.GetEnumerator()) {
+		[System.Environment]::SetEnvironmentVariable($_.Key, $_.Value)
 	}
 }

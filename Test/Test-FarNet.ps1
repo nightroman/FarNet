@@ -4,11 +4,11 @@
 
 .Description
 	Examples
-		ps: Test-FarNet.ps1
-		ps: Test-FarNet.ps1 *
-		ps: Test-FarNet.ps1 -All
-		ps: Test-FarNet.ps1 .\Test\X\*
-		ps: Test-FarNet.ps1 (ls -rec *panel*.ps1)
+		ps: Test-FarNet
+		ps: Test-FarNet *
+		ps: Test-FarNet -All
+		ps: Test-FarNet .\Test\X\*
+		ps: Test-FarNet (ls -rec *panel*.ps1)
 
 .Parameter Tests
 		| String -> Get-ChildItem path/pattern
@@ -17,10 +17,6 @@
 
 .Parameter All
 		Tells to invoke extra tests.
-
-.Parameter Quit
-		Tells to exit Far after successful tests.
-		Or you can set $env:QuitFarAfterTests = 1
 #>
 
 [CmdletBinding()]
@@ -30,15 +26,13 @@ param(
 	$ExpectedIBTestCount = 5,
 	$ExpectedBasicsCount = 15,
 	$ExpectedExtrasCount = 9,
-	[switch]$All,
-	[switch]$Quit
+	[switch]$All
 )
 
 Assert-Far $env:FarNetCode -Message 'Please set env:FarNetCode'
 Assert-Far ($Far.Window.Count -eq 2) -Message 'Please exit editors, viewers, dialogs.'
 
 $global:Error.Clear()
-if ($Quit) {$env:QuitFarAfterTests = 1}
 $SavedPanelPaths = $Far.Panel.CurrentDirectory, $Far.Panel2.CurrentDirectory
 
 ### Resolve $Tests
@@ -102,6 +96,7 @@ foreach($test in $extras) {
 }
 
 ### Main tests
+[FarNet.Works.ExitManager]::BeginJobs()
 Start-FarTask -Data Tests, ExpectedTaskCount, SavedPanelPaths {
 	$Data.Stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
 	$Data.TaskCount = 0
@@ -164,22 +159,22 @@ Start-FarTask -Data Tests, ExpectedTaskCount, SavedPanelPaths {
 		}
 	}
 	job {
-		### Quit after tests?
-		if ($env:QuitFarAfterTests -eq 1) {
-			$Far.Quit()
+		### Exiting
+		if ([FarNet.Works.ExitManager]::IsExiting) {
+			[FarNet.Works.ExitManager]::EndJobs()
+			return
 		}
-		else {
-			### Restore panels
-			$Far.Panel.CurrentDirectory = $Data.SavedPanelPaths[0]
-			$Far.Panel2.CurrentDirectory = $Data.SavedPanelPaths[1]
 
-			### Summary
-			Write-Host "Tasks: $($Data.TaskCount)/$($Data.ExpectedTaskCount)" -ForegroundColor ($Data.TaskCount -eq $Data.ExpectedTaskCount ? 'Green' : 'Yellow')
-			Write-Host "$($Data.Stopwatch.Elapsed)" -ForegroundColor Green
+		### Restore panels
+		$Far.Panel.CurrentDirectory = $Data.SavedPanelPaths[0]
+		$Far.Panel2.CurrentDirectory = $Data.SavedPanelPaths[1]
 
-			### DEBUG
-			if ((Get-Item $env:FARHOME\FarNet\FarNet.dll).VersionInfo.Comments -like '*DEBUG*') { Write-Host FN=DEBUG -ForegroundColor Red }
-			if ((Get-Item $env:FARHOME\FarNet\Modules\PowerShellFar\PowerShellFar.dll).VersionInfo.Comments -like '*DEBUG*') { Write-Host PS=DEBUG -ForegroundColor Red }
-		}
+		### Summary
+		Write-Host "Tasks: $($Data.TaskCount)/$($Data.ExpectedTaskCount)" -ForegroundColor ($Data.TaskCount -eq $Data.ExpectedTaskCount ? 'Green' : 'Yellow')
+		Write-Host "$($Data.Stopwatch.Elapsed)" -ForegroundColor Green
+
+		### DEBUG
+		if ((Get-Item $env:FARHOME\FarNet\FarNet.dll).VersionInfo.Comments -like '*DEBUG*') { Write-Host FN=DEBUG -ForegroundColor Red }
+		if ((Get-Item $env:FARHOME\FarNet\Modules\PowerShellFar\PowerShellFar.dll).VersionInfo.Comments -like '*DEBUG*') { Write-Host PS=DEBUG -ForegroundColor Red }
 	}
 }
