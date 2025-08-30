@@ -11,22 +11,28 @@
 	Otherwise powershell.exe is used.
 
 	*.build.ps1, *.test.ps1
-	The current task is invoked in a new console by Invoke-Build (https://github.com/nightroman/Invoke-Build).
+	The current task is invoked in a new console by Invoke-Build, https://github.com/nightroman/Invoke-Build
 	Note that built-in [F5] invokes in the Far Manager console and PowerShellFar session.
 
 	*.Rule.ps1
-	The current rule is invoked in a new console by Assert-PSRule (https://github.com/microsoft/PSRule).
+	The current rule is invoked in a new console by Assert-PSRule, https://github.com/microsoft/PSRule
 	Input is provided by your own command Get-PSRuleInput, e.g. a script in the path.
 
 	*.ps1
 	Other scripts are invoked by powershell in a new console.
 	Note that built-in [F5] invokes in the PowerShellFar session.
 
-	*.md, *.markdown, *.text
+	*.md, *.text
 	Markdown files are opened by Show-FarMarkdown.ps1
 
 	*.bat, *.cmd
 	Batch file are invoked in a new console by cmd.
+
+	*.fsx
+	F# scripts run by fsx.exe, FarNet.FSharpFar.
+
+	*.http, *.rest
+	VSCode REST Client HTTP files run by PSRest, https://github.com/nightroman/PSRest
 
 	Other files are invoked by Invoke-Item.
 #>
@@ -102,8 +108,14 @@ if ($ext -eq '.ps1') {
 }
 
 ### Markdown
-if ('.md', '.markdown', '.text' -contains $ext) {
+if ($ext -in '.md', '.text') {
 	Show-FarMarkdown.ps1
+	return
+}
+
+### Batch
+if ($ext -in '.bat', '.cmd') {
+	cmd.exe /c start cmd /k "`"$path`""
 	return
 }
 
@@ -113,9 +125,12 @@ if ($ext -eq '.fsx') {
 	return
 }
 
-### Batch
-if ('.bat', '.cmd' -contains $ext) {
-	cmd.exe /c start cmd /k "`"$path`""
+### HTTP
+if ($ext -in '.http', '.rest') {
+	Import-Module PSRest
+	$text = Invoke-RestHttp $path
+	Set-Content temp:/RestHttp.txt $text
+	Open-FarEditor temp:/RestHttp.txt -DisableHistory
 	return
 }
 

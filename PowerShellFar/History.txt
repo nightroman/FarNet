@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.45 =
+
+Invoke-FromEditor.ps1
+- *.http, *.rest // VSCode REST Client HTTP files run by PSRest, https://github.com/nightroman/PSRest
+
 = 9.0.44 =
 
 Use FarNet 9.0.34
