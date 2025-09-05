@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.46 =
+
+Remove some experiments, including command `#enter`.
+
+Invoke-FromEditor.ps1 - tweaks for PSRest.
+
 = 9.0.45 =
 
 Invoke-FromEditor.ps1

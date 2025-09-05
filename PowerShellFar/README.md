@@ -176,7 +176,6 @@ Helper commands for macros:
 - `ps:#invoke` calls "Invoke selected"
 - `ps:#history` calls "Command history"
 - `ps:#complete` calls "Complete"
-- `ps:#enter` sends `[Enter]` and keeps command line
 - `ps:#line-breakpoint` sets line breakpoint in the editor
 
 Console output may be transcribed to a file, use `Start-Transcript` and

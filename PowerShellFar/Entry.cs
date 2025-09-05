@@ -1,5 +1,4 @@
-﻿
-using FarNet;
+﻿using FarNet;
 using System.Management.Automation;
 
 namespace PowerShellFar;
@@ -129,7 +128,7 @@ public sealed class Entry : ModuleHost
 	{
 		return command switch
 		{
-			"InvokeScriptArguments" => new Func<string, object[], object[]>((string script, object[] arguments) =>
+			"InvokeScriptArguments" => new Func<string, object[], object[]>((script, arguments) =>
 			{
 				var result = A.InvokeCode(script, arguments);
 				return PS2.UnwrapPSObject(result);
@@ -153,9 +152,6 @@ public sealed class Entry : ModuleHost
 				return;
 			case "#history":
 				A.Psf.ShowHistory();
-				return;
-			case "#enter":
-				EditorKit.PlayNativeEnter();
 				return;
 			case "#line-breakpoint":
 				DebuggerKit.OnLineBreakpoint();

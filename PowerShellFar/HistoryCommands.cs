@@ -1,19 +1,10 @@
-﻿
-using FarNet;
+﻿using FarNet;
 using FarNet.Tools;
 
 namespace PowerShellFar;
 
 class HistoryCommands : HistoryStore
 {
-	static readonly List<HistoryInfo> _sessionLines = [];
-
-	public static void AddSessionLine(string line)
-	{
-		_sessionLines.RemoveAll(x => x.Name == line);
-		_sessionLines.Add(new(line, DateTime.Now, false));
-	}
-
 	public static bool HasPrefix(string line)
 	{
 		return
@@ -38,9 +29,6 @@ class HistoryCommands : HistoryStore
 			if (HasPrefix(info.Name))
 				res.Add(info);
 		}
-
-		// session
-		res.AddRange(_sessionLines);
 
 		// sort and trim
 		return [.. res
