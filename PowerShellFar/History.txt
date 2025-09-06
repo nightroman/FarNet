@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.47 =
+
+Invoke-FromEditor.ps1 - PSRest, run the caret request.
+
 = 9.0.46 =
 
 Remove some experiments, including command `#enter`.

@@ -128,7 +128,7 @@ if ($ext -eq '.fsx') {
 ### HTTP
 if ($ext -in '.http', '.rest') {
 	Import-Module -Name PSRest
-	$text = Invoke-RestHttp -Path $path -HeadersVariable Headers
+	$text = Invoke-RestHttp -Text ($editor.GetText()) -Tag ($editor.Caret.Y + 1) -HeadersVariable Headers
 
 	$ext = 'application/json' -eq $Headers.ContentType ? 'json' : 'txt'
 	$file = "$env:TEMP\RestHttp.$ext"
