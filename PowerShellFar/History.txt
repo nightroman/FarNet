@@ -1,5 +1,7 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.48 =
+
 Search-Regex.ps1
 - fix incomplete input on `AllText`
 - persist `AllText` per session
