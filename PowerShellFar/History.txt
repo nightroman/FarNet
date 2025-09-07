@@ -1,5 +1,12 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+Search-Regex.ps1
+- fix incomplete input on `AllText`
+- persist `AllText` per session
+
+Show-FarMarkdown.ps1
+- use Pandoc 3.8
+
 = 9.0.47 =
 
 Invoke-FromEditor.ps1 - PSRest, run the caret request.

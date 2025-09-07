@@ -122,9 +122,8 @@ HTML may be produced by this command:
 To keep line breaks similar to source, use `--wrap=preserve`. This should not
 affect HLF help rendering but may be useful for HLF inspection in the editor.
 
-For making just HLF use `--no-highlight` to disable code blocks syntax
-highlighting as not needed. For making HTML and HLF highlighting may be
-preserved.
+For making just HLF use `--syntax-highlighting=none` to disable not needed
+highlighting. For making HTML and HLF default highlighting may be preserved.
 
 To make HTML for documentation, use `--standalone` and set the page title
 `--metadata=pagetitle:MyTitle`. If this HTML is used for HLF then set

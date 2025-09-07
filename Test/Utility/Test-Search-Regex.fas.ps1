@@ -47,14 +47,6 @@ job {
 
 ### Invalid input
 job {
-	$r = try {<##> Search-Regex.ps1 -miss miss} catch {$_}
-	Assert-Far "$r" -eq 'Invalid arguments: -miss miss'
-	Assert-Far $r.InvocationInfo.Line.Contains('<##>')
-
-	$r = try {<##> 1 | Search-Regex.ps1 -InputObject 1} catch {$_}
-	Assert-Far "$r" -eq 'Pipeline input and InputObject cannot be used together.'
-	Assert-Far $r.InvocationInfo.Line.Contains('<##>')
-
 	$r = try {<##> Search-Regex.ps1 it} catch {$_}
 	Assert-Far "$r" -eq 'There is no input.'
 	Assert-Far $r.InvocationInfo.Line.Contains('<##>')

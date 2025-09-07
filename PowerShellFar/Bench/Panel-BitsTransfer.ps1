@@ -101,7 +101,7 @@ if ($Auto) {
 ### Start transfer
 if ($Source -and $Destination) {
 	if ($Source.Count -ne $Destination.Count) {
-		$Far.Message("Different server and client file numbers.")
+		Show-FarMessage "Different server and client file numbers."
 		return
 	}
 	if ($Source.Count -eq 1) {

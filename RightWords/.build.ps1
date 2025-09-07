@@ -20,7 +20,7 @@ task build meta, {
 task publish help, resgen
 
 task help -Inputs README.md -Outputs $ModuleRoot\RightWords.hlf {
-	exec { pandoc.exe README.md "--output=$env:TEMP\z.html" --from=gfm --no-highlight }
+	exec { pandoc.exe README.md "--output=$env:TEMP\z.html" --from=gfm --syntax-highlighting=none }
 	exec { HtmlToFarHelp.exe "from=$env:TEMP\z.html" "to=$ModuleRoot\RightWords.hlf" }
 }
 

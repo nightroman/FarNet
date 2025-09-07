@@ -131,7 +131,7 @@ $param = $(
 	"--output=$html"
 	"--from=$Format"
 	if ($Help) {
-		'--no-highlight'
+		'--syntax-highlighting=none'
 	}
 	else {
 		$name = [System.IO.Path]::GetFileNameWithoutExtension($FileName)

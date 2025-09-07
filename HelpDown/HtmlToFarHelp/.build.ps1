@@ -176,7 +176,7 @@ function Test-File([TestCase]$Test) {
 	# HTML
 	switch($Test.Mode) {
 		2 { exec { pandoc.exe $Test.File --output=$html --from=markdown_phpextra --wrap=preserve } }
-		3 { exec { pandoc.exe $Test.File --output=$html --from=gfm --wrap=preserve --no-highlight } }
+		3 { exec { pandoc.exe $Test.File --output=$html --from=gfm --wrap=preserve --syntax-highlighting=none } }
 	}
 
 	# HLF

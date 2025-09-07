@@ -22,7 +22,7 @@
 		The option Singleline/s implies AllText.
 
 .Parameter InputObject
-		Strings (file paths) and FileInfo (from Get-*Item).	If it is not
+		Strings (file paths) and FileInfo (from Get-*Item). If it is not
 		defined then items come from the pipeline. If there are no items
 		and Regex is not set then an input command is specified in the
 		dialog.
@@ -37,18 +37,27 @@
 		The option Singleline/s implies AllText.
 #>
 
+[CmdletBinding()]
 param(
-	$Regex,
-	$Options,
-	$InputObject,
+	$Regex
+	,
+	$Options
+	,
+	[Parameter(ValueFromPipeline=1)]
+	$InputObject
+	,
 	[switch]$AllText
 )
 
 #requires -Version 7.4
-$ErrorActionPreference = 1
-trap {Write-Error $_ -ErrorAction Stop}
-if ($args) {throw "Invalid arguments: $args"}
-if ($Host.Name -ne 'FarHost') {throw 'Requires FarHost.'}
+begin {
+	$ErrorActionPreference = 1; if ($Host.Name -ne 'FarHost') {Write-Error 'Requires FarHost.'}
+	$Items = [System.Collections.Generic.List[object]]::new()
+}
+process {
+	$Items.Add($InputObject)
+}
+end { try {
 
 [Flags()]
 enum SearchRegexOptions {
@@ -76,20 +85,11 @@ function whole_word_regex($_) {
 	"(?(?=\w)\b)$_(?(?<=\w)\b)"
 }
 
-### Collect input
-if (!$InputObject) {
-	$Host.UI.RawUI.WindowTitle = 'Collecting input...'
-	$InputObject = @($input)
-}
-elseif ($MyInvocation.ExpectingInput) {
-	throw "Pipeline input and InputObject cannot be used together."
-}
-
 ### Regex dialog
 if (!$Regex) {
 	[int]$w1 = $Far.UI.WindowSize.X * 0.8
 	[int]$w2 = $w1 - 6
-	$dialog = $Far.CreateDialog(-1, -1, $w1, ($InputObject ? 10 : 11))
+	$dialog = $Far.CreateDialog(-1, -1, $w1, 9)
 	$dialog.TypeId = 'DA462DD5-7767-471E-9FC8-64A227BEE2B1'
 	$dialog.HelpTopic = "<$($Psf.AppHome)\\>search-regexps1"
 	[void]$dialog.AddBox(3, 1, 0, 0, 'Search-Regex')
@@ -105,19 +105,19 @@ if (!$Regex) {
 	$eOptions.History = 'RegexOptions'
 	$eOptions.UseLastHistory = $true
 
-	if (!$InputObject) {
-		[void]$dialog.AddText(5, -1, 0, '&Input')
-		$eInput = $dialog.AddEdit($x, 0, $w2, '')
+	[void]$dialog.AddText(5, -1, 0, '&Input')
+	$eInput = $dialog.AddEdit($x, 0, $w2, '')
+	if ($Items) {
+		$eInput.Disabled = $true
+		$eInput.Text = "$($Items.Count) items"
+	}
+	else {
 		$eInput.History = 'PowerShellItems'
 		$eInput.UseLastHistory = $true
 	}
 
-	$dialog.AddText(5, -1, 0, '').Separator = 1
-
 	$xAllText = $dialog.AddCheckBox($x, -1, '&All text')
-	$xAllText.Selected = [bool]$AllText
-
-	$dialog.AddText(5, -1, 0, '').Separator = 1
+	$xAllText.Selected = [FarNet.User]::Data['Search-Regex.AllText'] ?? [bool]$AllText
 
 	$dialog.Default = $dialog.AddButton(0, -1, 'Ok')
 	$dialog.Default.CenterGroup = $true
@@ -135,7 +135,7 @@ if (!$Regex) {
 		if ($eOptions.Text) {
 			try { $Options = [SearchRegexOptions]($eOptions.Text.Trim() -split '\W+' -join ',') }
 			catch {
-				$Far.Message($_, 'Invalid options')
+				Show-FarMessage $_ 'Invalid options'
 				$dialog.Focused = $eOptions
 				continue
 			}
@@ -147,7 +147,7 @@ if (!$Regex) {
 		# pattern after options
 		$pattern = $eRegex.Text
 		if (!$pattern) {
-			$Far.Message('Pattern must not be empty.', 'Invalid pattern')
+			Show-FarMessage 'Pattern must not be empty.' 'Invalid pattern'
 			$dialog.Focused = $eRegex
 			continue
 		}
@@ -164,13 +164,16 @@ if (!$Regex) {
 			$Regex = [regex]::new($pattern, $RegexOptions)
 		}
 		catch {
-			$Far.Message($_, 'Invalid pattern')
+			Show-FarMessage $_ 'Invalid pattern'
 			$dialog.Focused = $eRegex
 			continue
 		}
 
+		# save
+		[FarNet.User]::Data['Search-Regex.AllText'] = $xAllText.Selected
+
 		# ready input
-		if ($InputObject) {
+		if ($Items) {
 			break
 		}
 
@@ -187,19 +190,19 @@ if (!$Regex) {
 
 			# invoke input
 			$Host.UI.RawUI.WindowTitle = 'Collecting input...'
-			$InputObject = & $sb
-			if ($InputObject) {
+			$Items = & $sb
+			if ($Items) {
 				break
 			}
 
 			# no input
 			$dialog.Focused = $eInput
-			$Far.Message('There are no input items.', 'Input')
+			Show-FarMessage 'There are no input items.' 'Input'
 		}
 		catch {
-			$Far.Message($_, 'Invalid Input', 'LeftAligned')
+			Show-FarMessage $_ 'Invalid Input' -LeftAligned
 			$dialog.Focused = $eInput
-			$InputObject = $null
+			$Items = $null
 		}
 	}
 
@@ -220,7 +223,7 @@ if ($Regex -isnot [regex]) {
 	$RegexOptions = [Text.RegularExpressions.RegexOptions](([int]$Options) -band (-bnot (1024 + 2048)))
 	$Regex = [regex]::new($Regex, $RegexOptions)
 }
-if (!$InputObject) {
+if (!$Items) {
 	throw "There is no input."
 }
 if ($Regex.Options -band [System.Text.RegularExpressions.RegexOptions]::Singleline) {
@@ -350,8 +353,8 @@ $Panel.add_Closed({
 })
 
 ### Start search task
-Start-FarTask -Panel $Panel -InputObject $InputObject -Regex $Regex -AllText $AllText {
-	param($Panel, $InputObject, $Regex, $AllText)
+Start-FarTask -Panel $Panel -Items $Items -Regex $Regex -AllText $AllText {
+	param($Panel, $Items, $Regex, $AllText)
 
 	$ExplorerData = $Panel.Explorer.Data
 
@@ -360,7 +363,7 @@ Start-FarTask -Panel $Panel -InputObject $InputObject -Regex $Regex -AllText $Al
 	}
 
 	### Process input items
-	foreach($item in $InputObject) {
+	foreach($item in $Items) {
 		if ($ExplorerData.Done) {
 			return
 		}
@@ -387,7 +390,7 @@ Start-FarTask -Panel $Panel -InputObject $InputObject -Regex $Regex -AllText $Al
 					$ExplorerData.Output.Add($file)
 				}
 			}
-			return
+			continue
 		}
 
 		$no = 0
@@ -418,3 +421,6 @@ Start-FarTask -Panel $Panel -InputObject $InputObject -Regex $Regex -AllText $Al
 
 	$ExplorerData.State = 'Completed'
 }
+} catch {
+	$PSCmdlet.ThrowTerminatingError($_)
+}}

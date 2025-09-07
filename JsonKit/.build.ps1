@@ -20,7 +20,7 @@ task build meta, {
 }
 
 task help -Inputs README.md -Outputs $ModuleRoot\JsonKit.hlf {
-	exec { pandoc.exe $Inputs --output=README.html --from=gfm --no-highlight }
+	exec { pandoc.exe $Inputs --output=README.html --from=gfm --syntax-highlighting=none }
 	exec { HtmlToFarHelp from=README.html to=$Outputs }
 	remove README.html
 }
