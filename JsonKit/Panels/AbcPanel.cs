@@ -1,5 +1,4 @@
 ﻿using FarNet;
-using System.Linq;
 using System.Text.Json.Nodes;
 
 namespace JsonKit.Panels;
@@ -30,7 +29,7 @@ abstract class AbcPanel(AbcExplorer explorer) : Panel(explorer)
 		MyExplorer.PanelClosed();
 	}
 
-	public sealed override bool UIKeyPressed(KeyInfo key)
+	public override bool UIKeyPressed(KeyInfo key)
 	{
 		switch (key.VirtualKeyCode)
 		{

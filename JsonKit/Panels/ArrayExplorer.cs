@@ -1,7 +1,4 @@
 ﻿using FarNet;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json.Nodes;
 
 namespace JsonKit.Panels;
@@ -41,5 +38,20 @@ sealed class ArrayExplorer(JsonArray node, ExplorerArgs args)
 	{
 		foreach (var file in args.Files.OrderByDescending(x => x.Length))
 			_node.RemoveAt((int)file.Length);
+	}
+
+	internal bool MoveItem(NodeFile file, int delta)
+	{
+		int index1 = file.Index;
+		int index2 = index1 + delta;
+		if (index2 < 0 || index2 >= _node.Count)
+			return false;
+
+		SetDirty();
+		_files = null;
+		_node.RemoveAt(index1);
+		_node.Insert(index2, file.Node);
+
+		return true;
 	}
 }

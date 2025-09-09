@@ -134,6 +134,10 @@ Keys and actions
 
     Sets nulls to selected items.
 
+- `AltUp`, `AltDown`
+
+    Moves the cursor item up and down.
+
 - `CtrlS`
 
     Saves JSON to the source file.

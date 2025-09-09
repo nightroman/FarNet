@@ -19,4 +19,34 @@ sealed class ArrayPanel : AbcPanel
 	}
 
 	protected override string HelpTopic => "array-panel";
+
+	new ArrayExplorer MyExplorer => (ArrayExplorer)Explorer;
+
+	void MoveItem(int delta)
+	{
+		if (CurrentFile is NodeFile file)
+		{
+			if (MyExplorer.MoveItem(file, delta))
+			{
+				Update(true);
+				Redraw();
+			}
+		}
+	}
+
+	public sealed override bool UIKeyPressed(KeyInfo key)
+	{
+		switch (key.VirtualKeyCode)
+		{
+			case KeyCode.DownArrow when key.IsAlt():
+				MoveItem(1);
+				return true;
+
+			case KeyCode.UpArrow when key.IsAlt():
+				MoveItem(-1);
+				return true;
+		}
+
+		return base.UIKeyPressed(key);
+	}
 }
