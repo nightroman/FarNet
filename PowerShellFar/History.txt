@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.49 =
+
+Microsoft.PowerShell.SDK 7.5.3
+
 = 9.0.48 =
 
 Search-Regex.ps1

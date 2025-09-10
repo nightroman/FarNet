@@ -9,7 +9,7 @@
     <NoWarn>FarNet250101</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="xunit.v3" Version="1.0.1" />
+    <PackageReference Include="xunit.v3" Version="3.0.1" />
   </ItemGroup>
   <ItemGroup Condition="'$(FarNetTest)'==''">
     <ProjectReference Include="..\FarNet\FarNet.csproj" />
