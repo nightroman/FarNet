@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.JsonKit
 
+= 0.4.4 =
+
+Minor tweaks.
+
 = 0.4.3 =
 
 Array panel - move array items by AltUp, AltDown.

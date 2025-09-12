@@ -3,11 +3,15 @@ using System.Text.Json.Nodes;
 
 namespace JsonKit.Panels;
 
-sealed class ArrayExplorer(JsonArray node, ExplorerArgs args)
-	: AbcExplorer(MyTypeId, args)
+sealed class ArrayExplorer : AbcExplorer
 {
 	public static Guid MyTypeId = new("f457df2e-85f9-430a-9ac3-3e3c69d3e027");
-	readonly JsonArray _node = node;
+	readonly JsonArray _node;
+
+	public ArrayExplorer(JsonArray node, ExplorerArgs args) : base(MyTypeId, args)
+	{
+		_node = node;
+	}
 
 	public override JsonNode Node => _node;
 

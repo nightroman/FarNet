@@ -1,17 +1,19 @@
 ﻿using FarNet;
-using System;
-using System.Collections.Generic;
 using System.Text.Json.Nodes;
 
 namespace JsonKit.Panels;
 
-sealed class ObjectExplorer(JsonObject node, ExplorerArgs args)
-	: AbcExplorer(MyTypeId, args)
+sealed class ObjectExplorer : AbcExplorer
 {
 	public static Guid MyTypeId = new("2dfece07-d75b-41cc-bf81-c6fcccf8b63e");
-	readonly JsonObject _node = node;
+	readonly JsonObject _node;
 
 	public override JsonNode Node => _node;
+
+	public ObjectExplorer(JsonObject node, ExplorerArgs args) : base(MyTypeId, args)
+	{
+		_node = node;
+	}
 
 	protected override void UpdateNode(NodeFile file, JsonNode? node)
 	{

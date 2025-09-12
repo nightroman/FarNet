@@ -3,11 +3,15 @@ using System.Text.Json.Nodes;
 
 namespace JsonKit.Panels;
 
-abstract class AbcPanel(AbcExplorer explorer) : Panel(explorer)
+abstract class AbcPanel : Panel
 {
 	protected abstract string HelpTopic { get; }
 
 	internal AbcExplorer MyExplorer => (AbcExplorer)Explorer;
+
+	public AbcPanel(AbcExplorer explorer) : base(explorer)
+	{
+	}
 
 	protected void SetView(PanelPlan plan0)
 	{
