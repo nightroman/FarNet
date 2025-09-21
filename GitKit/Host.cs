@@ -2,8 +2,6 @@
 using GitKit.Panels;
 using LibGit2Sharp;
 using LibGit2Sharp.Handlers;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json;

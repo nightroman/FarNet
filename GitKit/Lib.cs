@@ -1,9 +1,9 @@
 ﻿using FarNet;
 using LibGit2Sharp;
 
-namespace GitKit.About;
+namespace GitKit;
 
-public static class Lib
+internal static class Lib
 {
 	/// <summary>
 	/// Discovers the Git directory if any or fails.

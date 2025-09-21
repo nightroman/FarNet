@@ -4,7 +4,6 @@ obj
 ipch
 Debug
 Release
-Properties
 TestResults
 z
 
@@ -23,3 +22,4 @@ Active.h
 AssemblyInfo.cs
 AssemblyMeta.*
 Directory.Build.props
+launchSettings.json

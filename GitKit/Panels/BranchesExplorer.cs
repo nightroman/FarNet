@@ -1,10 +1,9 @@
 ﻿using FarNet;
-using GitKit.About;
 using LibGit2Sharp;
 
 namespace GitKit.Panels;
 
-class BranchesExplorer : BaseExplorer
+public class BranchesExplorer : BaseExplorer
 {
 	public static Guid MyTypeId = new("75a5d4a6-85b7-4bab-974c-f3a3eb21c992");
 

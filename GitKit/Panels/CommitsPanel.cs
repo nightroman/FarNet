@@ -1,15 +1,13 @@
 ﻿using FarNet;
-using GitKit.About;
 using GitKit.Commands;
 using LibGit2Sharp;
-using System;
-using System.IO;
-using System.Linq;
 
 namespace GitKit.Panels;
 
-class CommitsPanel : BasePanel<CommitsExplorer>
+public class CommitsPanel : BasePanel
 {
+	public new CommitsExplorer MyExplorer => (CommitsExplorer)Explorer;
+
 	public CommitsPanel(CommitsExplorer explorer) : base(explorer)
 	{
 		SortMode = PanelSortMode.Unsorted;

@@ -1,12 +1,17 @@
-﻿using FarNet;
+﻿using LibGit2Sharp;
 
 namespace GitKit.Panels;
 
-abstract class BasePanel<T>(T explorer) : AbcPanel(explorer) where T : BaseExplorer
+public abstract class BasePanel(BaseExplorer explorer) : AbcPanel(explorer)
 {
 	public string GitDir => explorer.GitDir;
 
-	public T MyExplorer => (T)Explorer;
+	public BaseExplorer MyExplorer => (BaseExplorer)Explorer;
+
+	public Repository UseRepository()
+	{
+		return new Repository(GitDir);
+	}
 
 	protected void CompareCommits(string oldCommitSha, string newCommitSha)
 	{

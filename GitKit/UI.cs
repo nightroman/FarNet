@@ -1,5 +1,4 @@
 ﻿using FarNet;
-using GitKit.About;
 using LibGit2Sharp;
 
 namespace GitKit;

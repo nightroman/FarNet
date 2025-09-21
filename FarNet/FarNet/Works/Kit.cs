@@ -1,13 +1,5 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-using System.Buffers;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Frozen;
-using System.Collections.Generic;
-using System.IO;
 using System.Text.RegularExpressions;
 
 namespace FarNet.Works;
@@ -178,7 +170,7 @@ public static class Kit
 	{
 		// skip spaces
 		int index1 = 0;
-		while (index1 < commandLine.Length && char.IsWhiteSpace(commandLine[index1]))
+		while (index1 < commandLine.Length && (char.IsWhiteSpace(commandLine[index1]) || commandLine[index1] == '@'))
 			++index1;
 
 		// skip word

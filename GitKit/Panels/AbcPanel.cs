@@ -1,9 +1,8 @@
 ﻿using FarNet;
-using System;
 
 namespace GitKit.Panels;
 
-abstract class AbcPanel(Explorer explorer) : Panel(explorer)
+public abstract class AbcPanel(Explorer explorer) : Panel(explorer)
 {
 	protected abstract string HelpTopic { get; }
 

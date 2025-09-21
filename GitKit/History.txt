@@ -1,5 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 1.3.16 =
+
+Expose some API for testing.
+Add `GitKit.fs.ini` for F#.
+
 = 1.3.15 =
 
 Keep and reuse temp diff files (for now, to avoid issues).

@@ -8,6 +8,12 @@ job {
 	Find-FarFile main
 }
 
+### test F#
+job {
+	$Far.InvokeCommand("fs:exec file=FSF\PanelBranch.fsx")
+	Assert-Far ([FarNet.User]::Data["PanelBranch"].Author.Email.Contains('@'))
+}
+
 ### branch copy sha
 macro 'Keys "F11" if Menu.Select("GitKit", 2) > 0 then Keys "Enter" if Menu.Select("Copy SHA-1", 2) > 0 then Keys "Enter" end end'
 job {

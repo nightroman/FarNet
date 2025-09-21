@@ -1,14 +1,9 @@
 ﻿using FarNet;
-using GitKit.About;
 using LibGit2Sharp;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace GitKit.Panels;
 
-class CommitsExplorer(string gitDir, string? branchName, string? itemPath) : BaseExplorer(gitDir, MyTypeId)
+public class CommitsExplorer(string gitDir, string? branchName, string? itemPath) : BaseExplorer(gitDir, MyTypeId)
 {
 	public static Guid MyTypeId = new("80354846-50a0-4675-a418-e177f6747d30");
 

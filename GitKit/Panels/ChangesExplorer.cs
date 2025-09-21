@@ -1,16 +1,14 @@
-﻿
-using FarNet;
-using GitKit.About;
+﻿using FarNet;
 using LibGit2Sharp;
 
 namespace GitKit.Panels;
 
-class ChangesExplorer : BaseExplorer
+public class ChangesExplorer : BaseExplorer
 {
-	public static Guid MyTypeId = new("7b4c229a-949e-4100-856e-45c17d516d25");
+	public static readonly Guid MyTypeId = new("7b4c229a-949e-4100-856e-45c17d516d25");
 	readonly Options _op;
 
-	internal class Options
+	public class Options
 	{
 		public Kind Kind;
 		public string? NewCommitSha;
@@ -19,7 +17,7 @@ class ChangesExplorer : BaseExplorer
 		public string? ItemPath;
 	}
 
-	internal enum Kind
+	public enum Kind
 	{
 		CommitsRange,
 		NotCommitted,

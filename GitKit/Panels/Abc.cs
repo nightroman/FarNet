@@ -1,31 +1,12 @@
 ﻿using FarNet;
 using LibGit2Sharp;
-using System;
-using System.IO;
 
-namespace GitKit.About;
-
-static class Const
-{
-	public const string
-		BlameFile = "&Blame file",
-		CommitLog = "Commit lo&g",
-		CompareBranches = "&Compare branches",
-		CompareCommits = "&Compare commits",
-		CopyCommit = "Copy commit to clipboard",
-		CopySha = "Copy SHA-&1",
-		CreateBranch = "Create branch",
-		EditFile = "&Edit file",
-		Help = "Help",
-		MergeBranch = "&Merge branch",
-		NoBranchName = "(no branch)",
-		PushBranch = "&Push branch";
-}
+namespace GitKit.Panels;
 
 /// <summary>
 /// Name: branch friendly name // Description: tip commit info // Owner: marks
 /// </summary>
-class BranchFile(string name, string description, string? owner = null) : FarFile
+public class BranchFile(string name, string description, string? owner = null) : FarFile
 {
 	public override string Name => name;
 	public override string Description => description;
@@ -36,7 +17,7 @@ class BranchFile(string name, string description, string? owner = null) : FarFil
 /// <summary>
 /// Name: commit info // Owner: mark // LastWriteTime // CommitSha
 /// </summary>
-class CommitFile(string name, string? owner, DateTime lastWriteTime, string commitSha) : FarFile
+public class CommitFile(string name, string? owner, DateTime lastWriteTime, string commitSha) : FarFile
 {
 	public override string Name => name;
 	public override string? Owner => owner;
@@ -48,7 +29,7 @@ class CommitFile(string name, string? owner, DateTime lastWriteTime, string comm
 /// <summary>
 /// Name: file git path // Description: change kind // Change: data
 /// </summary>
-class ChangeFile(string name, string description, TreeEntryChanges change) : FarFile
+public class ChangeFile(string name, string description, TreeEntryChanges change) : FarFile
 {
 	public override string Name => name;
 	public override string Description => description;

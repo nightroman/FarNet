@@ -1,13 +1,13 @@
-﻿
-using FarNet;
-using GitKit.About;
+﻿using FarNet;
 using LibGit2Sharp;
 using System.Diagnostics;
 
 namespace GitKit.Panels;
 
-class ChangesPanel : BasePanel<ChangesExplorer>
+public class ChangesPanel : BasePanel
 {
+	public new ChangesExplorer MyExplorer => (ChangesExplorer)Explorer;
+
 	/// <summary>
 	/// Set on getting files, null for bare repo.
 	/// </summary>

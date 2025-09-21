@@ -1,6 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 9.0.35 =
+
+Code completion - ignore leading `@`.
+
 = 9.0.34 =
 
 Bench/Start-Far.ps1

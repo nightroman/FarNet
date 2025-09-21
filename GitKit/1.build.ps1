@@ -26,6 +26,7 @@ task publish {
 
 	$bit = if ($FarHome -match 'x64') {'win-x64'} elseif ($FarHome -match 'Win32') {'win-x86'} else {throw}
 	Copy-Item -Destination $ModuleRoot @(
+		"Properties\GitKit.fs.ini"
 		"$HOME\.nuget\packages\LibGit2Sharp\$ver1\lib\net8.0\LibGit2Sharp.dll"
 		"$HOME\.nuget\packages\LibGit2Sharp\$ver1\lib\net8.0\LibGit2Sharp.xml"
 		"$HOME\.nuget\packages\LibGit2Sharp.NativeBinaries\$ver2\runtimes\$bit\native\*.dll"
@@ -91,6 +92,7 @@ task package win32, help, markdown, {
 
 	Assert-SameFile.ps1 -Result (Get-ChildItem z\tools -Recurse -File -Name) -Text -View $env:MERGE @'
 FarHome\FarNet\Modules\GitKit\GitKit.dll
+FarHome\FarNet\Modules\GitKit\GitKit.fs.ini
 FarHome\FarNet\Modules\GitKit\GitKit.hlf
 FarHome\FarNet\Modules\GitKit\History.txt
 FarHome\FarNet\Modules\GitKit\LibGit2Sharp.dll
@@ -102,7 +104,7 @@ FarHome.x86\FarNet\Modules\GitKit\git2-3f4182d.dll
 '@
 }
 
-task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props -Jobs version, {
+task meta -Inputs 1.build.ps1, History.txt -Outputs Directory.Build.props -Jobs version, {
 	Set-Content Directory.Build.props @"
 <Project>
 	<PropertyGroup>

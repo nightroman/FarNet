@@ -1,14 +1,13 @@
 ﻿using FarNet;
-using GitKit.About;
 using GitKit.Commands;
 using LibGit2Sharp;
-using System;
-using System.Linq;
 
 namespace GitKit.Panels;
 
-class BranchesPanel : BasePanel<BranchesExplorer>
+public class BranchesPanel : BasePanel
 {
+	public new BranchesExplorer MyExplorer => (BranchesExplorer)Explorer;
+
 	public BranchesPanel(BranchesExplorer explorer) : base(explorer)
 	{
 		SortMode = PanelSortMode.Unsorted;
