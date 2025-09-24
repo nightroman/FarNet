@@ -228,8 +228,6 @@ Show output in viewer or print to console.
 
 Editor: to invoke the whole script or `Invoke-Build` task, use `[F5]`.
 
-Command line: commands are added to session history but not saved.
-
 **Command console**
 
 Invoke commands from the bottom console-like prompt box.
@@ -243,9 +241,12 @@ See [Command history](#command-history).
 
 **Interactive**
 
-Opens a new interactive file associated with its main, local, or remote session.
-Files are stored in *%FARLOCALPROFILE%\FarNet\PowerShellFar*.
-Several interactive editors are allowed.
+Opens an interactive editor associated with the main session.
+See [Interactive](#interactive).
+
+**Int.session**
+
+Opens an interactive editor associated with a local session.
 See [Interactive](#interactive).
 
 **Power panel**
@@ -539,28 +540,25 @@ Debugging rules change rather frequently, so they are documented in Wiki
 
 [Contents]
 
-Interactive is a *.interactive.ps1* file opened in the editor. Such a file is
-opened in the special console-like mode designed for typing and invoking
-PowerShell commands with their output appended to the end of editor text.
+Interactive is `*.interactive.ps1` opened in the editor. This file is opened in
+terminal-like mode for typing commands. Commands output is added to the end.
 
-A new interactive is normally opened from the *Interactive* menu with three
-choices: *Main session*, *New local session*, and *New remote session*.
+Open new interactive from the menu: `Interactive` for the main session (sync
+execution and output) and `Int.session` for local sessions (async execution
+and output, using `Profile-Local.ps1` for initializing new sessions).
 
 An interactive is also opened on entering a nested prompt, for example when
 PowerShell execution is suspended.
 
-An interactive works similar to a traditional command console but it is
-still an editor window with some rules and special hotkeys.
-
 **Command and output areas**
 
-Output areas are lines between markers `<#<` and `>#>`.
-Empty output may be represented as `<##>`.
-Areas between output areas are commands.
-The last area is the active command.
+- Output areas are lines between markers `<#<` and `>#>`.
+- Empty output may be represented as `<##>`.
+- Areas between output areas are commands.
+- The last area is the active command.
 
-Output can be edited as usual text. Note that caress modification of marker
-lines may confuse the interactive tools, syntax highlighting, and etc.
+Everything is just text with the above rules, edit it as needed but keep all
+markers consistent for correct interactive actions and syntax highlighting.
 
 **Keys and actions**
 
@@ -601,61 +599,26 @@ Without selection some editor events are special:
 
     Stops running asynchronous commands in the local or remote session.
 
----
+**Features and limitations**
 
-Interactives may be more convenient than consoles.
-They have some features and limitations:
+- **Any interactive**
 
-**Any interactive**
+    Do not call native commands using any user interaction.
 
-Native console applications with user interaction should not be called.
+- **Main session (sync)**
 
-**Main sessions (synchronous)**
+    Avoid using `$Far.Editor`, i.e. the interactive.
+    This editor is already used for commands output.
 
-Avoid using `$Far.Editor`, i.e. the interactive.
-This editor is already used for commands output.
+    On typed commands the current location is set to panels current.
 
-**Local and remote sessions (asynchronous)**
+- **Local and remote sessions (async)**
 
-Each interactive opens a separate runspace with its own session state:
-provider locations, variables, functions, aliases, and etc. Commands are
-invoked asynchronously, UI is not blocked, you can switch to other windows
-while commands are running.
+    Do not use variables `$Far`, `$Psf` and cmdlets `*-Far*`.
 
-Limitations of asynchronous interactives:
-
-- Objects `$Far` and `$Psf` are not exposed.
-- Cmdlets `*-Far*` are exposed but normally should not be used.
-- UI should be avoided: `Read-Host`, `Write-Progress`, confirmations.
-
-*********************************************************************
-## Interactive menu
-
-[Contents]
-[Interactive](#interactive)
-
-The menu opens a new interactive for the current main, or a new local or remote
-session.
-
-* Main session
-
-    Opens a console for the main PowerShell session. Commands are invoked
-    synchronously in the default runspace as if they invoked from the command
-    line. Output is sent to the same editor. All main consoles share the same
-    workspace.
-
-* New local session
-
-    Opens a console for a new local PowerShell session. Commands are invoked
-    asynchronously in a new runspace. When the console closes all session data
-    are removed.
-
-* New remote session
-
-    Opens a console in a new remote PowerShell session. Commands are invoked
-    asynchronously in a new remote runspace. You are prompted to enter a
-    computer name and a user domain\name. If a user is specified then a
-    password is also requested.
+    Each interactive has its own session state: provider locations, variables,
+    functions, aliases. Commands are invoked asynchronously, UI is not blocked,
+    you may switch to other windows while commands are still running.
 
 *********************************************************************
 ## Power panel

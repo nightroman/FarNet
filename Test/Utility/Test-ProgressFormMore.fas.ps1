@@ -70,10 +70,8 @@ job {
 	$Far.Dialog.Close()
 }
 job {
+	Start-Sleep -Milliseconds 300
 	Assert-Far $Data._220709_0637 -eq $false
-
-	# wait
-	Start-Sleep -Milliseconds 100
 	Assert-Far $Data._220709_1006 -eq 'Exiting canceled task'
 	Assert-Far $Data._220709_2007 -eq 'CancellationToken action called'
 }

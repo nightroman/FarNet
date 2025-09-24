@@ -58,8 +58,7 @@ class FarHost : PSHost
 		{
 			//! Far used to crash: Test-CallStack.ps1 \ suspend \ type exit + enter
 			//! This exception from Open() was removed, so don't try\catch all in here.
-			//! SVN tag 4.2.26
-			_nestedPromptEditor = Interactive.Create(true).Editor;
+			_nestedPromptEditor = Interactive.Create(0, true).Editor;
 
 			// Enter the modal editor. There are two ways to exit.
 			// 1) User exits the editor ([Esc]/[F10]). _nested should be this editor, not null.

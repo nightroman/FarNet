@@ -1,7 +1,3 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 #include "StdAfx.h"
 #include "Wrappers.h"
 #include "farcolor.hpp"
@@ -44,14 +40,14 @@ AutoEditorInfo::AutoEditorInfo(intptr_t editorId, bool safe)
 		if (safe)
 			EditorID = -1;
 		else
-			throw gcnew InvalidOperationException(__FUNCTION__ " failed. Ensure current editor.");
+			throw gcnew InvalidOperationException(__FUNCTION__ ": ECTL_GETINFO failed.");
 	}
 }
 
 void AutoEditorInfo::Update()
 {
 	if (!Info.EditorControl(EditorID, ECTL_GETINFO, 0, this))
-		throw gcnew InvalidOperationException(__FUNCTION__ " failed. Ensure current editor.");
+		throw gcnew InvalidOperationException(__FUNCTION__ ": ECTL_GETINFO failed.");
 }
 
 AutoPluginPanelItem::AutoPluginPanelItem(HANDLE handle, int index, FileType type)

@@ -1,4 +1,3 @@
-
 using FarNet;
 using Microsoft.PowerShell;
 using System.Collections;
@@ -132,7 +131,6 @@ public sealed partial class Actor
 
 		// initial state
 		var state = InitialSessionState.CreateDefault();
-		state.ApartmentState = ApartmentState.STA;
 		state.ExecutionPolicy = ExecutionPolicy.Bypass;
 
 		// add cmdlets
@@ -146,6 +144,7 @@ public sealed partial class Actor
 
 		// open runspace
 		Runspace = RunspaceFactory.CreateRunspace(FarHost, state);
+		Runspace.ThreadOptions = PSThreadOptions.UseCurrentThread;
 		Runspace.Open();
 
 		// Add the module path.
@@ -329,14 +328,15 @@ public sealed partial class Actor
 	/// Shows a new main session interactive in the specified mode.
 	/// </summary>
 	/// <param name="mode">The editor open mode. Default: <see cref="OpenMode.Modal"/>.</param>
+	/// <param name="session">Session kind: 0: main; 1: local; 2: remote.</param>
 	/// <remarks>
 	/// The modal interactive may be called in the middle of something to perform actions manually
 	/// and then continue interrupted execution on exit. It is similar to PowerShell nested prompt.
 	/// </remarks>
-	public void ShowInteractive(OpenMode mode = OpenMode.Modal)
+	public void ShowInteractive(OpenMode mode = OpenMode.Modal, int session = 0)
 	{
-		var inter = Interactive.Create();
-		inter.Editor.Open(mode);
+		var interactive = Interactive.Create(session, false);
+		interactive.Editor.Open(mode);
 	}
 
 	/// <summary>

@@ -1,8 +1,4 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using FarNet.Works;
+﻿using FarNet.Works;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
@@ -569,7 +565,7 @@ public abstract class IEditor : IEditorBase
 	public abstract void EndAsync();
 
 	/// <summary>
-	/// Writes queued data in the asynchronous mode and redraws if needed.
+	/// Inserts pending text in async mode.
 	/// </summary>
 	public abstract void Sync();
 

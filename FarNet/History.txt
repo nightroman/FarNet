@@ -1,6 +1,14 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 9.0.36 =
+
+InteractiveEditor
+- fix auto save in async mode
+
+IEditor.Sync
+- do not call Redraw
+
 = 9.0.35 =
 
 Code completion - ignore leading `@`.

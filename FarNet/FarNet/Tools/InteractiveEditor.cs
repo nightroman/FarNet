@@ -1,10 +1,4 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-using System.IO;
-using System.Text;
+﻿using System.Text;
 
 namespace FarNet.Tools;
 
@@ -194,8 +188,7 @@ public abstract class InteractiveEditor
 			{
 				Editor.GoToEnd(false);
 				EndOutput();
-				Editor.EndUndo();
-				Editor.Redraw();
+				EndAndRedraw();
 			}
 		}
 		return true;
@@ -232,6 +225,7 @@ public abstract class InteractiveEditor
 		return true;
 	}
 
+	//! Do not `Save()` here, changes may be delayed.
 	void EndOutput()
 	{
 		if (Editor.IsOpened)
@@ -240,10 +234,17 @@ public abstract class InteractiveEditor
 				Editor.InsertLine();
 
 			Editor.InsertText(OutputMark2 + "\r\r");
-
-			if (AutoSave)
-				Editor.Save();
 		}
+	}
+
+	void EndAndRedraw()
+	{
+		Editor.EndUndo();
+
+		if (AutoSave)
+			Editor.Save();
+
+		Editor.Redraw();
 	}
 
 	/// <summary>
@@ -257,8 +258,7 @@ public abstract class InteractiveEditor
 		Far.Api.PostJob(() =>
 		{
 			Editor.Sync();
-			Editor.EndUndo();
-			Editor.Redraw();
+			EndAndRedraw();
 		});
 	}
 

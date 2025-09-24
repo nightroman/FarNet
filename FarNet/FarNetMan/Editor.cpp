@@ -1,7 +1,3 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 #include "stdafx.h"
 #include "Editor.h"
 #include "Editor0.h"
@@ -400,58 +396,58 @@ void Editor::Caret::set(Point value)
 
 void Editor::InsertText(String^ text)
 {
-	if (!_hMutex)
+	if (!_asyncMutex)
 	{
 		EditorControl_ECTL_INSERTTEXT(_id, text, -1);
 		return;
 	}
 
-	WaitForSingleObject(_hMutex, INFINITE);
+	WaitForSingleObject(_asyncMutex, INFINITE);
 	try
 	{
-		_output->Append(text);
+		_asyncText->Append(text);
 	}
 	finally
 	{
-		ReleaseMutex(_hMutex);
+		ReleaseMutex(_asyncMutex);
 	}
 }
 
 void Editor::InsertChar(Char text)
 {
-	if (!_hMutex)
+	if (!_asyncMutex)
 	{
 		EditorControl_ECTL_INSERTTEXT(_id, text, -1);
 		return;
 	}
 
-	WaitForSingleObject(_hMutex, INFINITE);
+	WaitForSingleObject(_asyncMutex, INFINITE);
 	try
 	{
-		_output->Append(text);
+		_asyncText->Append(text);
 	}
 	finally
 	{
-		ReleaseMutex(_hMutex);
+		ReleaseMutex(_asyncMutex);
 	}
 }
 
 void Editor::InsertLine(bool indent)
 {
-	if (!_hMutex)
+	if (!_asyncMutex)
 	{
 		EditorControl_ECTL_INSERTSTRING(_id, indent);
 		return;
 	}
 
-	WaitForSingleObject(_hMutex, INFINITE);
+	WaitForSingleObject(_asyncMutex, INFINITE);
 	try
 	{
-		_output->Append("\r");
+		_asyncText->Append("\r");
 	}
 	finally
 	{
-		ReleaseMutex(_hMutex);
+		ReleaseMutex(_asyncMutex);
 	}
 }
 
@@ -762,58 +758,55 @@ TextWriter^ Editor::OpenWriter()
 
 void Editor::BeginAsync()
 {
-	// do throw now, this is a bug to call it twice
-	if (_hMutex)
-		throw gcnew InvalidOperationException("Asynchronous mode is already started.");
+	if (_asyncMutex)
+		throw gcnew InvalidOperationException("Editor is already async.");
 
 	if (!IsOpened)
 		throw gcnew InvalidOperationException("Editor must be opened.");
 
-	_hMutex = CreateMutex(nullptr, FALSE, nullptr);
+	_asyncMutex = CreateMutex(nullptr, FALSE, nullptr);
 
-	_output = gcnew StringBuilder();
+	_asyncText = gcnew StringBuilder();
 }
 
 void Editor::EndAsync()
 {
 	// do not throw, this is OK to call it twice
-	if (!_hMutex)
+	if (!_asyncMutex)
 		return;
 
-	CloseHandle(_hMutex);
-	_hMutex = 0;
+	CloseHandle(_asyncMutex);
+	_asyncMutex = 0;
 }
 
 void Editor::Sync()
 {
-	if (_hMutex)
-		WaitForSingleObject(_hMutex, INFINITE);
+	if (_asyncMutex)
+		WaitForSingleObject(_asyncMutex, INFINITE);
 
 	try
 	{
-		if (_output && _output->Length)
+		if (_asyncText && _asyncText->Length)
 		{
 			GoToEnd(false);
 
-			EditorControl_ECTL_INSERTTEXT(_id, _output->ToString(), -1);
-
-			Redraw();
+			EditorControl_ECTL_INSERTTEXT(_id, _asyncText->ToString(), -1);
 		}
 
-		if (_hMutex)
+		if (_asyncMutex)
 		{
-			if (_output)
-				_output->Length = 0;
+			if (_asyncText)
+				_asyncText->Length = 0;
 		}
 		else
 		{
-			_output = nullptr;
+			_asyncText = nullptr;
 		}
 	}
 	finally
 	{
-		if (_hMutex)
-			ReleaseMutex(_hMutex);
+		if (_asyncMutex)
+			ReleaseMutex(_asyncMutex);
 	}
 }
 

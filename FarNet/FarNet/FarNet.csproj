@@ -13,7 +13,7 @@
     <CopyRetryCount>0</CopyRetryCount>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="ErrorProne.NET.CoreAnalyzers" Version="0.8.1-beta.1">
+    <PackageReference Include="ErrorProne.NET.CoreAnalyzers" Version="0.8.2-beta.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

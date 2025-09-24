@@ -8,7 +8,7 @@
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <NoWarn>IDE0079;IDE0130;FarNet250103</NoWarn>
+    <NoWarn>IDE0079;IDE0130;FarNet250103;EPC30</NoWarn>
     <CopyRetryCount>0</CopyRetryCount>
   </PropertyGroup>
   <ItemGroup>
@@ -20,7 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.5.3" />
-    <PackageReference Include="ErrorProne.NET.CoreAnalyzers" Version="0.8.1-beta.1">
+    <PackageReference Include="ErrorProne.NET.CoreAnalyzers" Version="0.8.2-beta.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

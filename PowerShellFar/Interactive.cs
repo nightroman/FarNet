@@ -1,4 +1,3 @@
-
 using FarNet;
 using FarNet.Tools;
 using System.Management.Automation;
@@ -17,6 +16,9 @@ class Interactive : InteractiveEditor
 	PowerShell? PowerShell;
 	readonly bool _isNestedPrompt;
 
+	static readonly List<Session> _localSessions = [];
+	internal record Session(Runspace Runspace, FarHost Host);
+
 	static readonly HistoryLog _history = new(Entry.LocalData + "\\InteractiveHistory.log", Settings.Default.MaximumHistoryCount);
 
 	static string GetFilePath()
@@ -27,7 +29,7 @@ class Interactive : InteractiveEditor
 	/// <summary>
 	/// Creates an interactive.
 	/// </summary>
-	public static Interactive Create(bool isNestedPrompt = false)
+	public static Interactive Create(int session, bool isNestedPrompt)
 	{
 		// editor
 		var editor = Far.Api.CreateEditor();
@@ -38,18 +40,16 @@ class Interactive : InteractiveEditor
 		editor.DeleteSource = DeleteSource.File;
 
 		// create interactive and attach it as the host to avoid conflicts
-		Interactive interactive = new(editor, 0, isNestedPrompt) { AutoSave = true };
+		Interactive interactive = new(editor, session, isNestedPrompt) { AutoSave = true };
 		editor.Host = interactive;
 		return interactive;
 	}
 
-	public Interactive(IEditor editor) : this(editor, 0, false) { }
-
-	public Interactive(IEditor editor, int mode, bool isNestedPrompt) : base(editor, _history, "<#<", ">#>", "<##>")
+	public Interactive(IEditor editor, int session, bool isNestedPrompt) : base(editor, _history, "<#<", ">#>", "<##>")
 	{
 		_isNestedPrompt = isNestedPrompt;
 
-		switch (mode)
+		switch (session)
 		{
 			case 0:
 				OpenMainSession();
@@ -95,31 +95,12 @@ class Interactive : InteractiveEditor
 		}
 	}
 
-	void CloseSession()
+	void EnsureHost(FarHost? host)
 	{
-		if (Runspace != null)
-		{
-			Runspace.Close();
-			Runspace = null;
-		}
+		FarHost = host ?? new FarHost(new FarUI());
+		FarUI = (FarUI)FarHost.UI;
 
-		Editor.Title = Editor.FileName;
-	}
-
-	void EnsureHost()
-	{
-		if (FarHost is null)
-		{
-			Editor.Closed += delegate { CloseSession(); };
-			Editor.CtrlCPressed += OnCtrlCPressed;
-			FarUI = new FarUI();
-			FarHost = new FarHost(FarUI);
-		}
-	}
-
-	void RunspaceOpen()
-	{
-		Runspace!.Open();
+		Editor.CtrlCPressed += OnCtrlCPressed;
 	}
 
 	void OpenMainSession()
@@ -129,15 +110,32 @@ class Interactive : InteractiveEditor
 
 	void OpenLocalSession()
 	{
-		EnsureHost();
+		// new or existing session
+		Session? ses = _localSessions.Count == 0 ? null : UI.SessionsMenu.Select(_localSessions);
 
-		Runspace = RunspaceFactory.CreateRunspace(FarHost, Runspace.DefaultRunspace.InitialSessionState);
-		Runspace.ThreadOptions = PSThreadOptions.ReuseThread;
-		RunspaceOpen();
+		EnsureHost(ses?.Host);
+
+		bool isNew = false;
+		if (ses is null)
+		{
+			isNew = true;
+
+			var rs = RunspaceFactory.CreateRunspace(FarHost, Runspace.DefaultRunspace.InitialSessionState);
+			rs.ThreadOptions = PSThreadOptions.ReuseThread;
+
+			rs.Open();
+			rs.SessionStateProxy.Path.SetLocation(Far.Api.CurrentDirectory);
+
+			ses = new(rs, FarHost!);
+			_localSessions.Add(ses);
+		}
+
+		Runspace = ses.Runspace;
+
+		if (isNew)
+			InvokeProfile("Profile-Local.ps1", false);
 
 		Editor.Title = "PS local session " + Path.GetFileName(Editor.FileName);
-
-		InvokeProfile("Profile-Local.ps1", false);
 	}
 
 	void OpenRemoteSession()
@@ -155,16 +153,15 @@ class Interactive : InteractiveEditor
 				return;
 		}
 
+		EnsureHost(null);
+
 		WSManConnectionInfo connectionInfo = new(false, computerName, 0, null, null, credential);
-
-		EnsureHost();
-
 		Runspace = RunspaceFactory.CreateRunspace(FarHost, connectionInfo);
-		RunspaceOpen();
-
-		Editor.Title = "PS " + computerName + " session " + Path.GetFileName(Editor.FileName);
+		Runspace.Open();
 
 		InvokeProfile("Profile-Remote.ps1", true);
+
+		Editor.Title = "PS " + computerName + " session " + Path.GetFileName(Editor.FileName);
 	}
 
 	void InvokeProfile(string fileName, bool remote)
@@ -175,8 +172,7 @@ class Interactive : InteractiveEditor
 
 		try
 		{
-			using var ps = PowerShell.Create();
-			ps.Runspace = Runspace;
+			using var ps = PowerShell.Create(Runspace);
 			if (remote)
 				ps.AddScript(File.ReadAllText(profile), false);
 			else
@@ -255,6 +251,7 @@ class Interactive : InteractiveEditor
 		if (Runspace is null)
 		{
 			EditorOutputWriter2 writer = new(Editor);
+			A.Psf.SyncPaths();
 			A.Psf.Run(new RunArgs(code) { Writer = writer });
 			if (_isNestedPrompt)
 				DoPrompt();
@@ -265,19 +262,20 @@ class Interactive : InteractiveEditor
 		FarUI!.PushWriter(new EditorOutputWriter3(Editor));
 
 		// begin command
-		PowerShell = PowerShell.Create();
-		PowerShell.Runspace = Runspace;
+		PowerShell = PowerShell.Create(Runspace);
 		PowerShell.Commands.AddScript(code).AddCommand(A.OutHostCommand);
 		_ = Task.Run(() =>
 		{
 			try
 			{
+				//! avoid user screen, cannot get editor info on output updates
+				using FarHost.IgnoreApplications ignoreApplications = new();
+
 				PowerShell.Invoke();
 			}
 			catch (Exception ex)
 			{
-				using var ps = PowerShell.Create();
-				ps.Runspace = Runspace;
+				using var ps = PowerShell.Create(Runspace);
 				A.OutReason(ps, ex);
 			}
 
@@ -287,6 +285,7 @@ class Interactive : InteractiveEditor
 
 			// kill
 			PowerShell.Dispose();
+			PowerShell = null;
 		});
 	}
 }

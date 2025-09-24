@@ -1,7 +1,3 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 #pragma once
 
 namespace FarNet
@@ -65,7 +61,7 @@ public:
 	virtual property bool SelectionExists { bool get() override; }
 	virtual property bool ShowWhiteSpace { bool get() override; void set(bool value) override; }
 	virtual property bool WriteByteOrderMark { bool get() override; void set(bool value) override; }
-	virtual property DateTime TimeOfGotFocus{ DateTime get() override; }
+	virtual property DateTime TimeOfGotFocus { DateTime get() override; }
 	virtual property DateTime TimeOfOpen { DateTime get() override; }
 	virtual property DateTime TimeOfSave { DateTime get() override; }
 	virtual property FarNet::DeleteSource DeleteSource { FarNet::DeleteSource get() override; void set(FarNet::DeleteSource value) override; }
@@ -172,9 +168,8 @@ internal:
 	int _ChangeCount;
 	DateTime _TimeOfGotFocus;
 	DateTime _TimeOfSave;
-	// async stuff
-	HANDLE _hMutex;
-	StringBuilder^ _output;
+	HANDLE _asyncMutex;
+	StringBuilder^ _asyncText;
 	Dictionary<Guid, DrawerInfo^>^ _drawers;
 };
 }

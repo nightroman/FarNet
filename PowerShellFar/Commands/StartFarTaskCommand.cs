@@ -1,4 +1,3 @@
-
 using FarNet;
 using System.Collections;
 using System.Management.Automation;
@@ -186,6 +185,7 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 
 		// open new session
 		var rs = RunspaceFactory.CreateRunspace(_iss);
+		rs.ThreadOptions = PSThreadOptions.ReuseThread;
 		rs.Open();
 
 		// $Data for scripts

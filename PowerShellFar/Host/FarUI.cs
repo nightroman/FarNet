@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Management.Automation;
 using System.Management.Automation.Host;
+using System.Management.Automation.Runspaces;
 using System.Security;
 using System.Text;
 
@@ -63,6 +64,12 @@ class FarUI : UniformUI
 	public override Dictionary<string, PSObject> Prompt(string caption, string message, Collection<FieldDescription> descriptions)
 	{
 		ArgumentNullException.ThrowIfNull(descriptions);
+
+		if (Runspace.DefaultRunspace.Id > 1)
+		{
+			var task = Tasks.Job(() => Prompt(caption, message, descriptions));
+			return Tasks.AwaitResult(task);
+		}
 
 		var r = new Dictionary<string, PSObject>();
 
@@ -192,6 +199,12 @@ class FarUI : UniformUI
 	{
 		if (choices == null || choices.Count == 0) throw new ArgumentOutOfRangeException(nameof(choices));
 		if (defaultChoice < -1 || defaultChoice >= choices.Count) throw new ArgumentOutOfRangeException(nameof(defaultChoice));
+
+		if (Runspace.DefaultRunspace.Id > 1)
+		{
+			var task = Tasks.Job(() => PromptForChoice(caption, message, choices, defaultChoice));
+			return Tasks.AwaitResult(task);
+		}
 
 		// PS trims, e.g. message "\n" is discarded
 		caption = caption is null? string.Empty : caption.TrimEnd();
@@ -399,6 +412,12 @@ class FarUI : UniformUI
 	/// </summary>
 	public override string ReadLine()
 	{
+		if (Runspace.DefaultRunspace.Id > 1)
+		{
+			var task = Tasks.Job(ReadLine);
+			return Tasks.AwaitResult(task);
+		}
+
 		if (IsConsole())
 		{
 			var ui = new UI.ReadLine(new UI.ReadLine.Args

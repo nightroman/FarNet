@@ -1,7 +1,4 @@
-﻿// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
-namespace PowerShellFar;
+﻿namespace PowerShellFar;
 
 /// <summary>
 /// Help topics.
@@ -18,7 +15,6 @@ static class HelpTopic
 		DebuggerMenu = "debugger-menu",
 		ErrorsMenu = "errors-menu",
 		FolderTree = "folder-tree",
-		InteractiveMenu = "interactive-menu",
 		InvokeCommandsDialog = "invoke-commands-dialog",
 		ListPanel = "list-panel",
 		MenuCommands = "menu-commands",

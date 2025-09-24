@@ -359,7 +359,7 @@ static class EditorKit
 		bool isInteractive = fileName.EndsWith(Word.InteractiveSuffix, StringComparison.OrdinalIgnoreCase);
 		if (isInteractive)
 		{
-			editor.Host ??= new Interactive(editor);
+			editor.Host ??= new Interactive(editor, 0, false);
 		}
 		else if (My.PathEx.IsPSFile(fileName))
 		{
@@ -377,12 +377,12 @@ static class EditorKit
 		var line = e.Line + 1;
 		var fullPath = Path.GetFullPath(editor.FileName); //!
 
-		IEnumerable<LineBreakpoint>? bps = null;
+		LineBreakpoint[] bps;
 		int delta = 0;
 		if (e.Kind == EditorChangeKind.LineAdded)
 		{
 			delta = 1;
-			bps = A.Psf.Breakpoints.Where(x => x.Line >= line && x.Script.Equals(fullPath, StringComparison.OrdinalIgnoreCase)).ToArray();
+			bps = [.. A.Psf.Breakpoints.Where(x => x.Line >= line && x.Script.Equals(fullPath, StringComparison.OrdinalIgnoreCase))];
 		}
 		else
 		{
@@ -391,7 +391,7 @@ static class EditorKit
 				A.RemoveBreakpoint(bp);
 
 			delta = -1;
-			bps = A.Psf.Breakpoints.Where(x => x.Line > line && x.Script.Equals(fullPath, StringComparison.OrdinalIgnoreCase)).ToArray();
+			bps = [.. A.Psf.Breakpoints.Where(x => x.Line > line && x.Script.Equals(fullPath, StringComparison.OrdinalIgnoreCase))];
 		}
 
 		foreach (var bp in bps)

@@ -1,4 +1,3 @@
-
 using FarNet;
 
 namespace PowerShellFar.UI;
@@ -32,7 +31,8 @@ static class ActorMenu
 		AddTool(Res.MenuInvokeSelected, delegate { A.Psf.InvokeSelectedCode(); }, ModuleToolOptions.Editor | ModuleToolOptions.Panels | ModuleToolOptions.Dialog);
 		AddTool(Res.MenuCommandConsole, delegate { A.Psf.StartCommandConsole(); }, ModuleToolOptions.Panels);
 		AddTool(Res.MenuCommandHistory, delegate { A.Psf.ShowHistory(); }, ModuleToolOptions.F11Menus);
-		AddTool(Res.MenuInteractive, delegate { A.Psf.ShowInteractive(OpenMode.None); }, ModuleToolOptions.F11Menus);
+		AddTool(Res.MenuInteractive1, delegate { A.Psf.ShowInteractive(OpenMode.None, 0); }, ModuleToolOptions.F11Menus);
+		AddTool(Res.MenuInteractive2, delegate { A.Psf.ShowInteractive(OpenMode.None, 1); }, ModuleToolOptions.F11Menus);
 		AddTool(Res.MenuPowerPanel, delegate { A.Psf.ShowPanel(); }, ModuleToolOptions.F11Menus);
 		AddTool(Res.MenuTabExpansion, delegate { A.Psf.ExpandCode(null); }, ModuleToolOptions.Editor | ModuleToolOptions.Panels | ModuleToolOptions.Dialog);
 		AddTool(Res.MenuDebugger, delegate { A.Psf.ShowDebugger(); }, ModuleToolOptions.F11Menus);
