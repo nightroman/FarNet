@@ -37,7 +37,15 @@ PowerShell FarNet module for Far Manager
 
 **UI**
 
+- [Breakpoint dialog](#breakpoint-dialog)
 - [Choice dialog](#choice-dialog)
+- [Command console](#command-console)
+- [Command history](#command-history)
+- [Debugger menu](#debugger-menu)
+- [Errors menu](#errors-menu)
+- [Invoke commands](#invoke-commands)
+- [List panel](#list-panel)
+- [Power panel menu](#power-panel-menu)
 
 *********************************************************************
 ## About
@@ -103,8 +111,8 @@ Use command line to invoke commands with the prefixes `ps:` and `vps:`, see
 **Invoke commands**
 
 Prompts for PowerShell commands: `[F11] \ PowerShellFar \ Invoke commands`.
-Panels: [Command console dialog](#command-console-dialog).
-Other areas: [Invoke commands dialog](#invoke-commands-dialog).
+Panels: [Command console](#command-console).
+Other areas: [Invoke commands](#invoke-commands).
 
 **Selected code**
 
@@ -223,7 +231,7 @@ text starts with a space and does not end with "#".
 
 Invoke commands from the command box.
 Show the output in viewer.
-See [Invoke commands dialog](#invoke-commands-dialog).
+See [Invoke commands](#invoke-commands).
 
 **Invoke selected**
 
@@ -236,7 +244,7 @@ Editor: to invoke the whole script or `Invoke-Build` task, use `[F5]`.
 
 Invoke commands from the bottom console-like prompt box.
 Print the output to console and show the prompt again.
-See [Command console dialog](#command-console-dialog).
+See [Command console](#command-console).
 
 **Command history**
 
@@ -277,10 +285,9 @@ available help information in the viewer. In code editors (`.ps1`, `.psm1`,
 For scripts it is exposed as `$Psf.ShowHelp()`.
 
 *********************************************************************
-## Command console dialog
+## Command console
 
 [Contents]
-[Menu commands](#command-console-dialog)
 
 This dialog is started from panels by `[F11] \ PowerShellFar \ Invoke commands`.
 To start by scripts, call `$Psf.StartCommandConsole()`.
@@ -354,7 +361,7 @@ so that you can conveniently work with the opened panel as usual. But when the
 panel closes the command prompt is restarted.
 
 *********************************************************************
-## Invoke commands dialog
+## Invoke commands
 
 [Contents]
 [Menu commands](#menu-commands)
@@ -628,7 +635,74 @@ Without selection some editor events are special:
 
 [Contents]
 
-TODO...
+The are two kinds of this dialog: "select one" and "select many".
+"Select one" is used by cmdlets for various confirmations with choices.
+The dialog itself may be either normal UI dialog or console mode prompt.
+
+"Select one" may be created by `$Host.UI.PromptForChoice()` with parameters:
+- `caption: [string]`
+- `message: [string]`
+- `choices: [System::Collections::ObjectModel::Collection[System::Management::Automation::Host::ChoiceDescription]]`
+- `defaultChoice: [int]`
+
+"Select many" may be created by `$Host.UI.PromptForChoice()` with parameters:
+- `caption: [string]`
+- `message: [string]`
+- `choices: [System::Collections::ObjectModel::Collection[System::Management::Automation::Host::ChoiceDescription]]`
+- `defaultChoices: [System::Collections::Generic::IEnumerable[int]]`
+
+**Normal dialog keys, buttons, actions**
+
+- `[Enter]` in the choice list
+
+    If the current item is `? Help`, shows choices help in the viewer.
+    Otherwise it operates on the current choice.
+
+    "Select one" closes the dialog and returns the current choice index.
+
+    "Select many" adds or removes the current choice from choices.
+    Added choices are marked in the list.
+
+- `[CtrlEnter]` or buttons `Select one`, `Select many`
+
+    Closes the dialog and returns one or many choice indexes.
+
+    "Select one" returns the current choice index.
+
+    "Select many" returns the selected choice indexes (choices with marks).
+    If none is selected then the default choice indexes are returned.
+
+- `Esc` or button `Cancel`
+
+    Terminates the current pipeline, i.e. stops script invocation.
+
+**Console mode dialog actions**
+
+In console mode it prints the caption and message and choices with default choices yellow.
+Then it prints the prompts for input, simple for "select one" and prompts like `Choice[0]`, ``Choice[1]`, ... for "select many".
+
+- Type a hotkey or item label and press `Enter`
+
+    If the hotkey is `?` or item label it `Help`, shows choices help in the viewer.
+    Otherwise it operates on the specified choice.
+
+    "Select one" returns the typed choice index.
+
+    "Select many" adds the current choice to choices.
+    There is no way to remove a choice.
+    This is how the console host works.
+
+- `Enter` without typing anything
+
+    "Select one" returns the default choice index.
+
+    "Select many" returns selected choice indexes.
+    If none is selected then the default choice indexes are returned.
+
+- `Esc`
+
+    Clears the typed text if any.
+    Otherwise terminates the current pipeline, i.e. stops script invocation.
 
 *********************************************************************
 ## Power panel
@@ -1555,7 +1629,7 @@ Show three useful versions: Far, FarNet, PowerShellFar
     ps: "Far $($Far.FarVersion)"; "FarNet $($Far.FarNetVersion)"; "PowerShellFar $($Host.Version)"
 
 ---
-Assign variables, do some math later
+Assign variables, do some Math later
 
     ps: $x = 3
     ps: $y = 5

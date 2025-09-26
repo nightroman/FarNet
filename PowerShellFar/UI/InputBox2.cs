@@ -1,7 +1,3 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
 using FarNet.Tools;
 
@@ -24,7 +20,7 @@ sealed class InputBox2 : InputBox
 					break;
 				case KeyCode.F1:
 					e.Ignore = true;
-					Help.ShowHelpForContext(HelpTopic.InvokeCommandsDialog);
+					Help.ShowHelpForContext(HelpTopic.InvokeCommands);
 					break;
 			}
 		};

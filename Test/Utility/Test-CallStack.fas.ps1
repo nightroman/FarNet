@@ -20,7 +20,7 @@ job {
 	Assert-Far -Dialog
 	$Controls = @($Far.Dialog.Controls)
 	Assert-Far ($Controls[1].Text -like 'Cannot remove variable Far *')
-	$box = $Controls[-4]
+	$box = $Controls[-3]
 	Assert-Far $box.Items[-1].Text -eq '&? Help'
 }
 

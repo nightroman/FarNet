@@ -26,8 +26,8 @@ static class ChoiceDialog
 
 	private static Collection<int>? Select(bool many, string caption, string message, Collection<ChoiceDescription> choices, Dictionary<int, bool> defaults)
 	{
-		int w1 = 77;
-		int w2 = w1 - 10;
+		const int w1 = 77;
+		const int w2 = w1 - 10;
 		int nItems = choices.Count + 1;
 
 		List<string> lines = [];
@@ -35,18 +35,28 @@ static class ChoiceDialog
 		if (lines.Count == 1 && string.IsNullOrWhiteSpace(lines[0]))
 			lines = [];
 
-		var dialog = Far.Api.CreateDialog(-1, -1, w1, 8 + lines.Count + nItems);
+		const int yMessage1 = 2;
+		int yBox1 = yMessage1 + lines.Count;
+		int yBox2 = yBox1 + nItems + 1;
+		int h1 = yBox2 + 4;
+		int hMax = Math.Min(25, Far.Api.UI.WindowSize.Y) - 3;
+		if (h1 > hMax)
+		{
+			int delta = h1 - hMax;
+			h1 = hMax;
+			yBox2 -= delta;
+		}
+
+		var dialog = Far.Api.CreateDialog(-1, -1, w1, h1);
 		dialog.AddBox(3, 1, 0, 0, caption);
 
-		for (int i = 0; i < lines.Count; ++i)
-			dialog.AddText(5, -1, 4 + w2, lines[i]);
+		for (int i = 0, y = yMessage1; i < lines.Count; ++i, ++y)
+			dialog.AddText(5, y, 4 + w2, lines[i]);
 
-		var box = dialog.AddListBox(5, -1, 71, 1 + nItems, string.Empty);
+		var box = dialog.AddListBox(5, yBox1, 71, yBox2, string.Empty);
 		box.NoAmpersands = true;
 
-		dialog.AddText(5, box.Rect.Bottom + 1, 0, string.Empty).Separator = 1;
-
-		var buttonSelect = dialog.AddButton(0, -1, many ? "Select many" : "Select one");
+		var buttonSelect = dialog.AddButton(0, yBox2 + 1, many ? "Select many" : "Select one");
 		buttonSelect.CenterGroup = true;
 		if (!many)
 			dialog.Default = buttonSelect;
@@ -79,8 +89,14 @@ static class ChoiceDialog
 			// items
 			for (int i = 0; i < choices.Count; ++i)
 			{
-				var defaultSuffix = many && result.Count == 0 && defaults.ContainsKey(i) ? " (default)" : string.Empty;
-				var item = new SetItem { Text = $"{choices[i].Label}{defaultSuffix}" };
+				var text = choices[i].Label;
+				if (result.Count == 0 && defaults.ContainsKey(i))
+				{
+					text += " (default)";
+					if (!many)
+						box.Selected = i;
+				}
+				var item = new SetItem { Text = text };
 				box.Items.Add(item);
 				item.Checked = many && result.Contains(i);
 			}

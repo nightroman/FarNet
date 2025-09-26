@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.52 =
+
+Choice dialog
+- Add help "Choice dialog" and connect
+- On too many items make list scrollable
+
 = 9.0.51 =
 
 Use FarNet 9.0.37

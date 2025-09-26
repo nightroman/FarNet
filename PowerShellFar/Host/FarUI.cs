@@ -113,7 +113,8 @@ class FarUI : UniformUI, IHostUISupportsMultipleChoiceSelection
 			var prompt = $"Choice[{num}]{TextPromptSuffix}";
 			var ui = new UI.ReadLine(new UI.ReadLine.Args
 			{
-				Prompt = prompt
+				Prompt = prompt,
+				IsPromptForChoice = true,
 			});
 			if (!ui.Show())
 				throw new PipelineStoppedException();
@@ -264,7 +265,7 @@ class FarUI : UniformUI, IHostUISupportsMultipleChoiceSelection
 						Prompt = prompt2,
 						History = Res.HistoryPrompt,
 						HelpMessage = current.HelpMessage,
-						Password = safe,
+						IsPassword = safe,
 					});
 					if (!ui.Show())
 						throw new PipelineStoppedException();
@@ -343,7 +344,8 @@ class FarUI : UniformUI, IHostUISupportsMultipleChoiceSelection
 
 			var ui = new UI.ReadLine(new UI.ReadLine.Args
 			{
-				Prompt = TextPromptSuffix
+				Prompt = TextPromptSuffix,
+				IsPromptForChoice = true,
 			});
 			if (!ui.Show())
 				throw new PipelineStoppedException();

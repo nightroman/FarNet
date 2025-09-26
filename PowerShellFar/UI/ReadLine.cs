@@ -1,4 +1,3 @@
-
 using FarNet;
 using FarNet.Forms;
 
@@ -18,7 +17,8 @@ class ReadLine
 		public string? Prompt;
 		public string? History;
 		public string? HelpMessage;
-		public bool Password;
+		public bool IsPassword;
+		public bool IsPromptForChoice;
 	}
 
 	class Layout
@@ -48,7 +48,7 @@ class ReadLine
 			Text.Coloring += Events.Coloring_TextAsConsole;
 		}
 
-		if (args.Password)
+		if (args.IsPassword)
 		{
 			Edit = Dialog.AddEditPassword(pos.EditLeft, pos.EditTop, pos.EditRight, string.Empty);
 		}
@@ -139,8 +139,14 @@ class ReadLine
 				if (e.Key.Is())
 				{
 					e.Ignore = true;
-					if (!string.IsNullOrEmpty(In.HelpMessage))
+					if (In.IsPromptForChoice)
+					{
+						Entry.Instance.ShowHelpTopic(HelpTopic.ChoiceDialog);
+					}
+					else if (!string.IsNullOrEmpty(In.HelpMessage))
+					{
 						Far.Api.Message(In.HelpMessage);
+					}
 				}
 				return;
 			case KeyCode.C when e.Key.IsCtrl() && Edit.Line.SelectionSpan.Length < 0:
