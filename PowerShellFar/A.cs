@@ -1,4 +1,3 @@
-
 using FarNet;
 using System.Collections;
 using System.Collections.ObjectModel;
@@ -9,17 +8,30 @@ using System.Text;
 
 namespace PowerShellFar;
 
-static class A
+internal static class A
 {
 	/// <summary>
 	/// PowerShellFar actor.
 	/// </summary>
-	public static Actor Psf => _Psf_!;
-	static Actor? _Psf_;
+	public static Actor Psf { get; private set; } = null!;
 
 	public static void Connect(Actor? psf)
 	{
-		_Psf_ = psf;
+		Psf = psf!;
+	}
+
+	public static bool IsMainSession => Runspace.DefaultRunspace.Id == 1;
+	public static bool IsAsyncSession => Runspace.DefaultRunspace.Id > 1;
+
+	/// <summary>
+	/// Executes the specified job synchronously if the session is main, otherwise posts and awaits it.
+	/// </summary>
+	public static void AwaitJob(Action job)
+	{
+		if (IsMainSession)
+			job();
+		else
+			Tasks.Await(Tasks.Job(job));
 	}
 
 	// Shows an error.

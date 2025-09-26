@@ -94,11 +94,10 @@ job {
 # delete a2
 keys Del
 job {
-	# v4.0
 	Assert-Far -Dialog
 	Assert-Far $Far.Dialog[2].Text.ToUpper().Contains('TARGET "ITEM: A2"')
 }
-keys y
+keys y Enter
 job {
 	Assert-Far -Panels
 	Assert-Far ($Far.Panel.CurrentFile.Name -ne 'a2')
@@ -110,11 +109,10 @@ job {
 }
 keys Del
 job {
-	# v4.0
 	Assert-Far -Dialog
 	Assert-Far $Far.Dialog[2].Text.ToUpper().Contains('TARGET "ITEM: A1"')
 }
-keys y
+keys y Enter
 job {
 	Assert-Far -Panels
 	Assert-Far ($Far.Panel.CurrentFile.Name -ne 'a1')

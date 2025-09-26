@@ -61,7 +61,7 @@ public static class Kit
 		ArgumentNullException.ThrowIfNull(message);
 
 		Regex? format = null;
-		foreach (var line in Kit.SplitLines(message.Replace('\t', ' ')))
+		foreach (var line in SplitLines(message.Replace('\t', ' ')))
 		{
 			if (line.Length <= width)
 			{
@@ -73,7 +73,7 @@ public static class Kit
 			}
 			else
 			{
-				format ??= new Regex("(.{0," + width + "}(?:\\s|$))");
+				format ??= new Regex($"(.{{0,{width}}}(?:\\{(mode == FormatMessageMode.Space ? 's' : 'W')}|$))");
 				string[] s3 = format.Split(line);
 				foreach (string s2 in s3)
 				{

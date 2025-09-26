@@ -166,7 +166,7 @@ job {
 	Assert-Far -Dialog
 	Assert-Far ($Far.Dialog[2].Text -like '*Target "Item: %2"*') # v4.0 Target -> target
 }
-keys y
+keys y Enter
 job {
 	Assert-Far -Panels
 	Assert-Far ($Far.Panel.CurrentFile.Name -ne '%2')
@@ -181,7 +181,7 @@ job {
 	Assert-Far -Dialog
 	Assert-Far ($Far.Dialog[2].Text -like '*Target "Item: %1"*') # v4.0 Target -> target
 }
-keys y
+keys y Enter
 job {
 	Assert-Far -Panels
 	Assert-Far ($Far.Panel.CurrentFile.Name -ne '%1')

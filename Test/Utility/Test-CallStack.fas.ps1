@@ -20,11 +20,12 @@ job {
 	Assert-Far -Dialog
 	$Controls = @($Far.Dialog.Controls)
 	Assert-Far ($Controls[1].Text -like 'Cannot remove variable Far *')
-	Assert-Far ($Controls[-1].Text -match 'Help&\?')
+	$box = $Controls[-4]
+	Assert-Far $box.Items[-1].Text -eq '&? Help'
 }
 
 # choose 'suspend'
-keys s
+keys s Enter
 job {
 	# editor?
 	Assert-Far -EditorFileName *.interactive.ps1
@@ -37,7 +38,7 @@ job {
 }
 
 # Halt --> error will be caught; otherwise Write-Error may cause problems in testing
-keys h
+keys h Enter
 job {
 	Assert-Far -Panels
 

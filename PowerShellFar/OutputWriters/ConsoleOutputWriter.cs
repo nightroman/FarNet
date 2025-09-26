@@ -1,9 +1,8 @@
-﻿using System;
-using FarNet;
+﻿using FarNet;
 
 namespace PowerShellFar;
 
-sealed class ConsoleOutputWriter : OutputWriter
+sealed class ConsoleOutputWriter : AbcOutputWriter
 {
 	Func<string>? _getEcho;
 

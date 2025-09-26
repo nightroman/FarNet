@@ -250,7 +250,7 @@ class Interactive : InteractiveEditor
 	{
 		if (Runspace is null)
 		{
-			EditorOutputWriter2 writer = new(Editor);
+			EditorOutputWriterNormal writer = new(Editor);
 			A.Psf.SyncPaths();
 			A.Psf.Run(new RunArgs(code) { Writer = writer });
 			if (_isNestedPrompt)
@@ -259,7 +259,7 @@ class Interactive : InteractiveEditor
 		}
 
 		// begin editor
-		FarUI!.PushWriter(new EditorOutputWriter3(Editor));
+		FarUI!.PushWriter(new EditorOutputWriterAsync(Editor));
 
 		// begin command
 		PowerShell = PowerShell.Create(Runspace);

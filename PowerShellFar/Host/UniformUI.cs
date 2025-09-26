@@ -1,9 +1,3 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Management.Automation;
 using System.Management.Automation.Host;
@@ -33,9 +27,10 @@ enum WriteMode
 /// </remarks>
 abstract class UniformUI : PSHostUserInterface
 {
+	#region This
 	internal bool HasError { get; set; }
 
-	internal abstract OutputWriter Writer { get; }
+	internal abstract AbcOutputWriter Writer { get; }
 
 	protected virtual void Writing()
 	{
@@ -57,6 +52,7 @@ abstract class UniformUI : PSHostUserInterface
 		}
 		return new PSObject(r);
 	}
+	#endregion
 
 	#region PSHostUserInterface
 	public override Dictionary<string, PSObject> Prompt(string caption, string message, Collection<FieldDescription> descriptions)

@@ -1,5 +1,15 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.51 =
+
+Use FarNet 9.0.37
+
+Improve async interactive.
+
+Support `PromptForChoice` (many).
+Rework `PromptForChoice` (one).
+Use same dialog with some differences.
+
 = 9.0.50 =
 
 Use FarNet 9.0.36

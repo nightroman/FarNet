@@ -31,7 +31,7 @@ job {
 	Assert-Far -Dialog
 	Assert-Far $Far.Dialog[0].Text -eq 'Confirm'
 }
-keys ?
+keys ? Enter
 job {
 	Assert-Far -Viewer
 }
@@ -39,7 +39,7 @@ keys Esc
 job {
 	Assert-Far -Dialog
 }
-keys y
+keys a Enter
 job {
 	# variable removed
 	Assert-Far -Panels

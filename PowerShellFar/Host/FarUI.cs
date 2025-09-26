@@ -5,13 +5,12 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Management.Automation;
 using System.Management.Automation.Host;
-using System.Management.Automation.Runspaces;
 using System.Security;
 using System.Text;
 
 namespace PowerShellFar;
 
-class FarUI : UniformUI
+class FarUI : UniformUI, IHostUISupportsMultipleChoiceSelection
 {
 	const string TextDefaultChoiceForMultipleChoices = @"(default is ""{0}"")";
 	const string TextDefaultChoicePrompt = @"(default is ""{0}"")";
@@ -25,7 +24,7 @@ class FarUI : UniformUI
 	const ConsoleColor PromptColor = ConsoleColor.White;
 	const ConsoleColor DefaultPromptColor = ConsoleColor.Yellow;
 
-	OutputWriter? _writer;
+	AbcOutputWriter? _writer;
 	readonly ConsoleOutputWriter _console = new();
 
 	/// <summary>
@@ -42,20 +41,124 @@ class FarUI : UniformUI
 	/// <summary>
 	/// Gets the current explicit writer or the fallback console writer.
 	/// </summary>
-	internal override OutputWriter Writer => _writer ?? _console;
+	internal override AbcOutputWriter Writer => _writer ?? _console;
 
-	internal OutputWriter PopWriter()
+	internal AbcOutputWriter PopWriter()
 	{
 		var head = _writer!;
 		_writer = head.Next;
 		return head;
 	}
 
-	internal void PushWriter(OutputWriter writer)
+	internal void PushWriter(AbcOutputWriter writer)
 	{
 		writer.Next = _writer;
 		_writer = writer;
 	}
+
+	#region IHostUISupportsMultipleChoiceSelection
+	/// <summary>
+	/// Shows a list of choices to select many.
+	/// </summary>
+	public Collection<int> PromptForChoice(string? caption, string? message, Collection<ChoiceDescription> choices, IEnumerable<int>? defaultChoices)
+	{
+		if (A.IsAsyncSession)
+		{
+			_writer?.Flush();
+			var task = Tasks.Job(() => PromptForChoice(caption, message, choices, defaultChoices));
+			return Tasks.AwaitResult(task);
+		}
+
+		if (choices == null || choices.Count == 0) throw new ArgumentOutOfRangeException(nameof(choices));
+
+		// defaults
+		Dictionary<int, bool> defaults = [];
+		if (defaultChoices is { })
+		{
+			foreach (var defaultChoice in defaultChoices)
+			{
+				if (defaultChoice < 0 || defaultChoice >= choices.Count)
+					throw new ArgumentOutOfRangeException(nameof(defaultChoices));
+
+				defaults.TryAdd(defaultChoice, true);
+			}
+		}
+
+		// PS trims, e.g. message "\n" is discarded
+		caption = caption is null ? string.Empty : caption.TrimEnd();
+		message = message is null ? string.Empty : message.TrimEnd();
+
+		if (!IsConsole())
+		{
+			return UI.ChoiceDialog.SelectMany(caption, message, choices, defaults)
+				?? throw new PipelineStoppedException();
+		}
+
+		// See: EmulatePromptForMultipleChoice
+
+		WriteLine();
+		if (caption.Length > 0)
+			WriteLine(PromptColor, BackgroundColor, caption);
+		if (message.Length > 0)
+			WriteLine(message);
+
+		BuildHotkeysAndPlainLabels(choices, out string[,] hotkeysAndPlainLabels);
+
+		WriteChoicePrompt(hotkeysAndPlainLabels, defaults, true);
+
+		Collection<int> result = [];
+		int num = 0;
+		while (true)
+		{
+			var prompt = $"Choice[{num}]{TextPromptSuffix}";
+			var ui = new UI.ReadLine(new UI.ReadLine.Args
+			{
+				Prompt = prompt
+			});
+			if (!ui.Show())
+				throw new PipelineStoppedException();
+
+			var text = ui.Out;
+
+			// new line
+			var lineText = Far.Api.UI.GetBufferLineText(Far.Api.UI.BufferCursor.Y).Trim();
+			if (lineText.Length > 0)
+				WriteLine();
+
+			// echo
+			WriteLine($"{prompt}{text}");
+
+			//: done
+			if (text.Length == 0)
+				break;
+
+			//: help
+			if (text.Trim() == "?")
+			{
+				ShowChoiceHelp(choices, hotkeysAndPlainLabels);
+				continue;
+			}
+
+			//: choice
+			var num2 = DetermineChoicePicked(text.Trim(), choices, hotkeysAndPlainLabels);
+			if (num2 >= 0 && !result.Contains(num2))
+			{
+				++num;
+				result.Add(num2);
+			}
+		}
+
+		// nothing? add defaults
+		if (result.Count == 0)
+		{
+			foreach (int key in defaults.Keys)
+				result.Add(key);
+		}
+
+		return result;
+	}
+
+	#endregion
 
 	#region PSHostUserInterface
 	/// <summary>
@@ -65,8 +168,9 @@ class FarUI : UniformUI
 	{
 		ArgumentNullException.ThrowIfNull(descriptions);
 
-		if (Runspace.DefaultRunspace.Id > 1)
+		if (A.IsAsyncSession)
 		{
+			_writer?.Flush();
 			var task = Tasks.Job(() => Prompt(caption, message, descriptions));
 			return Tasks.AwaitResult(task);
 		}
@@ -193,26 +297,32 @@ class FarUI : UniformUI
 	}
 
 	/// <summary>
-	/// Shows a dialog with a number of choices.
+	/// Shows a list of choices to select one.
 	/// </summary>
 	public override int PromptForChoice(string caption, string message, Collection<ChoiceDescription> choices, int defaultChoice)
 	{
-		if (choices == null || choices.Count == 0) throw new ArgumentOutOfRangeException(nameof(choices));
-		if (defaultChoice < -1 || defaultChoice >= choices.Count) throw new ArgumentOutOfRangeException(nameof(defaultChoice));
-
-		if (Runspace.DefaultRunspace.Id > 1)
+		if (A.IsAsyncSession)
 		{
+			_writer?.Flush();
 			var task = Tasks.Job(() => PromptForChoice(caption, message, choices, defaultChoice));
 			return Tasks.AwaitResult(task);
 		}
 
+		if (choices == null || choices.Count == 0) throw new ArgumentOutOfRangeException(nameof(choices));
+		if (defaultChoice < -1 || defaultChoice >= choices.Count) throw new ArgumentOutOfRangeException(nameof(defaultChoice));
+
+		// defaults
+		Dictionary<int, bool> defaults = [];
+		if (defaultChoice >= 0)
+			defaults.Add(defaultChoice, true);
+
 		// PS trims, e.g. message "\n" is discarded
-		caption = caption is null? string.Empty : caption.TrimEnd();
-		message = message is null? string.Empty : message.TrimEnd();
+		caption = caption is null ? string.Empty : caption.TrimEnd();
+		message = message is null ? string.Empty : message.TrimEnd();
 
 		if (!IsConsole())
 		{
-			int choice = UI.ChoiceMsg.Show(caption, message, choices);
+			int choice = UI.ChoiceDialog.SelectOne(caption, message, choices, defaults);
 			if (choice < 0)
 				throw new PipelineStoppedException();
 
@@ -227,13 +337,9 @@ class FarUI : UniformUI
 
 		BuildHotkeysAndPlainLabels(choices, out string[,] hotkeysAndPlainLabels);
 
-		Dictionary<int, bool> dictionary = [];
-		if (defaultChoice >= 0)
-			dictionary.Add(defaultChoice, true);
-
-		for (; ; )
+		while (true)
 		{
-			WriteChoicePrompt(hotkeysAndPlainLabels, dictionary, false);
+			WriteChoicePrompt(hotkeysAndPlainLabels, defaults, false);
 
 			var ui = new UI.ReadLine(new UI.ReadLine.Args
 			{
@@ -250,7 +356,7 @@ class FarUI : UniformUI
 				WriteLine();
 
 			// echo
-			WriteLine(TextPromptSuffix + ui.Out);
+			WriteLine(TextPromptSuffix + text);
 
 			if (text.Length == 0)
 			{
@@ -299,9 +405,10 @@ class FarUI : UniformUI
 		return num;
 	}
 
-	//! from PS
-	void ShowChoiceHelp(Collection<ChoiceDescription> choices, string[,] hotkeysAndPlainLabels)
+	//! see PS ShowChoiceHelp
+	internal static string GetChoiceHelp(Collection<ChoiceDescription> choices, string[,] hotkeysAndPlainLabels)
 	{
+		StringBuilder sb = new();
 		for (int i = 0; i < choices.Count; i++)
 		{
 			string text;
@@ -309,8 +416,16 @@ class FarUI : UniformUI
 				text = hotkeysAndPlainLabels[0, i];
 			else
 				text = hotkeysAndPlainLabels[1, i];
-			WriteLine(string.Format(null, "{0} - {1}", text, choices[i].HelpMessage));
+			sb.AppendLine(string.Format(null, "{0} - {1}", text, choices[i].HelpMessage));
 		}
+		sb.Append("Escape - stop the pipeline.");
+		return sb.ToString();
+	}
+
+	//! from PS
+	void ShowChoiceHelp(Collection<ChoiceDescription> choices, string[,] hotkeysAndPlainLabels)
+	{
+		WriteLine(GetChoiceHelp(choices, hotkeysAndPlainLabels));
 	}
 
 	//! from PS
@@ -379,7 +494,7 @@ class FarUI : UniformUI
 	}
 
 	//! from PS
-	static void BuildHotkeysAndPlainLabels(Collection<ChoiceDescription> choices, out string[,] hotkeysAndPlainLabels)
+	internal static void BuildHotkeysAndPlainLabels(Collection<ChoiceDescription> choices, out string[,] hotkeysAndPlainLabels)
 	{
 		hotkeysAndPlainLabels = new string[2, choices.Count];
 		for (int i = 0; i < choices.Count; i++)
@@ -412,8 +527,9 @@ class FarUI : UniformUI
 	/// </summary>
 	public override string ReadLine()
 	{
-		if (Runspace.DefaultRunspace.Id > 1)
+		if (A.IsAsyncSession)
 		{
+			_writer?.Flush();
 			var task = Tasks.Job(ReadLine);
 			return Tasks.AwaitResult(task);
 		}

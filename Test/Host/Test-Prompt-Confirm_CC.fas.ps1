@@ -34,7 +34,8 @@ job {
 keys ? Enter
 job {
 	Assert-Far -DialogTypeId ([PowerShellFar.Guids]::ReadLineDialog)
-	Assert-Far $Far.UI.GetBufferLineText(-3) -eq 'S - Pause the current pipeline and return to the command prompt. Type "exit" to resume the pipeline.'
+	Assert-Far $Far.UI.GetBufferLineText(-4) -eq 'S - Pause the current pipeline and return to the command prompt. Type "exit" to resume the pipeline.'
+	Assert-Far $Far.UI.GetBufferLineText(-3) -eq 'Escape - stop the pipeline.'
 }
 keys Enter
 job {

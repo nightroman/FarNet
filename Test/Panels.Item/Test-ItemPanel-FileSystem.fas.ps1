@@ -44,14 +44,14 @@ job {
 keys F8
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[2].Text.ToUpper().Contains('TARGET "C:\TEMP\TMP\DIR1`$]["') # v4.0 Target -> target
+	Assert-Far ($Far.Dialog[2].Text + $Far.Dialog[3].Text).Contains('target "C:\TEMP\Tmp\dir1`$]["')
 }
-keys y
+keys y Enter
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[2].Text.ToUpper().Contains('TARGET "C:\TEMP\TMP\FILE1`$]["') # v4.0 Target -> target
+	Assert-Far ($Far.Dialog[2].Text + $Far.Dialog[3].Text).Contains('target "C:\TEMP\Tmp\file1`$]["')
 }
-keys y
+keys y Enter
 job {
 	Assert-Far -Panels
 	Assert-Far @(
@@ -94,10 +94,10 @@ keys F6
 job {
 	Assert-Far -Dialog
 	Assert-Far (
-		$Far.Dialog[2].Text.ToUpper().Contains('TARGET "ITEM: C:\TEMP\TMP\DIR2`$][ DESTINATION: C:\TEMP\TMP\DIR1`$][\DIR2`$]["')
+		($Far.Dialog[2].Text + $Far.Dialog[3].Text).Contains('target "Item: C:\TEMP\Tmp\dir2`$][ Destination: C:\TEMP\Tmp\dir1`$][\dir2`$]["')
 	)
 }
-keys a
+keys a Enter
 job {
 	Assert-Far @(
 		$Far.Panel.GetFiles().Count -eq 2
@@ -129,10 +129,10 @@ macro 'Keys"Multiply F5"'
 job {
 	Assert-Far -Dialog
 	Assert-Far (
-		$Far.Dialog[2].Text.ToUpper().Contains('TARGET "ITEM: C:\TEMP\TMP\DIR1\DIR2`$][ DESTINATION: C:\TEMP\TMP\DIR2`$]["')
+		($Far.Dialog[2].Text + $Far.Dialog[3].Text).Contains('target "Item: C:\TEMP\Tmp\dir1\dir2`$][ Destination: C:\TEMP\Tmp\dir2`$]["')
 	)
 }
-keys a
+keys a Enter
 job {
 	Assert-Far -Panels -Plugin
 }
@@ -198,15 +198,15 @@ job {
 keys F8
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[1].Text.Contains('C:\TEMP\Tmp has children and the Recurse parameter was not specified.')
+	Assert-Far ($Far.Dialog[1].Text + $Far.Dialog[2].Text).Contains('C:\TEMP\Tmp has children and the Recurse parameter was not specified.')
 }
-keys y
+keys y Enter
 job {
 	# v4.0 amended text
 	Assert-Far -Dialog
 	Assert-Far ($Far.Dialog[2].Text -like '*Performing *operation "Remove Directory" on Target "C:\TEMP\Tmp".*')
 }
-macro 'Keys"a"'# v4.0 "y" is not enough, it continues to ask
+keys a Enter # v4.0 `y` is not enough, it continues to ask
 job {
 	Assert-Far -Panels
 	Assert-Far @(

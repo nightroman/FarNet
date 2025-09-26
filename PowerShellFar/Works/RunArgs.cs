@@ -4,7 +4,7 @@ class RunArgs(string code)
 {
 	public string Code { get; } = code;
 
-	public OutputWriter? Writer { get; set; }
+	public AbcOutputWriter? Writer { get; set; }
 
 	public bool NoOutReason { get; set; }
 

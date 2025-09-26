@@ -45,7 +45,7 @@ job {
 }
 
 # delete the key a1 (with children)
-macro 'Keys"Del y y"'
+keys Del y Enter y Enter
 job {
 	Assert-Far (!(Test-Path 'hkcu:\a1'))
 }

@@ -447,7 +447,7 @@ static class EditorKit
 		string code;
 		var from = Far.Api.Window.Kind;
 
-		OutputWriter? writer = null;
+		AbcOutputWriter? writer = null;
 		if (from == WindowKind.Editor)
 		{
 			var editor = Far.Api.Editor!;

@@ -28,7 +28,7 @@ task version {
 	($Script:Version = Get-BuildVersion Release-Notes.md '##\s+v(\d+\.\d+\.\d+)')
 }
 
-task meta -Inputs .build.ps1, Release-Notes.md -Outputs Directory.Build.props -Jobs version, {
+task meta -Inputs 1.build.ps1, Release-Notes.md -Outputs Directory.Build.props -Jobs version, {
 	Set-Content Directory.Build.props @"
 <Project>
 	<PropertyGroup>

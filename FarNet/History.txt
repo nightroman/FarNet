@@ -1,6 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 9.0.37 =
+
+Internal `FormatMessageMode`
+- rename item, add new
+
 = 9.0.36 =
 
 InteractiveEditor

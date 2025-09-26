@@ -1,10 +1,5 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
 using Microsoft.PowerShell.Commands;
-using System;
 using System.Collections;
 using System.Globalization;
 using System.Management.Automation;
@@ -312,7 +307,7 @@ public sealed class Meta : FarColumn
 			return result;
 
 		if (_RemoveEscSequences && result is string text)
-			return OutputWriter.RemoveOutputRendering(text);
+			return AbcOutputWriter.RemoveOutputRendering(text);
 
 		return result;
 	}

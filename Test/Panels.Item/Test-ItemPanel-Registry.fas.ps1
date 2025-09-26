@@ -85,11 +85,12 @@ job {
 # delete
 keys F8
 job {
-	# v4.0 amended text
 	Assert-Far -Dialog
-	Assert-Far ($Far.Dialog[2].Text -like '*Performing *operation "Remove Property" on Target "Item: HKEY_CURRENT_USER\a1 Property: dword*".')
+	Assert-Far (
+		($Far.Dialog[2].Text + $Far.Dialog[3].Text) -like '*Performing *operation "Remove Property" on Target "Item: HKEY_CURRENT_USER\a1 Property: dword*".'
+	)
 }
-keys y
+keys y Enter
 job {
 	Assert-Far -FileName $name1
 	Remove-Variable name1 -Scope global
@@ -205,9 +206,11 @@ keys Del
 job {
 	# v4.0 amended text
 	Assert-Far -Dialog
-	Assert-Far ($Far.Dialog[2].Text -like '*Performing *operation "Remove Property" on Target "Item: HKEY_CURRENT_USER\a1\key1 Property: dword*".')
+	Assert-Far (
+		($Far.Dialog[2].Text + $Far.Dialog[3].Text) -like '*Performing *operation "Remove Property" on Target "Item: HKEY_CURRENT_USER\a1\key1 Property: dword*".'
+	)
 }
-keys a
+keys a Enter
 job {
 	# issues
 	Assert-Far @(
@@ -280,7 +283,9 @@ keys F5
 job {
 	# v4.0 amended text
 	Assert-Far -Dialog
-	Assert-Far ($Far.Dialog[2].Text -like 'Performing *operation "Copy Key" on Target "Item: HKEY_CURRENT_USER\a1\key2 Destination: HKEY_CURRENT_USER\a1\key1".')
+	Assert-Far (
+		($Far.Dialog[2].Text + $Far.Dialog[3].Text) -like 'Performing *operation "Copy Key" on Target "Item: HKEY_CURRENT_USER\a1\key2 Destination: HKEY_CURRENT_USER\a1\key1".'
+	)
 }
 
 # confirm
@@ -309,29 +314,31 @@ job {
 # move HKEY_CURRENT_USER\a1\key1 to a1\key2 with children
 keys F6
 job {
-	#! v4.0
 	Assert-Far -Dialog
-	Assert-Far ($Far.Dialog[2].Text -like 'Performing *operation "Move Item" on Target "Item: HKEY_CURRENT_USER\a1\key1 Destination: HKEY_CURRENT_USER\a1\key2".')
+	Assert-Far (
+		($Far.Dialog[2].Text + $Far.Dialog[3].Text) -like 'Performing *operation "Move Item" on Target "Item: HKEY_CURRENT_USER\a1\key1 Destination: HKEY_CURRENT_USER\a1\key2".'
+	)
 }
-keys y
+keys y Enter
 job {
-	#! v4.0
 	Assert-Far -Dialog
-	Assert-Far ($Far.Dialog[2].Text -like 'Performing *operation "Copy Key" on Target "Item: HKEY_CURRENT_USER\a1\key1 Destination: HKEY_CURRENT_USER\a1\key2".')
+	Assert-Far (
+		($Far.Dialog[2].Text + $Far.Dialog[3].Text) -like 'Performing *operation "Copy Key" on Target "Item: HKEY_CURRENT_USER\a1\key1 Destination: HKEY_CURRENT_USER\a1\key2".'
+	)
 }
-keys y
+keys y Enter
 job {
-	#! v4.0
 	Assert-Far -Dialog
-	Assert-Far ($Far.Dialog[2].Text -like 'Performing *operation "Copy Key" on Target "Item: HKEY_CURRENT_USER\a1\key1\key2 Destination: HKEY_CURRENT_USER\a1\key2\key1\key2".')
+	Assert-Far (
+		($Far.Dialog[2].Text + $Far.Dialog[3].Text + $Far.Dialog[4].Text) -like 'Performing *operation "Copy Key" on Target "Item: HKEY_CURRENT_USER\a1\key1\key2 Destination: HKEY_CURRENT_USER\a1\key2\key1\key2".'
+	)
 }
-keys y
+keys y Enter
 job {
-	#! V3 RC "Remove key." (with a dot); v4.0
 	Assert-Far -Dialog
-	Assert-Far ($Far.Dialog[2].Text -like 'Performing *operation "Remove Key*" on Target "Item: HKEY_CURRENT_USER\a1\key1".')
+	Assert-Far (($Far.Dialog[2].Text + $Far.Dialog[3].Text) -like 'Performing *operation "Remove Key*" on Target "Item: HKEY_CURRENT_USER\a1\key1".')
 }
-keys a
+keys a Enter
 job {
 	# key2 is current after moving key1
 	Assert-Far -Panels
@@ -345,11 +352,12 @@ job {
 }
 keys Del
 job {
-	#! V3 RC "Remove key." (with a dot); v4.0
 	Assert-Far -Dialog
-	Assert-Far ($Far.Dialog[2].Text -like 'Performing *operation "Remove Key*" on Target "Item: HKEY_CURRENT_USER\a1\key2\key1\key2".')
+	Assert-Far (
+		($Far.Dialog[2].Text + $Far.Dialog[3].Text) -like 'Performing *operation "Remove Key*" on Target "Item: HKEY_CURRENT_USER\a1\key2\key1\key2".'
+	)
 }
-keys y
+keys y Enter
 job {
 	Assert-Far -Panels
 	Assert-Far @(Get-FarItem -All).Count -eq 0

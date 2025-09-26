@@ -6,34 +6,38 @@
 
 PowerShell FarNet module for Far Manager
 
-* [About](#about)
-* [Installation](#installation)
-* [Run commands](#run-commands)
-* [Command line](#command-line)
-* [Menu commands](#menu-commands)
-* [Interactive](#interactive)
-* [Power panel](#power-panel)
-* [Folder tree](#folder-tree)
-* [Data panel](#data-panel)
-* [Tree panel](#tree-panel)
-* [Global objects](#global-objects)
-* [Profiles](#profiles)
-* [Settings](#settings)
+- [About](#about)
+- [Installation](#installation)
+- [Run commands](#run-commands)
+- [Command line](#command-line)
+- [Menu commands](#menu-commands)
+- [Interactive](#interactive)
+- [Power panel](#power-panel)
+- [Folder tree](#folder-tree)
+- [Data panel](#data-panel)
+- [Tree panel](#tree-panel)
+- [Global objects](#global-objects)
+- [Profiles](#profiles)
+- [Settings](#settings)
 
 **Details**
 
-* [Debugging](#debugging)
-* [Commands output](#commands-output)
-* [Frequently asked questions][FAQ]
-* [Command and macro examples][Examples]
+- [Debugging](#debugging)
+- [Commands output](#commands-output)
+- [Frequently asked questions][FAQ]
+- [Command and macro examples][Examples]
 
 **Scripts**
 
-* [Suffixes](#suffixes)
-* [Profile.ps1](#profileps1)
-* [Profile-Editor.ps1](#profile-editorps1)
-* [TabExpansion2.ps1](#tabexpansion2ps1)
-* [Search-Regex.ps1](#search-regexps1)
+- [Suffixes](#suffixes)
+- [Profile.ps1](#profileps1)
+- [Profile-Editor.ps1](#profile-editorps1)
+- [TabExpansion2.ps1](#tabexpansion2ps1)
+- [Search-Regex.ps1](#search-regexps1)
+
+**UI**
+
+- [Choice dialog](#choice-dialog)
 
 *********************************************************************
 ## About
@@ -49,9 +53,9 @@ for Far Manager. Colorer takes care of editor syntax highlighting.
 
 **Project FarNet**
 
-* Wiki: <https://github.com/nightroman/FarNet/wiki>
-* Site: <https://github.com/nightroman/FarNet>
-* Author: Roman Kuzmin
+- Wiki: <https://github.com/nightroman/FarNet/wiki>
+- Site: <https://github.com/nightroman/FarNet>
+- Author: Roman Kuzmin
 
 *********************************************************************
 ## Installation
@@ -67,8 +71,8 @@ How to install and update FarNet and modules:\
 
 **Documentation**
 
-- *About-PowerShellFar.html* - this documentation
-- *History.txt* - the change log
+- `About-PowerShellFar.html` - this documentation
+- `History.txt` - the change log
 
 **Bench scripts**
 
@@ -77,12 +81,12 @@ use scripts directly from Bench include the directory in the path. See also
 sample scripts in the repository.
 
 New users may want to configure the module with [Profile.ps1](#profileps1) in
-*%FARPROFILE%\FarNet\PowerShellFar*.
+`%FARPROFILE%\FarNet\PowerShellFar`.
 
 **Syntax highlighting**
 
-The official plugin FarColorer includes and uses the syntax scheme *powershell.hrc*.
-The white background color scheme *visual.hrd* was designed with PowerShell in mind.
+The official plugin FarColorer includes and uses the syntax scheme `powershell.hrc`.
+The white background color scheme `visual.hrd` was designed with PowerShell in mind.
 
 *********************************************************************
 ## Run commands
@@ -268,8 +272,8 @@ See [Errors menu](#errors-menu).
 **Help**
 
 For the current text token in the editor, dialog, or command line it shows
-available help information in the viewer. In code editors (*.ps1*, *.psm1*,
-*.psd1*, input code boxes) this action is associated with `[ShiftF1]`.
+available help information in the viewer. In code editors (`.ps1`, `.psm1`,
+`.psd1`, input code boxes) this action is associated with `[ShiftF1]`.
 For scripts it is exposed as `$Psf.ShowHelp()`.
 
 *********************************************************************
@@ -393,7 +397,7 @@ The history includes Far Manager command and PowerShellFar input dialog historie
 - `[CtrlEnter]`
 
     Inserts the command to the input line (panels, interactive, command box) or
-    shows a new dialog *Invoke commands* dialog with the command text inserted.
+    shows a new dialog `Invoke commands` dialog with the command text inserted.
 
     On inserting to the command line, existing prefixes are preserved.
     On missing prefixes, the main prefix `ps:` is added automatically.
@@ -450,7 +454,7 @@ This section contains commands that create various breakpoints. There are
 three kind of breakpoints in PowerShell: line, command and variable.
 See also [Breakpoint dialog](#breakpoint-dialog).
 
-* Line breakpoint...
+- Line breakpoint...
 
     Opens a dialog to create a new line breakpoint. If the command is invoked
     from an editor and a line breakpoint already exists at the current editor
@@ -460,11 +464,11 @@ See also [Breakpoint dialog](#breakpoint-dialog).
     NOTE In editor, to set line breakpoints by a key, bind the macro calling
     `ps:#line-breakpoint`, see `PowerShellFar.macro.lua`.
 
-* Command breakpoint...
+- Command breakpoint...
 
     Opens a dialog to create a new command breakpoint.
 
-* Variable breakpoint...
+- Variable breakpoint...
 
     Opens a dialog to create a new variable breakpoint.
 
@@ -473,27 +477,26 @@ See also [Breakpoint dialog](#breakpoint-dialog).
 This section shows the list of available breakpoints where you can disable, enable
 or remove breakpoints.
 
-* `[F4]`
+- `[F4]`
 
     Opens the source script in the editor for the current line breakpoint or
     another kind of breakpoint with a script.
 
-* `[Space]`
+- `[Space]`
 
     Enables or disables the current breakpoint.
 
-* `[ShiftBS]`
+- `[ShiftBS]`
 
     Disables all breakpoints.
 
-* `[Del]`
+- `[Del]`
 
     Removes the breakpoint.
 
-* `[ShiftDel]`
+- `[ShiftDel]`
 
     Removes all breakpoints.
-
 
 *********************************************************************
 ## Breakpoint dialog
@@ -503,17 +506,17 @@ or remove breakpoints.
 The dialog creates a new breakpoint. There are three kind of breakpoints in
 PowerShell:
 
-* Line breakpoint
+- Line breakpoint
 
     You have to provide a script line number, script file
     path (mandatory) and optional action code.
 
-* Command breakpoint
+- Command breakpoint
 
     You have to provide a command name (mandatory),
     optional script path and optional action code.
 
-* Variable breakpoint
+- Variable breakpoint
 
     You have to provide a variable name (mandatory),
     optional script path and optional action code.
@@ -564,7 +567,7 @@ markers consistent for correct interactive actions and syntax highlighting.
 
 Without selection some editor events are special:
 
-* `[ShiftEnter]`
+- `[ShiftEnter]`
 
     If the caret is in the active command then the command is invoked and its
     output is appended to the end marked by `<#<` and `>#>` or `<##>` .
@@ -572,30 +575,30 @@ Without selection some editor events are special:
     If it is in the passive command then its code is appended to the active
     command and the caret is moved there as well.
 
-* `[Tab]`
+- `[Tab]`
 
     Invokes PowerShell TabExpansion.
     See [TabExpansion2.ps1](#tabexpansion2ps1)
 
-* `[Up]`, `[Down]`
+- `[Up]`, `[Down]`
 
     In the last editor line of the simple command area navigates through
     commands in the interactive history and inserts them.
 
-* `[F5]`
+- `[F5]`
 
     Opens the interactive history list menu.
     The selected text is appended to the end.
 
-* `[ShiftDel]`
+- `[ShiftDel]`
 
     Replaces the nearest upper output `<#<...>#>` with `<##>`.
 
-* `[CtrlBreak]`
+- `[CtrlBreak]`
 
     Stops running synchronous commands in the main session.
 
-* `[CtrlC]`
+- `[CtrlC]`
 
     Stops running asynchronous commands in the local or remote session.
 
@@ -621,6 +624,13 @@ Without selection some editor events are special:
     you may switch to other windows while commands are still running.
 
 *********************************************************************
+## Choice dialog
+
+[Contents]
+
+TODO...
+
+*********************************************************************
 ## Power panel
 
 [Contents]
@@ -628,28 +638,28 @@ Without selection some editor events are special:
 Power panel is a PowerShellFar panel with .NET objects, PowerShell provider
 items, object or item properties and etc. There are several panels:
 
-* [Object panel](#object-panel)
+- [Object panel](#object-panel)
 
     Table of any .NET objects, normally of the same type or the same base type.
     Columns (default or custom) show property values. The simplest way to use a
     panel is `Out-FarPanel` cmdlet.
 
-* [Member panel](#list-panel)
+- [Member panel](#list-panel)
 
     List of members (properties, methods, and etc.) of a .NET object.
     There are two columns: Name and Value.
 
-* [Provider item panel](#item-panel)
+- [Provider item panel](#item-panel)
 
     Table of PowerShell provider items in a specified path.
     Columns (default or custom) show item properties.
 
-* [Provider folder tree](#folder-tree)
+- [Provider folder tree](#folder-tree)
 
     Tree of PowerShell provider container items.
     Providers that support container items: FileSystem, Registry, ...
 
-* [Provider property panel](#list-panel)
+- [Provider property panel](#list-panel)
 
     List of provider properties of an item.
     Providers that support them: FileSystem, Registry, ...
@@ -659,49 +669,49 @@ items, object or item properties and etc. There are several panels:
 Availability and details of operations may depend on a panel type, mode, data
 types, providers and etc.
 
-* `[F1]`
+- `[F1]`
 
     Opens the panel help menu with available panel specific commands. `[F1]`
     pressed in this menu opens the panel help topic.
 
-* `[F3]`
+- `[F3]`
 
     Views content, properties or other PowerShell or .NET information about the
     current object, provider item, member, property or '..' element.
 
-* `[F4]`
+- `[F4]`
 
     Opens an editor for the current item content or property value. The editor
     is not modal, you can edit other items at the same time. If the item is
     recognized as read only then the editor is locked for changes.
 
-* `[AltF4]`
+- `[AltF4]`
 
     Starts Notepad. In contrast to `[F4]` you have to finish editing and exit.
     If there are errors then Notepad is started again with the same temp file,
     i.e. your changes are not lost and you may continue editing.
 
-* `[F5]`
+- `[F5]`
 
     Copies items or properties from the active panel to another. You can copy
     almost any items to an Object panel, so that an Object panel can be used as
     a collector of items for further operations.
 
-* `[ShiftF5]`
+- `[ShiftF5]`
 
     Copies the current provider item, dynamic property, and etc. here with
     another name.
 
-* `[F6]`
+- `[F6]`
 
     Moves items or properties to another panel. You can move items to Object
     panel but it works the same as copying (`[F5]`).
 
-* `[ShiftF6]`
+- `[ShiftF6]`
 
     Renames the current provider item, dynamic property, and etc.
 
-* `[F7]`
+- `[F7]`
 
     Creates a new item or a property or invokes similar actions. Depending on a
     provider you may have to specify required provider item or property type or
@@ -710,7 +720,7 @@ types, providers and etc.
     mode an empty object is created for you and you are prompted to create the
     first property (so called NoteProperty).
 
-* `[F8]`, `[Del]`
+- `[F8]`, `[Del]`
 
     Removes selected objects from the panel and, depending on a panel, performs
     actions on related system objects. Object panel: removes objects from the
@@ -718,49 +728,49 @@ types, providers and etc.
     dynamic properties. Confirmations depend on Far settings for delete
     operations, but confirmation dialog is not exactly the same as in Far.
 
-* `[Esc]`
+- `[Esc]`
 
     Closes the panel and opens its parent panel, if any.
 
-* `[ShiftEsc]`
+- `[ShiftEsc]`
 
     Closes the panel together with parent panels, if any.
 
-* `[Enter]`
+- `[Enter]`
 
     Enters folders, opens items, and etc. The actual action depends on a panel,
     for example in list panels it may be used for editing values in the command
     line using the prefix `=`.
 
-* `[ShiftEnter]`, `[CtrlA]`
+- `[ShiftEnter]`, `[CtrlA]`
 
     Opens a panel with provider properties of the current item. You can modify,
     add and delete some properties, depending on a provider. Example: Registry
     key values.
 
-* `[CtrlPgDn]`
+- `[CtrlPgDn]`
 
     Opens a panel with the current object members. If the current member type
-    is *Property* then you can also open its members by `[CtrlPgDn]` and so on.
+    is `Property` then you can also open its members by `[CtrlPgDn]` and so on.
     Use `[CtrlShiftM]` to switch member modes.
 
-* `[CtrlG]`
+- `[CtrlG]`
 
     Apply command. Opens an input box in order to enter a command and invoke it
     for each object `$_` of the selected items or the current item.
 
-* `[CtrlQ]`
+- `[CtrlQ]`
 
     Quick view. Shows contents, properties and other information. Data may be
     not the same as information shown by `[F3]`.
 
-* `[CtrlS]`
+- `[CtrlS]`
 
     Saves panel data. Implementation depends on a panel. E.g. a data panel
     commits changes to a database, an object panel exports objects to .clixml
     file, etc.
 
-* `[AltF7]`
+- `[AltF7]`
 
     Search, not really implemented at the moment.
 
@@ -779,7 +789,7 @@ commands. You can send objects to the panel using `Out-FarPanel` cmdlet.
 
 shows all processes in the panel. You can view (`[F3]`) or quick view
 (`[CtrlQ]`) process properties or open its property panel (`[Enter]`).
-See also *Panel-Process.ps1*.
+See also `Panel-Process.ps1`.
 
     ps: ps | sort WS -Descending | Out-FarPanel
 
@@ -803,13 +813,13 @@ not know what columns to use. In such cases it shows just object strings.
 Object panels may recognize some object types and be able to perform some
 special operations. For example:
 
-* Edit `[F4]`
+- Edit `[F4]`
 
     Works for full path like strings and objects based on `FileInfo` (e.g. from
     `Get-*Item` cmdlets), `MatchInfo` (from `Select-String`, with found match
     selected).
 
-* Open `[Enter]`
+- Open `[Enter]`
 
     Works for full path strings and objects based on `FileInfo` and `DirectoryInfo`.
     Files are opened by associated programs depending on types.
@@ -818,7 +828,7 @@ special operations. For example:
     Works for `GroupInfo` (from `Group-Object`) and opens another child panel
     for the group, `[Esc]` returns you to the parent panel with groups.
 
-* Delete `[Del]`
+- Delete `[Del]`
 
     Works for full path strings and objects based on `FileInfo`.
     The selected files are deleted with a confirmation dialog.
@@ -884,7 +894,7 @@ current panel item names without full paths.
 **How to open item or property panel at some location**
 
 If you want to open a panel at the specified location from a script you may
-use scripts *Go-To.ps1* (not *FileSystem*) and *Panel-ItemProperty.ps1* (any
+use scripts `Go-To.ps1` (not `FileSystem`) and `Panel-ItemProperty.ps1` (any
 provider). See comments and examples there.
 
 *********************************************************************
@@ -896,18 +906,18 @@ provider). See comments and examples there.
 
 Provider folder tree panel is a tree panel with provider container items. It
 works for so called "navigation" providers. Standard navigation providers are
-*FileSystem*, *Registry*, *Certificate*, and *WSMan*. Other providers depend on
+`FileSystem`, `Registry`, `Certificate`, and `WSMan`. Other providers depend on
 imported modules.
 
 **Keys and actions**
 
-* `[Enter]`
+- `[Enter]`
 
     This panel is mostly used for navigation through an item tree. Note that
     quick search `[Alt+Letter]` works, too. When you reach an item you are
     looking for, press `[Enter]` to open an item panel for this location.
 
-    For *FileSystem* `[Enter]` opens the standard file panel on the passive
+    For `FileSystem` `[Enter]` opens the standard file panel on the passive
     panel, for convenience, it is more useful than its PowerShell twin. The
     tree panel is still active, you can take a look at files on the passive
     panel and continue navigation in the tree.
@@ -915,11 +925,11 @@ imported modules.
     For other providers `[Enter]` opens an item panel at the same active panel,
     as the child panel. When you exit it then the parent tree is shown again.
 
-* `[ShiftEnter]`, `[CtrlA]`
+- `[ShiftEnter]`, `[CtrlA]`
 
     Opens a panel with provider properties of the current item. Values are
-    shown in the *Description* column. You can modify, add and delete some
-    properties (depending on a provider). Example: key values of *Registry*.
+    shown in the `Description` column. You can modify, add and delete some
+    properties (depending on a provider). Example: key values of `Registry`.
 
     See [Tree panel](#tree-panel) for other tree panels keys used for navigation
     (expanding, collapsing nodes and etc.).
@@ -940,36 +950,36 @@ to modify and update data, insert and delete records.
 Data panel is built on the same engine as any other [Power panel](#power-panel),
 so that you can find other keys not listed here that still work in Data panel.
 
-* `[F7]`
+- `[F7]`
 
     Inserts a new record into a table and opens a Member panel for editing data
     of the added record.
 
-* `[F8]`
+- `[F8]`
 
     Deletes selected records. If an error happens cursor is set to a record
     with an error.
 
-* `[CtrlR]`
+- `[CtrlR]`
 
     Reads data from the database and fills the table. Note that not yet saved
     changes will be lost (usually not manual changes, e.g. changes done by
     scripts).
 
-* `[CtrlS]`
+- `[CtrlS]`
 
     Commits all remaining changes to a database if they exist (for example if
     you have changed the table data by PowerShell commands or scripts). Table
     may have any number of modified, new and deleted records. `[CtrlS]` saves
     them all.
 
-* `[PgDn]`, `[PgUp]`
+- `[PgDn]`, `[PgUp]`
 
     If their are pressed at the last or the first panel item respectively then
     they tell to show the next and previous page of records. Otherwise they
     work as usual. Use the `[F1]` menu in order to change paging settings.
 
-* `[Enter]`, `[CtrlPgDn]`
+- `[Enter]`, `[CtrlPgDn]`
 
     Opens a member panel for the current record. You may edit fields values.
     Use `[CtrlS]` to save your changes or `[Esc]` to return to the parent data
@@ -987,13 +997,13 @@ At least they should be enough to learn how to create data panels.
 
 **Utility scripts**
 
-* *Panel-DBData.ps1* creates a data panel by a single command with parameters
-* *Panel-DBTable.ps1* shows all connected tables and opens them in basic mode
+- `Panel-DBData.ps1` creates a data panel by a single command with parameters
+- `Panel-DBTable.ps1` shows all connected tables and opens them in basic mode
 
 **Demo scripts (see also About-Test.hlf)**
 
-* *Test-Panel-DBCategories.far.ps1* - simple data table with all operations
-* *Test-Panel-DBNotes.far.ps1* - complex data table with all operations and lookup field.
+- `Test-Panel-DBCategories.far.ps1` - simple data table with all operations
+- `Test-Panel-DBNotes.far.ps1` - complex data table with all operations and lookup field.
 
 ---
 **Notes**
@@ -1020,7 +1030,7 @@ An object shown in the panel is exposed as `$Far.Panel.Value`.
 
 **Keys and actions**
 
-* `[Enter]`
+- `[Enter]`
 
     It is used to modify a property in the command line. If the command line is
     empty and the current property value can be represented as a single line of
@@ -1032,35 +1042,35 @@ An object shown in the panel is exposed as `$Far.Panel.Value`.
     If the current property is a complex object then `[Enter]` opens its Member
     panel as the child panel.
 
-* `[F3]`
+- `[F3]`
 
     Opens a viewer to show property information, e.g. to find out whether a
     property is settable or not.
 
-* `[F4]`
+- `[F4]`
 
     Opens an editor to edit property value representable as multi-line text.
     You can open several editors. Properties are assigned on saving in editors.
 
-* `[F8]`, `[Del]`
+- `[F8]`, `[Del]`
 
     Removes selected dynamic properties from the object or provider item. Note:
     this is not always allowed, it depends on objects, providers, and selected
     properties.
 
-* `[ShiftF8]`, `[ShiftDel]`
+- `[ShiftF8]`, `[ShiftDel]`
 
     Sets null value to selected properties (kind of "deletes values"). Null
     values are shown as `<null>`.
 
-* `[CtrlG]`
+- `[CtrlG]`
 
     Apply command. Opens an input box and prompts to enter a command to be
     invoked for the target object `$_` which members or properties are shown.
     This is used to invoke the target object methods and to assign results of
     expressions to properties.
 
-* `[CtrlShiftM]`
+- `[CtrlShiftM]`
 
     Switches panel modes: mode 1: properties and values (you can edit settable
     properties); mode 2: all public members and their information (read only
@@ -1075,40 +1085,40 @@ See [Power panel](#power-panel) for other keys.
 [Power panel](#power-panel)
 
 Tree panel is a kind of Power panel for PowerShell "navigation" providers, for
-example *FileSystem* and *Registry*. It shows container items as a tree with
+example `FileSystem` and `Registry`. It shows container items as a tree with
 expandable nodes.
 
 **Keys and actions**
 
-* `[Right]`
+- `[Right]`
 
     Expands the item or, if it is already expanded or not expandable, moves the
     cursor to the next item. If the item was expanded before and then collapsed
     then its children are not refilled.
 
-* `[AltRight]`
+- `[AltRight]`
 
     Similar to `[Right]` but the children are refilled.
     It is used to reflect external changes of source data.
 
-* `[Left]`
+- `[Left]`
 
     Collapses the item or moves the cursor to the parent item.
 
-* `[AltLeft]`
+- `[AltLeft]`
 
     Similar to `[Left]` but children are discarded from the tree. It is used to
     free memory or ensure refilled children when they are expanded next time.
 
-* `[Alt+Letter]`
+- `[Alt+Letter]`
 
     Quick search. It should work for actual names, the special tree node marks
     '+' and '-' are ignored.
 
 **View modes**
 
-* `[Ctrl0]` - just the tree, descriptions are in the status line.
-* `[Ctrl1]` - two columns, the tree nodes and their descriptions.
+- `[Ctrl0]` - just the tree, descriptions are in the status line.
+- `[Ctrl1]` - two columns, the tree nodes and their descriptions.
 
 *********************************************************************
 ## Global objects
@@ -1117,18 +1127,18 @@ expandable nodes.
 
 There are three main objects defined as global variables.
 
-* `$Far`
+- `$Far`
 
     The instance of `FarNet.IFar` interface. It provides access to Far data and
     functionality using the FarNet object model. See FarNet manuals.
 
-* `$Psf`
+- `$Psf`
 
     The instance of `PowerShellFar.Actor` class exposing PowerShellFar features
     additional to FarNet. See FarNet manuals. Also, the PowerShellFar namespace
     provides public classes that can be used directly.
 
-* `$Host`
+- `$Host`
 
     The PowerShell host. In PowerShellFar its `$Host.Name` is "FarHost".
     Scripts may choose how to work depending on a host.
@@ -1184,7 +1194,7 @@ in opened interactives for full error information.
 
 [Contents]
 
-Settings are mostly user preferences and they are usually set in *Profile.ps1*.
+Settings are mostly user preferences and they are usually set in `Profile.ps1`.
 The command to view or change settings temporarily is
 
     ps: Open-FarPanel $Psf.Settings
@@ -1218,9 +1228,9 @@ with no output remember that errors also produce output to be shown.
 
 Useful hotkeys in panels:
 
-* `[CtrlUp]`, `[CtrlDown]` - change panels height
-* `[CtrlAltShift]` - (press and hold) show the console
-* `[CtrlO]`, `[CtrlF1]`, `[CtrlF2]` - hide and show panels
+- `[CtrlUp]`, `[CtrlDown]` - change panels height
+- `[CtrlAltShift]` - (press and hold) show the console
+- `[CtrlO]`, `[CtrlF1]`, `[CtrlF2]` - hide and show panels
 
 ---
 **Viewer output**
@@ -1254,11 +1264,11 @@ Some sample scripts names end with ".far.ps1", "-.ps1", ".fas.ps1".
 
 The suffixes mean that scripts are not standard PowerShell scripts.
 
-* Suffix ".far.ps1", "-.ps1"
+- Suffix ".far.ps1", "-.ps1"
 
     Scripts designed for FarNet and invoked with FarHost.
 
-* Suffix ".fas.ps1"
+- Suffix ".fas.ps1"
 
     Asynchronous scripts invoked by `Start-FarTask`.
 
@@ -1347,7 +1357,7 @@ The author uses this profile to set some editor event handlers even when macros
 might work better. This is done deliberately in order to be sure that handlers
 work fine. Other users may prefer macros.
 
-- Do not use this profile together with *HlfViewer*. Either disable the plugin
+- Do not use this profile together with `HlfViewer`. Either disable the plugin
   or remove `[F1]` code from the script.
 
 - Do not use this profile with plugins processing mouse events in editors.
@@ -1367,8 +1377,8 @@ This example profile covers the following events:
 Keyboard events:
 
 - `[F1]`
-    - .hlf files: save and show the current topic help using *Show-Hlf.ps1*.
-    - .md and .text files: save and show the current topic help using *Show-FarMarkdown.ps1*.
+    - .hlf files: save and show the current topic help using `Show-Hlf.ps1`.
+    - .md and .text files: save and show the current topic help using `Show-FarMarkdown.ps1`.
 
 Mouse events:
 
@@ -1384,13 +1394,13 @@ Mouse events:
 This script replaces the built-in PowerShell function.
 It comes with the module and loads on the first call.
 
-*TabExpansion2.ps1* reuses built-in completions and supports
+`TabExpansion2.ps1` reuses built-in completions and supports
 extensions added by profiles named like `*ArgumentCompleters.ps1`.
 
-The script *Bench\ArgumentCompleters.ps1* is a sample profile.
+The script `Bench\ArgumentCompleters.ps1` is a sample profile.
 Use it as the base for your completers. See the script code and comments.
 
-*TabExpansion2.ps1* works with other PowerShell hosts as well.
+`TabExpansion2.ps1` works with other PowerShell hosts as well.
 All you need is to call the script once, normally in a host profile.
 
 *********************************************************************
@@ -1448,9 +1458,9 @@ with other options.
 ***
 **Result panel keys**
 
-* `[Enter]` - open the editor at the selected match.
-* `[Esc]` - close the panel with confirmation.
-* `[F1]` - open this help topic.
+- `[Enter]` - open the editor at the selected match.
+- `[Esc]` - close the panel with confirmation.
+- `[F1]` - open this help topic.
 
 ---
 **Examples of input commands in a dialog**
@@ -1501,7 +1511,7 @@ panels for displaying job results and further operations on them.
 **1:**
 
 Use the "Easy prefix" macro which inserts `ps:` to empty command lines.
-See *PowerShellFar.macro.lua*, `[Space]`.
+See `PowerShellFar.macro.lua`, `[Space]`.
 
 **2:**
 
@@ -1532,7 +1542,7 @@ The PSF plugin menu is shown by:
 
     Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "7DEF4106-570A-41AB-8ECB-40605339E6F7")
 
-See *PowerShellFar.macro.lua* for sample macros.
+See `PowerShellFar.macro.lua` for sample macros.
 
 **Command examples**
 
@@ -1562,7 +1572,7 @@ Open selected files in editor at once
     ps: Get-FarPath -Selected | Start-FarEditor
 
 ---
-View *.log* files one by one, do not add to history
+View `*.log` files one by one, do not add to history
 
     ps: Get-Item *.log | Start-FarViewer -Modal -DisableHistory
 

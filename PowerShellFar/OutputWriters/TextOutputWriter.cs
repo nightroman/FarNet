@@ -1,12 +1,6 @@
-﻿
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
+﻿namespace PowerShellFar;
 
-using System;
-
-namespace PowerShellFar;
-
-abstract class TextOutputWriter : OutputWriter
+abstract class TextOutputWriter : AbcOutputWriter
 {
 	WriteMode _mode;
 

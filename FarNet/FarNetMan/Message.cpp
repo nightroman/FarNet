@@ -1,13 +1,9 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 #include "stdafx.h"
 #include "Message.h"
 
 namespace FarNet
-{;
-const int ALL_BUTTONS = FMSG_MB_OK|FMSG_MB_OKCANCEL|FMSG_MB_ABORTRETRYIGNORE|FMSG_MB_YESNO|FMSG_MB_YESNOCANCEL|FMSG_MB_RETRYCANCEL;
+{
+const int ALL_BUTTONS = FMSG_MB_OK | FMSG_MB_OKCANCEL | FMSG_MB_ABORTRETRYIGNORE | FMSG_MB_YESNO | FMSG_MB_YESNOCANCEL | FMSG_MB_RETRYCANCEL;
 
 bool Message::Show()
 {
@@ -49,7 +45,7 @@ std::vector<CStr> Message::CreateBlock()
 	}
 	else
 	{
-		for each(String^ s in _body)
+		for each (String ^ s in _body)
 		{
 			items[index].Set(s);
 			++index;
@@ -58,7 +54,7 @@ std::vector<CStr> Message::CreateBlock()
 
 	if (_buttons)
 	{
-		for each(String^ s in _buttons)
+		for each (String ^ s in _buttons)
 		{
 			items[index].Set(s);
 			++index;
@@ -120,7 +116,7 @@ int Message::Show(MessageArgs^ args)
 
 	// body
 	int height = Far::Api->UI->WindowSize.Y - 9;
-	FarNet::Works::Kit::FormatMessage(%m._body, args->Text, maxTextWidth, height, FarNet::Works::FormatMessageMode::Word);
+	FarNet::Works::Kit::FormatMessage(% m._body, args->Text, maxTextWidth, height, FarNet::Works::FormatMessageMode::Space);
 
 	// buttons?
 	bool needButtonList = false;
@@ -144,7 +140,7 @@ int Message::Show(MessageArgs^ args)
 int Message::GetButtonLineLength(array<String^>^ buttons)
 {
 	int len = 0;
-	for each(String^ s in buttons)
+	for each (String ^ s in buttons)
 		len += s->Length + 4;
 	return len + buttons->Length - 1;
 }
@@ -153,12 +149,12 @@ int Message::ShowDialog(int maxTextWidth, bool needButtonList)
 {
 	if (!_header)
 		_header = String::Empty;
-	
+
 	// dialog width
 	int w = _header->Length;
 
 	// text lines
-	for each(String^ s in _body)
+	for each (String ^ s in _body)
 		if (s->Length > w)
 			w = s->Length;
 
@@ -167,7 +163,7 @@ int Message::ShowDialog(int maxTextWidth, bool needButtonList)
 	{
 		// extra for possible vertical scroll, to avoid >>
 		const int extra = 1;
-		for each(String^ s in _buttons)
+		for each (String ^ s in _buttons)
 		{
 			if (s->Length + extra > w)
 			{
@@ -223,7 +219,7 @@ int Message::ShowDialog(int maxTextWidth, bool needButtonList)
 	dialog->AddBox(3, 1, w - 4, h - 2, _header);
 
 	// text
-	for(int i = 0; i < nBody; ++i)
+	for (int i = 0; i < nBody; ++i)
 		dialog->AddText(5, -1, 0, _body[i])->ShowAmpersand = true;
 
 	// case: no buttons
@@ -242,7 +238,7 @@ int Message::ShowDialog(int maxTextWidth, bool needButtonList)
 		IListBox^ list = dialog->AddListBox(4, -1, w - 5, h - 6 - nBody, nullptr);
 		list->NoAmpersands = true;
 		list->NoBox = true;
-		for each(String^ s in _buttons)
+		for each (String ^ s in _buttons)
 			list->Add(s);
 
 		if (!dialog->Show())
@@ -254,7 +250,7 @@ int Message::ShowDialog(int maxTextWidth, bool needButtonList)
 	// else: normal buttons
 
 	List<IControl^> buttons(_buttons->Length);
-	for each(String^ s in _buttons)
+	for each (String ^ s in _buttons)
 	{
 		IButton^ button = dialog->AddButton(0, (buttons.Count ? 0 : -1), s);
 		button->CenterGroup = true;
@@ -275,7 +271,7 @@ int Message::ShowGui(String^ body, String^ header, MessageOptions options)
 	UINT type = MB_SYSTEMMODAL;
 
 	// buttons
-	switch(UINT(options) & 0xFFFF0000)
+	switch (UINT(options) & 0xFFFF0000)
 	{
 	case UINT(MessageOptions::OkCancel):
 		type |= MB_OKCANCEL;
@@ -307,7 +303,7 @@ int Message::ShowGui(String^ body, String^ header, MessageOptions options)
 	int res = ::MessageBox(0, pinText, pinCaption, type);
 
 	// result
-	switch(UINT(options) & 0xFFFF0000)
+	switch (UINT(options) & 0xFFFF0000)
 	{
 	case UINT(MessageOptions::Ok):
 		return res == IDOK ? 0 : -1;
@@ -324,5 +320,4 @@ int Message::ShowGui(String^ body, String^ header, MessageOptions options)
 	}
 	return -1;
 }
-
 }

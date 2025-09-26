@@ -7,6 +7,7 @@ static class HelpTopic
 {
 	public const string
 		BreakpointDialog = "breakpoint-dialog",
+		ChoiceDialog = "choice-dialog",
 		CommandConsole = "command-console-dialog",
 		CommandHistory = "command-history",
 		CommandLine = "command-line",
