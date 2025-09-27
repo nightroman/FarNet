@@ -256,9 +256,9 @@ See [Command history](#command-history).
 Opens an interactive editor associated with the main session.
 See [Interactive](#interactive).
 
-**Int.session**
+**Inter.async**
 
-Opens an interactive editor associated with a local session.
+Opens an interactive editor associated with an async session.
 See [Interactive](#interactive).
 
 **Power panel**

@@ -14,7 +14,7 @@ static class Res
 		MenuCommandConsole /**/ = "&3. Command console",
 		MenuCommandHistory /**/ = "&4. Command history",
 		MenuInteractive1 /*  */ = "&5. Interactive",
-		MenuInteractive2 /*  */ = "&s. Int.session",
+		MenuInteractive2 /*  */ = "&a. Inter.async",
 		MenuPowerPanel /*    */ = "&6. Power panel",
 		MenuTabExpansion /*  */ = "&7. Complete",
 		MenuDebugger /*      */ = "&9. Debugger",

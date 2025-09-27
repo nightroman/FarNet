@@ -1,5 +1,4 @@
 using FarNet;
-using Microsoft.PowerShell;
 using System.Collections;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
@@ -129,21 +128,8 @@ public sealed partial class Actor
 		FarUI = new FarUI();
 		FarHost = new FarHost(FarUI);
 
-		// initial state
-		var state = InitialSessionState.CreateDefault();
-		state.ExecutionPolicy = ExecutionPolicy.Bypass;
-
-		// add cmdlets
-		Commands.BaseCmdlet.AddCmdlets(state);
-
-		// add variables
-		state.Variables.Add([
-			new("Far", Far.Api, "Exposes FarNet.", ScopedItemOptions.AllScope | ScopedItemOptions.Constant),
-			new("Psf", this, "Exposes PowerShellFar.", ScopedItemOptions.AllScope | ScopedItemOptions.Constant),
-		]);
-
 		// open runspace
-		Runspace = RunspaceFactory.CreateRunspace(FarHost, state);
+		Runspace = RunspaceFactory.CreateRunspace(FarHost, FarInitialSessionState.Instance);
 		Runspace.ThreadOptions = PSThreadOptions.UseCurrentThread;
 		Runspace.Open();
 
@@ -160,9 +146,6 @@ public sealed partial class Actor
 		// Get engine once to avoid this: "A pipeline is already executing. Concurrent SessionStateProxy method call is not allowed."
 		// Looks like a hack, but it works fine. Problem case: run Test-CallStack.ps1, Esc -> the error above.
 		_engine_ = Runspace.SessionStateProxy.PSVariable.GetValue(Word.ExecutionContext) as EngineIntrinsics;
-
-		//? set instead of adding to initial state
-		Engine.SessionState.PSVariable.Set("ErrorActionPreference", ActionPreference.Stop);
 
 		// invoke profiles
 		using var ps = NewPowerShell();

@@ -561,124 +561,7 @@ Example: 'FullName' or {$_.FullName} tell to use a property FullName.
 	}
 }
 
-### Start-FarTask
-@{
-	command = 'Start-FarTask'
-	synopsis = 'Starts the script task.'
-	description = @'
-	This cmdlet starts the script task. The script runs in a new session
-	asynchronously without blocking the main thread. It uses special job
-	blocks for accessing FarNet API in the main session.
-
-	INPUT
-
-	The task script and jobs may use the shared hashtable $Data. It is set
-	explicitly by the parameter Data and implicitly by script parameters.
-
-	If Script uses parameters, they may be specified on Start-FarTask calls.
-	Known issue: avoid switch parameters or specify after parameter Script.
-	The specified parameters are also added to the shared hashtable $Data.
-
-	OUTPUT
-
-	The cmdlet returns nothing by default and the task script output is
-	ignored. Use the switch AsTask in order to return the started task.
-	The task result is the task script output presented as [object[]].
-
-	LOCATION
-
-	The task current location is the caller file system current location.
-	The task may change it, this does not affect anything else.
-
-	Task jobs current locations are the main session current location.
-	Jobs should not change it without restoring the original.
-
-	JOBS AND MACROS
-
-	job {...}
-
-		This job may output data as usual. Special case: if the output is a
-		task then this task is awaited and its result is returned instead.
-
-		Use $Var.<name> for getting or setting the task variables.
-
-	run {...}
-
-		This job starts some modal UI as the last command and immediately
-		returns to the task with modal UI still running. Output is ignored.
-
-		Use $Var.<name> for getting or setting the task variables.
-
-	ps: {...}
-
-		This job prints its commands output to the console.
-
-		Use $Var.<name> for getting or setting the task variables.
-
-	keys <key> [<key> ...]
-
-		This command invokes the specified keys.
-
-	macro <code>
-
-		This command invokes the specified macro.
-
-	DEBUGGING AND STEPPING
-
-	AddDebugger and Step enable debugging and require Add-Debugger.ps1 in the path.
-	Get Add-Debugger.ps1 -- https://www.powershellgallery.com/packages/Add-Debugger
-'@
-	parameters = @{
-		Script = @'
-		Specifies the task as script block or file name or script code.
-
-		File names are full or relative paths or just names in the path.
-		File names should end with ".ps1".
-
-		Strings not ending with ".ps1" are treated as code and compiled to
-		script blocks.
-'@
-		AsTask = @'
-		Tells to return the started task.
-		The task result is the task script output presented as [object[]].
-'@
-		Data = @'
-		The list of variable names or hashtables added to the shared hashtable $Data.
-
-		String items are names of existing variables added to $Data.
-
-		Other items are hashtables merged into $Data.
-'@
-		AddDebugger = @'
-		Tells to use Add-Debugger.ps1 and specifies its parameters hashtable.
-		Use null or empty hashtable for defaults.
-		Example:
-
-			Start-FarTask ... -AddDebugger @{
-				Path = "$env:TEMP\debug-1.log"
-				Context = 10
-			}
-
-		Ensure some breakpoints in the task script or use Wait-Debugger or
-		use Step to break at jobs and macros. Otherwise, the debugger will
-		not stop.
-'@
-		Step = @'
-		Tells to use Add-Debugger.ps1 and sets breakpoints at jobs and macros:
-		`job`, `run`, `ps:`, `keys`, `macro`.
-'@
-	}
-
-	outputs = @{
-		type = 'System.Threading.Tasks.Task[object[]]'
-		description = 'With AsTask, the started task.'
-	}
-
-	links = @(
-		@{ text = 'Samples -- https://github.com/nightroman/FarNet/tree/main/Samples/FarTask' }
-	)
-}
-
+### --Register
 $BaseRegister = @{
 	parameters = @{
 		Id = 'The action GUID.'
@@ -752,5 +635,281 @@ Merge-Helps $BaseRegister @{
 	}
 	links = @(
 		@{ text = 'https://github.com/nightroman/FarNet/blob/main/Samples/Tests/Test-RegisterTool.far.ps1' }
+	)
+}
+
+### --Task
+### Start-FarTask
+@{
+	command = 'Start-FarTask'
+	synopsis = 'Starts the script task.'
+	description = @'
+	This cmdlet starts the script task. The script runs in a new session
+	asynchronously without blocking the main thread. It uses special job
+	blocks for accessing FarNet API in the main session.
+
+	INPUT
+
+	The task script and jobs may use the shared hashtable $Data. It is set
+	explicitly by the parameter Data and implicitly by script parameters.
+
+	If Script uses parameters, they may be specified on Start-FarTask calls.
+	Known issue: avoid switch parameters or specify after parameter Script.
+	The specified parameters are also added to the shared hashtable $Data.
+
+	OUTPUT
+
+	The cmdlet returns nothing by default and the task script output is
+	ignored. Use the switch AsTask in order to return the started task.
+	The task result is the task script output presented as [object[]].
+
+	LOCATION
+
+	The task current location is the caller file system current location.
+	The task may change it, this does not affect anything else.
+
+	Task jobs current locations are the main session current location.
+	Jobs should not change it without restoring the original.
+
+	JOBS AND MACROS
+
+	`ps:` and `job` may be used in async and main sessions.
+	`run`, `keys`, `macro` are used in async sessions only.
+
+	ps: {...}
+
+		This job prints its commands output to the console.
+
+		Use $Var.<name> for getting or setting the task variables.
+
+	job {...}
+
+		This job may output data as usual. Special case: if the output is a
+		task then this task is awaited and its result is returned instead.
+
+		Use $Var.<name> for getting or setting the task variables.
+
+	run {...}
+
+		This job starts some modal UI as the last command and immediately
+		returns to the task with modal UI still running. Output is ignored.
+
+		Use $Var.<name> for getting or setting the task variables.
+
+	keys <key> [<key> ...]
+
+		This command invokes the specified keys.
+
+	macro <code>
+
+		This command invokes the specified macro.
+
+	DEBUGGING AND STEPPING
+
+	AddDebugger and Step enable debugging and require Add-Debugger.ps1 in the path.
+	Get Add-Debugger.ps1 -- https://www.powershellgallery.com/packages/Add-Debugger
+'@
+	parameters = @{
+		Script = @'
+		Specifies the task as script block or file name or script code.
+
+		File names are full or relative paths or just names in the path.
+		File names should end with ".ps1".
+
+		Strings not ending with ".ps1" are treated as code and compiled to
+		script blocks.
+'@
+		AsTask = @'
+		Tells to return the started task.
+		The task result is the task script output presented as [object[]].
+'@
+		Data = @'
+		The list of variable names or hashtables added to the shared hashtable $Data.
+
+		String items are names of existing variables added to $Data.
+
+		Other items are hashtables merged into $Data.
+'@
+		AddDebugger = @'
+		Tells to use Add-Debugger.ps1 and specifies its parameters hashtable.
+		Use null or empty hashtable for defaults.
+		Example:
+
+			Start-FarTask ... -AddDebugger @{
+				Path = "$env:TEMP\debug-1.log"
+				Context = 10
+			}
+
+		Ensure some breakpoints in the task script or use Wait-Debugger or
+		use Step to break at jobs and macros. Otherwise, the debugger will
+		not stop.
+'@
+		Step = @'
+		Tells to use Add-Debugger.ps1 and sets breakpoints at jobs and macros:
+		`job`, `run`, `ps:`, `keys`, `macro`.
+'@
+	}
+	outputs = @{
+		type = 'System.Threading.Tasks.Task[object[]]'
+		description = 'With AsTask, the started task.'
+	}
+	links = @(
+		@{ text = 'Samples -- https://github.com/nightroman/FarNet/tree/main/Samples/FarTask' }
+		@{ text = 'Invoke-FarTaskCmd' }
+		@{ text = 'Invoke-FarTaskJob' }
+		@{ text = 'Invoke-FarTaskRun' }
+		@{ text = 'Invoke-FarTaskKeys' }
+		@{ text = 'Invoke-FarTaskMacro' }
+	)
+}
+
+### Invoke-FarTaskCmd
+@{
+	command = 'Invoke-FarTaskCmd'
+	synopsis = '(ps:) Invokes task script as from command line.'
+	description = @'
+	Invokes the script as if it is typed in the command line and prints its
+	output to the console.
+
+	Supported sessions: async, main.
+'@
+	parameters = @{
+		Script = 'Script block.'
+	}
+	outputs = @(
+		@{
+			type = 'None'
+			description = 'Output is printed to the console.'
+		}
+	)
+    examples = @(
+        @{
+            code = {
+            	# Prints the active panel path.
+            	ps: {
+            		$Far.Panel.CurrentDirectory
+            	}
+            }
+        }
+    )
+}
+
+### Invoke-FarTaskJob
+@{
+	command = 'Invoke-FarTaskJob'
+	synopsis = '(job) Invokes task script with output.'
+	description = @'
+	Invokes the script and returns its output objects.
+
+	Supported sessions: async, main.
+'@
+	parameters = @{
+		Script = 'Script block.'
+	}
+	outputs = @(
+		@{
+			type = 'PSObject'
+			description = 'Script results.'
+		}
+	)
+    examples = @(
+        @{
+            code = {
+            	# Returns the active panel path.
+            	job {
+            		$Far.Panel.CurrentDirectory
+            	}
+            }
+        }
+    )
+}
+
+### Invoke-FarTaskRun
+@{
+	command = 'Invoke-FarTaskRun'
+	synopsis = '(run) Invokes task script.'
+	description = @'
+	Runs the script which starts some modal UI and immediately returns with the
+	modal UI still running. Output is ignored.
+
+	Then the caller may operate on the running modal UI. This is useful for
+	testing expected results in UI or doing something else more practical.
+
+	Supported sessions: async only.
+'@
+	parameters = @{
+		Script = 'Script block.'
+	}
+	outputs = @(
+		@{
+			type = 'None'
+			description = 'Output is ignored.'
+		}
+	)
+	examples = @(
+        @{
+            code = {
+            	# Shows some error message box.
+            	run {
+            		$Far.Message('Cannot find file.', 'Error', 'Warning, Ok')
+            	}
+            }
+        }
+	)
+}
+
+### Invoke-FarTaskKeys
+@{
+	command = 'Invoke-FarTaskKeys'
+	synopsis = '(keys) Posts task keys.'
+	description = @'
+	Posts the specified keys as if they are typed and awaits them, then the
+	caller continues. Keys are Far Manager key names. Keys are specified as
+	separate arguments.
+
+	Supported sessions: async only.
+'@
+	parameters = @{
+		Keys = 'One or more keys as separate arguments.'
+	}
+	outputs = @(
+		@{
+			type = 'None'
+		}
+	)
+	examples = @(
+		@{
+			code = {
+				# Enters "Hello"
+				keys H e l l o Enter
+			}
+		}
+	)
+}
+
+### Invoke-FarTaskMacro
+@{
+	command = 'Invoke-FarTaskMacro'
+	synopsis = '(macro) Posts task macro.'
+	description = @'
+	Posts the specified Lua macro and awaits it, then the caller continues.
+
+	Supported sessions: async only.
+'@
+	parameters = @{
+		Macro = 'Lua macro.'
+	}
+	outputs = @(
+		@{
+			type = 'None'
+		}
+	)
+	examples = @(
+		@{
+			code = {
+				# Shows Lua message box.
+				macro 'far.Message("Hello")'
+			}
+		}
 	)
 }

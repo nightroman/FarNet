@@ -1,4 +1,3 @@
-
 #include "stdafx.h"
 #include "Dialog.h"
 #include "DialogControls.h"
@@ -805,7 +804,7 @@ INT_PTR FarDialog::DialogProc(intptr_t msg, intptr_t param1, void* param2)
 			}
 			break;
 		}
-		case DN_INPUT: //rk-0
+		case DN_INPUT:
 		{
 			INPUT_RECORD* ir = (INPUT_RECORD*)param2;
 

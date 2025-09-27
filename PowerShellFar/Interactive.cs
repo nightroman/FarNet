@@ -120,7 +120,7 @@ class Interactive : InteractiveEditor
 		{
 			isNew = true;
 
-			var rs = RunspaceFactory.CreateRunspace(FarHost, Runspace.DefaultRunspace.InitialSessionState);
+			var rs = RunspaceFactory.CreateRunspace(FarHost, FarInitialSessionState.Instance);
 			rs.ThreadOptions = PSThreadOptions.ReuseThread;
 
 			rs.Open();
@@ -135,7 +135,7 @@ class Interactive : InteractiveEditor
 		if (isNew)
 			InvokeProfile("Profile-Local.ps1", false);
 
-		Editor.Title = "PS local session " + Path.GetFileName(Editor.FileName);
+		Editor.Title = "PS async session " + Path.GetFileName(Editor.FileName);
 	}
 
 	void OpenRemoteSession()

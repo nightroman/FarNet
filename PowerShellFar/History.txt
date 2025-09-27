@@ -1,5 +1,17 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.53 =
+
+Expose `Start-FarTask` internals for more cases, e.g. async sessions.
+DSL aliases and their cmdlets:
+- ps:   Invoke-FarTaskCmd
+- job   Invoke-FarTaskJob
+- run   Invoke-FarTaskRun
+- keys  Invoke-FarTaskKeys
+- macro Invoke-FarTaskMacro
+
+Why? To make this possible: /Samples/FarTask/MainAndAsyncCommon
+
 = 9.0.52 =
 
 Choice dialog
