@@ -162,7 +162,7 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 		rs.SessionStateProxy.SetVariable(NameData, _data);
 
 		// sync file system location
-		rs.SessionStateProxy.Path.SetLocation(SessionState.Path.CurrentFileSystemLocation.Path);
+		rs.SessionStateProxy.Path.SetLocation(WildcardPattern.Escape(SessionState.Path.CurrentFileSystemLocation.Path));
 
 		// PowerShell invoker
 		var ps = PowerShell.Create(rs);

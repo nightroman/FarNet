@@ -1,9 +1,4 @@
-﻿
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-using System.Management.Automation;
+﻿using System.Management.Automation;
 
 namespace PowerShellFar;
 
@@ -23,7 +18,7 @@ class PathInfoEx
 			_PathInfo = core.CurrentLocation;
 		else
 			// 3 times faster than push/set/pop location; NB: it is slow anyway
-			_PathInfo = core.GetResolvedPSPathFromPSPath(Kit.EscapeWildcard(path))[0];
+			_PathInfo = core.GetResolvedPSPathFromPSPath(WildcardPattern.Escape(path))[0];
 	}
 
 	internal PathInfoEx(PathInfo pathInfo)

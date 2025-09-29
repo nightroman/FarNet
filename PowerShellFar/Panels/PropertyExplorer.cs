@@ -1,7 +1,5 @@
 using FarNet;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Management.Automation;
 
@@ -70,7 +68,7 @@ public sealed class PropertyExplorer : ListExplorer
 			// so, don't add, they are noisy anyway (even if marked system or hidden).
 
 			// get property bag 090409
-			Collection<PSObject> bag = A.Psf.Engine.InvokeProvider.Property.Get(Kit.EscapeWildcard(ItemPath), null);
+			Collection<PSObject> bag = A.Psf.Engine.InvokeProvider.Property.Get(WildcardPattern.Escape(ItemPath), null);
 
 			// filter
 			List<string> filter =
@@ -204,7 +202,7 @@ public sealed class PropertyExplorer : ListExplorer
 				{
 					// remove or not
 					if (!confirm || 0 == Far.Api.Message("Delete the (default) property", Res.Delete, MessageOptions.YesNo))
-						A.Psf.Engine.InvokeProvider.Property.Remove(Kit.EscapeWildcard(ItemPath), string.Empty);
+						A.Psf.Engine.InvokeProvider.Property.Remove(WildcardPattern.Escape(ItemPath), string.Empty);
 
 					// remove from the list in any case
 					names.RemoveAt(i);
@@ -260,8 +258,8 @@ public sealed class PropertyExplorer : ListExplorer
 		//! *) -Name takes a single string only? (help: yes (copy), no (move) - odd!)
 		//! *) Names can't be pipelined (help says they can)
 		//! so, use provider directly (no confirmation)
-		string source = Kit.EscapeWildcard(that.ItemPath);
-		string target = Kit.EscapeWildcard(this.ItemPath);
+		string source = WildcardPattern.Escape(that.ItemPath);
+		string target = WildcardPattern.Escape(this.ItemPath);
 		if (args.Move)
 		{
 			foreach (string name in names)
@@ -361,7 +359,7 @@ public sealed class PropertyExplorer : ListExplorer
 		if (args.Parameter is not string newName)
 			throw new InvalidOperationException(Res.ParameterString);
 
-		string src = Kit.EscapeWildcard(ItemPath);
+		string src = WildcardPattern.Escape(ItemPath);
 		A.Psf.Engine.InvokeProvider.Property.Copy(src, args.File.Name, src, newName);
 
 		args.PostName = newName;

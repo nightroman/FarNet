@@ -18,7 +18,4 @@ static partial class MyRegex
 
 	[GeneratedRegex(@"\s+")]
 	public static partial Regex Spaces();
-
-	[GeneratedRegex(@"([`\[\]\*\?])")]
-	public static partial Regex WildcardChar();
 }

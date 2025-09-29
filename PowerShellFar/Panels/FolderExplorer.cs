@@ -1,12 +1,6 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Management.Automation;
 using FarNet;
+using System.Collections.ObjectModel;
+using System.Management.Automation;
 
 namespace PowerShellFar;
 
@@ -64,7 +58,7 @@ public FolderExplorer(string? path) : base(new Guid(TypeIdString))
 	{
 		// set location
 		if (!string.IsNullOrEmpty(path) && path != ".")
-			A.Psf.Engine.SessionState.Path.SetLocation(path);
+			A.Psf.Engine.SessionState.Path.SetLocation(WildcardPattern.Escape(path));
 
 		// get location
 		var location = new PathInfoEx(A.Psf.Engine.SessionState.Path.CurrentLocation);

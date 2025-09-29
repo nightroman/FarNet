@@ -524,7 +524,7 @@ static class EditorKit
 		{
 			// push/set the location; let's ignore issues
 			A.Psf.Engine.SessionState.Path.PushCurrentLocation(null);
-			A.Psf.Engine.SessionState.Path.SetLocation(Kit.EscapeWildcard(dir1));
+			A.Psf.Engine.SessionState.Path.SetLocation(WildcardPattern.Escape(dir1));
 
 			// invoke the script by the runner or directly
 			if (fileName.EndsWith(".fas.ps1", StringComparison.OrdinalIgnoreCase))

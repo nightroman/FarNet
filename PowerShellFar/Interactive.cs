@@ -124,7 +124,7 @@ class Interactive : InteractiveEditor
 			rs.ThreadOptions = PSThreadOptions.ReuseThread;
 
 			rs.Open();
-			rs.SessionStateProxy.Path.SetLocation(Far.Api.CurrentDirectory);
+			rs.SessionStateProxy.Path.SetLocation(WildcardPattern.Escape(Far.Api.CurrentDirectory));
 
 			ses = new(rs, FarHost!);
 			_localSessions.Add(ses);

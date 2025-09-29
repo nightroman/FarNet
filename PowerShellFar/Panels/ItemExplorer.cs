@@ -1,12 +1,7 @@
-﻿
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
+﻿using FarNet;
+using Microsoft.PowerShell.Commands;
 using System.Collections.ObjectModel;
 using System.Management.Automation;
-using FarNet;
-using Microsoft.PowerShell.Commands;
 
 namespace PowerShellFar;
 
@@ -303,7 +298,7 @@ public sealed class ItemExplorer : FormatExplorer
 			throw new InvalidOperationException(Res.ParameterString);
 
 		// workaround; Rename-Item has no -LiteralPath; e.g. z`z[z.txt is a big problem
-		string src = Kit.EscapeWildcard(My.PathEx.Combine(Location, args.File.Name));
+		string src = WildcardPattern.Escape(My.PathEx.Combine(Location, args.File.Name));
 		A.Psf.Engine.InvokeProvider.Item.Rename(src, newName);
 	}
 
@@ -384,7 +379,7 @@ public sealed class ItemExplorer : FormatExplorer
 		if (args.Parameter is not string newName)
 			throw new InvalidOperationException(Res.ParameterString);
 
-		string source = Kit.EscapeWildcard(My.PathEx.Combine(Location, args.File.Name));
+		string source = WildcardPattern.Escape(My.PathEx.Combine(Location, args.File.Name));
 		string target = My.PathEx.Combine(Location, newName);
 		A.Psf.Engine.InvokeProvider.Item.Copy(source, target, false, CopyContainers.CopyTargetContainer);
 

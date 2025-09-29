@@ -1,5 +1,4 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 
 namespace PowerShellFar;
 
@@ -28,15 +27,5 @@ static class Kit
 	public static bool Equals(string? strA, string? strB)
 	{
 		return string.Equals(strA, strB, StringComparison.OrdinalIgnoreCase);
-	}
-
-	// Escapes a literal string to be used as a wildcard.
-	//! It is a workaround:
-	// 1) Rename-Item has no -LiteralPath --> we have to escape wildcards (anyway it fails e.g. "name`$][").
-	// 2) BUG in [Management.Automation.WildcardPattern]::Escape(): e.g. `` is KO ==>.
-	// '``' -like [Management.Automation.WildcardPattern]::Escape('``') ==> False
-	public static string EscapeWildcard(string literal)
-	{
-		return MyRegex.WildcardChar().Replace(literal, "`$1");
 	}
 }

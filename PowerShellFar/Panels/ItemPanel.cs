@@ -9,8 +9,7 @@ _090929_061740 Far 2.0.1145 does not sync the current directory with the panel p
 
 using FarNet;
 using Microsoft.PowerShell.Commands;
-using System;
-using System.IO;
+using System.Management.Automation;
 
 namespace PowerShellFar;
 
@@ -139,7 +138,7 @@ public sealed class ItemPanel : FormatPanel
 		// Set-Location, the core remembers it for the drive, this is handy
 		try
 		{
-			A.Psf.Engine.SessionState.Path.SetLocation(Kit.EscapeWildcard(Explorer.Location));
+			A.Psf.Engine.SessionState.Path.SetLocation(WildcardPattern.Escape(Explorer.Location));
 		}
 		catch (Exception ex)
 		{

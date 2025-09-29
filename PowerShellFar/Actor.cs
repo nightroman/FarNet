@@ -220,7 +220,7 @@ public sealed partial class Actor
 		// Set the current location. Note, PS Core works fine with long paths.
 		// So do not catch, we should know why it fails and how to handle this.
 		// Parameter is wildcard. Test: enter into a folder "[]" and invoke a command.
-		pathIntrinsics.SetLocation(Kit.EscapeWildcard(currentDirectory));
+		pathIntrinsics.SetLocation(WildcardPattern.Escape(currentDirectory));
 	}
 	#endregion
 
