@@ -545,20 +545,35 @@ Merge-Helps $FarList @{
 	command = 'Out-FarList'
 	synopsis = 'Shows a list of input objects and returns selected.'
 	parameters = @{
-		InputObject = 'Object to be represented as a list item.'
+		InputObject = @'
+		Objects to show as list items.
+
+		Objects FarItem are used as is and shown as their property
+		Text. Their property Click may be used for custom actions.
+
+		Other objects are shown as SetItem with Text as ToString() or
+		specified by the parameter Text. The Data is set to the input
+		object, to be returned.
+'@
 		Text = @'
-A property name or a script to get the FarItem.Text text of a list item.
-Example: 'FullName' or {$_.FullName} tell to use a property FullName.
+		A property name or script to get the list item text. Example:
+		'FullName' or {$_.FullName} to use the property FullName.
 '@
 	}
 	inputs = @{
 		type = '[object]'
 		description = 'Any objects.'
 	}
-	outputs = @{
-		type = '[object] or none'
-		description = 'One of the input objects selected by a user or none if nothing is selected.'
-	}
+	outputs = @(
+		@{
+			type = 'null'
+			description = 'Nothing is selected.'
+		}
+		@{
+			type = '[object]'
+			description = 'The selected input object.'
+		}
+	)
 }
 
 ### --Register

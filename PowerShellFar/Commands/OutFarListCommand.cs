@@ -1,7 +1,3 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
 using System.Management.Automation;
 
@@ -35,6 +31,12 @@ sealed class OutFarListCommand : NewFarListCommand
 	{
 		if (InputObject is null)
 			return;
+
+		if (InputObject.BaseObject(out _) is FarItem farItem)
+		{
+			_menu.Items.Add(farItem);
+			return;
+		}
 
 		var text = Text is null ? InputObject.ToString() : Text.GetString(InputObject);
 		_menu.Add(text!).Data = InputObject;

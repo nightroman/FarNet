@@ -23,11 +23,6 @@ class FarHost : PSHost
 		_UI = ui;
 	}
 
-	internal static void Init()
-	{
-		s_ignoreApplications = false;
-	}
-
 	#region PSHost
 	// The host name.
 	public override string Name => "FarHost";
@@ -123,8 +118,7 @@ class FarHost : PSHost
 	#endregion
 
 	#region IgnoreApplications
-	//! Default is true for profile loading.
-	static bool s_ignoreApplications = true;
+	static bool s_ignoreApplications;
 
 	// Use with `using` to disable/restore Notify*Application().
 	internal sealed class IgnoreApplications : IDisposable

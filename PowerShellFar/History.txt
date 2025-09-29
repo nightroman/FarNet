@@ -1,5 +1,15 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.54 =
+
+Tweak session loading.
+
+Out-FarList
+- Accept input FarItem as is, this enables Click.
+
+Edit-IB.ps1
+- Rework special items using SetItem and Click.
+
 = 9.0.53 =
 
 Expose `Start-FarTask` internals for more cases, e.g. async sessions.

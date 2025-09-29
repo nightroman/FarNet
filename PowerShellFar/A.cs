@@ -15,13 +15,19 @@ internal static class A
 	/// </summary>
 	public static Actor Psf { get; private set; } = null!;
 
-	public static void Connect(Actor? psf)
-	{
-		Psf = psf!;
-	}
-
 	public static bool IsMainSession => Runspace.DefaultRunspace.Id == 1;
 	public static bool IsAsyncSession => Runspace.DefaultRunspace.Id > 1;
+
+	public static void Connect()
+	{
+		Psf = new Actor();
+		Psf.Connect();
+	}
+
+	public static void Disconnect()
+	{
+		Psf.Disconnect();
+	}
 
 	/// <summary>
 	/// Executes the specified job synchronously if the session is main, otherwise posts and awaits it.

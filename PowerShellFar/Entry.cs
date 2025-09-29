@@ -36,8 +36,8 @@ public sealed class Entry : ModuleHost
 
 	public override void Connect()
 	{
-		// create an actor and expose main instances
-		A.Connect(new Actor());
+		// first
+		A.Connect();
 
 		// register main command
 		CommandInvoke1 = Manager.RegisterCommand(
@@ -61,28 +61,18 @@ public sealed class Entry : ModuleHost
 		// subscribe to editors
 		Far.Api.AnyEditor.FirstOpening += EditorKit.OnEditorFirstOpening;
 		Far.Api.AnyEditor.Opened += EditorKit.OnEditorOpened;
-
-		// connect actor
-		A.Psf.Connect();
 	}
 
 	public override void Disconnect()
 	{
-		// disconnect instances
-		A.Psf.Disconnect();
-		A.Connect(null);
+		A.Disconnect();
 		Instance = null!;
 	}
 
 	public override void Invoking()
 	{
-		if (!IsInvokingCalled)
-		{
-			A.Psf.Invoking();
-			IsInvokingCalled = true;
-		}
+		A.Psf.Invoking();
 	}
-	bool IsInvokingCalled;
 
 	internal static bool IsMyPrefix(ReadOnlySpan<char> prefix)
 	{
@@ -126,6 +116,9 @@ public sealed class Entry : ModuleHost
 
 	public override object Interop(string command, object? args)
 	{
+		//2025-09-29-0630
+		A.Psf.Invoking();
+
 		return command switch
 		{
 			"InvokeScriptArguments" => new Func<string, object[], object[]>((script, arguments) =>

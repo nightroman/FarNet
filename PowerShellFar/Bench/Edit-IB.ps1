@@ -9,19 +9,19 @@
 
 	You may call this script from any child folder of a build script.
 
-	This script runs in FarHost. But it may start from console, it opens Far
-	Manager. This requires "Far.exe", "Start-Far.ps1", and "Edit-IB.ps1" in
-	the path.
+	This script runs in FarHost. If it runs in console, it opens Far Manager.
+	This requires "Far.exe", "Start-Far.ps1", and "Edit-IB.ps1" in the path.
 
-	If the build script is found then the list of its tasks is shown, including
-	*new*. Select a task. This opens the editor at the selected or new task.
+	If the build script is not found then a new "1.build.ps1" is opened in the
+	editor with a new task added. You may exit editor without saving anything.
 
-	If the build script is not found then a new ".build.ps1" is opened in the
-	editor with a new task added.
+	The menu is shown: the file, its tasks, <new task>. Select an item to
+	open in the editor. The task is opened at its location. A new task is
+	added to the end.
 
 	Tips:
 	- In the build script editor press [F5] to run the current task.
-	- After looking at the output press [Esc] to return to the editor.
+	- After looking at the output, press [Esc] to return to the editor.
 
 .Parameter Task
 		The task name to edit right away.
@@ -55,70 +55,76 @@ param(
 )
 
 #requires -Version 7.4
+Set-StrictMode -Version 3
 $ErrorActionPreference = 1; trap {$PSCmdlet.ThrowTerminatingError($_)}; if ($Host.Name -ne 'FarHost') {
 	return Start-Far.ps1 "vps:Edit-IB.ps1 $Task"
 }
 
-### dot-source Invoke-Build
+function __new_task {
+	$editor = $Far.CreateEditor()
+	$editor.FileName = $BuildFile
+	$editor.add_Opened({
+		$this.BeginUndo()
+		$this.GoToEnd($true)
+		$this.InsertText("`r`ntask  {`r`n}`r`n")
+		$this.GoTo(5, $this.Count - 3)
+		$this.EndUndo()
+	})
+	$editor.Open()
+}
+
+function __open_the_task {
+	$ii = $TheTask.InvocationInfo
+	Open-FarEditor $ii.ScriptName -LineNumber $ii.ScriptLineNumber
+}
+
+function __item_open_file {
+	$item = [FarNet.SetItem]::new()
+	$item.Text = [System.IO.Path]::GetFileName($BuildFile)
+	$item.Click = {
+		Open-FarEditor $BuildFile
+	}
+	$item
+}
+
+function __item_new_task {
+	$item = [FarNet.SetItem]::new()
+	$item.Text = '<new task>'
+	$item.Click = ${function:__new_task}
+	$item
+}
+
+### dot-source
 $_Task = $Task
-try {
-	. Invoke-Build
-}
-catch {
-	throw "Invoke-Build: $_"
-}
+try { . Invoke-Build }
+catch { throw "Invoke-Build: $_" }
 
-### find file, select task
-$file = Get-BuildFile $PWD
-if ($file) {
-	$fileName = [System.IO.Path]::GetFileName($file)
+### find build
+$BuildFile = Get-BuildFile $PWD
 
-	# all items
-	$list = @(
-		@{Name = $fileName}
-		(Invoke-Build ?? $file).Values
-		@{Name = '*new*'}
-	)
-
-	# input task?
-	$item = $null
-	if ($_Task) {
-		$item = $list.Where({$_.Name -eq $_Task})
-	}
-
-	# select item
-	if (!$item) {
-		$item = $list | Out-FarList -Title Tasks -Text {$_.Name}
-		if (!$item) {
-			return
-		}
-	}
-}
-else {
-	$fileName = $null
-	$file = "$PWD\.build.ps1"
-	$item = @{Name = '*new*'}
+### not found, new task
+if (!$BuildFile) {
+	$BuildFile = Join-Path $PWD 1.build.ps1
+	return __new_task
 }
 
-### just edit file
-if ($item.Name -eq $fileName) {
-	return Open-FarEditor $file
+### get tasks
+$all = Invoke-Build ?? $BuildFile
+
+### open given task
+if ($_Task -and ($TheTask = $all[$_Task])) {
+	return __open_the_task
 }
 
-### edit existing task
-if ($item.Name -ne '*new*') {
-	$ii = $item.InvocationInfo
-	return Open-FarEditor $ii.ScriptName -LineNumber $ii.ScriptLineNumber
-}
+### menu
+$TheTask = @(
+	__item_open_file
+	$all.Values
+	__item_new_task
+) |
+Out-FarList -Title Tasks -Text {$_.Name}
 
-### edit a new task
-$editor = $Far.CreateEditor()
-$editor.FileName = $file
-$editor.add_Opened({
-	$this.BeginUndo()
-	$this.GoToEnd($true)
-	$this.InsertText("`r`ntask  {`r`n}`r`n")
-	$this.GoTo(5, $this.Count - 3)
-	$this.EndUndo()
-})
-$editor.Open()
+### open selected task
+if ($TheTask) {
+	return __open_the_task
+}

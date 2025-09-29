@@ -133,6 +133,12 @@ public sealed partial class Actor
 		Runspace.ThreadOptions = PSThreadOptions.UseCurrentThread;
 		Runspace.Open();
 
+		//2025-09-29-0630 Eventually set for handlers. Do this in the main thread!
+		Far.Api.PostJob(() => Runspace.DefaultRunspace = Runspace);
+
+		// add the debug handler
+		Runspace.Debugger.BreakpointUpdated += OnBreakpointUpdated;
+
 		// Add the module path.
 		// STOP: [_100127_182335 test]
 		// *) Add before the profile, so that it can load modules.
@@ -148,6 +154,7 @@ public sealed partial class Actor
 		_engine_ = Runspace.SessionStateProxy.PSVariable.GetValue(Word.ExecutionContext) as EngineIntrinsics;
 
 		// invoke profiles
+		using FarHost.IgnoreApplications ignoreApplications = new();
 		using var ps = NewPowerShell();
 
 		// internal profile
@@ -188,22 +195,11 @@ public sealed partial class Actor
 		var task = OpenRunspaceTask;
 		OpenRunspaceTask = null;
 
-		try
-		{
-			// complete
-			task.Await();
-		}
-		finally
-		{
-			FarHost.Init();
+		// complete
+		task.Await();
 
-			//! set default runspace for handlers
-			//! it has to be done in main thread
-			Runspace.DefaultRunspace = Runspace;
-
-			// add the debug handler
-			Runspace.Debugger.BreakpointUpdated += OnBreakpointUpdated;
-		}
+		//2025-09-29-0630 Set for early interop like `Start-Far "fs:exec ...". Do this in the main thread!
+		Runspace.DefaultRunspace = Runspace;
 	}
 
 	// Sets the current location to predictable and expected.
