@@ -1,5 +1,4 @@
-﻿
-using FarNet;
+﻿using FarNet;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Diagnostics;

@@ -1,11 +1,8 @@
-using System;
+using FarNet;
 using System.Collections;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Management.Automation;
 using System.Text.RegularExpressions;
-using FarNet;
 
 namespace PowerShellFar;
 
@@ -175,7 +172,7 @@ public sealed class MemberExplorer : ListExplorer
 		catch (RuntimeException exception)
 		{
 			if (args.UI)
-				A.Message(exception.Message);
+				A.MyMessage(exception.Message);
 		}
 
 		return result;
@@ -214,7 +211,7 @@ public sealed class MemberExplorer : ListExplorer
 		if (pi is null)
 			args.Result = JobResult.Ignore;
 		else
-			A.SetPropertyFromTextUI(Value, pi, args.Text.TrimEnd());
+			SetPropertyFromTextUI(Value, pi, args.Text.TrimEnd());
 	}
 
 	/// <inheritdoc/>
@@ -293,9 +290,49 @@ public sealed class MemberExplorer : ListExplorer
 			}
 			catch (RuntimeException ex)
 			{
-				A.Message(ex.Message);
+				A.MyMessage(ex.Message);
 				continue;
 			}
+		}
+	}
+
+	private static void SetPropertyFromTextUI(object target, PSPropertyInfo pi, string text)
+	{
+		bool isPSObject;
+		object value;
+		string type;
+		if (pi.Value is PSObject ps)
+		{
+			isPSObject = true;
+			type = ps.BaseObject.GetType().FullName!;
+		}
+		else
+		{
+			isPSObject = false;
+			type = pi.TypeNameOfValue;
+		}
+
+		if (type == "System.Collections.ArrayList" || type.EndsWith(']'))
+		{
+			ArrayList lines = [.. FarNet.Works.Kit.SplitLines(text)];
+			value = lines;
+		}
+		else
+		{
+			value = text;
+		}
+
+		if (isPSObject)
+			value = PSObject.AsPSObject(value);
+
+		try
+		{
+			pi.Value = value;
+			MemberPanel.WhenMemberChanged(target);
+		}
+		catch (RuntimeException ex)
+		{
+			Far.Api.Message(ex.Message, "Setting property");
 		}
 	}
 }

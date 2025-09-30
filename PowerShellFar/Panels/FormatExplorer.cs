@@ -1,11 +1,5 @@
-﻿
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using FarNet;
-using System;
+﻿using FarNet;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Management.Automation;
 
@@ -123,7 +117,7 @@ public abstract class FormatExplorer(Guid typeId) : TableExplorer(typeId)
 			// case: use panel columns Index, Value, Type
 			if (Converter.IsLinearType(sampleType) ||
 				sample is IEnumerable && !Converter.IsGrouping(sampleType) ||
-				null == (commonType = A.FindCommonType(values)))
+				null == (commonType = FindCommonType(values)))
 			{
 				panel?.BuildPlan(Format.BuildFilesMixed(Cache, values));
 				return Cache;
@@ -184,5 +178,32 @@ public abstract class FormatExplorer(Guid typeId) : TableExplorer(typeId)
 
 		foreach (PSObject value in values)
 			files.Add(new MapFile(value, Map!));
+	}
+
+	// Gets the type common for all values or null.
+	// Why check for MarshalByRefObject: System.IO.DirectoryInfo, System.Diagnostics.Process in ps: (Get-Item .), (Get-Process -PID $PID) | op
+	private static Type? FindCommonType(Collection<PSObject> values)
+	{
+		Type? result = null;
+		foreach (PSObject value in values)
+		{
+			if (value is null)
+				continue;
+
+			var sample = value.BaseObject.GetType();
+			if (result is null)
+			{
+				result = sample;
+				continue;
+			}
+
+			while (!result.IsAssignableFrom(sample))
+			{
+				result = result.BaseType;
+				if (result is null || result == typeof(object) || result == typeof(MarshalByRefObject))
+					return null;
+			}
+		}
+		return result;
 	}
 }

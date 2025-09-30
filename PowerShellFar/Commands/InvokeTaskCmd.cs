@@ -8,8 +8,8 @@ internal sealed class InvokeTaskCmd : BaseTaskCmdlet
 
 	private Exception? InvokeScript()
 	{
-		A.Psf.Engine.SessionState.PSVariable.Set(StartFarTaskCommand.NameData, GetData());
-		A.Psf.Engine.SessionState.PSVariable.Set(StartFarTaskCommand.NameVar, GetVars());
+		A.Engine.SessionState.PSVariable.Set(StartFarTaskCommand.NameData, GetData());
+		A.Engine.SessionState.PSVariable.Set(StartFarTaskCommand.NameVar, GetVars());
 
 		var args = new RunArgs(StartFarTaskCommand.CodeJob)
 		{
@@ -18,7 +18,7 @@ internal sealed class InvokeTaskCmd : BaseTaskCmdlet
 			UseLocalScope = false,
 			Arguments = [Script]
 		};
-		A.Psf.Run(args);
+		A.Run(args);
 		return args.Reason;
 	}
 

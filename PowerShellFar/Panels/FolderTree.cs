@@ -144,7 +144,7 @@ public sealed class FolderTree(FolderExplorer explorer) : TreePanel(explorer)
 		ProviderInfo provider = (ProviderInfo)data.Properties["PSProvider"].Value;
 		if (!My.ProviderInfoEx.HasProperty(provider))
 		{
-			A.Message(Res.NotSupportedByProvider);
+			A.MyMessage(Res.NotSupportedByProvider);
 			return;
 		}
 

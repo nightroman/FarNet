@@ -1,10 +1,4 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
-using System;
-using System.IO;
 using System.Management.Automation;
 
 namespace PowerShellFar;
@@ -79,7 +73,7 @@ public partial class AnyPanel
 		}
 		catch (RuntimeException ex)
 		{
-			A.Msg(ex);
+			A.MyError(ex);
 		}
 	}
 	#endregion
@@ -155,7 +149,8 @@ public partial class AnyPanel
 		{
 			A.InvokeCode("$args[0] | Format-Table -AutoSize -ea 0 | Out-File -FilePath $args[1]", ShownItems, tmp);
 
-			IViewer v = A.CreateViewer(tmp);
+			var v = Far.Api.CreateViewer();
+			v.FileName = tmp;
 			v.DisableHistory = true;
 			v.Title = CurrentDirectory;
 			v.Open(OpenMode.None);

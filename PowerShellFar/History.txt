@@ -1,5 +1,12 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.55 =
+
+Refactor engine classes.
+
+Conventional prompt-history (experiment)
+- `Read-Host "[[foo-bar]]"` uses Far dialog history `foo-bar`.
+
 = 9.0.54 =
 
 Tweak session loading.

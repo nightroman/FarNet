@@ -1,11 +1,5 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-using System.Linq;
-using System.Management.Automation;
 using FarNet;
+using System.Management.Automation;
 
 namespace PowerShellFar;
 
@@ -32,7 +26,7 @@ public sealed class PropertyPanel : ListPanel
 
 	internal sealed override PSObject Target
 	{
-		get { return A.Psf.Engine.InvokeProvider.Item.Get([Explorer.ItemPath], true, true)[0]; }
+		get { return A.Engine.InvokeProvider.Item.Get([Explorer.ItemPath], true, true)[0]; }
 	}
 
 	internal override void SetUserValue(PSPropertyInfo info, string? value)
@@ -44,7 +38,7 @@ public sealed class PropertyPanel : ListPanel
 		}
 		catch (RuntimeException ex)
 		{
-			A.Message(ex.Message);
+			A.MyMessage(ex.Message);
 		}
 	}
 

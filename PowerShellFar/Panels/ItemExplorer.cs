@@ -55,7 +55,7 @@ public sealed class ItemExplorer : FormatExplorer
 		if (args.Explorer is not ItemExplorer)
 		{
 			if (args.UI)
-				A.Message(Res.UnknownFileSource);
+				A.MyMessage(Res.UnknownFileSource);
 			args.Result = JobResult.Ignore;
 			return;
 		}
@@ -65,13 +65,13 @@ public sealed class ItemExplorer : FormatExplorer
 		{
 			//! Actually e.g. functions can be copied, see UICopyHere
 			if (args.UI)
-				A.Message(Res.NotSupportedByProvider);
+				A.MyMessage(Res.NotSupportedByProvider);
 			args.Result = JobResult.Ignore;
 			return;
 		}
 
 		// call
-		using var ps = A.Psf.NewPowerShell();
+		using var ps = A.NewPowerShell();
 		if (args.Move)
 			ps.AddCommand("Move-Item").AddParameter(Prm.Force);
 		else
@@ -105,7 +105,7 @@ public sealed class ItemExplorer : FormatExplorer
 		// call
 		try
 		{
-			using var ps = A.Psf.NewPowerShell();
+			using var ps = A.NewPowerShell();
 			ps.AddCommand("Remove-Item")
 				.AddParameter(Prm.Force)
 				.AddParameter(Prm.ErrorAction, ActionPreference.Continue);
@@ -142,7 +142,7 @@ public sealed class ItemExplorer : FormatExplorer
 		{
 			args.Result = JobResult.Ignore;
 			if (args.UI)
-				A.Message(Res.NotSupportedByProvider);
+				A.MyMessage(Res.NotSupportedByProvider);
 			return;
 		}
 
@@ -299,7 +299,7 @@ public sealed class ItemExplorer : FormatExplorer
 
 		// workaround; Rename-Item has no -LiteralPath; e.g. z`z[z.txt is a big problem
 		string src = WildcardPattern.Escape(My.PathEx.Combine(Location, args.File.Name));
-		A.Psf.Engine.InvokeProvider.Item.Rename(src, newName);
+		A.Engine.InvokeProvider.Item.Rename(src, newName);
 	}
 
 	/// <inheritdoc/>
@@ -314,7 +314,7 @@ public sealed class ItemExplorer : FormatExplorer
 		{
 			try
 			{
-				using (var ps = A.Psf.NewPowerShell())
+				using (var ps = A.NewPowerShell())
 				{
 					//! Don't use Value if it is empty (e.g. to avoid (default) property at new key in Registry).
 					//! Don't use -Force or you silently kill existing item\property (with all children, properties, etc.)
@@ -341,7 +341,7 @@ public sealed class ItemExplorer : FormatExplorer
 			}
 			catch (RuntimeException ex)
 			{
-				A.Message(ex.Message);
+				A.MyMessage(ex.Message);
 				continue;
 			}
 		}
@@ -361,13 +361,13 @@ public sealed class ItemExplorer : FormatExplorer
 			string text = args.Text.TrimEnd();
 
 			// set
-			if (!A.SetContentUI(path, text))
+			if (!SetContentUI(path, text))
 				return;
 		}
 		catch (RuntimeException ex)
 		{
 			if (args.UI)
-				A.Message(ex.Message);
+				A.MyMessage(ex.Message);
 		}
 	}
 
@@ -381,8 +381,30 @@ public sealed class ItemExplorer : FormatExplorer
 
 		string source = WildcardPattern.Escape(My.PathEx.Combine(Location, args.File.Name));
 		string target = My.PathEx.Combine(Location, newName);
-		A.Psf.Engine.InvokeProvider.Item.Copy(source, target, false, CopyContainers.CopyTargetContainer);
+		A.Engine.InvokeProvider.Item.Copy(source, target, false, CopyContainers.CopyTargetContainer);
 
 		args.PostName = newName;
+	}
+
+	// Sets an item content, shows errors.
+	private static bool SetContentUI(string itemPath, string text)
+	{
+		//! PSF only, can do in console:
+		//! as a script: if param name -Value is used, can't set e.g. Alias:\%
+		//! as a block: same problem
+		//! so, use a command
+		using var ps = A.NewPowerShell();
+		ps.AddCommand("Set-Content")
+			.AddParameter("LiteralPath", itemPath)
+			.AddParameter("Value", text)
+			.AddParameter(Prm.Force)
+			.AddParameter(Prm.ErrorAction, ActionPreference.Continue);
+
+		ps.Invoke();
+
+		if (A.ShowError(ps))
+			return false;
+
+		return true;
 	}
 }

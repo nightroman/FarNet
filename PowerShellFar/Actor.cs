@@ -1,8 +1,5 @@
 using FarNet;
 using System.Collections;
-using System.Management.Automation;
-using System.Management.Automation.Runspaces;
-using System.Text;
 
 namespace PowerShellFar;
 #pragma warning disable CA1822
@@ -40,189 +37,6 @@ public sealed partial class Actor
 	internal Actor()
 	{
 	}
-
-	/// <summary>
-	/// Stops the running pipeline.
-	/// </summary>
-	void CancelKeyPress(object? sender, ConsoleCancelEventArgs e) //_110128_075844
-	{
-		// ControlBreak?
-		if (e.SpecialKey != ConsoleSpecialKey.ControlBreak)
-			return;
-
-		//! use copy
-		var pipe = Pipeline;
-		if (pipe is null || pipe.InvocationStateInfo.State != PSInvocationState.Running)
-			return;
-
-		// stop; it still can be bad but chances are low after the above checks
-		pipe.BeginStop(AsyncStop, pipe);
-	}
-
-	void AsyncStop(IAsyncResult ar) //_110128_075844
-	{
-		(ar.AsyncState as PowerShell)!.EndStop(ar);
-	}
-
-	#region Life
-	static Task? OpenRunspaceTask;
-
-	/// <summary>
-	/// Called on connection internally.
-	/// </summary>
-	// This is the entry point. It calls OpenRunspace in the end. OpenRunspace adds cmdlets and opens a runspace async.
-	// Concurrent methods:
-	// *) OnRunspaceStateEvent() is invoked by PS when the runspace is opened or broken;
-	// if it is opened it sets global variables and calls PSF and a user profiles; then is sets the flag for Invoking().
-	// *) Invoking() is called by FarNet on a user action; it should wait for opened/broken runspace and continue or die.
-	internal void Connect()
-	{
-		// preload
-		OpenRunspaceTask = Task.Run(OpenRunspace);
-
-		//! subscribe only _110301_164313
-		Console.CancelKeyPress += CancelKeyPress; //_110128_075844
-	}
-
-	/// <summary>
-	/// Called on disconnection internally.
-	/// If there are background jobs it shows a dialog about them.
-	/// </summary>
-	internal void Disconnect()
-	{
-		//! do not unsubscribe _110301_164313
-		//Console.CancelKeyPress -= CancelKeyPress; //_110128_075844
-
-		// unsubscribe
-		Far.Api.AnyEditor.Opened -= EditorKit.OnEditorOpened;
-		Far.Api.AnyEditor.Opened -= EditorKit.OnEditorFirstOpening;
-
-		// release menu
-		UI.ActorMenu.Close();
-
-		// kill host
-		if (FarHost != null)
-		{
-			try
-			{
-				//! it may be still opening, but Far is already closing, ignore this case,
-				//! or we will see for a sec disappearing together with Far error message.
-				if (Runspace.RunspaceStateInfo.State == RunspaceState.Opened)
-					Runspace.Close();
-			}
-			finally
-			{
-				// detach all
-				FarUI = null!;
-				FarHost = null!;
-				Runspace = null!;
-				_engine_ = null;
-				Pipeline = null;
-			}
-		}
-	}
-
-	void OpenRunspace()
-	{
-		// host and UI
-		FarUI = new FarUI();
-		FarHost = new FarHost(FarUI);
-
-		// open runspace
-		Runspace = RunspaceFactory.CreateRunspace(FarHost, FarInitialSessionState.Instance);
-		Runspace.ThreadOptions = PSThreadOptions.UseCurrentThread;
-		Runspace.Open();
-
-		//2025-09-29-0630 Eventually set for handlers. Do this in the main thread!
-		Far.Api.PostJob(() => Runspace.DefaultRunspace = Runspace);
-
-		// add the debug handler
-		Runspace.Debugger.BreakpointUpdated += OnBreakpointUpdated;
-
-		// Add the module path.
-		// STOP: [_100127_182335 test]
-		// *) Add before the profile, so that it can load modules.
-		// *) Add after the opening so that standard paths are added.
-		// *) Check for already added, e.g. when starting from another Far.
-		var modulePathAdd = $"{Entry.RoamingData}\\Modules;";
-		var modulePathNow = Environment.GetEnvironmentVariable(Word.PSModulePath) ?? string.Empty;
-		if (!modulePathNow.Contains(modulePathAdd))
-			Environment.SetEnvironmentVariable(Word.PSModulePath, modulePathAdd + modulePathNow);
-
-		// Get engine once to avoid this: "A pipeline is already executing. Concurrent SessionStateProxy method call is not allowed."
-		// Looks like a hack, but it works fine. Problem case: run Test-CallStack.ps1, Esc -> the error above.
-		_engine_ = Runspace.SessionStateProxy.PSVariable.GetValue(Word.ExecutionContext) as EngineIntrinsics;
-
-		// invoke profiles
-		using FarHost.IgnoreApplications ignoreApplications = new();
-		using var ps = NewPowerShell();
-
-		// internal profile
-		{
-			using var stream = typeof(Actor).Assembly.GetManifestResourceStream("PowerShellFar.PowerShellFar.ps1");
-			using var reader = new StreamReader(stream!, Encoding.UTF8);
-			var code = reader.ReadToEnd();
-			ps.AddScript(code, false).Invoke();
-		}
-
-		// user profile, run separately for better errors
-		var profile = Entry.RoamingData + "\\Profile.ps1";
-		if (File.Exists(profile))
-		{
-			ps.Commands.Clear();
-			try
-			{
-				ps.AddCommand(profile, false).Invoke();
-			}
-			catch (RuntimeException ex)
-			{
-				throw new ModuleException($"Profile.ps1 error: {ex.Message}", ex);
-			}
-		}
-	}
-
-	/// <summary>
-	/// Completes the runspace opening.
-	/// Called by FarNet on command line and by PowerShellFar on its actions.
-	/// </summary>
-	internal void Invoking()
-	{
-		// done?
-		if (OpenRunspaceTask is null)
-			return;
-
-		// null the task
-		var task = OpenRunspaceTask;
-		OpenRunspaceTask = null;
-
-		// complete
-		task.Await();
-
-		//2025-09-29-0630 Set for early interop like `Start-Far "fs:exec ...". Do this in the main thread!
-		Runspace.DefaultRunspace = Runspace;
-	}
-
-	// Sets the current location to predictable and expected.
-	// Used in operations which potentially invoke user code.
-	internal void SyncPaths()
-	{
-		// skip running
-		if (IsRunning)
-			return;
-
-		var currentDirectory = Far.Api.CurrentDirectory;
-
-		//! avoid rather expensive SetLocation
-		var pathIntrinsics = Engine.SessionState.Path;
-		if (pathIntrinsics.CurrentLocation.Path == currentDirectory)
-			return;
-
-		// Set the current location. Note, PS Core works fine with long paths.
-		// So do not catch, we should know why it fails and how to handle this.
-		// Parameter is wildcard. Test: enter into a folder "[]" and invoke a command.
-		pathIntrinsics.SetLocation(WildcardPattern.Escape(currentDirectory));
-	}
-	#endregion
 
 	/// <summary>
 	/// Gets the configuration settings and the session settings.
@@ -324,7 +138,7 @@ public sealed partial class Actor
 	/// </summary>
 	public void ShowPanel()
 	{
-		A.Psf.SyncPaths();
+		A.SyncPaths();
 
 		var drive = UI.SelectMenu.SelectPowerPanel();
 		if (drive is null)
@@ -389,164 +203,6 @@ public sealed partial class Actor
 	/// <param name="editLine">Editor line, command line or dialog edit box line; if null then <see cref="IFar.Line"/> is used.</param>
 	public void ExpandCode(ILine? editLine) => EditorKit.ExpandCode(editLine, null);
 
-	// PS host
-	FarHost FarHost = null!;
-	// PS UI
-	internal FarUI FarUI = null!;
-	// PS runspace
-	internal Runspace Runspace { get; private set; } = null!;
-	// Main pipeline
-	PowerShell? Pipeline;
-	// PS engine
-	EngineIntrinsics? _engine_;
-	internal EngineIntrinsics Engine => _engine_!;
-
-	/// <summary>
-	/// Gets a new pipeline or nested one.
-	/// </summary>
-	/// <returns>Pipeline; it has to be disposed.</returns>
-	internal PowerShell NewPowerShell()
-	{
-		if (IsRunning)
-			return Pipeline!.CreateNestedPowerShell();
-
-		Pipeline = PowerShell.Create();
-		Pipeline.Runspace = Runspace;
-		return Pipeline;
-	}
-
-	/// <summary>
-	/// Is it running?
-	/// </summary>
-	internal bool IsRunning => Pipeline != null && Pipeline.InvocationStateInfo.State == PSInvocationState.Running;
-
-	// Current command being invoked (e.g. used as Out-FarPanel title)
-	internal string? _myCommand;
-
-	/// <summary>
-	/// Runs the PowerShell command pipeline.
-	/// Null or empty commands are ignored.
-	/// </summary>
-	/// <returns>False if the code fails.</returns>
-	internal bool Run(RunArgs args)
-	{
-		var code = args.Code;
-		if (string.IsNullOrEmpty(code))
-			return true;
-
-		// push writer
-		if (args.Writer is null)
-		{
-			// use own lazy output
-			FarUI.PushWriter(new TranscriptOutputWriter());
-		}
-		else
-		{
-			// specified output
-			FarUI.PushWriter(args.Writer);
-		}
-
-		FarHost.IgnoreApplications? ignoreApplications = null;
-		try
-		{
-			// progress
-			FarUI.IsProgressStarted = false;
-			Far.Api.UI.SetProgressState(TaskbarProgressBarState.Indeterminate);
-
-			// output and apps
-			Command output;
-			if (FarUI.Writer is ConsoleOutputWriter)
-			{
-				output = A.OutDefaultCommand;
-			}
-			else
-			{
-				output = A.OutHostCommand;
-				ignoreApplications = new();
-			}
-
-			// invoke command
-			using var ps = NewPowerShell();
-			_myCommand = code;
-			var command = ps.Commands.AddScript(code, args.UseLocalScope);
-			if (args.Arguments is { } arguments)
-			{
-				for (int i = 0; i < arguments.Length; ++i)
-					command.AddArgument(arguments[i]);
-			}
-			command.AddCommand(output);
-			ps.Invoke();
-			args.Reason = ps.InvocationStateInfo.Reason;
-
-			return true;
-		}
-		catch (Exception reason)
-		{
-			if (FarNet.Works.ExitManager.IsExiting)
-				throw;
-
-			args.Reason = reason;
-			if (args.NoOutReason)
-				return false;
-
-			var color1 = ConsoleColor.Black;
-			try
-			{
-				// push console color
-				if (args.Writer is ConsoleOutputWriter)
-				{
-					color1 = Far.Api.UI.ForegroundColor;
-					Far.Api.UI.ShowUserScreen();
-					Far.Api.UI.ForegroundColor = Settings.ErrorForegroundColor;
-				}
-
-				// write the reason
-				using var ps = NewPowerShell();
-				A.OutReason(ps, reason);
-			}
-			finally
-			{
-				// pop console color
-				if (color1 != ConsoleColor.Black)
-					Far.Api.UI.ForegroundColor = color1;
-			}
-
-			return false;
-		}
-		finally
-		{
-			// restore apps
-			ignoreApplications?.Dispose();
-
-			// restore progress
-			FarUI.IsProgressStarted = false;
-			Far.Api.UI.SetProgressState(TaskbarProgressBarState.NoProgress);
-
-			_myCommand = null;
-
-			// pop writer
-			var usedWriter = FarUI.PopWriter();
-			if (args.Writer is null)
-			{
-				// it is the writer created here, view its file, if any
-				var myWriter = (TranscriptOutputWriter)usedWriter;
-				myWriter.Close();
-				if (myWriter.FileName != null)
-				{
-					var viewer = Far.Api.CreateViewer();
-					viewer.FileName = myWriter.FileName;
-					//! code with \n may come from ReadLine editors
-					viewer.Title = code.IndexOf('\n') < 0 ? code.Trim() : "Command output";
-					viewer.DeleteSource = DeleteSource.File;
-					viewer.Switching = Switching.Enabled;
-					viewer.DisableHistory = true;
-					viewer.CodePage = 1200;
-					viewer.Open();
-				}
-			}
-		}
-	}
-
 	/// <summary>
 	/// Provider settings.
 	/// </summary>
@@ -586,37 +242,6 @@ public sealed partial class Actor
 		EditorKit.InvokeScriptFromEditor(null);
 	}
 
-	bool _isFirstBreakpoint = true;
-	HashSet<LineBreakpoint>? _breakpoints_;
-	internal HashSet<LineBreakpoint> Breakpoints => _breakpoints_ ??= [];
-
-	void OnBreakpointUpdated(object? sender, BreakpointUpdatedEventArgs e)
-	{
-		//! update first
-		if (!string.IsNullOrEmpty(e.Breakpoint.Script))
-		{
-			if (e.Breakpoint is LineBreakpoint bp)
-			{
-				if (e.UpdateType == BreakpointUpdateType.Removed)
-					Breakpoints.Remove(bp);
-				else
-					Breakpoints.Add(bp);
-			}
-		}
-
-		//! then this with possible exceptions
-		if (_isFirstBreakpoint && e.Breakpoint.Action is null)
-		{
-			_isFirstBreakpoint = false;
-
-			if (!DebuggerKit.HasAnyDebugger(A.Psf.Runspace.Debugger))
-			{
-				DebuggerKit.ValidateAvailable();
-				A.InvokeCode("Add-Debugger.ps1");
-			}
-		}
-	}
-
 	/// <summary>
 	/// FarNet module manager of the PowerShellFar module.
 	/// </summary>
@@ -629,8 +254,96 @@ public sealed partial class Actor
 	/// </remarks>
 	public IModuleManager Manager => Entry.Instance.Manager;
 
+	#region CommandConsole
+	private static UI.InputBox2 CreateCodeDialog()
+	{
+		var ui = new UI.InputBox2(Res.InvokeCommands, Res.Me);
+		ui.Edit.History = Res.History;
+		ui.Edit.UseLastHistory = true;
+		return ui;
+	}
+
 	/// <summary>
-	/// Transcript writer, may be null.
+	/// Shows an input dialog and returns entered PowerShell code.
 	/// </summary>
-	internal TranscriptOutputWriter? Transcript { get; set; }
+	/// <remarks>
+	/// It is called by the plugin menu command "Invoke commands". You may call it, too.
+	/// It is just an input box for any text but it is designed for PowerShell code input,
+	/// e.g. TabExpansion is enabled (by [Tab]).
+	/// <para>
+	/// The code is simply returned, if you want to execute it then call <see cref="InvokeInputCode"/>.
+	/// </para>
+	/// </remarks>
+	public string? InputCode()
+	{
+		var ui = CreateCodeDialog();
+		return ui.Show();
+	}
+
+	/// <summary>
+	/// Prompts to input code and invokes it.
+	/// </summary>
+	public void InvokeInputCode()
+	{
+		InvokeInputCodePrivate(null);
+	}
+
+	internal static void InvokeInputCodePrivate(string? input)
+	{
+		var ui = CreateCodeDialog();
+		if (input != null)
+			ui.Edit.Text = input;
+		var code = ui.Show();
+		if (!string.IsNullOrEmpty(code))
+			A.Run(new RunArgs(code));
+	}
+
+	/// <summary>
+	/// Invokes the selected text or the current line text in the editor or the command line.
+	/// Called on "Invoke selected".
+	/// </summary>
+	public void InvokeSelectedCode()
+	{
+		EditorKit.InvokeSelectedCode();
+	}
+
+	/// <summary>
+	/// Prompts for PowerShell commands.
+	/// Called on "Invoke commands".
+	/// </summary>
+	public async Task StartInvokeCommands()
+	{
+		var ui = CreateCodeDialog();
+		var code = await ui.ShowAsync();
+		if (!string.IsNullOrEmpty(code))
+			await Tasks.Job(() => A.Run(new RunArgs(code)));
+	}
+
+	/// <summary>
+	/// Starts "Command console".
+	/// </summary>
+	public void StartCommandConsole()
+	{
+		_ = UI.ReadCommand.StartAsync();
+	}
+
+	/// <summary>
+	/// Stops "Command console".
+	/// </summary>
+	public void StopCommandConsole()
+	{
+		UI.ReadCommand.Stop();
+	}
+
+	/// <summary>
+	/// Starts "Command console" and waits for it.
+	/// </summary>
+	public Task RunCommandConsole()
+	{
+		StartCommandConsole();
+		return FarNet.Works.Tasks2.Wait(nameof(StartCommandConsole), () =>
+			Far.Api.Window.Kind == WindowKind.Dialog &&
+			Far.Api.Dialog!.TypeId == new Guid(Guids.ReadCommandDialog));
+	}
+	#endregion
 }

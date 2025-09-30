@@ -58,15 +58,15 @@ public FolderExplorer(string? path) : base(new Guid(TypeIdString))
 	{
 		// set location
 		if (!string.IsNullOrEmpty(path) && path != ".")
-			A.Psf.Engine.SessionState.Path.SetLocation(WildcardPattern.Escape(path));
+			A.Engine.SessionState.Path.SetLocation(WildcardPattern.Escape(path));
 
 		// get location
-		var location = new PathInfoEx(A.Psf.Engine.SessionState.Path.CurrentLocation);
+		var location = new PathInfoEx(A.Engine.SessionState.Path.CurrentLocation);
 		if (!My.ProviderInfoEx.IsNavigation(location.Provider))
 			throw new RuntimeException("Provider '" + location.Provider + "' does not support navigation.");
 
 		// get root item
-		Collection<PSObject> items = A.Psf.Engine.SessionState.InvokeProvider.Item.Get(s_paramPath, true, true);
+		Collection<PSObject> items = A.Engine.SessionState.InvokeProvider.Item.Get(s_paramPath, true, true);
 		//! trap Get-Item at Cert:
 		if (items.Count == 0)
 			throw new RuntimeException(string.Format(null, "Provider '{0}' cannot get '{1}'.", location.Provider, location.Path));

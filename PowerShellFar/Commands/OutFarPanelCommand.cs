@@ -1,9 +1,4 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
-using System.Collections.Generic;
 using System.Management.Automation;
 
 namespace PowerShellFar.Commands;
@@ -41,8 +36,8 @@ sealed class OutFarPanelCommand : BasePanelCmdlet
 		_panel.HideMemberPattern = HideMemberPattern;
 
 		// and title, if not yet
-		if (string.IsNullOrEmpty(_panel.Title) && !string.IsNullOrEmpty(A.Psf._myCommand))
-			_panel.Title = A.Psf._myCommand;
+		if (string.IsNullOrEmpty(_panel.Title) && !string.IsNullOrEmpty(A.MyCommand))
+			_panel.Title = A.MyCommand;
 	}
 
 	// Use collector to control count of finaly added to the panel.

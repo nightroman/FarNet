@@ -1,4 +1,3 @@
-
 #include "stdafx.h"
 #include "Far1.h"
 #include "CommandLine.h"
@@ -250,7 +249,7 @@ void Far1::ShowError(String^ title, Exception^ error)
 	error = Works::Kit::UnwrapAggregateException(error);
 
 	// quietly ignore PowerShell stopped pipelines, they are like cancels
-	if (error->GetType()->FullName == "System.Management.Automation.PipelineStoppedException") //_110128_075844
+	if (error->GetType()->FullName == "System.Management.Automation.PipelineStoppedException")
 		return;
 
 	// trace

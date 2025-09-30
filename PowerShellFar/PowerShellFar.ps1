@@ -43,7 +43,7 @@ function Invoke-History {
 #>
 function Show-FarTranscript([Parameter()][switch]$Internal) {
 	trap { $PSCmdlet.ThrowTerminatingError($_) }
-	[PowerShellFar.Zoo]::ShowTranscript($Internal)
+	[PowerShellFar.Transcript]::ShowTranscript($Internal)
 }
 
 <#
@@ -54,7 +54,7 @@ function Stop-FarTranscript {
 	[CmdletBinding()]
 	param()
 	trap { $PSCmdlet.ThrowTerminatingError($_) }
-	[PowerShellFar.Zoo]::StopTranscript($false)
+	[PowerShellFar.Transcript]::StopTranscript($false)
 }
 
 <#
@@ -94,5 +94,5 @@ function Start-FarTranscript {
 			$LiteralPath = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($LiteralPath)
 		}
 	}
-	[PowerShellFar.Zoo]::StartTranscript($LiteralPath, $Append, $Force, $NoClobber)
+	[PowerShellFar.Transcript]::StartTranscript($LiteralPath, $Append, $Force, $NoClobber)
 }

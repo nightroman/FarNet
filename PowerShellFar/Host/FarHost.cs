@@ -68,9 +68,9 @@ class FarHost : PSHost
 			// Thus, we have to exit the nested prompt. IsRunning check is added for V3 CTP2.
 			// It works fine in V2, too. Meaning: if there is no running pipeline (stepper)
 			// then there is nothing to exit, so do not exit. Exit nothing hangs in V3 CTP2.
-			if (_nestedPromptEditor != null && A.Psf.IsRunning)
+			if (_nestedPromptEditor != null && A.IsRunning)
 			{
-				using var ps = A.Psf.NewPowerShell();
+				using var ps = A.NewPowerShell();
 				ps.AddScript("exit").Invoke();
 			}
 		}

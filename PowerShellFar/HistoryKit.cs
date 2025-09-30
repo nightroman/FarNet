@@ -1,5 +1,4 @@
-﻿
-using FarNet;
+﻿using FarNet;
 using FarNet.Tools;
 
 namespace PowerShellFar;
@@ -60,7 +59,7 @@ static class HistoryKit
 		code = HistoryCommands.RemovePrefix(code);
 		if (run)
 		{
-			A.Psf.Run(new RunArgs(code));
+			A.Run(new RunArgs(code));
 			return;
 		}
 
@@ -86,6 +85,6 @@ static class HistoryKit
 				return;
 		}
 
-		A.Psf.InvokeInputCodePrivate(code);
+		Actor.InvokeInputCodePrivate(code);
 	}
 }

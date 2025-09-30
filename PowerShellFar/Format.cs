@@ -1,14 +1,16 @@
-﻿using System;
+﻿using FarNet;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Management.Automation;
-using FarNet;
+using System.Runtime.InteropServices;
 
 namespace PowerShellFar;
 
 static class Format
 {
+	//! Get-FormatData is expensive (~50% on search), use cache.
+	static Dictionary<string, TableControl?>? _CacheTableControl;
+
 	static Meta[] CutOffMetas(Meta[] metas)
 	{
 		if (metas.Length <= Settings.Default.MaximumPanelColumnCount)
@@ -26,7 +28,7 @@ static class Format
 	{
 		// try to find a table
 		var typeName = value.BaseObject.GetType().FullName!;
-		var table = A.FindTableControl(typeName);
+		var table = FindTableControl(typeName);
 		if (table == null)
 			return null;
 
@@ -260,10 +262,10 @@ static class Format
 				file.Name = value.ToString();
 			else if (value.BaseObject is IEnumerable asIEnumerable)
 				file.Name = Converter.FormatEnumerable(asIEnumerable, Settings.Default.FormatEnumerationLimit);
-			else if ((pi = A.FindDisplayProperty(value)) != null)
-				file.Name = A.SafeToString(A.SafePropertyValue(pi)); //_131106_104220
+			else if ((pi = FindDisplayProperty(value)) != null)
+				file.Name = SafeToString(A.SafePropertyValue(pi)); //_131106_104220
 			else
-				file.Name = A.SafeToString(value); //_131106_105605
+				file.Name = SafeToString(value); //_131106_105605
 
 			// add
 			files.Add(file);
@@ -441,5 +443,79 @@ static class Format
 			r.Columns[i] = metas[i];
 
 		return r;
+	}
+
+	// Finds heuristically a property to be used to display the object.
+	private static PSPropertyInfo? FindDisplayProperty(PSObject value)
+	{
+		//! Microsoft.PowerShell.Commands.Internal.Format.PSObjectHelper.GetDisplayNameExpression()
+
+		PSPropertyInfo pi;
+		pi = value.Properties[Word.Name];
+		if (pi != null)
+			return pi;
+		pi = value.Properties[Word.Id];
+		if (pi != null)
+			return pi;
+		pi = value.Properties[Word.Key];
+		if (pi != null)
+			return pi;
+
+		ReadOnlyPSMemberInfoCollection<PSPropertyInfo> ppi;
+		ppi = value.Properties.Match("*" + Word.Key);
+		if (ppi.Count > 0)
+			return ppi[0];
+		ppi = value.Properties.Match("*" + Word.Name);
+		if (ppi.Count > 0)
+			return ppi[0];
+		ppi = value.Properties.Match("*" + Word.Id);
+		if (ppi.Count > 0)
+			return ppi[0];
+
+		return null;
+	}
+
+	// Finds an available table control.
+	private static TableControl? FindTableControl(string typeName)
+	{
+		_CacheTableControl ??= [];
+
+		ref TableControl? result = ref CollectionsMarshal.GetValueRefOrAddDefault(_CacheTableControl, typeName, out bool found);
+		if (found)
+			return result;
+
+		// extended type definitions:
+		foreach (var pso in A.InvokeCode("Get-FormatData -TypeName $args[0] -PowerShellVersion $PSVersionTable.PSVersion", typeName))
+		{
+			var typeDef = (ExtendedTypeDefinition)pso.BaseObject;
+			foreach (var viewDef in typeDef.FormatViewDefinition)
+			{
+				// if it's table, cache and return it
+				if (viewDef.Control is TableControl table)
+				{
+					result = table;
+					return table;
+				}
+			}
+		}
+
+		// nothing, cached anyway as null
+		return null;
+	}
+
+	private static string SafeToString(object? value)
+	{
+		if (value is null)
+			return string.Empty;
+
+		try
+		{
+			return value.ToString()!;
+		}
+		catch (Exception ex)
+		{
+			Log.TraceException(ex);
+			return $"<ERROR: {ex.Message}>";
+		}
 	}
 }

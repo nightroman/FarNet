@@ -1,7 +1,5 @@
 using FarNet;
-using System;
 using System.Data;
-using System.Linq;
 using System.Management.Automation;
 
 namespace PowerShellFar;
@@ -153,7 +151,7 @@ public sealed class MemberPanel : ListPanel
 		}
 		catch (RuntimeException ex)
 		{
-			A.Msg(ex);
+			A.MyError(ex);
 		}
 	}
 

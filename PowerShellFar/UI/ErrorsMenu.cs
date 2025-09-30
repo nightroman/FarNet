@@ -1,11 +1,5 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
-using System;
 using System.Collections;
-using System.IO;
 using System.Management.Automation;
 
 namespace PowerShellFar.UI;
@@ -32,7 +26,7 @@ class ErrorsMenu
 
 	public void Show()
 	{
-		var errors = (ArrayList)A.Psf.Engine.SessionState.PSVariable.GetValue("Error")!;
+		var errors = (ArrayList)A.Engine.SessionState.PSVariable.GetValue("Error")!;
 		foreach (object error in errors)
 		{
 			// exception:

@@ -30,7 +30,7 @@ static class EditorKit
 	public static void InitTabExpansion(Runspace? runspace)
 	{
 		// load TabExpansion
-		using var ps = runspace is null ? A.Psf.NewPowerShell() : PowerShell.Create();
+		using var ps = runspace is null ? A.NewPowerShell() : PowerShell.Create();
 		if (runspace is not null)
 			ps.Runspace = runspace;
 
@@ -48,7 +48,7 @@ static class EditorKit
 		using FarHost.IgnoreApplications ignoreApplications = new();
 
 		InitTabExpansion();
-		A.Psf.SyncPaths();
+		A.SyncPaths();
 
 		// hot line
 		if (editLine is null)
@@ -56,7 +56,7 @@ static class EditorKit
 			editLine = Far.Api.Line;
 			if (editLine is null)
 			{
-				A.Message("There is no current editor line.");
+				A.MyMessage("There is no current editor line.");
 				return;
 			}
 		}
@@ -144,7 +144,7 @@ static class EditorKit
 		try
 		{
 			// call TabExpansion
-			using var ps = runspace is null ? A.Psf.NewPowerShell() : PowerShell.Create();
+			using var ps = runspace is null ? A.NewPowerShell() : PowerShell.Create();
 			if (runspace is not null)
 				ps.Runspace = runspace;
 
@@ -335,14 +335,14 @@ static class EditorKit
 
 	public static void OnEditorFirstOpening(object? sender, EventArgs e)
 	{
-		A.Psf.Invoking();
+		A.Invoking();
 
 		try
 		{
 			var profile = Entry.RoamingData + "\\Profile-Editor.ps1";
 			if (File.Exists(profile))
 			{
-				using var ps = A.Psf.NewPowerShell();
+				using var ps = A.NewPowerShell();
 				ps.AddCommand(profile, false).Invoke();
 			}
 		}
@@ -382,16 +382,16 @@ static class EditorKit
 		if (e.Kind == EditorChangeKind.LineAdded)
 		{
 			delta = 1;
-			bps = [.. A.Psf.Breakpoints.Where(x => x.Line >= line && x.Script.Equals(fullPath, StringComparison.OrdinalIgnoreCase))];
+			bps = [.. A.Breakpoints.Where(x => x.Line >= line && x.Script.Equals(fullPath, StringComparison.OrdinalIgnoreCase))];
 		}
 		else
 		{
-			var bp = A.Psf.Breakpoints.FirstOrDefault(x => x.Line == line && x.Script.Equals(fullPath, StringComparison.OrdinalIgnoreCase));
+			var bp = A.Breakpoints.FirstOrDefault(x => x.Line == line && x.Script.Equals(fullPath, StringComparison.OrdinalIgnoreCase));
 			if (bp != null)
 				A.RemoveBreakpoint(bp);
 
 			delta = -1;
-			bps = [.. A.Psf.Breakpoints.Where(x => x.Line > line && x.Script.Equals(fullPath, StringComparison.OrdinalIgnoreCase))];
+			bps = [.. A.Breakpoints.Where(x => x.Line > line && x.Script.Equals(fullPath, StringComparison.OrdinalIgnoreCase))];
 		}
 
 		foreach (var bp in bps)
@@ -476,8 +476,8 @@ static class EditorKit
 		// command
 		FarNet.Works.Kit.SplitCommandWithPrefix(code, out _, out var command, Entry.IsMyPrefix);
 
-		A.Psf.SyncPaths();
-		A.Psf.Run(new RunArgs(command.ToString()) { Writer = writer });
+		A.SyncPaths();
+		A.Run(new RunArgs(command.ToString()) { Writer = writer });
 	}
 
 	// PSF sets the current directory and location to the script directory.
@@ -523,8 +523,8 @@ static class EditorKit
 		try
 		{
 			// push/set the location; let's ignore issues
-			A.Psf.Engine.SessionState.Path.PushCurrentLocation(null);
-			A.Psf.Engine.SessionState.Path.SetLocation(WildcardPattern.Escape(dir1));
+			A.Engine.SessionState.Path.PushCurrentLocation(null);
+			A.Engine.SessionState.Path.SetLocation(WildcardPattern.Escape(dir1));
 
 			// invoke the script by the runner or directly
 			if (fileName.EndsWith(".fas.ps1", StringComparison.OrdinalIgnoreCase))
@@ -533,7 +533,7 @@ static class EditorKit
 			}
 			else
 			{
-				A.Psf.Run(new RunArgs($"& '{fileName.Replace("'", "''")}'"));
+				A.Run(new RunArgs($"& '{fileName.Replace("'", "''")}'"));
 			}
 		}
 		finally
@@ -542,7 +542,7 @@ static class EditorKit
 			Environment.CurrentDirectory = dir0;
 
 			// then pop the location, it may fail perhaps
-			A.Psf.Engine.SessionState.Path.PopLocation(null);
+			A.Engine.SessionState.Path.PopLocation(null);
 		}
 	}
 
@@ -596,7 +596,7 @@ static class EditorKit
 		try
 		{
 			// get tasks
-			using var ps = A.Psf.NewPowerShell().AddScript("""
+			using var ps = A.NewPowerShell().AddScript("""
 				Invoke-Build ?? $args[0] -Result:Result
 				, $Result.Redefined
 				""")
@@ -676,7 +676,7 @@ static class EditorKit
 					Arguments = [goodTaskName!, fileName],
 					Writer = new ConsoleOutputWriter()
 				};
-				A.Psf.Run(args);
+				A.Run(args);
 
 				// on error in the editor script go to its position
 				//! do not redraw now or the editor is shown

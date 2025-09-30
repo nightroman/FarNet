@@ -1,5 +1,4 @@
-﻿
-using FarNet;
+﻿using FarNet;
 
 namespace PowerShellFar;
 
@@ -18,7 +17,7 @@ public class BreakpointDrawer : ModuleDrawer
 		int st = e.Lines[0].Index;
 		int en = st + e.Lines.Count;
 
-		foreach (var bp in A.Psf.Breakpoints)
+		foreach (var bp in A.Breakpoints)
 		{
 			if (!fullPath.Equals(bp.Script, StringComparison.OrdinalIgnoreCase))
 				continue;

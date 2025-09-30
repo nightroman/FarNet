@@ -1,4 +1,3 @@
-
 using FarNet;
 using System.Collections;
 using System.Management.Automation;
@@ -343,7 +342,7 @@ sealed class AssertFarCommand : BaseCmdlet
 				{
 					// ask to attach a debugger
 					bool isAddDebugger = false;
-					var debugger = A.Psf.Runspace.Debugger;
+					var debugger = A.Runspace.Debugger;
 					while (!DebuggerKit.HasAnyDebugger(debugger))
 					{
 						var buttonsAttachDebugger = new[] { BtnOK, BtnAddDebugger, BtnCancel };

@@ -74,7 +74,7 @@ public sealed class ItemPanel : FormatPanel
 		// has property?
 		if (!My.ProviderInfoEx.HasProperty(Explorer.Provider))
 		{
-			A.Message(Res.NotSupportedByProvider);
+			A.MyMessage(Res.NotSupportedByProvider);
 			return;
 		}
 
@@ -138,7 +138,7 @@ public sealed class ItemPanel : FormatPanel
 		// Set-Location, the core remembers it for the drive, this is handy
 		try
 		{
-			A.Psf.Engine.SessionState.Path.SetLocation(WildcardPattern.Escape(Explorer.Location));
+			A.Engine.SessionState.Path.SetLocation(WildcardPattern.Escape(Explorer.Location));
 		}
 		catch (Exception ex)
 		{

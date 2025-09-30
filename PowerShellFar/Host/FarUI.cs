@@ -238,13 +238,21 @@ class FarUI : UniformUI, IHostUISupportsMultipleChoiceSelection
 			}
 			else
 			{
-				var safe = type == typeof(SecureString);
+				// secure?
+				var isSecret = type == typeof(SecureString);
+
+				// conventional history prompt
+				string history;
+				if (prompt.StartsWith("[[") && prompt.EndsWith("]]"))
+					history = prompt[2..(prompt.Length - 2)];
+				else
+					history = Res.HistoryPrompt;
 
 				string text;
 				if (IsConsole())
 				{
 					string prompt2;
-					if (safe && safe && prompt == " ")
+					if (isSecret && prompt == " ")
 					{
 						//: Read-Host -AsSecureString
 						prompt2 = string.Empty;
@@ -263,15 +271,15 @@ class FarUI : UniformUI, IHostUISupportsMultipleChoiceSelection
 					var ui = new UI.ReadLine(new UI.ReadLine.Args
 					{
 						Prompt = prompt2,
-						History = Res.HistoryPrompt,
+						History = history,
 						HelpMessage = current.HelpMessage,
-						IsPassword = safe,
+						IsPassword = isSecret,
 					});
 					if (!ui.Show())
 						throw new PipelineStoppedException();
 
 					text = ui.Out;
-					WriteLine(prompt2 + (safe ? "*" : text));
+					WriteLine(prompt2 + (isSecret ? "*" : text));
 				}
 				else
 				{
@@ -280,8 +288,8 @@ class FarUI : UniformUI, IHostUISupportsMultipleChoiceSelection
 					{
 						Title = caption,
 						Prompt = string.IsNullOrEmpty(message) ? prompt : message + "\r" + prompt,
-						History = Res.HistoryPrompt,
-						Password = safe,
+						History = history,
+						Password = isSecret,
 						TypeId = new Guid(Guids.PSPromptDialog)
 					};
 
@@ -290,7 +298,7 @@ class FarUI : UniformUI, IHostUISupportsMultipleChoiceSelection
 
 					text = ui.Text!;
 				}
-				r.Add(prompt, ValueToResult(text, safe));
+				r.Add(prompt, ValueToResult(text, isSecret));
 			}
 		}
 

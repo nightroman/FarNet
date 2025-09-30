@@ -68,7 +68,7 @@ class Interactive : InteractiveEditor
 
 	void DoPrompt()
 	{
-		var rs = Runspace ?? A.Psf.Runspace;
+		var rs = Runspace ?? A.Runspace;
 
 		using var ps = rs.CreateNestedPipeline("prompt", false);
 		var res = ps.Invoke();
@@ -251,8 +251,8 @@ class Interactive : InteractiveEditor
 		if (Runspace is null)
 		{
 			EditorOutputWriterNormal writer = new(Editor);
-			A.Psf.SyncPaths();
-			A.Psf.Run(new RunArgs(code) { Writer = writer });
+			A.SyncPaths();
+			A.Run(new RunArgs(code) { Writer = writer });
 			if (_isNestedPrompt)
 				DoPrompt();
 			return;

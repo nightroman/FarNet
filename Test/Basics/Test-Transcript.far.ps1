@@ -6,7 +6,7 @@
 Assert-Far (!$Error) -Message 'Please clear $Errors.'
 
 # force stop
-[PowerShellFar.Zoo]::StopTranscript($true)
+[PowerShellFar.Transcript]::StopTranscript($true)
 
 ### Bad $Transcript
 

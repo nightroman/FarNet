@@ -173,7 +173,7 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 			DebuggerKit.ValidateAvailable();
 
 			// import breakpoints
-			foreach (var bp in A.Psf.Runspace.Debugger.GetBreakpoints())
+			foreach (var bp in A.Runspace.Debugger.GetBreakpoints())
 			{
 				switch (bp)
 				{

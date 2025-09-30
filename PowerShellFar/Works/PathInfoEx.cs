@@ -13,7 +13,7 @@ class PathInfoEx
 	///
 	public PathInfoEx(string? path)
 	{
-		var core = A.Psf.Engine.SessionState.Path;
+		var core = A.Engine.SessionState.Path;
 		if (string.IsNullOrEmpty(path) || path == ".")
 			_PathInfo = core.CurrentLocation;
 		else

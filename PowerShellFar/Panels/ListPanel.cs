@@ -1,4 +1,3 @@
-
 using FarNet;
 using System.Collections;
 using System.Data;
@@ -135,7 +134,7 @@ public abstract class ListPanel : AnyPanel
 		}
 		catch (RuntimeException ex)
 		{
-			A.Message(ex.Message);
+			A.MyMessage(ex.Message);
 		}
 	}
 

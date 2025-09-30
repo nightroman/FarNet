@@ -1,4 +1,3 @@
-
 using FarNet;
 using System.Collections;
 using System.Data;
@@ -202,11 +201,11 @@ public sealed class DataPanel : TablePanel, IDisposable
 		}
 		catch (DBConcurrencyException ex)
 		{
-			A.Msg(ex);
+			A.MyError(ex);
 		}
 		catch (DbException ex)
 		{
-			A.Msg(ex);
+			A.MyError(ex);
 		}
 		return false;
 	}
@@ -772,7 +771,7 @@ public sealed class DataPanel : TablePanel, IDisposable
 
 		if (!int.TryParse(text, out int value) || value < 1)
 		{
-			A.Message("Invalid number");
+			A.MyMessage("Invalid number");
 			return;
 		}
 
@@ -790,7 +789,7 @@ public sealed class DataPanel : TablePanel, IDisposable
 
 		if (!int.TryParse(text, out int value) || value < 0)
 		{
-			A.Message("Invalid number");
+			A.MyMessage("Invalid number");
 			return;
 		}
 

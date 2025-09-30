@@ -1,4 +1,3 @@
-
 using FarNet;
 using FarNet.Forms;
 using System.Management.Automation;
@@ -84,9 +83,9 @@ class ReadCommand
 	{
 		try
 		{
-			A.Psf.SyncPaths();
+			A.SyncPaths();
 
-			using var ps = A.Psf.NewPowerShell();
+			using var ps = A.NewPowerShell();
 			var res = ps.AddCommand("prompt").Invoke();
 
 			//! as PS, use not empty res[0]
@@ -409,7 +408,7 @@ class ReadCommand
                         return;
 
                     // run
-                    var obj = await Tasks.Command(() => A.Psf.Run(res));
+                    var obj = await Tasks.Command(() => A.Run(res));
 
                     // switch to opened panel, come back on exit
                     if (obj is Panel panel)

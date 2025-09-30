@@ -1,8 +1,3 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
 using FarNet;
 
 namespace PowerShellFar;
@@ -114,7 +109,13 @@ public sealed class Settings
 	/// </remarks>
 	public int FormatEnumerationLimit
 	{
-		get => _FormatEnumerationLimit >= 0 ? _FormatEnumerationLimit : _FormatEnumerationLimit = A.FormatEnumerationLimit;
+		get
+		{
+			if (_FormatEnumerationLimit < 0)
+				_FormatEnumerationLimit = A.Engine.SessionState.PSVariable.GetValue("FormatEnumerationLimit") is int n && n >= 0 ? n : 4;
+
+			return _FormatEnumerationLimit;
+		}
 		set
 		{
 			if (value >= 0)

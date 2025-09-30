@@ -1,10 +1,5 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
 using FarNet.Forms;
-using System;
 using System.Collections;
 
 namespace PowerShellFar.UI;
@@ -78,7 +73,7 @@ class InputBoxEx
 			editLine = Far.Api.Line;
 			if (editLine is null)
 			{
-				A.Message("There is no current editor line.");
+				A.MyMessage("There is no current editor line.");
 				return;
 			}
 		}

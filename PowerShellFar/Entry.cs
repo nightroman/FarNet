@@ -71,7 +71,7 @@ public sealed class Entry : ModuleHost
 
 	public override void Invoking()
 	{
-		A.Psf.Invoking();
+		A.Invoking();
 	}
 
 	internal static bool IsMyPrefix(ReadOnlySpan<char> prefix)
@@ -93,7 +93,7 @@ public sealed class Entry : ModuleHost
 		}
 
 		// Code
-		A.Psf.SyncPaths();
+		A.SyncPaths();
 
 		// echo / no echo
 		Func<string>? getEcho;
@@ -102,22 +102,22 @@ public sealed class Entry : ModuleHost
 		else
 			getEcho = () => CommandInvoke1.Prefix + ':' + command;
 
-		var ok = A.Psf.Run(new RunArgs(command) { Writer = new ConsoleOutputWriter(getEcho) });
+		var ok = A.Run(new RunArgs(command) { Writer = new ConsoleOutputWriter(getEcho) });
 		e.Ignore = !ok;
 	}
 
 	void OnCommandInvoke2(object? sender, ModuleCommandEventArgs e)
 	{
-		A.Psf.SyncPaths();
+		A.SyncPaths();
 
-		var ok = A.Psf.Run(new RunArgs(e.Command));
+		var ok = A.Run(new RunArgs(e.Command));
 		e.Ignore = !ok;
 	}
 
 	public override object Interop(string command, object? args)
 	{
 		//2025-09-29-0630
-		A.Psf.Invoking();
+		A.Invoking();
 
 		return command switch
 		{
@@ -127,7 +127,7 @@ public sealed class Entry : ModuleHost
 				return PS2.UnwrapPSObject(result);
 			}),
 
-			"Runspace" => A.Psf.Runspace,
+			"Runspace" => A.Runspace,
 
 			_ => throw new ArgumentException("Unknown command.", nameof(command)),
 		};

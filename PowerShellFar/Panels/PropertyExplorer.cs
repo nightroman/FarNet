@@ -68,7 +68,7 @@ public sealed class PropertyExplorer : ListExplorer
 			// so, don't add, they are noisy anyway (even if marked system or hidden).
 
 			// get property bag 090409
-			Collection<PSObject> bag = A.Psf.Engine.InvokeProvider.Property.Get(WildcardPattern.Escape(ItemPath), null);
+			Collection<PSObject> bag = A.Engine.InvokeProvider.Property.Get(WildcardPattern.Escape(ItemPath), null);
 
 			// filter
 			List<string> filter =
@@ -116,7 +116,7 @@ public sealed class PropertyExplorer : ListExplorer
 		catch (RuntimeException error)
 		{
 			if (args.UI)
-				A.Message(error.Message);
+				A.MyMessage(error.Message);
 		}
 
 		return result;
@@ -178,7 +178,7 @@ public sealed class PropertyExplorer : ListExplorer
 		catch (RuntimeException ex)
 		{
 			if (args.UI)
-				A.Msg(ex);
+				A.MyError(ex);
 		}
 	}
 
@@ -191,7 +191,7 @@ public sealed class PropertyExplorer : ListExplorer
 		bool confirm = args.UI && 0 != (long)Far.Api.GetSetting(FarSetting.Confirmations, "Delete");
 
 		// names to be deleted
-		List<string> names = A.FileNameList(args.Files);
+		List<string> names = FileNameList(args.Files);
 
 		//! Registry: workaround: (default)
 		if (Provider.Name == "Registry")
@@ -202,7 +202,7 @@ public sealed class PropertyExplorer : ListExplorer
 				{
 					// remove or not
 					if (!confirm || 0 == Far.Api.Message("Delete the (default) property", Res.Delete, MessageOptions.YesNo))
-						A.Psf.Engine.InvokeProvider.Property.Remove(WildcardPattern.Escape(ItemPath), string.Empty);
+						A.Engine.InvokeProvider.Property.Remove(WildcardPattern.Escape(ItemPath), string.Empty);
 
 					// remove from the list in any case
 					names.RemoveAt(i);
@@ -215,7 +215,7 @@ public sealed class PropertyExplorer : ListExplorer
 				return;
 		}
 
-		using var ps = A.Psf.NewPowerShell();
+		using var ps = A.NewPowerShell();
 		ps.AddCommand("Remove-ItemProperty")
 			.AddParameter("LiteralPath", ItemPath)
 			.AddParameter(Word.Name, names)
@@ -246,13 +246,13 @@ public sealed class PropertyExplorer : ListExplorer
 		// that source
 		if (args.Explorer is not PropertyExplorer that)
 		{
-			if (args.UI) A.Message(Res.UnknownFileSource);
+			if (args.UI) A.MyMessage(Res.UnknownFileSource);
 			args.Result = JobResult.Ignore;
 			return;
 		}
 
 		// names
-		List<string> names = A.FileNameList(args.Files);
+		List<string> names = FileNameList(args.Files);
 
 		//! gotchas in {Copy|Move}-ItemProperty:
 		//! *) -Name takes a single string only? (help: yes (copy), no (move) - odd!)
@@ -263,12 +263,12 @@ public sealed class PropertyExplorer : ListExplorer
 		if (args.Move)
 		{
 			foreach (string name in names)
-				A.Psf.Engine.InvokeProvider.Property.Move(source, name, target, name);
+				A.Engine.InvokeProvider.Property.Move(source, name, target, name);
 		}
 		else
 		{
 			foreach (string name in names)
-				A.Psf.Engine.InvokeProvider.Property.Copy(source, name, target, name);
+				A.Engine.InvokeProvider.Property.Copy(source, name, target, name);
 		}
 	}
 
@@ -285,11 +285,11 @@ public sealed class PropertyExplorer : ListExplorer
 		{
 			args.Result = JobResult.Ignore;
 			if (args.UI)
-				A.Message("Cannot rename this property.");
+				A.MyMessage("Cannot rename this property.");
 			return;
 		}
 
-		using var ps = A.Psf.NewPowerShell();
+		using var ps = A.NewPowerShell();
 		ps.AddCommand("Rename-ItemProperty")
 			.AddParameter("LiteralPath", ItemPath)
 			.AddParameter(Word.Name, args.File.Name)
@@ -319,7 +319,7 @@ public sealed class PropertyExplorer : ListExplorer
 		{
 			try
 			{
-				using (var ps = A.Psf.NewPowerShell())
+				using (var ps = A.NewPowerShell())
 				{
 					//! Don't use Value if it is empty (e.g. to avoid (default) property at new key in Registry).
 					//! Don't use -Force or you silently kill existing item\property (with all children, properties, etc.)
@@ -345,7 +345,7 @@ public sealed class PropertyExplorer : ListExplorer
 			}
 			catch (RuntimeException exception)
 			{
-				A.Message(exception.Message);
+				A.MyMessage(exception.Message);
 				continue;
 			}
 		}
@@ -360,8 +360,17 @@ public sealed class PropertyExplorer : ListExplorer
 			throw new InvalidOperationException(Res.ParameterString);
 
 		string src = WildcardPattern.Escape(ItemPath);
-		A.Psf.Engine.InvokeProvider.Property.Copy(src, args.File.Name, src, newName);
+		A.Engine.InvokeProvider.Property.Copy(src, args.File.Name, src, newName);
 
 		args.PostName = newName;
+	}
+
+	// Collects names of files.
+	private static List<string> FileNameList(IList<FarFile> files)
+	{
+		var r = new List<string>(files.Count);
+		foreach (FarFile f in files)
+			r.Add(f.Name);
+		return r;
 	}
 }

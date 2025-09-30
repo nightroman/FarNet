@@ -54,29 +54,29 @@
     </NamespaceSummaries>
     <ApiFilter>
       <Filter entryType="Namespace" fullName="FarNet" isExposed="True">
-        <Filter entryType="Class" fullName="FarNet.IUserInterface" filterName="IUserInterface" isExposed="True">
-          <Filter entryType="Method" fullName="FarNet.IUserInterface.GetBufferContents" filterName="GetBufferContents" isExposed="False" />
-          <Filter entryType="Method" fullName="FarNet.IUserInterface.ScrollBufferContents" filterName="ScrollBufferContents" isExposed="False" />
-          <Filter entryType="Method" fullName="FarNet.IUserInterface.SetBufferContents" filterName="SetBufferContents" isExposed="False" />
-        </Filter>
-        <Filter entryType="Class" fullName="FarNet.Panel" filterName="Panel" isExposed="True">
-          <Filter entryType="Method" fullName="FarNet.Panel.WorksEscaping" filterName="WorksEscaping" isExposed="False" />
-          <Filter entryType="Method" fullName="FarNet.Panel.WorksExportExplorerFile" filterName="WorksExportExplorerFile" isExposed="False" />
-          <Filter entryType="Method" fullName="FarNet.Panel.WorksInvokingCommand" filterName="WorksInvokingCommand" isExposed="False" />
-          <Filter entryType="Method" fullName="FarNet.Panel.WorksKeyPressed" filterName="WorksKeyPressed" isExposed="False" />
-          <Filter entryType="Property" fullName="FarNet.Panel.WorksPanel" filterName="WorksPanel" isExposed="False" />
-        </Filter>
-      </Filter>
-      <Filter entryType="Namespace" fullName="FarNet.Tools" isExposed="True">
-        <Filter entryType="Class" fullName="FarNet.Tools.XPathInput" filterName="XPathInput" isExposed="False" />
-        <Filter entryType="Class" fullName="FarNet.Tools.XPathObjectNavigator" filterName="XPathObjectNavigator" isExposed="False" />
-      </Filter>
-      <Filter entryType="Namespace" fullName="FarNet.Works" isExposed="False" />
-      <Filter entryType="Namespace" fullName="PowerShellFar" isExposed="True">
-        <Filter entryType="Class" fullName="PowerShellFar.Entry" filterName="Entry" isExposed="False" />
-        <Filter entryType="Class" fullName="PowerShellFar.Zoo" filterName="Zoo" isExposed="False" />
-      </Filter>
-    </ApiFilter>
+  <Filter entryType="Class" fullName="FarNet.IUserInterface" filterName="IUserInterface" isExposed="True">
+    <Filter entryType="Method" fullName="FarNet.IUserInterface.GetBufferContents" filterName="GetBufferContents" isExposed="False" />
+    <Filter entryType="Method" fullName="FarNet.IUserInterface.ScrollBufferContents" filterName="ScrollBufferContents" isExposed="False" />
+    <Filter entryType="Method" fullName="FarNet.IUserInterface.SetBufferContents" filterName="SetBufferContents" isExposed="False" />
+  </Filter>
+  <Filter entryType="Class" fullName="FarNet.Panel" filterName="Panel" isExposed="True">
+    <Filter entryType="Method" fullName="FarNet.Panel.WorksEscaping" filterName="WorksEscaping" isExposed="False" />
+    <Filter entryType="Method" fullName="FarNet.Panel.WorksExportExplorerFile" filterName="WorksExportExplorerFile" isExposed="False" />
+    <Filter entryType="Method" fullName="FarNet.Panel.WorksInvokingCommand" filterName="WorksInvokingCommand" isExposed="False" />
+    <Filter entryType="Method" fullName="FarNet.Panel.WorksKeyPressed" filterName="WorksKeyPressed" isExposed="False" />
+    <Filter entryType="Property" fullName="FarNet.Panel.WorksPanel" filterName="WorksPanel" isExposed="False" />
+  </Filter>
+</Filter>
+<Filter entryType="Namespace" fullName="FarNet.Tools" isExposed="True">
+  <Filter entryType="Class" fullName="FarNet.Tools.XPathInput" filterName="XPathInput" isExposed="False" />
+  <Filter entryType="Class" fullName="FarNet.Tools.XPathObjectNavigator" filterName="XPathObjectNavigator" isExposed="False" />
+</Filter>
+<Filter entryType="Namespace" fullName="FarNet.Works" isExposed="False" />
+<Filter entryType="Namespace" fullName="PowerShellFar" isExposed="True">
+  <Filter entryType="Class" fullName="PowerShellFar.Entry" filterName="Entry" isExposed="False" />
+  <Filter entryType="Class" fullName="PowerShellFar.Transcript" filterName="Transcript" isExposed="False" />
+  <Filter entryType="Class" fullName="PowerShellFar.Zoo" filterName="Zoo" isExposed="False" />
+</Filter></ApiFilter>
     <WebsiteSdkLinkType>Msdn</WebsiteSdkLinkType>
     <HtmlSdkLinkType>None</HtmlSdkLinkType>
     <IncludeFavorites>False</IncludeFavorites>

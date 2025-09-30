@@ -1,8 +1,4 @@
-﻿
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using FarNet;
+﻿using FarNet;
 
 namespace PowerShellFar.UI;
 
@@ -25,7 +21,7 @@ static class SelectMenu
 		m.Add(TextAnyObjects);
 		m.Add(string.Empty).IsSeparator = true;
 
-		var drives = A.Psf.Runspace.SessionStateProxy.Drive.GetAll();
+		var drives = A.Runspace.SessionStateProxy.Drive.GetAll();
 		foreach (var drive in drives)
 		{
 			m.Add(drive.Name + ':');

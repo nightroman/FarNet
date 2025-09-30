@@ -1,12 +1,7 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System.Collections;
-using System.IO;
-using System.Management.Automation;
 using FarNet;
 using FarNet.Forms;
+using System.Collections;
+using System.Management.Automation;
 
 namespace PowerShellFar.UI;
 
@@ -77,7 +72,7 @@ class ExportDialog
 			{
 				if (!int.TryParse(ui._Depth.Text, out int r) || r <= 0)
 				{
-					A.Message("Invalid depth value");
+					A.MyMessage("Invalid depth value");
 					ui._Dialog.Focused = ui._Depth;
 					continue;
 				}
@@ -108,7 +103,7 @@ class ExportDialog
 		}
 		catch (RuntimeException ex)
 		{
-			A.Msg(ex);
+			A.MyError(ex);
 		}
 	}
 }
