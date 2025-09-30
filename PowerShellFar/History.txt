@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.56 =
+
+Use FarNet 9.0.38
+
+Fix opening command console.
+
 = 9.0.55 =
 
 Refactor engine classes.

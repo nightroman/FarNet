@@ -71,14 +71,14 @@ class ReadLine
 	// If we do not hide panels the dialog is not prominent enough.
 	public bool Show()
 	{
-		Far.Api.UI.ShowUserScreen2();
+		Far.Api.UI.GetUserScreen(1);
 		try
 		{
 			return Dialog.Show();
 		}
 		finally
 		{
-			Far.Api.UI.SaveUserScreen2();
+			Far.Api.UI.SetUserScreen(1);
 		}
 	}
 
@@ -114,12 +114,12 @@ class ReadLine
 
 	void Edit_DropDownOpening(object? sender, DropDownOpeningEventArgs e)
 	{
-		Far.Api.UI.ShowUserScreen();
+		Far.Api.UI.GetUserScreen(1);
 	}
 
 	void Edit_DropDownClosed(object? sender, DropDownClosedEventArgs e)
 	{
-		Far.Api.UI.SaveUserScreen();
+		Far.Api.UI.SetUserScreen(1);
 	}
 
 	void Edit_KeyPressed(object? sender, KeyPressedEventArgs e)

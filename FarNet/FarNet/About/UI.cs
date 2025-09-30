@@ -176,6 +176,18 @@ public abstract class IUserInterface
 	public abstract IntPtr SaveScreen(int left, int top, int right, int bottom);
 
 	/// <summary>
+	/// INTERNAL
+	/// </summary>
+	/// <param name="n">0: new line; 1: no new line.</param>
+	public abstract void GetUserScreen(int n);
+
+	/// <summary>
+	/// INTERNAL
+	/// </summary>
+	/// <param name="n">0: new line; 1: no new line.</param>
+	public abstract void SetUserScreen(int n);
+
+	/// <summary>
 	/// Copies the current screen contents to the user screen buffer
 	/// (which is displayed when the panels are switched off).
 	/// </summary>
@@ -186,11 +198,6 @@ public abstract class IUserInterface
 	public abstract void SaveUserScreen();
 
 	/// <summary>
-	/// INTERNAL
-	/// </summary>
-	public abstract void SaveUserScreen2();
-
-	/// <summary>
 	/// Copies the current user screen buffer to console screen
 	/// (which is displayed when the panels are switched off).
 	/// </summary>
@@ -199,11 +206,6 @@ public abstract class IUserInterface
 	/// Note: try to avoid these low level operations.
 	/// </remarks>
 	public abstract void ShowUserScreen();
-
-	/// <summary>
-	/// INTERNAL
-	/// </summary>
-	public abstract void ShowUserScreen2();
 
 	/// <summary>
 	/// Writes text to the console with the current colors.

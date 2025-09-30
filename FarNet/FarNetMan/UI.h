@@ -1,11 +1,7 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 #pragma once
 
 namespace FarNet
-{;
+{
 ref class FarUI sealed : IUserInterface
 {
 public:
@@ -37,18 +33,18 @@ public:
 	virtual void DrawColor(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text) override;
 	virtual void DrawPalette(int left, int top, PaletteColor paletteColor, String^ text) override;
 	virtual void FlushInputBuffer() override;
+	virtual void GetUserScreen(int n) override;
 	virtual void Redraw() override;
 	virtual void RestoreScreen(IntPtr screen) override;
 	virtual void SaveUserScreen() override;
-	virtual void SaveUserScreen2() override;
 	virtual void SetProgressFlash() override;
 	virtual void SetProgressState(TaskbarProgressBarState state) override;
 	virtual void SetProgressValue(int currentValue, int maximumValue) override;
+	virtual void SetUserScreen(int n) override;
 	virtual void ScrollBufferContents(Place source, Point destination, Place clip, Works::BufferCell fill) override;
 	virtual void SetBufferContents(Place rectangle, Works::BufferCell fill) override;
 	virtual void SetBufferContents(Point origin, array<Works::BufferCell, 2>^ contents) override;
 	virtual void ShowUserScreen() override;
-	virtual void ShowUserScreen2() override;
 	virtual void Write(String^ text) override;
 	virtual void Write(String^ text, ConsoleColor foregroundColor) override;
 	virtual void Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgroundColor) override;

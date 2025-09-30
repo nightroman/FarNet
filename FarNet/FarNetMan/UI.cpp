@@ -1,7 +1,3 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 #include "stdafx.h"
 #include "UI.h"
 #include "Wrappers.h"
@@ -580,16 +576,15 @@ bool isConsoleModal()
 	return (wi.Flags & WIF_MODAL) != 0;
 }
 
-
 const intptr_t UserScreenNoNewLine = 1;
 
 #pragma push_macro("FCTL_GETUSERSCREEN")
 #undef FCTL_GETUSERSCREEN
-void static GetUserScreen()
+void static _GetUserScreen(intptr_t n = UserScreenNoNewLine)
 {
 	ConsoleColor fc = Console::ForegroundColor;
 	ConsoleColor bc = Console::BackgroundColor;
-	Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETUSERSCREEN, UserScreenNoNewLine, 0);
+	Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETUSERSCREEN, n, 0);
 	Console::ForegroundColor = fc;
 	Console::BackgroundColor = bc;
 }
@@ -597,48 +592,48 @@ void static GetUserScreen()
 
 #pragma push_macro("FCTL_SETUSERSCREEN")
 #undef FCTL_SETUSERSCREEN
-void static SetUserScreen()
+void static _SetUserScreen(intptr_t n = UserScreenNoNewLine)
 {
-	Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, UserScreenNoNewLine, 0);
+	Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, n, 0);
 }
 #pragma pop_macro("FCTL_SETUSERSCREEN")
+
+void FarUI::GetUserScreen(int n)
+{
+	::_GetUserScreen(n);
+}
+
+void FarUI::SetUserScreen(int n)
+{
+	::_SetUserScreen(n);
+}
 
 void FarUI::ShowUserScreen()
 {
 	// only if not shown
 	if (_UserScreenCount == 0)
-		::GetUserScreen();
+		::_GetUserScreen();
 
 	// update always, for stats
 	++_UserScreenCount;
-}
-
-void FarUI::ShowUserScreen2()
-{
-	::GetUserScreen();
 }
 
 void FarUI::SaveUserScreen()
 {
 	// only if done, assuming paired calls
 	if (_UserScreenCount == 1)
-		::SetUserScreen();
+		::_SetUserScreen();
 
 	// update but keep positive for reset
 	if (_UserScreenCount > 0)
 		--_UserScreenCount;
 }
 
-void FarUI::SaveUserScreen2()
-{
-	::SetUserScreen();
-}
-
 void FarUI::ResetUserScreen()
 {
 	// only if shown and not done
 	if (_UserScreenCount > 0)
-		::SetUserScreen();
+		::_SetUserScreen();
 
 	// reset
 	_UserScreenCount = 0;
