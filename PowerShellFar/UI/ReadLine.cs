@@ -5,6 +5,8 @@ namespace PowerShellFar.UI;
 
 class ReadLine
 {
+	IntPtr _savedScreen;
+
 	public readonly Args In;
 	public string Out => Edit.Text;
 
@@ -114,12 +116,12 @@ class ReadLine
 
 	void Edit_DropDownOpening(object? sender, DropDownOpeningEventArgs e)
 	{
-		Far.Api.UI.GetUserScreen(1);
+		_savedScreen = Far.Api.UI.SaveScreen(0, 0, -1, -1);
 	}
 
 	void Edit_DropDownClosed(object? sender, DropDownClosedEventArgs e)
 	{
-		Far.Api.UI.SetUserScreen(1);
+		Far.Api.UI.RestoreScreen(_savedScreen);
 	}
 
 	void Edit_KeyPressed(object? sender, KeyPressedEventArgs e)

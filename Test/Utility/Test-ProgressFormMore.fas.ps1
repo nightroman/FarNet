@@ -5,11 +5,11 @@
 
 ### Task completes
 job {
-	$progress = New-Object FarNet.Tools.ProgressForm
+	$progress = [FarNet.Tools.ProgressForm]::new()
 	$progress.Title = "Show(Task) complete"
 
 	$task = Start-FarTask -AsTask {
-		Start-Sleep 1
+		Start-Sleep -Milliseconds 100
 	}
 
 	$r = $progress.Show($task)
@@ -18,11 +18,11 @@ job {
 
 ### Task cancels by OperationCanceledException
 job {
-	$progress = New-Object FarNet.Tools.ProgressForm
+	$progress = [FarNet.Tools.ProgressForm]::new()
 	$progress.Title = "Show(Task) cancel exception"
 
 	$task = Start-FarTask -AsTask {
-		Start-Sleep 1
+		Start-Sleep -Milliseconds 100
 		throw [OperationCanceledException]''
 	}
 
@@ -33,11 +33,11 @@ job {
 
 ### Task throws generic exception.
 job {
-	$progress = New-Object FarNet.Tools.ProgressForm
+	$progress = [FarNet.Tools.ProgressForm]::new()
 	$progress.Title = "Show(Task) other exception"
 
 	$task = Start-FarTask -AsTask {
-		Start-Sleep 1
+		Start-Sleep -Milliseconds 100
 		throw 'Test exception.'
 	}
 
@@ -49,7 +49,7 @@ job {
 
 ### User cancels the form and task.
 run {
-	$progress = New-Object FarNet.Tools.ProgressForm
+	$progress = [FarNet.Tools.ProgressForm]::new()
 	$progress.Title = "Show(Task) user cancel"
 	$progress.CanCancel = $true
 
@@ -69,8 +69,8 @@ job {
 	Assert-Far $Far.Dialog[0].Text -eq "Show(Task) user cancel"
 	$Far.Dialog.Close()
 }
+Start-Sleep -Milliseconds 100
 job {
-	Start-Sleep -Milliseconds 500
 	Assert-Far $Data._220709_0637 -eq $false
 	Assert-Far $Data._220709_1006 -eq 'Exiting canceled task'
 	Assert-Far $Data._220709_2007 -eq 'CancellationToken action called'

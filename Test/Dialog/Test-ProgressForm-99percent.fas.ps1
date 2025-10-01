@@ -1,22 +1,19 @@
 ﻿<#
 .Synopsis
 	At 99% keep 1 slot not filled
-
-.Description
-	Used to be a problem, works now.
 #>
 
 run {
-	$Data.progress = $progress = New-Object FarNet.Tools.ProgressForm
-	$progress.Title = "the title"
+	$Var.progress = $progress = [FarNet.Tools.ProgressForm]::new()
 	$progress.CanCancel = $true
 	$done = $progress.Show()
 }
-job {
-	$Data.progress.SetProgressValue(99, 100)
-	Start-Sleep -Milliseconds 300
-}
+
+# set progress async and let it update
+$progress.SetProgressValue(99, 100)
+Start-Sleep -Milliseconds 300
+
 job {
 	Assert-Far $Far.Dialog[2].Text.StartsWith('█████████████████████████████████████████████████████████████░')
+	$Far.Dialog.Close()
 }
-keys Esc
