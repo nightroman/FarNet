@@ -1,6 +1,14 @@
 ﻿https://www.nuget.org/packages/FarNet
 Far Manager 3.0.5505
 
+= 9.0.39 =
+
+Adapt for Far GH-939
+
+Editor IsSaved is obsolete and will be removed. Use IsModified.
+
+Removed obsolete Explorer OpenPanel() and OpenPanelChild().
+
 = 9.0.38 =
 
 Tweak internal user screen methods.

@@ -124,7 +124,6 @@ public:
 	virtual void Redraw() override;
 	virtual void RemoveAt(int index) override;
 	virtual void RemoveDrawer(Guid id) override;
-	virtual void Save() override;
 	virtual void Save(bool force) override;
 	virtual void Save(String^ fileName) override;
 	virtual void SelectAllText() override;

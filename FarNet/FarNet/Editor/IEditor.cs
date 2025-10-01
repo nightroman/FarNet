@@ -265,7 +265,7 @@ public abstract class IEditor : IEditorBase
 	/// <remarks>
 	/// This method does nothing if there are no changes to save (<see cref="IsSaved"/> gets true).
 	/// </remarks>
-	public abstract void Save();
+	public void Save() => Save(false);
 
 	/// <summary>
 	/// Saves the file in the editor even with no changes. Exception on failure.
@@ -316,23 +316,15 @@ public abstract class IEditor : IEditorBase
 	public abstract bool Overtype { get; set; }
 
 	/// <summary>
-	/// Gets true if the text is modified in the editor (see remarks).
+	/// Gets true if the text is modified.
 	/// </summary>
-	/// <remarks>
-	/// It gets true if the text is modified at least once and these changes are not undone.
-	/// Note that in this case it will get true even after saving. Use <see cref="IsSaved"/>
-	/// in order to check for not saved changes.
-	/// </remarks>
 	/// <seealso cref="TimeOfSave"/>
 	public abstract bool IsModified { get; }
 
 	/// <summary>
-	/// Gets true if there are no changes to save in the editor (see remarks).
+	/// .
 	/// </summary>
-	/// <remarks>
-	/// It is true when the editor is just opened or saved.
-	/// Use <see cref="TimeOfSave"/> to check whether it was saved at least once.
-	/// </remarks>
+	[Obsolete("Use IsModified")]
 	public abstract bool IsSaved { get; }
 
 	/// <summary>

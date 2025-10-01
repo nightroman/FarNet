@@ -472,18 +472,9 @@ void Editor::DeleteLine()
 }
 
 //! 090926 Mantis 921. Fixed in 1142
-void Editor::Save()
-{
-	if (IsSaved)
-		return;
-
-	if (!Info.EditorControl(_id, ECTL_SAVEFILE, 0, 0))
-		throw gcnew InvalidOperationException("Cannot save the editor file.");
-}
-
 void Editor::Save(bool force)
 {
-	if (!force && IsSaved)
+	if (!force && !IsModified)
 		return;
 
 	if (!Info.EditorControl(_id, ECTL_SAVEFILE, 0, 0))

@@ -1,11 +1,4 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-using System.Collections.Generic;
-
-namespace FarNet;
+﻿namespace FarNet;
 
 /// <summary>
 /// Explorer of a virtual file system, file provider and manager, and optionally a panel maker.
@@ -402,25 +395,4 @@ public abstract class Explorer(Guid typeId)
 		set => _FileComparer = value ?? throw new ArgumentNullException(nameof(value));
 	}
 	IEqualityComparer<FarFile>? _FileComparer;
-
-	/// <summary>
-	/// .
-	/// </summary>
-	[Obsolete("Use CreatePanel().Open()")]
-	public void OpenPanel()
-	{
-		var panel = CreatePanel();
-		panel.Open();
-	}
-
-	/// <summary>
-	/// .
-	/// </summary>
-	/// <param name="parent">.</param>
-	[Obsolete("Use CreatePanel().OpenChild(parent)")]
-	public void OpenPanelChild(Panel parent)
-	{
-		var panel = CreatePanel();
-		panel.OpenChild(parent);
-	}
 }

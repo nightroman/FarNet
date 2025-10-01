@@ -153,11 +153,11 @@ Assert-Far @(
 )
 
 ### State, Save, Redraw, Redrawing, Title
-Assert-Far ($Editor.IsModified -and !$Editor.IsSaved)
+Assert-Far ($Editor.IsModified)
 $Editor.Title = "EDITOR TEST SUCCEEDED"
 $Editor.SetText("EDITOR TEST SUCCEEDED") #! $Editor.Title issue
 $Editor.Save($true)
-Assert-Far (!$Editor.IsModified -and $Editor.IsSaved) #! 2023-09-09
+Assert-Far (!$Editor.IsModified) #! 2023-09-09
 $Editor.add_Redrawing({ Start-Sleep -m 25 })
 for($Editor.GoTo(0, 0); $Editor.Caret.X -lt 21; $Editor.GoToColumn($Editor.Caret.X + 1)) { $Editor.Redraw() }
 
