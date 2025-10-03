@@ -25,7 +25,7 @@ $result = job {
 }
 
 # test result
-if ($result -ne 3) {throw "Expected: 3, actual: $result"}
+Assert-Far $result -eq 3
 
 # test and print
 ps: {

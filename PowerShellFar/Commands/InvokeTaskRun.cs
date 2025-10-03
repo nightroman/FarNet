@@ -1,4 +1,10 @@
+/*
+	Why `run` in main. Case: An Invoke-Build task is invoked in FarHost, so for
+	example to open a result panel, do `run { op }`.
+*/
+
 using FarNet;
+using System.Management.Automation;
 
 namespace PowerShellFar.Commands;
 
@@ -6,10 +12,25 @@ internal sealed class InvokeTaskRun : BaseTaskCmdlet
 {
 	internal const string MyName = "Invoke-FarTaskRun";
 
+	protected override ScriptBlock ConvertScript(ScriptBlock script)
+	{
+		return A.IsMainSession ? script.GetNewClosure() : base.ConvertScript(script);
+	}
+
 	protected override void BeginProcessing()
 	{
 		if (A.IsMainSession)
-			throw new InvalidOperationException("Cannot run in main session.");
+		{
+			_ = Tasks.Wait(100, 0, () =>
+			{
+				if (A.IsRunning || Far.Api.Window.IsModal)
+					return false;
+
+				Far.Api.PostJob(() => Script.Invoke());
+				return true;
+			});
+			return;
+		}
 
 		// post the job as task
 		var task = Tasks.Run(() =>

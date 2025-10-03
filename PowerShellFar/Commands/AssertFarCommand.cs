@@ -29,6 +29,9 @@ sealed class AssertFarCommand : BaseCmdlet
 	public string? Title { get; set; }
 
 	[Parameter(ParameterSetName = PSParameters)]
+	public SwitchParameter NoError { get; set; }
+
+	[Parameter(ParameterSetName = PSParameters)]
 	public string? FileDescription { get; set; }
 
 	[Parameter(ParameterSetName = PSParameters)]
@@ -127,6 +130,18 @@ sealed class AssertFarCommand : BaseCmdlet
 				AssertEnumerable(many);
 			}
 			return;
+		}
+
+		// async? fail
+		if (A.IsAsyncSession)
+			throw new InvalidOperationException("Invalid Assert-Far parameters in async session.");
+
+		// check errors
+		if (NoError)
+		{
+			var errors = SessionState.PSVariable.GetValue("Global:Error") as IList;
+			if (errors?.Count > 0)
+				AssertDialog($"Expected no errors, found {errors.Count}.");
 		}
 
 		// check dialog
@@ -240,6 +255,15 @@ sealed class AssertFarCommand : BaseCmdlet
 
 	void AssertDialog(object? message = null, int conditionIndex = 0, bool doNotIgnore = false)
 	{
+		if (A.IsAsyncSession)
+		{
+			Tasks
+				.Job(() => AssertDialog(message, conditionIndex, doNotIgnore))
+				.Await();
+
+			return;
+		}
+
 		// break a macro
 		MacroState macroState = Far.Api.MacroState;
 		if (macroState == MacroState.Executing || macroState == MacroState.ExecutingCommon)
@@ -272,13 +296,15 @@ sealed class AssertFarCommand : BaseCmdlet
 		if (IsError)
 		{
 			var sb = new StringBuilder(body);
+
 			if (conditionIndex > 0)
 			{
 				sb.AppendLine();
 				sb.Append("Condition #");
 				sb.Append(conditionIndex + 1);
 			}
-			if (MyInvocation.ScriptName != null)
+
+			if (MyInvocation.ScriptName is { })
 			{
 				sb.AppendLine();
 				sb.Append(MyInvocation.ScriptName);
@@ -287,8 +313,23 @@ sealed class AssertFarCommand : BaseCmdlet
 				sb.Append(',');
 				sb.Append(MyInvocation.OffsetInLine);
 				sb.AppendLine("):");
-				sb.Append(MyInvocation.Line.Trim());
 			}
+
+			// amended statement
+			{
+				var statement = MyInvocation.Statement;
+				int ix = statement.IndexOfAny(FarNet.Works.Kit.NewLineChars);
+				if (ix < 0)
+					ix = statement.Length;
+
+				var line1 = statement.AsSpan(0, ix).TrimEnd();
+				var line2 = MyInvocation.Line.AsSpan().TrimEnd();
+				if (!line2.SequenceEqual(line1))
+					statement = $"{line2}{statement.AsSpan(ix)}";
+
+				sb.Append(statement);
+			}
+
 			body = sb.ToString();
 		}
 

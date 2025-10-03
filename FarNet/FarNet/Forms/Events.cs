@@ -1,10 +1,4 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-
-namespace FarNet.Forms;
+﻿namespace FarNet.Forms;
 
 /// <summary>
 /// Common UI event handlers.
@@ -26,7 +20,7 @@ public static class Events
 		e.Foreground2 = ConsoleColor.Black;
 		// unchanged text
 		e.Background3 = ConsoleColor.Black;
-		e.Foreground3 = ConsoleColor.Gray;
+		e.Foreground3 = ConsoleColor.DarkGray;
 		// combo
 		e.Background4 = ConsoleColor.Black;
 		e.Foreground4 = ConsoleColor.Gray;

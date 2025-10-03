@@ -1,5 +1,4 @@
-﻿
-using FarNet.Forms;
+﻿using FarNet.Forms;
 using System.Diagnostics;
 
 namespace FarNet;
@@ -530,9 +529,9 @@ public static class Tasks
 	/// Starts a task which waits until the job returns true.
 	/// </summary>
 	/// <param name="delay">Milliseconds to delay when the predicate returns false.</param>
-	/// <param name="timeout">Maximum waiting time in milliseconds. Use 0 for infinite.</param>
+	/// <param name="timeout">Maximum waiting time in milliseconds. 0 for infinite.</param>
 	/// <param name="job">Returns true to stop waiting.</param>
-	/// <returns>True if the job returns true before the time is out.</returns>
+	/// <returns>True if the job returns true before the timeout.</returns>
 	public static async Task<bool> Wait(int delay, int timeout, Func<bool> job)
 	{
 		var span = timeout > 0 ? TimeSpan.FromMilliseconds(timeout) : TimeSpan.MaxValue;
@@ -548,5 +547,30 @@ public static class Tasks
 
 			await Task.Delay(delay);
 		}
+	}
+
+	/// <summary>
+	/// Waits for a plugin panel to appear within the timeout.
+	/// </summary>
+	/// <param name="timeout">Maximum waiting time in milliseconds. 0 for infinite.</param>
+	/// <exception cref="InvalidOperationException">Thrown if the plugin panel does not appear.</exception>
+	public static async Task WaitForPlugin(int timeout)
+	{
+		bool ok = await Wait(9, timeout, () => Far.Api.Panel?.IsPlugin == true);
+		if (!ok)
+			await Job(() => throw new InvalidOperationException("Expected plugin panel does not appear."));
+	}
+
+	/// <summary>
+	/// Waits for a window of the specified kind to appear within the timeout.
+	/// </summary>
+	/// <param name="kind">The type of window to wait for.</param>
+	/// <param name="timeout">Maximum waiting time in milliseconds. 0 for infinite.</param>
+	/// <exception cref="InvalidOperationException">Thrown if the specified window does not appear.</exception>
+	public static async Task WaitForWindow(WindowKind kind, int timeout)
+	{
+		bool ok = await Wait(9, timeout, () => Far.Api.Window.Kind == kind);
+		if (!ok)
+			await Job(() => throw new InvalidOperationException($"Expected window '{kind}' does not appear."));
 	}
 }

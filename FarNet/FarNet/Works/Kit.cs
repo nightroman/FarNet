@@ -7,7 +7,10 @@ namespace FarNet.Works;
 
 public static class Kit
 {
-	static readonly string[] SplitLineSeparators = ["\r\n", "\r", "\n"];
+	static readonly string[] SplitLineSeparators = ["\r\n", "\n", "\r"];
+
+	// For IndexOfAny(), etc.
+	public static char[] NewLineChars { get; } = ['\r', '\n'];
 
 	// Joins two strings with a space. Either string may be null or empty.
 	public static string JoinText(string? head, string? tail)

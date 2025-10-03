@@ -5,9 +5,8 @@
 
 job {
 	[FarNet.Works.Script]::InvokeCommand()
+	[FarNet.Tasks]::WaitForWindow('Dialog', 999)
 }
-
-Start-Sleep -Milliseconds 200
 
 job {
 	Assert-Far -DialogTypeId ([FarNet.Tools.InputBox]::DefaultTypeId)

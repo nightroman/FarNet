@@ -9,59 +9,62 @@ Set-StrictMode -Version 3
 @{
 	command = 'Assert-Far'
 	synopsis = @'
-Checks for the conditions and stops invocation if any of them is evaluated to false.
+	Checks for the conditions and stops invocation if any is false.
 '@
 	description = @'
-If the assertion fails, a dialog is shown with several options.
-A running macro, if any, is stopped before showing the dialog.
+	Supported sessions: main (all parameters), async (Value, Eq, Message, Title).
 
-Use the parameter Title for simple messages without assertion details
-with only two options Stop and Throw without Ignore, Debug, Edit.
+	If the assertion fails, a dialog is shown with several options.
+	A running macro, if any, is stopped before showing the dialog.
 
-ACTIONS
+	Use the parameter Title for simple messages without assertion details
+	with only two options Stop and Throw without Ignore, Debug, Edit.
 
-	[Stop], [Esc]
-		Stop running PowerShell commands.
+	ACTIONS
 
-	[Throw]
-		Throw 'Assertion failed.' error.
+		[Stop], [Esc]
+			Stop running PowerShell commands.
 
-	[Ignore]
-		Continue running commands.
+		[Throw]
+			Throw 'Assertion failed.' error.
 
-	[Debug]
-		Break into an attached debugger, if any.
-		Otherwise ask to attach a debugger and repeat.
+		[Ignore]
+			Continue running commands.
 
-	[Edit]
-		Stop commands and open the editor at the assert.
-		(when the source script is available)
+		[Debug]
+			Break into an attached debugger, if any.
+			Otherwise ask to attach a debugger and repeat.
+
+		[Edit]
+			Stop commands and open the editor at the assert.
+			(when the source script is available)
 '@
 	parameters = @{
 		Value = @'
-One or more condition values to be checked. If any value is evaluated to false
-by PowerShell (null, 0, empty string, etc.) then an assertion dialog is shown.
+		One or more condition values to be checked. If any value is false-y
+		(null, 0, empty string, etc.) then an assertion dialog is shown.
 
-If it is a collection then all items are checked as conditions.
+		If it is a collection then all items are checked as conditions.
 
-With Eq, it is the value compared with Eq.
+		With Eq, it is the value compared with Eq.
 '@
 		Eq = @'
-Specifies the value compared with Value by Object.Equals().
+		Specifies the value compared with Value by Object.Equals().
 
-`Assert-Far X -eq Y` is not the same as `Assert-Far (X -eq Y)`. The first
-uses Object.Equals(). The second uses the PowerShell operator -eq, which is
-case insensitive, converts types, has different meaning when X is collection.
+		`Assert-Far X -eq Y` is not the same as `Assert-Far (X -eq Y)`.
+		The first uses Object.Equals(). The second uses operator `-eq`,
+		which is case insensitive, converts types, has different meaning
+		when X is collection.
 '@
 		Message = @'
-Specifies a user friendly message shown on failures or a script block invoked
-on failures in order to get a message.
+		Specifies a user friendly message shown on failures or a script block
+		invoked on failures in order to get a message.
 '@
 		Title = @'
-Specifies a message box title and tells to show a simplified message box with
-less options and diagnostics. Such a dialog normally tells what to do instead
-of where the problem is.
+		Tells to show the simple dialog with [Stop] and [Throw] buttons and
+		specifies its title.
 '@
+		NoError = 'Asserts $Global:Error is empty.'
 		FileDescription = 'Specifies the expected current panel file description.'
 		FileName = 'Specifies the expected current panel file name.'
 		FileOwner = 'Specifies the expected current file owner.'
@@ -77,29 +80,28 @@ of where the problem is.
 		DialogTypeId = 'Checks the current window is dialog with the specified type ID.'
 		ExplorerTypeId = 'Checks the panel explorer with the specified type ID.'
 	}
-
 	examples = @(
-		@{code={
-	# Hardcoded breakpoint
-	Assert-Far
+		@{ code = {
+			# Hardcoded breakpoint
+			Assert-Far
 		}}
-		@{code={
-	# Single checks
-	Assert-Far -Panels
-	Assert-Far ($Far.Window.Kind -eq 'Panels')
-	Assert-Far $Far.Window.Kind -eq ([FarNet.WindowKind]::Panels)
+		@{ code = {
+			# Single checks
+			Assert-Far -Panels
+			Assert-Far ($Far.Window.Kind -eq 'Panels')
+			Assert-Far $Far.Window.Kind -eq ([FarNet.WindowKind]::Panels)
 		}}
-		@{code={
-	# Combined checks
-	Assert-Far -Panels -Plugin
-	Assert-Far @(
-		$Far.Window.Kind -eq 'Panels'
-		$Far.Panel.IsPlugin
-	)
+		@{ code = {
+			# Combined checks
+			Assert-Far -Panels -Plugin
+			Assert-Far @(
+				$Far.Window.Kind -eq 'Panels'
+				$Far.Panel.IsPlugin
+			)
 		}}
-		@{code={
-	# User friendly error message
-	Assert-Far -Panels -Message "Run this script from panels." -Title Search-Regex.ps1
+		@{ code = {
+			# User friendly stop
+			Assert-Far -Panels -Message "Run this from panels." -Title Search-Regex.ps1
 		}}
 	)
 }
@@ -699,8 +701,8 @@ Merge-Helps $BaseRegister @{
 
 	job {...}
 
-		This job may output data as usual. Special case: if the output is a
-		task then this task is awaited and its result is returned instead.
+		This job may output data as usual. If an object is a task then this
+		task is awaited and its result is returned, if not null.
 
 		Use $Var.<name> for getting or setting the task variables.
 
@@ -814,7 +816,8 @@ Merge-Helps $BaseRegister @{
 	command = 'Invoke-FarTaskJob'
 	synopsis = '(job) Invokes task script with output.'
 	description = @'
-	Invokes the script and returns its output objects.
+	Invokes the script and returns its output objects. If an object is a task
+	then this task is awaited and its result is returned, if not null.
 
 	Supported sessions: async, main.
 '@
@@ -850,7 +853,11 @@ Merge-Helps $BaseRegister @{
 	Then the caller may operate on the running modal UI. This is useful for
 	testing expected results in UI or doing something else more practical.
 
-	Supported sessions: async only.
+	Supported sessions: async, main (*).
+
+	(*) Experiment. In main session `run` posts the script with scope variables
+	for later. The script runs as soon as the current pipeline finishes and the
+	window is not modal. E.g. this allows opening result panels.
 '@
 	parameters = @{
 		Script = 'Script block.'

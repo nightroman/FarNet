@@ -16,7 +16,7 @@
 #>
 
 job {
-	if ($global:Error) {throw 'Please remove errors.'}
+	Assert-Far -Title Ensure -NoError
 
 	# ensure no aliases
 	Remove-Item 'alias:\%[12]'
@@ -109,7 +109,7 @@ job {
 # open members
 job {
 	# no errors yet
-	Assert-Far (!$global:Error)
+	Assert-Far -NoError
 }
 
 keys CtrlPgDn
@@ -191,6 +191,5 @@ job {
 keys Esc
 job {
 	# _091019_081503
-	Assert-Far -Native
-	Assert-Far (!$global:Error)
+	Assert-Far -NoError -Native
 }

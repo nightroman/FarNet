@@ -96,9 +96,9 @@ task build meta, {
 	)}
 }, PS::help, PS::markdown
 
-# Synopsis: Build and install API docs.
+# Synopsis: Build FarNet API docs.
 task docs {
-	Invoke-Build build, install, clean .\Docs
+	Invoke-Build build, install, clean .\FarNet\Docs
 }
 
 # Synopsis: Remove files from FarHome.

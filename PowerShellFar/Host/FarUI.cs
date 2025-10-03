@@ -65,8 +65,9 @@ class FarUI : UniformUI, IHostUISupportsMultipleChoiceSelection
 		if (A.IsAsyncSession)
 		{
 			_writer?.Flush();
-			var task = Tasks.Job(() => PromptForChoice(caption, message, choices, defaultChoices));
-			return Tasks.AwaitResult(task);
+			return Tasks
+				.Job(() => PromptForChoice(caption, message, choices, defaultChoices))
+				.AwaitResult();
 		}
 
 		if (choices == null || choices.Count == 0) throw new ArgumentOutOfRangeException(nameof(choices));
@@ -172,8 +173,9 @@ class FarUI : UniformUI, IHostUISupportsMultipleChoiceSelection
 		if (A.IsAsyncSession)
 		{
 			_writer?.Flush();
-			var task = Tasks.Job(() => Prompt(caption, message, descriptions));
-			return Tasks.AwaitResult(task);
+			return Tasks
+				.Job(() => Prompt(caption, message, descriptions))
+				.AwaitResult();
 		}
 
 		var r = new Dictionary<string, PSObject>();
@@ -243,10 +245,17 @@ class FarUI : UniformUI, IHostUISupportsMultipleChoiceSelection
 
 				// conventional history prompt
 				string history;
+				bool useLastHistory;
 				if (prompt.StartsWith("[[") && prompt.EndsWith("]]"))
+				{
 					history = prompt[2..(prompt.Length - 2)];
+					useLastHistory = true;
+				}
 				else
+				{
 					history = Res.HistoryPrompt;
+					useLastHistory = false;
+				}
 
 				string text;
 				if (IsConsole())
@@ -274,6 +283,7 @@ class FarUI : UniformUI, IHostUISupportsMultipleChoiceSelection
 						History = history,
 						HelpMessage = current.HelpMessage,
 						IsPassword = isSecret,
+						UseLastHistory = useLastHistory,
 					});
 					if (!ui.Show())
 						throw new PipelineStoppedException();
@@ -290,7 +300,8 @@ class FarUI : UniformUI, IHostUISupportsMultipleChoiceSelection
 						Prompt = string.IsNullOrEmpty(message) ? prompt : message + "\r" + prompt,
 						History = history,
 						Password = isSecret,
-						TypeId = new Guid(Guids.PSPromptDialog)
+						UseLastHistory = useLastHistory,
+						TypeId = new Guid(Guids.PSPromptDialog),
 					};
 
 					if (!ui.Show())
@@ -313,8 +324,9 @@ class FarUI : UniformUI, IHostUISupportsMultipleChoiceSelection
 		if (A.IsAsyncSession)
 		{
 			_writer?.Flush();
-			var task = Tasks.Job(() => PromptForChoice(caption, message, choices, defaultChoice));
-			return Tasks.AwaitResult(task);
+			return Tasks
+				.Job(() => PromptForChoice(caption, message, choices, defaultChoice))
+				.AwaitResult();
 		}
 
 		if (choices == null || choices.Count == 0) throw new ArgumentOutOfRangeException(nameof(choices));
@@ -540,8 +552,9 @@ class FarUI : UniformUI, IHostUISupportsMultipleChoiceSelection
 		if (A.IsAsyncSession)
 		{
 			_writer?.Flush();
-			var task = Tasks.Job(ReadLine);
-			return Tasks.AwaitResult(task);
+			return Tasks
+				.Job(ReadLine)
+				.AwaitResult();
 		}
 
 		if (IsConsole())

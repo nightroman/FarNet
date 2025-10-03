@@ -4,7 +4,7 @@
 #>
 
 job {
-	if ($global:Error) {throw 'Please remove errors.'}
+	Assert-Far -Title Ensure -NoError
 
 	# IsModal
 	Assert-Far (!$Far.Window.IsModal)

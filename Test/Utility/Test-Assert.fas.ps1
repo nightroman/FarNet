@@ -4,7 +4,7 @@
 #>
 
 job {
-	if ($global:Error) {throw 'Please remove errors.'}
+	Assert-Far -Title Ensure -NoError
 
 	# "Should pass" is tested by other tests. So here let's just cover Message
 	# and Title, to make sure they are supported in all parameter name sets.
@@ -25,7 +25,10 @@ job {
 run {
 	$r1 = [PSCustomObject]@{a=1}
 	$r2 = [PSCustomObject]@{a=1}
+
 	Assert-Far $r1 -eq $r1 # pass
+
+	#! keep comment, ensure the whole line is in the message
 	Assert-Far $r1 -eq $r2 # fail
 }
 job {

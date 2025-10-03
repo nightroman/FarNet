@@ -66,7 +66,8 @@ std::vector<CStr> Message::CreateBlock()
 
 int Message::Show(MessageArgs^ args)
 {
-	if (!args) throw gcnew ArgumentNullException("args");
+	if (!args || !args->Text)
+		throw gcnew ArgumentException("Null args or Text.");
 
 	// to change
 	MessageOptions options = args->Options;
@@ -115,8 +116,9 @@ int Message::Show(MessageArgs^ args)
 	}
 
 	// body
+	auto text = args->Text->TrimEnd();
 	int height = Far::Api->UI->WindowSize.Y - 9;
-	FarNet::Works::Kit::FormatMessage(% m._body, args->Text, maxTextWidth, height, FarNet::Works::FormatMessageMode::Space);
+	FarNet::Works::Kit::FormatMessage(% m._body, text, maxTextWidth, height, FarNet::Works::FormatMessageMode::Space);
 
 	// buttons?
 	bool needButtonList = false;

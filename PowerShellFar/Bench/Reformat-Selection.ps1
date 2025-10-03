@@ -160,7 +160,7 @@ if (!$lines) {
 	# find head
 	for($$ = $y1 - 1; $$ -ge 0; --$$) {
 		$text = $Editor[$$].Text.Trim()
-		if (!$text -or ($type -eq 'ps' -and $text -match '^(\s*#*\s*)\.|^<#|@[''"]$')) {
+		if (!$text -or ($type -eq 'ps' -and $text -match '^(\s*#*\s*)\.|^<#|@[''"]$') -or $text -match '^/+\*') {
 			break
 		}
 		$y1 = $$
@@ -170,7 +170,7 @@ if (!$lines) {
 	$n = $Editor.Count
 	for($$ = $y2 + 1; $$ -lt $n; ++$$) {
 		$text = $Editor[$$].Text.Trim()
-		if (!$text -or ($type -eq 'ps' -and $text -match '^#>|^[''"]@')) {
+		if (!$text -or ($type -eq 'ps' -and $text -match '^#>|^[''"]@') -or $text -match '\*/+$') {
 			break
 		}
 		$y2 = $$

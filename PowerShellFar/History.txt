@@ -1,5 +1,19 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.58 =
+
+Use FarNet 9.0.40
+
+Assert-Far
+- support async for subset of parameters
+- new switch NoError
+
+(run) Invoke-FarTaskRun
+- in main posts the script for later (experiment)
+
+Prompt-history (experiment)
+- use first from history
+
 = 9.0.57 =
 
 ReadLine
@@ -15,7 +29,7 @@ Fix opening command console.
 
 Refactor engine classes.
 
-Conventional prompt-history (experiment)
+Prompt-history (experiment)
 - `Read-Host "[[foo-bar]]"` uses Far dialog history `foo-bar`.
 
 = 9.0.54 =

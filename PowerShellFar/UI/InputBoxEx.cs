@@ -12,6 +12,7 @@ class InputBoxEx
 	public string? History { get; set; }
 	public Func<IEnumerable>? GetWords { get; set; }
 	public bool Password { get; set; }
+	public bool UseLastHistory { get; set; }
 	public Guid? TypeId { get; set; }
 
 	public bool Show()
@@ -41,6 +42,7 @@ class InputBoxEx
 		{
 			edit = dialog.AddEdit(5, -1, w - 6, Text);
 			edit.History = History ?? string.Empty;
+			edit.UseLastHistory = UseLastHistory;
 		}
 
 		// expansion

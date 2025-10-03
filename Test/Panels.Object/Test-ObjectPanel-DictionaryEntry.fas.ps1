@@ -12,8 +12,8 @@
 
 # _131002_111804 In a DictionaryEntry we avoid Name (same as Key).
 # Let's test that Name actually exists and our trick is needed.
-$de = New-Object Collections.DictionaryEntry @('key1', 'value1')
-if ($de.Name -ne 'key1') {throw}
+$de = [System.Collections.DictionaryEntry]::new('key1', 'value1')
+Assert-Far $de.Name -eq key1
 
 job {
 	# panel with a dictionary

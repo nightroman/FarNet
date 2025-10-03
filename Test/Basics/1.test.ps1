@@ -2,7 +2,7 @@
 # Cover crash on invalid non-modal dialog parameters and leaks after fixing the crash
 # https://github.com/FarGroup/FarManager/issues/66
 task 3_0_5261_crash {
-	Assert-Far (!$Error) -Message 'Please clear $Errors.'
+	Assert-Far -Title Ensure -NoError
 	try {
 		#! used to crash on Open for invalid dialog parameters (3, should be 8)
 		$dialog = $Far.CreateDialog(1, 6, 52, 3)

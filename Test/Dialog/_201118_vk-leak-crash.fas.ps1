@@ -2,7 +2,7 @@
 # _201118_vk After fixing it crashed at first.
 
 job {
-	if ($global:Error) {throw 'Please clear errors.'}
+	Assert-Far -Title Ensure -NoError
 
 	$dialog = $Far.CreateDialog(-1, -1, 52, 3)
 	$t = $dialog.AddText(1, 1, 50, '_201118_vk')

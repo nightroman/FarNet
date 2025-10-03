@@ -3,7 +3,7 @@
 	Test transcript basics.
 #>
 
-Assert-Far (!$Error) -Message 'Please clear $Errors.'
+Assert-Far -Title Ensure -NoError
 
 # force stop
 [PowerShellFar.Transcript]::StopTranscript($true)

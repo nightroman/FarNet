@@ -6,7 +6,7 @@
 if ([System.Environment]::OSVersion.Version.Major -lt 10) {return}
 
 job {
-	if ($global:Error) {throw 'Please remove errors.'}
+	Assert-Far -Title Ensure -NoError
 
 	$null = Start-Mongo
 	Import-Module FarMongo

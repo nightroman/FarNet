@@ -1,7 +1,3 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 #include "stdafx.h"
 #include "DialogControls.h"
 #include "Dialog.h"
@@ -52,7 +48,7 @@ void FarControl::Init(FarDialogItem& item, FARDIALOGITEMTYPES type)
 {
 	_item = &item;
 	memset(_item, 0, sizeof(FarDialogItem));
-	
+
 	item.Type = type;
 	item.X1 = _rect.Left;
 	item.Y1 = _rect.Top;
@@ -60,8 +56,9 @@ void FarControl::Init(FarDialogItem& item, FARDIALOGITEMTYPES type)
 	item.Y2 = _rect.Bottom;
 	item.Selected = _selected;
 	item.Flags = _flags;
-	if (Text)
-		item.Data = NewChars(Text);
+
+	if (_text)
+		item.Data = NewChars(_text);
 }
 
 // Called internally when a dialog has exited but still exists
@@ -458,7 +455,7 @@ void FarEdit::Mask::set(String^ value)
 void FarEdit::Starting(FarDialogItem& item)
 {
 	Init(item, _type);
-	
+
 	if (SS(_history))
 	{
 		item.Flags |= DIF_HISTORY;
@@ -482,10 +479,10 @@ void FarEdit::Stop(bool ok)
 void FarEdit::Free()
 {
 	FarControl::Free();
-	
+
 	delete _item->History;
 	_item->History = nullptr;
-	
+
 	delete _item->Mask;
 	_item->Mask = nullptr;
 }

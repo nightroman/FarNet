@@ -6,7 +6,7 @@
 ### positional parameter is not found
 # obsolete: null condition with other checks
 job {
-	if ($global:Error) {throw 'Please remove errors.'}
+	Assert-Far -Title Ensure -NoError
 
 	try { Assert-Far -Panels $null }
 	catch {$err = $_}

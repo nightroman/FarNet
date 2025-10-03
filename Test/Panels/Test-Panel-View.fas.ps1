@@ -1,6 +1,6 @@
 ﻿
 job {
-	if ($global:Error) {throw 'Please remove errors.'}
+	Assert-Far -Title Ensure -NoError
 
 	# open Alias location
 	Go-To Alias:
@@ -40,8 +40,7 @@ job {
 	$Error.RemoveAt(0)
 	#>
 	# 110301 It looks gone due to different methods in use
-	Assert-Far -Viewer
-	Assert-Far (!$global:Error)
+	Assert-Far -NoError -Viewer
 }
 
 # exit viewer

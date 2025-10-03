@@ -32,19 +32,21 @@ internal sealed class InvokeTaskJob : BaseTaskCmdlet
 		var result = task.AwaitResult();
 		FarNet.Works.Far2.Api.WaitSteps().Await();
 
-		//! if the job returns a task, await and return
-		if (result.Count == 1 && result[0]?.BaseObject is Task task2)
+		// await tasks, return results
+		foreach (var pso in result)
 		{
-			task2.Await();
-
-			var result2 = task2.GetType().GetProperty("Result")?.GetValue(task2);
-			if (result2 is { })
-				WriteObject(result2);
-		}
-		else
-		{
-			foreach (var it in result)
-				WriteObject(it);
+			if (pso?.BaseObject is Task task2)
+			{
+				task2.Await();
+				var taskType = task2.GetType();
+				var result2 = taskType.GetProperty("Result")?.GetValue(task2);
+				if (result2 is { } && result2.GetType().Name != "VoidTaskResult")
+					WriteObject(result2);
+			}
+			else
+			{
+				WriteObject(pso);
+			}
 		}
 	}
 }

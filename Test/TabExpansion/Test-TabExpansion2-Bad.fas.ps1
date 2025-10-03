@@ -4,7 +4,7 @@
 #>
 
 job {
-	if ($global:Error) {throw 'Please remove errors.'}
+	Assert-Far -Title Ensure -NoError
 
 	# add the root to the path
 	$thePath = $env:Path

@@ -4,7 +4,7 @@
 #>
 
 job {
-	if ($global:Error) {throw 'Please remove errors.'}
+	Assert-Far -Title Ensure -NoError
 
 	Import-Module FarLite
 	$Data.FileName = "$env:TEMP\z.LiteDB"

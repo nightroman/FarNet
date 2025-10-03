@@ -21,6 +21,7 @@ class ReadLine
 		public string? HelpMessage;
 		public bool IsPassword;
 		public bool IsPromptForChoice;
+		public bool UseLastHistory;
 	}
 
 	class Layout
@@ -52,12 +53,13 @@ class ReadLine
 
 		if (args.IsPassword)
 		{
-			Edit = Dialog.AddEditPassword(pos.EditLeft, pos.EditTop, pos.EditRight, string.Empty);
+			Edit = Dialog.AddEditPassword(pos.EditLeft, pos.EditTop, pos.EditRight, null);
 		}
 		else
 		{
-			Edit = Dialog.AddEdit(pos.EditLeft, pos.EditTop, pos.EditRight, string.Empty);
+			Edit = Dialog.AddEdit(pos.EditLeft, pos.EditTop, pos.EditRight, null);
 			Edit.History = args.History!;
+			Edit.UseLastHistory = args.UseLastHistory;
 			Edit.DropDownOpening += Edit_DropDownOpening;
 			Edit.DropDownClosed += Edit_DropDownClosed;
 		}

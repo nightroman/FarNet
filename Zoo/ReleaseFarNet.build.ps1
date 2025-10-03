@@ -10,7 +10,7 @@
 #>
 
 param(
-	[ValidateScript({"GH::..\Code.build.ps1", "DC::..\Docs\Docs.build.ps1"})]
+	[ValidateScript({"GH::..\Code.build.ps1", "DC::..\FarNet\Docs\Docs.build.ps1"})]
 	$Extends,
 	# persistent data
 	[Parameter(DontShow=1)]$Push,

@@ -9,7 +9,7 @@
 #>
 
 run {
-	if ($Error) {throw 'Please remove errors.'}
+	Assert-Far -Title Ensure -NoError
 
 	# call the test, it opens the Inquire prompt on error
 	& "$env:FarNetCode\Samples\Tests\Test-CallStack.ps1"

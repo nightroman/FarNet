@@ -22,7 +22,7 @@
 [CmdletBinding()]
 param(
 	$Tests = -1,
-	$ExpectedTaskCount = 211,
+	$ExpectedTaskCount = 212,
 	$ExpectedIBTestCount = 5,
 	$ExpectedBasicsCount = 15,
 	$ExpectedExtrasCount = 9,
@@ -61,7 +61,7 @@ if (!$Tests) {
 	foreach($test in $items) {
 		[Diagnostics.Debug]::WriteLine("# $($test.FullName)")
 		& $test.FullName
-		if ($global:Error) {throw "Errors after $($test.FullName)" }
+		Assert-Far -NoError -Message "Errors after $($test.FullName)"
 	}
 }
 
@@ -92,7 +92,7 @@ if ($All) {
 foreach($test in $extras) {
 	[Diagnostics.Debug]::WriteLine("# $test")
 	& $test
-	if ($global:Error) {throw "Errors after extra test: $test" }
+	Assert-Far -NoError -Message "Errors after extra test: $test"
 }
 
 ### Main tests

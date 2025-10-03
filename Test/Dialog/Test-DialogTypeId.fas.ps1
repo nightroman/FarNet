@@ -1,25 +1,20 @@
 ﻿<#
 .Synopsis
-	Tests dialog type ID.
-
-.Link
-	_091126_135929
+	Tests dialog type ID. _091126_135929
 #>
 
 ###  Native 'Find' dialog
-
 # open 'Find' dialog
 keys AltF7
 job {
 	# test dialog type ID
 	$id = $Far.Dialog.TypeId
-	if ($id -ne ([guid]'8C9EAD29-910F-4b24-A669-EDAFBA6ED964')) { throw "TypeId = '$id'" }
+	Assert-Far $id -eq ([guid]'8C9EAD29-910F-4b24-A669-EDAFBA6ED964')
 }
 # close dialog
 keys Esc
 job {
-	# assert panels
-	if ($Far.Window.Kind -ne 'Panels') { throw }
+	Assert-Far -Panels
 }
 
 ### FarNet dialog

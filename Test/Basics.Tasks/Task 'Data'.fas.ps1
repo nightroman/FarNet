@@ -6,9 +6,11 @@
 	Keep " " and "'" in file name for test sake.
 #>
 
-# $Data is the automatic variable, now it is an empty hashtable
-if ($Data -isnot [Hashtable]) {throw}
-if ($Data.Count -ne 0) {throw}
+# $Data is the automatic variable
+Assert-Far @(
+	$Data -is [Hashtable]
+	$Data.Count -eq 0
+)
 
 job {
 	Assert-Far @(

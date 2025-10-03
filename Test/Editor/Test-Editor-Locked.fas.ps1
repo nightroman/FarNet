@@ -7,7 +7,7 @@ $Data.Message = 'Editor is locked for changes. Unlock by [CtrlL].'
 
 ### Edit empty text and exit without saving
 run {
-	if ($global:Error) {throw 'Please remove errors.'}
+	Assert-Far -Title Ensure -NoError
 
 	# open modal editor
 	$Far.AnyEditor.EditText(@{Text = '0123456789'})

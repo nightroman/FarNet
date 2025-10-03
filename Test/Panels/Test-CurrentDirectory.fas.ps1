@@ -7,7 +7,7 @@
 #>
 
 job {
-	if ($global:Error) {throw 'Please remove errors.'}
+	Assert-Far -Title Ensure -NoError
 	$Far.Panel.CurrentDirectory = 'C:\TEMP'
 }
 job {
