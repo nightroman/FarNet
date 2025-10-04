@@ -220,7 +220,7 @@ class FarUI : UniformUI, IHostUISupportsMultipleChoiceSelection
 						var ui = new UI.InputBoxEx()
 						{
 							Title = caption,
-							Prompt = string.IsNullOrEmpty(message) ? prompt2 : message + "\r" + prompt2,
+							Prompt = string.IsNullOrEmpty(message) ? prompt2 : message + '\n' + prompt2,
 							History = Res.HistoryPrompt,
 							TypeId = new Guid(Guids.PSPromptDialog)
 						};
@@ -297,7 +297,7 @@ class FarUI : UniformUI, IHostUISupportsMultipleChoiceSelection
 					var ui = new UI.InputBoxEx()
 					{
 						Title = caption,
-						Prompt = string.IsNullOrEmpty(message) ? prompt : message + "\r" + prompt,
+						Prompt = string.IsNullOrEmpty(message) ? prompt : message + '\n' + prompt,
 						History = history,
 						Password = isSecret,
 						UseLastHistory = useLastHistory,

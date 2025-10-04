@@ -1,5 +1,5 @@
-﻿
-using FarNet;
+﻿using FarNet;
+using FarNet.Works;
 using System.Collections.ObjectModel;
 using System.Management.Automation;
 
@@ -58,7 +58,7 @@ class DebuggerMenu
 					++n;
 					string text = bp.ToString()!;
 					if (n <= 9)
-						text = "&" + Kit.ToString(n) + " " + text;
+						text = "&" + Converter.ToStringCurrentCulture(n) + " " + text;
 
 					FarItem mi = _menu.Add(text);
 					mi.Checked = bp.Enabled;
@@ -174,7 +174,7 @@ class DebuggerMenu
 		var lbp = bp as LineBreakpoint;
 
 		// the target script is opened now
-		if (editor != null && Kit.Equals(editor.FileName, bp.Script))
+		if (editor != null && Kit.EqualsIgnoreCase(editor.FileName, bp.Script))
 		{
 			// it is a line breakpoint, go to line
 			if (lbp != null)

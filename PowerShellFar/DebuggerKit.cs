@@ -1,5 +1,5 @@
-
 using FarNet;
+using FarNet.Works;
 using PowerShellFar.UI;
 using System.Collections;
 using System.Collections.ObjectModel;
@@ -63,7 +63,7 @@ static class DebuggerKit
 			// find
 			foreach (PSObject o in breakpoints!)
 			{
-				if (o.BaseObject is LineBreakpoint lbp && lbp.Action is null && line == lbp.Line && Kit.Equals(file, lbp.Script))
+				if (o.BaseObject is LineBreakpoint lbp && lbp.Action is null && line == lbp.Line && Kit.EqualsIgnoreCase(file, lbp.Script))
 				{
 					bpFound = lbp;
 					break;

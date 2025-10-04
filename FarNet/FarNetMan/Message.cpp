@@ -110,7 +110,7 @@ int Message::Show(MessageArgs^ args)
 	// header
 	if (!String::IsNullOrEmpty(args->Caption))
 	{
-		m._header = Regex::Replace(args->Caption, "[\t\r\n]+", " ");
+		m._header = Works::Regexes::TabsAndNewLines()->Replace(args->Caption, " ");
 		if (m._header->Length > maxTextWidth)
 			m._header = m._header->Substring(0, maxTextWidth);
 	}

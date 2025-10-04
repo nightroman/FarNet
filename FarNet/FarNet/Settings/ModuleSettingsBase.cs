@@ -1,10 +1,4 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using FarNet.Works;
-using System;
-using System.IO;
+﻿using FarNet.Works;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -168,8 +162,8 @@ public abstract class ModuleSettingsBase
 			var xmlNew = docNew.DocumentElement!.OuterXml;
 
 			//! ensure same line ends
-			xmlOld = xmlOld.Replace("\r\n", "\n");
-			xmlNew = xmlNew.Replace("\r\n", "\n");
+			xmlOld = xmlOld.ReplaceLineEndings("\n");
+			xmlNew = xmlNew.ReplaceLineEndings("\n");
 			if (xmlOld == xmlNew)
 				return;
 

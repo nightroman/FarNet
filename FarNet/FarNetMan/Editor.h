@@ -54,7 +54,6 @@ public:
 	virtual property bool IsLocked { bool get() override; void set(bool value) override; }
 	virtual property bool IsModified { bool get() override; }
 	virtual property bool IsOpened { bool get() override; }
-	virtual property bool IsSaved { bool get() override; }
 	virtual property bool IsTitleBar { bool get() override; }
 	virtual property bool IsVirtualSpace { bool get() override; void set(bool value) override; }
 	virtual property bool Overtype { bool get() override; void set(bool value) override; }

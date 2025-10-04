@@ -1,7 +1,3 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 #pragma once
 
 #pragma region String pins and converters
@@ -231,16 +227,6 @@ namespace FarNet
 {;
 // Constant values
 typedef String^ const ConstString;
-ref class CV
-{
-internal:
-	static ConstString
-		CR = "\r",
-		LF = "\n",
-		CRLF = "\r\n";
-private:
-	CV() {}
-};
 
 // Resource strings
 ref class Res

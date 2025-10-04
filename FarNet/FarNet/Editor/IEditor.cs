@@ -263,7 +263,7 @@ public abstract class IEditor : IEditorBase
 	/// Saves changes, if any. Exception on failure.
 	/// </summary>
 	/// <remarks>
-	/// This method does nothing if there are no changes to save (<see cref="IsSaved"/> gets true).
+	/// This method does nothing if <see cref="IsModified"/> is false.
 	/// </remarks>
 	public void Save() => Save(false);
 
@@ -320,12 +320,6 @@ public abstract class IEditor : IEditorBase
 	/// </summary>
 	/// <seealso cref="TimeOfSave"/>
 	public abstract bool IsModified { get; }
-
-	/// <summary>
-	/// .
-	/// </summary>
-	[Obsolete("Use IsModified")]
-	public abstract bool IsSaved { get; }
 
 	/// <summary>
 	/// Gets true if the key bar is shown.

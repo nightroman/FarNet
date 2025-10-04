@@ -8,6 +8,7 @@ _090929_061740 Far 2.0.1145 does not sync the current directory with the panel p
 */
 
 using FarNet;
+using FarNet.Works;
 using Microsoft.PowerShell.Commands;
 using System.Management.Automation;
 
@@ -110,7 +111,7 @@ public sealed class ItemPanel : FormatPanel
 		var info2 = Explorer.Info();
 
 		// fixed drive?
-		if (Drive.Length > 0 && !Kit.Equals(Drive, info2.DriveName))
+		if (Drive.Length > 0 && !Kit.EqualsIgnoreCase(Drive, info2.DriveName))
 			return;
 
 		// customise if not yet

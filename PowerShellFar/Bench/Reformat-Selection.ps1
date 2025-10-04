@@ -216,7 +216,7 @@ foreach($line in $lines) {
 $strings = do_text $text $len $pref $type
 $Editor.BeginUndo()
 $Editor.DeleteText()
-$Editor.InsertText(($strings -join "`n"))
+$Editor.InsertText(($strings -join "`r"))
 $Editor.EndUndo()
 
 # go to last string end

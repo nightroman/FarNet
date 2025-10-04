@@ -1,4 +1,5 @@
 using FarNet;
+using FarNet.Works;
 using System.Collections;
 using System.Management.Automation;
 
@@ -21,7 +22,7 @@ class ErrorsMenu
 	{
 		var m = MyRegex.ErrorActionPreference().Match(message);
 		var r = m.Success ? m.Groups[1].Value : message;
-		return MyRegex.NewLinesAndTabs().Replace(r, " ");
+		return Regexes.TabsAndNewLines().Replace(r, " ");
 	}
 
 	public void Show()

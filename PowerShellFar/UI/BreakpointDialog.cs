@@ -1,8 +1,4 @@
-﻿
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using FarNet;
+﻿using FarNet;
 using FarNet.Forms;
 using System.Management.Automation;
 
@@ -52,7 +48,7 @@ class BreakpointDialog
 		{
 			case 0:
 				if (line > 0)
-					UIMatter.Text = Kit.ToString(line);
+					UIMatter.Text = Converter.ToStringCurrentCulture(line);
 				break;
 			case 1:
 				UIMatter.History = Res.HistoryCommand;

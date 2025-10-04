@@ -1,5 +1,13 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.59 =
+
+`run` in main
+- work around rendering issues
+
+Search-Regex.ps1
+- use full screen result panel
+
 = 9.0.58 =
 
 Use FarNet 9.0.40

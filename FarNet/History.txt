@@ -1,5 +1,12 @@
 ﻿https://www.nuget.org/packages/FarNet
-Far Manager 3.0.5505
+
+= 9.0.41 =
+
+Use Far 3.0.6562
+
+Retire obsolete editor IsSaved.
+
+New methods Tasks WaitForPlugin, WaitForWindow.
 
 = 9.0.40 =
 

@@ -1,7 +1,3 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 #include "StdAfx.h"
 #include "Wrappers.h"
 
@@ -149,12 +145,13 @@ void EditorControl_ECTL_INSERTTEXT(intptr_t editorId, Char text, int overtype)
 	}
 }
 
+// "\r" -- new line sharp // "\n" -- new line + indent // so "\r\n" -- 2 new lines
 void EditorControl_ECTL_INSERTTEXT(intptr_t editorId, String^ text, int overtype)
 {
 	if (overtype > 0)
 		Edit_SetOvertype(editorId, false);
 
-	String^ text2 = text->Replace("\r\n", "\r")->Replace('\n', '\r');
+	String^ text2 = text->ReplaceLineEndings("\r");
 	PIN_NE(pin, text2);
 
 	try

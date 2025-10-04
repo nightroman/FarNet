@@ -9,6 +9,8 @@ namespace FarNet;
 /// </summary>
 public static class Tasks
 {
+	private const int WaitForDelay = 10;
+
 	/// <summary>
 	/// Creates it with asynchronous continuations.
 	/// </summary>
@@ -552,25 +554,25 @@ public static class Tasks
 	/// <summary>
 	/// Waits for a plugin panel to appear within the timeout.
 	/// </summary>
-	/// <param name="timeout">Maximum waiting time in milliseconds. 0 for infinite.</param>
-	/// <exception cref="InvalidOperationException">Thrown if the plugin panel does not appear.</exception>
+	/// <param name="timeout">Maximum waiting time in milliseconds, 0 for infinite.</param>
+	/// <exception cref="TimeoutException">The plugin panel does not appear.</exception>
 	public static async Task WaitForPlugin(int timeout)
 	{
-		bool ok = await Wait(9, timeout, () => Far.Api.Panel?.IsPlugin == true);
+		bool ok = await Wait(WaitForDelay, timeout, () => Far.Api.Panel?.IsPlugin == true);
 		if (!ok)
-			await Job(() => throw new InvalidOperationException("Expected plugin panel does not appear."));
+			await Job(() => throw new TimeoutException("Expected panel does not appear."));
 	}
 
 	/// <summary>
 	/// Waits for a window of the specified kind to appear within the timeout.
 	/// </summary>
 	/// <param name="kind">The type of window to wait for.</param>
-	/// <param name="timeout">Maximum waiting time in milliseconds. 0 for infinite.</param>
-	/// <exception cref="InvalidOperationException">Thrown if the specified window does not appear.</exception>
+	/// <param name="timeout">Maximum waiting time in milliseconds, 0 for infinite.</param>
+	/// <exception cref="TimeoutException">The specified window does not appear.</exception>
 	public static async Task WaitForWindow(WindowKind kind, int timeout)
 	{
-		bool ok = await Wait(9, timeout, () => Far.Api.Window.Kind == kind);
+		bool ok = await Wait(WaitForDelay, timeout, () => Far.Api.Window.Kind == kind);
 		if (!ok)
-			await Job(() => throw new InvalidOperationException($"Expected window '{kind}' does not appear."));
+			await Job(() => throw new TimeoutException($"Expected '{kind}' does not appear."));
 	}
 }

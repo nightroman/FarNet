@@ -13,9 +13,6 @@ static partial class MyRegex
 	[GeneratedRegex(@"ErrorActionPreference.*Stop:\s*(.*)")]
 	public static partial Regex ErrorActionPreference();
 
-	[GeneratedRegex(@"[\r\n\t]+")]
-	public static partial Regex NewLinesAndTabs();
-
 	[GeneratedRegex(@"\s+")]
 	public static partial Regex Spaces();
 }

@@ -1,4 +1,3 @@
-
 using FarNet;
 using System.Collections;
 using System.Globalization;
@@ -12,6 +11,14 @@ namespace PowerShellFar;
 /// </summary>
 static class Converter
 {
+	/// <summary>
+	/// Converts with culture.
+	/// </summary>
+	public static string ToStringCurrentCulture<T>(T value) where T : IConvertible //! IConvertible is not CLS-compliant
+	{
+		return value.ToString(CultureInfo.CurrentCulture);
+	}
+
 	/// <summary>
 	/// Extends possible Boolean input with 0 and 1.
 	/// </summary>

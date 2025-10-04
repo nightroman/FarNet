@@ -66,7 +66,7 @@ function __new_task {
 	$editor.add_Opened({
 		$this.BeginUndo()
 		$this.GoToEnd($true)
-		$this.InsertText("`r`ntask  {`r`n}`r`n")
+		$this.InsertText("`rtask  {`r}`r")
 		$this.GoTo(5, $this.Count - 3)
 		$this.EndUndo()
 	})

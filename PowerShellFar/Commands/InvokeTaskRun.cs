@@ -1,6 +1,11 @@
 /*
-	Why `run` in main. Case: An Invoke-Build task is invoked in FarHost, so for
-	example to open a result panel, do `run { op }`.
+	Why `run` in main
+
+		Case: An Invoke-Build task is invoked from editor. This ends with modal
+		"pause" and there is no more code to run. So, say, to open a panel, do
+		`run { op }` in the task code.
+
+		`Redraw()` once works around "pause" not rendered during `Wait`, odd.
 */
 
 using FarNet;
@@ -21,9 +26,20 @@ internal sealed class InvokeTaskRun : BaseTaskCmdlet
 	{
 		if (A.IsMainSession)
 		{
+			bool redraw = true;
+
 			_ = Tasks.Wait(100, 0, () =>
 			{
-				if (A.IsRunning || Far.Api.Window.IsModal)
+				if (A.IsRunning)
+					return false;
+
+				if (redraw)
+				{
+					redraw = false;
+					Far.Api.UI.Redraw();
+				}
+
+				if (Far.Api.Window.IsModal)
 					return false;
 
 				Far.Api.PostJob(() => Script.Invoke());

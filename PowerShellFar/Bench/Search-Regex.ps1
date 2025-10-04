@@ -252,7 +252,7 @@ $Panel.RealNames = $true
 $Panel.RightAligned = $true
 $Panel.SortMode = 'Unsorted'
 $Panel.Title = 'Searching...'
-$Panel.ViewMode = $Far.Panel.IsVisible ? 'Descriptions' : 'LongDescriptions'
+$Panel.ViewMode = 'LongDescriptions'
 
 ### Plan
 # 'Descriptions'

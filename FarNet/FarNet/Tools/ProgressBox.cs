@@ -1,10 +1,4 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-
-namespace FarNet.Tools;
+﻿namespace FarNet.Tools;
 
 /// <summary>
 /// Not modal progress message box.
@@ -106,9 +100,9 @@ public sealed class ProgressBox : IProgress, IDisposable
 		var lines = _progress.Build(out string progress, LineCount);
 		string text;
 		if (lines.Length == 1)
-			text = lines[0] + "\r" + progress;
+			text = lines[0] + "\n" + progress;
 		else
-			text = string.Join("\r", lines) + "\r" + progress;
+			text = string.Join("\n", lines) + "\n" + progress;
 
 		Far.Api.Message(text, Title, MessageOptions.Draw | MessageOptions.LeftAligned);
 
@@ -118,18 +112,12 @@ public sealed class ProgressBox : IProgress, IDisposable
 	/// <summary>
 	/// Gets the time elapsed from the last show.
 	/// </summary>
-	public TimeSpan ElapsedFromShow
-	{
-		get { return _progress.Elapsed - _lastShow; }
-	}
+	public TimeSpan ElapsedFromShow => _progress.Elapsed - _lastShow;
 
 	/// <summary>
 	/// Gets the time elapsed from the start.
 	/// </summary>
-	public TimeSpan ElapsedFromStart
-	{
-		get { return _progress.Elapsed; }
-	}
+	public TimeSpan ElapsedFromStart => _progress.Elapsed;
 	TimeSpan _lastShow;
 	#endregion
 }

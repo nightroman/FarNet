@@ -222,16 +222,6 @@ bool Editor::IsOpened::get()
 	return _id >= 0;
 }
 
-bool Editor::IsSaved::get()
-{
-	if (!IsOpened)
-		return false;
-
-	AutoEditorInfo ei(_id);
-
-	return (ei.CurState & ECSTATE_SAVED) != 0;
-}
-
 bool Editor::Overtype::get()
 {
 	if (!IsOpened)
@@ -629,7 +619,7 @@ String^ Editor::GetText(String^ separator)
 {
 	StringBuilder sb;
 	if (separator == nullptr)
-		separator = CV::CRLF;
+		separator = "\r\n";
 
 	AutoEditorInfo ei(_id);
 
@@ -922,7 +912,7 @@ String^ Editor::GetSelectedText(String^ separator)
 	StringBuilder sb;
 
 	if (separator == nullptr)
-		separator = CV::CRLF;
+		separator = "\r\n";
 
 	EditorGetString egs = { sizeof(egs) };
 	for (egs.StringNumber = ei.BlockStartLine; egs.StringNumber < ei.TotalLines; ++egs.StringNumber)
@@ -1109,7 +1099,7 @@ void Editor::Insert(int line, String^ text)
 		line = nLines;
 
 	// prepare text
-	text = text->Replace(CV::CRLF, CV::CR)->Replace('\n', '\r');
+	text = text->ReplaceLineEndings("\r");
 
 	// add?
 	int len = 0;
@@ -1122,7 +1112,7 @@ void Editor::Insert(int line, String^ text)
 		if (len == 0)
 		{
 			newline = false;
-			text += CV::CR;
+			text += "\r";
 		}
 	}
 

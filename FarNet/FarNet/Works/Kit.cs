@@ -12,6 +12,12 @@ public static class Kit
 	// For IndexOfAny(), etc.
 	public static char[] NewLineChars { get; } = ['\r', '\n'];
 
+	// Compares strings OrdinalIgnoreCase.
+	public static bool EqualsIgnoreCase(string? strA, string? strB)
+	{
+		return string.Equals(strA, strB, StringComparison.OrdinalIgnoreCase);
+	}
+
 	// Joins two strings with a space. Either string may be null or empty.
 	public static string JoinText(string? head, string? tail)
 	{
