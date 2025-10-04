@@ -118,7 +118,7 @@ let formatMessage width (text: string) =
         text
     else
     let list = ResizeArray()
-    Works.Kit.FormatMessage(list, text, width, Int32.MaxValue, FormatMessageMode.Word)
+    Works.Kit.FormatMessage(list, text, width, Int32.MaxValue, FormatMessageMode.Space)
     use w = new StringWriter()
     for i in 0 .. list.Count - 2 do
         w.WriteLine list[i]

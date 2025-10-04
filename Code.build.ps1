@@ -23,7 +23,7 @@ task reset {
 
 # Synopsis: Remove temp files.
 task clean FN::clean, PS::clean, {
-	Invoke-Build clean .\FSharpFar\.build.ps1
+	Invoke-Build clean .\FSharpFar
 }
 
 # Synopsis: Generate or update meta files.
@@ -118,29 +118,29 @@ task modules {
 	assert (!(Get-Process [f]ar)) 'Exit Far.'
 
 	# used main
-	Invoke-Build build, clean .\CopyColor\.build.ps1
-	Invoke-Build build, clean .\Drawer\.build.ps1
-	Invoke-Build build, clean .\EditorKit\.build.ps1
-	Invoke-Build build, clean .\Explore\.build.ps1
-	Invoke-Build build, clean .\FolderChart\.build.ps1
-	Invoke-Build build, clean .\FSharpFar\.build.ps1
-	Invoke-Build build, clean .\GitKit\.build.ps1
-	Invoke-Build build, clean .\JavaScriptFar\.build.ps1
-	Invoke-Build build, clean .\RightControl\.build.ps1
-	Invoke-Build build, clean .\RightWords\.build.ps1
-	Invoke-Build build, clean .\Vessel\.build.ps1
+	Invoke-Build build, clean .\CopyColor
+	Invoke-Build build, clean .\Drawer
+	Invoke-Build build, clean .\EditorKit
+	Invoke-Build build, clean .\Explore
+	Invoke-Build build, clean .\FolderChart
+	Invoke-Build build, clean .\FSharpFar
+	Invoke-Build build, clean .\GitKit
+	Invoke-Build build, clean .\JavaScriptFar
+	Invoke-Build build, clean .\RightControl
+	Invoke-Build build, clean .\RightWords
+	Invoke-Build build, clean .\Vessel
 
 	# used demo
-	Invoke-Build build, clean .\Modules\FarNet.Demo\.build.ps1
+	Invoke-Build build, clean .\Modules\FarNet.Demo
 
 	# pure demo
 	Invoke-Build testBuild .\Modules\Modules.build.ps1
 },
 buildFarDescription
 
-# Synopsis: Ensure Help, to test by Test-Help-.ps1
+# Synopsis: Ensure Help, to test.
 task buildFarDescription {
-	Invoke-Build build, help, clean ..\..\DEV\FarDescription\.build.ps1
+	Invoke-Build build, help, clean ..\..\DEV\FarDescription
 }
 
 task . clean

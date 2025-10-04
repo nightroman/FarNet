@@ -37,7 +37,7 @@ task version {
 	($Script:Version = Get-BuildVersion History.txt '^= (\d+\.\d+\.\d+) =$')
 }
 
-task meta -Inputs .build.ps1, History.txt -Outputs src/Directory.Build.props -Jobs version, {
+task meta -Inputs 1.build.ps1, History.txt -Outputs src/Directory.Build.props -Jobs version, {
 	Set-Content src/Directory.Build.props @"
 <Project>
 	<PropertyGroup>

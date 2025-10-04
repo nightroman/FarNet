@@ -2,11 +2,11 @@
 module FSharpFar.Kit
 open System
 open System.Text.RegularExpressions
+open FarNet.Works
 
 /// Makes a string for one line show.
-let strAsLine =
-    let re = Regex @"[\r\n\t]+"
-    fun x -> re.Replace(x, " ")
+let strAsLine str =
+    Regexes.TabsAndNewLines().Replace(str, " ")
 
 /// Zips 2+ spaces into one.
 let strZipSpace =
