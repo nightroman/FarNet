@@ -1,5 +1,12 @@
 ﻿https://www.nuget.org/packages/FarNet
 
+= 9.0.42 =
+
+Use Far 3.0.6570 (GH-939 again)
+
+Exception dialog, [More]
+- filter not useful stack lines
+
 = 9.0.41 =
 
 Use Far 3.0.6562

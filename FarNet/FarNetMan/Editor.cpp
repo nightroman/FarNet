@@ -187,6 +187,7 @@ void Editor::DisableHistory::set(bool value)
 	_DisableHistory = value;
 }
 
+// https://github.com/FarGroup/FarManager/issues/939
 bool Editor::IsModified::get()
 {
 	if (!IsOpened)
@@ -194,7 +195,7 @@ bool Editor::IsModified::get()
 
 	AutoEditorInfo ei(_id);
 
-	return (ei.CurState & ECSTATE_MODIFIED) != 0;
+	return (ei.CurState & ECSTATE_SAVED) == 0;
 }
 
 bool Editor::IsKeyBar::get()

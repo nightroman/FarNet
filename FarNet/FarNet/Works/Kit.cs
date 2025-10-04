@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Frozen;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace FarNet.Works;
@@ -207,5 +208,19 @@ public static class Kit
 		// unknown or no prefix
 		prefix = commandLine[0..index1];
 		command = commandLine[index1..];
+	}
+
+	public static string FilterExceptionString(string text)
+	{
+		var span = text.AsSpan();
+		var sb = new StringBuilder();
+		foreach (var r in span.Split('\n'))
+		{
+			var line = span[r];
+			var trim = line.TrimStart();
+			if (!trim.StartsWith("at ") || line.IndexOf(":line") >= 0)
+				sb.Append(line).Append('\n');
+		}
+		return sb.ToString();
 	}
 }

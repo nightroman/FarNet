@@ -1,10 +1,3 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-using System.IO;
-
 namespace FarNet.Works;
 #pragma warning disable 1591
 
@@ -55,8 +48,9 @@ public static class ErrorDialog
 			writer.WriteLine();
 		}
 
+		var errorText = Kit.FilterExceptionString(error.ToString());
 		writer.WriteLine();
-		writer.WriteLine(error.ToString());
+		writer.Write(errorText);
 
 		// show text in the editor
 		Far.Api.AnyEditor.EditText(new EditTextArgs()
