@@ -270,7 +270,7 @@ void Far1::ShowError(String^ title, Exception^ error)
 	Log::TraceError(errorString);
 
 	auto text = gcnew StringWriter;
-	Log::FormatException(text, error);
+	Works::Kit::WriteException(text, error);
 	text->WriteLine(title);
 
 	// on loading print errors

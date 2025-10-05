@@ -1,5 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet
 
+= 9.0.43 =
+
+Make error dialog [More] editor non-modal.
+
+Add some internal API.
+
 = 9.0.42 =
 
 Use Far 3.0.6570 (GH-939 again)

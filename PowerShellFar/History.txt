@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.60 =
+
+Use FarNet 9.0.43 for some internal API.
+
 = 9.0.59 =
 
 `run` in main

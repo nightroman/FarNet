@@ -1,5 +1,4 @@
-﻿
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 
 namespace FarNet.Demo;
@@ -16,7 +15,7 @@ namespace FarNet.Demo;
 [ModuleTool(Name = "MenuTitle", Options = ModuleToolOptions.AllAreas, Resources = true, Id = "a10218a8-76b3-47f7-8900-3a162bf16c49")]
 public class DemoTool : ModuleTool
 {
-	const string TracingFile = "FarNet.Demo.tracing";
+	const string TraceFileName = "FarNet.Demo.trace";
 	static TextWriterTraceListener _Listener;
 
 	/// <summary>
@@ -25,7 +24,7 @@ public class DemoTool : ModuleTool
 	public override void Invoke(object sender, ModuleToolEventArgs e)
 	{
 		// tracing file is in the local module data directory
-		var fileName = Path.Combine(Manager.GetFolderPath(SpecialFolder.LocalData, true), TracingFile);
+		var fileName = Path.Join(Manager.GetFolderPath(SpecialFolder.LocalData, true), TraceFileName);
 
 		// create the menu instance
 		var menu = Far.Api.CreateMenu();
@@ -81,7 +80,6 @@ public class DemoTool : ModuleTool
 				case 0:
 					// open the tracing file in the viewer
 					var viewer = Far.Api.CreateViewer();
-					viewer.Switching = Switching.Disabled;
 					viewer.FileName = fileName;
 					viewer.Open();
 					return;
@@ -89,9 +87,10 @@ public class DemoTool : ModuleTool
 					// turn tracing to file on/off
 					if (_Listener == null)
 					{
-						_Listener = new TextWriterTraceListener(fileName, TracingFile);
+						_Listener = new TextWriterTraceListener(fileName, TraceFileName);
 						Log.Source.Listeners.Add(_Listener);
 						Trace.Listeners.Add(_Listener);
+						Trace.AutoFlush = true;
 					}
 					else
 					{

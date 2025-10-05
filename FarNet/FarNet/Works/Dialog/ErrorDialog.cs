@@ -5,9 +5,6 @@ public static class ErrorDialog
 {
 	public static void Show(string? title, Exception error, string more)
 	{
-		// unwrap
-		error = Kit.UnwrapAggregateException(error);
-
 		// for module exceptions show just [OK]
 		var moduleError = error as ModuleException;
 		string[] buttons =
@@ -17,16 +14,7 @@ public static class ErrorDialog
 
 		// resolve title
 		if (string.IsNullOrEmpty(title))
-		{
-			if (moduleError == null)
-			{
-				title = error.GetType().FullName;
-			}
-			else
-			{
-				title = moduleError.Source;
-			}
-		}
+			title = moduleError?.Source ?? error.GetType().FullName;
 
 		// ask
 		int res = Far.Api.Message(
@@ -39,21 +27,27 @@ public static class ErrorDialog
 			return;
 
 		// write error text
-		var writer = new StringWriter();
-		Log.FormatException(writer, error);
-		if (more != null)
+		using var writer = new StringWriter();
 		{
+			// info
+			Kit.WriteException(writer, error);
+
+			// more
+			if (more is { })
+			{
+				writer.WriteLine();
+				writer.WriteLine(more);
+				writer.WriteLine();
+			}
+
+			// full
+			var errorText = Kit.FilterExceptionString(error.ToString());
 			writer.WriteLine();
-			writer.WriteLine(more);
-			writer.WriteLine();
+			writer.Write(errorText);
 		}
 
-		var errorText = Kit.FilterExceptionString(error.ToString());
-		writer.WriteLine();
-		writer.Write(errorText);
-
-		// show text in the editor
-		Far.Api.AnyEditor.EditText(new EditTextArgs()
+		// open error text editor
+		_ = Far.Api.AnyEditor.EditTextAsync(new()
 		{
 			Text = writer.ToString(),
 			Title = error.GetType().FullName,

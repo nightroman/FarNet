@@ -1,11 +1,4 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-using System.Threading.Tasks;
-
-namespace FarNet;
+﻿namespace FarNet;
 
 /// <summary>
 /// Any editor operator, common editor events, options and tools.
@@ -25,14 +18,15 @@ public abstract class IAnyEditor : IEditorBase
 	public abstract event EventHandler FirstOpening;
 
 	/// <summary>
-	/// Opens a modal editor in order to edit the text.
+	/// Opens modal editor with the text and gets the result text.
+	/// For non-modal editor use <see cref="EditTextAsync"/>.
 	/// </summary>
 	/// <param name="args">Arguments.</param>
 	/// <returns>The result text.</returns>
 	public abstract string EditText(EditTextArgs args);
 
 	/// <summary>
-	/// Opens a non-modal editor in order to edit the text.
+	/// Opens non-modal editor with the text and gets the result text task.
 	/// </summary>
 	/// <param name="args">Arguments.</param>
 	/// <returns>The result text task.</returns>

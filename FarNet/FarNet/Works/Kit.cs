@@ -223,4 +223,23 @@ public static class Kit
 		}
 		return sb.ToString();
 	}
+
+	public static void WriteException(TextWriter writer, Exception ex)
+	{
+		ArgumentNullException.ThrowIfNull(ex);
+
+		writer.Write(ex.GetType().FullName);
+		writer.Write(": ");
+		writer.WriteLine(ex.Message);
+
+		if (ex.TryProperty("ErrorRecord")?.TryProperty("InvocationInfo")?.TryProperty("PositionMessage") is { } positionMessage)
+			writer.WriteLine(positionMessage);
+
+		if (ex.InnerException is { })
+		{
+			writer.WriteLine();
+			writer.WriteLine("InnerException:");
+			WriteException(writer, ex.InnerException);
+		}
+	}
 }

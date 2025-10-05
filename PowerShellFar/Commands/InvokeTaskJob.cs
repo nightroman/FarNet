@@ -1,4 +1,5 @@
 using FarNet;
+using FarNet.Works;
 using System.Collections.ObjectModel;
 using System.Management.Automation;
 
@@ -30,7 +31,7 @@ internal sealed class InvokeTaskJob : BaseTaskCmdlet
 
 		// await
 		var result = task.AwaitResult();
-		FarNet.Works.Far2.Api.WaitSteps().Await();
+		Far2.Api.WaitSteps().Await();
 
 		// await tasks, return results
 		foreach (var pso in result)
@@ -38,8 +39,7 @@ internal sealed class InvokeTaskJob : BaseTaskCmdlet
 			if (pso?.BaseObject is Task task2)
 			{
 				task2.Await();
-				var taskType = task2.GetType();
-				var result2 = taskType.GetProperty("Result")?.GetValue(task2);
+				var result2 = task2.TryProperty("Result");
 				if (result2 is { } && result2.GetType().Name != "VoidTaskResult")
 					WriteObject(result2);
 			}

@@ -215,7 +215,7 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 				{
 					if (AsTask)
 					{
-						tcs!.SetException(FarNet.Works.Kit.UnwrapAggregateException(ex));
+						tcs!.SetException(ex);
 					}
 					else
 					{
