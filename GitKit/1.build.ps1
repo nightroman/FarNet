@@ -16,7 +16,7 @@ $ModuleRoot = "$FarHome\FarNet\Modules\$ModuleName"
 $Description = 'Far Manager git helpers based on LibGit2Sharp.'
 
 task build meta, {
-	exec { dotnet build -c $Configuration "-p:FarHome=$FarHome" }
+	exec { dotnet build -c $Configuration "-p:FarHome=$FarHome" --tl:off }
 }
 
 task publish {

@@ -226,9 +226,11 @@ This command commits changes.
 
 - `Message=<string>`
 
-    The commit message. Omit it in order to compose in the editor. If you also
-    set `CommentaryChar` then the editor text will contain commentaries about
-    changes.
+    The commit message. If it is set then the command commits immediately.
+
+    If the message is empty then the non-modal editor is opened for the
+    message. If `CommentaryChar` is set then the initial text contains
+    change comments. When the editor closes the command commits.
 
 - `All=<bool>`
 

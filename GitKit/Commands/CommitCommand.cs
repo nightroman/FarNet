@@ -6,7 +6,7 @@ namespace GitKit.Commands;
 
 sealed class CommitCommand : BaseCommand
 {
-	readonly CommitOptions op = new();
+	readonly CommitOptions _op = new();
 	readonly string? _message;
 	readonly bool _All;
 	readonly char _CommentaryChar;
@@ -17,19 +17,19 @@ sealed class CommitCommand : BaseCommand
 
 		_All = parameters.GetBool(Param.All);
 
-		op.AmendPreviousCommit = parameters.GetBool(Param.AmendPreviousCommit);
-		op.AllowEmptyCommit = parameters.GetBool(Param.AllowEmptyCommit);
+		_op.AmendPreviousCommit = parameters.GetBool(Param.AmendPreviousCommit);
+		_op.AllowEmptyCommit = parameters.GetBool(Param.AllowEmptyCommit);
 
 		var PrettifyMessage = parameters.GetBool(Param.PrettifyMessage);
 		_CommentaryChar = parameters.GetValue<char>(Param.CommentaryChar);
 		if (_CommentaryChar == 0)
 		{
-			op.PrettifyMessage = PrettifyMessage;
+			_op.PrettifyMessage = PrettifyMessage;
 		}
 		else
 		{
-			op.PrettifyMessage = true;
-			op.CommentaryChar = _CommentaryChar;
+			_op.PrettifyMessage = true;
+			_op.CommentaryChar = _CommentaryChar;
 		}
 	}
 
@@ -40,7 +40,7 @@ sealed class CommitCommand : BaseCommand
 		Commit? tip = repo.Head.Tip;
 
 		var message = string.Empty;
-		if (op.AmendPreviousCommit && tip is not null)
+		if (_op.AmendPreviousCommit && tip is not null)
 			message = tip.Message;
 
 		if (_CommentaryChar == 0 || tip is null)
@@ -51,7 +51,7 @@ sealed class CommitCommand : BaseCommand
 		sb.AppendLine();
 
 		// warning about overriding remote commit
-		if (op.AmendPreviousCommit && repo.Head.TrackedBranch is not null && repo.Head.TrackedBranch.Tip == tip)
+		if (_op.AmendPreviousCommit && repo.Head.TrackedBranch is not null && repo.Head.TrackedBranch.Tip == tip)
 		{
 			sb.AppendLine($"{_CommentaryChar} WARNING:");
 			sb.AppendLine($"{_CommentaryChar}\tThe remote commit will be amended.");
@@ -72,7 +72,7 @@ sealed class CommitCommand : BaseCommand
 		}
 
 		// last changes to be amended
-		if (op.AmendPreviousCommit)
+		if (_op.AmendPreviousCommit)
 		{
 			sb.AppendLine();
 			sb.AppendLine($"{_CommentaryChar} Changes to be amended:");
@@ -86,7 +86,7 @@ sealed class CommitCommand : BaseCommand
 		return sb.ToString();
 	}
 
-	string EditMessage()
+	void EditMessageThen(Action<string> then)
 	{
 		using var repo = new Repository(GitDir);
 
@@ -100,30 +100,34 @@ sealed class CommitCommand : BaseCommand
 		editor.CodePage = 65001;
 		editor.DisableHistory = true;
 		editor.Caret = new Point(0, 0);
-		editor.Title = (op.AmendPreviousCommit ? "Amend commit" : "Commit") + $" on branch {repo.Head.FriendlyName} -- empty message aborts the commit";
-		editor.Open(OpenMode.Modal);
+		editor.Title = (_op.AmendPreviousCommit ? "Amend commit" : "Commit") + $" on branch {repo.Head.FriendlyName} -- empty message aborts the commit";
 
-		message = File.ReadAllText(file);
-		if (_CommentaryChar > 0)
+		editor.Closed += (s, e) =>
 		{
-			op.PrettifyMessage = false;
-			message = Commit.PrettifyMessage(message, _CommentaryChar);
-		}
+			message = File.ReadAllText(file);
+			File.Delete(file);
 
-		return message;
+			if (_CommentaryChar > 0)
+			{
+				_op.PrettifyMessage = false;
+				message = LibGit2Sharp.Commit.PrettifyMessage(message, _CommentaryChar);
+			}
+
+			then(message);
+		};
+
+		editor.Open();
 	}
 
-	public override void Invoke()
+	void Commit(string message)
 	{
-		using var repo = new Repository(GitDir);
-
-		var message = _message ?? EditMessage();
-		if (message.Length == 0)
+		if (string.IsNullOrWhiteSpace(message))
 		{
 			Far.Api.UI.WriteLine("Aborting commit due to empty commit message.");
 			return;
 		}
 
+		using var repo = new Repository(GitDir);
 		if (_All)
 		{
 			try
@@ -137,8 +141,16 @@ sealed class CommitCommand : BaseCommand
 		}
 
 		var sig = Lib.BuildSignature(repo);
-		repo.Commit(message, sig, sig, op);
+		repo.Commit(message, sig, sig, _op);
 
 		Host.UpdatePanels();
+	}
+
+	public override void Invoke()
+	{
+		if (string.IsNullOrWhiteSpace(_message))
+			EditMessageThen(Commit);
+		else
+			Commit(_message);
 	}
 }

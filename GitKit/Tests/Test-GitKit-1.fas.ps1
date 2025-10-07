@@ -14,7 +14,7 @@ job {
 	Assert-Far $Far.CurrentDirectory -eq ($Data.root)
 	$Far.InvokeCommand('gk:init')
 }
-run {
+job {
 	Set-Location -LiteralPath ($Data.root)
 	Assert-Far (Test-Path .git)
 	Set-Content 1.txt 1
@@ -88,7 +88,7 @@ job {
 }
 
 ### 2nd commit
-run {
+job {
 	$Far.InvokeCommand('gk:commit All=true; CommentaryChar=#')
 }
 job {
