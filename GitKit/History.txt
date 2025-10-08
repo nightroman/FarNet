@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 1.3.18 =
+
+Tip info menu and dialog.
+
 = 1.3.17 =
 
 gk:commit uses non-modal editor for commit message.

@@ -156,7 +156,7 @@ public class BranchesPanel : BasePanel
 		PushCommand.PushBranch(repo, branch);
 	}
 
-	void CopySha()
+	void CopyTip()
 	{
 		var branchName = CurrentFile?.Name;
 		if (branchName is null)
@@ -166,12 +166,12 @@ public class BranchesPanel : BasePanel
 
 		var branch = repo.MyBranch(branchName);
 		if (branch.Tip is { } tip)
-			UI.CopySha(tip);
+			UI.CopyTip(tip);
 	}
 
 	internal override void AddMenu(IMenu menu)
 	{
-		menu.Add(Const.CopySha, (s, e) => CopySha());
+		menu.Add(Const.TipInfo, (s, e) => CopyTip());
 		menu.Add(Const.PushBranch, (s, e) => PushBranch());
 		menu.Add(Const.MergeBranch, (s, e) => MergeBranch());
 		menu.Add(Const.CompareBranches, (s, e) => CompareBranches());

@@ -44,10 +44,14 @@ public class CommitsPanel : BasePanel
 		CompareCommits(commits[0].Sha, commits[1].Sha);
 	}
 
-	void CopySha()
+	void CopyTip()
 	{
 		if (CurrentFile is CommitFile file)
-			UI.CopySha(file.CommitSha, file.Name);
+		{
+			using var repo = new Repository(GitDir);
+			if (repo.Lookup<Commit>(file.CommitSha) is { } commit)
+				UI.CopyTip(commit);
+		}
 	}
 
 	void CreateBranch(string branchName)
@@ -85,7 +89,7 @@ public class CommitsPanel : BasePanel
 
 	internal override void AddMenu(IMenu menu)
 	{
-		menu.Add(Const.CopySha, (s, e) => CopySha());
+		menu.Add(Const.TipInfo, (s, e) => CopyTip());
 
 		if (MyExplorer.BranchName is { } branchName)
 		{

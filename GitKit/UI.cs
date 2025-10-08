@@ -5,22 +5,23 @@ namespace GitKit;
 
 static class UI
 {
-	public static void CopySha(Commit commit)
+	public static void CopyTip(Commit commit)
 	{
-		CopySha(
-			commit.Sha,
-			Lib.FormatCommit(commit, Settings.Default.GetData().ShaPrefixLength));
-	}
+		var info = Lib.FormatCommit(commit, Settings.Default.GetData().ShaPrefixLength);
 
-	public static void CopySha(string sha, string info)
-	{
-		switch (Far.Api.Message(info, Const.CopyCommit, default, ["SHA-&1", "&Info", "Cancel"]))
+		switch (Far.Api.Message(info, Const.CopyCommit, default, ["SHA-&1", "&Info", "&Full", "&Short", "Cancel"]))
 		{
 			case 0:
-				Far.Api.CopyToClipboard(sha);
+				Far.Api.CopyToClipboard(commit.Sha);
 				break;
 			case 1:
 				Far.Api.CopyToClipboard(info);
+				break;
+			case 2:
+				Far.Api.CopyToClipboard(commit.Message);
+				break;
+			case 3:
+				Far.Api.CopyToClipboard(commit.MessageShort);
 				break;
 		}
 	}

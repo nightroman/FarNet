@@ -8,7 +8,7 @@ static class Const
 		CompareBranches = "&Compare branches",
 		CompareCommits = "&Compare commits",
 		CopyCommit = "Copy commit to clipboard",
-		CopySha = "Copy SHA-&1",
+		TipInfo = "&Tip info",
 		CreateBranch = "Create branch",
 		EditFile = "&Edit file",
 		Help = "Help",

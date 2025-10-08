@@ -20,7 +20,7 @@ public class Tool : ModuleTool
 		}
 		else
 		{
-			menu.Add(Const.CopySha, (s, e) => CopySha());
+			menu.Add(Const.TipInfo, (s, e) => CopyTip());
 			menu.Add(Const.BlameFile, (_, _) => BlameFile());
 			menu.Add(Const.CommitLog, (_, _) => CommitLog());
 		}
@@ -30,13 +30,13 @@ public class Tool : ModuleTool
 		menu.Show();
 	}
 
-	static void CopySha()
+	static void CopyTip()
 	{
 		try
 		{
 			using var repo = new Repository(Lib.GetGitDir(Far.Api.CurrentDirectory));
 
-			UI.CopySha(Lib.GetExistingTip(repo));
+			UI.CopyTip(Lib.GetExistingTip(repo));
 		}
 		catch (Exception ex)
 		{
