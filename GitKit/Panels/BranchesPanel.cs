@@ -194,7 +194,7 @@ public class BranchesPanel : BasePanel
 	public override void UIDeleteFiles(DeleteFilesEventArgs args)
 	{
 		var text = $"Delete branches ({args.Files.Count})\n{string.Join("\n", args.Files.Select(x => x.Name))}";
-		var op = MessageOptions.YesNo | MessageOptions.LeftAligned;
+		var op = MessageOptions.YesNo;
 		if (args.Force)
 			op |= MessageOptions.Warning;
 

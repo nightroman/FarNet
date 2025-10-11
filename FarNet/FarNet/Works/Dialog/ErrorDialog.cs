@@ -20,7 +20,7 @@ public static class ErrorDialog
 		int res = Far.Api.Message(
 			error.Message,
 			title,
-			MessageOptions.LeftAligned | MessageOptions.Warning,
+			MessageOptions.Warning,
 			buttons
 		);
 		if (res < 1)

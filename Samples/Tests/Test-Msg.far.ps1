@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Test extreme message boxes.
@@ -29,10 +28,10 @@ Note:
 '@
 
 ### Test 3
-Show-FarMessage "$(0..$long)" 'Test 3: too many text lines' -LeftAligned
+Show-FarMessage "$(0..$long)" 'Test 3: too many text lines'
 
 ### Test 4
-$null = Show-FarMessage "$(0..$long)" 'Test 4: too many text lines and too many buttons' -LeftAligned -Choices @(0..$long)
+$null = Show-FarMessage "$(0..$long)" 'Test 4: too many text lines and too many buttons' -Choices @(0..$long)
 
 ### Test 5
 $null = Show-FarMessage "$(0..$long)" 'Test 5: too many text lines and too long buttons' -IsWarning -Choices $choices

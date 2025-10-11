@@ -104,7 +104,7 @@ public sealed class ProgressBox : IProgress, IDisposable
 		else
 			text = string.Join("\n", lines) + "\n" + progress;
 
-		Far.Api.Message(text, Title, MessageOptions.Draw | MessageOptions.LeftAligned);
+		Far.Api.Message(text, Title, MessageOptions.Draw);
 
 		_lastShow = _progress.Elapsed;
 	}

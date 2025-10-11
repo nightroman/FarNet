@@ -16,7 +16,7 @@ $ModuleRoot = "$FarHome\FarNet\Modules\$ModuleName"
 $Description = 'Far Manager Redis helpers based on FarNet.Redis'
 
 task build meta, {
-	exec { dotnet build -c $Configuration "-p:FarHome=$FarHome" }
+	exec { dotnet build -c $Configuration "-p:FarHome=$FarHome" --tl:off }
 }
 
 task help -Inputs README.md -Outputs $ModuleRoot\RedisKit.hlf {
@@ -73,7 +73,7 @@ FarHome\FarNet\Modules\RedisKit\RedisKit.hlf
 '@
 }
 
-task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props -Jobs version, {
+task meta -Inputs 1.build.ps1, History.txt -Outputs Directory.Build.props -Jobs version, {
 	Set-Content Directory.Build.props @"
 <Project>
 	<PropertyGroup>

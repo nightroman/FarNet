@@ -107,7 +107,7 @@ let isFSharpFileName (fileName: string) =
 
 /// Shows a message with the left aligned text.
 let showText text title =
-    far.Message(text, title, MessageOptions.LeftAligned) |> ignore
+    far.Message(text, title) |> ignore
 
 let messageWidth full =
     let size = far.UI.WindowSize

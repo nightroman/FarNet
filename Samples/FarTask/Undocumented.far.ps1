@@ -29,7 +29,7 @@ Start-FarTask -Data id {
 	$run = $true
 
 	job {
-		Show-FarMessage -Caption "Task $($Data.id)" -LeftAligned @'
+		Show-FarMessage -Caption "Task $($Data.id)" @'
 Script task is started and its jobs are invoked (job, run, ps:).
 Watch global variables $Data and $Var exposed by the last task job.
 See Start-FarTask help for what they are, use them for testing, etc.
@@ -52,7 +52,7 @@ To stop one of running tasks set $Data.run or $Var.run to $false:
 		$started = [FarNet.User]::Data['161682e9-1da5-47aa-a495-46b8ee58d19b-started']
 		$finished = ++ [FarNet.User]::Data['161682e9-1da5-47aa-a495-46b8ee58d19b-finished']
 
-		Show-FarMessage -Caption "Task $($Data.id)" -LeftAligned @"
+		Show-FarMessage -Caption "Task $($Data.id)" @"
 Script task is finished.
 Still running tasks: $($started - $finished).
 "@

@@ -1,5 +1,4 @@
-﻿
-using FarNet;
+﻿using FarNet;
 using System.Diagnostics;
 using System.Text;
 
@@ -64,7 +63,7 @@ internal static class AboutPanel
 			int choice = Far.Api.Message(
 				sb.ToString(),
 				Res.Delete,
-				MessageOptions.LeftAligned | MessageOptions.Warning,
+				MessageOptions.Warning,
 				[Res.Delete, Res.Cancel]);
 
 			if (choice != 0)
@@ -117,7 +116,7 @@ internal static class AboutPanel
 			int choice = Far.Api.Message(
 				sb.ToString(),
 				Res.Stop,
-				MessageOptions.LeftAligned | MessageOptions.Warning,
+				MessageOptions.Warning,
 				[Res.Stop, Res.Cancel]);
 
 			if (choice != 0)

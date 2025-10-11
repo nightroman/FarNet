@@ -90,7 +90,7 @@ type FarEditor() =
                             let tips = Tips.format tip false
                             if tips.Length > 0 && inbox.CurrentQueueLength = 0 then
                                 do! jobEditor (fun _ ->
-                                    let r = far.Message(tips, "Tips", MessageOptions.LeftAligned, [|"More"; "Close"|])
+                                    let r = far.Message(tips, "Tips", MessageOptions.None, [|"More"; "Close"|])
                                     if r = 0 then
                                         showTempText (Tips.format tip true) (String.Join(".", List.toArray idents))
                                 )

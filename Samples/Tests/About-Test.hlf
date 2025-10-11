@@ -47,7 +47,7 @@ can get concurrency error or record data can be incomplete and etc.).
 
 
 @TestBase
-$#Test-Base-.ps1#
+$#Test-Base.far.ps1#
 ~Contents~@Contents@
 
 This is just a demo help topic.

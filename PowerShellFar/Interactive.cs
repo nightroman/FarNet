@@ -183,7 +183,8 @@ class Interactive : InteractiveEditor
 		{
 			Far.Api.Message(
 				string.Format(null, "Error in {0}, see $Error for details. Message: {1}", fileName, ex.Message),
-				Res.Me, MessageOptions.Warning | MessageOptions.LeftAligned);
+				Res.Me,
+				MessageOptions.Warning);
 		}
 	}
 

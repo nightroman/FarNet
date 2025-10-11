@@ -362,7 +362,7 @@ sealed class AssertFarCommand : BaseCmdlet
 			Text = body,
 			Buttons = buttons,
 			Caption = Title ?? MyName,
-			Options = IsError ? (MessageOptions.Warning | MessageOptions.LeftAligned) : MessageOptions.None,
+			Options = IsError ? (MessageOptions.Warning) : MessageOptions.None,
 		});
 
 		switch (result < 0 ? BtnStop : buttons[result])

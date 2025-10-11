@@ -5,7 +5,7 @@ namespace GitKit.Panels;
 
 public class BranchesExplorer : BaseExplorer
 {
-	public static Guid MyTypeId = new("75a5d4a6-85b7-4bab-974c-f3a3eb21c992");
+	public static readonly Guid MyTypeId = new("75a5d4a6-85b7-4bab-974c-f3a3eb21c992");
 
 	public BranchesExplorer(string gitDir) : base(gitDir, MyTypeId)
 	{
@@ -111,7 +111,7 @@ public class BranchesExplorer : BaseExplorer
 		args.Result = JobResult.Incomplete;
 		args.FilesToStay.Add(file);
 		if (0 == (args.Mode & ExplorerModes.Silent))
-			Far.Api.Message(message, Host.MyName, MessageOptions.LeftAligned | MessageOptions.Warning);
+			Far.Api.Message(message, Host.MyName, MessageOptions.Warning);
 	}
 
 	void DeleteRemoteBranch(Branch branch)

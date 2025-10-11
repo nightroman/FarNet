@@ -6,7 +6,7 @@ job {
 	# open test file, type code, do not save
 	Open-FarEditor c:/tmp/tmp.fsx -CodePage 65001 -DisableHistory
 	$Far.Editor.SetText(@'
-let msg(any) = far.Message((sprintf "%A" any), "F#", MessageOptions.LeftAligned)
+let msg(any) = far.Message((sprintf "%A" any), "F#")
 type Fruit = {name : string; count : int}
 let x = {name = "banana"; count = 3}
 msg x

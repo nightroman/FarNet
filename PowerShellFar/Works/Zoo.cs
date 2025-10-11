@@ -1,7 +1,6 @@
 ﻿using FarNet;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Management.Automation;
 
 namespace PowerShellFar;
 
@@ -34,7 +33,8 @@ public static class Zoo
 			{
 				Far.Api.Message(
 					"Cannot start the external viewer.",
-					Res.Me, MessageOptions.LeftAligned | MessageOptions.Warning);
+					Res.Me,
+					MessageOptions.Warning);
 			}
 		}
 

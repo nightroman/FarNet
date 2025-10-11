@@ -1,5 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet
 
+= 9.0.44 =
+
+Messages are left aligned by default. Use new AlignCenter to center.
+Obsolete LeftAligned will be removed soon as redundant.
+
 = 9.0.43 =
 
 Make error dialog [More] editor non-modal.

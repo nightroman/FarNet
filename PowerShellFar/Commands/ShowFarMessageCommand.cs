@@ -1,7 +1,3 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
 using System.Management.Automation;
 
@@ -31,6 +27,9 @@ sealed class ShowFarMessageCommand : BaseCmdlet
 
 	[Parameter]
 	public SwitchParameter LeftAligned { get; set; }
+
+	[Parameter]
+	public SwitchParameter AlignCenter { get; set; }
 
 	[Parameter]
 	public SwitchParameter KeepBackground { get; set; }
@@ -80,8 +79,8 @@ sealed class ShowFarMessageCommand : BaseCmdlet
 			options |= MessageOptions.Error;
 		if (IsWarning)
 			options |= MessageOptions.Warning;
-		if (LeftAligned)
-			options |= MessageOptions.LeftAligned;
+		if (AlignCenter)
+			options |= MessageOptions.AlignCenter;
 
 		int r = Far.Api.Message(Text ?? string.Empty, Caption, options, Choices, HelpTopic);
 		if (!Draw && (Buttons != ButtonSet.Ok || Choices != null && Choices.Length > 0))

@@ -372,13 +372,13 @@ internal static class A
 	// Shows an error.
 	internal static void MyError(Exception error)
 	{
-		Far.Api.Message(error.Message, "PowerShellFar error", MessageOptions.LeftAligned);
+		Far.Api.Message(error.Message, "PowerShellFar error");
 	}
 
 	// Shows a message.
 	internal static void MyMessage(string message)
 	{
-		Far.Api.Message(message, Res.Me, MessageOptions.LeftAligned);
+		Far.Api.Message(message, Res.Me);
 	}
 
 	// Sets an item property value as it is.
@@ -419,7 +419,7 @@ internal static class A
 		foreach (object o in ps.Streams.Error)
 			sb.AppendLine(o.ToString());
 
-		Far.Api.Message(sb.ToString(), "PowerShellFar error(s)", MessageOptions.LeftAligned);
+		Far.Api.Message(sb.ToString(), "PowerShellFar error(s)");
 		return true;
 	}
 

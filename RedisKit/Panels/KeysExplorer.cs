@@ -1,5 +1,4 @@
 ﻿using FarNet;
-using FarNet.Redis;
 using RedisKit.Commands;
 using StackExchange.Redis;
 using System.Runtime.InteropServices;
@@ -353,7 +352,7 @@ sealed class KeysExplorer : BaseExplorer
 		catch (Exception ex)
 		{
 			if (args.UI)
-				Far.Api.Message(ex.Message, Host.MyName, MessageOptions.LeftAligned | MessageOptions.Warning);
+				Far.Api.Message(ex.Message, Host.MyName, MessageOptions.Warning);
 
 			args.Result = JobResult.Incomplete;
 		}

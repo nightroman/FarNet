@@ -89,8 +89,7 @@ class KeysPanel : BasePanel<KeysExplorer>
 		}
 
 		var text = $"{message}\n{string.Join("\n", args.Files.Select(x => x.Name))}";
-		var op = MessageOptions.YesNo | MessageOptions.LeftAligned;
-		if (0 != Far.Api.Message(text, Host.MyName, op))
+		if (0 != Far.Api.Message(text, Host.MyName, MessageOptions.YesNo))
 		{
 			args.Result = JobResult.Ignore;
 			return;

@@ -1,5 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet.RedisKit
 
+= 0.6.3 =
+
+Use FarNet 9.0.44
+
+Remove LeftAligned from messages.
+
 = 0.6.2 =
 
 Requires FarNet.Redis 0.17.1.

@@ -7,8 +7,10 @@ const int ALL_BUTTONS = FMSG_MB_OK | FMSG_MB_OKCANCEL | FMSG_MB_ABORTRETRYIGNORE
 
 bool Message::Show()
 {
-	// process the draw flag
-	int flags = _flags;
+	//! invert FMSG_LEFTALIGN
+	int flags = _flags ^ FMSG_LEFTALIGN;
+
+	// process Draw flag
 	if ((flags & (int)MessageOptions::Draw) == 0)
 	{
 		// add at least one button

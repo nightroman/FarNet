@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Test base features.
@@ -40,8 +39,8 @@ function Test-InputBox
 
 function Test-Message
 {
-	$null = Show-FarMessage -LeftAligned -IsWarning -HelpTopic $Help -Choices 'Button&1', 'Button&2', 'Button&3' @'
-Left aligned
+	$null = Show-FarMessage -AlignCenter -IsWarning -HelpTopic $Help -Choices 'Button&1', 'Button&2', 'Button&3' @'
+center aligned
 multiline
 warning message
 with custom buttons

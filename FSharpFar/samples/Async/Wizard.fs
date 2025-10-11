@@ -9,7 +9,7 @@ open FarNet.FSharp
 
 /// Shows a message with the specified buttons and gets the choice index.
 let jobAsk text title buttons =
-    job { return far.Message(text, title, MessageOptions.LeftAligned, buttons) }
+    job { return far.Message(text, title, MessageOptions.None, buttons) }
 
 /// Opens a modeless editor and gets the result text when the editor exits.
 let jobEditText text title = async {

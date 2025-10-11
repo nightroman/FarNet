@@ -618,8 +618,7 @@ static class EditorKit
 			{
 				Far.Api.Message(
 					"Move the caret to a task to invoke.",
-					MyTitle,
-					MessageOptions.LeftAligned);
+					MyTitle);
 
 				return;
 			}
@@ -637,7 +636,7 @@ static class EditorKit
 					{ii.ScriptName}:{ii.ScriptLineNumber}
 					""",
 					MyTitle,
-					MessageOptions.LeftAligned,
+					MessageOptions.None,
 					["&Go to redefined", "&Invoke redefined"]);
 
 				switch (answer)
@@ -698,7 +697,7 @@ static class EditorKit
 			Far.Api.Message(
 				ex.Message,
 				MyTitle,
-				MessageOptions.LeftAligned | MessageOptions.Warning);
+				MessageOptions.Warning);
 		}
 	}
 

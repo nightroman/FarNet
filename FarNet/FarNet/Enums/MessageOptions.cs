@@ -1,10 +1,4 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-
-namespace FarNet;
+﻿namespace FarNet;
 
 /// <summary>
 /// Message box options.
@@ -35,9 +29,15 @@ public enum MessageOptions
 	KeepBackground = 0x4,
 
 	/// <summary>
-	/// Left align the message lines.
+	/// .
 	/// </summary>
-	LeftAligned = 0x8,
+	[Obsolete("Will be removed, messages are left aligned by default.")]
+	LeftAligned = 0,
+
+	/// <summary>
+	/// Center the message lines.
+	/// </summary>
+	AlignCenter = 0x8,
 
 	/// <summary>
 	/// Additional button: Ok.

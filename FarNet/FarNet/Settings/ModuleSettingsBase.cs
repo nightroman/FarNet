@@ -170,7 +170,7 @@ public abstract class ModuleSettingsBase
 			var answer = Far.Api.Message(
 				DifferentXml,
 				_type.FullName!,
-				MessageOptions.YesNo | MessageOptions.LeftAligned);
+				MessageOptions.YesNo);
 
 			if (answer != 0)
 				return;

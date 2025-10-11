@@ -1,5 +1,15 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.61 =
+
+Use FarNet 9.0.44
+
+Remove LeftAligned from messages.
+
+Show-FarMessage
+- New switch AlignCenter
+- Obsolete LeftAligned will be removed.
+
 = 9.0.60 =
 
 Use FarNet 9.0.43 for some internal API.

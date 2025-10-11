@@ -200,7 +200,7 @@ if (!$Regex) {
 			Show-FarMessage 'There are no input items.' 'Input'
 		}
 		catch {
-			Show-FarMessage $_ 'Invalid Input' -LeftAligned
+			Show-FarMessage $_ 'Invalid Input'
 			$dialog.Focused = $eInput
 			$Items = $null
 		}

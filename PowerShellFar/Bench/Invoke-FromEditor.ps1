@@ -38,7 +38,7 @@
 #>
 
 trap {
-	Show-FarMessage $_ Invoke-FromEditor -LeftAligned
+	Show-FarMessage $_ Invoke-FromEditor -IsWarning
 	exit
 }
 
@@ -130,7 +130,7 @@ if ($ext -in '.http', '.rest') {
 	Import-Module -Name PSRest
 	$text = Invoke-RestHttp -Text ($editor.GetText()) -Tag ($editor.Caret.Y + 1) -HeadersVariable Headers
 
-	$ext = 'application/json' -eq $Headers.ContentType ? 'json' : 'txt'
+	$ext = switch -Regex ($Headers.ContentType) {'json' {'json'} 'xml' {'xml'} default {'txt'}}
 	$file = "$env:TEMP\RestHttp.$ext"
 
 	Set-Content -LiteralPath $file -Value $text
