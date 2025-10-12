@@ -1,5 +1,4 @@
-﻿
-using FarNet;
+﻿using FarNet;
 using System.ComponentModel;
 
 namespace Vessel;

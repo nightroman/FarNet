@@ -1,5 +1,4 @@
-﻿
-using FarNet;
+﻿using FarNet;
 using System.Runtime.InteropServices;
 
 namespace Vessel;
@@ -29,7 +28,7 @@ public partial class Actor
 	/// </summary>
 	/// <param name="mode">Files/Folders/Commands mode.</param>
 	/// <param name="store">The store path. Empty/null is the default.</param>
-	public Actor(Mode mode, string store = null)
+	public Actor(Mode mode, string? store = null)
 	{
 		switch (mode)
 		{
@@ -81,7 +80,7 @@ public partial class Actor
 			Mode.File => Far.Api.History.GetHistory(new GetHistoryArgs { Kind = HistoryKind.Editor, Last = _MaximumFileCountFromFar }),
 			Mode.Folder => Far.Api.History.GetHistory(new GetHistoryArgs { Kind = HistoryKind.Folder, Last = _MaximumFileCountFromFar }),
 			Mode.Command => Far.Api.History.GetHistory(new GetHistoryArgs { Kind = HistoryKind.Command, Last = _MaximumFileCountFromFar }),
-			_ => throw null,
+			_ => throw null!,
 		};
 	}
 
@@ -93,10 +92,10 @@ public partial class Actor
 		var farHistory = GetFarHistory();
 		foreach (var item in farHistory)
 		{
-			ref Record info = ref CollectionsMarshal.GetValueRefOrAddDefault(map, item.Name, out bool found);
+			ref Record? info = ref CollectionsMarshal.GetValueRefOrAddDefault(map, item.Name, out bool found);
 			if (found)
 			{
-				if (item.Time > info.Time)
+				if (item.Time > info!.Time)
 					info.Time = item.Time;
 			}
 			else
@@ -128,7 +127,7 @@ public partial class Actor
 		}
 
 		// the sort by rank and return for show
-		records.Sort(new Record.RankComparer());
+		records.Sort(new Record.RankComparer(_mode == Mode.Command ? null : Far.Api.CurrentDirectory));
 		return records;
 	}
 

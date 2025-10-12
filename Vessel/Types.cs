@@ -1,5 +1,4 @@
-﻿
-namespace Vessel;
+﻿namespace Vessel;
 
 public enum Mode
 {
@@ -59,7 +58,7 @@ static class Lua
 static class My
 {
 	public const string Name = "Vessel";
-	static string AppHome => Path.GetDirectoryName(typeof(My).Assembly.Location);
+	static string AppHome => Path.GetDirectoryName(typeof(My).Assembly.Location)!;
 	static string HelpRoot => "<" + AppHome + "\\>";
 	public static string HelpTopic(string topic) => HelpRoot + topic;
 }

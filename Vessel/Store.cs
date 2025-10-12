@@ -1,5 +1,4 @@
-﻿
-using System.Text;
+﻿using System.Text;
 
 namespace Vessel;
 
@@ -19,7 +18,7 @@ public static class Store
 		{
 			var dir = Path.GetDirectoryName(store);
 			if (!Directory.Exists(dir))
-				Directory.CreateDirectory(dir);
+				Directory.CreateDirectory(dir!);
 
 			using var writer = new StreamWriter(store, false, Encoding.UTF8);
 			writer.WriteLine(LINE_HEADER);
@@ -36,10 +35,10 @@ public static class Store
 		{
 			using var reader = new StreamReader(store, Encoding.UTF8);
 
-			string line;
+			string? line;
 			int index = -1;
 			var sep = new char[] { '\t' };
-			while (null != (line = reader.ReadLine()))
+			while ((line = reader.ReadLine()) is { })
 			{
 				// skip header
 				if (++index == 0)

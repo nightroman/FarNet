@@ -14,7 +14,7 @@ $ModuleRoot = "$FarHome\FarNet\Modules\$ModuleName"
 $Description = 'Enhanced history of files, folders, commands. FarNet module for Far Manager.'
 
 task build meta, {
-	exec { dotnet build -c $Configuration /p:FarHome=$FarHome }
+	exec { dotnet build -c $Configuration /p:FarHome=$FarHome --tl:off }
 }
 
 task clean {
@@ -25,7 +25,7 @@ task version {
 	($Script:Version = Get-BuildVersion History.txt '^= (\d+\.\d+\.\d+) =$')
 }
 
-task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props version, {
+task meta -Inputs 1.build.ps1, History.txt -Outputs Directory.Build.props version, {
 	Set-Content Directory.Build.props @"
 <Project>
   <PropertyGroup>

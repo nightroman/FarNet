@@ -5,7 +5,7 @@
 
 # start SUT process and open process panel
 job {
-	$Data.SUT = [System.Diagnostics.Process]::Start('powershell', '-NoProfile Start-Sleep 9')
+	$Data.SUT = [System.Diagnostics.Process]::Start('pwsh', '-NoProfile -Command Start-Sleep 9')
 	Panel-Process.ps1
 }
 
@@ -15,7 +15,7 @@ job {
 	$ff = @(Get-FarItem -Selected)
 	Assert-Far @(
 		$ff.Count -eq 1
-		$ff[0].ProcessName -eq 'powershell'
+		$ff[0].ProcessName -eq 'pwsh'
 	)
 }
 
@@ -32,7 +32,7 @@ job {
 # exit properties by Esc
 keys Esc
 job {
-	Assert-Far -FileName 'powershell'
+	Assert-Far -FileName 'pwsh'
 }
 
 # open WMI properties, go to CommandLine
@@ -44,7 +44,7 @@ job {
 # exit properties by ..
 macro 'Keys"Home Enter"'
 job {
-	Assert-Far -FileName 'powershell'
+	Assert-Far -FileName 'pwsh'
 }
 
 # kill it

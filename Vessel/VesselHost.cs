@@ -1,5 +1,4 @@
-﻿
-using FarNet;
+﻿using FarNet;
 
 namespace Vessel;
 
@@ -10,7 +9,7 @@ public class VesselHost : ModuleHost
 	const string NameLogFile2 = "VesselFolders.txt";
 	const string NameLogFile3 = "VesselCommands.txt";
 
-	internal static IReadOnlyList<string> LogPath { get; private set; }
+	internal static IReadOnlyList<string> LogPath { get; private set; } = null!;
 
 	public override void Connect()
 	{

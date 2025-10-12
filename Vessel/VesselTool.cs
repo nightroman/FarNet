@@ -1,5 +1,4 @@
-﻿
-using FarNet;
+﻿using FarNet;
 using System.Diagnostics;
 
 namespace Vessel;
@@ -85,7 +84,7 @@ public class VesselTool : ModuleTool
 	class Context
 	{
 		public Actor Actor { get; }
-		public Record SelectedRecord { get; private set; }
+		public Record SelectedRecord { get; private set; } = null!;
 		public string SelectedPath => SelectedRecord.Path;
 
 		readonly IEnumerable<Record> _records;
@@ -129,7 +128,7 @@ public class VesselTool : ModuleTool
 				return false;
 
 			_indexSelected = _menu.Selected;
-			SelectedRecord = (Record)_menu.SelectedData;
+			SelectedRecord = (Record)_menu.SelectedData!;
 			return true;
 		}
 
@@ -181,10 +180,10 @@ public class VesselTool : ModuleTool
 		}
 	}
 
-	static void FilterByCurrentDirectory(object sender, MenuEventArgs e)
+	static void FilterByCurrentDirectory(object? sender, MenuEventArgs e)
 	{
-		var menu = (IListMenu)sender;
-		menu.Incremental = menu.Incremental.Length > 0 ? string.Empty : Far.Api.Panel.CurrentDirectory + @"\*";
+		var menu = (IListMenu)sender!;
+		menu.Incremental = menu.Incremental.Length > 0 ? string.Empty : Far.Api.CurrentDirectory + @"\*";
 		menu.Selected = -1;
 		e.Restart = true;
 	}
@@ -262,7 +261,8 @@ public class VesselTool : ModuleTool
 			// go to:
 			if (menu.Key.IsCtrl(KeyCode.Enter))
 			{
-				Far.Api.Panel.GoToPath(context.SelectedPath);
+				if (Far.Api.Panel is { } panel)
+					panel.GoToPath(context.SelectedPath);
 			}
 			// view:
 			else if (menu.Key.VirtualKeyCode == KeyCode.F3)
@@ -376,12 +376,14 @@ public class VesselTool : ModuleTool
 				if (menu.Key.IsCtrl(KeyCode.Enter))
 				{
 					// go to:
-					Far.Api.Panel.GoToPath(context.SelectedPath);
+					if (Far.Api.Panel is { } panel)
+						panel.GoToPath(context.SelectedPath);
 				}
 				else
 				{
 					// open:
-					Far.Api.Panel.CurrentDirectory = context.SelectedPath;
+					if (Far.Api.Panel is { } panel)
+						panel.CurrentDirectory = context.SelectedPath;
 				}
 			}
 			else
