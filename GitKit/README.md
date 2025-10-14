@@ -505,10 +505,11 @@ branches" and "Compare commits" or by the command [gk:changes](#gkchanges).
 
 [Contents]
 
-- **Tip info** (main menu, branches panel, commits panel)
+- **Copy info** (main menu, branches panel, commits panel)
 
-    Shows the tip or cursor commit info and buttons to copy: SHA-1, Info
-    (shown), Full (full commit message), Short (short commit message).
+    Shows the tip or cursor commit info, the current branch name and status
+    (clean / dirty), and buttons to copy: SHA-1, Info (shown), Full (full
+    commit message), Short (short commit message).
 
 - **Push branch** (branches panel, commits panel)
 

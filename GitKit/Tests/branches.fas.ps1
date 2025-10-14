@@ -15,7 +15,7 @@ job {
 }
 
 ### branch copy sha
-macro 'Keys "F11" if Menu.Select("GitKit", 2) > 0 then Keys "Enter" if Menu.Select("Tip info", 2) > 0 then Keys "Enter" end end'
+macro 'Keys "F11" if Menu.Select("GitKit", 2) > 0 then Keys "Enter" if Menu.Select("Copy info", 2) > 0 then Keys "Enter" end end'
 job {
 	Assert-Far -Dialog
 	Assert-Far ($Far.Dialog[1].Text -match '^\w+ \d\d\d\d-\d\d-\d\d ')
@@ -30,7 +30,7 @@ job {
 
 ### commit copy sha
 keys Down
-macro 'Keys "F11" if Menu.Select("GitKit", 2) > 0 then Keys "Enter" if Menu.Select("tip info", 2) > 0 then Keys "Enter" end end'
+macro 'Keys "F11" if Menu.Select("GitKit", 2) > 0 then Keys "Enter" if Menu.Select("Copy info", 2) > 0 then Keys "Enter" end end'
 job {
 	Assert-Far -Dialog
 	Assert-Far ($Far.Dialog[1].Text -match '^\w+ \d\d\d\d-\d\d-\d\d ')

@@ -5,11 +5,17 @@ namespace GitKit;
 
 static class UI
 {
-	public static void CopyTip(Commit commit)
+	public static void CopyInfo(Repository repo, Commit commit)
 	{
 		var info = Lib.FormatCommit(commit, Settings.Default.GetData().ShaPrefixLength);
+		var branch = repo.Head.FriendlyName;
+		var status = repo.RetrieveStatus().IsDirty ? "dirty" : "clean";
 
-		switch (Far.Api.Message(info, Const.CopyCommit, default, ["SHA-&1", "&Info", "&Full", "&Short", "Cancel"]))
+		switch (Far.Api.Message(
+			$"{info}\nCurrent branch: {branch} ({status})",
+			Const.CopyInfoTitle,
+			default,
+			["SHA-&1", "&Info", "&Full", "&Short", "Cancel"]))
 		{
 			case 0:
 				Far.Api.CopyToClipboard(commit.Sha);
