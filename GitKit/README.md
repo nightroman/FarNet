@@ -471,13 +471,13 @@ The panel is opened by the command [gk:branches](#gkbranches).
 
 - `F8`, `Del`
 
-    Safely deletes selected local tracking branches.
+    Safely deletes local branches merged to other branches.
 
-    Remote, non-tracking, tracking with new commits are not deleted.
+    Remote and not merged local branches are not deleted.
 
 - `ShiftF8`, `ShiftDel`
 
-    Deletes selected branches including remote, non-tracking, tracking with new commits.
+    Deletes branches including remote and not merged.
 
 - See also [Menu](#menu).
 

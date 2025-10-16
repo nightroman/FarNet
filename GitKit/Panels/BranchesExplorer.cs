@@ -149,7 +149,25 @@ public class BranchesExplorer : BaseExplorer
 					continue;
 				}
 
-				if (branch.TrackedBranch is not { } tracked || tracked.Tip is not { } tip2 || tip2.Author.When < branch.Tip.Author.When)
+				// to find refs
+				var tip = branch.Tip;
+
+				// other local branches, from new to old, new are more likely merged
+				// (one calls safe delete assuming merged)
+				var otherLocalBranches = repo.Branches
+					.Where(b => b != branch && !b.IsRemote)
+					.OrderByDescending(b => b.Tip?.Author.When)
+					.Select(b => b.Reference)
+					.ToArray();
+
+				// merged to local?
+				bool safe = repo.Refs.ReachableFrom(otherLocalBranches, [tip]).Any();
+
+				// merged to tracked?
+				if (!safe)
+					safe = branch.TrackedBranch is { } tracked && repo.Refs.ReachableFrom([tracked.Reference], [tip]).Any();
+
+				if (!safe)
 				{
 					CannotDelete(args, file, $"Use [ShiftDel] to delete branch '{branch.FriendlyName}'.");
 					continue;

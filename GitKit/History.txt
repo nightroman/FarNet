@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 1.4.1 =
+
+Safe delete merged branches.
+
 = 1.4.0 =
 
 New command gk:setenv
