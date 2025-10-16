@@ -14,6 +14,7 @@ abstract class AbcCommand
 		public const string IsGitPath = "IsGitPath";
 		public const string Kind = "Kind";
 		public const string Message = "Message";
+		public const string Name = "Name";
 		public const string NoCheckout = "NoCheckout";
 		public const string Path = "Path";
 		public const string PrettifyMessage = "PrettifyMessage";

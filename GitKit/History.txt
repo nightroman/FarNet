@@ -1,5 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 1.4.0 =
+
+New command gk:setenv
+- to show branch in title or prompt
+
 = 1.3.20 =
 
 Tweak "Copy info" menu and message.

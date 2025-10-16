@@ -26,6 +26,7 @@ public class Command : ModuleCommand
 				"init" => new InitCommand(parameters),
 				"pull" => new PullCommand(parameters),
 				"push" => new PushCommand(parameters),
+				"setenv" => new SetEnvCommand(parameters),
 				"status" => new StatusCommand(parameters),
 				_ => throw new ModuleException($"Unknown command '{parameters.Command}'.")
 			};

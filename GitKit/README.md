@@ -21,6 +21,7 @@ Far Manager git helpers based on LibGit2Sharp
     - [gk:init](#gkinit)
     - [gk:pull](#gkpull)
     - [gk:push](#gkpush)
+    - [gk:setenv](#gksetenv)
     - [gk:status](#gkstatus)
 - [Panels](#panels)
     - [Branches panel](#branches-panel)
@@ -374,6 +375,38 @@ This command pulls the head branch.
 [Contents]
 
 This command pushes the head branch, with a confirmation dialog.
+
+*********************************************************************
+## gk:setenv
+
+[Contents]
+
+Sets the specified environment variable to `<branch-name> (<change-count>)`.
+
+**Parameters**
+
+- `Name=<string>`
+
+    The environment variable name.
+
+**Use case: Show branch in title or prompt**
+
+(1) Use this macro with your variable name (`_branch`):
+
+```lua
+Event {
+  group = "FolderChanged";
+  description = "GitKit setenv";
+  action = function()
+    Plugin.SyncCall("10435532-9BB3-487B-A045-B0E6ECAAB6BC", [[gk:setenv name=_branch]])
+  end;
+}
+```
+
+(2) Use `%_branch%` in one of the options (`F9` / `Options`):
+
+- `Interface settings` / `Far window title addons`
+- `Command line settings` / `Set command line prompt format`
 
 *********************************************************************
 ## gk:status
