@@ -561,4 +561,9 @@ Out-String -Width $args[1]
 			return $"<ERROR: {ex.Message}>";
 		}
 	}
+
+	internal static object GetVariableValue(string name)
+	{
+		return Engine.SessionState.PSVariable.GetValue(name);
+	}
 }

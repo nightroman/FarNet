@@ -1,5 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 1.4.3 =
+
+Branches panel
+- Checkout cursor branch: ShiftF7 instead of ShiftEnter
+
 = 1.4.2 =
 
 gk:setenv

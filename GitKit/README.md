@@ -452,12 +452,6 @@ The panel is opened by the command [gk:branches](#gkbranches).
 
     Opens the cursor branch [Commits panel](#commits-panel).
 
-- `ShiftEnter`
-
-    Checkouts the cursor branch.
-    For the local branch, makes it the head branch.
-    For the remote branch, creates a new branch from it and makes it the head branch.
-
 - `ShiftF5`
 
     Creates a new branch from the cursor branch.
@@ -468,9 +462,12 @@ The panel is opened by the command [gk:branches](#gkbranches).
 
 - `F7`
 
-    Creates and checkouts a new branch from the head branch.
-    Note that the head branch is with `*`, not the cursor.
-    To copy the cursor branch, use `ShiftF5`.
+    Creates and checkouts a new branch from the head branch marked with `*`.
+
+- `ShiftF7`
+
+    Checkouts the cursor branch.
+    For remote, creates a new branch first.
 
 - `F8`, `Del`
 

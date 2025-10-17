@@ -240,8 +240,7 @@ public class BranchesPanel : BasePanel
 	{
 		switch (key.VirtualKeyCode)
 		{
-			// checkout cursor branch
-			case KeyCode.Enter when key.IsShift():
+			case KeyCode.F7 when key.IsShift():
 				CheckoutBranch();
 				return true;
 		}

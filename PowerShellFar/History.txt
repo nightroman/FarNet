@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.62 =
+
+[F5] in Invoke-Build script editor, on errors
+- go to nested error, if any
+- open another script error
+
 = 9.0.61 =
 
 Use FarNet 9.0.44

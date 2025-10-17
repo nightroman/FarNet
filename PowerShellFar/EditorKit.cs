@@ -546,6 +546,25 @@ static class EditorKit
 		}
 	}
 
+	static (string?, int, int) GetErrorPosition(RuntimeException ex)
+	{
+		//! InvocationInfo is null on CtrlC in prompts
+		if (!(ex.ErrorRecord.InvocationInfo is { } ii))
+			return (null, -1, -1);
+
+		// amend for inner error
+		var errors = (ArrayList)A.GetVariableValue("Error");
+		if (errors.Count >= 2 &&
+			errors[0] is ErrorRecord er1 &&
+			errors[1] is ErrorRecord er2 &&
+			er2.ScriptStackTrace.Contains(er1.ScriptStackTrace))
+		{
+			ii = er2.InvocationInfo;
+		}
+
+		return (ii.ScriptName, ii.OffsetInLine - 1, ii.ScriptLineNumber - 1);
+	}
+
 	// !! Use PS for getting tasks, script block fails with odd NRE on exit.
 
 	// !! The task must be in the same file and strictly above or at the caret,
@@ -558,14 +577,24 @@ static class EditorKit
 
 		var fileName = editor.FileName;
 
-		void GoToError(RuntimeException ex, bool redraw)
+		void GoToError(RuntimeException ex)
 		{
-			//! InvocationInfo is null on CtrlC in prompts
-			if (ex.ErrorRecord.InvocationInfo is { } ii && fileName.Equals(ii.ScriptName, StringComparison.OrdinalIgnoreCase))
+			var (file, x, y) = GetErrorPosition(ex);
+			if (fileName.Equals(file, StringComparison.OrdinalIgnoreCase))
 			{
-				editor.GoTo(ii.OffsetInLine - 1, ii.ScriptLineNumber - 1);
-				if (redraw)
-					editor.Redraw();
+				editor.GoTo(x, y);
+				editor.Redraw();
+			}
+			else if (file is { })
+			{
+				//! post over user screen
+				Far.Api.PostJob(() =>
+				{
+					var editor = Far.Api.CreateEditor();
+					editor.FileName = file;
+					editor.GoTo(x, y);
+					editor.Open();
+				});
 			}
 		}
 
@@ -677,13 +706,12 @@ static class EditorKit
 				};
 				A.Run(args);
 
-				// on error in the editor script go to its position
-				//! do not redraw now or the editor is shown
-				if (args.Reason is RuntimeException ex)
-					GoToError(ex, false);
-
 				// like `pause`
 				new UI.ReadLine(new() { Prompt = "Press Enter to continue..." }).Show();
+
+				// go to the error position
+				if (args.Reason is RuntimeException ex)
+					GoToError(ex);
 			}
 			finally
 			{
@@ -692,8 +720,8 @@ static class EditorKit
 		}
 		catch (RuntimeException ex)
 		{
-			// it is a build script issue more likely, go to its position and redraw, show the simple message
-			GoToError(ex, true);
+			// it is a build script issue more likely, go to its position, show warning
+			GoToError(ex);
 			Far.Api.Message(
 				ex.Message,
 				MyTitle,
