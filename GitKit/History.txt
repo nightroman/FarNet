@@ -1,5 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 1.4.2 =
+
+gk:setenv
+- one-symbol rule
+
 = 1.4.1 =
 
 Safe delete merged branches.

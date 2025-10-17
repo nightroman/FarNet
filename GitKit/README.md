@@ -383,6 +383,9 @@ This command pushes the head branch, with a confirmation dialog.
 
 Sets the specified environment variable to `<branch-name> (<change-count>)`.
 
+One-symbol rule: if the variable exists and set to one symbol, neither letter
+nor digit, then updates of this variable are disabled.
+
 **Parameters**
 
 - `Name=<string>`

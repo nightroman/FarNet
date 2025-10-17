@@ -29,9 +29,10 @@ param(
 	[switch]$All
 )
 
-Assert-Far $env:FarNetCode -Message 'Please set env:FarNetCode'
-Assert-Far ($Far.Window.Count -eq 2) -Message 'Please exit editors, viewers, dialogs.'
+Assert-Far $env:FarNetCode -Message 'Requires env:FarNetCode'
+Assert-Far ($Far.Window.Count -eq 2) -Message 'Exit editors, viewers, dialogs.'
 
+$env:_branch = '?'
 $global:Error.Clear()
 $SavedPanelPaths = $Far.Panel.CurrentDirectory, $Far.Panel2.CurrentDirectory
 

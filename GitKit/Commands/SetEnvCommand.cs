@@ -10,6 +10,11 @@ sealed class SetEnvCommand(CommandParameters parameters) : AbcCommand
 
 	public override void Invoke()
 	{
+		// one-symbol rule
+		var old = Environment.GetEnvironmentVariable(_name);
+		if (old?.Length == 1 && !char.IsLetterOrDigit(old[0]))
+			return;
+
 		string root = Repository.Discover(Far.Api.CurrentDirectory);
 
 		string text;
@@ -29,8 +34,7 @@ sealed class SetEnvCommand(CommandParameters parameters) : AbcCommand
 				text += $" ({count})";
 		}
 
-		var text2 = Environment.GetEnvironmentVariable(_name);
-		if (text != text2)
+		if (text != old)
 		{
 			Environment.SetEnvironmentVariable(_name, text);
 			Far.Api.UI.Redraw();
