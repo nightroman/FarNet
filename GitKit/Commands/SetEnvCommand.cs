@@ -25,10 +25,27 @@ sealed class SetEnvCommand(CommandParameters parameters) : AbcCommand
 		else
 		{
 			using var repo = new Repository(root);
+			var head = repo.Head;
 
-			text = repo.Head.FriendlyName;
+			text = head.FriendlyName;
 
-			//! implemented as lazy call `git_diff_num_deltas`
+			// add tracking
+			if (head.IsTracking && head.TrackingDetails is { } tracking)
+			{
+				int n1 = tracking.AheadBy.GetValueOrDefault();
+				int n2 = tracking.BehindBy.GetValueOrDefault();
+
+				if (n1 > 0)
+					text += $" +{n1}";
+
+				if (n2 > 0)
+					text += $" -{n2}";
+
+				if (n1 + n2 == 0)
+					text += " =";
+			}
+
+			// add changes (lazy call `git_diff_num_deltas`)
 			var count = repo.Diff.Compare<TreeChanges>().Count;
 			if (count > 0)
 				text += $" ({count})";

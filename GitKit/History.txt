@@ -1,5 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 1.4.4 =
+
+gk:setenv
+- add tracking info
+
 = 1.4.3 =
 
 Branches panel

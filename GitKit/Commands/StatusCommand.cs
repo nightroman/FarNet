@@ -54,9 +54,10 @@ sealed class StatusCommand(CommandParameters parameters) : BaseCommand(parameter
 	public override void Invoke()
 	{
 		using var repo = new Repository(GitDir);
+		var head = repo.Head;
 
 		// tip is null: empty repository, fresh orphan branch ~ both "unborn"
-		Commit? tip = repo.Head.Tip;
+		Commit? tip = head.Tip;
 
 		if (!repo.Info.IsBare)
 			WriteChanges(repo, _showFiles);
@@ -73,20 +74,19 @@ sealed class StatusCommand(CommandParameters parameters) : BaseCommand(parameter
 
 		if (tip is null)
 		{
-			Far.Api.UI.Write(repo.Head.FriendlyName);
+			Far.Api.UI.Write(head.FriendlyName);
 			if (repo.Info.IsHeadUnborn)
 				Far.Api.UI.Write(" (unborn)");
 		}
 		else
 		{
-			var tracking = repo.Head.TrackingDetails;
-			if (tracking is not null)
+			if (head.IsTracking && head.TrackingDetails is { } tracking)
 			{
-				if (tracking.AheadBy > 0)
-					Far.Api.UI.Write($"+{tracking.AheadBy} ", ConsoleColor.Green);
+				if (tracking.AheadBy is int n1 && n1 > 0)
+					Far.Api.UI.Write($"+{n1} ", ConsoleColor.Green);
 
-				if (tracking.BehindBy > 0)
-					Far.Api.UI.Write($"-{tracking.BehindBy} ", ConsoleColor.Red);
+				if (tracking.BehindBy is int n2 && n2 > 0)
+					Far.Api.UI.Write($"-{n2} ", ConsoleColor.Red);
 			}
 
 			var branches = repo.Branches
