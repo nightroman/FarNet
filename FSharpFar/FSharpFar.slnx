@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="src/FarNet.FSharp/FarNet.FSharp.fsproj" />
+  <Project Path="src/FSharpFar/FSharpFar.fsproj" />
+  <Project Path="src/fsx/fsx.fsproj" />
+</Solution>

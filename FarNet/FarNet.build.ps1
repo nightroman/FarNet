@@ -47,7 +47,7 @@ task buildWin32 {
 
 	#! build just FarNetMan
 	exec { & (Resolve-MSBuild) @(
-		"..\FarNet.sln"
+		"..\FarNet.slnx"
 		"/t:restore,FarNetMan"
 		"/p:Platform=Win32"
 		"/p:FarHome=$(Split-Path $FarHome)\Win32"

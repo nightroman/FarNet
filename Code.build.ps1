@@ -87,7 +87,7 @@ task meta -Inputs $BuildFile, Get-Version.ps1 -Outputs @(
 task build meta, {
 	#! build the whole solution, i.e. FarNet, FarNetMan, PowerShellFar
 	exec { & (Resolve-MSBuild) @(
-		'FarNet.sln'
+		'FarNet.slnx'
 		'/t:restore,build'
 		'/verbosity:minimal'
 		"/p:FarHome=$FarHome"
