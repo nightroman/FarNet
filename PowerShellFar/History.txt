@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.63 =
+
+Microsoft.PowerShell.SDK 7.5.4
+
 = 9.0.62 =
 
 [F5] in Invoke-Build script editor, on errors
