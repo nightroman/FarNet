@@ -9,7 +9,7 @@
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <NoWarn>IDE0130;FarNet250101;FarNet250103</NoWarn>
+    <NoWarn>FarNet250101;FarNet250103</NoWarn>
     <CopyRetryCount>0</CopyRetryCount>
   </PropertyGroup>
   <ItemGroup>

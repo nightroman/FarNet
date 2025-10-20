@@ -1,5 +1,12 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 1.4.5 =
+
+gk:setenv
+- change count includes staged
+- update on git folder changes
+- use caching, avoid same work
+
 = 1.4.4 =
 
 gk:setenv
