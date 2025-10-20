@@ -381,7 +381,7 @@ This command pushes the head branch, with a confirmation dialog.
 
 [Contents]
 
-Sets the specified environment variable to `<branch> <tracking> (<changes>)`.
+Sets the specified environment variable to `<repo> / <branch> <tracking> (<changes>)`.
 
 One-symbol rule: if the variable exists and set to one symbol, neither letter
 nor digit, then updates of this variable are disabled.
@@ -392,6 +392,7 @@ nor digit, then updates of this variable are disabled.
 
     The environment variable name.
 
+---
 **Use case: Show branch in title or prompt**
 
 (1) Use this macro with your variable name (`_branch`):
@@ -410,6 +411,12 @@ Event {
 
 - `Interface settings` / `Far window title addons`
 - `Command line settings` / `Set command line prompt format`
+
+---
+**NOTES**
+
+If a new repo is initialized in a visited folder, it will not be recognized,
+restart is needed. Otherwise the info will be `n/a` or a parent repo info.
 
 *********************************************************************
 ## gk:status

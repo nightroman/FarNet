@@ -18,6 +18,12 @@ sealed class SetEnvCommand : AbcCommand
 	// workdir to info
 	static readonly ConcurrentDictionary<string, Info> _info = new(StringComparer.OrdinalIgnoreCase);
 
+	// location to info
+	static readonly Dictionary<string, Info> _locations = new(StringComparer.OrdinalIgnoreCase);
+
+	// n/a locations
+	static readonly HashSet<string> _na = new(StringComparer.OrdinalIgnoreCase);
+
 	private class Info
 	{
 		public required string Gitdir { get; init; }
@@ -25,7 +31,8 @@ sealed class SetEnvCommand : AbcCommand
 		public string? Text { get; set; }
 		public DateTime LastCallTime { get; set; }
 		public bool IsBusy { get; set; }
-		public FileSystemWatcher? Watcher { get; set; }
+		public FileSystemWatcher? WordirWatcher { get; set; }
+		public FileSystemWatcher? GitdirWatcher { get; set; }
 	}
 
 	public SetEnvCommand(CommandParameters parameters)
@@ -46,20 +53,21 @@ sealed class SetEnvCommand : AbcCommand
 
 	private static void Update(Info info, FileSystemEventArgs? e)
 	{
-		Debug.WriteLine($"gk## {e?.ChangeType} {e?.Name}");
+		Debug.WriteLine($"##gk {e?.ChangeType} {e?.Name}");
 
 		// update time and let busy to work
 		info.LastCallTime = DateTime.UtcNow;
 		if (info.IsBusy)
 			return;
 
+		// skip outer location
+		string location = Far.Api.CurrentDirectory;
+		if (!InRoot(info.Workdir, location))
+			return;
+
 		// one-symbol rule
 		var old = Environment.GetEnvironmentVariable(_name);
 		if (OneSymbolRule(old))
-			return;
-
-		// skip outer location
-		if (!InRoot(info.Workdir, Far.Api.CurrentDirectory))
 			return;
 
 		info.IsBusy = true;
@@ -81,16 +89,16 @@ sealed class SetEnvCommand : AbcCommand
 				using var repo = new Repository(info.Gitdir);
 
 				// always update the text
-				info.Text = GetText(repo);
+				info.Text = GetText(repo, info.Workdir);
 
-				Debug.WriteLine($"gk## try -- {info.Text}");
+				Debug.WriteLine($"##gk try -- {info.Text}");
 
 				var old = Environment.GetEnvironmentVariable(_name);
 				if (info.Text == old)
 					return;
 
-				//! user could change panel after we started work
-				if (!InRoot(info.Workdir, Far.Api.CurrentDirectory))
+				//! user could change after started work
+				if (!location.Equals(Far.Api.CurrentDirectory, StringComparison.OrdinalIgnoreCase))
 					return;
 
 				// done
@@ -106,20 +114,16 @@ sealed class SetEnvCommand : AbcCommand
 		});
 	}
 
-	private static FileSystemWatcher CreateWatcher(Info info)
+	private static FileSystemWatcher CreateWatcher(string dir, Info info)
 	{
-		Debug.WriteLine($"gk## watch {info.Gitdir}");
+		Debug.WriteLine($"##gk watch {dir}");
 
-		var watcher = new FileSystemWatcher(info.Gitdir)
+		var watcher = new FileSystemWatcher(dir)
 		{
 			NotifyFilter = 0
-			| NotifyFilters.Attributes
 			| NotifyFilters.CreationTime
-			| NotifyFilters.DirectoryName
 			| NotifyFilters.FileName
-			| NotifyFilters.LastAccess
 			| NotifyFilters.LastWrite
-			| NotifyFilters.Security
 			| NotifyFilters.Size
 		};
 
@@ -133,6 +137,14 @@ sealed class SetEnvCommand : AbcCommand
 		return watcher;
 	}
 
+	private static void InitWatchers(Info info)
+	{
+		info.WordirWatcher = CreateWatcher(info.Workdir, info);
+
+		if (!info.Gitdir.StartsWith(info.Workdir, StringComparison.OrdinalIgnoreCase))
+			info.GitdirWatcher = CreateWatcher(info.Gitdir, info);
+	}
+
 	private static Info AddInfo(Repository repo)
 	{
 		var workdir = repo.Info.WorkingDirectory.TrimEnd('\\');
@@ -144,15 +156,15 @@ sealed class SetEnvCommand : AbcCommand
 				Workdir = workdir,
 			};
 
-			info.Watcher = CreateWatcher(info);
+			InitWatchers(info);
 			return info;
 		});
 	}
 
-	private static string GetText(Repository repo)
+	private static string GetText(Repository repo, string workdir)
 	{
 		var head = repo.Head;
-		var text = head.FriendlyName;
+		var text = $"{Path.GetFileName(workdir)} / {head.FriendlyName}";
 
 		// add tracking
 		if (head.IsTracking && head.TrackingDetails is { } tracking)
@@ -181,7 +193,7 @@ sealed class SetEnvCommand : AbcCommand
 
 	private static void SetText(string text)
 	{
-		Debug.WriteLine($"gk## set -- {text}");
+		Debug.WriteLine($"##gk set -- {text}");
 
 		Environment.SetEnvironmentVariable(_name, text);
 		Far.Api.UI.Redraw();
@@ -194,9 +206,9 @@ sealed class SetEnvCommand : AbcCommand
 		if (OneSymbolRule(old))
 			return;
 
-		// existing info
+		// known location
 		string location = Far.Api.CurrentDirectory;
-		if (_info.Values.FirstOrDefault(x => InRoot(x.Workdir, location)) is { } found)
+		if (_locations.TryGetValue(location, out var found))
 		{
 			if (!found.IsBusy && found.Text is { } text && text != old)
 				SetText(text);
@@ -204,9 +216,8 @@ sealed class SetEnvCommand : AbcCommand
 			return;
 		}
 
-		// n/a repo
-		string root = Repository.Discover(location);
-		if (root is null)
+		// known n/a
+		if (_na.Contains(location))
 		{
 			if (NA != old)
 				SetText(NA);
@@ -214,9 +225,22 @@ sealed class SetEnvCommand : AbcCommand
 			return;
 		}
 
+		// n/a repo
+		string gitdir = Repository.Discover(location);
+		if (gitdir is null)
+		{
+			_na.Add(location);
+
+			if (NA != old)
+				SetText(NA);
+
+			return;
+		}
+
 		// async update to avoid big repo lags
-		using var repo = new Repository(root);
+		using var repo = new Repository(gitdir);
 		var info = AddInfo(repo);
+		_locations.Add(location, info);
 		Update(info, null);
 	}
 }

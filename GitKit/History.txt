@@ -1,5 +1,12 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 1.4.6 =
+
+gk:setenv
+- add repo name to info
+- fix nested repo info
+- use better caching
+
 = 1.4.5 =
 
 gk:setenv
