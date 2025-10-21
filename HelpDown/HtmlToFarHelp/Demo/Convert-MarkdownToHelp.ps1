@@ -8,7 +8,7 @@ param(
 	[string]$Path = "$PSScriptRoot\README.md"
 )
 
-$ErrorActionPreference = 1
+$ErrorActionPreference=1
 
 # HTML title
 $title = [System.IO.Path]::GetFileNameWithoutExtension($Path)

@@ -50,7 +50,7 @@ param(
 	$Anything
 )
 
-$ErrorActionPreference = 1; trap {$PSCmdlet.ThrowTerminatingError($_)}
+$ErrorActionPreference=1; trap {$PSCmdlet.ThrowTerminatingError($_)}
 
 if (!$Command) {
 	if ($Host.Name -ne 'FarHost') {

@@ -51,7 +51,7 @@ param(
 
 #requires -Version 7.4
 begin {
-	$ErrorActionPreference = 1; if ($Host.Name -ne 'FarHost') {Write-Error 'Requires FarHost.'}
+	$ErrorActionPreference=1; if ($Host.Name -ne 'FarHost') {Write-Error 'Requires FarHost.'}
 	$Items = [System.Collections.Generic.List[object]]::new()
 }
 process {

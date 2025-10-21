@@ -27,6 +27,6 @@ job {
 ]
 '@
 
-	$res = $search.Invoke()
-	Assert-Far 'PowerShellFar.csproj RightControl.csproj RightWords.csproj Script.csproj Vessel.csproj' -eq (($res | Sort-Object Name) -join ' ')
+	$r = $search.Invoke() | Sort-Object name | Join-String -Separator /
+	Assert-Far $r -eq 'GitKit.csproj/PowerShellFar.csproj/RightControl.csproj/RightWords.csproj/Script.csproj/Vessel.csproj'
 }

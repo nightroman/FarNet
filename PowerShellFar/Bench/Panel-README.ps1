@@ -49,7 +49,7 @@ function global:Panel-Readme-FileName($Root) {
 }
 
 #requires -Version 7.4
-$ErrorActionPreference = 1; trap {$PSCmdlet.ThrowTerminatingError($_)}; if ($Host.Name -ne 'FarHost') {throw 'Requires FarHost.'}
+$ErrorActionPreference=1; trap {$PSCmdlet.ThrowTerminatingError($_)}; if ($Host.Name -ne 'FarHost') {throw 'Requires FarHost.'}
 
 $Root = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($Root)
 

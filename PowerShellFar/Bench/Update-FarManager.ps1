@@ -82,7 +82,7 @@ param(
 )
 
 Set-StrictMode -Version 3
-$ErrorActionPreference = 1; trap {$PSCmdlet.ThrowTerminatingError($_)}
+$ErrorActionPreference=1; trap {$PSCmdlet.ThrowTerminatingError($_)}
 
 ### Files to remove after updates if they did not exist.
 $UnusedFiles = '*.hlf', '*.lng', '*.cmd', '*.map', 'changelog', 'File_id.diz'

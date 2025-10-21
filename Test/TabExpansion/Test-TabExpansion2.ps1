@@ -11,7 +11,7 @@ param(
 	[switch]$NoExit
 )
 
-$ErrorActionPreference = 1
+$ErrorActionPreference=1
 
 $PSModulePath = $env:PSModulePath
 $env:PSModulePath = [Environment]::GetEnvironmentVariable('PSModulePath', 'Machine')

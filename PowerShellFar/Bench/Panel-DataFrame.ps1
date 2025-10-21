@@ -53,7 +53,7 @@ param(
 )
 
 #requires -Version 7.4 -Modules DataFrame
-$ErrorActionPreference = 1
+$ErrorActionPreference=1
 if ($Host.Name -ne 'FarHost') {
 	Write-Error 'Please run with FarNet.PowerShellFar.'
 }

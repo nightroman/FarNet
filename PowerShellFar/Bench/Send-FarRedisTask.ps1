@@ -33,7 +33,7 @@ param(
 	[switch]$SkipExited
 )
 
-$ErrorActionPreference = 1
+$ErrorActionPreference=1
 
 # check the pair
 if ($FarRedisPair = [FarNet.User]::Data['FarRedisPair']) {

@@ -39,7 +39,7 @@ function Install-FarPackage(
 )
 {
 	trap {$PSCmdlet.ThrowTerminatingError($_)}
-	$ErrorActionPreference = 1
+	$ErrorActionPreference=1
 
 	# get latest version
 	if (!$Version -or $Version[0] -eq '?') {
@@ -107,7 +107,7 @@ function Restore-FarPackage(
 )
 {
 	trap {$PSCmdlet.ThrowTerminatingError($_)}
-	$ErrorActionPreference = 1
+	$ErrorActionPreference=1
 
 	$Path = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($Path)
 	if (![System.IO.File]::Exists($Path)) {
@@ -222,7 +222,7 @@ function Update-FarPackage(
 )
 {
 	trap {$PSCmdlet.ThrowTerminatingError($_)}
-	$ErrorActionPreference = 1
+	$ErrorActionPreference=1
 
 	$FarHome = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($FarHome)
 	Write-Host "Updating packages in '$FarHome'"
@@ -257,7 +257,7 @@ function Uninstall-FarPackage(
 )
 {
 	trap {$PSCmdlet.ThrowTerminatingError($_)}
-	$ErrorActionPreference = 1
+	$ErrorActionPreference=1
 
 	$FarHome = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($FarHome)
 	Write-Host "Uninstalling '$Id' in '$FarHome'" -ForegroundColor Cyan

@@ -6,7 +6,7 @@
 	Should be tested with FarHost, pwsh, powershell.
 #>
 
-$ErrorActionPreference = 1
+$ErrorActionPreference=1
 $Error.Clear()
 
 $FarHost = $Host.Name -eq 'FarHost'

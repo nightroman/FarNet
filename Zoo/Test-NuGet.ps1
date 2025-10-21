@@ -7,7 +7,7 @@
 #>
 
 Set-StrictMode -Version 3
-$ErrorActionPreference = 1
+$ErrorActionPreference=1
 $tempFarHome = "C:\TEMP\TempFarHome"
 
 Import-Module $env:FarNetCode\PowerShellFar\Modules\FarPackage

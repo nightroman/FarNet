@@ -181,7 +181,7 @@ if ($MyInvocation.InvocationName -eq '.') {
 }
 
 trap {Write-Error $_}
-$ErrorActionPreference = 1
+$ErrorActionPreference=1
 if ($Host.Name -ne 'FarHost') {throw 'Please run with FarNet.PowerShellFar.'}
 
 if ($Far.Window.Kind -ne 'Editor') {

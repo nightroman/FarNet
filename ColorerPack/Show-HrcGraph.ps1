@@ -33,7 +33,7 @@ param(
 	[switch]$NoShow
 )
 
-$ErrorActionPreference = 1
+$ErrorActionPreference=1
 trap {$PSCmdlet.ThrowTerminatingError($_)}
 
 # resolve dot.exe

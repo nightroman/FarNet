@@ -56,7 +56,7 @@ param(
 
 #requires -Version 7.4
 Set-StrictMode -Version 3
-$ErrorActionPreference = 1; trap {$PSCmdlet.ThrowTerminatingError($_)}; if ($Host.Name -ne 'FarHost') {
+$ErrorActionPreference=1; trap {$PSCmdlet.ThrowTerminatingError($_)}; if ($Host.Name -ne 'FarHost') {
 	return Start-Far.ps1 "vps:Edit-IB.ps1 $Task"
 }
 

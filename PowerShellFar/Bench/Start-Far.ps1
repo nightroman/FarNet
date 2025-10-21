@@ -94,7 +94,7 @@ param(
 	[switch]$Wait
 )
 
-$ErrorActionPreference = 1; trap {$PSCmdlet.ThrowTerminatingError($_)}
+$ErrorActionPreference=1; trap {$PSCmdlet.ThrowTerminatingError($_)}
 
 $Path = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($Path)
 if (!(Test-Path -LiteralPath $Path)) {throw "Missing Path: '$Path'."}

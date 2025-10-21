@@ -76,7 +76,7 @@ param(
 )
 
 #requires -Version 7.4 -Modules PSEverything
-$ErrorActionPreference = 1; trap {$PSCmdlet.ThrowTerminatingError($_)}; if ($Host.Name -ne 'FarHost') {throw 'Requires FarHost.'}
+$ErrorActionPreference=1; trap {$PSCmdlet.ThrowTerminatingError($_)}; if ($Host.Name -ne 'FarHost') {throw 'Requires FarHost.'}
 
 # preprocess filter, undo relaxed spaces and backticks enclosing a part
 $Filter = $Filter.Trim() -replace ':\s+', ':' -replace '`(.*?)`.*', '$1'

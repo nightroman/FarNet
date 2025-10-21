@@ -3,7 +3,7 @@
 # - static method Job1()
 # - object method Job2()
 
-$ErrorActionPreference = 1
+$ErrorActionPreference=1
 
 $dll = "$env:TEMP\MyLibForJS.dll"
 if (Test-Path $dll) {

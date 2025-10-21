@@ -7,7 +7,7 @@
 	See Send-FarRedisTask.ps1
 #>
 
-$ErrorActionPreference = 1
+$ErrorActionPreference=1
 
 if ([FarNet.User]::Data['FarRedisHandler']) {
 	return

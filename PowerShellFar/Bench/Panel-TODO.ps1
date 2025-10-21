@@ -30,7 +30,7 @@ param(
 )
 
 #requires -Version 7.4
-$ErrorActionPreference = 1
+$ErrorActionPreference=1
 trap {$PSCmdlet.ThrowTerminatingError($_)}
 if ($Host.Name -ne 'FarHost') {throw 'Requires FarHost.'}
 
