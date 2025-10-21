@@ -60,10 +60,17 @@ sealed class SetEnvCommand : AbcCommand
 		if (info.IsBusy)
 			return;
 
-		// skip outer location
+		// skip outer repo or location
 		string location = Far.Api.CurrentDirectory;
-		if (!InRoot(info.Workdir, location))
+		if (_locations.TryGetValue(location, out var info2))
+		{
+			if (info2 != info)
+				return;
+		}
+		else if (!InRoot(info.Workdir, location))
+		{
 			return;
+		}
 
 		// one-symbol rule
 		var old = Environment.GetEnvironmentVariable(_name);

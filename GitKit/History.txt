@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 1.4.8 =
+
+Skip outer repo events on changes in nested, fix wrong info.
+
 = 1.4.7 =
 
 Add sample macro file.
