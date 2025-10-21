@@ -497,7 +497,7 @@ static class EditorKit
 		if (fileName.EndsWith(".build.ps1", StringComparison.OrdinalIgnoreCase) ||
 			fileName.EndsWith(".test.ps1", StringComparison.OrdinalIgnoreCase))
 		{
-			InvokeTaskFromEditor(editor);
+			InvokeIBTaskFromEditor(editor);
 			return;
 		}
 
@@ -571,7 +571,7 @@ static class EditorKit
 	// that is avoid unexpected redefined tasks below the caret and do not run
 	// implicit dot-tasks as we used to.
 
-	public static void InvokeTaskFromEditor(IEditor editor)
+	public static void InvokeIBTaskFromEditor(IEditor editor)
 	{
 		const string MyTitle = "Invoke-Build task";
 

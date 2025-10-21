@@ -84,6 +84,7 @@ task package win32, help, markdown, {
 		'README.html'
 		'History.txt'
 		'..\LICENSE'
+		'GitKit.macro.lua'
 	)
 
 	# bits
@@ -94,6 +95,7 @@ task package win32, help, markdown, {
 FarHome\FarNet\Modules\GitKit\GitKit.dll
 FarHome\FarNet\Modules\GitKit\GitKit.fs.ini
 FarHome\FarNet\Modules\GitKit\GitKit.hlf
+FarHome\FarNet\Modules\GitKit\GitKit.macro.lua
 FarHome\FarNet\Modules\GitKit\History.txt
 FarHome\FarNet\Modules\GitKit\LibGit2Sharp.dll
 FarHome\FarNet\Modules\GitKit\LibGit2Sharp.xml
@@ -104,7 +106,7 @@ FarHome.x86\FarNet\Modules\GitKit\git2-3f4182d.dll
 '@
 }
 
-task meta -Inputs 1.build.ps1, History.txt -Outputs Directory.Build.props -Jobs version, {
+task meta -Inputs $BuildFile, History.txt -Outputs Directory.Build.props -Jobs version, {
 	Set-Content Directory.Build.props @"
 <Project>
 	<PropertyGroup>

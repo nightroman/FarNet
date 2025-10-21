@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 1.4.7 =
+
+Add sample macro file.
+
 = 1.4.6 =
 
 gk:setenv

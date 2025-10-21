@@ -4,8 +4,8 @@
     <Platform Name="Win32" />
     <Platform Name="x64" />
   </Configurations>
-  <Project Path="FarNet/FarNet/FarNet.csproj" />
-  <Project Path="FarNet/FarNetMan/FarNetMan.vcxproj" />
+  <Project Path="FarNet/FarNet/FarNet.csproj" Id="264744c1-b6ff-4b75-8ad0-0920bccff3d3" />
+  <Project Path="FarNet/FarNetMan/FarNetMan.vcxproj" Id="A5F07EDB-2242-4A92-BFD1-48396007C625" />
   <Project Path="FarNet/FarNetTest/FarNetTest.csproj" />
   <Project Path="PowerShellFar/PowerShellFar.csproj">
     <BuildDependency Project="FarNet/FarNetMan/FarNetMan.vcxproj" />
