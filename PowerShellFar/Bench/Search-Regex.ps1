@@ -17,9 +17,9 @@
 
 .Parameter Options
 		When Regex is [string] specifies regex options and extra options.
-		See SearchRegexOptions in code for available values and shortcuts.
+		See SearchRegexOptions in code for available values and aliases.
 
-		The string is comma separated values or joined one-letter shortcuts.
+		The string is comma separated values or joined one-letter aliases.
 
 		NOT STANDARD EXTRA OPTIONS
 

@@ -134,7 +134,7 @@ class ReadCommand
 		}
 
 		// result
-		Out = new RunArgs(code) { Writer = new ConsoleOutputWriter(echo) };
+		Out = new RunArgs(code) { Writer = new ConsoleOutputWriter(echo), UseTeeResult = true };
 	}
 
 	bool _Dialog_GotFocus;

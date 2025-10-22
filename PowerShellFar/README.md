@@ -733,6 +733,15 @@ REPL `$r` is the global session variable with the last invoked command result.
 It is used as `$r` or `$Global:r` in the same or different UI context as input
 to next commands or for seeing results again without replying the same command.
 
+Keep in mind, `$r` is changed by next commands with output.
+If this is unwanted:
+
+- Keep `$r` as another variable: `$r2 = $r`
+- Keep another command output as another variable `$r2 = bar`
+- Write another command output to host, to see it: `bar | Out-Host`
+- Discard non-needed output: `$null = bar`, `bar >$null`, `bar | Out-Null`
+- In command line use `ps:no-space...` or use `vps:` for output to viewer
+
 
 *********************************************************************
 ## Power panel
