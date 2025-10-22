@@ -129,11 +129,11 @@ task nuget package, version, {
 }
 
 task test_psf_ib {
-	Start-Far 'ps: Invoke-Build ** tests\PSF.test' -Exit 999
+	Start-Far 'ps:Invoke-Build ** tests\PSF.test' -Exit 999
 }
 
 task test_psf_fas {
-	Start-Far "ps: Test-FarNet *" .\tests\PSF.test -Exit 999
+	Start-Far "ps:Test-FarNet *" .\tests\PSF.test -Exit 999
 }
 
 task test_testing {

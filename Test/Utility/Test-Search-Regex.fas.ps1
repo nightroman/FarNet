@@ -5,43 +5,56 @@
 	KO because `Search-Regex 12.9` ~ ERROR (neither string nor regex).
 #>
 
-### Whole word option
+### to_options_string
 job {
-	#! from script
-	function WholeWord($_) {
-		"(?(?=\w)\b)$_(?(?<=\w)\b)"
+	. Search-Regex.ps1
+
+	$r = to_options_string 'I, SIMPLEMATCH, SM'
+	Assert-Far $r -eq 'IgnoreCase, SimpleMatch, Singleline, Multiline'
+
+	try { throw to_options_string 'I, SIMPLEMATCH, SzM'}
+	catch {
+		Assert-Far "$_" -eq @'
+'S, z, M': Cannot convert value "z" to type "SearchRegexOptions". Error: "Unable to match the identifier name z to a valid enumerator name. Specify one of the following enumerator names and try again:
+None, i, IgnoreCase, m, Multiline, n, ExplicitCapture, Compiled, s, Singleline, x, IgnorePatternWhitespace, RightToLeft, ECMAScript, CultureInvariant, t, SimpleMatch, w, WholeWord, a, AllText"
+'@
 	}
+}
+
+### whole_word_regex
+job {
+	. Search-Regex.ps1
 
 	Assert-Far @(
-		'='  -match    (WholeWord '=')
-		'-=' -match    (WholeWord '=')
-		'=-' -match    (WholeWord '=')
-		'b=' -match    (WholeWord '=')
-		'=b' -match    (WholeWord '=')
+		'='  -match    (whole_word_regex '=')
+		'-=' -match    (whole_word_regex '=')
+		'=-' -match    (whole_word_regex '=')
+		'b=' -match    (whole_word_regex '=')
+		'=b' -match    (whole_word_regex '=')
 	)
 
 	Assert-Far @(
-		'a'  -match    (WholeWord 'a')
-		'-a' -match    (WholeWord 'a')
-		'a-' -match    (WholeWord 'a')
-		'ba' -notmatch (WholeWord 'a')
-		'ab' -notmatch (WholeWord 'a')
+		'a'  -match    (whole_word_regex 'a')
+		'-a' -match    (whole_word_regex 'a')
+		'a-' -match    (whole_word_regex 'a')
+		'ba' -notmatch (whole_word_regex 'a')
+		'ab' -notmatch (whole_word_regex 'a')
 	)
 
 	Assert-Far @(
-		'-a'  -match    (WholeWord '-a')
-		'--a' -match    (WholeWord '-a')
-		'-a-' -match    (WholeWord '-a')
-		'b-a' -match    (WholeWord '-a')
-		'-ab' -notmatch (WholeWord '-a')
+		'-a'  -match    (whole_word_regex '-a')
+		'--a' -match    (whole_word_regex '-a')
+		'-a-' -match    (whole_word_regex '-a')
+		'b-a' -match    (whole_word_regex '-a')
+		'-ab' -notmatch (whole_word_regex '-a')
 	)
 
 	Assert-Far @(
-		'a-'  -match    (WholeWord 'a-')
-		'-a-' -match    (WholeWord 'a-')
-		'a--' -match    (WholeWord 'a-')
-		'a-b' -match    (WholeWord 'a-')
-		'ba-' -notmatch (WholeWord 'a-')
+		'a-'  -match    (whole_word_regex 'a-')
+		'-a-' -match    (whole_word_regex 'a-')
+		'a--' -match    (whole_word_regex 'a-')
+		'a-b' -match    (whole_word_regex 'a-')
+		'ba-' -notmatch (whole_word_regex 'a-')
 	)
 }
 

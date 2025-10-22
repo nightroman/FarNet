@@ -316,7 +316,7 @@ public sealed partial class Actor
 		var ui = CreateCodeDialog();
 		var code = await ui.ShowAsync();
 		if (!string.IsNullOrEmpty(code))
-			await Tasks.Job(() => A.Run(new RunArgs(code)));
+			await Tasks.Job(() => A.Run(new RunArgs(code) { UseTeeResult = true }));
 	}
 
 	/// <summary>

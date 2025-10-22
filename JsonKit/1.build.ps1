@@ -75,7 +75,7 @@ README.html
 '@
 }
 
-task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props -Jobs version, {
+task meta -Inputs $BuildFile, History.txt -Outputs Directory.Build.props -Jobs version, {
 	Set-Content Directory.Build.props @"
 <Project>
 	<PropertyGroup>
@@ -121,7 +121,7 @@ task nuget package, version, {
 }
 
 task test {
-	Start-Far "ps: Test-FarNet *" .\Tests -Exit 999
+	Start-Far "ps:Test-FarNet *" .\Tests -Exit 999
 }
 
 task . build, help, clean

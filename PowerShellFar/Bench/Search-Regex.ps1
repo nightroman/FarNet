@@ -13,13 +13,28 @@
 
 		Regex capturing groups are treated as separate found matches.
 
-		With AllText editor selection is not used and groups are ignored.
+		With AllText/a editor selection is not used and groups are ignored.
 
 .Parameter Options
-		Regular expression options and extra options, when Regex is [string].
-		See SearchRegexOptions here for available values.
+		When Regex is [string] specifies regex options and extra options.
+		See SearchRegexOptions in code for available values and shortcuts.
 
-		The option Singleline/s implies AllText.
+		The string is comma separated values or joined one-letter shortcuts.
+
+		NOT STANDARD EXTRA OPTIONS
+
+		SimpleMatch/t - Regex is the plain text, substring to match as is.
+
+		WholeWord/w - Tells to test non-word boundaries before and after.
+
+		AllText/a - Tells to read and process files as whole strings, not
+		lines. Found matches are not selected in the editor.
+
+		Note that Singleline/s implies AllText/a because without it inputs are
+		lines and Singleline/s is not needed. They are not the same, AllText/a
+		without Singleline/s means `\n` is not in `.` and `\n` may be used to
+		control "number of lines between parts", e.g. `before.*\n.*after` =
+		"before" with "after" at the next line.
 
 .Parameter InputObject
 		Strings (file paths) and FileInfo (from Get-*Item). If it is not
@@ -28,52 +43,53 @@
 		dialog.
 
 		Built-in helpers:
-		* Get-EditorHistory - files from history excluding network paths
-
-.Parameter AllText
-		Tells to read and process files as whole strings, not lines.
-		Found matches are not selected in the editor.
-
-		The option Singleline/s implies AllText.
+		- Get-EditorHistory - files from history excluding network paths.
 #>
 
 [CmdletBinding()]
 param(
-	$Regex
+	[object]$Regex
 	,
-	$Options
+	[string]$Options
 	,
 	[Parameter(ValueFromPipeline=1)]
-	$InputObject
-	,
-	[switch]$AllText
+	[object]$InputObject
 )
 
 #requires -Version 7.4
+
 begin {
-	$ErrorActionPreference=1; if ($Host.Name -ne 'FarHost') {Write-Error 'Requires FarHost.'}
-	$Items = [System.Collections.Generic.List[object]]::new()
-}
-process {
-	$Items.Add($InputObject)
-}
-end { try {
 
 [Flags()]
 enum SearchRegexOptions {
 	None = 0
-	IgnoreCase = 1; ic = 1
-	Multiline = 2; m = 2
-	ExplicitCapture = 4; ec = 4
+	i = 1; IgnoreCase = 1
+	m = 2; Multiline = 2
+	n = 4; ExplicitCapture = 4
 	Compiled = 8
-	Singleline = 16; s = 16
-	IgnorePatternWhitespace = 32; ipw = 32
+	s = 16; Singleline = 16
+	x = 32; IgnorePatternWhitespace = 32
 	RightToLeft = 64
 	ECMAScript = 256
 	CultureInvariant = 512
-	SimpleMatch = 1024; sm = 1024
-	WholeWord = 2048; ww = 2048
+
+	t = 1024; SimpleMatch = 1024
+	w = 2048; WholeWord = 2048
+	a = 4096; AllText = 4096
 }
+
+$ErrorActionPreference=1; if ($Host.Name -ne 'FarHost') {Write-Error 'Requires FarHost.'}
+$Items = [System.Collections.Generic.List[object]]::new()
+
+}
+
+process {
+
+$Items.Add($InputObject)
+
+}
+
+end { try {
 
 function Get-EditorHistory {
 	$array = $Far.History.Editor()
@@ -84,6 +100,30 @@ function Get-EditorHistory {
 function whole_word_regex($_) {
 	"(?(?=\w)\b)$_(?(?<=\w)\b)"
 }
+
+function to_options_string([string]$Options) {
+	$r = ''
+	$a = $Options.Split(',', [System.StringSplitOptions]'RemoveEmptyEntries, TrimEntries')
+	for($$ = 0; $$ -lt $a.Length; ++$$) {
+		$s = $a[$$]
+		$o = ''
+		if (![Enum]::TryParse([SearchRegexOptions], $s, $true, [ref]$o)) {
+			if ($s.Length -eq 1) {
+				try { [SearchRegexOptions]$s }
+				catch { throw "'$Options': $_"}
+			}
+			$o = to_options_string ($s.ToCharArray() -join ', ')
+		}
+		$r += $$ ? ", $o" : $o
+	}
+	$r
+}
+
+if ($MyInvocation.InvocationName -eq '.') {
+	return
+}
+
+$AllText = $false
 
 ### Regex dialog
 if (!$Regex) {
@@ -116,8 +156,7 @@ if (!$Regex) {
 		$eInput.UseLastHistory = $true
 	}
 
-	$xAllText = $dialog.AddCheckBox($x, -1, '&All text')
-	$xAllText.Selected = [FarNet.User]::Data['Search-Regex.AllText'] ?? [bool]$AllText
+	$dialog.AddText(-1, -1, 0, '').Separator = $true
 
 	$dialog.Default = $dialog.AddButton(0, -1, 'Ok')
 	$dialog.Default.CenterGroup = $true
@@ -133,7 +172,9 @@ if (!$Regex) {
 
 		# options
 		if ($eOptions.Text) {
-			try { $Options = [SearchRegexOptions]($eOptions.Text.Trim() -split '\W+' -join ',') }
+			try {
+				$SearchOptions = [SearchRegexOptions](to_options_string $eOptions.Text)
+			}
 			catch {
 				Show-FarMessage $_ 'Invalid options'
 				$dialog.Focused = $eOptions
@@ -141,7 +182,7 @@ if (!$Regex) {
 			}
 		}
 		else {
-			$Options = [SearchRegexOptions]::None
+			$SearchOptions = [SearchRegexOptions]::None
 		}
 
 		# pattern after options
@@ -151,16 +192,19 @@ if (!$Regex) {
 			$dialog.Focused = $eRegex
 			continue
 		}
-		if ([int]$Options -band [SearchRegexOptions]::SimpleMatch) {
+		if ([int]$SearchOptions -band [SearchRegexOptions]::SimpleMatch) {
 			$pattern = [regex]::Escape($pattern)
 		}
-		if ([int]$Options -band [SearchRegexOptions]::WholeWord) {
+		if ([int]$SearchOptions -band [SearchRegexOptions]::WholeWord) {
 			$pattern = whole_word_regex $pattern
+		}
+		if ([int]$SearchOptions -band [SearchRegexOptions]::AllText) {
+			$AllText = $true
 		}
 
 		# regex after options and pattern
 		try {
-			$RegexOptions = [Text.RegularExpressions.RegexOptions](([int]$Options) -band (-bnot (1024 + 2048)))
+			$RegexOptions = [Text.RegularExpressions.RegexOptions](([int]$SearchOptions) -band (-bnot (1024 + 2048 + 4096)))
 			$Regex = [regex]::new($pattern, $RegexOptions)
 		}
 		catch {
@@ -168,9 +212,6 @@ if (!$Regex) {
 			$dialog.Focused = $eRegex
 			continue
 		}
-
-		# save
-		[FarNet.User]::Data['Search-Regex.AllText'] = $xAllText.Selected
 
 		# ready input
 		if ($Items) {
@@ -205,9 +246,6 @@ if (!$Regex) {
 			$Items = $null
 		}
 	}
-
-	# other options
-	$AllText = [bool]$xAllText.Selected
 }
 
 ### Validate input and set job data
@@ -420,7 +458,6 @@ Start-FarTask -Panel $Panel -Items $Items -Regex $Regex -AllText $AllText {
 	}
 
 	$ExplorerData.State = 'Completed'
-}
-} catch {
+}} catch {
 	$PSCmdlet.ThrowTerminatingError($_)
 }}

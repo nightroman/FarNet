@@ -1,5 +1,15 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.64 =
+
+Automatic variable REPL $r (last command result) for interactive editors,
+invoke commands, invoke selected, command console, and `ps: ...` commands
+(with a space after colon).
+
+Search-Regex options:
+- Use traditional one-letter shortcuts for regex and extra options.
+- Parameter AllText is replaced with the extra option AllText/a.
+
 = 9.0.63 =
 
 Microsoft.PowerShell.SDK 7.5.4

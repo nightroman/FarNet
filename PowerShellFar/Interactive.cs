@@ -253,7 +253,7 @@ class Interactive : InteractiveEditor
 		{
 			EditorOutputWriterNormal writer = new(Editor);
 			A.SyncPaths();
-			A.Run(new RunArgs(code) { Writer = writer });
+			A.Run(new RunArgs(code) { Writer = writer, UseTeeResult = true });
 			if (_isNestedPrompt)
 				DoPrompt();
 			return;
@@ -264,7 +264,10 @@ class Interactive : InteractiveEditor
 
 		// begin command
 		PowerShell = PowerShell.Create(Runspace);
-		PowerShell.Commands.AddScript(code).AddCommand(A.OutHostCommand);
+		PowerShell.Commands
+			.AddScript(code)
+			.AddCommand(A.TeeResultCommand)
+			.AddCommand(A.OutHostCommand);
 		_ = Task.Run(() =>
 		{
 			try

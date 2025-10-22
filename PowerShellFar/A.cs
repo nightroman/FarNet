@@ -206,7 +206,7 @@ internal static class A
 			if (!DebuggerKit.HasAnyDebugger(Runspace.Debugger))
 			{
 				DebuggerKit.ValidateAvailable();
-				A.InvokeCode("Add-Debugger.ps1");
+				InvokeCode("Add-Debugger.ps1");
 			}
 		}
 	}
@@ -267,11 +267,11 @@ internal static class A
 			Command output;
 			if (_FarUI.Writer is ConsoleOutputWriter)
 			{
-				output = A.OutDefaultCommand;
+				output = OutDefaultCommand;
 			}
 			else
 			{
-				output = A.OutHostCommand;
+				output = OutHostCommand;
 				ignoreApplications = new();
 			}
 
@@ -284,6 +284,8 @@ internal static class A
 				for (int i = 0; i < arguments.Length; ++i)
 					command.AddArgument(arguments[i]);
 			}
+			if (args.UseTeeResult)
+				command.AddCommand(TeeResultCommand);
 			command.AddCommand(output);
 			ps.Invoke();
 			args.Reason = ps.InvocationStateInfo.Reason;
@@ -312,7 +314,7 @@ internal static class A
 
 				// write the reason
 				using var ps = NewPowerShell();
-				A.OutReason(ps, reason);
+				OutReason(ps, reason);
 			}
 			finally
 			{
@@ -436,6 +438,14 @@ internal static class A
 	{
 		MergeUnclaimedPreviousCommandResults = PipelineResultTypes.Output | PipelineResultTypes.Error
 	};
+
+	internal static Command TeeResultCommand { get; } = TeeResultCommandGet();
+	private static Command TeeResultCommandGet()
+	{
+		var r = new Command("Tee-Object", false, true);
+		r.Parameters.Add("Variable", "r");
+		return r;
+	}
 
 	// Robust Get-ChildItem.
 	internal static Collection<PSObject> GetChildItems(string literalPath)

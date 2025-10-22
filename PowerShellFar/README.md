@@ -12,6 +12,7 @@ PowerShell FarNet module for Far Manager
 - [Command line](#command-line)
 - [Menu commands](#menu-commands)
 - [Interactive](#interactive)
+- [REPL $r](#repl-r)
 - [Power panel](#power-panel)
 - [Folder tree](#folder-tree)
 - [Data panel](#data-panel)
@@ -110,21 +111,27 @@ Use command line to invoke commands with the prefixes `ps:` and `vps:`, see
 
 **Invoke commands**
 
-Prompts for PowerShell commands: `[F11] \ PowerShellFar \ Invoke commands`.
-Panels: [Command console](#command-console).
-Other areas: [Invoke commands](#invoke-commands).
+Commands input box: `[F11]` / `PowerShellFar` / `Invoke commands`.
+See [Invoke commands](#invoke-commands).
 
 **Selected code**
 
-The selected or current line text in any editor including command line and
-dialogs can be invoked as PowerShell code: `[F11] \ PowerShellFar \ Invoke
-selected`.
+The selected or current line text in editors, command line, and dialogs is
+invoked as command: `[F11]` / `PowerShellFar` / `Invoke selected`.
+
+**Command console**
+
+Console prompt like input box: `[F11]` / `PowerShellFar` / `Command console`.
+See [Command console](#command-console).
 
 **Interactive**
 
-Main, local, remote editor interactive: `[F11] \ PowerShellFar \ Interactive`.
-Local and remote editors use new sessions and invoke commands asynchronously,
-the UI is not blocked when commands are running, even with output in progress.
+Main session interactive editor: `[F11]` / `PowerShellFar` / `Interactive`.
+See [Interactive](#interactive).
+
+**Inter.async**
+
+Async session interactive editor: `[F11]` / `PowerShellFar` / `Inter.async`.
 See [Interactive](#interactive).
 
 **Script editor**
@@ -141,7 +148,7 @@ which invoke PowerShell commands. See [Examples].
 
 **User menu and file associations**
 
-The user menu (`[F2]`) and file associations (`Commands \ File associations`)
+The user menu (`[F2]`) and file associations (`Commands` / `File associations`)
 may include PowerShell commands with prefixes. See Far Manager help. Note that
 the user menu can be opened in any area, not just panels, but Far Manager does
 not provide a standard key, so use some key and macro `mf.usermenu(0, "")`.
@@ -174,6 +181,7 @@ It is not normally possible to stop commands started from event handlers.
 ## Command line
 
 [Contents]
+[REPL $r](#repl-r)
 
 Commands with prefixes are used in the command line, user menu, file
 associations, and macros.
@@ -288,8 +296,9 @@ For scripts it is exposed as `$Psf.ShowHelp()`.
 ## Command console
 
 [Contents]
+[REPL $r](#repl-r)
 
-This dialog is started from panels by `[F11] \ PowerShellFar \ Invoke commands`.
+This dialog is started from panels by `[F11]` / `PowerShellFar` / `Invoke commands`.
 To start by scripts, call `$Psf.StartCommandConsole()`.
 
 It is a realistic console with the prompt dialog at the bottom. The prompt is
@@ -340,7 +349,7 @@ The prompt is not modal, you may switch to other windows.
 
     Inserts the current file name or full path.
 
-- `[F11] \ PowerShellFar \ Command history`
+- `[F11]` / `PowerShellFar` / `Command history`
 
     Shows the [command history](#command-history).
 
@@ -364,9 +373,10 @@ panel closes the command prompt is restarted.
 ## Invoke commands
 
 [Contents]
+[REPL $r](#repl-r)
 [Menu commands](#menu-commands)
 
-It is opened in all areas but panels by `[F11] \ PowerShellFar \ Invoke commands`.
+It is opened in all areas but panels by `[F11]` / `PowerShellFar` / `Invoke commands`.
 
 This dialog is used for typing and invoking PowerShell commands.
 The output is shown in the viewer.
@@ -391,7 +401,7 @@ The output is shown in the viewer.
 
 [Contents]
 
-The PowerShell command history is shown by `[F11] \ PowerShellFar \ Command history`.
+The PowerShell command history is shown by `[F11]` / `PowerShellFar` / `Command history`.
 
 The history includes Far Manager command and PowerShellFar input dialog histories.
 
@@ -549,15 +559,16 @@ Debugging rules change rather frequently, so they are documented in Wiki
 ## Interactive
 
 [Contents]
+[REPL $r](#repl-r)
 
 Interactive is `*.interactive.ps1` opened in the editor. This file is opened in
 terminal-like mode for typing commands. Commands output is added to the end.
 
 Open new interactive from the menu: `Interactive` for the main session (sync
-execution and output) and `Int.session` for local sessions (async execution
+execution and output) and `Inter.async` for local sessions (async execution
 and output, using `Profile-Local.ps1` for initializing new sessions).
 
-An interactive is also opened on entering a nested prompt, for example when
+Modal interactives are also used on entering nested prompts, for example when
 PowerShell execution is suspended.
 
 **Command and output areas**
@@ -703,6 +714,25 @@ Then it prints the prompts for input, simple for "select one" and prompts like `
 
     Clears the typed text if any.
     Otherwise terminates the current pipeline, i.e. stops script invocation.
+
+*********************************************************************
+## REPL $r
+
+[Contents]
+[Command line](#command-line)
+[Invoke commands](#invoke-commands)
+[Command console](#command-console)
+[Interactive](#interactive)
+
+Automatic variable REPL `$r` is provided for interactive editors, invoke
+commands box, invoke selected code, command console prompt, and `ps: ...`
+commands with a space after colon (`ps:no-space` is for non-interactive
+user menu, file associations, macros).
+
+REPL `$r` is the global session variable with the last invoked command result.
+It is used as `$r` or `$Global:r` in the same or different UI context as input
+to next commands or for seeing results again without replying the same command.
+
 
 *********************************************************************
 ## Power panel
@@ -1499,21 +1529,23 @@ with other options.
     Specifies the regular expression pattern or simple text.
 
     If the regex defines capturing groups then each group is treated as a match
-    and gets selected on opening. Groups are ignored on "All text".
+    and gets selected on opening. Groups are ignored on `AllText/a`.
 
 - Options
 
-    Comma or space delimited regular expression options or their aliases.
+    Comma separated options or aliases, aliases may be joined together.
 
     Standard .NET regular expression options and aliases:
-    `None`, `IgnoreCase/ic`, `Multiline/m`, `ExplicitCapture/ec`, `Compiled`,
-    `Singleline/s`, `IgnorePatternWhitespace/ipw`, `RightToLeft`, `ECMAScript`,
+    `None`, `IgnoreCase/i`, `Multiline/m`, `ExplicitCapture/n`, `Compiled`,
+    `Singleline/s`, `IgnorePatternWhitespace/x`, `RightToLeft`, `ECMAScript`,
     `CultureInvariant`.
 
-    Extra helper options: `SimpleMatch/sm` tells that the pattern is literal
-    string, `WholeWord/ww` tells to search for word bounds, i.e. `\b...\b`.
+    Extra helper options: `SimpleMatch/t` tells that the pattern is literal
+    string, `WholeWord/w` tells to test for non-word bounds before and after,
+    `AllText/a` tells to read files as whole strings, not lines, found matches
+    are not selected in editors.
 
-    Note that the option `Singleline/s` implies "All text".
+    Note that `Singleline/s` implies `AllText/a`. But they are not the same.
 
 - Input
 
@@ -1522,12 +1554,6 @@ with other options.
 
     If the text starts with `*` then it is translated as
     `"Get-ChildItem . -Force -Recurse -Include $text"`
-
-- All text
-
-    Tells to read and process files as whole strings, not lines. In this case
-    options `Multiline` and `Singleline` may be useful. Found matches are not
-    selected in the editor, just the caret set to starts.
 
 ***
 **Result panel keys**
@@ -1565,7 +1591,7 @@ piped to the script or specified by `InputObject`.
 
 Example:
 
-    dir *.ps1 | Search-Regex.ps1 TODO ic, ww
+    dir *.ps1 | Search-Regex.ps1 TODO iw
 
 ***
 **Developer notes**

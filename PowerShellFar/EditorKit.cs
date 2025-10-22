@@ -477,7 +477,7 @@ static class EditorKit
 		FarNet.Works.Kit.SplitCommandWithPrefix(code, out _, out var command, Entry.IsMyPrefix);
 
 		A.SyncPaths();
-		A.Run(new RunArgs(command.ToString()) { Writer = writer });
+		A.Run(new RunArgs(command.ToString()) { Writer = writer, UseTeeResult = true });
 	}
 
 	// PSF sets the current directory and location to the script directory.

@@ -117,7 +117,7 @@ task nuget package, version, {
 }
 
 task test {
-	Start-Far "ps: Test-FarNet *" .\Tests -Exit 999
+	Start-Far "ps:Test-FarNet *" .\Tests -Exit 999
 }
 
 task . build, clean

@@ -8,10 +8,7 @@ job {
 	}
 }
 
-macro @'
-print 'ps: Test-6 Line1; Test-6 Line2'
-Keys 'Enter'
-'@
+macro "print 'ps: Test-6 Line1; Test-6 Line2'; Keys 'Enter'" # $r
 
 <#
 ps: T  Gray
@@ -28,4 +25,7 @@ job {
 	Remove-Item C:\TEMP\buffer.csv
 
 	Remove-Item function:\Test-6
+
+	# REPL $r
+	Assert-Far ($r | Join-String -Separator /) -eq 'Line1/Line2'
 }
