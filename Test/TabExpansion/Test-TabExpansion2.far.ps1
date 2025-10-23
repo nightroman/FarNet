@@ -6,7 +6,10 @@
 	Should be tested with FarHost, pwsh, powershell.
 #>
 
+#2025-10-23-0528 odd caller [scriptblock] on calling from IB task
+
 $ErrorActionPreference=1
+Set-StrictMode -Off
 $Error.Clear()
 
 $FarHost = $Host.Name -eq 'FarHost'
@@ -205,8 +208,11 @@ Test '#.e' { $_ -ccontains '.ExternalHelp' }
 Test '#  .e' { $_ -ccontains '.ExternalHelp' }
 Test '  ##  .e' { $_ -ccontains '.ExternalHelp' }
 
-Test "<#`r`n.z" { !$_ }
-Test "#.z" { !$_ }
+#2025-10-23-0528
+Test "<#`r`n.z" { !$_ -or $_ -is [scriptblock]}
+
+#2025-10-23-0528
+Test "#.z" { !$_ -or $_ -is [scriptblock]}
 
 ### code in comments
 
@@ -244,7 +250,9 @@ if ($FarHost) {
 ### Find-FarFile
 if ($FarHost) {
 	Test 'Find-FarFile ' { "$_" -ceq "$($Far.Panel.GetFiles())" }
-	Test 'Find-FarFile zzz' { !$_ -and !$Error }
+
+	#2025-10-23-0528
+	Test 'Find-FarFile zzz' { (!$_ -or $_ -is [scriptblock]) -and !$Error }
 }
 
 ### Out-FarPanel

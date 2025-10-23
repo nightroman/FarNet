@@ -6,7 +6,6 @@
 	Examples
 		ps: Test-FarNet
 		ps: Test-FarNet *
-		ps: Test-FarNet -All
 		ps: Test-FarNet .\Test\X\*
 		ps: Test-FarNet (ls -rec *panel*.ps1)
 
@@ -14,9 +13,6 @@
 		| String -> Get-ChildItem path/pattern
 		| Some -> test file items
 		| -> default tests
-
-.Parameter All
-		Tells to invoke extra tests.
 #>
 
 [CmdletBinding()]
@@ -24,9 +20,7 @@ param(
 	$Tests = -1,
 	$ExpectedTaskCount = 213,
 	$ExpectedIBTestCount = 5,
-	$ExpectedBasicsCount = 15,
-	$ExpectedExtrasCount = 9,
-	[switch]$All
+	$ExpectedBasicsCount = 15
 )
 
 Assert-Far $env:FarNetCode -Message 'Requires env:FarNetCode'
@@ -71,29 +65,6 @@ if (!$Tests) {
 	$items = @(Get-ChildItem $env:FarNetCode\Test -Recurse -Include *.test.ps1)
 	Assert-Far $items.Count -eq $ExpectedIBTestCount
 	Invoke-Build ** $env:FarNetCode\Test
-}
-
-### Extra tests
-$extras = @(
-	if ($All) {
-		{ Invoke-Build test "$env:FarNetCode\FarNet" }
-		Get-Item "$env:FarNetCode\Test\TabExpansion\Test-TabExpansion2.far.ps1"
-		{ & "$env:FarNetCode\Test\TabExpansion\Test-TabExpansion2.ps1" pwsh }
-		{ & "$env:FarNetCode\Test\TabExpansion\Test-TabExpansion2.ps1" powershell }
-		{ Invoke-Build test "$env:FarNetCode\GitKit" }
-		{ Invoke-Build test "$env:FarNetCode\FSharpFar" }
-		{ Invoke-Build test "$env:FarNetCode\JavaScriptFar" }
-		{ Invoke-Build test "$env:FarNetCode\JsonKit" }
-		{ Invoke-Build test "$env:FarNetCode\RedisKit" }
-	}
-)
-if ($All) {
-	Assert-Far $extras.Count -eq $ExpectedExtrasCount
-}
-foreach($test in $extras) {
-	[Diagnostics.Debug]::WriteLine("# $test")
-	& $test
-	Assert-Far -NoError -Message "Errors after extra test: $test"
 }
 
 ### Main tests
@@ -177,5 +148,8 @@ Start-FarTask -Data Tests, ExpectedTaskCount, SavedPanelPaths {
 		### DEBUG
 		if ((Get-Item $env:FARHOME\FarNet\FarNet.dll).VersionInfo.Comments -like '*DEBUG*') { Write-Host FN=DEBUG -ForegroundColor Red }
 		if ((Get-Item $env:FARHOME\FarNet\Modules\PowerShellFar\PowerShellFar.dll).VersionInfo.Comments -like '*DEBUG*') { Write-Host PS=DEBUG -ForegroundColor Red }
+
+		### end
+		Set-Content temp:Test-FarNet.end.txt (Get-Date -Format o)
 	}
 }

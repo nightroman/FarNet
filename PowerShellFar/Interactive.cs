@@ -135,7 +135,7 @@ class Interactive : InteractiveEditor
 		if (isNew)
 			InvokeProfile("Profile-Local.ps1", false);
 
-		Editor.Title = "PS async session " + Path.GetFileName(Editor.FileName);
+		Editor.Title = $"PS async session {ses.Runspace.Id} {Path.GetFileName(Editor.FileName)}";
 	}
 
 	void OpenRemoteSession()

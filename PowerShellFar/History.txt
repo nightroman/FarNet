@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.66 =
+
+[Esc] is async sessions menu opens the first.
+
+Show runspace id in async interactive titles.
+
 = 9.0.65 =
 
 Fix REPL $r in "Command console".

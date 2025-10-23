@@ -75,14 +75,33 @@ Create and test NuGet packages?
 	.\Test-NuGet.ps1
 }
 
-task testAll -If {
+task testFarNet -If {
 	ask @'
-Test all, mind x86, x64.
+Test FarNet, mind x86, x64.
 Start default testing?
 '@
 } {
-	Test-Far.ps1 -All
-	Clear-Host
+	$begin = [datetime]::Now
+
+	Set-Alias far $(if ($env:FARHOME) {"$env:FARHOME\Far.exe"} else {'Far.exe'})
+	far -ro "ps:$env:FarNetCode\Test\Test-FarNet.ps1"
+
+	$end = [datetime](Get-Content temp:Test-FarNet.end.txt -ErrorAction 0)
+	if ($end -lt $begin) {
+		throw "Tests failed."
+	}
+}
+
+### Extras
+$extras = Get-ChildItem ..\..\Test -Filter *.test.ps1
+foreach($test in $extras) {
+	task $test.Name -Data $test {
+		Invoke-Build * $Task.Data.FullName
+	}
+}
+
+task testExtras $extras.ForEach('Name') -If {
+	ask 'Start extra tests?'
 }
 
 task pushPackages -If {

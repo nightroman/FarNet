@@ -25,8 +25,9 @@ static class SessionsMenu
 
 			menu.Add(TextNewSession);
 
+			// Esc? open first
 			if (!menu.Show())
-				continue;
+				return sessions[0];
 
 			var selected = menu.SelectedData as Session;
 

@@ -1,5 +1,5 @@
 
--- Insert "ps: " to empty command line
+-- Insert "ps:space" to empty command line
 Macro {
   key="Space"; description="PSF: Easy prefix";
   area="Shell"; flags="EmptyCommandLine";
