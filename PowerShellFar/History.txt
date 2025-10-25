@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.67 =
+
+Panel-DataFrame.ps1
+- Add Signal plot, use latest FarNet.ScottPlot
+
 = 9.0.66 =
 
 [Esc] is async sessions menu opens the first.

@@ -24,9 +24,7 @@ param(
 	[string]$Path
 )
 
-trap {Write-Error $_}
-$ErrorActionPreference=1
-if ($Host.Name -ne 'FarHost') {throw 'Please run in FarHost.'}
+$ErrorActionPreference=1; trap {Write-Error $_}; if ($Host.Name -ne 'FarHost') {throw 'Requires FarHost.'}
 
 if (!$Path) {
 	$Path = Get-FarPath

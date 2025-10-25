@@ -225,7 +225,7 @@ if (!$Regex) {
 				$text = 'Get-ChildItem -File -Force'
 			}
 			elseif ($text.StartsWith('*')) {
-				$text = "Get-ChildItem . -File -Force -Recurse -Include $text"
+				$text = "(Get-ChildItem . -File -Force -Recurse -Include $text).Where({`$_.FullName -notlike '*\obj\*'})"
 			}
 			$sb = [scriptblock]::Create($text)
 

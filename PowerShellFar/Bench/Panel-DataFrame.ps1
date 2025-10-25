@@ -5,7 +5,7 @@
 
 .Description
 	Requires: https://github.com/nightroman/DataFrame
-	Optional: https://www.nuget.org/packages/FarNet.ScottPlot
+	Optional: https://github.com/nightroman/FarNet.ScottPlot
 
 	Panel columns:
 	- Name: Table and columns.
@@ -16,7 +16,7 @@
 	Keys:
 	- [Enter] opens data table or column panels
 	- [F1] panel help menu, plots:
-		- Histogram, for numeric columns
+		- Histogram, Signal for numerics
 		- Top 10 50 .., top used entries
 		- Scatter of two selected columns
 
@@ -53,10 +53,7 @@ param(
 )
 
 #requires -Version 7.4 -Modules DataFrame
-$ErrorActionPreference=1
-if ($Host.Name -ne 'FarHost') {
-	Write-Error 'Please run with FarNet.PowerShellFar.'
-}
+$ErrorActionPreference=1; if ($Host.Name -ne 'FarHost') {Write-Error 'Requires FarHost.'}
 
 if ($Source -is [string]) {
 	$title = [System.IO.Path]::GetFileName($Source)
@@ -182,6 +179,7 @@ $Panel.add_MenuCreating({
 
 	if ($data.IsNumericColumn()) {
 		$_.Menu.Add('Histogram', {DFShowColumnHistogram $_.Item.Data}).Data = $data
+		$_.Menu.Add('Signal', {DFShowColumnSignal $_.Item.Data}).Data = $data
 	}
 
 	$_.Menu.Add('Top 10', {DFShowColumnCounts $_.Item.Data 10}).Data = $data
@@ -210,11 +208,20 @@ function global:DFConvertColumn {
 
 function global:DFAssertScottPlot {
 	try {
-		Add-Type -Path "$env:FARHOME\FarNet\Lib\FarNet.ScottPlot\FarNet.ScottPlot.dll"
+		Import-Module "$env:FARHOME\FarNet\Lib\FarNet.ScottPlot"
 	}
 	catch {
 		throw "Cannot load FarNet.ScottPlot, is it installed?"
 	}
+}
+
+function global:DFShowColumnSignal {
+	param(
+		[Parameter(Mandatory=1)]
+		[Microsoft.Data.Analysis.DataFrameColumn]$Column
+	)
+	DFAssertScottPlot
+	Show-FarPlotSignal $Column -Title $Column.Name -YLabel $Column.Name
 }
 
 function global:DFShowColumnScatter {
@@ -225,17 +232,8 @@ function global:DFShowColumnScatter {
 		[Parameter(Mandatory=1)]
 		[Microsoft.Data.Analysis.DataFrameColumn]$Column2
 	)
-
 	DFAssertScottPlot
-
-	$xs = [double[]]$Column1
-	$ys = [double[]]$Column2
-
-	$plot = [ScottPlot.FarPlot]::new("$($Column1.Name) -> $($Column2.Name)")
-	$plot.XLabel($Column1.Name)
-	$plot.YLabel($Column2.Name)
-	$null = $plot.Add.ScatterPoints($xs, $ys)
-	$plot.Show()
+	Show-FarPlotScatter $Column1 $Column2 -Kind Points -Title "$($Column1.Name) -> $($Column2.Name)" -XLabel $Column1.Name -YLabel $Column2.Name
 }
 
 function global:DFShowColumnHistogram {
@@ -243,34 +241,8 @@ function global:DFShowColumnHistogram {
 		[Parameter(Mandatory=1)]
 		[Microsoft.Data.Analysis.DataFrameColumn]$Column
 	)
-
 	DFAssertScottPlot
-
-	$N = 20
-	$min = $Column.Min()
-	$max = $Column.Max()
-	$values = [double[]]$Column
-
-	$plot = [ScottPlot.FarPlot]::new($Column.Name)
-	$plot.YLabel('Count')
-	$plot.Axes.Right.Label.Text = 'Probability'
-
-	$hist = [ScottPlot.Statistics.Histogram]::WithBinCount($N, $values)
-
-	$set1 = $plot.Add.Bars($hist.Bins, $hist.Counts)
-	foreach($_ in $set1.Bars) {$_.Size = $hist.FirstBinSize * 0.8}
-
-	$pd = [ScottPlot.Statistics.ProbabilityDensity]::new($values)
-	[double[]] $xs = [ScottPlot.Generate]::RangeWithCount($min, $max, $N * 2);
-	[double[]] $ys = $pd.GetYs($xs, 1)
-
-	$set2 = $plot.Add.ScatterLine($xs, $ys)
-	$set2.Axes.YAxis = $plot.Axes.Right
-	$set2.LineWidth = 2
-	$set2.LineColor = [ScottPlot.Colors]::Black
-	$set2.LinePattern = [ScottPlot.LinePattern]::DenselyDashed
-
-	$plot.Show()
+	Show-FarPlotHistogram $Column -Title $Column.Name -UseProbability
 }
 
 function global:DFShowColumnCounts {

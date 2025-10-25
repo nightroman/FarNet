@@ -1521,15 +1521,10 @@ All you need is to call the script once, normally in a host profile.
 
 [Contents]
 
-The script searches for the specified regex or simple match in the input
-files and sends found matches to the panel, where you can open the editor
-with the caret at the found match.
+The script searches for the regex or simple text in the input files and sends
+matches to the panel for opening in editor with matched text selected.
 
-The search is performed in the background and results are sent to the panel.
-You may work with results immediately even with the search still running.
-
-If the parameter `Regex` is omitted you are prompted to enter it together
-with other options.
+If the parameter `Regex` is omitted, the dialog with options is shown.
 
 **Input dialog controls**
 
@@ -1549,17 +1544,18 @@ with other options.
     `Singleline/s`, `IgnorePatternWhitespace/x`, `RightToLeft`, `ECMAScript`,
     `CultureInvariant`.
 
-    Extra helper options: `SimpleMatch/t` tells that the pattern is literal
-    string, `WholeWord/w` tells to test for non-word bounds before and after,
-    `AllText/a` tells to read files as whole strings, not lines, found matches
-    are not selected in editors.
+    Extra helper options:
 
-    Note that `Singleline/s` implies `AllText/a`. But they are not the same.
+    - `SimpleMatch/t` tells that the pattern is simple text to match.
+    - `WholeWord/w` tells to test for non-word bounds before and after.
+    - `AllText/a` tells to read files as text, not lines, matches are not selected in editors.
+
+    Note: `Singleline/s` implies `AllText/a`. But they are not the same.
 
 - Input
 
     Any command returning file paths or file system items.
-    Missing paths and directory paths or items are ignored.
+    Missing paths and items are ignored.
 
     If the text starts with `*` then it is translated as
     `"Get-ChildItem . -Force -Recurse -Include $text"`
@@ -1576,31 +1572,41 @@ with other options.
 
 Search in .ps1 files in the current directory:
 
-    dir *.ps1
+```text
+dir *.ps1
+```
 
 The same with sub-directories:
 
-    dir . -Include *.ps1 -Recurse
+```text
+*.ps1
+dir . -File -Force -Recurse -Include *.ps1
+```
 
-To search in all or selected panel items, useful in temp panels:
+Search in all or selected panel items, useful in temp panels:
 
-    Get-FarPath -All
-    Get-FarPath -Selected
+```text
+Get-FarPath -All
+Get-FarPath -Selected
+```
 
-To search in the editor history (recent files first, excluded network paths):
+Search in the editor history (recent files first, excluded network paths):
 
-    Get-EditorHistory
+```
+Get-EditorHistory
+```
 
 ***
 **Command line mode**
 
-The script is started with no dialog if the parameter `Regex` is defined. In
-this case options are also defined in the command and input items are either
-piped to the script or specified by `InputObject`.
+The script starts with no dialog if the parameter `Regex` is defined.
+Input items are piped to the script or specified by `InputObject`.
 
 Example:
 
-    dir *.ps1 | Search-Regex.ps1 TODO iw
+```text
+dir *.ps1 | Search-Regex.ps1 TODO iw
+```
 
 ***
 **Developer notes**

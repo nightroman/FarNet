@@ -180,12 +180,10 @@ if ($MyInvocation.InvocationName -eq '.') {
 	return
 }
 
-trap {Write-Error $_}
-$ErrorActionPreference=1
-if ($Host.Name -ne 'FarHost') {throw 'Please run with FarNet.PowerShellFar.'}
+$ErrorActionPreference=1; trap {Write-Error $_}; if ($Host.Name -ne 'FarHost') {throw 'Requires FarHost.'}
 
 if ($Far.Window.Kind -ne 'Editor') {
-	return Show-FarMessage 'Please run from editor.' Snippet
+	return Show-FarMessage 'Requires editor.' Snippet
 }
 
 $Editor = $Far.Editor
