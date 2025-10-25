@@ -38,16 +38,6 @@ If a file opened in editor does not have some settings or they are set to
 unsupported values then the module does nothing and Far Manager current
 settings apply.
 
-### Profile settings
-
-Profile settings may be specified in this configuration file:
-
-    %FARPROFILE%\FarNet\EditorKit\.editorconfig
-
-It is used when the usual `.editorconfig` files are not found.
-
-The profile should set `root = true` to ensure that just this file is used.
-
 ## Module settings
 
 F11 / FarNet / Settings / EditorKit

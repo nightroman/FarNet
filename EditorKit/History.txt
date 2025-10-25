@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.EditorKit
 
+= 2.3.0 =
+
+The default ".editorconfig" in module profile folder is no longer supported.
+It is useful in some cases but not well discoverable, neither by tools nor
+users. Using explicit ".editorconfig" in folders of interest works better.
+
 = 2.2.2 =
 
 Docs.
