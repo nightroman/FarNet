@@ -17,7 +17,7 @@
 	- [Enter] opens data table or column panels
 	- [F1] panel help menu, plots:
 		- Histogram, Signal for numerics
-		- Top 10 50 .., top used entries
+		- Counts... top N most used items
 		- Scatter of two selected columns
 
 .Parameter Source
@@ -182,9 +182,7 @@ $Panel.add_MenuCreating({
 		$_.Menu.Add('Signal', {DFShowColumnSignal $_.Item.Data}).Data = $data
 	}
 
-	$_.Menu.Add('Top 10', {DFShowColumnCounts $_.Item.Data 10}).Data = $data
-	$_.Menu.Add('Top 50', {DFShowColumnCounts $_.Item.Data 50}).Data = $data
-	$_.Menu.Add('Top ..', {DFShowColumnCounts $_.Item.Data 0}).Data = $data
+	$_.Menu.Add('Counts...', {DFShowColumnCounts $_.Item.Data}).Data = $data
 })
 
 function global:DFConvertColumn {
@@ -249,20 +247,16 @@ function global:DFShowColumnCounts {
 	param(
 		[Parameter(Mandatory=1)]
 		[Microsoft.Data.Analysis.DataFrameColumn]$Column
-		,
-		[int]$N
 	)
-
 	DFAssertScottPlot
 
 	$df = $Column.ValueCounts().OrderByDescending('Counts')
 
+	[int]$N = $df.Rows.Count
+	try {$N = $Far.Input('Top', $null, 'Counts', $N)}
+	catch {}
 	if ($N -le 0) {
-		try {$N = $Far.Input('Count', $null, 'Top', $df.Rows.Count)}
-		catch {}
-		if ($N -le 0) {
-			return
-		}
+		return
 	}
 
 	if ($N -lt $df.Rows.Count) {

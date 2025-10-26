@@ -119,6 +119,20 @@ function to_options_string([string]$Options) {
 	$r
 }
 
+function regex_from_pattern_and_options($Pattern, [SearchRegexOptions]$SearchOptions) {
+	if ([int]$SearchOptions -band [SearchRegexOptions]::SimpleMatch) {
+		$Pattern = [regex]::Escape($Pattern)
+	}
+	if ([int]$SearchOptions -band [SearchRegexOptions]::WholeWord) {
+		$Pattern = whole_word_regex $Pattern
+	}
+	if ([int]$SearchOptions -band [SearchRegexOptions]::AllText) {
+		$Script:AllText = $true
+	}
+	$RegexOptions = [Text.RegularExpressions.RegexOptions](([int]$SearchOptions) -band (-bnot (1024 + 2048 + 4096)))
+	[regex]::new($Pattern, $RegexOptions)
+}
+
 if ($MyInvocation.InvocationName -eq '.') {
 	return
 }
@@ -192,26 +206,9 @@ if (!$Regex) {
 			$dialog.Focused = $eRegex
 			continue
 		}
-		if ([int]$SearchOptions -band [SearchRegexOptions]::SimpleMatch) {
-			$pattern = [regex]::Escape($pattern)
-		}
-		if ([int]$SearchOptions -band [SearchRegexOptions]::WholeWord) {
-			$pattern = whole_word_regex $pattern
-		}
-		if ([int]$SearchOptions -band [SearchRegexOptions]::AllText) {
-			$AllText = $true
-		}
 
 		# regex after options and pattern
-		try {
-			$RegexOptions = [Text.RegularExpressions.RegexOptions](([int]$SearchOptions) -band (-bnot (1024 + 2048 + 4096)))
-			$Regex = [regex]::new($pattern, $RegexOptions)
-		}
-		catch {
-			Show-FarMessage $_ 'Invalid pattern'
-			$dialog.Focused = $eRegex
-			continue
-		}
+		$Regex = regex_from_pattern_and_options $pattern $SearchOptions
 
 		# ready input
 		if ($Items) {
@@ -251,15 +248,8 @@ if (!$Regex) {
 ### Validate input and set job data
 if ($Regex -isnot [regex]) {
 	$Regex = "$Regex"
-	$Options = $Options ? [SearchRegexOptions]$Options : 0
-	if ([int]$Options -band [SearchRegexOptions]::SimpleMatch) {
-		$Regex = [regex]::Escape($Regex)
-	}
-	if ([int]$Options -band [SearchRegexOptions]::WholeWord) {
-		$Regex = whole_word_regex $Regex
-	}
-	$RegexOptions = [Text.RegularExpressions.RegexOptions](([int]$Options) -band (-bnot (1024 + 2048)))
-	$Regex = [regex]::new($Regex, $RegexOptions)
+	$SearchOptions = $Options ? [SearchRegexOptions]$Options : 0
+	$Regex = regex_from_pattern_and_options $pattern $SearchOptions
 }
 if (!$Items) {
 	throw "There is no input."

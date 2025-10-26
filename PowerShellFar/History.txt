@@ -1,5 +1,13 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.68 =
+
+Search-Regex.ps1
+- fix options parameter
+
+Panel-DataFrame.ps1
+- use one "Counts..." menu
+
 = 9.0.67 =
 
 Panel-DataFrame.ps1

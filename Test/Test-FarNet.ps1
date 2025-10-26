@@ -46,15 +46,29 @@ else {
 }
 
 ### Initialize
-$null = & $PSScriptRoot\About\Initialize-Test.far.ps1
-[Diagnostics.Debug]::WriteLine("# $(Get-Date) Begin tests")
+$null = & {
+	# ensure expected panel modes
+	$panel1 = $Far.Panel
+	$panel2 = $Far.Panel2
+	$panel1.SortMode = $panel2.SortMode = 'Name'
+
+	# assert and clear
+	[FarNet.Works.Test]::AssertNormalState()
+	Clear-Session
+
+	# ensure Mongo for all tests
+	if (!$Tests) {
+		Start-Mongo.ps1
+	}
+}
+[Diagnostics.Debug]::WriteLine("## $(Get-Date) Begin tests")
 
 ### Basic tests first
 if (!$Tests) {
 	$items = @(Get-ChildItem "$env:FarNetCode\Test\Basics" -Filter *.far.ps1)
 	Assert-Far $items.Count -eq $ExpectedBasicsCount
 	foreach($test in $items) {
-		[Diagnostics.Debug]::WriteLine("# $($test.FullName)")
+		[Diagnostics.Debug]::WriteLine("## $($test.FullName)")
 		& $test.FullName
 		Assert-Far -NoError -Message "Errors after $($test.FullName)"
 	}
@@ -94,7 +108,7 @@ Start-FarTask -Data Tests, ExpectedTaskCount, SavedPanelPaths {
 	foreach($item in $Data.Tests) {
 		++$Data.taskCount
 		$TestFile = $item.FullName
-		[Diagnostics.Debug]::WriteLine("# $TestFile")
+		[Diagnostics.Debug]::WriteLine("## $TestFile")
 
 		### Run current test
 		$result = job {
@@ -123,7 +137,7 @@ Start-FarTask -Data Tests, ExpectedTaskCount, SavedPanelPaths {
 
 	### Finish
 	ps: {
-		[Diagnostics.Debug]::WriteLine("# $(Get-Date) End tests")
+		[Diagnostics.Debug]::WriteLine("## $(Get-Date) End tests")
 		$r = Clear-Session -KeepError -Verbose
 		$r | Format-List
 		if ($r.RemovedVariableCount) {
