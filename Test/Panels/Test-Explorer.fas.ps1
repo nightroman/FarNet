@@ -16,24 +16,22 @@ job {
 }
 job {
 	# title, no dots, the files
-	$Panel = $Far.Panel
 	Assert-Far -Plugin
 	Assert-Far @(
-		$Panel.Title -eq 'Root'
-		$Panel.Files[0].Name -eq 'Flat'
-		$Panel.Files[1].Name -eq 'Tree'
-		$Panel.Files[2].Name -eq 'Path'
+		$__.Title -eq 'Root'
+		$__.Files[0].Name -eq 'Flat'
+		$__.Files[1].Name -eq 'Tree'
+		$__.Files[2].Name -eq 'Path'
 	)
 }
 ### "Flat" explorer
 keys Enter
 job {
 	# title, dots, the file
-	$Panel = $Far.Panel
 	Assert-Far -Plugin
 	Assert-Far @(
-		$Panel.Title -eq 'Flat: Functions'
-		$Panel.Files[0].Name -eq '..'
+		$__.Title -eq 'Flat: Functions'
+		$__.Files[0].Name -eq '..'
 	)
 }
 
@@ -45,7 +43,7 @@ Get-Step-TestFunctionZ
 #! the last test
 job {
 	# drop the update (~ CanSet = false)
-	$Far.Panel.Explorer.AsSetText = $null
+	$__.Explorer.AsSetText = $null
 }
 # edit
 keys F4
@@ -73,18 +71,18 @@ job {
 	Assert-Far -FileName 'aaa2'
 }
 job {
-	$Far.Panel.SelectNames(('aaa2', 'aaa3'))
+	$__.SelectNames(('aaa2', 'aaa3'))
 	Assert-Far @(
-		$Far.Panel.SelectedFiles.Count -eq 2
-		$Far.Panel.SelectedFiles[0].Name -eq 'aaa2'
-		$Far.Panel.SelectedFiles[1].Name -eq 'aaa3'
+		$__.SelectedFiles.Count -eq 2
+		$__.SelectedFiles[0].Name -eq 'aaa2'
+		$__.SelectedFiles[1].Name -eq 'aaa3'
 	)
 }
 keys Del
 job {
 	Assert-Far @(
-		$Far.Panel.CurrentFile.Name -ne 'aaa2'
-		$Far.Panel.SelectedIndexes().Count -eq 0
+		$__.CurrentFile.Name -ne 'aaa2'
+		$__.SelectedIndexes().Count -eq 0
 	)
 }
 
@@ -103,11 +101,10 @@ job {
 keys Enter
 job {
 	# title, dots, the file
-	$Panel = $Far.Panel
 	Assert-Far -Plugin
 	Assert-Far @(
-		$Panel.Title -eq 'Tree: HKCU:\Control Panel'
-		$Panel.Files[0].Name -eq '..'
+		$__.Title -eq 'Tree: HKCU:\Control Panel'
+		$__.Files[0].Name -eq '..'
 	)
 	Find-FarFile Desktop
 }
@@ -115,12 +112,11 @@ job {
 keys Enter
 job {
 	# title, dots, the 1st file
-	$Panel = $Far.Panel
 	Assert-Far -Plugin
 	Assert-Far @(
-		$Panel.Title -like "Tree: *\Control Panel\Desktop"
-		$Panel.Files[0].Name -eq '..'
-		$Panel.Files[1].Name -eq 'Colors'
+		$__.Title -like "Tree: *\Control Panel\Desktop"
+		$__.Files[0].Name -eq '..'
+		$__.Files[1].Name -eq 'Colors'
 	)
 	Find-FarFile Colors
 }
@@ -129,7 +125,7 @@ keys Enter
 job {
 	# title
 	Assert-Far -Plugin
-	Assert-Far ($Far.Panel.Title -like "Tree: *\Colors")
+	Assert-Far ($__.Title -like "Tree: *\Colors")
 }
 # up
 keys CtrlPgUp
@@ -153,31 +149,31 @@ function Test-PathOrLocation {
 	job {
 		# -> Name, keep the panel
 		Find-FarFile $Data.Name
-		$Data.Panel = $Far.Panel
+		$Data.Panel = $__
 	}
 	keys Enter
 	job {
 		# title, dots, different panel (just created)
 		Assert-Far @(
-			$Far.Panel.Title -eq "$($Data.Name): $env:FARHOME\FarNet"
-			$Far.Panel.Files[0].Name -eq '..'
-			$Data.Panel -ne $Far.Panel
+			$__.Title -eq "$($Data.Name): $env:FARHOME\FarNet"
+			$__.Files[0].Name -eq '..'
+			$Data.Panel -ne $__
 		)
 	}
 	# enter FarNet
 	job {
 		# -> Modules, keep the panel (to test reuse)
 		Find-FarFile Modules
-		$Data.Panel = $Far.Panel
+		$Data.Panel = $__
 	}
 	keys Enter
 	job {
 		# title, dots, same panel (yes, reused)
 		Assert-Far -Panels
 		Assert-Far @(
-			$Far.Panel.Title -eq "$($Data.Name): $env:FARHOME\FarNet\Modules"
-			$Far.Panel.Files[0].Name -eq '..'
-			$Data.Panel -eq $Far.Panel
+			$__.Title -eq "$($Data.Name): $env:FARHOME\FarNet\Modules"
+			$__.Files[0].Name -eq '..'
+			$Data.Panel -eq $__
 		)
 	}
 	# exit FarNet
@@ -185,7 +181,7 @@ function Test-PathOrLocation {
 	job {
 		# title, current
 		Assert-Far -Panels -FileName 'Modules'
-		Assert-Far $Far.Panel.Title -eq "$($Data.Name): $env:FARHOME\FarNet"
+		Assert-Far $__.Title -eq "$($Data.Name): $env:FARHOME\FarNet"
 	}
 	# goto root
 	keys Ctrl\
@@ -193,8 +189,8 @@ function Test-PathOrLocation {
 		# title, dots
 		Assert-Far -Panels
 		Assert-Far @(
-			$Far.Panel.Title -eq "$($Data.Name): C:\"
-			$Far.Panel.Files[0].Name -eq '..'
+			$__.Title -eq "$($Data.Name): C:\"
+			$__.Files[0].Name -eq '..'
 		)
 	}
 	# goto root again, nothing changes
@@ -203,8 +199,8 @@ function Test-PathOrLocation {
 		# title, dots
 		Assert-Far -Panels
 		Assert-Far @(
-			$Far.Panel.Title -eq "$($Data.Name): C:\"
-			$Far.Panel.Files[0].Name -eq '..'
+			$__.Title -eq "$($Data.Name): C:\"
+			$__.Files[0].Name -eq '..'
 		)
 	}
 	# escape the explorer
@@ -212,7 +208,7 @@ function Test-PathOrLocation {
 	job {
 		# title, dots
 		Assert-Far -Panels -FileName $Data.Name
-		Assert-Far $Far.Panel.Title -eq "Root"
+		Assert-Far $__.Title -eq "Root"
 	}
 	# go to the Path root again
 	macro 'Keys[[Enter Ctrl\]]'
@@ -220,8 +216,8 @@ function Test-PathOrLocation {
 		# title, dots
 		Assert-Far -Panels
 		Assert-Far @(
-			$Far.Panel.Title -eq "$($Data.Name): C:\"
-			$Far.Panel.Files[0].Name -eq '..'
+			$__.Title -eq "$($Data.Name): C:\"
+			$__.Files[0].Name -eq '..'
 		)
 	}
 	# now go up
@@ -229,7 +225,7 @@ function Test-PathOrLocation {
 	job {
 		# title, dots
 		Assert-Far -Panels -FileName $Data.Name
-		Assert-Far $Far.Panel.Title -eq "Root"
+		Assert-Far $__.Title -eq "Root"
 	}
 }
 
@@ -249,7 +245,7 @@ job {
 
 ### Restore on close all _110210_081347
 job {
-	$Far.Panel.GoToPath("$PSScriptRoot\Test-Explorer.fas.ps1")
+	$__.GoToPath("$PSScriptRoot\Test-Explorer.fas.ps1")
 	Assert-Far -FileName Test-Explorer.fas.ps1
 }
 job {
@@ -264,7 +260,7 @@ job {
 }
 keys Enter
 job {
-	Assert-Far $Far.Panel.Files[1].Name -eq 'Colors'
+	Assert-Far $__.Files[1].Name -eq 'Colors'
 }
 keys ShiftEsc
 job {

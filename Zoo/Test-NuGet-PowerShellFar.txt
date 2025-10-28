@@ -17,7 +17,7 @@ FarHome\FarNet\Modules\PowerShellFar\Bench\Go-Bookmark.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Go-Everything.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Go-HeadFile.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Go-To.ps1
-FarHome\FarNet\Modules\PowerShellFar\Bench\Import-Panel-.ps1
+FarHome\FarNet\Modules\PowerShellFar\Bench\Import-Panel.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Indent-Selection.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Invoke-FromEditor.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Invoke-Shortcut-.ps1

@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.69 =
+
+New automatic variables $__ and $_path, see README.
+
+Import-Panel-.ps1 -> Import-Panel.ps1
+
 = 9.0.68 =
 
 Search-Regex.ps1

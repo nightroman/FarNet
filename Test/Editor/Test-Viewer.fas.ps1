@@ -22,15 +22,15 @@ job {
 }
 macro 'Keys"F3" -- open file in the viewer'
 job {
-	Assert-Far $Far.Viewer.FileName -eq $Data.File1
+	Assert-Far $__.FileName -eq $Data.File1
 }
 macro 'Keys"Add" -- open next file in the same viewer'
 job {
-	Assert-Far $Far.Viewer.FileName -eq $Data.File2
+	Assert-Far $__.FileName -eq $Data.File2
 }
 macro 'Keys"Subtract" -- open prev file in the same viewer'
 job {
-	Assert-Far $Far.Viewer.FileName -eq $Data.File1
+	Assert-Far $__.FileName -eq $Data.File1
 }
 macro 'Keys"Esc" -- close viewer'
 job {

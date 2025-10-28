@@ -24,7 +24,7 @@ job {
 
 job {
 	# end of file!
-	$Frame = $Far.Editor.Frame
+	$Frame = $__.Frame
 	Assert-Far @(
 		$Frame.CaretLine -eq 9
 		$Frame.CaretColumn -eq 13
@@ -35,8 +35,8 @@ job {
 macro 'Keys"RCtrl1 CtrlHome" -- set bookmark 1 and go home'
 
 job {
-	$Caret = $Far.Editor.Caret
-	$Bookmarks = $Far.Editor.Bookmark.Bookmarks()
+	$Caret = $__.Caret
+	$Bookmarks = $__.Bookmark.Bookmarks()
 	Assert-Far @(
 		# home!
 		$Caret.Y -eq 0
@@ -60,8 +60,8 @@ job {
 }
 
 job {
-	$Caret = $Far.Editor.Caret
-	$Bookmarks = $Far.Editor.Bookmark.Bookmarks()
+	$Caret = $__.Caret
+	$Bookmarks = $__.Bookmark.Bookmarks()
 	Assert-Far @(
 		# at bookmark 1!
 		$Caret.Y -eq 9
@@ -76,8 +76,8 @@ job {
 }
 
 job {
-	$Caret = $Far.Editor.Caret
-	$Bookmarks = $Far.Editor.Bookmark.Bookmarks()
+	$Caret = $__.Caret
+	$Bookmarks = $__.Bookmark.Bookmarks()
 	Assert-Far @(
 		# at bookmark 0!
 		$Caret.Y -eq 1
@@ -89,13 +89,13 @@ job {
 
 job {
 	# go to 3 lines, add stack bookmarks
-	$Far.Editor.GoToLine(3)
-	$Far.Editor.Bookmark.AddSessionBookmark()
-	$Far.Editor.GoToLine(5)
-	$Far.Editor.Bookmark.AddSessionBookmark()
-	$Far.Editor.GoToLine(7)
-	$Far.Editor.Bookmark.AddSessionBookmark()
-	$Bookmarks = $Far.Editor.Bookmark.SessionBookmarks()
+	$__.GoToLine(3)
+	$__.Bookmark.AddSessionBookmark()
+	$__.GoToLine(5)
+	$__.Bookmark.AddSessionBookmark()
+	$__.GoToLine(7)
+	$__.Bookmark.AddSessionBookmark()
+	$Bookmarks = $__.Bookmark.SessionBookmarks()
 	Assert-Far @(
 		$Bookmarks.Count -eq 3
 		$Bookmarks[0].CaretLine -eq 3
@@ -111,10 +111,10 @@ job {
 macro 'BM.Prev()'
 
 job {
-	$Bookmarks = $Far.Editor.Bookmark.SessionBookmarks()
+	$Bookmarks = $__.Bookmark.SessionBookmarks()
 	Assert-Far @(
 		# was the same line
-		$Far.Editor.Caret.Y -eq 5
+		$__.Caret.Y -eq 5
 		# was one more same bookmark
 		$Bookmarks.Count -eq 3
 	)
@@ -124,29 +124,29 @@ job {
 macro 'BM.Next()'
 
 job {
-	Assert-Far $Far.Editor.Caret.Y -eq 7
+	Assert-Far $__.Caret.Y -eq 7
 }
 
 job {
 	# go to previous by API
-	$Far.Editor.Bookmark.GoToPreviousSessionBookmark()
+	$__.Bookmark.GoToPreviousSessionBookmark()
 }
 job {
-	Assert-Far $Far.Editor.Caret.Y -eq 5
+	Assert-Far $__.Caret.Y -eq 5
 }
 
 job {
 	# go to next by API
-	$Far.Editor.Bookmark.GoToNextSessionBookmark()
+	$__.Bookmark.GoToNextSessionBookmark()
 }
 job {
-	Assert-Far $Far.Editor.Caret.Y -eq 7
+	Assert-Far $__.Caret.Y -eq 7
 }
 
 job {
 	# remove current
-	$Far.Editor.Bookmark.RemoveSessionBookmarkAt(-1)
-	$Bookmarks = $Far.Editor.Bookmark.SessionBookmarks()
+	$__.Bookmark.RemoveSessionBookmarkAt(-1)
+	$Bookmarks = $__.Bookmark.SessionBookmarks()
 	Assert-Far @(
 		$Bookmarks.Count -eq 2
 		$Bookmarks[0].CaretLine -eq 3
@@ -156,8 +156,8 @@ job {
 
 job {
 	# remove at 1
-	$Far.Editor.Bookmark.RemoveSessionBookmarkAt(1)
-	$Bookmarks = $Far.Editor.Bookmark.SessionBookmarks()
+	$__.Bookmark.RemoveSessionBookmarkAt(1)
+	$Bookmarks = $__.Bookmark.SessionBookmarks()
 	Assert-Far @(
 		$Bookmarks.Count -eq 1
 		$Bookmarks[0].CaretLine -eq 3
@@ -170,13 +170,13 @@ job {
 	Go-Bookmark.ps1
 }
 job {
-	Assert-Far $Far.Editor.Caret.Y -eq 3
+	Assert-Far $__.Caret.Y -eq 3
 }
 
 job {
 	# clear stack bookmarks
-	$Far.Editor.Bookmark.ClearSessionBookmarks()
-	Assert-Far $Far.Editor.Bookmark.SessionBookmarks().Count -eq 0
+	$__.Bookmark.ClearSessionBookmarks()
+	Assert-Far $__.Bookmark.SessionBookmarks().Count -eq 0
 }
 
 # exit

@@ -4,13 +4,13 @@
 keys F11 2 1 g l Enter
 job {
 	Assert-Far -Viewer
-	$Far.Viewer.Close()
+	$__.Close()
 	Assert-Far $r.Path -eq $PWD.Path
 }
 keys F11 2 1 $ _ = 5
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[2].Text -eq '$_=5'
+	Assert-Far $__[2].Text -eq '$_=5'
 }
 keys Enter
 job {
@@ -79,17 +79,17 @@ job {
 	Assert-Far ($var.e.Title.StartsWith('PS async session'))
 }
 keys 1 1 ShiftEnter
-[FarNet.Tasks]::Wait(99, 999, {$e[-4].Text -eq '11'}).Wait()
+[FarNet.Tasks]::Wait(9, 999, {$e[-4].Text -eq '11'}).Wait()
 job {
 	Assert-Far $var.e[-3].Text -eq '>#>'
 }
 keys $ _ = 1 ShiftEnter
-[FarNet.Tasks]::Wait(99, 999, {$e[-5].Text -eq '$_=1'}).Wait()
+[FarNet.Tasks]::Wait(9, 999, {$e[-5].Text -eq '$_=1'}).Wait()
 job {
 	Assert-Far $var.e[-4].Text -eq '<#<'
 }
 keys $ r ShiftEnter
-[FarNet.Tasks]::Wait(99, 999, {$e[-4].Text -eq '11'}).Wait()
+[FarNet.Tasks]::Wait(9, 999, {$e[-4].Text -eq '11'}).Wait()
 job {
 	Assert-Far $var.e[-3].Text -eq '>#>'
 }

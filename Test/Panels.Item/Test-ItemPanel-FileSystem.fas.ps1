@@ -44,12 +44,12 @@ job {
 keys F8
 job {
 	Assert-Far -Dialog
-	Assert-Far ($Far.Dialog[2].Text + $Far.Dialog[3].Text).Contains('target "C:\TEMP\Tmp\dir1`$]["')
+	Assert-Far ($__[2].Text + $__[3].Text).Contains('target "C:\TEMP\Tmp\dir1`$]["')
 }
 keys y Enter
 job {
 	Assert-Far -Dialog
-	Assert-Far ($Far.Dialog[2].Text + $Far.Dialog[3].Text).Contains('target "C:\TEMP\Tmp\file1`$]["')
+	Assert-Far ($__[2].Text + $__[3].Text).Contains('target "C:\TEMP\Tmp\file1`$]["')
 }
 keys y Enter
 job {
@@ -64,7 +64,7 @@ job {
 keys F7
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'New FileSystem item'
+	Assert-Far $__[0].Text -eq 'New FileSystem item'
 }
 macro 'Keys"AltN f i l e 1 ` $ ] [ AltT f i l e AltV Del Enter"'
 job {
@@ -75,7 +75,7 @@ job {
 keys F7
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'New FileSystem item'
+	Assert-Far $__[0].Text -eq 'New FileSystem item'
 }
 macro 'Keys"AltN d i r 1 ` $ ] [ AltT d i r e c t o r y AltV Del Enter"'
 job {
@@ -94,7 +94,7 @@ keys F6
 job {
 	Assert-Far -Dialog
 	Assert-Far (
-		($Far.Dialog[2].Text + $Far.Dialog[3].Text).Contains('target "Item: C:\TEMP\Tmp\dir2`$][ Destination: C:\TEMP\Tmp\dir1`$][\dir2`$]["')
+		($__[2].Text + $__[3].Text).Contains('target "Item: C:\TEMP\Tmp\dir2`$][ Destination: C:\TEMP\Tmp\dir1`$][\dir2`$]["')
 	)
 }
 keys a Enter
@@ -115,7 +115,7 @@ job {
 keys ShiftF6
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'Rename'
+	Assert-Far $__[0].Text -eq 'Rename'
 }
 macro 'Keys"d i r 1 Enter"'
 job {
@@ -129,7 +129,7 @@ macro 'Keys"Multiply F5"'
 job {
 	Assert-Far -Dialog
 	Assert-Far (
-		($Far.Dialog[2].Text + $Far.Dialog[3].Text).Contains('target "Item: C:\TEMP\Tmp\dir1\dir2`$][ Destination: C:\TEMP\Tmp\dir2`$]["')
+		($__[2].Text + $__[3].Text).Contains('target "Item: C:\TEMP\Tmp\dir1\dir2`$][ Destination: C:\TEMP\Tmp\dir2`$]["')
 	)
 }
 keys a Enter
@@ -155,14 +155,14 @@ keys ShiftF6
 job {
 	Assert-Far -Dialog
 	Assert-Far @(
-		$Far.Dialog[0].Text -eq 'Rename'
-		$Far.Dialog[2].Text -eq 'file3`$]['
+		$__[0].Text -eq 'Rename'
+		$__[2].Text -eq 'file3`$]['
 	)
 }
 #! Regression Far 3.0.4760 / 50
 macro 'Keys"Right 3"'
 job {
-	Assert-Far ($Far.Dialog[2].Text -eq 'file3`$][3')
+	Assert-Far ($__[2].Text -eq 'file3`$][3')
 }
 keys Enter
 job {
@@ -198,13 +198,13 @@ job {
 keys F8
 job {
 	Assert-Far -Dialog
-	Assert-Far ($Far.Dialog[1].Text + $Far.Dialog[2].Text).Contains('C:\TEMP\Tmp has children and the Recurse parameter was not specified.')
+	Assert-Far ($__[1].Text + $__[2].Text).Contains('C:\TEMP\Tmp has children and the Recurse parameter was not specified.')
 }
 keys y Enter
 job {
 	# v4.0 amended text
 	Assert-Far -Dialog
-	Assert-Far ($Far.Dialog[2].Text -like '*Performing *operation "Remove Directory" on Target "C:\TEMP\Tmp".*')
+	Assert-Far ($__[2].Text -like '*Performing *operation "Remove Directory" on Target "C:\TEMP\Tmp".*')
 }
 keys a Enter # v4.0 `y` is not enough, it continues to ask
 job {

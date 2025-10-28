@@ -1,3 +1,32 @@
+Set-StrictMode -Version 3
+
+### Auto vars
+
+task auto_var_area {
+	equals $__.GetType().FullName FarNet.Panel1
+
+	$__ = 42
+	equals $__ 42
+
+	try { throw $Global:__ = 42 }
+	catch { equals $_.FullyQualifiedErrorId VariableNotWritable }
+
+	$Error.RemoveAt(0)
+}
+
+task auto_var_path {
+	assert ($_path -like '?:\*')
+
+	$_path = 42
+	equals $_path 42
+
+	try { throw $Global:_path = 42 }
+	catch { equals $_.FullyQualifiedErrorId VariableNotWritable }
+
+	$Error.RemoveAt(0)
+}
+
+###
 
 # Cover crash on invalid non-modal dialog parameters and leaks after fixing the crash
 # https://github.com/FarGroup/FarManager/issues/66

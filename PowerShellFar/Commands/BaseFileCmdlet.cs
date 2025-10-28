@@ -1,9 +1,4 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
-using System.Collections.Generic;
 using System.Management.Automation;
 
 namespace PowerShellFar.Commands;
@@ -45,8 +40,10 @@ class BaseFileCmdlet : BaseCmdlet
 		}
 	}
 
-	internal static string GetCurrentPath(IPanel panel1, IPanel panel2)
+	internal static string GetCurrentPath(IPanel panel1, IPanel? panel2 = null)
 	{
+		panel2 ??= panel1;
+
 		var file = panel1.CurrentFile;
 		if (file is null)
 			return panel2.CurrentDirectory;

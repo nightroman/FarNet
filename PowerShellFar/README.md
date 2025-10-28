@@ -17,7 +17,7 @@ PowerShell FarNet module for Far Manager
 - [Folder tree](#folder-tree)
 - [Data panel](#data-panel)
 - [Tree panel](#tree-panel)
-- [Global objects](#global-objects)
+- [Variables](#variables)
 - [Profiles](#profiles)
 - [Settings](#settings)
 
@@ -1234,11 +1234,11 @@ expandable nodes.
 - `[Ctrl1]` - two columns, the tree nodes and their descriptions.
 
 *********************************************************************
-## Global objects
+## Variables
 
 [Contents]
 
-There are three main objects defined as global variables.
+**Global objects**
 
 - `$Far`
 
@@ -1255,6 +1255,33 @@ There are three main objects defined as global variables.
 
     The PowerShell host. In PowerShellFar its `$Host.Name` is "FarHost".
     Scripts may choose how to work depending on a host.
+
+***
+**Automatic variables**
+
+- `$r`
+
+    The last interactive command result, see [REPL $r](#repl-r).
+
+- `$__`
+
+    The current area interface, one of:
+
+    - `$Far.Dialog`
+    - `$Far.Editor`
+    - `$Far.Viewer`
+    - `$Far.Panel`
+
+    Designed for interactive use and tests.
+    Scripts should use explicit expressions.
+
+- `$_path`
+
+    The cursor file, folder, provider path.
+
+    In active editors and viewers gets their file paths.
+
+    Otherwise gets the panel cursor path, same as `Get-FarPath`.
 
 *********************************************************************
 ## Profiles

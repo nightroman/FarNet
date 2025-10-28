@@ -95,6 +95,8 @@ internal static class A
 		// Get engine once to avoid this: "A pipeline is already executing. Concurrent SessionStateProxy method call is not allowed."
 		// Looks like a hack, but it works fine. Problem case: run Test-CallStack.ps1, Esc -> the error above.
 		Engine = (EngineIntrinsics)Runspace.SessionStateProxy.PSVariable.GetValue(Word.ExecutionContext);
+		Engine.SessionState.PSVariable.Set(new VariableArea());
+		Engine.SessionState.PSVariable.Set(new VariablePath());
 
 		// invoke profiles
 		using FarHost.IgnoreApplications ignoreApplications = new();
