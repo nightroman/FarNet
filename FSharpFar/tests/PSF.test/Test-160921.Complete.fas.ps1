@@ -7,7 +7,10 @@ job {
 	Open-FarEditor "c:\tmp\$([guid]::NewGuid()).fsx"
 }
 
-macro "Keys'Tab' -- must not trigger completion"
+#! FarNet 9.0.45, FSF 5.1.6, ideally test without .editorconfig
+# should not trigger completion
+# should insert spaces
+keys Tab
 job {
 	Assert-Far $Far.Editor.Line.Text -eq '    '
 }

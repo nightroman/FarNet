@@ -44,6 +44,7 @@ type FarInteractive(session: Session) =
         editor.FileName <- path
         editor.CodePage <- 65001
         editor.DisableHistory <- true
+        editor.ExpandTabs <- ExpandTabsMode.New
         editor.Title <- $"F# {Path.GetFileName session.ConfigFile} {Path.GetFileName path}"
         editor.Switching <- Switching.Disabled
         editor.DeleteSource <- DeleteSource.File

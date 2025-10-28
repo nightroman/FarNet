@@ -32,7 +32,8 @@ job {
 	Assert-Far $Far.Line.Text -eq '(far.AnyViewer'
 }
 
-# process as native Tab
+#! FarNet 9.0.45, FSF 5.1.6, ideally test without .editorconfig
+# Tab should insert spaces
 set-it 'x[0]. ' 'Tab'
 job {
 	Assert-Far $Far.Line.Text -eq 'x[0].   '

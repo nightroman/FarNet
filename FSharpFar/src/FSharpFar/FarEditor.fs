@@ -102,6 +102,8 @@ type FarEditor() =
 
     override __.Invoke(sender, _) =
         editor <- sender
+        editor.ExpandTabs <- ExpandTabsMode.New
+
         if editor.MySession.IsNone then
 
             editor.Saving.Add <| fun e ->

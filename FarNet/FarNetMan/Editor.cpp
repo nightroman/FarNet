@@ -269,7 +269,7 @@ void Editor::CodePage::set(int value)
 ExpandTabsMode Editor::ExpandTabs::get()
 {
 	if (!IsOpened)
-		return ExpandTabsMode::None;
+		return _ExpandTabs;
 
 	AutoEditorInfo ei(_id);
 
@@ -282,10 +282,15 @@ ExpandTabsMode Editor::ExpandTabs::get()
 
 void Editor::ExpandTabs::set(ExpandTabsMode value)
 {
-	EditorSetParameter esp = { sizeof(esp) };
-	esp.Type = ESPT_EXPANDTABS;
-	esp.iParam = (int)value;
-	EditorControl_ECTL_SETPARAM(_id, esp);
+	if (IsOpened)
+	{
+		EditorSetParameter esp = { sizeof(esp) };
+		esp.Type = ESPT_EXPANDTABS;
+		esp.iParam = (int)value;
+		EditorControl_ECTL_SETPARAM(_id, esp);
+	}
+
+	_ExpandTabs = value;
 }
 
 IntPtr Editor::Id::get()
@@ -889,6 +894,10 @@ void Editor::Start(const EditorInfo& ei, bool waiting)
 		if (_WriteByteOrderMark.HasValue)
 			WriteByteOrderMark = _WriteByteOrderMark.Value;
 	}
+
+	// apply tabs via property
+	if (_ExpandTabs != ExpandTabsMode::None)
+		ExpandTabs = _ExpandTabs;
 
 	// subscribe to change events Far 3.0.3371
 	EditorSubscribeChangeEvent esce = { sizeof(EditorSubscribeChangeEvent), MainGuid };

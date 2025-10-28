@@ -154,6 +154,7 @@ private:
 	Nullable<bool> _ShowWhiteSpace;
 	Nullable<bool> _WriteByteOrderMark;
 private:
+	ExpandTabsMode _ExpandTabs;
 	FarNet::DeleteSource _DeleteSource;
 	FarNet::Switching _Switching;
 	bool _DisableHistory;

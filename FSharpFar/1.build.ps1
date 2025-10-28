@@ -68,34 +68,34 @@ task markdown {
 
 task package markdown, {
 	remove z
-	$toModule = mkdir "z\tools\FarHome\FarNet\Modules\$ModuleName"
+	$toModule = New-Item "z\tools\FarHome\FarNet\Modules\$ModuleName" -Type Directory
 
-	# module
-	exec { robocopy $ModuleRoot $toModule /s /xf *.pdb } 1
+	exec { robocopy $ModuleRoot $toModule /s } 1
 
-	# meta
 	Copy-Item -Destination z @(
 		'README.md'
 		'..\Zoo\FarNetLogo.png'
 	)
 
-	# repo
 	Copy-Item -Destination $toModule @(
 		'README.html'
 		'History.txt'
 		'..\LICENSE'
 	)
 
-	Assert-SameFile.ps1 -Text -View $env:MERGE -Result (Get-ChildItem $toModule -Recurse -File -Name) -Sample @'
+	Assert-SameFile.ps1 -Result (Get-ChildItem $toModule -Recurse -File -Name) -Text -View $env:MERGE -Sample @'
 FarNet.FSharp.dll
+FarNet.FSharp.pdb
 FarNet.FSharp.xml
 FSharp.Compiler.Service.dll
 FSharp.Core.dll
 FSharp.Core.xml
 FSharp.DependencyManager.Nuget.dll
 FSharpFar.dll
+FSharpFar.pdb
 fsx.dll
 fsx.exe
+fsx.pdb
 fsx.runtimeconfig.json
 History.txt
 LICENSE

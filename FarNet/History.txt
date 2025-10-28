@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet
 
+= 9.0.45 =
+
+Make ExpandTabs working.
+
 = 9.0.44 =
 
 Messages are left aligned by default. Use new AlignCenter to center.

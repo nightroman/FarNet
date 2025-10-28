@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 
+= 5.1.6 =
+
+Use FarNet 9.0.45 and ExpandTabs.
+
 = 5.1.5 =
 
 Use FarNet 9.0.44
