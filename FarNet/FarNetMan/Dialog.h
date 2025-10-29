@@ -1,4 +1,3 @@
-
 #pragma once
 
 namespace FarNet
@@ -65,7 +64,7 @@ internal:
 	FarDialog(HANDLE hDlg);
 	FarDialog(int left, int top, int right, int bottom);
 	INT_PTR DialogProc(intptr_t msg, intptr_t param1, void* param2);
-	static FarDialog^ GetDialog();
+	static FarDialog^ GetDialog(intptr_t id);
 internal:
 	static List<FarDialog^> _dialogs;
 	HANDLE _hDlg;

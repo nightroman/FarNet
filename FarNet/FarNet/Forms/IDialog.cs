@@ -1,4 +1,3 @@
-
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
@@ -21,8 +20,14 @@ namespace FarNet.Forms;
 /// <see cref="Closed"/> may be used for cleaning up.
 /// </para>
 /// </remarks>
-public abstract class IDialog
+public abstract class IDialog : IFace
 {
+	/// <inheritdoc/>
+	public abstract nint Id { get; }
+
+	/// <inheritdoc/>
+	public WindowKind WindowKind => WindowKind.Dialog;
+
 	/// <summary>
 	/// Called when all dialog items are initialized and about to be shown.
 	/// </summary>
@@ -193,11 +198,6 @@ public abstract class IDialog
 	/// Gets or sets the dialog window rectangular.
 	/// </summary>
 	public abstract Place Rect { get; set; }
-
-	/// <summary>
-	/// Gets the internal identifier.
-	/// </summary>
-	public abstract IntPtr Id { get; }
 
 	/// <summary>
 	/// Gets or sets the dialog type ID.

@@ -1,8 +1,4 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System.Collections;
+﻿using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
 namespace FarNet;
@@ -41,6 +37,12 @@ namespace FarNet;
 /// </remarks>
 public partial class Panel : IPanel
 {
+	/// <inheritdoc/>
+	public nint Id => 0;
+
+	/// <inheritdoc/>
+	public WindowKind WindowKind => WindowKind.Panels;
+
 	/// <summary>
 	/// Gets or sets the flag telling that files should be refreshed, reloaded, etc.
 	/// </summary>

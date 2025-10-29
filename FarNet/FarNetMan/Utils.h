@@ -254,6 +254,7 @@ MouseInfo^ GetMouseInfo(const MOUSE_EVENT_RECORD& m);
 void AssertCurrentViewer();
 void DeleteSourceOptional(String^ path, DeleteSource option);
 void SetPanelDirectory(HANDLE handle, String^ path);
+int Call_ACTL_GETWINDOWCOUNT();
 void Call_ACTL_GETWINDOWINFO(WindowInfo& wi, int index);
 void Call_ACTL_GETWINDOWINFO(WindowInfo& wi);
 void Call_DM_GETDLGITEM(CBin& bin, FarGetDialogItem& gdi, HANDLE hDlg, int item);

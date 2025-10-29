@@ -445,9 +445,10 @@ void FarDialog::EnableRedraw()
 	Info.SendDlgMessage(_hDlg, DM_ENABLEREDRAW, TRUE, 0);
 }
 
-FarDialog^ FarDialog::GetDialog()
+FarDialog^ FarDialog::GetDialog(intptr_t id)
 {
-	for (int i = Far::Api->Window->Count; --i >= 0;)
+	int n = Call_ACTL_GETWINDOWCOUNT();
+	for (int i = n; --i >= 0;)
 	{
 		WindowInfo wi;
 		Call_ACTL_GETWINDOWINFO(wi, i);
@@ -458,7 +459,7 @@ FarDialog^ FarDialog::GetDialog()
 		//if (wi.Type == WTYPE_VMENU)
 		//	return nullptr;
 
-		if (wi.Id == 0 || wi.Type != WTYPE_DIALOG)
+		if (wi.Id == 0 || wi.Type != WTYPE_DIALOG || (id != 0 && wi.Id != id))
 			continue;
 
 		HANDLE hDlg = (HANDLE)wi.Id;

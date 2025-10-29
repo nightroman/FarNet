@@ -16,6 +16,7 @@ enum AppState
 extern AppState g_AppState;
 
 // Deny Far
+#define ACTL_GETWINDOWCOUNT stop_ACTL_GETWINDOWCOUNT
 #define ACTL_GETWINDOWINFO stop_ACTL_GETWINDOWINFO
 #define DM_GETDLGITEM stop_DM_GETDLGITEM
 #define DM_SETDLGITEM stop_DM_SETDLGITEM

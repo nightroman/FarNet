@@ -6,7 +6,7 @@ namespace FarNet;
 public abstract class IWindow
 {
 	/// <summary>
-	/// Gets open window count.
+	/// Gets the window count.
 	/// </summary>
 	/// <remarks>
 	/// There is at least one window (panels, editor, or viewer).
@@ -28,21 +28,21 @@ public abstract class IWindow
 	public abstract bool IsModal { get; }
 
 	/// <summary>
-	/// Returns the window kind.
+	/// Gets the window interface.
 	/// </summary>
-	/// <param name="index">
-	/// Window index or -1 for the current window, same as <see cref="WindowKind"/>.
-	/// See <see cref="Count"/>.
-	/// </param>
+	/// <param name="index">Window index or -1 for the current window.</param>
+	public abstract IFace? GetAt(int index);
+
+	/// <summary>
+	/// Gets the window kind.
+	/// </summary>
+	/// <param name="index">Window index or -1 for the current window.</param>
 	public abstract WindowKind GetKindAt(int index);
 
 	/// <summary>
-	/// Returns the window title.
+	/// Gets the window title.
 	/// </summary>
-	/// <param name="index">
-	/// Window index or -1 for the current window.
-	/// See <see cref="Count"/>.
-	/// </param>
+	/// <param name="index">Window index or -1 for the current window.</param>
 	/// <remarks>
 	/// Window title:
 	/// viewer, editor: the file name;
@@ -53,17 +53,14 @@ public abstract class IWindow
 	public abstract string GetNameAt(int index);
 
 	/// <summary>
-	/// Gets the internal identifier.
+	/// Gets the windo identifier.
 	/// </summary>
-	/// <param name="index">
-	/// Window index or -1 for the current window.
-	/// See <see cref="Count"/>.
-	/// </param>
-	public abstract IntPtr GetIdAt(int index);
+	/// <param name="index">Window index or -1 for the current window.</param>
+	public abstract nint GetIdAt(int index);
 
 	/// <summary>
 	/// Sets the current window by the specified index.
 	/// </summary>
-	/// <param name="index">Window index. See <see cref="Count"/>.</param>
+	/// <param name="index">Window index or -1 for the current window.</param>
 	public abstract void SetCurrentAt(int index);
 }

@@ -1,7 +1,3 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 #pragma once
 
 namespace FarNet
@@ -13,6 +9,7 @@ public:
 	virtual property int Count { int get() override; }
 	virtual property WindowKind Kind { WindowKind get() override; }
 public:
+	virtual IFace^ GetAt(int index) override;
 	virtual IntPtr GetIdAt(int index) override;
 	virtual String^ GetNameAt(int index) override;
 	virtual void SetCurrentAt(int index) override;

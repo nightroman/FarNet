@@ -244,10 +244,18 @@ sealed class SetEnvCommand : AbcCommand
 			return;
 		}
 
-		// async update to avoid big repo lags
-		using var repo = new Repository(gitdir);
-		var info = AddInfo(repo);
-		_locations.Add(location, info);
-		Update(info, null);
+		// Async update to avoid big repo lags.
+		// Use try/log, .git may be broken.
+		try
+		{
+			using var repo = new Repository(gitdir);
+			var info = AddInfo(repo);
+			_locations.Add(location, info);
+			Update(info, null);
+		}
+		catch (Exception ex)
+		{
+			Log.TraceException(ex);
+		}
 	}
 }

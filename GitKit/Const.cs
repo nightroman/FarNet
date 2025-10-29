@@ -13,6 +13,7 @@ static class Const
 		EditFile = "&Edit file",
 		Help = "Help",
 		MergeBranch = "&Merge branch",
+		FinishBranch = "&Finish branch",
 		NoBranchName = "(no branch)",
 		PushBranch = "&Push branch";
 }

@@ -453,6 +453,12 @@ void SetPanelDirectory(HANDLE handle, String^ path)
 		throw gcnew InvalidOperationException("Cannot set panel directory: " + path);
 }
 
+#undef ACTL_GETWINDOWCOUNT
+int Call_ACTL_GETWINDOWCOUNT()
+{
+	return (int)Info.AdvControl(&MainGuid, ACTL_GETWINDOWCOUNT, 0, 0);
+}
+
 #undef ACTL_GETWINDOWINFO
 void Call_ACTL_GETWINDOWINFO(WindowInfo& wi, int index)
 {

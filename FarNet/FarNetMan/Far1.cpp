@@ -328,7 +328,7 @@ String^ Far1::TempName(String^ prefix)
 
 IDialog^ Far1::Dialog::get()
 {
-	return FarDialog::GetDialog();
+	return FarDialog::GetDialog(0);
 }
 
 void Far1::PostJob(Action^ handler)

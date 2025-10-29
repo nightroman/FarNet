@@ -141,6 +141,51 @@ public class BranchesPanel : BasePanel
 		Redraw();
 	}
 
+	void FinishBranch()
+	{
+		var branchName = CurrentFile?.Name;
+		if (branchName is null)
+			return;
+
+		using var repo = new Repository(GitDir);
+
+		if (repo.Info.IsHeadDetached)
+			return;
+
+		var branch = repo.Branches[branchName];
+
+		// find main/master
+		var main = repo.Branches["main"] ?? repo.Branches["master"] ??
+			throw new ModuleException("No 'main' or 'master' branch found.");
+
+		// same branch?
+		if (branchName == main.FriendlyName)
+			throw new ModuleException("Cannot merge branch into itself.");
+
+		if (0 != Far.Api.Message(
+			$"Merge branch '{branchName}' into '{main.FriendlyName}'\nand delete '{branchName}' after merging?",
+			Host.MyName,
+			MessageOptions.YesNo))
+			return;
+
+		// checkout main
+		LibGit2Sharp.Commands.Checkout(repo, main);
+
+		// merge into main
+		var mergeResult = repo.Merge(branch, Lib.BuildSignature(repo));
+		if (mergeResult.Status == MergeStatus.Conflicts)
+		{
+			// handle conflicts (abort, resolve, or throw)
+			throw new ModuleException("Merge produced conflicts. Resolve before deleting the source branch.");
+		}
+
+		// delete branch
+		repo.Branches.Remove(branch);
+
+		Update(true);
+		Redraw();
+	}
+
 	void PushBranch()
 	{
 		var branchName = CurrentFile?.Name;
@@ -174,6 +219,7 @@ public class BranchesPanel : BasePanel
 		menu.Add(Const.CopyInfoMenu, (s, e) => CopyInfo());
 		menu.Add(Const.PushBranch, (s, e) => PushBranch());
 		menu.Add(Const.MergeBranch, (s, e) => MergeBranch());
+		menu.Add(Const.FinishBranch, (s, e) => FinishBranch());
 		menu.Add(Const.CompareBranches, (s, e) => CompareBranches());
 	}
 

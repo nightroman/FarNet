@@ -1,5 +1,12 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.70 =
+
+Use FarNet 9.0.46, apply new methods.
+
+In code input dialogs, $__ is the next window, not current dialog.
+This makes code completion ($__.x [Tab]) more practically useful.
+
 = 9.0.69 =
 
 New automatic variables $__ and $_path, see README.

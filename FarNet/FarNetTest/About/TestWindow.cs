@@ -10,6 +10,11 @@ public class TestWindow : IWindow
 
 	public override bool IsModal => throw new NotImplementedException();
 
+	public override IFace? GetAt(int index)
+	{
+		throw new NotImplementedException();
+	}
+
 	public override nint GetIdAt(int index)
 	{
 		throw new NotImplementedException();

@@ -1,10 +1,4 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 
 namespace FarNet;
 
@@ -12,7 +6,7 @@ namespace FarNet;
 /// Any panel: native, plugin, or module.
 /// Exposed as <see cref="IFar.Panel"/> and <see cref="IFar.Panel2"/>.
 /// </summary>
-public interface IPanel //! think twice when convert to abstract class (see Panel2 : Panel1, IPanel)
+public interface IPanel : IFace //! think twice when convert to abstract class (see Panel2 : Panel1, IPanel)
 {
 	#region Settable modes
 	/// <summary>

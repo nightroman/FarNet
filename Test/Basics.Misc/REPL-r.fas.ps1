@@ -10,7 +10,12 @@ job {
 keys F11 2 1 $ _ = 5
 job {
 	Assert-Far -Dialog
-	Assert-Far $__[2].Text -eq '$_=5'
+
+	#! $__ "skips" input dialog
+	Assert-Far ($__ -is [FarNet.IPanel])
+
+	#! hence use $Far.Dialog
+	Assert-Far $Far.Dialog[2].Text -eq '$_=5'
 }
 keys Enter
 job {

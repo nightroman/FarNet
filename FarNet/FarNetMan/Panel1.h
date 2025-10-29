@@ -1,14 +1,13 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 #pragma once
 #include "Wrappers.h"
 
 namespace FarNet
-{;
+{
 ref class Panel1 : public IPanel
 {
+public:
+	virtual property IntPtr Id { IntPtr get() { return IntPtr::Zero; }; }
+	virtual property WindowKind WindowKind { FarNet::WindowKind get() { return FarNet::WindowKind::Panels; }; }
 public:
 	virtual property bool DirectoriesFirst { bool get(); void set(bool value); }
 	virtual property bool Highlight { bool get(); }

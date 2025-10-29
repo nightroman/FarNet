@@ -1,8 +1,4 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-namespace FarNet;
+﻿namespace FarNet;
 
 /// <summary>
 /// Viewer operator. Exposed as <see cref="IFar.Viewer"/>. Created by <see cref="IFar.CreateViewer"/>.
@@ -11,12 +7,13 @@ namespace FarNet;
 /// Normally this object should be created or requested, used instantly and never kept for future use.
 /// When you need the current viewer operator next time call <see cref="IFar.Viewer"/> again to get it.
 /// </remarks>
-public abstract class IViewer : IViewerBase
+public abstract class IViewer : IViewerBase, IFace
 {
-	/// <summary>
-	/// Gets the internal identifier.
-	/// </summary>
-	public abstract IntPtr Id { get; }
+	/// <inheritdoc/>
+	public abstract nint Id { get; }
+
+	/// <inheritdoc/>
+	public WindowKind WindowKind => WindowKind.Viewer;
 
 	/// <summary>
 	/// Gets or sets the option to delete the source file on exit.

@@ -562,6 +562,11 @@ branches" and "Compare commits" or by the command [gk:changes](#gkchanges).
 
     Merges the cursor branch into the head branch, with a confirmation dialog.
 
+- **Finish branch** (branches panel)
+
+    Merges the cursor branch into "main" or "master" and deletes the branch.
+    You are prompted to confirm this operation.
+
 - **Compare branches** (branches panel)
 
     Compares the cursor branch with the selected branch and opens the changes panel.

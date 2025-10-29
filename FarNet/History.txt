@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet
 
+= 9.0.46 =
+
+Add IWindow.GetAt().
+
 = 9.0.45 =
 
 Make ExpandTabs working.

@@ -27,8 +27,14 @@ namespace FarNet;
 /// Standard line lists are <see cref="Lines"/> or <see cref="SelectedLines"/>, they have members mostly for reading.
 /// </para>
 /// </remarks>
-public abstract class IEditor : IEditorBase
+public abstract class IEditor : IEditorBase, IFace
 {
+	/// <inheritdoc/>
+	public abstract nint Id { get; }
+
+	/// <inheritdoc/>
+	public WindowKind WindowKind => WindowKind.Editor;
+
 	#region Line list
 	/// <summary>
 	/// Gets line count. At least one line always exists.
@@ -89,11 +95,6 @@ public abstract class IEditor : IEditorBase
 	/// </remarks>
 	/// <seealso cref="IFar.Line"/>
 	public abstract ILine Line { get; }
-
-	/// <summary>
-	/// Gets the internal identifier.
-	/// </summary>
-	public abstract IntPtr Id { get; }
 
 	/// <summary>
 	/// Gets or sets tab size in spaces in the editor.
@@ -765,7 +766,7 @@ public abstract class IEditor : IEditorBase
 	{
 		fixed (char* p = text)
 		{
-			Far2.Api.IEditorLineText(Id, line, (IntPtr)p, text.Length);
+			Far2.Api.IEditorLineText(Id, line, (nint)p, text.Length);
 		}
 	}
 

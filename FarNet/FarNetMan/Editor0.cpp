@@ -44,6 +44,15 @@ int Editor0::FindEditor(intptr_t id)
 	return -1;
 }
 
+IEditor^ Editor0::GetEditor(intptr_t id)
+{
+	for (int i = 0; i < _editors.Count; ++i)
+		if (id == (intptr_t)_editors[i]->Id)
+			return _editors[i];
+
+	return nullptr;
+}
+
 void Editor0::ConnectEditor(Editor^ editor, const EditorInfo& ei, bool isEditorWaiting)
 {
 	// 0) first opening

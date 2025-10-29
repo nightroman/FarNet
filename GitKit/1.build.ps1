@@ -71,7 +71,7 @@ task package win32, help, markdown, {
 	$toModule86 = mkdir "z\tools\FarHome.x86\FarNet\Modules\$ModuleName"
 
 	# module
-	exec { robocopy $ModuleRoot $toModule /s /xf *.pdb git2*.dll} (0..2)
+	exec { robocopy $ModuleRoot $toModule /s /xf git2*.dll} 1
 
 	# meta
 	Copy-Item -Destination z @(
@@ -96,6 +96,7 @@ FarHome\FarNet\Modules\GitKit\GitKit.dll
 FarHome\FarNet\Modules\GitKit\GitKit.fs.ini
 FarHome\FarNet\Modules\GitKit\GitKit.hlf
 FarHome\FarNet\Modules\GitKit\GitKit.macro.lua
+FarHome\FarNet\Modules\GitKit\GitKit.pdb
 FarHome\FarNet\Modules\GitKit\History.txt
 FarHome\FarNet\Modules\GitKit\LibGit2Sharp.dll
 FarHome\FarNet\Modules\GitKit\LibGit2Sharp.xml

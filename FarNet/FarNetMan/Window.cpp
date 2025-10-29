@@ -1,13 +1,33 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 #include "StdAfx.h"
+#include "Dialog.h"
+#include "Editor0.h"
+#include "Viewer0.h"
+#include "Panel0.h"
 #include "Window.h"
 #include "Wrappers.h"
 
 namespace FarNet
-{;
+{
+IFace^ Window::GetAt(int index)
+{
+	WindowInfo wi;
+	Call_ACTL_GETWINDOWINFO(wi, index);
+
+	switch (wi.Type)
+	{
+	case WTYPE_DIALOG:
+		return FarDialog::GetDialog(wi.Id);
+
+	case WTYPE_EDITOR:
+		return Editor0::GetEditor(wi.Id);
+
+	case WTYPE_VIEWER:
+		return Viewer0::GetViewer(wi.Id);
+	}
+
+	return Panel0::GetPanel(true);
+}
+
 IntPtr Window::GetIdAt(int index)
 {
 	WindowInfo wi;
@@ -39,7 +59,7 @@ String^ Window::GetNameAt(int index)
 
 int Window::Count::get()
 {
-	return (int)Info.AdvControl(&MainGuid, ACTL_GETWINDOWCOUNT, 0, 0);
+	return Call_ACTL_GETWINDOWCOUNT();
 }
 
 bool Window::IsModal::get()

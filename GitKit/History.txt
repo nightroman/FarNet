@@ -1,5 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 1.4.9 =
+
+Branches panel
+- new menu "Finish branch"
+
 = 1.4.8 =
 
 Skip outer repo events on changes in nested, fix wrong info.

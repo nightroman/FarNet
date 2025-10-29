@@ -557,7 +557,7 @@ bool isConsoleModal()
 	int index = -1;
 
 	// find index of Desktop
-	int nWindow = Far::Api->Window->Count;
+	int nWindow = Call_ACTL_GETWINDOWCOUNT();
 	int iWindow = 0;
 	do
 	{

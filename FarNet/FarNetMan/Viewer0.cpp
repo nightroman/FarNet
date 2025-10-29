@@ -1,13 +1,9 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 #include "StdAfx.h"
 #include "Viewer0.h"
 #include "Viewer.h"
 
 namespace FarNet
-{;
+{
 //! See Editor0::Editors().
 array<IViewer^>^ Viewer0::Viewers()
 {
@@ -50,6 +46,15 @@ Viewer^ Viewer0::GetCurrentViewer()
 	Viewer^ viewer = gcnew Viewer;
 	Register(viewer, vi);
 	return viewer;
+}
+
+IViewer^ Viewer0::GetViewer(intptr_t id)
+{
+	for (int i = 0; i < _viewers.Count; ++i)
+		if (id == (intptr_t)_viewers[i]->Id)
+			return _viewers[i];
+
+	return nullptr;
 }
 
 int Viewer0::AsProcessViewerEvent(const ProcessViewerEventInfo* info)
