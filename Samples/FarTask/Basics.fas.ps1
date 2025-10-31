@@ -4,7 +4,7 @@
 #>
 
 job {
-	if ($Far.Window.Count -ne 2) {throw 'Please close Far Manager internal windows.'}
+	if ($Far.Window.Count -ne 2) {throw 'Exit editors, viewers, dialogs.'}
 
 	# keep some data, use the automatic variable $Data
 	$Data.Path = $Far.Panel.CurrentDirectory
@@ -41,7 +41,7 @@ job {
 	Find-FarFile 'Far.exe.example.ini'
 }
 
-macro 'Keys"CtrlA" -- open attributes dialog'
+keys CtrlA # attributes dialog
 
 job {
 	# test: the dialog and its control
@@ -49,7 +49,7 @@ job {
 	Assert-Far $Far.Dialog[2].Text -eq 'Far.exe.example.ini'
 }
 
-macro 'Keys"Esc" -- exit dialog'
+keys Esc # exit dialog
 
 job {
 	# test: the window (panels) and item ('Far.exe.example.ini')
@@ -68,7 +68,7 @@ run {
 	Assert-Far $text -eq 'Another text'
 }
 
-macro 'Keys"S a m p l e Space t e x t" -- type some text'
+keys S a m p l e Space t e x t # type some text
 
 job {
 	# test: the dialog and its control
@@ -86,7 +86,7 @@ job {
 	Assert-Far $Far.Dialog[1].Text -eq 'Another text'
 }
 
-macro 'Keys"Enter" -- enter typed text'
+keys Enter # enter typed text
 
 ### HOW TO: open a modal editor
 run {
@@ -106,7 +106,7 @@ job {
 	Assert-Far $Far.Editor.GetText() -eq 'Modal Editor'
 }
 
-macro 'Keys"Esc n" -- exit editor, do not save'
+keys Esc n # exit editor, do not save
 
 job {
 	# test: current window
@@ -123,7 +123,7 @@ job {
 	Assert-Far -Editor
 }
 
-macro 'print("Modeless Editor") -- type some text'
+macro 'print("Modeless Editor")' # type some text
 
 job {
 	# test: editor text
@@ -147,7 +147,7 @@ job {
 	$Panel.Open()
 }
 
-macro 'Keys"Tab" -- go to another panel'
+keys Tab # go to another panel
 
 job {
 	# open yet another panel
@@ -156,7 +156,7 @@ job {
 	$Panel.Open()
 }
 
-macro 'Keys"Tab" -- go back to start panel'
+keys Tab # go back to start panel
 
 job {
 	# switch to editor
@@ -168,16 +168,16 @@ job {
 	Assert-Far -Editor
 }
 
-macro 'Keys"Esc n" -- exit editor, do not save'
+keys Esc n # exit editor, do not save
 
 job {
 	# test: current window
 	Assert-Far -Panels
 }
 
-macro 'Keys"Esc" -- exit module panel'
+keys Esc # exit module panel
 
-macro 'Keys"Tab Esc Tab" -- go to another panel, exit, go back'
+keys Tab Esc Tab # go to another panel, exit, go back
 
 job {
 	# restore original panel path and item

@@ -1,36 +1,31 @@
-﻿
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-using System.IO;
-using System.Text;
+﻿using System.Text;
 
 namespace PowerShellFar;
 
 sealed class TranscriptOutputWriter : TextOutputWriter
 {
-	public static string? LastFileName { get; private set; }
-	const string TextTranscriptPrologue = @"
-**********************
-PowerShell transcript start
-Start time: {0:yyyyMMddHHmmss}
-Username  : {1}\{2}
-Machine	  : {3} ({4})
-**********************
-";
-	const string TextTranscriptEpilogue = @"
-**********************
-PowerShell transcript end
-End time: {0:yyyyMMddHHmmss}
-**********************
-";
+	const string TextTranscriptPrologue = """
+		**********************
+		PowerShell transcript start
+		Start time: {0:yyyyMMddHHmmss}
+		Username  : {1}\{2}
+		Machine	  : {3} ({4})
+		**********************
+		""";
+
+	const string TextTranscriptEpilogue = """
+		**********************
+		PowerShell transcript end
+		End time: {0:yyyyMMddHHmmss}
+		**********************
+		""";
 
 	static int _fileNameCount;
 	StreamWriter? _writer;
 	string? _fileName;
 	readonly bool _transcript;
 
+	public static string? LastFileName { get; private set; }
 	public string? FileName => _fileName;
 
 	public TranscriptOutputWriter()
@@ -39,7 +34,7 @@ End time: {0:yyyyMMddHHmmss}
 
 	public TranscriptOutputWriter(string path, bool append)
 	{
-		_writer = new StreamWriter(path, append, Encoding.Unicode)
+		_writer = new StreamWriter(path, append, Encoding.UTF8)
 		{
 			AutoFlush = true
 		};

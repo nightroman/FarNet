@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.71 =
+
+Change transcript encoding to UTF8.
+
+Add sample macro `cc:` ~ command with output to clipboard.
+
 = 9.0.70 =
 
 Use FarNet 9.0.46, apply new methods.

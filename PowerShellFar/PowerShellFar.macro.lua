@@ -52,3 +52,12 @@ Macro {
     Plugin.SyncCall("10435532-9BB3-487B-A045-B0E6ECAAB6BC", [[vps:Complete-Word.ps1]])
   end;
 }
+
+-- cc: <command with output to clipboard>
+CommandLine {
+  prefixes = "cc";
+  description = "PSF: Command to clipboard";
+  action = function(prefix, text)
+    Plugin.SyncCall("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "vps:" .. text .. " | Set-Clipboard")
+  end;
+}

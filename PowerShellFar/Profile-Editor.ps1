@@ -1,11 +1,11 @@
 <#
 .Synopsis
-	Editor profile (example).
-	Author: Roman Kuzmin
+	Editor profile sample.
 
 .Description
-	The editor profile: %FARPROFILE%\FarNet\PowerShellFar\Profile-Editor.ps1
-	Before using read the code and see "Profile-Editor.ps1" in documentation.
+	Location: %FARPROFILE%\FarNet\PowerShellFar\Profile-Editor.ps1
+	See
+		About-PowerShellFar.html /Profile-Editor.ps1
 #>
 
 ### Init focus data, set ReadOnly to prevent next calls.

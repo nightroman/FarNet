@@ -55,11 +55,11 @@
 
 .Example
 	># PowerShellFar REPL
-	Start-Far 'ps:$Psf.StartCommandConsole()' -Hidden
+	ps: Start-Far 'ps:$Psf.StartCommandConsole()' -Hidden
 
 .Example
 	># Far Manager folders
-	Start-Far '' $env:FARHOME $env:FARPROFILE -Active Left
+	ps: Start-Far '' $env:FARHOME $env:FARPROFILE -Active Left
 #>
 
 [CmdletBinding()]

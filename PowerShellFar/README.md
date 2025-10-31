@@ -1452,37 +1452,35 @@ The main session profile: `%FARPROFILE%\FarNet\PowerShellFar\Profile.ps1`
 Example: [Profile.ps1](https://github.com/nightroman/FarNet/blob/main/PowerShellFar/Profile.ps1)
 
 ---
+Define doskey macros
 
-    # Macros
     doskey ib=ps:Invoke-Build
-    doskey ?=ps:Invoke-Build ?
-
-Define convenient doskey macros.
 
 ---
+Define command aliases
 
-    # Aliases
+    Set-Alias ff Find-FarFile
+    Set-Alias fm Show-FarMessage
+    Set-Alias gt Go-To.ps1
     Set-Alias op Out-FarPanel
-    Set-Alias pp Get-FarPath
-    ...
-
-Define convenient command aliases.
+    Set-Alias re Search-Regex.ps1
 
 ---
+Define functions (e.g. change predefined `prompt`)
 
-    # Preferences
+    function prompt {'PS> '}
+
+---
+Change `$Psf.Settings`, mostly UI preferences, see API help.
+
     $Psf.Settings.PopupAutoSelect = $false
     ...
 
-Change `$Psf.Settings`, mostly UI preferences, see API help.
-
 ---
-
-    # Provider settings
-    $Psf.Providers = ...
-
-Define how provider data look in panels; see API help for more details:
+Configure provider data for panels. See API help for details:
 properties `Providers` (class `Actor`), `Columns` (class `ItemPanel`).
+
+    $Psf.Providers = ...
 
 *********************************************************************
 ## Profile-Editor.ps1
