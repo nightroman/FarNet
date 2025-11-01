@@ -47,7 +47,7 @@ job {
 macro 'Keys"Del Enter" -- try delete not empty collection'
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[1].Text -eq "Collection 'x' is not empty."
+	Assert-Far $__[1].Text -eq "Collection 'x' is not empty."
 	Assert-Far $global:Error
 	$global:Error.Clear()
 }

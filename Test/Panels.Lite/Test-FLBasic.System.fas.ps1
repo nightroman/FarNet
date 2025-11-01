@@ -15,12 +15,12 @@ job {
 }
 job {
 	# go to `$indexes` then enter
-	Assert-Far $Far.Panel.Title -eq 'Collections'
+	Assert-Far $__.Title -eq 'Collections'
 	Find-FarFile '$cols'
 }
 keys Enter
 job {
-	Assert-Far $Far.Panel.Title -eq '$cols'
+	Assert-Far $__.Title -eq '$cols'
 	Find-FarFile Files
 }
 job {

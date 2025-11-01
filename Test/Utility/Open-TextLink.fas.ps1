@@ -46,7 +46,7 @@ job {
 }
 job {
 	Assert-Far -Editor
-	$Caret = $Far.Editor.Caret
+	$Caret = $__.Caret
 	Assert-Far ($Caret.X -eq 8 -and $Caret.Y -eq 8)
 }
 keys Esc
@@ -80,7 +80,7 @@ job {
 }
 job {
 	Assert-Far -Editor
-	$Caret = $Far.Editor.Caret
+	$Caret = $__.Caret
 	Assert-Far ($Caret.X -eq 8 -and $Caret.Y -eq 8)
 }
 keys Esc

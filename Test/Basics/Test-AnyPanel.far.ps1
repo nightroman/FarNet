@@ -1,6 +1,6 @@
 
 # the panel
-$Panel = $Far.Panel
+$Panel = $__
 
 function TestPanelFlag($Flag)
 {

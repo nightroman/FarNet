@@ -6,8 +6,8 @@ run {
 
 job {
 	# info dialog?
-	Assert-Far $Far.Dialog[1].Text -eq 'Command prefix "mycmd:" is registered.'
-	$Far.Dialog.Close()
+	Assert-Far $__[1].Text -eq 'Command prefix "mycmd:" is registered.'
+	$__.Close()
 }
 
 job {
@@ -20,11 +20,11 @@ keys Enter
 
 job {
 	# command result dialog?
-	Assert-Far $Far.Dialog[1].Text -eq 'Command : Hello'
-	Assert-Far $Far.Dialog[2].Text -eq 'Prefix  : mycmd'
-	Assert-Far $Far.Dialog[3].Text -eq 'IsMacro : False'
-	Assert-Far $Far.Dialog[4].Text -eq 'Ignore  : False'
-	$Far.Dialog.Close()
+	Assert-Far $__[1].Text -eq 'Command : Hello'
+	Assert-Far $__[2].Text -eq 'Prefix  : mycmd'
+	Assert-Far $__[3].Text -eq 'IsMacro : False'
+	Assert-Far $__[4].Text -eq 'Ignore  : False'
+	$__.Close()
 }
 
 run {

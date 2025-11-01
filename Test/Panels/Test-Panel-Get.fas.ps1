@@ -6,7 +6,7 @@
 job {
 	# go to
 	$Data.Dir = "$env:FarNetCode\Test\Panels"
-	$Far.Panel.CurrentDirectory = $Data.Dir
+	$__.CurrentDirectory = $Data.Dir
 }
 
 # go to and select a file
@@ -22,7 +22,7 @@ job {
 	#! fixed
 	$nItem = @(Get-FarItem -All).Count
 	$nPath = @(Get-FarPath -All).Count
-	$nFile = $Far.Panel.Files.Count
+	$nFile = $__.Files.Count
 	Assert-Far @(
 		$nItem -ge 2
 		$nItem -eq $nPath
@@ -34,7 +34,7 @@ job {
 macro 'Keys"Tab F11 t Multiply F7"'
 macro 'Keys"Tab F5 Enter Tab"'
 job {
-	Assert-Far $Far.Panel.RealNames
+	Assert-Far $__.RealNames
 }
 
 # go to file

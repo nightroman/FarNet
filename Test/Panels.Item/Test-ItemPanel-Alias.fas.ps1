@@ -27,8 +27,8 @@ job {
 job {
 	# It's questionable to have a path like this, but why not? But there was an issue, see below
 	# _110227_123432 We do not have such paths. Test anyway.
-	Assert-Far $Far.Panel.CurrentDirectory -eq Alias:\
-	Assert-Far $Far.Panel.CurrentFile -eq $null # dots
+	Assert-Far $__.CurrentDirectory -eq Alias:\
+	Assert-Far $__.CurrentFile -eq $null # dots
 }
 
 # view all
@@ -56,8 +56,8 @@ job { Assert-Far -Panels }
 keys F4
 job {
 	Assert-Far -Editor
-	Assert-Far $Far.Editor[0].Text -eq 'ForEach-Object'
-	$Far.Editor[0].Text = 'ForEach-Object #'
+	Assert-Far $__[0].Text -eq 'ForEach-Object'
+	$__[0].Text = 'ForEach-Object #'
 }
 macro 'Keys"F2 Esc"'
 job {
@@ -67,8 +67,8 @@ job {
 keys F4
 job {
 	Assert-Far -Editor
-	Assert-Far $Far.Editor[0].Text -eq 'ForEach-Object #'
-	$Far.Editor[0].Text = 'ForEach-Object'
+	Assert-Far $__[0].Text -eq 'ForEach-Object #'
+	$__[0].Text = 'ForEach-Object'
 }
 macro 'Keys"F2 Esc"'
 job {
@@ -82,14 +82,14 @@ macro 'Keys"F7 % 1 AltT Del AltV G e t - H e l p Enter"'
 job {
 	# columns =
 	Assert-Far -FileName '%1' -FileDescription 'Get-Help' -FileOwner ''
-	Assert-Far @($Far.Panel.CurrentFile.Columns)[0] -eq 'None'
+	Assert-Far @($__.CurrentFile.Columns)[0] -eq 'None'
 }
 
 # not supported
 keys ShiftEnter
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[1].Text -eq 'Operation is not supported by the provider.'
+	Assert-Far $__[1].Text -eq 'Operation is not supported by the provider.'
 }
 keys Esc
 job {
@@ -157,19 +157,19 @@ macro 'Keys"ShiftF5 % 2 Enter"'
 job {
 	# columns =
 	Assert-Far -FileName '%2' -FileDescription 'Get-Help' -FileOwner ''
-	Assert-Far @($Far.Panel.CurrentFile.Columns)[0] -eq 'None'
+	Assert-Far @($__.CurrentFile.Columns)[0] -eq 'None'
 }
 
 # delete %2
 keys Del
 job {
 	Assert-Far -Dialog
-	Assert-Far ($Far.Dialog[2].Text -like '*Target "Item: %2"*') # v4.0 Target -> target
+	Assert-Far ($__[2].Text -like '*Target "Item: %2"*') # v4.0 Target -> target
 }
 keys y Enter
 job {
 	Assert-Far -Panels
-	Assert-Far ($Far.Panel.CurrentFile.Name -ne '%2')
+	Assert-Far ($__.CurrentFile.Name -ne '%2')
 }
 
 # find %1, delete
@@ -179,12 +179,12 @@ job {
 keys Del
 job {
 	Assert-Far -Dialog
-	Assert-Far ($Far.Dialog[2].Text -like '*Target "Item: %1"*') # v4.0 Target -> target
+	Assert-Far ($__[2].Text -like '*Target "Item: %1"*') # v4.0 Target -> target
 }
 keys y Enter
 job {
 	Assert-Far -Panels
-	Assert-Far ($Far.Panel.CurrentFile.Name -ne '%1')
+	Assert-Far ($__.CurrentFile.Name -ne '%1')
 }
 
 # exit panel

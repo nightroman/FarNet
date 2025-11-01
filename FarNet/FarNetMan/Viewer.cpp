@@ -1,13 +1,10 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 #include "StdAfx.h"
 #include "Viewer.h"
 #include "Viewer0.h"
+#include "Window.h"
 
 namespace FarNet
-{;
+{
 void AnyViewer::ViewText(String^ text, String^ title, OpenMode mode)
 {
 	Works::EditorTools::ViewText(text, title, mode);
@@ -65,7 +62,7 @@ void Viewer::Open(OpenMode mode)
 	PIN_ES(pinTitle, _Title);
 
 	// from modal? set modal
-	bool preIsModal = Far::Api->Window->IsModal;
+	bool preIsModal = FarNet::Window::Instance.IsModal;
 	if (preIsModal)
 		flags &= ~VF_NONMODAL;
 

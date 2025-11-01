@@ -57,13 +57,13 @@ run {
 job {
 	# diff detected
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'FarNet.Demo.Settings+Data'
+	Assert-Far $__[0].Text -eq 'FarNet.Demo.Settings+Data'
 }
 keys Esc
 job {
 	# text not changed
 	Assert-Far -Editor
-	Assert-Far $Far.Editor[4].Text -eq '  <Memo/>'
+	Assert-Far $__[4].Text -eq '  <Memo/>'
 }
 keys Esc
 job {
@@ -77,10 +77,10 @@ job {
 	# text changed
 	Assert-Far -Editor
 	Assert-Far @(
-		$Far.Editor[4].Text -eq '  <Age>42</Age>'
-		$Far.Editor[5].Text -eq '  <Memo><![CDATA[]]></Memo>'
-		$Far.Editor[8].Text -eq '    <string>%FARHOME%</string>'
-		$Far.Editor[9].Text -eq '    <string>c:\temp</string>'
+		$__[4].Text -eq '  <Age>42</Age>'
+		$__[5].Text -eq '  <Memo><![CDATA[]]></Memo>'
+		$__[8].Text -eq '    <string>%FARHOME%</string>'
+		$__[9].Text -eq '    <string>c:\temp</string>'
 	)
 }
 keys Esc

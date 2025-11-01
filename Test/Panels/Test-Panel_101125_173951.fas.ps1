@@ -11,7 +11,7 @@ job {
 }
 job {
 	Assert-Far -Plugin
-	$columns = $Far.Panel.GetPlan(0).Columns
+	$columns = $__.GetPlan(0).Columns
 	Assert-Far @(
 		$columns.Count -eq 1
 		$columns[0].Name -eq 'System.String'
@@ -27,7 +27,7 @@ job {
 }
 job {
 	Assert-Far -Plugin
-	$columns = $Far.Panel.GetPlan(0).Columns
+	$columns = $__.GetPlan(0).Columns
 	Assert-Far @(
 		$columns.Count -eq 3
 		$columns[0].Name -eq '##'

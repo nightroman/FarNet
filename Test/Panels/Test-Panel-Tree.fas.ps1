@@ -13,7 +13,7 @@ job {
 
 job {
 	# try items
-	$files = $Far.Panel.GetFiles()
+	$files = $__.GetFiles()
 	Assert-Far @(
 		$files[0].Owner -eq '+ Services'
 		$files[1].Owner -eq '+ Processes'
@@ -25,11 +25,11 @@ job {
 # 090823 fixed title on Open-FarPanel -Title ..
 job { Find-FarFile 'Services' }
 keys Enter
-job { Assert-Far $Far.Panel.Title -eq 'Services opened by [Enter]' }
+job { Assert-Far $__.Title -eq 'Services opened by [Enter]' }
 keys Esc
 job { Assert-Far -FileName 'Services' }
 keys CtrlPgDn
-job { Assert-Far $Far.Panel.Title -eq 'Members: TreeFile' }
+job { Assert-Far $__.Title -eq 'Members: TreeFile' }
 keys Esc
 job { Assert-Far -FileName 'Services' }
 
@@ -38,7 +38,7 @@ job {
 	# try item
 	Find-FarFile 'Registry'
 	Assert-Far -FileOwner '  + Registry'
-	Assert-Far ($Far.Panel.CurrentFile.Description -match '\bHKCU\b')
+	Assert-Far ($__.CurrentFile.Description -match '\bHKCU\b')
 }
 
 # expand, find, expand
@@ -57,7 +57,7 @@ macro 'Keys"Home AltP r o v i d e r s Esc Left"'
 job {
 	# try items
 	Assert-Far -FileOwner '+ Providers'
-	Assert-Far $Far.Panel.GetFiles().Count -eq 3
+	Assert-Far $__.GetFiles().Count -eq 3
 }
 
 # expand, find

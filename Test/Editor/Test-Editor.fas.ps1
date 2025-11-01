@@ -23,7 +23,7 @@ run {
 	$Far.AnyEditor.EditText(@{})
 }
 job {
-	$Editor = $Far.Editor
+	$Editor = $__
 
 	### test ExpandTabs
 	$ExpandTabs = $Editor.ExpandTabs
@@ -77,7 +77,7 @@ job {
 ### Test _101210_142325: SetText() drops selection
 job {
 	# set and select some text
-	$Editor = $Far.Editor
+	$Editor = $__
 	$Editor.SetText("0123456789")
 	$Editor[-1].SelectText(2, 7)
 	Assert-Far $Editor.SelectionExists

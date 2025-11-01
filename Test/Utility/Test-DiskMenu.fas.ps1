@@ -12,7 +12,7 @@ $macro = job {
 
 	# open tree panel via the disk menu
 	$(
-		if ($Far.Panel.IsLeft) {'Keys("AltF1")'} else {'Keys("AltF2")'}
+		if ($__.IsLeft) {'Keys("AltF1")'} else {'Keys("AltF2")'}
 		'if Menu.Select("Test FarNet disk menu", 2) > 0 then Keys("Enter") if Menu.Select("Folder tree", 0) > 0 then Keys("Enter") end end'
 	) | Out-String
 }
@@ -26,7 +26,7 @@ job {
 	$tool.Unregister()
 
 	# tree panel
-	Assert-Far $Far.Panel.Title -eq 'Tree'
+	Assert-Far $__.Title -eq 'Tree'
 }
 
 macro 'Keys"Esc" -- exit the panel'

@@ -2,7 +2,7 @@
 job {
 	# Not 2-3 Name column mode because Shift+Arrow works differently
 	Assert-Far -Panels
-	Assert-Far ((1 -ne $Far.Panel.ViewMode) -and (2 -ne $Far.Panel.ViewMode))
+	Assert-Far ((1 -ne $__.ViewMode) -and (2 -ne $__.ViewMode))
 }
 
 ### common tests

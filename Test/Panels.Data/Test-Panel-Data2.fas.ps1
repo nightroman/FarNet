@@ -7,7 +7,7 @@
 
 # open it
 job { & "$env:FarNetCode\Samples\Tests\Test-Panel-DBNotes.far.ps1" }
-job { Assert-Far ($Far.Panel -is [PowerShellFar.DataPanel]) }
+job { Assert-Far ($__ -is [PowerShellFar.DataPanel]) }
 
 # go to Note1
 job {
@@ -19,7 +19,7 @@ job {
 keys F3
 job {
 	Assert-Far -Viewer
-	Assert-Far ([IO.File]::ReadAllText($Far.Viewer.FileName).Trim() -match '^Note.+?\r\nCategory.+?\r\nCreated.+?\r\nNoteId.+?\r\nCategoryId : \d+$')
+	Assert-Far ([IO.File]::ReadAllText($__.FileName).Trim() -match '^Note.+?\r\nCategory.+?\r\nCreated.+?\r\nNoteId.+?\r\nCategoryId : \d+$')
 }
 keys Esc
 job {
@@ -32,7 +32,7 @@ job {
 	Find-FarFile NoteId -ErrorAction 0
 	Assert-Far @(
 		"File is not found: 'NoteId'." -eq $global:Error[0]
-		$Far.Panel.Value.NoteId -eq 2
+		$__.Value.NoteId -eq 2
 	)
 	$global:Error.RemoveAt(0)
 }
@@ -87,7 +87,7 @@ job { Assert-Far -Native }
 
 # open it
 job { & "$env:FarNetCode\Samples\Tests\Test-Panel-DBNotes.far.ps1" -GenericLookup }
-job { Assert-Far ($Far.Panel -is [PowerShellFar.DataPanel]) }
+job { Assert-Far ($__ -is [PowerShellFar.DataPanel]) }
 
 # go to Note1
 job {
@@ -117,7 +117,7 @@ job {
 
 # save and exit, it has to be DataPanel
 macro 'Keys"CtrlS Esc"'
-job { Assert-Far ($Far.Panel -is [PowerShellFar.DataPanel]) }
+job { Assert-Far ($__ -is [PowerShellFar.DataPanel]) }
 
 # exit
 keys Esc

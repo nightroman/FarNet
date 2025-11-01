@@ -11,9 +11,9 @@ macro 'Keys "F9 o u 1 e" Menu.Select("b7916b53-2c17-4086-8f13-5ffcf0d82900", 3) 
 job {
 	# set mask to not default
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'FSharpFar'
-	Assert-Far $Far.Dialog[2].Text -eq '*.fs;*.fsx;*.fsscript'
-	$Far.Dialog[2].Text = '*.fs;*.fsx'
+	Assert-Far $__[0].Text -eq 'FSharpFar'
+	Assert-Far $__[2].Text -eq '*.fs;*.fsx;*.fsscript'
+	$__[2].Text = '*.fs;*.fsx'
 }
 keys Enter
 job {
@@ -30,9 +30,9 @@ macro 'Menu.Select("b7916b53-2c17-4086-8f13-5ffcf0d82900", 3) Keys "Enter"'
 job {
 	# set mask to default
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'FSharpFar'
-	Assert-Far $Far.Dialog[2].Text -eq '*.fs;*.fsx'
-	$Far.Dialog[2].Text = '*.fs;*.fsx;*.fsscript'
+	Assert-Far $__[0].Text -eq 'FSharpFar'
+	Assert-Far $__[2].Text -eq '*.fs;*.fsx'
+	$__[2].Text = '*.fs;*.fsx;*.fsscript'
 }
 keys Enter
 job {

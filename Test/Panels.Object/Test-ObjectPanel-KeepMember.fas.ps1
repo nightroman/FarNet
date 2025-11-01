@@ -5,7 +5,7 @@
 
 function Test-GetFiles {
 	job {
-		$files = $Far.Panel.GetFiles()
+		$files = $__.GetFiles()
 		Assert-Far -Plugin
 		Assert-Far $files.Count -eq 9
 		Assert-Far (Get-FarItem -All | .{process{ $_.Test -eq "Value=$_" }})

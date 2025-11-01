@@ -16,8 +16,8 @@ job {
 job {
 	# fixture: it is Unicode and file is empty
 	Assert-Far -Editor
-	Assert-Far $Far.Editor.CodePage -eq 1200
-	Assert-Far $Far.Editor.GetText() -eq ''
+	Assert-Far $__.CodePage -eq 1200
+	Assert-Far $__.GetText() -eq ''
 }
 # exit not modified editor
 keys Esc

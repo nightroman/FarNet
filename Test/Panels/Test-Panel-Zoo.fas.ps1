@@ -15,15 +15,15 @@ function Get-Block-Add
 
 function Get-Block-Delete
 {
-	job { $global:FileToRemove = $Far.Panel.CurrentFile.Name }
+	job { $global:FileToRemove = $__.CurrentFile.Name }
 	keys Del
 	job {
 		Assert-Far -Dialog
-		Assert-Far $Far.Dialog[0].Text -eq 'Delete'
+		Assert-Far $__[0].Text -eq 'Delete'
 	}
 	keys Enter
 	job {
-		Assert-Far ($Far.Panel.CurrentFile.Name -ne $global:FileToRemove)
+		Assert-Far ($__.CurrentFile.Name -ne $global:FileToRemove)
 		Remove-Variable -Name FileToRemove -Scope global
 	}
 }
@@ -40,7 +40,7 @@ job { Assert-Far -FileName '.NET data' }
 keys Enter
 job {
 	Find-FarFile '..'
-	$global:e = $Far.Panel.Value
+	$global:e = $__.Value
 }
 
 # fixed: try to enter new value on dots;
@@ -313,12 +313,12 @@ keys Enter
 # set null value
 job {
 	Find-FarFile 'name'
-	Assert-Far ($Far.Panel.Value.Name -ne $null)
+	Assert-Far ($__.Value.Name -ne $null)
 }
 macro 'Keys"ShiftDel Enter"'#??????
 job {
 	Assert-Far -FileName name
-	Assert-Far $Far.Panel.Value.Name -eq $null
+	Assert-Far $__.Value.Name -eq $null
 }
 
 # try to delete and check it is not deleted
@@ -340,8 +340,8 @@ job {
 keys F4
 job {
 	Assert-Far -Editor
-	Assert-Far $Far.Editor.Count -eq 3
-	$Far.Editor.Close()
+	Assert-Far $__.Count -eq 3
+	$__.Close()
 }
 job {
 	Assert-Far -Panels
@@ -356,8 +356,8 @@ job {
 keys F4
 job {
 	Assert-Far -Editor
-	Assert-Far $Far.Editor.Count -eq 3
-	$Far.Editor.Close()
+	Assert-Far $__.Count -eq 3
+	$__.Close()
 }
 job {
 	Assert-Far -Panels

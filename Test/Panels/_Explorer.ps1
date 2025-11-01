@@ -42,8 +42,8 @@ function Get-Step-TestFunctionZ {
 		# viewer, title, file
 		Assert-Far -Viewer
 		Assert-Far @(
-			$Far.Viewer.Title -eq 'Z:'
-			$Data.File = $Far.Viewer.FileName
+			$__.Title -eq 'Z:'
+			$Data.File = $__.FileName
 			$Data.File -match '\.tmp$'
 		)
 	}
@@ -59,18 +59,18 @@ function Get-Step-TestFunctionZ {
 		# editor, title, file, text
 		Assert-Far -Editor
 		Assert-Far @(
-			$Far.Editor.Title -eq 'Z:'
+			$__.Title -eq 'Z:'
 
-			!$Far.Editor.IsLocked
+			!$__.IsLocked
 
-			$Data.File = $Far.Editor.FileName
+			$Data.File = $__.FileName
 			$Data.File -like '*.ps1'
 
-			$$ = $Far.Editor[0].Text
+			$$ = $__[0].Text
 			$$ -eq 'Set-Location Z:' -or $$ -eq 'Set-Location $MyInvocation.MyCommand.Name'
 		)
 		# change text
-		$Far.Editor.SetText('Set-Location Z: #')
+		$__.SetText('Set-Location Z: #')
 	}
 	# save, it triggers import now
 	keys F2
@@ -90,12 +90,12 @@ function Get-Step-TestFunctionZ {
 		# editor with file like and text
 		Assert-Far -Editor
 		Assert-Far @(
-			!$Far.Editor.IsLocked
-			$Far.Editor.FileName -like '*.ps1'
-			$Far.Editor[0].Text -eq 'Set-Location Z: #'
+			!$__.IsLocked
+			$__.FileName -like '*.ps1'
+			$__[0].Text -eq 'Set-Location Z: #'
 		)
 		# change text
-		$Far.Editor.SetText('Set-Location Z:')
+		$__.SetText('Set-Location Z:')
 	}
 	# save, exit editor
 	macro 'Keys"F2 Esc"'

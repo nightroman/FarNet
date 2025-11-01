@@ -32,7 +32,7 @@ job {
 macro 'Keys"Del Enter" -- try delete z'
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[1].Text -eq "Database 'z' is not empty, 2 collections."
+	Assert-Far $__[1].Text -eq "Database 'z' is not empty, 2 collections."
 	Assert-Far $global:Error
 	$global:Error.Clear()
 }
@@ -61,7 +61,7 @@ job {
 macro 'Keys"Del Enter" -- try delete not empty collection'
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[1].Text -eq "Collection 'x' is not empty."
+	Assert-Far $__[1].Text -eq "Collection 'x' is not empty."
 	Assert-Far $global:Error
 	$global:Error.Clear()
 }
@@ -77,6 +77,6 @@ job {
 macro 'Keys"ShiftDel Enter" -- delete not empty database'
 job {
 	Assert-Far -Panels
-	Assert-Far ($Far.Panel.CurrentFile.Name -ne 'z')
+	Assert-Far ($__.CurrentFile.Name -ne 'z')
 }
 keys Esc

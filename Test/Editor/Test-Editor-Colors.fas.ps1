@@ -11,10 +11,10 @@ job {
 }
 job {
 	Assert-Far -Editor
-	Assert-Far $Far.Editor.IsLocked
+	Assert-Far $__.IsLocked
 
 	#! go to same last line or CurrentWord may change colors
-	$Far.Editor.GoToLine(($Far.Editor.Count - 1))
+	$__.GoToLine(($__.Count - 1))
 	$data = Show-EditorColor.ps1
 	Assert-Far 290 -eq $data.Count
 
@@ -28,7 +28,7 @@ job {
 	Assert-Far ($data -eq '1 4ddb64b8-7954-41f0-a93f-d5f6a09cc752 11 (30, 33) Green/Cyan                    :  A ')
 }
 job {
-	$Far.Editor.Close()
+	$__.Close()
 }
 job {
 	Assert-Far -Panels

@@ -8,14 +8,14 @@ run {
 
 job {
 	# debugger menu?
-	Assert-Far $Far.Dialog.Focused.Text -eq "&Line breakpoint..."
+	Assert-Far $__.Focused.Text -eq "&Line breakpoint..."
 }
 
 # open line bp dialog
 keys Enter
 job {
 	# line bp dialog?
-	Assert-Far $Far.Dialog[0].Text -eq "Line breakpoint"
+	Assert-Far $__[0].Text -eq "Line breakpoint"
 }
 
 # type
@@ -25,7 +25,7 @@ macro 'Keys"AltL 1 AltS c : / r o m / a p s / a b o u t . p s 1 Enter"'
 keys 1
 job {
 	# the current item is..
-	Assert-Far $Far.Dialog.Focused.Text -eq "&1 Line breakpoint on 'C:\rom\aps\about.ps1:1'"
+	Assert-Far $__.Focused.Text -eq "&1 Line breakpoint on 'C:\rom\aps\about.ps1:1'"
 }
 
 # edit
@@ -45,7 +45,7 @@ run {
 keys 1
 job {
 	# the current item is..
-	Assert-Far $Far.Dialog.Focused.Text -eq "&1 Line breakpoint on 'C:\rom\aps\about.ps1:1'"
+	Assert-Far $__.Focused.Text -eq "&1 Line breakpoint on 'C:\rom\aps\about.ps1:1'"
 }
 
 # toggle

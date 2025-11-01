@@ -28,7 +28,7 @@ Assert-Far ($Far.Window.Count -eq 2) -Message 'Exit editors, viewers, dialogs.'
 
 $env:_branch = '?'
 $global:Error.Clear()
-$SavedPanelPaths = $Far.Panel.CurrentDirectory, $Far.Panel2.CurrentDirectory
+$SavedPanelPaths = $__.CurrentDirectory, $Far.Panel2.CurrentDirectory
 
 ### Resolve $Tests
 if ($Tests -is [string]) {
@@ -48,7 +48,7 @@ else {
 ### Initialize
 $null = & {
 	# ensure expected panel modes
-	$panel1 = $Far.Panel
+	$panel1 = $__
 	$panel2 = $Far.Panel2
 	$panel1.SortMode = $panel2.SortMode = 'Name'
 
@@ -100,7 +100,7 @@ Start-FarTask -Data Tests, ExpectedTaskCount, SavedPanelPaths {
 
 	### Show panels
 	job {
-		$Far.Panel.IsVisible = $true
+		$__.IsVisible = $true
 		$Far.Panel2.IsVisible = $true
 	}
 
@@ -152,7 +152,7 @@ Start-FarTask -Data Tests, ExpectedTaskCount, SavedPanelPaths {
 		}
 
 		### Restore panels
-		$Far.Panel.CurrentDirectory = $Data.SavedPanelPaths[0]
+		$__.CurrentDirectory = $Data.SavedPanelPaths[0]
 		$Far.Panel2.CurrentDirectory = $Data.SavedPanelPaths[1]
 
 		### Summary

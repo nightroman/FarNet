@@ -47,7 +47,7 @@ $child = { job {
 			$Panel.Garbage.Add(([TestPanelClosed]{ $Data.Output += "Child-Disposed." }))
 			$Panel
 		}
-	}).CreatePanel().OpenChild($Far.Panel)
+	}).CreatePanel().OpenChild($__)
 }}
 
 ### open parent
@@ -57,13 +57,13 @@ $child = { job {
 & $child
 job {
 	Assert-Far -Plugin
-	Assert-Far ($Far.Panel.Parent -ne $null)
-	$Far.Panel.CloseChild()
+	Assert-Far ($__.Parent -ne $null)
+	$__.CloseChild()
 }
 job {
 	Assert-Far -Plugin
 	Assert-Far @(
-		$Far.Panel.Title -eq 'parent panel'
+		$__.Title -eq 'parent panel'
 		$Data.Output -eq 'Child-Closed.Child-Disposed.'
 	)
 	$Data.Output = ''
@@ -73,8 +73,8 @@ job {
 & $child
 job {
 	Assert-Far -Plugin
-	Assert-Far ($Far.Panel.Parent -ne $null)
-	$Far.Panel.Close()
+	Assert-Far ($__.Parent -ne $null)
+	$__.Close()
 }
 job {
 	Assert-Far -Native

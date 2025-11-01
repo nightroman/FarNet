@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "Dialog.h"
 #include "DialogControls.h"
+#include "Far1.h"
+#include "UI.h"
+#include "Window.h"
 #include "Wrappers.h"
 
 namespace FarNet
@@ -44,7 +47,7 @@ FarDialog::FarDialog(int left, int top, int right, int bottom)
 {
 	if (left < 0 || top < 0)
 	{
-		Point size = Far::Api->UI->WindowSize;
+		Point size = FarUI::Instance.WindowSize;
 		if (left < 0)
 		{
 			_rect.Left = (size.X - right) / 2;
@@ -274,7 +277,7 @@ IUserControl^ FarDialog::AddUserControl(int left, int top, int right, int bottom
 void FarDialog::Open()
 {
 	// force modal if pre-modal
-	bool preIsModal = Far::Api->Window->IsModal;
+	bool preIsModal = Window::Instance.IsModal;
 	if (preIsModal)
 		_NoModal = false;
 	else
@@ -372,7 +375,7 @@ bool FarDialog::Show()
 void FarDialog::OnTimer(Object^)
 {
 	if (_Timer && _timerInstance && _hDlg != INVALID_HANDLE_VALUE)
-		Far::Api->PostJob(gcnew Action(this, &FarDialog::OnTimerJob));
+		Far1::Instance.PostJob(gcnew Action(this, &FarDialog::OnTimerJob));
 }
 
 // called from the main thread //_210630_i0
@@ -923,7 +926,7 @@ INT_PTR FarDialog::DialogProc(intptr_t msg, intptr_t param1, void* param2)
 	}
 	catch (Exception^ e)
 	{
-		Far::Api->ShowError("Error in " __FUNCTION__, e);
+		Far1::Instance.ShowError("Error in " __FUNCTION__, e);
 	}
 
 	//_201118_vk case: exception in Closing in non-modal dialog

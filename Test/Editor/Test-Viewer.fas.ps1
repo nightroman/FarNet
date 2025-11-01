@@ -18,7 +18,7 @@ job {
 	# go to a file with another file after it
 	$Far.AnyViewer.add_Opened($Data.Opened)
 	$Far.AnyViewer.add_Closed($Data.Closed)
-	$Far.Panel.GoToPath($Data.File1)
+	$__.GoToPath($Data.File1)
 }
 macro 'Keys"F3" -- open file in the viewer'
 job {

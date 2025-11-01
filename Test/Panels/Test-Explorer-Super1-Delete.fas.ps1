@@ -38,8 +38,8 @@ job {
 job {
 	# select files to delete
 	Assert-Far -ExplorerTypeId ([FarNet.Tools.SuperExplorer]::TypeIdString)
-	$Far.Panel.SelectNames(('11', '13', '15', '21', '23', '25', '31', '33', '35'))
-	Assert-Far $Far.Panel.SelectedFiles.Count -eq 9
+	$__.SelectNames(('11', '13', '15', '21', '23', '25', '31', '33', '35'))
+	Assert-Far $__.SelectedFiles.Count -eq 9
 }
 
 # delete files
@@ -48,8 +48,8 @@ job {
 	# test shown and recovered selection
 	Assert-Far -Panels
 	Assert-Far @(
-		'12 13 14 22 23 24 32 33 34' -eq ($Far.Panel.Files -join ' ')
-		'13 23 33' -eq ($Far.Panel.SelectedFiles -join ' ')
+		'12 13 14 22 23 24 32 33 34' -eq ($__.Files -join ' ')
+		'13 23 33' -eq ($__.SelectedFiles -join ' ')
 	)
 }
 

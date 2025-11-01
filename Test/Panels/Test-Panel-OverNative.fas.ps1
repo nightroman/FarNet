@@ -18,7 +18,7 @@ job {
 	Set-Content C:\TEMP\temp.temp $PSScriptRoot\Test-Panel-OverNative.fas.ps1
 
 	# go to the .temp file
-	$Far.Panel.GoToPath('C:\TEMP\temp.temp')
+	$__.GoToPath('C:\TEMP\temp.temp')
 	Assert-Far -FileName 'temp.temp'
 }
 
@@ -35,7 +35,7 @@ job {
 }
 job {
 	Assert-Far -Plugin
-	Assert-Far ($Far.Panel -is [FarNet.Panel])
+	Assert-Far ($__ -is [FarNet.Panel])
 }
 
 # close the FarNet panel

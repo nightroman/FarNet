@@ -9,13 +9,13 @@ job {
 }
 job {
 	Assert-Far -Plugin
-	Assert-Far $Far.Panel.GetFiles().Count -eq 1
+	Assert-Far $__.GetFiles().Count -eq 1
 }
 
 # go to the first item - hashtable
 macro 'Keys"Alt{ Esc"'
 job {
-	$CurrentFile = $Far.Panel.CurrentFile
+	$CurrentFile = $__.CurrentFile
 	Assert-Far @(
 		$CurrentFile.Name -match '^\{.*\}$'
 		$CurrentFile.Description -eq 'System.Collections.Hashtable'
@@ -26,8 +26,8 @@ job {
 keys Enter
 job {
 	Assert-Far @(
-		$Far.Panel.Title -eq 'Objects'
-		$Far.Panel.GetFiles().Count -eq 2
+		$__.Title -eq 'Objects'
+		$__.GetFiles().Count -eq 2
 	)
 }
 
@@ -47,13 +47,13 @@ job {
 }
 job {
 	Assert-Far -Plugin
-	Assert-Far $Far.Panel.GetFiles().Count -eq 1
+	Assert-Far $__.GetFiles().Count -eq 1
 }
 
 # go to the first item - dictionary
 macro 'Keys"Alt{ Esc"'
 job {
-	$CurrentFile = $Far.Panel.CurrentFile
+	$CurrentFile = $__.CurrentFile
 	Assert-Far @(
 		$CurrentFile.Name -match '^\{\[.*\]\}$'
 		$CurrentFile.Description.StartsWith('System.Collections.Generic.Dictionary')
@@ -64,8 +64,8 @@ job {
 keys Enter
 job {
 	Assert-Far @(
-		$Far.Panel.Title -eq 'Objects'
-		$Far.Panel.GetFiles().Count -eq $Data.Dictionary.Count
+		$__.Title -eq 'Objects'
+		$__.GetFiles().Count -eq $Data.Dictionary.Count
 	)
 }
 

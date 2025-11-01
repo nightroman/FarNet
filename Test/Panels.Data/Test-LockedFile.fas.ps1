@@ -20,7 +20,7 @@ run {
 
 job {
 	Assert-Far -Dialog
-	$Far.Dialog.Close()
+	$__.Close()
 }
 
 job {
@@ -36,12 +36,12 @@ keys Enter
 
 job {
 	Assert-Far -Dialog
-	$Far.Dialog.Close()
+	$__.Close()
 }
 
 job {
 	Assert-Far -Plugin
-	Assert-Far $Far.Panel.Title -eq t1
+	Assert-Far $__.Title -eq t1
 }
 
 # exit both panels

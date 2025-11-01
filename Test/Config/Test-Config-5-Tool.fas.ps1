@@ -10,8 +10,8 @@ macro 'Keys "F9 o u 1 t" Menu.Select("Трассировка", 3) Keys "Enter"'
 job {
 	# uncheck Panels
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'Трассировка'
-	$Far.Dialog[1].Selected = 0
+	Assert-Far $__[0].Text -eq 'Трассировка'
+	$__[1].Selected = 0
 }
 keys Enter
 job {
@@ -28,9 +28,9 @@ macro 'Menu.Select("Трассировка", 3) Keys "Enter"'
 job {
 	# check Panels ~ default
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'Трассировка'
-	Assert-Far $Far.Dialog[1].Selected -eq 0
-	$Far.Dialog[1].Selected = 1
+	Assert-Far $__[0].Text -eq 'Трассировка'
+	Assert-Far $__[1].Selected -eq 0
+	$__[1].Selected = 1
 }
 keys Enter
 job {

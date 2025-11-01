@@ -11,7 +11,7 @@ run {
 	$null = New-Variable -Scope global
 }
 job {
-	Assert-Far ($Far.Dialog[0].Text -match '^cmdlet New-Variable')
+	Assert-Far ($__[0].Text -match '^cmdlet New-Variable')
 }
 keys 0 9 0 3 2 8 1 9 4 6 3 6 Enter
 job {

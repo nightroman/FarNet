@@ -32,7 +32,7 @@ run {
 }
 job {
 	Assert-Far -DialogTypeId ([PowerShellFar.Guids]::ReadLineDialog)
-	$Far.Dialog[0].Text = '140302_142029'
+	$__[0].Text = '140302_142029'
 }
 keys Enter
 

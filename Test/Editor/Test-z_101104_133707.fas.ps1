@@ -10,30 +10,30 @@ job {
 }
 job {
 	Assert-Far @(
-		[Math]::Abs(($Far.Editor.TimeOfOpen - [DateTime]::Now).TotalSeconds) -lt 3
-		$Far.Editor.TimeOfSave -eq [DateTime]::MinValue
+		[Math]::Abs(($__.TimeOfOpen - [DateTime]::Now).TotalSeconds) -lt 3
+		$__.TimeOfSave -eq [DateTime]::MinValue
 	)
 }
 job {
 	# new file is not saved on soft save
-	$Far.Editor.Save()
+	$__.Save()
 	Assert-Far @(
 		!(Test-Path $HOME/_101104_133707)
-		$Far.Editor.TimeOfSave -eq [DateTime]::MinValue
+		$__.TimeOfSave -eq [DateTime]::MinValue
 	)
 
 	# ditto
-	$Far.Editor.Save($false)
+	$__.Save($false)
 	Assert-Far @(
 		!(Test-Path $HOME/_101104_133707)
-		$Far.Editor.TimeOfSave -eq [DateTime]::MinValue
+		$__.TimeOfSave -eq [DateTime]::MinValue
 	)
 
 	# hard save does the job
-	$Far.Editor.Save($true)
+	$__.Save($true)
 	Assert-Far @(
 		(Test-Path $HOME/_101104_133707)
-		[Math]::Abs(($Far.Editor.TimeOfSave - [DateTime]::Now).TotalSeconds) -lt 3
+		[Math]::Abs(($__.TimeOfSave - [DateTime]::Now).TotalSeconds) -lt 3
 	)
 }
 keys Esc
@@ -45,7 +45,7 @@ job {
 	Open-FarViewer $HOME/_101104_133707 -DisableHistory
 }
 job {
-	Assert-Far ([Math]::Abs(($Far.Viewer.TimeOfOpen - [DateTime]::Now).TotalSeconds) -lt 3)
+	Assert-Far ([Math]::Abs(($__.TimeOfOpen - [DateTime]::Now).TotalSeconds) -lt 3)
 }
 keys Esc
 job {

@@ -3,7 +3,7 @@ job {
 	Open-FarEditor 'Test-Editor-Reindent-Selection..ps1.tmp'
 }
 job {
-	$global:Editor = $Far.Editor
+	$global:Editor = $__
 	Assert-Far -Editor
 	Assert-Far @(
 		$Editor.FileName.EndsWith('\Test-Editor-Reindent-Selection..ps1.tmp')

@@ -1,7 +1,7 @@
 ﻿
 job {
 	# go to this file
-	$Far.Panel.GoToPath("$PSScriptRoot\Test-Panel-Restore.fas.ps1")
+	$__.GoToPath("$PSScriptRoot\Test-Panel-Restore.fas.ps1")
 	Assert-Far -FileName 'Test-Panel-Restore.fas.ps1'
 }
 

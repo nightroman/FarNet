@@ -1,27 +1,27 @@
 ﻿
 job {
-	$Far.Panel.CurrentDirectory = 'C:\ROM'
-	$Far.Panel.Redraw(0, $true)
-	Assert-Far $Far.Panel.CurrentIndex -eq 0
+	$__.CurrentDirectory = 'C:\ROM'
+	$__.Redraw(0, $true)
+	Assert-Far $__.CurrentIndex -eq 0
 }
 job {
 	Go-HeadFile.ps1
-	$Data.Index = $Far.Panel.CurrentIndex
+	$Data.Index = $__.CurrentIndex
 	Assert-Far @(
 		$Data.Index -ne 0
-		!$Far.Panel.CurrentFile.IsDirectory
+		!$__.CurrentFile.IsDirectory
 	)
 }
 keys Up
 job {
-	Assert-Far $Far.Panel.CurrentFile.IsDirectory
+	Assert-Far $__.CurrentFile.IsDirectory
 }
 job {
 	Go-HeadFile.ps1
-	Assert-Far $Far.Panel.CurrentIndex -eq $Data.Index
+	Assert-Far $__.CurrentIndex -eq $Data.Index
 }
 keys End
 job {
 	Go-HeadFile.ps1
-	Assert-Far $Far.Panel.CurrentIndex -eq $Data.Index
+	Assert-Far $__.CurrentIndex -eq $Data.Index
 }

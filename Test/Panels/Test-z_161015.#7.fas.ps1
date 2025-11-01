@@ -3,7 +3,7 @@
 macro 'print "ps: 42; $Host | Out-FarPanel"; Keys "Enter"' # $r
 job {
 	Assert-Far -Plugin
-	$Far.Panel.Close()
+	$__.Close()
 
 	# REPL $r
 	Assert-Far $r -eq 42

@@ -1,11 +1,7 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 #pragma once
 
 namespace FarNet
-{;
+{
 ref class CommandLine sealed : ILine
 {
 public:
@@ -19,5 +15,9 @@ public:
 	virtual void InsertText(String^ text) override;
 	virtual void SelectText(int start, int end) override;
 	virtual void UnselectText() override;
+internal:
+	static CommandLine Instance;
+private:
+	CommandLine() {}
 };
 }

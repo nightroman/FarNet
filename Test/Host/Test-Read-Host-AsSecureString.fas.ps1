@@ -13,7 +13,7 @@ run {
 	Assert-Far ($ss -is [System.Security.SecureString])
 }
 job {
-	$dialog = $Far.Dialog
+	$dialog = $__
 	Assert-Far @(
 		$dialog
 		$dialog[1].Text -eq ' '
@@ -30,7 +30,7 @@ run {
 	Assert-Far ($ss -is [System.Security.SecureString])
 }
 job {
-	$dialog = $Far.Dialog
+	$dialog = $__
 	Assert-Far @(
 		$dialog
 		$dialog[1].Text -eq 'Password'

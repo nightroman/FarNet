@@ -9,8 +9,8 @@ job {
 }
 job {
 	# empty object panel?
-	Assert-Far ($Far.Panel -is [PowerShellFar.ObjectPanel])
-	$Columns = $Far.Panel.GetPlan(0).Columns
+	Assert-Far ($__ -is [PowerShellFar.ObjectPanel])
+	$Columns = $__.GetPlan(0).Columns
 	Assert-Far $Columns.Count -eq 1
 	Assert-Far $Columns[0].Name -eq '<empty>'
 }
@@ -28,39 +28,39 @@ Keys('Enter')
 job {
 	Assert-Far -Panels
 	# with 1 column and 1 file
-	$Columns = $Far.Panel.GetPlan(0).Columns
+	$Columns = $__.GetPlan(0).Columns
 	Assert-Far -FileName 'PropertyValue1'
 	Assert-Far @(
 		$Columns.Count -eq 1
 		$Columns[0].Name -eq 'PropertyName1'
-		$Far.Panel.GetFiles().Count -eq 1
+		$__.GetFiles().Count -eq 1
 	)
 }
 
 ### enter the member panel to add another property
 keys Enter
 job {
-	Assert-Far ($Far.Panel -is [PowerShellFar.MemberPanel])
+	Assert-Far ($__ -is [PowerShellFar.MemberPanel])
 }
 keys F7
 job {
 	# dialog
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'New property'
+	Assert-Far $__[0].Text -eq 'New property'
 }
 macro 'Keys"O t h e r N a m e AltV V a l u e 2 Enter"'
 job {
 	Assert-Far -FileName 'OtherName' -FileDescription 'Value2'
-	Assert-Far $Far.Panel.Value.OtherName -eq 'Value2'
+	Assert-Far $__.Value.OtherName -eq 'Value2'
 }
 
 # exit member panel
 keys Esc
 job {
 	# object panel
-	Assert-Far ($Far.Panel -is [PowerShellFar.ObjectPanel])
+	Assert-Far ($__ -is [PowerShellFar.ObjectPanel])
 	# with still 1 column
-	$Columns = $Far.Panel.GetPlan(0).Columns
+	$Columns = $__.GetPlan(0).Columns
 	Assert-Far @(
 		$Columns.Count -eq 1
 		$Columns[0].Name -eq 'PropertyName1'
@@ -72,7 +72,7 @@ keys CtrlR
 job {
 	# 2 columns
 	# N ~ OtherName, Z ~ PropertyName1
-	$Columns = $Far.Panel.GetPlan(0).Columns
+	$Columns = $__.GetPlan(0).Columns
 	Assert-Far -FileName 'Value2' -FileDescription 'PropertyValue1'
 	Assert-Far @(
 		$Columns.Count -eq 2
@@ -86,17 +86,17 @@ keys Del
 job {
 	# dialog
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'Remove'
+	Assert-Far $__[0].Text -eq 'Remove'
 }
 keys Enter
 job {
-	$Columns = $Far.Panel.GetPlan(0).Columns
+	$Columns = $__.GetPlan(0).Columns
 	Assert-Far -Panels
 	Assert-Far @(
 		$Columns.Count -eq 2
 		$Columns[0].Name -eq 'PropertyName1'
 		$Columns[1].Name -eq 'OtherName'
-		$Far.Panel.GetFiles().Count -eq 0
+		$__.GetFiles().Count -eq 0
 	)
 }
 
@@ -104,7 +104,7 @@ job {
 keys CtrlR
 job {
 	# with 1 column
-	$Columns = $Far.Panel.GetPlan(0).Columns
+	$Columns = $__.GetPlan(0).Columns
 	Assert-Far -Panels
 	Assert-Far @(
 		$Columns.Count -eq 1

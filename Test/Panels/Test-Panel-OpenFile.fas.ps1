@@ -17,7 +17,7 @@ $F3F4 = {
 	keys F3
 	job {
 		Assert-Far -Viewer
-		Assert-Far $Far.Viewer.FileName -eq $Data.File
+		Assert-Far $__.FileName -eq $Data.File
 	}
 	keys Esc
 	job {

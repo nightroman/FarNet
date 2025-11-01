@@ -1,13 +1,10 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 #include "StdAfx.h"
 #include "Shelve.h"
+#include "Far1.h"
 #include "Panel2.h"
 
 namespace FarNet
-{;
+{
 ShelveInfoNative::ShelveInfoNative(Panel1^ panel, bool modes)
 : _modes(modes)
 {
@@ -15,7 +12,7 @@ ShelveInfoNative::ShelveInfoNative(Panel1^ panel, bool modes)
 	// Let's use the active path to restore, no path (just close) is worse.
 	if (panel->Kind != PanelKind::File)
 	{
-		Path = Far::Api->CurrentDirectory;
+		Path = Far1::Instance.CurrentDirectory;
 		return;
 	}
 
@@ -47,7 +44,7 @@ ShelveInfoNative::ShelveInfoNative(Panel1^ panel, bool modes)
 ShelveInfoNative^ ShelveInfoNative::CreateActiveInfo(bool modes)
 {
 	// any panel
-	IPanel^ native = Far::Api->Panel;
+	IPanel^ native = Far1::Instance.Panel;
 	if (!native)
 		return nullptr;
 

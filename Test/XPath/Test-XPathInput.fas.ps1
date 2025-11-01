@@ -7,7 +7,7 @@ run {
 }
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'Input variable'
+	Assert-Far $__[0].Text -eq 'Input variable'
 }
 macro 'Keys"1 2 3 4 5 Enter"'
 job {
@@ -28,7 +28,7 @@ run {
 }
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'Input variable'
+	Assert-Far $__[0].Text -eq 'Input variable'
 }
 macro 'Keys"q w e r t y Enter"'
 job {

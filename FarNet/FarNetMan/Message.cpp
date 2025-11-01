@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "Message.h"
+#include "Far1.h"
+#include "UI.h"
 
 namespace FarNet
 {
@@ -86,7 +88,7 @@ int Message::Show(MessageArgs^ args)
 	// GUI on macro?
 	if (int(options & MessageOptions::GuiOnMacro))
 	{
-		if (Far::Api->MacroState != MacroState::None)
+		if (Far1::Instance.MacroState != MacroState::None)
 			options = options | MessageOptions::Gui;
 	}
 
@@ -107,7 +109,7 @@ int Message::Show(MessageArgs^ args)
 	m._flags = (int)options;
 
 	// text width
-	int maxTextWidth = Far::Api->UI->WindowSize.X - 16;
+	int maxTextWidth = FarUI::Instance.WindowSize.X - 16;
 
 	// header
 	if (!String::IsNullOrEmpty(args->Caption))
@@ -119,7 +121,7 @@ int Message::Show(MessageArgs^ args)
 
 	// body
 	auto text = args->Text->TrimEnd();
-	int height = Far::Api->UI->WindowSize.Y - 9;
+	int height = FarUI::Instance.WindowSize.Y - 9;
 	FarNet::Works::Kit::FormatMessage(% m._body, text, maxTextWidth, height, FarNet::Works::FormatMessageMode::Space);
 
 	// buttons?
@@ -190,7 +192,7 @@ int Message::ShowDialog(int maxTextWidth, bool needButtonList)
 	w += 10;
 
 	// dialog height
-	Point size = Far::Api->UI->WindowSize;
+	Point size = FarUI::Instance.WindowSize;
 	int nBody = Math::Min(_body.Count, size.Y / 3);
 	int h;
 	if (needButtonList)
@@ -216,7 +218,7 @@ int Message::ShowDialog(int maxTextWidth, bool needButtonList)
 	int y2 = y1 < 0 ? h : y1 + h - 1;
 
 	// dialog
-	auto dialog = Far::Api->CreateDialog(x1, y1, x2, y2);
+	auto dialog = Far1::Instance.CreateDialog(x1, y1, x2, y2);
 	dialog->TypeId = _args->TypeId;
 	dialog->HelpTopic = _args->HelpTopic;
 	dialog->IsWarning = (_flags & FMSG_WARNING);

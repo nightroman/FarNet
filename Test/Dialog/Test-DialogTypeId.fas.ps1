@@ -8,7 +8,7 @@
 keys AltF7
 job {
 	# test dialog type ID
-	$id = $Far.Dialog.TypeId
+	$id = $__.TypeId
 	Assert-Far $id -eq ([guid]'8C9EAD29-910F-4b24-A669-EDAFBA6ED964')
 }
 # close dialog
@@ -24,7 +24,7 @@ run {
 }
 job {
 	# test dialog type ID; _091126_135929
-	$id = $Far.Dialog.TypeId
+	$id = $__.TypeId
 	Assert-Far $id -eq ([guid]'DA462DD5-7767-471E-9FC8-64A227BEE2B1')
 }
 # close dialog

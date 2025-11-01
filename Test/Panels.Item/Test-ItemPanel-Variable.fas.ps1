@@ -8,8 +8,8 @@ job {
 }
 job {
 	Assert-Far @(
-		$Far.Panel.CurrentDirectory -eq 'Variable:\' #_110227_123432
-		!$Far.Panel.CurrentFile # dots
+		$__.CurrentDirectory -eq 'Variable:\' #_110227_123432
+		!$__.CurrentFile # dots
 	)
 }
 
@@ -29,14 +29,14 @@ macro 'Keys"F7 a 1 AltT i n t AltV 1 2 3 4 5 Enter"'
 job {
 	# columns =
 	Assert-Far -FileName 'a1' -FileDescription '12345' -FileOwner ''
-	Assert-Far @($Far.Panel.CurrentFile.Columns)[0] -eq 'None'
+	Assert-Far @($__.CurrentFile.Columns)[0] -eq 'None'
 }
 
 # not supported
 keys ShiftEnter
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[1].Text -eq 'Operation is not supported by the provider.'
+	Assert-Far $__[1].Text -eq 'Operation is not supported by the provider.'
 }
 keys Esc
 job {
@@ -88,19 +88,19 @@ macro 'Keys"ShiftF5 a 2 Enter"'
 job {
 	# columns =
 	Assert-Far -FileName 'a2' -FileDescription 'NewValue' -FileOwner ''
-	Assert-Far @($Far.Panel.CurrentFile.Columns)[0] -eq 'None'
+	Assert-Far @($__.CurrentFile.Columns)[0] -eq 'None'
 }
 
 # delete a2
 keys Del
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[2].Text.ToUpper().Contains('TARGET "ITEM: A2"')
+	Assert-Far $__[2].Text.ToUpper().Contains('TARGET "ITEM: A2"')
 }
 keys y Enter
 job {
 	Assert-Far -Panels
-	Assert-Far ($Far.Panel.CurrentFile.Name -ne 'a2')
+	Assert-Far ($__.CurrentFile.Name -ne 'a2')
 }
 
 # find a1, delete
@@ -110,12 +110,12 @@ job {
 keys Del
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[2].Text.ToUpper().Contains('TARGET "ITEM: A1"')
+	Assert-Far $__[2].Text.ToUpper().Contains('TARGET "ITEM: A1"')
 }
 keys y Enter
 job {
 	Assert-Far -Panels
-	Assert-Far ($Far.Panel.CurrentFile.Name -ne 'a1')
+	Assert-Far ($__.CurrentFile.Name -ne 'a1')
 }
 
 # exit panel

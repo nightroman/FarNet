@@ -10,8 +10,8 @@ macro 'Keys "F9 o u 1 c" Menu.Select("FarNet.Demo", 3) Keys "Enter"'
 job {
 	# set Prefix=demo2
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'FarNet.Demo Command'
-	$Far.Dialog[2].Text = 'demo2'
+	Assert-Far $__[0].Text -eq 'FarNet.Demo Command'
+	$__[2].Text = 'demo2'
 }
 keys Enter
 job {
@@ -26,8 +26,8 @@ macro 'Menu.Select("FarNet.Demo", 3) Keys "Enter"'
 job {
 	# set Prefix='' ~ default
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'FarNet.Demo Command'
-	$Far.Dialog[2].Text = ''
+	Assert-Far $__[0].Text -eq 'FarNet.Demo Command'
+	$__[2].Text = ''
 }
 keys Enter
 job {

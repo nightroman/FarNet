@@ -5,7 +5,7 @@
 
 ### test .GoToPath and then Get-FarPath
 job {
-	$Far.Panel.GoToPath('C:\ROM\Aps\About.ps1')
+	$__.GoToPath('C:\ROM\Aps\About.ps1')
 	Assert-Far -FileName About.ps1
 
 	$Far.Panel2.GoToPath('C:\TEMP\Missed-Missed-Missed')
@@ -24,29 +24,29 @@ job {
 # mind test order
 job {
 	# dumb, existing
-	$Far.Panel.GoToName('AbOuT-AnY.Ps1')
+	$__.GoToName('AbOuT-AnY.Ps1')
 	Assert-Far -FileName About-Any.ps1
 
 	# test, existing
-	Assert-Far ($Far.Panel.GoToName('AbOuT.Ps1', $false))
+	Assert-Far ($__.GoToName('AbOuT.Ps1', $false))
 	Assert-Far -FileName About.ps1
 
 	# dumb, missed
-	$Far.Panel.GoToName('missed-missed')
+	$__.GoToName('missed-missed')
 	Assert-Far -FileName About.ps1
 
 	# test, missed
-	Assert-Far (!$Far.Panel.GoToName('missed-missed', $false))
+	Assert-Far (!$__.GoToName('missed-missed', $false))
 	Assert-Far -FileName About.ps1
 
 	# fail, existing
-	Assert-Far ($Far.Panel.GoToName('About-Any.ps1', $true))
+	Assert-Far ($__.GoToName('About-Any.ps1', $true))
 	Assert-Far -FileName About-Any.ps1
 
 	# fail, missed
 	$failed = $false
 	try {
-		$Far.Panel.GoToName('missed-missed', $true)
+		$__.GoToName('missed-missed', $true)
 	}
 	catch {
 		$failed = $true

@@ -21,8 +21,8 @@ run {
 }
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'my-title'
-	Assert-Far $Far.Dialog[1].Text -eq 'my-message'
+	Assert-Far $__[0].Text -eq 'my-title'
+	Assert-Far $__[1].Text -eq 'my-message'
 }
 macro 'Keys"t" -- Throw'
 job {
@@ -40,8 +40,8 @@ run {
 }
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[1].Text -eq 'Assertion failed.'
-	Assert-Far $Far.Dialog[2].Text -eq 'Condition #3'
+	Assert-Far $__[1].Text -eq 'Assertion failed.'
+	Assert-Far $__[2].Text -eq 'Condition #3'
 }
 macro 'Keys"t" -- Throw'
 job {
@@ -56,7 +56,7 @@ run {
 }
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[1].Text -eq 'Assertion set is empty.'
+	Assert-Far $__[1].Text -eq 'Assertion set is empty.'
 }
 macro 'Keys"t" -- Throw'
 job {

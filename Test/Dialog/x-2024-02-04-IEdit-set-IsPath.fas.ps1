@@ -9,9 +9,9 @@ run {
 keys Del
 
 job {
-	Assert-Far $Far.Dialog.Focused.Text -eq ''
-	$Far.Dialog.Focused.IsPath = $true
-	Assert-Far $Far.Dialog.Focused.Text -eq '' #! used to be my-text
+	Assert-Far $__.Focused.Text -eq ''
+	$__.Focused.IsPath = $true
+	Assert-Far $__.Focused.Text -eq '' #! used to be my-text
 
-	$Far.Dialog.Close()
+	$__.Close()
 }

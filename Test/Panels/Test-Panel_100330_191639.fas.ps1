@@ -4,13 +4,13 @@ job {
 	Get-Process -Id $PID | Out-FarPanel
 }
 job {
-	Assert-Far ($Far.Panel -is [PowerShellFar.ObjectPanel])
-	Assert-Far $Far.Panel.GetFiles().Count -eq 1
+	Assert-Far ($__ -is [PowerShellFar.ObjectPanel])
+	Assert-Far $__.GetFiles().Count -eq 1
 }
 keys CtrlR
 job {
 	# still 1 file
-	Assert-Far $Far.Panel.GetFiles().Count -eq 1
+	Assert-Far $__.GetFiles().Count -eq 1
 }
 keys Esc
 job {
@@ -22,12 +22,12 @@ job {
 	Get-Process -Id $PID | Out-FarPanel Name, Handles
 }
 job {
-	Assert-Far ($Far.Panel -is [PowerShellFar.ObjectPanel])
-	Assert-Far $Far.Panel.GetFiles().Count -eq 1
+	Assert-Far ($__ -is [PowerShellFar.ObjectPanel])
+	Assert-Far $__.GetFiles().Count -eq 1
 }
 keys CtrlR
 job {
 	# still 1 file; used to fail
-	Assert-Far $Far.Panel.GetFiles().Count -eq 1
+	Assert-Far $__.GetFiles().Count -eq 1
 }
 keys Esc

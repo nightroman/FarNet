@@ -17,7 +17,7 @@ job {
 	# PSF 5.0.84 opens the existing file from the current PS location.
 	# PSF 5.0.83 fails to find the file and opens a new with another path.
 	Assert-Far -Viewer
-	Assert-Far $Far.Viewer.FileName -eq "$($Data.Root)\$($Data.Name)"
+	Assert-Far $__.FileName -eq "$($Data.Root)\$($Data.Name)"
 }
 macro 'Keys"Esc" -- exit viewer'
 job {

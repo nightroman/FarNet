@@ -24,7 +24,7 @@ job {
 
 	# Gets breakpoints as @{line -> color}
 	function global:GetEditorBreakpointColor {
-		$Editor = $Far.Editor
+		$Editor = $__
 		$r = @{}
 		$r
 		$colors = [System.Collections.Generic.List[FarNet.EditorColorInfo]]::new()
@@ -53,7 +53,7 @@ job {
 }
 job {
 	# go to the 1st breakpoint
-	$Far.Editor.GoTo(0, 1)
+	$__.GoTo(0, 1)
 }
 # add a line before shifting this down
 keys Enter
@@ -69,7 +69,7 @@ job {
 }
 job {
 	# go to the just added empty line
-	$Far.Editor.GoTo(0, 1)
+	$__.GoTo(0, 1)
 }
 # delete the empty line
 keys Del
@@ -94,7 +94,7 @@ job {
 }
 job {
 	# exit
-	$Far.Editor.Close()
+	$__.Close()
 }
 job {
 	# remove breakpoints

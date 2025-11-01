@@ -41,11 +41,11 @@ job {
 ### copy 2
 job {
 	Assert-Far -FileName file1
-	$Far.Panel.SelectNames(('file1', 'file2'))
+	$__.SelectNames(('file1', 'file2'))
 }
 keys F5
 job {
-	$files = $Far.Panel.GetFiles()
+	$files = $__.GetFiles()
 	Assert-Far @(
 		$files.Count -eq 9
 		$files[0].Name -eq 'file1'
@@ -57,7 +57,7 @@ job {
 
 ### move
 job {
-	$Far.Panel.SelectNames(('file3', 'file4'))
+	$__.SelectNames(('file3', 'file4'))
 	Assert-Far @(
 		Test-Path 'c:\temp\z\files\file3'
 		Test-Path 'c:\temp\z\files\file4'
@@ -67,7 +67,7 @@ job {
 }
 keys F6
 job {
-	$files = $Far.Panel.GetFiles()
+	$files = $__.GetFiles()
 	Assert-Far @(
 		$files.Count -eq 7
 		!(Test-Path 'c:\temp\z\files\file3')

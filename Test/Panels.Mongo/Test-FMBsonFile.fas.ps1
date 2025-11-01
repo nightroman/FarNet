@@ -24,10 +24,10 @@ job {
 job {
 	Assert-Far -Plugin
 	Assert-Far $(
-		$Far.Panel.CurrentIndex -eq 0
-		$Far.Panel.Title -eq ([IO.Path]::GetFileName($Data.File))
+		$__.CurrentIndex -eq 0
+		$__.Title -eq ([IO.Path]::GetFileName($Data.File))
 	)
-	$r = $Far.Panel.GetFiles()
+	$r = $__.GetFiles()
 	Assert-Far $(
 		$r.Count -eq 2
 		$r[0].Name -eq 'name1'
@@ -48,9 +48,9 @@ job {
 keys F7
 job {
 	Assert-Far -Editor
-	$Far.Editor.SetText('{_id: 3}')
-	$Far.Editor.Save()
-	$Far.Editor.Close()
+	$__.SetText('{_id: 3}')
+	$__.Save()
+	$__.Close()
 }
 #! Far 3.0.5839 change in updating panels?
 keys CtrlR
@@ -61,8 +61,8 @@ macro 'Keys"Esc" -- try exit'
 job {
 	Assert-Far -Dialog
 	Assert-Far @(
-		$Far.Dialog[0].Text -eq 'Export'
-		$Far.Dialog[1].Text -eq 'Export data to file?'
+		$__[0].Text -eq 'Export'
+		$__[1].Text -eq 'Export data to file?'
 	)
 }
 macro 'Keys"Esc" -- do not exit'
@@ -96,7 +96,7 @@ job {
 macro 'Keys"Esc" -- try exit'
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'Export'
+	Assert-Far $__[0].Text -eq 'Export'
 }
 macro 'Keys"Enter" -- yes'
 job {
@@ -120,7 +120,7 @@ job {
 macro 'Keys"F4" -- edit'
 job {
 	Assert-Far -Editor
-	$Far.Editor.SetText('{_id: 2, name: "name2"}')
+	$__.SetText('{_id: 2, name: "name2"}')
 }
 macro 'Keys"Esc Enter" -- exit editor'
 job {
@@ -129,7 +129,7 @@ job {
 macro 'Keys"Esc" -- try exit'
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'Export'
+	Assert-Far $__[0].Text -eq 'Export'
 }
 macro 'Keys"Enter" -- yes'
 job {
@@ -154,7 +154,7 @@ job {
 macro 'Keys"F4" -- edit, change name'
 job {
 	Assert-Far -Editor
-	$Far.Editor.SetText('{_id: 2, name: "name3"}')
+	$__.SetText('{_id: 2, name: "name3"}')
 }
 macro 'Keys"Esc Enter" -- exit editor'
 job {

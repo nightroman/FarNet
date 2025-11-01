@@ -18,7 +18,7 @@ run {
 job {
 	# error message (in inquire dialog)?
 	Assert-Far -Dialog
-	$Controls = @($Far.Dialog.Controls)
+	$Controls = @($__.Controls)
 	Assert-Far ($Controls[1].Text -like 'Cannot remove variable Far *')
 	$box = $Controls[-3]
 	Assert-Far $box.Items[-1].Text -eq '&? Help'

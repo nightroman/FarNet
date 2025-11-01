@@ -151,7 +151,7 @@ job {
 	Assert-Far -Editor
 
 	# expanded?
-	Assert-Far $Far.Editor.GetText() -eq 'bar: $Far.CommandLine'
+	Assert-Far $__.GetText() -eq 'bar: $Far.CommandLine'
 }
 
 # exit editor

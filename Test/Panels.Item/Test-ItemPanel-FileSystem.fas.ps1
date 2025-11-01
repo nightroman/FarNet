@@ -100,7 +100,7 @@ job {
 keys a Enter
 job {
 	Assert-Far @(
-		$Far.Panel.GetFiles().Count -eq 2
+		$__.GetFiles().Count -eq 2
 		$Far.Panel2.GetFiles().Count -eq 4
 	)
 }
@@ -145,7 +145,7 @@ job {
 
 # go to TEMP
 job {
-	$Far.Panel.CurrentDirectory = "C:\TEMP"
+	$__.CurrentDirectory = "C:\TEMP"
 }
 
 # back to the 1st panel
@@ -172,12 +172,12 @@ job {
 # open the member panel, edit the file Attributes, make it Hidden
 keys CtrlPgDn
 job {
-	Assert-Far ($Far.Panel -is [PowerShellFar.MemberPanel])
+	Assert-Far ($__ -is [PowerShellFar.MemberPanel])
 	Find-FarFile Attributes
 }
 macro 'Keys"Enter Right , H i d d e n Enter"'
 job {
-	Assert-Far $Far.Panel.CurrentFile.Description.Contains('Hidden')
+	Assert-Far $__.CurrentFile.Description.Contains('Hidden')
 }
 
 # go back to the item panel, the file has got hidden
@@ -185,7 +185,7 @@ keys CtrlPgUp
 job {
 	#! v5 -a-h--
 	Assert-Far @(
-		!$Far.Panel.CurrentFile
+		!$__.CurrentFile
 		(Get-Item -LiteralPath 'C:\TEMP\Tmp\file3`$][3' -Force).Mode -like '-a-h-*'
 	)
 }
@@ -211,7 +211,7 @@ job {
 	Assert-Far -Panels
 	Assert-Far @(
 		!(Test-Path "C:\TEMP\Tmp")
-		$Far.Panel.CurrentFile.Name -ne 'Tmp'
+		$__.CurrentFile.Name -ne 'Tmp'
 	)
 }
 

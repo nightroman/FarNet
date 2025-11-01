@@ -10,5 +10,5 @@ job {
 	Assert-Far -Panels -Plugin
 }
 job {
-	$Far.Panel.Close()
+	$__.Close()
 }

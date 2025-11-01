@@ -9,7 +9,7 @@ run {
 }
 job {
 	Assert-Far $Far.UI.GetBufferLineText(-2) -eq ('1234567890' * 6)
-	Assert-Far $Far.Dialog[0].Text -eq ': '
+	Assert-Far $__[0].Text -eq ': '
 }
 keys 1 Enter
 
@@ -27,7 +27,7 @@ job {
 	Assert-Far $Far.UI.GetBufferLineText(-4) -eq 'Question?'
 	Assert-Far $Far.UI.GetBufferLineText(-3) -eq '[1] Answer1'
 	Assert-Far $Far.UI.GetBufferLineText(-2) -eq '[2] Answer2'
-	Assert-Far $Far.Dialog[0].Text -eq ': '
+	Assert-Far $__[0].Text -eq ': '
 }
 keys 2 Enter
 

@@ -19,7 +19,7 @@ run {
 job {
 	Assert-Far -Dialog
 	Assert-Far @(
-		$d = $Far.Dialog
+		$d = $__
 		$r = $d.Rect
 
 		$r.Top -eq 2

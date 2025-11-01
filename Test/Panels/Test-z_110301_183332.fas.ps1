@@ -8,7 +8,7 @@ job {
 
 $FixColumns = { ### 'Registry' columns
 	job {
-		Assert-Far 'SKC VC Name' -eq (($Far.Panel.GetPlan(0).Columns | Select-Object -ExpandProperty Name) -join ' ')
+		Assert-Far 'SKC VC Name' -eq (($__.GetPlan(0).Columns | Select-Object -ExpandProperty Name) -join ' ')
 	}
 }
 
@@ -18,7 +18,7 @@ job {
 }
 job {
 	Assert-Far -Plugin
-	Assert-Far $Far.Panel.CurrentDirectory -eq 'FarControlPanel:\'
+	Assert-Far $__.CurrentDirectory -eq 'FarControlPanel:\'
 }
 & $FixColumns
 
@@ -29,7 +29,7 @@ job {
 keys Enter
 job {
 	Assert-Far -Plugin
-	Assert-Far $Far.Panel.CurrentDirectory -eq 'FarControlPanel:\Desktop'
+	Assert-Far $__.CurrentDirectory -eq 'FarControlPanel:\Desktop'
 }
 & $FixColumns
 

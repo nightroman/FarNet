@@ -14,7 +14,7 @@ run {
 }
 job {
 	Assert-Far -DialogTypeId ([PowerShellFar.Guids]::ReadLineDialog)
-	Assert-Far $Far.Dialog[0].IsPassword
+	Assert-Far $__[0].IsPassword
 }
 keys p a s s Enter
 job {
@@ -29,8 +29,8 @@ run {
 }
 job {
 	Assert-Far -DialogTypeId ([PowerShellFar.Guids]::ReadLineDialog)
-	Assert-Far $Far.Dialog[0].Text -eq 'Password: '
-	Assert-Far $Far.Dialog[1].IsPassword
+	Assert-Far $__[0].Text -eq 'Password: '
+	Assert-Far $__[1].IsPassword
 }
 keys p a s s Enter
 job {

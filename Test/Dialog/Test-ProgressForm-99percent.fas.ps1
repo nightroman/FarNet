@@ -14,6 +14,6 @@ $progress.SetProgressValue(99, 100)
 Start-Sleep -Milliseconds 300
 
 job {
-	Assert-Far $Far.Dialog[2].Text.StartsWith('█████████████████████████████████████████████████████████████░')
-	$Far.Dialog.Close()
+	Assert-Far $__[2].Text.StartsWith('█████████████████████████████████████████████████████████████░')
+	$__.Close()
 }

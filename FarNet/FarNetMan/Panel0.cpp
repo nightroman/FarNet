@@ -1,15 +1,14 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 #include "StdAfx.h"
 #include "Panel0.h"
+#include "CommandLine.h"
+#include "Far1.h"
 #include "Panel2.h"
 #include "Shelve.h"
+#include "Window.h"
 #include "Wrappers.h"
 
 namespace FarNet
-{;
+{
 // This is the very first called method
 int Panel0::AsGetFindData(GetFindDataInfo* info)
 {
@@ -78,7 +77,7 @@ int Panel0::AsGetFiles(GetFilesInfo* info)
 	const bool silent = int(mode & ExplorerModes::Silent);
 
 	// process bad names? - do not if silent or the target is plugin
-	const bool processBadNames = qview || (!silent && !Far::Api->Panel2->IsPlugin);
+	const bool processBadNames = qview || (!silent && !Far1::Instance.Panel2->IsPlugin);
 
 	// delete files on move?
 	const bool deleteFiles = info->Move && explorer->CanDeleteFiles;
@@ -224,7 +223,7 @@ void Panel0::AsClosePanel(const ClosePanelInfo* info)
 		}
 		catch(Exception^ ex)
 		{
-			Far::Api->ShowError("UIClosed", ex);
+			Far1::Instance.ShowError("UIClosed", ex);
 		}
 	}
 }
@@ -293,11 +292,11 @@ int Panel0::AsProcessPanelEvent(const ProcessPanelEventInfo* info)
 
 					// clear the command line
 					if (e.Ignore)
-						Far::Api->CommandLine->Text = String::Empty;
+						CommandLine::Instance.Text = String::Empty;
 				}
 				catch(Exception^ exception)
 				{
-					Far::Api->ShowError("Event: Executing", exception);
+					Far1::Instance.ShowError("Event: Executing", exception);
 				}
 
 				return e.Ignore ? 1 : 0;
@@ -448,7 +447,7 @@ int Panel0::AsProcessPanelInput(const ProcessPanelInputInfo* info)
 		return 1;
 
 	// 3. escape; special not yet handled case
-	if ((e.Key->Is(KeyCode::Escape) || e.Key->IsShift(KeyCode::Escape)) && Far::Api->CommandLine->Length == 0)
+	if ((e.Key->Is(KeyCode::Escape) || e.Key->IsShift(KeyCode::Escape)) && CommandLine::Instance.Length == 0)
 	{
 		pp->Host->WorksEscaping(%e);
 		if (e.Ignore)
@@ -579,7 +578,7 @@ void Panel0::OpenPanel(Panel2^ plugin)
 		throw gcnew InvalidOperationException("Cannot open panel, another panel is waiting.");
 
 	// panels must be current at this point
-	if (Far::Api->Window->Kind != WindowKind::Panels)
+	if (Window::Instance.Kind != WindowKind::Panels)
 		throw gcnew InvalidOperationException("Cannot open panel, panels must be current.");
 
 	// set waiting panel

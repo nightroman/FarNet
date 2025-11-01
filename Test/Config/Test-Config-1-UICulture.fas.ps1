@@ -10,8 +10,8 @@ macro 'Keys "F9 o u 1 u" Menu.Select("FarNet.Demo", 3) Keys "Enter"'
 job {
 	# set Culture '' ~ default
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'FarNet.Demo'
-	$Far.Dialog[2].Text = ''
+	Assert-Far $__[0].Text -eq 'FarNet.Demo'
+	$__[2].Text = ''
 }
 keys Enter
 job {
@@ -24,8 +24,8 @@ macro 'Menu.Select("FarNet.Demo", 3) Keys "Enter"'
 job {
 	# set Culture `ru`
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'FarNet.Demo'
-	$Far.Dialog[2].Text = 'ru'
+	Assert-Far $__[0].Text -eq 'FarNet.Demo'
+	$__[2].Text = 'ru'
 }
 keys Enter
 job {

@@ -56,5 +56,9 @@ public:
 	virtual void Quit() override;
 	virtual void ShowError(String^ title, Exception^ error) override;
 	virtual void ShowHelp(String^ path, String^ topic, HelpOptions options) override;
+internal:
+	static Far1 Instance;
+private:
+	Far1() {}
 };
 }

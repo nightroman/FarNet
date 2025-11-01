@@ -16,6 +16,6 @@ job {
 	$ob1, $ob2 | Out-FarPanel -Title AutoColumnType
 }
 job {
-	Assert-Far $Far.Panel.Title -eq AutoColumnType
+	Assert-Far $__.Title -eq AutoColumnType
 }
 keys Esc

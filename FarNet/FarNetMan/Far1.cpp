@@ -177,7 +177,7 @@ ILine^ Far1::Line::get()
 	break;
 	case FarNet::WindowKind::Menu:
 	{
-		FarNet::MacroArea area = Far::Api->MacroArea;
+		FarNet::MacroArea area = Far1::Instance.MacroArea;
 		if (area == FarNet::MacroArea::ShellAutoCompletion)
 			return CommandLine;
 
@@ -276,12 +276,12 @@ void Far1::ShowError(String^ title, Exception^ error)
 	// on loading print errors
 	if (g_AppState == AppState::Loading)
 	{
-		Far::Api->UI->Write(text->ToString(), ConsoleColor::Red);
+		FarUI::Instance.Write(text->ToString(), ConsoleColor::Red);
 	}
 	else
 	{
 		text->Write(errorString);
-		Far::Api->Message(text->ToString(), title, (MessageOptions::Gui | MessageOptions::Warning));
+		Far1::Instance.Message(text->ToString(), title, (MessageOptions::Gui | MessageOptions::Warning));
 	}
 }
 
@@ -399,7 +399,7 @@ void Far1::Quit()
 
 ILine^ Far1::CommandLine::get()
 {
-	return gcnew FarNet::CommandLine;
+	return % FarNet::CommandLine::Instance;
 }
 
 IWindow^ Far1::Window::get()

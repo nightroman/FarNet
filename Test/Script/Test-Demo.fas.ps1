@@ -18,9 +18,9 @@ job {
 	Assert-Far $env:SCRIPT_DEMO_COUNT -eq "1"
 
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[1].Text -eq 'name: John Doe, age: 42'
+	Assert-Far $__[1].Text -eq 'name: John Doe, age: 42'
 
-	$Far.Dialog.Close()
+	$__.Close()
 }
 
 job {
@@ -36,7 +36,7 @@ run {
 
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[1].Text -eq 'name: John Doe, age: 42'
+	Assert-Far $__[1].Text -eq 'name: John Doe, age: 42'
 
-	$Far.Dialog.Close()
+	$__.Close()
 }

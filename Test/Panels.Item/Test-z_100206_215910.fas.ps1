@@ -26,7 +26,7 @@ job {
 # enter the funny key
 keys Enter
 job {
-	Assert-Far $Far.Panel.CurrentFile -eq $null
+	Assert-Far $__.CurrentFile -eq $null
 }
 
 # exit the funny key on dots

@@ -14,7 +14,7 @@ job {
 	Open-FarEditor 'C:\TEMP\unicode-ansi.txt'
 }
 job {
-	$e = $Far.Editor
+	$e = $__
 	Assert-Far @(
 		$e.FileName -eq 'C:\TEMP\unicode-ansi.txt'
 		$e.CodePage -eq 1200
@@ -22,7 +22,7 @@ job {
 	)
 }
 run {
-	$e = $Far.Editor
+	$e = $__
 	$e.Save()
 	$e.Save('C:\TEMP\unicode-ansi.bak')
 	$e.Save('C:\TEMP\tmp.txt')
@@ -42,7 +42,7 @@ job {
 	Open-FarEditor 'C:\TEMP\unicode-true.txt'
 }
 job {
-	$e = $Far.Editor
+	$e = $__
 	Assert-Far @(
 		$e.FileName -eq 'C:\TEMP\unicode-true.txt'
 		$e.CodePage -eq 1200
@@ -50,7 +50,7 @@ job {
 	)
 }
 run {
-	$e = $Far.Editor
+	$e = $__
 	$e.Save()
 	$e.Save('C:\TEMP\unicode-true.bak')
 	$e.Save('C:\TEMP\tmp.txt')
@@ -70,7 +70,7 @@ job {
 	Open-FarEditor 'C:\TEMP\utf8-ansi.txt'
 }
 job {
-	$e = $Far.Editor
+	$e = $__
 	Assert-Far @(
 		$e.FileName -eq 'C:\TEMP\utf8-ansi.txt'
 		$e.CodePage -eq 65001
@@ -78,7 +78,7 @@ job {
 	)
 }
 run {
-	$e = $Far.Editor
+	$e = $__
 	$e.Save()
 	$e.Save('C:\TEMP\utf8-ansi.bak')
 	$e.Save('C:\TEMP\tmp.txt')
@@ -98,7 +98,7 @@ job {
 	Open-FarEditor 'C:\TEMP\utf8-true.txt'
 }
 job {
-	$e = $Far.Editor
+	$e = $__
 	Assert-Far @(
 		$e.FileName -eq 'C:\TEMP\utf8-true.txt'
 		$e.CodePage -eq 65001
@@ -106,7 +106,7 @@ job {
 	)
 }
 run {
-	$e = $Far.Editor
+	$e = $__
 	$e.Save()
 	$e.Save('C:\TEMP\utf8-true.bak')
 	$e.Save('C:\TEMP\tmp.txt')

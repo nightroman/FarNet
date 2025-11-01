@@ -14,22 +14,22 @@ job {
 # go to FARHOME, select files
 keys Tab
 job {
-	$Far.Panel.CurrentDirectory = $env:FARHOME
-	$Far.Panel.SelectNames(@('FarNet', 'Plugins', 'FarEng.hlf', 'FarRus.hlf'))
+	$__.CurrentDirectory = $env:FARHOME
+	$__.SelectNames(@('FarNet', 'Plugins', 'FarEng.hlf', 'FarRus.hlf'))
 }
 
 # copy files to the empty panel
 macro 'Keys"F5 Enter"'
 job {
 	# files "to stay" are selected
-	Assert-Far 'Plugins FarRus.hlf' -eq ($Far.Panel.SelectedFiles -join ' ')
-	$Far.Panel.UnselectAll()
+	Assert-Far 'Plugins FarRus.hlf' -eq ($__.SelectedFiles -join ' ')
+	$__.UnselectAll()
 }
 
 # back to 1st
 keys Tab
 job {
-	Assert-Far 'FarNet FarEng.hlf' -eq ($Far.Panel.Files -join ' ')
+	Assert-Far 'FarNet FarEng.hlf' -eq ($__.Files -join ' ')
 }
 
 # exit

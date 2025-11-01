@@ -5,8 +5,8 @@ job {
 	[FarNet.Tasks]::WaitForWindow('Dialog', 999)
 }
 job {
-	Assert-Far $Far.Dialog[1].Text -eq 'Hi Joe (42)'
-	$Far.Dialog.Close()
+	Assert-Far $__[1].Text -eq 'Hi Joe (42)'
+	$__.Close()
 }
 
 ### =2
@@ -15,8 +15,8 @@ job {
 	[FarNet.Tasks]::WaitForWindow('Dialog', 999)
 }
 job {
-	Assert-Far $Far.Dialog[1].Text -eq 'Hi Joe'
-	$Far.Dialog.Close()
+	Assert-Far $__[1].Text -eq 'Hi Joe'
+	$__.Close()
 }
 
 ### =3
@@ -27,6 +27,6 @@ job {
 	[FarNet.Tasks]::WaitForWindow('Dialog', 999)
 }
 job {
-	Assert-Far $Far.Dialog[1].Text -eq 'Hi Joe'
-	$Far.Dialog.Close()
+	Assert-Far $__[1].Text -eq 'Hi Joe'
+	$__.Close()
 }

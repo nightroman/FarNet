@@ -4,7 +4,7 @@
 #>
 
 ### init
-job { $Far.Panel.GoToPath($PSCommandPath) }
+job { $__.GoToPath($PSCommandPath) }
 job { $Psf.RunCommandConsole() }
 
 ### F3

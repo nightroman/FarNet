@@ -19,29 +19,29 @@ run {
 job {
 	# Name
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'cmdlet TestManyMandatoryParameters at command pipeline position 1'
-	Assert-Far $Far.Dialog[1].Text -eq 'Supply values for the following parameters:'
-	Assert-Far $Far.Dialog[2].Text -eq 'Name'
+	Assert-Far $__[0].Text -eq 'cmdlet TestManyMandatoryParameters at command pipeline position 1'
+	Assert-Far $__[1].Text -eq 'Supply values for the following parameters:'
+	Assert-Far $__[2].Text -eq 'Name'
 }
 keys u s e r Enter
 job {
 	# Tags[0]
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'cmdlet TestManyMandatoryParameters at command pipeline position 1'
-	Assert-Far $Far.Dialog[1].Text -eq 'Supply values for the following parameters:'
-	Assert-Far $Far.Dialog[2].Text -eq 'Tags[0]'
+	Assert-Far $__[0].Text -eq 'cmdlet TestManyMandatoryParameters at command pipeline position 1'
+	Assert-Far $__[1].Text -eq 'Supply values for the following parameters:'
+	Assert-Far $__[2].Text -eq 'Tags[0]'
 }
 keys t a g 1 Enter
 job {
 	# Tags[1]
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[2].Text -eq 'Tags[1]'
+	Assert-Far $__[2].Text -eq 'Tags[1]'
 }
 keys Enter # enter empty
 job {
 	# Password
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[2].Text -eq 'Password'
-	Assert-Far $Far.Dialog[3].IsPassword
+	Assert-Far $__[2].Text -eq 'Password'
+	Assert-Far $__[3].IsPassword
 }
 keys p a s s Enter

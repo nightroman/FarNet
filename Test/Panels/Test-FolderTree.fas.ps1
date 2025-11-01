@@ -5,13 +5,13 @@ job {
 	$Panel.Open()
 }
 job {
-	Assert-Far $Far.Panel.Title -eq 'Tree'
+	Assert-Far $__.Title -eq 'Tree'
 }
 
 # go to the root item
 keys Down
 job {
-	Assert-Far $Far.Panel.Title -eq 'Tree: C:\ROM'
+	Assert-Far $__.Title -eq 'Tree: C:\ROM'
 }
 
 # find DEV, enter
@@ -26,13 +26,13 @@ job {
 # expand
 keys Right
 job {
-	Assert-Far $Far.Panel.Title -eq 'Tree: C:\ROM'
+	Assert-Far $__.Title -eq 'Tree: C:\ROM'
 }
 job {
 	Find-FarFile 'Achilles'
 }
 job {
-	Assert-Far $Far.Panel.Title -eq 'Tree: C:\ROM\DEV'
+	Assert-Far $__.Title -eq 'Tree: C:\ROM\DEV'
 }
 
 keys Enter
@@ -44,7 +44,7 @@ job {
 keys CtrlPgUp
 job {
 	Assert-Far -FileName 'ROM'
-	Assert-Far $Far.Panel.Title -eq 'Tree: C:\'
+	Assert-Far $__.Title -eq 'Tree: C:\'
 }
 
 # exit

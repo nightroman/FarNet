@@ -13,8 +13,8 @@ job {
 job {
 	# dots 1
 	$fs = $Far.FS
-	Assert-Far 0 -eq $Far.Panel.CurrentIndex
-	Assert-Far $null -eq $Far.Panel.CurrentFile
+	Assert-Far 0 -eq $__.CurrentIndex
+	Assert-Far $null -eq $__.CurrentFile
 	Assert-Far $null -eq $fs.CursorDirectory
 	Assert-Far $null -eq $fs.CursorFile
 	Assert-Far $null -eq $fs.CursorItem
@@ -22,12 +22,12 @@ job {
 }
 
 job {
-	$Far.Panel.Redraw(1, 0)
+	$__.Redraw(1, 0)
 }
 job {
 	# dots 2
 	$fs = $Far.FS
-	Assert-Far 1 -eq $Far.Panel.CurrentIndex
+	Assert-Far 1 -eq $__.CurrentIndex
 	Assert-Far -FileName ..
 	Assert-Far $null -eq $fs.CursorDirectory
 	Assert-Far $null -eq $fs.CursorFile
@@ -72,12 +72,12 @@ job {
 }
 
 job {
-	$Far.Panel.SelectNames($Data.names)
+	$__.SelectNames($Data.names)
 }
 job {
 	# selected
 	#! my `..` is not selected -> -1
-	Assert-Far $Far.Panel.SelectedFiles.Count -eq ($Data.names.Count - 1)
+	Assert-Far $__.SelectedFiles.Count -eq ($Data.names.Count - 1)
 	$fs = $Far.FS
 
 	$r1, $r2 = $fs.GetSelectedPaths()
@@ -96,6 +96,6 @@ job {
 }
 
 job {
-	Assert-Far * -eq $Far.Panel.CurrentDirectory
-	$Far.Panel.Close()
+	Assert-Far * -eq $__.CurrentDirectory
+	$__.Close()
 }

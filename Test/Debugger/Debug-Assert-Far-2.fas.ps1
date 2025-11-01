@@ -18,8 +18,8 @@ try {
 		Assert-Far (Test-Path variable:\_Debugger)
 		Assert-Far -DialogTypeId ([PowerShellFar.Guids]::PSPromptDialog)
 
-		$Far.Dialog[2].Text = 'quit'
-		$Far.Dialog.Close()
+		$__[2].Text = 'quit'
+		$__.Close()
 	}
 
 	job {

@@ -23,7 +23,7 @@ job {
 }
 job {
 	Assert-Far -EditorFileName '*\New_File_*.txt'
-	$Far.Editor.Close()
+	$__.Close()
 }
 job {
 	Assert-Far -Panels
@@ -42,7 +42,7 @@ job {
 }
 job {
 	Assert-Far -EditorFileName '*\New_File_*.txt'
-	$Far.Editor.Close()
+	$__.Close()
 }
 job {
 	Assert-Far -Panels
@@ -56,7 +56,7 @@ job {
 }
 job {
 	Assert-Far -EditorFileName '*\New_File_*.txt'
-	$Far.Editor.Close()
+	$__.Close()
 }
 job {
 	Assert-Far -Panels
@@ -72,7 +72,7 @@ job {
 }
 job {
 	Assert-Far -EditorFileName *\feb9343c-6242-402f-aa0b-5427501b2942
-	$Far.Editor.Close()
+	$__.Close()
 }
 job {
 	Assert-Far -Panels
@@ -103,7 +103,7 @@ run {
 
 job {
 	### Checked flaw - Far shows msg
-	$dialog = $Far.Dialog
+	$dialog = $__
 	Assert-Far ($dialog -ne $null)
 	Assert-Far $dialog[1].Text -eq "It is impossible to edit the folder"
 }

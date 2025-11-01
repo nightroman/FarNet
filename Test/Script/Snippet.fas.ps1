@@ -8,7 +8,7 @@ job {
 }
 
 job {
-	$Editor = $Far.Editor
+	$Editor = $__
 	$Editor.ExpandTabs = 'All'
 	$Editor.TabSize = 2
 	$Editor.InsertText('  ')
@@ -17,7 +17,7 @@ job {
 
 job {
 	Assert-Far -Editor
-	$Editor = $Far.Editor
+	$Editor = $__
 	Assert-Far $Editor.Count -eq 3
 	Assert-Far $Editor.Caret.X -eq 16
 	Assert-Far $Editor[0].Text -eq '  foreach($_ in ) {'
@@ -26,5 +26,5 @@ job {
 }
 
 job {
-	$Far.Editor.Close()
+	$__.Close()
 }

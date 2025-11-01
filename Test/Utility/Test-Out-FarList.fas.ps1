@@ -55,15 +55,15 @@ run {
 }
 job {
 	# last item is current
-	Assert-Far $Far.Dialog.Focused.Text -eq '#3'
+	Assert-Far $__.Focused.Text -eq '#3'
 }
 
 # bug: used to yield '$', e.g. filter ~ '$2'
 keys Home
 job {
 	# correct: '#1'
-	Assert-Far $Far.Dialog.Focused.Text -eq '#1'
-	Assert-Far $Far.Dialog.Focused.Rect.Height -eq 3
+	Assert-Far $__.Focused.Text -eq '#1'
+	Assert-Far $__.Focused.Rect.Height -eq 3
 }
 
 # exit

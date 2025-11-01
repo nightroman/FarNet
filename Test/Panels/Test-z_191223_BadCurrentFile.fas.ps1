@@ -14,8 +14,8 @@ job {
 	# current item is ".."
 	Assert-Far -Plugin
 	Assert-Far $(
-		$Far.Panel.CurrentIndex -eq 0
-		$Far.Panel.Files[0].Name -eq '..'
+		$__.CurrentIndex -eq 0
+		$__.Files[0].Name -eq '..'
 	)
 }
 keys Esc

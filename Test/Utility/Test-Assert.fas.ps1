@@ -33,8 +33,8 @@ run {
 }
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[1].Text -eq 'Objects are not equal:'
-	Assert-Far $Far.Dialog[6].Text.Contains('Assert-Far $r1 -eq $r2 # fail')
+	Assert-Far $__[1].Text -eq 'Objects are not equal:'
+	Assert-Far $__[6].Text.Contains('Assert-Far $r1 -eq $r2 # fail')
 }
 keys s
 
@@ -45,7 +45,7 @@ run {
 }
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[1].Text -eq 'Assertion failed.'
+	Assert-Far $__[1].Text -eq 'Assertion failed.'
 }
 macro 'Keys"t" -- Throw'
 job {
@@ -60,7 +60,7 @@ run {
 }
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[1].Text -eq 'Objects are not equal:'
+	Assert-Far $__[1].Text -eq 'Objects are not equal:'
 }
 macro 'Keys"t" -- Throw'
 job {
@@ -75,8 +75,8 @@ run {
 }
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq "Demo title"
-	Assert-Far $Far.Dialog[1].Text -eq "Demo message"
+	Assert-Far $__[0].Text -eq "Demo title"
+	Assert-Far $__[1].Text -eq "Demo message"
 }
 macro 'Keys"e" -- to be ignored, i.e. no Edit button'
 job {
@@ -152,7 +152,7 @@ run {
 job {
 	# name fails
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[1].Text -eq "The current file name is not 'foo'."
+	Assert-Far $__[1].Text -eq "The current file name is not 'foo'."
 }
 macro 'Keys"t" -- Throw'
 job {
@@ -169,7 +169,7 @@ run {
 job {
 	# description fails
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[1].Text -eq "The current file description is not 'foo'."
+	Assert-Far $__[1].Text -eq "The current file description is not 'foo'."
 }
 macro 'Keys"t" -- Throw'
 job {
@@ -186,7 +186,7 @@ run {
 job {
 	# owner fails
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[1].Text -eq "The current file owner is not 'foo'."
+	Assert-Far $__[1].Text -eq "The current file owner is not 'foo'."
 }
 macro 'Keys"t" -- Throw'
 job {

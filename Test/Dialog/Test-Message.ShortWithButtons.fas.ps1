@@ -17,7 +17,7 @@ run {
 job {
 	Assert-Far -Dialog
 	Assert-Far @(
-		$r = $Far.Dialog.Rect
+		$r = $__.Rect
 		$r.Top -eq 1
 		$r.Left -eq 1
 		$r.Right -eq 45

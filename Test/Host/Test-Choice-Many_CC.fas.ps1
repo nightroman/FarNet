@@ -12,7 +12,7 @@ run {
 }
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'Choice[0]: '
+	Assert-Far $__[0].Text -eq 'Choice[0]: '
 }
 
 # help
@@ -24,7 +24,7 @@ job {
 # Select 0
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'Choice[0]: '
+	Assert-Far $__[0].Text -eq 'Choice[0]: '
 }
 keys Enter Esc
 job {

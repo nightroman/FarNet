@@ -37,11 +37,11 @@ keys Enter # enter the table property
 
 job {
 	# it is the DataPanel
-	Assert-Far $Far.Panel.GetType() -eq ([PowerShellFar.DataPanel])
+	Assert-Far $__.GetType() -eq ([PowerShellFar.DataPanel])
 }
 
 job {
 	# exit both panels
-	$Far.Panel.Close()
-	$Far.Panel.Close()
+	$__.Close()
+	$__.Close()
 }

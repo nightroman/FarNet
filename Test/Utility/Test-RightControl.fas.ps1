@@ -23,7 +23,7 @@ job {
 
 job {
 	Open-FarEditor 'Test-RightControl..ps1.tmp'
-	$global:Editor = $Far.Editor
+	$global:Editor = $__
 	$global:Line = $Editor.Line
 	Assert-Far -EditorFileName *\Test-RightControl..ps1.tmp
 }

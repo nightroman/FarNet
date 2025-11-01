@@ -3,7 +3,7 @@ job {
 	Open-FarEditor Test-Reformat-Selection.ps1.tmp
 }
 job {
-	$global:Editor = $Far.Editor
+	$global:Editor = $__
 	Assert-Far -EditorFileName *\Test-Reformat-Selection.ps1.tmp
 }
 

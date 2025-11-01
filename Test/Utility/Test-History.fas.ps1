@@ -16,7 +16,7 @@ run {
 job {
 	# last command
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog.Focused.Text -eq 'ps:1+1'
+	Assert-Far $__.Focused.Text -eq 'ps:1+1'
 }
 
 # exit ('Enter' is not working with stepping?)
@@ -35,7 +35,7 @@ run {
 job {
 	# last command
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog.Focused.Text -eq 'ps:1+1'
+	Assert-Far $__.Focused.Text -eq 'ps:1+1'
 }
 
 # insert into the cmdline

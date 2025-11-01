@@ -13,7 +13,7 @@ job {
 }
 job {
 	Assert-Far -Panels
-	Assert-Far $Far.Panel.GetFiles().Count -eq 0
+	Assert-Far $__.GetFiles().Count -eq 0
 }
 
 ### new and cancel
@@ -24,21 +24,21 @@ job {
 macro 'Keys"Esc" -- cancel new document'
 job {
 	Assert-Far -Panels
-	Assert-Far $Far.Panel.GetFiles().Count -eq 0
+	Assert-Far $__.GetFiles().Count -eq 0
 }
 
 ### new and save
 macro 'Keys"F7" -- new document'
 job {
 	Assert-Far -Editor
-	$Far.Editor.SetText('{_id: "id1", x: 1}')
+	$__.SetText('{_id: "id1", x: 1}')
 }
 macro 'Keys"Esc Enter" -- exit, save'
 job {
 	Assert-Far -Panels
 	Assert-Far $(
-		$Far.Panel.CurrentFile.Name -ceq 'id1'
-		$Far.Panel.CurrentFile.Description -ceq '1'
+		$__.CurrentFile.Name -ceq 'id1'
+		$__.CurrentFile.Description -ceq '1'
 	)
 	Import-Module Ldbc
 	Use-LiteDatabase $Data.FileName {
@@ -53,17 +53,17 @@ macro 'Keys"F4" -- edit document'
 job {
 	Assert-Far -Editor
 	Assert-Far $(
-		$Far.Editor[1].Text -ceq '  "_id": "id1",'
-		$Far.Editor[2].Text -ceq '  "x": 1'
+		$__[1].Text -ceq '  "_id": "id1",'
+		$__[2].Text -ceq '  "x": 1'
 	)
-	$Far.Editor[2].Text = 'x: 2'
+	$__[2].Text = 'x: 2'
 }
 macro 'Keys"Esc Enter" -- exit, save'
 job {
 	Assert-Far -Panels
 	Assert-Far $(
-		$Far.Panel.CurrentFile.Name -ceq 'id1'
-		$Far.Panel.CurrentFile.Description -ceq '2'
+		$__.CurrentFile.Name -ceq 'id1'
+		$__.CurrentFile.Description -ceq '2'
 	)
 	Import-Module Ldbc
 	Use-LiteDatabase $Data.FileName {
@@ -77,15 +77,15 @@ job {
 macro 'Keys"F7" -- new document'
 job {
 	Assert-Far -Editor
-	$Far.Editor.SetText('{x: 25}')
+	$__.SetText('{x: 25}')
 }
 macro 'Keys"Esc Enter" -- exit, save'
 job {
 	Assert-Far -Panels
 	Assert-Far $(
-		$Far.Panel.GetFiles().Count -eq 2
+		$__.GetFiles().Count -eq 2
 
-		$data = $Far.Panel.CurrentFile.Data
+		$data = $__.CurrentFile.Data
 		$data._id.GetType() -eq ([LiteDB.ObjectId])
 		[object]::Equals($data.x, 25)
 	)

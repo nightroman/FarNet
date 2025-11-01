@@ -26,7 +26,7 @@ job {
 keys F5
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'Invalid file name'
+	Assert-Far $__[0].Text -eq 'Invalid file name'
 }
 keys Esc
 job {
@@ -38,12 +38,12 @@ job {
 keys F5
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'Invalid file name'
+	Assert-Far $__[0].Text -eq 'Invalid file name'
 }
 keys Enter
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'Invalid file name'
+	Assert-Far $__[0].Text -eq 'Invalid file name'
 }
 macro 'Keys"a Enter"'
 job {

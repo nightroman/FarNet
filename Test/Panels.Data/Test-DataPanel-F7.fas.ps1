@@ -5,21 +5,21 @@ function Get-F7EscNo {
 	job {
 		# member panel with a new row
 		Assert-Far -Panels
-		Assert-Far $Far.Panel.Title -eq 'Members: DataRow'
+		Assert-Far $__.Title -eq 'Members: DataRow'
 	}
 	# exit
 	keys Esc
 	job {
 		# the Save dialog
 		Assert-Far -Dialog
-		Assert-Far $Far.Dialog[0].Text -eq 'Save'
+		Assert-Far $__[0].Text -eq 'Save'
 	}
 	# [No]
 	keys 'Right Enter'
 	job {
 		# original panel
 		Assert-Far -Panels
-		Assert-Far $Far.Panel.Title -eq '_110330_175246'
+		Assert-Far $__.Title -eq '_110330_175246'
 	}
 }
 
@@ -35,7 +35,7 @@ job {
 }
 job {
 	Assert-Far -Plugin
-	Assert-Far $Far.Panel.Title -eq '_110330_175246'
+	Assert-Far $__.Title -eq '_110330_175246'
 }
 
 ### Add and cancel from the empty panel

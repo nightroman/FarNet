@@ -29,12 +29,12 @@ job {
 }
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[1].Text -eq 'Initialized!'
+	Assert-Far $__[1].Text -eq 'Initialized!'
 }
 macro 'Keys"CtrlDown Enter" -- open combo, pick first'
 job {
 	#! if it is '' in CtrlG, alas, remove this '' as last in history and repeat
-	Assert-Far $Far.Dialog[1].Text
+	Assert-Far $__[1].Text
 
 	Assert-Far $Data.log -eq '+Opening+Closed'
 }

@@ -8,8 +8,8 @@ function Test-F1 {
 	job {
 		Assert-Far -Dialog
 		Assert-Far @(
-			$Far.Dialog[0].Text -eq 'KeyPressed'
-			$Far.Dialog[1].Text -eq '[F1] has been pressed'
+			$__[0].Text -eq 'KeyPressed'
+			$__[1].Text -eq '[F1] has been pressed'
 		)
 	}
 }
@@ -27,7 +27,7 @@ job {
 	& "$env:FarNetCode\Samples\Tests\Test-Panel.far.ps1"
 }
 job {
-	Assert-Far $Far.Panel.Title -eq "Test Panel"
+	Assert-Far $__.Title -eq "Test Panel"
 }
 
 ### KeyPressed, handle it
@@ -36,8 +36,8 @@ keys h
 job {
 	Assert-Far -Dialog
 	Assert-Far @(
-		$Far.Dialog[0].Text -eq 'KeyPressed'
-		$Far.Dialog[1].Text -eq '[F1] has been handled'
+		$__[0].Text -eq 'KeyPressed'
+		$__[1].Text -eq '[F1] has been handled'
 	)
 }
 keys Esc
@@ -55,13 +55,13 @@ job {
 # covers: F8 when there are no files
 job {
 	# no files, zero counter
-	Assert-Far $Far.Panel.GetFiles().Count -eq 0
-	$Far.Panel.Explorer.Data.DeleteFiles = 0
+	Assert-Far $__.GetFiles().Count -eq 0
+	$__.Explorer.Data.DeleteFiles = 0
 }
 keys F8
 job {
 	# check counter: event has not happend
-	Assert-Far $Far.Panel.Explorer.Data.DeleteFiles -eq 0
+	Assert-Far $__.Explorer.Data.DeleteFiles -eq 0
 }
 
 # make new file
@@ -70,17 +70,17 @@ job {
 	# new item exists and it is current
 	Assert-Far -FileName 'Item1'
 	Assert-Far @(
-		$Far.Panel.GetFiles().Count -eq 1
-		$Far.Panel.Explorer.Data.CreateFile -eq 1
+		$__.GetFiles().Count -eq 1
+		$__.Explorer.Data.CreateFile -eq 1
 	)
-	$Far.Panel.Explorer.Data.CreateFile = 0
+	$__.Explorer.Data.CreateFile = 0
 }
 
 # push
 # NB: cannot use F11
 # Update: now we can
 job {
-	$Data.Panel = $Far.Panel
+	$Data.Panel = $__
 	$Data.Panel.Push()
 }
 job {
@@ -105,38 +105,38 @@ keys CtrlL
 macro 'Keys"CtrlL"'
 macro 'Keys"CtrlL"'
 job {
-	Assert-Far $Far.Panel.Explorer.Data.GetContent -eq 1
-	$Far.Panel.Explorer.Data.GetContent = 1
+	Assert-Far $__.Explorer.Data.GetContent -eq 1
+	$__.Explorer.Data.GetContent = 1
 }
 
 # delete it
 keys F8
 job {
 	Assert-Far @(
-		$Far.Panel.GetFiles().Count -eq 0
-		$Far.Panel.Explorer.Data.DeleteFiles -eq 1
+		$__.GetFiles().Count -eq 0
+		$__.Explorer.Data.DeleteFiles -eq 1
 	)
-	$Far.Panel.Explorer.Data.DeleteFiles = 0
+	$__.Explorer.Data.DeleteFiles = 0
 }
 
 # make 2 files
 macro 'Keys"F7 F7"'
 job {
 	Assert-Far @(
-		$Far.Panel.GetFiles().Count -eq 2
-		$Far.Panel.Explorer.Data.CreateFile -eq 2
+		$__.GetFiles().Count -eq 2
+		$__.Explorer.Data.CreateFile -eq 2
 	)
-	$Far.Panel.Explorer.Data.CreateFile = 0
+	$__.Explorer.Data.CreateFile = 0
 }
 
 # delete all
 macro 'Keys"Multiply F8"'
 job {
 	Assert-Far @(
-		$Far.Panel.GetFiles().Count -eq 0
-		$Far.Panel.Explorer.Data.DeleteFiles -eq 1
+		$__.GetFiles().Count -eq 0
+		$__.Explorer.Data.DeleteFiles -eq 1
 	)
-	$Far.Panel.Explorer.Data.DeleteFiles = 0
+	$__.Explorer.Data.DeleteFiles = 0
 }
 
 ### open panel 2
@@ -145,54 +145,54 @@ job {
 	& "$env:FarNetCode\Samples\Tests\Test-Panel.far.ps1" -NoDots
 }
 job {
-	Assert-Far $Far.Panel.Title -eq "Test Panel"
+	Assert-Far $__.Title -eq "Test Panel"
 }
 
 # F8 when panel is empty
 keys F8
 job {
 	# event has not happend
-	Assert-Far $Far.Panel.Explorer.Data.DeleteFiles -eq 0
+	Assert-Far $__.Explorer.Data.DeleteFiles -eq 0
 }
 
 # make new file
 keys F7
 job {
 	Assert-Far @(
-		$Far.Panel.GetFiles().Count -eq 1
-		$Far.Panel.Explorer.Data.CreateFile -eq 1
+		$__.GetFiles().Count -eq 1
+		$__.Explorer.Data.CreateFile -eq 1
 	)
-	$Far.Panel.Explorer.Data.CreateFile = 0
+	$__.Explorer.Data.CreateFile = 0
 }
 
 # delete it
 keys F8
 job {
 	Assert-Far @(
-		$Far.Panel.GetFiles().Count -eq 0
-		$Far.Panel.Explorer.Data.DeleteFiles -eq 1
+		$__.GetFiles().Count -eq 0
+		$__.Explorer.Data.DeleteFiles -eq 1
 	)
-	$Far.Panel.Explorer.Data.DeleteFiles = 0
+	$__.Explorer.Data.DeleteFiles = 0
 }
 
 # make 2 files
 macro 'Keys"F7 F7"'
 job {
 	Assert-Far @(
-		$Far.Panel.GetFiles().Count -eq 2
-		$Far.Panel.Explorer.Data.CreateFile -eq 2
+		$__.GetFiles().Count -eq 2
+		$__.Explorer.Data.CreateFile -eq 2
 	)
-	$Far.Panel.Explorer.Data.CreateFile = 0
+	$__.Explorer.Data.CreateFile = 0
 }
 
 # delete all
 macro 'Keys"Multiply F8"'
 job {
 	Assert-Far @(
-		$Far.Panel.GetFiles().Count -eq 0
-		$Far.Panel.Explorer.Data.DeleteFiles -eq 1
+		$__.GetFiles().Count -eq 0
+		$__.Explorer.Data.DeleteFiles -eq 1
 	)
-	$Far.Panel.Explorer.Data.DeleteFiles = 0
+	$__.Explorer.Data.DeleteFiles = 0
 }
 
 ### make and copy 1 file
@@ -200,12 +200,12 @@ keys F7
 Test-Copy
 job {
 	Assert-Far @(
-		$Far.Panel.GetFiles().Count -eq 1
-		$Far.Panel.Explorer.Data.CreateFile -eq 1
+		$__.GetFiles().Count -eq 1
+		$__.Explorer.Data.CreateFile -eq 1
 		$Far.Panel2.GetFiles().Count -eq 1
 		$Far.Panel2.Explorer.Data.AcceptFiles -eq 1
 	)
-	$Far.Panel.Explorer.Data.CreateFile = 0
+	$__.Explorer.Data.CreateFile = 0
 	$Far.Panel2.Explorer.Data.AcceptFiles = 0
 }
 
@@ -214,12 +214,12 @@ Test-Move
 job {
 	# delete at source and import at target
 	Assert-Far @(
-		$Far.Panel.GetFiles().Count -eq 0
-		$Far.Panel.Explorer.Data.DeleteFiles -eq 1
+		$__.GetFiles().Count -eq 0
+		$__.Explorer.Data.DeleteFiles -eq 1
 		$Far.Panel2.GetFiles().Count -eq 2
 		$Far.Panel2.Explorer.Data.AcceptFiles -eq 1
 	)
-	$Far.Panel.Explorer.Data.DeleteFiles = 0
+	$__.Explorer.Data.DeleteFiles = 0
 	$Far.Panel2.Explorer.Data.AcceptFiles = 0
 }
 
@@ -227,15 +227,15 @@ job {
 macro 'Keys"F7 F7 Multiply"'
 job {
 	Assert-Far @(
-		$Far.Panel.GetSelectedFiles().Count -eq 2
-		$Far.Panel.Explorer.Data.CreateFile -eq 2
+		$__.GetSelectedFiles().Count -eq 2
+		$__.Explorer.Data.CreateFile -eq 2
 	)
-	$Far.Panel.Explorer.Data.CreateFile = 0
+	$__.Explorer.Data.CreateFile = 0
 }
 Test-Copy
 job {
 	Assert-Far @(
-		$Far.Panel.GetSelectedFiles().Count -eq 1
+		$__.GetSelectedFiles().Count -eq 1
 		$Far.Panel2.GetFiles().Count -eq 4
 		$Far.Panel2.Explorer.Data.AcceptFiles -eq 1
 	)
@@ -247,12 +247,12 @@ keys Multiply
 Test-Move
 job {
 	Assert-Far @(
-		$Far.Panel.GetFiles().Count -eq 0
-		$Far.Panel.Explorer.Data.DeleteFiles -eq 1
+		$__.GetFiles().Count -eq 0
+		$__.Explorer.Data.DeleteFiles -eq 1
 		$Far.Panel2.GetFiles().Count -eq 6
 		$Far.Panel2.Explorer.Data.AcceptFiles -eq 1
 	)
-	$Far.Panel.Explorer.Data.DeleteFiles = 0
+	$__.Explorer.Data.DeleteFiles = 0
 	$Far.Panel2.Explorer.Data.AcceptFiles = 0
 }
 
@@ -270,24 +270,24 @@ job {
 macro 'Keys"Tab Multiply"'
 job {
 	Assert-Far @(
-		$Far.Panel.GetFiles().Count -eq 6
-		$Far.Panel.GetSelectedFiles().Count -eq 6
+		$__.GetFiles().Count -eq 6
+		$__.GetSelectedFiles().Count -eq 6
 	)
 }
 keys F8
 job {
 	Assert-Far @(
-		$Far.Panel.GetFiles().Count -eq 0
-		$Far.Panel.Explorer.Data.DeleteFiles = 1
+		$__.GetFiles().Count -eq 0
+		$__.Explorer.Data.DeleteFiles = 1
 	)
-	$Far.Panel.Explorer.Data.DeleteFiles = 0
+	$__.Explorer.Data.DeleteFiles = 0
 }
 
 ### AcceptFiles from a native panel
 keys Tab
 job {
-	$Far.Panel.CurrentDirectory = $env:FARHOME
-	$Far.Panel.SelectNames(@('Far.exe', 'Far.exe.example.ini'))
+	$__.CurrentDirectory = $env:FARHOME
+	$__.SelectNames(@('Far.exe', 'Far.exe.example.ini'))
 }
 keys F5
 job {
@@ -298,7 +298,7 @@ keys Enter
 keys Enter
 macro 'Keys"Tab"'
 job {
-	$files = $Far.Panel.GetFiles()
+	$files = $__.GetFiles()
 	Assert-Far @(
 		$files.Count -eq 2
 		$files[0].Name -eq 'Far.exe'

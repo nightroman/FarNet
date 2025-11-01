@@ -6,10 +6,10 @@ job {
 	Go-To Alias:
 }
 job {
-	Assert-Far ($Far.Panel -is [PowerShellFar.ItemPanel])
+	Assert-Far ($__ -is [PowerShellFar.ItemPanel])
 
 	#! 090823 used to return null istead of dots
-	Assert-Far $Far.Panel.Files[0].Name -eq '..'
+	Assert-Far $__.Files[0].Name -eq '..'
 }
 
 # view all

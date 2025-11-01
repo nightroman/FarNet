@@ -30,7 +30,7 @@ run {
 }
 job {
 	Assert-Far -Dialog
-	$list = $Far.Dialog[1]
+	$list = $__[1]
 	Assert-Far @(
 		$list -is [FarNet.Forms.IListBox]
 		$list.Items.Count -eq 2
@@ -44,7 +44,7 @@ job {
 keys Tab
 job {
 	Assert-Far -Dialog
-	$list = $Far.Dialog[1]
+	$list = $__[1]
 	Assert-Far $list.Selected -eq 1
 }
 
@@ -63,7 +63,7 @@ run {
 }
 job {
 	Assert-Far -Dialog
-	$list = $Far.Dialog[1]
+	$list = $__[1]
 	Assert-Far @(
 		$list -is [FarNet.Forms.IListBox]
 		$list.Items.Count -eq 3

@@ -11,13 +11,13 @@ job {
 job {
 	Assert-Far -DialogTypeId ([FarNet.Tools.InputBox]::DefaultTypeId)
 
-	$Far.Dialog[2].Text = 'fn: script=Script; method=Message ;; name="Joe"'
-	$Far.Dialog.Close()
+	$__[2].Text = 'fn: script=Script; method=Message ;; name="Joe"'
+	$__.Close()
 }
 
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'System.ArgumentException'
-	Assert-Far $Far.Dialog[1].Text -eq 'Age cannot be negative.'
-	$Far.Dialog.Close()
+	Assert-Far $__[0].Text -eq 'System.ArgumentException'
+	Assert-Far $__[1].Text -eq 'Age cannot be negative.'
+	$__.Close()
 }

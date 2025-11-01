@@ -14,7 +14,7 @@ run {
 }
 job {
 	# lock
-	$Editor = $Far.Editor
+	$Editor = $__
 	$Editor.IsLocked = $true
 	Assert-Far $Editor.IsLocked
 	$Editor.GoTo(0, 0)
@@ -22,49 +22,49 @@ job {
 job {
 	# try to clear
 	$err = ''
-	try {$Far.Editor.Clear()}
+	try {$__.Clear()}
 	catch {$err = "$_"}
 	Assert-Far $err -eq ('Exception calling "Clear" with "0" argument(s): "{0}"' -f $Data.Message)
 }
 job {
 	# try to delete char
 	$err = ''
-	try {$Far.Editor.DeleteChar()}
+	try {$__.DeleteChar()}
 	catch {$err = "$_"}
 	Assert-Far $err -eq ('Exception calling "DeleteChar" with "0" argument(s): "{0}"' -f $Data.Message)
 }
 job {
 	# try to delete line
 	$err = ''
-	try {$Far.Editor.DeleteLine()}
+	try {$__.DeleteLine()}
 	catch {$err = "$_"}
 	Assert-Far $err -eq ('Exception calling "DeleteLine" with "0" argument(s): "{0}"' -f $Data.Message)
 }
 job {
 	# try to change
 	$err = ''
-	try {$Far.Editor.Line.Text = 'foo'}
+	try {$__.Line.Text = 'foo'}
 	catch {$err = "$_"}
 	Assert-Far $err -eq ('Exception setting "Text": "{0}"' -f $Data.Message)
 }
 job {
 	# try to add
 	$err = ''
-	try {$Far.Editor.Add('foo')}
+	try {$__.Add('foo')}
 	catch {$err = "$_"}
 	Assert-Far $err -eq ('Exception calling "Add" with "1" argument(s): "{0}"' -f $Data.Message)
 }
 job {
 	# try to insert char
 	$err = ''
-	try {$Far.Editor.InsertChar('a')}
+	try {$__.InsertChar('a')}
 	catch {$err = "$_"}
 	Assert-Far $err -eq ('Exception calling "InsertChar" with "1" argument(s): "{0}"' -f $Data.Message)
 }
 job {
 	# try to insert text
 	$err = ''
-	try {$Far.Editor.InsertText('foo')}
+	try {$__.InsertText('foo')}
 	catch {$err = "$_"}
 	Assert-Far $err -eq ('Exception calling "InsertText" with "1" argument(s): "{0}"' -f $Data.Message)
 }

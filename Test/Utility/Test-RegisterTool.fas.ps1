@@ -6,14 +6,14 @@ run {
 
 job {
 	# info dialog?
-	Assert-Far $Far.Dialog[1].Text -eq "Tool 'PSF test tool' is registered. Try it in F11 menus, e.g. now."
+	Assert-Far $__[1].Text -eq "Tool 'PSF test tool' is registered. Try it in F11 menus, e.g. now."
 }
 
 macro 'Keys("F11") Menu.Select("PSF test tool", 2) Keys("Enter") -- invoke from menu'
 
 job {
 	# tool result dialog?
-	Assert-Far $Far.Dialog[1].Text -eq 'Hello from Dialog'
+	Assert-Far $__[1].Text -eq 'Hello from Dialog'
 }
 
 macro 'Keys"Esc Esc" -- exit both dialogs'

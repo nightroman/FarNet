@@ -66,8 +66,8 @@ run {
 }
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq "Show(Task) user cancel"
-	$Far.Dialog.Close()
+	Assert-Far $__[0].Text -eq "Show(Task) user cancel"
+	$__.Close()
 }
 Start-Sleep -Milliseconds 100
 job {

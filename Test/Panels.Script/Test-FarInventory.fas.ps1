@@ -9,12 +9,12 @@ job {
 }
 job {
 	Find-FarFile 'C:'
-	$CurrentFile = $Far.Panel.CurrentFile
+	$CurrentFile = $__.CurrentFile
 	Assert-Far @(
 		$CurrentFile.Name -eq 'C:'
 		$CurrentFile.Description -eq 'Local Fixed Disk'
 		$CurrentFile.Owner -eq 'NTFS'
 		@($CurrentFile.Columns)[0] -eq 'Local Disk' # _100410_051915 fixed $_ in modules
 	)
-	$Far.Panel.Close()
+	$__.Close()
 }

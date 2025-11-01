@@ -14,7 +14,7 @@ job {
 	Panel-DBTable
 }
 job {
-	Assert-Far $Far.Panel.Title -eq 'main Tables'
+	Assert-Far $__.Title -eq 'main Tables'
 }
 
 # go to TestCategories, open it
@@ -24,13 +24,13 @@ job {
 keys Enter
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[2].Text -eq "SELECT * FROM [TestCategories]"
+	Assert-Far $__[2].Text -eq "SELECT * FROM [TestCategories]"
 }
 keys Enter
 ### Test Panel-DBData on TestCategories
 
 job {
-	Assert-Far ($Far.Panel.Title -like '*TestCategories')
+	Assert-Far ($__.Title -like '*TestCategories')
 }
 
 # check the 1st record Name, Description
@@ -45,8 +45,8 @@ job {
 	# member panel?
 	# exactly 3 items? fixed unwanted DataRow extras
 	Assert-Far @(
-		$Far.Panel.Title -eq 'Members: DataRow'
-		$Far.Panel.GetFiles().Count -eq 3
+		$__.Title -eq 'Members: DataRow'
+		$__.GetFiles().Count -eq 3
 	)
 }
 # go to Category, enter a new value
@@ -72,13 +72,13 @@ job {
 keys Enter
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[2].Text -eq "SELECT * FROM [TestNotes]"
+	Assert-Far $__[2].Text -eq "SELECT * FROM [TestNotes]"
 }
 keys Enter
 ### Test Panel-DBData on TestNotes
 
 job {
-	Assert-Far ($Far.Panel.Title -like '*TestNotes')
+	Assert-Far ($__.Title -like '*TestNotes')
 }
 
 # check the 1st record Name, Description
@@ -89,14 +89,14 @@ job {
 
 # delete this record
 macro 'Keys"Del Enter"'
-job { Assert-Far ($Far.Panel.CurrentFile.Name -ne '1') }
+job { Assert-Far ($__.CurrentFile.Name -ne '1') }
 
 # go to 2, enter, go to Note, set new value
 job { Find-FarFile 2 }
 keys Enter
 job {
 	# fixed unwanted extras and order
-	$files = $Far.Panel.GetFiles()
+	$files = $__.GetFiles()
 	Assert-Far @(
 		$files.Count -eq 4
 		$files[0].Name -eq 'NoteId'

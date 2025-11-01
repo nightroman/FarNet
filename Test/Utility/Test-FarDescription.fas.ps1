@@ -11,7 +11,7 @@ job {
 	# new file
 	$global:4 = "C:\TEMP\Edit-FarDescription.tmp"
 	1 > $4
-	$Far.Panel.GoToPath($4)
+	$__.GoToPath($4)
 	Assert-Far -FileName Edit-FarDescription.tmp
 	Edit-FarDescription.ps1
 	Assert-Far -Editor
@@ -33,28 +33,28 @@ job {
 job {
 	# open description editor from editor
 	Assert-Far -Editor
-	Assert-Far $Far.Editor[0].Text -eq '1'
+	Assert-Far $__[0].Text -eq '1'
 	Edit-FarDescription.ps1
 }
 job {
 	# text is 42
 	Assert-Far -Editor
-	Assert-Far $Far.Editor[0].Text -eq '42'
-	Assert-Far (!$Far.Editor.SelectionExists)
+	Assert-Far $__[0].Text -eq '42'
+	Assert-Far (!$__.SelectionExists)
 }
 
 # delete all
 macro 'Keys"CtrlA Del"'
 job {
 	# empty
-	Assert-Far $Far.Editor[0].Text -eq ''
+	Assert-Far $__[0].Text -eq ''
 }
 # save, exit description editor
 macro 'Keys"F2 Esc"'
 job {
 	# in the file editor
 	Assert-Far -Editor
-	Assert-Far $Far.Editor[0].Text -eq '1'
+	Assert-Far $__[0].Text -eq '1'
 }
 # exit file editor
 keys Esc
@@ -78,7 +78,7 @@ job {
 job {
 	# text is empty
 	Assert-Far -Editor
-	Assert-Far $Far.Editor[0].Text -eq ''
+	Assert-Far $__[0].Text -eq ''
 }
 # type 17, save, exit
 macro 'Keys"1 7 F2 Esc"'

@@ -23,7 +23,7 @@ keys 'Down Enter'
 
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'item2'
+	Assert-Far $__[0].Text -eq 'item2'
 }
 
 keys Esc

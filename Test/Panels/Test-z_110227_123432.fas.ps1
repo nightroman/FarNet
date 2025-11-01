@@ -14,16 +14,16 @@ job {
 }
 job {
 	Assert-Far -Plugin
-	Assert-Far $Far.Panel.Explorer.Location -eq 'FarControlPanel:\Keyboard'
+	Assert-Far $__.Explorer.Location -eq 'FarControlPanel:\Keyboard'
 }
 keys Ctrl\
 job {
 	Assert-Far -Plugin
-	Assert-Far $Far.Panel.Explorer.Location -eq 'FarControlPanel:\'
+	Assert-Far $__.Explorer.Location -eq 'FarControlPanel:\'
 }
 keys Ctrl\
 job {
 	Assert-Far -Panels
-	Assert-Far $Far.Panel.Explorer.Location -eq 'FarControlPanel:\'
+	Assert-Far $__.Explorer.Location -eq 'FarControlPanel:\'
 }
 keys Esc

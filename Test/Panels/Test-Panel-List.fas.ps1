@@ -24,7 +24,7 @@ $TestEditReadOnly = {
 	job {
 		# locked
 		Assert-Far -Editor
-		Assert-Far $Far.Editor.IsLocked
+		Assert-Far $__.IsLocked
 	}
 	keys Esc
 	job {
@@ -85,7 +85,7 @@ job {
 }
 keys Enter
 job {
-	Assert-Far $Far.Panel.Title -eq 'Members: DirectoryInfo'
+	Assert-Far $__.Title -eq 'Members: DirectoryInfo'
 }
 macro 'Keys"Esc Esc"'
 

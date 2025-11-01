@@ -10,7 +10,7 @@ job {
 }
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'Modeless dialog'
+	Assert-Far $__[0].Text -eq 'Modeless dialog'
 }
 keys Esc
 
@@ -21,16 +21,16 @@ job {
 }
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'Modeless dialog'
+	Assert-Far $__[0].Text -eq 'Modeless dialog'
 
-	$Far.Dialog[1].Text = '_221107_0640'
-	$Far.Dialog.Close()
+	$__[1].Text = '_221107_0640'
+	$__.Close()
 }
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[1].Text -eq '_221107_0640'
+	Assert-Far $__[1].Text -eq '_221107_0640'
 
-	$Far.Dialog.Close()
+	$__.Close()
 }
 
 ### Error
@@ -40,13 +40,13 @@ job {
 }
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'Modeless dialog'
+	Assert-Far $__[0].Text -eq 'Modeless dialog'
 
-	$Far.Dialog.Close()
+	$__.Close()
 }
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[1].Text -eq 'Empty string!'
+	Assert-Far $__[1].Text -eq 'Empty string!'
 
-	$Far.Dialog.Close()
+	$__.Close()
 }

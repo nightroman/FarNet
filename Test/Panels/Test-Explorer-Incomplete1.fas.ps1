@@ -18,16 +18,16 @@ job {
 job {
 	# select 5 files
 	Assert-Far -ExplorerTypeId c33db20e-7477-4301-ba5d-4c6b3b81f66b
-	$Far.Panel.SelectNames((1, 3, 5, 7, 9))
+	$__.SelectNames((1, 3, 5, 7, 9))
 }
 keys Del
 job {
 	# check
 	Assert-Far @(
-		$Far.Panel.Files.Count -eq 7
-		$Far.Panel.SelectedFiles.Count -eq 2
-		$Far.Panel.SelectedFiles[0].Name -eq '3'
-		$Far.Panel.SelectedFiles[1].Name -eq '7'
+		$__.Files.Count -eq 7
+		$__.SelectedFiles.Count -eq 2
+		$__.SelectedFiles[0].Name -eq '3'
+		$__.SelectedFiles[1].Name -eq '7'
 	)
 }
 
@@ -41,19 +41,19 @@ job {
 }
 job {
 	# select all
-	$Far.Panel.SelectAll()
+	$__.SelectAll()
 	Assert-Far -Plugin
 	Assert-Far @(
-		$Far.Panel.Explorer.TypeId -eq 'c33db20e-7477-4301-ba5d-4c6b3b81f66b'
-		$Far.Panel.SelectedFiles.Count -eq 6
+		$__.Explorer.TypeId -eq 'c33db20e-7477-4301-ba5d-4c6b3b81f66b'
+		$__.SelectedFiles.Count -eq 6
 	)
 }
 keys F5
 job {
 	# this panel (2nd)
-	$selected = $Far.Panel.SelectedFiles
+	$selected = $__.SelectedFiles
 	Assert-Far @(
-		$Far.Panel.GetFiles().Count -eq 6
+		$__.GetFiles().Count -eq 6
 		$selected.Count -eq 3
 		$selected[0].Name -eq '12'
 		$selected[1].Name -eq '14'
@@ -82,9 +82,9 @@ job {
 keys F6
 job {
 	# this panel (2nd)
-	$selected = $Far.Panel.SelectedFiles
+	$selected = $__.SelectedFiles
 	Assert-Far @(
-		$Far.Panel.GetFiles().Count -eq 5
+		$__.GetFiles().Count -eq 5
 		$selected.Count -eq 2
 		$selected[0].Name -eq '14'
 		$selected[1].Name -eq '16'

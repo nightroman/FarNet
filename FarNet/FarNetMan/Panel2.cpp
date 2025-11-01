@@ -1,11 +1,9 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 #include "stdafx.h"
 #include "Panel2.h"
+#include "Far1.h"
 #include "Panel0.h"
 #include "Shelve.h"
+#include "UI.h"
 
 /* _230529_0854
 
@@ -888,7 +886,7 @@ int Panel2::AsGetFindData(GetFindDataInfo* info)
 				}
 				catch (Exception^ ex)
 				{
-					Far::Api->UI->WriteLine("Cannot get all files: " + ex->Message);
+					FarUI::Instance.WriteLine("Cannot get all files: " + ex->Message);
 				}
 			}
 
@@ -999,7 +997,7 @@ int Panel2::AsGetFindData(GetFindDataInfo* info)
 	catch (Exception^ e)
 	{
 		if ((info->OpMode & (OPM_FIND | OPM_SILENT)) == 0)
-			Far::Api->ShowError("Getting panel files", e);
+			Far1::Instance.ShowError("Getting panel files", e);
 		else
 			Log::TraceException(e);
 
@@ -1101,7 +1099,7 @@ FarFile^ Panel2::GetFileByUserData(void* data)
 void Panel2::OnTimer(Object^)
 {
 	if (_timerInstance && IsOpened)
-		Far::Api->PostJob(gcnew Action(this, &Panel2::OnTimerJob));
+		Far1::Instance.PostJob(gcnew Action(this, &Panel2::OnTimerJob));
 }
 
 // called from the main thread //_210630_hi

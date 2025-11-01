@@ -249,7 +249,7 @@ if ($FarHost) {
 
 ### Find-FarFile
 if ($FarHost) {
-	Test 'Find-FarFile ' { "$_" -ceq "$($Far.Panel.GetFiles())" }
+	Test 'Find-FarFile ' { "$_" -ceq "$($__.GetFiles())" }
 
 	#2025-10-23-0528
 	Test 'Find-FarFile zzz' { (!$_ -or $_ -is [scriptblock]) -and !$Error }

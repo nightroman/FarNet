@@ -12,6 +12,7 @@
 #include "Panel0.h"
 #include "Panel2.h"
 #include "Shelve.h"
+#include "Window.h"
 #include "Wrappers.h"
 
 namespace FarNet
@@ -44,7 +45,7 @@ void Far0::Start()
 	try
 	{
 		// inject
-		Far::Api = gcnew Far1();
+		Far::Api = % Far1::Instance;
 		Works::Far2::Api = gcnew Far2();
 
 		// module folder
@@ -388,7 +389,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 bool Far0::AsConfigure(const ConfigureInfo* info) //config//
 {
 	Guid guid = FromGUID(*info->Guid);
-	IModuleTool^ tool = (IModuleTool^)Far::Api->GetModuleAction(guid);
+	IModuleTool^ tool = (IModuleTool^)Far1::Instance.GetModuleAction(guid);
 	if (tool && (tool->Options & ModuleToolOptions::Config))
 	{
 		ModuleToolEventArgs e;
@@ -446,7 +447,7 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 		case OPEN_LEFTDISKMENU:
 		case OPEN_RIGHTDISKMENU:
 			{
-				IModuleTool^ tool = (IModuleTool^)Far::Api->GetModuleAction(FromGUID(*info->Guid));
+				IModuleTool^ tool = (IModuleTool^)Far1::Instance.GetModuleAction(FromGUID(*info->Guid));
 				ModuleToolEventArgs e;
 				e.From = ModuleToolOptions::Disk;
 				e.IsLeft = info->OpenFrom == OPEN_LEFTDISKMENU;
@@ -462,7 +463,7 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 					break;
 				}
 
-				IModuleTool^ tool = (IModuleTool^)Far::Api->GetModuleAction(guid);
+				IModuleTool^ tool = (IModuleTool^)Far1::Instance.GetModuleAction(guid);
 				ModuleToolEventArgs e;
 				e.From = ModuleToolOptions::Panels;
 				tool->Invoke(nullptr, %e);
@@ -477,7 +478,7 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 					break;
 				}
 
-				IModuleTool^ tool = (IModuleTool^)Far::Api->GetModuleAction(guid);
+				IModuleTool^ tool = (IModuleTool^)Far1::Instance.GetModuleAction(guid);
 				ModuleToolEventArgs e;
 				e.From = ModuleToolOptions::Editor;
 				tool->Invoke(nullptr, %e);
@@ -493,10 +494,10 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 				}
 
 				//_110628_192511
-				if (Far::Api->Window->Kind == WindowKind::Panels)
+				if (Window::Instance.Kind == WindowKind::Panels)
 					break;
 
-				IModuleTool^ tool = (IModuleTool^)Far::Api->GetModuleAction(guid);
+				IModuleTool^ tool = (IModuleTool^)Far1::Instance.GetModuleAction(guid);
 				ModuleToolEventArgs e;
 				e.From = ModuleToolOptions::Viewer;
 				tool->Invoke(nullptr, %e);
@@ -512,7 +513,7 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 					break;
 				}
 
-				IModuleTool^ tool = (IModuleTool^)Far::Api->GetModuleAction(guid);
+				IModuleTool^ tool = (IModuleTool^)Far1::Instance.GetModuleAction(guid);
 				ModuleToolEventArgs e;
 				e.From = ModuleToolOptions::Dialog;
 				tool->Invoke(nullptr, %e);
@@ -538,7 +539,7 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 
 void Far0::OpenConfig() //config//
 {
-	IMenu^ menu = Far::Api->CreateMenu();
+	IMenu^ menu = Far1::Instance.CreateMenu();
 	menu->AutoAssignHotkeys = true;
 	menu->HelpTopic = "config-menu";
 	menu->Title = "Modules configuration";
@@ -606,7 +607,7 @@ void Far0::InvokeModuleEditors(IEditor^ editor, const wchar_t* fileName)
 		}
 		catch(Exception^ e)
 		{
-			Far::Api->ShowError(it->Manager->ModuleName, e);
+			Far1::Instance.ShowError(it->Manager->ModuleName, e);
 		}
 	}
 
@@ -623,7 +624,7 @@ void Far0::InvokeModuleEditors(IEditor^ editor, const wchar_t* fileName)
 		}
 		catch(Exception^ e)
 		{
-			Far::Api->ShowError(it->Manager->ModuleName, e);
+			Far1::Instance.ShowError(it->Manager->ModuleName, e);
 		}
 	}
 }
@@ -715,7 +716,7 @@ void Far0::ShowMenu(ModuleToolOptions from)
 	String^ sConsole = "&Console";
 	String^ sSettings = "&Settings";
 
-	IMenu^ menu = Far::Api->CreateMenu();
+	IMenu^ menu = Far1::Instance.CreateMenu();
 	menu->HelpTopic = "plugin-menu";
 	menu->Title = "FarNet";
 
@@ -760,9 +761,9 @@ void Far0::ShowMenu(ModuleToolOptions from)
 
 void Far0::ShowDrawersMenu()
 {
-	Editor^ editor = (Editor^)Far::Api->Editor;
+	Editor^ editor = (Editor^)Far1::Instance.Editor;
 
-	IMenu^ menu = Far::Api->CreateMenu();
+	IMenu^ menu = Far1::Instance.CreateMenu();
 	menu->Title = "Drawers";
 	menu->HelpTopic = "drawers-menu";
 
@@ -786,7 +787,7 @@ void Far0::ShowDrawersMenu()
 
 void Far0::ShowConsoleMenu()
 {
-	IMenu^ menu = Far::Api->CreateMenu();
+	IMenu^ menu = Far1::Instance.CreateMenu();
 	menu->HelpTopic = "console-menu";
 	menu->Title = "Console";
 
@@ -899,7 +900,7 @@ bool Far0::InvokeCommand(const wchar_t* command, OPENFROM from)
 		if (isAsync)
 		{
 			Action^ handler = gcnew Action(gcnew CommandJob(it, e), &CommandJob::Invoke);
-			Far::Api->PostJob(handler);
+			Far1::Instance.PostJob(handler);
 			return true;
 		}
 
@@ -919,7 +920,7 @@ bool Far0::InvokeCommand(const wchar_t* command, OPENFROM from)
 // Plugin.Menu is not a replacement for F11, it is less predictable on posted keys and async jobs.
 void Far0::PostSelf()
 {
-	Far::Api->PostMacro("Keys('F11') Menu.Select('FarNet', 2) Keys('Enter')", Works::Kit::MacroOutput, false);
+	Far1::Instance.PostMacro("Keys('F11') Menu.Select('FarNet', 2) Keys('Enter')", Works::Kit::MacroOutput, false);
 }
 
 //! must be sync call
@@ -950,8 +951,8 @@ WaitHandle^ Far0::PostMacroWait(String^ macro)
 	//! post 2 macros instead of 1 combined because:
 	//! - clear syntax error messages without 2nd part
 	//! - combined does not work any faster, so KISS
-	Far::Api->PostMacro(macro);
-	Far::Api->PostMacro("Plugin.SyncCall('10435532-9BB3-487B-A045-B0E6ECAAB6BC', 'signal_macro')");
+	Far1::Instance.PostMacro(macro);
+	Far1::Instance.PostMacro("Plugin.SyncCall('10435532-9BB3-487B-A045-B0E6ECAAB6BC', 'signal_macro')");
 
 	// add and return wait handle, it will be signaled and removed when signal_macro is called
 	auto wait = gcnew ManualResetEvent(false);

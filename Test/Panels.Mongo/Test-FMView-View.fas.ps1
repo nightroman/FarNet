@@ -29,7 +29,7 @@ job {
 }
 job {
 	Assert-Far -Panels
-	Assert-Far $Far.Panel.Title -eq 'test_view (test)'
+	Assert-Far $__.Title -eq 'test_view (test)'
 }
 # common steps
 . $PSScriptRoot\FMView.ps1

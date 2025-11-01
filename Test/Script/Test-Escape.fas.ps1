@@ -5,9 +5,9 @@ run {
 
 job {
 	Assert-Far -Editor
-	Assert-Far $Far.Editor[0].Text -eq '\"'
+	Assert-Far $__[0].Text -eq '\"'
 
-	$Far.Editor.SelectAllText()
+	$__.SelectAllText()
 }
 
 job {
@@ -15,7 +15,7 @@ job {
 }
 
 job {
-	Assert-Far $Far.Editor[0].Text -eq '\\\"'
+	Assert-Far $__[0].Text -eq '\\\"'
 }
 
 job {
@@ -23,7 +23,7 @@ job {
 }
 
 job {
-	Assert-Far $Far.Editor[0].Text -eq '\"'
+	Assert-Far $__[0].Text -eq '\"'
 
-	$Far.Editor.Close()
+	$__.Close()
 }

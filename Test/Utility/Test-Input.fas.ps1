@@ -9,7 +9,7 @@ run {
 macro 'Keys"T e x t"'
 
 job {
-	$eb = $Far.Dialog[2]
+	$eb = $__[2]
 	Assert-Far $eb.Line.Text -eq 'Text' # worked fine; weird
 	Assert-Far $eb.Text -eq 'Text' # used to get empty string
 }

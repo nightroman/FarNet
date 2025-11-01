@@ -10,13 +10,13 @@ if (Test-Path C:\TEMP\Test-EditorAsync*.txt) {
 job {
 	# open editor 1
 	Open-FarEditor C:\TEMP\Test-EditorAsync1.txt
-	$Data.Editor1 = $Far.Editor
+	$Data.Editor1 = $__
 	Assert-Far ($Data.Editor1.FileName -eq 'C:\TEMP\Test-EditorAsync1.txt')
 }
 job {
 	# open editor 2
 	Open-FarEditor C:\TEMP\Test-EditorAsync2.txt
-	$Data.Editor2 = $Far.Editor
+	$Data.Editor2 = $__
 	Assert-Far ($Data.Editor2.FileName -eq 'C:\TEMP\Test-EditorAsync2.txt')
 }
 job {
@@ -31,7 +31,7 @@ job {
 macro 'Keys"F12 2"'
 job {
 	# test text 1
-	$e = $Far.Editor
+	$e = $__
 	Assert-Far @(
 		$e -eq $Data.Editor1
 		$e.Count -eq 2
@@ -49,7 +49,7 @@ job {
 macro 'Keys"Esc n" -- exit editor 1, do not save'
 job {
 	# test text 2
-	$e = $Far.Editor
+	$e = $__
 	Assert-Far @(
 		$e -eq $Data.Editor2
 		$e.Count -eq 2

@@ -3,7 +3,7 @@ job {
 	Open-FarEditor 'Test-Editor-Utility..ps1.tmp'
 }
 job {
-	$Data.Editor = $Far.Editor
+	$Data.Editor = $__
 	$Data.Text = @"
 `t`r`n`r`n"йцу\кен"`t `r`n`r`n`r`n"!№;%:?*" `r`n
 "@

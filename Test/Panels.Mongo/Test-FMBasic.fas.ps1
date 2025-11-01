@@ -14,33 +14,33 @@ job {
 }
 job {
 	# go to `test` then enter
-	Assert-Far $Far.Panel.Title -eq 'Databases'
+	Assert-Far $__.Title -eq 'Databases'
 	Find-FarFile test
 }
 keys Enter
 job {
 	# go to `files` then enter
-	Assert-Far $Far.Panel.Title -eq 'Collections'
+	Assert-Far $__.Title -eq 'Collections'
 	Find-FarFile files
 }
 keys Enter
 job {
-	Assert-Far $Far.Panel.Title -eq 'files'
+	Assert-Far $__.Title -eq 'files'
 }
 # go to end and keep the last file name
 keys End
 job {
-	$data.LastName = $Far.Panel.CurrentFile.Name
+	$data.LastName = $__.CurrentFile.Name
 }
 # next data page
 keys PgDn
 job {
-	Assert-Far $Far.Panel.CurrentIndex -eq ($Far.Panel.Files.Count - 1)
+	Assert-Far $__.CurrentIndex -eq ($__.Files.Count - 1)
 }
 # prev data page, go to end
 macro 'Keys"Home PgUp End"'
 job {
-	Assert-Far $data.LastName -eq $Far.Panel.CurrentFile.Name
+	Assert-Far $data.LastName -eq $__.CurrentFile.Name
 }
 # exit all panels
 keys ShiftEsc

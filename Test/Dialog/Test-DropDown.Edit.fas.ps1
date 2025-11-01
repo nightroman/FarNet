@@ -27,7 +27,7 @@ run {
 }
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq '140322_151023'
+	Assert-Far $__[0].Text -eq '140322_151023'
 }
 macro 'Keys"CtrlDown Enter" -- open combo, pick first'
 job {

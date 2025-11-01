@@ -10,8 +10,8 @@ job {
 }
 job {
 	Assert-Far @(
-		$Far.Panel -is [PowerShellFar.ItemPanel]
-		$Far.Panel.Explorer.Location -eq 'HKCU:\'
+		$__ -is [PowerShellFar.ItemPanel]
+		$__.Explorer.Location -eq 'HKCU:\'
 	)
 }
 
@@ -25,20 +25,20 @@ job {
 macro 'Keys"a 1 Enter"'
 job {
 	Assert-Far -Panels -FileName 'a1'
-	Assert-Far $Far.Panel.CurrentFile.IsDirectory
+	Assert-Far $__.CurrentFile.IsDirectory
 }
 
 # item properties panels
 keys CtrlA
 job {
-	Assert-Far ($Far.Panel -is [PowerShellFar.PropertyPanel])
+	Assert-Far ($__ -is [PowerShellFar.PropertyPanel])
 }
 
 # new propery dialog
 keys F7
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'New property'
+	Assert-Far $__[0].Text -eq 'New property'
 }
 
 # enter dword value with funny name
@@ -59,8 +59,8 @@ keys ShiftF5
 job {
 	Assert-Far -Dialog
 	Assert-Far @(
-		$Far.Dialog[0].Text -eq 'Copy'
-		$Far.Dialog[2].Text -eq 'dword`$][*?'
+		$__[0].Text -eq 'Copy'
+		$__[2].Text -eq 'dword`$][*?'
 	)
 }
 macro 'Keys"Right # Enter"'
@@ -73,8 +73,8 @@ keys ShiftF6
 job {
 	Assert-Far -Dialog
 	Assert-Far @(
-		$Far.Dialog[0].Text -eq 'Rename'
-		$Far.Dialog[2].Text -eq 'dword`$][*?#'
+		$__[0].Text -eq 'Rename'
+		$__[2].Text -eq 'dword`$][*?#'
 	)
 }
 macro 'Keys"Right # Enter"'
@@ -87,7 +87,7 @@ keys F8
 job {
 	Assert-Far -Dialog
 	Assert-Far (
-		($Far.Dialog[2].Text + $Far.Dialog[3].Text) -like '*Performing *operation "Remove Property" on Target "Item: HKEY_CURRENT_USER\a1 Property: dword*".'
+		($__[2].Text + $__[3].Text) -like '*Performing *operation "Remove Property" on Target "Item: HKEY_CURRENT_USER\a1 Property: dword*".'
 	)
 }
 keys y Enter
@@ -100,7 +100,7 @@ job {
 keys F7
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'New property'
+	Assert-Far $__[0].Text -eq 'New property'
 }
 macro 'Keys"s t r i n g Tab s t r i n g Tab s t r i n g Enter"'
 job {
@@ -117,7 +117,7 @@ job {
 keys F7
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'New property'
+	Assert-Far $__[0].Text -eq 'New property'
 }
 macro 'Keys"m u l t i s t r i n g Tab m u l t i s t r i n g Tab m u l t i s t r i n g Enter"'
 job {
@@ -159,8 +159,8 @@ job {
 job {
 	Assert-Far -Plugin
 	Assert-Far @(
-		$Far.Panel -is [PowerShellFar.ItemPanel]
-		$Far.Panel.Explorer.Location -eq 'HKCU:\a1'
+		$__ -is [PowerShellFar.ItemPanel]
+		$__.Explorer.Location -eq 'HKCU:\a1'
 	)
 }
 macro 'Keys"F7 k e y 1 Enter"'
@@ -172,8 +172,8 @@ job {
 keys CtrlA
 job {
 	Assert-Far @(
-		$Far.Panel -is [PowerShellFar.PropertyPanel]
-		!$Far.Panel.CurrentFile
+		$__ -is [PowerShellFar.PropertyPanel]
+		!$__.CurrentFile
 	)
 }
 
@@ -187,7 +187,7 @@ job {
 macro 'Keys"Tab Multiply F5 Tab"'
 job {
 	Assert-Far @(
-		$Far.Panel.CurrentDirectory -eq 'hkcu:\a1\key1.*'
+		$__.CurrentDirectory -eq 'hkcu:\a1\key1.*'
 		@(Get-FarItem).Count -eq @(Get-FarItem -Passive).Count
 	)
 }
@@ -195,7 +195,7 @@ job {
 # select 2 properties and delete
 macro 'Keys"Down ShiftDown ShiftDown"'
 job {
-	$1 = $Far.Panel.GetSelectedFiles()
+	$1 = $__.GetSelectedFiles()
 	Assert-Far @(
 		$1.Count -eq 2
 		$1[0].Name -eq 'dword`$][*?'
@@ -207,7 +207,7 @@ job {
 	# v4.0 amended text
 	Assert-Far -Dialog
 	Assert-Far (
-		($Far.Dialog[2].Text + $Far.Dialog[3].Text) -like '*Performing *operation "Remove Property" on Target "Item: HKEY_CURRENT_USER\a1\key1 Property: dword*".'
+		($__[2].Text + $__[3].Text) -like '*Performing *operation "Remove Property" on Target "Item: HKEY_CURRENT_USER\a1\key1 Property: dword*".'
 	)
 }
 keys a Enter
@@ -218,9 +218,9 @@ job {
 		@(Get-FarItem -All -Passive).Count -eq 3
 		@(Get-FarPath -All).Count -eq 1
 		@(Get-FarPath -All -Passive).Count -eq 3
-		@($Far.Panel.GetFiles()).Count -eq 1
+		@($__.GetFiles()).Count -eq 1
 		@($Far.Panel2.GetFiles()).Count -eq 3
-		@($Far.Panel.ShownItems).Count -eq 1
+		@($__.ShownItems).Count -eq 1
 		@($Far.Panel2.ShownItems).Count -eq 3
 	)
 }
@@ -228,7 +228,7 @@ job {
 # select all, move and step out
 keys Multiply
 job {
-	$1 = $Far.Panel.GetSelectedFiles()
+	$1 = $__.GetSelectedFiles()
 	Assert-Far @(
 		$1.Count -eq 1
 		$1[0].Name -eq 'string'
@@ -270,7 +270,7 @@ job {
 keys Enter
 job {
 	# issue: must be no files
-	Assert-Far $Far.Panel.GetFiles().Count -eq 0
+	Assert-Far $__.GetFiles().Count -eq 0
 }
 
 # tab to key2 and copy it to a1\key1
@@ -284,7 +284,7 @@ job {
 	# v4.0 amended text
 	Assert-Far -Dialog
 	Assert-Far (
-		($Far.Dialog[2].Text + $Far.Dialog[3].Text) -like 'Performing *operation "Copy Key" on Target "Item: HKEY_CURRENT_USER\a1\key2 Destination: HKEY_CURRENT_USER\a1\key1".'
+		($__[2].Text + $__[3].Text) -like 'Performing *operation "Copy Key" on Target "Item: HKEY_CURRENT_USER\a1\key2 Destination: HKEY_CURRENT_USER\a1\key1".'
 	)
 }
 
@@ -302,7 +302,7 @@ job {
 # enter key2
 keys Enter
 job {
-	Assert-Far $Far.Panel.GetFiles().Count -eq 0
+	Assert-Far $__.GetFiles().Count -eq 0
 }
 
 # tab, enter dots
@@ -316,27 +316,27 @@ keys F6
 job {
 	Assert-Far -Dialog
 	Assert-Far (
-		($Far.Dialog[2].Text + $Far.Dialog[3].Text) -like 'Performing *operation "Move Item" on Target "Item: HKEY_CURRENT_USER\a1\key1 Destination: HKEY_CURRENT_USER\a1\key2".'
+		($__[2].Text + $__[3].Text) -like 'Performing *operation "Move Item" on Target "Item: HKEY_CURRENT_USER\a1\key1 Destination: HKEY_CURRENT_USER\a1\key2".'
 	)
 }
 keys y Enter
 job {
 	Assert-Far -Dialog
 	Assert-Far (
-		($Far.Dialog[2].Text + $Far.Dialog[3].Text) -like 'Performing *operation "Copy Key" on Target "Item: HKEY_CURRENT_USER\a1\key1 Destination: HKEY_CURRENT_USER\a1\key2".'
+		($__[2].Text + $__[3].Text) -like 'Performing *operation "Copy Key" on Target "Item: HKEY_CURRENT_USER\a1\key1 Destination: HKEY_CURRENT_USER\a1\key2".'
 	)
 }
 keys y Enter
 job {
 	Assert-Far -Dialog
 	Assert-Far (
-		($Far.Dialog[2].Text + $Far.Dialog[3].Text + $Far.Dialog[4].Text) -like 'Performing *operation "Copy Key" on Target "Item: HKEY_CURRENT_USER\a1\key1\key2 Destination: HKEY_CURRENT_USER\a1\key2\key1\key2".'
+		($__[2].Text + $__[3].Text + $__[4].Text) -like 'Performing *operation "Copy Key" on Target "Item: HKEY_CURRENT_USER\a1\key1\key2 Destination: HKEY_CURRENT_USER\a1\key2\key1\key2".'
 	)
 }
 keys y Enter
 job {
 	Assert-Far -Dialog
-	Assert-Far (($Far.Dialog[2].Text + $Far.Dialog[3].Text) -like 'Performing *operation "Remove Key*" on Target "Item: HKEY_CURRENT_USER\a1\key1".')
+	Assert-Far (($__[2].Text + $__[3].Text) -like 'Performing *operation "Remove Key*" on Target "Item: HKEY_CURRENT_USER\a1\key1".')
 }
 keys a Enter
 job {
@@ -354,7 +354,7 @@ keys Del
 job {
 	Assert-Far -Dialog
 	Assert-Far (
-		($Far.Dialog[2].Text + $Far.Dialog[3].Text) -like 'Performing *operation "Remove Key*" on Target "Item: HKEY_CURRENT_USER\a1\key2\key1\key2".'
+		($__[2].Text + $__[3].Text) -like 'Performing *operation "Remove Key*" on Target "Item: HKEY_CURRENT_USER\a1\key2\key1\key2".'
 	)
 }
 keys y Enter

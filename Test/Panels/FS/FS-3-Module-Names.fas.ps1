@@ -13,7 +13,7 @@ job {
 	$Data.names | Out-FarPanel
 }
 job {
-	$Far.Panel.CurrentLocation = $env:FARHOME
+	$__.CurrentLocation = $env:FARHOME
 }
 
 job {
@@ -77,11 +77,11 @@ job {
 }
 
 job {
-	$Far.Panel.SelectNames($Data.names)
+	$__.SelectNames($Data.names)
 }
 job {
 	# selected
-	Assert-Far $Data.names.Count -eq $Far.Panel.SelectedFiles.Count
+	Assert-Far $Data.names.Count -eq $__.SelectedFiles.Count
 	$fs = $Far.FS
 
 	$r1, $r2, $r3 = $Far.FS.GetSelectedPaths()
@@ -101,5 +101,5 @@ job {
 }
 
 job {
-	$Far.Panel.Close()
+	$__.Close()
 }

@@ -1,7 +1,7 @@
 ﻿# native panel
 
 job {
-	$Far.Panel.CurrentDirectory = $env:FARHOME
+	$__.CurrentDirectory = $env:FARHOME
 }
 job {
 	# dots
@@ -38,7 +38,7 @@ job {
 }
 
 job {
-	$Far.Panel.SelectNames(@('FarNet', 'Far.exe'))
+	$__.SelectNames(@('FarNet', 'Far.exe'))
 }
 job {
 	# selected

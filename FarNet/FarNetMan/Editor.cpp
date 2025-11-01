@@ -5,6 +5,7 @@
 #include "EditorLine.h"
 #include "Far0.h"
 #include "Settings.h"
+#include "Window.h"
 #include "Wrappers.h"
 
 namespace FarNet
@@ -45,7 +46,7 @@ void Editor::Open(OpenMode mode)
 	int nPos = _frameStart.CaretColumn >= 0 ? _frameStart.CaretColumn + 1 : -1;
 
 	// from modal? set modal
-	bool preIsModal = Far::Api->Window->IsModal;
+	bool preIsModal = FarNet::Window::Instance.IsModal;
 	if (preIsModal)
 		mode = OpenMode::Modal;
 

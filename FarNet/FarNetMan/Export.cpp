@@ -1,7 +1,3 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 #include "stdafx.h"
 #include <initguid.h>
 #include "AssemblyResolver.h"
@@ -9,6 +5,7 @@
 #include "Dialog.h"
 #include "Editor0.h"
 #include "Far0.h"
+#include "Far1.h"
 #include "Panel0.h"
 #include "Viewer0.h"
 #include "UI.h"
@@ -28,7 +25,7 @@ DEFINE_GUID(ColorerGuid, 0xd2f36b62, 0xa470, 0x418d, 0x83, 0xa3, 0xed, 0x7a, 0x3
 //! ResetUserScreen before the error dialog. The dialog may have the button [More].
 //! It opens the editor and Colorer shows its progress message on opening.
 //! This message stays and pollutes the user screen permanently.
-#define __END } catch(Exception^ e) { FarUI::ResetUserScreen(); Far::Api->ShowError(nullptr, e); } finally { FarUI::ResetUserScreen(); }
+#define __END } catch(Exception^ e) { FarUI::ResetUserScreen(); Far1::Instance.ShowError(nullptr, e); } finally { FarUI::ResetUserScreen(); }
 
 void WINAPI GetGlobalInfoW(struct GlobalInfo* info)
 {

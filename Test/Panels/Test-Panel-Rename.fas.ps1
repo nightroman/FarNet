@@ -19,7 +19,7 @@ keys ShiftF6
 job {
 	# the dialog
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'Rename'
+	Assert-Far $__[0].Text -eq 'Rename'
 }
 
 # enter zz:

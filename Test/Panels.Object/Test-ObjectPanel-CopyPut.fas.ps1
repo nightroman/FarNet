@@ -9,13 +9,13 @@ job {
 	Out-FarPanel
 }
 job {
-	Assert-Far ($Far.Panel -is [PowerShellFar.ObjectPanel])
+	Assert-Far ($__ -is [PowerShellFar.ObjectPanel])
 }
 
 # go to another panel, Far.exe.example.ini
 keys Tab
 job {
-	$Far.Panel.GoToPath("$env:FARHOME\Far.exe.example.ini")
+	$__.GoToPath("$env:FARHOME\Far.exe.example.ini")
 	Assert-Far -FileName 'Far.exe.example.ini'
 }
 
@@ -36,7 +36,7 @@ job {
 }
 job {
 	# item panel, find Far.exe.example.ini
-	Assert-Far ($Far.Panel -is [PowerShellFar.ItemPanel])
+	Assert-Far ($__ -is [PowerShellFar.ItemPanel])
 	Find-FarFile 'Far.exe.example.ini'
 }
 
@@ -72,6 +72,6 @@ job {
 ### back to target, exit it
 keys Tab
 job {
-	Assert-Far ($Far.Panel -is [PowerShellFar.ObjectPanel])
+	Assert-Far ($__ -is [PowerShellFar.ObjectPanel])
 }
 keys Esc

@@ -4,14 +4,14 @@
 #>
 
 ### init
-job { $Far.Panel.GoToPath($PSCommandPath) }
+job { $__.GoToPath($PSCommandPath) }
 job { $Psf.RunCommandConsole() }
 
 ### Up/Down
 keys Up
 job {
 	[FarNet.Works.Tasks2]::Wait('Wait', { $Far.Window.Kind -eq 'Dialog' -and $Far.Dialog.TypeId -eq ([PowerShellFar.Guids]::ReadCommandDialog) })
-	Assert-Far ($Far.Panel.CurrentFile -ne 'Test-CC-KeyPanel.fas.ps1')
+	Assert-Far ($__.CurrentFile -ne 'Test-CC-KeyPanel.fas.ps1')
 }
 keys Down
 job {

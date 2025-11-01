@@ -18,15 +18,15 @@ try {
 
 	job {
 		Assert-Far -Dialog
-		Assert-Far $Far.Dialog[1].Text -eq 'Step (h or ? for help)'
+		Assert-Far $__[1].Text -eq 'Step (h or ? for help)'
 
-		$Far.Dialog[2].Text = 'continue'
-		$Far.Dialog.Close()
+		$__[2].Text = 'continue'
+		$__.Close()
 	}
 
 	job {
 		Assert-Far -DialogTypeId ([PowerShellFar.Guids]::AssertDialog)
-		$Far.Dialog.Close()
+		$__.Close()
 	}
 }
 finally {

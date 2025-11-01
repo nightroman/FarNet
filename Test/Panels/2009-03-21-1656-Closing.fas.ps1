@@ -11,7 +11,7 @@ job {
 job {
 	# add panel Closing
 	Assert-Far -Plugin
-	$Far.Panel.add_Closing({
+	$__.add_Closing({
 		$DebugPanelClosing = 42
 	})
 

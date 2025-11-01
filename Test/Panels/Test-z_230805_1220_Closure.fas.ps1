@@ -8,10 +8,10 @@ job {
 job {
 	Assert-Far "$($global:Error[0])" -eq 'You cannot call a method on a null-valued expression.'
 
-	$file = $Far.Panel.Files[1]
+	$file = $__.Files[1]
 	Assert-Far $file.Name -eq $null
 	Assert-Far $file.Description -eq '12345'
 
-	$Far.Panel.Close()
+	$__.Close()
 	$global:Error.Clear()
 }

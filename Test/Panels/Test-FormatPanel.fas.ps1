@@ -4,12 +4,12 @@ job {
 	$r | Out-FarPanel
 }
 job {
-	$Columns = $Far.Panel.GetPlan(0).Columns
+	$Columns = $__.GetPlan(0).Columns
 	Assert-Far $Columns.Count -eq $Psf.Settings.MaximumPanelColumnCount
 	Assert-Far @(
 		$Columns[0].Name -eq 'Name'
 		$Columns[1].Name -eq 'Description'
 		$Columns[2].Name -eq 'Status'
 	)
-	$Far.Panel.Close()
+	$__.Close()
 }

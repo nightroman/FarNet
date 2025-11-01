@@ -17,8 +17,8 @@ job {
 }
 Assert-Far $var2 -eq not-blocked1
 job {
-	Assert-Far $Far.Panel.Files[1].Name -eq scope-var1
-	$Far.Panel.Close()
+	Assert-Far $__.Files[1].Name -eq scope-var1
+	$__.Close()
 }
 
 ### Can open dialog.
@@ -35,8 +35,8 @@ job {
 }
 Assert-Far $var2 -eq not-blocked2
 job {
-	Assert-Far $Far.Dialog[1].Text -eq scope-var2
-	$Far.Dialog.Close()
+	Assert-Far $__[1].Text -eq scope-var2
+	$__.Close()
 }
 
 ### Error is shown.
@@ -47,7 +47,7 @@ job {
 	[FarNet.Tasks]::WaitForWindow('Dialog', 999)
 }
 job {
-	Assert-Far $Far.Dialog[1].Text -eq oops
-	$Far.Dialog.Close()
+	Assert-Far $__[1].Text -eq oops
+	$__.Close()
 	$Error.Clear()
 }

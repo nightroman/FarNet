@@ -19,7 +19,7 @@ job {
 }
 job {
 	Assert-Far -Panels
-	Assert-Far $Far.Panel.Title -eq 'test (aggregate)'
+	Assert-Far $__.Title -eq 'test (aggregate)'
 }
 # common steps
 . $PSScriptRoot\FMView.ps1

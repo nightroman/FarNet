@@ -12,27 +12,27 @@ job {
 keys Enter
 job {
 	Assert-Far @(
-		$Far.Panel.Value.Category -isnot [System.DBNull]
-		$Far.Panel.Value.Remarks -isnot [System.DBNull]
+		$__.Value.Category -isnot [System.DBNull]
+		$__.Value.Remarks -isnot [System.DBNull]
 	)
-	$Far.Panel.SelectNames(('Category', 'Remarks'))
+	$__.SelectNames(('Category', 'Remarks'))
 }
 keys ShiftDel
 job {
 	Assert-Far @(
-		$Far.Panel.Value.Category -is [System.DBNull]
-		$Far.Panel.Value.Remarks -is [System.DBNull]
+		$__.Value.Category -is [System.DBNull]
+		$__.Value.Remarks -is [System.DBNull]
 	)
 }
 macro 'Keys"Esc Right"'
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog.Focused.Text -eq 'No'
+	Assert-Far $__.Focused.Text -eq 'No'
 }
 keys Enter
 job {
 	Assert-Far -Panels
-	Assert-Far $Far.Panel.Title -eq 'TestCategories'
+	Assert-Far $__.Title -eq 'TestCategories'
 }
 keys Esc
 

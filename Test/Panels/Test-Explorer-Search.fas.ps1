@@ -16,9 +16,9 @@ job {
 	$cmd.Invoke($null, $arg)
 }
 job {
-	$list = $Far.Panel.Files
+	$list = $__.Files
 	Assert-Far @(
-		$Far.Panel.Explorer.TypeId -eq '7d503b37-23a0-4ebd-878b-226e972b0b9d'
+		$__.Explorer.TypeId -eq '7d503b37-23a0-4ebd-878b-226e972b0b9d'
 		$list[0].Name -eq '..'
 		$list[1].Name -eq 'Flat'
 		$list[2].Name -eq 'Tree'
@@ -56,7 +56,7 @@ keys Esc
 job {
 	# this explorer and name here
 	Assert-Far -FileName PowerShellFar
-	Assert-Far ($Far.Panel.CurrentFile.Explorer.TypeId -eq 'fd00a7cc-5ec1-4279-b659-541bbb5b2a00')
+	Assert-Far ($__.CurrentFile.Explorer.TypeId -eq 'fd00a7cc-5ec1-4279-b659-541bbb5b2a00')
 }
 
 # go to found directory
@@ -69,7 +69,7 @@ keys Esc
 job {
 	# this explorer and name here
 	Assert-Far -FileName PowerShellFar
-	Assert-Far ($Far.Panel.CurrentFile.Explorer.TypeId -eq 'fd00a7cc-5ec1-4279-b659-541bbb5b2a00')
+	Assert-Far ($__.CurrentFile.Explorer.TypeId -eq 'fd00a7cc-5ec1-4279-b659-541bbb5b2a00')
 }
 
 # Location, nested, dupe name: PowerShellFar
@@ -86,7 +86,7 @@ keys Esc
 job {
 	# this explorer and name here
 	Assert-Far -FileName PowerShellFar
-	Assert-Far ($Far.Panel.CurrentFile.Explorer.TypeId -eq '594e5d2e-1f00-4f25-902d-9464cba1d4a2')
+	Assert-Far ($__.CurrentFile.Explorer.TypeId -eq '594e5d2e-1f00-4f25-902d-9464cba1d4a2')
 }
 
 # go to found directory
@@ -99,7 +99,7 @@ keys Esc
 job {
 	# this explorer and name here
 	Assert-Far -FileName PowerShellFar
-	Assert-Far ($Far.Panel.CurrentFile.Explorer.TypeId -eq '594e5d2e-1f00-4f25-902d-9464cba1d4a2')
+	Assert-Far ($__.CurrentFile.Explorer.TypeId -eq '594e5d2e-1f00-4f25-902d-9464cba1d4a2')
 }
 
 ### test Z:

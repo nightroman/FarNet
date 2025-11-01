@@ -20,7 +20,7 @@ $editor = $Far.CreateEditor()
 $editor.Open()
 
 Assert-Far -Editor
-$Far.Editor.Close()
+$__.Close()
 Assert-Far -Panels
 
 ### part 2: actual test
@@ -36,5 +36,5 @@ $ps.Invoke()
 $ps.Dispose()
 
 Assert-Far -Editor
-$Far.Editor.Close()
+$__.Close()
 Assert-Far -Panels

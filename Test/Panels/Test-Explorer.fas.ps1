@@ -50,7 +50,7 @@ keys F4
 job {
 	# locked
 	Assert-Far -Editor
-	Assert-Far $Far.Editor.IsLocked
+	Assert-Far $__.IsLocked
 }
 # exit editor
 keys Esc

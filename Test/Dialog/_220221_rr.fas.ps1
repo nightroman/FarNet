@@ -13,7 +13,7 @@ run {
 
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'my edit'
-	Assert-Far $Far.Dialog[0].Line.Caret -eq 3
-	$Far.Dialog.Close()
+	Assert-Far $__[0].Text -eq 'my edit'
+	Assert-Far $__[0].Line.Caret -eq 3
+	$__.Close()
 }

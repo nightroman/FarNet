@@ -10,8 +10,8 @@ run {
 }
 job {
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq Confirm
-	Assert-Far $Far.Dialog[1].Text -eq "Are you sure you want to continue?"
+	Assert-Far $__[0].Text -eq Confirm
+	Assert-Far $__[1].Text -eq "Are you sure you want to continue?"
 }
 
 # help
@@ -24,7 +24,7 @@ keys Esc
 # CtrlEnter closes even on <Help>
 job {
 	Assert-Far -Dialog
-	$box = $Far.Dialog[2]
+	$box = $__[2]
 	Assert-Far $box.Items[$box.Selected].Text -eq '&? Help'
 }
 keys CtrlEnter

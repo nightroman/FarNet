@@ -1,9 +1,6 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 #include "stdafx.h"
 #include "Panel1.h"
+#include "Far1.h"
 #include "Panel0.h"
 #include "PanelFileCollection.h"
 
@@ -75,7 +72,7 @@ void Panel1::IsVisible::set(bool value)
 		return;
 
 	String^ macro = pi.PanelRect.left == 0 ? "Keys('CtrlF1')" : "Keys('CtrlF2')";
-	Far::Api->PostMacro(macro);
+	Far1::Instance.PostMacro(macro);
 }
 
 // STOP: It is possible to ask the current file directly, but implementation is not safe.

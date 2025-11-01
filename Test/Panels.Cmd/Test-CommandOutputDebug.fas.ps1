@@ -49,7 +49,7 @@ macro 'Keys"v p s : Space O u t p u t O n D e b u g g i n g Enter"'
 Test-DebugDialog
 job {
 	Assert-Far -Viewer
-	Assert-Far $Far.Viewer.Title -eq 'OutputOnDebugging'
+	Assert-Far $__.Title -eq 'OutputOnDebugging'
 }
 keys Esc
 job {

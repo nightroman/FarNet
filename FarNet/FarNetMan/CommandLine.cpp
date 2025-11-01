@@ -1,13 +1,9 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 #include "StdAfx.h"
 #include "CommandLine.h"
 
 namespace FarNet
-{;
-FarNet::WindowKind CommandLine::WindowKind::get()
+{
+WindowKind CommandLine::WindowKind::get()
 {
 	return FarNet::WindowKind::Panels;
 }
@@ -124,7 +120,7 @@ void CommandLine::SelectedText::set(String^ value)
 		throw gcnew InvalidOperationException(Res::CannotSetSelectedText);
 
 	// make new text
-	String^ text = Far::Api->CommandLine->Text;
+	String^ text = Text;
 	String^ text1 = text->Substring(0, (int)cls.SelStart);
 	String^ text2 = text->Substring((int)cls.SelEnd);
 	text = text1 + value + text2;

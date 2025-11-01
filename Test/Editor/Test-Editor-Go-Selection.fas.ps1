@@ -7,7 +7,7 @@ job {
 	Open-FarEditor 'Test-Go-Selection.ps1.tmp'
 }
 job {
-	$global:Editor = $Far.Editor
+	$global:Editor = $__
 	Assert-Far -EditorFileName *\Test-Go-Selection.ps1.tmp
 }
 

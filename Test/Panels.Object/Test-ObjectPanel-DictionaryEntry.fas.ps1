@@ -31,8 +31,8 @@ job {
 
 }
 job {
-	Assert-Far ($Far.Panel -is [PowerShellFar.ObjectPanel])
-	Assert-Far $Far.Panel.GetFiles().Count -eq 1
+	Assert-Far ($__ -is [PowerShellFar.ObjectPanel])
+	Assert-Far $__.GetFiles().Count -eq 1
 }
 macro 'Keys"Down Enter" -- Enter the only item'
 job {
@@ -41,8 +41,8 @@ job {
 macro 'Keys"Enter" -- Open Array in *object* panel'
 job {
 	Assert-Far @(
-		$Far.Panel -is [PowerShellFar.ObjectPanel]
-		$Far.Panel.GetFiles().Count -eq 3
+		$__ -is [PowerShellFar.ObjectPanel]
+		$__.GetFiles().Count -eq 3
 	)
 }
 keys Esc
@@ -52,8 +52,8 @@ job {
 macro 'Keys"CtrlPgDn" -- Open Array in member panel'
 job {
 	Assert-Far @(
-		$Far.Panel -is [PowerShellFar.MemberPanel]
-		$Far.Panel.Title -eq 'Members: DictionaryEntry'
+		$__ -is [PowerShellFar.MemberPanel]
+		$__.Title -eq 'Members: DictionaryEntry'
 	)
 }
 keys Esc
@@ -62,10 +62,10 @@ job {
 }
 macro 'Keys"Enter" -- Open String in *member* panel'
 job {
-	$files = $Far.Panel.GetFiles()
+	$files = $__.GetFiles()
 	Assert-Far @(
-		$Far.Panel -is [PowerShellFar.MemberPanel]
-		$Far.Panel.Title -eq 'Members: DictionaryEntry'
+		$__ -is [PowerShellFar.MemberPanel]
+		$__.Title -eq 'Members: DictionaryEntry'
 		#_131002_111804
 		$files.Count -eq 2
 		$files[0].Name -ceq 'Key'

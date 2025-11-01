@@ -40,7 +40,7 @@ job {
 	#1
 	$Far.Panel2.IsVisible = $false
 	#2
-	$Far.Panel.IsVisible = $false
+	$__.IsVisible = $false
 }
 
 # 5.0.94 error color should be red
@@ -130,7 +130,7 @@ job {
 macro 'Keys"v p s : 1 2 3 4 5 Enter"'
 job {
 	Assert-Far -Viewer
-	Assert-Far $Far.Viewer.Title -eq '12345'
+	Assert-Far $__.Title -eq '12345'
 }
 keys Esc
 job {
@@ -141,7 +141,7 @@ job {
 macro 'Keys"v p s : 1 2 3 4 5 Enter"'
 job {
 	Assert-Far -Viewer
-	Assert-Far $Far.Viewer.Title -eq '12345'
+	Assert-Far $__.Title -eq '12345'
 }
 keys F6
 job {
@@ -159,7 +159,7 @@ job {
 
 ### end
 job {
-	$Far.Panel.IsVisible = $true
+	$__.IsVisible = $true
 }
 job {
 	$Far.Panel2.IsVisible = $true

@@ -13,7 +13,7 @@ job {
 		}
 		AsExploreParent = {
 			$Data.AsExploreParent = 'called'
-			$Far.Panel.Close()
+			$__.Close()
 		}
 		AsEnterPanel = {
 			param($0, $_)

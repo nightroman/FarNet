@@ -6,7 +6,7 @@
 job {
 	# open editor 1 locked and keep its instance for later changes when it is not active
 	Open-FarEditor "$PSScriptRoot\Test-z_221108_0500.fas.ps1" -DisableHistory -IsLocked
-	$Data.editor1 = $Far.Editor
+	$Data.editor1 = $__
 }
 
 job {
@@ -24,8 +24,8 @@ job {
 
 job {
 	Assert-Far -Editor
-	$Far.Editor.Close()
+	$__.Close()
 	Assert-Far -Editor
-	$Far.Editor.Close()
+	$__.Close()
 	$Global:Error.Clear()
 }

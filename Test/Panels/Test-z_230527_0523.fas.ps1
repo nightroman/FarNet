@@ -13,7 +13,7 @@ job {
 }
 job {
 	Assert-Far @(
-		$Far.Panel.Title -eq 'Test Panel'
+		$__.Title -eq 'Test Panel'
 		$Far.Panel2.Title -eq 'Test Panel'
 	)
 }

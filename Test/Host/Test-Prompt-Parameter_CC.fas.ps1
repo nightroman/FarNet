@@ -16,7 +16,7 @@ job {
 	Assert-Far -DialogTypeId ([PowerShellFar.Guids]::ReadLineDialog)
 	Assert-Far $Far.UI.GetBufferLineText(-3) -eq 'cmdlet New-Variable at command pipeline position 1'
 	Assert-Far $Far.UI.GetBufferLineText(-2) -eq 'Supply values for the following parameters:'
-	Assert-Far $Far.Dialog[0].Text -eq 'Name: '
+	Assert-Far $__[0].Text -eq 'Name: '
 }
 keys 0 9 0 3 2 8 1 9 4 6 3 6 Enter
 job {

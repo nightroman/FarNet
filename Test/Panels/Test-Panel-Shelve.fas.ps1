@@ -8,7 +8,7 @@
 
 $GoHome = { job {
 	# go home
-	$Panel = $Far.Panel
+	$Panel = $__
 	$Panel.CurrentDirectory = $HOME
 	Assert-Far $Panel.CurrentDirectory -eq $HOME
 	Assert-Far $Panel.CurrentIndex -eq 0
@@ -25,12 +25,12 @@ $Unshelve = { job {
 
 job {
 	# go to Far.exe
-	$Far.Panel.GoToPath("$env:FARHOME\Far.exe")
+	$__.GoToPath("$env:FARHOME\Far.exe")
 }
 
 $Test = { job {
 	# current == Far.exe, selected == Far.exe
-	$Panel = $Far.Panel
+	$Panel = $__
 	Assert-Far $Panel.CurrentFile.Name -eq 'Far.exe'
 	$selected = $Panel.SelectedFiles
 	Assert-Far (($selected.Count -eq 1) -and ($selected[0].Name -eq 'Far.exe'))
@@ -39,7 +39,7 @@ $Test = { job {
 
 job {
 	# shelve
-	$Far.Panel.Push()
+	$__.Push()
 	$top = @([FarNet.Works.ShelveInfo]::Stack)[-1]
 	Assert-Far @(
 		$top.Current -eq 'Far.exe'
@@ -59,7 +59,7 @@ job {
 keys ShiftDown
 $Test = { job {
 	# current != Far.exe, selected == Far.exe
-	$Panel = $Far.Panel
+	$Panel = $__
 	Assert-Far ($Panel.CurrentFile.Name -ne 'Far.exe')
 	$selected = $Panel.SelectedFiles
 	Assert-Far (($selected.Count -eq 1) -and ($selected[0].Name -eq 'Far.exe'))
@@ -68,7 +68,7 @@ $Test = { job {
 
 job {
 	# shelve
-	$Far.Panel.Push()
+	$__.Push()
 	$top = @([FarNet.Works.ShelveInfo]::Stack)[-1]
 	Assert-Far $top.GetSelectedNames().Count -eq 1
 	Assert-Far $top.GetSelectedNames()[0] -eq 'Far.exe'
@@ -87,7 +87,7 @@ macro 'Keys"ShiftDown ShiftDown Up Up Up"'
 
 $Test = { job {
 	# current == Far.exe and 3 selected items with Far.exe
-	$Panel = $Far.Panel
+	$Panel = $__
 	Assert-Far $Panel.CurrentFile.Name -eq 'Far.exe'
 	$selected = $Panel.SelectedFiles
 	Assert-Far (($selected.Count -eq 3) -and ($selected[0].Name -eq 'Far.exe'))
@@ -96,7 +96,7 @@ $Test = { job {
 
 job {
 	# shelve
-	$Far.Panel.Push()
+	$__.Push()
 	$top = @([FarNet.Works.ShelveInfo]::Stack)[-1]
 	Assert-Far $top.GetSelectedNames().Count -eq 3
 	Assert-Far $top.GetSelectedNames()[0] -eq 'Far.exe'
@@ -127,7 +127,7 @@ macro 'Keys"Esc 1"'
 
 job {
 	# shelve
-	$Far.Panel.Push()
+	$__.Push()
 }
 
 job {

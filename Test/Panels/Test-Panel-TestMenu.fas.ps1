@@ -12,20 +12,20 @@ macro 'Keys"ShiftF3 2 Esc"'
 
 # check value directly
 job {
-	$e = $Far.Panel.Value
+	$e = $__.Value
 	Assert-Far $e.Any -eq 'String 1'
 }
 
 # go to Item, select
 job {
 	Find-FarFile 'Item'
-	Assert-Far ($Far.Panel.CurrentFile.Description -like '*Far.exe')
+	Assert-Far ($__.CurrentFile.Description -like '*Far.exe')
 }
 keys Ins
 # go to Process, select
 job {
 	Find-FarFile 'Process'
-	Assert-Far ($Far.Panel.CurrentFile.Description -like '*(Far)')
+	Assert-Far ($__.CurrentFile.Description -like '*(Far)')
 }
 keys Ins
 # go home, call item 2

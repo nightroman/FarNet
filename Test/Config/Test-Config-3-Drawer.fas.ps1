@@ -11,10 +11,10 @@ macro 'Keys "F9 o u 1 d" Menu.Select("67db13c5-6b7b-4936-b984-e59db08e23c7", 3) 
 job {
 	# set mask *.ps1
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'PowerShell breakpoints'
-	Assert-Far $Far.Dialog[2].Text -eq '*.ps1;*.psm1'
-	Assert-Far $Far.Dialog[4].Text -eq '1'
-	$Far.Dialog[2].Text = '*.ps1'
+	Assert-Far $__[0].Text -eq 'PowerShell breakpoints'
+	Assert-Far $__[2].Text -eq '*.ps1;*.psm1'
+	Assert-Far $__[4].Text -eq '1'
+	$__[2].Text = '*.ps1'
 }
 keys Enter
 job {
@@ -32,11 +32,11 @@ macro 'Menu.Select("67db13c5-6b7b-4936-b984-e59db08e23c7", 3) Keys "Enter"'
 job {
 	# set mask to default, priority to not default
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'PowerShell breakpoints'
-	Assert-Far $Far.Dialog[2].Text -eq '*.ps1'
-	Assert-Far $Far.Dialog[4].Text -eq '1'
-	$Far.Dialog[2].Text = '*.ps1;*.psm1'
-	$Far.Dialog[4].Text = '2'
+	Assert-Far $__[0].Text -eq 'PowerShell breakpoints'
+	Assert-Far $__[2].Text -eq '*.ps1'
+	Assert-Far $__[4].Text -eq '1'
+	$__[2].Text = '*.ps1;*.psm1'
+	$__[4].Text = '2'
 }
 keys Enter
 job {
@@ -54,10 +54,10 @@ macro 'Menu.Select("67db13c5-6b7b-4936-b984-e59db08e23c7", 3) Keys "Enter"'
 job {
 	# set priority to default
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[0].Text -eq 'PowerShell breakpoints'
-	Assert-Far $Far.Dialog[2].Text -eq '*.ps1;*.psm1'
-	Assert-Far $Far.Dialog[4].Text -eq '2'
-	$Far.Dialog[4].Text = '1'
+	Assert-Far $__[0].Text -eq 'PowerShell breakpoints'
+	Assert-Far $__[2].Text -eq '*.ps1;*.psm1'
+	Assert-Far $__[4].Text -eq '2'
+	$__[4].Text = '1'
 }
 keys Enter
 job {

@@ -4,8 +4,8 @@
 #>
 
 job {
-	$Data.Path0 = $Far.Panel.CurrentDirectory
-	$Far.Panel.CurrentDirectory = 'C:\ROM\APS'
+	$Data.Path0 = $__.CurrentDirectory
+	$__.CurrentDirectory = 'C:\ROM\APS'
 }
 
 job {
@@ -20,7 +20,7 @@ Keys"7" -- expand
 job {
 	# items shown differently
 	Assert-Far -Dialog
-	$r = $Far.Dialog[1].Items
+	$r = $__[1].Items
 	Assert-Far $r.Count -eq 3
 	Assert-Far $r[0].Text -eq '.\Test-Far.ps1' # local
 	Assert-Far $r[1].Text -eq 'Test-Far.ps1' # path
@@ -30,5 +30,5 @@ job {
 macro 'Keys"Esc Esc" -- exit list, drop command line'
 
 job {
-	$Far.Panel.CurrentDirectory = $Data.Path0
+	$__.CurrentDirectory = $Data.Path0
 }
