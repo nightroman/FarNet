@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.72 =
+
+Upgrade Start-Transcript to match pwsh
+- new parameters OutputDirectory, IncludeInvocationHeader, UseMinimalHeader
+- support nested transcripts
+
 = 9.0.71 =
 
 Change transcript encoding to UTF8.

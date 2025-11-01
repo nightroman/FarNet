@@ -6,35 +6,37 @@ namespace PowerShellFar;
 
 public static class Transcript
 {
-	const string TextTranscriptFileExistsNoClobber = "File {0} already exists and {1} was specified.";
-	const string TextTranscriptFileReadOnly = "Transcription file is read only.";
-	const string TextTranscriptFileMissing = "Transcription file is missing.";
-	const string TextTranscriptInProgress = "Transcription has already been started. Use the Stop-Transcript command to stop transcription.";
-	const string TranscriptNotInProgress = "Transcription has not been started. Use the Start-Transcript command to start transcription.";
+	const string TextFileExistsNoClobber = "File {0} already exists and {1} was specified.";
+	const string TextFileReadOnly = "Transcription file is read only.";
+	const string TextFileMissing = "Transcription file is missing.";
+	const string TextNotInProgress = "The host is not currently transcribing.";
 	const string TextTranscriptStarted = "Transcript started, output file is {0}";
 	const string TextTranscriptStopped = "Transcript stopped, output file is {0}";
 
 	internal static TranscriptOutputWriter? Writer { get; private set; }
+	private static string? _lastFileName;
+	private static int _fileNameCount;
 
 	public static void ShowTranscript(bool internalViewer)
 	{
-		if (TranscriptOutputWriter.LastFileName == null)
-			throw new InvalidOperationException(TranscriptNotInProgress);
+		string? fileName = Writer?.FileName ?? _lastFileName;
+		if (fileName == null)
+			return;
 
-		if (!File.Exists(TranscriptOutputWriter.LastFileName))
-			throw new InvalidOperationException(TextTranscriptFileMissing);
+		if (!File.Exists(fileName))
+			throw new InvalidOperationException(TextFileMissing);
 
 		if (internalViewer)
 		{
 			var viewer = Far.Api.CreateViewer();
-			viewer.Title = Path.GetFileName(TranscriptOutputWriter.LastFileName);
-			viewer.FileName = TranscriptOutputWriter.LastFileName;
+			viewer.Title = Path.GetFileName(fileName);
+			viewer.FileName = fileName;
 			viewer.CodePage = 1200;
 			viewer.Open();
 		}
 		else
 		{
-			Zoo.StartExternalViewer(TranscriptOutputWriter.LastFileName);
+			Zoo.StartExternalViewer(fileName);
 		}
 	}
 
@@ -45,45 +47,75 @@ public static class Transcript
 			if (force)
 				return null;
 
-			throw new InvalidOperationException(TranscriptNotInProgress);
+			throw new InvalidOperationException(TextNotInProgress);
 		}
 
-		Writer.Close();
-		Writer = null;
+		_lastFileName = Writer.FileName!;
+		Writer = Writer.Close();
 
-		return GetTranscriptResult(TextTranscriptStopped, TranscriptOutputWriter.LastFileName);
+		return GetTranscriptResult(TextTranscriptStopped, _lastFileName);
 	}
 
-	public static PSObject StartTranscript(string path, bool append, bool force, bool noClobber)
+	public static PSObject StartTranscript(Args args)
 	{
-		if (Writer != null)
-			throw new InvalidOperationException(TextTranscriptInProgress);
-
+		// resolve path
+		var path = args.Path;
 		if (string.IsNullOrEmpty(path))
 		{
-			path = Path.Combine(
-				Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-				string.Format("PowerShell_transcript.{0:yyyyMMddHHmmss}.txt", DateTime.Now));
+			if (string.IsNullOrEmpty(args.OutputDirectory))
+			{
+				var raw = A.GetVariableValue("Global:Transcript");
+				if (raw is string str)
+					path = str;
+				else if (raw != null)
+					throw new InvalidOperationException("$Transcript value is not a string.");
+			}
+
+			if (string.IsNullOrEmpty(path))
+			{
+				string dir;
+				if (string.IsNullOrEmpty(args.OutputDirectory))
+				{
+					dir = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+				}
+				else
+				{
+					Directory.CreateDirectory(args.OutputDirectory);
+					dir = args.OutputDirectory;
+				}
+				path = Path.Join(dir, NewFileName());
+			}
 		}
 
 		if (File.Exists(path))
 		{
-			if (noClobber && !append)
-				throw new InvalidOperationException(string.Format(TextTranscriptFileExistsNoClobber, path, "NoClobber"));
+			if (args.NoClobber && !args.Append)
+				throw new InvalidOperationException(string.Format(TextFileExistsNoClobber, path, "NoClobber"));
 
 			var fileInfo = new FileInfo(path);
 			if ((fileInfo.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
 			{
-				if (!force)
-					throw new InvalidOperationException(TextTranscriptFileReadOnly);
+				if (!args.Force)
+					throw new InvalidOperationException(TextFileReadOnly);
 
 				fileInfo.Attributes &= ~FileAttributes.ReadOnly;
 			}
 		}
+		else if (Directory.Exists(path))
+		{
+			throw new InvalidOperationException("The specified path is not a file.");
+		}
 
-		Writer = new TranscriptOutputWriter(path, append);
+		Writer = new TranscriptOutputWriter(Writer, path, args);
 
 		return GetTranscriptResult(TextTranscriptStarted, path);
+	}
+
+	internal static string NewFileName()
+	{
+		++_fileNameCount;
+		int process = Environment.ProcessId;
+		return string.Format(null, "PowerShell_transcript.{0:yyyyMMddHHmmss}.{1}.{2}.txt", DateTime.UtcNow, process, _fileNameCount);
 	}
 
 	//! Start-Transcript and Stop-Transcript get PSObject(string) with note property Path.
@@ -92,5 +124,16 @@ public static class Transcript
 		var res = PSObject.AsPSObject(string.Format(format, path));
 		res.Properties.Add(new PSNoteProperty("Path", path));
 		return res;
+	}
+
+	public class Args
+	{
+		public string? Path { get; set; }
+		public string? OutputDirectory { get; set; }
+		public bool Append { get; set; }
+		public bool IncludeInvocationHeader { get; set; }
+		public bool Force { get; set; }
+		public bool NoClobber { get; set; }
+		public bool UseMinimalHeader { get; set; }
 	}
 }

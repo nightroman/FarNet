@@ -4,7 +4,8 @@ namespace PowerShellFar;
 
 sealed class TranscriptOutputWriter : TextOutputWriter
 {
-	const string TextTranscriptPrologue = """
+	#region Text
+	const string TextHeaderFull = """
 		**********************
 		PowerShell transcript start
 		Start time: {0:yyyyMMddHHmmss}
@@ -13,58 +14,81 @@ sealed class TranscriptOutputWriter : TextOutputWriter
 		**********************
 		""";
 
-	const string TextTranscriptEpilogue = """
+	const string TextHeaderMinimal = """
+		**********************
+		PowerShell transcript start
+		Start time: {0:yyyyMMddHHmmss}
+		**********************
+		""";
+
+	const string TextCommand = """
+		**********************
+		Command start time: {0:yyyyMMddHHmmss}
+		**********************
+		""";
+
+	const string TextFooter = """
+
 		**********************
 		PowerShell transcript end
 		End time: {0:yyyyMMddHHmmss}
 		**********************
 		""";
+	#endregion
 
-	static int _fileNameCount;
+	readonly TranscriptOutputWriter? _parent;
+	readonly Transcript.Args? _args;
+	readonly bool _transcript;
 	StreamWriter? _writer;
 	string? _fileName;
-	readonly bool _transcript;
 
-	public static string? LastFileName { get; private set; }
 	public string? FileName => _fileName;
 
 	public TranscriptOutputWriter()
 	{
 	}
 
-	public TranscriptOutputWriter(string path, bool append)
+	public TranscriptOutputWriter(TranscriptOutputWriter? parent, string path, Transcript.Args args)
 	{
-		_writer = new StreamWriter(path, append, Encoding.UTF8)
-		{
-			AutoFlush = true
-		};
+		_parent = parent;
+		_args = args;
+		_writer = new StreamWriter(path, args.Append, Encoding.UTF8) { AutoFlush = true };
 
-		_writer.WriteLine(
-			TextTranscriptPrologue,
-			DateTime.Now,
-			Environment.UserDomainName,
-			Environment.UserName,
-			Environment.MachineName,
-			Environment.OSVersion.VersionString);
+		if (args.UseMinimalHeader)
+		{
+			_writer.WriteLine(
+				TextHeaderMinimal,
+				DateTime.UtcNow);
+		}
+		else
+		{
+			_writer.WriteLine(
+				TextHeaderFull,
+				DateTime.UtcNow,
+				Environment.UserDomainName,
+				Environment.UserName,
+				Environment.MachineName,
+				Environment.OSVersion.VersionString);
+		}
 
 		_fileName = path;
 		_transcript = true;
-		LastFileName = path;
 	}
 
-	public void Close()
+	public TranscriptOutputWriter? Close()
 	{
 		if (_writer != null)
 		{
 			if (_transcript)
-				_writer.Write(string.Format(null, TextTranscriptEpilogue, DateTime.Now));
+				_writer.Write(string.Format(null, TextFooter, DateTime.UtcNow));
 
 			_writer.Close();
 			_writer = null;
 		}
+		return _parent;
 	}
 
-	static string NewFileName()
+	static string NewTempFileName()
 	{
 		// Tried to use the Personal folder (like PS does). For some reasons
 		// some files are not deleted due to UnauthorizedAccessException.
@@ -73,43 +97,51 @@ sealed class TranscriptOutputWriter : TextOutputWriter
 		// deleted files there than in Personal.
 		// NB: the above is for "transcribe always".
 
-		string directory = Path.GetTempPath();
-
-		// next instant transcript
-		++_fileNameCount;
-		int process = Environment.ProcessId;
-		return Path.Combine(
-			directory,
-			string.Format(null, "PowerShell_transcript.{0:yyyyMMddHHmmss}.{1}.{2}.txt", DateTime.Now, process, _fileNameCount));
+		return Path.Join(Path.GetTempPath(), Transcript.NewFileName());
 	}
 
 	void Writing()
 	{
 		if (_writer == null)
 		{
-			_fileName ??= NewFileName();
+			_fileName ??= NewTempFileName();
 
-			_writer = new StreamWriter(_fileName, false, Encoding.Unicode)
-			{
-				AutoFlush = true
-			};
+			_writer = new StreamWriter(_fileName, false, Encoding.Unicode) { AutoFlush = true };
 		}
+	}
+
+	internal void WriteEcho(string echo)
+	{
+		_parent?.WriteEcho(echo);
+
+		var sb = new StringBuilder(Environment.NewLine);
+		if (_args?.IncludeInvocationHeader == true)
+			sb.AppendLine(string.Format(null, TextCommand, DateTime.UtcNow));
+		sb.AppendLine(echo);
+
+		_writer!.Write(sb.ToString());
 	}
 
 	protected override void Append(string value)
 	{
+		_parent?.Append(value);
+
 		Writing();
 		_writer!.Write(value);
 	}
 
 	protected override void AppendLine()
 	{
+		_parent?.AppendLine();
+
 		Writing();
 		_writer!.WriteLine();
 	}
 
 	protected override void AppendLine(string value)
 	{
+		_parent?.AppendLine(value);
+
 		Writing();
 		_writer!.WriteLine(value);
 	}

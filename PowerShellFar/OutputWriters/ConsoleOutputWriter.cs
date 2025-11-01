@@ -24,7 +24,7 @@ sealed class ConsoleOutputWriter : AbcOutputWriter
 			Far.Api.UI.Write(echo, Settings.Default.CommandForegroundColor);
 			_getEcho = null;
 
-			Transcript.Writer?.WriteLine(Environment.NewLine + echo);
+			Transcript.Writer?.WriteEcho(echo);
 		}
 	}
 

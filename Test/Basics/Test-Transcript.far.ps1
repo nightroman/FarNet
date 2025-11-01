@@ -3,8 +3,6 @@
 	Test transcript basics.
 #>
 
-Assert-Far -Title Ensure -NoError
-
 # force stop
 [PowerShellFar.Transcript]::StopTranscript($true)
 
@@ -15,8 +13,8 @@ if ($Transcript? = Test-Path Variable:\Global:Transcript) {
 }
 
 $global:Transcript = 1
-$e = try {Start-Transcript} catch {$_}
-Assert-Far ($e -clike '*$Transcript value is not a string.*')
+try { throw Start-Transcript }
+catch { Assert-Far "$_" -eq '$Transcript value is not a string.' }
 
 if ($Transcript?) {
 	$global:Transcript = $Transcript0
@@ -27,39 +25,45 @@ else {
 
 ### Not a file
 
-$e = try {Start-Transcript $HOME} catch {$_}
-Assert-Far ($e -clike '*The specified path is not a file.*')
+try { throw Start-Transcript $HOME }
+catch { Assert-Far ($_ -clike '*The specified path is not a file.*') }
 
 ### Bad path
 
-$e = try {Start-Transcript C:\TEMP\z*} catch {$_}
-Assert-Far ($e -clike 'The filename, directory name, or volume label syntax is incorrect.*')
+try { throw Start-Transcript C:\TEMP\z* }
+catch { Assert-Far ($_ -clike 'The filename, directory name, or volume label syntax is incorrect.*') }
 
 ### Not started
 
 # Stop-Transcript fails, Show-FarTranscript may work with the last
-$e = try {Stop-Transcript} catch {$_}
-Assert-Far ($e -clike '*Transcription has not been started.*')
+try { throw Stop-Transcript }
+catch { Assert-Far "$_" -eq 'The host is not currently transcribing.' }
 
-### Start
+### Start 1, 2
 
-$log = "$env:TEMP\transcript.txt"
-[System.IO.File]::Delete($log)
+$log1 = "$env:TEMP\transcript1.txt"
+$log2 = "$env:TEMP\transcript2.txt"
+Remove-Item $log1, $log2 -ea Ignore
 
-$r = Start-Transcript $log
-Assert-Far (Test-Path -LiteralPath $log)
-Assert-Far $r -eq "Transcript started, output file is $log"
-Assert-Far $r.Path -eq $log
+$r = Start-Transcript $log1
+Assert-Far (Test-Path $log1)
+Assert-Far $r -eq "Transcript started, output file is $log1"
+Assert-Far $r.Path -eq $log1
 
-### Already started
+$r = Start-Transcript -LiteralPath $log2 #! alias
+Assert-Far (Test-Path $log2)
+Assert-Far $r -eq "Transcript started, output file is $log2"
+Assert-Far $r.Path -eq $log2
 
-$e = try {Start-Transcript} catch {$_}
-Assert-Far ($e -clike '*Transcription has already been started.*')
-
-### Stop
+### Stop 1, 2
 
 $r = Stop-Transcript
-Assert-Far $r -eq "Transcript stopped, output file is $log"
-Assert-Far $r.Path -eq $log
-Remove-Item -LiteralPath $log
+Assert-Far $r -eq "Transcript stopped, output file is $log2"
+Assert-Far $r.Path -eq $log2
+
+$r = Stop-Transcript
+Assert-Far $r -eq "Transcript stopped, output file is $log1"
+Assert-Far $r.Path -eq $log1
+
+Remove-Item $log1, $log2
 $Error.Clear()
