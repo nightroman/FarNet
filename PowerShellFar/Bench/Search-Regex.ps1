@@ -8,27 +8,25 @@
 	controls and result panel keys.
 
 .Parameter Regex
-		Regular expression [string] or [regex]. If it is omitted then a
-		dialog is opened where you can define this and other parameters.
+		Regular expression [string] or [regex]. If it is omitted then a dialog
+		shows to define this and other options.
 
-		Regex capturing groups are treated as separate found matches.
-
-		With AllText/a editor selection is not used and groups are ignored.
+		Regex named groups produce additional named matches.
+		Names cannot start with a number or contain punctuation.
 
 .Parameter Options
-		When Regex is [string] specifies regex options and extra options.
+		When Regex is [string], specifies regex options and extra options.
 		See SearchRegexOptions in code for available values and aliases.
 
 		The string is comma separated values or joined one-letter aliases.
 
-		NOT STANDARD EXTRA OPTIONS
+		EXTRA OPTIONS
 
 		SimpleMatch/t - Regex is the plain text, substring to match as is.
 
 		WholeWord/w - Tells to test non-word boundaries before and after.
 
-		AllText/a - Tells to read and process files as whole strings, not
-		lines. Found matches are not selected in the editor.
+		AllText/a - Tells to process files as whole text, not lines.
 
 		Note that Singleline/s implies AllText/a because without it inputs are
 		lines and Singleline/s is not needed. They are not the same, AllText/a
@@ -39,8 +37,7 @@
 .Parameter InputObject
 		Strings (file paths) and FileInfo (from Get-*Item). If it is not
 		defined then items come from the pipeline. If there are no items
-		and Regex is not set then an input command is specified in the
-		dialog.
+		and Regex is not set then the dialog defines the input command.
 
 		Built-in helpers:
 		- Get-EditorHistory - files from history excluding network paths.
@@ -325,23 +322,18 @@ $Panel.add_KeyPressed({
 	### [Enter] opens an editor at the selected match
 	if ($_.Key.Is([FarNet.KeyCode]::Enter)) {
 		$file = $this.CurrentFile
-		if (!$file -or $file.Description -notmatch '^\s*(\d+):') {
+		if (!$file) {
 			return
 		}
 		$_.Ignore = $true
-		$editor = New-FarEditor $file.Name ($Matches[1]) -DisableHistory
+		$x1, $y1, $x2, $y2 = $file.Data
+		$editor = New-FarEditor $file.Name ($y1 + 1) -DisableHistory
 		$frame = $editor.Frame
 		$editor.Open()
-		$index, $length = $file.Data
-		$frame.CaretColumn = $index + $length
+		$frame.CaretColumn = $x1
 		$frame.VisibleLine = $frame.CaretLine - $Host.UI.RawUI.WindowSize.Height / 3
 		$editor.Frame = $frame
-		if ($length) {
-			# null if a file is already opened
-			if ($line = $editor.Line) {
-				$line.SelectText($index, $frame.CaretColumn)
-			}
-		}
+		$editor.SelectText($x1, $y1, $x2, $y2)
 		$editor.Redraw()
 		return
 	}
@@ -386,6 +378,22 @@ Start-FarTask -Panel $Panel -Items $Items -Regex $Regex -AllText $AllText {
 
 	$ExplorerData = $Panel.Explorer.Data
 
+	function __fileLineMatch($item, $i, $m) {
+		$file = [FarNet.SetFile]::new($item, $true)
+		$file.Data = @($m.Index, $i, ($m.Index + $m.Length - 1), $i)
+		$file.Description = $m.Name -eq '0' ? "$($i + 1): $($line.Trim())" : "$($m.Name): $($m.Value)"
+		$ExplorerData.Output.Add($file)
+	}
+
+	function __fileTextMatch($item, $text, $m) {
+		$file = [FarNet.SetFile]::new($item, $true)
+		$1 = [FarNet.Works.Kit]::IndexToColumnLine($text, $m.Index)
+		$2 = [FarNet.Works.Kit]::IndexToColumnLine($text, $m.Index + $m.Length - 1)
+		$file.Data = @($1.Item1, $1.Item2, $2.Item1, $2.Item2)
+		$file.Description = $m.Name -eq '0' ? "$($1.Item2 + 1): $($m.Value)" : "$($m.Name): $($m.Value)"
+		$ExplorerData.Output.Add($file)
+	}
+
 	job {
 		[FarNet.Tasks]::OpenPanel({ $Data.Panel.OpenChild($null) })
 	}
@@ -406,41 +414,25 @@ Start-FarTask -Panel $Panel -Items $Items -Regex $Regex -AllText $AllText {
 		++$ExplorerData.CountItems
 
 		if ($AllText) {
-			$text = try {[System.IO.File]::ReadAllText($item.FullName)} catch {continue}
-			if ($text -match $Regex) {
-				for($m = $Regex.Match($text); $m.Success; $m = $m.NextMatch()) {
-					$s = $text.Substring(0, $m.Index)
-					$n = [regex]::Count($s, '\n')
-					$null = $s -match '\n?([^\n]*)$'
-					$file = [FarNet.SetFile]::new($item, $true)
-					$file.Data = @($Matches[1].Length, 0)
-					$file.Description = '{0,4:d}: {1}' -f ($n + 1), $m.Value
-					$ExplorerData.Output.Add($file)
+			$text = try {[System.IO.File]::ReadAllText($item)} catch {continue}
+			for($m = $Regex.Match($text); $m.Success; $m = $m.NextMatch()) {
+				foreach($g in $m.Groups) {
+					if (($_=$g.Name) -eq '0' -or ($_ -and ![char]::IsDigit($_))) {
+						__fileTextMatch $item $text $g
+					}
 				}
 			}
 			continue
 		}
 
-		$no = 0
-		$lines = try {[System.IO.File]::ReadAllLines($item.FullName)} catch {continue}
+		$$ = -1
+		$lines = try {[System.IO.File]::ReadAllLines($item)} catch {continue}
 		foreach($line in $lines) {
-			++$no
-			if ($line -match $Regex) {
-				for($m = $Regex.Match($line); $m.Success; $m = $m.NextMatch()) {
-					if ($m.Groups.Count -gt 1) {
-						for($gi = 1; $gi -lt $m.Groups.Count; ++$gi) {
-							$g = $m.Groups[$gi]
-							$file = [FarNet.SetFile]::new($item, $true)
-							$file.Data = @($g.Index, $g.Length)
-							$file.Description = '{0,4:d}: {1}' -f $no, $line.Trim()
-							$ExplorerData.Output.Add($file)
-						}
-					}
-					else {
-						$file = [FarNet.SetFile]::new($item, $true)
-						$file.Data = @($m.Index, $m.Length)
-						$file.Description = '{0,4:d}: {1}' -f $no, $line.Trim()
-						$ExplorerData.Output.Add($file)
+			++$$
+			for($m = $Regex.Match($line); $m.Success; $m = $m.NextMatch()) {
+				foreach($g in $m.Groups) {
+					if (($_=$g.Name) -eq '0' -or ($_ -and ![char]::IsDigit($_))) {
+						__fileLineMatch $item $$ $g
 					}
 				}
 			}
@@ -448,6 +440,7 @@ Start-FarTask -Panel $Panel -Items $Items -Regex $Regex -AllText $AllText {
 	}
 
 	$ExplorerData.State = 'Completed'
-}} catch {
+}}
+catch {
 	$PSCmdlet.ThrowTerminatingError($_)
 }}

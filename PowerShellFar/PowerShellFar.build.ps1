@@ -65,9 +65,8 @@ task help -Inputs {Get-Item Commands\*} -Outputs "$ModuleRoot\PowerShellFar.dll-
 		Convert-Helps "$BuildRoot\Commands\PowerShellFar.dll-Help.ps1" "$Outputs"
 	}
 	else {
-		# let the caller know
 		$env:FarNetToBuildPowerShellFarHelp = 1
-		Write-Warning "Run task 'help' with PowerShellFar."
+		print Yellow "INFO: Run task 'help' with PowerShellFar."
 	}
 }
 

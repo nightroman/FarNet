@@ -242,4 +242,28 @@ public static class Kit
 			WriteException(writer, ex.InnerException);
 		}
 	}
+
+	public static (int, int) IndexToColumnLine(string text, int index)
+	{
+		if (index < 0 || index >= text.Length)
+			throw new ArgumentOutOfRangeException(nameof(index));
+
+		int column = 0;
+		int line = 0;
+
+		for (int i = 0; i < index; ++i)
+		{
+			if (text[i] == '\n')
+			{
+				++line;
+				column = 0;
+			}
+			else
+			{
+				++column;
+			}
+		}
+
+		return (column, line);
+	}
 }

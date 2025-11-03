@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet
 
+= 9.0.48 =
+
+Internal helper IndexToColumnLine.
+
 = 9.0.47 =
 
 Avoid redundant FarNet API calls from cpp.

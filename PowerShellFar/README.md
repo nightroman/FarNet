@@ -1546,10 +1546,11 @@ All you need is to call the script once, normally in a host profile.
 
 [Contents]
 
-The script searches for the regex or simple text in the input files and sends
-matches to the panel for opening in editor with matched text selected.
+The script searches for the regex or simple text in the input files and
+opens a panel with found matches. The cursor match opens an editor with
+matched text selected.
 
-If the parameter `Regex` is omitted, the dialog with options is shown.
+If the parameter `Regex` is omitted, the options dialog shows.
 
 **Input dialog controls**
 
@@ -1557,12 +1558,12 @@ If the parameter `Regex` is omitted, the dialog with options is shown.
 
     Specifies the regular expression pattern or simple text.
 
-    If the regex defines capturing groups then each group is treated as a match
-    and gets selected on opening. Groups are ignored on `AllText/a`.
+    Regex named groups produce additional named matches.
+    Names cannot start with a number or contain punctuation.
 
 - Options
 
-    Comma separated options or aliases, aliases may be joined together.
+    Comma separated options or aliases, aliases may join together.
 
     Standard .NET regular expression options and aliases:
     `None`, `IgnoreCase/i`, `Multiline/m`, `ExplicitCapture/n`, `Compiled`,
@@ -1572,8 +1573,8 @@ If the parameter `Regex` is omitted, the dialog with options is shown.
     Extra helper options:
 
     - `SimpleMatch/t` tells that the pattern is simple text to match.
-    - `WholeWord/w` tells to test for non-word bounds before and after.
-    - `AllText/a` tells to read files as text, not lines, matches are not selected in editors.
+    - `WholeWord/w` tells to test non-word bounds before and after.
+    - `AllText/a` tells to process files as whole text, not lines.
 
     Note: `Singleline/s` implies `AllText/a`. But they are not the same.
 

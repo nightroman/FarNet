@@ -1,5 +1,12 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.73 =
+
+Use FarNet 9.0.48
+
+Search-Regex.ps1 full text mode works the same as line mode: matches are
+selected in editors and regex named groups produce extra result matches.
+
 = 9.0.72 =
 
 Upgrade Start-Transcript to match pwsh
