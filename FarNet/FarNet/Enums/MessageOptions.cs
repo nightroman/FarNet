@@ -29,12 +29,6 @@ public enum MessageOptions
 	KeepBackground = 0x4,
 
 	/// <summary>
-	/// .
-	/// </summary>
-	[Obsolete("Will be removed, messages are left aligned by default.")]
-	LeftAligned = 0,
-
-	/// <summary>
 	/// Center the message lines.
 	/// </summary>
 	AlignCenter = 0x8,

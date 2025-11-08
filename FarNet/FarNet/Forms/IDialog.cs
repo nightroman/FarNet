@@ -180,6 +180,11 @@ public abstract class IDialog : IFace
 	public abstract bool NoSmartCoordinates { get; set; }
 
 	/// <summary>
+	/// Tells to ignore mouse clicks outside.
+	/// </summary>
+	public abstract bool NoClickOutside { get; set; }
+
+	/// <summary>
 	/// Tells the modeless fialog to stay on top.
 	/// </summary>
 	[Experimental("FarNet250326")]

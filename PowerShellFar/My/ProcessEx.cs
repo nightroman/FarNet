@@ -1,4 +1,3 @@
-
 using FarNet;
 using System.Diagnostics;
 
@@ -7,11 +6,20 @@ namespace My;
 static class ProcessEx
 {
 	/// <summary>
-	/// Just a wrapper and helper to watch calls.
+	/// Starts the process.
 	/// </summary>
 	public static Process Start(string fileName, string arguments)
 	{
 		return Process.Start(new ProcessStartInfo { FileName = fileName, Arguments = arguments, UseShellExecute = true })!;
+	}
+
+	/// <summary>
+	/// Starts new Far process.
+	/// </summary>
+	public static Process StartFar(string arguments)
+	{
+		var p = Process.GetCurrentProcess();
+		return Process.Start(new ProcessStartInfo { FileName = p.MainModule?.FileName, Arguments = arguments, UseShellExecute = true })!;
 	}
 
 	/// <summary>

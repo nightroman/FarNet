@@ -1,5 +1,14 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.75 =
+
+Open-FarEditor
+- new switch -Detach ~ reopen as Far /e
+- add sample macro
+
+Show-FarMessage
+- remove obsolete -LeftAligned
+
 = 9.0.74 =
 
 Use FarNet 9.0.49

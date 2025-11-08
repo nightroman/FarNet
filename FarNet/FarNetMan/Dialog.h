@@ -23,6 +23,7 @@ public:
 	virtual property bool IsSmall { bool get() override; void set(bool value) override; }
 	virtual property bool IsWarning { bool get() override; void set(bool value) override; }
 	virtual property bool KeepWindowTitle { bool get() override; void set(bool value) override; }
+	virtual property bool NoClickOutside{ bool get() override { return _NoClickOutside; } void set(bool value) override { _NoClickOutside = value; } }
 	virtual property bool NoPanel { bool get() override; void set(bool value) override; }
 	virtual property bool NoShadow{ bool get() override; void set(bool value) override; }
 	virtual property bool StayOnTop { bool get() override; void set(bool value) override; }
@@ -78,6 +79,7 @@ private:
 private:
 	int _flags;
 	bool _EnableInputEvents;
+	bool _NoClickOutside;
 	bool _NoModal;
 	bool _NoSmartCoordinates;
 	Place _rect;

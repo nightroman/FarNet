@@ -21,7 +21,7 @@ Set-Alias ask Confirm-Build
 $RepoRoot = $env:FarNetCode
 requires -Path $RepoRoot
 
-task setVersion -If {
+task Set-Version -If {
 	ask @'
 Edit Get-Version.ps1 to set versions.
 What you change is what you are about to push.
@@ -30,9 +30,9 @@ What you change is what you are about to push.
 	Start-Process Far.exe /e, $RepoRoot\Get-Version.ps1 -Wait
 }
 
-task chooseToPush {
+task Select-Project {
 	while(($script:Push = Read-Host @'
-Choose to push:
+Select project to push:
 [1] All
 [2] FarNet
 [3] PowerShellFar
@@ -48,9 +48,9 @@ Choose to push:
 	}
 }
 
-task build buildFarNet, buildHelp, buildDocs
+task Build Build-FarNet, Build-PSF-Help, Build-Docs
 
-task buildFarNet -If {
+task Build-FarNet -If {
 	ask 'Build FarNet projects'
 } {
 	while (Get-Process [F]ar) {Read-Host 'Exit Far and enter to build all'}
@@ -58,15 +58,15 @@ task buildFarNet -If {
 }
 
 #! run when push=2 as well, or help file is missing -> assert
-task buildHelp -If {
+task Build-PSF-Help -If {
 	$env:FarNetToBuildPowerShellFarHelp -and (ask 'Build PSF help')
 } {
 	Start-Far 'ps:Invoke-Build help' $RepoRoot\PowerShellFar -Exit 0
 }
 
-task buildDocs -If {($Push -ne 3) -and (ask 'Build FarNet CHM help')} DC::make
+task Build-Docs -If {($Push -ne 3) -and (ask 'Build FarNet CHM help')} DC::make
 
-task nugetAndTest -If {
+task Make-and-Test-NuGet -If {
 	ask @'
 Make last changes in docs and notes.
 Create and test NuGet packages?
@@ -75,7 +75,7 @@ Create and test NuGet packages?
 	.\Test-NuGet.ps1
 }
 
-task testFarNet -If {
+task Test-FarNet -If {
 	ask @'
 Test FarNet, mind x86, x64.
 Start default testing?
@@ -100,22 +100,22 @@ foreach($test in $extras) {
 	}
 }
 
-task testExtras $extras.ForEach('Name') -If {
+task Test-Extras $extras.ForEach('Name') -If {
 	ask 'Start extra tests?'
 }
 
-task pushPackages -If {
+task Push-Packages -If {
 	ask 'Push new packages to NuGet manually. Then continue.'
 }
 
-task commitSource -If {
+task Commit-Source -If {
 	ask "Start git gui to commit/amend changes for [$Tags]?"
 } {
 	Set-Location $RepoRoot
 	git gui
 }
 
-task pushSource -If {
+task Push-Source -If {
 	ask "Push commits and tags [$Tags]?"
 } {
 	Set-Location $RepoRoot
@@ -136,9 +136,9 @@ task pushSource -If {
 }
 
 # before zip
-task clean GH::clean
+task Clean GH::clean
 
-task zipFarDev -If {
+task Zip-FarDev -If {
 	ask 'Zip FarDev? // checkpoint Code and maybe related extras'
 } {
 	. ..\Get-Version.ps1

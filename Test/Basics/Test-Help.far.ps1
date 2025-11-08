@@ -9,7 +9,7 @@ param([switch]$Force)
 
 ### test up-to-date
 
-$helpScript = "$env:FarNetCode\PowerShellFar\Commands\PowerShellFar.dll-Help.ps1"
+$helpScript = "$env:FarNetCode\PowerShellFar\Commands\Help.ps1"
 $helpOutput = "$($Psf.AppHome)\PowerShellFar.dll-Help.xml"
 
 $toBuild = $Force -or (!(Test-Path $helpOutput))

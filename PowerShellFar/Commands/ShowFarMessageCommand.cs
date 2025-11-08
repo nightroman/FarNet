@@ -26,9 +26,6 @@ sealed class ShowFarMessageCommand : BaseCmdlet
 	public SwitchParameter Draw { get; set; }
 
 	[Parameter]
-	public SwitchParameter LeftAligned { get; set; }
-
-	[Parameter]
 	public SwitchParameter AlignCenter { get; set; }
 
 	[Parameter]

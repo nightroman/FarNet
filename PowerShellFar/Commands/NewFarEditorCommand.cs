@@ -1,7 +1,3 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
 using System.Management.Automation;
 
@@ -10,20 +6,20 @@ namespace PowerShellFar.Commands;
 [OutputType(typeof(IEditor))]
 class NewFarEditorCommand : BaseTextCmdlet
 {
-	[Parameter(Position = 0, ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
+	[Parameter(ParameterSetName = PsnMain, Position = 0, ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
 	[Alias("FilePath", "FileName")]
 	public string? Path { get; set; }
 
-	[Parameter(Position = 1, ValueFromPipelineByPropertyName = true)]
+	[Parameter(ParameterSetName = PsnMain, Position = 1, ValueFromPipelineByPropertyName = true)]
 	public int LineNumber { get; set; }
 
-	[Parameter(Position = 2)]
+	[Parameter(ParameterSetName = PsnMain, Position = 2)]
 	public int CharNumber { get; set; }
 
-	[Parameter]
+	[Parameter(ParameterSetName = PsnMain)]
 	public new PSObject? Host { get; set; }
 
-	[Parameter]
+	[Parameter(ParameterSetName = PsnMain)]
 	public SwitchParameter IsLocked { set => _IsLocked = value; }
 	SwitchParameter? _IsLocked;
 

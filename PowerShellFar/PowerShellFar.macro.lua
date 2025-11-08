@@ -62,3 +62,10 @@ CommandLine {
     Plugin.SyncCall("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "vps:" .. text .. " | Set-Clipboard")
   end;
 }
+
+Macro {
+  area="Editor"; key="AltF4"; description="Save, close, open as Far /e.";
+  action=function()
+    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "vps:Open-FarEditor -Detach")
+  end;
+}

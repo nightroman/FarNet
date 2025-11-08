@@ -49,3 +49,4 @@ job {
 }
 
 job { $Psf.StopCommandConsole() }
+Start-Sleep 1 #TODO

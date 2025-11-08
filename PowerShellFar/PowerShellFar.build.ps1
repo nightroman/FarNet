@@ -63,7 +63,7 @@ task installRes {
 task help -Inputs {Get-Item Commands\*} -Outputs "$ModuleRoot\PowerShellFar.dll-Help.xml" {
 	if ($Host.Name -eq 'FarHost') {
 		. Helps.ps1
-		Convert-Helps "$BuildRoot\Commands\PowerShellFar.dll-Help.ps1" "$Outputs"
+		Convert-Helps "$BuildRoot\Commands\Help.ps1" "$Outputs"
 	}
 	else {
 		$env:FarNetToBuildPowerShellFarHelp = 1
