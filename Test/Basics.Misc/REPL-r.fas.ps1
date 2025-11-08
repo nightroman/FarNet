@@ -68,8 +68,8 @@ job {
 keys $ _ = 1 ShiftEnter
 job {
 	Assert-Far $r -eq 15
-	Assert-Far $var.e[-5].Text -eq '$_=1'
-	Assert-Far $var.e[-4].Text -eq '<#<'
+	Assert-Far $var.e[-4].Text -eq '$_=1'
+	Assert-Far $var.e[-3].Text -eq '<##>'
 }
 keys Esc
 job {
@@ -91,7 +91,7 @@ job {
 keys $ _ = 1 ShiftEnter
 [FarNet.Tasks]::Wait(9, 999, {$e[-5].Text -eq '$_=1'}).Wait()
 job {
-	Assert-Far $var.e[-4].Text -eq '<#<'
+	Assert-Far $var.e[-3].Text -eq '<##>'
 }
 keys $ r ShiftEnter
 [FarNet.Tasks]::Wait(9, 999, {$e[-4].Text -eq '11'}).Wait()

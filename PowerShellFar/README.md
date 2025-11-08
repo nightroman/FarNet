@@ -298,12 +298,12 @@ For scripts it is exposed as `$Psf.ShowHelp()`.
 [Contents]
 [REPL $r](#repl-r)
 
-This dialog is started from panels by `[F11]` / `PowerShellFar` / `Invoke commands`.
-To start by scripts, call `$Psf.StartCommandConsole()`.
+Use menu: `[F11]` / `PowerShellFar` / `Command console` (panels, editors, viewers).
+In scripts use `$Psf.StartCommandConsole()`.
 
-It is a realistic console with the prompt dialog at the bottom. The prompt is
-shown repeatedly after each command. Command output is written to the console.
-The prompt is not modal, you may switch to other windows.
+It is the console with the prompt at the bottom. The prompt shows after each
+command. Command output is written to the console. The prompt is not modal,
+you may switch to other windows.
 
 **Keys and actions:**
 
@@ -338,12 +338,12 @@ The prompt is not modal, you may switch to other windows.
 - `[CtrlE]`
 
     Gets the previous command from history.
-    Same as `[UpArrow]` when panels are off.
+    Same as `[UpArrow]` when panels are hidden.
 
 - `[CtrlX]`
 
     Gets the next command from history.
-    Same as `[DownArrow]` when panels are off.
+    Same as `[DownArrow]` when panels are hidden.
 
 - `[CtrlEnter]`, `[CtrlF]`
 
@@ -353,15 +353,19 @@ The prompt is not modal, you may switch to other windows.
 
     Shows the [command history](#command-history).
 
-- `[Up]`, `[Down]`, `[PgUp]`, `[PgDn]`, `[F2]`, `[F3]`, `[F4]`, `[CtrlO]`, `[CtrlF1]`, `[CtrlF2]`
+- `[CtrlO]`, `[CtrlF1]`, `[CtrlF2]`
 
-    These keys are sent to panels for navigation, edit/view, hide/show.
+    These keys toggle panels visibility.
+
+- `[Up]`, `[Down]`, `[PgUp]`, `[PgDn]`, `[F2]`, `[F3]`, `[F4]`
+
+    These keys are sent to shown panels for navigation, user menu, view, edit operations.
 
 **Custom command prompt**
 
-Like in the PowerShell console, the command prompt is defined by the function
-`prompt`, either default or custom in the profile. `prompt` normally returns
-one line text. It may also use `Write-Host` for multiline prompt, with colors.
+Like in PowerShell console, the prompt is defined by the function `prompt`,
+either default or custom in the profile. `prompt` normally returns one line
+text. But before that it may use `Write-Host` for extra lines, with colors.
 
 **Commands opening panels**
 

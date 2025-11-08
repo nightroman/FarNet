@@ -19,4 +19,5 @@ indent_size = 2
 cpp_indent_namespace_contents = false
 
 [*.cs]
+dotnet_diagnostic.IDE0008.severity = none
 dotnet_diagnostic.IDE0130.severity = none

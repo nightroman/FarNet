@@ -19,9 +19,6 @@ Set-Alias gt Go-To.ps1
 Set-Alias op Out-FarPanel
 Set-Alias re Search-Regex.ps1
 
-# Functions
-function prompt {'PS> '}
-
 # Preferences
 $Psf.Settings.PopupAutoSelect = $false
 $Psf.Settings.PopupMaxHeight = 0

@@ -1,4 +1,5 @@
 using FarNet;
+using PowerShellFar.UI;
 using System.Collections;
 
 namespace PowerShellFar;
@@ -140,14 +141,14 @@ public sealed partial class Actor
 	{
 		A.SyncPaths();
 
-		var drive = UI.SelectMenu.SelectPowerPanel();
+		var drive = SelectMenu.SelectPowerPanel();
 		if (drive is null)
 			return;
 
 		AnyPanel panel;
-		if (drive == UI.SelectMenu.TextFolderTree)
+		if (drive == SelectMenu.TextFolderTree)
 			panel = new FolderTree();
-		else if (drive == UI.SelectMenu.TextAnyObjects)
+		else if (drive == SelectMenu.TextAnyObjects)
 			panel = new ObjectPanel();
 		else
 			panel = new ItemPanel(drive);
@@ -174,7 +175,7 @@ public sealed partial class Actor
 	/// </summary>
 	public void ShowDebugger()
 	{
-		var ui = new UI.DebuggerMenu();
+		var ui = new DebuggerMenu();
 		ui.Show();
 	}
 
@@ -183,7 +184,7 @@ public sealed partial class Actor
 	/// </summary>
 	public void ShowErrors()
 	{
-		var ui = new UI.ErrorsMenu();
+		var ui = new ErrorsMenu();
 		ui.Show();
 	}
 
@@ -255,9 +256,9 @@ public sealed partial class Actor
 	public IModuleManager Manager => Entry.Instance.Manager;
 
 	#region CommandConsole
-	private static UI.InputBox2 CreateCodeDialog()
+	private static InputBox2 CreateCodeDialog()
 	{
-		var ui = new UI.InputBox2(Res.InvokeCommands, Res.Me);
+		var ui = new InputBox2(Res.InvokeCommands, Res.Me);
 		ui.Edit.History = Res.History;
 		ui.Edit.UseLastHistory = true;
 		return ui;
@@ -324,7 +325,7 @@ public sealed partial class Actor
 	/// </summary>
 	public void StartCommandConsole()
 	{
-		_ = UI.ReadCommand.StartAsync();
+		_ = ReadCommand.StartAsync();
 	}
 
 	/// <summary>
@@ -332,7 +333,7 @@ public sealed partial class Actor
 	/// </summary>
 	public void StopCommandConsole()
 	{
-		UI.ReadCommand.Stop();
+		ReadCommand.Stop();
 	}
 
 	/// <summary>
@@ -341,9 +342,7 @@ public sealed partial class Actor
 	public Task RunCommandConsole()
 	{
 		StartCommandConsole();
-		return FarNet.Works.Tasks2.Wait(nameof(StartCommandConsole), () =>
-			Far.Api.Window.Kind == WindowKind.Dialog &&
-			Far.Api.Dialog!.TypeId == new Guid(Guids.ReadCommandDialog));
+		return FarNet.Works.Tasks2.Wait(nameof(StartCommandConsole), () => ReadCommand.IsOpen());
 	}
 	#endregion
 }

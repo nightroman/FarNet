@@ -1,5 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet
 
+= 9.0.49 =
+
+Add IFar.HasPanels.
+
+Correct end mark on empty output in interactive editors.
+
 = 9.0.48 =
 
 Internal helper IndexToColumnLine.

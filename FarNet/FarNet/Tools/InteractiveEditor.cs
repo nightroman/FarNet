@@ -17,6 +17,7 @@ public abstract class InteractiveEditor
 	readonly string OutputMark2;
 	readonly string OutputMark3;
 	HistoryNext? Next;
+	int _lastOutputMark1;
 
 	/// <summary>
 	/// New instance.
@@ -164,6 +165,7 @@ public abstract class InteractiveEditor
 		Editor.GoToEnd(false);
 		if (Editor.Line.Length > 0)
 			Editor.InsertLine();
+		_lastOutputMark1 = Editor.Caret.Y;
 		Editor.InsertText(OutputMark1 + "\r");
 
 		try
@@ -187,7 +189,6 @@ public abstract class InteractiveEditor
 			if (!IsAsync && Editor.IsOpened)
 			{
 				Editor.GoToEnd(false);
-				EndOutput();
 				EndAndRedraw();
 			}
 		}
@@ -225,20 +226,30 @@ public abstract class InteractiveEditor
 		return true;
 	}
 
-	//! Do not `Save()` here, changes may be delayed.
-	void EndOutput()
+	void InsertEndMarks()
 	{
-		if (Editor.IsOpened)
-		{
-			if (Editor.Line.Length > 0)
-				Editor.InsertLine();
+		if (!Editor.IsOpened)
+			return;
 
-			Editor.InsertText(OutputMark2 + "\r\r");
+		int caretLineLength = Editor.Line.Length;
+
+		//: no output, convert mark 2 to 3
+		if (Editor.Caret.Y == _lastOutputMark1 + 1 && caretLineLength == 0)
+		{
+			Editor.SetLineText2(_lastOutputMark1, OutputMark3.AsSpan());
+			Editor.InsertLine();
+			return;
 		}
+
+		if (caretLineLength > 0)
+			Editor.InsertLine();
+
+		Editor.InsertText(OutputMark2 + "\r\r");
 	}
 
 	void EndAndRedraw()
 	{
+		InsertEndMarks();
 		Editor.EndUndo();
 
 		if (AutoSave)
@@ -249,17 +260,24 @@ public abstract class InteractiveEditor
 
 	/// <summary>
 	/// It is called in the end of <see cref="Invoke"/>.
+	/// Call it directly, do not post in async mode.
 	/// </summary>
 	protected void EndInvoke()
 	{
-		EndOutput();
-		Editor.EndAsync();
-
-		Far.Api.PostJob(() =>
+		if (IsAsync)
 		{
-			Editor.Sync();
+			Far.Api.PostJob(() =>
+			{
+				Editor.Sync();
+				Editor.EndAsync();
+
+				EndAndRedraw();
+			});
+		}
+		else
+		{
 			EndAndRedraw();
-		});
+		}
 	}
 
 	void DoDelete()

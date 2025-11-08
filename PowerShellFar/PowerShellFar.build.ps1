@@ -39,6 +39,7 @@ task markdown {
 }
 
 task installBin {
+	Stop-Process -Name Far -ErrorAction Ignore
 	exec { dotnet publish "$ModuleName.csproj" -c $Configuration -o $ModuleRoot --no-build }
 
 	# move `ref` folder to "expected" location or cannot compile C# in PS

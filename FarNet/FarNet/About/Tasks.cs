@@ -147,8 +147,9 @@ public static class Tasks
 	/// Awaits the task and processes exceptions in the main thread.
 	/// </summary>
 	/// <param name="task">The task function.</param>
-	/// <param name="error">The optional exception handler.</param>
-	public static async Task ExecuteAndCatch(Func<Task> task, Action<Exception>? error = null)
+	/// <param name="error">The optional error action.</param>
+	/// <param name="final">The optional final action.</param>
+	public static async Task ExecuteAndCatch(Func<Task> task, Action<Exception>? error = null, Action? final = null)
 	{
 		try
 		{
@@ -163,6 +164,10 @@ public static class Tasks
 				else
 					error(ex);
 			});
+		}
+		finally
+		{
+			final?.Invoke();
 		}
 	}
 
@@ -406,21 +411,21 @@ public static class Tasks
 	}
 
 	/// <summary>
-	/// Starts a task with the command like job.
+	/// Starts a task with the command job which may open a module panel.
 	/// </summary>
 	/// <param name="job">The command like job.</param>
-	/// <returns>The task which awaits the job and some internal extras.</returns>
+	/// <returns>The task which awaits the job and its possible new panel.</returns>
 	/// <remarks>
-	/// If the job does not open a panel, use <see cref="Job"/> instead.
-	/// If the job opens a panel, use <see cref="OpenPanel(Action)"/> instead.
-	/// This method is for uncertain jobs like invoking interactive commands (REPL).
+	/// If the job is not for opening possible panels, use <see cref="Job"/> instead.
+	/// If the job always opens a panel, use <see cref="OpenPanel(Action)"/> instead.
+	/// This method is for uncertain jobs like interactive commands (REPL).
 	/// </remarks>
-	public static async Task<object?> Command(Action job)
+	public static async Task<Panel?> Command(Action job)
 	{
 		// open
 		var oldPanel = await Job(() =>
 		{
-			var panel = Far.Api.Panel;
+			var panel = Far.Api.Panel as Panel;
 			job();
 			return panel;
 		});
@@ -428,13 +433,10 @@ public static class Tasks
 		// wait
 		await Works.Far2.Api.WaitSteps();
 
-		// test and return
+		// new panel?
 		return await Job(() =>
 		{
-			if (Far.Api.Panel is Panel newPanel && newPanel != oldPanel)
-				return newPanel;
-
-			return null;
+			return Far.Api.Panel is Panel newPanel && newPanel != oldPanel ? newPanel : null;
 		});
 	}
 

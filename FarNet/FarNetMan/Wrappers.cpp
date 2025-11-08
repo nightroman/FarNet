@@ -79,26 +79,6 @@ AutoPluginPanelItem::~AutoPluginPanelItem()
 		delete[] (char*)m.Item;
 }
 
-#undef FCTL_GETPANELINFO
-
-void GetPanelInfo(HANDLE handle, PanelInfo& info)
-{
-	SetState<bool> state(State::GetPanelInfo, true);
-
-	info.StructSize = sizeof(info);
-	if (!Info.PanelControl(handle, FCTL_GETPANELINFO, 0, &info))
-		throw gcnew InvalidOperationException("Cannot get panel information.");
-}
-
-//! Steps: open a panel; Tab; CtrlL; $Far.Panel used to fail
-bool TryPanelInfo(HANDLE handle, PanelInfo& info)
-{
-	SetState<bool> state(State::GetPanelInfo, true);
-
-	info.StructSize = sizeof(info);
-	return Info.PanelControl(handle, FCTL_GETPANELINFO, 0, &info) ? true : false;
-}
-
 // Gets dialog control text of any length
 String^ GetDialogControlText(HANDLE hDlg, int id, int start, int len)
 {

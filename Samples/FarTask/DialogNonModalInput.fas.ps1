@@ -14,6 +14,7 @@ $Data.Input = $null
 # $Data.Input is set in Closed
 job {
 	$dialog = $Far.CreateDialog(-1, -1, 52, 4)
+	$dialog.KeepWindowTitle = $true
 	$null = $dialog.AddText(1, 1, 50, '_201123_rz')
 	$edit = $dialog.AddEdit(1, -1, 50, '')
 

@@ -18,7 +18,7 @@
 [CmdletBinding()]
 param(
 	$Tests = -1,
-	$ExpectedTaskCount = 213,
+	$ExpectedTaskCount = 212,
 	$ExpectedIBTestCount = 5,
 	$ExpectedBasicsCount = 15
 )

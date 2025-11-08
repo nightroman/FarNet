@@ -8,7 +8,6 @@
 #include "InputBox.h"
 #include "Menu.h"
 #include "Message.h"
-#include "Panel0.h"
 #include "Panel2.h"
 #include "Settings.h"
 #include "UI.h"
@@ -209,16 +208,6 @@ IEditor^ Far1::Editor::get()
 IViewer^ Far1::Viewer::get()
 {
 	return Viewer0::GetCurrentViewer();
-}
-
-IPanel^ Far1::Panel::get()
-{
-	return Panel0::GetPanel(true);
-}
-
-IPanel^ Far1::Panel2::get()
-{
-	return Panel0::GetPanel(false);
 }
 
 IInputBox^ Far1::CreateInputBox()

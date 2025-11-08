@@ -1,4 +1,6 @@
 #pragma once
+#include "Panel0.h"
+#include "Wrappers.h"
 
 namespace FarNet
 {
@@ -6,6 +8,7 @@ namespace FarNet
 ref class Far1 sealed : IFar
 {
 public:
+	virtual property bool HasPanels { bool get() override { return ::HasPanels(); } }
 	virtual property FarNet::MacroArea MacroArea { FarNet::MacroArea get() override; }
 	virtual property FarNet::MacroState MacroState { FarNet::MacroState get() override; }
 	virtual property IAnyEditor^ AnyEditor { IAnyEditor^ get() override; }
@@ -15,8 +18,8 @@ public:
 	virtual property IHistory^ History { IHistory^ get() override; }
 	virtual property ILine^ CommandLine { ILine^ get() override; }
 	virtual property ILine^ Line { ILine^ get() override; }
-	virtual property IPanel^ Panel { IPanel^ get() override; }
-	virtual property IPanel^ Panel2 { IPanel^ get() override; }
+	virtual property IPanel^ Panel { IPanel^ get() override { return Panel0::GetPanel(true); } }
+	virtual property IPanel^ Panel2 { IPanel^ get() override { return Panel0::GetPanel(false); }}
 	virtual property IUserInterface^ UI { IUserInterface^ get() override; }
 	virtual property IViewer^ Viewer { IViewer^ get() override; }
 	virtual property IWindow^ Window { IWindow^ get() override; }

@@ -1,12 +1,5 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-using System.Threading.Tasks;
-
-namespace FarNet.Works;
-#pragma warning disable 1591
+﻿namespace FarNet.Works;
+#pragma warning disable CS1591
 
 public static class Tasks2
 {

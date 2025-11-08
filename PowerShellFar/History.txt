@@ -1,5 +1,16 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.74 =
+
+Use FarNet 9.0.49
+
+Command console
+- Rework for better console experience, remove unusual features
+- Support opening from Editor and Viewer
+
+Search-Regex.ps1
+- Show input regex and options in result panel title
+
 = 9.0.73 =
 
 Use FarNet 9.0.48

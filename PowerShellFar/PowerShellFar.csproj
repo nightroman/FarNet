@@ -31,6 +31,6 @@
     </ProjectReference>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="ib publish -Configuration $(Configuration) -FarHome $(FarHome)" />
+    <Exec Command="pwsh -nop -c Invoke-Build publish -Configuration $(Configuration) -FarHome $(FarHome)" />
   </Target>
 </Project>

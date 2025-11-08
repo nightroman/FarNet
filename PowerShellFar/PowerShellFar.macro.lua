@@ -1,14 +1,20 @@
 
--- Insert "ps:space" to empty command line
 Macro {
-  key="Space"; description="PSF: Easy prefix";
+  key="Space"; description='PSF: Easy prefix, insert "ps:space" to command line';
   area="Shell"; flags="EmptyCommandLine";
   action=function()
     Keys "p s : Space"
   end;
 }
 
--- PowerShell command history
+Macro {
+  key="Ctrl="; description="PSF Command console";
+  area="Shell Editor Viewer";
+  action = function()
+    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "vps:$Psf.StartCommandConsole()")
+  end;
+}
+
 Macro {
   key="AltF10"; description="PSF: Command history";
   area="Common";
@@ -18,7 +24,6 @@ Macro {
   end;
 }
 
--- PowerShell line breakpoint
 Macro {
   key="CtrlF9"; description="PSF: Line breakpoint";
   area="Editor"; filemask = "*.ps1,*.psm1";
@@ -27,9 +32,8 @@ Macro {
   end;
 }
 
--- Complete PowerShell code
 Macro {
-  key="F9"; description="PSF: Complete";
+  key="F9"; description="PSF: Complete code";
   area="Dialog Editor Shell QView Tree Info DialogAutoCompletion ShellAutoCompletion";
   condition=function()
     return Area.Dialog or Area.Editor or Area.DialogAutoCompletion or Area.ShellAutoCompletion or not CmdLine.Empty
@@ -40,7 +44,6 @@ Macro {
   end;
 }
 
--- Invoke "Complete-Word.ps1"
 Macro {
   key="CtrlSpace"; description="PSF: Complete-Word.ps1";
   area="Dialog Editor Shell QView Tree Info DialogAutoCompletion ShellAutoCompletion";
@@ -53,10 +56,8 @@ Macro {
   end;
 }
 
--- cc: <command with output to clipboard>
 CommandLine {
-  prefixes = "cc";
-  description = "PSF: Command to clipboard";
+  prefixes = "cc"; description = "PSF: Command output to clipboard";
   action = function(prefix, text)
     Plugin.SyncCall("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "vps:" .. text .. " | Set-Clipboard")
   end;

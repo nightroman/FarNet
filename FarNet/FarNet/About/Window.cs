@@ -63,4 +63,12 @@ public abstract class IWindow
 	/// </summary>
 	/// <param name="index">Window index or -1 for the current window.</param>
 	public abstract void SetCurrentAt(int index);
+
+	/// <summary>
+	/// Gets the number of visible panels.
+	/// </summary>
+	public int CountVisiblePanels()
+	{
+		return Kind != WindowKind.Panels ? -1 : (Far.Api.Panel!.IsVisible ? 1 : 0) + (Far.Api.Panel2!.IsVisible ? 1 : 0);
+	}
 }

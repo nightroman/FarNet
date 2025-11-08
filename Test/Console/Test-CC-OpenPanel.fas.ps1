@@ -11,9 +11,5 @@ keys Enter
 job {
 	Assert-Far -ExplorerTypeId ([PowerShellFar.Guids]::ObjectExplorer)
 	Find-FarFile 42
+	$__.Close()
 }
-keys Esc
-job {
-	Assert-Far -DialogTypeId ([PowerShellFar.Guids]::ReadCommandDialog)
-}
-job { $Psf.StopCommandConsole() }

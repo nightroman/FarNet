@@ -4,20 +4,22 @@ using System.Management.Automation;
 
 namespace PowerShellFar.UI;
 
-class ReadCommand
+internal class ReadCommand
 {
-	static ReadCommand? Instance;
+	private const string ErrorCannotSetPanels = "Cannot set area 'Panels'.";
+	private static readonly Guid MyTypeId = new(Guids.ReadCommandDialog);
 
-	readonly IDialog Dialog;
-	readonly IText Text;
-	readonly IEdit Edit;
-	string? PromptTrimmed;
-	string PromptOriginal;
-	string? TextFromEditor;
+	private static ReadCommand? Instance;
 
-	RunArgs? Out;
+	private readonly IDialog Dialog;
+	private readonly IText Text;
+	private readonly IEdit Edit;
+	private readonly string PromptOriginal;
+	private string? PromptTrimmed;
+	private string? TextFromEditor;
+	private RunArgs? Out;
 
-	class Layout
+	private class Layout
 	{
 		public int DialogLeft, DialogTop, DialogRight, DialogBottom;
 		public int TextLeft, TextTop, TextRight;
@@ -31,11 +33,10 @@ class ReadCommand
 		var pos = GetLayoutAndSetPromptTrimmed(PromptOriginal);
 
 		Dialog = Far.Api.CreateDialog(pos.DialogLeft, pos.DialogTop, pos.DialogRight, pos.DialogBottom);
-		Dialog.TypeId = new(Guids.ReadCommandDialog);
+		Dialog.TypeId = MyTypeId;
 		Dialog.NoShadow = true;
-		Dialog.KeepWindowTitle = true;
 		Dialog.Closing += Dialog_Closing;
-		Dialog.GotFocus += Dialog_GotFocus;
+		Dialog.LosingFocus += Dialog_LosingFocus;
 		Dialog.ConsoleSizeChanged += Dialog_ConsoleSizeChanged;
 		Dialog.MouseClicked += Events.MouseClicked_IgnoreOutside;
 
@@ -47,9 +48,35 @@ class ReadCommand
 		Edit.History = Res.History;
 		Edit.KeyPressed += Edit_KeyPressed;
 		Edit.Coloring += Events.Coloring_EditAsConsole;
+
+		// with no panels, set area Desktop to hide editor / viewer
+		if (!Far.Api.HasPanels && Far.Api.Window.Kind != WindowKind.Desktop)
+			Far.Api.Window.SetCurrentAt(0);
 	}
 
-	Layout GetLayoutAndSetPromptTrimmed(string prompt)
+	public static bool IsActive()
+	{
+		if (Instance is null)
+			return false;
+
+		var from = Far.Api.Window.Kind;
+		if (from == WindowKind.Desktop)
+			return true;
+
+		return from == WindowKind.Dialog && Far.Api.Dialog!.TypeId == MyTypeId;
+	}
+
+	public static bool IsOpen()
+	{
+		return Far.Api.Window.Kind == WindowKind.Dialog && Far.Api.Dialog!.TypeId == MyTypeId;
+	}
+
+	public static void Stop()
+	{
+		Instance?.Dialog.Close(-2);
+	}
+
+	private Layout GetLayoutAndSetPromptTrimmed(string prompt)
 	{
 		var size = Far.Api.UI.WindowSize;
 		int maxPromptLength = size.X / 3;
@@ -79,12 +106,10 @@ class ReadCommand
 		};
 	}
 
-	static string GetPrompt()
+	private static string GetPrompt()
 	{
 		try
 		{
-			A.SyncPaths();
-
 			using var ps = A.NewPowerShell();
 			var res = ps.AddCommand("prompt").Invoke();
 
@@ -97,23 +122,6 @@ class ReadCommand
 		{
 		}
 		return "PS> ";
-	}
-
-	public static bool IsActive()
-	{
-		if (Instance is null)
-			return false;
-
-		var from = Far.Api.Window.Kind;
-		if (from == WindowKind.Desktop)
-			return true;
-
-		return from == WindowKind.Dialog && Far.Api.Dialog!.TypeId == new Guid(Guids.ReadCommandDialog);
-	}
-
-	public static void Stop()
-	{
-		Instance?.Dialog.Close(-2);
 	}
 
 	void Dialog_Closing(object? sender, ClosingEventArgs e)
@@ -137,39 +145,36 @@ class ReadCommand
 		Out = new RunArgs(code) { Writer = new ConsoleOutputWriter(echo), UseTeeResult = true };
 	}
 
-	bool _Dialog_GotFocus;
-	void Dialog_GotFocus(object? sender, EventArgs e)
+	private bool _Dialog_LosingFocus;
+	private void Dialog_LosingFocus(object? sender, EventArgs e)
 	{
-		if (_Dialog_GotFocus)
+		if (_Dialog_LosingFocus)
 			return;
 
-		_Dialog_GotFocus = true;
-		try
-		{
-			// ensure dialog over panels
-			Far.Api.Window.SetCurrentAt(-1);
-			Dialog.Activate();
+		_Dialog_LosingFocus = true;
 
-			// refresh prompt and layout
-			var prompt = GetPrompt();
-			if (prompt != PromptOriginal)
+		_ = Tasks.ExecuteAndCatch(async () =>
+		{
+			await Tasks.Wait(50, 0, () =>
 			{
-				PromptOriginal = prompt;
-				Far.Api.UI.WindowTitle = prompt;
+				if (IsOpen())
+					return true;
 
-				var pos = GetLayoutAndSetPromptTrimmed(prompt);
-				Text.Text = PromptTrimmed!;
-				Text.Rect = new Place(pos.TextLeft, pos.TextTop, pos.TextRight, pos.TextTop);
-				Edit.Rect = new Place(pos.EditLeft, pos.EditTop, pos.EditRight, pos.EditTop);
-			}
-		}
-		finally
+				if (Far.Api.Window.IsModal)
+					return false;
+
+				Stop();
+				return true;
+			});
+		},
+		null,
+		() =>
 		{
-			_Dialog_GotFocus = false;
-		}
+			_Dialog_LosingFocus = false;
+		});
 	}
 
-	void Dialog_ConsoleSizeChanged(object? sender, SizeEventArgs e)
+	private void Dialog_ConsoleSizeChanged(object? sender, SizeEventArgs e)
 	{
 		var pos = GetLayoutAndSetPromptTrimmed(PromptOriginal);
 		Dialog.Rect = new Place(pos.DialogLeft, pos.DialogTop, pos.DialogRight, pos.DialogBottom);
@@ -178,163 +183,72 @@ class ReadCommand
 		Text.Text = PromptTrimmed!;
 	}
 
-	void Edit_KeyPressedCtrl(KeyPressedEventArgs e)
+	private void Edit_KeyPressed(object? sender, KeyPressedEventArgs e)
 	{
 		switch (e.Key.VirtualKeyCode)
 		{
-			case KeyCode.O:
-			case KeyCode.F1:
-			case KeyCode.F2:
-				{
-					// hide/show panels
-					e.Ignore = true;
-					_ = RunKeyInPanelsAsync(e.Key, true);
-				}
+			case KeyCode.Escape when e.Key.Is() && Edit.Line.Length > 0:
+				// clear text if not empty
+				e.Ignore = true;
+				Edit.Text = string.Empty;
 				return;
-			case KeyCode.Enter:
+
+			case KeyCode.Tab when e.Key.Is():
+				// complete code
+				e.Ignore = true;
+				EditorKit.ExpandCode(Edit.Line, null);
+				return;
+
+			case KeyCode.UpArrow when e.Key.Is():
+			case KeyCode.E when e.Key.IsCtrl():
+				// history navigation up
+				e.Ignore = true;
+				Edit.Text = HistoryKit.GetNextCommand(true, Edit.Text);
+				return;
+
+			case KeyCode.DownArrow when e.Key.Is():
+			case KeyCode.X when e.Key.IsCtrl() && Edit.Line.SelectionSpan.Length < 0:
+				// history navigation down, mind selected ~ CtrlX Cut
+				e.Ignore = true;
+				Edit.Text = HistoryKit.GetNextCommand(false, Edit.Text);
+				return;
+
+			case KeyCode.F1 when e.Key.Is():
+				// show help
+				e.Ignore = true;
+				Help.ShowHelpForText(Edit.Text, Edit.Line.Caret, HelpTopic.CommandConsole);
+				return;
+
+			case KeyCode.F4 when e.Key.Is():
+			case KeyCode.F5 when e.Key.Is():
+				// modal edit script
+				e.Ignore = true;
+				DoEditor();
+				return;
+
+			case KeyCode.Enter when e.Key.IsCtrl():
+				// insert current file name
+				if (Far.Api.HasPanels)
 				{
-					// insert current file name
 					e.Ignore = true;
-					var file = Far.Api.Panel!.CurrentFile;
-					if (file != null)
+					if (Far.Api.Panel!.CurrentFile is { } file)
 						Edit.Line.InsertText(file.Name);
 				}
 				return;
-			case KeyCode.F:
+
+			case KeyCode.F when e.Key.IsCtrl() && Far.Api.HasPanels:
+				// insert current file path
+				if (Far.Api.HasPanels)
 				{
-					// insert current file path
 					e.Ignore = true;
-					var panel = Far.Api.Panel!;
-					var file = panel.CurrentFile;
-					if (file != null)
-						Edit.Line.InsertText(Path.Combine(panel.CurrentDirectory, file.Name));
+					if (Far.Api.Panel!.CurrentFile is { } file)
+						Edit.Line.InsertText(Path.Combine(Far.Api.CurrentDirectory, file.Name));
 				}
 				return;
 		}
 	}
 
-	void Edit_KeyPressed(object? sender, KeyPressedEventArgs e)
-	{
-		if (e.Key.IsCtrl())
-		{
-			Edit_KeyPressedCtrl(e);
-			if (e.Ignore)
-				return;
-		}
-
-		switch (e.Key.VirtualKeyCode)
-		{
-			case KeyCode.Escape:
-				// clear text if not empty
-				if (e.Key.Is() && Edit.Line.Length > 0)
-				{
-					e.Ignore = true;
-					Edit.Text = string.Empty;
-				}
-				return;
-			case KeyCode.Tab:
-				// complete code
-				if (e.Key.Is())
-				{
-					e.Ignore = true;
-					if (Edit.Line.Length > 0)
-						EditorKit.ExpandCode(Edit.Line, null);
-					else
-						_ = RunKeyInPanelsAsync(e.Key, true);
-				}
-				return;
-			case KeyCode.UpArrow:
-			case KeyCode.DownArrow:
-				// panel or history navigation
-				if (e.Key.Is())
-				{
-					e.Ignore = true;
-					if (Far.Api.Panel!.IsVisible || Far.Api.Panel2!.IsVisible)
-						_ = RunKeyInPanelsAsync(e.Key, true);
-					else
-						Edit.Text = HistoryKit.GetNextCommand(e.Key.VirtualKeyCode == KeyCode.UpArrow, Edit.Text);
-				}
-				return;
-			case KeyCode.E:
-				// history navigation up
-				if (e.Key.IsCtrl())
-				{
-					e.Ignore = true;
-					Edit.Text = HistoryKit.GetNextCommand(true, Edit.Text);
-				}
-				return;
-			case KeyCode.X:
-				// history navigation down, mind selected ~ CtrlX Cut
-				if (e.Key.IsCtrl() && Edit.Line.SelectionSpan.Length < 0)
-				{
-					e.Ignore = true;
-					Edit.Text = HistoryKit.GetNextCommand(false, Edit.Text);
-				}
-				return;
-			case KeyCode.F1:
-				// show help
-				if (e.Key.Is())
-				{
-					e.Ignore = true;
-					Help.ShowHelpForText(Edit.Text, Edit.Line.Caret, HelpTopic.CommandConsole);
-				}
-				return;
-			case KeyCode.F3:
-				if (e.Key.Is())
-				{
-					// view panel file
-					e.Ignore = true;
-					_ = Task.Run(async () =>
-					{
-						await RunKeyInPanelsAsync(e.Key, false);
-						var viewer = Far.Api.Viewer;
-						if (viewer != null)
-						{
-							await Tasks.Viewer(viewer);
-							await ActivateAsync();
-						}
-					});
-				}
-				return;
-			case KeyCode.F4:
-				if (e.Key.Is())
-				{
-					// edit panel file
-					e.Ignore = true;
-					_ = Task.Run(async () =>
-					{
-						await RunKeyInPanelsAsync(e.Key, false);
-						var editor = Far.Api.Editor;
-						if (editor != null)
-						{
-							await Tasks.Editor(editor);
-							await ActivateAsync();
-						}
-					});
-				}
-				return;
-			case KeyCode.F5:
-				if (e.Key.Is())
-				{
-					// modal edit script
-					e.Ignore = true;
-					DoEditor();
-				}
-				return;
-			case KeyCode.F2:
-			case KeyCode.PageDown:
-			case KeyCode.PageUp:
-				// panel keys
-				if (e.Key.Is())
-				{
-					e.Ignore = true;
-					_ = RunKeyInPanelsAsync(e.Key, true);
-				}
-				return;
-		}
-	}
-
-	void DoEditor()
+	private void DoEditor()
 	{
 		var args = new EditTextArgs
 		{
@@ -347,26 +261,7 @@ class ReadCommand
 		Dialog.Close();
 	}
 
-	Task RunKeyInPanelsAsync(KeyInfo key, bool activate)
-	{
-		var name = Far.Api.KeyInfoToName(key);
-		return RunMacroInPanelsAsync($"Keys'{name}'", activate);
-	}
-
-	async Task RunMacroInPanelsAsync(string macro, bool activate)
-	{
-		await Tasks.Job(() => Far.Api.Window.SetCurrentAt(-1));
-		await Tasks.Macro(macro);
-		if (activate)
-			await ActivateAsync();
-	}
-
-	public Task ActivateAsync()
-	{
-		return Tasks.Job(Dialog.Activate);
-	}
-
-	public Task<RunArgs?> ReadAsync()
+	private Task<RunArgs?> ReadAsync()
 	{
 		return Task.Run(async () =>
 		{
@@ -376,65 +271,150 @@ class ReadCommand
 		});
 	}
 
-    public static async Task StartAsync()
-    {
-        try
-        {
-            // already started? activate
-            if (Instance != null)
-            {
-                await Instance.ActivateAsync();
-                return;
-            }
-
-            // must be panels
-            if (Far.Api.Window.Kind != WindowKind.Panels)
-                throw new ModuleException("Command console should start from panels.");
-
-            // hide key bar (hack)
-            bool visibleKeyBar = Console.CursorTop - Console.WindowTop == Console.WindowHeight - 2;
-            if (visibleKeyBar)
-                await Tasks.Macro("Keys'CtrlB'");
-
-            try
-            {
-                // REPL
-                for (; ; )
-                {
-                    // read
-                    Instance = await Tasks.Job(() => new ReadCommand());
-                    var res = await Instance.ReadAsync();
-                    if (res is null)
-                        return;
-
-                    // run
-                    var obj = await Tasks.Command(() => A.Run(res));
-
-                    // switch to opened panel, come back on exit
-                    if (obj is Panel panel)
-                    {
-						panel.Closed += Panel_Closed;
-                        return;
-                    }
-                }
-            }
-            finally
-            {
-                Instance = null;
-
-                // restore key bar (may not work with jobs)
-                if (visibleKeyBar)
-                    await Tasks.Macro("Keys'CtrlB'");
-            }
-        }
-        catch (Exception ex)
-        {
-            _ = Tasks.Job(() => Far.Api.ShowError("Command console", ex));
-        }
-    }
-
-	static void Panel_Closed(object? sender, EventArgs e)
+	private static async Task DoFinallyAsync(WindowKind area1, bool visibleKeyBar, int visiblePanels)
 	{
-		_ = StartAsync();
+		// close running
+		if (Instance is { })
+		{
+			await Tasks.Job(() =>
+			{
+				Instance?.Dialog.Close(-2);
+
+				// with no panels save user screen printed during this REPL
+				if (!Far.Api.HasPanels && Far.Api.Window.Kind == WindowKind.Desktop)
+					Far.Api.UI.SaveUserScreen();
+			});
+			Instance = null;
+		}
+
+		// set panels
+		var area2 = Far.Api.Window.Kind;
+		if (area2 != WindowKind.Panels && Far.Api.HasPanels)
+		{
+			try
+			{
+				await Tasks.Job(() => Far.Api.Window.SetCurrentAt(-1));
+			}
+			catch (Exception ex)
+			{
+				throw new InvalidOperationException(ErrorCannotSetPanels, ex);
+			}
+		}
+
+		// restore key bar (may not work with jobs)
+		if (visibleKeyBar)
+			await Tasks.Macro("Keys'CtrlB'");
+
+		// show panels
+		if (visiblePanels > 0)
+		{
+			int visiblePanels2 = Far.Api.Window.CountVisiblePanels();
+			if (visiblePanels != visiblePanels2)
+			{
+				if (visiblePanels == 2 && visiblePanels2 == 0)
+				{
+					await Tasks.Macro("Keys'CtrlO'");
+				}
+
+				if (visiblePanels == 2 && visiblePanels2 == 1)
+				{
+					if (Far.Api.Panel!.IsLeft)
+						await Tasks.Macro("Keys'CtrlF2'");
+					else
+						await Tasks.Macro("Keys'CtrlF1'");
+				}
+
+				if (visiblePanels == 1 && visiblePanels2 == 0)
+				{
+					if (Far.Api.Panel!.IsLeft)
+						await Tasks.Macro("Keys'CtrlF1'");
+					else
+						await Tasks.Macro("Keys'CtrlF2'");
+				}
+			}
+		}
+
+		if (area2 != area1)
+		{
+			try
+			{
+				await Tasks.Job(() => Far.Api.Window.SetCurrentAt(Far.Api.Window.Count - 2));
+			}
+			catch (Exception ex)
+			{
+				throw new InvalidOperationException($"Cannot set area '{area1}'.", ex);
+			}
+		}
+
+		// last, post quit
+		if (Environment.GetEnvironmentVariable("FAR_START_COMMAND") is string cmd && cmd.Contains(nameof(Actor.StartCommandConsole)))
+			Far.Api.PostJob(Far.Api.Quit);
+	}
+
+	public static async Task StartAsync()
+	{
+		if (Instance is { })
+			return;
+
+		try
+		{
+			// sync part
+
+			var area1 = Far.Api.Window.Kind;
+			if (area1 != WindowKind.Panels && Far.Api.HasPanels)
+			{
+				try
+				{
+					Far.Api.Window.SetCurrentAt(-1);
+				}
+				catch (Exception ex)
+				{
+					throw new InvalidOperationException(ErrorCannotSetPanels, ex);
+				}
+			}
+
+			// hide key bar (hack)
+			bool visibleKeyBar = Console.CursorTop - Console.WindowTop == Console.WindowHeight - 2;
+			if (visibleKeyBar)
+				await Tasks.Macro("Keys'CtrlB'");
+
+			// hide panels
+			int visiblePanels = Far.Api.Window.CountVisiblePanels();
+			if (visiblePanels > 0)
+				await Tasks.Macro("Keys'CtrlO'");
+
+			A.Invoking();
+
+			// async part
+
+			// REPL
+			try
+			{
+				for (bool run = true; run;)
+				{
+					// read
+					Instance = await Tasks.Job(() => new ReadCommand());
+					var args = await Instance.ReadAsync();
+					if (args is null)
+						return;
+
+					// run
+					var newPanel = await Tasks.Command(() => A.Run(args));
+					if (newPanel is { })
+					{
+						Stop();
+						run = false;
+					}
+				}
+			}
+			finally
+			{
+				await DoFinallyAsync(area1, visibleKeyBar, visiblePanels);
+			}
+		}
+		catch (Exception ex)
+		{
+			_ = Tasks.Job(() => Far.Api.ShowError("Command console", ex));
+		}
 	}
 }

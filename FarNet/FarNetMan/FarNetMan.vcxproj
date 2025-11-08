@@ -211,6 +211,7 @@
     <ClCompile Include="Far0.cpp" />
     <ClCompile Include="Far1.cpp" />
     <ClCompile Include="Far2.cpp" />
+    <ClCompile Include="FCTL_GETPANELINFO.cpp" />
     <ClCompile Include="History.cpp" />
     <ClCompile Include="InputBox.cpp" />
     <ClCompile Include="ListItemCollection.cpp" />
@@ -251,6 +252,7 @@
     <ClInclude Include="Far0.h" />
     <ClInclude Include="Far1.h" />
     <ClInclude Include="Far2.h" />
+    <ClInclude Include="FCTL_GETPANELINFO.h" />
     <ClInclude Include="History.h" />
     <ClInclude Include="InputBox.h" />
     <ClInclude Include="ListItemCollection.h" />

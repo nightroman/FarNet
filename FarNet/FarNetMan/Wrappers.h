@@ -1,8 +1,5 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 #pragma once
+#include "FCTL_GETPANELINFO.h"
 
 ref class Wrap
 {
@@ -81,8 +78,5 @@ public:
 private:
 	HANDLE _hDlg;
 };
-
-void GetPanelInfo(HANDLE handle, PanelInfo& info);
-bool TryPanelInfo(HANDLE handle, PanelInfo& info);
 
 String^ GetDialogControlText(HANDLE hDlg, int id, int start, int len);

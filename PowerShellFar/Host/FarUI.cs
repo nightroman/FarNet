@@ -1,4 +1,5 @@
 using FarNet;
+using PowerShellFar.UI;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -35,7 +36,7 @@ class FarUI : UniformUI, IHostUISupportsMultipleChoiceSelection
 		if (_writer is ConsoleOutputWriter)
 			return true;
 		else
-			return UI.ReadCommand.IsActive();
+			return ReadCommand.IsActive();
 	}
 
 	/// <summary>

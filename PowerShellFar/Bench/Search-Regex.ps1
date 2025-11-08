@@ -116,7 +116,12 @@ function to_options_string([string]$Options) {
 	$r
 }
 
+$InPattern = ''
+$InOptions = ''
 function regex_from_pattern_and_options($Pattern, [SearchRegexOptions]$SearchOptions) {
+	$Script:InPattern = $Pattern
+	$Script:InOptions = $SearchOptions
+
 	if ([int]$SearchOptions -band [SearchRegexOptions]::SimpleMatch) {
 		$Pattern = [regex]::Escape($Pattern)
 	}
@@ -262,6 +267,7 @@ $Explorer.Data = @{
 	Done = $false
 	CountItems = 0
 	State = 'Running'
+	Regex = "* $InPattern * $InOptions"
 }
 $Explorer.AsGetFiles = {
 	param($Explorer)
@@ -304,7 +310,7 @@ $Panel.add_Timer({
 		$this.Update($false)
 	}
 
-	$title = '{0}: {1} lines in {2} files' -f $ExplorerData.State, $this.Explorer.Cache.Count, $ExplorerData.CountItems
+	$title = '{0}: {1} in {2} files {3}' -f $ExplorerData.State, $this.Explorer.Cache.Count, $ExplorerData.CountItems, $ExplorerData.Regex
 	if ($this.Title -ne $title) {
 		$this.Title = $title
 		$this.Redraw()
