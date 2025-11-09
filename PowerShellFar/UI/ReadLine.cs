@@ -40,10 +40,10 @@ class ReadLine
 
 		Dialog = Far.Api.CreateDialog(pos.DialogLeft, pos.DialogTop, pos.DialogRight, pos.DialogBottom);
 		Dialog.TypeId = new Guid(Guids.ReadLineDialog);
+		Dialog.NoClickOutside = true;
 		Dialog.NoShadow = true;
 		Dialog.KeepWindowTitle = true;
 		Dialog.ConsoleSizeChanged += Dialog_ConsoleSizeChanged;
-		Dialog.MouseClicked += Events.MouseClicked_IgnoreOutside;
 
 		if (prompt.Length > 0)
 		{

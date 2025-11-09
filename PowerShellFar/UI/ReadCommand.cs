@@ -3,6 +3,7 @@ using FarNet.Forms;
 using System.Management.Automation;
 
 namespace PowerShellFar.UI;
+#pragma warning disable CA1416
 
 internal class ReadCommand
 {
@@ -34,11 +35,11 @@ internal class ReadCommand
 
 		Dialog = Far.Api.CreateDialog(pos.DialogLeft, pos.DialogTop, pos.DialogRight, pos.DialogBottom);
 		Dialog.TypeId = MyTypeId;
+		Dialog.NoClickOutside = true;
 		Dialog.NoShadow = true;
 		Dialog.Closing += Dialog_Closing;
-		Dialog.LosingFocus += Dialog_LosingFocus;
-		Dialog.ConsoleSizeChanged += Dialog_ConsoleSizeChanged;
-		Dialog.MouseClicked += Events.MouseClicked_IgnoreOutside;
+		Dialog.LosingFocus += OnLosingFocus;
+		Dialog.ConsoleSizeChanged += OnConsoleSizeChanged;
 
 		Text = Dialog.AddText(pos.TextLeft, pos.TextTop, pos.TextRight, PromptTrimmed);
 		Text.Coloring += Events.Coloring_TextAsConsole;
@@ -46,7 +47,7 @@ internal class ReadCommand
 		Edit = Dialog.AddEdit(pos.EditLeft, pos.EditTop, pos.EditRight, string.Empty);
 		Edit.IsPath = true;
 		Edit.History = Res.History;
-		Edit.KeyPressed += Edit_KeyPressed;
+		Edit.KeyPressed += OnKeyPressed;
 		Edit.Coloring += Events.Coloring_EditAsConsole;
 
 		// with no panels, set area Desktop to hide editor / viewer
@@ -146,7 +147,7 @@ internal class ReadCommand
 	}
 
 	private bool _Dialog_LosingFocus;
-	private void Dialog_LosingFocus(object? sender, EventArgs e)
+	private void OnLosingFocus(object? sender, EventArgs e)
 	{
 		if (_Dialog_LosingFocus)
 			return;
@@ -174,7 +175,7 @@ internal class ReadCommand
 		});
 	}
 
-	private void Dialog_ConsoleSizeChanged(object? sender, SizeEventArgs e)
+	private void OnConsoleSizeChanged(object? sender, SizeEventArgs e)
 	{
 		var pos = GetLayoutAndSetPromptTrimmed(PromptOriginal);
 		Dialog.Rect = new Place(pos.DialogLeft, pos.DialogTop, pos.DialogRight, pos.DialogBottom);
@@ -183,10 +184,45 @@ internal class ReadCommand
 		Text.Text = PromptTrimmed!;
 	}
 
-	private void Edit_KeyPressed(object? sender, KeyPressedEventArgs e)
+	private static void DoScroll(int dir, int pageSize = 0)
+	{
+		if (pageSize == 0)
+			pageSize = Console.WindowHeight - 1;
+
+		int topLine = Console.WindowTop;
+
+		if (dir > 0)
+			topLine = Math.Max(0, topLine - pageSize);
+		else
+			topLine = Math.Min(Console.BufferHeight - Console.WindowHeight, topLine + pageSize);
+
+		Console.SetWindowPosition(0, topLine);
+	}
+
+	private void OnKeyPressed(object? sender, KeyPressedEventArgs e)
 	{
 		switch (e.Key.VirtualKeyCode)
 		{
+			case KeyCode.PageUp when e.Key.Is():
+				e.Ignore = true;
+				DoScroll(1);
+				return;
+
+			case KeyCode.PageDown when e.Key.Is():
+				e.Ignore = true;
+				DoScroll(-1);
+				return;
+
+			case KeyCode.UpArrow when e.Key.IsCtrl():
+				e.Ignore = true;
+				DoScroll(1, 1);
+				return;
+
+			case KeyCode.DownArrow when e.Key.IsCtrl():
+				e.Ignore = true;
+				DoScroll(-1, 1);
+				return;
+
 			case KeyCode.Escape when e.Key.Is() && Edit.Line.Length > 0:
 				// clear text if not empty
 				e.Ignore = true;

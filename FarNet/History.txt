@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet
 
+= 9.0.51 =
+
+Obsolete MouseClicked_IgnoreOutside, use IDialog.NoClickOutside.
+
 = 9.0.50 =
 
 Add IDialog.NoClickOutside.

@@ -301,9 +301,8 @@ For scripts it is exposed as `$Psf.ShowHelp()`.
 Use menu: `[F11]` / `PowerShellFar` / `Command console` (panels, editors, viewers).
 In scripts use `$Psf.StartCommandConsole()`.
 
-It is the console with the prompt at the bottom. The prompt shows after each
-command. Command output is written to the console. The prompt is not modal,
-you may switch to other windows.
+It is the console with non-modal prompt at the bottom shown after each command.
+Command output is written to the console.
 
 **Keys and actions:**
 
@@ -313,8 +312,7 @@ you may switch to other windows.
 
 - `[Tab]`
 
-    If the input is empty changes the active panel.
-    Otherwise invokes code completion (TabExpansion).
+    Invokes code completion (TabExpansion).
 
 - `[F10]`
 
@@ -329,49 +327,37 @@ you may switch to other windows.
     If the input is empty shows this topic.
     Otherwise shows PowerShell context help.
 
-- `[F5]`
+- `[F4]`, `[F5]`
 
     Opens the editor for the alternative code input.
     On closing the editor the code is always invoked.
     You may use `[F5]` in the editor to run the code.
 
-- `[CtrlE]`
+- `[CtrlE]`, `[Up]`
 
     Gets the previous command from history.
-    Same as `[UpArrow]` when panels are hidden.
 
-- `[CtrlX]`
+- `[CtrlX]`, `[Down]`
 
     Gets the next command from history.
-    Same as `[DownArrow]` when panels are hidden.
 
 - `[CtrlEnter]`, `[CtrlF]`
 
-    Inserts the current file name or full path.
+    Inserts the panel cursor file name or path.
 
 - `[F11]` / `PowerShellFar` / `Command history`
 
     Shows the [command history](#command-history).
 
-- `[CtrlO]`, `[CtrlF1]`, `[CtrlF2]`
+- `[PgUp]`, `[PgDn]`, `[CtrlUp]`, `[CtrlDown]`
 
-    These keys toggle panels visibility.
-
-- `[Up]`, `[Down]`, `[PgUp]`, `[PgDn]`, `[F2]`, `[F3]`, `[F4]`
-
-    These keys are sent to shown panels for navigation, user menu, view, edit operations.
+    Console scrolling by pages and lines.
 
 **Custom command prompt**
 
 Like in PowerShell console, the prompt is defined by the function `prompt`,
 either default or custom in the profile. `prompt` normally returns one line
 text. But before that it may use `Write-Host` for extra lines, with colors.
-
-**Commands opening panels**
-
-When a typed command opens a panel then the command prompt temporarily closes,
-so that you can conveniently work with the opened panel as usual. But when the
-panel closes the command prompt is restarted.
 
 *********************************************************************
 ## Invoke commands

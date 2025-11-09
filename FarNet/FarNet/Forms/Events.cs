@@ -43,6 +43,7 @@ public static class Events
 	/// </summary>
 	/// <param name="sender">.</param>
 	/// <param name="e">.</param>
+	[Obsolete("Use IDialog.NoClickOutside")]
 	public static void MouseClicked_IgnoreOutside(object? sender, MouseClickedEventArgs e)
 	{
 		if (e.Control is null)

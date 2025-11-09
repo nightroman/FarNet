@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.76 =
+
+Command console
+- Scroll by keys
+- Update help
+
 = 9.0.75 =
 
 Open-FarEditor
