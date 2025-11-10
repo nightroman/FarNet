@@ -54,18 +54,22 @@ FarDialog::FarDialog(int left, int top, int right, int bottom)
 	, _rect(left, top, right, bottom)
 	, _items(gcnew List<FarControl^>)
 {
+	const float denominator = 1.64;
+
 	if (left < 0 || top < 0)
 	{
 		Point size = FarUI::Instance.WindowSize;
 		if (left < 0)
 		{
-			_rect.Left = (size.X - right) / 2;
-			_rect.Right = _rect.Left + right - 1;
+			int width = right < 0 ? size.X / denominator : right;
+			_rect.Left = (size.X - width) / 2;
+			_rect.Right = _rect.Left + width - 1;
 		}
 		if (top < 0)
 		{
-			_rect.Top = (size.Y - bottom) / 2;
-			_rect.Bottom = _rect.Top + bottom - 1;
+			int height = bottom < 0 ? size.Y / denominator : bottom;
+			_rect.Top = (size.Y - height) / 2;
+			_rect.Bottom = _rect.Top + height - 1;
 		}
 	}
 }
@@ -192,6 +196,10 @@ void FarDialog::AddItem(FarControl^ item)
 			item->_rect.Bottom = item->_rect.Top;
 		else
 			item->_rect.Bottom += item->_rect.Top;
+	}
+	if (item->_rect.Right < 0)
+	{
+		item->_rect.Right = Rect.Width - item->_rect.Left - 1;
 	}
 }
 

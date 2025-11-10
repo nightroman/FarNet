@@ -1,11 +1,5 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet.Forms;
 using FarNet.Works;
-using System;
-using System.Threading.Tasks;
 
 namespace FarNet.Tools;
 
@@ -37,11 +31,11 @@ public class InputBox
 	public InputBox(string? prompt = null, string? title = null)
 	{
 		var promptLines = prompt is null ? [] : Kit.SplitLines(prompt);
-
-		int w = Far.Api.UI.WindowSize.X - 7;
 		int h = 5 + promptLines.Length;
 
-		Dialog = Far.Api.CreateDialog(-1, -1, w, h);
+		Dialog = Far.Api.CreateDialog(-1, -1, -1, h);
+		int w = Dialog.Rect.Width;
+
 		Dialog.TypeId = new Guid(DefaultTypeId);
 		Dialog.AddBox(3, 1, w - 4, h - 2, title);
 

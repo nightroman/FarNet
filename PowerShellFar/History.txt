@@ -1,5 +1,14 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.77 =
+
+Use FarNet 9.0.52
+
+Dialogs: use calculated default geometry.
+
+Invoke-FromEditor.ps1
+- add *FarMenu.ini
+
 = 9.0.76 =
 
 Command console

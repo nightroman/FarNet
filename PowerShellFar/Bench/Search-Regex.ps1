@@ -143,9 +143,9 @@ $AllText = $false
 
 ### Regex dialog
 if (!$Regex) {
-	[int]$w1 = $Far.UI.WindowSize.X * 0.8
+	$dialog = $Far.CreateDialog(-1, -1, -1, 9)
+	[int]$w1 = $dialog.Rect.Width
 	[int]$w2 = $w1 - 6
-	$dialog = $Far.CreateDialog(-1, -1, $w1, 9)
 	$dialog.TypeId = 'DA462DD5-7767-471E-9FC8-64A227BEE2B1'
 	$dialog.HelpTopic = "<$($Psf.AppHome)\\>search-regexps1"
 	[void]$dialog.AddBox(3, 1, 0, 0, 'Search-Regex')

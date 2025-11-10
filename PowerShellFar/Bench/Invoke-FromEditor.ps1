@@ -31,6 +31,9 @@
 	*.fsx
 	F# scripts run by fsx.exe, FarNet.FSharpFar.
 
+	*FarMenu.ini
+	Far Manager user menu files.
+
 	*.http, *.rest
 	VSCode REST Client HTTP files run by PSRest, https://github.com/nightroman/PSRest
 
@@ -122,6 +125,12 @@ if ($ext -in '.bat', '.cmd') {
 ### FSharp
 if ($ext -eq '.fsx') {
 	Start-Process fsx.exe "--nologo --use:`"$path`""
+	return
+}
+
+### *FarMenu.ini
+if ($path -like '*FarMenu.ini') {
+	$Far.PostMacro("mf.usermenu(2, [[$path]])")
 	return
 }
 

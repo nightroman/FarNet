@@ -214,23 +214,23 @@
     </summary>
   </HelpTopic>
   <LT>
-    <param name="left">Left position.</param>
+    <param name="left">Left column.</param>
     <param name="top">Top line.</param>
   </LT>
   <LTB>
-    <param name="left">Left position.</param>
+    <param name="left">Left column.</param>
     <param name="top">Top line.</param>
     <param name="bottom">Bottom line.</param>
   </LTB>
   <LTR>
-    <param name="left">Left position.</param>
+    <param name="left">Left column.</param>
     <param name="top">Top line.</param>
-    <param name="right">Right position.</param>
+    <param name="right">Right column or -1 to calculate.</param>
   </LTR>
   <LTRB>
-    <param name="left">Left position.</param>
+    <param name="left">Left column.</param>
     <param name="top">Top line.</param>
-    <param name="right">Right position.</param>
+    <param name="right">Right column.</param>
     <param name="bottom">Bottom line.</param>
   </LTRB>
   <ShowHelp>

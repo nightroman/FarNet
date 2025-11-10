@@ -169,3 +169,4 @@ job {
 	Remove-Item Function:\test1,  Function:\test2
 	[FarNet.Works.Kit]::MacroOutput = $Data.MacroOutput
 }
+Start-Sleep 1 #TODO

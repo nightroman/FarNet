@@ -4,16 +4,15 @@ using System.Diagnostics.CodeAnalysis;
 namespace FarNet.Forms;
 
 /// <summary>
-/// Far dialog.
-/// It is created by <see cref="IFar.CreateDialog"/>.
+/// Far dialog created by <see cref="IFar.CreateDialog"/>.
 /// </summary>
 /// <remarks>
-/// After creation of a dialog by <see cref="IFar.CreateDialog"/> you have to:
+/// After creating a dialog by <see cref="IFar.CreateDialog"/>:
 /// <ul>
-/// <li>set the dialog properties and add event handlers;</li>
-/// <li>create and add controls using <c>Add*</c> methods;</li>
-/// <li>set control properties and add event handlers;</li>
-/// <li>show the dialog.</li>
+/// <li>Set dialog properties and add event handlers.</li>
+/// <li>Add controls using <c>Add*</c> methods.</li>
+/// <li>Set control properties and add event handlers.</li>
+/// <li>Call <see cref="Show"/> or <see cref="Open"/>.</li>
 /// </ul>
 /// <para>
 /// <see cref="Closing"/> may be used for input data validation without closing the dialog.

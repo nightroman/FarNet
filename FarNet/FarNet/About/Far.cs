@@ -284,12 +284,16 @@ public abstract class IFar
 
 	/// <summary>
 	/// Creates a new dialog.
-	/// You set its properties, add controls, event handlers and then call <see cref="IDialog.Show"/>.
 	/// </summary>
 	/// <include file='doc.xml' path='doc/LTRB/*'/>
 	/// <remarks>
-	/// You can set <c>left</c> = -1 or <c>top</c> = -1 to be auto-calculated.
-	/// In this case <c>right</c> or <c>bottom</c> should be width and height.
+	/// <para>
+	/// Use <c>left</c> = -1 / <c>top</c> = -1 to calculate.
+	/// In this case <c>right</c> / <c>bottom</c> is width / height (or use -1 to calculate as well).
+	/// </para>
+	/// <para>
+	/// Geometry is calculated on creation and its values may be used on adding controls later.
+	/// </para>
 	/// </remarks>
 	public abstract IDialog CreateDialog(int left, int top, int right, int bottom);
 

@@ -1,5 +1,6 @@
 using FarNet;
 using FarNet.Forms;
+using FarNet.Works;
 using System.Collections;
 
 namespace PowerShellFar.UI;
@@ -17,13 +18,13 @@ class InputBoxEx
 
 	public bool Show()
 	{
-		var promptLines = FarNet.Works.Kit.SplitLines(Prompt ?? string.Empty);
-
-		int w = Far.Api.UI.WindowSize.X - 7;
+		var promptLines = Kit.SplitLines(Prompt ?? string.Empty);
 		int h = 5 + promptLines.Length;
 
 		// dialog
-		var dialog = Far.Api.CreateDialog(-1, -1, w, h);
+		var dialog = Far.Api.CreateDialog(-1, -1, -1, h);
+		int w = dialog.Rect.Width;
+
 		dialog.TypeId = TypeId ?? new Guid(Guids.InputBoxEx);
 		dialog.AddBox(3, 1, w - 4, h - 2, Title);
 
