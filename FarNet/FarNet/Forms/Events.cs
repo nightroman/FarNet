@@ -37,16 +37,4 @@ public static class Events
 		e.Background1 = ConsoleColor.Black;
 		e.Foreground1 = ConsoleColor.Gray;
 	}
-
-	/// <summary>
-	/// .
-	/// </summary>
-	/// <param name="sender">.</param>
-	/// <param name="e">.</param>
-	[Obsolete("Use IDialog.NoClickOutside")]
-	public static void MouseClicked_IgnoreOutside(object? sender, MouseClickedEventArgs e)
-	{
-		if (e.Control is null)
-			e.Ignore = true;
-	}
 }

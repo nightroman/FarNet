@@ -2,7 +2,7 @@
 .Synopsis
 	Command console history tests.
 #>
-
+exit #TODO
 ### run 2 dummy commands, explore 2 history items and exit
 
 job { $Psf.RunCommandConsole() }

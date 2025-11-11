@@ -1,4 +1,5 @@
 ﻿
+[/apps]: https://github.com/nightroman/FarNet/tree/main/FSharpFar/apps
 [/samples]: https://github.com/nightroman/FarNet/tree/main/FSharpFar/samples
 [TryPanelFSharp]: https://github.com/nightroman/FarNet/tree/main/FSharpFar/samples/TryPanelFSharp
 [F# Interactive Options]: https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/fsharp-interactive-options
@@ -582,7 +583,7 @@ shown as a go to menu. Project uses are shown in a new editor.
 *********************************************************************
 ## Using F# scripts
 
-(See [/samples] for some example scripts.)
+(See [/apps] and [/samples] for examples.)
 
 How to run F# scripts in Far Manager?
 

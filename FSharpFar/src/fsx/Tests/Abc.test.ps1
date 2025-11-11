@@ -1,4 +1,8 @@
 
+task test-user-menus {
+	exec {fsx ../../../apps/test-user-menus.fsx}
+}
+
 task test_01_same_dir_fsx {
 	Set-Location test_01
 	($r = exec {fsx Test.fsx})
