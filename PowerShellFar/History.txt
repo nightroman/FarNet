@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.78 =
+
+Command console
+- fix scrolling, support [CtrlHome], [CtrlEnd]
+
 = 9.0.77 =
 
 Use FarNet 9.0.52

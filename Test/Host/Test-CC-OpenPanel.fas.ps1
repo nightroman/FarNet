@@ -13,3 +13,4 @@ job {
 	Find-FarFile 42
 	$__.Close()
 }
+Start-Sleep 1 #TODO

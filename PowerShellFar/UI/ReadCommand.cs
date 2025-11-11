@@ -184,19 +184,26 @@ internal class ReadCommand
 		Text.Text = PromptTrimmed!;
 	}
 
-	private static void DoScroll(int dir, int pageSize = 0)
+	private static void DoScroll(KeyPressedEventArgs e)
 	{
-		if (pageSize == 0)
-			pageSize = Console.WindowHeight - 1;
+		var (up, size) = e.Key.VirtualKeyCode switch
+		{
+			KeyCode.PageUp => (true, Console.WindowHeight - 1),
+			KeyCode.PageDown => (false, Console.WindowHeight - 1),
+			KeyCode.UpArrow => (true, 1),
+			KeyCode.DownArrow => (false, 1),
+			KeyCode.Home => (true, 1234567),
+			KeyCode.End => (false, 1234567),
+			_ => (true, 0)
+		};
 
-		int topLine = Console.WindowTop;
-
-		if (dir > 0)
-			topLine = Math.Max(0, topLine - pageSize);
+		int top = Console.WindowTop;
+		if (up)
+			top = Math.Max(0, top - size);
 		else
-			topLine = Math.Min(Console.BufferHeight - Console.WindowHeight, topLine + pageSize);
+			top = Math.Min(Console.BufferHeight - Console.WindowHeight, top + size);
 
-		Console.SetWindowPosition(0, topLine);
+		Console.SetWindowPosition(0, top);
 	}
 
 	private void OnKeyPressed(object? sender, KeyPressedEventArgs e)
@@ -204,23 +211,13 @@ internal class ReadCommand
 		switch (e.Key.VirtualKeyCode)
 		{
 			case KeyCode.PageUp when e.Key.Is():
-				e.Ignore = true;
-				DoScroll(1);
-				return;
-
 			case KeyCode.PageDown when e.Key.Is():
+			case KeyCode.UpArrow when e.Key.IsShift():
+			case KeyCode.DownArrow when e.Key.IsShift():
+			case KeyCode.Home when e.Key.IsCtrl():
+			case KeyCode.End when e.Key.IsCtrl():
 				e.Ignore = true;
-				DoScroll(-1);
-				return;
-
-			case KeyCode.UpArrow when e.Key.IsCtrl():
-				e.Ignore = true;
-				DoScroll(1, 1);
-				return;
-
-			case KeyCode.DownArrow when e.Key.IsCtrl():
-				e.Ignore = true;
-				DoScroll(-1, 1);
+				DoScroll(e);
 				return;
 
 			case KeyCode.Escape when e.Key.Is() && Edit.Line.Length > 0:
