@@ -301,6 +301,9 @@ For scripts it is exposed as `$Psf.ShowHelp()`.
 Use menu: `[F11]` / `PowerShellFar` / `Command console` (panels, editors, viewers).
 In scripts use `$Psf.StartCommandConsole()`.
 
+See also `%FARHOME%\pwsf.exe`, external PowerShell console on steroids powered
+by Far / FarNet / PowerShellFar.
+
 It is the console with non-modal prompt at the bottom shown after each command.
 Command output is written to the console.
 
@@ -327,11 +330,13 @@ Command output is written to the console.
     If the input is empty shows this topic.
     Otherwise shows PowerShell context help.
 
-- `[F4]`, `[F5]`
+- `[F4]`
 
-    Opens the editor for the alternative code input.
-    On closing the editor the code is always invoked.
-    You may use `[F5]` in the editor to run the code.
+    Opens more comfortable editor for composing the command.
+    You may use `[F5]` to run the code in the editor.
+
+    On closing one-line commands are inserted to prompt.
+    Multi-line commands show the choice dialog.
 
 - `[CtrlE]`, `[Up]`
 

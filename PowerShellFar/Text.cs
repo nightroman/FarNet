@@ -8,10 +8,11 @@ static class Res
 	public const int ConfirmSampleCount = 10;
 
 	public const string
+		TextCommandConsole = "Command console",
 		// main menu
 		MenuInvokeCommands /**/ = "&1. Invoke commands",
 		MenuInvokeSelected /**/ = "&2. Invoke selected",
-		MenuCommandConsole /**/ = "&3. Command console",
+		MenuCommandConsole /**/ = $"&3. {TextCommandConsole}",
 		MenuCommandHistory /**/ = "&4. Command history",
 		MenuInteractive1 /*  */ = "&5. Interactive",
 		MenuInteractive2 /*  */ = "&a. Inter.async",

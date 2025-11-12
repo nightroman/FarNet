@@ -75,6 +75,7 @@ FarHome\FarNet\Modules\PowerShellFar\PowerShellFar.dll
 FarHome\FarNet\Modules\PowerShellFar\PowerShellFar.dll-Help.xml
 FarHome\FarNet\Modules\PowerShellFar\PowerShellFar.hlf
 FarHome\FarNet\Modules\PowerShellFar\PowerShellFar.macro.lua
+FarHome\FarNet\Modules\PowerShellFar\PowerShellFar.pdb
 FarHome\FarNet\Modules\PowerShellFar\PowerShellFar.xml
 FarHome\FarNet\Modules\PowerShellFar\runtimes
 FarHome\FarNet\Modules\PowerShellFar\runtimes\win
@@ -361,3 +362,4 @@ FarHome\FarNet\Modules\PowerShellFar\System.Threading.AccessControl.dll
 FarHome\FarNet\Modules\PowerShellFar\System.Web.Services.Description.dll
 FarHome\FarNet\Modules\PowerShellFar\System.Windows.Extensions.dll
 FarHome\FarNet\Modules\PowerShellFar\TabExpansion2.ps1
+FarHome\pwsf.exe

@@ -48,7 +48,7 @@ Select project to push:
 	}
 }
 
-task Build Build-FarNet, Build-PSF-Help, Build-Docs
+task Build Build-FarNet, Build-PSF-Help, Build-Docs, pwsf::build
 
 task Build-FarNet -If {
 	ask 'Build FarNet projects'

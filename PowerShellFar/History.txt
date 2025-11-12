@@ -1,5 +1,17 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 9.0.79 =
+
+pwsf - PowerShell console on steroids powered by Far / FarNet / PowerShellFar
+- work in progress with some rough edges but it works well
+- pwsf.exe comes with the package in Far Manager folder
+- parameters:
+	- (hidden) panel path
+
+Command console
+- ignore panel key bar (enough is enough)
+- change how [F4] works
+
 = 9.0.78 =
 
 Command console

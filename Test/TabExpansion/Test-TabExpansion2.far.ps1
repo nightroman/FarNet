@@ -278,8 +278,8 @@ if ($PSEdition -eq 'Core') {
 ### Invoke-Build, alias x
 
 Push-Location $env:FarNetCode\Zoo
-Test "ib " { $_ -ccontains 'setVersion' -and $_ -ccontains 'zipFarDev' }
-Test "ib -File ReleaseFarNet.build.ps1 p" { $_ -ccontains 'pushSource' -and $_ -cnotcontains 'commitSource' }
+Test "ib " { $_ -ccontains 'Set-Version' -and $_ -ccontains 'Zip-FarDev' }
+Test "ib -File ReleaseFarNet.build.ps1 p" { $_ -ccontains 'Push-Source' -and $_ -cnotcontains 'Commit-Source' }
 Test "ib . " { $_ -eq 'PowerShellFar' -and $_ -like '*.ps1'  }
 Test "ib ** " { $_.Count -ge 3 -and $_ -eq 'PowerShellFar' -and @($_ -like '*.ps1').Count -eq 0 }
 Pop-Location
@@ -290,7 +290,7 @@ Pop-Location
 Test (@'
 ib  `
 -File {0}
-'@ -f "$env:FarNetCode\Zoo\ReleaseFarNet.build.ps1") -caret 3 { $_ -ccontains 'zipFarDev' }
+'@ -f "$env:FarNetCode\Zoo\ReleaseFarNet.build.ps1") -caret 3 { $_ -ccontains 'Zip-FarDev' }
 
 ### Equals, GetType, ToString
 

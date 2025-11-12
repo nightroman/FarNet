@@ -4,7 +4,7 @@
 #>
 
 param(
-	[ValidateScript({"FN::.\FarNet\FarNet.build.ps1", "PS::.\PowerShellFar\PowerShellFar.build.ps1"})]
+	[ValidateScript({"FN::FarNet\FarNet.build.ps1", "PS::PowerShellFar\PowerShellFar.build.ps1", "pwsf::FarNet\pwsf\1.build.ps1"})]
 	$Extends,
 	$Platform = (property Platform x64),
 	$FarHome = (property FarHome "C:\Bin\Far\$Platform"),
@@ -22,7 +22,7 @@ task reset {
 }
 
 # Synopsis: Remove temp files.
-task clean FN::clean, PS::clean, {
+task clean FN::clean, PS::clean, pwsf::clean, {
 	Invoke-Build clean .\FSharpFar
 }
 
@@ -83,7 +83,7 @@ task meta -Inputs $BuildFile, Get-Version.ps1 -Outputs @(
 "@
 }
 
-# Synopsis: Build projects and PSF help.
+# Synopsis: Build projects and PSF docs.
 task build meta, {
 	#! build the whole solution, i.e. FarNet, FarNetMan, PowerShellFar
 	exec { & (Resolve-MSBuild) @(
@@ -140,7 +140,7 @@ buildFarDescription
 
 # Synopsis: Ensure Help, to test.
 task buildFarDescription {
-	Invoke-Build build, help, clean ..\..\DEV\FarDescription
+	Invoke-Build build, help, clean ..\..\KIT\FarDescription
 }
 
 task . clean

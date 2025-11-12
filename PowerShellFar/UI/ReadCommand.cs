@@ -20,6 +20,10 @@ internal class ReadCommand
 	private string? TextFromEditor;
 	private RunArgs? Out;
 
+	private readonly bool _isKeyBar = Far.Api.GetSetting(FarSetting.Screen, "KeyBar").ToString() == "1";
+	private static readonly bool __isConsoleMode =
+		Environment.GetEnvironmentVariable("FAR_START_COMMAND") is string cmd && cmd.Contains(nameof(Actor.StartCommandConsole), StringComparison.OrdinalIgnoreCase);
+
 	private class Layout
 	{
 		public int DialogLeft, DialogTop, DialogRight, DialogBottom;
@@ -37,7 +41,7 @@ internal class ReadCommand
 		Dialog.TypeId = MyTypeId;
 		Dialog.NoClickOutside = true;
 		Dialog.NoShadow = true;
-		Dialog.Closing += Dialog_Closing;
+		Dialog.Closing += OnClosing;
 		Dialog.LosingFocus += OnLosingFocus;
 		Dialog.ConsoleSizeChanged += OnConsoleSizeChanged;
 
@@ -53,6 +57,15 @@ internal class ReadCommand
 		// with no panels, set area Desktop to hide editor / viewer
 		if (!Far.Api.HasPanels && Far.Api.Window.Kind != WindowKind.Desktop)
 			Far.Api.Window.SetCurrentAt(0);
+	}
+
+	static ReadCommand()
+	{
+		if (__isConsoleMode)
+		{
+			Far.Api.AnyEditor.Closed += OnWindow;
+			Far.Api.AnyViewer.Closed += OnWindow;
+		}
 	}
 
 	public static bool IsActive()
@@ -92,12 +105,13 @@ internal class ReadCommand
 		int pos = PromptTrimmed.Length;
 
 		//! make Edit one cell wider to hide the arrow
+		int formY = size.Y - (_isKeyBar ? 2 : 1);
 		return new()
 		{
 			DialogLeft = 0,
-			DialogTop = size.Y - 1,
+			DialogTop = formY,
 			DialogRight = size.X - 1,
-			DialogBottom = size.Y - 1,
+			DialogBottom = formY,
 			TextLeft = 0,
 			TextTop = 0,
 			TextRight = pos - 1,
@@ -125,7 +139,16 @@ internal class ReadCommand
 		return "PS> ";
 	}
 
-	void Dialog_Closing(object? sender, ClosingEventArgs e)
+	private static void OnWindow(object? sender, EventArgs e)
+	{
+		Far.Api.PostJob(() =>
+		{
+			if (Far.Api.Window.Kind == WindowKind.Panels)
+				_ = StartAsync();
+		});
+	}
+
+	private void OnClosing(object? sender, ClosingEventArgs e)
 	{
 		// cancel
 		if (e.Control is null)
@@ -253,7 +276,6 @@ internal class ReadCommand
 				return;
 
 			case KeyCode.F4 when e.Key.Is():
-			case KeyCode.F5 when e.Key.Is():
 				// modal edit script
 				e.Ignore = true;
 				DoEditor();
@@ -283,15 +305,44 @@ internal class ReadCommand
 
 	private void DoEditor()
 	{
-		var args = new EditTextArgs
+		for (var text = Edit.Text; ; text = TextFromEditor)
 		{
-			Text = Edit.Text,
-			Extension = "ps1",
-			Title = PromptOriginal,
-			EditorOpened = (editor, _) => ((IEditor)editor!).GoTo(Edit.Line.Caret, 0)
-		};
-		TextFromEditor = Far.Api.AnyEditor.EditText(args);
-		Dialog.Close();
+			var args = new EditTextArgs
+			{
+				Text = text,
+				Extension = "ps1",
+				Title = PromptOriginal,
+				EditorOpened = (editor, _) => ((IEditor)editor!).GoTo(Edit.Line.Caret, 0)
+			};
+
+			TextFromEditor = Far.Api.AnyEditor.EditText(args).TrimEnd();
+			if (TextFromEditor.Length == 0)
+				return;
+
+			if (!TextFromEditor.Contains('\n'))
+			{
+				Edit.Text = TextFromEditor;
+				return;
+			}
+
+			var message = $"""
+				Invoke multiline code without keeping history?
+				Yes: Invoke; No: Edit again; Cancel: Discard.
+
+				{TextFromEditor}
+				""";
+
+			switch (Far.Api.Message(message, Res.TextCommandConsole, MessageOptions.YesNoCancel))
+			{
+				case 0:
+					Dialog.Close();
+					return;
+				case 1:
+					continue;
+				default:
+					return;
+			}
+		}
 	}
 
 	private Task<RunArgs?> ReadAsync()
@@ -304,7 +355,7 @@ internal class ReadCommand
 		});
 	}
 
-	private static async Task DoFinallyAsync(WindowKind area1, bool visibleKeyBar, int visiblePanels)
+	private static async Task DoFinallyAsync(WindowKind area1, int visiblePanels)
 	{
 		// close running
 		if (Instance is { })
@@ -333,10 +384,6 @@ internal class ReadCommand
 				throw new InvalidOperationException(ErrorCannotSetPanels, ex);
 			}
 		}
-
-		// restore key bar (may not work with jobs)
-		if (visibleKeyBar)
-			await Tasks.Macro("Keys'CtrlB'");
 
 		// show panels
 		if (visiblePanels > 0)
@@ -380,8 +427,11 @@ internal class ReadCommand
 		}
 
 		// last, post quit
-		if (Environment.GetEnvironmentVariable("FAR_START_COMMAND") is string cmd && cmd.Contains(nameof(Actor.StartCommandConsole)))
-			Far.Api.PostJob(Far.Api.Quit);
+		if (__isConsoleMode)
+		{
+			if (Far.Api.Window.Count <= 2)
+				Far.Api.PostJob(Far.Api.Quit);
+		}
 	}
 
 	public static async Task StartAsync()
@@ -405,11 +455,6 @@ internal class ReadCommand
 					throw new InvalidOperationException(ErrorCannotSetPanels, ex);
 				}
 			}
-
-			// hide key bar (hack)
-			bool visibleKeyBar = Console.CursorTop - Console.WindowTop == Console.WindowHeight - 2;
-			if (visibleKeyBar)
-				await Tasks.Macro("Keys'CtrlB'");
 
 			// hide panels
 			int visiblePanels = Far.Api.Window.CountVisiblePanels();
@@ -442,12 +487,12 @@ internal class ReadCommand
 			}
 			finally
 			{
-				await DoFinallyAsync(area1, visibleKeyBar, visiblePanels);
+				await DoFinallyAsync(area1, visiblePanels);
 			}
 		}
 		catch (Exception ex)
 		{
-			_ = Tasks.Job(() => Far.Api.ShowError("Command console", ex));
+			_ = Tasks.Job(() => Far.Api.ShowError(Res.TextCommandConsole, ex));
 		}
 	}
 }
