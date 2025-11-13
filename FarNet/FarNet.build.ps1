@@ -6,6 +6,7 @@
 param(
 	[ValidateScript({"FA::FarNet\FarNetApi.build.ps1", "FM::FarNetMan\FarNetMan.build.ps1"})]
 	$Extends,
+	[ValidateSet('x64')]
 	$Platform = (property Platform x64),
 	$FarHome = (property FarHome "C:\Bin\Far\$Platform"),
 	$Configuration = (property Configuration Release)
@@ -41,29 +42,14 @@ task markdown {
 	}
 }
 
-# Synopsis: Make Win32 files.
-task buildWin32 {
-	equals $Platform x64
-
-	#! build just FarNetMan
-	exec { & (Resolve-MSBuild) @(
-		"..\FarNet.slnx"
-		"/t:restore,FarNetMan"
-		"/p:Platform=Win32"
-		"/p:FarHome=$(Split-Path $FarHome)\Win32"
-		"/p:Configuration=Release"
-	)}
-}
-
 # Make package files
-task package buildWin32, markdown, {
+task package markdown, {
 	# folders
 	remove z
 	$null = mkdir `
 	z\tools\FarHome\FarNet,
 	z\tools\FarHome\Plugins\FarNet,
-	z\tools\FarHome.x64\Plugins\FarNet,
-	z\tools\FarHome.x86\Plugins\FarNet
+	z\tools\FarHome.x64\Plugins\FarNet
 
 	# copy
 	[System.IO.File]::Delete("$FarHome\FarNet\FarNetAPI.chw")
@@ -79,26 +65,11 @@ task package buildWin32, markdown, {
 		"$FarHome\Plugins\FarNet\FarNetMan.hlf"
 		"$FarHome\Plugins\FarNet\FarNetMan.runtimeconfig.json"
 	)
-	if ($Platform -eq 'Win32') {
-		Copy-Item -Destination z\tools\FarHome.x64\Plugins\FarNet @(
-			"FarNetMan\Release\x64\FarNetMan.dll"
-			"FarNetMan\Release\x64\Ijwhost.dll"
-		)
-		Copy-Item -Destination z\tools\FarHome.x86\Plugins\FarNet @(
-			"$FarHome\Plugins\FarNet\FarNetMan.dll"
-			"$FarHome\Plugins\FarNet\Ijwhost.dll"
-		)
-	}
-	else {
-		Copy-Item -Destination z\tools\FarHome.x64\Plugins\FarNet @(
-			"$FarHome\Plugins\FarNet\FarNetMan.dll"
-			"$FarHome\Plugins\FarNet\Ijwhost.dll"
-		)
-		Copy-Item -Destination z\tools\FarHome.x86\Plugins\FarNet @(
-			"FarNetMan\Release\Win32\FarNetMan.dll"
-			"FarNetMan\Release\Win32\Ijwhost.dll"
-		)
-	}
+
+	Copy-Item -Destination z\tools\FarHome.x64\Plugins\FarNet @(
+		"$FarHome\Plugins\FarNet\FarNetMan.dll"
+		"$FarHome\Plugins\FarNet\Ijwhost.dll"
+	)
 
 	# icon
 	Copy-Item ..\Zoo\FarNetLogo.png z

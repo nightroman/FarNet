@@ -77,8 +77,7 @@ Create and test NuGet packages?
 
 task Test-FarNet -If {
 	ask @'
-Test FarNet, mind x86, x64.
-Start default testing?
+Start testing?
 '@
 } {
 	$begin = [datetime]::Now

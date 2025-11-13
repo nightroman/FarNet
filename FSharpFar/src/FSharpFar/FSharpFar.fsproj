@@ -5,7 +5,7 @@
     <OutDir>$(FarHome)\FarNet\Modules\$(AssemblyName)</OutDir>
     <GenerateDependencyFile>false</GenerateDependencyFile>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
@@ -41,8 +41,8 @@
     <Reference Include="$(FarHome)\FarNet\FarNet.dll">
       <Private>False</Private>
     </Reference>
-    <PackageReference Include="FSharp.Core" Version="9.0.303" />
-    <PackageReference Include="FSharp.Compiler.Service" Version="43.9.303" />
+    <PackageReference Include="FSharp.Core" Version="10.0.100" />
+    <PackageReference Include="FSharp.Compiler.Service" Version="43.10.100" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="ib publish -Configuration $(Configuration) -FarHome $(FarHome)" />

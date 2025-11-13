@@ -1,5 +1,13 @@
 ﻿https://www.nuget.org/packages/FarNet
 
+= 10.0.0 =
+
+Requires and uses .NET 10.0.
+Win32 x86 is no longer supported.
+
+Existing modules do not have to be upgraded.
+But gradual migration to net10.0 is recommended.
+
 = 9.0.52 =
 
 Dialog geometry: support some more calculated.

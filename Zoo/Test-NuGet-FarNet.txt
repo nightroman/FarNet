@@ -4,11 +4,6 @@ FarHome.x64\Plugins
 FarHome.x64\Plugins\FarNet
 FarHome.x64\Plugins\FarNet\FarNetMan.dll
 FarHome.x64\Plugins\FarNet\Ijwhost.dll
-FarHome.x86
-FarHome.x86\Plugins
-FarHome.x86\Plugins\FarNet
-FarHome.x86\Plugins\FarNet\FarNetMan.dll
-FarHome.x86\Plugins\FarNet\Ijwhost.dll
 FarHome\FarNet
 FarHome\FarNet\About-FarNet.html
 FarHome\FarNet\FarNet.dll

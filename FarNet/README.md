@@ -253,18 +253,6 @@ incorrect menu, or works incorrectly.
 
 Try again after removing the module cache `%FARLOCALPROFILE%\FarNet\Cache*.bin`
 
----
-
-**Problem:** x86 Far on x64 machines: in rare cases not trivial .NET modules
-cannot be loaded because x86 Far disables WOW64 redirection.
-
-The best way to avoid this problem is to use x64 Far, FarNet, and plugins on
-x64 machines. But this is not always possible. Then the following batch file
-can be used to start x86 Far:
-
-    set PATH=%WINDIR%\syswow64;%PATH%
-    Far.exe
-
 *********************************************************************
 ## Plugin menu
 

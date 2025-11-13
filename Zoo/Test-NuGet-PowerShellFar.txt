@@ -92,19 +92,6 @@ FarHome\FarNet\Modules\PowerShellFar\runtimes\win-x64\native\microsoft.managemen
 FarHome\FarNet\Modules\PowerShellFar\runtimes\win-x64\native\PowerShell.Core.Instrumentation.dll
 FarHome\FarNet\Modules\PowerShellFar\runtimes\win-x64\native\pwrshplugin.dll
 FarHome\FarNet\Modules\PowerShellFar\runtimes\win-x64\native\sni.dll
-FarHome\FarNet\Modules\PowerShellFar\runtimes\win-x86
-FarHome\FarNet\Modules\PowerShellFar\runtimes\win-x86\lib
-FarHome\FarNet\Modules\PowerShellFar\runtimes\win-x86\lib\net5.0
-FarHome\FarNet\Modules\PowerShellFar\runtimes\win-x86\lib\net5.0\getfilesiginforedistwrapper.dll
-FarHome\FarNet\Modules\PowerShellFar\runtimes\win-x86\lib\netstandard1.6
-FarHome\FarNet\Modules\PowerShellFar\runtimes\win-x86\lib\netstandard1.6\microsoft.management.infrastructure.dll
-FarHome\FarNet\Modules\PowerShellFar\runtimes\win-x86\lib\netstandard1.6\microsoft.management.infrastructure.native.dll
-FarHome\FarNet\Modules\PowerShellFar\runtimes\win-x86\native
-FarHome\FarNet\Modules\PowerShellFar\runtimes\win-x86\native\getfilesiginforedist.dll
-FarHome\FarNet\Modules\PowerShellFar\runtimes\win-x86\native\microsoft.management.infrastructure.native.unmanaged.dll
-FarHome\FarNet\Modules\PowerShellFar\runtimes\win-x86\native\PowerShell.Core.Instrumentation.dll
-FarHome\FarNet\Modules\PowerShellFar\runtimes\win-x86\native\pwrshplugin.dll
-FarHome\FarNet\Modules\PowerShellFar\runtimes\win-x86\native\sni.dll
 FarHome\FarNet\Modules\PowerShellFar\runtimes\win\lib
 FarHome\FarNet\Modules\PowerShellFar\runtimes\win\lib\net8.0
 FarHome\FarNet\Modules\PowerShellFar\runtimes\win\lib\net8.0\System.Data.SqlClient.dll
@@ -322,7 +309,6 @@ FarHome\FarNet\Modules\PowerShellFar\runtimes\win\lib\net9.0\System.Runtime.Cach
 FarHome\FarNet\Modules\PowerShellFar\runtimes\win\lib\net9.0\System.Security.Cryptography.Pkcs.dll
 FarHome\FarNet\Modules\PowerShellFar\runtimes\win\lib\net9.0\System.ServiceProcess.ServiceController.dll
 FarHome\FarNet\Modules\PowerShellFar\runtimes\win\lib\net9.0\System.Speech.dll
-FarHome\FarNet\Modules\PowerShellFar\runtimes\win\lib\net9.0\System.Threading.AccessControl.dll
 FarHome\FarNet\Modules\PowerShellFar\runtimes\win\lib\net9.0\System.Windows.Extensions.dll
 FarHome\FarNet\Modules\PowerShellFar\System.CodeDom.dll
 FarHome\FarNet\Modules\PowerShellFar\System.ComponentModel.Composition.dll
@@ -358,7 +344,6 @@ FarHome\FarNet\Modules\PowerShellFar\System.ServiceModel.Security.dll
 FarHome\FarNet\Modules\PowerShellFar\System.ServiceModel.Syndication.dll
 FarHome\FarNet\Modules\PowerShellFar\System.ServiceProcess.ServiceController.dll
 FarHome\FarNet\Modules\PowerShellFar\System.Speech.dll
-FarHome\FarNet\Modules\PowerShellFar\System.Threading.AccessControl.dll
 FarHome\FarNet\Modules\PowerShellFar\System.Web.Services.Description.dll
 FarHome\FarNet\Modules\PowerShellFar\System.Windows.Extensions.dll
 FarHome\FarNet\Modules\PowerShellFar\TabExpansion2.ps1

@@ -585,8 +585,9 @@ static class EditorKit
 				editor.GoTo(x, y);
 				editor.Redraw();
 			}
-			else if (file is { })
+			else if (!string.IsNullOrEmpty(file))
 			{
+				//! may be empty, e.g. on missing task
 				//! post over user screen
 				Far.Api.PostJob(() =>
 				{

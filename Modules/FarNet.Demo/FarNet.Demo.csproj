@@ -4,7 +4,7 @@
     <FarNetModules Condition="'$(FarNetModules)' == ''">$(FarHome)\FarNet\Modules</FarNetModules>
     <OutDir>$(FarNetModules)\$(AssemblyName)</OutDir>
     <GenerateDependencyFile>false</GenerateDependencyFile>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>

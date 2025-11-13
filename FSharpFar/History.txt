@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 
+= 5.2.0 =
+
+Requires .NET 10.0, FarNet 10.0.0
+
+F# 10 with FSharp.Core 10.0.100, FSharp.Compiler.Service 43.10.100
+
 = 5.1.6 =
 
 Use FarNet 9.0.45 and ExpandTabs.

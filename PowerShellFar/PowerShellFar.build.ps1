@@ -9,8 +9,8 @@ param(
 )
 
 Set-StrictMode -Version 3
-$_name_PowerShellFar = "PowerShellFar"
-$_root_PowerShellFar = "$FarHome\FarNet\Modules\$_name_PowerShellFar"
+$_name_psf = "PowerShellFar"
+$_root_psf = "$FarHome\FarNet\Modules\$_name_psf"
 
 task clean {
 	remove z, bin, obj, About-PowerShellFar.html
@@ -20,7 +20,7 @@ task clean {
 task publish installBin, installRes
 
 task uninstall {
-	if (Test-Path $_root_PowerShellFar) { Remove-Item $_root_PowerShellFar -Recurse -Force }
+	if (Test-Path $_root_psf) { Remove-Item $_root_psf -Recurse -Force }
 }
 
 task markdown {
@@ -35,32 +35,32 @@ task markdown {
 		'--metadata=lang:en'
 		'--metadata=pagetitle:PowerShellFar'
 	)}
-	exec { HtmlToFarHelp.exe from=About-PowerShellFar.html "to=$_root_PowerShellFar\PowerShellFar.hlf" }
+	exec { HtmlToFarHelp.exe from=About-PowerShellFar.html "to=$_root_psf\PowerShellFar.hlf" }
 }
 
 task installBin {
 	Stop-Process -Name Far -ErrorAction Ignore
-	exec { dotnet publish "$_name_PowerShellFar.csproj" -c $Configuration -o $_root_PowerShellFar --no-build }
+	exec { dotnet publish "$_name_psf.csproj" -c $Configuration -o $_root_psf --no-build }
 
 	# move `ref` folder to "expected" location or cannot compile C# in PS
-	remove "$_root_PowerShellFar\runtimes\win\lib\net9.0\ref"
-	Move-Item "$_root_PowerShellFar\ref" "$_root_PowerShellFar\runtimes\win\lib\net9.0\ref"
+	remove "$_root_psf\runtimes\win\lib\net9.0\ref"
+	Move-Item "$_root_psf\ref" "$_root_psf\runtimes\win\lib\net9.0\ref"
 
 	# unused
-	Set-Location "$_root_PowerShellFar\runtimes"
-	remove android*, freebsd, illumos, ios, linux*, maccatalyst*, osx*, solaris, tvos, unix, win-arm*
+	Set-Location "$_root_psf\runtimes"
+	remove android*, freebsd, illumos, ios, linux*, maccatalyst*, osx*, solaris, tvos, unix, win-arm*, win-x86
 
 	# 2024-11-18-1917 remove CIM, avoid bad issues
-	Set-Location "$_root_PowerShellFar\runtimes\win\lib\net9.0"
+	Set-Location "$_root_psf\runtimes\win\lib\net9.0"
 	remove Modules\CimCmdlets, Microsoft.Management.Infrastructure.CimCmdlets.dll
 }
 
 task installRes {
-	Copy-Item -Destination $_root_PowerShellFar TabExpansion2.ps1
+	Copy-Item -Destination $_root_psf TabExpansion2.ps1
 }
 
 # Build PowerShell help if FarHost else Write-Warning.
-task help -Inputs {Get-Item Commands\*} -Outputs "$_root_PowerShellFar\PowerShellFar.dll-Help.xml" {
+task help -Inputs {Get-Item Commands\*} -Outputs "$_root_psf\PowerShellFar.dll-Help.xml" {
 	if ($Host.Name -eq 'FarHost') {
 		. Helps.ps1
 		Convert-Helps "$BuildRoot\Commands\Help.ps1" "$Outputs"
@@ -83,7 +83,7 @@ task package markdown, {
 	Copy-Item -Destination z\tools\FarHome $FarHome\pwsf.exe
 
 	# module
-	exec { robocopy $_root_PowerShellFar $toModule /s } 1
+	exec { robocopy $_root_psf $toModule /s } 1
 
 	Copy-Item -Destination $toModule -Recurse -Force @(
 		"Bench"

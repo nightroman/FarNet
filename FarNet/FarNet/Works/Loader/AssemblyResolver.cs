@@ -1,14 +1,5 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Reflection;
-using System.Runtime.InteropServices;
 
 namespace FarNet.Works;
 #pragma warning disable 1591
@@ -19,16 +10,11 @@ public static class AssemblyResolver
 	const string Win64 = "win-x64";
 	const string Win86 = "win-x86";
 
-	static readonly string _win_this;
-	static readonly string _win_skip;
 	static readonly string[] _folders;
 	static readonly LinkedList<string> _lastRoots = [];
 
 	static AssemblyResolver()
 	{
-		_win_this = RuntimeInformation.RuntimeIdentifier;
-		_win_skip = _win_this switch { Win64 => Win86, Win86 => Win64, _ => throw new Exception("Unknown runtime.") };
-
 		var root = $"{Environment.GetEnvironmentVariable("FARHOME")}\\FarNet\\";
 		var folders = new List<string>(2);
 		{
@@ -90,7 +76,7 @@ public static class AssemblyResolver
 		// System.Management.Automation ->
 		//   Microsoft.Management.Infrastructure
 		{
-			var path = $"{root}\\runtimes\\{_win_this}\\lib\\netstandard1.6\\{dllName}";
+			var path = $"{root}\\runtimes\\{Win64}\\lib\\netstandard1.6\\{dllName}";
 			if (File.Exists(path))
 				return Assembly.LoadFrom(path);
 		}
@@ -159,7 +145,7 @@ public static class AssemblyResolver
 		Debug.WriteLine($"## ResolveAssembly {name} <-- {args.RequestingAssembly.Location}");
 
 		if (paths.Count > 1)
-			paths.RemoveAll(x => x.Contains(_win_skip));
+			paths.RemoveAll(x => x.Contains(Win86));
 
 		// one in FarNet
 		if (paths.Count == 1)

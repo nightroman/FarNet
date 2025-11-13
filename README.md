@@ -10,9 +10,9 @@ Far Manager platform for .NET modules and scripts in PowerShell, F#, JavaScript
 
 ## Prerequisites
 
-**.NET 9.0**
+**.NET 10.0**
 
-Download and install [.NET 9.0 SDK or runtime](https://aka.ms/dotnet/download), **x64 or x86 depending on Far Manager**.\
+Download and install [.NET 10.0 SDK or runtime](https://aka.ms/dotnet/download), **x64**.\
 SDK is needed for developing FarNet modules but recommended in any case.
 
 Check for existing installations by these commands:
@@ -22,18 +22,13 @@ Check for existing installations by these commands:
 
 **Visual C++ Redistributable**
 
-Look at the installed programs and find entries like:
+Find this at the installed programs, download and install if missing:
 
-- Microsoft Visual C++ 2015-2022 Redistributable (x64)
-- Microsoft Visual C++ 2015-2022 Redistributable (x86)
-
-If they are missing, then install the required.
-Links are not provided, they keep changing.
+- Microsoft Visual C++ Redistributable v14 (x64)
 
 **Far Manager**
 
-Choose the required from [downloads](https://www.farmanager.com/download.php?l=en).\
-Normally the stable build is recommended.
+Choose the required from [downloads](https://www.farmanager.com/download.php?l=en).
 
 ## Install using PowerShell
 

@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 10.0.0 =
+
+Requires and uses .NET 10.0.
+Win32 x86 is no longer supported.
+
 = 9.0.79 =
 
 pwsf - PowerShell console on steroids powered by Far / FarNet / PowerShellFar

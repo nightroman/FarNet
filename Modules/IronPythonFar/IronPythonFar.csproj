@@ -4,7 +4,7 @@
     <FarNetModules Condition="'$(FarNetModules)' == ''">$(FarHome)\FarNet\Modules</FarNetModules>
     <OutDir>$(FarNetModules)\$(AssemblyName)</OutDir>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="IronPython" Version="3.4.2" />

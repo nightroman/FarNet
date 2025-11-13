@@ -9,7 +9,7 @@ param(
 )
 
 task build {
-	Set-Alias MSBuild (Resolve-MSBuild)
+	Set-Alias MSBuild (Resolve-MSBuild 17.0)
 	exec { MSBuild FarNetAPI.shfbproj /p:Configuration=Release }
 },
 test

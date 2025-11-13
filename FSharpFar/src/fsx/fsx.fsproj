@@ -4,7 +4,7 @@
     <FarHome Condition="'$(FarHome)' == ''">C:\Bin\Far\x64</FarHome>
     <MyOutDir>$(FarHome)\FarNet\Modules\FSharpFar</MyOutDir>
     <GenerateDependencyFile>false</GenerateDependencyFile>
-    <TargetFramework>net9.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <OutputType>Exe</OutputType>
@@ -22,8 +22,8 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FSharp.Core" Version="9.0.303" />
-    <PackageReference Include="FSharp.Compiler.Service" Version="43.9.303" />
+    <PackageReference Include="FSharp.Core" Version="10.0.100" />
+    <PackageReference Include="FSharp.Compiler.Service" Version="43.10.100" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <ItemGroup>

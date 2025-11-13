@@ -140,7 +140,7 @@ module Config =
         addProperty "StartProgram" (getFarExePath ())
 
         //! use `windows` or charting is not happy
-        addProperty "TargetFramework" "net9.0-windows"
+        addProperty "TargetFramework" "net10.0-windows"
         addProperty "UseWindowsForms" "true"
         addProperty "DisableImplicitFSharpCoreReference" "true"
 

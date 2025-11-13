@@ -13,8 +13,6 @@ let [<Literal>] private Win86 = "win-x86"
 
 let mutable private _folders : string[] = Array.empty
 let private _roots = LinkedList<string>()
-let private _win_this = RuntimeInformation.RuntimeIdentifier
-let private _win_skip = match _win_this with Win64 -> Win86 | Win86 -> Win64 | _ -> failwith "Unknown runtime."
 
 let init (folders : string seq) =
     _folders <- Seq.toArray folders
@@ -98,7 +96,7 @@ let assemblyResolve _ (args: ResolveEventArgs) =
     Debug.WriteLine($"## assemblyResolve {name}")
 
     if paths.Count > 1 then
-        paths.RemoveAll(fun x -> x.Contains(_win_skip)) |> ignore
+        paths.RemoveAll(fun x -> x.Contains(Win86)) |> ignore
 
     // one in folders
     if paths.Count = 1 then
