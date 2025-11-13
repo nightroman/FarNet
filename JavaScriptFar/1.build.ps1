@@ -4,24 +4,24 @@
 #>
 
 param(
-	$FarHome = (property FarHome C:\Bin\Far\x64),
-	$Configuration = (property Configuration Release)
+	$Configuration = (property Configuration Release),
+	$FarHome = (property FarHome C:\Bin\Far\x64)
 )
 
 Set-StrictMode -Version 3
-$ModuleName = 'JavaScriptFar'
-$ModuleRoot = "$FarHome\FarNet\Modules\$ModuleName"
-$Description = 'JavaScript scripting in Far Manager.'
+$_name = 'JavaScriptFar'
+$_root = "$FarHome\FarNet\Modules\$_name"
+$_description = 'JavaScript scripting in Far Manager.'
 
 task meta -Inputs $BuildFile, History.txt -Outputs Directory.Build.props -Jobs version, {
 	Set-Content Directory.Build.props @"
 <Project>
 	<PropertyGroup>
-		<Description>$Description</Description>
 		<Company>https://github.com/nightroman/FarNet</Company>
 		<Copyright>Copyright (c) Roman Kuzmin</Copyright>
-		<Product>FarNet.$ModuleName</Product>
-		<Version>$Version</Version>
+		<Description>$_description</Description>
+		<Product>FarNet.$_name</Product>
+		<Version>$_version</Version>
 		<IncludeSourceRevisionInInformationalVersion>False</IncludeSourceRevisionInInformationalVersion>
 	</PropertyGroup>
 </Project>
@@ -29,7 +29,13 @@ task meta -Inputs $BuildFile, History.txt -Outputs Directory.Build.props -Jobs v
 }
 
 task build meta, {
-	exec { dotnet build -c $Configuration -p:FarHome=$FarHome }
+	exec { dotnet build -c $Configuration -p:FarHome=$FarHome --tl:off }
+}
+
+task publish {
+	Set-Location $_root
+	Copy-Item runtimes\win-x64\native\* .
+	remove runtimes
 }
 
 task clean {
@@ -37,7 +43,7 @@ task clean {
 }
 
 task version {
-	($Script:Version = Get-BuildVersion History.txt '^= (\d+\.\d+\.\d+) =$')
+	($Script:_version = Get-BuildVersion History.txt '^= (\d+\.\d+\.\d+) =$')
 }
 
 task markdown {
@@ -49,16 +55,18 @@ task markdown {
 		'--embed-resources'
 		'--standalone'
 		"--css=$env:MarkdownCss"
-		"--metadata=pagetitle=$ModuleName"
+		"--metadata=pagetitle=$_name"
 	)}
 }
 
-task package markdown, {
+task package markdown, version, {
+	equals $_version (Get-Item "$_root\$_name.dll").VersionInfo.ProductVersion
+
 	remove z
-	$toModule = mkdir "z\tools\FarHome\FarNet\Modules\$ModuleName"
+	$toModule = New-Item "z\tools\FarHome\FarNet\Modules\$_name" -ItemType Directory
 
 	# module
-	exec { robocopy $ModuleRoot $toModule /s /xf *.pdb } 1
+	Copy-Item "$_root\*" $toModule -Recurse
 
 	# nuget
 	Copy-Item -Destination z @(
@@ -79,35 +87,34 @@ ClearScript.V8.dll
 ClearScript.V8.ICUData.dll
 ClearScript.Windows.Core.dll
 ClearScript.Windows.dll
+ClearScriptV8.win-x64.dll
 History.txt
-JavaScriptFar.deps.json
 JavaScriptFar.dll
+JavaScriptFar.pdb
 LICENSE
 Newtonsoft.Json.dll
 README.html
-runtimes\win-x64\native\ClearScriptV8.win-x64.dll
-runtimes\win-x86\native\ClearScriptV8.win-x86.dll
 '@
 }
 
 task nuget package, version, {
-	$dllVersion = (Get-Item "$FarHome\FarNet\Modules\$ModuleName\$ModuleName.dll").VersionInfo.ProductVersion
-	equals $Version $dllVersion
+	$dllVersion = (Get-Item "$FarHome\FarNet\Modules\$_name\$_name.dll").VersionInfo.ProductVersion
+	equals $_version $dllVersion
 
 	Set-Content z\Package.nuspec @"
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
-		<id>FarNet.$ModuleName</id>
-		<version>$Version</version>
+		<id>FarNet.$_name</id>
+		<version>$_version</version>
 		<authors>Roman Kuzmin</authors>
 		<owners>Roman Kuzmin</owners>
-		<projectUrl>https://github.com/nightroman/FarNet/tree/main/$ModuleName</projectUrl>
+		<projectUrl>https://github.com/nightroman/FarNet/tree/main/$_name</projectUrl>
 		<icon>FarNetLogo.png</icon>
 		<readme>README.md</readme>
 		<license type="expression">BSD-3-Clause</license>
-		<description>$Description</description>
-		<releaseNotes>https://github.com/nightroman/FarNet/blob/main/$ModuleName/History.txt</releaseNotes>
+		<description>$_description</description>
+		<releaseNotes>https://github.com/nightroman/FarNet/blob/main/$_name/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module JavaScript ClearScript V8</tags>
 	</metadata>
 </package>

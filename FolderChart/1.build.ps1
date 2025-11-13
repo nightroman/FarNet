@@ -38,7 +38,7 @@ task markdown {
 	)}
 }
 
-task meta -Inputs 1.build.ps1, History.txt -Outputs Directory.Build.props -Jobs version, {
+task meta -Inputs $BuildFile, History.txt -Outputs Directory.Build.props -Jobs version, {
 	Set-Content Directory.Build.props @"
 <Project>
 	<PropertyGroup>
@@ -47,15 +47,14 @@ task meta -Inputs 1.build.ps1, History.txt -Outputs Directory.Build.props -Jobs 
 		<Description>$_description</Description>
 		<Product>FarNet.$_name</Product>
 		<Version>$_version</Version>
-		<FileVersion>$_version</FileVersion>
-		<AssemblyVersion>$_version</AssemblyVersion>
+		<IncludeSourceRevisionInInformationalVersion>False</IncludeSourceRevisionInInformationalVersion>
 	</PropertyGroup>
 </Project>
 "@
 }
 
 task package version, markdown, {
-	equals $_version (Get-Item "$_root\$_name.dll").VersionInfo.FileVersion
+	equals $_version (Get-Item "$_root\$_name.dll").VersionInfo.ProductVersion
 
 	remove z
 	$toModule = New-Item "z\tools\FarHome\FarNet\Modules\$_name" -ItemType Directory
