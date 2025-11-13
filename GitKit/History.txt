@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 1.5.0 =
+
+Uses .NET 10
+
 = 1.4.9 =
 
 Branches panel
