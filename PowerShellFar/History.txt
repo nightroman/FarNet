@@ -1,5 +1,14 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 10.0.1 =
+
+Command console
+- Sync $PWD and hidden panel
+- Use same scrolling keys as WT
+- Tweaks for using as WT quake window
+
+	wt -w _quake -p pwsf
+
 = 10.0.0 =
 
 Requires and uses .NET 10.0.

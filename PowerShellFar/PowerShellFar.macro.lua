@@ -8,7 +8,7 @@ Macro {
 }
 
 Macro {
-  key="Ctrl="; description="PSF Command console";
+  key="Ctrl`"; description="PSF: Command console";
   area="Shell Editor Viewer";
   action = function()
     Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "vps:$Psf.StartCommandConsole()")

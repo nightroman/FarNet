@@ -15,10 +15,10 @@ internal class ReadCommand
 	private readonly IDialog Dialog;
 	private readonly IText Text;
 	private readonly IEdit Edit;
-	private readonly string PromptOriginal;
+	private string PromptOriginal;
 	private string? PromptTrimmed;
 	private string? TextFromEditor;
-	private RunArgs? Out;
+	private RunArgs? ArgsToRun;
 
 	private readonly bool _isKeyBar = Far.Api.GetSetting(FarSetting.Screen, "KeyBar").ToString() == "1";
 	private static readonly bool __isConsoleMode =
@@ -42,6 +42,7 @@ internal class ReadCommand
 		Dialog.NoClickOutside = true;
 		Dialog.NoShadow = true;
 		Dialog.Closing += OnClosing;
+		Dialog.GotFocus += OnGotFocus;
 		Dialog.LosingFocus += OnLosingFocus;
 		Dialog.ConsoleSizeChanged += OnConsoleSizeChanged;
 
@@ -121,16 +122,17 @@ internal class ReadCommand
 		};
 	}
 
+	//! Use not empty res[0], as PS does.
 	private static string GetPrompt()
 	{
 		try
 		{
-			using var ps = A.NewPowerShell();
-			var res = ps.AddCommand("prompt").Invoke();
+			A.SyncPaths();
 
-			//! as PS, use not empty res[0]
+			var res = A.InvokeCode("prompt");
+
 			string prompt;
-			if (res.Count > 0 && res[0] != null && (prompt = res[0].ToString()).Length > 0)
+			if (res.Count > 0 && res[0] is { } obj && (prompt = obj.ToString()).Length > 0)
 				return prompt;
 		}
 		catch (RuntimeException)
@@ -166,16 +168,37 @@ internal class ReadCommand
 		}
 
 		// result
-		Out = new RunArgs(code) { Writer = new ConsoleOutputWriter(echo), UseTeeResult = true };
+		ArgsToRun = new RunArgs(code) { Writer = new ConsoleOutputWriter(echo), UseTeeResult = true };
 	}
 
-	private bool _Dialog_LosingFocus;
+	// Why post? On `cd X` from user menu it gets focus before the panel changes dir.
+	private bool _OnGotFocus;
+	private void OnGotFocus(object? sender, EventArgs e)
+	{
+		if (!_OnGotFocus)
+		{
+			_OnGotFocus = true;
+			return;
+		}
+
+		Far.Api.PostJob(() =>
+		{
+			var prompt = GetPrompt();
+			if (prompt != PromptOriginal)
+			{
+				PromptOriginal = prompt;
+				OnConsoleSizeChanged(null, null!);
+			}
+		});
+	}
+
+	private bool _OnLosingFocus;
 	private void OnLosingFocus(object? sender, EventArgs e)
 	{
-		if (_Dialog_LosingFocus)
+		if (_OnLosingFocus)
 			return;
 
-		_Dialog_LosingFocus = true;
+		_OnLosingFocus = true;
 
 		_ = Tasks.ExecuteAndCatch(async () =>
 		{
@@ -194,7 +217,7 @@ internal class ReadCommand
 		null,
 		() =>
 		{
-			_Dialog_LosingFocus = false;
+			_OnLosingFocus = false;
 		});
 	}
 
@@ -233,20 +256,29 @@ internal class ReadCommand
 	{
 		switch (e.Key.VirtualKeyCode)
 		{
-			case KeyCode.PageUp when e.Key.Is():
-			case KeyCode.PageDown when e.Key.Is():
-			case KeyCode.UpArrow when e.Key.IsShift():
-			case KeyCode.DownArrow when e.Key.IsShift():
-			case KeyCode.Home when e.Key.IsCtrl():
-			case KeyCode.End when e.Key.IsCtrl():
+			//! like WT
+			case KeyCode.PageUp when e.Key.IsCtrlShift():
+			case KeyCode.PageDown when e.Key.IsCtrlShift():
+			case KeyCode.UpArrow when e.Key.IsCtrlShift():
+			case KeyCode.DownArrow when e.Key.IsCtrlShift():
+			case KeyCode.Home when e.Key.IsCtrlShift():
+			case KeyCode.End when e.Key.IsCtrlShift():
 				e.Ignore = true;
 				DoScroll(e);
 				return;
 
-			case KeyCode.Escape when e.Key.Is() && Edit.Line.Length > 0:
-				// clear text if not empty
-				e.Ignore = true;
-				Edit.Text = string.Empty;
+			case KeyCode.Escape when e.Key.Is():
+				if (Edit.Line.Length > 0)
+				{
+					// clear text
+					e.Ignore = true;
+					Edit.Text = string.Empty;
+				}
+				else if (__isConsoleMode)
+				{
+					// avoid closing
+					e.Ignore = true;
+				}
 				return;
 
 			case KeyCode.Tab when e.Key.Is():
@@ -351,7 +383,7 @@ internal class ReadCommand
 		{
 			await Tasks.Dialog(Dialog);
 			HistoryKit.ResetNavigation();
-			return Out;
+			return ArgsToRun;
 		});
 	}
 
@@ -478,10 +510,14 @@ internal class ReadCommand
 
 					// run
 					var newPanel = await Tasks.Command(() => A.Run(args));
-					if (newPanel is { })
+					if (newPanel is { } && !__isConsoleMode)
 					{
 						Stop();
 						run = false;
+					}
+					else
+					{
+						A.SyncPathsBack();
 					}
 				}
 			}

@@ -6,8 +6,6 @@ namespace FarNetTest.About;
 
 public class TestFar : IFar
 {
-	public override bool HasPanels => throw new NotImplementedException();
-
 	public override Version FarVersion => throw new NotImplementedException();
 
 	public override Version FarNetVersion => throw new NotImplementedException();

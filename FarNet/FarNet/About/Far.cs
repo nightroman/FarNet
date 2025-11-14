@@ -18,10 +18,12 @@ namespace FarNet;
 /// </remarks>
 public abstract class IFar
 {
+	bool? _HasPanels;
+
 	/// <summary>
 	/// Gets true if Far has panels, i.e. not started as <c>/e</c> or <c>/v</c>.
 	/// </summary>
-	public abstract bool HasPanels { get; }
+	public bool HasPanels => _HasPanels ??= Panel is { };
 
 	/// <summary>
 	/// Gets a module action by its ID. Null is returned if the ID is not found.

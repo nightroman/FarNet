@@ -165,6 +165,20 @@ internal static class A
 		pathIntrinsics.SetLocation(WildcardPattern.Escape(currentDirectory));
 	}
 
+	// Sets Far current directory from PowerShell current location.
+	internal static void SyncPathsBack()
+	{
+		if (IsRunning || !Far.Api.HasPanels)
+			return;
+
+		var path = Engine.SessionState.Path.CurrentFileSystemLocation.Path;
+		if (!path.Equals(Far.Api.CurrentDirectory, StringComparison.OrdinalIgnoreCase))
+		{
+			if (Far.Api.Panel is { } panel)
+				panel.CurrentDirectory = path;
+		}
+	}
+
 	// Stops the running pipeline.
 	private static void CancelKeyPress(object? sender, ConsoleCancelEventArgs e)
 	{

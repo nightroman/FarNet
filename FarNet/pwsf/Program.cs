@@ -6,7 +6,7 @@ var fileName = string.IsNullOrEmpty(farHome) ? "Far.exe" : $"{farHome}\\Far.exe"
 
 var sb = new StringBuilder("/set:Panel.Left.Visible=false /set:Panel.Right.Visible=false");
 
-var pwd = args.Length > 0 ? args[0] : null;
+var pwd = args.Length > 0 ? args[0] : Environment.CurrentDirectory;
 if (pwd is { })
     sb.Append(" \"{pwd}\" \"{pwd}\"");
 

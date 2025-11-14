@@ -4,13 +4,6 @@
 
 #undef FCTL_GETPANELINFO
 
-bool HasPanels()
-{
-	PanelInfo info;
-	info.StructSize = sizeof(info);
-	return (bool)Info.PanelControl(PANEL_ACTIVE, FCTL_GETPANELINFO, 0, &info);
-}
-
 void GetPanelInfo(HANDLE handle, PanelInfo& info)
 {
 	SetState<bool> state(State::GetPanelInfo, true);

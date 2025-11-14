@@ -354,9 +354,9 @@ Command output is written to the console.
 
     Shows the [command history](#command-history).
 
-- `[PgUp]`, `[PgDn]`, `[ShiftUp]`, `[ShiftDown]`, `[CtrlHome]`, `[CtrlEnd]`
+- `[CtrlShift{Up|Down|PgUp|PgDn|Home|End}]`
 
-    Console scrolling by pages, lines, buffer.
+    Console scrolling by lines, pages, buffer.
 
 **Custom command prompt**
 

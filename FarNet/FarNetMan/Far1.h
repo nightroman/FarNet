@@ -1,6 +1,5 @@
 #pragma once
 #include "Panel0.h"
-#include "Wrappers.h"
 
 namespace FarNet
 {
@@ -8,7 +7,6 @@ namespace FarNet
 ref class Far1 sealed : IFar
 {
 public:
-	virtual property bool HasPanels { bool get() override { return ::HasPanels(); } }
 	virtual property FarNet::MacroArea MacroArea { FarNet::MacroArea get() override; }
 	virtual property FarNet::MacroState MacroState { FarNet::MacroState get() override; }
 	virtual property IAnyEditor^ AnyEditor { IAnyEditor^ get() override; }
