@@ -4,11 +4,11 @@
 #>
 
 param(
-	[ValidateScript({"FN::FarNet\FarNet.build.ps1", "PS::PowerShellFar\PowerShellFar.build.ps1", "pwsf::FarNet\pwsf\1.build.ps1"})]
+	[ValidateScript({"FN::FarNet\FarNet.build.ps1", "PS::PowerShellFar\1.build.ps1", "pwsf::PowerShellFar\Modules\pwsf\1.build.ps1"})]
 	$Extends,
+	$Configuration = (property Configuration Release),
 	$Platform = (property Platform x64),
-	$FarHome = (property FarHome "C:\Bin\Far\$Platform"),
-	$Configuration = (property Configuration Release)
+	$FarHome = (property FarHome "C:\Bin\Far\$Platform")
 )
 
 Enter-Build {

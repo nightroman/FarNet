@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 10.0.2 =
+
+Command console
+- Add [F2] for user menu
+
 = 10.0.1 =
 
 Command console

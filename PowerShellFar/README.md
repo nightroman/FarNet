@@ -330,6 +330,15 @@ Command output is written to the console.
     If the input is empty shows this topic.
     Otherwise shows PowerShell context help.
 
+- `[F2]`
+
+    Shows the user menu. Note that some commands may not as expected in this
+    mode, especially with `pwsf.exe`. Yet many commands are still useful.
+
+    E.g. `cd` is still useful, it changes the hidden active panel, see the
+    updated prompt path. Now PowerShell or other user menu commands operate
+    with the new current directory.
+
 - `[F4]`
 
     Opens more comfortable editor for composing the command.

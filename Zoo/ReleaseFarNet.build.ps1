@@ -66,7 +66,7 @@ task Build-PSF-Help -If {
 
 task Build-Docs -If {($Push -ne 3) -and (ask 'Build FarNet CHM help')} DC::make
 
-task Make-and-Test-NuGet -If {
+task Make-NuGet -If {
 	ask @'
 Make last changes in docs and notes.
 Create and test NuGet packages?

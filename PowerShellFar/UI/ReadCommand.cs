@@ -307,6 +307,12 @@ internal class ReadCommand
 				Help.ShowHelpForText(Edit.Text, Edit.Line.Caret, HelpTopic.CommandConsole);
 				return;
 
+			case KeyCode.F2 when e.Key.Is():
+				// user menu
+				e.Ignore = true;
+				Far.Api.PostMacro("mf.usermenu(0)");
+				return;
+
 			case KeyCode.F4 when e.Key.Is():
 				// modal edit script
 				e.Ignore = true;

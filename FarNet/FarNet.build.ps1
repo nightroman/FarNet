@@ -13,7 +13,7 @@ param(
 )
 
 task clean FA::clean, FM::clean, {
-	remove z, About-FarNet.html, FarNetTest\bin, FarNetTest\obj
+	remove z, FarNetTest\bin, FarNetTest\obj, About-FarNet.html, FarNet.*.nupkg
 }
 
 task install FA::install, FM::install, help
@@ -46,7 +46,7 @@ task markdown {
 task package markdown, {
 	# folders
 	remove z
-	$null = mkdir `
+	$null = New-Item -ItemType Directory `
 	z\tools\FarHome\FarNet,
 	z\tools\FarHome\Plugins\FarNet,
 	z\tools\FarHome.x64\Plugins\FarNet
@@ -83,6 +83,8 @@ task version {
 
 # Make NuGet package
 task nuget package, version, {
+	equals $Version (Get-Item $FarHome\FarNet\FarNet.dll).VersionInfo.ProductVersion
+
 	Get-Content ..\README.md | ?{$_ -notlike '*FarNetLogo.png*'} | Set-Content z\README.md
 
 	Set-Content z\Package.nuspec @"

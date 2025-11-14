@@ -13,7 +13,7 @@ $_name_psf = "PowerShellFar"
 $_root_psf = "$FarHome\FarNet\Modules\$_name_psf"
 
 task clean {
-	remove z, bin, obj, About-PowerShellFar.html
+	remove z, bin, obj, About-PowerShellFar.html, FarNet.PowerShellFar.*.nupkg
 }
 
 # Install all. Run after Build.
@@ -74,24 +74,19 @@ task help -Inputs {Get-Item Commands\*} -Outputs "$_root_psf\PowerShellFar.dll-H
 # Make package files
 task package markdown, {
 	remove z
-	$toModule = mkdir 'z\tools\FarHome\FarNet\Modules\PowerShellFar'
+	$toModule = New-Item -ItemType Directory "z\tools\FarHome\FarNet\Modules\PowerShellFar"
 
-	# logo
-	Copy-Item -Destination z ..\Zoo\FarNetLogo.png
+	Copy-Item -Destination $toModule -Recurse `
+	$_root_psf\*,
+	..\LICENSE,
+	Bench,
+	About-PowerShellFar.html,
+	History.txt,
+	PowerShellFar.macro.lua
 
-	# pwsf
 	Copy-Item -Destination z\tools\FarHome $FarHome\pwsf.exe
 
-	# module
-	exec { robocopy $_root_psf $toModule /s } 1
-
-	Copy-Item -Destination $toModule -Recurse -Force @(
-		"Bench"
-		"About-PowerShellFar.html"
-		"History.txt"
-		"..\LICENSE"
-		"PowerShellFar.macro.lua"
-	)
+	Copy-Item -Destination z ..\Zoo\FarNetLogo.png
 }
 
 # Set version
@@ -102,6 +97,9 @@ task version {
 
 # Make NuGet package
 task nuget package, version, {
+	equals $Version (Get-Item z\tools\FarHome\pwsf.exe).VersionInfo.ProductVersion
+	equals $Version (Get-Item z\tools\FarHome\FarNet\Modules\PowerShellFar\PowerShellFar.dll).VersionInfo.ProductVersion
+
 	Copy-Item About.md z\README.md
 
 	Set-Content z\Package.nuspec @"
