@@ -4,14 +4,14 @@
     <OutDir>$(FarHome)\FarNet\Modules\$(AssemblyName)</OutDir>
     <GenerateDependencyFile>false</GenerateDependencyFile>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>FarNet250103;FarNet250106</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="WeCantSpell.Hunspell" Version="6.0.3" />
+    <PackageReference Include="WeCantSpell.Hunspell" Version="7.0.0" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="$(FarHome)\FarNet\FarNet.dll">
