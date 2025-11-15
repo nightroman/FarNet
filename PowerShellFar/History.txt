@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 10.0.3 =
+
+pwsf
+- support Far parameters /ro and /set
+
 = 10.0.2 =
 
 Command console
