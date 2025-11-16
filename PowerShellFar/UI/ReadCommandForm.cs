@@ -92,8 +92,10 @@ internal sealed class ReadCommandForm
 	}
 
 	//! Use not empty res[0], as PS does.
+	private static bool _GetPromptCalled;
 	private static string GetPrompt()
 	{
+		_GetPromptCalled = true;
 		try
 		{
 			A.SyncPaths();
@@ -106,6 +108,7 @@ internal sealed class ReadCommandForm
 		}
 		catch (RuntimeException)
 		{
+			_GetPromptCalled = false;
 		}
 		return "PS> ";
 	}
@@ -135,6 +138,9 @@ internal sealed class ReadCommandForm
 	private bool _OnGotFocus;
 	private void OnGotFocus(object? sender, EventArgs e)
 	{
+		if (_GetPromptCalled)
+			return;
+
 		if (!_OnGotFocus)
 		{
 			_OnGotFocus = true;
@@ -155,6 +161,9 @@ internal sealed class ReadCommandForm
 	private bool _OnLosingFocus;
 	private void OnLosingFocus(object? sender, EventArgs e)
 	{
+		if (_GetPromptCalled)
+			return;
+
 		if (_OnLosingFocus)
 			return;
 

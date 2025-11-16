@@ -1,9 +1,14 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
-= 10.0.4 =
+= 10.0.5 =
 
 Command console
 - avoid recursion on `prompt`
+
+= 10.0.4 =
+
+Command console
+- refactoring
 
 Invoke-FromEditor.ps1
 - *FarMenu.ini files - It shows the user menu and selects the current item.
