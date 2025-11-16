@@ -11,15 +11,15 @@ param(
 )
 
 Set-StrictMode -Version 3
-$ModuleName = 'RedisKit'
-$ModuleRoot = "$FarHome\FarNet\Modules\$ModuleName"
-$Description = 'Far Manager Redis helpers based on FarNet.Redis'
+$_name = 'RedisKit'
+$_root = "$FarHome\FarNet\Modules\$_name"
+$_description = 'Far Manager Redis helpers based on FarNet.Redis'
 
 task build meta, {
 	exec { dotnet build -c $Configuration "-p:FarHome=$FarHome" --tl:off }
 }
 
-task help -Inputs README.md -Outputs $ModuleRoot\RedisKit.hlf {
+task help -Inputs README.md -Outputs $_root\RedisKit.hlf {
 	exec { pandoc.exe $Inputs --output=README.html --from=gfm --syntax-highlighting=none }
 	exec { HtmlToFarHelp from=README.html to=$Outputs }
 	remove README.html
@@ -30,7 +30,7 @@ task clean {
 }
 
 task version {
-	($Script:Version = Get-BuildVersion History.txt '^= (\d+\.\d+\.\d+) =$')
+	($Script:_version = Get-BuildVersion History.txt '^= (\d+\.\d+\.\d+) =$')
 }
 
 task markdown {
@@ -42,34 +42,30 @@ task markdown {
 		'--embed-resources'
 		'--standalone'
 		"--css=$env:MarkdownCss"
-		"--metadata=pagetitle=$ModuleName"
+		"--metadata=pagetitle=$_name"
 	)}
 }
 
 task package help, markdown, {
 	remove z
-	$toModule = mkdir "z\tools\FarHome\FarNet\Modules\$ModuleName"
+	$toModule = New-Item -ItemType Directory "z\tools\FarHome\FarNet\Modules\$_name"
 
-	# module
-	exec { robocopy $ModuleRoot $toModule /s /xf *.pdb } 1
+	Copy-Item -Destination $toModule `
+	$_root\*,
+	..\LICENSE,
+	README.html,
+	History.txt
 
-	# meta
 	Copy-Item ..\Zoo\FarNetLogo.png z
 	(Get-Content README.md).Where{!$_.Contains('[Contents]')} | Set-Content z\README.md
 
-	# repo
-	Copy-Item -Destination $toModule @(
-		'README.html'
-		'History.txt'
-		'..\LICENSE'
-	)
-
-	Assert-SameFile.ps1 -Result (Get-ChildItem z\tools -Recurse -File -Name) -Text -View $env:MERGE @'
-FarHome\FarNet\Modules\RedisKit\History.txt
-FarHome\FarNet\Modules\RedisKit\LICENSE
-FarHome\FarNet\Modules\RedisKit\README.html
-FarHome\FarNet\Modules\RedisKit\RedisKit.dll
-FarHome\FarNet\Modules\RedisKit\RedisKit.hlf
+	Assert-SameFile.ps1 -Result (Get-ChildItem $toModule -Recurse -File -Name) -Text -View $env:MERGE @'
+History.txt
+LICENSE
+README.html
+RedisKit.dll
+RedisKit.hlf
+RedisKit.pdb
 '@
 }
 
@@ -77,11 +73,11 @@ task meta -Inputs 1.build.ps1, History.txt -Outputs Directory.Build.props -Jobs 
 	Set-Content Directory.Build.props @"
 <Project>
 	<PropertyGroup>
-		<Description>$Description</Description>
 		<Company>https://github.com/nightroman/FarNet</Company>
 		<Copyright>Copyright (c) Roman Kuzmin</Copyright>
-		<Product>FarNet.$ModuleName</Product>
-		<Version>$Version</Version>
+		<Description>$_description</Description>
+		<Product>FarNet.$_name</Product>
+		<Version>$_version</Version>
 		<IncludeSourceRevisionInInformationalVersion>False</IncludeSourceRevisionInInformationalVersion>
 	</PropertyGroup>
 </Project>
@@ -94,22 +90,22 @@ task make_test_tree {
 }
 
 task nuget package, version, {
-	equals $Version (Get-Item "$ModuleRoot\$ModuleName.dll").VersionInfo.ProductVersion
+	equals $_version (Get-Item "$_root\$_name.dll").VersionInfo.ProductVersion
 
 	Set-Content z\Package.nuspec @"
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
-		<id>FarNet.$ModuleName</id>
-		<version>$Version</version>
+		<id>FarNet.$_name</id>
+		<version>$_version</version>
 		<authors>Roman Kuzmin</authors>
 		<owners>Roman Kuzmin</owners>
-		<projectUrl>https://github.com/nightroman/FarNet/tree/main/$ModuleName</projectUrl>
+		<projectUrl>https://github.com/nightroman/FarNet/tree/main/$_name</projectUrl>
 		<icon>FarNetLogo.png</icon>
 		<readme>README.md</readme>
 		<license type="expression">BSD-3-Clause</license>
-		<description>$Description</description>
-		<releaseNotes>https://github.com/nightroman/FarNet/blob/main/$ModuleName/History.txt</releaseNotes>
+		<description>$_description</description>
+		<releaseNotes>https://github.com/nightroman/FarNet/blob/main/$_name/History.txt</releaseNotes>
 		<tags>FarManager FarNet Redis Client Database</tags>
 	</metadata>
 </package>

@@ -20,4 +20,7 @@ job {
 }
 
 ### kill
-job { $Psf.StopCommandConsole() }
+job {
+	$Psf.StopCommandConsole()
+	[FarNet.Tasks]::WaitForPanels(9)
+}

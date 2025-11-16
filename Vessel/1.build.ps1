@@ -9,20 +9,20 @@ param(
 )
 
 Set-StrictMode -Version 3
-$ModuleName = 'Vessel'
-$ModuleRoot = "$FarHome\FarNet\Modules\$ModuleName"
-$Description = 'Enhanced history of files, folders, commands. FarNet module for Far Manager.'
+$_name = 'Vessel'
+$_root = "$FarHome\FarNet\Modules\$_name"
+$_description = 'Enhanced history of files, folders, commands. FarNet module for Far Manager.'
 
 task build meta, {
 	exec { dotnet build -c $Configuration /p:FarHome=$FarHome --tl:off }
 }
 
 task clean {
-	remove z, bin, obj, README.html, FarNet.$ModuleName.*.nupkg
+	remove z, bin, obj, README.html, FarNet.$_name.*.nupkg
 }
 
 task version {
-	($Script:Version = Get-BuildVersion History.txt '^= (\d+\.\d+\.\d+) =$')
+	($Script:_version = Get-BuildVersion History.txt '^= (\d+\.\d+\.\d+) =$')
 }
 
 task meta -Inputs 1.build.ps1, History.txt -Outputs Directory.Build.props version, {
@@ -31,9 +31,9 @@ task meta -Inputs 1.build.ps1, History.txt -Outputs Directory.Build.props versio
   <PropertyGroup>
     <Company>https://github.com/nightroman/FarNet</Company>
     <Copyright>Copyright (c) Roman Kuzmin</Copyright>
-    <Product>FarNet.$ModuleName</Product>
-    <Version>$Version</Version>
-    <Description>$Description</Description>
+    <Product>FarNet.$_name</Product>
+    <Version>$_version</Version>
+    <Description>$_description</Description>
   </PropertyGroup>
 </Project>
 "@
@@ -49,30 +49,36 @@ task markdown {
 		'--embed-resources'
 		"--css=$env:MarkdownCss"
 		'--metadata=lang:en'
-		"--metadata=pagetitle:$ModuleName"
+		"--metadata=pagetitle:$_name"
 	)}
-	exec { HtmlToFarHelp.exe "from=README.html" "to=$ModuleRoot\Vessel.hlf" }
+	exec { HtmlToFarHelp.exe "from=README.html" "to=$_root\Vessel.hlf" }
 }
 
 task package markdown, {
 	remove z
-	$toModule = mkdir "z\tools\FarHome\FarNet\Modules\$ModuleName"
+	$toModule = New-Item -ItemType Directory "z\tools\FarHome\FarNet\Modules\$_name"
 
-	# main
-	Copy-Item -Destination $toModule @(
-		'README.html'
-		'History.txt'
-		'..\LICENSE'
-		'Vessel.macro.lua'
-		"$ModuleRoot\Vessel.dll"
-		"$ModuleRoot\Vessel.hlf"
-	)
+	Copy-Item -Destination $toModule `
+	$_root\*,
+	..\LICENSE,
+	README.html,
+	History.txt,
+	Vessel.macro.lua
 
-	# meta
 	Copy-Item -Destination z @(
 		'README.md'
 		'..\Zoo\FarNetLogo.png'
 	)
+
+	Assert-SameFile.ps1 -Result (Get-ChildItem $toModule -Recurse -File -Name) -Text -View $env:MERGE @'
+History.txt
+LICENSE
+README.html
+Vessel.dll
+Vessel.hlf
+Vessel.macro.lua
+Vessel.pdb
+'@
 }
 
 task nuget package, version, {
@@ -80,16 +86,16 @@ task nuget package, version, {
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
-		<id>FarNet.$ModuleName</id>
-		<version>$Version</version>
+		<id>FarNet.$_name</id>
+		<version>$_version</version>
 		<owners>Roman Kuzmin</owners>
 		<authors>Roman Kuzmin</authors>
 		<projectUrl>https://github.com/nightroman/FarNet</projectUrl>
 		<icon>FarNetLogo.png</icon>
 		<readme>README.md</readme>
 		<license type="expression">BSD-3-Clause</license>
-		<description>$Description</description>
-		<releaseNotes>https://github.com/nightroman/FarNet/blob/main/$ModuleName/History.txt</releaseNotes>
+		<description>$_description</description>
+		<releaseNotes>https://github.com/nightroman/FarNet/blob/main/$_name/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module</tags>
 	</metadata>
 </package>

@@ -3,7 +3,7 @@
     <FarHome Condition="'$(FarHome)' == ''">C:\Bin\Far\x64</FarHome>
     <OutDir>$(FarHome)\FarNet\Modules\$(AssemblyName)</OutDir>
     <GenerateDependencyFile>false</GenerateDependencyFile>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>

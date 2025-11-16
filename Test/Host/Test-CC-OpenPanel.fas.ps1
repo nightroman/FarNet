@@ -12,5 +12,5 @@ job {
 	Assert-Far -ExplorerTypeId ([PowerShellFar.Guids]::ObjectExplorer)
 	Find-FarFile 42
 	$__.Close()
+	[FarNet.Tasks]::WaitForPanels(9)
 }
-Start-Sleep 1 #TODO

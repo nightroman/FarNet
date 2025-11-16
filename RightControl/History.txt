@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.RightControl
 
+= 5.3.0 =
+
+Uses .NET 10
+
 = 5.2.0 =
 
 Requires FarNet 9.0.12, uses .NET 9.

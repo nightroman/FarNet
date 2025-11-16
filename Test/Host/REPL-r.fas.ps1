@@ -37,15 +37,15 @@ job {
 ### Command console
 
 keys F11 2 3
-[FarNet.Tasks]::WaitForWindow('Dialog', 999).Wait()
+[FarNet.Tasks]::WaitForDialog(999).Wait()
 keys g l Enter
-[FarNet.Tasks]::WaitForWindow('Dialog', 999).Wait()
+[FarNet.Tasks]::WaitForDialog(999).Wait()
 job {
 	Assert-Far -Dialog
 	Assert-Far $r.Path -eq $PWD.Path
 }
 keys $ _ = 5 Enter
-[FarNet.Tasks]::WaitForWindow('Dialog', 999).Wait()
+[FarNet.Tasks]::WaitForDialog(999).Wait()
 job {
 	Assert-Far -Dialog
 	Assert-Far $r.Path -eq $PWD.Path

@@ -342,7 +342,7 @@ public sealed partial class Actor
 	public Task RunCommandConsole()
 	{
 		StartCommandConsole();
-		return FarNet.Works.Tasks2.Wait(nameof(StartCommandConsole), () => ReadCommand.IsOpen());
+		return FarNet.Works.Tasks2.Wait(nameof(StartCommandConsole), () => ReadCommandForm.IsOpen());
 	}
 	#endregion
 }

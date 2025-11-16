@@ -36,4 +36,7 @@ job {
 }
 keys Enter
 
-job { $Psf.StopCommandConsole() }
+job {
+	$Psf.StopCommandConsole()
+	[FarNet.Tasks]::WaitForPanels(9)
+}

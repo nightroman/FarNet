@@ -1,5 +1,13 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 10.0.4 =
+
+Command console
+- avoid recursion on `prompt`
+
+Invoke-FromEditor.ps1
+- *FarMenu.ini files - It shows the user menu and selects the current item.
+
 = 10.0.3 =
 
 pwsf
@@ -17,7 +25,7 @@ Command console
 - Use same scrolling keys as WT
 - Tweaks for using as WT quake window
 
-	wt -w _quake -p pwsf
+	wt -w _quake pwsf <path>
 
 = 10.0.0 =
 

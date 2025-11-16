@@ -31,7 +31,7 @@ job {
 
 	$Var.var2 = 'not-blocked2'
 
-	[FarNet.Tasks]::WaitForWindow('Dialog', 999)
+	[FarNet.Tasks]::WaitForDialog(999)
 }
 Assert-Far $var2 -eq not-blocked2
 job {
@@ -44,7 +44,7 @@ job {
 	run {
 		throw 'oops'
 	}
-	[FarNet.Tasks]::WaitForWindow('Dialog', 999)
+	[FarNet.Tasks]::WaitForDialog(999)
 }
 job {
 	Assert-Far $__[1].Text -eq oops

@@ -44,5 +44,8 @@ job {
 	Assert-Far (!(Test-Path Variable:\090328194636))
 }
 
-job { $Psf.StopCommandConsole() }
-Start-Sleep 1 #TODO
+job {
+	$Psf.StopCommandConsole()
+	[FarNet.Tasks]::WaitForPanels(9)
+}
+

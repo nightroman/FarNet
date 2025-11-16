@@ -5,7 +5,7 @@
 
 job {
 	[FarNet.Works.Script]::InvokeCommand()
-	[FarNet.Tasks]::WaitForWindow('Dialog', 999)
+	[FarNet.Tasks]::WaitForDialog(999)
 }
 
 job {

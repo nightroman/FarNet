@@ -20,7 +20,10 @@
 
 	*.ps1
 	Other scripts are invoked by powershell in a new console.
-	Note that built-in [F5] invokes in the PowerShellFar session.
+	Note that built-in [F5] invokes scripts by FarHost (PSF).
+
+	*FarMenu.ini
+	It shows the user menu and selects the current item.
 
 	*.md, *.text
 	Markdown files are opened by Show-FarMarkdown.ps1
@@ -30,9 +33,6 @@
 
 	*.fsx
 	F# scripts run by fsx.exe, FarNet.FSharpFar.
-
-	*FarMenu.ini
-	Far Manager user menu files.
 
 	*.http, *.rest
 	VSCode REST Client HTTP files run by PSRest, https://github.com/nightroman/PSRest
@@ -110,6 +110,23 @@ if ($ext -eq '.ps1') {
 	return
 }
 
+### *FarMenu.ini
+if ($path -like '*FarMenu.ini') {
+	$name = ''
+	for($$ = $editor.Caret.Y; $$ -ge 0; --$$) {
+		$text = $editor[$$].Text
+		if ($text -match '^(?<key>[^\:]{0,3}):\s+(?<name>.+)') {
+			$name = $Matches.key ? $Matches.key.PadRight(4) + $Matches.name : $Matches.name
+			break
+		}
+	}
+	if ($name) {
+		$editor.Save()
+		$Far.PostMacro("mf.usermenu(2, [[$path]]); Menu.Select([[$name]], 0)")
+	}
+	return
+}
+
 ### Markdown
 if ($ext -in '.md', '.text') {
 	Show-FarMarkdown.ps1
@@ -125,12 +142,6 @@ if ($ext -in '.bat', '.cmd') {
 ### FSharp
 if ($ext -eq '.fsx') {
 	Start-Process fsx.exe "--nologo --use:`"$path`""
-	return
-}
-
-### *FarMenu.ini
-if ($path -like '*FarMenu.ini') {
-	$Far.PostMacro("mf.usermenu(2, [[$path]])")
 	return
 }
 

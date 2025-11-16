@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.Vessel
 
+= 6.2.0 =
+
+Uses .NET 10
+
 = 6.1.2 =
 
 Take location into account on sorting paths.

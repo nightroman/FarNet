@@ -55,7 +55,10 @@ for (int i = st; i < args.Length; i++)
 
 	return 1;
 }
+
 var arguments = sb.ToString();
+Debug.WriteLine($"## pwsf: args: {string.Join(", ", args)}");
+Debug.WriteLine($"## pwsf: arguments: {arguments}");
 
 // trigger
 Environment.SetEnvironmentVariable("FAR_START_COMMAND", "ps:$Psf.StartCommandConsole()");

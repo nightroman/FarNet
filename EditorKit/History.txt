@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.EditorKit
 
+= 2.4.0 =
+
+Uses .NET 10
+
 = 2.3.0 =
 
 The default ".editorconfig" in module profile folder is no longer supported.

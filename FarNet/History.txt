@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet
 
+= 10.0.2=
+
+Add Tasks.WaitFor* for main windows.
+
 = 10.0.1 =
 
 Make IFar.HasPanels lazy cached.

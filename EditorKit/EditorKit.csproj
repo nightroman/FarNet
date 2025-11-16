@@ -4,7 +4,7 @@
     <OutDir>$(FarHome)\FarNet\Modules\$(AssemblyName)</OutDir>
     <GenerateDependencyFile>false</GenerateDependencyFile>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>

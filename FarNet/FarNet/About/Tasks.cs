@@ -577,4 +577,28 @@ public static class Tasks
 		if (!ok)
 			await Job(() => throw new TimeoutException($"Expected '{kind}' does not appear."));
 	}
+
+	/// <summary>
+	/// Calls <see cref="WaitForWindow"/>.
+	/// </summary>
+	/// <param name="timeout">.</param>
+	public static Task WaitForDialog(int timeout) => WaitForWindow(WindowKind.Dialog, timeout);
+
+	/// <summary>
+	/// Calls <see cref="WaitForWindow"/>.
+	/// </summary>
+	/// <param name="timeout">.</param>
+	public static Task WaitForEditor(int timeout) => WaitForWindow(WindowKind.Editor, timeout);
+
+	/// <summary>
+	/// Calls <see cref="WaitForWindow"/>.
+	/// </summary>
+	/// <param name="timeout">.</param>
+	public static Task WaitForViewer(int timeout) => WaitForWindow(WindowKind.Viewer, timeout);
+
+	/// <summary>
+	/// Calls <see cref="WaitForWindow"/>.
+	/// </summary>
+	/// <param name="timeout">.</param>
+	public static Task WaitForPanels(int timeout) => WaitForWindow(WindowKind.Panels, timeout);
 }
