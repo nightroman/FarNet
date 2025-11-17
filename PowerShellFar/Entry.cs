@@ -85,27 +85,18 @@ public sealed class Entry : ModuleHost
 	{
 		var command = e.Command;
 
-		// helper commands
 		if (command.StartsWith('#'))
 		{
 			InvokeHelpers(command);
 			return;
 		}
 
-		// Code
 		A.SyncPaths();
 
-		//? hacky
-		bool looksInteractive = command.StartsWith(' ');
+		string GetEcho() => CommandInvoke1.Prefix + ':' + command;
+		bool useTeeResult = command.StartsWith(' ');
 
-		// echo / no echo
-		Func<string>? getEcho;
-		if (!looksInteractive || command.EndsWith('#'))
-			getEcho = null;
-		else
-			getEcho = () => CommandInvoke1.Prefix + ':' + command;
-
-		var ok = A.Run(new RunArgs(command) { Writer = new ConsoleOutputWriter(getEcho), UseTeeResult = looksInteractive });
+		var ok = A.Run(new RunArgs(command) { Writer = new ConsoleOutputWriter(GetEcho), UseTeeResult = useTeeResult });
 		e.Ignore = !ok;
 	}
 

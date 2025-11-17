@@ -11,9 +11,9 @@ internal sealed class ReadCommandForm
 
 	internal readonly IDialog Dialog;
 	internal readonly IEdit Edit;
+	internal string? PromptTrimmed;
 	private readonly IText Text;
 	private string PromptOriginal;
-	private string? PromptTrimmed;
 	private string? TextFromEditor;
 	private RunArgs? ArgsToRun;
 
@@ -70,7 +70,7 @@ internal sealed class ReadCommandForm
 		{
 			int i1 = maxPromptLength / 2;
 			int i2 = PromptTrimmed.Length - i1 - 1;
-			PromptTrimmed = $"{PromptTrimmed[..i1]}\u2026{PromptTrimmed[i2..]}";
+			PromptTrimmed = $"{PromptTrimmed[..i1]}*{PromptTrimmed[i2..]}";
 		}
 		int pos = PromptTrimmed.Length;
 
@@ -91,6 +91,23 @@ internal sealed class ReadCommandForm
 		};
 	}
 
+	private static bool _InitCalled;
+	private static void Init()
+	{
+		if (_InitCalled)
+			return;
+
+		_InitCalled = true;
+
+		var profile = Entry.RoamingData + "\\Profile-Console.ps1";
+		if (File.Exists(profile))
+		{
+			A.Invoking();
+			using var ps = A.NewPowerShell();
+			ps.AddCommand(profile, false).Invoke();
+		}
+	}
+
 	//! Use not empty res[0], as PS does.
 	private static bool _GetPromptCalled;
 	private static string GetPrompt()
@@ -98,6 +115,7 @@ internal sealed class ReadCommandForm
 		_GetPromptCalled = true;
 		try
 		{
+			Init();
 			A.SyncPaths();
 
 			var res = A.InvokeCode("prompt");

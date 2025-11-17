@@ -17,14 +17,15 @@ sealed class ConsoleOutputWriter : AbcOutputWriter
 
 	void Writing()
 	{
-		// write and drop echo
+		// use and null echo
 		if (_getEcho is { })
 		{
-			var echo = _getEcho() + Environment.NewLine;
-			Far.Api.UI.Write(echo, Settings.Default.CommandForegroundColor);
+			if (Transcript.Writer is { } writer)
+			{
+				var echo = _getEcho() + Environment.NewLine;
+				writer.WriteEcho(echo);
+			}
 			_getEcho = null;
-
-			Transcript.Writer?.WriteEcho(echo);
 		}
 	}
 

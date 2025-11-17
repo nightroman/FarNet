@@ -11,17 +11,17 @@ job {
 macro "print 'ps: Test-6 Line1; Test-6 Line2'; Keys 'Enter'" # $r
 
 <#
-ps: T  Gray
+
 Line1  Red
 Line2  Red
 #>
 job {
 	$y = $Host.UI.RawUI.CursorPosition.Y
-	$rect = New-Object System.Management.Automation.Host.Rectangle 0, ($y - 3), 4, ($y - 1)
+	$rect = [System.Management.Automation.Host.Rectangle]::new(0, $y - 3, 4, $y - 1)
 	$buff = $Host.UI.RawUI.GetBufferContents($rect)
-	$buff | Select-Object Character, ForegroundColor | Export-Csv -NoTypeInformation c:\temp\buffer.csv
-	$md5 = [guid][System.Security.Cryptography.MD5]::Create().ComputeHash([System.IO.File]::ReadAllBytes('C:\TEMP\buffer.csv'))
-	Assert-Far $md5 -eq ([guid]'a23f4856-c53c-5be8-4b65-64270c0c840d')
+	$buff | Select-Object Character, ForegroundColor | Export-Csv C:\TEMP\buffer.csv
+	$hash = (Get-FileHash C:\TEMP\buffer.csv).Hash
+	Assert-Far $hash -eq 377FBB88BB96E6D7F45F2C0EEF4906D87B761413626C925F3DAAA483B058E70F
 	Remove-Item C:\TEMP\buffer.csv
 
 	Remove-Item function:\Test-6

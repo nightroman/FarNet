@@ -13,7 +13,7 @@ $_name_psf = "PowerShellFar"
 $_root_psf = "$FarHome\FarNet\Modules\$_name_psf"
 
 task clean {
-	remove z, bin, obj, About-PowerShellFar.html, FarNet.PowerShellFar.*.nupkg
+	remove z, bin, obj, FarNet.PowerShellFar.*.nupkg, About\About-PowerShellFar.html
 }
 
 # Install all. Run after Build.
@@ -27,7 +27,7 @@ task markdown {
 	requires -Path $env:MarkdownCss
 	exec { pandoc.exe @(
 		'README.md'
-		'--output=About-PowerShellFar.html'
+		'--output=About\About-PowerShellFar.html'
 		'--from=gfm'
 		'--standalone'
 		'--embed-resources'
@@ -35,7 +35,7 @@ task markdown {
 		'--metadata=lang:en'
 		'--metadata=pagetitle:PowerShellFar'
 	)}
-	exec { HtmlToFarHelp.exe from=About-PowerShellFar.html "to=$_root_psf\PowerShellFar.hlf" }
+	exec { HtmlToFarHelp.exe from=About\About-PowerShellFar.html "to=$_root_psf\PowerShellFar.hlf" }
 }
 
 task installBin {
@@ -79,10 +79,8 @@ task package markdown, {
 	Copy-Item -Destination $toModule -Recurse `
 	$_root_psf\*,
 	..\LICENSE,
-	Bench,
-	About-PowerShellFar.html,
-	History.txt,
-	PowerShellFar.macro.lua
+	About,
+	Bench
 
 	Copy-Item -Destination z\tools\FarHome $FarHome\pwsf.exe
 

@@ -2,7 +2,13 @@ FarHome
 FarHome\FarNet
 FarHome\FarNet\Modules
 FarHome\FarNet\Modules\PowerShellFar
-FarHome\FarNet\Modules\PowerShellFar\About-PowerShellFar.html
+FarHome\FarNet\Modules\PowerShellFar\About
+FarHome\FarNet\Modules\PowerShellFar\About\About-PowerShellFar.html
+FarHome\FarNet\Modules\PowerShellFar\About\History.txt
+FarHome\FarNet\Modules\PowerShellFar\About\PowerShellFar.macro.lua
+FarHome\FarNet\Modules\PowerShellFar\About\Profile-Console.ps1
+FarHome\FarNet\Modules\PowerShellFar\About\Profile-Editor.ps1
+FarHome\FarNet\Modules\PowerShellFar\About\Profile.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench
 FarHome\FarNet\Modules\PowerShellFar\Bench\ArgumentCompleters.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Clear-Session.ps1
@@ -20,11 +26,11 @@ FarHome\FarNet\Modules\PowerShellFar\Bench\Go-To.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Import-Panel.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Indent-Selection.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Invoke-FromEditor.ps1
-FarHome\FarNet\Modules\PowerShellFar\Bench\Invoke-Shortcut-.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Menu-Favorites-.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Menu-More.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Merge-Selected.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\mn.ps1
+FarHome\FarNet\Modules\PowerShellFar\Bench\Open-Shortcut.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Open-TextLink.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-BitsTransfer.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Panel-DataFrame.ps1
@@ -55,7 +61,6 @@ FarHome\FarNet\Modules\PowerShellFar\Bench\Show-KeyName-.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Snippet.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Start-Far.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Update-FarManager.ps1
-FarHome\FarNet\Modules\PowerShellFar\History.txt
 FarHome\FarNet\Modules\PowerShellFar\Humanizer.dll
 FarHome\FarNet\Modules\PowerShellFar\Json.More.dll
 FarHome\FarNet\Modules\PowerShellFar\JsonPointer.Net.dll
@@ -74,7 +79,6 @@ FarHome\FarNet\Modules\PowerShellFar\Newtonsoft.Json.dll
 FarHome\FarNet\Modules\PowerShellFar\PowerShellFar.dll
 FarHome\FarNet\Modules\PowerShellFar\PowerShellFar.dll-Help.xml
 FarHome\FarNet\Modules\PowerShellFar\PowerShellFar.hlf
-FarHome\FarNet\Modules\PowerShellFar\PowerShellFar.macro.lua
 FarHome\FarNet\Modules\PowerShellFar\PowerShellFar.pdb
 FarHome\FarNet\Modules\PowerShellFar\PowerShellFar.xml
 FarHome\FarNet\Modules\PowerShellFar\runtimes

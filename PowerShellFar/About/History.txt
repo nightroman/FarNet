@@ -1,0 +1,2671 @@
+https://www.nuget.org/packages/FarNet.PowerShellFar
+
+= 10.0.6 =
+
+Package
+- folder "About" with manual, history, profile and macro samples
+
+Command console
+- use profile, see sample "About/Profile-Console.ps1"
+
+`ps:` command
+- retire echo, rely on native @
+
+Renamed
+- Invoke-Shortcut-.ps1 -> Open-Shortcut.ps1
+
+= 10.0.5 =
+
+Command console
+- avoid recursion on `prompt`
+
+= 10.0.4 =
+
+Command console
+- refactoring
+
+Invoke-FromEditor.ps1
+- *FarMenu.ini files - It shows the user menu and selects the current item.
+
+= 10.0.3 =
+
+pwsf
+- support Far parameters /ro and /set
+
+= 10.0.2 =
+
+Command console
+- Add [F2] for user menu
+
+= 10.0.1 =
+
+Command console
+- Sync $PWD and hidden panel
+- Use same scrolling keys as WT
+- Tweaks for using as WT quake window
+
+	wt -w _quake pwsf <path>
+
+= 10.0.0 =
+
+Requires and uses .NET 10.0.
+Win32 x86 is no longer supported.
+
+= 9.0.79 =
+
+pwsf - PowerShell console on steroids powered by Far / FarNet / PowerShellFar
+- work in progress with some rough edges but it works well
+- pwsf.exe comes with the package in Far Manager folder
+- parameters:
+	- (hidden) panel path
+
+Command console
+- ignore panel key bar (enough is enough)
+- change how [F4] works
+
+= 9.0.78 =
+
+Command console
+- fix scrolling, support [CtrlHome], [CtrlEnd]
+
+= 9.0.77 =
+
+Use FarNet 9.0.52
+
+Dialogs: use calculated default geometry.
+
+Invoke-FromEditor.ps1
+- add *FarMenu.ini
+
+= 9.0.76 =
+
+Command console
+- Scroll by keys
+- Update help
+
+= 9.0.75 =
+
+Open-FarEditor
+- new switch -Detach ~ reopen as Far /e
+- add sample macro
+
+Show-FarMessage
+- remove obsolete -LeftAligned
+
+= 9.0.74 =
+
+Use FarNet 9.0.49
+
+Command console
+- Rework for better console experience, remove unusual features
+- Support opening from Editor and Viewer
+
+Search-Regex.ps1
+- Show input regex and options in result panel title
+
+= 9.0.73 =
+
+Use FarNet 9.0.48
+
+Search-Regex.ps1 full text mode works the same as line mode: matches are
+selected in editors and regex named groups produce extra result matches.
+
+= 9.0.72 =
+
+Upgrade Start-Transcript to match pwsh
+- new parameters OutputDirectory, IncludeInvocationHeader, UseMinimalHeader
+- support nested transcripts
+
+= 9.0.71 =
+
+Change transcript encoding to UTF8.
+
+Add sample macro `cc:` ~ command with output to clipboard.
+
+= 9.0.70 =
+
+Use FarNet 9.0.46, apply new methods.
+
+In code input dialogs, $__ is the next window, not current dialog.
+This makes code completion ($__.x [Tab]) more practically useful.
+
+= 9.0.69 =
+
+New automatic variables $__ and $_path, see README.
+
+Import-Panel-.ps1 -> Import-Panel.ps1
+
+= 9.0.68 =
+
+Search-Regex.ps1
+- fix options parameter
+
+Panel-DataFrame.ps1
+- use one "Counts..." menu
+
+= 9.0.67 =
+
+Panel-DataFrame.ps1
+- Add Signal plot, use latest FarNet.ScottPlot
+
+= 9.0.66 =
+
+[Esc] is async sessions menu opens the first.
+
+Show runspace id in async interactive titles.
+
+= 9.0.65 =
+
+Fix REPL $r in "Command console".
+
+= 9.0.64 =
+
+Automatic variable REPL $r (last command result) for interactive editors,
+invoke commands, invoke selected, command console, and `ps: ...` commands
+(with a space after colon).
+
+Search-Regex options:
+- Use traditional one-letter aliases for regex and extra options.
+- Parameter AllText is replaced with the extra option AllText/a.
+
+= 9.0.63 =
+
+Microsoft.PowerShell.SDK 7.5.4
+
+= 9.0.62 =
+
+[F5] in Invoke-Build script editor, on errors
+- go to nested error, if any
+- open another script error
+
+= 9.0.61 =
+
+Use FarNet 9.0.44
+
+Remove LeftAligned from messages.
+
+Show-FarMessage
+- New switch AlignCenter
+- Obsolete LeftAligned will be removed.
+
+= 9.0.60 =
+
+Use FarNet 9.0.43 for some internal API.
+
+= 9.0.59 =
+
+`run` in main
+- work around rendering issues
+
+Search-Regex.ps1
+- use full screen result panel
+
+= 9.0.58 =
+
+Use FarNet 9.0.40
+
+Assert-Far
+- support async for subset of parameters
+- new switch NoError
+
+(run) Invoke-FarTaskRun
+- in main posts the script for later (experiment)
+
+Prompt-history (experiment)
+- use first from history
+
+= 9.0.57 =
+
+ReadLine
+- work around console defects
+
+= 9.0.56 =
+
+Use FarNet 9.0.38
+
+Fix opening command console.
+
+= 9.0.55 =
+
+Refactor engine classes.
+
+Prompt-history (experiment)
+- `Read-Host "[[foo-bar]]"` uses Far dialog history `foo-bar`.
+
+= 9.0.54 =
+
+Tweak session loading.
+
+Out-FarList
+- Accept input FarItem as is, this enables Click.
+
+Edit-IB.ps1
+- Rework special items using SetItem and Click.
+
+= 9.0.53 =
+
+Expose `Start-FarTask` internals for more cases, e.g. async sessions.
+DSL aliases and their cmdlets:
+- ps:   Invoke-FarTaskCmd
+- job   Invoke-FarTaskJob
+- run   Invoke-FarTaskRun
+- keys  Invoke-FarTaskKeys
+- macro Invoke-FarTaskMacro
+
+Why? To make this possible: /Samples/FarTask/MainAndAsyncCommon
+
+= 9.0.52 =
+
+Choice dialog
+- Add help "Choice dialog" and connect
+- On too many items make list scrollable
+
+= 9.0.51 =
+
+Use FarNet 9.0.37
+
+Improve async interactive.
+
+Support `PromptForChoice` (many).
+Rework `PromptForChoice` (one).
+Use same dialog with some differences.
+
+= 9.0.50 =
+
+Use FarNet 9.0.36
+
+Menu
+- "Int.session", local session interactive
+
+Main interactive
+- Set the current location on invoking typed commands
+
+= 9.0.49 =
+
+Microsoft.PowerShell.SDK 7.5.3
+
+= 9.0.48 =
+
+Search-Regex.ps1
+- fix incomplete input on `AllText`
+- persist `AllText` per session
+
+Show-FarMarkdown.ps1
+- use Pandoc 3.8
+
+= 9.0.47 =
+
+Invoke-FromEditor.ps1 - PSRest, run the caret request.
+
+= 9.0.46 =
+
+Remove some experiments, including command `#enter`.
+
+Invoke-FromEditor.ps1 - tweaks for PSRest.
+
+= 9.0.45 =
+
+Invoke-FromEditor.ps1
+- *.http, *.rest // VSCode REST Client HTTP files run by PSRest, https://github.com/nightroman/PSRest
+
+= 9.0.44 =
+
+Use FarNet 9.0.34
+
+Rework Bench/Start-Far.ps1
+- Processed by FarNet, PSF is not not needed.
+- Replaced Test, Timeout, Quit with new Exit.
+- Renamed Panel1 -> Path, Panel2 -> Path2.
+- New parameter Active (Left/Right).
+
+= 9.0.43 =
+
+Use FarNet 9.0.33
+
+Start-Far.ps1
+- Tweaks and docs.
+
+= 9.0.42 =
+
+Start-Far.ps1
+- Set panels by native Far arguments, avoid unwanted effects.
+
+= 9.0.41 =
+
+Bench/Show-FarMarkdown.ps1
+- Simplify navigation to the current editor heading in the browser.
+
+= 9.0.40 =
+
+Bench/Show-Markdown.ps1 -> Show-FarMarkdown.ps1
+- Rename to avoid conflict with `Microsoft.PowerShell.Utility\Show-Markdown`.
+- Remove $env:MarkdownBrowser, it was a workaround now done differently.
+- Use Show-FarMarkdown.* for temp files.
+
+New Bench/Panel-README.ps1
+- Shows folder tree for exploring README.md files.
+
+= 9.0.39 =
+
+Handle empty paths in StartScriptAsync.
+
+= 9.0.38 =
+
+Use FarNet 9.0.31, fix some ErrorProne issues.
+
+Complete-Word.ps1
+- case sensitive
+- use frequency
+
+ColorerPack
+- powershell.hrc
+
+= 9.0.37 =
+
+Microsoft.PowerShell.SDK 7.5.2
+
+= 9.0.36 =
+
+[F5] in *.build.ps1 editors
+- less blocking ending pause
+
+= 9.0.35 =
+
+FarNet 9.0.28
+
+Edit-IB.ps1
+- Fix opening tasks from dot-sourced files.
+
+= 9.0.34 =
+
+[F5] in Invoke-Build script editor
+- Improve actions on redefined tasks
+- Do not invoke dot-tasks implicitly
+
+Console-like ReadLine input box
+- Fix user screen defects on auto-complete
+
+= 9.0.33 =
+
+Sync path before invoking scripts on completion.
+
+= 9.0.32 =
+
+Debugger and breakpoints UX improvements.
+
+= 9.0.31 =
+
+"Enter-loop" feature, v2
+- loop of commands keeping command line: with caret inside text, use special macro [Enter]
+- see https://github.com/nightroman/FarNet/blob/main/PowerShellFar/PowerShellFar.macro.lua
+
+New macro helper
+- ps:#line-breakpoint -- sets line breakpoint
+
+Command history, like Far "History"
+- [Enter] invokes, [CtrlEnter] inserts
+
+= 9.0.30 =
+
+Enter-loop
+- select the command part
+- add command to session history
+
+= 9.0.28 =
+
+"Enter-loop" experimental feature
+- use special prefix "ps:;" and special macro [Enter] in panels
+
+	ps:; ...
+
+New helper "hash-commands"
+- ps:#invoke -- Invoke selected
+- ps:#history -- Command history
+- ps:#complete -- Complete
+- ps:#enter -- [Enter] in "Enter-loop"
+
+Menu
+- "1. Invoke commands" now shows same dialog in any area
+- "3. Command console" comes back again, for panels only
+
+= 9.0.27 =
+
+Use FarNet 9.0.26
+
+Open-TextLink.ps1
+- fix PS script call stack links
+
+= 9.0.26 =
+
+Debugger
+- on first added breakpoint and no debugger ask to use Add-Debugger
+
+Update-FarManager.ps1
+- support both "msi" and "7z" package types
+- default is "msi", to use built-in msiexec
+
+= 9.0.25 =
+
+Start-FarTask
+- rework task and job script invocations
+- https://github.com/nightroman/FarNet/blob/main/Samples/FarTask/Undocumented.far.ps1
+
+Misc
+- Remove-EmptyString-.ps1 -> Remove-EmptyString.ps1
+- Remove-EndSpace-.ps1 -> Samples/Tests/Test-TrimEnd.ps1
+
+= 9.0.24 =
+
+FarNet 9.0.25, use new quitting helpers.
+https://github.com/nightroman/FarNet/tree/main/Samples/Quit
+
+= 9.0.23 =
+
+FarNet 9.0.24
+
+Allow calling apps from "Profile.ps1", e.g. for doskey macros.
+
+Treat space after `ps:` as echo / no echo.
+
+Edit-Gcm.ps1
+- exclude .com, .cpl, .msc
+
+Misc
+- exclude example profile scripts from "Bench"
+
+= 9.0.22 =
+
+Allow code completion with any `prefix:`.
+
+= 9.0.21 =
+
+New script Edit-Gcm.ps1
+- find, select, edit script or function using Get-Command (gcm)
+
+Edit-IB.ps1
+- minor improvements
+
+Go-Everything.ps1
+- relaxed filter, see help
+
+Above scripts have examples of Lua commands with prefixes.
+
+Misc
+- Select-Bookmark-.ps1 -> Go-Bookmark.ps1
+
+= 9.0.20 =
+
+Microsoft.PowerShell.SDK 7.5.1
+
+Go-Everything.ps1
+- parameter Filter: support ":edit" suffix in addition to substring "edit:"
+
+Search-Regex.ps1
+- use wider dialog
+
+Update-FarManager.ps1
+- support *.map as unused files
+- support not used files in subfolders
+
+= 9.0.19 =
+
+Search-Regex.ps1
+- input shortcut "*..."
+
+Snippet.ps1
+- fix here-string indent
+
+= 9.0.18 =
+
+When calling apps, avoid user screen for vps:, interactive editor, F5 in script editor, etc.
+
+Bench
+- Indent-Selection-.ps1 -> Indent-Selection.ps1
+- Open-TODO-.ps1 -> Panel-TODO.ps1
+
+= 9.0.17 =
+
+Reformat-Selection.ps1
+- tweaks, including PowerShell specific
+
+Bench
+- Go-Head-.ps1 -> Go-HeadFile.ps1
+- Panel-Property-.ps1 -> Panel-ItemProperty.ps1
+- Go-Selection-.ps1 -> Samples\Tests\Test-Go-Selection.ps1
+
+= 9.0.16 =
+
+Merge-Selected.ps1
+- predefined tools, VSCode and WinMerge
+
+Reformat-Selection.ps1
+- without selection use current paragraph
+
+Renamed
+- Show-EditorColor-.ps1 -> Show-EditorColor.ps1
+
+= 9.0.15 =
+
+Panel-DataFrame.ps1 - support Parquet files.
+
+Start-FarTask - tweak help.
+
+= 9.0.14 =
+
+Start-FarTask
+- treat task script parameters the same way in all cases
+
+Misc
+- moved folder "Samples" to the repo root
+- renamed "Generate-Dialog-.ps1" -> "Generate-Dialog.ps1"
+
+= 9.0.13 =
+
+** Start-FarTask new feature and breaking change **
+- jobs use $Var.<name> for getting or setting task variables
+- removed job parameters -Arguments, use $Var.<name> instead
+
+= 9.0.12 =
+
+Start-FarTask
+- task current location is set to the caller file system location
+
+= 9.0.11 =
+
+** Retired Start-FarJob **
+https://github.com/nightroman/FarNet/discussions/64
+
+Search-Regex.ps1
+- Migrate from Start-FarJob to Start-FarTask
+
+Retired scripts
+- Bench/Job-RemoveItem-.ps1
+- Tests/Test-Job-.ps1
+
+= 9.0.10 =
+
+** Start-FarJob will be removed soon **
+
+Improve and simplify Start-FarTask
+- script blocks support dynamic parameters as well as file scripts
+- use one parameter set with optional -AddDebugger and -Step
+
+Register-FarRedisTask.ps1 and Send-FarRedisTask.ps1
+- use default Redis database
+
+Show-Image.ps1
+- fix [Enter]
+
+= 9.0.9 =
+
+Start-FarTask and Assert-Far debugging features use Add-Debugger.ps1 2.4.0
+- Start-FarTask -AddDebugger supports @{} for all defaults.
+
+= 9.0.8 =
+
+Go-Everything.ps1
+- filter supports `edit:`
+
+= 9.0.7 =
+
+Microsoft.PowerShell.SDK 7.5.0
+
+Edit-IB.ps1 - new parameter Task
+
+= 9.0.6 =
+
+Requires FarNet 9.0.10, refactoring.
+
+= 9.0.5 =
+
+Refactor panels.
+
+= 9.0.4 =
+
+Use embedded internal profile.
+
+= 9.0.3 =
+
+Fix completion on null matches.
+
+= 9.0.2 =
+
+Object panel: tweak format cache.
+
+Search-Regex.ps1
+- option Singleline/s implies AllText
+- some tweaks
+
+= 9.0.1 =
+
+Used some new net9.0 features internally.
+
+= 9.0.0 =
+
+Requires .NET 9.0 and FarNet 9.0.0
+
+Uses Microsoft.PowerShell.SDK 7.5.0-rc.1
+
+= 8.1.25 =
+
+FarNet 8.1.14
+
+Tweaks in Redis scripts.
+
+= 8.1.24 =
+
+Fix System.Drawing https://github.com/PowerShell/PowerShell/discussions/24562
+
+= 8.1.23 =
+
+Microsoft.PowerShell.SDK 7.4.6
+
+Amend `ArgumentCompleters.ps1` magic ForEach, Where
+
+= 8.1.22 =
+
+Rename Reformat-Selection-.ps1 to Reformat-Selection.ps1
+Improve Reformat-Selection.ps1 algorithm.
+
+= 8.1.21 =
+
+Microsoft.PowerShell.SDK 7.4.5
+
+= 8.1.20 =
+
+Requires FarNet 8.1.11
+
+Amended work with tasks.
+
+= 8.1.19 =
+
+Microsoft.PowerShell.SDK 7.4.4
+
+Support `prompt` in nested prompt editor consoles.
+
+= 8.1.18 =
+
+`PromptForChoice`: trim end of caption and message.
+
+= 8.1.17 =
+
+Requires FarNet 8.1.9
+
+Amend PS host ReadLine and PromptForChoice.
+
+= 8.1.16 =
+
+Microsoft.PowerShell.SDK 7.4.3
+
+= 8.1.15 =
+
+Fix NRE on CtrlC in prompts.
+
+Open-TextLink.ps1
+- amend opening obsidian-like links
+
+= 8.1.14 =
+
+Amend message on `Assert-Far -eq` check failure.
+
+Rename Reindent-Selection-.ps1 to Reindent-Selection.ps1
+Handle line comments after ( and {.
+
+= 8.1.13 =
+
+ItemExplorer
+- replace copy/pasted guid with unique
+
+Tweak and rename
+- Show-Hlf-.ps1 -> Show-Hlf.ps1
+- Show-Markdown-.ps1 -> Show-Markdown.ps1
+
+= 8.1.12 =
+
+Requires FarNet 8.1.7
+
+Optimize setting current locations on invoking commands.
+
+Go-Everything.ps1 uses settings instead of env variables.
+
+= 8.1.11 =
+
+New cmdlets Register-FarCommand, Register-FarDrawer, Register-FarTool.
+See Samples/Tests
+
+= 8.1.10 =
+
+Use 127.0.0.1:3278 in FarRedisTask, faster than localhost.
+
+Handle System.Linq.Grouping in object panel.
+
+= 8.1.9 =
+
+Microsoft.PowerShell.SDK 7.4.2
+
+= 8.1.8 =
+
+Tweak Far tasks and FarRedisTask scripts.
+
+Edit-FarFileSync.ps1
+- open with the current frame
+
+= 8.1.7 =
+
+New Bench script Edit-FarFileSync.ps1 for editing in two Far instances.
+
+Rework FarRedisTask scripts.
+
+= 8.1.6 =
+
+Start-FarTask -Data may accept hashtables.
+
+New Bench scripts
+- Send-FarRedisTask.ps1
+- Register-FarRedisTask.ps1
+
+see Samples/FarRedisTask
+- Test-1.PingPong.far.ps1
+- Test-2.EditFile.far.ps1
+
+= 8.1.5 =
+
+Invoke-FromEditor.ps1
+- Use $env:pwsh for PS scripts, if defined.
+
+= 8.1.4 =
+
+Update-FarManager.ps1
+- downloads from GitHub releases
+- removed parameters Version and Stable
+
+= 8.1.3 =
+
+New script Go-Everything.ps1
+
+Format help shown in the editor with the window width.
+
+Move debugging help to https://github.com/nightroman/FarNet/wiki/PowerShellFar-debugging
+
+= 8.1.2 =
+
+Microsoft.PowerShell.SDK 7.4.1
+
+= 8.1.1 =
+
+Requires FarNet 8.1.4
+
+Search-FarFile
+- new parameter -Exclude
+
+= 8.1.0 =
+
+Requires FarNet 8.1.0
+
+Redesigned Search-FarFile
+- with non FarNet panel uses file system search
+- recursive by default, use -Depth to control
+- new parameter -Path for file system search
+- new switch -Bfs for breadth-first-search
+
+DataPanel
+- new helper methods Open and OpenChild
+
+= 8.0.9 =
+
+Panel-DataFrame.ps1
+- F1 menu: scatter plot of two selected columns
+
+= 8.0.8 =
+
+Align completion with https://github.com/nightroman/PS-GuiCompletion
+
+= 8.0.7 =
+
+ArgumentCompleters.ps1, completion of types
+- use built-in completer for normal type names, e.g. [hash
+- use our completer for full name wildcards, e.g. [.hash, [hash*
+
+Snippet.ps1
+- amend auto-select
+
+= 8.0.6 =
+
+Panel-DataFrame.ps1
+- Column plots using FarNet.ScottPlot (counts, histogram)
+
+= 8.0.5 =
+
+Panel-DataFrame.ps1
+- New script for browsing CSV files or DataFrame
+
+ListPanel
+- Recognize and open DataTable
+
+= 8.0.4 =
+
+Snippet.ps1
+- get snippets by prefixes matching the current word
+- support some snippet variables
+
+= 8.0.3 =
+
+Snippet.ps1
+- support "*.code-snippets" and "{language}.json"
+- support custom Get-VSCodeLanguageIdentifier
+- support more known languages by default
+- input placeholders interactively
+
+= 8.0.2 =
+
+New script Snippet.ps1 for using VSCode compatible snippets.
+Retire TabExpansion.txt, snippets are more useful.
+
+= 8.0.1 =
+
+Adjust TabExpansion ArgumentCompleters.ps1 for PS 7.4.0
+
+= 8.0.0 =
+
+Requires .NET 8.0, FarNet 8.0.0
+
+Uses Microsoft.PowerShell.SDK 7.4.0
+
+= 7.0.22 =
+
+Requires FarNet 7.0.13
+
+Start-Far.ps1
+- by default commands are not entered as if typed manually
+- new switch Enter: tells to enter the command as if typed
+- new switch Hidden: tells to start with hidden panels
+
+Search-Regex.ps1
+- Use PowerShell enum.
+- Dialog: Options: treat all \W as separators.
+- With hidden panels open full screen result panel.
+
+Example:
+ps: Start-Far ps:Search-Regex -Hidden
+
+= 7.0.21 =
+
+Microsoft.PowerShell.SDK 7.3.9
+
+= 7.0.20 =
+
+Microsoft.PowerShell.SDK 7.3.8
+
+= 7.0.19 =
+
+- Microsoft.PowerShell.SDK 7.3.7
+- Open-TextLink - deal with possible app URL output
+- Tweak TabExpansion.txt
+
+= 7.0.18 =
+
+Amend panel column expressions, document use of `GetNewClosure` in some cases.
+
+= 7.0.17 =
+
+Microsoft.PowerShell.SDK 7.3.6
+
+= 7.0.16 =
+
+Microsoft.PowerShell.SDK 7.3.5
+
+= 7.0.15 =
+
+Avoid user screen on completion calling native apps.
+
+= 7.0.14 =
+
+ArgumentCompleters.ps1
+- support `dotnet`
+- support `dotnet-suggest`, if available
+
+= 7.0.13 =
+
+Show online help for microsoft.com only.
+
+= 7.0.12 =
+
+Fix PromptForCredential (remove backslash from user name).
+
+= 7.0.11 =
+
+PS modules and paths
+- Add %FarProfile%\FarNet\PowerShellFar\Modules to %PSModulePath%.
+- Retire %FarHome%\Modules\PowerShellFar\Modules from %PSModulePath%.
+- Retire FarInventory module from package, it is available in sources.
+
+New script
+- Bench\Panel-Version.ps1
+
+= 7.0.10 =
+
+Microsoft.PowerShell.SDK 7.3.4
+
+= 7.0.9 =
+
+Make args nullable in Interop().
+
+= 7.0.8 =
+
+Microsoft.PowerShell.SDK 7.3.3
+
+= 7.0.7 =
+
+Microsoft.PowerShell.SDK 7.3.2
+
+= 7.0.6 =
+
+master -> main, update links.
+
+ArgumentCompleters.ps1 - amend completion of -ComputerName
+
+Panel-DBTable.ps1 - use sqlite_schema instead of sqlite_master
+
+= 7.0.5 =
+
+New Edit-IB.ps1 finds and edits selected Invoke-Build tasks.
+
+= 7.0.4 =
+
+Microsoft.PowerShell.SDK 7.3.1
+
+TabExpansion tweaks
+
+= 7.0.3 =
+
+Object panel:
+- Group-Object result panel: set Count column kind to "S"
+
+Panel-History.ps1
+- replace AllowDelete with ReadOnly, i.e. invert the default
+
+Add .ForEach and .Where helpers to code completion.
+
+= 7.0.2 =
+
+Amend begin/end application processing.
+
+= 7.0.1 =
+
+Database scripts now use the package FarNet.SQLite.
+- New script Panel-History.ps1 to browse histories
+- Connect-SQLite-.ps1 -> Panel-SQLite.ps1
+- Panel-DbData-.ps1 -> Panel-DBData.ps1
+- Panel-DbTable-.ps1 -> Panel-DBTable.ps1
+- rework sample/test scripts
+
+DataPanel
+- fixed issue on opening records without primary key
+
+= 7.0.0 =
+
+Requires FarNet 7, uses .NET 7.
+
+Open-TextLink.ps1 - open NuGet package references (like in project files)
+
+TabExpansion2: support case .\S
+
+PS help: fix `ShiftF1` in editor
+
+= 6.0.23 =
+
+Requires FarNet 6.0.25
+
+Changed command exception handling in the test mode.
+
+Reworked Start-Far.ps1
+- new parameter `Test` enables command test mode
+- switch `Wait` now checks for the exit code
+- amended parameter `Timeout`
+- new parameter `WindowStyle`
+
+= 6.0.22 =
+
+Requires FarNet 6.0.23
+
+Retire Get-FarFile as not adding value to other methods.
+
+Assert-Far
+- new switch Passive tells to check the passive panel
+- removed Native2, Plugin2, ExplorerTypeId2 (use -Passive instead)
+
+= 6.0.21 =
+
+Microsoft.PowerShell.SDK 7.2.7
+
+= 6.0.20 =
+
+Requires FarNet 6.0.21
+
+Use FarNet.Tools.InputBox.
+Amend nullable references.
+
+= 6.0.19 =
+
+Reworked SyncPaths on invoking commands, see https://github.com/nightroman/FarNet/issues/34
+
+= 6.0.18 =
+
+Enables nullable reference types (NRT) in the API.
+This does not change much for scripts.
+
+Minor tweaks:
+- Rework legacy code in menu
+- Amend Assert-Far dialog Ignore
+- Amend Find-FarFile parameter sets
+- One $Psf.ShowInteractive with default parameter instead of two
+
+= 6.0.17 =
+
+Requires FarNet 6.0.14
+
+Interactive editors:
+- support history navigation by up/down arrows in the last line
+- the key for show history changed from F6 to F5
+
+Interactive editors opened from the menu:
+- use temp files deleted after use
+- save automatically on output
+
+Clear-Session.ps1 - MB as memory unit.
+
+= 6.0.16 =
+
+Requires FarNet 6.0.13
+Updates and maintenance.
+
+= 6.0.15 =
+
+Requires FarNet 6.0.12
+
+The module does not write command history anymore. You may remove
+"%FARLOCALPROFILE%\FarNet\PowerShellFar\PowerShellFarHistory.log".
+The command history is created from Far Manager histories.
+See https://github.com/nightroman/FarNet/discussions/31
+
+Renamed and updated Complete-Word-.ps1 -> Complete-Word.ps1
+
+= 6.0.14 =
+
+FarInventory module works again. Replaced CIM cmdlets with System.Management tools.
+
+Internal profile - redefined `help`. Core `help` is not user screen friendly.
+
+Open-TextLink recognizes some more ClearScript style links.
+
+= 6.0.13 =
+
+Fix issues in async interactive editors.
+
+= 6.0.12 =
+
+Make runspace opening completely background.
+As a result, Far with FarNet starts faster.
+
+= 6.0.11 =
+
+Requires FarNet 6.0.6
+Technical tweaks.
+
+= 6.0.10 =
+
+Search-Regex.ps1 - follow up.
+
+= 6.0.9 =
+
+Requires FarNet 6.0.4
+Assert-Far - set dialog TypeId.
+Show-Markdown-.ps1 - fix regression.
+Search-Regex.ps1 - remove Groups, use regex groups automatically.
+
+= 6.0.8 =
+
+Assert-Far [Debug] in addition to manually attached debugger (usually VSCode)
+offers quick [Add-Debugger] session. Add-Debugger 2.1.0 is recommended.
+
+= 6.0.7 =
+
+Omit not so useful details in printed PowerShell errors,
+better with default PowerShell $ErrorView='ConciseView'.
+Full info is still available in many ways, when needed.
+
+Start-FarTask debugging
+- Requires Add-Debugger 2.0.0.
+- New parameter AddDebugger replaces Break and specifies Add-Debugger's
+parameters. It's verbose but flexible and works well when Add-Debugger
+is used for different tasks. Use with wrappers and file associations:
+
+	*.fas.ps1
+	@ps: Start-FarTask -Script '!\!.!' -Step -AddDebugger @{Path="$env:TEMP\debug.log"; Environment='AddDebuggerFarTask'} #
+
+Assert-Far
+- Fixed [Debug], now debugger should stop at the line with Assert-Far
+- Added [Ignore], not very safe (after assert) but may be very useful
+
+= 6.0.6 =
+
+Uses PowerShell SDK 7.2.6
+
+Support ANSI colored console output. By default, enabled on Windows 10+.
+Set $Psf.Settings.RemoveOutputRendering=$true/$false to disable/enable.
+
+	Not just core commands output ANSI colors.
+	You may craft some cool rendering, too, e.g.
+	ps: $PSStyle.Background.BrightRed+'Power'+$PSStyle.Underline+$PSStyle.Bold+'Shell'+$PSStyle.Reset
+
+Start-FarTask scripts debugging
+
+	New switch Break tells to use Add-Debugger.ps1 and available breakpoints.
+	Get from PSGallery https://www.powershellgallery.com/packages/Add-Debugger
+	(use the latest)
+
+	New switch Step implies Break and adds auto breakpoints for stopping at
+	`job`, `ps:`, `run`, `keys`, `macro`.
+
+	You may use two debuggers at the same time:
+	- Add-Debugger for the task code (auto started on -Break / -Step).
+	- VSCode debugger for code in `job`, `ps:`, `run` (attach manually).
+	- Note, all breakpoints set in PowerShellFar work for both debuggers.
+	  But each breakpoint usually works and makes sense for one of them.
+
+= 6.0.5 =
+
+- Use Wait-Debugger in Assert-Far and tweak
+- Open-TextLink.ps1 - support ClearScript links
+
+= 6.0.4 =
+
+VSCode PowerShell debugger works with PowerShellFar in Far Manager.
+It's a game changer! See README for details. Removed old debugger.
+
+If VSCode is not an option use this script with a log watching:
+https://www.powershellgallery.com/packages/Add-Debugger
+ps: Add-Debugger $env:TEMP\debug.log
+
+= 6.0.3 =
+
+Adjust help tools for PS Core changes.
+Show available online help for cmdlets.
+
+= 6.0.2 =
+
+Panel-Process.ps1
+- Renamed Panel-Process-.ps1 to Panel-Process.ps1
+- Fixed WMI properties lost in 6.0.0 (workaround)
+
+Removed Panel-Job-.ps1, not working in PS Core Host.
+
+= 6.0.1 =
+
+Requires FarNet 6.0.1
+
+Retired FarNet obsolete panel members:
+- ShownList -> Files
+- ShownFiles -> GetFiles()
+- SelectedFiles -> GetSelectedFiles()
+
+Obsolete members will be removed soon.
+Adjust scripts working with panel files.
+
+= 6.0.0 =
+
+Requires FarNet 6 and uses .NET 6
+
+FarNet 6 announcement -- https://github.com/nightroman/FarNet/pull/25
+
+Main changes in PowerShell (module not changed much):
+- It's PowerShell 7.2.5, not 5.1, some things are slightly different, mostly better.
+- Module auto-import is no more, use Import-Module before calling its commands.
+- WMI cmdlets are no more. CIM cmdlets replace them but they do not work yet.
+- PowerShell jobs do not work yet, use Start-FarTask, better in many ways.
+
+= 5.9.5 =
+
+Object panel:
+- [Del] really deletes known files/objects (more like in temp panel)
+- [ShiftDel] simply removes objects
+
+= 5.9.4 =
+
+Object panel:
+- [Enter] opens file-like objects using associated programs
+- [Enter] opens directory-like objects in the passive panel
+- [ShiftDel] deletes files with a confirmation dialog
+- [ShiftDel] stops processes with a confirmation dialog
+
+Go-To.ps1
+- renamed from Go-To-.ps1
+- added the switch -Open to open directories
+- finds applications and scripts in the system path
+- accepts pipeline input, on 2+ shows selection list
+
+= 5.9.3 =
+
+Requires FarNet 5.9.2.
+
+Search-Regex.ps1
+- opens the panel as child to restore the current panel on closing
+- amended Regex parameter, e.g. `10.2` used to be an error
+- allow starting not in panels
+
+Merge-Selected.ps1
+- new script to invoke merge of two panel items
+
+= 5.9.2 =
+
+Requires FarNet 5.9.1 (for more reliable help methods).
+
+Renamed Search-Regex-.ps1 -> Search-Regex.ps1.
+
+Fixed getting paths from panels with fake directory `*`.
+
+Support `MatchInfo` (from `Select-String`) in object panel:
+- better choice of panel columns
+- [F4] opens the file at the match
+
+= 5.9.1 =
+
+Fix potential issues with help topics resolution.
+
+= 5.9.0 =
+
+Requires .NET Framework 4.7.2 or newer.
+
+Invoke-FromEditor.ps1 - run current rule from `.Rule.ps1`.
+
+Renamed Panel-BitsTransfer-.ps1 to Panel-BitsTransfer.ps1.
+
+= 5.8.9 =
+
+Start-Transcript and Stop-Transcript result has property Path, like in PS.
+
+Invoke-FromEditor.ps1 - support PSRule *.Rule.ps1 files.
+
+= 5.8.8 =
+
+[F5] in the editor with *.build.ps1, *.test.ps1 (Invoke-Build scripts) invokes
+the current task. Output is shown in the console. Press [Esc] to return to the
+editor. If the invoked task fails, the caret moves to the error position.
+
+Renamed Invoke-Editor-.ps1 to Invoke-FromEditor.ps1, updated doc comments.
+
+= 5.8.7 =
+
+Open-TextLink.ps1
+- Also looks in the user screen text, e.g. printed errors.
+
+= 5.8.6 =
+
+ReadLine dialog
+- [CtrlC] with no selection works as [Esc].
+
+Rename-FarFile-.ps1
+- Renamed to Rename-FarFile.ps1.
+- Allow to edit the new name.
+- New switch -Quiet.
+
+Open-TextLink-.ps1
+- Renamed to Open-TextLink.ps1
+- Amended parameter sets
+
+Get-TextLink-.ps1
+- Renamed to Get-TextLink.ps1
+
+= 5.8.5 =
+
+Command console
+- Up/down keys work like in panels, either navigation or history.
+
+= 5.8.4 =
+
+Command console
+- Fix CtrlX as Cut with selection.
+
+= 5.8.3 =
+
+Console input in more cases, so that:
+- ps: console output and console input
+- vps: viewer output and input dialogs
+(swap some ps: <-> vps: to get desired)
+
+Invoke selected
+- Make it more consistent in different areas.
+
+Command console
+- Sync code runs in editor (F5) with the context.
+
+Other
+- Sample macros in PowerShellFar.macro.lua
+- Retire Invoke-Far, use cases are not clear.
+
+= 5.8.2 =
+
+Requires FarNet 5.8.1
+
+Command console:
+- The prompt is not modal, you may switch windows.
+- Panels are no longer hidden, this is up you.
+- Commands opening panels are now supported.
+- Changed keys, see help F1 in empty prompt.
+- Some keys are sent to the active panel.
+
+= 5.8.1 =
+
+Amended command console history navigation.
+
+= 5.8.0 =
+
+Requires FarNet 5.8.0.
+
+Added the command console v2 (previously retired in 5.2.0).
+It is started in panels by F11 \ PowerShell \ Invoke commands.
+
+Added Start-Far.ps1, useful for starting with a command.
+In particular may be used for starting as command console.
+
+= 5.7.3 =
+
+** Potentially breaking change, review Assert-Far usage **
+
+Reworked Assert-Far to avoid misuse:
+- (1) Assert-Far value(s)
+- (2) Assert-Far value1 -eq value2 (new)
+- (3) Assert-Far <other check parameters>
+- Common -Message and -Title are named parameters
+- New checks: -DialogTypeId -EditorFileName -EditorTitle -ExplorerTypeId
+
+Fixed $_ value in Power panel "invoke for each" (CtrlG).
+
+= 5.7.2 =
+
+Requires FarNet 5.7.1
+Updated for new GetColors.
+
+= 5.7.1 =
+
+Breakpoint colors: make depending on FarColorer presence.
+
+= 5.7.0 =
+
+Breakpoint colors: use yellow background and original foreground.
+
+= 5.6.0 =
+
+Version update to align with FarNet and minor tweaks.
+
+= 5.5.1 =
+
+Maintenance.
+
+= 5.5.0 =
+
+Requires FarNet 5.5.0
+
+Panel cmdlets: replaced switch IdleUpdate with parameter TimerUpdate.
+
+= 5.4.13 =
+
+Removed FarPackage, see https://github.com/nightroman/FarNet/issues/20
+
+= 5.4.12 =
+
+- FarPackage - use NuGet v3 API
+- ArgumentCompleters.ps1 - escape aliases pattern
+- Open-TextLink-.ps1 - tweak pattern
+- Show-Markdown-.ps1 - support images
+
+= 5.4.11 =
+
+Tweak PSF session loading, use $ErrorActionPreference='Stop' by default.
+Start-FarTask jobs support the parameter Arguments ~ $args in jobs.
+
+= 5.4.10 =
+
+Start-FarTask: `keys` supports many arguments joined with spaces.
+
+= 5.4.9 =
+
+Update for FarNet 5.4.13
+
+= 5.4.8 =
+
+Tweak installation scripts and docs.
+
+= 5.4.7 =
+
+Fix breakpoints in files with DOS names.
+
+= 5.4.6 =
+
+Tweaks in tasks and jobs code.
+
+= 5.4.5 =
+
+Removed obsolete Invoke-FarStepper. Use Start-FarTask.
+
+= 5.4.4 =
+
+Removed obsolete PowerShellFar.Stepper. Alternatives:
+- Invoke-FarStepper for old step scripts (obsolete)
+- Start-FarTask for new task scripts (recommended)
+
+= 5.4.3 =
+
+Start-FarTask
+	- replace parameter Variable with more useful Data
+	- add `run` blocks for modal UI without blocking
+	- add Samples/FarTask/Test-Dialog.*.ps1 tests
+
+Invoke-FarStepper
+	- obsolete but still supported
+	- add switch parameter AsTask
+	- retire pipeline input
+
+PowerShellFar.Stepper
+	- obsolete, will be removed from API
+
+= 5.4.2 =
+
+Start-FarTask
+	- improve `keys` and `macro` and support with -Confirm
+	- rename `run` blocks to `ps:`
+
+= 5.4.1 =
+
+Start-FarTask
+	- add `run` blocks in addition to `job`
+
+= 5.4.0 =
+
+** PowerShell v2 is not supported **
+	- In theory we support v3+.
+	- But we test only v5.1.
+	- Report v3-v5 issues.
+
+Support more types having table formats in panels.
+
+ArgumentCompleters.ps1 ~ Equals, GetType, ToString.
+
+= 5.3.9 =
+
+- add parameter Return to Out-FarPanel
+- add output type attributes to cmdlets
+- work on Samples/FarTask
+
+= 5.3.8 =
+
+Start-FarTask
+	- Added the switch parameter Confirm.
+	- Added `macro` in addition to `keys`.
+	- Fixed Assert-Far [Break] in jobs.
+
+Bench/Test moved from the package to Samples/Tests.
+
+Retired (moved to Zoo/PowerShellFar)
+- Connect-MSAccess-.ps1
+- Connect-SqlCompact-.ps1
+
+= 5.3.7 =
+
+Start-FarTask
+
+	- Replaced 3 parameters Script, Code, File with just Script.
+	- Script parameters may be specified for Start-FarTask.
+	- Fixed [F5] in editor for *.fas.ps1 task scripts.
+
+= 5.3.6 =
+
+Add Start-FarTask for async scripts with sync Far jobs and keys.
+Samples: Samples/FarTask
+F# tests: FSharpFar/tests/TestPSFar.fs
+
+= 5.3.5 =
+
+- add InvokeInputCodeAsync, "Input commands" dialog is not modal
+- fix rare case in Complete-Word-.ps1
+
+= 5.3.4 =
+
+FarInventory module
+- Use newer Cim cmdlets instead of obsolete Wmi.
+
+TabExpansion
+- Improve for auto complete "insert first".
+
+= 5.3.3 =
+
+PowerShellFar Interop (e.g. used in FSharpFar)
+- Corrected returned objects of "InvokeScriptArguments"
+- Added "Runspace", the PowerShellFar session runspace
+
+= 5.3.2 =
+
+Updates for FarNet 5.3.0
+
+= 5.3.1 =
+
+Amend the "Esc" dialog in PS confirmation dialogs.
+
+Retire Start-MSBuild-.ps1 (moved to "repo/Zoo").
+Tweak Invoke-Editor-.ps1, remove Start-MSBuild-.ps1, add fsx.
+
+= 5.3.0 =
+
+PowerShell module FarDescription:
+- moved to https://github.com/nightroman/FarDescription
+- you can install it by: Install-Module FarDescription
+- functionality is the same but some details changed
+
+Moved "Bench\Test\Test-Descript-.ps1" tests to the new repo.
+
+= 5.2.17 =
+
+Requires FarNet 5.2.23, Far 3.0.5505, for new menu flags
+
+Menu cmdlets, new switches
+- NoBox, NoMargin, SingleBox, NoShadow
+
+Editor profile
+- Fixed issues with $Far.AnyEditor.add_Opened()
+- Profile-Editor.ps1 uses $Far.AnyEditor.add_Opened()
+- Removed old workaround ignoring the first mouse move
+
+= 5.2.16 =
+
+Show-Markdown-.ps1
+- $env:MarkdownCss may specify the custom CSS, see comments for a good one
+- renamed $env:BrowserForMarkdown to $env:MarkdownBrowser, for consistency
+
+Search-Regex-.ps1
+- built-in command Get-EditorHistory, to search in editor history files
+
+Module
+- fixed removal of finished background jobs
+
+= 5.2.15 =
+
+Get-TextLink-.ps1 - $env:TextLinkEnv may define variables for path
+substitutions in text links.
+
+= 5.2.14 =
+
+Show-Markdown-.ps1
+- requires HtmlToFarHelp v1.3.0
+- improve and correct work with headings/topics
+- $env:BrowserForMarkdown may specify custom browser
+
+Open-TextLink-.ps1
+- support paths starting with %Variable%
+
+= 5.2.13 =
+
+Updates for HtmlToFarHelp v1.2.0
+- module help from GitHub Flavored Markdown
+- update Show-Markdown-.ps1 and Show-Hlf-.ps1
+
+= 5.2.12 =
+
+Tidy up Power panel menu, retire hack shares in item panel.
+
+= 5.2.11 =
+
+- TabExpansion2 - complete even if the caret is at [\w$]
+- Fix order of items in Folder tree panel.
+- Retire some PS v2 bits.
+
+Session ApartmentState and script threads:
+
+	The default apartment state is STA, like in other PowerShell hosts.
+	Scripts are invoked in separate threads. Use the environment variable
+	"PSF.ApartmentState" to change this:
+
+	- "MTA", "STA" - set MTA/STA, invoke scripts in separate threads
+	- "Unknown" - do not set ApartmentState, invoke scripts in the current thread
+
+= 5.2.10 =
+
+Removed Panel-Mongo-.ps1 from the package.
+Use the module FarMongo instead - https://github.com/nightroman/FarMongo
+
+= 5.2.9 =
+
+Panel-Mongo-.ps1
+- update for Mdbc v6
+- support views and aggregate pipelines
+
+Open-TextLink-.ps1
+- if the line has no links, show all URLs in the file
+
+= 5.2.8 =
+
+Open-TextLink-.ps1 -- Add `file:` to URL pattern.
+
+Edit-FarDescription-.ps1 -- Use DisableHistory on editing temp files.
+
+Panel-Database-.ps1 -- Moved from the PowerShellFar package to repo/Zoo.
+It is designed and still may be used for somewhat obsolete SQL Express.
+
+= 5.2.7 =
+
+- Fix ArgumentCompleters for the latest git help syntax.
+- 7za -> 7z in Bench/Update-FarManager.ps1
+
+= 5.2.6 =
+
+Use the current thread in the main runspace in order to deal with Far 3.0.5256.
+Far 3.0.5260 reverts use of critical sections on every plugin call but we keep
+our change for other similar problems in Far, e.g. in menus, see Mantis 2241.
+Unfortunately we have to drop the ability to use different apartment states.
+
+= 5.2.5 =
+
+FarNet 5.2.6
+
+- Add Invoke-Far, similar to command box but designed for more cases.
+- Open-TextLink-.ps1 new switch -Clip to get text from clipboard.
+- Interop "Stepper". Experimental, to be tested in FS.
+
+= 5.2.4 =
+
+Fix #12, exception on "Cursor beyond end of line".
+Tweak TabExpansion2 to avoid noise data in some cases.
+
+= 5.2.3 =
+
+Fix #5
+
+= 5.2.2 =
+
+- Adapt for Far 3.0.4821
+
+= 5.2.1 =
+
+Editor console -> Interactive
+
+	The term "editor console" is replaced with "interactive".
+	PowerShellFar and FSharpFar interactive are made similar.
+
+	Interactive output is no longer colored by Colorer.
+	This feature may be restored if it looks important.
+
+	Changed some keys used in interactive, see docs.
+	(e.g. use [ShiftEnter] instead of [Enter])
+
+= 5.2.0 =
+
+Adapt for Far 3.0.4782.
+Retire command console.
+
+= 5.1.0 =
+
+Adapted for FarNet 5.1.0
+
+= 5.0.94 =
+
+Fixed color of errors printed to console (requires Far 3.0.4744).
+
+= 5.0.93 =
+
+Fixed #4 TabExpansion2 v1.0.1 regression on read only results.
+
+= 5.0.92 =
+
+Completed revision of TabExpansion, see notes: https://github.com/nightroman/FarNet/issues/3
+
+Fixed variable names leaked to results from completers and internal code.
+
+= 5.0.91 =
+
+Revision of TabExpansion2.ps1, prepare for future breaking changes.
+See migration notes: https://github.com/nightroman/FarNet/issues/2
+
+Invoke-Editor-.ps1
+- ExecutionPolicy Bypass for all PS scripts.
+- NoProfile for Invoke-Build scripts.
+
+= 5.0.90 =
+
+Recommended Far 3.0.4660+
+Fixed command console exit.
+
+= 5.0.89 =
+
+Far does not support idle editor events.
+Removed Watch-Output-.ps1 and Test-Watch-Output-.ps1.
+
+= 5.0.88 =
+
+DataTable:
+- Do not auto hide some columns.
+- Improved check for data changes.
+
+Invoke-Editor-.ps1:
+- Invoke-Build scripts: get tasks by ??, avoid some limitations.
+
+= 5.0.87 =
+
+Removed user items from the module menu, i.e removed $Psf.Action().
+See forum: http://forum.farmanager.com/viewtopic.php?p=135651#p135651
+
+= 5.0.86 =
+
+Tree panel:
+- Default panel view without description column
+- Folder tree: better error message at Cert:\
+
+TabExpansionProfile.ps1: fixed completer for git 2.5+
+
+Test-Job-.ps1: adapted for PS v5
+
+= 5.0.85 =
+
+TabExpansion takes the prefix "ps:" into account not only in the command line
+but also in dialogs (needed for user menu, apply command, file associations).
+
+Search-Regex-.ps1: The parameter Options accepts some shortcuts:
+sm: SimpleMatch, ww: WholeWord, etc.
+
+= 5.0.84 =
+
+Open-FarEditor, New-FarEditor, Open-FarViewer, and New-FarViewer resolve
+relative input paths using the current PowerShell location.
+
+= 5.0.83 =
+
+Assert-Far: Refactoring and slightly changed logic. Special processing of
+Conditions defined as a script block. See:
+ps: help Assert-Far -full
+
+Migration to GitHub: updated links.
+
+= 5.0.82 =
+
+Migration to GitHub. Some git commands are not friendly to "!" characters.
+So the recommended stepper script suffix now is "..ps1". Renamed tests:
+- Test-Dialog!.ps1 -> Test-Dialog..ps1
+- Test-Stepper!.ps1 -> Test-Stepper..ps1
+
+= 5.0.81 =
+
+Update-FarManager.ps1
+7za (standalone) is used instead of 7z (installed with 7-zip). If you do not
+have 7za then define an alias to existing 7z.exe before calling the script:
+> Set-Alias 7za <path>\7z.exe
+> Update-FarManager.ps1 ...
+
+Profile-Remote.ps1
+The profile was expected on a remote machine (incorrect). Now it is read on the
+current machine (correct) and then this code is invoked in a remote workspace.
+
+Minor changes due to migration to GitHub, mostly in the documentation.
+
+= 5.0.80 =
+
+Show-History-.ps1
+Removed work around unwanted Far messages on setting missing directories.
+
+= 5.0.79 =
+
+Adapted for Far 3.0.4138
+
+= 5.0.78 =
+
+Adapted for Far 3.0.4042 (new "Desktop" window).
+
+= 5.0.77 =
+
+PowerExplorer.Functions: SetText and SetFile are set automatically if AsSetText
+and AsSetFile are assigned.
+
+Panel-Mongo-.ps1: Can view [F3] and edit [F4] and save documents as JSON.
+[F5] copies JSON to disk (not from).
+
+= 5.0.76 =
+
+Editor console & history: redraw on inserting commands from history.
+
+= 5.0.75 =
+
+Reindent-Selection-.ps1 - fixed for ExpandTabs mode
+
+Update-FarManager.ps1 can remove some more not used files after updates.
+
+= 5.0.74 =
+
+Continued. [Esc] is for stopping in prompts for Type[] arguments as well.
+
+= 5.0.73 =
+
+STOPPING COMMANDS ON USER INPUT
+
+In MS PS console [CtrlC] stops all commands on user input, i.e. on read host,
+prompt for choice, etc. The same ability is added to PSF. But in PSF [Esc] is
+used instead in various prompts. Unlike in PS, it also asks a user to confirm.
+
+= 5.0.72 =
+
+As far as Mantis#2635 is not going to be fixed, implemented a kludge.
+
+NEW UPDATE TOOLS
+
+Update-FarPackage.ps1 is replaced with the module FarPackage:
+FarNet\Modules\PowerShellFar\Modules\FarPackage
+See about_FarPackage.help.txt there.
+
+Instead of one script with many not trivial parameters and rules these four
+commands with simple parameters are used:
+
+* Install-FarPackage   - installs/updates one package from web
+* Restore-FarPackage   - installs one package from a file
+* Update-FarPackage    - updates all installed packages
+* Uninstall-FarPackage - removes one installed package
+
+Intermediate unpacked directories "<PackageID>.<version>" are not used, you do
+not have to clean after updates. Files are extracted from packages directly to
+destinations.
+
+Some packages slightly changed their structure, e.g. FarNet and PowerShellFar
+moved information files to other directories.
+
+If somebody wants some files to be excluded on unpacking we can support, say, a
+file "Update.Exclude.txt" with relative paths and file masks to be excluded.
+Think, suggest.
+
+= 5.0.71 =
+
+Command line and box: enabled path completion in both.
+
+Menu "Errors": replaced \r\n\t in messages with spaces.
+
+= 5.0.70 =
+
+Update-FarPackage.ps1:
+- Omitted FarHome is resolved to the current location if Far.exe is there.
+- Verbose messages are replaced with Write-Host and always written.
+
+Invoke-Editor-.ps1:
+- amended current task recognition in *.{build|test}.ps1
+- removed *-.ps1, redundant because there is [F5]
+
+Invoke-Shortcut-.ps1: minor tweaks.
+
+= 5.0.69 =
+
+Use FarNet 5.0.46
+
+Stepper: "Ask" mode shows step prompts at the top right corner of the window.
+
+Removed menu "F11 \ PowerShellFar \ Modules+" as not useful anymore. In PS
+v3.0+ modules does not have to be explicitly loaded for using commands. For
+analysis of modules this command is more useful than the old menu:
+ps: Get-Module -ListAvailable | Out-FarPanel
+
+= 5.0.68 =
+
+Use FarNet 5.0.45
+
+Command console:
+- Fixed missing cursor on cls.
+- Fixed extra empty line on Read-Host.
+- Fixed a conflict between console app output and prompt.
+
+= 5.0.67 =
+
+Command console:
+- Nested prompt and debugger console also use command console prompt.
+- Editor consoles are not used in command console mode (i.e. denied).
+
+= 5.0.66 =
+
+Command console:
+- Fix: output from console apps could override prompt echo.
+- Read-Host and Prompt(): prompt and echo use ":" in a new line.
+- Like in MS, empty text exits prompts for multiple values (e.g. string[]).
+
+TabExpansionProfile.ps1: Replaced demo completer of Far switches with more
+practical completer of git commands, e.g. git [Tab]->all, git a[Tab]->a...
+
+HLF file uses new syntax (Mantis#0002619). Recommended Far 3.0.3831.
+
+= 5.0.65 =
+
+Command console and "ps:" commands:
+- Console apps with interaction and colors work as expected. In particular,
+...|more works fine, git.exe commands work with colors and interaction, etc.
+
+Execution policy:
+- The module does not require Set-ExecutionPolicy in PowerShell.
+
+= 5.0.64 =
+
+Command console:
+- Read-Host and Prompt(): fixed history and password.
+- Show-FarTranscript uses the external viewer by default.
+- Transcribing is off by default, use Start-Transcript, Show-FarTranscript.
+- Start-Transcript, Stop-Transcript work like in MS with minor differences.
+
+= 5.0.63 =
+
+Command console:
+- As in MS console, [F7] shows PowerShell command history.
+- PromptForChoice: fixed formatting of long items.
+
+PowerShell history:
+- Default MaximumHistoryCount: 512 -> 1000.
+- [Enter] inserts to command lines or a new command input box.
+- [CtrlEnter] is not used.
+
+Other:
+- Added /w- to the default external viewer, i.e. Far /w- ...
+
+= 5.0.62 =
+
+Requires FarNet 5.0.42
+
+Command console:
+- UI (prompt, confirmation, choice) is mostly the same as in the MS PS console.
+- Clicks outside of the input line are ignored (for now?) and do not exit.
+- Too long prompts are not truncated but shown as read only edit boxes.
+- [F4] Opens the modal editor for editing/pasting multiline code.
+- Removed some AI on errors.
+
+Complete-Word-.ps1: checks IsReadOnly.
+Reformat-Selection-.ps1: checks IsLocked.
+
+= 5.0.61 =
+
+Implemented internals of "Read-Host -AsSecureString" properly with a password
+edit box in UI and SecureString returned as a result.
+
+Command console
+
+The input line is shown at the line before the last in order to be there always
+regardless of the key bar presence. As a result the last line is always empty,
+for now. Later we can make it either the status line with some dynamic custom
+information or maybe the special console mode tool bar.
+** Suggestions and ideas are welcome **
+
+Other tweaks:
+- [F1] in empty command lines opens the help topic "Command input line".
+- $Psf.StartConsole() throws an error if it is called not from panels.
+- Key and menu bars are hidden/restored, as panels.
+
+= 5.0.60 =
+
+Requires FarNet 5.0.41
+
+New feature/mode: "Command console"
+
+The genuine console with the prompt implemented as one line input box with Far
+history completion, PowerShell completion with [Tab], PowerShell help with
+[F1], etc. It is like the standard PowerShell console but in many ways more
+powerful with Far UI behind. This mode is started from the menu in panels.
+[Esc] in the empty line exits back to panels.
+
+You can run Far Manager with this mode started:
+Far.exe /w ps:$Psf.StartConsole()
+
+This mode is useful already. But a few touches will make it even better and
+looking more like the standard console, with less surprises.
+
+OTHER CHANGES
+
+Simplified menu names. Hotkeys are not changed.
+
+Improved processing of the debugger command "Quit".
+
+Connect-SQLite-.ps1 requires System.Data.SQLite.1.0.91.0
+
+Go-Head-.ps1 now always goes to the first file, not directory.
+
+Test-Debugger.ps1 moved to https://github.com/nightroman/PowerShelf
+
+= 5.0.59 =
+
+Fixed an error on TabExpansion in a weird case (looks like a PS issue).
+
+Update-FarPackage.ps1
+
+- The script supports automatic updates using "Update.*.info" files.
+- Added new parameter Source (Default: https://www.nuget.org/api/v2).
+- Added new switch Remove which removes installed files.
+- Improved potential error messages.
+
+Internal. Replaced delegate GetValues with a Func<>.
+
+= 5.0.58 =
+
+Slightly simplified the NuGet package. It is recommended to update it by the
+upgraded script Update-FarPackage.ps1
+
+Upgraded Update-FarPackage.ps1. See the help comments for details and examples.
+Summary:
+- Revised and simplified parameter names.
+- It can just get and return the latest version.
+- It can just download and unpack without updating.
+- Much faster unpacking by System.IO.Packaging (instead of Shell.Application).
+
+= 5.0.57 =
+
+THE PACKAGE MOVED TO NUGET
+
+Update-FarPackage.ps1
+
+New script Update-FarPackage.ps1 replaces Update-FarNet.ps1. The new script
+installs or updates any NuGet package with special structure for Far Manager.
+For now there are two packages "FarNet" and "FarNet.PowerShellFar". Other
+FarNet modules will move to NuGet soon.
+
+The script needs only PowerShell. It downloads packages by System.Net.WebClient
+and unzips them by COM Shell.Application.
+
+NOTE: Other authors can push their packages designed for Far to NuGet and use
+this script for updates. This will work for native plugins, too. NuGet is for
+.NET libraries in first place but packages can be created from any files, not
+necessarily .NET related.
+
+OTHER CHANGES
+
+Removed the helper PowerShellFar.Wrap with methods ConverterToString and
+Comparison. The first was needed for SubsetForm.ItemToString (not needed
+anymore, script blocks can be used directly, see Test-SubsetForm-.ps1).
+The second is not used, presumably.
+
+Amended documentation comments for FarNetAPI.chm
+
+RENAMED:
+- Test-Dialog+.ps1 -> Test-Dialog!.ps1
+- Test-Stepper+.ps1 -> Test-Stepper!.ps1
+
+REASON: OPC packages (NuGet) escape some characters (e.g. "+" becomes "%2B").
+Update-FarPackage.ps1 and NuGet.exe decode such names correctly but on manual
+unzipping such names will be problematic. We better avoid "+" and use another
+symbol which is not escaped, say, "!".
+
+= 5.0.56 =
+
+Fixed TabExpansion in the editor console opened from the debugger dialog.
+
+Script Connect-SQLite-.ps1 - Redesigned for use of the NuGet package and the
+env var (can be set globally or in a profile). This is more portable and does
+not require installation of assemblies to GAC or registration of the provider.
+
+Fixed several issues in database demo scripts.
+
+= 5.0.55 =
+
+INITIALIZATION
+
+Internal changes in session initialization. Like in ISE and ConsoleHost v3, the
+default apartment state is STA. As a result, for example, it is possible to use
+System.Windows.Forms.Clipboard, WPF forms, and other features that require STA.
+
+NOTE: If MTA is still required set the env var: PSF.ApartmentState=MTA. Please,
+report such cases, perhaps a better option is needed.
+
+NOTE: New initialization caused an insignificant change in one test. If you
+notice any significant changes in PowerShellFar behaviour, please report.
+
+OTHER CHANGES
+
+Amended items in completion lists for commands and provider items.
+
+= 5.0.54 =
+
+Fixed incorrect comparison of keys (transition to Far3, v5.0.0). E.g. break
+keys in some menus did not work.
+
+Fixed issues in the "Background job" dialog shown on Far exit with existing
+jobs. Used the PSF external viewer instead of Notepad for viewing jobs output.
+
+Added the switch /ro to the default PSF external viewer command, so it is:
+<this-far.exe> /ro /m /p /v <file>
+
+= 5.0.53 =
+
+NOTE: Simple manual upgrade steps may be needed.
+
+CONFIGURATION VIA PROFILES
+
+PowerShellFar is configured via profiles with special fixed names located in
+"%FARPROFILE%\FarNet\PowerShellFar". Each profile is invoked on the relevant
+event, once per session. Profiles are invoked in the global scope.
+
+HOW TO UPGRADE. Rename profile scripts and copy them to the profile directory.
+Cosmetic changes may be needed depending on how profiles were called before.
+
+Supported profiles:
+- Profile.ps1        - use new or upgraded
+- Profile-Editor.ps1 - use new or upgraded
+- Profile-Local.ps1  - new feature
+- Profile-Remote.ps1 - new feature
+
+"Profile.ps1" is the main session profile invoked on loading PowerShellFar. It
+replaces the old setting "StartupCode". Renamed "Profile-.ps1" to "Profile.ps1".
+
+"Profile-Editor.ps1" is the editor profile invoked on the first use of editor.
+It replaces the old setting "StartupEdit". Renamed "Profile-Editor-.ps1" to
+"Profile-Editor.ps1".
+
+NEW: "Profile-Local.ps1" and "Profile-Remote.ps1" are session profiles invoked
+on opening local and remote editor consoles, once per each new session.
+
+Updated the manual and added the new topic "Profiles".
+
+If the old file "%FARPROFILE%\FarNet\PowerShellFar\Settings.resources" exists
+remove it because PowerShellFar does not have any settings saved there now.
+
+CODE COMPLETION IN LOCAL AND REMOTE CONSOLES
+
+TabExpansion2/TabExpansion which is used in the main session is enabled in
+local and remote editor consoles, too. It is also initialized on the first
+completion and the same completer rules and expansion profiles are used.
+
+Fixed some code completion issues in remote consoles.
+
+= 5.0.52 =
+
+TabExpansion
+
+- Like in ISE, completion list items can be different from their completion
+texts (e.g. shorter, without common leading parts, etc.).
+
+TabExpansionProfile.ps1, Type/Namespace completion
+
+- Fixed cases of incorrect replacement on type name completion.
+- Like in ISE, completion lists show ListItemText instead of CompletionText.
+
+= 5.0.51 =
+
+Multiline commands in PowerShell editor consoles
+
+- Like in ISE, [ShiftEnter] just adds a new line without invoking the command.
+- [Enter] at any position of the last command area invokes the whole area code.
+- As a result, it is possible to paste multiline code and invoke it by [Enter].
+- Introduced the marker line <> for empty output. It is needed now in order to
+separate commands because they are not one-liners anymore.
+- Multiline commands are not added to the history.
+- Updated TabExpansion for multiline commands.
+- Updated editor console help.
+- Updated powershell.hrc in order to recognize the new marker <>.
+
+= 5.0.50 =
+
+Code completion in script editors
+
+- Covered statements that continue after the current line.
+- Corrected completion of variables from the current script.
+
+= 5.0.49 =
+
+Code completion in script editors analyses not just the current line but the
+whole code, e.g. completion in multiline statements including continued lines
+(` at EOL) should work fine.
+
+TabExpansion2.ps1
+
+- Improved diagnostics of user profile and completer issues like unexpected
+output and invalid result type. Errors are silent, examine $Error on problems.
+
+TabExpansionProfile.ps1
+
+- Completion of Find-FarFile:Name takes into account pre-typed parts.
+- Completion of help comment tags (.Synopsis, etc.) works in ISE, too.
+- Improved completion of "one line code" in comments, also works in ISE.
+
+= 5.0.48 =
+
+TabExpansionProfile.ps1, TabExpansion2.ps1
+
+- Completion in comments moved from TabExpansion2 to TabExpansionProfile. In
+other words, it is up to a user. TabExpansion2 is now just a bare engine for
+invoking completers added by profiles.
+- Completion of help comments (.Synopsis, etc.) is for FarHost only. It's
+complicated in ISE and useless in console.
+- Improved work around read only built-in results.
+
+= 5.0.47 =
+
+TabExpansionProfile.ps1, TabExpansion2.ps1, TabExpansion.ps1
+
+- Special processing of results for ISE lists (V3).
+- Type/namespace order: namespaces first, types second.
+- Generic types are completed with "[]", "[,]", etc. at ends.
+- Faster type and namespace completions, even with new features.
+- Added ResultType to New-CompletionResult and used in completers accordingly.
+NB: If you use ISE, this value is important for icons in ISE completion lists.
+- Magic. TabExpansionProfile.ps1 Out-FarPanel completer gets properties, try:
+Get-Process | Out-FarPanel [Tab]
+
+= 5.0.46 =
+
+TabExpansion2
+
+- Removed $token parameter from result processors.
+- Upgraded TabExpansionProfile.ps1 result processors accordingly.
+- Added support for InputProcessors in addition to ResultProcessors.
+- Added one custom input processor which completes .NET types and namespaces
+like TabExpansion.ps1 does. Personally, this way is much more useful than the
+built-in completion.
+
+Search-Regex-.ps1
+
+- Extra options:
+* SimpleMatch instead of the old trick *pattern.
+* WholeWord ensures word bounds at pattern start/end words.
+
+- Command line mode: if InputObject is specified and it is a script block then
+it will be invoked in the background for getting input files. Analogue in UI:
+"Input" command + "Background input" checked.
+
+= 5.0.45 =
+
+TabExpansion2 for PowerShell v3
+
+New script TabExpansion2.ps1 in the module home directory is automatically used
+for PowerShell v3. The old TabExpansion.ps1 is also there, it is used for
+PowerShell v2.
+
+There are many new useful features. One of the best (personally) is argument
+completion for some popular cmdlets and ability to add custom completers for
+external or even build-in commands.
+
+TabExpansion2.ps1, unlike the old one, supports custom extensions via profiles.
+New script Bench\TabExpansionProfile.ps1 is a profile used by the author. Use
+it as the base for your own. See the script comments and code for the details.
+
+Custom completers are new and some features may change, like rules for result
+completers. Other completers are more or less standard, they are less likely
+going to change.
+
+Removed Test-TabExpansion-.ps1 from the package. It's a boring test now.
+
+= 5.0.44 =
+
+TabExpansion
+
+- Improved expansion of types and namespaces. Removed type caching, all works
+fast enough. As a result, types added later are processed without re-caching.
+
+- If a type name contains any wildcard character then a search for all types is
+performed. '*' is not added to end as it used to be, so that it is possible to
+search for types which names "end with". E.g. [*client<Tab> gets types which
+names end with 'client'.
+
+- Special "#". WORD#<Tab> is used for command history, like in the console
+host. Expansion gets commands containing WORD.
+
+- Special "=". WORD=<Tab> is used for lines from TabExpansion.txt from the same
+directory as TabExpansion.ps1. Expansion gets lines containing WORD and sets
+the cursor to the symbol "#", if any. Old TabExpansion#.txt can be removed.
+
+NOTE: Special "#" and "=" should work in other hosts if TabExpansion.ps1 is
+used there. Tested with Microsoft PowerShell console and ISE hosts.
+
+NOTE: This is probably the last PS V2 compatible TabExpansion. It will continue
+to exist and work for V2 but for V3 TabExpansion2 will be used. New development
+will be there. Some new features are coming soon.
+
+= 5.0.43 =
+
+TabExpansion: Fixed issues on not yet imported module command parameters.
+
+Improved cmdlet help for panels, especially Out-FarPanel.
+
+Internal: Removed scriptblock cache. PS V3 uses its own.
+
+= 5.0.42 =
+
+Object panel: Take into account possible problematic objects with some
+properties or ToString() throwing exceptions.
+
+TabExpansion: Avoided redundant parts in choice menu items in some cases.
+
+Update-FarManager.ps1, Update-FarNet.ps1: parameter Platform: default value
+(x86|x64) is taken from Far.exe file info.
+
+Panel-Mongo-.ps1: Adapted for the latest Mdbc. Added support of file collections.
+
+= 5.0.41 =
+
+Improved navigation of KeyValuePair's in object and member panels.
+
+= 5.0.40 =
+
+Improved view and navigation of DictionaryEntry's in object and member panels.
+Object panel: [Enter] on DictionaryEntry opens a panel for its Value, if it is
+not trivial, [CtrlPgDn] as usual opens a member panel. Member panel: only "Key"
+and "Value" are shown, "Name" is removed (redundant PowerShell alias of "Key").
+
+Fixed "Cannot access a disposed object." in a dialog of remote session console.
+
+Script Invoke-Editor-.ps1. If a file is *.build|test.ps1 then the current task
+is invoked by Invoke-Build.ps1 (https://github.com/nightroman/Invoke-Build)
+
+Script Complete-Word-.ps1. Redraw the editor on insertion to avoid delays.
+
+Scripts Update-FarManager.ps1, Update-FarNet.ps1 - either parameter or env
+variable FARHOME is mandatory. Default "C:\Program Files\Far" is not used.
+
+= 5.0.39 =
+
+Fixed a few defects caused by new prefixes ps:, vps: (e.g. TabExpansion, etc.).
+
+Minor, mostly internal, changes in PSF background jobs.
+
+= 5.0.38 =
+
+Changed default command prefixes ">:" to "ps:" and ">>:" to "vps:". If you want
+to use the old prefixes go to Options\Plugins configuration\FarNet\Commands and
+change the prefixes there.
+
+= 5.0.37 =
+
+Technical build for FarNet 5.0.34.
+
+= 5.0.36 =
+
+Folder panel. Fixed occasional errors on syncing the current location before
+invoking PS commands when this panel is active.
+
+= 5.0.35 =
+
+Technical build for FarNet 5.0.32.
+
+Test-Dialog-.ps1 - fixed interactive testing and separator text positions.
+
+= 5.0.34 =
+
+* Adapted for FarNet 5.0.31
+* Converted PowerShellFar.farconfig to PowerShellFar.macro.lua.
+* Removed Show-KeyMap.ps1, it does not work with new Far macros.
+* Select-Bookmark-.ps1 - call Redraw() after setting the position.
+
+= 5.0.33 =
+
+Improved TabExpansion of variables in a script in the editor for variables with
+prefixes `$script:`, `$global:`, and `$private:`.
+
+Moved some not PSF scripts to https://github.com/nightroman/PowerShelf
+They are useful with or without Far and will be maintained separately.
+* Add-Path.ps1
+* Format-Chart.ps1
+* Invoke-Environment.ps1
+* Set-Console.ps1 (as Set-ConsoleSize.ps1)
+
+= 5.0.32 =
+
+Improved expansion of variables in an editor from the current text.
+
+Open-TextLink-.ps1
+* Also opens Evernote links (evernote://...).
+
+Import-Panel-.ps1
+* No AI, an object panel is opened for any number of objects: 0, 1, 2+.
+
+= 5.0.31 =
+
+Read-Host
+* The input dialog supports multi-line prompts.
+
+Panel-Job-.ps1
+* [Enter] opens a menu with the commands: Suspend, Resume, Stop, Remove.
+* In PS v3 workflow and scheduled jobs are supported. See script comments.
+
+Panel-BitsTransfer-.ps1
+* Fixed the [Enter] menu.
+
+= 5.0.30 =
+
+Expansion of variables (TabExpansion) also uses variables from the current file
+(usually a script) in the editor in addition to existing session variables.
+
+Show-KeyMap.ps1
+* Default output file is $env:TEMP\FarKeyMap.output.htm
+
+Invoke-Editor-.ps1
+* Amended invocation of .ps1 files in an external console
+
+= 5.0.29 =
+
+Module FarDescription does not depend on Far2 registry settings. The settings
+are defined in `FarDescription.psm1`. See `about_FarDescription.help.txt` for
+details.
+
+Script `Update-FarNet.ps1`
+* Removed check for running Far instances. It was troublesome in some cases.
+
+= 5.0.28 =
+
+Adapted for the new macro engine in Far 3.0.2853. Scripts using hardcoded
+macros (e.g. stepper scripts) should be adapted, as well as other used macros.
+
+= 5.0.27 =
+
+Panel-Mongo-.ps1
+* [ShiftF6] Prompts for a new name and renames the current collection.
+
+Reviewed and tested for PowerShell V3 RC.
+
+= 5.0.26 =
+
+Panel-Mongo-.ps1 (requires Mdbc module v2.0.0)
+* It can delete selected databases, collections, documents. DISCLAIMER: usual,
+see in the script. Thus, in addition to browsing you can also prune your data.
+NB: changes of document data in panels are ignored.
+* Specific content. New parameters DatabaseName, CollectionName allow opening
+collections of the specified database or documents of the specified collection.
+
+Minor supportive changes in the PSF core.
+
+= 5.0.25 =
+
+New script Panel-Mongo-.ps1, the browser of MongoDB databases, collections, and
+documents, including nested data. Requires MongoDB + Mdbc. Simple, fast, cool.
+
+DataPanel (universal SQL database data browser) uses new FarNet paging instead
+of implementing its own. Removed "Next / Previous Range" from the [F1] menu.
+For paging simply use "smart" [PgDn] and [PgUp].
+
+Debugger dialog: renamed Break -> Quit (like in the console debugger).
+
+TabExpansion expands $*xxx[tab]. Added a test.
+
+= 5.0.24 =
+
+The stepper engine uses new IFar.PostSteps().
+
+Adapted scripts to changes in `powershell.hrc`.
+
+= 5.0.20 =
+
+Adapted a few scripts to new powershell.hrc features.
+
+= 5.0.19 =
+
+For Far 3.0.2573.
+
+Extras
+- The directory Extras with Colorer syntax and color schemes is removed from
+the PowerShellFar package. It is distributed separately as the ColorerPack
+package among other FarNet packages.
+
+= 5.0.18 =
+
+Improved powershell.hrc for Colorer
+- Renamed PowerShell to powershell (Colorer style), update your prototype file.
+- powershell:regions instead of def:regions (colors can be customized in .hrd).
+- Comment inherits def:Comment => TODO, URL, Email, bug, fix, ??, !!
+- Backtick at EOL is the region LineWrap.
+- Added yet missing escaped "" in "...".
+- Improved psfconsole output.
+
+Get-TextLink-.ps1
+- Gets the link + selected text, if any.
+
+Open-TextLink-.ps1
+- VS link: also uses the next editor line as a hint.
+- In markdown files can jump to internal link targets.
+
+= 5.0.17 =
+
+FarDescription module and Edit-FarDescription-.ps1
+(description tools and multi-line editor)
+
+- Do not trim, keep text as it is.
+- Do not preselect 1-line descriptions.
+- Use temp names like "name.ext.description.txt" and enable editor history.
+Thus, it is much more convenient to edit descriptions - texts are opened at
+last saved positions and Colorer adds some colors for .txt. Distinctive name
+can be used by other tools (e.g. RightWords for spelling checks on opening).
+
+Show-Markdown-.ps1
+- Amended the anchor pattern.
+
+Reformat-Selection-.ps1
+- Amended formatting of markdown lists.
+
+Indent-Selection-.ps1
+- Renamed the switch Outdent -> Back.
+- It can work with any custom prefix, e.g. '> ' (quotations in markdown).
+
+Show-Hlf-.ps1
+- @+ @- should not be treated as topic anchors.
+
+RomanConsole.hrd
+- Changed def:Tag color so that it is different from def:Text.
+(BTW, the original standard White scheme has the same "defect").
+
+= 5.0.16 =
+
+Settings
+- $Psf.Settings.EditorConsoleEndOutputScript = 'Get-Date'
+The script is invoked after each editor console command, its output is
+converted to strings and written to the editor console.
+
+Markdown tools
+- Reformat-Selection-.ps1: formatting of markdown list items.
+- Markdown scripts support .text, .md, .markdown extensions.
+
+Select-Bookmark-.ps1 adapted to FarNet changes.
+
+Search-FarFile checks masks for validity.
+
+= 5.0.15 =
+
+* Markdown & markdown help tools
+- Requires HelpDown
+- New script Show-Markdown-.ps1 opens markdown as HTML or Far help.
+- Invoke-Editor-.ps1 opens markdown files from editors as HTML, at the topic.
+- Profile-Editor-.ps1 opens markdown files from editors as HLF, at the topic.
+
+= 5.0.12 =
+
+* Amended source info format in stepper error messages.
+
+= 5.0.11 =
+
+Tweaks in PowerShell breakpoint related code.
+
+= 5.0.9 =
+
+*) New FarNet drawers infrastructure and new Far events
+- Good news: breakpoints are now updated on script changes. There are some
+cases not yet processed correctly due to the nature of Far change events.
+- Breakpoint highlighting is based on new drawers engine + fixed minor defects.
+- Removed Draw-Word-.ps1 (it is replaced by the new FarNet module Drawer).
+- Test-EditorDrawer-.ps1 -> Test-RegisterDrawer-.ps1
+
+*) Misc
+- Added yet missing switch -IsLocked to *-FarEditor cmdlets.
+
+= 5.0.8 =
+
+*) Amended drawers API
+- Adapted Draw-Word-.ps1. As a result, also fixed some defects.
+
+= 5.0.7 =
+
+*) Editor drawers use new PowerShell friendly API
+- New script Draw-Word-.ps1: Draws occurrences of the current word.
+- Adapted Test-EditorDrawer-.ps1
+
+*) Breakpoints in PS files
+- Changed highlighting color to White on DarkRed (like in ISE, VS, etc.).
+
+*) Assert-Far
+- Changed order of buttons and disabled cancel.
+
+= 5.0.6 =
+
+*) Stepper (engine for tests and super-macros)
+- Steps may return script blocks (modal steps), other output is an error.
+- New cmdlet Invoke-FarStepper for running stepper scripts easier.
+- New Stepper.AddFile(), Stepper.Data & automatic variable $Data.
+- Removed $Psf.Go(), Stepper.AskDefault, Stepper.PostUnit().
+- More information on errors.
+
+*) PowerShellFar.farconfig
+- Minor tweaks of some macros (e.g. about Mantis 1700).
+
+= 5.0.5 =
+
+*) Histories come back
+- Complete-Word-.ps1 uses command/dialog history again.
+- Show-History-.ps1 comes back.
+
+*) Misc
+- A few example macros in PowerShellFar.farconfig
+- Minor fixes
+
+= 5.0.4 =
+
+*) Editor console
+- Simplified menus and removed some exotic unlikely used features.
+- [Console] in the debugger dialog does not show not needed menus.
+- Files, if saved, are in the local PowerShellFar root directory.
+
+*) Cmdlets *-FarEditor, *-FarViewer
+- Added yet missing parameter CodePage
+- *-FarEditor cmdlets allow empty file names
+
+= 5.0.3 =
+
+*) Debugging
+Script breakpoints are highlighted in the script editor. Note: breakpoints are
+not updated when scripts change. To be continued, hopefully with this:
+http://bugs.farmanager.com/view.php?id=1981
+
+*) Scripts
+- New Test-EditorDrawer-.ps1 (enjoy colors in PSF, too!)
+- New Show-EditorColor-.ps1 (dumps current editor colors)
+- Updated Show-KeyMap.ps1 for Far 3.0.2366 + new formatting.
+
+*) Removed scripts designed for Far2:
+- Start-Far.ps1
+- Export-FarSettings.ps1
+- Import-FarSettings.ps1.
+
+= 5.0.2 =
+
+- Fixed Edit-FarDescription-.ps1
+
+= 5.0.0 =
+
+This version is designed for Far Manager 3 + FarNet 5.
+
+There are breaking changes and some scripts have to be updated. See FarNet
+history for details and new FarNet API documentation.
+
+Some PSF features were removed (forever or not may depend on the feedback):
+- FarMacro module and its cmdlets (*-FarMacro).
+- Far history is not supported by scripts.
+
+= 1.0.0 - 4.6.1 =
+
+https://github.com/nightroman/FarNet/blob/main/PowerShellFar/History4.txt

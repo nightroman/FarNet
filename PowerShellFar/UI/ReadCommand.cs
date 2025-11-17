@@ -280,6 +280,9 @@ internal sealed class ReadCommand
 					if (args is null)
 						return;
 
+					// echo
+					Far.Api.UI.WriteLine($"{Instance._form.PromptTrimmed}{args.Code}");
+
 					// run
 					var newPanel = await Tasks.Command(() => A.Run(args));
 					if (newPanel is { } && !__isConsoleMode)

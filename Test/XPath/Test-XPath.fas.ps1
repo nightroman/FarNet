@@ -9,7 +9,7 @@ job {
 /*/File[equals(@Name, $Name)]
 '@
 	$res = $search.Invoke()
-	Assert-Far 15 -eq @($res).Count
+	Assert-Far 14 -eq @($res).Count
 }
 
 job {
@@ -28,5 +28,5 @@ job {
 '@
 
 	$r = $search.Invoke() | Sort-Object name | Join-String -Separator /
-	Assert-Far $r -eq 'GitKit.csproj/PowerShellFar.csproj/RightControl.csproj/RightWords.csproj/Script.csproj/Vessel.csproj'
+	Assert-Far $r -eq 'GitKit.csproj/RightControl.csproj/RightWords.csproj/Script.csproj/Vessel.csproj'
 }

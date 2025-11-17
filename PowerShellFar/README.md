@@ -1,6 +1,7 @@
 [Contents]: #farnetpowershellfar
 [FAQ]: #frequently-asked-questions
 [Examples]: #command-and-macro-examples
+[Invoke-Build]:https://github.com/nightroman/Invoke-Build
 
 # FarNet.PowerShellFar
 
@@ -121,7 +122,7 @@ invoked as command: `[F11]` / `PowerShellFar` / `Invoke selected`.
 
 **Command console**
 
-Console prompt like input box: `[F11]` / `PowerShellFar` / `Command console`.
+Command console prompt: `[F11]` / `PowerShellFar` / `Command console`.
 See [Command console](#command-console).
 
 **Interactive**
@@ -138,8 +139,8 @@ See [Interactive](#interactive).
 
 A script in the editor is invoked by `[F5]`. For a normal script, this is the
 same as invoking without parameters from the command line or the command box.
-For `Invoke-Build` scripts (`*.build.ps1`, `*.test.ps1`) the current task is
-invoked by `Invoke-Build`.
+For build scripts (`*.build.ps1`, `*.test.ps1`) the current task is invoked by
+[Invoke-Build].
 
 **Far Manager macros**
 
@@ -151,20 +152,21 @@ which invoke PowerShell commands. See [Examples].
 The user menu (`[F2]`) and file associations (`Commands` / `File associations`)
 may include PowerShell commands with prefixes. See Far Manager help. Note that
 the user menu can be opened in any area, not just panels, but Far Manager does
-not provide a standard key, so use some key and macro `mf.usermenu(0, "")`.
+not provide a standard key, so use some key and macro `mf.usermenu(0)`.
 
 **Event handlers**
 
-Various event handlers can be added using the profiles or scripts. See
-[Profile.ps1](#profileps1) and [Profile-Editor.ps1](#profile-editorps1).
+Various event handlers can be added using the profiles or scripts.
+See [Profile-Editor.ps1](#profile-editorps1).
 
----
+***
 **Stopping running commands**
 
 `[CtrlBreak]` stops synchronous commands invoked from:
 
 - Invoke commands
 - Invoke selected
+- Command console
 - Main interactive
 - File associations
 - User menu (`[F2]`)
@@ -204,7 +206,7 @@ viewing the output.
 
 PowerShell scripts opened in the editor may be invoked by `[F5]`.
 Normal script output is shown in the viewer.
-`Invoke-Build` script output is shown in the console.
+[Invoke-Build] script output is shown in the console.
 
 **Examples**
 
@@ -225,10 +227,17 @@ Commands with no output and input may use any prefix:
 
 See more [Examples].
 
-**Command echo rule**
+**REPL $r**
 
-Commands with console output print (echo) their text before output if the
-text starts with a space and does not end with "#".
+REPL `$r` variable is used to keep command output if a command has a space after `ps:`.
+
+This command prints processes and keeps them as `$r`:
+
+    ps: Get-Process
+
+This command just prints processes:
+
+    ps:Get-Process
 
 *********************************************************************
 ## Menu commands
@@ -297,6 +306,7 @@ For scripts it is exposed as `$Psf.ShowHelp()`.
 
 [Contents]
 [REPL $r](#repl-r)
+[Profiles](#profiles)
 
 Use menu: `[F11]` / `PowerShellFar` / `Command console` (panels, editors, viewers).
 In scripts use `$Psf.StartCommandConsole()`.
@@ -1293,16 +1303,17 @@ expandable nodes.
 [Contents]
 
 PowerShellFar is configured by profiles in `%FARPROFILE%\FarNet\PowerShellFar`.
-Profile are invoked once per their session, when needed, in the global scope.
+Profiles are invoked once per their session, when needed, in the global scope.
 
 Used profiles:
 
 - `Profile.ps1`
+- `Profile-Console.ps1`
 - `Profile-Editor.ps1`
 - `Profile-Local.ps1`
 - `Profile-Remote.ps1`
 
----
+***
 **Profile.ps1**
 
 It is the main session profile invoked on loading. A separate thread is used
@@ -1314,7 +1325,13 @@ to make loading faster. This introduces some limitations:
 
 Example: [Profile.ps1](#profileps1)
 
----
+***
+**Profile-Console.ps1**
+
+[Command console](#command-console) profile invoked on the first use of the console.
+Normally it defines the function `prompt` and helpers for command console REPL.
+
+***
 **Profile-Editor.ps1**
 
 It is the editor profile invoked on the first use of editor. Normally it adds
@@ -1322,12 +1339,12 @@ editor event handlers to `$Far.AnyEditor`.
 
 Example: [Profile-Editor.ps1](#profile-editorps1).
 
----
+***
 **Profile-Local.ps1 and Profile-Remote.ps1**
 
-They are session profiles invoked on opening local and remote interactives,
-once per each new session. The remote profile code is taken from the local
-script but it is invoked in a remote workspace.
+They are session profiles invoked on opening interactives for async local and
+remote sessions. The remote profile code is taken from the local script but it
+is invoked in a remote workspace.
 
 Non-terminating profile errors are not shown. A terminating error is shown in a
 standard message box with a bare error message. Examine the variable `$Error`

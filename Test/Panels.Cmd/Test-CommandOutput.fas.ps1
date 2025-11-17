@@ -47,15 +47,16 @@ job {
 job {
 	$Data.errorCount = $global:Error.Count
 }
-macro 'Keys"c l s Enter P S : Space t h r o w Space 4 2 Enter"'
+keys P S : Space t h r o w Space 4 2 Enter
 job {
 	# from ps: to end
 	$y = $Host.UI.RawUI.CursorPosition.Y
-	$rect = [System.Management.Automation.Host.Rectangle]::new(0, $y - 3, 30, $y - 1)
+	# empty line and red message
+	$rect = [System.Management.Automation.Host.Rectangle]::new(0, $y - 2, 30, $y - 1)
 	$buff = $Host.UI.RawUI.GetBufferContents($rect)
 	$buff | Select-Object Character, ForegroundColor | Export-Csv C:\TEMP\buffer.csv
 	$hash = (Get-FileHash C:\TEMP\buffer.csv).Hash
-	Assert-Far $hash -eq 548C7A35E27B4D013D69776A58284E94C9532ABD635F19E3A9F476139404191A
+	Assert-Far $hash -eq A84385C2E00B7978B0A656295F2E98B124C4D7695D3E7BB773F1D27F92378FC0
 	Remove-Item C:\TEMP\buffer.csv
 	Assert-Far $Data.errorCount -eq ($global:Error.Count - 1)
 	$global:Error.RemoveAt(0)
@@ -63,48 +64,51 @@ job {
 
 ### used to be user screen mess
 <#
-ps: test1 --- DarkDray
+
 before
 
 
 after
-
 #>
-macro 'Keys"c l s Enter P S : Space t e s t 1 Enter Enter"'
+keys P S : Space t e s t 1 Enter Enter
 job {
 	$y = $Host.UI.RawUI.CursorPosition.Y
-	$rect = New-Object System.Management.Automation.Host.Rectangle 0, ($y - 4), 8, ($y - 1)
+	$rect = [System.Management.Automation.Host.Rectangle]::new(0, $y - 4, 8, $y - 1)
 	$buff = $Host.UI.RawUI.GetBufferContents($rect)
-	$buff | Select-Object Character, ForegroundColor | Export-Csv -NoTypeInformation c:\temp\buffer.csv
-	$md5 = [guid][System.Security.Cryptography.MD5]::Create().ComputeHash([System.IO.File]::ReadAllBytes('C:\TEMP\buffer.csv'))
-	Assert-Far $md5 -eq ([guid]'e1927daf-06fe-34a5-0164-59c828d21b78')
+	$buff | Select-Object Character, ForegroundColor | Export-Csv C:\TEMP\buffer.csv
+	$hash = (Get-FileHash C:\TEMP\buffer.csv).Hash
+	Assert-Far $hash -eq A134E94D8BF0461FA3B153CE525E00D6DCE91B69F4AFC77C12373C6B2305EC53
 	Remove-Item C:\TEMP\buffer.csv
 }
 
 ### 'before' was missing
 <#
-ps: test1 --- DarkDray
+
 before
-
 after
-
 #>
-macro 'Keys"c l s Enter P S : Space t e s t 2 Enter Enter"'
+keys P S : Space t e s t 2 Enter Enter
 job {
 	$y = $Host.UI.RawUI.CursorPosition.Y
-	$rect = New-Object System.Management.Automation.Host.Rectangle 0, ($y - 3), 8, ($y - 1)
+	$rect = [System.Management.Automation.Host.Rectangle]::new(0, $y - 3, 8, $y - 1)
 	$buff = $Host.UI.RawUI.GetBufferContents($rect)
-	$buff | Select-Object Character, ForegroundColor | Export-Csv -NoTypeInformation c:\temp\buffer.csv
-	$md5 = [guid][System.Security.Cryptography.MD5]::Create().ComputeHash([System.IO.File]::ReadAllBytes('C:\TEMP\buffer.csv'))
-	Assert-Far $md5 -eq ([guid]'b106cf3f-7956-4d98-414d-ebe3efa0aaef')
+	$buff | Select-Object Character, ForegroundColor | Export-Csv C:\TEMP\buffer.csv
+	$hash = (Get-FileHash C:\TEMP\buffer.csv).Hash
+	Assert-Far $hash -eq 68E89467FF72CE3F47FAAA594C6DED43D37F0BBE64B633E138E5B2D68C250B7F
 	Remove-Item C:\TEMP\buffer.csv
 }
 
 ### full output
+<#
+
+Test of Write-Host
+...
+Write-Error: Test of Write-Error 2
+#>
 macro @"
- Keys("c l s Enter p s : Space")
+ Keys "p s : Space"
  print("$("$env:FarNetCode\Samples\Tests\Test-Write.ps1".Replace('\', '\\'))")
- Keys("Enter")
+ Keys "Enter"
 "@
 job {
 	Assert-Far @(
@@ -116,18 +120,18 @@ job {
 	$global:Error.RemoveAt(0)
 }
 job {
-	# from ps: to end
 	$y = $Host.UI.RawUI.CursorPosition.Y
-	$rect = [System.Management.Automation.Host.Rectangle]::new(0, $y - 13, 34, $y - 1)
+	# from line starting `ps:` to line ending `Error 2`
+	$rect = [System.Management.Automation.Host.Rectangle]::new(0, $y - 11, 34, $y - 1)
 	$buff = $Host.UI.RawUI.GetBufferContents($rect)
 	$buff | Select-Object Character, ForegroundColor | Export-Csv C:\TEMP\buffer.csv
 	$hash = (Get-FileHash C:\TEMP\buffer.csv).Hash
-	Assert-Far $hash -eq D7F0736CC5C04DB61CE8F809775FE2B6A90E73EDC0D4F74BC639A64FBB2003DA
+	Assert-Far $hash -eq 16AF8F69E031AFDDFB0810F07FF6A7131E29E65B1D3908A32FCC4479A742FDF6
 	Remove-Item C:\TEMP\buffer.csv
 }
 
 ### viewer output simple
-macro 'Keys"v p s : 1 2 3 4 5 Enter"'
+keys v p s : 1 2 3 4 5 Enter
 job {
 	Assert-Far -Viewer
 	Assert-Far $__.Title -eq '12345'
@@ -138,7 +142,7 @@ job {
 }
 
 ### viewer output + switch
-macro 'Keys"v p s : 1 2 3 4 5 Enter"'
+keys v p s : 1 2 3 4 5 Enter
 job {
 	Assert-Far -Viewer
 	Assert-Far $__.Title -eq '12345'
@@ -165,8 +169,7 @@ job {
 	$Far.Panel2.IsVisible = $true
 }
 job {
-	Clear-Host
 	Remove-Item Function:\test1,  Function:\test2
 	[FarNet.Works.Kit]::MacroOutput = $Data.MacroOutput
+	[FarNet.Tasks]::WaitForPanels(999)
 }
-Start-Sleep 1 #TODO

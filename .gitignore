@@ -1,7 +1,6 @@
 .vs
 bin
 obj
-ipch
 Debug
 Release
 TestResults
@@ -10,12 +9,7 @@ z
 z.*
 *.bak
 *.clixml
-*.opendb
-*.opensdf
-*.sdf
-*.suo
 *.user
-*.VC.db
 
 *.htm*
 *.nupkg

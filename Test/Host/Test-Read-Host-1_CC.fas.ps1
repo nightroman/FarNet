@@ -17,8 +17,8 @@ job {
 }
 keys Enter
 job {
-	Assert-Far $Far.UI.GetBufferLineText(-3) -eq 'Prompt: 090328_192727'
-	Assert-Far $Far.UI.GetBufferLineText(-2) -eq '090328_192727'
+	Assert-Far $Far.UI.GetBufferLineText(-4) -eq 'Prompt: 090328_192727'
+	Assert-Far $Far.UI.GetBufferLineText(-3) -eq '090328_192727'
 }
 
 job {
