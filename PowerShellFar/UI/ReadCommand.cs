@@ -241,7 +241,10 @@ internal sealed class ReadCommand
 	public static async Task StartAsync()
 	{
 		if (Instance is { })
+		{
+			Instance._form.Dialog.Activate();
 			return;
+		}
 
 		try
 		{
@@ -281,7 +284,7 @@ internal sealed class ReadCommand
 						return;
 
 					// echo
-					Far.Api.UI.WriteLine($"{Instance._form.PromptTrimmed}{args.Code}");
+					Far.Api.UI.WriteLine($"{Instance._form.PromptTrimmed}{args.Code}", ConsoleColor.DarkGray);
 
 					// run
 					var newPanel = await Tasks.Command(() => A.Run(args));

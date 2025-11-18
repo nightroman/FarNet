@@ -1,5 +1,6 @@
 using FarNet;
 using FarNet.Forms;
+using FarNet.Works;
 using System.Management.Automation;
 
 namespace PowerShellFar.UI;
@@ -141,15 +142,23 @@ internal sealed class ReadCommandForm
 		bool fromEditor = TextFromEditor != null;
 		var code = (fromEditor ? TextFromEditor! : Edit.Text).TrimEnd();
 
-		string echo()
+		// strip prefixes
+		Kit.SplitCommandWithPrefix(code, out var prefix, out var command, Entry.IsMyPrefix);
+		if (prefix.Length > 0)
 		{
-			//! use original prompt (transcript, analysis, etc.)
-			bool showCode = !fromEditor || code.IndexOf('\n') < 0;
-			return PromptOriginal + (showCode ? code : "...");
+			code = command.ToString();
+			Edit.Text = code;
+		}
+
+		//! use original prompt (transcript analysis)
+		string GetEcho()
+		{
+			bool hideCode = fromEditor && code.Contains('\n');
+			return PromptOriginal + (hideCode ? "..." : code);
 		}
 
 		// result
-		ArgsToRun = new RunArgs(code) { Writer = new ConsoleOutputWriter(echo), UseTeeResult = true };
+		ArgsToRun = new RunArgs(code) { Writer = new ConsoleOutputWriter(GetEcho), UseTeeResult = true };
 	}
 
 	// Why post? On `cd X` from user menu it gets focus before the panel changes dir.

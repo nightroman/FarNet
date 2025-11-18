@@ -15,6 +15,6 @@ function prompt {
 		$line = $line.Substring(0, $half) + '*' + $line.Substring($line.Length - $width + $half + 1)
 	}
 
-	$Far.UI.WriteLine($line)
+	$Far.UI.WriteLine($line, 'DarkGray')
 	"└─($([datetime]::Now.ToString('HH:MM:ss')))─> "
 }

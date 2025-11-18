@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 10.0.7 =
+
+Command console
+- strip prefixes, e.g. from copy/pasted code
+- print echo DarkGray
+
 = 10.0.6 =
 
 Package

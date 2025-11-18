@@ -1,6 +1,6 @@
 = 5.0.0 - ... =
 
-https://github.com/nightroman/FarNet/blob/main/PowerShellFar/History.txt
+https://github.com/nightroman/FarNet/blob/main/PowerShellFar/About/History.txt
 
 = 4.6.1 =
 
