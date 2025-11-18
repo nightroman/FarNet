@@ -75,6 +75,7 @@ internal sealed class ReadCommand
 				return;
 
 			case KeyCode.Escape when e.Key.Is():
+				// clear line or avoid closing
 				if (_form.Edit.Line.Length > 0)
 				{
 					// clear text
@@ -86,6 +87,12 @@ internal sealed class ReadCommand
 					// avoid closing
 					e.Ignore = true;
 				}
+				return;
+
+			case KeyCode.Spacebar when _form.Edit.Line.Length == 0:
+				// exit console on empty line
+				e.Ignore = true;
+				_form.Close();
 				return;
 
 			case KeyCode.Tab when e.Key.Is():

@@ -22,6 +22,8 @@ try {
 		$__.Close()
 	}
 
+	[FarNet.Tasks]::WaitForDialog(999).Wait()
+
 	job {
 		Assert-Far -DialogTypeId ([PowerShellFar.Guids]::AssertDialog)
 	}

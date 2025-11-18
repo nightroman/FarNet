@@ -61,12 +61,12 @@ if (!$Command) {
 		return help $$ -Full
 	}
 
-	if ($Far.Window.Kind -eq 'Editor' -and  ($$ = $Far.Editor.FileName) -like '*.ps1') {
-		$Far.Editor.Save()
-		return help $Far.Editor.FileName -Full
+	if (($Editor = $Far.Editor) -and  ($FileName = $Editor.FileName) -like '*.ps1') {
+		$Editor.Save()
+		return help $FileName -Full
 	}
 
-	throw 'Requires panel or editor with .ps1 file.'
+	throw 'Requires panels or editor with .ps1 file.'
 }
 
 # resolve aliases

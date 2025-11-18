@@ -8,7 +8,9 @@ FarHome\FarNet\Modules\PowerShellFar\About\History.txt
 FarHome\FarNet\Modules\PowerShellFar\About\PowerShellFar.macro.lua
 FarHome\FarNet\Modules\PowerShellFar\About\Profile-Console.ps1
 FarHome\FarNet\Modules\PowerShellFar\About\Profile-Editor.ps1
+FarHome\FarNet\Modules\PowerShellFar\About\Profile-Local.ps1
 FarHome\FarNet\Modules\PowerShellFar\About\Profile.ps1
+FarHome\FarNet\Modules\PowerShellFar\About\prompt-1.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench
 FarHome\FarNet\Modules\PowerShellFar\Bench\ArgumentCompleters.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Clear-Session.ps1
@@ -18,6 +20,7 @@ FarHome\FarNet\Modules\PowerShellFar\Bench\Edit-FarFileSync.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Edit-Gcm.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Edit-IB.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Generate-Dialog.ps1
+FarHome\FarNet\Modules\PowerShellFar\Bench\Get-FarVersion.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Get-TextLink.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Go-Bookmark.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Go-Everything.ps1

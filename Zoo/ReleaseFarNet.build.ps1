@@ -14,12 +14,14 @@ param(
 	$Extends,
 	# persistent data
 	[Parameter(DontShow=1)]$Push,
-	[Parameter(DontShow=1)]$Tags
+	[Parameter(DontShow=1)]$Tags,
+	[Parameter(DontShow=1)]$FarNetVersion,
+	[Parameter(DontShow=1)]$PowerShellFarVersion
 )
 
 Set-Alias ask Confirm-Build
 $RepoRoot = $env:FarNetCode
-requires -Path $RepoRoot
+requires -Path $RepoRoot -Env NuGetApiKey
 
 task Set-Version -If {
 	ask @'
@@ -27,11 +29,14 @@ Edit Get-Version.ps1 to set versions.
 What you change is what you are about to push.
 '@
 } {
-	Start-Process Far.exe /e, $RepoRoot\Get-Version.ps1 -Wait
+	Start-Process Far.exe "/e $RepoRoot\Get-Version.ps1" -Wait
+	. $RepoRoot\Get-Version.ps1
+	$Script:FarNetVersion = $FarNetVersion
+	$Script:PowerShellFarVersion = $PowerShellFarVersion
 }
 
 task Select-Project {
-	while(($script:Push = Read-Host @'
+	while(($Script:Push = Read-Host @'
 Select project to push:
 [1] All
 [2] FarNet
@@ -39,8 +44,7 @@ Select project to push:
 
 '@) -notmatch '^(1|2|3)$') {}
 
-	. $RepoRoot\Get-Version.ps1
-	$script:Tags = switch($Push) {
+	$Script:Tags = switch($Push) {
 		1 {"FarNet.$FarNetVersion", "PowerShellFar.$PowerShellFarVersion"}
 		2 {"FarNet.$FarNetVersion"}
 		3 {"PowerShellFar.$PowerShellFarVersion"}
@@ -48,7 +52,7 @@ Select project to push:
 	}
 }
 
-task Build Build-FarNet, Build-PSF-Help, Build-Docs, pwsf::build
+task Build PS::sync, Build-FarNet, Build-PSF-Help, Build-Docs, pwsf::build
 
 task Build-FarNet -If {
 	ask 'Build FarNet projects'
@@ -104,7 +108,17 @@ task Test-Extras $extras.ForEach('Name') -If {
 }
 
 task Push-Packages -If {
-	ask 'Push new packages to NuGet manually. Then continue.'
+	ask "Push new packages to NuGet: [$Tags]"
+} {
+	$files = @(
+		if ($Push -in 1, 2) {"$HOME\FarNet.$FarNetVersion.nupkg"}
+		if ($Push -in 1, 3) {"$HOME\FarNet.PowerShellFar.$PowerShellFarVersion.nupkg"}
+	)
+	foreach($file in $files) {
+		print 3 $file
+		exec { nuget push $file -Source nuget.org -ApiKey $env:NuGetApiKey }
+	}
+	remove "$HOME\FarNet.*.nupkg" -verbose
 }
 
 task Commit-Source -If {

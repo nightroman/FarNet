@@ -1,5 +1,15 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 10.0.8 =
+
+New Bench/Get-FarVersion.ps1
+
+Command console
+- [Space] on empty line exits console; why? see help
+
+New in /About
+- Profile-Console.ps1, Profile-Local.ps1, prompt-1.ps1
+
 = 10.0.7 =
 
 Command console

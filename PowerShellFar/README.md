@@ -329,11 +329,18 @@ Command output is written to the console.
 
 - `[F10]`
 
-    Exits the command console.
+    Exits command console.
 
 - `[Esc]`
 
-    Clears the input or exits the command console.
+    Clears the input or exits command console.
+
+- `[*Space]` on empty line
+
+    Exits command console.
+
+    Consider using macro `[ShiftSpace]` for command console.
+    Then `[ShiftSpace]` switches Far and PowerShell prompts.
 
 - `[F1]`
 

@@ -20,7 +20,11 @@ task clean {
 task publish installBin, installRes
 
 task uninstall {
-	if (Test-Path $_root_psf) { Remove-Item $_root_psf -Recurse -Force }
+	remove $_root_psf
+}
+
+task sync {
+	Invoke-Build sync $env:FARPROFILE
 }
 
 task markdown {
