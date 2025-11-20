@@ -24,7 +24,7 @@ job {
 
 job {
 	# open editor
-	Open-FarEditor "$env:FarHome\Far.exe.example.ini"
+	Open-FarEditor "$env:FarHome\Far.exe.ini"
 }
 job {
 	# IsModal
@@ -38,7 +38,7 @@ job {
 	$name1 = $Far.Window.GetNameAt(-1)
 	$name2 = $Far.Window.GetNameAt(2)
 	Assert-Far $name1 -eq $name2
-	Assert-Far $name1 -eq "$env:FarHome\Far.exe.example.ini"
+	Assert-Far $name1 -eq "$env:FarHome\Far.exe.ini"
 }
 
 ### Viewer
@@ -69,7 +69,7 @@ job {
 job {
 	# switch to editor
 	$Far.Window.SetCurrentAt(2)
-	Assert-Far $Far.Window.GetNameAt(-1) -eq "$env:FarHome\Far.exe.example.ini"
+	Assert-Far $Far.Window.GetNameAt(-1) -eq "$env:FarHome\Far.exe.ini"
 }
 macro 'Keys"Esc" -- exit editor'
 job {

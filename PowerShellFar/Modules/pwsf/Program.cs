@@ -32,14 +32,28 @@ for (int i = st; i < args.Length; i++)
 	{
 		var str = arg.TrimStart('-', '/');
 
-		if (str.Equals("ro", StringComparison.OrdinalIgnoreCase) ||
-			str.Equals("ro-", StringComparison.OrdinalIgnoreCase))
+		if (str == "ro" || str == "ro-")
 		{
 			sb.Append($" {arg}");
 			continue;
 		}
 
-		if (str.StartsWith("set:", StringComparison.OrdinalIgnoreCase))
+		if (str == "s")
+		{
+			sb.Append($" {arg}");
+			if (++i >= args.Length)
+				break;
+			sb.Append($" {args[i]}");
+			int j = i + 1;
+			if (j < args.Length && args[j][0] != '-' && args[j][0] != '/')
+			{
+				++i;
+				sb.Append($" {args[i]}");
+			}
+			continue;
+		}
+
+		if (str.StartsWith("set:"))
 		{
 			sb.Append($" \"{arg}\"");
 			continue;
@@ -51,6 +65,7 @@ for (int i = st; i < args.Length; i++)
 		Arguments:
 		-ro[-]
 		-set:<parameter>=<value>
+		-s <profilepath> [<localprofilepath>]
 		""");
 
 	return 1;

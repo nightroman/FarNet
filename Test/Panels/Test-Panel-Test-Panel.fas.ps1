@@ -287,7 +287,7 @@ job {
 keys Tab
 job {
 	$__.CurrentDirectory = $env:FARHOME
-	$__.SelectNames(@('Far.exe', 'Far.exe.example.ini'))
+	$__.SelectNames(@('Far.exe', 'Far.exe.ini'))
 }
 keys F5
 job {
@@ -302,7 +302,7 @@ job {
 	Assert-Far @(
 		$files.Count -eq 2
 		$files[0].Name -eq 'Far.exe'
-		$files[1].Name -eq 'Far.exe.example.ini'
+		$files[1].Name -eq 'Far.exe.ini'
 	)
 }
 

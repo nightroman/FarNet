@@ -10,10 +10,10 @@ $exit = job {
 		return 1
 	}
 
-	# select Far.exe.example.ini to transfer to TEMP
+	# select Far.exe.ini to transfer to TEMP
 	$__.CurrentDirectory = "$env:FARHOME"
-	$__.SelectNames(@('Far.exe.example.ini'))
-	if (Test-Path 'C:\TEMP\Far.exe.example.ini') { Remove-Item 'C:\TEMP\Far.exe.example.ini' }
+	$__.SelectNames(@('Far.exe.ini'))
+	if (Test-Path 'C:\TEMP\Far.exe.ini') { Remove-Item 'C:\TEMP\Far.exe.ini' }
 	$Far.Panel2.CurrentDirectory = 'C:\TEMP'
 }
 if ($exit) {exit}
@@ -24,8 +24,8 @@ run {
 job {
 	# it promts to transfer the file from .. to ..
 	Assert-Far -Dialog
-	Assert-Far $__[2].Text -eq "$env:FARHOME\Far.exe.example.ini"
-	Assert-Far $__[4].Text -eq 'C:\TEMP\Far.exe.example.ini'
+	Assert-Far $__[2].Text -eq "$env:FARHOME\Far.exe.ini"
+	Assert-Far $__[4].Text -eq 'C:\TEMP\Far.exe.ini'
 }
 # yes
 keys Enter

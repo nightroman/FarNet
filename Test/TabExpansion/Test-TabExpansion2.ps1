@@ -17,12 +17,11 @@ $PSModulePath = $env:PSModulePath
 $env:PSModulePath = [Environment]::GetEnvironmentVariable('PSModulePath', 'Machine')
 try {
 	$param = @(
+		'-nop',
 		if ($NoExit) {
-			'-NoExit'
+			'-noe'
 		}
-		'-NoProfile',
-		'-Command',
-		'.\Test-TabExpansion2.far.ps1'
+		'-c .\Test-TabExpansion2.far.ps1'
 	)
 	$process = Start-Process $pwsh -ArgumentList $param -WorkingDirectory $PSScriptRoot -PassThru -Wait:(!$NoExit)
 	if (!$NoExit -and $process.ExitCode) {

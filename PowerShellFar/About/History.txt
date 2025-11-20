@@ -1,5 +1,14 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 10.0.9 =
+
+Command console
+- Fix new line on the first call
+- Do not exit on [Space] in pwsf
+
+Console mode inputs
+- Use DarkGray for echoes.
+
 = 10.0.8 =
 
 New Bench/Get-FarVersion.ps1

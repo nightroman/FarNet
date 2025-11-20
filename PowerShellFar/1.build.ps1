@@ -24,7 +24,7 @@ task uninstall {
 }
 
 task sync {
-	Invoke-Build sync $env:FARPROFILE
+	Invoke-Build sync $env:FARHOME
 }
 
 task markdown {

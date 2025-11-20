@@ -92,7 +92,7 @@ class FarUI : UniformUI, IHostUISupportsMultipleChoiceSelection
 
 		if (!IsConsole())
 		{
-			return UI.ChoiceDialog.SelectMany(caption, message, choices, defaults)
+			return ChoiceDialog.SelectMany(caption, message, choices, defaults)
 				?? throw new PipelineStoppedException();
 		}
 
@@ -113,7 +113,7 @@ class FarUI : UniformUI, IHostUISupportsMultipleChoiceSelection
 		while (true)
 		{
 			var prompt = $"Choice[{num}]{TextPromptSuffix}";
-			var ui = new UI.ReadLine(new UI.ReadLine.Args
+			var ui = new ReadLine(new ReadLine.Args
 			{
 				Prompt = prompt,
 				IsPromptForChoice = true,
@@ -129,7 +129,7 @@ class FarUI : UniformUI, IHostUISupportsMultipleChoiceSelection
 				WriteLine();
 
 			// echo
-			WriteLine($"{prompt}{text}");
+			WriteLine(ConsoleColor.DarkGray, ConsoleColor.Black, $"{prompt}{text}");
 
 			//: done
 			if (text.Length == 0)
@@ -203,7 +203,7 @@ class FarUI : UniformUI, IHostUISupportsMultipleChoiceSelection
 					string text;
 					if (IsConsole())
 					{
-						var ui = new UI.ReadLine(new UI.ReadLine.Args
+						var ui = new ReadLine(new ReadLine.Args
 						{
 							Prompt = prompt2 + TextPromptSuffix,
 							History = Res.HistoryPrompt,
@@ -213,12 +213,14 @@ class FarUI : UniformUI, IHostUISupportsMultipleChoiceSelection
 							throw new PipelineStoppedException();
 
 						text = ui.Out;
-						WriteLine(ui.In.Prompt + text);
+
+						// echo
+						WriteLine(ConsoleColor.DarkGray, ConsoleColor.Black, ui.In.Prompt + text);
 					}
 					else
 					{
 						//TODO HelpMessage - not done
-						var ui = new UI.InputBoxEx()
+						var ui = new InputBoxEx()
 						{
 							Title = caption,
 							Prompt = string.IsNullOrEmpty(message) ? prompt2 : message + '\n' + prompt2,
@@ -278,7 +280,7 @@ class FarUI : UniformUI, IHostUISupportsMultipleChoiceSelection
 						prompt2 = prompt + TextPromptSuffix;
 					}
 
-					var ui = new UI.ReadLine(new UI.ReadLine.Args
+					var ui = new ReadLine(new ReadLine.Args
 					{
 						Prompt = prompt2,
 						History = history,
@@ -290,12 +292,14 @@ class FarUI : UniformUI, IHostUISupportsMultipleChoiceSelection
 						throw new PipelineStoppedException();
 
 					text = ui.Out;
-					WriteLine(prompt2 + (isSecret ? "*" : text));
+
+					// echo
+					WriteLine(ConsoleColor.DarkGray, ConsoleColor.Black, prompt2 + (isSecret ? "*" : text));
 				}
 				else
 				{
 					//TODO HelpMessage - not done
-					var ui = new UI.InputBoxEx()
+					var ui = new InputBoxEx()
 					{
 						Title = caption,
 						Prompt = string.IsNullOrEmpty(message) ? prompt : message + '\n' + prompt,
@@ -344,7 +348,7 @@ class FarUI : UniformUI, IHostUISupportsMultipleChoiceSelection
 
 		if (!IsConsole())
 		{
-			int choice = UI.ChoiceDialog.SelectOne(caption, message, choices, defaults);
+			int choice = ChoiceDialog.SelectOne(caption, message, choices, defaults);
 			if (choice < 0)
 				throw new PipelineStoppedException();
 
@@ -363,7 +367,7 @@ class FarUI : UniformUI, IHostUISupportsMultipleChoiceSelection
 		{
 			WriteChoicePrompt(hotkeysAndPlainLabels, defaults, false);
 
-			var ui = new UI.ReadLine(new UI.ReadLine.Args
+			var ui = new ReadLine(new ReadLine.Args
 			{
 				Prompt = TextPromptSuffix,
 				IsPromptForChoice = true,
@@ -379,7 +383,7 @@ class FarUI : UniformUI, IHostUISupportsMultipleChoiceSelection
 				WriteLine();
 
 			// echo
-			WriteLine(TextPromptSuffix + text);
+			WriteLine(ConsoleColor.DarkGray, ConsoleColor.Black, TextPromptSuffix + text);
 
 			if (text.Length == 0)
 			{
@@ -560,7 +564,7 @@ class FarUI : UniformUI, IHostUISupportsMultipleChoiceSelection
 
 		if (IsConsole())
 		{
-			var ui = new UI.ReadLine(new UI.ReadLine.Args
+			var ui = new ReadLine(new ReadLine.Args
 			{
 				History = Res.HistoryPrompt
 			});
@@ -573,7 +577,7 @@ class FarUI : UniformUI, IHostUISupportsMultipleChoiceSelection
 		}
 		else
 		{
-			var ui = new UI.InputBox2();
+			var ui = new InputBox2();
 			ui.Edit.History = Res.HistoryPrompt;
 			var text = ui.Show();
 			if (text != null)

@@ -8,18 +8,18 @@ job {
 	Set-Alias Test-ProgressBox "$env:FarNetCode\Samples\Tests\Test-ProgressBox.far.ps1" -Scope global
 	Set-Alias Test-ProgressForm "$env:FarNetCode\Samples\Tests\Test-ProgressForm.far.ps1" -Scope global
 
-	Test-ProgressBox -JobSeconds 1 -JobSteps 100
+	Test-ProgressBox -JobSeconds 0.2 -JobSteps 100
 }
 
 ### cancellable, complete
 job {
-	$done = Test-ProgressForm -JobSeconds 1 -JobSteps 100 -Delay 0
+	$done = Test-ProgressForm -JobSeconds 0.2 -JobSteps 100 -Delay 0
 	Assert-Far $done
 }
 
 ### not cancellable, complete
 job {
-	$done = Test-ProgressForm -JobSeconds 1 -JobSteps 100 -Delay 0 -NoCancel
+	$done = Test-ProgressForm -JobSeconds 0.2 -JobSteps 100 -Delay 0 -NoCancel
 	Assert-Far $done
 }
 
@@ -33,6 +33,6 @@ job {
 ### not cancellable, not canceled by Esc
 job {
 	$Far.PostMacro('Keys("Esc")')
-	$done = Test-ProgressForm -JobSeconds 1 -Delay 0 -NoCancel
+	$done = Test-ProgressForm -JobSeconds 0.2 -Delay 0 -NoCancel
 	Assert-Far $done
 }

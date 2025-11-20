@@ -12,11 +12,11 @@ job {
 	Assert-Far ($__ -is [PowerShellFar.ObjectPanel])
 }
 
-# go to another panel, Far.exe.example.ini
+# go to another panel, Far.exe.ini
 keys Tab
 job {
-	$__.GoToPath("$env:FARHOME\Far.exe.example.ini")
-	Assert-Far -FileName 'Far.exe.example.ini'
+	$__.GoToPath("$env:FARHOME\Far.exe.ini")
+	Assert-Far -FileName 'Far.exe.ini'
 }
 
 ### copy to the object panel from the native panel
@@ -26,7 +26,7 @@ job {
 	Assert-Far $Far.Panel2.GetFiles().Count -eq 1
 
 	# select it, mind case
-	$Far.Panel2.SelectNames(@('Far.exe.example.ini'))
+	$Far.Panel2.SelectNames(@('Far.exe.ini'))
 	Assert-Far $Far.Panel2.GetSelectedFiles().Count -eq 1
 }
 
@@ -35,9 +35,9 @@ job {
 	New-Object PowerShellFar.ItemPanel $Far.CurrentDirectory | Open-FarPanel
 }
 job {
-	# item panel, find Far.exe.example.ini
+	# item panel, find Far.exe.ini
 	Assert-Far ($__ -is [PowerShellFar.ItemPanel])
-	Find-FarFile 'Far.exe.example.ini'
+	Find-FarFile 'Far.exe.ini'
 }
 
 ### copy to the object panel from the power panel

@@ -89,7 +89,7 @@ internal sealed class ReadCommand
 				}
 				return;
 
-			case KeyCode.Spacebar when _form.Edit.Line.Length == 0:
+			case KeyCode.Spacebar when _form.Edit.Line.Length == 0 && !__isConsoleMode:
 				// exit console on empty line
 				e.Ignore = true;
 				_form.Close();
@@ -245,6 +245,7 @@ internal sealed class ReadCommand
 		}
 	}
 
+	private static bool __doLine = true;
 	public static async Task StartAsync()
 	{
 		if (Instance is { })
@@ -292,6 +293,11 @@ internal sealed class ReadCommand
 
 					// echo
 					Far.Api.UI.WriteLine($"{Instance._form.PromptTrimmed}{args.Code}", ConsoleColor.DarkGray);
+					if (__doLine)
+					{
+						Far.Api.UI.WriteLine();
+						__doLine = false;
+					}
 
 					// run
 					var newPanel = await Tasks.Command(() => A.Run(args));

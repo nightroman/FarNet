@@ -38,7 +38,7 @@ job {
 
 job {
 	# find file
-	Find-FarFile 'Far.exe.example.ini'
+	Find-FarFile 'Far.exe.ini'
 }
 
 keys CtrlA # attributes dialog
@@ -46,15 +46,15 @@ keys CtrlA # attributes dialog
 job {
 	# test: the dialog and its control
 	Assert-Far -Dialog
-	Assert-Far $Far.Dialog[2].Text -eq 'Far.exe.example.ini'
+	Assert-Far $Far.Dialog[2].Text -eq 'Far.exe.ini'
 }
 
 keys Esc # exit dialog
 
 job {
-	# test: the window (panels) and item ('Far.exe.example.ini')
+	# test: the window (panels) and item ('Far.exe.ini')
 	Assert-Far -Panels
-	Assert-Far -FileName Far.exe.example.ini
+	Assert-Far -FileName Far.exe.ini
 }
 
 ### HOW TO: start a modal dialog

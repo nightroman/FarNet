@@ -11,17 +11,20 @@
 
 param(
 	[ValidateScript({"GH::..\Code.build.ps1", "DC::..\FarNet\Docs\Docs.build.ps1"})]
-	$Extends,
-	# persistent data
-	[Parameter(DontShow=1)]$Push,
-	[Parameter(DontShow=1)]$Tags,
-	[Parameter(DontShow=1)]$FarNetVersion,
+	$Extends
+	,
+	[Parameter(DontShow=1)]$Push
+	,
+	[Parameter(DontShow=1)]$Tags
+	,
+	[Parameter(DontShow=1)]$FarNetVersion
+	,
 	[Parameter(DontShow=1)]$PowerShellFarVersion
 )
 
 Set-Alias ask Confirm-Build
 $RepoRoot = $env:FarNetCode
-requires -Path $RepoRoot -Env NuGetApiKey
+requires -Path $RepoRoot
 
 task Set-Version -If {
 	ask @'
@@ -110,13 +113,14 @@ task Test-Extras $extras.ForEach('Name') -If {
 task Push-Packages -If {
 	ask "Push new packages to NuGet: [$Tags]"
 } {
+	$Script:NuGetApiKey = $(property NuGetApiKey)
 	$files = @(
 		if ($Push -in 1, 2) {"$HOME\FarNet.$FarNetVersion.nupkg"}
 		if ($Push -in 1, 3) {"$HOME\FarNet.PowerShellFar.$PowerShellFarVersion.nupkg"}
 	)
 	foreach($file in $files) {
 		print 3 $file
-		exec { nuget push $file -Source nuget.org -ApiKey $env:NuGetApiKey }
+		exec { nuget push $file -Source nuget.org -ApiKey $NuGetApiKey }
 	}
 	remove "$HOME\FarNet.*.nupkg" -verbose
 }
