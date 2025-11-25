@@ -106,7 +106,7 @@ Double semicolon `;;` separates script parameters from method parameters.
 Parameters are `name=value` pairs separated by `;` (DB Connection String).
 
 Use `fn:@` notation for loading complex commands from `dbcs` files.
-Colorer scheme: [dbcs.hrc](https://github.com/nightroman/FarNet/blob/main/ColorerPack/hrc/dbcs.hrc)
+Colorer scheme: [dbcs.hrc](https://github.com/nightroman/FarNet/blob/main/Zoo/ColorerPack/hrc/dbcs.hrc)
 
 **Script parameters:**
 

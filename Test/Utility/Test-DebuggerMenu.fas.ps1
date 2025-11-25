@@ -2,7 +2,7 @@
 run {
 	# show menu
 	$bp = Get-PSBreakpoint
-	Assert-Far (!$bp) -Message "Please remove breakpoints."
+	Assert-Far (!$bp) -Message "Remove breakpoints."
 	$Psf.ShowDebugger()
 }
 
@@ -19,13 +19,13 @@ job {
 }
 
 # type
-macro 'Keys"AltL 1 AltS c : / r o m / a p s / a b o u t . p s 1 Enter"'
+macro "Keys'AltL 1 AltS'; print'$($env:FarNetCode.Replace('\', '/'))/web.ps1'; Keys'Enter'"
 
 # go to new bp
 keys 1
 job {
 	# the current item is..
-	Assert-Far $__.Focused.Text -eq "&1 Line breakpoint on 'C:\rom\aps\about.ps1:1'"
+	Assert-Far $__.Focused.Text -eq "&1 Line breakpoint on '$env:FarNetCode\web.ps1:1'"
 }
 
 # edit
@@ -45,7 +45,7 @@ run {
 keys 1
 job {
 	# the current item is..
-	Assert-Far $__.Focused.Text -eq "&1 Line breakpoint on 'C:\rom\aps\about.ps1:1'"
+	Assert-Far $__.Focused.Text -eq "&1 Line breakpoint on '$env:FarNetCode\web.ps1:1'"
 }
 
 # toggle

@@ -1,6 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet
 
-= 10.0.2=
+= 10.0.3 =
+
+Internal hook FAR_ON_QUIT_PWSH.
+
+= 10.0.2 =
 
 Add Tasks.WaitFor* for main windows.
 

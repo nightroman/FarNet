@@ -377,12 +377,39 @@ void Far1::PostMacro(String^ macro, bool enableOutput, bool disablePlugins)
 
 void Far1::Quit()
 {
+	// event
 	QuittingEventArgs ea;
-
 	FarNet::Works::Far2::Api->OnQuit(% ea);
 	if (ea.Ignore)
 		return;
 
+	// hook
+	auto script = Environment::GetEnvironmentVariable("FAR_ON_QUIT_PWSH");
+	if (!String::IsNullOrEmpty(script))
+	{
+		script = Environment::ExpandEnvironmentVariables(script);
+		int pid = Process::GetCurrentProcess()->Id;
+
+		auto psi = gcnew ProcessStartInfo();
+		psi->FileName = "pwsh.exe";
+		psi->Arguments = "-nop \"" + script + "\" " + pid;
+		psi->UseShellExecute = false;
+
+		Process::Start(psi);
+		while (true)
+		{
+			Thread::Sleep(99);
+
+			auto done = Environment::GetEnvironmentVariable("FAR_ON_QUIT_DONE", EnvironmentVariableTarget::User);
+			if (done == pid.ToString())
+			{
+				Environment::SetEnvironmentVariable("FAR_ON_QUIT_DONE", nullptr, EnvironmentVariableTarget::User);
+				break;
+			}
+		}
+	}
+
+	// quit
 	Info.AdvControl(&MainGuid, ACTL_QUIT, 0, 0);
 }
 

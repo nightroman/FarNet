@@ -5,8 +5,8 @@
 
 ### test .GoToPath and then Get-FarPath
 job {
-	$__.GoToPath('C:\ROM\Aps\About.ps1')
-	Assert-Far -FileName About.ps1
+	$__.GoToPath("$env:FarNetCode\web.ps1")
+	Assert-Far -FileName web.ps1
 
 	$Far.Panel2.GoToPath('C:\TEMP\Missed-Missed-Missed')
 	Assert-Far $Far.Panel2.CurrentDirectory -eq C:\TEMP
@@ -14,8 +14,8 @@ job {
 }
 job {
 	Assert-Far @(
-		(Get-FarPath -Mirror) -eq 'C:\TEMP\About.ps1'
-		(Get-FarPath -Mirror -Selected) -eq 'C:\TEMP\About.ps1'
+		(Get-FarPath -Mirror) -eq 'C:\TEMP\web.ps1'
+		(Get-FarPath -Mirror -Selected) -eq 'C:\TEMP\web.ps1'
 	)
 }
 
@@ -24,24 +24,24 @@ job {
 # mind test order
 job {
 	# dumb, existing
-	$__.GoToName('AbOuT-AnY.Ps1')
-	Assert-Far -FileName About-Any.ps1
+	$__.GoToName('fArNeT.SlNx')
+	Assert-Far -FileName FarNet.slnx
 
 	# test, existing
-	Assert-Far ($__.GoToName('AbOuT.Ps1', $false))
-	Assert-Far -FileName About.ps1
+	Assert-Far ($__.GoToName('WeB.Ps1', $false))
+	Assert-Far -FileName web.ps1
 
 	# dumb, missed
 	$__.GoToName('missed-missed')
-	Assert-Far -FileName About.ps1
+	Assert-Far -FileName web.ps1
 
 	# test, missed
 	Assert-Far (!$__.GoToName('missed-missed', $false))
-	Assert-Far -FileName About.ps1
+	Assert-Far -FileName web.ps1
 
 	# fail, existing
-	Assert-Far ($__.GoToName('About-Any.ps1', $true))
-	Assert-Far -FileName About-Any.ps1
+	Assert-Far ($__.GoToName('FarNet.slnx', $true))
+	Assert-Far -FileName FarNet.slnx
 
 	# fail, missed
 	$failed = $false
@@ -53,17 +53,22 @@ job {
 		$global:Error.RemoveAt(0)
 	}
 	Assert-Far $failed
-	Assert-Far -FileName About-Any.ps1
+	Assert-Far -FileName FarNet.slnx
 }
 
 ### tests Alt+Letter because Find-FarFile is to use in other places
 #! Alt+Letter: directory
-macro 'Keys"AltU s e d Esc"'
+keys AltZ o o Esc
 job {
-	Assert-Far -FileName Used
+	Assert-Far -FileName Zoo
 }
 #! Alt+Letter: with *
-macro 'Keys"Alt* A b o u t * A n * p s 1 Esc"'
+keys Alt* F a * N e * s l n x Esc
 job {
-	Assert-Far -FileName About-Any.ps1
+	Assert-Far -FileName FarNet.slnx
+}
+
+# and test this
+job {
+	& "$PSScriptRoot\Test-Panel-Abc.far.ps1"
 }

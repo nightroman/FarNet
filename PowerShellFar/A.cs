@@ -23,6 +23,26 @@ internal static class A
 	#region Life
 	private static Task? _OpenRunspaceTask;
 
+	internal static string? FAR_PWSF_COMMAND { get; private set; }
+	internal static string? FAR_PWSF_FILE { get; private set; }
+	internal static bool FAR_PWSF_NO_EXIT { get; private set; }
+	internal static bool FAR_PWSF_NO_PROFILE { get; private set; }
+	internal static bool FAR_PWSF_MODE { get; private set; }
+	internal static bool FAR_PWSF_RUN { get; private set; }
+
+	internal static void RunDone(Exception? reason)
+	{
+		FAR_PWSF_RUN = false;
+
+		if (FAR_PWSF_NO_EXIT)
+			return;
+
+		if (reason is { })
+			Environment.Exit(1);
+
+		Far.Api.PostJob(Far.Api.Quit);
+	}
+
 	internal static void Connect()
 	{
 		Psf = new Actor();
@@ -32,6 +52,40 @@ internal static class A
 
 		//! subscribe only, do not unsubscribe _110301_164313
 		Console.CancelKeyPress += CancelKeyPress;
+
+		if (Environment.GetEnvironmentVariable("FAR_PWSF_COMMAND") is string cmd && cmd.Length > 0)
+		{
+			Environment.SetEnvironmentVariable("FAR_PWSF_COMMAND", null);
+			FAR_PWSF_COMMAND = cmd;
+			FAR_PWSF_RUN = true;
+		}
+
+		if (Environment.GetEnvironmentVariable("FAR_PWSF_FILE") is string file && file.Length > 0)
+		{
+			Environment.SetEnvironmentVariable("FAR_PWSF_FILE", null);
+			FAR_PWSF_FILE = file;
+			FAR_PWSF_RUN = true;
+		}
+
+		if (Environment.GetEnvironmentVariable("FAR_PWSF_NO_EXIT") == "1")
+		{
+			Environment.SetEnvironmentVariable("FAR_PWSF_NO_EXIT", null);
+			FAR_PWSF_NO_EXIT = true;
+		}
+
+		if (Environment.GetEnvironmentVariable("FAR_PWSF_NO_PROFILE") == "1")
+		{
+			Environment.SetEnvironmentVariable("FAR_PWSF_NO_PROFILE", null);
+			FAR_PWSF_NO_PROFILE = true;
+		}
+
+		if (Environment.GetEnvironmentVariable("FAR_PWSF_MODE") == "1")
+		{
+			Environment.SetEnvironmentVariable("FAR_PWSF_MODE", null);
+			FAR_PWSF_MODE = true;
+
+			Psf.StartCommandConsole();
+		}
 	}
 
 	internal static void Disconnect()
@@ -110,6 +164,10 @@ internal static class A
 		}
 
 		// user profile, run separately for better errors
+
+		if (FAR_PWSF_NO_PROFILE)
+			return;
+
 		var profile = Entry.RoamingData + "\\Profile.ps1";
 		if (File.Exists(profile))
 		{

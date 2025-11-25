@@ -291,9 +291,25 @@ internal sealed class ReadCommandForm
 		}
 	}
 
-	internal Task<RunArgs?> ReadAsync()
+	internal async Task<RunArgs?> ReadAsync()
 	{
-		return Task.Run(async () =>
+		if (A.FAR_PWSF_RUN)
+		{
+			if (A.FAR_PWSF_COMMAND is { } cmd)
+				return new(cmd) { Writer = new ConsoleOutputWriter() };
+
+			if (A.FAR_PWSF_FILE is null)
+				throw new InvalidOperationException();
+
+			var param = A.FAR_PWSF_FILE.Split('\n');
+			var file = param[0];
+			if (!Path.IsPathRooted(file))
+				file = Path.Combine(Far.Api.CurrentDirectory, file);
+
+			return new($". '{file.Replace("'", "''")}' @args") { Writer = new ConsoleOutputWriter(), Arguments = [.. param.Skip(1)] };
+		}
+
+		return await Task.Run(async () =>
 		{
 			await Tasks.Dialog(Dialog);
 			HistoryKit.ResetNavigation();

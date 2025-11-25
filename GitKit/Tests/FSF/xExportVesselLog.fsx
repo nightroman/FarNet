@@ -5,15 +5,15 @@ open System.IO
 open LibGit2Sharp
 
 /// Repository path.
-let inRoot = @"C:\Bin\Far\Far Backup"
+let inRoot = @"C:\Bin\Far\x64"
 
 /// Starting from date.
-let inTime = DateTime.UtcNow - TimeSpan.FromDays(365)
+let inTime = DateTime.UtcNow - TimeSpan.FromDays(10)
 
 /// Files to export.
 let inFiles = [
-    "ProfileLocal/FarNet/Vessel/VesselHistory.txt"
-    "ProfileLocal/FarNet/Vessel/VesselFolders.txt"
+    "1far/Local/FarNet/Vessel/VesselHistory.txt"
+    "1far/Local/FarNet/Vessel/VesselFolders.txt"
 ]
 
 /// Temp output directory.

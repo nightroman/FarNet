@@ -10,8 +10,7 @@ internal sealed class ReadCommand
 	private static ReadCommand? Instance { get; set; }
 	private readonly ReadCommandForm _form;
 
-	private static readonly bool __isConsoleMode =
-		Environment.GetEnvironmentVariable("FAR_START_COMMAND") is string cmd && cmd.Contains(nameof(Actor.StartCommandConsole), StringComparison.OrdinalIgnoreCase);
+	private static readonly bool __isConsoleMode = A.FAR_PWSF_MODE;
 
 	public ReadCommand()
 	{
@@ -292,11 +291,14 @@ internal sealed class ReadCommand
 						return;
 
 					// echo
-					Far.Api.UI.WriteLine($"{Instance._form.PromptTrimmed}{args.Code}", ConsoleColor.DarkGray);
-					if (__doLine)
+					if (!A.FAR_PWSF_RUN)
 					{
-						Far.Api.UI.WriteLine();
-						__doLine = false;
+						Far.Api.UI.WriteLine($"{Instance._form.PromptTrimmed}{args.Code}", ConsoleColor.DarkGray);
+						if (__doLine)
+						{
+							Far.Api.UI.WriteLine();
+							__doLine = false;
+						}
 					}
 
 					// run
@@ -310,6 +312,9 @@ internal sealed class ReadCommand
 					{
 						A.SyncPathsBack();
 					}
+
+					if (A.FAR_PWSF_RUN)
+						A.RunDone(args.Reason);
 				}
 			}
 			finally

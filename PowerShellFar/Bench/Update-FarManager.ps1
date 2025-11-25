@@ -1,6 +1,6 @@
 <#PSScriptInfo
 .DESCRIPTION Updates Far Manager and standard plugins.
-.VERSION 1.0.0
+.VERSION 1.0.1
 .AUTHOR Roman Kuzmin
 .COPYRIGHT (c) Roman Kuzmin
 .TAGS Download Update FarManager
@@ -85,7 +85,17 @@ Set-StrictMode -Version 3
 $ErrorActionPreference=1; trap {$PSCmdlet.ThrowTerminatingError($_)}
 
 ### Files to remove after updates if they did not exist.
-$UnusedFiles = '*.hlf', '*.lng', '*.cmd', '*.map', 'changelog', 'File_id.diz'
+$UnusedFiles = @(
+	'*.cmd'
+	'*.diz'
+	'*.hlf'
+	'*.lng'
+	'*.map'
+	'*.png'
+	'changelog'
+	'Far.exe.example.ini'
+	'Far.VisualElementsManifest.xml'
+)
 
 function archive_pattern([string]$Platform, [string]$PackageType) {
 	"^Far\.$Platform\.(\d+\.\d+\.\d+\.\d+)\.\w+\.$PackageType$"

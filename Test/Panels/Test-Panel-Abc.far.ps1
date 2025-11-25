@@ -6,23 +6,23 @@
 #! do not remove or reorder these tests
 function Test.GoToPath.Tools
 {
-	Go-To 'c:/rom/'
-	Assert-Far ($__.CurrentDirectory -eq 'c:\rom')
+	Go-To 'c:/temp/'
+	Assert-Far $__.CurrentDirectory -eq 'C:\TEMP'
 
 	Go-To '\'
-	Assert-Far ($__.CurrentDirectory -eq 'c:\')
+	Assert-Far $__.CurrentDirectory -eq 'C:\'
 
-	Go-To '\rom/'
-	Assert-Far ($__.CurrentDirectory -eq 'c:\rom')
+	Go-To '\temp/'
+	Assert-Far $__.CurrentDirectory -eq 'C:\TEMP'
 
 	Go-To '/'
-	Assert-Far ($__.CurrentDirectory -eq 'c:\')
+	Assert-Far $__.CurrentDirectory -eq 'C:\'
 
-	Go-To '/rom\\aps//about.ps1'
-	Assert-Far -FileName about.ps1
+	Go-To '/temp/RunOnShutdown.log'
+	Assert-Far -FileName RunOnShutdown.log
 
-	Go-To '\rom'
-	Assert-Far -FileName rom
+	Go-To '\temp'
+	Assert-Far -FileName TEMP
 
 	Go-To Go-To
 	Assert-Far -FileName Go-To.ps1
