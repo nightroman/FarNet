@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.RightWords
 
+= 5.4.1 =
+
+WeCantSpell.Hunspell 7.0.1
+
 = 5.4.0 =
 
 Uses .NET 10 and WeCantSpell.Hunspell 7.0.0

@@ -11,7 +11,7 @@
     <NoWarn>FarNet250103;FarNet250106</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="WeCantSpell.Hunspell" Version="7.0.0" />
+    <PackageReference Include="WeCantSpell.Hunspell" Version="7.0.1" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="$(FarHome)\FarNet\FarNet.dll">
