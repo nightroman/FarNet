@@ -1,4 +1,5 @@
 using FarNet;
+using FarNet.Works;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Management.Automation;
@@ -28,17 +29,21 @@ internal static class A
 	internal static bool FAR_PWSF_NO_EXIT { get; private set; }
 	internal static bool FAR_PWSF_NO_PROFILE { get; private set; }
 	internal static bool FAR_PWSF_MODE { get; private set; }
+	internal static bool FAR_PWSF_PANELS { get; private set; }
 	internal static bool FAR_PWSF_RUN { get; private set; }
 
 	internal static void RunDone(Exception? reason)
 	{
 		FAR_PWSF_RUN = false;
 
+		if (ExitManager.IsExiting)
+		{
+			ExitManager.Exit(reason);
+			return;
+		}
+
 		if (FAR_PWSF_NO_EXIT)
 			return;
-
-		if (reason is { })
-			Environment.Exit(1);
 
 		Far.Api.PostJob(Far.Api.Quit);
 	}
@@ -79,13 +84,74 @@ internal static class A
 			FAR_PWSF_NO_PROFILE = true;
 		}
 
-		if (Environment.GetEnvironmentVariable("FAR_PWSF_MODE") == "1")
+		if (Environment.GetEnvironmentVariable("FAR_PWSF_PANELS") == "1")
 		{
-			Environment.SetEnvironmentVariable("FAR_PWSF_MODE", null);
-			FAR_PWSF_MODE = true;
+			Environment.SetEnvironmentVariable("FAR_PWSF_PANELS", null);
+			FAR_PWSF_PANELS = true;
+		}
 
+		if (FAR_PWSF_RUN)
+		{
+			var delay = Environment.GetEnvironmentVariable("FAR_START_DELAY");
+			if (!string.IsNullOrEmpty(delay))
+			{
+				Environment.SetEnvironmentVariable("FAR_START_DELAY", null);
+				ExitManager.SetDelay(int.Parse(delay));
+			}
+
+			var timeout = Environment.GetEnvironmentVariable("FAR_START_TIMEOUT");
+			if (!string.IsNullOrEmpty(timeout))
+			{
+				Environment.SetEnvironmentVariable("FAR_START_TIMEOUT", null);
+				ExitManager.SetTimeout(int.Parse(timeout));
+			}
+		}
+
+		//! last
+		if (Environment.GetEnvironmentVariable("FAR_PWSF_MODE") != "1")
+			return;
+
+		Environment.SetEnvironmentVariable("FAR_PWSF_MODE", null);
+		FAR_PWSF_MODE = true;
+
+		if (FAR_PWSF_RUN && FAR_PWSF_PANELS)
+		{
+			_ = Tasks.Command(() =>
+			{
+				Invoking();
+				SyncPaths();
+
+				var args = GetPwsfRunArgs();
+
+				// ref: 2025-11-28-0615
+				//Far.Api.UI.GetUserScreen(1); //rk-0
+
+				Run(args);
+
+				if (!FAR_PWSF_NO_EXIT)
+					ExitManager.Exit(args.Reason);
+			});
+		}
+		else
+		{
 			Psf.StartCommandConsole();
 		}
+	}
+
+	internal static RunArgs GetPwsfRunArgs()
+	{
+		if (FAR_PWSF_COMMAND is { } cmd)
+			return new(cmd) { Writer = new ConsoleOutputWriter() };
+
+		if (FAR_PWSF_FILE is null)
+			throw new InvalidOperationException();
+
+		var param = FAR_PWSF_FILE.Split('\n');
+		var file = param[0];
+		if (!Path.IsPathRooted(file))
+			file = Path.Combine(Far.Api.CurrentDirectory, file);
+
+		return new($". '{file.Replace("'", "''")}' @args") { Writer = new ConsoleOutputWriter(), Arguments = [.. param.Skip(1)] };
 	}
 
 	internal static void Disconnect()
@@ -368,7 +434,7 @@ internal static class A
 		}
 		catch (Exception reason)
 		{
-			if (FarNet.Works.ExitManager.IsExiting)
+			if (ExitManager.IsExiting && !FAR_PWSF_RUN) //rk-0
 				throw;
 
 			args.Reason = reason;

@@ -21,6 +21,7 @@ PowerShell FarNet module for Far Manager
 - [Variables](#variables)
 - [Profiles](#profiles)
 - [Settings](#settings)
+- [pwsf](#pwsf)
 
 **Details**
 
@@ -1760,5 +1761,50 @@ Show settings in the panel:
 Show available scripts and their help synopsis in description column
 
     ps: Get-Command -Type ExternalScript | Get-Help | Out-FarPanel -Columns Name, Synopsis
+
+*********************************************************************
+## pwsf
+
+[Contents]
+
+`pwsf.exe` is the console shell similar to `pwsh.exe` but with `FarHost`.
+
+```
+Usage: pwsf [<path> [<path>]] [<arguments>]
+```
+
+Shell arguments, see `pwsh`:
+
+- `-Command | -c ...`
+- `-File | -f <file> ...`
+- `-EncodedCommand | -ec <1200-base64>`
+- `-NoExit | -noe`
+- `-NoProfile | -nop`
+
+Far Manager arguments:
+
+- `-ro[-]`
+- `-set:<parameter>=<value>`
+- `-s <profilepath> [<localprofilepath>]`
+
+Other arguments:
+
+- `-nss`
+
+    Same as `-set:System.AutoSaveSetup=false`.
+
+- `-Panels | -pan`
+
+    Tells to show panels instead of console prompt.
+
+- `-Exit | -x <delay>[:<timeout>]`
+
+    Tells to exit after the command completion with the delay or after
+    the timeout, whatever happens first. Specifies one or two numbers:
+    delay and timeout in milliseconds.
+
+    It is designed for running tests and implies `-ro` and `-Panels`.
+
+    Exit codes: 0: success, 1: failure, N: timeout value.
 
 *********************************************************************

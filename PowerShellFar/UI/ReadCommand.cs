@@ -1,5 +1,6 @@
 using FarNet;
 using FarNet.Forms;
+using FarNet.Works;
 
 namespace PowerShellFar.UI;
 
@@ -10,7 +11,7 @@ internal sealed class ReadCommand
 	private static ReadCommand? Instance { get; set; }
 	private readonly ReadCommandForm _form;
 
-	private static readonly bool __isConsoleMode = A.FAR_PWSF_MODE;
+	private static readonly bool __isConsoleMode = A.FAR_PWSF_MODE && !A.FAR_PWSF_PANELS;
 
 	public ReadCommand()
 	{

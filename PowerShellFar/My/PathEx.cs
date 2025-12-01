@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Management.Automation;
+﻿using System.Management.Automation;
 
 namespace My;
 
@@ -73,14 +71,23 @@ static class PathEx
 		if (fileInfo is { })
 			return fileInfo.FullName;
 
-		if (LanguagePrimitives.TryConvertTo(value, out string path))
 		{
-			// looks like a full path
-			if (path.Length > 3 && path.AsSpan(1, 2).SequenceEqual(":\\") || path.StartsWith("\\\\"))
+			if (LanguagePrimitives.TryConvertTo(value, out string path))
 			{
-				if (File.Exists(path))
-					return path;
+				// looks like a full path
+				if (path.Length > 3 && path.AsSpan(1, 2).SequenceEqual(":\\") || path.StartsWith("\\\\"))
+				{
+					if (File.Exists(path))
+						return path;
+				}
 			}
+		}
+		{
+
+			var pso = PSObject.AsPSObject(value);
+			var path = pso.Properties["Path"]?.Value as string;
+			if (File.Exists(path))
+				return path;
 		}
 
 		return null;

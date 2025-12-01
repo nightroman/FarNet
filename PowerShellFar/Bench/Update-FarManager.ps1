@@ -223,13 +223,27 @@ foreach($plugin in $plugins2) {
 	}
 }
 
-### remove not used files
+### remove not used files and empty dirs
 Write-Host -ForegroundColor Cyan "Removing not used files..."
 $files2 = Get-ChildItem $FarHome -Force -Recurse -File -Name -Include $UnusedFiles
-foreach($file in $files2) {
-	if ($files1 -notcontains $file) {
-		Write-Host "Removing file '$file'"
-		[System.IO.File]::Delete("$FarHome\$file")
+$maybeEmptyDirs = @{}
+
+# files
+foreach($file2 in $files2) {
+	if ($files1 -notcontains $file2) {
+		$file2 = [System.IO.FileInfo]"$FarHome\$file2"
+		Write-Host "Removing file '$file2'"
+		$file2.Delete()
+		$maybeEmptyDirs[$file2.DirectoryName] = ''
+	}
+}
+
+# dirs
+foreach($dir in $maybeEmptyDirs.Keys) {
+	$dir = [System.IO.DirectoryInfo]$dir
+	if (!@($dir.EnumerateFileSystemInfos())) {
+		Write-Host "Removing empty '$dir'"
+		$dir.Delete()
 	}
 }
 

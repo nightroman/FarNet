@@ -176,13 +176,13 @@ public abstract class IUserInterface
 	public abstract IntPtr SaveScreen(int left, int top, int right, int bottom);
 
 	/// <summary>
-	/// INTERNAL
+	/// INTERNAL <see cref="ShowUserScreen"/>
 	/// </summary>
 	/// <param name="n">0: new line; 1: no new line.</param>
 	public abstract void GetUserScreen(int n);
 
 	/// <summary>
-	/// INTERNAL
+	/// INTERNAL <see cref="SaveUserScreen"/>
 	/// </summary>
 	/// <param name="n">0: new line; 1: no new line.</param>
 	public abstract void SetUserScreen(int n);

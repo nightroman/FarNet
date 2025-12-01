@@ -8,4 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="pwsh -nop -c Invoke-Build publish -Configuration $(Configuration) -FarHome $(FarHome)" />
+  </Target>
 </Project>

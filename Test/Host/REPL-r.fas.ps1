@@ -36,8 +36,7 @@ job {
 
 ### Command console
 
-keys F11 2 3
-[FarNet.Tasks]::WaitForDialog(999).Wait()
+job { $Psf.RunCommandConsole() }
 keys g l Enter
 [FarNet.Tasks]::WaitForDialog(999).Wait()
 job {

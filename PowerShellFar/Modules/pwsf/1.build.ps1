@@ -13,6 +13,9 @@ $_root_pwsf = $FarHome
 
 task build {
 	exec { dotnet build -c $Configuration -p:FarHome=$FarHome --tl:off }
+}
+
+task publish {
 	remove "$_root_pwsf\$_name_pwsf.pdb", "$_root_pwsf\$_name_pwsf.exe.config"
 }
 

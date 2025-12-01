@@ -1,5 +1,4 @@
-﻿
-namespace FarNet.Works;
+﻿namespace FarNet.Works;
 #pragma warning disable 1591
 
 public static class ExitManager
@@ -22,6 +21,9 @@ public static class ExitManager
 				throw new InvalidOperationException("BeginJobs should be called once.");
 
 			_jobs = Tasks.CreateAsyncTaskCompletionSource<int>();
+
+			// ref: 2025-11-28-0602
+			//Far.Api.UI.GetUserScreen(1); //rk-0
 		}
 	}
 
@@ -32,6 +34,9 @@ public static class ExitManager
 		{
 			if (_jobs is null)
 				throw new InvalidOperationException("BeginJobs should be called first.");
+
+			//! pwsf -x 9 Test-FarNet.ps1
+			Far.Api.UI.GetUserScreen(1); //rk-0
 
 			_jobs.SetResult(0);
 		}
@@ -54,8 +59,12 @@ public static class ExitManager
 			if (_exitDelay > 0)
 				await Task.Delay(_exitDelay);
 
+			Console.ResetColor();
+
 			if (ex is null)
 				Environment.Exit(0);
+
+			Console.WriteLine($"\nExit reason: {ex.Message}");
 
 			Log.TraceException(ex);
 			Environment.Exit(1);
@@ -75,7 +84,12 @@ public static class ExitManager
 		{
 			_timerTimeout ??= new Timer(s =>
 				{
-					Log.TraceError("Timeout exit.");
+					var text = $"Exit timeout: {milliseconds}";
+
+					Console.WriteLine();
+					Console.WriteLine(text);
+
+					Log.TraceError(text);
 					Environment.Exit(milliseconds);
 				},
 				null,

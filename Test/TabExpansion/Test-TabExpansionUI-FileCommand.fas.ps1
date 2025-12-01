@@ -24,7 +24,6 @@ job {
 	Assert-Far $r.Count -eq 3
 	Assert-Far $r[0].Text -eq '.\Test-Far.ps1' # local
 	Assert-Far $r[1].Text -eq 'Test-Far.ps1' # path
-	Assert-Far $r[2].Text -eq 'Test-FarNet' # alias
 }
 
 macro 'Keys"Esc Esc" -- exit list, drop command line'

@@ -1,8 +1,24 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 10.0.11 =
+
+OBSOLETE TO BE REMOVED
+- Start-Far.ps1 - use pwsf.exe
+
+pwsf.exe
+- add docs
+- new arguments
+
+	-nss
+	-Panels | -pan
+	-Exit | -x <delay>[:<timeout>]
+
+Update-FarManager.ps1
+- after removing files remove their folders if empty
+
 = 10.0.10 =
 
-`pwsf.exe`
+pwsf.exe
 - works similar to `pwsh.exe` with new parameters:
     -Command | -c ...
     -File | -f <file> ...

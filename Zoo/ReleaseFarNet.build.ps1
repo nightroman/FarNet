@@ -48,9 +48,9 @@ Select project to push:
 '@) -notmatch '^(1|2|3)$') {}
 
 	$Script:Tags = switch($Push) {
-		1 {"FarNet.$FarNetVersion", "PowerShellFar.$PowerShellFarVersion"}
-		2 {"FarNet.$FarNetVersion"}
-		3 {"PowerShellFar.$PowerShellFarVersion"}
+		1 {"FN.$FarNetVersion", "PS.$PowerShellFarVersion"}
+		2 {"FN.$FarNetVersion"}
+		3 {"PS.$PowerShellFarVersion"}
 		default {throw}
 	}
 }
@@ -90,7 +90,7 @@ Start testing?
 	$begin = [datetime]::Now
 
 	Set-Alias far $(if ($env:FARHOME) {"$env:FARHOME\Far.exe"} else {'Far.exe'})
-	far -ro "ps:$env:FarNetCode\Test\Test-FarNet.ps1"
+	far -ro "ps:Test-FarNet.ps1"
 
 	$end = [datetime](Get-Content temp:Test-FarNet.end.txt -ErrorAction 0)
 	if ($end -lt $begin) {

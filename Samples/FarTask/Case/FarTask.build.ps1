@@ -20,9 +20,9 @@ task panel-job-vars {
 	}
 }
 
-# Synopsis: dump-variables in a new session
+# Synopsis: dump-variables in a new session, 5 .csv
 task dump-variables {
-	Start-Far.ps1 "ps:./dump-variables.far.ps1"
+	Start-Process pwsf "-noe -pan -c ./dump-variables.far.ps1"
 }
 
 # Synopsis: Time GetNewClosure vs GetScriptBlock
