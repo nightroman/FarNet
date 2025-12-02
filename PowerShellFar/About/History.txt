@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 10.0.12 =
+
+Use `.` as the default module panel location.
+
 = 10.0.11 =
 
 OBSOLETE TO BE REMOVED

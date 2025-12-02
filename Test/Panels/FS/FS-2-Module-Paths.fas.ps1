@@ -96,6 +96,6 @@ job {
 }
 
 job {
-	Assert-Far * -eq $__.CurrentDirectory
+	Assert-Far . -eq $__.CurrentDirectory
 	$__.Close()
 }

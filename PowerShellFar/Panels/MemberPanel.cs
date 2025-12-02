@@ -21,7 +21,7 @@ public sealed class MemberPanel : ListPanel
 	public MemberPanel(MemberExplorer explorer) : base(explorer)
 	{
 		Title = "Members: " + Target.BaseObject.GetType().Name;
-		CurrentLocation = "*";
+		CurrentLocation = ".";
 		SortMode = PanelSortMode.Unsorted;
 	}
 

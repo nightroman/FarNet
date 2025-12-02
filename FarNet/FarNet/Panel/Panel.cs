@@ -174,7 +174,7 @@ public partial class Panel : IPanel
 			if (location.Length > 0)
 				_Panel.CurrentLocation = location;
 			else
-				_Panel.CurrentLocation = "*";
+				_Panel.CurrentLocation = ".";
 		}
 
 		// the first update

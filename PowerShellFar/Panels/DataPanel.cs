@@ -19,7 +19,7 @@ public sealed class DataPanel : TablePanel, IDisposable
 	{
 		Explorer.Panel = this;
 
-		CurrentLocation = "*";
+		CurrentLocation = ".";
 		SortMode = PanelSortMode.Unsorted; // assume it is sorted in SELECT
 		UseSortGroups = false;
 

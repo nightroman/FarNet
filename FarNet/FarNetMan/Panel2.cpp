@@ -833,7 +833,7 @@ void Panel2::OpenExplorer(Explorer^ explorer, ExploreEventArgs^ args)
 	if (location->Length)
 		newPanel->CurrentLocation = location;
 	else
-		newPanel->CurrentLocation = "*";
+		newPanel->CurrentLocation = ".";
 
 	// same panel? update, reuse
 	if (newPanel == oldPanel)

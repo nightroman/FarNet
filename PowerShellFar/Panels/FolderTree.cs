@@ -72,7 +72,7 @@ public sealed class FolderTree(FolderExplorer explorer) : TreePanel(explorer)
 		else
 		{
 			Title = "Tree";
-			dir = "*"; // to avoid empty (Far closes on dots or CtrlPgUp); STOP: see _130117_234326
+			dir = "."; // to avoid empty (Far closes on dots or CtrlPgUp); STOP: see _130117_234326
 		}
 
 		//! panel directory is not the same as the explorer location

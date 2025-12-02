@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet
 
+= 10.0.5 =
+
+Use `.` as the default module panel location.
+
 = 10.0.4 =
 
 Tune exit.

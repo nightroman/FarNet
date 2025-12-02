@@ -29,7 +29,7 @@ static class PathEx
 	public static string Combine(string path, string file)
 	{
 		// no path or special fake path, e.g. in object panel
-		if (path is null || path == "*")
+		if (path is null || path == ".")
 			return file;
 
 		if (path.EndsWith('\\'))

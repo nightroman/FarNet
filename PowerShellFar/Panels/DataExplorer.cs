@@ -1,10 +1,4 @@
-﻿
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using FarNet;
-using System;
-using System.Collections.Generic;
+﻿using FarNet;
 
 namespace PowerShellFar;
 
@@ -17,7 +11,7 @@ sealed class DataExplorer : TableExplorer
 	public DataExplorer() : base(new Guid(TypeIdString))
 	{
 		FileComparer = new FileDataComparer();
-		Location = "*";
+		Location = ".";
 		Functions =
 			ExplorerFunctions.DeleteFiles |
 			ExplorerFunctions.CreateFile |

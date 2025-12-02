@@ -1,5 +1,4 @@
 using FarNet;
-using System.Collections.Generic;
 using System.Management.Automation;
 
 namespace PowerShellFar;
@@ -21,7 +20,7 @@ public class ObjectPanel : FormatPanel
 	public ObjectPanel(ObjectExplorer explorer) : base(explorer)
 	{
 		Title = "Objects";
-		CurrentLocation = "*";
+		CurrentLocation = ".";
 		SortMode = PanelSortMode.Unsorted;
 	}
 
