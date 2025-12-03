@@ -60,9 +60,7 @@ $null = & {
 	$panel1.SortMode = $panel2.SortMode = 'Name'
 
 	# assert and clear
-	<#TODO
 	[FarNet.Works.Test]::AssertNormalState()
-	#>
 	Clear-Session
 
 	# ensure Mongo for all tests
@@ -92,7 +90,7 @@ if (!$Tests) {
 
 ### Main tests
 [FarNet.Works.ExitManager]::BeginJobs()
-Start-FarTask -Data Tests, ExpectedTaskCount, SavedPanelPaths {
+Start-FarTask -Data All, Tests, ExpectedTaskCount, SavedPanelPaths {
 	$Data.Stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
 	$Data.TaskCount = 0
 
@@ -132,9 +130,7 @@ Start-FarTask -Data Tests, ExpectedTaskCount, SavedPanelPaths {
 		### Check test effects
 		try {
 			job {
-				<#TODO
 				[FarNet.Works.Test]::AssertNormalState()
-				#>
 
 				if ($global:Error) {
 					throw "Unexpected error after test: $($global:Error[-1])"
@@ -159,22 +155,26 @@ Start-FarTask -Data Tests, ExpectedTaskCount, SavedPanelPaths {
 		### end
 		Set-Content temp:Test-FarNet.end.txt (Get-Date -Format o)
 
-		### Exiting
-		if ([FarNet.Works.ExitManager]::IsExiting) {
-			[FarNet.Works.ExitManager]::EndJobs()
-			return
-		}
-
 		### Restore panels
 		$__.CurrentDirectory = $Data.SavedPanelPaths[0]
 		$Far.Panel2.CurrentDirectory = $Data.SavedPanelPaths[1]
 
 		### Summary
-		Write-Host "Tasks: $($Data.TaskCount)/$($Data.ExpectedTaskCount)" -ForegroundColor ($Data.TaskCount -eq $Data.ExpectedTaskCount ? 'Green' : 'Yellow')
+		if ($Data.All) {
+			Write-Host "Tasks: $($Data.TaskCount)/$($Data.ExpectedTaskCount)" -ForegroundColor ($Data.TaskCount -eq $Data.ExpectedTaskCount ? 'Green' : 'Yellow')
+		}
+		else {
+			Write-Host "Tasks: $($Data.TaskCount)" -ForegroundColor Green
+		}
 		Write-Host "$($Data.Stopwatch.Elapsed)" -ForegroundColor Green
 
 		### DEBUG
 		if ((Get-Item $env:FARHOME\FarNet\FarNet.dll).VersionInfo.Comments -like '*DEBUG*') { Write-Host FN=DEBUG -ForegroundColor Red }
 		if ((Get-Item $env:FARHOME\FarNet\Modules\PowerShellFar\PowerShellFar.dll).VersionInfo.Comments -like '*DEBUG*') { Write-Host PS=DEBUG -ForegroundColor Red }
+
+		### Exiting
+		if ([FarNet.Works.ExitManager]::IsExiting) {
+			[FarNet.Works.ExitManager]::EndJobs()
+		}
 	}
 }

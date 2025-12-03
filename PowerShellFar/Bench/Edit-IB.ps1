@@ -10,7 +10,7 @@
 	You may call this script from any child folder of a build script.
 
 	This script runs in FarHost. If it runs in console, it opens Far Manager.
-	This requires "Far.exe", "Start-Far.ps1", and "Edit-IB.ps1" in the path.
+	This requires "pwsf.exe" and "Edit-IB.ps1" in the path.
 
 	If the build script is not found then a new "1.build.ps1" is opened in the
 	editor with a new task added. You may exit editor without saving anything.
@@ -57,7 +57,7 @@ param(
 #requires -Version 7.4
 Set-StrictMode -Version 3
 $ErrorActionPreference=1; trap {$PSCmdlet.ThrowTerminatingError($_)}; if ($Host.Name -ne 'FarHost') {
-	return Start-Far.ps1 "vps:Edit-IB.ps1 $Task"
+	return Start-Process pwsf "-far -nss -c Edit-IB.ps1 $Task"
 }
 
 function __new_task {

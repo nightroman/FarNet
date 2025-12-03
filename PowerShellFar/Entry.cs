@@ -96,7 +96,7 @@ public sealed class Entry : ModuleHost
 		string GetEcho() => CommandInvoke1.Prefix + ':' + command;
 		bool useTeeResult = command.StartsWith(' ');
 
-		var ok = A.Run(new RunArgs(command) { Writer = new ConsoleOutputWriter(GetEcho), UseTeeResult = useTeeResult });
+		var ok = A.Run(new RunArgs(command) { Writer = new ConsoleOutputWriter(GetEcho, true), UseTeeResult = useTeeResult });
 		e.Ignore = !ok;
 	}
 

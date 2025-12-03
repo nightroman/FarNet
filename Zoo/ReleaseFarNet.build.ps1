@@ -90,7 +90,7 @@ Start testing?
 	$begin = [datetime]::Now
 
 	Set-Alias far $(if ($env:FARHOME) {"$env:FARHOME\Far.exe"} else {'Far.exe'})
-	far -ro "ps:Test-FarNet.ps1"
+	far -ro "ps:Test-FarNet.ps1 -All"
 
 	$end = [datetime](Get-Content temp:Test-FarNet.end.txt -ErrorAction 0)
 	if ($end -lt $begin) {
@@ -102,7 +102,7 @@ Start testing?
 $extras = Get-ChildItem ..\..\Test -Filter *.test.ps1
 foreach($test in $extras) {
 	task $test.Name -Data $test {
-		Invoke-Build * $Task.Data.FullName
+		exec { pwsf -far -x 0 -c Invoke-Build * $Task.Data.FullName }
 	}
 }
 

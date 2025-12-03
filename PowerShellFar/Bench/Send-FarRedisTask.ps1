@@ -6,7 +6,7 @@
 .Description
 	Requires:
 	- FarNet.Redis library, $env:FARNET_REDIS_CONFIGURATION
-	- Register-FarRedisTask.ps1 and Start-Far.ps1 in the path
+	- Register-FarRedisTask.ps1
 
 	The script uses Redis pub/sub in order to pair two Far instances and send
 	messages between them. The second Far is started automatically when needed.
@@ -65,5 +65,7 @@ else {
 
 	# keep data and start the pair, data will be send when we receive the pair message
 	[FarNet.User]::Data.FarRedisData = $taskMessageData
-	Start-Far ps:Register-FarRedisTask $Far.CurrentDirectory -Environment @{FAR_REDIS_PAIR = $PID}
+	Start-Process "$env:FARHOME\pwsf.exe" @"
+"$($Far.CurrentDirectory)" -far -env FAR_REDIS_PAIR=$PID -c Register-FarRedisTask.ps1
+"@
 }

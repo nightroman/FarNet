@@ -21,9 +21,6 @@ public static class ExitManager
 				throw new InvalidOperationException("BeginJobs should be called once.");
 
 			_jobs = Tasks.CreateAsyncTaskCompletionSource<int>();
-
-			// ref: 2025-11-28-0602
-			//Far.Api.UI.GetUserScreen(1); //rk-0
 		}
 	}
 
@@ -34,9 +31,6 @@ public static class ExitManager
 		{
 			if (_jobs is null)
 				throw new InvalidOperationException("BeginJobs should be called first.");
-
-			//! pwsf -x 9 Test-FarNet.ps1
-			Far.Api.UI.GetUserScreen(1); //rk-0
 
 			_jobs.SetResult(0);
 		}
@@ -62,12 +56,32 @@ public static class ExitManager
 			Console.ResetColor();
 
 			if (ex is null)
-				Environment.Exit(0);
+			{
+				/*
+				NB Quit() works too, so it is possible but should be opt-in.
+				It makes testing slower and has issues, e.g. odd, `-x <delay>`
+				with small delay may "pause" and wait for any key to resume.
+				*/
 
-			Console.WriteLine($"\nExit reason: {ex.Message}");
+				// good exit: Exit(0)
+				Far.Api.PostJob(() =>
+				{
+					Far.Api.UI.GetUserScreen(1);
+					Environment.Exit(0);
+				});
+			}
+			else
+			{
+				// fail exit: Exit(1)
+				Console.WriteLine($"\nExit reason: {ex.Message}");
+				Log.TraceException(ex);
 
-			Log.TraceException(ex);
-			Environment.Exit(1);
+				Far.Api.PostJob(() =>
+				{
+					Far.Api.UI.GetUserScreen(1);
+					Environment.Exit(1);
+				});
+			}
 		});
 	}
 
@@ -84,12 +98,15 @@ public static class ExitManager
 		{
 			_timerTimeout ??= new Timer(s =>
 				{
+					Far.Api.UI.SetProgressState(TaskbarProgressBarState.NoProgress);
+
 					var text = $"Exit timeout: {milliseconds}";
 
 					Console.WriteLine();
 					Console.WriteLine(text);
 
 					Log.TraceError(text);
+
 					Environment.Exit(milliseconds);
 				},
 				null,

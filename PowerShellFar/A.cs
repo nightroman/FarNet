@@ -114,7 +114,7 @@ internal static class A
 		Environment.SetEnvironmentVariable("FAR_PWSF_MODE", null);
 		FAR_PWSF_MODE = true;
 
-		if (FAR_PWSF_RUN && FAR_PWSF_PANELS)
+		if (FAR_PWSF_PANELS && FAR_PWSF_RUN)
 		{
 			_ = Tasks.Command(() =>
 			{
@@ -123,16 +123,13 @@ internal static class A
 
 				var args = GetPwsfRunArgs();
 
-				// ref: 2025-11-28-0615
-				//Far.Api.UI.GetUserScreen(1); //rk-0
-
 				Run(args);
 
 				if (!FAR_PWSF_NO_EXIT)
 					ExitManager.Exit(args.Reason);
 			});
 		}
-		else
+		else if (!(FAR_PWSF_PANELS && FAR_PWSF_NO_EXIT))
 		{
 			Psf.StartCommandConsole();
 		}
@@ -383,6 +380,13 @@ internal static class A
 		var code = args.Code;
 		if (string.IsNullOrEmpty(code))
 			return true;
+
+		//: prefix?
+		if (Kit.CommandHasPrefix(code))
+		{
+			Far.Api.InvokeCommand(code);
+			return true;
+		}
 
 		// push writer
 		if (args.Writer is null)

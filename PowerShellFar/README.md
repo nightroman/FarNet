@@ -1784,10 +1784,15 @@ Shell arguments, see `pwsh`:
 Far Manager arguments:
 
 - `-ro[-]`
+- `-title:<text>`
 - `-set:<parameter>=<value>`
 - `-s <profilepath> [<localprofilepath>]`
 
 Other arguments:
+
+- `-far`
+
+    Same as `-NoExit -Panels`.
 
 - `-nss`
 
@@ -1797,11 +1802,13 @@ Other arguments:
 
     Tells to show panels instead of console prompt.
 
+- `-env <name>=<value>`
+
+    Sets the process environment variable.
+
 - `-Exit | -x <delay>[:<timeout>]`
 
-    Tells to exit after the command completion with the delay or after
-    the timeout, whatever happens first. Specifies one or two numbers:
-    delay and timeout in milliseconds.
+    Tells to exit after the command completion after the delay or timeout (milliseconds).
 
     It is designed for running tests and implies `-ro` and `-Panels`.
 

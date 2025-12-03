@@ -5,25 +5,28 @@ namespace PowerShellFar;
 sealed class ConsoleOutputWriter : AbcOutputWriter
 {
 	Func<string>? _getEcho;
+	readonly bool _transcriptOnly;
 
 	public ConsoleOutputWriter()
 	{
 	}
 
-	public ConsoleOutputWriter(Func<string>? getEcho)
+	public ConsoleOutputWriter(Func<string>? getEcho, bool transcriptOnly)
 	{
 		_getEcho = getEcho;
+		_transcriptOnly = transcriptOnly;
 	}
 
 	void Writing()
 	{
-		// use and null echo
 		if (_getEcho is { })
 		{
-			if (Transcript.Writer is { } writer)
+			if (!_transcriptOnly || Transcript.Writer is { })
 			{
-				var echo = _getEcho() + Environment.NewLine;
-				writer.WriteEcho(echo);
+				var value = _getEcho() + Environment.NewLine;
+				Transcript.Writer?.Write(value);
+				if (!_transcriptOnly)
+					Far.Api.UI.Write(value, ConsoleColor.DarkGray);
 			}
 			_getEcho = null;
 		}

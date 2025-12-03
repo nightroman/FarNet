@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 10.0.13 =
+
+pwsf.exe
+- new arguments `-title`, `-far`, `-env`
+- replaces obsolete Start-Far.ps1 (moved to /zoo/PowerShellFar)
+
 = 10.0.12 =
 
 Use `.` as the default module panel location.

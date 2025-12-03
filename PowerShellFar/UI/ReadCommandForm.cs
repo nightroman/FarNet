@@ -12,7 +12,7 @@ internal sealed class ReadCommandForm
 
 	internal readonly IDialog Dialog;
 	internal readonly IEdit Edit;
-	internal string? PromptTrimmed;
+	private string? PromptTrimmed;
 	private readonly IText Text;
 	private string PromptOriginal;
 	private string? TextFromEditor;
@@ -158,7 +158,7 @@ internal sealed class ReadCommandForm
 		}
 
 		// result
-		ArgsToRun = new RunArgs(code) { Writer = new ConsoleOutputWriter(GetEcho), UseTeeResult = true };
+		ArgsToRun = new RunArgs(code) { Writer = new ConsoleOutputWriter(GetEcho, false), UseTeeResult = true };
 	}
 
 	// Why post? On `cd X` from user menu it gets focus before the panel changes dir.

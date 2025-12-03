@@ -165,6 +165,26 @@ public static class Kit
 	// Gets or sets the default macro output mode.
 	public static bool MacroOutput { get; set; }
 
+	public static bool CommandHasPrefix(ReadOnlySpan<char> commandLine)
+	{
+		// skip spaces
+		int index1 = 0;
+		while (index1 < commandLine.Length && (char.IsWhiteSpace(commandLine[index1]) || commandLine[index1] == '@'))
+			++index1;
+
+		// skip colons
+		while (index1 < commandLine.Length && commandLine[index1] == ':')
+			++index1;
+
+		// skip word
+		int index2 = index1;
+		while (index2 < commandLine.Length && char.IsLetterOrDigit(commandLine[index2]))
+			++index2;
+
+		// has prefix? length > 1 to avoid conflicts with drive letters
+		return index2 > 0 && index2 < commandLine.Length && commandLine[index2] == ':' && index2 - index1 > 1;
+	}
+
 	/// <summary>
 	/// Splits the command line to prefix and command.
 	/// </summary>

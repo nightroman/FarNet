@@ -245,7 +245,6 @@ internal sealed class ReadCommand
 		}
 	}
 
-	private static bool __doLine = true;
 	public static async Task StartAsync()
 	{
 		if (Instance is { })
@@ -290,17 +289,6 @@ internal sealed class ReadCommand
 					var args = await Instance._form.ReadAsync();
 					if (args is null)
 						return;
-
-					// echo
-					if (!A.FAR_PWSF_RUN)
-					{
-						Far.Api.UI.WriteLine($"{Instance._form.PromptTrimmed}{args.Code}", ConsoleColor.DarkGray);
-						if (__doLine)
-						{
-							Far.Api.UI.WriteLine();
-							__doLine = false;
-						}
-					}
 
 					// run
 					var newPanel = await Tasks.Command(() => A.Run(args));

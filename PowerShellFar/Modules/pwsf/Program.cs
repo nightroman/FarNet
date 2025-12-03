@@ -17,13 +17,16 @@ Shell arguments, see pwsh:
 Far Manager arguments:
 
 	-ro[-]
+	-title:<text>
 	-set:<parameter>=<value>
 	-s <profilepath> [<localprofilepath>]
 
 Other arguments:
 
+	-far
 	-nss
 	-Panels | -pan
+	-env <name>=<value>
 	-Exit | -x <delay>[:<timeout>]
 
 See docs:
@@ -32,6 +35,7 @@ See docs:
 """;
 
 bool addReadOnly = false;
+bool noExit = false;
 bool showPanels = false;
 
 static void ExitUsage()
@@ -48,6 +52,9 @@ static bool IsSwitch(string arg)
 Debug.WriteLine($"## pwsf args: {'"' + string.Join("\" \"", args) + '"'}");
 try
 {
+	ConsoleHelper.EnableAnsiEscapeSequences();
+	Console.OutputEncoding = Encoding.UTF8;
+
 	// executable
 	var baseDirectory = AppContext.BaseDirectory;
 	var fileName = $"{baseDirectory}\\{FarExe}";
@@ -89,7 +96,7 @@ try
 		if (!IsSwitch(arg))
 			ExitUsage();
 
-		var str = arg.TrimStart('-', '/');
+		var str = arg.TrimStart('-');
 
 		if (str == "ro" || str == "ro-")
 		{
@@ -108,7 +115,7 @@ try
 				sb.Append(' ').Append(args[i]);
 			}
 		}
-		else if (str.StartsWith("set:"))
+		else if (str.StartsWith("set:") || str.StartsWith("title:"))
 		{
 			sb.Append(" \"").Append(arg).Append('"');
 		}
@@ -116,9 +123,14 @@ try
 		{
 			sb.Append(" -set:System.AutoSaveSetup=false");
 		}
+		else if (str == "far")
+		{
+			noExit = true;
+			showPanels = true;
+		}
 		else if (str == "NoExit" || str == "noe")
 		{
-			Environment.SetEnvironmentVariable("FAR_PWSF_NO_EXIT", "1");
+			noExit = true;
 		}
 		else if (str == "NoProfile" || str == "nop")
 		{
@@ -127,6 +139,18 @@ try
 		else if (str == "Panels" || str == "pan")
 		{
 			showPanels = true;
+		}
+		else if (str == "env")
+		{
+			if (++i >= args.Length)
+				ExitUsage();
+			var envArg = args[i];
+			var eq = envArg.IndexOf('=');
+			if (eq < 1 || eq >= envArg.Length - 1)
+				throw new Exception("Invalid env argument.");
+			var name = envArg.Substring(0, eq).Trim();
+			var value = envArg.Substring(eq + 1).Trim();
+			Environment.SetEnvironmentVariable(name, value);
 		}
 		else if (str == "Exit" || str == "x")
 		{
@@ -207,6 +231,11 @@ try
 		sb.Append(" -ro");
 	}
 
+	if (noExit)
+	{
+		Environment.SetEnvironmentVariable("FAR_PWSF_NO_EXIT", "1");
+	}
+
 	if (showPanels)
 	{
 		sb.Append(" -set:Panel.Left.Visible=true -set:Panel.Right.Visible=true");
@@ -228,7 +257,17 @@ try
 		UseShellExecute = false,
 		FileName = fileName,
 		Arguments = arguments,
+		RedirectStandardOutput = true,
+		StandardOutputEncoding = Encoding.UTF8,
 	});
+
+	var output = process.StandardOutput;
+	string? line;
+	while ((line = output.ReadLine()) is { })
+	{
+		if (!line.StartsWith("Far Manager, version") && !line.StartsWith("Copyright © 1996-2000 Eugene Roshal"))
+			Console.WriteLine(line);
+	}
 
 	process!.WaitForExit();
 	return process.ExitCode;

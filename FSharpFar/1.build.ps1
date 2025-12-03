@@ -137,11 +137,11 @@ task test_psf_fas {
 }
 
 task test_testing {
-	Start-Far "fs:exec file=$env:FarNetCode\FSharpFar\samples\Testing\App1.fsx" -Exit 999
+	exec { pwsf -nop -x 999 -c "fs:exec file=$env:FarNetCode\FSharpFar\samples\Testing\App1.fsx" }
 }
 
 task test_tests {
-	Start-Far "fs:exec file=$env:FarNetCode\FSharpFar\tests\App1.fsx" -Exit 999
+	exec { pwsf -nop -x 999 -c "fs:exec file=$env:FarNetCode\FSharpFar\tests\App1.fsx" }
 }
 
 task test_fsx {
