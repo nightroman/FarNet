@@ -4,7 +4,7 @@
 #>
 
 param(
-	[ValidateScript({"FN::FarNet\FarNet.build.ps1", "PS::PowerShellFar\1.build.ps1", "pwsf::PowerShellFar\Modules\pwsf\1.build.ps1"})]
+	[ValidateScript({"FN::FarNet\FarNet.build.ps1", "PS::PowerShellFar\1.build.ps1"})]
 	$Extends,
 	$Configuration = (property Configuration Release),
 	$Platform = (property Platform x64),
@@ -22,7 +22,7 @@ task reset {
 }
 
 # Synopsis: Remove temp files.
-task clean FN::clean, PS::clean, pwsf::clean, {
+task clean FN::clean, PS::clean, {
 	Invoke-Build clean .\FSharpFar
 }
 

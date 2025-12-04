@@ -1,5 +1,4 @@
-﻿
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.Reflection;
 
@@ -48,11 +47,6 @@ public class ModuleLoader
 
 		// free config data
 		Config.Default.Reset();
-
-		// start command
-		var command = Environment.GetEnvironmentVariable("FAR_START_COMMAND");
-		if (!string.IsNullOrEmpty(command))
-			_ = Task.Run(() => StartFarAsync(command));
 	}
 
 	// Loads the module assembly.
@@ -304,54 +298,5 @@ public class ModuleLoader
 			return null;
 
 		return manager.Interop(interopName, args);
-	}
-
-	static async Task StartFarAsync(string command)
-	{
-		try
-		{
-			var delay = Environment.GetEnvironmentVariable("FAR_START_DELAY");
-			if (!string.IsNullOrEmpty(delay))
-				ExitManager.SetDelay(int.Parse(delay));
-
-			var timeout = Environment.GetEnvironmentVariable("FAR_START_TIMEOUT");
-			if (!string.IsNullOrEmpty(timeout))
-				ExitManager.SetTimeout(int.Parse(timeout));
-
-			var enter = Environment.GetEnvironmentVariable("FAR_START_ENTER");
-			if (string.IsNullOrEmpty(enter))
-			{
-				Debug.WriteLine($"# Invoke command: {command}");
-
-				await Tasks.Job(() =>
-				{
-					Far.Api.InvokeCommand(command);
-				});
-			}
-			else
-			{
-				Debug.WriteLine($"# Enter command: {command}");
-
-				await Tasks.Job(() =>
-				{
-					Far.Api.CommandLine.Text = command;
-				});
-
-				await Tasks.Keys("Enter");
-			}
-
-			if (ExitManager.IsExiting)
-			{
-				await Tasks.Job(() =>
-				{
-					Debug.WriteLine("# Exit");
-					ExitManager.Exit(null);
-				});
-			}
-		}
-		catch (Exception ex)
-		{
-			Far.Api.ShowError("Start command error", ex);
-		}
 	}
 }

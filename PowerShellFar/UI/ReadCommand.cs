@@ -1,6 +1,6 @@
 using FarNet;
 using FarNet.Forms;
-using FarNet.Works;
+using System.Diagnostics;
 
 namespace PowerShellFar.UI;
 
@@ -32,7 +32,6 @@ internal sealed class ReadCommand
 		}
 	}
 
-	//! 2025-11-16-0641
 	public static bool IsActive()
 	{
 		if (Instance is null)
@@ -291,6 +290,8 @@ internal sealed class ReadCommand
 						return;
 
 					// run
+					Debug.WriteLine($"## CC: {args.Code}");
+
 					var newPanel = await Tasks.Command(() => A.Run(args));
 					if (newPanel is { } && !__isConsoleMode)
 					{

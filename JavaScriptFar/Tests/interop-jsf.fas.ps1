@@ -28,6 +28,7 @@ run {
 	$Far.Dialog[2].Text = 'John Doe'
 	$Far.Dialog.Close()
 }
+[FarNet.Tasks]::WaitForDialog(999).Wait()
 run {
 	Assert-Far -Dialog
 	Assert-Far $Far.Dialog[1].Text -eq 'Hello, John Doe'

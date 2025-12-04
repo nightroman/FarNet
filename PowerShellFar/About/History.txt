@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 10.0.14 =
+
+Tune pwsf.exe and starter code.
+
 = 10.0.13 =
 
 pwsf.exe

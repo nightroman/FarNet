@@ -35,7 +35,7 @@ job {
 }
 job {
 	Assert-Far -Editor
-	Start-Sleep 2 #! odd
+	Start-Sleep 3 #! odd
 	$Far.Editor.Close()
 }
 

@@ -4,6 +4,8 @@
 #>
 
 param(
+	[ValidateScript({"pwsf::Modules\pwsf\1.build.ps1"})]
+	$Extends,
 	$Configuration = (property Configuration Release),
 	$FarHome = (property FarHome C:\Bin\Far\x64)
 )
@@ -12,12 +14,12 @@ Set-StrictMode -Version 3
 $_name_psf = "PowerShellFar"
 $_root_psf = "$FarHome\FarNet\Modules\$_name_psf"
 
-task clean {
+task clean pwsf::clean, {
 	remove z, bin, obj, FarNet.PowerShellFar.*.nupkg, About\About-PowerShellFar.html
 }
 
 # Install all. Run after Build.
-task publish installBin, installRes
+task publish installBin, installRes, pwsf::build
 
 task uninstall {
 	remove $_root_psf
@@ -126,3 +128,5 @@ task nuget package, version, {
 	#! -NoPackageAnalysis ~ "scripts will not be executed"
 	exec { nuget pack z\Package.nuspec -NoPackageAnalysis }
 }
+
+task .

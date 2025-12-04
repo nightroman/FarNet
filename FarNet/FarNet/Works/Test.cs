@@ -1,25 +1,39 @@
-﻿
-namespace FarNet.Works;
+﻿namespace FarNet.Works;
 #pragma warning disable 1591
 
 public static class Test
 {
-	static void AssertNormalPanel(IPanel? panel, string active)
+	private static string? ErrorNormalPanel(IPanel? panel, string active)
 	{
 		if (panel is null)
-			throw new InvalidOperationException("Expected panel.");
+			return "Expected panel.";
 
 		if (panel.IsPlugin)
-			throw new InvalidOperationException($"Expected {active} panel type: Native, actual: Plugin.");
+			return $"Expected {active} panel type: Native, actual: Plugin.";
 
 		if (panel.Kind != PanelKind.File)
-			throw new InvalidOperationException($"Expected {active} panel kind: File, actual: {panel.Kind}.");
+			return $"Expected {active} panel kind: File, actual: {panel.Kind}.";
 
 		if (!panel.IsVisible)
-			throw new InvalidOperationException($"Expected {active} panel state: Visible, actial: Hidden.");
+			return $"Expected {active} panel state: Visible, actual: Hidden.";
 
 		if (panel.SelectedFirst)
-			throw new InvalidOperationException($"Expected {active} panel SelectedFirst: Off, actial: On.");
+			return $"Expected {active} panel SelectedFirst: Off, actual: On.";
+
+		return null;
+	}
+
+	private static void AssertNormalPanel(IPanel? panel, string active)
+	{
+		for (int i = 5; --i >= 0; Thread.Sleep(200))
+		{
+			var error = ErrorNormalPanel(panel, active);
+			if (error is null)
+				return;
+
+			if (i == 0)
+				throw new InvalidOperationException(error);
+		}
 	}
 
 	public static void AssertNormalState()

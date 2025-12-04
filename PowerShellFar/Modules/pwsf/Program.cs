@@ -170,7 +170,7 @@ try
 				if (!int.TryParse(delay, out _))
 					throw new Exception("Invalid Exit delay.");
 
-				Environment.SetEnvironmentVariable("FAR_START_DELAY", delay);
+				Environment.SetEnvironmentVariable("FAR_PWSF_DELAY", delay);
 			}
 
 			if (parts.Length > 1)
@@ -181,7 +181,7 @@ try
 					if (!int.TryParse(timeout, out _))
 						throw new Exception("Invalid Exit timeout.");
 
-					Environment.SetEnvironmentVariable("FAR_START_TIMEOUT", timeout);
+					Environment.SetEnvironmentVariable("FAR_PWSF_TIMEOUT", timeout);
 				}
 			}
 		}

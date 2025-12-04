@@ -2,6 +2,7 @@ using FarNet;
 using FarNet.Works;
 using System.Collections;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Text;
@@ -92,17 +93,17 @@ internal static class A
 
 		if (FAR_PWSF_RUN)
 		{
-			var delay = Environment.GetEnvironmentVariable("FAR_START_DELAY");
+			var delay = Environment.GetEnvironmentVariable("FAR_PWSF_DELAY");
 			if (!string.IsNullOrEmpty(delay))
 			{
-				Environment.SetEnvironmentVariable("FAR_START_DELAY", null);
+				Environment.SetEnvironmentVariable("FAR_PWSF_DELAY", null);
 				ExitManager.SetDelay(int.Parse(delay));
 			}
 
-			var timeout = Environment.GetEnvironmentVariable("FAR_START_TIMEOUT");
+			var timeout = Environment.GetEnvironmentVariable("FAR_PWSF_TIMEOUT");
 			if (!string.IsNullOrEmpty(timeout))
 			{
-				Environment.SetEnvironmentVariable("FAR_START_TIMEOUT", null);
+				Environment.SetEnvironmentVariable("FAR_PWSF_TIMEOUT", null);
 				ExitManager.SetTimeout(int.Parse(timeout));
 			}
 		}
@@ -122,11 +123,8 @@ internal static class A
 				SyncPaths();
 
 				var args = GetPwsfRunArgs();
-
 				Run(args);
-
-				if (!FAR_PWSF_NO_EXIT)
-					ExitManager.Exit(args.Reason);
+				RunDone(args.Reason);
 			});
 		}
 		else if (!(FAR_PWSF_PANELS && FAR_PWSF_NO_EXIT))
@@ -146,7 +144,7 @@ internal static class A
 		var param = FAR_PWSF_FILE.Split('\n');
 		var file = param[0];
 		if (!Path.IsPathRooted(file))
-			file = Path.Combine(Far.Api.CurrentDirectory, file);
+			file = Path.Join(Far.Api.CurrentDirectory, file);
 
 		return new($". '{file.Replace("'", "''")}' @args") { Writer = new ConsoleOutputWriter(), Arguments = [.. param.Skip(1)] };
 	}
@@ -377,6 +375,8 @@ internal static class A
 	/// <returns>False if the code fails.</returns>
 	internal static bool Run(RunArgs args)
 	{
+		Debug.WriteLine($"## A.Run: {args.Code}");
+
 		var code = args.Code;
 		if (string.IsNullOrEmpty(code))
 			return true;
@@ -438,9 +438,6 @@ internal static class A
 		}
 		catch (Exception reason)
 		{
-			if (ExitManager.IsExiting && !FAR_PWSF_RUN) //rk-0
-				throw;
-
 			args.Reason = reason;
 			if (args.NoOutReason)
 				return false;

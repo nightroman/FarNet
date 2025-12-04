@@ -55,7 +55,7 @@ Select project to push:
 	}
 }
 
-task Build PS::sync, Build-FarNet, Build-PSF-Help, Build-Docs, pwsf::build
+task Build PS::sync, Build-FarNet, Build-PSF-Help, Build-Docs
 
 task Build-FarNet -If {
 	ask 'Build FarNet projects'
@@ -99,16 +99,21 @@ Start testing?
 }
 
 ### Extras
-$extras = Get-ChildItem ..\..\Test -Filter *.test.ps1
-foreach($test in $extras) {
-	task $test.Name -Data $test {
-		exec { pwsf -far -x 0 -c Invoke-Build * $Task.Data.FullName }
-	}
-}
 
-task Test-Extras $extras.ForEach('Name') -If {
+$_ = { exec { pwsf -x 0 -c Invoke-Build * "..\..\Test\$($Task.Name)" } }
+task 1.pwsf.test.ps1 $_
+task 2.Extras.test.ps1 $_
+task FarNet.Lib.test.ps1 $_
+task FarNet.Modules.test.ps1 $_
+
+task Test-Extras -If {
 	ask 'Start extra tests?'
-}
+} @(
+	'1.pwsf.test.ps1'
+	'2.Extras.test.ps1'
+	'FarNet.Lib.test.ps1'
+	'FarNet.Modules.test.ps1'
+)
 
 task Push-Packages -If {
 	ask "Push new packages to NuGet: [$Tags]"

@@ -25,6 +25,10 @@ param(
 	[switch]$All
 )
 
+#requires -Version 7.4
+Set-StrictMode -Version 3
+$ErrorActionPreference=1; trap {$PSCmdlet.ThrowTerminatingError($_)}; if ($Host.Name -ne 'FarHost') {throw 'Requires FarHost.'}
+
 $ExpectedTaskCount = 211
 $ExpectedIBTestCount = 5
 $ExpectedBasicsCount = 15
@@ -40,7 +44,7 @@ $SavedPanelPaths = $__.CurrentDirectory, $Far.Panel2.CurrentDirectory
 if ($PSCmdlet.ParameterSetName -eq 'Tests') {
 	if ($Tests -is [string]) {
 		# path/pattern
-		$Tests = Get-ChildItem $Test -Recurse -Include *.fas.ps1
+		$Tests = Get-ChildItem $Tests -Recurse -Include *.fas.ps1
 		if (!$Tests) {throw "Found no tests."}
 	}
 	else {
@@ -68,14 +72,14 @@ $null = & {
 		Start-Mongo.ps1
 	}
 }
-[Diagnostics.Debug]::WriteLine("## $(Get-Date) Begin tests")
+[Diagnostics.Debug]::WriteLine("## Test-FarNet: Begin: $(Get-Date)")
 
 ### Basic tests first
 if (!$Tests) {
 	$items = @(Get-ChildItem "$env:FarNetCode\Test\Basics" -Filter *.far.ps1)
 	Assert-Far $items.Count -eq $ExpectedBasicsCount
 	foreach($test in $items) {
-		[Diagnostics.Debug]::WriteLine("## $($test.FullName)")
+		[Diagnostics.Debug]::WriteLine("## Test-FarNet: Test: $($test.FullName)")
 		& $test.FullName
 		Assert-Far -NoError -Message "Errors after $($test.FullName)"
 	}
@@ -115,7 +119,7 @@ Start-FarTask -Data All, Tests, ExpectedTaskCount, SavedPanelPaths {
 	foreach($item in $Data.Tests) {
 		++$Data.taskCount
 		$TestFile = $item.FullName
-		[Diagnostics.Debug]::WriteLine("## $TestFile")
+		[Diagnostics.Debug]::WriteLine("## Test-FarNet: Test: $TestFile")
 
 		### Run current test
 		$result = job {
@@ -144,7 +148,7 @@ Start-FarTask -Data All, Tests, ExpectedTaskCount, SavedPanelPaths {
 
 	### Finish
 	ps: {
-		[Diagnostics.Debug]::WriteLine("## $(Get-Date) End tests")
+		[Diagnostics.Debug]::WriteLine("## Test-FarNet: End: $(Get-Date)")
 		$r = Clear-Session -KeepError -Verbose
 		$r | Format-List
 		if ($r.RemovedVariableCount) {

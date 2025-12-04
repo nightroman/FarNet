@@ -1,5 +1,5 @@
 ﻿
-macro "print [[js:@ $env:FarNetCode\JavaScriptFar\Samples\extras\error-reference.js]] Keys'Enter'"
+run { $Far.InvokeCommand(":js:@ $env:FarNetCode\JavaScriptFar\Samples\extras\error-reference.js") }
 job {
 	Assert-Far -Dialog
 	Assert-Far $Far.Dialog[0].Text -eq 'JavaScriptFar'
@@ -8,7 +8,7 @@ job {
 	$Far.Dialog.Close()
 }
 
-macro "print [[js:@ $env:FarNetCode\JavaScriptFar\Samples\extras\error-throw-error.js]] Keys'Enter'"
+run { $Far.InvokeCommand(":js:@ $env:FarNetCode\JavaScriptFar\Samples\extras\error-throw-error.js") }
 job {
 	Assert-Far -Dialog
 	Assert-Far $Far.Dialog[0].Text -eq 'JavaScriptFar'
@@ -17,7 +17,7 @@ job {
 	$Far.Dialog.Close()
 }
 
-macro "print [[js:@ $env:FarNetCode\JavaScriptFar\Samples\extras\error-throw-string.js]] Keys'Enter'"
+run { $Far.InvokeCommand(":js:@ $env:FarNetCode\JavaScriptFar\Samples\extras\error-throw-string.js") }
 job {
 	Assert-Far -Dialog
 	Assert-Far $Far.Dialog[0].Text -eq 'JavaScriptFar'

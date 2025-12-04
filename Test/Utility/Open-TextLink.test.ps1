@@ -8,10 +8,10 @@
 $r = @{}
 Set-Alias Open-Match Open-Match2
 function Open-Match2 {
-	$r.File = $Matches.File
-	$r.Text = $Matches.Text
-	$r.Line = $Matches.Line
-	$r.Char = $Matches.Char
+	$r.File = $Matches['File']
+	$r.Text = $Matches['Text']
+	$r.Line = $Matches['Line']
+	$r.Char = $Matches['Char']
 }
 
 task PS.script-stack {

@@ -11,7 +11,7 @@ param(
 $_name_pwsf = 'pwsf'
 $_root_pwsf = $FarHome
 
-task build {
+task build -Inputs {Get-ChildItem *.cs*} -Outputs {"$_root_pwsf\pwsf.exe"} {
 	exec { dotnet build -c $Configuration -p:FarHome=$FarHome --tl:off }
 }
 

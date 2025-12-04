@@ -53,8 +53,6 @@ public static class ExitManager
 			if (_exitDelay > 0)
 				await Task.Delay(_exitDelay);
 
-			Console.ResetColor();
-
 			if (ex is null)
 			{
 				/*
@@ -73,12 +71,11 @@ public static class ExitManager
 			else
 			{
 				// fail exit: Exit(1)
-				Console.WriteLine($"\nExit reason: {ex.Message}");
 				Log.TraceException(ex);
-
 				Far.Api.PostJob(() =>
 				{
 					Far.Api.UI.GetUserScreen(1);
+					Far.Api.UI.WriteLine($"Exit reason: {ex.Message}", ConsoleColor.Red);
 					Environment.Exit(1);
 				});
 			}
@@ -95,23 +92,16 @@ public static class ExitManager
 	{
 		IsExiting = true;
 		if (milliseconds > 0)
+			_timerTimeout ??= new Timer(Exit, null, milliseconds, Timeout.Infinite);
+
+		void Exit(object? state)
 		{
-			_timerTimeout ??= new Timer(s =>
-				{
-					Far.Api.UI.SetProgressState(TaskbarProgressBarState.NoProgress);
-
-					var text = $"Exit timeout: {milliseconds}";
-
-					Console.WriteLine();
-					Console.WriteLine(text);
-
-					Log.TraceError(text);
-
-					Environment.Exit(milliseconds);
-				},
-				null,
-				milliseconds,
-				Timeout.Infinite);
-		}
+			Far.Api.UI.SetProgressState(TaskbarProgressBarState.NoProgress);
+			var text = $"Exit timeout: {milliseconds}";
+			Log.TraceError(text);
+			Far.Api.UI.GetUserScreen(1);
+			Far.Api.UI.WriteLine(text, ConsoleColor.Red);
+			Environment.Exit(milliseconds);
+		};
 	}
 }
