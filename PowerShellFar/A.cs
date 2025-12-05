@@ -14,6 +14,7 @@ internal static class A
 	private static FarUI _FarUI = null!;
 	private static FarHost _FarHost = null!;
 	private static PowerShell? _Pipeline;
+	private static int _runCount;
 
 	internal static Actor Psf { get; private set; } = null!;
 	internal static Runspace Runspace { get; private set; } = null!;
@@ -381,10 +382,25 @@ internal static class A
 		if (string.IsNullOrEmpty(code))
 			return true;
 
+		++_runCount;
+
 		//: prefix?
 		if (Kit.CommandHasPrefix(code))
 		{
-			Far.Api.InvokeCommand(code);
+			try
+			{
+				Far.Api.InvokeCommand(code);
+
+				if (_runCount == 1 && ExitManager.IsExiting)
+					ExitManager.Exit(null);
+			}
+			catch (Exception ex)
+			{
+				if (_runCount == 1 && ExitManager.IsExiting)
+					ExitManager.Exit(ex);
+
+				throw;
+			}
 			return true;
 		}
 

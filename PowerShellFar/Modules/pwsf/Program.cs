@@ -46,7 +46,7 @@ static void ExitUsage()
 
 static bool IsSwitch(string arg)
 {
-	return arg.StartsWith("-") || arg.StartsWith("/");
+	return arg.StartsWith("-");
 }
 
 Debug.WriteLine($"## pwsf args: {'"' + string.Join("\" \"", args) + '"'}");
@@ -63,32 +63,32 @@ try
 	var sb = new StringBuilder();
 
 	int st;
+	string dir1, dir2;
 	if (args.Length == 0 || IsSwitch(args[0]))
 	{
 		st = 0;
-		var pwd = Environment.CurrentDirectory;
-		sb.Append('"').Append(pwd).Append('"');
+		dir1 = dir2 = Environment.CurrentDirectory;
 	}
 	else
 	{
-		st = 0;
-		while (true)
+		dir1 = args[0].TrimEnd('/').TrimEnd('\\');
+		if (dir1.EndsWith(":"))
+			dir1 += '\\';
+
+		if (args.Length == 1 || IsSwitch(args[1]))
 		{
-			var pwd = args[st].TrimEnd('/').TrimEnd('\\');
-
-			if (sb.Length > 0)
-				sb.Append(' ');
-
-			sb.Append('"').Append(pwd);
-			if (pwd.EndsWith(":"))
-				sb.Append('\\');
-			sb.Append('"');
-
-			++st;
-			if (st > 1 || st >= args.Length || IsSwitch(args[st]))
-				break;
+			st = 1;
+			dir2 = dir1;
+		}
+		else
+		{
+			st = 2;
+			dir2 = args[1].TrimEnd('/').TrimEnd('\\');
+			if (dir2.EndsWith(":"))
+				dir2 += '\\';
 		}
 	}
+	sb.Append('"').Append(dir1).Append("\" \"").Append(dir2).Append('"');
 
 	for (int i = st; i < args.Length; ++i)
 	{
@@ -121,7 +121,7 @@ try
 		}
 		else if (str.StartsWith("nss"))
 		{
-			sb.Append(" -set:System.AutoSaveSetup=false");
+			sb.Append(" -set:System.AutoSaveSetup=0");
 		}
 		else if (str == "far")
 		{
@@ -225,25 +225,24 @@ try
 		}
 	}
 
+	if (noExit)
+	{
+		Environment.SetEnvironmentVariable("FAR_PWSF_NO_EXIT", "1");
+	}
 
 	if (addReadOnly)
 	{
 		sb.Append(" -ro");
 	}
 
-	if (noExit)
-	{
-		Environment.SetEnvironmentVariable("FAR_PWSF_NO_EXIT", "1");
-	}
-
 	if (showPanels)
 	{
-		sb.Append(" -set:Panel.Left.Visible=true -set:Panel.Right.Visible=true");
+		sb.Append(" -set:Panel.LeftFocus=0 -set:Panel.Left.Visible=1 -set:Panel.Right.Visible=1");
 		Environment.SetEnvironmentVariable("FAR_PWSF_PANELS", "1");
 	}
 	else
 	{
-		sb.Append(" -set:Panel.Left.Visible=false -set:Panel.Right.Visible=false");
+		sb.Append(" -set:Panel.Left.Visible=0 -set:Panel.Right.Visible=0");
 	}
 
 	var arguments = sb.ToString();

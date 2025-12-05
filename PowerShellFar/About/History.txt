@@ -1,5 +1,12 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 10.0.15 =
+
+pwsf.exe
+- handle exit of prefix commands
+- default passive path = active
+- set focus to the right panel
+
 = 10.0.14 =
 
 Tune pwsf.exe and starter code.
