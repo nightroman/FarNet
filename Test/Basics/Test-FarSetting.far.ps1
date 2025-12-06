@@ -31,7 +31,7 @@ Assert-Far (0 -eq $Far.GetSetting('Panels', 'ShowHidden'))
 # 3.0.4367 WordDiv is same for Editor and System
 # _180213 my own: $
 $WordDiv = @'
-$~!%^&*()+|{}:"<>?`=\[];',./
+~!%^&*()+|{}:"<>?`=\[];',./
 '@
 Assert-Far ($WordDiv -eq $Far.GetSetting('Editor', 'WordDiv'))
 Assert-Far ($WordDiv -eq $Far.GetSetting('System', 'WordDiv'))

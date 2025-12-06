@@ -137,6 +137,9 @@ public sealed class ListMenu : AnyMenu, IListMenu
 			if (r > min + size - 1)
 				w -= (r - min - size + 1);
 		}
+
+		if (x > Console.CursorLeft)
+			x = Console.CursorLeft;
 	}
 
 	void MakeSizes(IDialog dialog, Point size)

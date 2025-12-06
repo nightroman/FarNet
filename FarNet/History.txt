@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet
 
+= 10.0.8 =
+
+Tweaks for pwsf.exe in VSCode.
+
 = 10.0.7 =
 
 Tune exit and testing, remove unused starter code.

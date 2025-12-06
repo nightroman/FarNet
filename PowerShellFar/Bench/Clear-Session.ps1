@@ -105,7 +105,7 @@ $r = 1 | Select-Object WorkingSet, PrivateMemory, ManagedMemory, ErrorCount, Rem
 $r.RemovedVariableCount = 0
 foreach($_ in Get-Variable * -Scope Global) {
 	if ((!$_.Description) -and ($_.Options -eq 0) -and ($keepVariables -notcontains $_.Name)) {
-		Remove-Variable $_.Name -Scope Global -ErrorAction Continue -Verbose:$Verbose
+		Remove-Variable $_.Name -Scope Global -ErrorAction Continue -Verbose:(!!$VerbosePreference)
 		++$r.RemovedVariableCount
 	}
 }

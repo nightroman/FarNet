@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 10.0.16 =
+
+Use FarNet 10.0.8
+Tweaks for pwsf.exe in VSCode.
+
 = 10.0.15 =
 
 pwsf.exe

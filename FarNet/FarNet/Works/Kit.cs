@@ -8,6 +8,7 @@ namespace FarNet.Works;
 
 public static class Kit
 {
+	public static readonly bool IsVSCode = Environment.GetEnvironmentVariable("TERM_PROGRAM") == "vscode";
 	static readonly string[] SplitLineSeparators = ["\r\n", "\n", "\r"];
 
 	// For IndexOfAny(), etc.

@@ -40,7 +40,14 @@ static class HistoryKit
 		if (code is null)
 			return;
 
-		bool run = ui.Menu.Key.Is(KeyCode.Enter);
+		bool isInputCode = false;
+		if (Far.Api.Window.Kind == WindowKind.Dialog)
+		{
+			var typeId = Far.Api.Dialog!.TypeId;
+			isInputCode = typeId == new Guid(Guids.ReadCommandDialog) || typeId == new Guid(Guids.InputDialog);
+		}
+
+		bool run = !isInputCode && ui.Menu.Key.Is(KeyCode.Enter);
 
 		// case: panels, preserve the prefix
 		if (Far.Api.Window.Kind == WindowKind.Panels)
@@ -75,8 +82,7 @@ static class HistoryKit
 				return;
 			case WindowKind.Dialog:
 				var dialog = Far.Api.Dialog!;
-				var typeId = dialog.TypeId;
-				if (typeId != new Guid(Guids.ReadCommandDialog) && typeId != new Guid(Guids.InputDialog))
+				if (!isInputCode)
 					break;
 				var line = Far.Api.Line;
 				if (line is null || line.IsReadOnly)
