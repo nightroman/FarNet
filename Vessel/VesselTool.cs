@@ -150,33 +150,18 @@ public class VesselTool : ModuleTool
 			});
 		}
 
+		public void RemoveTracking()
+		{
+			if (SelectedRecord.IsTracked)
+				Actor.RemoveRecordFromStore(SelectedRecord.Path);
+		}
+
 		public void ToggleTracking()
 		{
 			if (SelectedRecord.IsTracked)
-			{
-				if (0 == Far.Api.Message(SelectedRecord.Path, "Stop tracking?", MessageOptions.OkCancel))
-				{
-					Actor.RemoveRecordFromStore(SelectedRecord.Path);
-				}
-			}
+				Actor.RemoveRecordFromStore(SelectedRecord.Path);
 			else
-			{
-				if (0 == Far.Api.Message(SelectedRecord.Path, "Start tracking?", MessageOptions.OkCancel))
-				{
-					Actor.AppendRecordToStore(Record.USED, SelectedRecord.Path);
-					_menu.Selected = -1;
-				}
-			}
-		}
-
-		public bool DiscardRecordAndHistory(string macro)
-		{
-			if (0 != Far.Api.Message(SelectedRecord.Path, "Remove from log and history?", MessageOptions.OkCancel))
-				return false;
-
-			Actor.RemoveRecordFromStore(SelectedRecord.Path);
-			Far.Api.PostMacro(macro);
-			return true;
+				Actor.AppendRecordToStore(Record.USED, SelectedRecord.Path);
 		}
 	}
 
@@ -186,6 +171,16 @@ public class VesselTool : ModuleTool
 		menu.Incremental = menu.Incremental.Length > 0 ? string.Empty : Far.Api.CurrentDirectory + @"\*";
 		menu.Selected = -1;
 		e.Restart = true;
+	}
+
+	static void RunRemoveItem(Context context, string macro, Action loop)
+	{
+		context.RemoveTracking();
+		Task.Run(async () =>
+		{
+			await Tasks.Macro(macro);
+			await Tasks.Job(loop);
+		});
 	}
 
 	static void ShowFiles()
@@ -213,90 +208,93 @@ public class VesselTool : ModuleTool
 		if (area == WindowKind.Panels || area == WindowKind.Editor || area == WindowKind.Viewer)
 			menu.AddKey(KeyCode.Delete, ControlKeyStates.ShiftPressed);
 
-		for (; ; )
+		Loop();
+
+		void Loop()
 		{
-			var context = new Context(menu, mode, DateTime.Now - limit);
-
-		show:
-
-			if (!context.Show())
-				return;
-
-			// update:
-			if (menu.Key.IsCtrl(KeyCode.R))
+			for (; ; )
 			{
-				context.Actor.Update();
-				continue;
-			}
+				var context = new Context(menu, mode, DateTime.Now - limit);
 
-			// toggle tracking:
-			if (menu.Key.Is(KeyCode.Delete))
-			{
-				context.ToggleTracking();
-				continue;
-			}
+			show:
 
-			// discard:
-			if (menu.Key.IsShift(KeyCode.Delete))
-			{
-				// Known far history items: Edit: PATH | Edit:-PATH | View: PATH | Ext.: ...
-				// Remove 1-3 and 4 if 4 ends with PATH (note, proper commands use "PATH", i.e. do not end with PATH)
-				if (context.DiscardRecordAndHistory(
-					$"Keys 'AltF11'; while Menu.Select({Lua.StringLiteral(context.SelectedPath)}, 2) > 0 do Keys 'ShiftDel' end; if Area.Menu then Keys 'Esc' end"))
+				if (!context.Show())
 					return;
+
+				// update:
+				if (menu.Key.IsCtrl(KeyCode.R))
+				{
+					context.Actor.Update();
+					continue;
+				}
+
+				// toggle tracking:
+				if (menu.Key.Is(KeyCode.Delete))
+				{
+					context.ToggleTracking();
+					continue;
+				}
+
+				// discard:
+				if (menu.Key.IsShift(KeyCode.Delete))
+				{
+					// Known far history items: Edit: PATH | Edit:-PATH | View: PATH | Ext.: ...
+					// Remove 1-3 and 4 if 4 ends with PATH (note, proper commands use "PATH", i.e. do not end with PATH)
+					var macro = $"Keys 'AltF11'; while Menu.Select({Lua.StringLiteral(context.SelectedPath)}, 2) > 0 do Keys 'ShiftDel' end; if Area.Menu then Keys 'Esc' end";
+					RunRemoveItem(context, macro, Loop);
+					return;
+				}
+
+				// missing?
+				if (!File.Exists(context.SelectedPath))
+				{
+					Far.Api.Message("File does not exist.");
+					goto show;
+				}
+
+				// selected!
+				context.StartUpdate();
+
+				// go to:
+				if (menu.Key.IsCtrl(KeyCode.Enter))
+				{
+					if (Far.Api.Panel is { } panel)
+						panel.GoToPath(context.SelectedPath);
+				}
+				// view:
+				else if (menu.Key.VirtualKeyCode == KeyCode.F3)
+				{
+					IViewer viewer = Far.Api.CreateViewer();
+					viewer.FileName = context.SelectedPath;
+
+					if (menu.Key.IsCtrl())
+					{
+						viewer.Open(OpenMode.Modal);
+						goto show;
+					}
+
+					viewer.Open();
+				}
+				// edit:
 				else
-					goto show;
-			}
-
-			// missing?
-			if (!File.Exists(context.SelectedPath))
-			{
-				Far.Api.Message("File does not exist.");
-				goto show;
-			}
-
-			// selected!
-			context.StartUpdate();
-
-			// go to:
-			if (menu.Key.IsCtrl(KeyCode.Enter))
-			{
-				if (Far.Api.Panel is { } panel)
-					panel.GoToPath(context.SelectedPath);
-			}
-			// view:
-			else if (menu.Key.VirtualKeyCode == KeyCode.F3)
-			{
-				IViewer viewer = Far.Api.CreateViewer();
-				viewer.FileName = context.SelectedPath;
-
-				if (menu.Key.IsCtrl())
 				{
-					viewer.Open(OpenMode.Modal);
-					goto show;
+					IEditor editor = Far.Api.CreateEditor();
+					editor.FileName = context.SelectedPath;
+
+					if (menu.Key.IsCtrl(KeyCode.F4))
+					{
+						editor.Open(OpenMode.Modal);
+						goto show;
+					}
+
+					editor.Open();
+
+					if (menu.Key.IsShift(KeyCode.Enter))
+						goto show;
 				}
 
-				viewer.Open();
+				return;
 			}
-			// edit:
-			else
-			{
-				IEditor editor = Far.Api.CreateEditor();
-				editor.FileName = context.SelectedPath;
-
-				if (menu.Key.IsCtrl(KeyCode.F4))
-				{
-					editor.Open(OpenMode.Modal);
-					goto show;
-				}
-
-				editor.Open();
-
-				if (menu.Key.IsShift(KeyCode.Enter))
-					goto show;
-			}
-
-			return;
 		}
 	}
 
@@ -320,78 +318,79 @@ public class VesselTool : ModuleTool
 		if (Far.Api.Window.Kind == WindowKind.Panels)
 			menu.AddKey(KeyCode.Delete, ControlKeyStates.ShiftPressed);
 
-		for (; ; )
+		Loop();
+
+		void Loop()
 		{
-			var context = new Context(menu, mode, DateTime.Now - limit);
-
-		show:
-
-			if (!context.Show())
-				return;
-
-			// update:
-			if (menu.Key.IsCtrl(KeyCode.R))
+			for (; ; )
 			{
-				context.Actor.Update();
-				continue;
-			}
+				var context = new Context(menu, mode, DateTime.Now - limit);
 
-			// toggle tracking:
-			if (menu.Key.Is(KeyCode.Delete))
-			{
-				context.ToggleTracking();
-				continue;
-			}
-
-			// discard:
-			if (menu.Key.IsShift(KeyCode.Delete))
-			{
-				if (context.DiscardRecordAndHistory(
-					$"Keys 'AltF12'; if Menu.Select({Lua.StringLiteral(context.SelectedPath)}) > 0 then Keys 'ShiftDel' end; if Area.Menu then Keys 'Esc' end"))
+				if (!context.Show())
 					return;
+
+				// update:
+				if (menu.Key.IsCtrl(KeyCode.R))
+				{
+					context.Actor.Update();
+					continue;
+				}
+
+				// toggle tracking:
+				if (menu.Key.Is(KeyCode.Delete))
+				{
+					context.ToggleTracking();
+					continue;
+				}
+
+				// discard:
+				if (menu.Key.IsShift(KeyCode.Delete))
+				{
+					var macro = $"Keys 'AltF12'; if Menu.Select({Lua.StringLiteral(context.SelectedPath)}) > 0 then Keys 'ShiftDel' end; if Area.Menu then Keys 'Esc' end";
+					RunRemoveItem(context, macro, Loop);
+					return;
+				}
+
+				// selected!
+				context.StartUpdate();
+
+				// open in new console: active panel = selected path, passive panel = current path
+				if (menu.Key.IsShift(KeyCode.Enter))
+				{
+					var info = new ProcessStartInfo($"{Environment.GetEnvironmentVariable("FARHOME")}\\Far.exe") { UseShellExecute = true };
+					info.ArgumentList.Add(context.SelectedPath);
+					info.ArgumentList.Add(Far.Api.CurrentDirectory);
+					Process.Start(info);
+					return;
+				}
+
+				// change to panels
+				if (Far.Api.Window.Kind != WindowKind.Panels && !Far.Api.Window.IsModal)
+					Far.Api.Window.SetCurrentAt(-1);
+
+				// go to or open
+				if (Far.Api.Window.Kind == WindowKind.Panels)
+				{
+					if (menu.Key.IsCtrl(KeyCode.Enter))
+					{
+						// go to:
+						if (Far.Api.Panel is { } panel)
+							panel.GoToPath(context.SelectedPath);
+					}
+					else
+					{
+						// open:
+						if (Far.Api.Panel is { } panel)
+							panel.CurrentDirectory = context.SelectedPath;
+					}
+				}
 				else
-					goto show;
-			}
+				{
+					BadWindow();
+				}
 
-			// selected!
-			context.StartUpdate();
-
-			// open in new console: active panel = selected path, passive panel = current path
-			if (menu.Key.IsShift(KeyCode.Enter))
-			{
-				var info = new ProcessStartInfo($"{Environment.GetEnvironmentVariable("FARHOME")}\\Far.exe") { UseShellExecute = true };
-				info.ArgumentList.Add(context.SelectedPath);
-				info.ArgumentList.Add(Far.Api.CurrentDirectory);
-				Process.Start(info);
 				return;
 			}
-
-			// change to panels
-			if (Far.Api.Window.Kind != WindowKind.Panels && !Far.Api.Window.IsModal)
-				Far.Api.Window.SetCurrentAt(-1);
-
-			// go to or open
-			if (Far.Api.Window.Kind == WindowKind.Panels)
-			{
-				if (menu.Key.IsCtrl(KeyCode.Enter))
-				{
-					// go to:
-					if (Far.Api.Panel is { } panel)
-						panel.GoToPath(context.SelectedPath);
-				}
-				else
-				{
-					// open:
-					if (Far.Api.Panel is { } panel)
-						panel.CurrentDirectory = context.SelectedPath;
-				}
-			}
-			else
-			{
-				BadWindow();
-			}
-
-			return;
 		}
 	}
 
@@ -413,59 +412,66 @@ public class VesselTool : ModuleTool
 		if (Far.Api.Window.Kind == WindowKind.Panels)
 			menu.AddKey(KeyCode.Delete, ControlKeyStates.ShiftPressed);
 
-		for (; ; )
+		Loop();
+
+		void Loop()
 		{
-			var context = new Context(menu, mode, DateTime.Now - limit);
-
-		show:
-
-			if (!context.Show())
-				return;
-
-			// update:
-			if (menu.Key.IsCtrl(KeyCode.R))
+			for (; ; )
 			{
-				context.Actor.Update();
-				continue;
-			}
+				var context = new Context(menu, mode, DateTime.Now - limit);
 
-			// toggle tracking:
-			if (menu.Key.Is(KeyCode.Delete))
-			{
-				context.ToggleTracking();
-				continue;
-			}
-
-			// discard:
-			if (menu.Key.IsShift(KeyCode.Delete))
-			{
-				if (context.DiscardRecordAndHistory(
-					$"Keys 'AltF8'; if Menu.Select({Lua.StringLiteral(context.SelectedPath)}) > 0 then Keys 'ShiftDel' end; if Area.Menu then Keys 'Esc' end"))
+				if (!context.Show())
 					return;
+
+				// update:
+				if (menu.Key.IsCtrl(KeyCode.R))
+				{
+					context.Actor.Update();
+					continue;
+				}
+
+				// toggle tracking:
+				if (menu.Key.Is(KeyCode.Delete))
+				{
+					context.ToggleTracking();
+					continue;
+				}
+
+				// discard:
+				if (menu.Key.IsShift(KeyCode.Delete))
+				{
+					var macro = $"Keys 'AltF8'; if Menu.Select({Lua.StringLiteral(context.SelectedPath)}) > 0 then Keys 'ShiftDel' end; if Area.Menu then Keys 'Esc' end";
+					RunRemoveItem(context, macro, Loop);
+					return;
+				}
+
+				// selected!
+				context.StartUpdate();
+
+				// Enter | CtrlEnter:
+				var from = Far.Api.Window.Kind;
+				if (from != WindowKind.Dialog && from != WindowKind.Panels && !Far.Api.Window.IsModal)
+					Far.Api.Window.SetCurrentAt(-1);
+
+				// put/post command
+				ILine? line;
+				if (Far.Api.Window.Kind == WindowKind.Panels)
+				{
+					Far.Api.CommandLine.Text = context.SelectedPath;
+					if (!menu.Key.IsCtrl())
+						Far.Api.PostMacro("Keys'Enter'");
+				}
+				else if ((line = Far.Api.Line) is { } && !line.IsReadOnly)
+				{
+					line.InsertText(context.SelectedPath);
+				}
 				else
-					goto show;
+				{
+					BadWindow();
+				}
+
+				return;
 			}
-
-			// selected!
-			context.StartUpdate();
-
-			// Enter | CtrlEnter:
-			if (Far.Api.Window.Kind != WindowKind.Panels && !Far.Api.Window.IsModal)
-				Far.Api.Window.SetCurrentAt(-1);
-
-			// put/post command
-			if (Far.Api.Window.Kind == WindowKind.Panels)
-			{
-				Far.Api.CommandLine.Text = context.SelectedPath;
-				if (!menu.Key.IsCtrl())
-					Far.Api.PostMacro("Keys'Enter'");
-			}
-			else
-			{
-				BadWindow();
-			}
-
-			return;
 		}
 	}
 }

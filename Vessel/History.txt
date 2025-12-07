@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.Vessel
 
+= 6.2.1 =
+
+Simplify [Del] and [ShiftDel] in histories.
+
+Command history - insert text in dialogs.
+
 = 6.2.0 =
 
 Uses .NET 10

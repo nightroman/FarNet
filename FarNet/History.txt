@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet
 
+= 10.0.9 =
+
+New IListMenu.MaxWidth = 100
+
 = 10.0.8 =
 
 Tweaks for pwsf.exe in VSCode.

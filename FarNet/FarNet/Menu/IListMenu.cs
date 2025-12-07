@@ -1,9 +1,3 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-
 namespace FarNet;
 
 /// <summary>
@@ -65,6 +59,11 @@ public interface IListMenu : IAnyMenu
 	/// Tells to use usual Far menu margins.
 	/// </summary>
 	bool UsualMargins { get; set; }
+
+	/// <summary>
+	/// Specifies the maximum width of the menu dialog.
+	/// </summary>
+	int MaxWidth { get; set; }
 
 	/// <summary>
 	/// Gets or sets the dialog type ID.

@@ -81,7 +81,6 @@ static class HistoryKit
 				editor.Redraw();
 				return;
 			case WindowKind.Dialog:
-				var dialog = Far.Api.Dialog!;
 				if (!isInputCode)
 					break;
 				var line = Far.Api.Line;

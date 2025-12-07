@@ -1,10 +1,4 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet.Forms;
-using System;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace FarNet.Works;
@@ -12,6 +6,8 @@ namespace FarNet.Works;
 
 public sealed class ListMenu : AnyMenu, IListMenu
 {
+	private const int DefaultMaxWidth = 100;
+
 	IListBox _box = null!;
 
 	// Original user defined filter
@@ -37,6 +33,8 @@ public sealed class ListMenu : AnyMenu, IListMenu
 	public bool UsualMargins { get; set; }
 
 	public int ScreenMargin { get; set; }
+
+	public int MaxWidth { get; set; } = DefaultMaxWidth;
 
 	public Guid TypeId { get; set; } = new Guid("01a43865-b81d-4bca-b3a4-a9ae4f9f7b55");
 
@@ -137,9 +135,6 @@ public sealed class ListMenu : AnyMenu, IListMenu
 			if (r > min + size - 1)
 				w -= (r - min - size + 1);
 		}
-
-		if (x > Console.CursorLeft)
-			x = Console.CursorLeft;
 	}
 
 	void MakeSizes(IDialog dialog, Point size)
@@ -188,11 +183,18 @@ public sealed class ListMenu : AnyMenu, IListMenu
 		if (w < 20)
 			w = 20;
 
-		// X
-		int dw = w + 4, dx = X;
+		// limit width, do X
+		int dw = w + 4, dx = X, max;
+		if (MaxWidth > 0 && dw > (max = MaxWidth + (UsualMargins ? 2 : 0)))
+			dw = max;
 		ValidateRect(ref dx, ref dw, ms, size.X - 2 * ms);
 
-		// Y
+		// smart left
+		int left = (Console.CursorLeft + dx) / 2;
+		if (dx > left)
+			dx = left;
+
+		// do Y
 		int dh = n + 2 + 2 * my, dy = Y;
 		ValidateRect(ref dy, ref dh, ms, size.Y - 2 * ms);
 

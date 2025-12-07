@@ -186,7 +186,7 @@ Keys and actions:
 
 - `[Del]`
 
-    Stops or starts the current item tracking.
+    Toggles the current item tracking.
 
 - `[ShiftDel]` (Panels, Editor, Viewer)
 
@@ -228,7 +228,7 @@ Keys and actions:
 
 - `[Del]`
 
-    Stops or starts the current item tracking.
+    Toggles the current item tracking.
 
 - `[ShiftDel]` (Panels)
 
@@ -261,7 +261,7 @@ Keys and actions:
 
 - `[Del]`
 
-    Stops or starts the current item tracking.
+    Toggles the current item tracking.
 
 - `[ShiftDel]` (Panels)
 

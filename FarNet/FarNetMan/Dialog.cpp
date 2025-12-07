@@ -54,6 +54,7 @@ FarDialog::FarDialog(int left, int top, int right, int bottom)
 	, _rect(left, top, right, bottom)
 	, _items(gcnew List<FarControl^>)
 {
+	// 164 / 1.64 = 100
 	const float denominator = 1.64;
 
 	if (left < 0 || top < 0)
