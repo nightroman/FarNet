@@ -1,5 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet
 
+= 10.0.10 =
+
+List menu
+- optimize filtering
+- amend default width
+
 = 10.0.9 =
 
 New IListMenu.MaxWidth = 100

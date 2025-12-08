@@ -1,7 +1,3 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using System.Text.RegularExpressions;
 
 namespace FarNet.Works;
@@ -22,14 +18,33 @@ public static class BulletFilter
 			return filter + Separator;
 	}
 
-	// Converts the filter to regex.
-	public static Regex? ToRegex(string filter, PatternOptions options)
+	// Converts the filter to predicate.
+	public static Predicate<string>? ToPredicate(string filter, PatternOptions options)
 	{
 		if (options == 0 || string.IsNullOrEmpty(filter))
 			return null;
 
-		var sum = string.Empty;
 		var parts = filter.Split(Separator);
+
+		bool isRegex = !options.HasFlag(PatternOptions.Literal) && parts.Any(s => s.Contains('*'));
+		if (isRegex)
+		{
+			return ToRegex(parts, options).IsMatch;
+		}
+		else if (!options.HasFlag(PatternOptions.Prefix))
+		{
+			return s => parts.All(p => s.Contains(p, StringComparison.OrdinalIgnoreCase));
+		}
+		else
+		{
+			return s => s.StartsWith(parts[0], StringComparison.OrdinalIgnoreCase) && (parts.Length == 1 || parts.Skip(1).All(p => s.Contains(p, StringComparison.OrdinalIgnoreCase)));
+		}
+	}
+
+	// Converts the filter to regex.
+	private static Regex ToRegex(string[] parts, PatternOptions options)
+	{
+		var sum = string.Empty;
 
 		for (int i = 0; i < parts.Length; i++)
 		{

@@ -1,10 +1,4 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System.Collections.Generic;
-
-namespace FarNet.Forms;
+﻿namespace FarNet.Forms;
 
 /// <summary>
 /// Base interface for <see cref="IComboBox"/> and <see cref="IListBox"/>.
@@ -72,5 +66,5 @@ public interface IBaseList : IControl
 	/// </summary>
 	/// <param name="items">.</param>
 	/// <param name="subset">.</param>
-	void ReplaceItems(IList<FarItem> items, IList<int> subset);
+	void ReplaceItems(IList<FarItem> items, IList<int>? subset);
 }

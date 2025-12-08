@@ -23,8 +23,9 @@ public sealed class ListMenu : AnyMenu, IListMenu
 	bool _isKeyHandled;
 
 	// Filtered
-	List<int>? _ii;
-	Regex? _re;
+	List<int> _ii = [];
+	List<int>? _jj;
+	Predicate<string>? _predicate;
 
 	public bool AutoSelect { get; set; }
 
@@ -47,52 +48,72 @@ public sealed class ListMenu : AnyMenu, IListMenu
 		{
 			_Incremental_ = value ?? throw new ArgumentNullException(nameof(value));
 			_filter = value;
-			_re = null;
+			_predicate = null;
 		}
 	}
 
-	void MakeFilter()
+	bool MakeFilter()
 	{
 		// done? skip
 		if (!_toFilter)
-			return;
+			return true;
 
 		// mark done
 		_toFilter = false;
 
 		// create
-		_re ??= BulletFilter.ToRegex(_filter, IncrementalOptions);
-		if (_re == null)
-			return;
+		_predicate ??= BulletFilter.ToPredicate(_filter, IncrementalOptions);
+		if (_predicate == null)
+			return true;
 
-		// case: filter already filtered
-		if (_ii != null)
+		if (_ii.Count == 0)
 		{
-			var ii = new List<int>();
-			foreach (int k in _ii)
+			// not yet filtered
+			if (_ii.Capacity < Items.Count)
+				_ii.Capacity = Items.Count;
+
+			int n = Items.Count;
+			for (int i = 0; i < n; ++i)
 			{
-				if (_re.IsMatch(myItems[k].Text))
-					ii.Add(k);
+				if (_predicate(Items[i].Text))
+					_ii.Add(i);
 			}
-			_ii = ii;
-			return;
-		}
 
-		// case: not yet filtered
-		_ii = [];
-		int i = -1;
-		foreach (var mi in Items)
+			return _ii.Count > 0;
+		}
+		else
 		{
-			++i;
-			if (_re.IsMatch(mi.Text))
-				_ii.Add(i);
+			// filter already filtered
+			if (_jj is null)
+			{
+				_jj = new List<int>(_ii.Count);
+			}
+			else
+			{
+				_jj.Clear();
+				if (_jj.Capacity < _ii.Count)
+					_jj.Capacity = _ii.Count;
+			}
+
+			int n = _ii.Count;
+			for (int i = 0; i < n; ++i)
+			{
+				if (_predicate(myItems[_ii[i]].Text))
+					_jj.Add(_ii[i]);
+			}
+
+			if (_jj.Count == 0)
+				return false;
+
+			(_ii, _jj) = (_jj, _ii);
+			return true;
 		}
 	}
 
 	string InfoLine()
 	{
 		var r = "(";
-		if (_ii != null)
+		if (_ii.Count > 0)
 			r += _ii.Count + "/";
 		r += Items.Count + ")";
 		return Kit.JoinText(r, Bottom);
@@ -155,23 +176,38 @@ public sealed class ListMenu : AnyMenu, IListMenu
 		int my = UsualMargins ? 1 : 0;
 
 		// width
+		int maxItemWidth = MaxWidth > 0 ? MaxWidth - 2 - 2 * mx : int.MaxValue;
 		int w = 0;
-		if (_ii == null)
+		if (_ii.Count == 0)
 		{
-			foreach (var mi in myItems)
-				if (mi.Text.Length > w)
-					w = mi.Text.Length;
+			for (int i = myItems.Count; --i >= 0;)
+			{
+				int wi = myItems[i].Text.Length;
+				if (wi > w)
+				{
+					w = wi;
+					if (w >= maxItemWidth)
+						break;
+				}
+			}
 		}
 		else
 		{
-			foreach (int k in _ii)
-				if (myItems[k].Text.Length > w)
-					w = myItems[k].Text.Length;
+			for (int i = _ii.Count; --i >= 0;)
+			{
+				int wi = myItems[_ii[i]].Text.Length;
+				if (wi > w)
+				{
+					w = wi;
+					if (w >= maxItemWidth)
+						break;
+				}
+			}
 		}
 		w += 2 + 2 * mx; // if less last chars are lost
 
 		// height
-		int n = _ii == null ? myItems.Count : _ii.Count;
+		int n = _ii.Count > 0 ? _ii.Count : myItems.Count;
 		if (MaxHeight > 0 && n > MaxHeight)
 			n = MaxHeight;
 
@@ -184,9 +220,9 @@ public sealed class ListMenu : AnyMenu, IListMenu
 			w = 20;
 
 		// limit width, do X
-		int dw = w + 4, dx = X, max;
-		if (MaxWidth > 0 && dw > (max = MaxWidth + (UsualMargins ? 2 : 0)))
-			dw = max;
+		int dw = w + 4, dx = X;
+		if (MaxWidth > 0 && dw > MaxWidth)
+			dw = MaxWidth;
 		ValidateRect(ref dx, ref dw, ms, size.X - 2 * ms);
 
 		// smart left
@@ -247,7 +283,7 @@ public sealed class ListMenu : AnyMenu, IListMenu
 			{
 				_isKeyHandled = true;
 				Selected = _box.Selected;
-				if (_ii != null && Selected >= 0)
+				if (_ii.Count > 0 && Selected >= 0)
 					Selected = _ii[Selected];
 
 				var a = new MenuEventArgs(Selected >= 0 ? myItems[Selected] : null);
@@ -261,7 +297,7 @@ public sealed class ListMenu : AnyMenu, IListMenu
 				if (a.Restart)
 				{
 					myKeyIndex = -2;
-					_ii = null;
+					_ii.Clear();
 					_toFilter = true;
 				}
 			}
@@ -297,8 +333,8 @@ public sealed class ListMenu : AnyMenu, IListMenu
 			if (key.IsShift())
 			{
 				Incremental = string.Empty;
-				_ii = null;
 				myKeyIndex = -2;
+				_ii.Clear();
 				_toFilter = false;
 				dialog.Close();
 				return;
@@ -309,7 +345,7 @@ public sealed class ListMenu : AnyMenu, IListMenu
 			{
 				char c = _filter[^1];
 				_filter = _filter[..^1];
-				_re = null;
+				_predicate = null;
 				// '*'
 				if (0 == (IncrementalOptions & PatternOptions.Literal) && c == '*')
 				{
@@ -317,7 +353,7 @@ public sealed class ListMenu : AnyMenu, IListMenu
 				}
 				else
 				{
-					_ii = null;
+					_ii.Clear();
 					_toFilter = true;
 				}
 			}
@@ -339,9 +375,9 @@ public sealed class ListMenu : AnyMenu, IListMenu
 			{
 				// keep and change filter
 				var filterBak = _filter;
-				var reBak = _re;
+				var reBak = _predicate;
 				_filter += append;
-				_re = null;
+				_predicate = null;
 
 				// append "*" -> do not close, just update title/bottom
 				if (0 == (IncrementalOptions & PatternOptions.Literal) && append == "*")
@@ -350,19 +386,19 @@ public sealed class ListMenu : AnyMenu, IListMenu
 					return;
 				}
 
-				// try the filter, rollback on empty
-				var iiBak = _ii;
+				// try filter, rollback
 				_toFilter = true;
-				MakeFilter();
-				if (_ii != null && _ii.Count == 0)
+				if (MakeFilter())
+				{
+					myKeyIndex = -2;
+					dialog.Close();
+				}
+				else
 				{
 					_filter = filterBak;
-					_re = reBak;
-					_ii = iiBak;
-					return;
+					_predicate = reBak;
 				}
-
-				_toFilter = true;
+				return;
 			}
 		}
 
@@ -373,7 +409,7 @@ public sealed class ListMenu : AnyMenu, IListMenu
 	public override bool Show()
 	{
 		//! drop filter indexes because they are invalid on the second show if items have changed
-		_ii = null;
+		_ii.Clear();
 		_toFilter = true;
 
 		// main loop
@@ -383,12 +419,12 @@ public sealed class ListMenu : AnyMenu, IListMenu
 			MakeFilter();
 
 			// filtered item number
-			int nItem2 = _ii == null ? myItems.Count : _ii.Count;
+			int nItem2 = _ii.Count > 0 ? _ii.Count : myItems.Count;
 			if (nItem2 < 2 && AutoSelect)
 			{
 				if (nItem2 == 1)
 				{
-					Selected = _ii == null ? 0 : _ii[0];
+					Selected = _ii.Count > 0 ? _ii[0] : 0;
 					return true;
 				}
 				else if (pass == 0)
@@ -427,7 +463,7 @@ public sealed class ListMenu : AnyMenu, IListMenu
 				dialog.AddText(1, 1, 1, info);
 
 			// items and filter
-			_box.ReplaceItems(myItems, _ii!);
+			_box.ReplaceItems(myItems, _ii.Count > 0 ? _ii : null);
 
 			// now we are ready to make sizes
 			MakeSizes(dialog, Far.Api.UI.WindowSize);
@@ -447,7 +483,7 @@ public sealed class ListMenu : AnyMenu, IListMenu
 
 			// correct by filter
 			Selected = _box.Selected;
-			if (_ii != null && Selected >= 0)
+			if (_ii.Count > 0 && Selected >= 0)
 				Selected = _ii[Selected];
 
 			// call click if a key was not handled yet
