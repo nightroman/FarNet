@@ -6,7 +6,7 @@ namespace FarNet.Works;
 
 public sealed class ListMenu : AnyMenu, IListMenu
 {
-	private const int DefaultMaxWidth = 100;
+	private const int DefaultMaxWidth = 120;
 
 	IListBox _box = null!;
 
