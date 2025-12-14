@@ -70,10 +70,11 @@ Set-StrictMode -Version 3
 		FileOwner = 'Specifies the expected current file owner.'
 		Dialog = 'Checks the current window is dialog.'
 		Editor = 'Checks the current window is editor.'
-		EditorFileName = 'Checks the current editor file name wildcard.'
-		EditorTitle = 'Checks the current editor title wildcard.'
+		EditorFileName = 'Checks Editor and its file name (wildcard).'
+		EditorTitle = 'Checks Editor and its title (wildcard).'
 		Panels = 'Checks the current window is panels.'
 		Viewer = 'Checks the current window is viewer.'
+		Menu = 'Checks the current window is menu.'
 		Plugin = 'Checks the panel is plugin.'
 		Native = 'Checks the panel is not plugin.'
 		Passive = 'Tells using the passive panel.'
@@ -749,9 +750,14 @@ Merge-Helps $BaseRegister @{
 
 		Other items are hashtables merged into $Data.
 '@
+		Step = @'
+		Tells to set breakpoints at jobs and macros: job, run, ps:, keys, macro.
+
+		Without Debugger, assumes and calls "Add-Debugger.ps1".
+'@
 		AddDebugger = @'
-		Tells to use Add-Debugger.ps1 and specifies its parameters hashtable.
-		Use null or empty hashtable for defaults.
+		Tells to use "Add-Debugger.ps1" and specifies its parameters.
+		Use an empty hashtable for defaults.
 		Example:
 
 			Start-FarTask ... -AddDebugger @{
@@ -763,9 +769,8 @@ Merge-Helps $BaseRegister @{
 		use Step to break at jobs and macros. Otherwise, the debugger will
 		not stop.
 '@
-		Step = @'
-		Tells to use Add-Debugger.ps1 and sets breakpoints at jobs and macros:
-		`job`, `run`, `ps:`, `keys`, `macro`.
+		Debugger = @'
+		Tells to show the debugger choice dialog.
 '@
 	}
 	outputs = @{

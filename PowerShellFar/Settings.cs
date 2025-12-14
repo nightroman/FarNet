@@ -191,4 +191,9 @@ public sealed class Settings
 	/// Default: false for Windows 10+, true otherwise.
 	/// </summary>
 	public bool RemoveOutputRendering { get; set; } = Environment.OSVersion.Version.Major < 10;
+
+	/// <summary>
+	/// Tells to disable the attach debugger dialog on setting breakpoints.
+	/// </summary>
+	public bool DisableAttachDebuggerDialogOnBreakpoint { get; set; }
 }

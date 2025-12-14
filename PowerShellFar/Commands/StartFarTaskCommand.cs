@@ -1,4 +1,5 @@
 using FarNet;
+using PowerShellFar.UI;
 using System.Collections;
 using System.Management.Automation;
 using System.Management.Automation.Language;
@@ -107,10 +108,13 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 	public SwitchParameter AsTask { get; set; }
 
 	[Parameter]
+	public SwitchParameter Step { get; set; }
+
+	[Parameter(ParameterSetName = "AddDebugger", Mandatory = true)]
 	public Hashtable? AddDebugger { get; set; }
 
-	[Parameter]
-	public SwitchParameter Step { get; set; }
+	[Parameter(ParameterSetName = "Debugger", Mandatory = true)]
+	public SwitchParameter Debugger { get; set; }
 
 	static void ShowError(Exception exception)
 	{
@@ -156,6 +160,7 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 		// open new session
 		var rs = RunspaceFactory.CreateRunspace(FarInitialSessionState.Instance);
 		rs.ThreadOptions = PSThreadOptions.ReuseThread;
+		rs.Name = "task";
 		rs.Open();
 
 		// $Data for scripts
@@ -168,11 +173,42 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 		var ps = PowerShell.Create(rs);
 
 		// debugging
-		if (Step || AddDebugger is { })
+		if (Step || Debugger || AddDebugger is { })
 		{
-			DebuggerKit.ValidateAvailable();
+			bool addDebugger = AddDebugger is { } || !Debugger;
+			bool cancel = false;
 
-			// import breakpoints
+			if (Debugger)
+			{
+				switch (AttachDebuggerDialog.Show(rs))
+				{
+					case AttachDebuggerDialog.Continue:
+						if (!DebuggerKit.HasDebugger(rs))
+							cancel = true;
+						break;
+					case AttachDebuggerDialog.AddDebugger:
+						addDebugger = true;
+						break;
+					default:
+						cancel = true;
+						break;
+				}
+			}
+
+			if (cancel)
+			{
+				ps.Dispose();
+				rs.Dispose();
+				throw new PipelineStoppedException();
+			}
+
+			if (addDebugger)
+			{
+				DebuggerKit.ValidateAvailable();
+				DebuggerKit.AddDebugger(rs, AddDebugger);
+			}
+
+			// import breakpoints from main to task runspace
 			foreach (var bp in A.Runspace.Debugger.GetBreakpoints())
 			{
 				switch (bp)
@@ -190,7 +226,6 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 			}
 
 			// load debugger assets
-			DebuggerKit.AddDebugger(ps, AddDebugger);
 			if (Step)
 			{
 				ps.AddScript(CodeStep, true).Invoke();

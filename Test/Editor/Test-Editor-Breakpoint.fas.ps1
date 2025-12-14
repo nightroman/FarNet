@@ -4,7 +4,8 @@
 #>
 
 job {
-	Assert-Far (!(Get-PSBreakpoint)) -Message 'Please remove breakpoints'
+	Assert-Far (!(Get-PSBreakpoint)) -Message 'Remove breakpoints.'
+	$Psf.Settings.DisableAttachDebuggerDialogOnBreakpoint = $true
 
 	# make the script
 	Set-Content C:\TEMP\LongNameFile.ps1 @'
@@ -97,6 +98,8 @@ job {
 	$__.Close()
 }
 job {
+	$Psf.Settings.DisableAttachDebuggerDialogOnBreakpoint = $false
+
 	# remove breakpoints
 	Remove-PSBreakpoint -Breakpoint (Get-PSBreakpoint)
 

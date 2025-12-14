@@ -1,52 +1,48 @@
 ﻿
+# show menu
 run {
-	# show menu
-	$bp = Get-PSBreakpoint
-	Assert-Far (!$bp) -Message "Remove breakpoints."
+	if (Get-PSBreakpoint) {throw "Remove breakpoints."}
+
+	$Psf.Settings.DisableAttachDebuggerDialogOnBreakpoint = $true
+
 	$Psf.ShowDebugger()
 }
 
+# menu?
 job {
-	# debugger menu?
-	Assert-Far $__.Focused.Text -eq "&Line breakpoint..."
+	Assert-Far -Menu
 }
 
 # open line bp dialog
 keys Enter
 job {
 	# line bp dialog?
+	Assert-Far -Dialog
 	Assert-Far $__[0].Text -eq "Line breakpoint"
 }
 
 # type
-macro "Keys'AltL 1 AltS'; print'$($env:FarNetCode.Replace('\', '/'))/web.ps1'; Keys'Enter'"
+macro "Keys'AltL 2 AltS'; print[[$env:FarNetCode\web.ps1]]"
+keys Enter
 
 # go to new bp
 keys 1
-job {
-	# the current item is..
-	Assert-Far $__.Focused.Text -eq "&1 Line breakpoint on '$env:FarNetCode\web.ps1:1'"
-}
 
-# edit
+# edit, exit
 keys F4
 job {
-	Assert-Far -Editor
+	Assert-Far -EditorFileName *\web.ps1
+	Assert-Far $__.Caret.Y -eq 1
+	$__.Close()
 }
 
-# exit editor
-keys Esc
+# show menu
 run {
-	# show menu
 	$Psf.ShowDebugger()
 }
 
 # go to bp
 keys 1
-job {
-	# the current item is..
-	Assert-Far $__.Focused.Text -eq "&1 Line breakpoint on '$env:FarNetCode\web.ps1:1'"
-}
 
 # toggle
 keys Space
@@ -66,11 +62,16 @@ job {
 
 # delete bp
 keys Del
+
+# no bp?
 job {
-	# no bp?
-	$bp = Get-PSBreakpoint
-	Assert-Far (!$bp)
+	Assert-Far (!(Get-PSBreakpoint))
 }
 
-# exit dialog
+# exit menu
 keys Esc
+
+# done
+job {
+	$Psf.Settings.DisableAttachDebuggerDialogOnBreakpoint = $false
+}

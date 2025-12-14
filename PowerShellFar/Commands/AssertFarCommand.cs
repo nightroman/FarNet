@@ -1,4 +1,5 @@
 using FarNet;
+using PowerShellFar.UI;
 using System.Collections;
 using System.Management.Automation;
 using System.Text;
@@ -53,6 +54,9 @@ sealed class AssertFarCommand : BaseCmdlet
 	public SwitchParameter Viewer { get; set; }
 
 	[Parameter(ParameterSetName = PSParameters)]
+	public SwitchParameter Menu { get; set; }
+
+	[Parameter(ParameterSetName = PSParameters)]
 	public SwitchParameter Plugin { get; set; }
 
 	[Parameter(ParameterSetName = PSParameters)]
@@ -70,14 +74,10 @@ sealed class AssertFarCommand : BaseCmdlet
 	Guid? _ExplorerTypeId;
 
 	[Parameter(ParameterSetName = PSParameters)]
-	public string EditorFileName { set { _isEditorFileName = true; _EditorFileName = value; } }
-	string? _EditorFileName;
-	bool _isEditorFileName;
+	public string? EditorFileName { get; set; }
 
 	[Parameter(ParameterSetName = PSParameters)]
-	public string EditorTitle { set { _isEditorTitle = true; _EditorTitle = value; } }
-	string? _EditorTitle;
-	bool _isEditorTitle;
+	public string? EditorTitle { get; set; }
 
 	bool IsError => Title is null;
 
@@ -155,18 +155,18 @@ sealed class AssertFarCommand : BaseCmdlet
 		}
 
 		// check editor
-		if (Editor || _isEditorFileName || _isEditorTitle)
+		if (Editor || EditorFileName is { } || EditorTitle is { })
 		{
 			if (Far.Api.Window.Kind != WindowKind.Editor)
 				AssertDialog(Message ?? "The current window is not editor.");
 
-			if (_isEditorFileName &&
-				!new WildcardPattern(_EditorFileName, WildcardOptions.IgnoreCase).IsMatch(Far.Api.Editor!.FileName))
-				AssertDialog(Message ?? $"The editor file name is not like '{_EditorFileName}'.");
+			if (EditorFileName is { } &&
+				!new WildcardPattern(EditorFileName, WildcardOptions.IgnoreCase).IsMatch(Far.Api.Editor!.FileName))
+				AssertDialog(Message ?? $"The editor file name is not like '{EditorFileName}'.");
 
-			if (_isEditorTitle &&
-				!new WildcardPattern(_EditorTitle, WildcardOptions.IgnoreCase).IsMatch(Far.Api.Editor!.Title))
-				AssertDialog(Message ?? $"The editor file name is not like '{_EditorTitle}'.");
+			if (EditorTitle is { } &&
+				!new WildcardPattern(EditorTitle, WildcardOptions.IgnoreCase).IsMatch(Far.Api.Editor!.Title))
+				AssertDialog(Message ?? $"The editor file name is not like '{EditorTitle}'.");
 		}
 
 		// check panels
@@ -176,6 +176,10 @@ sealed class AssertFarCommand : BaseCmdlet
 		// check viewer
 		if (Viewer && Far.Api.Window.Kind != WindowKind.Viewer)
 			AssertDialog(Message ?? "The current window is not viewer.");
+
+		// check menu
+		if (Menu && Far.Api.Window.Kind != WindowKind.Menu)
+			AssertDialog(Message ?? "The current window is not menu.");
 
 		// check native
 		if (Native && Panel.IsPlugin)
@@ -383,24 +387,20 @@ sealed class AssertFarCommand : BaseCmdlet
 				{
 					// ask to attach a debugger
 					bool isAddDebugger = false;
-					var debugger = A.Runspace.Debugger;
-					while (!DebuggerKit.HasAnyDebugger(debugger))
+					while (!DebuggerKit.HasDebugger(A.Runspace))
 					{
-						var buttonsAttachDebugger = new[] { BtnOK, BtnAddDebugger, BtnCancel };
-						var res = Far.Api.Message("Attach a debugger and continue.", "Debug", 0, buttonsAttachDebugger);
-						if (res == 0)
+						var r = AttachDebuggerDialog.Show(A.Runspace);
+						if (r == AttachDebuggerDialog.Continue)
 							continue;
 
-						if (res == 1)
+						if (r == AttachDebuggerDialog.AddDebugger)
 						{
 							try
 							{
 								DebuggerKit.ValidateAvailable();
 
-								//! use unique file to avoid conflicts
-								var logFile = Path.Join(Path.GetTempPath(), "Add-Debugger-Assert-Far.log");
-								File.Delete(logFile);
-								A.InvokeCode("Add-Debugger.ps1 $args[0]", logFile);
+								//! use own environment
+								A.InvokeCode("Add-Debugger.ps1 -Env Assert-Far");
 
 								//! force the debugger action to "Quit"
 								Environment.SetEnvironmentVariable(AddDebuggerAction, "Quit");
@@ -419,6 +419,7 @@ sealed class AssertFarCommand : BaseCmdlet
 					}
 
 					// trigger debugger (do not Wait-Debugger, it shows with no source)
+					var debugger = A.Runspace.Debugger;
 					try
 					{
 						// ensure variable and its breakpoint
@@ -470,9 +471,5 @@ sealed class AssertFarCommand : BaseCmdlet
 		BtnThrow = "&Throw",
 		BtnIgnore = "&Ignore",
 		BtnDebug = "&Debug",
-		BtnEdit = "&Edit",
-		//
-		BtnOK = "OK",
-		BtnAddDebugger = "Add-&Debugger",
-		BtnCancel = "Cancel";
+		BtnEdit = "&Edit";
 }

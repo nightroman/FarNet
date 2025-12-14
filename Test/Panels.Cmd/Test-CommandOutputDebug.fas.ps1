@@ -10,6 +10,8 @@ function Test-DebugDialog {
 }
 
 job {
+	$Psf.Settings.DisableAttachDebuggerDialogOnBreakpoint = $true
+
 	Set-StrictMode -Version 3
 	$Data.FarIds = @(Get-Process Far | % Id)
 	$Data.Transcript = "$env:TEMP\transcript.txt"
@@ -58,6 +60,8 @@ job {
 
 ###
 job {
+	$Psf.Settings.DisableAttachDebuggerDialogOnBreakpoint = $false
+
 	Remove-Item 'Function:\*OutputOnDebugging'
 	Get-PSBreakpoint -Command Invoke-OutputOnDebugging | Remove-PSBreakpoint
 

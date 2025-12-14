@@ -1,5 +1,18 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 10.0.17 =
+
+Add "Attach debugger" to debugger menu.
+
+Bench/Start-FarDebug.ps1
+- new helper for VSCode debugging
+
+Assert-Far
+- new switch Menu
+
+Start-FarTask
+- new switch Debugger
+
 = 10.0.16 =
 
 Use FarNet 10.0.8

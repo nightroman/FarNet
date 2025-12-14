@@ -4,15 +4,18 @@ using PowerShellFar.UI;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Management.Automation;
+using System.Management.Automation.Runspaces;
 using System.Reflection;
 
 namespace PowerShellFar;
 
 static class DebuggerKit
 {
-	public static bool HasAnyDebugger(Debugger debugger)
+	public static bool HasDebugger(Runspace runspace)
 	{
-		return typeof(Debugger).GetField("DebuggerStop", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(debugger) is Delegate;
+		return (bool)typeof(Debugger)
+			.GetMethod("IsDebuggerStopEventSubscribed", BindingFlags.NonPublic | BindingFlags.Instance)!
+			.Invoke(runspace.Debugger, null)!;
 	}
 
 	public static void ValidateAvailable()
@@ -28,13 +31,46 @@ static class DebuggerKit
 		}
 	}
 
-	public static void AddDebugger(PowerShell ps, Hashtable? parameters)
+	public static void AddDebugger(Runspace runspace, Hashtable? parameters)
 	{
+		using var ps = PowerShell.Create(runspace);
 		ps.AddCommand("Add-Debugger.ps1");
-		if (parameters is { })
+		if (parameters is { } && parameters.Count > 0)
 			ps.AddParameters(parameters);
 		ps.Invoke();
-		ps.Commands.Clear();
+	}
+
+	public static void AttachDebugger()
+	{
+		if (HasDebugger(A.Runspace))
+		{
+			Far.Api.Message("The debugger is already attached to 'main'.", "Debugger");
+			return;
+		}
+
+		while (!HasDebugger(A.Runspace))
+		{
+			var r = AttachDebuggerDialog.Show(A.Runspace);
+			if (r == AttachDebuggerDialog.Cancel)
+				return;
+
+			if (r == AttachDebuggerDialog.AddDebugger)
+			{
+				if (0 == A.InvokeCode("Get-Command Add-Debugger.ps1 -Type ExternalScript -ErrorAction Ignore").Count)
+				{
+					Far.Api.Message("""
+						Cannot find "Add-Debugger.ps1" in the path.
+						Get the script from PSGallery and place in the path.
+						https://www.powershellgallery.com/packages/Add-Debugger
+						""",
+						"Debugger");
+				}
+				else
+				{
+					A.InvokeCode("Add-Debugger.ps1");
+				}
+			}
+		}
 	}
 
 	internal static void OnLineBreakpoint()
@@ -73,14 +109,13 @@ static class DebuggerKit
 			// found?
 			if (bpFound is { })
 			{
-				switch (Far.Api.Message(bpFound.ToString(),
+				switch (Far.Api.Message(
+					bpFound.ToString(),
 					"Line breakpoint",
 					MessageOptions.None,
 					[
 						"&Remove",
 						bpFound.Enabled ? "&Disable" : "&Enable",
-						"&Modify",
-						"&Add",
 						"&Cancel",
 					]))
 				{
@@ -91,13 +126,8 @@ static class DebuggerKit
 						if (bpFound.Enabled)
 							A.DisableBreakpoint(bpFound);
 						else
-							A.InvokeCode("Enable-PSBreakpoint -Breakpoint $args[0]", bpFound);
+							A.EnableBreakpoint(bpFound);
 						return;
-					case 2:
-						break;
-					case 3:
-						bpFound = null;
-						break;
 					default:
 						return;
 				}

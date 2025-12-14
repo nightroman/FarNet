@@ -122,6 +122,7 @@ class Interactive : InteractiveEditor
 
 			var rs = RunspaceFactory.CreateRunspace(FarHost, FarInitialSessionState.Instance);
 			rs.ThreadOptions = PSThreadOptions.ReuseThread;
+			rs.Name = "async";
 
 			rs.Open();
 			rs.SessionStateProxy.Path.SetLocation(WildcardPattern.Escape(Far.Api.CurrentDirectory));

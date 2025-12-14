@@ -190,6 +190,7 @@ internal static class A
 		// open runspace
 		Runspace = RunspaceFactory.CreateRunspace(_FarHost, FarInitialSessionState.Instance);
 		Runspace.ThreadOptions = PSThreadOptions.UseCurrentThread;
+		Runspace.Name = "main";
 		Runspace.Open();
 
 		//2025-09-29-0630 Eventually set for handlers. Do this in the main thread!
@@ -317,7 +318,6 @@ internal static class A
 	#endregion
 
 	#region Breakpoints
-	private static bool _isFirstBreakpoint = true;
 	internal static HashSet<LineBreakpoint> Breakpoints { get; } = [];
 
 	private static void OnBreakpointUpdated(object? sender, BreakpointUpdatedEventArgs e)
@@ -335,15 +335,12 @@ internal static class A
 		}
 
 		//! then this with possible exceptions
-		if (_isFirstBreakpoint && e.Breakpoint.Action is null)
+		if (e.UpdateType == BreakpointUpdateType.Set &&
+			e.Breakpoint.Action is null &&
+			!DebuggerKit.HasDebugger(Runspace) &&
+			!Settings.Default.DisableAttachDebuggerDialogOnBreakpoint)
 		{
-			_isFirstBreakpoint = false;
-
-			if (!DebuggerKit.HasAnyDebugger(Runspace.Debugger))
-			{
-				DebuggerKit.ValidateAvailable();
-				InvokeCode("Add-Debugger.ps1");
-			}
+			DebuggerKit.AttachDebugger();
 		}
 	}
 	#endregion
@@ -709,6 +706,11 @@ Out-String -Width $args[1]
 	internal static void DisableBreakpoint(object breakpoint)
 	{
 		InvokeCode("Disable-PSBreakpoint -Breakpoint $args[0]", breakpoint);
+	}
+
+	internal static void EnableBreakpoint(object breakpoint)
+	{
+		InvokeCode("Enable-PSBreakpoint -Breakpoint $args[0]", breakpoint);
 	}
 
 	internal static object? SafePropertyValue(PSPropertyInfo pi)

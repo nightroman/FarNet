@@ -6,6 +6,7 @@
 static class HelpTopic
 {
 	public const string
+		AttachDebuggerDialog = "attach-debugger-dialog",
 		BreakpointDialog = "breakpoint-dialog",
 		ChoiceDialog = "choice-dialog",
 		CommandConsole = "command-console",

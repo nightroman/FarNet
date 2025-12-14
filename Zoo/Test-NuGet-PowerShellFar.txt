@@ -62,6 +62,7 @@ FarHome\FarNet\Modules\PowerShellFar\Bench\Show-Hlf.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Show-Image.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Show-KeyName-.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Snippet.ps1
+FarHome\FarNet\Modules\PowerShellFar\Bench\Start-FarDebug.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Test-FarNet.ps1
 FarHome\FarNet\Modules\PowerShellFar\Bench\Update-FarManager.ps1
 FarHome\FarNet\Modules\PowerShellFar\Humanizer.dll

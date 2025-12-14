@@ -511,6 +511,10 @@ See also [Breakpoint dialog](#breakpoint-dialog).
 
     Opens a dialog to create a new variable breakpoint.
 
+- Attach debugger...
+
+    See [Attach debugger dialog](#attach-debugger-dialog).
+
 **Breakpoint list keys and actions**
 
 This section shows the list of available breakpoints where you can disable, enable
@@ -568,6 +572,24 @@ edited is inserted by default.
 If you do not provide actions then breakpoints break into a connected debugger.
 Otherwise actions depend on their code. It may be logging, diagnostics, adding
 extra or altering original features without changing the source code.
+
+*********************************************************************
+## Attach debugger dialog
+
+[Contents]
+
+- `Continue`
+
+    Continues after attaching a debugger, e.g. VSCode debugger using `Start-FarDebug.ps1`.
+
+- `Open VSCode`
+
+    Opens VSCode for attaching a debugger, e.g. using `Start-FarDebug.ps1`.
+
+- `Add-Debugger.ps1`
+
+    Calls `Add-Debugger.ps1` for attaching its debugger and continues.
+    See <https://www.powershellgallery.com/packages/Add-Debugger>
 
 *********************************************************************
 ## Debugging

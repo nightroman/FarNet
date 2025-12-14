@@ -7,19 +7,16 @@ namespace PowerShellFar.UI;
 
 class DebuggerMenu
 {
-	readonly IListMenu _menu;
+	readonly IMenu _menu;
 	IEditor? _editor;
 	Collection<PSObject>? _breakpoints;
 	bool _toStop;
 
 	public DebuggerMenu()
 	{
-		_menu = Far.Api.CreateListMenu();
-		_menu.Title = "PowerShell debugger tools";
+		_menu = Far.Api.CreateMenu();
+		_menu.Title = "Debugger";
 		_menu.HelpTopic = Entry.Instance.GetHelpTopic(HelpTopic.DebuggerMenu);
-		_menu.NoInfo = true;
-		_menu.ScreenMargin = Settings.Default.ListMenuScreenMargin;
-		_menu.UsualMargins = Settings.Default.ListMenuUsualMargins;
 
 		_menu.AddKey(KeyCode.Delete, ControlKeyStates.None, OnDelete);
 		_menu.AddKey(KeyCode.Delete, ControlKeyStates.ShiftPressed, OnDeleteAll);
@@ -37,10 +34,11 @@ class DebuggerMenu
 		// menu loop
 		for (_toStop = false; ; _menu.Items.Clear())
 		{
-			// new breakpoint by types
 			_menu.Add("&Line breakpoint...", OnLineBreakpoint);
 			_menu.Add("&Command breakpoint...", OnCommandBreakpoint);
 			_menu.Add("&Variable breakpoint...", OnVariableBreakpoint);
+			_menu.Add("").IsSeparator = true;
+			_menu.Add("&Attach debugger...", (_, _) => DebuggerKit.AttachDebugger());
 
 			// breakpoint collection
 			_breakpoints = A.InvokeCode("Get-PSBreakpoint");
