@@ -1,6 +1,7 @@
 module TestViewer
 open FarNet
 open FarNet.FSharp
+open Swensen.Unquote
 
 let fileName = __SOURCE_DIRECTORY__ + "\\" + __SOURCE_FILE__
 
@@ -37,11 +38,11 @@ Test.Add("testModal", async {
 
     do! job {
         Assert.Dialog()
-        Assert.Equal("OK", far.Dialog[1].Text)
+        test <@ "OK" = far.Dialog[1].Text @>
     }
     do! Jobs.Keys "Esc"
 
-    do! job { Assert.True(isWideDialog ()) }
+    do! job { test <@ isWideDialog () @> }
     do! Jobs.Keys "Esc"
 
     do! job { Assert.NativePanel() }

@@ -3,6 +3,8 @@ open FarNet
 open System
 open System.Runtime.CompilerServices
 
+#nowarn FS0044
+
 /// Exception thrown by assertions.
 [<Serializable>]
 type AssertException(message) =
@@ -26,38 +28,45 @@ type Assert =
         Assert.Fail("Unexpected case", ?path=path, ?line=line)
 
     /// Fails if the specified condition is not true.
+    [<Obsolete("Use Unquote Boolean expression.")>]
     static member True(condition, [<CallerFilePath>]?path, [<CallerLineNumber>]?line) =
         if not condition then
             Assert.Fail("Condition is false", ?path=path, ?line=line)
 
     /// Fails if the specified condition is not false.
+    [<Obsolete("Use Unquote Boolean expression.")>]
     static member False(condition, [<CallerFilePath>]?path, [<CallerLineNumber>]?line) =
         if condition then
             Assert.Fail("Condition is true", ?path=path, ?line=line)
 
     /// Fails if the specified expected and actual values are not equal.
+    [<Obsolete("Use Unquote Boolean expression.")>]
     static member Equal(expected, actual, [<CallerFilePath>]?path, [<CallerLineNumber>]?line) =
         if expected <> actual then
             let message = sprintf "Expected value: %A, actual: %A" expected actual
             Assert.Fail(message, ?path=path, ?line=line)
 
     /// Fails if the specified values are equal.
+    [<Obsolete("Use Unquote Boolean expression.")>]
     static member NotEqual(x, y, [<CallerFilePath>]?path, [<CallerLineNumber>]?line) =
         if x = y then
             let message = sprintf "Expected not equal to %A" x
             Assert.Fail(message, ?path=path, ?line=line)
 
     /// Fails if the specified values is not null.
+    [<Obsolete("Use Unquote Boolean expression.")>]
     static member Null(x, [<CallerFilePath>]?path, [<CallerLineNumber>]?line) =
         if not (isNull x) then
             Assert.Fail("Value is not null", ?path=path, ?line=line)
 
     /// Fails if the specified values is null.
+    [<Obsolete("Use Unquote Boolean expression.")>]
     static member NotNull(x, [<CallerFilePath>]?path, [<CallerLineNumber>]?line) =
         if isNull x then
             Assert.Fail("Value is null", ?path=path, ?line=line)
 
     /// Fails if the specified function does not throw or throws an unexpected exception.
+    [<Obsolete("Use Unquote `raises`.")>]
     static member Throws(exnType: Type, func: unit -> unit, [<CallerFilePath>]?path, [<CallerLineNumber>]?line) =
         let exn =
             try
@@ -71,9 +80,10 @@ type Assert =
             Assert.Fail(sprintf "Expected exception '%A', actual '%A'." exnType (exn.GetType()), ?path=path, ?line=line)
         exn
 
-    /// Fails if the specified function does not throw or throws an unexpected exception.
-    static member Throws<'a when 'a :> exn> (func: unit -> unit, [<CallerFilePath>]?path, [<CallerLineNumber>]?line) =
-        Assert.Throws(typeof<'a>, func, ?path=path, ?line=line)
+    /// Fails if the specified function does not throw.
+    [<Obsolete("Use Unquote `raises`.")>]
+    static member Throws (func: unit -> unit, [<CallerFilePath>]?path, [<CallerLineNumber>]?line) =
+        Assert.Throws(typeof<exn>, func, ?path=path, ?line=line)
 
     /// Fails if the current window is not dialog.
     static member Dialog([<CallerFilePath>]?path, [<CallerLineNumber>]?line) =

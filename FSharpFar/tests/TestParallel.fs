@@ -3,6 +3,7 @@ open Parallel
 open FarNet
 open FarNet.FSharp
 open System.Text.RegularExpressions
+open Swensen.Unquote
 
 Test.Add("TestParallel", async {
     Async.Start(demo 1.)
@@ -11,7 +12,7 @@ Test.Add("TestParallel", async {
     do! job {
         let text = far.Dialog[1].Text
         let m = Regex.Match(text, "^\d+ \d+ \d+$")
-        Assert.True(m.Success && text <> "0 0 0")
+        test <@ m.Success && text <> "0 0 0" @>
     }
 
     do! Jobs.Keys "Esc"

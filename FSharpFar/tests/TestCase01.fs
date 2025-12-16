@@ -2,6 +2,7 @@ module TestCase01
 open Wizard
 open FarNet
 open FarNet.FSharp
+open Swensen.Unquote
 
 // Similar to demo wizard but simpler + cancel + error.
 let work = async {
@@ -43,7 +44,7 @@ Test.Add("testNo", async {
 
     // exit editor
     do! Jobs.Keys "Esc"
-    do! job { Assert.True(isWizard ()) }
+    do! job { test <@ isWizard () @> }
 
     // Yes -> my panel
     do! Jobs.Keys "Y"
@@ -53,7 +54,7 @@ Test.Add("testNo", async {
     do! Jobs.Keys "Esc"
     do! job {
         Assert.Dialog()
-        Assert.Equal("Done", far.Dialog[0].Text)
+        test <@ "Done" = far.Dialog[0].Text @>
     }
 
     // exit dialog
@@ -86,7 +87,7 @@ Test.Add("testCancel", async {
 
     // exit editor
     do! Jobs.Keys "Esc"
-    do! job { Assert.True(isWizard ()) }
+    do! job { test <@ isWizard () @> }
 
     // Cancel -> panels
     do! Jobs.Keys "C"

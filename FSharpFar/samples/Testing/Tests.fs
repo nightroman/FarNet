@@ -1,21 +1,22 @@
 module Tests
 open FarNet.FSharp
+open Swensen.Unquote
 
 // This is a typical synchronous test, `unit -> unit` module function.
 Test.Add("testSync", fun () ->
     printfn "in testSync"
 
     let tests1 = Test.SyncTests
-    Assert.Equal(3, tests1.Count)
-    Assert.True(tests1.ContainsKey("testSync"))
-    Assert.True(tests1.ContainsKey("syncWithParameter1"))
-    Assert.True(tests1.ContainsKey("syncWithParameter2"))
+    test <@ 3 = tests1.Count @>
+    test <@ tests1.ContainsKey("testSync") @>
+    test <@ tests1.ContainsKey("syncWithParameter1") @>
+    test <@ tests1.ContainsKey("syncWithParameter2") @>
 
     let tests2 = Test.AsyncTests
-    Assert.Equal(3, tests2.Count)
-    Assert.True(tests2.ContainsKey("testAsync"))
-    Assert.True(tests2.ContainsKey("asyncWithParameter1"))
-    Assert.True(tests2.ContainsKey("asyncWithParameter2"))
+    test <@ 3 = tests2.Count @>
+    test <@ tests2.ContainsKey("testAsync") @>
+    test <@ tests2.ContainsKey("asyncWithParameter1") @>
+    test <@ tests2.ContainsKey("asyncWithParameter2") @>
 )
 
 // Body of a test with parameters.

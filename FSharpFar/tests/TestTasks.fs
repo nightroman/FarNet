@@ -2,6 +2,7 @@ module TestTasks
 open FarNet
 open FarNet.FSharp
 open System
+open Swensen.Unquote
 
 // Use Tasks.Job, Tasks.Job<T>, Tasks.Editor, Tasks.Keys
 let workTasks = async {
@@ -10,7 +11,7 @@ let workTasks = async {
 
     // task with function
     let! r = Tasks.Job(fun () -> far.Input("Function")) |> Async.AwaitTask
-    Assert.Equal("bar", r)
+    test <@ "bar" = r @>
 
     // task with editor
     let editor = far.CreateEditor();
@@ -27,22 +28,22 @@ Test.Add("testTasks", async {
 
     // message box
     do! Assert.Wait Window.IsDialog
-    do! job { Assert.Equal("Action", far.Dialog[1].Text) }
+    do! job { test <@ "Action" = far.Dialog[1].Text @> }
     do! Jobs.Keys "Esc"
 
     // input box, enter "bar"
     do! Assert.Wait Window.IsDialog
-    do! job { Assert.Equal("Function", far.Dialog[1].Text) }
+    do! job { test <@ "Function" = far.Dialog[1].Text @> }
     do! Jobs.Keys "b a r Enter"
 
     // editor, exit
     do! Assert.Wait Window.IsEditor
-    do! job { Assert.True(far.Editor.Title.EndsWith(__SOURCE_FILE__)) }
+    do! job { test <@ far.Editor.Title.EndsWith(__SOURCE_FILE__) @> }
     do! Jobs.Keys "Esc"
 
     // CtrlG dialog, exit
     do! Assert.Wait Window.IsDialog
-    do! job { Assert.Equal(Guid("044ef83e-8146-41b2-97f0-404c2f4c7b69"), far.Dialog.TypeId) }
+    do! job { test <@ Guid("044ef83e-8146-41b2-97f0-404c2f4c7b69") = far.Dialog.TypeId @> }
     do! Jobs.Keys "Esc"
 })
 
@@ -53,11 +54,11 @@ let workEditText = async {
     args.Extension <- "ps1"
 
     let! text = far.AnyEditor.EditTextAsync(args) |> Async.AwaitTask
-    Assert.Equal("$x=1", text)
+    test <@ "$x=1" = text @>
 
     args.Text <- "$x=2"
     let! text = far.AnyEditor.EditTextAsync(args) |> Async.AwaitTask
-    Assert.Equal("$x=3", text)
+    test <@ "$x=3" = text @>
 }
 
 Test.Add("testEditText", async {

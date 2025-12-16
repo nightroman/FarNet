@@ -1,6 +1,7 @@
 module TestDialog
 open FarNet
 open FarNet.FSharp
+open Swensen.Unquote
 
 let work = async {
     // dialog
@@ -34,14 +35,14 @@ Test.Add("testEmpty", async {
     do! Jobs.Keys "Enter"
     do! job {
         Assert.Dialog()
-        Assert.Equal("", far.Dialog[0].Text)
+        test <@ "" = far.Dialog[0].Text @>
     }
 
     // cancel
     do! Jobs.Keys "Esc"
     do! job {
         Assert.Dialog()
-        Assert.Equal("cancel", far.Dialog[1].Text)
+        test <@ "cancel" = far.Dialog[1].Text @>
     }
 
     do! Jobs.Keys "Esc"
@@ -56,7 +57,7 @@ Test.Add("testItem1", async {
     do! Jobs.Keys "CtrlDown Enter Enter"
     do! job {
         Assert.Dialog()
-        Assert.Equal("item1", far.Dialog[1].Text)
+        test <@ "item1" = far.Dialog[1].Text @>
     }
 
     do! Jobs.Keys "Esc"

@@ -1,6 +1,7 @@
 ﻿module TestPanelEditFile
 open FarNet
 open FarNet.FSharp
+open Swensen.Unquote
 
 // Common test code
 let testErrorsOnSaving keys1 (delay: int) keys2 = async {
@@ -10,10 +11,10 @@ let testErrorsOnSaving keys1 (delay: int) keys2 = async {
     // edit file
     do! Jobs.Keys "F4"
     do! job {
-        Assert.True(Window.IsEditor())
-        Assert.Equal("Euler's number (e)", far.Editor.Title)
-        Assert.Equal("2.71828", far.Editor.GetText())
-        Assert.Equal(0, far.Editor.Line.Caret) // used to be not 0 sometimes, _201223_vc
+        test <@ Window.IsEditor() @>
+        test <@ "Euler's number (e)" = far.Editor.Title @>
+        test <@ "2.71828" = far.Editor.GetText() @>
+        test <@ 0 = far.Editor.Line.Caret @> // used to be not 0 sometimes, _201223_vc
     }
 
     // add some letter, make invalid number, save
@@ -22,23 +23,23 @@ let testErrorsOnSaving keys1 (delay: int) keys2 = async {
 
     // assert error dialog
     do! job {
-        Assert.True(Window.IsDialog())
-        Assert.Equal("Cannot set text", far.Dialog[0].Text)
+        test <@ Window.IsDialog() @>
+        test <@ "Cannot set text" = far.Dialog[0].Text @>
     }
 
     // exit dialog, wait for the specified time
     do! Jobs.Keys "Esc"
     do! Async.Sleep delay
     do! job {
-        Assert.True(Window.IsEditor())
-        Assert.Equal(8, far.Editor.Line.Caret)
+        test <@ Window.IsEditor() @>
+        test <@ 8 = far.Editor.Line.Caret @>
     }
 
     // exit editor, same Description
     do! Jobs.Keys "Esc"
     do! job {
-        Assert.True(Window.IsModulePanel())
-        Assert.Equal("2.71828", far.Panel.CurrentFile.Description)
+        test <@ Window.IsModulePanel() @>
+        test <@ "2.71828" = far.Panel.CurrentFile.Description @>
     }
 
     // edit again, valid number
@@ -48,8 +49,8 @@ let testErrorsOnSaving keys1 (delay: int) keys2 = async {
 
     // assert updated panel
     do! job {
-        Assert.True(Window.IsModulePanel())
-        Assert.Equal("2.71", far.Panel.CurrentFile.Description)
+        test <@ Window.IsModulePanel() @>
+        test <@ "2.71" = far.Panel.CurrentFile.Description @>
     }
 
     // exit panel

@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 
+= 5.2.1 =
+
+Deprecated
+- `Assert.{True|False|Equal|Null|Throws|NotEqual|NotNull}` will be removed.
+- Use more robust lib `FarNet.FSharp.Unquote` (Swensen.Unquote) instead.
+
 = 5.2.0 =
 
 Requires .NET 10.0, FarNet 10.0.0

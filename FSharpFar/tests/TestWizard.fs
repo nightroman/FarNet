@@ -2,11 +2,12 @@ module TestWizard
 open Wizard
 open FarNet
 open FarNet.FSharp
+open Swensen.Unquote
 
 // Test the demo wizard job.
 Test.Add("testWizard", async {
     Jobs.StartImmediate jobWizard
-    do! job { Assert.True(isWizard ()) }
+    do! job { test <@ isWizard () @> }
 
     // open editor
     do! Jobs.Keys "E"
@@ -22,7 +23,7 @@ Test.Add("testWizard", async {
 
     // exit editor
     do! Jobs.Keys "Esc"
-    do! job { Assert.True(isWizard ()) }
+    do! job { test <@ isWizard () @> }
 
     // open my panel
     do! Jobs.Keys "P"
@@ -34,17 +35,17 @@ Test.Add("testWizard", async {
 
     // go back to mine
     do! Jobs.Keys "Tab"
-    do! job { Assert.True(isMyPanel ()) }
+    do! job { test <@ isMyPanel () @> }
 
     // exit panel
     do! Jobs.Keys "Esc"
-    do! job { Assert.True(isWizard ()) }
+    do! job { test <@ isWizard () @> }
 
     // OK
     do! Jobs.Keys "Enter"
     do! job {
         Assert.Dialog()
-        Assert.Equal("Done", far.Dialog[0].Text)
+        test <@ "Done" = far.Dialog[0].Text @>
     }
 
     // done

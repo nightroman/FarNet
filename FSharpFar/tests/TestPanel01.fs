@@ -1,6 +1,7 @@
 module TestPanel01
 open FarNet
 open FarNet.FSharp
+open Swensen.Unquote
 
 // Not a panel test but related to panels.
 Test.Add("testSkipModal", async {
@@ -13,7 +14,7 @@ Test.Add("testSkipModal", async {
         do! job { far.Message "done" }
     }
     |> Jobs.StartImmediate
-    do! job { Assert.True(isWideDialog ()) }
+    do! job { test <@ isWideDialog () @> }
 
     // exit dialog -> trigger "done" after waiting
     do! Jobs.Keys "Esc"
@@ -53,7 +54,7 @@ Test.Add("testCanOpenFromEditor", async {
 
     // panel
     do! Jobs.OpenPanel(MyPanel.panel [])
-    do! job { Assert.True(isMyPanel ()) }
+    do! job { test <@ isMyPanel () @> }
 
     // exit panel
     do! Jobs.Keys "Esc"
@@ -63,6 +64,6 @@ Test.Add("testCanOpenFromEditor", async {
     do! Jobs.Keys "F12 2 Esc"
     do! job {
         Assert.NativePanel()
-        Assert.Equal(2, far.Window.Count)
+        test <@ 2 = far.Window.Count @>
     }
 })
