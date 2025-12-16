@@ -21,7 +21,4 @@ job {
 	Assert-Far $Far.UI.GetBufferLineText(-2) -eq '090328_192727'
 }
 
-job {
-	$Psf.StopCommandConsole()
-	[FarNet.Tasks]::WaitForPanels(9)
-}
+keys Esc # exit CC

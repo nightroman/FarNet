@@ -61,8 +61,7 @@ Set-StrictMode -Version 3
 		invoked on failures in order to get a message.
 '@
 		Title = @'
-		Tells to show the simple dialog with [Stop] and [Throw] buttons and
-		specifies its title.
+		Tells to show the message with this title and stop the pipeline.
 '@
 		NoError = 'Asserts $Global:Error is empty.'
 		FileDescription = 'Specifies the expected current panel file description.'

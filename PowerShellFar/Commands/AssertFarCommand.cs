@@ -79,8 +79,6 @@ sealed class AssertFarCommand : BaseCmdlet
 	[Parameter(ParameterSetName = PSParameters)]
 	public string? EditorTitle { get; set; }
 
-	bool IsError => Title is null;
-
 	IPanel? _panel_;
 	IPanel Panel
 	{
@@ -296,8 +294,16 @@ sealed class AssertFarCommand : BaseCmdlet
 		}
 
 		// message body
-		var body = Message is null ? "Assertion failed." : Message.ToString();
-		if (IsError)
+		string body = Message is null ? "Assertion failed." : Message.ToString()!;
+
+		//: user friendly message and stop
+		if (Title is { })
+		{
+			Far.Api.Message(body, Title);
+			throw new PipelineStoppedException();
+		}
+
+		// complete the message body
 		{
 			var sb = new StringBuilder(body);
 
@@ -339,11 +345,7 @@ sealed class AssertFarCommand : BaseCmdlet
 
 		// buttons
 		string[] buttons;
-		if (!IsError)
-		{
-			buttons = [BtnStop, BtnThrow];
-		}
-		else if (string.IsNullOrEmpty(MyInvocation.ScriptName))
+		if (string.IsNullOrEmpty(MyInvocation.ScriptName))
 		{
 			if (doNotIgnore)
 				buttons = [BtnStop, BtnThrow, BtnDebug];
@@ -366,7 +368,7 @@ sealed class AssertFarCommand : BaseCmdlet
 			Text = body,
 			Buttons = buttons,
 			Caption = Title ?? MyName,
-			Options = IsError ? (MessageOptions.Warning) : MessageOptions.None,
+			Options = MessageOptions.Warning,
 		});
 
 		switch (result < 0 ? BtnStop : buttons[result])

@@ -28,7 +28,4 @@ job {
 	Remove-Variable -Scope Global 090328194636
 }
 
-job {
-	$Psf.StopCommandConsole()
-	[FarNet.Tasks]::WaitForPanels(9)
-}
+keys Esc # exit CC

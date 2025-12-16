@@ -19,8 +19,4 @@ job {
 	Assert-Far -FileName 'Test-CC-KeyPanel.fas.ps1'
 }
 
-### kill
-job {
-	$Psf.StopCommandConsole()
-	[FarNet.Tasks]::WaitForPanels(9)
-}
+keys Esc # exit CC

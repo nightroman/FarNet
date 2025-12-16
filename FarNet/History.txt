@@ -1,5 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet
 
+= 10.0.12 =
+
+Error dialog [More]
+- better formatting
+- script stack if any
+
 = 10.0.11 =
 
 IListMenu.MaxWidth = 120

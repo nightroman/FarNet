@@ -2,6 +2,9 @@ module TestPSFar
 open FarNet
 open FarNet.FSharp
 
+let editorLine1 = 2
+let editorLine2 = 3
+
 let getFarTask name =
     __SOURCE_DIRECTORY__ + @"\..\..\Samples\FarTask\" + name
 
@@ -37,8 +40,8 @@ Test.Add("FarTaskError1", async {
     do! Jobs.Keys "Tab Enter"
     do! job {
         Assert.True(Window.IsEditor())
-        Assert.True(far.Editor[1].Text.Contains("\FarTaskError1.far.ps1:"))
-        Assert.True(far.Editor[2].Text.Contains("throw 'oops-async'"))
+        Assert.True(far.Editor[editorLine1].Text.Contains("\FarTaskError1.far.ps1:"))
+        Assert.True(far.Editor[editorLine2].Text.Contains("throw 'oops-async'"))
     }
     do! Jobs.Keys "Esc"
 })
@@ -54,8 +57,8 @@ Test.Add("FarTaskError2", async {
     do! Jobs.Keys "Tab Enter"
     do! job {
         Assert.True(Window.IsEditor())
-        Assert.True(far.Editor[1].Text.Contains("\FarTaskError2.far.ps1:"))
-        Assert.True(far.Editor[2].Text.Contains("throw 'oops-job'"))
+        Assert.True(far.Editor[editorLine1].Text.Contains("\FarTaskError2.far.ps1:"))
+        Assert.True(far.Editor[editorLine2].Text.Contains("throw 'oops-job'"))
     }
     do! Jobs.Keys "Esc"
 })
@@ -71,8 +74,8 @@ Test.Add("FarTaskError3", async {
     do! Jobs.Keys "Tab Enter"
     do! job {
         Assert.True(Window.IsEditor())
-        Assert.True(far.Editor[1].Text.Contains("\FarTaskError3.far.ps1:"))
-        Assert.True(far.Editor[2].Text.Contains("throw 'oops-ps:'"))
+        Assert.True(far.Editor[editorLine1].Text.Contains("\FarTaskError3.far.ps1:"))
+        Assert.True(far.Editor[editorLine2].Text.Contains("throw 'oops-ps:'"))
     }
     do! Jobs.Keys "Esc"
 })
@@ -88,8 +91,8 @@ Test.Add("FarTaskError4", async {
     do! Jobs.Keys "Tab Enter"
     do! job {
         Assert.True(Window.IsEditor())
-        Assert.True(far.Editor[1].Text.Contains("\FarTaskError4.far.ps1:"))
-        Assert.True(far.Editor[2].Text.Contains("throw 'oops-run-before'"))
+        Assert.True(far.Editor[editorLine1].Text.Contains("\FarTaskError4.far.ps1:"))
+        Assert.True(far.Editor[editorLine2].Text.Contains("throw 'oops-run-before'"))
     }
     do! Jobs.Keys "Esc"
 })
@@ -107,8 +110,8 @@ Test.Add("FarTaskError5", async {
     do! Jobs.Keys "Tab Enter"
     do! job {
         Assert.True(Window.IsEditor())
-        Assert.True(far.Editor[1].Text.Contains("\FarTaskError5.far.ps1:"))
-        Assert.True(far.Editor[2].Text.Contains("throw 'oops-run-after'"))
+        Assert.True(far.Editor[editorLine1].Text.Contains("\FarTaskError5.far.ps1:"))
+        Assert.True(far.Editor[editorLine2].Text.Contains("throw 'oops-run-after'"))
     }
     do! Jobs.Keys "Esc"
 })

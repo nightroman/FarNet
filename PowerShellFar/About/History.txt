@@ -1,5 +1,12 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 10.0.18 =
+
+Tweak the errors menu.
+
+Assert-Far
+- with Title, show the message and stop the pipeline
+
 = 10.0.17 =
 
 Add "Attach debugger" to debugger menu.

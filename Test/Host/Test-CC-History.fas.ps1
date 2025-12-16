@@ -1,9 +1,6 @@
 <#
 .Synopsis
 	Command console history tests.
-
-	?? Unstable, may end with hidden panels. Looks like CtrlO has no effect
-	sometimes, even when API shows it working (count visible panels).
 #>
 
 ### run 2 dummy commands, explore 2 history items and exit
@@ -27,10 +24,7 @@ job {
 	Assert-Far -DialogTypeId ([PowerShellFar.Guids]::ReadCommandDialog)
 	Assert-Far $Far.Dialog[1].Text -eq ''
 }
-job {
-	$Psf.StopCommandConsole()
-	[FarNet.Tasks]::WaitForPanels(9)
-}
+keys Esc # exit CC
 
 ### repeat and compare, do not exit
 
@@ -61,8 +55,6 @@ job {
 keys CtrlX
 job {
 	Assert-Far $Far.Dialog[1].Text -eq '1'
+	$Far.Dialog[1].Text = ''
 }
-job {
-	$Psf.StopCommandConsole()
-	[FarNet.Tasks]::WaitForPanels(9)
-}
+keys Esc # exit CC

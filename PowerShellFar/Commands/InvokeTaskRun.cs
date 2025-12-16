@@ -51,8 +51,8 @@ internal sealed class InvokeTaskRun : BaseTaskCmdlet
 		// post the job as task
 		var task = Tasks.Run(() =>
 		{
-			A.Engine.SessionState.PSVariable.Set(StartFarTaskCommand.NameData, GetData());
-			A.Engine.SessionState.PSVariable.Set(StartFarTaskCommand.NameVar, GetVars());
+			A.SetVariableValue(StartFarTaskCommand.NameData, GetData());
+			A.SetVariableValue(StartFarTaskCommand.NameVar, GetVars());
 
 			//!! 2025-05-18-1148 Test-CallStack.fas.ps1 -- nested pipeline issues if we use `Script.Invoke()` like `job`.
 			using var ps = A.NewPowerShell();

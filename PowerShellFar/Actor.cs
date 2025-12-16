@@ -175,8 +175,7 @@ public sealed partial class Actor
 	/// </summary>
 	public void ShowDebugger()
 	{
-		var ui = new DebuggerMenu();
-		ui.Show();
+		new DebuggerMenu().Show();
 	}
 
 	/// <summary>
@@ -184,8 +183,7 @@ public sealed partial class Actor
 	/// </summary>
 	public void ShowErrors()
 	{
-		var ui = new ErrorsMenu();
-		ui.Show();
+		new ErrorsMenu().Show();
 	}
 
 	/// <summary>
@@ -326,14 +324,6 @@ public sealed partial class Actor
 	public void StartCommandConsole()
 	{
 		_ = ReadCommand.StartAsync();
-	}
-
-	/// <summary>
-	/// Stops "Command console".
-	/// </summary>
-	public void StopCommandConsole()
-	{
-		ReadCommand.Stop();
 	}
 
 	/// <summary>

@@ -37,7 +37,4 @@ job {
 	Assert-Far $Far.UI.GetBufferLineText(-2) -eq 'Password: *'
 }
 
-job {
-	$Psf.StopCommandConsole()
-	[FarNet.Tasks]::WaitForPanels(9)
-}
+keys Esc # exit CC

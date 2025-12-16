@@ -112,7 +112,7 @@ public sealed class Settings
 		get
 		{
 			if (_FormatEnumerationLimit < 0)
-				_FormatEnumerationLimit = A.Engine.SessionState.PSVariable.GetValue("FormatEnumerationLimit") is int n && n >= 0 ? n : 4;
+				_FormatEnumerationLimit = A.GetVariableValue("FormatEnumerationLimit") is int n && n >= 0 ? n : 4;
 
 			return _FormatEnumerationLimit;
 		}

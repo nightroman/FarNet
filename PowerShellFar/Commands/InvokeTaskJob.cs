@@ -12,8 +12,8 @@ internal sealed class InvokeTaskJob : BaseTaskCmdlet
 
 	private Collection<PSObject> InvokeScript()
 	{
-		A.Engine.SessionState.PSVariable.Set(StartFarTaskCommand.NameData, GetData());
-		A.Engine.SessionState.PSVariable.Set(StartFarTaskCommand.NameVar, GetVars());
+		A.SetVariableValue(StartFarTaskCommand.NameData, GetData());
+		A.SetVariableValue(StartFarTaskCommand.NameVar, GetVars());
 		return Script.Invoke();
 	}
 

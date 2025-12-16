@@ -735,4 +735,9 @@ Out-String -Width $args[1]
 	{
 		return Engine.SessionState.PSVariable.GetValue(name);
 	}
+
+	internal static void SetVariableValue(string name, object? value)
+	{
+		Engine.SessionState.PSVariable.Set(name, value);
+	}
 }

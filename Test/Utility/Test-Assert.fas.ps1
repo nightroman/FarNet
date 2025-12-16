@@ -70,23 +70,13 @@ job {
 
 ### production assert + message as a scriptblock
 run {
-	try { Assert-Far $false -Message {"Demo message"} -Title "Demo title" }
-	catch {}
+	Assert-Far $false -Message {"Demo message"} -Title "Demo title"
 }
 job {
 	Assert-Far -Dialog
 	Assert-Far $__[0].Text -eq "Demo title"
 	Assert-Far $__[1].Text -eq "Demo message"
-}
-macro 'Keys"e" -- to be ignored, i.e. no Edit button'
-job {
-	# still dialog
-	Assert-Far -Dialog
-}
-macro 'Keys"t" -- Throw'
-job {
-	Assert-Far -Panels
-	$global:Error.RemoveAt(0)
+	$__.Close()
 }
 
 ### debugger assert

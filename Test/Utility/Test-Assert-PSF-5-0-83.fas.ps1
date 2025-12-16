@@ -16,18 +16,13 @@ job {
 
 ### my title with no conditions
 run {
-	try { Assert-Far -Dialog -Message my-message -Title my-title }
-	catch {}
+	Assert-Far -Dialog -Message my-message -Title my-title
 }
 job {
 	Assert-Far -Dialog
 	Assert-Far $__[0].Text -eq 'my-title'
 	Assert-Far $__[1].Text -eq 'my-message'
-}
-macro 'Keys"t" -- Throw'
-job {
-	Assert-Far -Panels
-	$global:Error.RemoveAt(0)
+	$__.Close()
 }
 
 ### unrolled enumerable, not just object[]

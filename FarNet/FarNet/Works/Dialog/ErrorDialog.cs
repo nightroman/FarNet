@@ -3,10 +3,10 @@ namespace FarNet.Works;
 
 public static class ErrorDialog
 {
-	public static void Show(string? title, Exception error, string more)
+	public static void Show(string? title, Exception ex, string more)
 	{
 		// for module exceptions show just [OK]
-		var moduleError = error as ModuleException;
+		var moduleError = ex as ModuleException;
 		string[] buttons =
 			moduleError is { } && (moduleError.InnerException is null || moduleError.InnerException is ModuleException) ?
 			["OK"] :
@@ -14,11 +14,11 @@ public static class ErrorDialog
 
 		// resolve title
 		if (string.IsNullOrEmpty(title))
-			title = moduleError?.Source ?? error.GetType().FullName;
+			title = moduleError?.Source ?? ex.GetType().FullName;
 
 		// ask
 		int res = Far.Api.Message(
-			error.Message,
+			ex.Message,
 			title,
 			MessageOptions.Warning,
 			buttons
@@ -26,11 +26,11 @@ public static class ErrorDialog
 		if (res < 1)
 			return;
 
-		// write error text
+		// write text for editor
 		using var writer = new StringWriter();
 		{
 			// info
-			Kit.WriteException(writer, error);
+			Kit.WriteException(writer, ex);
 
 			// more
 			if (more is { })
@@ -41,16 +41,16 @@ public static class ErrorDialog
 			}
 
 			// full
-			var errorText = Kit.FilterExceptionString(error.ToString());
+			var exToString = Kit.FilterExceptionString(ex.ToString());
 			writer.WriteLine();
-			writer.Write(errorText);
+			writer.Write(exToString);
 		}
 
-		// open error text editor
+		// open text editor
 		_ = Far.Api.AnyEditor.EditTextAsync(new()
 		{
 			Text = writer.ToString(),
-			Title = error.GetType().FullName,
+			Title = title,
 			IsLocked = true
 		});
 	}

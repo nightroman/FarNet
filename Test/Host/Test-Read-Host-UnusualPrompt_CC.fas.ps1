@@ -31,8 +31,4 @@ job {
 }
 keys 2 Enter
 
-job {
-	$Psf.StopCommandConsole()
-	$ok = [FarNet.Tasks]::Wait(9, 99, { $Far.Window.Kind -eq 'Panels' -and $Far.Window.CountVisiblePanels() -eq 2 })
-	if (!$ok) {throw "Timeout."}
-}
+keys Esc # exit CC

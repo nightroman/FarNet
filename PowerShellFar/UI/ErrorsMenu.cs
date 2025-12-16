@@ -27,7 +27,7 @@ class ErrorsMenu
 
 	public void Show()
 	{
-		var errors = (ArrayList)A.Engine.SessionState.PSVariable.GetValue("Error")!;
+		var errors = (ArrayList)A.GetVariableValue("Error")!;
 		foreach (object error in errors)
 		{
 			// exception:
@@ -64,17 +64,12 @@ class ErrorsMenu
 			}
 
 			var error = _menu.SelectedData;
-
-			if (error is Exception asException)
+			Exception? exception = null;
+			if (error is Exception ex1)
 			{
-				if (_menu.Key.VirtualKeyCode != 0)
-					continue;
-
-				Far.Api.ShowError(null, asException);
-				continue;
+				exception = ex1;
 			}
-
-			if (error is ErrorRecord asRecord)
+			else if (error is ErrorRecord asRecord)
 			{
 				if (_menu.Key.Is(KeyCode.F4))
 				{
@@ -87,9 +82,16 @@ class ErrorsMenu
 						return;
 					}
 				}
+				exception = asRecord.Exception;
+			}
 
-				Far.Api.ShowError(null, asRecord.Exception);
-				continue;
+			if (exception is { })
+			{
+				if (_menu.Key.VirtualKeyCode != 0)
+					continue;
+
+				Far.Api.ShowError(null, exception);
+				return;
 			}
 		}
 	}

@@ -249,18 +249,29 @@ public static class Kit
 	{
 		ArgumentNullException.ThrowIfNull(ex);
 
-		writer.Write(ex.GetType().FullName);
-		writer.Write(": ");
+		//! just message, the type will be in ex.ToString()
 		writer.WriteLine(ex.Message);
 
-		if (ex.TryProperty("ErrorRecord")?.TryProperty("InvocationInfo")?.TryProperty("PositionMessage") is { } positionMessage)
-			writer.WriteLine(positionMessage);
+		if (ex.TryProperty("ErrorRecord") is { } errorRecord)
+		{
+			if (errorRecord.TryProperty("InvocationInfo")?.TryProperty("PositionMessage") is { } positionMessage)
+			{
+				writer.WriteLine();
+				writer.WriteLine(positionMessage);
+			}
 
-		if (ex.InnerException is { })
+			if (errorRecord.TryProperty("ScriptStackTrace") is string scriptStackTrace && scriptStackTrace.Contains('\n'))
+			{
+				writer.WriteLine();
+				writer.WriteLine(scriptStackTrace);
+			}
+		}
+
+		if (ex.InnerException is { } inner)
 		{
 			writer.WriteLine();
 			writer.WriteLine("InnerException:");
-			WriteException(writer, ex.InnerException);
+			WriteException(writer, inner);
 		}
 	}
 

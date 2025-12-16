@@ -29,7 +29,7 @@ param(
 Set-StrictMode -Version 3
 $ErrorActionPreference=1; trap {$PSCmdlet.ThrowTerminatingError($_)}; if ($Host.Name -ne 'FarHost') {throw 'Requires FarHost.'}
 
-$ExpectedTaskCount = 211
+$ExpectedTaskCount = 213
 $ExpectedIBTestCount = 5
 $ExpectedBasicsCount = 15
 
@@ -119,30 +119,35 @@ Start-FarTask -Data All, Tests, ExpectedTaskCount, SavedPanelPaths {
 	foreach($item in $Data.Tests) {
 		++$Data.taskCount
 		$TestFile = $item.FullName
+		$_about = $env:_about; $env:_about = $TestFile
 		[Diagnostics.Debug]::WriteLine("## Test-FarNet: Test: $TestFile")
-
-		### Run current test
-		$result = job {
-			Start-FarTask $Var.TestFile -AsTask
-		}
-
-		### Check test output
-		if ($result) {
-			throw "$TestFile`nUnexpected test output:`n$result"
-		}
-
-		### Check test effects
 		try {
-			job {
-				[FarNet.Works.Test]::AssertNormalState()
+			### Run current test
+			$result = job {
+				Start-FarTask $Var.TestFile -AsTask
+			}
 
+			### Check test output
+			if ($result) {
+				throw "Unexpected test output:`n$result"
+			}
+
+			### Check test effects
+			job {
+				#! error first, it may be the reason of bad state
 				if ($global:Error) {
 					throw "Unexpected error after test: $($global:Error[-1])"
 				}
+
+				#! then state
+				[FarNet.Works.Test]::AssertNormalState()
 			}
 		}
 		catch {
 			throw "$TestFile`n$_"
+		}
+		finally {
+			$env:_about = $_about
 		}
 	}
 
