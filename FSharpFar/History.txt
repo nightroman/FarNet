@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 
+= 5.2.2 =
+
+Removed deprecated Assert methods.
+
 = 5.2.1 =
 
 Deprecated
