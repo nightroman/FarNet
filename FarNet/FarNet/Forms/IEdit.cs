@@ -1,14 +1,13 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-namespace FarNet.Forms;
+﻿namespace FarNet.Forms;
 
 /// <summary>
 /// Edit control.
 /// It is created and added to a dialog by:
 /// <see cref="IDialog.AddEdit"/>, <see cref="IDialog.AddEditFixed"/>, <see cref="IDialog.AddEditPassword"/>.
 /// </summary>
+/// <remarks>
+/// FarNet dialogs edit controls support undo / redo (<c>CtrlZ</c> / <c>CtrlY</c>).
+/// </remarks>
 public interface IEdit : IControl, IEditable, IDropDown
 {
 	/// <summary>

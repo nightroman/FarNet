@@ -290,6 +290,8 @@
     </PostBuildEvent>
     <ClCompile>
       <AdditionalOptions>/Wv:18 %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdcpp20</LanguageStandard>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdcpp20</LanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
 </Project>

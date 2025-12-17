@@ -18,7 +18,7 @@
 
 [CmdletBinding(DefaultParameterSetName='Tests')]
 param(
-	[Parameter(ParameterSetName='Tests')]
+	[Parameter(ParameterSetName='Tests', Position=0)]
 	[object]$Tests = '*'
 	,
 	[Parameter(ParameterSetName='All', Mandatory=1)]
@@ -29,7 +29,7 @@ param(
 Set-StrictMode -Version 3
 $ErrorActionPreference=1; trap {$PSCmdlet.ThrowTerminatingError($_)}; if ($Host.Name -ne 'FarHost') {throw 'Requires FarHost.'}
 
-$ExpectedTaskCount = 213
+$ExpectedTaskCount = 214
 $ExpectedIBTestCount = 5
 $ExpectedBasicsCount = 15
 

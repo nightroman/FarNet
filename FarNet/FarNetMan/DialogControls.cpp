@@ -358,6 +358,44 @@ FarEdit::FarEdit(FarDialog^ dialog, int left, int top, int right, String^ text, 
 : FarControl(dialog, left, top, right, top, text)
 , _type(type)
 {
+	_undo.Push(text);
+	_KeyPressed += gcnew EventHandler<KeyPressedEventArgs^>(this, &FarEdit::OnKeyPressed);
+	_TextChanged += gcnew EventHandler<TextChangedEventArgs^>(this, &FarEdit::OnTextChanged);
+}
+
+void FarEdit::OnTextChanged(Object^ sender, TextChangedEventArgs^ e)
+{
+	if (_ignoreTextChange || _undo.Count == 0)
+		return;
+
+	_undo.Push(e->Text);
+	_redo.Clear();
+}
+
+void FarEdit::OnKeyPressed(Object^ sender, KeyPressedEventArgs^ e)
+{
+	if (e->Key->VirtualKeyCode == KeyCode::Z && e->Key->IsCtrl())
+	{
+		e->Ignore = true;
+		if (_undo.Count > 1)
+		{
+			_ignoreTextChange = true;
+			_redo.Push(_undo.Pop());
+			Text = _undo.Peek();
+			_ignoreTextChange = false;
+		}
+	}
+	else if (e->Key->VirtualKeyCode == KeyCode::Y && e->Key->IsCtrl())
+	{
+		e->Ignore = true;
+		if (_redo.Count > 0)
+		{
+			_ignoreTextChange = true;
+			_undo.Push(_redo.Pop());
+			Text = _undo.Peek();
+			_ignoreTextChange = false;
+		}
+	}
 }
 
 DEF_CONTROL_FLAG(FarEdit, Editor, DIF_EDITOR);

@@ -1,11 +1,7 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 #pragma once
 
 namespace FarNet
-{;
+{
 ref class Far;
 ref class FarDialog;
 
@@ -126,9 +122,15 @@ internal:
 	virtual void Stop(bool ok) override;
 	virtual void Free() override;
 private:
+	void OnKeyPressed(Object^ sender, KeyPressedEventArgs^ e);
+	void OnTextChanged(Object^ sender, TextChangedEventArgs^ e);
+private:
 	FARDIALOGITEMTYPES _type;
 	String^ _history;
 	String^ _mask;
+	bool _ignoreTextChange;
+	Stack<String^> _undo;
+	Stack<String^> _redo;
 };
 
 ref class FarRadioButton : public FarControl, public IRadioButton
