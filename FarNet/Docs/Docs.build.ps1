@@ -9,8 +9,9 @@ param(
 )
 
 task build {
-	Set-Alias MSBuild (Resolve-MSBuild 17.0)
-	exec { MSBuild FarNetAPI.shfbproj /p:Configuration=Release }
+	Set-Alias MSBuild (Resolve-MSBuild 18.0)
+	#TODO /p:AlwaysLoadProject=True https://github.com/EWSoftware/SHFB/issues/1146
+	exec { MSBuild FarNetAPI.shfbproj /p:Configuration=Release /p:AlwaysLoadProject=True }
 },
 test
 
