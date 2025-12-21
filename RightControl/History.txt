@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.RightControl
 
+= 5.3.1 =
+
+Requires FarNet 10.0.14, uses new .NET settings validation.
+
 = 5.3.0 =
 
 Uses .NET 10

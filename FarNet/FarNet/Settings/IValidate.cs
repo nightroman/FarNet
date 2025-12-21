@@ -1,13 +1,9 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-namespace FarNet;
+﻿namespace FarNet;
 
 /// <summary>
 /// Validates and completes data.
 /// </summary>
-/// <seealso cref="ModuleSettings{T}"/>
+[Obsolete("Use IValidatableObject.")]
 public interface IValidate
 {
 	/// <summary>

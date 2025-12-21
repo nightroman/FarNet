@@ -1,4 +1,5 @@
 ﻿using FarNet.Works;
+using System.ComponentModel.DataAnnotations;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -86,17 +87,39 @@ public abstract class ModuleSettingsBase
 
 	void ValidateData(object data)
 	{
-		if (data is not IValidate validate)
-			return;
+		if (data is IValidatableObject validatable)
+		{
+			try
+			{
+				Validator.ValidateObject(
+					validatable,
+					new ValidationContext(data),
+					validateAllProperties: true);
+			}
+			catch (ValidationException ex)
+			{
+				throw new ModuleException($"""
+					Settings validation failed.
+					File: {FileName}
+					Field: {string.Join(", ", ex.ValidationResult.MemberNames)}
+					Error: {ex.Message}
+					""");
+			}
+		}
 
-		try
+#pragma warning disable CS0618
+		if (data is IValidate validate)
 		{
-			validate.Validate();
+			try
+			{
+				validate.Validate();
+			}
+			catch (Exception ex)
+			{
+				throw new ModuleException($"Cannot validate data.\nFile: {FileName}\nError: {ex.Message}", ex);
+			}
 		}
-		catch (Exception ex)
-		{
-			throw new ModuleException($"Cannot validate data.\nFile: {FileName}\nError: {ex.Message}", ex);
-		}
+#pragma warning restore CS0618
 	}
 
 	/// <summary>

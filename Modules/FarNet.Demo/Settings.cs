@@ -1,5 +1,6 @@
-﻿
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Serialization;
@@ -32,10 +33,10 @@ public class Settings : ModuleSettings<Settings.Data>
 	/// </summary>
 	/// <remarks>
 	/// Optionally use <see cref="XmlRootAttribute"/> for the root name.
-	/// Optionally implement <see cref="IValidate"/> for data validation.
+	/// Optionally implement <see cref="IValidatableObject"/> for validation.
 	/// </remarks>
 	[XmlRoot("Data")]
-	public class Data : IValidate
+	public class Data : IValidatableObject
 	{
 		internal int SavedVersion;
 
@@ -55,9 +56,16 @@ public class Settings : ModuleSettings<Settings.Data>
 		public string Name { get; set; } = "John Doe";
 
 		/// <summary>
-		/// Some number.
+		/// Number using range validation.
 		/// </summary>
+		[Range(0, 200)]
 		public int Age { get; set; } = 42;
+
+		/// <summary>
+		/// Enum using data type validation.
+		/// </summary>
+		[EnumDataType(typeof(ConsoleColor))]
+		public string Color { get; set; } = "Black";
 
 		/// <summary>
 		/// CDATA with empty text.
@@ -70,9 +78,10 @@ public class Settings : ModuleSettings<Settings.Data>
 		public XmlCData Regex { get; set; } = "([<>&]+)";
 
 		/// <summary>
-		/// Some list of strings.
+		/// List of strings with length validation.
 		/// </summary>
-		public string[] Paths { get; set; } = new string[] { "%FARHOME%" };
+		[Length(1, 10)]
+		public string[] Paths { get; set; } = ["%FARHOME%"];
 
 		/// <summary>
 		/// Regex created by <see cref="Validate"/> from <see cref="Regex"/>.
@@ -87,8 +96,9 @@ public class Settings : ModuleSettings<Settings.Data>
 		/// This interface method is called after deserializing or creating default data.
 		/// This sample creates <see cref="Regex2"/> from its pattern <see cref="Regex"/>.
 		/// </remarks>
-		public void Validate()
+		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
 		{
+			List<ValidationResult> r = [];
 			try
 			{
 				// try to create the regex from its pattern
@@ -96,9 +106,9 @@ public class Settings : ModuleSettings<Settings.Data>
 			}
 			catch (Exception ex)
 			{
-				// throw amended exception with invalid data details
-				throw new Exception($"{nameof(Regex)}: {ex.Message}", ex);
+				r.Add(new($"Invalid regex pattern: {ex.Message}", [nameof(Regex)]));
 			}
+			return r;
 		}
 	}
 

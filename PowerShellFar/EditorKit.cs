@@ -625,16 +625,17 @@ static class EditorKit
 
 		try
 		{
-			// get tasks
+			// get good tasks and redefined tasks
 			using var ps = A.NewPowerShell().AddScript("""
 				Invoke-Build ?? $args[0] -Result:Result
 				, $Result.Redefined
 				""")
 				.AddArgument(fileName);
 
+			//! may be 0 on stopped pipeline, show friendly error
 			var res = ps.Invoke();
 			if (res.Count != 2)
-				throw new InvalidOperationException($"Unexpected result count: {res.Count}");
+				throw new ModuleException("Cannot get build tasks.");
 
 			var goodTasksDic = (OrderedDictionary)res[0].BaseObject;
 			var goodTasks = goodTasksDic.Values;

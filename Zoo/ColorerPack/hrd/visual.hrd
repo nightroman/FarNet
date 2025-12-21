@@ -3,7 +3,7 @@
   "http://colorer.sf.net/2003/hrd.dtd">
 <hrd xmlns="http://colorer.sf.net/2003/hrd">
 
-<!--White background color scheme by Roman Kuzmin, aka NightRoman, 2021-12-04-->
+<!--White background by Roman Kuzmin, aka nightroman, 2025-12-20-->
 
 <assign fore="#0" back="#F" name="def:Text"/>
 
@@ -64,7 +64,7 @@
 <assign fore="#F" back="#4" name="def:Error"/>
 <assign fore="#D" name="def:ErrorText"/>
 
-<assign fore="#F" back="#2" name="def:TODO"/>
+<assign fore="#0" back="#A" name="def:TODO"/>
 <assign fore="#4" back="#7" name="def:Debug"/>
 
 <assign back="#E" name="def:Insertion"/>

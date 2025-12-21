@@ -1,5 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet
 
+= 10.0.14 =
+
+Settings
+- IValidate is obsolete and will be removed in vNext
+- Use .NET IValidatableObject instead
+
 = 10.0.13 =
 
 FarNet dialogs edit controls

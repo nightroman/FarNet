@@ -1,14 +1,14 @@
 ﻿using FarNet;
-using System;
+using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
 namespace RightControl;
 
 public sealed class Settings : ModuleSettings<Settings.Data>
 {
-	public static Settings Default { get; } = new Settings();
+	public static Settings Default { get; } = new();
 
-	public class Data : IValidate
+	public class Data : IValidatableObject
 	{
 		public XmlCData RegexLeft { get; set; } = @"(?x: ^ | $ | (?<=\b|\s)\S )";
 
@@ -18,19 +18,17 @@ public sealed class Settings : ModuleSettings<Settings.Data>
 
 		internal Regex RegexRight2 { get; private set; } = null!;
 
-		public void Validate()
+		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
 		{
-			if (string.IsNullOrWhiteSpace(RegexLeft))
-				throw new ModuleException("RegexLeft cannot be empty.");
+			(RegexLeft2, var err) = Validators.Regex(RegexLeft, nameof(RegexLeft));
+			if (err is { })
+				return [err];
 
-			if (string.IsNullOrWhiteSpace(RegexRight))
-				throw new ModuleException("RegexRight cannot be empty.");
+			(RegexRight2, err) = Validators.Regex(RegexRight, nameof(RegexRight));
+			if (err is { })
+				return [err];
 
-			try { RegexLeft2 = new Regex(RegexLeft.Value.Trim()); }
-			catch (Exception ex) { throw new ModuleException($"RegexLeft: {ex.Message}"); }
-
-			try { RegexRight2 = new Regex(RegexRight.Value.Trim()); }
-			catch (Exception ex) { throw new ModuleException($"RegexRight: {ex.Message}"); }
+			return [];
 		}
 	}
 }

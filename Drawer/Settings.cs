@@ -1,5 +1,5 @@
 ﻿using FarNet;
-using System;
+using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
 namespace Drawer;
@@ -15,15 +15,17 @@ public sealed class Settings : ModuleSettings<Settings.Data>
 
 	public static Settings Default { get; } = new();
 
-	public class Data : IValidate
+	public class Data : IValidatableObject
 	{
 		public CurrentWord CurrentWord { get; set; } = new();
 		public FixedColumn FixedColumn { get; set; } = new();
 		public Tabs Tabs { get; set; } = new();
 
-		public void Validate()
+		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
 		{
-			CurrentWord.Validate();
+			(CurrentWord.WordRegex2, var err) = Validators.Regex(CurrentWord.WordRegex, $"{nameof(CurrentWord)}.{nameof(CurrentWord.WordRegex)}");
+			if (err is { })
+				yield return err;
 		}
 	}
 
@@ -37,16 +39,7 @@ public sealed class Settings : ModuleSettings<Settings.Data>
 
 		public ConsoleColor ColorBackground { get; set; } = ConsoleColor.Gray;
 
-		internal Regex WordRegex2 { get; private set; } = null!;
-
-		internal void Validate()
-		{
-			if (string.IsNullOrWhiteSpace(WordRegex))
-				throw new ModuleException("CurrentWord/WordRegex cannot be empty.");
-
-			try { WordRegex2 = new Regex(WordRegex.Value.Trim()); }
-			catch (Exception ex) { throw new ModuleException($"CurrentWord/WordRegex: {ex.Message}"); }
-		}
+		internal Regex WordRegex2 { get; set; } = null!;
 	}
 
 	public class FixedColumn

@@ -7,7 +7,7 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="powershell">
 <annotation><documentation><![CDATA[
 
-powershell.hrc by Roman Kuzmin, aka nightroman, 2025-10-27
+powershell.hrc by Roman Kuzmin, aka nightroman, 2025-12-13
 visual.hrd is recommended as optimized for powershell.hrc
 
 Regex syntax in strings after regex operators, [regex], and <#regex#>
@@ -35,12 +35,12 @@ SQL syntax in here-strings after <#sql#>
 <region name="Directive"     parent="def:Directive"     description="#requires, ..."/>
 <region name="EnumKey"       parent="def:Parameter"     description="Enum keys."/>
 <region name="Error"         parent="def:Error"         description="Error and warning areas."/>
-<region name="HashKey"       parent="def:Parameter"     description="Hashtable keys."/>
+<region name="HashKey"       parent="def:Label"         description="Hashtable keys."/>
 <region name="HelpDirective" parent="def:CommentDoc"    description="Help comment directives."/>
 <region name="Identifier"    parent="def:Identifier"    description="Command, member, etc. names"/>
 <region name="Keyword"       parent="def:Keyword"       description="Keywords and known DSL."/>
 <region name="Label"         parent="def:Label"         description="Loop labels."/>
-<region name="Parameter"     parent="def:Parameter"     description="Command parameters."/>
+<region name="Parameter"     parent="def:Label"         description="Command parameters."/>
 <region name="Pipeline"      parent="def:KeywordStrong" description="Pipeline and redirection operators."/>
 <region name="String"        parent="def:String"        description="Literal text in string expressions."/>
 <region name="StringEdge"    parent="def:StringEdge"    description="Edges of string literals."/>

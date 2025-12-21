@@ -1,6 +1,4 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace FarNet;
 
@@ -8,8 +6,7 @@ namespace FarNet;
 /// Module settings base class.
 /// </summary>
 /// <typeparam name="T">
-/// The data type.
-/// It may implement <see cref="IValidate"/> for data validation and completion.
+/// The settings data. It may implement <see cref="IValidatableObject"/> for validation.
 /// </typeparam>
 /// <remarks>
 /// See the <see href="https://github.com/nightroman/FarNet/tree/main/Modules/FarNet.Demo">FarNet.Demo</see> module
@@ -47,8 +44,7 @@ namespace FarNet;
 /// See its remarks for details.
 /// </para>
 /// <para>
-/// For data validation and completion the data type may implement <see cref="IValidate"/>.
-/// It is called when the data are deserialized or default created.
+/// The settings data type may implement <see cref="IValidatableObject"/> for validation.
 /// </para>
 /// </remarks>
 public class ModuleSettings<T> : ModuleSettingsBase where T : new()

@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 10.0.19 =
+
+F5 in build scripts
+- better error on no tasks
+
 = 10.0.18 =
 
 Tweak the errors menu.
