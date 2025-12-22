@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.JsonKit
 
+= 0.5.0 =
+
+Requires FarNet 10, uses .NET 10
+
 = 0.4.4 =
 
 Minor tweaks.

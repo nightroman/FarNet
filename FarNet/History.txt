@@ -1,5 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet
 
+= 10.0.15 =
+
+Settings
+- removed obsolete IValidate, use IValidatableObject instead
+- use defaults when the file is invalid or validation fails
+
 = 10.0.14 =
 
 Settings

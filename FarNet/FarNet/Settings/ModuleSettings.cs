@@ -40,11 +40,14 @@ namespace FarNet;
 /// Reading only happens on the first call of <see cref="GetData"/>.
 /// </para>
 /// <para>
-/// For migrating old data, override <see cref="UpdateData"/>.
-/// See its remarks for details.
+/// For migrating old data, override <see cref="UpdateData"/>, see its remarks.
 /// </para>
 /// <para>
 /// The settings data type may implement <see cref="IValidatableObject"/> for validation.
+/// Validation is called after reading from the file or creating the original default.
+/// In addition to validation itself, it may be used for initializing extra data.
+/// For example, regular expression objects may be created from string patterns,
+/// e.g. using <see cref="Validators.Regex"/>.
 /// </para>
 /// </remarks>
 public class ModuleSettings<T> : ModuleSettingsBase where T : new()
@@ -76,8 +79,14 @@ public class ModuleSettings<T> : ModuleSettingsBase where T : new()
 	/// Gets the current settings data.
 	/// </summary>
 	/// <remarks>
+	/// <para>
+	/// If the source file is invalid or validation fails, an error is shown and the default settings are used.
+	/// Correct the file or data. Restarting Far Manager is recommended, depending on how modules use settings.
+	/// </para>
+	/// <para>
 	/// Do not cache the returned object, it is already cached internally.
 	/// The current object may be different on next calls after updates.
+	/// </para>
 	/// </remarks>
 	public T GetData()
 	{

@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.Explore
 
+= 5.3.0 =
+
+Requires FarNet 10, uses .NET 10
+
 = 5.2.1 =
 
 Tweaks for testing.

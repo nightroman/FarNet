@@ -9,31 +9,31 @@ param(
 )
 
 Set-StrictMode -Version 3
-$ModuleName = 'CopyColor'
-$ModuleRoot = "$FarHome\FarNet\Modules\$ModuleName"
-$Description = 'Copy editor text with colors as HTML. FarNet module for Far Manager.'
+$_name = 'CopyColor'
+$_root = "$FarHome\FarNet\Modules\$_name"
+$_description = 'Copy editor text with colors as HTML. FarNet module for Far Manager.'
 
 task build meta, {
 	exec { dotnet build -c $Configuration /p:FarHome=$FarHome }
 }
 
 task clean {
-	remove z, bin, obj, README.html, FarNet.$ModuleName.*.nupkg
+	remove z, bin, obj, README.html, FarNet.$_name.*.nupkg
 }
 
 task version {
-	($Script:Version = Get-BuildVersion History.txt '^= (\d+\.\d+\.\d+) =$')
+	($Script:_version = Get-BuildVersion History.txt '^= (\d+\.\d+\.\d+) =$')
 }
 
-task meta -Inputs .build.ps1, History.txt -Outputs Directory.Build.props version, {
+task meta -Inputs $BuildFile, History.txt -Outputs Directory.Build.props version, {
 	Set-Content Directory.Build.props @"
 <Project>
   <PropertyGroup>
     <Company>https://github.com/nightroman/FarNet</Company>
     <Copyright>Copyright (c) Roman Kuzmin</Copyright>
-    <Product>FarNet.$ModuleName</Product>
-    <Version>$Version</Version>
-    <Description>$Description</Description>
+    <Product>FarNet.$_name</Product>
+    <Version>$_version</Version>
+    <Description>$_description</Description>
   </PropertyGroup>
 </Project>
 "@
@@ -49,14 +49,14 @@ task markdown {
 			'--embed-resources'
 			'--standalone'
 			"--css=$env:MarkdownCss"
-			"--metadata=pagetitle:$ModuleName"
+			"--metadata=pagetitle:$_name"
 		)
 	}
 }
 
 task package markdown, version, {
-	equals "$Version.0" (Get-Item $ModuleRoot\$ModuleName.dll).VersionInfo.FileVersion
-	$toModule = "z\tools\FarHome\FarNet\Modules\$ModuleName"
+	equals "$_version.0" (Get-Item $_root\$_name.dll).VersionInfo.FileVersion
+	$toModule = "z\tools\FarHome\FarNet\Modules\$_name"
 
 	remove z
 	$null = mkdir $toModule
@@ -70,7 +70,7 @@ task package markdown, version, {
 		'README.html'
 		'History.txt'
 		'..\LICENSE'
-		"$ModuleRoot\$ModuleName.dll"
+		"$_root\$_name.dll"
 	)
 }
 
@@ -79,15 +79,15 @@ task nuget package, version, {
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
-		<id>FarNet.$ModuleName</id>
-		<version>$Version</version>
+		<id>FarNet.$_name</id>
+		<version>$_version</version>
 		<owners>Roman Kuzmin</owners>
 		<authors>Roman Kuzmin</authors>
 		<license type="expression">BSD-3-Clause</license>
 		<icon>FarNetLogo.png</icon>
 		<readme>README.md</readme>
 		<projectUrl>https://github.com/nightroman/FarNet/tree/main/CopyColor</projectUrl>
-		<description>$description</description>
+		<description>$_description</description>
 		<releaseNotes>https://github.com/nightroman/FarNet/blob/main/CopyColor/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module HTML Clipboard</tags>
 	</metadata>

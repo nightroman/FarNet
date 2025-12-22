@@ -39,27 +39,42 @@ public abstract class ModuleSettingsBase
 		if (_data is not null)
 			return _data;
 
-		object data;
-		if (File.Exists(FileName))
+		try
 		{
-			try
+			object data;
+			if (File.Exists(FileName))
 			{
-				data = Read();
-				if (DoUpdateData(data))
-					Save(FileName, data);
+				try
+				{
+					data = Read();
+					if (DoUpdateData(data))
+						Save(FileName, data);
+				}
+				catch (Exception ex)
+				{
+					throw new ModuleException($"Cannot read settings.\nFile: {FileName}\nError: {ex.Message}", ex);
+				}
 			}
-			catch (Exception ex)
+			else
 			{
-				throw new ModuleException($"Cannot read settings.\nFile: {FileName}\nError: {ex.Message}", ex);
+				data = DoNewData();
 			}
-		}
-		else
-		{
-			data = DoNewData();
-		}
 
-		ValidateData(data);
-		return _data = data;
+			ValidateData(data);
+			return _data = data;
+		}
+		catch (Exception ex)
+		{
+			// log and post error
+			Log.TraceException(ex);
+			Far.Api.PostJob(() => Far.Api.ShowError("Using default settings", ex));
+
+			// use default data
+			_data = DoNewData();
+			ValidateData(_data);
+
+			return _data;
+		}
 	}
 
 	internal abstract object DoNewData();
@@ -99,27 +114,13 @@ public abstract class ModuleSettingsBase
 			catch (ValidationException ex)
 			{
 				throw new ModuleException($"""
-					Settings validation failed.
+					Settings validation error.
 					File: {FileName}
 					Field: {string.Join(", ", ex.ValidationResult.MemberNames)}
 					Error: {ex.Message}
 					""");
 			}
 		}
-
-#pragma warning disable CS0618
-		if (data is IValidate validate)
-		{
-			try
-			{
-				validate.Validate();
-			}
-			catch (Exception ex)
-			{
-				throw new ModuleException($"Cannot validate data.\nFile: {FileName}\nError: {ex.Message}", ex);
-			}
-		}
-#pragma warning restore CS0618
 	}
 
 	/// <summary>
@@ -215,14 +216,13 @@ public abstract class ModuleSettingsBase
 		editor.Open();
 	}
 
-	const string DifferentXml = @"
-The XML is different from the current settings XML.
-Update the text with the current settings XML?
+	const string DifferentXml = """
+		The XML is different from the current settings:
+		(?) added new elements or removed old
+		(?) changed formatting or data order
+		(?) syntax or validation errors
 
-You may undo this change before saving.
-
-What you may get:
-- Added new and removed old elements
-- Original formatting and elements order
-";
+		Update the text with the current settings?
+		(you may undo this change before saving)
+		""";
 }
