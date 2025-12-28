@@ -5,7 +5,7 @@ namespace GitKit.Commands;
 
 sealed class CDCommand(CommandParameters parameters) : BaseCommand(parameters)
 {
-	readonly string _path = parameters.GetString(Param.Path, ParameterOptions.ExpandVariables) ?? string.Empty;
+	readonly string _path = parameters.GetString(ParamPath, ParameterOptions.ExpandVariables) ?? string.Empty;
 
 	public override void Invoke()
 	{

@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 10.0.20 =
+
+Tune work with paths.
+
 = 10.0.19 =
 
 F5 in build scripts

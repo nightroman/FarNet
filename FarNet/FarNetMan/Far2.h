@@ -1,12 +1,7 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 #pragma once
 
 namespace FarNet
 {
-// Works::Far2::Api instance.
 ref class Far2 : Works::Far2
 {
 public:
@@ -25,5 +20,9 @@ public:
 	virtual void IEditorLineText(IntPtr id, int line, IntPtr p, int n) override;
 	virtual ValueTuple<IntPtr, int> ILineText(ILine^ line) override;
 	virtual void ILineText(ILine^ line, IntPtr p, int n) override;
+internal:
+	static Far2 Instance;
+private:
+	Far2() {}
 };
 }

@@ -8,27 +8,17 @@ public class Command : ModuleCommand
 {
 	public override void Invoke(object sender, ModuleCommandEventArgs e)
 	{
-		try
+		InvokeSubcommand(e.Command, static (name, parameters) =>
+		name switch
 		{
-			var parameters = CommandParameters.Parse(e.Command);
-			AbcCommand command = parameters.Command switch
-			{
-				"edit" => new EditCommand(parameters),
-				"hash" => new HashCommand(parameters),
-				"json" => new JsonCommand(parameters),
-				"keys" => new KeysCommand(parameters),
-				"list" => new ListCommand(parameters),
-				"set" => new SetCommand(parameters),
-				"tree" => new TreeCommand(parameters),
-				_ => throw new ModuleException($"Unknown command '{parameters.Command}'.")
-			};
-
-			parameters.ThrowUnknownParameters();
-			command.Invoke();
-		}
-		catch (Exception ex)
-		{
-			throw new ModuleException(ex.Message, ex);
-		}
+			"edit" => new EditCommand(parameters),
+			"hash" => new HashCommand(parameters),
+			"json" => new JsonCommand(parameters),
+			"keys" => new KeysCommand(parameters),
+			"list" => new ListCommand(parameters),
+			"set" => new SetCommand(parameters),
+			"tree" => new TreeCommand(parameters),
+			_ => null
+		});
 	}
 }

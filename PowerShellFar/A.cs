@@ -143,9 +143,7 @@ internal static class A
 			throw new InvalidOperationException();
 
 		var param = FAR_PWSF_FILE.Split('\n');
-		var file = param[0];
-		if (!Path.IsPathRooted(file))
-			file = Path.Join(Far.Api.CurrentDirectory, file);
+		var file = Far.Api.GetFullPath(param[0]);
 
 		return new($". '{file.Replace("'", "''")}' @args") { Writer = new ConsoleOutputWriter(), Arguments = [.. param.Skip(1)] };
 	}

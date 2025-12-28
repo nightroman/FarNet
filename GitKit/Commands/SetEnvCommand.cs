@@ -1,12 +1,11 @@
 ﻿using FarNet;
-using GitKit.Commands;
 using LibGit2Sharp;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 
 namespace GitKit;
 
-sealed class SetEnvCommand : AbcCommand
+static class SetEnvCommand
 {
 	private const string NA = "n/a";
 
@@ -33,11 +32,6 @@ sealed class SetEnvCommand : AbcCommand
 		public bool IsBusy { get; set; }
 		public FileSystemWatcher? WordirWatcher { get; set; }
 		public FileSystemWatcher? GitdirWatcher { get; set; }
-	}
-
-	public SetEnvCommand(CommandParameters parameters)
-	{
-		_name = parameters.GetRequiredString(Param.Name);
 	}
 
 	private static bool OneSymbolRule(string? old)
@@ -206,15 +200,18 @@ sealed class SetEnvCommand : AbcCommand
 		Far.Api.UI.Redraw();
 	}
 
-	public override void Invoke()
+	public static void Run(string location)
 	{
+		_name ??= Settings.Default.GetData().InfoEnvVar;
+		if (_name.Length == 0)
+			return;
+
 		// one-symbol rule
 		var old = Environment.GetEnvironmentVariable(_name);
 		if (OneSymbolRule(old))
 			return;
 
 		// known location
-		string location = Far.Api.CurrentDirectory;
 		if (_locations.TryGetValue(location, out var found))
 		{
 			if (!found.IsBusy && found.Text is { } text && text != old)

@@ -3,6 +3,7 @@ using FarNet.Forms;
 using System.Globalization;
 
 namespace FarNetTest.About;
+#pragma warning disable CS0067
 
 public class TestFar : IFar
 {
@@ -35,6 +36,8 @@ public class TestFar : IFar
 	public override string CurrentDirectory => AbcTest.TestRoot;
 
 	readonly IWindow _Window = new TestWindow();
+
+	public override event EventHandler<DirectoryChangedEventArgs>? DirectoryChanged;
 
 	public override IWindow Window => _Window;
 

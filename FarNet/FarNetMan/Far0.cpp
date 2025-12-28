@@ -1,4 +1,3 @@
-
 // _110628_192511 Open from a quick view panel issue
 // The `from` == OPEN_VIEWER. But the menu has been created for `window` == WTYPE_PANELS.
 // The `item` is related to the panel handlers. But technically it is strange to call them for not really a panel.
@@ -46,7 +45,7 @@ void Far0::Start()
 	{
 		// inject
 		Far::Api = % Far1::Instance;
-		Works::Far2::Api = gcnew Far2();
+		Works::Far2::Api = % Far2::Instance;
 
 		// module folder
 		auto path = Environment::ExpandEnvironmentVariables("%FARHOME%\\FarNet\\Modules");
@@ -418,11 +417,18 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 		// the command
 		auto command = mi->Values[0].String;
 
-		// called to signal some macro completion
-		if (lstrcmpW(command, L"signal_macro") == 0)
+		// called on folder change
+		if (lstrcmpW(command, L"fn:dir") == 0)
 		{
-			auto wait = _macroWait.Dequeue();
-			wait->Set();
+			if (Far1::Instance._DirectoryChanged)
+				Far1::Instance._DirectoryChanged->Invoke(nullptr, % DirectoryChangedEventArgs(Far1::Instance.CurrentDirectory));
+			return 0;
+		}
+
+		// called on macro completion
+		if (lstrcmpW(command, L"fn:macro") == 0)
+		{
+			_macroWait.Dequeue()->Set();
 			return 0;
 		}
 
@@ -952,7 +958,7 @@ WaitHandle^ Far0::PostMacroWait(String^ macro)
 	//! - clear syntax error messages without 2nd part
 	//! - combined does not work any faster, so KISS
 	Far1::Instance.PostMacro(macro);
-	Far1::Instance.PostMacro("Plugin.SyncCall('10435532-9BB3-487B-A045-B0E6ECAAB6BC', 'signal_macro')");
+	Far1::Instance.PostMacro("Plugin.SyncCall('10435532-9BB3-487B-A045-B0E6ECAAB6BC', 'fn:macro')");
 
 	// add and return wait handle, it will be signaled and removed when signal_macro is called
 	auto wait = gcnew ManualResetEvent(false);

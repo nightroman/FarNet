@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.RedisKit
 
+= 0.7.1 =
+
+Use FarNet 10.0.16 (subcommands).
+
 = 0.7.0 =
 
 Uses .NET 10

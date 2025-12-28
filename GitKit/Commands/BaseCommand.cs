@@ -9,8 +9,8 @@ abstract class BaseCommand : AbcCommand
 
 	protected BaseCommand(CommandParameters parameters)
 	{
-		try { GitDir = Lib.GetGitDir(parameters.GetPathOrCurrentDirectory(Param.Repo)); }
-		catch (Exception ex) { throw parameters.ParameterError(Param.Repo, ex.Message); }
+		try { GitDir = Lib.GetGitDir(parameters.GetPathOrCurrentDirectory(ParamRepo)); }
+		catch (Exception ex) { throw parameters.ParameterError(ParamRepo, ex.Message); }
 	}
 
 	protected static string? GetGitPathOrPath(

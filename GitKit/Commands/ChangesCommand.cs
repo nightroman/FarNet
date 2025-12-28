@@ -9,7 +9,7 @@ sealed class ChangesCommand : BaseCommand
 
 	public ChangesCommand(CommandParameters parameters) : base(parameters)
 	{
-		var kind = parameters.GetString(Param.Kind);
+		var kind = parameters.GetString(ParamKind);
 		_kind = kind switch
 		{
 			"NotCommitted" => ChangesExplorer.Kind.NotCommitted,
@@ -17,7 +17,7 @@ sealed class ChangesCommand : BaseCommand
 			"Staged" => ChangesExplorer.Kind.Staged,
 			"Head" => ChangesExplorer.Kind.Head,
 			"Last" or null => ChangesExplorer.Kind.Last,
-			_ => throw parameters.ParameterError(Param.Kind, $"Unknown value: '{kind}'.")
+			_ => throw parameters.ParameterError(ParamKind, $"Unknown value: '{kind}'.")
 		};
 	}
 

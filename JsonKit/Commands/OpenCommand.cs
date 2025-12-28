@@ -19,9 +19,9 @@ sealed class OpenCommand : AbcCommand
 
 	public OpenCommand(CommandParameters parameters)
 	{
-		_file = parameters.GetPath(Param.File, ParameterOptions.UseCursorFile);
+		_file = parameters.GetPath(ParamFile, ParameterOptions.UseCursorFile);
 
-		if (parameters.GetString(Param.Select) is { } select)
+		if (parameters.GetString(ParamSelect) is { } select)
 		{
 			try
 			{
@@ -32,14 +32,14 @@ sealed class OpenCommand : AbcCommand
 			}
 			catch (Exception ex)
 			{
-				throw parameters.ParameterError(Param.Select, ex.Message);
+				throw parameters.ParameterError(ParamSelect, ex.Message);
 			}
 		}
 
 		if (_file is null)
 		{
 			if (_select is null || Far.Api.Panel is not AbcPanel panel)
-				throw parameters.ParameterError(Param.File, "Omitted requires the panel cursor file.");
+				throw parameters.ParameterError(ParamFile, "Omitted requires the panel cursor file.");
 
 			_panel = (panel, _select);
 		}

@@ -10,7 +10,7 @@ sealed class EditCommand : BaseCommand
 
 	public EditCommand(CommandParameters parameters) : base(parameters)
 	{
-		_key = parameters.GetRequiredString(Param.Key);
+		_key = parameters.GetRequiredString(ParamKey);
 	}
 
 	public override void Invoke()

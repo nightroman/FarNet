@@ -6,8 +6,8 @@ namespace GitKit.Commands;
 
 sealed class CommitsCommand(CommandParameters parameters) : BaseCommand(parameters)
 {
-	string? _path = parameters.GetString(Param.Path, ParameterOptions.ExpandVariables);
-	readonly bool _isGitPath = parameters.GetBool(Param.IsGitPath);
+	string? _path = parameters.GetString(ParamPath, ParameterOptions.ExpandVariables);
+	readonly bool _isGitPath = parameters.GetBool(ParamIsGitPath);
 
 	public override void Invoke()
 	{

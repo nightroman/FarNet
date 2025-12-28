@@ -8,6 +8,8 @@ public class Settings : ModuleSettings<Settings.Data>
 
 	public class Data
 	{
+		public string InfoEnvVar { get; set; } = "";
+
 		public string DiffTool { get; set; } = @"%LOCALAPPDATA%\Programs\Microsoft VS Code\bin\code.cmd";
 		public string DiffToolArguments { get; set; } = "--diff \"%1\" \"%2\"";
 

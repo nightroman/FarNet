@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.JsonKit
 
+= 0.5.1 =
+
+Use FarNet 10.0.16 (subcommands).
+
 = 0.5.0 =
 
 Requires FarNet 10, uses .NET 10

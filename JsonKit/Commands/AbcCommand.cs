@@ -1,12 +1,9 @@
-﻿namespace JsonKit.Commands;
+﻿using FarNet;
 
-abstract class AbcCommand
+namespace JsonKit.Commands;
+
+abstract class AbcCommand : Subcommand
 {
-	protected static class Param
-	{
-		public const string File = "File";
-		public const string Select = "Select";
-	}
-
-	public abstract void Invoke();
+	public const string ParamFile = "File";
+	public const string ParamSelect = "Select";
 }

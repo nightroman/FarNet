@@ -11,23 +11,23 @@ sealed class CloneCommand : AbcCommand
 
 	public CloneCommand(CommandParameters parameters)
 	{
-		_url = parameters.GetRequiredString(Param.Url);
+		_url = parameters.GetRequiredString(ParamUrl);
 
-		_path = parameters.GetPathOrCurrentDirectory(Param.Path);
+		_path = parameters.GetPathOrCurrentDirectory(ParamPath);
 
 		_op = new CloneOptions
 		{
-			IsBare = parameters.GetBool(Param.IsBare),
-			RecurseSubmodules = parameters.GetBool(Param.RecurseSubmodules),
+			IsBare = parameters.GetBool(ParamIsBare),
+			RecurseSubmodules = parameters.GetBool(ParamRecurseSubmodules),
 			FetchOptions =
 			{
-				Depth = parameters.GetValue<int>(Param.Depth)
+				Depth = parameters.GetValue<int>(ParamDepth)
 			}
 		};
 
 		_op.FetchOptions.CredentialsProvider = Host.GetCredentialsHandler();
 
-		if (parameters.GetBool(Param.NoCheckout))
+		if (parameters.GetBool(ParamNoCheckout))
 			_op.Checkout = false;
 	}
 

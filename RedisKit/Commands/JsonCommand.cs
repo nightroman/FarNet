@@ -10,7 +10,7 @@ sealed class JsonCommand : BaseCommand
 
 	public JsonCommand(CommandParameters parameters) : base(parameters)
 	{
-		_mask = parameters.GetRequiredString(Param.Mask);
+		_mask = parameters.GetRequiredString(ParamMask);
 	}
 
 	public override void Invoke()

@@ -1,5 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet
 
+= 10.0.16 =
+
+Support subcommands, use in GitKit, JsonKit, RedisKit.
+
+New event IFar.DirectoryChanged, requires a macro, see docs.
+
 = 10.0.15 =
 
 Settings

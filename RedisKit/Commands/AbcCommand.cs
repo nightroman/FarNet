@@ -1,17 +1,14 @@
-﻿namespace RedisKit.Commands;
+﻿using FarNet;
 
-abstract class AbcCommand
+namespace RedisKit.Commands;
+
+abstract class AbcCommand : Subcommand
 {
-	public static class Param
-	{
-		public const string Colon = "Colon";
-		public const string DB = "DB";
-		public const string Eol = "Eol";
-		public const string Key = "Key";
-		public const string Mask = "Mask";
-		public const string Redis = "Redis";
-		public const string Root = "Root";
-	}
-
-	public abstract void Invoke();
+	public const string ParamColon = "Colon";
+	public const string ParamDB = "DB";
+	public const string ParamEol = "Eol";
+	public const string ParamKey = "Key";
+	public const string ParamMask = "Mask";
+	public const string ParamRedis = "Redis";
+	public const string ParamRoot = "Root";
 }

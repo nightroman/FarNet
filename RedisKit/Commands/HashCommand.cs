@@ -12,7 +12,7 @@ sealed class HashCommand : BaseCommand
 	public HashCommand(CommandParameters parameters) : base(parameters)
 	{
 		_key = GetRequiredRedisKeyOfType(parameters, RedisType.Hash);
-		_eol = parameters.GetBool(Param.Eol);
+		_eol = parameters.GetBool(ParamEol);
 	}
 
 	public override void Invoke()

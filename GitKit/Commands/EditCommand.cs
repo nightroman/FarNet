@@ -5,7 +5,7 @@ namespace GitKit.Commands;
 
 sealed class EditCommand(CommandParameters parameters) : BaseCommand(parameters)
 {
-	readonly string? _path = parameters.GetString(Param.Path, ParameterOptions.ExpandVariables);
+	readonly string? _path = parameters.GetString(ParamPath, ParameterOptions.ExpandVariables);
 
 	static string? InputPath(Repository repo)
 	{

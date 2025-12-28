@@ -8,21 +8,11 @@ public class Command : ModuleCommand
 {
 	public override void Invoke(object sender, ModuleCommandEventArgs e)
 	{
-		try
+		InvokeSubcommand(e.Command, static (name, parameters) =>
+		name switch
 		{
-			var parameters = CommandParameters.Parse(e.Command);
-			AbcCommand command = parameters.Command switch
-			{
-				"open" => new OpenCommand(parameters),
-				_ => throw new ModuleException($"Unknown command '{parameters.Command}'.")
-			};
-
-			parameters.ThrowUnknownParameters();
-			command.Invoke();
-		}
-		catch (Exception ex)
-		{
-			throw new ModuleException(ex.Message, ex);
-		}
+			"open" => new OpenCommand(parameters),
+			_ => null
+		});
 	}
 }

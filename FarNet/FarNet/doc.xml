@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding='utf-8'?>
+<!--
+/// <include file='doc.xml' path='doc/UnselectNames/*'/>
+/// <include file='doc.xml' path='doc/N1[@name="N2"]/*'/>
+
+With 2+ paragraphs do not omit <para> blocks.
+
+Use <pre> instead of <code>, <code> shows as one line.
+
+    <pre><![CDATA[
+    ]]></pre>
+-->
 <doc>
-  <!--
-    /// <include file='doc.xml' path='doc/UnselectNames/*'/>
-    /// <include file='doc.xml' path='doc/N1[@name="N2"]/*'/>
-    -->
   <Files>
     <summary>
       Lists panel files including ".." dynamically by index.
@@ -242,8 +249,7 @@
       <para>
         The <c>topic</c> formats:
       </para>
-      <code>
-        <![CDATA[
+      <pre><![CDATA[
 "<ModulePath>Topic"
 Help files in the folder of the specified file.
 Example: "<D:\Far\FarNet\Modules\Foo\Foo.dll>Bar"
@@ -257,8 +263,7 @@ Reference to the FarNet plugin help.
 
 ":Topic"
 Reference to the Far Manager help.
-]]>
-      </code>
+      ]]></pre>
     </remarks>
   </ShowHelp>
   <Colors>
@@ -283,30 +288,54 @@ Reference to the Far Manager help.
       List item collection. STOP: see remarks.
     </summary>
     <remarks>
-      Normally you fill the list with items and set their properties before opening a
-      dialog. After opening this collection is mapped to a control dynamically, i.e.
-      all operations (set, insert, remove and etc.) are displayed immediately. The
-      items themselves are not mapped dynamically, so that if you change an item then
-      you have to reset it explicitly, see the example.
       <para>
-        Dynamic mapping is simple, useful and effective when you change (or add, remove)
-        one item at a time (or just a few items). But if you actually recreate all the
-        items then for better performance you have to use <see cref="DetachItems"/>
-        before changes and <see cref="AttachItems"/> after changes.
+
+Normally you fill the list with items and set their properties before opening
+a dialog. After opening this collection is mapped to a control dynamically,
+i.e. all operations (set, insert, remove and etc.) are displayed immediately.
+The items themselves are not mapped dynamically, so that if you change an item
+then you have to reset it explicitly, see the example.
+
+      </para>
+      <para>
+
+Dynamic mapping is simple, useful and effective when you change (or add,
+remove) one item at a time (or just a few items). But if you actually
+recreate all the items then for better performance you have to use <see
+cref="DetachItems"/> before changes and <see cref="AttachItems"/> after
+changes.
+
       </para>
     </remarks>
     <example>
       (PowerShell): how to set an item checked when the dialog is running
-      <code>
-        <![CDATA[
+      <pre><![CDATA[
 # get an item
 $item = $listbox.Items[3]
 # change it
 $item.Checked = $true
 # set it!
 $listbox.Items[3] = $item
-]]>
-      </code>
+      ]]></pre>
     </example>
   </BaseListItems>
+  <DirectoryChanged>
+    <summary>
+    Occurs when <see cref="CurrentDirectory"/> changes.
+    </summary>
+    <remarks>
+    <para>
+    To make this event working, you have to define a macro:
+    </para>
+    <pre><![CDATA[
+Event {
+  group = "FolderChanged"; description = "FarNet event";
+  action = function() Plugin.SyncCall("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "fn:dir") end;
+}
+    ]]></pre>
+    <para>
+    To avoid this macro, support <see href="https://github.com/FarGroup/FarManager/issues/1060"/>
+    </para>
+    </remarks>
+  </DirectoryChanged>
 </doc>

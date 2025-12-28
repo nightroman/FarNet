@@ -158,10 +158,7 @@ sealed class Session : IDisposable
 		if (isRootFromParameter)
 		{
 			root = args.Parameters![SessionParameterName] as string ?? throw new ModuleException("Parameter _session must be string.");
-
-			if (!Path.IsPathRooted(root))
-				root = Path.Join(Far.Api.CurrentDirectory, root);
-
+			root = Far.Api.GetFullPath(root);
 			root = Path.GetFullPath(root);
 		}
 		else

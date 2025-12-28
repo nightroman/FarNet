@@ -561,6 +561,9 @@ public abstract class IFar
 		else
 			return Path.GetFullPath(path, CurrentDirectory);
 	}
+
+	/// <include file='doc.xml' path='doc/DirectoryChanged/*'/>
+	public abstract event EventHandler<DirectoryChangedEventArgs> DirectoryChanged;
 }
 
 /// <summary>

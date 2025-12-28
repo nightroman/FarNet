@@ -85,7 +85,6 @@ FarHome\FarNet\Modules\GitKit\git2-3f4182d.dll
 FarHome\FarNet\Modules\GitKit\GitKit.dll
 FarHome\FarNet\Modules\GitKit\GitKit.fs.ini
 FarHome\FarNet\Modules\GitKit\GitKit.hlf
-FarHome\FarNet\Modules\GitKit\GitKit.macro.lua
 FarHome\FarNet\Modules\GitKit\GitKit.pdb
 FarHome\FarNet\Modules\GitKit\History.txt
 FarHome\FarNet\Modules\GitKit\LibGit2Sharp.dll

@@ -1,6 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet.JavaScriptFar
 https://github.com/microsoft/ClearScript/releases
 
+= 2.2.1 =
+
+Tune work with paths.
+
 = 2.2.0 =
 
 Requires FarNet 10, uses .NET 10.

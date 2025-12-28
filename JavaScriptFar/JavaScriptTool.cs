@@ -42,7 +42,7 @@ public class JavaScriptTool : ModuleTool
 					var file = Far.Api.Panel!.CurrentFile;
 					if (file is not null && Session.IsFileDocument(file.Name))
 					{
-						var path = Path.Join(Far.Api.CurrentDirectory, file.Name);
+						var path = Far.Api.GetFullPath(file.Name);
 						if (File.Exists(path))
 						{
 							Actor.StartDebugging(path);
@@ -57,7 +57,7 @@ public class JavaScriptTool : ModuleTool
 
 	static void Configuration()
 	{
-		var file = Path.Combine(Far.Api.CurrentDirectory, Session.SessionConfigFile);
+		var file = Far.Api.GetFullPath(Session.SessionConfigFile);
 		if (!File.Exists(file))
 		{
 			if (0 != Far.Api.Message($"Create configuration {file}?", Res.MyName, MessageOptions.YesNo))

@@ -148,7 +148,7 @@ internal sealed class ReadCommand
 				{
 					e.Ignore = true;
 					if (Far.Api.Panel!.CurrentFile is { } file)
-						_form.Edit.Line.InsertText(Path.Combine(Far.Api.CurrentDirectory, file.Name));
+						_form.Edit.Line.InsertText(Far.Api.GetFullPath(file.Name));
 				}
 				return;
 		}

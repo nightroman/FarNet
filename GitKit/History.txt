@@ -1,5 +1,18 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 1.5.1 =
+
+Use FarNet 10.0.16 (subcommands).
+
+gk:status
+- show total number of changes
+
+gk:setenv
+- replaced with the new setting InfoEnvVar, see docs
+
+"GitKit.macro.lua"
+- removed from the package
+
 = 1.5.0 =
 
 Uses .NET 10

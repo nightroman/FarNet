@@ -9,7 +9,7 @@ sealed class KeysCommand : BaseCommand
 
 	public KeysCommand(CommandParameters parameters) : base(parameters)
 	{
-		_mask = parameters.GetString(Param.Mask);
+		_mask = parameters.GetString(ParamMask);
 	}
 
 	public override void Invoke()

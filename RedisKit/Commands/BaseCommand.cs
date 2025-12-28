@@ -9,18 +9,18 @@ abstract class BaseCommand : AbcCommand
 
 	protected BaseCommand(CommandParameters parameters)
 	{
-		var config = parameters.GetString(Param.Redis);
-		var index = parameters.GetValue(Param.DB, -1);
+		var config = parameters.GetString(ParamRedis);
+		var index = parameters.GetValue(ParamDB, -1);
 		Database = OpenDatabase(GetRedisConfiguration(config), index);
 	}
 
 	protected RedisKey GetRequiredRedisKeyOfType(CommandParameters parameters, RedisType expectedType)
 	{
-		RedisKey key = parameters.GetRequiredString(Param.Key);
+		RedisKey key = parameters.GetRequiredString(ParamKey);
 
 		var actualType = Database.KeyType(key);
 		if (actualType != expectedType && actualType != RedisType.None)
-			throw parameters.ParameterError(Param.Key, $"The existing key is '{actualType}', not '{expectedType}'.");
+			throw parameters.ParameterError(ParamKey, $"The existing key is '{actualType}', not '{expectedType}'.");
 
 		return key;
 	}

@@ -7,8 +7,8 @@ namespace GitKit.Commands;
 sealed class BlameCommand(CommandParameters parameters) : BaseCommand(parameters)
 {
 	const int AuthorNameMax = 15;
-	string? _path = parameters.GetString(Param.Path, ParameterOptions.ExpandVariables);
-	readonly bool _isGitPath = parameters.GetBool(Param.IsGitPath);
+	string? _path = parameters.GetString(ParamPath, ParameterOptions.ExpandVariables);
+	readonly bool _isGitPath = parameters.GetBool(ParamIsGitPath);
 
 	public override void Invoke()
 	{

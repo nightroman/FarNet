@@ -11,7 +11,8 @@ sealed class StatusCommand(CommandParameters parameters) : BaseCommand(parameter
 	{
 		// see TreeChanges.DebuggerDisplay
 		var changes = Lib.GetChanges(repo);
-		if (changes.Count == 0)
+		var count = changes.Count;
+		if (count == 0)
 			return;
 
 		if (showFiles)
@@ -21,34 +22,7 @@ sealed class StatusCommand(CommandParameters parameters) : BaseCommand(parameter
 				Far.Api.UI.WriteLine($"  {change.Status}:\t{change.Path}");
 		}
 
-		int n;
-
-		n = changes.Added.Count();
-		if (n > 0)
-			Far.Api.UI.Write($"a{n} ", ConsoleColor.Red);
-
-		n = changes.Modified.Count();
-		if (n > 0)
-			Far.Api.UI.Write($"m{n} ", ConsoleColor.Red);
-
-		n = changes.Deleted.Count();
-		if (n > 0)
-			Far.Api.UI.Write($"d{n} ", ConsoleColor.Red);
-
-		n = changes.TypeChanged.Count();
-		if (n > 0)
-			Far.Api.UI.Write($"t{n} ", ConsoleColor.Red);
-
-		n = changes.Renamed.Count();
-		if (n > 0)
-			Far.Api.UI.Write($"r{n} ", ConsoleColor.Red);
-
-		n = changes.Copied.Count();
-		if (n > 0)
-			Far.Api.UI.Write($"c{n} ", ConsoleColor.Red);
-
-		//! sign of changes, just in case if none of the above
-		Far.Api.UI.Write("- ");
+		Far.Api.UI.Write($"({count}) ", ConsoleColor.Red);
 	}
 
 	public override void Invoke()

@@ -7,6 +7,7 @@ Far Manager git helpers based on LibGit2Sharp
 
 - [About](#about)
 - [Install](#install)
+- [Credentials](#credentials)
 - [Commands](#commands)
     - [gk:blame](#gkblame)
     - [gk:branches](#gkbranches)
@@ -21,7 +22,6 @@ Far Manager git helpers based on LibGit2Sharp
     - [gk:init](#gkinit)
     - [gk:pull](#gkpull)
     - [gk:push](#gkpush)
-    - [gk:setenv](#gksetenv)
     - [gk:status](#gkstatus)
 - [Panels](#panels)
     - [Branches panel](#branches-panel)
@@ -29,7 +29,6 @@ Far Manager git helpers based on LibGit2Sharp
     - [Changes panel](#changes-panel)
 - [Menu](#menu)
 - [Settings](#settings)
-- [Credentials](#credentials)
 
 *********************************************************************
 ## About
@@ -57,6 +56,22 @@ Git may be optionally used for getting credentials.
 
 How to install and update FarNet and modules\
 <https://github.com/nightroman/FarNet#readme>
+
+*********************************************************************
+## Credentials
+
+[Contents]
+[Settings](#settings)
+
+Remote git hosts may require credentials, user name and password.
+GitKit offers two ways, with some advantages and disadvantages.
+
+With `UseGitCredentials` set to false, an input dialog is used. Enter user name
+and password and optionally save them for later use. The environment variable
+`GitKit_User` is used for keeping credentials.
+
+Alternatively, if you have git installed and available in the path, set
+`UseGitCredentials` to true in order to use git for getting credentials.
 
 *********************************************************************
 ## Commands
@@ -377,49 +392,6 @@ This command pulls the head branch.
 This command pushes the head branch, with a confirmation dialog.
 
 *********************************************************************
-## gk:setenv
-
-[Contents]
-
-Sets the specified environment variable to `<repo> / <branch> <tracking> (<changes>)`.
-
-One-symbol rule: if the variable exists and set to one symbol, neither letter
-nor digit, then updates of this variable are disabled.
-
-**Parameters**
-
-- `Name=<string>`
-
-    The environment variable name.
-
----
-**Use case: Show branch in title or prompt**
-
-(1) Use macros with your variable name (`_branch`, see `GitKit.macro.lua`):
-
-```lua
-Event {
-  group = "FolderChanged"; description = "GitKit setenv";
-  action = function() Plugin.SyncCall("10435532-9BB3-487B-A045-B0E6ECAAB6BC", [[gk:setenv name=_branch]]) end;
-}
-Macro {
-  area="Common"; key="CtrlShiftB"; description = "GitKit setenv";
-  action = function() Plugin.SyncCall("10435532-9BB3-487B-A045-B0E6ECAAB6BC", [[gk:setenv name=_branch]]) end;
-}
-```
-
-(2) Use `%_branch%` in one of the options (`F9` / `Options`):
-
-- `Interface settings` / `Far window title addons`
-- `Command line settings` / `Set command line prompt format`
-
----
-**NOTES**
-
-If a new repo is initialized in a visited folder, it will not be recognized,
-restart is needed. Otherwise the info will be `n/a` or a parent repo info.
-
-*********************************************************************
 ## gk:status
 
 [Contents]
@@ -605,6 +577,31 @@ branches" and "Compare commits" or by the command [gk:changes](#gkchanges).
 Settings editor: F11 / FarNet / Settings / GitKit
 
 *********************************************************************
+**InfoEnvVar**
+
+The name of environment variable to be automatically updated with the current
+folder git information: `<repo> / <branch> <tracking> (<changes>)`.
+
+Use this variable in Far Manager settings: "Interface settings" / "Far window
+title addons" or "Command line settings" / "Set command line prompt format".
+
+If you do not use this environment variable then keep its name empty.
+Otherwise the module will be working for nothing.
+
+Restart Far Manager after changing this setting.
+
+This feature requires a macro:
+
+```
+Event {
+  group = "FolderChanged"; description = "FarNet event";
+  action = function() Plugin.SyncCall("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "fn:dir") end;
+}
+```
+
+To avoid this macro, support <https://github.com/FarGroup/FarManager/issues/1060>
+
+*********************************************************************
 **DiffTool** and **DiffToolArguments**
 
 Specify the diff tool and arguments used to compare changed files.
@@ -638,21 +635,5 @@ Default: 100.
 
 The number of chars for truncated commit SHA.\
 Default: 7.
-
-*********************************************************************
-## Credentials
-
-[Contents]
-[Settings](#settings)
-
-Remote git hosts may require credentials, user name and password.
-GitKit offers two ways, with some advantages and disadvantages.
-
-With `UseGitCredentials` set to false, an input dialog is used. Enter user name
-and password and optionally save them for later use. The environment variable
-`GitKit_User` is used for keeping credentials.
-
-Alternatively, if you have git installed and available in the path, set
-`UseGitCredentials` to true in order to use git for getting credentials.
 
 *********************************************************************

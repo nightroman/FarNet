@@ -8,6 +8,7 @@ using System.Text.Json;
 
 namespace GitKit;
 
+[ModuleHost(Load = true)]
 public class Host : ModuleHost
 {
 	public const string MyName = "GitKit";
@@ -17,6 +18,12 @@ public class Host : ModuleHost
 	public Host()
 	{
 		Instance = this;
+	}
+
+	public override void Connect()
+	{
+		Far.Api.DirectoryChanged += (s, e) => SetEnvCommand.Run(e.Path);
+		Far.Api.PostJob(() => SetEnvCommand.Run(Far.Api.CurrentDirectory));
 	}
 
 	public static void InvokeGit(string arguments, string workingDirectory)

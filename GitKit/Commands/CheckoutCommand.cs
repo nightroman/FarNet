@@ -5,7 +5,7 @@ namespace GitKit.Commands;
 
 sealed class CheckoutCommand(CommandParameters parameters) : BaseCommand(parameters)
 {
-	readonly string? _checkoutBranchName = parameters.GetString(Param.Branch);
+	readonly string? _checkoutBranchName = parameters.GetString(ParamBranch);
 
 	public override void Invoke()
 	{
