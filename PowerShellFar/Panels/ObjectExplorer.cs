@@ -95,9 +95,7 @@ public sealed class ObjectExplorer : FormatExplorer
 		if (obj!.GetType().FullName == Res.MatchInfoTypeName)
 		{
 			var dynamo = (dynamic)obj;
-#pragma warning disable EPC20
 			filePath = dynamo.Path;
-#pragma warning restore EPC20
 			args.UseFileName = filePath;
 
 			var lineIndex = (int)dynamo.LineNumber - 1;

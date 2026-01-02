@@ -1,12 +1,5 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
 using FarNet;
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.IO;
 using System.Management.Automation;
 
 namespace PowerShellFar;
@@ -48,7 +41,7 @@ class FileColumnEnumerator(PSObject value, List<Meta> columns) : IEnumerator
 	public bool MoveNext() => ++Index < Columns.Count;
 }
 
-class FileColumnCollection(PSObject value, List<Meta> columns) : My.SimpleCollection
+class FileColumnCollection(PSObject value, List<Meta> columns) : MyCollection
 {
 	readonly PSObject Value = value;
 	readonly List<Meta> Columns = columns;

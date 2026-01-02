@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 10.0.21 =
+
+Minor refactoring.
+
 = 10.0.20 =
 
 Tune work with paths.

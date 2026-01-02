@@ -11,8 +11,8 @@ static class SetEnvCommand
 
 	private static readonly TimeSpan WaitChanges = TimeSpan.FromSeconds(1);
 
-	// one variable name
-	private static string _name = null!;
+	// variable name
+	internal static readonly string InfoEnvVar = Settings.Default.GetData().InfoEnvVar?.Trim() ?? "";
 
 	// workdir to info
 	static readonly ConcurrentDictionary<string, Info> _info = new(StringComparer.OrdinalIgnoreCase);
@@ -34,11 +34,6 @@ static class SetEnvCommand
 		public FileSystemWatcher? GitdirWatcher { get; set; }
 	}
 
-	private static bool OneSymbolRule(string? old)
-	{
-		return old?.Length == 1 && !char.IsLetterOrDigit(old[0]);
-	}
-
 	private static bool InRoot(string root, string dir)
 	{
 		return dir.StartsWith(root, StringComparison.OrdinalIgnoreCase) &&
@@ -47,12 +42,17 @@ static class SetEnvCommand
 
 	private static void Update(Info info, FileSystemEventArgs? e)
 	{
-		Debug.WriteLine($"##gk {e?.ChangeType} {e?.Name}");
+		// skip?
+		var old = Environment.GetEnvironmentVariable(InfoEnvVar);
+		if (old?.StartsWith(Const.SkipSetEnvChar) == true)
+			return;
 
 		// update time and let busy to work
 		info.LastCallTime = DateTime.UtcNow;
 		if (info.IsBusy)
 			return;
+
+		Debug.WriteLine($"##gk {e?.ChangeType} {e?.Name}");
 
 		// skip outer repo or location
 		string location = Far.Api.CurrentDirectory;
@@ -66,13 +66,8 @@ static class SetEnvCommand
 			return;
 		}
 
-		// one-symbol rule
-		var old = Environment.GetEnvironmentVariable(_name);
-		if (OneSymbolRule(old))
-			return;
-
 		info.IsBusy = true;
-		Task.Run(async () =>
+		ThreadPool.QueueUserWorkItem(async _ =>
 		{
 			try
 			{
@@ -94,7 +89,7 @@ static class SetEnvCommand
 
 				Debug.WriteLine($"##gk try -- {info.Text}");
 
-				var old = Environment.GetEnvironmentVariable(_name);
+				var old = Environment.GetEnvironmentVariable(InfoEnvVar);
 				if (info.Text == old)
 					return;
 
@@ -105,8 +100,9 @@ static class SetEnvCommand
 				// done
 				Far.Api.PostJob(() => SetText(info.Text));
 			}
-			catch
+			catch (Exception ex)
 			{
+				Log.TraceException(ex);
 			}
 			finally
 			{
@@ -196,19 +192,15 @@ static class SetEnvCommand
 	{
 		Debug.WriteLine($"##gk set -- {text}");
 
-		Environment.SetEnvironmentVariable(_name, text);
+		Environment.SetEnvironmentVariable(InfoEnvVar, text);
 		Far.Api.UI.Redraw();
 	}
 
 	public static void Run(string location)
 	{
-		_name ??= Settings.Default.GetData().InfoEnvVar;
-		if (_name.Length == 0)
-			return;
-
-		// one-symbol rule
-		var old = Environment.GetEnvironmentVariable(_name);
-		if (OneSymbolRule(old))
+		// skip?
+		var old = Environment.GetEnvironmentVariable(InfoEnvVar);
+		if (old?.StartsWith(Const.SkipSetEnvChar) == true)
 			return;
 
 		// known location

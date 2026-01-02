@@ -43,7 +43,7 @@ public static class ExitManager
 			return;
 
 		_exiting = true;
-		_ = Task.Run(async () =>
+		ThreadPool.QueueUserWorkItem(async _ =>
 		{
 			if (_jobs is { })
 				await _jobs.Task;

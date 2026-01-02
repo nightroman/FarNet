@@ -1,12 +1,6 @@
-
-// PowerShellFar module for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data;
 using FarNet;
+using System.Collections;
+using System.Data;
 
 namespace PowerShellFar;
 
@@ -47,7 +41,7 @@ class DataColumnEnumerator(DataRow row, List<int> indexes) : IEnumerator
 	public bool MoveNext() => ++Index < Indexes.Count;
 }
 
-class DataColumnCollection(DataRow row, List<int> indexes) : My.SimpleCollection
+class DataColumnCollection(DataRow row, List<int> indexes) : MyCollection
 {
 	readonly DataRow Row = row;
 	readonly List<int> Indexes = indexes;

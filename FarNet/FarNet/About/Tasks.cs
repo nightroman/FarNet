@@ -28,9 +28,7 @@ public static class Tasks
 	/// <returns>.</returns>
 	public static TaskCompletionSource<T> CreateSyncTaskCompletionSource<T>()
 	{
-#pragma warning disable EPC32
 		return new TaskCompletionSource<T>();
-#pragma warning restore EPC32
 	}
 
 	/// <summary>

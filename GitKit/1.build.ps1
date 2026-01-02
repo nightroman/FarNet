@@ -77,7 +77,6 @@ task package help, markdown, {
 		'README.html'
 		'History.txt'
 		'..\LICENSE'
-		'GitKit.macro.lua'
 	)
 
 	Assert-SameFile.ps1 -Result (Get-ChildItem z\tools -Recurse -File -Name) -Text -View $env:MERGE @'

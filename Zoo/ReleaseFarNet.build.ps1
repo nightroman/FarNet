@@ -68,7 +68,7 @@ task Build-FarNet -If {
 task Build-PSF-Help -If {
 	$env:FarNetToBuildPowerShellFarHelp -and (ask 'Build PSF help')
 } {
-	exec { pwsf "$RepoRoot\PowerShellFar" -nop -c Invoke-Build help }
+	exec { pwsf "$RepoRoot\PowerShellFar" -nop -ro -c Invoke-Build help }
 }
 
 task Build-Docs -If {($Push -ne 3) -and (ask 'Build FarNet CHM help')} DC::make

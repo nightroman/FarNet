@@ -22,8 +22,11 @@ public class Host : ModuleHost
 
 	public override void Connect()
 	{
-		Far.Api.DirectoryChanged += (s, e) => SetEnvCommand.Run(e.Path);
-		Far.Api.PostJob(() => SetEnvCommand.Run(Far.Api.CurrentDirectory));
+		if (SetEnvCommand.InfoEnvVar.Length > 0)
+		{
+			Far.Api.DirectoryChanged += (s, e) => SetEnvCommand.Run(e.Path);
+			Far.Api.PostJob(() => SetEnvCommand.Run(Far.Api.CurrentDirectory));
+		}
 	}
 
 	public static void InvokeGit(string arguments, string workingDirectory)

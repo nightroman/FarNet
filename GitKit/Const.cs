@@ -16,4 +16,6 @@ static class Const
 		FinishBranch = "&Finish branch",
 		NoBranchName = "(no branch)",
 		PushBranch = "&Push branch";
+
+	public const char SkipSetEnvChar = '?';
 }

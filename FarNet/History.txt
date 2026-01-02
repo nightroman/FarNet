@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet
 
+= 10.0.17 =
+
+Tweak exit.
+
 = 10.0.16 =
 
 Support subcommands, use in GitKit, JsonKit, RedisKit.

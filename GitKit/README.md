@@ -585,9 +585,6 @@ folder git information: `<repo> / <branch> <tracking> (<changes>)`.
 Use this variable in Far Manager settings: "Interface settings" / "Far window
 title addons" or "Command line settings" / "Set command line prompt format".
 
-If you do not use this environment variable then keep its name empty.
-Otherwise the module will be working for nothing.
-
 Restart Far Manager after changing this setting.
 
 This feature requires a macro:
@@ -600,6 +597,11 @@ Event {
 ```
 
 To avoid this macro, support <https://github.com/FarGroup/FarManager/issues/1060>
+
+If you do not use this environment variable then keep its name in settings
+empty. Otherwise the module will be working for nothing. Alternatively, to
+disable without changing settings, you may set this variable to a string
+starting with the question mark, e.g. `setx <InfoEnvVar> ?`
 
 *********************************************************************
 **DiffTool** and **DiffToolArguments**
