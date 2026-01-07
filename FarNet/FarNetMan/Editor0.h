@@ -25,5 +25,7 @@ private:
 	static List<Editor^> _editors;
 	// First opening
 	static bool _started;
+	// Mouse
+	static bool _isLastClickEvent;
 };
 }

@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 1.5.3 =
+
+Tweak FS change updates.
+
 = 1.5.2 =
 
 Tweaks about InfoEnvVar.

@@ -2,6 +2,7 @@
 open FarNet
 open FarNet.FSharp
 open System
+open System.Threading.Channels
 open FSharp.Compiler.Tokenization
 
 type LineArgs = {
@@ -26,20 +27,23 @@ type FarEditor() =
             ccont (OperationCanceledException())
     )
 
-    let checkAgent = MailboxProcessor.Start(fun inbox -> async {
+    let changes =
+        Channel.CreateBounded<int>(BoundedChannelOptions(1, SingleReader = true, SingleWriter = true, FullMode = BoundedChannelFullMode.DropWrite))
+
+    let _changes = task {
+        let reader = changes.Reader
         while true do
-            do! inbox.Receive()
-            if inbox.CurrentQueueLength > 0 then () else
+            let! _ = reader.ReadAsync()
 
             do! Async.Sleep 1000
-            if inbox.CurrentQueueLength > 0 then () else
+            if reader.Count > 0 then () else
 
             let! text = jobEditor (fun () -> Editor.sourceText editor)
             try
                 let config = editor.MyConfig()
                 let! check = Checker.check editor.FileName text config
                 editor.MyErrors <-
-                    if inbox.CurrentQueueLength > 0 then
+                    if reader.Count > 0 then
                         None
                     else
                         let errors = check.CheckResults.Diagnostics
@@ -47,19 +51,22 @@ type FarEditor() =
                 do! jobEditor editor.Redraw
             with exn ->
                 Jobs.PostShowError exn
-    })
+    }
 
-    let mouseAgent = MailboxProcessor.Start(fun inbox -> async {
+    let mouse =
+        Channel.CreateBounded<MouseMessage>(BoundedChannelOptions(1, SingleReader = true, SingleWriter = true, FullMode = BoundedChannelFullMode.DropNewest))
+
+    let _mouse = task {
+        let reader = mouse.Reader
         while true do
-            let! message = inbox.Receive()
-            if inbox.CurrentQueueLength > 0 then () else
+            let! message = reader.ReadAsync()
+
+            do! Async.Sleep 1000
+            if reader.Count > 0 then () else
 
             match message with
             | Noop -> ()
             | Move it ->
-                do! Async.Sleep 400
-                if inbox.CurrentQueueLength > 0 then () else
-
                 let mutable autoTips = Workings.Default.GetData().AutoTips
                 match editor.MyFileErrors() with
                 | None -> ()
@@ -88,7 +95,7 @@ type FarEditor() =
                             let! check = Checker.check editor.FileName text config
                             let tip = check.CheckResults.GetToolTip(it.Index + 1, column + 1, it.Text, idents, FSharpTokenTag.Identifier)
                             let tips = Tips.format tip false
-                            if tips.Length > 0 && inbox.CurrentQueueLength = 0 then
+                            if tips.Length > 0 && reader.Count = 0 then
                                 do! jobEditor (fun _ ->
                                     let r = far.Message(tips, "Tips", MessageOptions.None, [|"More"; "Close"|])
                                     if r = 0 then
@@ -96,11 +103,12 @@ type FarEditor() =
                                 )
                         with exn ->
                             Jobs.PostShowError exn
-    })
+    }
 
-    let postNoop _ =  mouseAgent.Post Noop
+    let postNoop _ =
+        mouse.Writer.TryWrite Noop |> ignore
 
-    override __.Invoke(sender, _) =
+    override _.Invoke(sender, _) =
         editor <- sender
         editor.ExpandTabs <- ExpandTabsMode.New
 
@@ -119,25 +127,16 @@ type FarEditor() =
                 | _ -> ()
 
             editor.Changed.Add <| fun e ->
-                let isAutoCheck = Workings.Default.GetData().AutoCheck
-
-                // We want to keep errors visible, so that on typing fixes we see how errors go.
-                // This does not work well on massive changes like copy/paste, delete lines.
-                // So keep errors if just a line changes to draw them in "checking" mode.
-                if e.Kind = EditorChangeKind.LineChanged && isAutoCheck then
-                    editor.MyChecking <- true
-                else
-                    editor.MyErrors <- None
-
-                if isAutoCheck then
-                    checkAgent.Post()
+                editor.MyErrors <- None
+                if Workings.Default.GetData().AutoCheck then
+                    changes.Writer.TryWrite 0 |> ignore
 
             editor.MouseDoubleClick.Add postNoop
             editor.MouseClick.Add postNoop
             editor.MouseWheel.Add postNoop
 
             editor.MouseMove.Add <| fun e ->
-                mouseAgent.Post(
+                mouse.Writer.TryWrite(
                     if e.Mouse.Is() then
                         let pos = editor.ConvertPointScreenToEditor e.Mouse.Where
                         if pos.Y < editor.Count then
@@ -147,4 +146,4 @@ type FarEditor() =
                             else Noop
                         else Noop
                     else Noop
-                )
+                ) |> ignore

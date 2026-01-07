@@ -1098,14 +1098,14 @@ FarFile^ Panel2::GetFileByUserData(void* data)
 // called from the timer thread //_210630_hi
 void Panel2::OnTimer(Object^)
 {
-	if (_timerInstance && IsOpened)
+	if (IsOpened)
 		Far1::Instance.PostJob(gcnew Action(this, &Panel2::OnTimerJob));
 }
 
 // called from the main thread //_210630_hi
 void Panel2::OnTimerJob()
 {
-	if (_timerInstance && IsOpened)
+	if (IsOpened)
 	{
 		// 1) call
 		Host->UITimer();

@@ -392,14 +392,14 @@ bool FarDialog::Show()
 // called from the timer thread //_210630_i0
 void FarDialog::OnTimer(Object^)
 {
-	if (_Timer && _timerInstance && _hDlg != INVALID_HANDLE_VALUE)
+	if (_Timer && _hDlg != INVALID_HANDLE_VALUE)
 		Far1::Instance.PostJob(gcnew Action(this, &FarDialog::OnTimerJob));
 }
 
 // called from the main thread //_210630_i0
 void FarDialog::OnTimerJob()
 {
-	if (_Timer && _timerInstance && _hDlg != INVALID_HANDLE_VALUE)
+	if (_Timer && _hDlg != INVALID_HANDLE_VALUE)
 		_Timer(this, nullptr);
 }
 

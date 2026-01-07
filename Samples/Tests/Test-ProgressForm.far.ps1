@@ -14,12 +14,13 @@ param(
 	[int]$JobSeconds = 10,
 	[int]$JobSteps = 10,
 	[int]$Delay = 500,
-	[switch]$NoCancel
+	[switch]$NoCancel,
+	[string]$Title = "Progress: CanCancel=$(!$NoCancel)"
 )
 
 ### 1) create the progress form, do not show yet
 $Progress = [FarNet.Tools.ProgressForm]::new()
-$Progress.Title = "ProgressForm: CanCancel=$(!$NoCancel)"
+$Progress.Title = $Title
 $Progress.CanCancel = !$NoCancel
 $Progress.LineCount = 4
 

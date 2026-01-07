@@ -1,5 +1,13 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 
+= 5.2.3 =
+
+Use FarNet 10.0.18, better mouse events.
+
+Editors
+- hide errors on making changes
+- use channels instead of mailboxes
+
 = 5.2.2 =
 
 Removed deprecated Assert methods.

@@ -42,14 +42,14 @@ static class SetEnvCommand
 
 	private static void Update(Info info, FileSystemEventArgs? e)
 	{
-		// skip?
-		var old = Environment.GetEnvironmentVariable(InfoEnvVar);
-		if (old?.StartsWith(Const.SkipSetEnvChar) == true)
-			return;
-
 		// update time and let busy to work
 		info.LastCallTime = DateTime.UtcNow;
 		if (info.IsBusy)
+			return;
+
+		// skip?
+		var old = Environment.GetEnvironmentVariable(InfoEnvVar);
+		if (old?.StartsWith(Const.SkipSetEnvChar) == true)
 			return;
 
 		Debug.WriteLine($"##gk {e?.ChangeType} {e?.Name}");

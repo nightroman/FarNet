@@ -1,9 +1,4 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-using FarNet.Forms;
+﻿using FarNet.Forms;
 
 namespace FarNet.Tools;
 

@@ -1,5 +1,4 @@
-﻿
-using FarNet.Forms;
+﻿using FarNet.Forms;
 
 namespace FarNet.Tools;
 

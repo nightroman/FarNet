@@ -44,7 +44,9 @@ Use <pre> instead of <code>, <code> shows as one line.
     </remarks>
   </SelectedIndexes>
   <Timer>
-    <summary>Called periodically if the timer interval is set to a positive value.</summary>
+    <summary>
+      Called in the main thread when the timer interval is positive.
+    </summary>
     <seealso cref="TimerInterval"/>
   </Timer>
   <TimerInterval>

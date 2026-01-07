@@ -320,6 +320,7 @@ int Editor0::AsProcessEditorInput(const ProcessEditorInputInfo* info)
 		switch (e.dwEventFlags)
 		{
 		case 0:
+			_isLastClickEvent = true;
 			if (_anyEditor._MouseClick || editor->_MouseClick)
 			{
 				MouseEventArgs ea(GetMouseInfo(rec->Event.MouseEvent));
@@ -331,6 +332,7 @@ int Editor0::AsProcessEditorInput(const ProcessEditorInputInfo* info)
 			}
 			break;
 		case DOUBLE_CLICK:
+			_isLastClickEvent = false;
 			if (_anyEditor._MouseDoubleClick || editor->_MouseDoubleClick)
 			{
 				MouseEventArgs ea(GetMouseInfo(rec->Event.MouseEvent));
@@ -342,6 +344,13 @@ int Editor0::AsProcessEditorInput(const ProcessEditorInputInfo* info)
 			}
 			break;
 		case MOUSE_MOVED:
+			//! skip `moved` after `click` -- https://github.com/FarGroup/FarManager/issues/1063
+			if (_isLastClickEvent)
+			{
+				_isLastClickEvent = false;
+				break;
+			}
+
 			if (_anyEditor._MouseMove || editor->_MouseMove)
 			{
 				MouseEventArgs ea(GetMouseInfo(rec->Event.MouseEvent));
@@ -353,6 +362,7 @@ int Editor0::AsProcessEditorInput(const ProcessEditorInputInfo* info)
 			}
 			break;
 		case MOUSE_WHEELED:
+			_isLastClickEvent = false;
 			if (_anyEditor._MouseWheel || editor->_MouseWheel)
 			{
 				MouseEventArgs ea(GetMouseInfo(rec->Event.MouseEvent));

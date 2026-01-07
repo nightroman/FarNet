@@ -5,10 +5,9 @@ open System.IO
 open FSharp.Compiler.Diagnostics
 
 module private Key =
-    let config = "F# config"
-    let session = "F# session"
-    let errors = "F# errors"
-    let checking = "F# checking"
+    let [<Literal>] config = "F# config"
+    let [<Literal>] session = "F# session"
+    let [<Literal>] errors = "F# errors"
 
 type IEditor with
     member private x.GetOpt<'T> (key) =
@@ -28,17 +27,12 @@ type IEditor with
     member x.MyErrors
         with get () = x.GetOpt<FSharpDiagnostic []> Key.errors
         and set (value: FSharpDiagnostic [] option) =
-            x.MyChecking <- false
             match value with
             | Some value ->
                 //! avoid useless and sometimes numerous dupes
                 x.Data[Key.errors] <- value |> Array.distinctBy (fun x -> x.StartLine, x.ErrorNumber, x.FileName, x.Message)
             | None ->
                 x.Data.Remove Key.errors
-
-    member x.MyChecking
-        with get () = defaultArg (x.GetOpt<bool> Key.checking) false
-        and set (value: bool) = x.SetOpt(Key.checking, Some value)
 
     member x.MyConfig() =
         match x.GetOpt<Config> Key.config with
