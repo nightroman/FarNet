@@ -1,6 +1,6 @@
-module TestPSFar
+module TestPowerShellFar
 open FarNet
-open FarNet.FSharp
+open FarNet.Tools
 open Swensen.Unquote
 
 let editorLine1 = 2
@@ -12,7 +12,7 @@ let getFarTask name =
 // PowerShellFar unwraps PSObject unless its BaseObject is PSCustomObject.
 // In this case the original PSObject is returned.
 Test.Add("PSCustomObject", fun () ->
-    let r = PSFar.Invoke """ $Host; [PSCustomObject]@{name='foo'; version='bar'} """
+    let r = PowerShellFar.Invoke """ $Host; [PSCustomObject]@{name='foo'; version='bar'} """
     test <@ 2 = r.Length @>
 
     let r1 = r[0]
@@ -25,14 +25,14 @@ Test.Add("PSCustomObject", fun () ->
 // PowerShellFar runspace is designed for advanced uses, for example with
 // System.Management.Automation or FarNet.FSharp.PowerShell NuGet library.
 Test.Add("Runspace", fun () ->
-    let r1 = PSFar.Runspace
-    let r2 = (PSFar.Invoke "[runspace]::DefaultRunspace")[0]
+    let r1 = PowerShellFar.Runspace
+    let r2 = (PowerShellFar.Invoke "[runspace]::DefaultRunspace")[0]
     test <@ obj.ReferenceEquals(r1, r2) @>
 )
 
 // Error in async code, ensure it points to the script file.
 Test.Add("FarTaskError1", async {
-    let! _ = job { return PSFar.Invoke(getFarTask "Case/FarTaskError1.far.ps1") }
+    let! _ = job { return PowerShellFar.Invoke(getFarTask "Case/FarTaskError1.far.ps1") }
     do! Assert.Wait Window.IsDialog
     do! job {
         test <@ "FarTask error" = far.Dialog[0].Text @>
@@ -49,7 +49,7 @@ Test.Add("FarTaskError1", async {
 
 // Error in job code, ensure it points to the script file.
 Test.Add("FarTaskError2", async {
-    let! _ = job { return PSFar.Invoke(getFarTask "Case/FarTaskError2.far.ps1") }
+    let! _ = job { return PowerShellFar.Invoke(getFarTask "Case/FarTaskError2.far.ps1") }
     do! Assert.Wait Window.IsDialog
     do! job {
         test <@ "FarTask error" = far.Dialog[0].Text @>
@@ -66,7 +66,7 @@ Test.Add("FarTaskError2", async {
 
 // Error in run code, ensure it points to the script file.
 Test.Add("FarTaskError3", async {
-    let! _ = job { return PSFar.Invoke(getFarTask "Case/FarTaskError3.far.ps1") }
+    let! _ = job { return PowerShellFar.Invoke(getFarTask "Case/FarTaskError3.far.ps1") }
     do! Assert.Wait Window.IsDialog
     do! job {
         test <@ "FarTask error" = far.Dialog[0].Text @>
@@ -83,7 +83,7 @@ Test.Add("FarTaskError3", async {
 
 //! used to fail
 Test.Add("FarTaskError4", async {
-    let! _ = job { return PSFar.Invoke(getFarTask "Case/FarTaskError4.far.ps1") }
+    let! _ = job { return PowerShellFar.Invoke(getFarTask "Case/FarTaskError4.far.ps1") }
     do! Assert.Wait Window.IsDialog
     do! job {
         test <@ "FarTask error" = far.Dialog[0].Text @>
@@ -100,7 +100,7 @@ Test.Add("FarTaskError4", async {
 
 //! used to fail
 Test.Add("FarTaskError5", async {
-    let! _ = job { return PSFar.Invoke(getFarTask "Case/FarTaskError5.far.ps1") }
+    let! _ = job { return PowerShellFar.Invoke(getFarTask "Case/FarTaskError5.far.ps1") }
     do! Assert.Wait(fun () -> Window.IsDialog() && far.Dialog[1].Text = "working")
     do! Jobs.Keys "Esc"
     do! job {
@@ -119,7 +119,7 @@ Test.Add("FarTaskError5", async {
 
 // Ensure result objects are unwrapped and null is preserved.
 Test.Add("StartTaskCode", async {
-    let! res = PSFar.StartTask("1; $null")
+    let! res = PowerShellFar.InvokeAsync("1; $null") |> Async.AwaitTask
     test <@ 2 = res.Length @>
     test <@ 1 = (res[0] :?> int) @>
     test <@ isNull res[1] @>
@@ -129,13 +129,13 @@ Test.Add("StartTaskCode", async {
 // PowerShell, even with script block returning something. The output is lost
 // in Job<Action> because it always SetResult(null).
 Test.Add("TaskJobActionNull", async {
-    let! res = PSFar.StartTask("job { [FarNet.Tasks]::Job({42}) }")
+    let! res = PowerShellFar.InvokeAsync("job { [FarNet.Tasks]::Job({42}) }") |> Async.AwaitTask
     test <@ 0 = res.Length @>
 })
 
 // In order to call [FarNet.Tasks]::Job<Func<T>> we must cast explicitly.
 Test.Add("TaskJobFuncInt", async {
-    let! res = PSFar.StartTask("job { [FarNet.Tasks]::Job(([System.Func[int]]{42})) }")
+    let! res = PowerShellFar.InvokeAsync("job { [FarNet.Tasks]::Job(([System.Func[int]]{42})) }") |> Async.AwaitTask
     test <@ 1 = res.Length @>
     test <@ 42 = (res[0] :?> int) @>
 })
@@ -143,7 +143,7 @@ Test.Add("TaskJobFuncInt", async {
 // Scenario: cancel -> result is null
 Test.Add("DialogNonModalInput1", async {
     // run input dialog and cancel it
-    let! complete = PSFar.StartTask(getFarTask "DialogNonModalInput.fas.ps1") |> Async.StartChild
+    let! complete = PowerShellFar.InvokeAsync(getFarTask "DialogNonModalInput.fas.ps1") |> Async.AwaitTask |> Async.StartChild
     do! Assert.Wait Window.IsDialog
     do! job {
         test <@ "_201123_rz" = far.Dialog[0].Text @>
@@ -158,7 +158,7 @@ Test.Add("DialogNonModalInput1", async {
 // Scenario: enter "bar" -> result is "bar"
 Test.Add("DialogNonModalInput2", async {
     // run input dialog and enter "bar"
-    let! complete = PSFar.StartTask(getFarTask "DialogNonModalInput.fas.ps1") |> Async.StartChild
+    let! complete = PowerShellFar.InvokeAsync(getFarTask "DialogNonModalInput.fas.ps1") |> Async.AwaitTask |> Async.StartChild
     do! Assert.Wait Window.IsDialog
     do! job {
         test <@ "_201123_rz" = far.Dialog[0].Text @>
@@ -176,7 +176,7 @@ Test.Add("DialogNonModalInput2", async {
 
 // Scenario: input box -> non-modal editor -> message box -> task result
 Test.Add("InputEditorMessage", async {
-    let! complete = PSFar.StartTask(getFarTask "InputEditorMessage.fas.ps1") |> Async.StartChild
+    let! complete = PowerShellFar.InvokeAsync(getFarTask "InputEditorMessage.fas.ps1") |> Async.AwaitTask |> Async.StartChild
     do! Assert.Wait Window.IsDialog
     do! job {
         test <@ "Hello async world" = far.Dialog[2].Text @>
@@ -195,7 +195,7 @@ Test.Add("InputEditorMessage", async {
 })
 
 Test.Add("ParametersScriptBlock", async {
-    do! job { PSFar.Invoke(getFarTask "Parameters=1.far.ps1") |> ignore }
+    do! job { PowerShellFar.Invoke(getFarTask "Parameters=1.far.ps1") |> ignore }
     do! Assert.Wait Window.IsDialog
     do! job {
         test <@ "Hi Joe (42)" = far.Dialog[1].Text @>
@@ -204,12 +204,10 @@ Test.Add("ParametersScriptBlock", async {
 })
 
 Test.Add("ParametersScriptFile", async {
-    let! _ =
-        PSFar.StartTask(
-            getFarTask "Parameters=3.fas.ps1",
-            ["Param1", box "hi"; "Param2", box "there"]
-        )
-        |> Async.StartChild
+    let p = System.Collections.Hashtable()
+    p.Add("Param1", "hi")
+    p.Add("Param2", "there")
+    let! _ = PowerShellFar.InvokeAsync(getFarTask "Parameters=3.fas.ps1", p) |> Async.AwaitTask |> Async.StartChild
     do! Assert.Wait Window.IsDialog
     do! job {
         test <@ "hi there" = far.Dialog[1].Text @>
@@ -220,7 +218,7 @@ Test.Add("ParametersScriptFile", async {
 // Handling of special PipelineStoppedException, e.g. in Assert-Far.
 Test.Add("AssertFar", async {
     // run
-    let! _ = PSFar.StartTask("job {Assert-Far 0}; job {throw}") |> Async.StartChild
+    let! _ = PowerShellFar.InvokeAsync("job {Assert-Far 0}; job {throw}") |> Async.AwaitTask |> Async.StartChild
 
     // job 1 shows Assert-Far dialog
     do! Assert.Wait Window.IsDialog
@@ -239,7 +237,7 @@ Test.Add("AssertFar", async {
 })
 
 Test.Add("PanelSelectItem", async {
-    let! _ = PSFar.StartTask(getFarTask "PanelSelectItem.fas.ps1") |> Async.StartChild
+    let! _ = PowerShellFar.InvokeAsync(getFarTask "PanelSelectItem.fas.ps1") |> Async.AwaitTask |> Async.StartChild
     do! Assert.Wait Window.IsModulePanel
 
     do! Jobs.Keys "Down"

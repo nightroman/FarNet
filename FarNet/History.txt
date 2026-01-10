@@ -1,5 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet
 
+= 10.0.19 =
+
+FarNet.Tools.PowerShellFar
+- new interop helper
+
 = 10.0.18 =
 
 Editors

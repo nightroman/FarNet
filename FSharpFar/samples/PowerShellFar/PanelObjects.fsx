@@ -12,5 +12,5 @@ let persons = [|
 |]
 
 // Call Out-FarPanel in order to show our data in the panel.
-open FarNet.FSharp
-PSFar.Invoke("$args[0] | Out-FarPanel", [| persons |])
+open FarNet.Tools
+PowerShellFar.Invoke("$args[0] | Out-FarPanel", [| persons |])

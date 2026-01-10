@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 
+= 5.3.0 =
+
+Use FarNet 10.0.19
+
+`PSFar` is replaced with `FarNet.Tools.PowerShellFar`.
+
 = 5.2.3 =
 
 Use FarNet 10.0.18, better mouse events.

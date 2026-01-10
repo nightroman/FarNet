@@ -1,16 +1,13 @@
 ## PowerShellFar
 
-You can invoke PowerShell scripts from F# using the FarNet module PowerShellFar
-and provided helper methods. The scripts are either pure PowerShell or using
-FarNet and PowerShellFar API and tools.
+With the module `FarNet.PowerShellFar` installed, you can invoke PowerShell
+scripts from F# using `FarNet.Tools.PowerShellFar`. The scripts are either
+pure PowerShell or using FarNet and PowerShellFar.
 
-Here is the "Hello, World" example which shows all the required pieces, the
-helper function, script, and arguments:
+Here is an example with all pieces: helper method, script, arguments:
 
 ```fsharp
-open FarNet.FSharp
-
-PSFar.Invoke("$Far.Message($args[0])", [| "Hello, World!" |])
+FarNet.Tools.PowerShellFar.Invoke("$Far.Message($args[0])", [| "Hello, World!" |])
 ```
 
 ***

@@ -1500,7 +1500,7 @@ one of the associated commands.
 
 The main session profile: `%FARPROFILE%\FarNet\PowerShellFar\Profile.ps1`
 
-Example: [Profile.ps1](https://github.com/nightroman/FarNet/blob/main/PowerShellFar/Profile.ps1)
+Example: [Profile.ps1](https://github.com/nightroman/FarNet/blob/main/PowerShellFar/About/Profile.ps1)
 
 ---
 Define doskey macros
@@ -1540,7 +1540,7 @@ properties `Providers` (class `Actor`), `Columns` (class `ItemPanel`).
 
 The editor profile: `%FARPROFILE%\FarNet\PowerShellFar\Profile-Editor.ps1`
 
-Example: [Profile-Editor.ps1](https://github.com/nightroman/FarNet/blob/main/PowerShellFar/Profile-Editor.ps1)
+Example: [Profile-Editor.ps1](https://github.com/nightroman/FarNet/blob/main/PowerShellFar/About/Profile-Editor.ps1)
 
 The author uses this profile to set some editor event handlers even when macros
 might work better. This is done deliberately in order to be sure that handlers

@@ -1,14 +1,14 @@
 // Demo Jobs functions for panels.
 module TestPanel02
 open FarNet
-open FarNet.FSharp
+open FarNet.Tools
 open Swensen.Unquote
 
 // Opens a panel with 3 items. After closing shows a message with selected items.
 let workWaitPanelClosing = async {
     // open the panel with 3 items
     let! panel = Jobs.OpenPanel(fun () ->
-        PSFar.Invoke "11..13 | Out-FarPanel" |> ignore
+        PowerShellFar.Invoke "11..13 | Out-FarPanel" |> ignore
     )
     // wait for closing with the function returning selected files
     let! r = Jobs.WaitPanelClosing(panel, fun _ ->
@@ -34,7 +34,7 @@ Test.Add("testWaitPanelClosing", async {
 let workWaitPanelClosed = async {
     // open the panel with 3 items
     let! panel = Jobs.OpenPanel(fun () ->
-        PSFar.Invoke "1..3 | Out-FarPanel" |> ignore
+        PowerShellFar.Invoke "1..3 | Out-FarPanel" |> ignore
     )
     // wait for closing
     do! Jobs.WaitPanelClosed panel

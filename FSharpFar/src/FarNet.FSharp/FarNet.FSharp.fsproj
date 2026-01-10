@@ -19,7 +19,6 @@
     <Compile Include="Jobs.fs" />
     <Compile Include="Assert.fs" />
     <Compile Include="Test.fs" />
-    <Compile Include="PSFar.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FSharp.Core" Version="10.0.100" />
