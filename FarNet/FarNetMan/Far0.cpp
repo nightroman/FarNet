@@ -635,25 +635,44 @@ void Far0::InvokeModuleEditors(IEditor^ editor, const wchar_t* fileName)
 	}
 }
 
+//2026-01-12-1933
 void Far0::AsProcessSynchroEvent(const ProcessSynchroEventInfo* info)
 {
 	if (info->Event != SE_COMMONSYNCHRO)
 		return;
 
-	Action^ job = nullptr;
+	ValueTuple<Action^, TaskCompletionSource^> item;
 	Monitor::Enter(% _jobs);
 	try
 	{
-		job = _jobs.Dequeue();
+		item = _jobs.Dequeue();
 	}
 	finally
 	{
 		Monitor::Exit(% _jobs);
 	}
 
-	job();
+	Action^ job = item.Item1;
+	TaskCompletionSource^ tcs = item.Item2;
+
+	if (!tcs)
+	{
+		job();
+		return;
+	}
+
+	try
+	{
+		job();
+		tcs->SetResult();
+	}
+	catch (Exception^ e)
+	{
+		tcs->SetException(e);
+	}
 }
 
+//2026-01-12-1933
 void Far0::PostJob(Action^ job)
 {
 	if (!job)
@@ -662,8 +681,28 @@ void Far0::PostJob(Action^ job)
 	Monitor::Enter(% _jobs);
 	try
 	{
-		_jobs.Enqueue(job);
+		_jobs.Enqueue(ValueTuple<Action^, TaskCompletionSource^>(job, nullptr));
 		Info.AdvControl(&MainGuid, ACTL_SYNCHRO, 0, 0);
+	}
+	finally
+	{
+		Monitor::Exit(% _jobs);
+	}
+}
+
+//2026-01-12-1933
+Task^ Far0::PostJobAsync(Action^ job)
+{
+	if (!job)
+		throw gcnew ArgumentNullException("job");
+
+	Monitor::Enter(% _jobs);
+	try
+	{
+		TaskCompletionSource^ tcs = gcnew TaskCompletionSource();
+		_jobs.Enqueue(ValueTuple::Create(job, tcs));
+		Info.AdvControl(&MainGuid, ACTL_SYNCHRO, 0, 0);
+		return tcs->Task;
 	}
 	finally
 	{

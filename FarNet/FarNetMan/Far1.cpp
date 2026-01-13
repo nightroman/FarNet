@@ -1,18 +1,8 @@
 #include "stdafx.h"
 #include "Far1.h"
-#include "CommandLine.h"
-#include "Dialog.h"
-#include "Editor0.h"
 #include "Far0.h"
-#include "History.h"
-#include "InputBox.h"
-#include "Menu.h"
-#include "Message.h"
-#include "Panel2.h"
 #include "Settings.h"
 #include "UI.h"
-#include "Viewer0.h"
-#include "Window.h"
 
 namespace FarNet
 {
@@ -33,31 +23,11 @@ IModuleAction^ Far1::GetModuleAction(Guid id)
 	return action;
 }
 
-int Far1::Message(MessageArgs^ args)
-{
-	return Message::Show(args);
-}
-
 System::Version^ Far1::FarVersion::get()
 {
 	VersionInfo vi;
 	Info.AdvControl(&MainGuid, ACTL_GETFARMANAGERVERSION, 0, &vi);
 	return gcnew System::Version(vi.Major, vi.Minor, vi.Build, vi.Revision);
-}
-
-System::Version^ Far1::FarNetVersion::get()
-{
-	return Far1::typeid->Assembly->GetName()->Version;
-}
-
-IMenu^ Far1::CreateMenu()
-{
-	return gcnew Menu;
-}
-
-IListMenu^ Far1::CreateListMenu()
-{
-	return gcnew Works::ListMenu;
 }
 
 FarNet::MacroArea Far1::MacroArea::get()
@@ -68,26 +38,6 @@ FarNet::MacroArea Far1::MacroArea::get()
 FarNet::MacroState Far1::MacroState::get()
 {
 	return (FarNet::MacroState)Info.MacroControl(&MainGuid, MCTL_GETSTATE, 0, 0);
-}
-
-array<IEditor^>^ Far1::Editors()
-{
-	return Editor0::Editors();
-}
-
-array<IViewer^>^ Far1::Viewers()
-{
-	return Viewer0::Viewers();
-}
-
-IAnyEditor^ Far1::AnyEditor::get()
-{
-	return % Editor0::_anyEditor;
-}
-
-IAnyViewer^ Far1::AnyViewer::get()
-{
-	return % Viewer0::_anyViewer;
 }
 
 String^ Far1::PasteFromClipboard()
@@ -110,16 +60,6 @@ void Far1::InvokeCommand(String^ command)
 {
 	PIN_NE(pin, command);
 	Far0::InvokeCommand(pin, OPEN_LUAMACRO);
-}
-
-IEditor^ Far1::CreateEditor()
-{
-	return gcnew FarNet::Editor;
-}
-
-IViewer^ Far1::CreateViewer()
-{
-	return gcnew FarNet::Viewer;
 }
 
 KeyInfo^ Far1::NameToKeyInfo(String^ key)
@@ -200,21 +140,6 @@ ILine^ Far1::Line::get()
 	return nullptr;
 }
 
-IEditor^ Far1::Editor::get()
-{
-	return Editor0::GetCurrentEditor();
-}
-
-IViewer^ Far1::Viewer::get()
-{
-	return Viewer0::GetCurrentViewer();
-}
-
-IInputBox^ Far1::CreateInputBox()
-{
-	return gcnew InputBox;
-}
-
 void Far1::ShowError(String^ title, Exception^ error)
 {
 	// 091028 Do not throw on null, just ignore.
@@ -274,21 +199,6 @@ void Far1::ShowError(String^ title, Exception^ error)
 	}
 }
 
-IDialog^ Far1::CreateDialog(int left, int top, int right, int bottom)
-{
-	return gcnew FarDialog(left, top, right, bottom);
-}
-
-array<Panel^>^ Far1::Panels(Guid typeId)
-{
-	return Panel0::PanelsByGuid(typeId);
-}
-
-array<Panel^>^ Far1::Panels(Type^ type)
-{
-	return Panel0::PanelsByType(type);
-}
-
 String^ Far1::Input(String^ prompt, String^ history, String^ title, String^ text)
 {
 	InputBox ib;
@@ -300,11 +210,6 @@ String^ Far1::Input(String^ prompt, String^ history, String^ title, String^ text
 	return ib.Show() ? ib.Text : nullptr;
 }
 
-void Far1::PostStep(Action^ step)
-{
-	Far0::PostStep(step);
-}
-
 String^ Far1::TempName(String^ prefix)
 {
 	PIN_NE(pin, prefix);
@@ -313,21 +218,6 @@ String^ Far1::TempName(String^ prefix)
 	while (box(Info.FSF->MkTemp(box, box.Size(), pin))) {}
 
 	return gcnew String(box);
-}
-
-IDialog^ Far1::Dialog::get()
-{
-	return FarDialog::GetDialog(0);
-}
-
-void Far1::PostJob(Action^ handler)
-{
-	Far0::PostJob(handler);
-}
-
-CultureInfo^ Far1::GetCurrentUICulture(bool update)
-{
-	return Far0::GetCurrentUICulture(update);
 }
 
 void Far1::PostMacro(String^ macro, bool enableOutput, bool disablePlugins)
@@ -413,23 +303,6 @@ void Far1::Quit()
 	Info.AdvControl(&MainGuid, ACTL_QUIT, 0, 0);
 }
 
-ILine^ Far1::CommandLine::get()
-{
-	return % FarNet::CommandLine::Instance;
-}
-
-IWindow^ Far1::Window::get()
-{
-	return % FarNet::Window::Instance;
-}
-
-// Implementation of Far methods.
-
-IUserInterface^ Far1::UI::get()
-{
-	return % FarUI::Instance;
-}
-
 bool Far1::IsMaskMatch(String^ path, String^ mask, bool full)
 {
 	if (!path) throw gcnew ArgumentNullException("path");
@@ -462,22 +335,12 @@ String^ Far1::GetFolderPath(SpecialFolder folder)
 	}
 }
 
-IModuleManager^ Far1::GetModuleManager(String^ name)
-{
-	return Works::ModuleLoader::GetModuleManager(name);
-}
-
 void Far1::ShowHelp(String^ path, String^ topic, HelpOptions options)
 {
 	PIN_NE(pinPath, path);
 	PIN_NS(pinTopic, topic);
 
 	Info.ShowHelp(pinPath, pinTopic, (int)options);
-}
-
-IHistory^ Far1::History::get()
-{
-	return % FarNet::History::Instance;
 }
 
 Object^ Far1::GetSetting(FarSetting settingSet, String^ settingName)

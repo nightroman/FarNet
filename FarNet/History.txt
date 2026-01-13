@@ -1,5 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet
 
+= 10.0.20 =
+
+`Tasks.Job(Action)` is obsolete and will be removed.
+Use new `IFar.PostJobAsync(Action)` instead.
+
 = 10.0.19 =
 
 FarNet.Tools.PowerShellFar

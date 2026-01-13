@@ -63,7 +63,7 @@ static class Actor
 			}
 			catch (Exception ex)
 			{
-				Tasks.Job(() => Far.Api.ShowError(
+				Far.Api.PostJob(() => Far.Api.ShowError(
 					"JavaScript task error",
 					Session.ModuleExceptionFromScriptEngineException(ex)));
 			}

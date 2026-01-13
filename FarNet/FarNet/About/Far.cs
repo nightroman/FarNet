@@ -358,6 +358,25 @@ public abstract class IFar
 	public abstract void PostJob(Action job);
 
 	/// <summary>
+	/// Posts the action called when the core gets control.
+	/// </summary>
+	/// <param name="job">The job action.</param>
+	/// <returns>The task representing the posted job.</returns>
+	/// <remarks>
+	/// <para>
+	/// Parallel threads should not call the core directly.
+	/// They should use this method to post an action calling the core.
+	/// This action is called from the main thread when the core gets control.
+	/// </para>
+	/// <para>
+	/// If the job opens a panel, see <see cref="Tasks.OpenPanel(Action)"/>.
+	/// If the job may open a panel, see <see cref="Tasks.Command"/>.
+	/// </para>
+	/// </remarks>
+	/// <seealso cref="Tasks"/>
+	public abstract Task PostJobAsync(Action job);
+
+	/// <summary>
 	/// Posts the action called later from the plugin menu.
 	/// </summary>
 	/// <param name="step">The step action.</param>

@@ -1,5 +1,4 @@
-﻿
-using FarNet.Tools;
+﻿using FarNet.Tools;
 using System.ComponentModel;
 using System.Reflection;
 
@@ -38,7 +37,7 @@ public static class Script
 			if (string.IsNullOrEmpty(text))
 				return;
 
-			await Tasks.Job(() =>
+			await Far.Api.PostJobAsync(() =>
 			{
 				try
 				{
@@ -254,7 +253,7 @@ public static class Script
 						}
 						catch (Exception ex)
 						{
-							await Tasks.Job(() =>
+							await Far.Api.PostJobAsync(() =>
 							{
 								Far.Api.ShowError(null, ex);
 							});

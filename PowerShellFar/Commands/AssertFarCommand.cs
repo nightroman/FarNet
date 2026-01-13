@@ -259,10 +259,7 @@ sealed class AssertFarCommand : BaseCmdlet
 	{
 		if (A.IsAsyncSession)
 		{
-			Tasks
-				.Job(() => AssertDialog(message, conditionIndex, doNotIgnore))
-				.Await();
-
+			Far.Api.PostJobAsync(() => AssertDialog(message, conditionIndex, doNotIgnore)).Await();
 			return;
 		}
 

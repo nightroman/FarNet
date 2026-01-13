@@ -159,7 +159,7 @@ internal sealed class ReadCommand
 		// close running
 		if (Instance is { })
 		{
-			await Tasks.Job(() =>
+			await Far.Api.PostJobAsync(() =>
 			{
 				Instance._form.Close();
 
@@ -176,7 +176,7 @@ internal sealed class ReadCommand
 		{
 			try
 			{
-				await Tasks.Job(() => Far.Api.Window.SetCurrentAt(-1));
+				await Far.Api.PostJobAsync(() => Far.Api.Window.SetCurrentAt(-1));
 			}
 			catch (Exception ex)
 			{
@@ -228,7 +228,7 @@ internal sealed class ReadCommand
 		{
 			try
 			{
-				await Tasks.Job(() => Far.Api.Window.SetCurrentAt(Far.Api.Window.Count - 2));
+				await Far.Api.PostJobAsync(() => Far.Api.Window.SetCurrentAt(Far.Api.Window.Count - 2));
 			}
 			catch (Exception ex)
 			{
@@ -314,7 +314,7 @@ internal sealed class ReadCommand
 		}
 		catch (Exception ex)
 		{
-			_ = Tasks.Job(() => Far.Api.ShowError(Res.TextCommandConsole, ex));
+			_ = Far.Api.PostJobAsync(() => Far.Api.ShowError(Res.TextCommandConsole, ex));
 		}
 	}
 }

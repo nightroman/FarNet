@@ -44,7 +44,7 @@ public static class Add
 		undefinedNames.Sort();
 
 		// call FarNet after await
-		await Tasks.Job(() =>
+		await Far.Api.PostJobAsync(() =>
 		{
 			editor.BeginUndo();
 			try

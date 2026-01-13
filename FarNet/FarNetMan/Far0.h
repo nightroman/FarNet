@@ -1,7 +1,3 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
 #pragma once
 
 namespace FarNet
@@ -30,6 +26,7 @@ public:
 	static CultureInfo^ GetCurrentUICulture(bool update);
 	static void ChangeFontSize(bool increase);
 	static void PostJob(Action^ job);
+	static Task^ PostJobAsync(Action^ job);
 	static void PostStep(Action^ step);
 	static void ShowConsoleMenu();
 	static void ShowDrawersMenu();
@@ -63,6 +60,6 @@ private:
 	/// Posted macro wait handles
 	static Queue<ManualResetEvent^> _macroWait;
 	/// Posted jobs
-	static Queue<Action^> _jobs;
+	static Queue<ValueTuple<Action^, TaskCompletionSource^>> _jobs;
 };
 }

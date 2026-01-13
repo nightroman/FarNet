@@ -93,6 +93,8 @@ public class TestFar : IFar
 
 	public override void PostJob(Action job) => throw new NotImplementedException();
 
+	public override Task PostJobAsync(Action job) => throw new NotImplementedException();
+
 	public override void PostMacro(string macro, bool enableOutput, bool disablePlugins) => throw new NotImplementedException();
 
 	public override void PostStep(Action step) => throw new NotImplementedException();

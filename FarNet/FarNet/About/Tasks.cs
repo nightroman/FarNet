@@ -85,24 +85,10 @@ public static class Tasks
 	/// If the job opens a panel, use <see cref="OpenPanel(Action)"/> instead.
 	/// If the job may open a panel, use <see cref="Command"/> instead.
 	/// </remarks>
+	[Obsolete("Use IFar.PostJobAsync")]
 	public static Task Job(Action job)
 	{
-		var tcs = CreateSyncTaskCompletionSource<object>();
-
-		Far.Api.PostJob(() =>
-		{
-			try
-			{
-				job();
-				tcs.SetResult(null!);
-			}
-			catch (Exception ex)
-			{
-				tcs.SetException(ex);
-			}
-		});
-
-		return tcs.Task;
+		return Far.Api.PostJobAsync(job);
 	}
 
 	/// <summary>
@@ -155,7 +141,7 @@ public static class Tasks
 		}
 		catch (Exception ex)
 		{
-			await Job(() =>
+			await Far.Api.PostJobAsync(() =>
 			{
 				if (error is null)
 					Far.Api.ShowError(null, ex);
@@ -367,13 +353,13 @@ public static class Tasks
 	public static async Task OpenPanel(Panel panel)
 	{
 		// open
-		await Job(panel.Open);
+		await Far.Api.PostJobAsync(panel.Open);
 
 		// wait
 		await Works.Far2.Api.WaitSteps();
 
 		// test
-		await Job(() =>
+		await Far.Api.PostJobAsync(() =>
 		{
 			if (Far.Api.Panel != panel)
 				throw new InvalidOperationException("Panel was not opened.");
@@ -560,7 +546,7 @@ public static class Tasks
 	{
 		bool ok = await Wait(WaitForDelay, timeout, () => Far.Api.Panel?.IsPlugin == true);
 		if (!ok)
-			await Job(() => throw new TimeoutException("Expected panel does not appear."));
+			await Far.Api.PostJobAsync(() => throw new TimeoutException("Expected panel does not appear."));
 	}
 
 	/// <summary>
@@ -573,7 +559,7 @@ public static class Tasks
 	{
 		bool ok = await Wait(WaitForDelay, timeout, () => Far.Api.Window.Kind == kind);
 		if (!ok)
-			await Job(() => throw new TimeoutException($"Expected '{kind}' does not appear."));
+			await Far.Api.PostJobAsync(() => throw new TimeoutException($"Expected '{kind}' does not appear."));
 	}
 
 	/// <summary>

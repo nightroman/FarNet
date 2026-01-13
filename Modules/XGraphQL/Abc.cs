@@ -66,7 +66,7 @@ static partial class Abc
 
 	private static async Task SetEditorTextAsync(IEditor editor, string text, bool selected)
 	{
-		await Tasks.Job(() =>
+		await Far.Api.PostJobAsync(() =>
 		{
 			editor.BeginUndo();
 			try

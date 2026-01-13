@@ -142,7 +142,7 @@ public class VesselTool : ModuleTool
 			if (_indexSelected < _indexSeparator)
 				Actor.LogChoice(_records, _indexSelected, path);
 
-			Tasks.Job(() =>
+			Far.Api.PostJob(() =>
 			{
 				Actor.AppendRecordToStore(what, path);
 
@@ -176,10 +176,10 @@ public class VesselTool : ModuleTool
 	static void RunRemoveItem(Context context, string macro, Action loop)
 	{
 		context.RemoveTracking();
-		Task.Run(async () =>
+		_ = Task.Run(async () =>
 		{
 			await Tasks.Macro(macro);
-			await Tasks.Job(loop);
+			await Far.Api.PostJobAsync(loop);
 		});
 	}
 

@@ -520,7 +520,7 @@ internal static class A
 		if (IsMainSession)
 			job();
 		else
-			Tasks.Await(Tasks.Job(job));
+			Far.Api.PostJobAsync(job).Await();
 	}
 
 	// Shows an error.

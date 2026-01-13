@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 10.0.22 =
+
+Use FarNet 10.0.20.
+Replaced obsolete `Tasks.Job(Action)`.
+
 = 10.0.21 =
 
 Minor refactoring.
