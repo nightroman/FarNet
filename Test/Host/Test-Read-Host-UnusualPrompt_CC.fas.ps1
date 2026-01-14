@@ -1,5 +1,5 @@
 ﻿
-job { $Psf.RunCommandConsole() }
+fun { $Psf.RunCommandConsole() }
 
 ### too long
 

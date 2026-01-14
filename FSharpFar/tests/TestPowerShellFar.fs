@@ -127,13 +127,13 @@ Test.Add("StartTaskCode", async {
 
 // It's Action in PS, even with script block returning something. The output is lost.
 Test.Add("PostJobAsync", async {
-    let! res = PowerShellFar.InvokeAsync("job { $Far.PostJobAsync({42}) }") |> Async.AwaitTask
+    let! res = PowerShellFar.InvokeAsync("fun { $Far.PostJobAsync({42}) }") |> Async.AwaitTask
     test <@ 0 = res.Length @>
 })
 
 // In order to call [FarNet.Tasks]::Job<Func<T>> we must cast explicitly.
 Test.Add("TaskJobFuncInt", async {
-    let! res = PowerShellFar.InvokeAsync("job { [FarNet.Tasks]::Job(([System.Func[int]]{42})) }") |> Async.AwaitTask
+    let! res = PowerShellFar.InvokeAsync("fun { [FarNet.Tasks]::Job(([System.Func[int]]{42})) }") |> Async.AwaitTask
     test <@ 1 = res.Length @>
     test <@ 42 = (res[0] :?> int) @>
 })

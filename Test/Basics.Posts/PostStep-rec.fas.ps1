@@ -1,5 +1,5 @@
 ﻿
-job {
+fun {
 	$global:tcs = [System.Threading.Tasks.TaskCompletionSource[object]]::new()
 	$global:log = 'do1/'
 	$Far.PostStep({

@@ -1,6 +1,5 @@
 using FarNet;
 using FarNet.Works;
-using System.Collections.ObjectModel;
 using System.Management.Automation;
 
 namespace PowerShellFar.Commands;
@@ -10,11 +9,13 @@ internal sealed class InvokeTaskJob : BaseTaskCmdlet
 {
 	internal const string MyName = "Invoke-FarTaskJob";
 
-	private Collection<PSObject> InvokeScript()
+	private void InvokeScript()
 	{
 		A.SetVariableValue(StartFarTaskCommand.NameData, GetData());
 		A.SetVariableValue(StartFarTaskCommand.NameVar, GetVars());
-		return Script.Invoke();
+		var r = Script.Invoke();
+		if (r.Count > 0)
+			throw new InvalidOperationException($"Unexpected `job` output: '{r[0]?.BaseObject.GetType().FullName}'.");
 	}
 
 	protected override void BeginProcessing()
@@ -22,31 +23,15 @@ internal sealed class InvokeTaskJob : BaseTaskCmdlet
 		// do sync
 		if (A.IsMainSession)
 		{
-			WriteObject(InvokeScript(), true);
+			InvokeScript();
 			return;
 		}
 
 		// post the job as task
-		var task = Tasks.Job(InvokeScript);
+		var task = Far.Api.PostJobAsync(InvokeScript);
 
 		// await
-		var result = task.AwaitResult();
+		task.Await();
 		Far2.Api.WaitSteps().Await();
-
-		// await tasks, return results
-		foreach (var pso in result)
-		{
-			if (pso?.BaseObject is Task task2)
-			{
-				task2.Await();
-				var result2 = task2.TryProperty("Result");
-				if (result2 is { } && result2.GetType().Name != "VoidTaskResult")
-					WriteObject(result2);
-			}
-			else
-			{
-				WriteObject(pso);
-			}
-		}
 	}
 }

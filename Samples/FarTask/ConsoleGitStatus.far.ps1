@@ -28,7 +28,7 @@ Start-FarTask {
 	# loop while not told to stop, with pauses after each step
 	for(; [FarNet.User]::Data.ConsoleGitStatus -eq 'run'; Start-Sleep 2) {
 		# job 1: take data from Far
-		$path = job {
+		$path = fun {
 			if ($Far.Window.Kind -eq 'Panels') {
 				$Far.CurrentDirectory
 			}

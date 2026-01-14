@@ -18,7 +18,7 @@ if (!$file) {return}
 # from this Far 1, send data and task to another Far 2
 Send-FarRedisTask -Data @{file = $file.FullName} {
 	# open non-modal editor in Far 2 and wait for exit
-	job {
+	fun {
 		$editor = $Far.CreateEditor()
 		$editor.FileName = $Data.file
 		[FarNet.Tasks]::Editor($editor)

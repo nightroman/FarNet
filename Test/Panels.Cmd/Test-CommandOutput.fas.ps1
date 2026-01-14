@@ -171,5 +171,5 @@ job {
 job {
 	Remove-Item Function:\test1,  Function:\test2
 	[FarNet.Works.Kit]::MacroOutput = $Data.MacroOutput
-	[FarNet.Tasks]::WaitForPanels(999)
 }
+[FarNet.Tasks]::WaitForPanels(999).Wait()

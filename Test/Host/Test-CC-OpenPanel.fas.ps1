@@ -3,7 +3,7 @@
 	Command console opens a panel.
 #>
 
-job { $Psf.RunCommandConsole() }
+fun { $Psf.RunCommandConsole() }
 job {
 	$Far.Dialog[1].Text = '42 | Out-FarPanel'
 }
@@ -12,5 +12,5 @@ job {
 	Assert-Far -ExplorerTypeId ([PowerShellFar.Guids]::ObjectExplorer)
 	Find-FarFile 42
 	$__.Close()
-	[FarNet.Tasks]::WaitForPanels(9)
 }
+[FarNet.Tasks]::WaitForPanels(9).Wait()

@@ -4,7 +4,7 @@
 #>
 
 ### Help, Enter with default
-job { $Psf.RunCommandConsole() }
+fun { $Psf.RunCommandConsole() }
 
 $Data.result = $null
 run {
@@ -33,7 +33,7 @@ job {
 }
 
 ### Select 1, 0
-job { $Psf.RunCommandConsole() }
+fun { $Psf.RunCommandConsole() }
 
 $Data.result = $null
 run {

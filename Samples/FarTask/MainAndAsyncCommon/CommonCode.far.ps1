@@ -18,7 +18,7 @@ ps: {
 }
 
 # test, increment, return
-$result = job {
+$result = fun {
 	Assert-Far $Data.var1 -eq 2
 	++$Data.var1
 	$Data.var1

@@ -84,18 +84,18 @@ public class VesselTool : ModuleTool
 	class Context
 	{
 		public Actor Actor { get; }
+		public IListMenu Menu { get; }
 		public Record SelectedRecord { get; private set; } = null!;
 		public string SelectedPath => SelectedRecord.Path;
 
 		readonly IEnumerable<Record> _records;
-		readonly IListMenu _menu;
 		int _indexSeparator;
 		int _indexSelected;
 
 		public Context(IListMenu menu, Mode mode, DateTime old)
 		{
 			Actor = new Actor(mode);
-			_menu = menu;
+			Menu = menu;
 			_records = Actor.GetHistory(old);
 
 			PopulateMenu();
@@ -103,19 +103,19 @@ public class VesselTool : ModuleTool
 
 		void PopulateMenu()
 		{
-			_menu.Items.Clear();
+			Menu.Items.Clear();
 			_indexSeparator = int.MaxValue;
 			foreach (var record in _records)
 			{
 				// separator
 				if (record.IsRecent && _indexSeparator == int.MaxValue)
 				{
-					_indexSeparator = _menu.Items.Count;
-					_menu.Add(string.Empty).IsSeparator = true;
+					_indexSeparator = Menu.Items.Count;
+					Menu.Add(string.Empty).IsSeparator = true;
 				}
 
 				// item
-				var item = _menu.Add(record.Path);
+				var item = Menu.Add(record.Path);
 				item.Data = record;
 				if (record.What.Length > 0)
 					item.Checked = true;
@@ -124,11 +124,11 @@ public class VesselTool : ModuleTool
 
 		public bool Show()
 		{
-			if (!_menu.Show() || _menu.Selected < 0)
+			if (!Menu.Show() || Menu.Selected < 0)
 				return false;
 
-			_indexSelected = _menu.Selected;
-			SelectedRecord = (Record)_menu.SelectedData!;
+			_indexSelected = Menu.Selected;
+			SelectedRecord = (Record)Menu.SelectedData!;
 			return true;
 		}
 
@@ -175,6 +175,7 @@ public class VesselTool : ModuleTool
 
 	static void RunRemoveItem(Context context, string macro, Action loop)
 	{
+		--context.Menu.Selected;
 		context.RemoveTracking();
 		_ = Task.Run(async () =>
 		{

@@ -18,7 +18,7 @@ using namespace System.Windows.Forms.DataVisualization
 Add-Type -AssemblyName System.Windows.Forms.DataVisualization
 
 # Far job 1: get panel files
-$files = job {
+$files = fun {
 	$Far.Panel.GetFiles() | Where-Object {$_.Length} | Sort-Object Length | Select-Object -Last 20
 }
 

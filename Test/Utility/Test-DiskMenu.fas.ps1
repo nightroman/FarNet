@@ -3,7 +3,7 @@
 	FarNet disk menu, RegisterTool, PostMacro.
 #>
 
-$macro = job {
+$macro = fun {
 	# register
 	$null = $Psf.Manager.RegisterTool(
 		[FarNet.ModuleToolAttribute]@{Name="Test FarNet disk menu"; Options = "Disk"; Id="e3caaf07-e63d-42cf-a31c-c35b91fbdc49"},

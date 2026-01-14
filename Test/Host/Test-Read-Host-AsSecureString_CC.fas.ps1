@@ -3,7 +3,7 @@
 	SecureString input
 #>
 
-job { $Psf.RunCommandConsole() }
+fun { $Psf.RunCommandConsole() }
 
 ### Empty prompt, calls ReadLineAsSecureString()
 

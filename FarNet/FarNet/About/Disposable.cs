@@ -11,7 +11,7 @@ public abstract class Disposable : IDisposable
 	/// <summary>
 	/// Gets the disposed state.
 	/// </summary>
-	public bool IsDisposed => IsDisposed;
+	public bool IsDisposed => _IsDisposed;
 
 	/// <summary>
 	/// Disposes this object.

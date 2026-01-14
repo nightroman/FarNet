@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet
 
+= 10.0.22 =
+
+Fix stack overflow in `Disposable`.
+
 = 10.0.21 =
 
 Remove obsolete `Tasks.Job(Action)`, use `IFar.PostJobAsync(Action)`.

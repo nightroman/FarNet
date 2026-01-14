@@ -359,6 +359,7 @@ public abstract class IFar
 
 	/// <summary>
 	/// Posts the action called when the core gets control.
+	/// For function tasks use <see cref="Tasks.Job"/>.
 	/// </summary>
 	/// <param name="job">The job action.</param>
 	/// <returns>The task representing the posted job.</returns>

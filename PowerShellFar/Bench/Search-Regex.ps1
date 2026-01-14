@@ -1,7 +1,6 @@
 <#
 .Synopsis
 	Searches files and panel found results.
-	Author: Roman Kuzmin
 
 .Description
 	See help (run this and [F1]) for more information about input, dialog
@@ -400,7 +399,7 @@ Start-FarTask -Panel $Panel -Items $Items -Regex $Regex -AllText $AllText {
 		$ExplorerData.Output.Add($file)
 	}
 
-	job {
+	fun {
 		[FarNet.Tasks]::OpenPanel({ $Data.Panel.OpenChild($null) })
 	}
 

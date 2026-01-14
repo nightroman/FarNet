@@ -5,7 +5,7 @@
 
 ### init
 job { $__.GoToPath($PSCommandPath) }
-job { $Psf.RunCommandConsole() }
+fun { $Psf.RunCommandConsole() }
 
 ### F4
 keys F4

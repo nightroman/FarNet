@@ -3,7 +3,7 @@
 	Prompt() with one field
 #>
 
-job { $Psf.RunCommandConsole() }
+fun { $Psf.RunCommandConsole() }
 
 run {
 	# remove the variable

@@ -123,7 +123,7 @@ Start-FarTask -Data All, Tests, ExpectedTaskCount, SavedPanelPaths {
 		[Diagnostics.Debug]::WriteLine("## Test-FarNet: Test: $TestFile")
 		try {
 			### Run current test
-			$result = job {
+			$result = fun {
 				Start-FarTask $Var.TestFile -AsTask
 			}
 

@@ -5,7 +5,7 @@
 
 ### run 2 dummy commands, explore 2 history items and exit
 
-job { $Psf.RunCommandConsole() }
+fun { $Psf.RunCommandConsole() }
 keys 1 Enter
 keys 2 Enter
 job {
@@ -28,7 +28,7 @@ keys Esc # exit CC
 
 ### repeat and compare, do not exit
 
-job { $Psf.RunCommandConsole() }
+fun { $Psf.RunCommandConsole() }
 keys CtrlE
 job {
 	Assert-Far $Far.Dialog[1].Text -eq '2'

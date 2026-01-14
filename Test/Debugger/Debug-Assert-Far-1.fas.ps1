@@ -22,9 +22,9 @@ try {
 
 		$__[2].Text = 'continue'
 		$__.Close()
-		[FarNet.Tasks]::WaitForDialog(999)
 	}
 
+	[FarNet.Tasks]::WaitForDialog(999).Wait()
 
 	job {
 		Assert-Far -DialogTypeId ([PowerShellFar.Guids]::AssertDialog)

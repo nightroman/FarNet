@@ -30,7 +30,7 @@ function GetTestLine {
 	}
 
 	# home, right
-	$kind = job {$Far.Window.Kind}
+	$kind = fun {$Far.Window.Kind}
 	if ($kind -eq 'Editor') {
 		macro 'Keys("Home Right")'
 	}

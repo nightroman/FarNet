@@ -16,13 +16,13 @@ $Data.Text = $Text
 # Input box with our text as the default. Here the job returns the result, so
 # we use `$Data.Text = job {...}`. Alternatively, we can use a job with no
 # output and set $Data.Text in it: `job { $Data.Text = ... }`.
-$Data.Text = job {
+$Data.Text = fun {
 	$Far.Input('Type something', $null, 'Input', $Data.Text)
 }
 
 # This job starts a non-modal editor with the initial text $Data.Text and sets
 # the new $Data.Text value in the editor `Saving` event handler.
-job {
+fun {
 	$editor = $Far.CreateEditor()
 	$editor.FileName = $Far.TempName()
 	$editor.DisableHistory = $true

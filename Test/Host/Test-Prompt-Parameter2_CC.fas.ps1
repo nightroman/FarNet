@@ -3,7 +3,7 @@
 	Prompt() with several fields
 #>
 
-job { $Psf.RunCommandConsole() }
+fun { $Psf.RunCommandConsole() }
 
 run {
 	. $PSScriptRoot\zoo.ps1

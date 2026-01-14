@@ -34,11 +34,13 @@ class BaseCmdlet : PSCmdlet
 			// Far task
 			new SessionStateCmdletEntry("Start-FarTask", typeof(StartFarTaskCommand), Help),
 			new SessionStateCmdletEntry(InvokeTaskCmd.MyName, typeof(InvokeTaskCmd), Help),
+			new SessionStateCmdletEntry(InvokeTaskFun.MyName, typeof(InvokeTaskFun), Help),
 			new SessionStateCmdletEntry(InvokeTaskJob.MyName, typeof(InvokeTaskJob), Help),
 			new SessionStateCmdletEntry(InvokeTaskRun.MyName, typeof(InvokeTaskRun), Help),
 			new SessionStateCmdletEntry(InvokeTaskKeys.MyName, typeof(InvokeTaskKeys), Help),
 			new SessionStateCmdletEntry(InvokeTaskMacro.MyName, typeof(InvokeTaskMacro), Help),
 			new SessionStateAliasEntry("ps:", InvokeTaskCmd.MyName),
+			new SessionStateAliasEntry("fun", InvokeTaskFun.MyName),
 			new SessionStateAliasEntry("job", InvokeTaskJob.MyName),
 			new SessionStateAliasEntry("run", InvokeTaskRun.MyName),
 			new SessionStateAliasEntry("keys", InvokeTaskKeys.MyName),

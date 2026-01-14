@@ -3,7 +3,7 @@
 	PromptForChoice()
 #>
 
-job { $Psf.RunCommandConsole() }
+fun { $Psf.RunCommandConsole() }
 
 ### Test Esc
 

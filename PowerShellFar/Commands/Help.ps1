@@ -692,19 +692,25 @@ Merge-Helps $BaseRegister @{
 
 	JOBS AND MACROS
 
-	`ps:` and `job` may be used in async and main sessions.
+	`ps:`, `fun`, `job` may be used in async and main sessions.
 	`run`, `keys`, `macro` are used in async sessions only.
 
 	ps: {...}
 
-		This job prints its commands output to the console.
+		This job prints its output to the console.
+
+		Use $Var.<name> for getting or setting the task variables.
+
+	fun {...}
+
+		This script outputs some data. No output is an error. If output has
+		tasks then tasks are awaited and their not null results are returned.
 
 		Use $Var.<name> for getting or setting the task variables.
 
 	job {...}
 
-		This job may output data as usual. If an object is a task then this
-		task is awaited and its result is returned, if not null.
+		This script is an action with no output. Output is an error.
 
 		Use $Var.<name> for getting or setting the task variables.
 
@@ -779,6 +785,7 @@ Merge-Helps $BaseRegister @{
 	links = @(
 		@{ text = 'Samples -- https://github.com/nightroman/FarNet/tree/main/Samples/FarTask' }
 		@{ text = 'Invoke-FarTaskCmd' }
+		@{ text = 'Invoke-FarTaskFun' }
 		@{ text = 'Invoke-FarTaskJob' }
 		@{ text = 'Invoke-FarTaskRun' }
 		@{ text = 'Invoke-FarTaskKeys' }
@@ -805,30 +812,31 @@ Merge-Helps $BaseRegister @{
 			description = 'Output is printed to the console.'
 		}
 	)
-    examples = @(
-        @{
-            code = {
-            	# Prints the active panel path.
-            	ps: {
-            		$Far.Panel.CurrentDirectory
-            	}
-            }
-        }
-    )
+	examples = @(
+		@{
+			code = {
+				# Prints the active panel path.
+				ps: {
+					$Far.Panel.CurrentDirectory
+				}
+			}
+		}
+	)
 }
 
-### Invoke-FarTaskJob
+### Invoke-FarTaskFun
 @{
-	command = 'Invoke-FarTaskJob'
-	synopsis = '(job) Invokes task script with output.'
+	command = 'Invoke-FarTaskFun'
+	synopsis = '(fun) Invokes task script with output.'
 	description = @'
-	Invokes the script and returns its output objects. If an object is a task
-	then this task is awaited and its result is returned, if not null.
+	Invokes the script and returns its output objects. No output is an error.
+	If output has tasks then tasks are awaited and their not null results are
+	returned.
 
 	Supported sessions: async, main.
 '@
 	parameters = @{
-		Script = 'Script block.'
+		Script = 'Script block with output.'
 	}
 	outputs = @(
 		@{
@@ -836,16 +844,42 @@ Merge-Helps $BaseRegister @{
 			description = 'Script results.'
 		}
 	)
-    examples = @(
-        @{
-            code = {
-            	# Returns the active panel path.
-            	job {
-            		$Far.Panel.CurrentDirectory
-            	}
-            }
-        }
-    )
+	examples = @(
+		@{
+			code = {
+				# Returns the active panel path.
+				$cd = fun {
+					$Far.Panel.CurrentDirectory
+				}
+				# use $cd in task code
+				...
+			}
+		}
+	)
+}
+
+### Invoke-FarTaskJob
+@{
+	command = 'Invoke-FarTaskJob'
+	synopsis = '(job) Invokes task script with no output.'
+	description = @'
+	Invokes the script with no output. Throws on output.
+
+	Supported sessions: async, main.
+'@
+	parameters = @{
+		Script = 'Script block with no output.'
+	}
+	examples = @(
+		@{
+			code = {
+				# Shows a simple message.
+				job {
+					$Far.Message('Hello!')
+				}
+			}
+		}
+	)
 }
 
 ### Invoke-FarTaskRun
@@ -875,14 +909,17 @@ Merge-Helps $BaseRegister @{
 		}
 	)
 	examples = @(
-        @{
-            code = {
-            	# Shows some error message box.
-            	run {
-            		$Far.Message('Cannot find file.', 'Error', 'Warning, Ok')
-            	}
-            }
-        }
+		@{
+			code = {
+				# Shows a message and tests it in the next job.
+				run {
+					$Far.Message('Cannot find file.', 'Error', 'Warning, Ok')
+				}
+				job {
+					Assert-Far -Dialog
+				}
+			}
+		}
 	)
 }
 

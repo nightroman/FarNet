@@ -22,7 +22,7 @@ sealed class StartFarTaskCommand : BaseCmdlet, IDynamicParameters
 	internal const string CodeJob = "& $args[0]";
 
 	// sets step breaks
-	const string CodeStep = "Set-PSBreakpoint -Command job, ps:, run, keys, macro";
+	const string CodeStep = "Set-PSBreakpoint -Command job, fun, ps:, run, keys, macro";
 
 	// $Data for scripts
 	readonly Hashtable _data = new(StringComparer.OrdinalIgnoreCase);

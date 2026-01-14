@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 10.0.24 =
+
+Start-FarTask
+- split `job` to `fun` (output) and `job` (no output).
+
 = 10.0.23 =
 
 Use `UnsafeAccessor` instead of reflection.

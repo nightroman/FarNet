@@ -12,7 +12,7 @@ $Data.Input = $null
 
 # input using non-modal dialog
 # $Data.Input is set in Closed
-job {
+fun {
 	$dialog = $Far.CreateDialog(-1, -1, 52, 4)
 	$dialog.KeepWindowTitle = $true
 	$null = $dialog.AddText(1, 1, 50, '_201123_rz')

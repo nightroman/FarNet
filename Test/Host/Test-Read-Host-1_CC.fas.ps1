@@ -3,7 +3,7 @@
 	Read-Host 1 line prompt
 #>
 
-job { $Psf.RunCommandConsole() }
+fun { $Psf.RunCommandConsole() }
 
 run {
 	Assert-Far -DialogTypeId ([PowerShellFar.Guids]::ReadCommandDialog)

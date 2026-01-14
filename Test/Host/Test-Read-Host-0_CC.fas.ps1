@@ -6,7 +6,7 @@
 	This scenario calls ReadLine(), not Prompt()
 #>
 
-job { $Psf.RunCommandConsole() }
+fun { $Psf.RunCommandConsole() }
 
 ### Test Esc
 

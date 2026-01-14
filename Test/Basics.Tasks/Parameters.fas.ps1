@@ -2,8 +2,8 @@
 ### =1
 job {
 	& "$env:FarNetCode\Samples\FarTask\Parameters=1.far.ps1"
-	[FarNet.Tasks]::WaitForDialog(999)
 }
+[FarNet.Tasks]::WaitForDialog(999).Wait()
 job {
 	Assert-Far $__[1].Text -eq 'Hi Joe (42)'
 	$__.Close()
@@ -12,8 +12,8 @@ job {
 ### =2
 job {
 	& "$env:FarNetCode\Samples\FarTask\Parameters=2.far.ps1"
-	[FarNet.Tasks]::WaitForDialog(999)
 }
+[FarNet.Tasks]::WaitForDialog(999).Wait()
 job {
 	Assert-Far $__[1].Text -eq 'Hi Joe'
 	$__.Close()
@@ -23,9 +23,7 @@ job {
 run {
 	Start-FarTask "$env:FarNetCode\Samples\FarTask\Parameters=3.fas.ps1" -Param1 Hi -Param2 Joe
 }
-job {
-	[FarNet.Tasks]::WaitForDialog(999)
-}
+[FarNet.Tasks]::WaitForDialog(999).Wait()
 job {
 	Assert-Far $__[1].Text -eq 'Hi Joe'
 	$__.Close()

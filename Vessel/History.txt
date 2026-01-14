@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.Vessel
 
+= 6.2.3 =
+
+Set cursor to the previous item on removing.
+
 = 6.2.2 =
 
 Use FarNet 10.0.20.

@@ -11,7 +11,7 @@
 #>
 
 for() {
-	job {
+	fun {
 		# make a panel with some data
 		$panel = Get-ChildItem -LiteralPath $PSScriptRoot -File | Out-FarPanel -Return -Title 'Go to a file or dots and close.'
 
@@ -30,7 +30,7 @@ for() {
 	}
 
 	# edit the file
-	job {
+	fun {
 		$editor = New-FarEditor "$PSScriptRoot\$($Data.CurrentFile)" -DisableHistory
 		[FarNet.Tasks]::Editor($editor)
 	}

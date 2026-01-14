@@ -52,7 +52,8 @@ public static class Tasks
 	}
 
 	/// <summary>
-	/// Starts a task with the specified function job.
+	/// Starts a task with the specified function.
+	/// For action tasks use <see cref="IFar.PostJobAsync(Action)"/>.
 	/// </summary>
 	/// <typeparam name="T">The function result.</typeparam>
 	/// <param name="job">The function job.</param>
