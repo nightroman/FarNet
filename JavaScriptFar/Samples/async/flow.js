@@ -22,7 +22,7 @@ async function show() {
     let res2 = await showDialog(res1)
     if (!res2)
         return
-    await clr.FarNet.Tasks.Job(host.proc(0, () => far.Message(res2, 'result')))
+    await far.PostJobAsync(host.proc(0, () => far.Message(res2, 'result')))
 }
 
 show()

@@ -1,9 +1,13 @@
 ﻿https://www.nuget.org/packages/FarNet
 
+= 10.0.21 =
+
+Remove obsolete `Tasks.Job(Action)`, use `IFar.PostJobAsync(Action)`.
+Use `Activator.CreateInstance()` instead of compiled expressions.
+
 = 10.0.20 =
 
-`Tasks.Job(Action)` is obsolete and will be removed.
-Use new `IFar.PostJobAsync(Action)` instead.
+`Tasks.Job(Action)` is obsolete and will be removed, use new `IFar.PostJobAsync(Action)` instead.
 
 = 10.0.19 =
 

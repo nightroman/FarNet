@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 10.0.23 =
+
+Use `UnsafeAccessor` instead of reflection.
+
 = 10.0.22 =
 
 Use FarNet 10.0.20.

@@ -125,11 +125,9 @@ Test.Add("StartTaskCode", async {
     test <@ isNull res[1] @>
 })
 
-// This job calls [FarNet.Tasks]::Job<Action>, i.e. by default it's Action for
-// PowerShell, even with script block returning something. The output is lost
-// in Job<Action> because it always SetResult(null).
-Test.Add("TaskJobActionNull", async {
-    let! res = PowerShellFar.InvokeAsync("job { [FarNet.Tasks]::Job({42}) }") |> Async.AwaitTask
+// It's Action in PS, even with script block returning something. The output is lost.
+Test.Add("PostJobAsync", async {
+    let! res = PowerShellFar.InvokeAsync("job { $Far.PostJobAsync({42}) }") |> Async.AwaitTask
     test <@ 0 = res.Length @>
 })
 

@@ -77,21 +77,6 @@ public static class Tasks
 	}
 
 	/// <summary>
-	/// Starts a task with the specified action job.
-	/// </summary>
-	/// <param name="job">The action job.</param>
-	/// <returns>The task which completes when the action job completes.</returns>
-	/// <remarks>
-	/// If the job opens a panel, use <see cref="OpenPanel(Action)"/> instead.
-	/// If the job may open a panel, use <see cref="Command"/> instead.
-	/// </remarks>
-	[Obsolete("Use IFar.PostJobAsync")]
-	public static Task Job(Action job)
-	{
-		return Far.Api.PostJobAsync(job);
-	}
-
-	/// <summary>
 	/// Starts a task which runs the job and completes when the core gets control.
 	/// </summary>
 	/// <param name="job">The job to run.</param>

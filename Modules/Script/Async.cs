@@ -25,7 +25,7 @@ public static class Async
 		if (res.Trim().Length == 0)
 			throw new Exception("Empty string!");
 
-		await Tasks.Job(() =>
+			await Far.Api.PostJobAsync(() =>
 		{
 			Far.Api.Message(res, "You entered");
 		});

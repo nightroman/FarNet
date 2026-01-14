@@ -5,17 +5,18 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
-using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace PowerShellFar;
 
 static class DebuggerKit
 {
+	[UnsafeAccessor(UnsafeAccessorKind.Method, Name = "IsDebuggerStopEventSubscribed")]
+	public static extern bool IsDebuggerStopEventSubscribed(Debugger instance);
+
 	public static bool HasDebugger(Runspace runspace)
 	{
-		return (bool)typeof(Debugger)
-			.GetMethod("IsDebuggerStopEventSubscribed", BindingFlags.NonPublic | BindingFlags.Instance)!
-			.Invoke(runspace.Debugger, null)!;
+		return IsDebuggerStopEventSubscribed(runspace.Debugger);
 	}
 
 	public static void ValidateAvailable()

@@ -6,7 +6,7 @@ function sleep(milliseconds) {
 }
 
 function job(proc) {
-    return clr.FarNet.Tasks.Job(host.proc(0, proc))
+    return far.PostJobAsync(host.proc(0, proc))
 }
 
 async function test(milliseconds) {

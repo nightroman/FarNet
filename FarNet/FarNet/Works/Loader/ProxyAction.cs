@@ -1,19 +1,10 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-using System.IO;
-using System.Linq.Expressions;
-
-namespace FarNet.Works;
+﻿namespace FarNet.Works;
 
 abstract class ProxyAction : IModuleAction
 {
 	string? _ClassName;
 	Type? _ClassType;
 	readonly Guid _Id;
-	Func<object>? _Constructor;
 	readonly ModuleManager _Manager;
 	protected ModuleActionAttribute ActionAttribute { get; }
 
@@ -80,6 +71,7 @@ abstract class ProxyAction : IModuleAction
 		}
 	}
 
+	//! Used compiled expressions here, not proven to be more effective.
 	internal object GetInstance()
 	{
 		// resolve class name to its type
@@ -89,13 +81,8 @@ abstract class ProxyAction : IModuleAction
 			_ClassName = null;
 		}
 
-		// compile its default constructor
-		// Faster than Activator.CreateInstance for 2+ calls.
-		// For singletons still use Activator.CreateInstance.
-		_Constructor ??= Expression.Lambda<Func<object>>(Expression.New(_ClassType!)).Compile();
-
 		// get new instance
-		return _Constructor();
+		return Activator.CreateInstance(_ClassType!)!;
 	}
 
 	void Initialize()
