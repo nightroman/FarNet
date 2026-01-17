@@ -514,6 +514,8 @@ TextFrame Editor::Frame::get()
 	r.CaretScreenColumn = (int)ei.CurTabPos;
 	r.VisibleLine = (int)ei.TopScreenLine;
 	r.VisibleChar = (int)ei.LeftPos;
+	r.WindowArea = Place(ei.WindowArea.left, ei.WindowArea.top, ei.WindowArea.right, ei.WindowArea.bottom);
+	r.ClientArea = Place(ei.ClientArea.left, ei.ClientArea.top, ei.ClientArea.right, ei.ClientArea.bottom);
 	return r;
 }
 
@@ -559,21 +561,18 @@ int Editor::ConvertColumnScreenToEditor(int line, int column)
 
 Point Editor::ConvertPointEditorToScreen(Point point)
 {
-	TextFrame frame = Frame;
-	point.X = ConvertColumnEditorToScreen(point.Y, point.X) - frame.VisibleChar;
-	point.Y -= frame.VisibleLine;
-	if (IsTitleBar)
-		++point.Y;
+	AutoEditorInfo ei(_id);
+	point.X = ConvertColumnEditorToScreen(point.Y, point.X) + ei.ClientArea.left - ei.LeftPos;
+	point.Y = point.Y - ei.TopScreenLine + ei.ClientArea.top;
 	return point;
 }
 
 Point Editor::ConvertPointScreenToEditor(Point point)
 {
-	TextFrame frame = Frame;
-	point.Y += frame.VisibleLine;
-	if (IsTitleBar)
-		--point.Y;
-	point.X = ConvertColumnScreenToEditor(point.Y, point.X) + frame.VisibleChar;
+	AutoEditorInfo ei(_id);
+	//! Y first
+	point.Y = point.Y + ei.TopScreenLine - ei.ClientArea.top;
+	point.X = ConvertColumnScreenToEditor(point.Y, point.X) - ei.ClientArea.left + ei.LeftPos;
 	return point;
 }
 

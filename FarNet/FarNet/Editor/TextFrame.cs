@@ -1,15 +1,11 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-namespace FarNet;
+﻿namespace FarNet;
 
 /// <summary>
 /// Information about the text frame and the caret position.
 /// </summary>
 public struct TextFrame
 {
-	/// <param name="value">The same value assigned to all properties.</param>
+	/// <param name="value">The same value assigned to numeric properties.</param>
 	public TextFrame(int value)
 		: this()
 	{
@@ -45,6 +41,16 @@ public struct TextFrame
 	/// </summary>
 	public int VisibleChar { get; set; }
 
+	/// <summary>
+	/// Gets or sets the window area.
+	/// </summary>
+	public Place WindowArea { get; set; }
+
+	/// <summary>
+	/// Gets or sets the client area.
+	/// </summary>
+	public Place ClientArea { get; set; }
+
 	/// <include file='doc.xml' path='doc/OpEqual/*'/>
 	public static bool operator ==(TextFrame left, TextFrame right)
 	{
@@ -53,7 +59,9 @@ public struct TextFrame
 			left.CaretColumn == right.CaretColumn &&
 			left.CaretScreenColumn == right.CaretScreenColumn &&
 			left.VisibleLine == right.VisibleLine &&
-			left.VisibleChar == right.VisibleChar;
+			left.VisibleChar == right.VisibleChar &&
+			left.WindowArea == right.WindowArea &&
+			left.ClientArea == right.ClientArea;
 	}
 
 	/// <include file='doc.xml' path='doc/OpNotEqual/*'/>
