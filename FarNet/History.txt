@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet
 
+= 10.0.24 =
+
+Tweak module manager.
+
 = 10.0.23 =
 
 Use Far 3.0.6632 with amended editor pos methods.

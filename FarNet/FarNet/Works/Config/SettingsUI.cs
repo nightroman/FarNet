@@ -1,11 +1,4 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace FarNet.Works;
 #pragma warning disable 1591
@@ -18,7 +11,7 @@ public static class SettingsUI
 	{
 		// collect sorted data
 		var list = managers
-			.SelectMany(manager => manager.SettingsTypeNames.Select(typeName => new KeyValuePair<IModuleManager, string>(manager, typeName)))
+			.SelectMany(manager => manager.GetSettingsTypeNames().Select(typeName => new KeyValuePair<IModuleManager, string>(manager, typeName)))
 			.OrderBy(x => x.Key.ModuleName, StringComparer.OrdinalIgnoreCase)
 			.ThenBy(x => x.Value, StringComparer.OrdinalIgnoreCase)
 			.ToList();

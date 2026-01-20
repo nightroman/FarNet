@@ -1,10 +1,4 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Reflection;
 
 namespace FarNet;
@@ -118,15 +112,19 @@ public abstract class IModuleManager
 	public abstract void SaveConfig();
 
 	/// <summary>
-	/// INTERNAL
-	/// </summary>
-	public abstract IReadOnlyList<string> SettingsTypeNames { get; }
-
-	/// <summary>
 	/// Calls <see cref="ModuleHost.Interop"/>.
 	/// </summary>
 	/// <param name="command">.</param>
 	/// <param name="args">.</param>
 	/// <returns>.</returns>
 	public abstract object Interop(string command, object? args);
+
+	// from cache or reflection
+	private string? _SettingsTypeNames;
+
+	internal string[] GetSettingsTypeNames() =>
+		_SettingsTypeNames is null ? [] : _SettingsTypeNames.Split('|');
+
+	internal void AddSettingsTypeName(string name) =>
+		_SettingsTypeNames = _SettingsTypeNames is null ? name : _SettingsTypeNames + '|' + name;
 }

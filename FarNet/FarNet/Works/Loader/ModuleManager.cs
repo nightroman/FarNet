@@ -1,12 +1,5 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.Reflection;
 using System.Resources;
 
@@ -24,16 +17,6 @@ sealed partial class ModuleManager : IModuleManager
 	Type? _ModuleHostType;
 	ModuleHost? _ModuleHost;
 
-	// from cache or reflection
-	readonly List<string> _SettingsTypeNames = [];
-
-	// used by loader on reflection
-	public void AddSettingsTypeName(string name) => _SettingsTypeNames.Add(name);
-
-	// used for the settings menu and caching
-	public override IReadOnlyList<string> SettingsTypeNames => _SettingsTypeNames;
-
-	// New module manager
 	internal ModuleManager(string assemblyPath)
 	{
 		AssemblyPath = assemblyPath;

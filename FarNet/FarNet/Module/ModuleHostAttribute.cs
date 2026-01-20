@@ -1,10 +1,4 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-
-namespace FarNet;
+﻿namespace FarNet;
 
 /// <summary>
 /// Module host attribute.
@@ -13,11 +7,11 @@ namespace FarNet;
 public sealed class ModuleHostAttribute : Attribute
 {
 	/// <summary>
-	/// Tells to load and connect the host always. There should be good reasons for 'true'.
+	/// Tells to load and connect the host.
 	/// </summary>
 	/// <remarks>
 	/// If the module host is the only implemented module item then this flag
-	/// has to be set to true. Otherwise the host has no chances to be used.
+	/// should to be set to true. Otherwise the module is not loaded.
 	/// </remarks>
 	public bool Load { get; set; }
 }

@@ -1,11 +1,4 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System.Collections.Generic;
-using System.IO;
-
-namespace FarNet.Works;
+﻿namespace FarNet.Works;
 
 partial class ModuleManager
 {
@@ -34,8 +27,9 @@ partial class ModuleManager
 		writer.Write(CurrentUICultureName());
 
 		// [3]
-		writer.Write(_SettingsTypeNames.Count);
-		foreach (var typeName in _SettingsTypeNames)
+		var settingsTypeNames = GetSettingsTypeNames();
+		writer.Write(settingsTypeNames.Length);
+		foreach (string typeName in settingsTypeNames)
 			writer.Write(typeName);
 
 		// [4]
@@ -61,9 +55,8 @@ partial class ModuleManager
 
 		// [3]
 		var settingsCount = reader.ReadInt32();
-		_SettingsTypeNames.Capacity = settingsCount;
 		for (int i = 0; i < settingsCount; i++)
-			_SettingsTypeNames.Add(reader.ReadString());
+			AddSettingsTypeName(reader.ReadString());
 
 		// [4]
 		var hostTypeName = reader.ReadString();
