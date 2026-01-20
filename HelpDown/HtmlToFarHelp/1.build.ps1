@@ -141,7 +141,7 @@ task test_main {
 
 		# not used for HLF
 		[TestCase]@{File = "..\..\CopyColor\README.md"; Name = 'CopyColor.README'; Mode = 3; Root = $SampleHome3}
-		[TestCase]@{File = "..\..\Drawer\README.md"; Name = 'Drawer.README'; Mode = 3; Root = $SampleHome3}
+		[TestCase]@{File = "..\..\EditorKit\README.md"; Name = 'EditorKit.README'; Mode = 3; Root = $SampleHome3}
 		[TestCase]@{File = "..\..\Explore\README.md"; Name = 'Explore.README'; Mode = 3; Root = $SampleHome3}
 		[TestCase]@{File = "..\..\FSharpFar\README.md"; Name = 'FSharpFar.README'; Mode = 3; Root = $SampleHome3}
 		[TestCase]@{File = "..\..\RightControl\README.md"; Name = 'RightControl.README'; Mode = 3; Root = $SampleHome3}

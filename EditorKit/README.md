@@ -2,7 +2,11 @@
 
 [EditorConfig]: https://editorconfig.org/
 
-FarNet module for Far Manager editor configuration
+FarNet module for Far Manager editor configuration and tools.
+
+- [Editor configuration](#editor-configuration)
+- [Editor drawers](#editor-drawers)
+- [Settings](#settings)
 
 ## Installation
 
@@ -13,18 +17,13 @@ FarNet module for Far Manager editor configuration
 How to install and update FarNet and modules:\
 https://github.com/nightroman/FarNet#readme
 
-## Description
+*********************************************************************
+## Editor configuration
 
 EditorKit uses `.editorconfig` files (see [EditorConfig]) and its own settings
-for extras (see [Module settings](#module-settings)).
+for extras (see [Module settings](#settings)).
 
-What is EditorConfig?
-
-> EditorConfig helps maintain consistent coding styles for multiple developers
-working on the same project across various editors and IDEs. EditorConfig files
-are easily readable and they work nicely with version control systems.
-
-### Supported settings
+Supported `EditorConfig` settings:
 
 ```ini
 trim_trailing_whitespace = true | false
@@ -34,16 +33,31 @@ indent_size = <number>
 charset = utf-8 | utf-8-bom | utf-16le | utf-16be
 ```
 
-If a file opened in editor does not have some settings or they are set to
-unsupported values then the module does nothing and Far Manager current
-settings apply.
+If an editor file does not have some settings or they are set to unsupported
+values then the module ignores them and Far Manager current settings apply.
 
-## Module settings
+*********************************************************************
+## Editor drawers
 
-F11 / FarNet / Settings / EditorKit
+The module provides the following color drawers:
 
-***
-**Colorer types set by file masks**
+- `Current word` - colors occurrences of the current word
+- `Fixed column` - colors custom columns (80, 120)
+- `Tabs` - colors tabs
+
+In order to toggle a drawer, use the menu: `[F11] / FarNet / Drawers`.
+
+*********************************************************************
+## Settings
+
+Drawer file masks: `F9 / Options / Plugin configuration / FarNet / Drawers`.
+
+- `Mask` - file mask to enable the drawer on opening
+- `Priority` - drawer color priority
+
+Common settings: `F11 / FarNet / Settings / EditorKit`.
+
+- Colorer types set by file masks
 
 ```xml
   <ColorerTypes>
@@ -52,3 +66,31 @@ F11 / FarNet / Settings / EditorKit
     <ColorerType Type="text" Mask="*\logs\*.*" Full="true" />
   </ColorerTypes>
 ```
+
+- `CurrentWord/WordRegex`
+
+    The regular expression for "words".
+
+    Default: `\w[-\w]*`
+
+- `CurrentWord/ExcludeCurrent`
+
+    Tells to not color the current word.
+
+    Default: false
+
+- `FixedColumn/ColumnNumbers`
+
+    Defines the numbers of highlighted columns.
+
+    Default: 80, 120
+
+- `.../ColorForeground`, `.../ColorBackground`
+
+    Valid colors: Black, DarkBlue, DarkGreen, DarkCyan, DarkRed, DarkMagenta,
+    DarkYellow, Gray, DarkGray, Blue, Green, Cyan, Red, Magenta, Yellow, White.
+
+    With the plugin FarColorer `Current word` uses `ColorBackground` and
+    preserves the foreground if possible, else uses `ColorForeground`.
+
+*********************************************************************

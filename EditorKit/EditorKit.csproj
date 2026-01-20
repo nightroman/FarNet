@@ -8,7 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>FarNet250103</NoWarn>
+    <NoWarn>FarNet250103;FarNet250104</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="editorconfig" Version="0.15.0" />

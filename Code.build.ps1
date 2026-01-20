@@ -119,7 +119,6 @@ task modules {
 
 	# used main
 	Invoke-Build build, clean .\CopyColor
-	Invoke-Build build, clean .\Drawer
 	Invoke-Build build, clean .\EditorKit
 	Invoke-Build build, clean .\Explore
 	Invoke-Build build, clean .\FolderChart

@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.EditorKit
 
+= 2.5.0 =
+
+Added color drawers from "FarNet.Drawer".
+"FarNet.Drawer" is empty, to be removed.
+See https://github.com/nightroman/FarNet/blob/main/Drawer/README.md
+
 = 2.4.0 =
 
 Uses .NET 10

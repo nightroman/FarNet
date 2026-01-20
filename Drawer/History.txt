@@ -1,5 +1,10 @@
 ﻿https://www.nuget.org/packages/FarNet.Drawer
 
+= 5.0.0 =
+
+This module is empty, replaced by "FarNet.EditorKit".
+See docs for how to migrate settings and tidy up.
+
 = 4.3.0 =
 
 Requires FarNet 10.0.14, uses .NET 10 and new .NET settings validation.

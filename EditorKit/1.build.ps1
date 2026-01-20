@@ -18,7 +18,7 @@ task build meta, {
 }
 
 task clean {
-	remove z, bin, obj, README.html, Directory.Build.props, "*$_name.*.nupkg"
+	remove z, bin, obj, README.html, "*$_name.*.nupkg"
 }
 
 task markdown {

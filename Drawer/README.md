@@ -1,73 +1,33 @@
 ﻿# FarNet.Drawer
 
-FarNet module Drawer for Far Manager
+This module is empty, replaced by [FarNet.EditorKit](https://www.nuget.org/packages/FarNet.EditorKit)
 
-The module provides a few editor color highlighting tools (drawers).
+## Migrate settings
 
-**Project FarNet**
+**(1) file masks**
 
-* Wiki: <https://github.com/nightroman/FarNet/wiki>
-* Site: <https://github.com/nightroman/FarNet>
-* Author: Roman Kuzmin
+Edit `%FARPROFILE%\FarNet\FarNet.xml` and find lines like:
 
-*********************************************************************
-## Install
+```xml
+  <Module Name="Drawer">
+    <Drawer Id="a9a6f877-e049-4438-a315-d5914b200988" Mask="*" />
+    <Drawer Id="ae160caa-6f5b-43f1-b94a-f2a4fa6ba000" Mask="*.tsv" />
+  </Module>
+```
 
-- Far Manager
-- Package [FarNet](https://www.nuget.org/packages/FarNet)
-- Package [FarNet.Drawer](https://www.nuget.org/packages/FarNet.Drawer)
+Change `Name="Drawer"` to `Name="EditorKit"`.\
+Restart Far Manager.
 
-How to install and update FarNet and modules\
-<https://github.com/nightroman/FarNet#readme>
+**(2) other settings**
 
-*********************************************************************
-## Description
+Open EditorKit settings: `F11 / FarNet / Settings / EditorKit`.
 
-The module provides the following editor color drawers:
+Replace XML elements `CurrentWord`, `FixedColumn`, `Tabs` with elements from
+`%FARPROFILE%\FarNet\Drawer\Settings.xml`.
 
-- `Current word` - colors occurrences of the current word.
-- `Fixed column` - colors custom columns (80, 120 by default).
-- `Tabs` - colors tabs.
+## Tidy up
 
-In order to turn a drawer on and off, use the menu: `[F11] / FarNet / Drawers`.
+Remove the old module and its data:
 
-*********************************************************************
-## Options
-
-`F9 / Options / Plugin configuration / FarNet / Drawers`
-
-- `Mask` - mask of files where the drawer is turned on automatically.
-- `Priority` - drawer color priority.
-
-*********************************************************************
-## Settings
-
-Module settings: `F11 / FarNet / Settings / Drawer`
-
-- `CurrentWord/WordRegex`
-
-    The regular expression for "words".
-
-    Default: `\w[-\w]*`
-
-- `CurrentWord/ExcludeCurrent`
-
-    Tells to not color the current word.
-
-    Default: false
-
-- `FixedColumn/ColumnNumbers`
-
-    Defines the numbers of highlighted columns.
-
-    Default: 80, 120
-
-- `.../ColorForeground`, `.../ColorBackground`
-
-    Valid colors: Black, DarkBlue, DarkGreen, DarkCyan, DarkRed, DarkMagenta,
-    DarkYellow, Gray, DarkGray, Blue, Green, Cyan, Red, Magenta, Yellow, White.
-
-    With the plugin FarColorer `Current word` uses `ColorBackground` and
-    preserves the foreground if possible, else uses `ColorForeground`.
-
-*********************************************************************
+- `%FARHOME%\FarNet\Modules\Drawer`
+- `%FARPROFILE%\FarNet\Drawer`

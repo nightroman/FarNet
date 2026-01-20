@@ -1,6 +1,6 @@
 ﻿using FarNet;
 
-namespace Drawer;
+namespace EditorKit;
 
 [ModuleDrawer(Name = Settings.FixedColumnName, Priority = 1, Id = Settings.FixedColumnGuid)]
 public class FixedColumnDrawer : ModuleDrawer

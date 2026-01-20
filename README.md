@@ -65,7 +65,6 @@ Install modules
 
 ```powershell
 Install-FarPackage FarNet.CopyColor
-Install-FarPackage FarNet.Drawer
 Install-FarPackage FarNet.EditorKit
 Install-FarPackage FarNet.Explore
 Install-FarPackage FarNet.FolderChart
