@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 10.0.26 =
+
+Use FarNet 10.0.26, removed deprecated code
+
 = 10.0.25 =
 
 Use FarNet 10.0.25, new first editor opening.

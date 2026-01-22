@@ -1,5 +1,12 @@
 ﻿https://www.nuget.org/packages/FarNet
 
+= 10.0.26 =
+
+Deprecated, will be removed
+- ModuleHost.Connect, use constructor
+- ModuleHost.Disconnect, use IDisposable
+- ModuleHostAttribute, use ModuleHost.ToLoad
+
 = 10.0.25 =
 
 `ModuleHost.UseEditors` replaces `IAnyEditor.FirstOpening`.

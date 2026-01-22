@@ -48,10 +48,12 @@ sealed partial class ModuleManager : IModuleManager
 
 		_host = (ModuleHost)Activator.CreateInstance(type, false)!;
 		ToUseEditors = _host.ToUseEditors;
+#pragma warning disable CS0618
 		_host.Connect();
+#pragma warning restore CS0618
 	}
 
-	void EnsureHost()
+		void EnsureHost()
 	{
 		if (_host is null)
 		{
@@ -96,9 +98,14 @@ sealed partial class ModuleManager : IModuleManager
 		if (_host is null)
 			return true;
 
+		if (_host.ToLoad)
+			return false;
+
+#pragma warning disable CS0618
 		object[] attrs = _host.GetType().GetCustomAttributes(typeof(ModuleHostAttribute), false);
 		if (attrs.Length == 0 || !((ModuleHostAttribute)attrs[0]).Load)
 			return true;
+#pragma warning restore CS0618
 
 		return false;
 	}
@@ -177,7 +184,16 @@ sealed partial class ModuleManager : IModuleManager
 
 		try
 		{
-			_host.Disconnect();
+			if (_host is IDisposable disposable)
+			{
+				disposable.Dispose();
+			}
+			else
+			{
+#pragma warning disable CS0618
+				_host.Disconnect();
+#pragma warning restore CS0618
+			}
 		}
 		catch (Exception ex)
 		{

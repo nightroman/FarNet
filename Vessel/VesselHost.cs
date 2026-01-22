@@ -2,7 +2,6 @@
 
 namespace Vessel;
 
-[ModuleHost]
 public class VesselHost : ModuleHost
 {
 	const string NameLogFile1 = "VesselHistory.txt";
@@ -11,7 +10,7 @@ public class VesselHost : ModuleHost
 
 	internal static IReadOnlyList<string> LogPath { get; private set; } = null!;
 
-	public override void Connect()
+	public VesselHost()
 	{
 		var dir = Manager.GetFolderPath(SpecialFolder.LocalData, true);
 		LogPath = [Path.Combine(dir, NameLogFile1), Path.Combine(dir, NameLogFile2), Path.Combine(dir, NameLogFile3)];

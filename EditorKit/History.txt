@@ -1,5 +1,11 @@
 https://www.nuget.org/packages/FarNet.EditorKit
 
+= 2.6.0 =
+
+Use FarNet 10.0.26, removed deprecated code
+
+New features "Mouse menu", "Select text by mouse", off by default.
+
 = 2.5.0 =
 
 Added color drawers from "FarNet.Drawer".

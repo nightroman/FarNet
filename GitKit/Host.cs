@@ -8,20 +8,18 @@ using System.Text.Json;
 
 namespace GitKit;
 
-[ModuleHost(Load = true)]
 public class Host : ModuleHost
 {
 	public const string MyName = "GitKit";
 	public const string GitKit_User = "GitKit_User";
 	public static Host Instance { get; private set; } = null!;
 
+	public override bool ToLoad => true;
+
 	public Host()
 	{
 		Instance = this;
-	}
 
-	public override void Connect()
-	{
 		if (SetEnvCommand.InfoEnvVar.Length > 0)
 		{
 			Far.Api.DirectoryChanged += (s, e) => SetEnvCommand.Run(e.Path);

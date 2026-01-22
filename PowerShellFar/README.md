@@ -1542,15 +1542,8 @@ The editor profile: `%FARPROFILE%\FarNet\PowerShellFar\Profile-Editor.ps1`
 
 Example: [Profile-Editor.ps1](https://github.com/nightroman/FarNet/blob/main/PowerShellFar/About/Profile-Editor.ps1)
 
-The author uses this profile to set some editor event handlers even when macros
-might work better. This is done deliberately in order to be sure that handlers
-work fine. Other users may prefer macros.
-
 - Do not use this profile together with `HlfViewer`. Either disable the plugin
   or remove `[F1]` code from the script.
-
-- Do not use this profile with plugins processing mouse events in editors.
-  Either disable the plugins or remove mouse code from the script.
 
 - Use `$Far.AnyEditor.add_Opened()` in order to add handlers depending on file
   types, see how this is done in the example for Markdown and HLF. In this way
@@ -1565,12 +1558,6 @@ Keyboard events:
 - `[F1]`
     - .hlf files: save and show the current topic help using `Show-Hlf.ps1`.
     - .md and .text files: save and show the current topic help using `Show-FarMarkdown.ps1`.
-
-Mouse events:
-
-- `LeftMove` - select to the moving location dynamically while moving.
-- `RightClick` - shows a menu with some commands like Cut, Copy, and Paste.
-- `Shift+LeftClick` - select from the last LeftClick position or from the cursor.
 
 *********************************************************************
 ## TabExpansion2.ps1

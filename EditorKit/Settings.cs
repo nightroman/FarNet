@@ -20,9 +20,15 @@ public class Settings : ModuleSettings<Settings.Data>
 
 	public class Data : IValidatableObject
 	{
+		public bool MouseMenu { get; set; }
+		public bool MouseSelection { get; set; }
+
 		public ColorerType[] ColorerTypes { get; set; } = [new() { Type = "json", Mask = "*.canvas" }];
+
 		public CurrentWord CurrentWord { get; set; } = new();
+
 		public FixedColumn FixedColumn { get; set; } = new();
+
 		public Tabs Tabs { get; set; } = new();
 
 		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

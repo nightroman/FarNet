@@ -7,30 +7,28 @@
 /// In many cases the module actions should be implemented instead of the host
 /// (see predefined descendants of <see cref="ModuleAction"/>).
 /// <para>
-/// If the attribute <see cref="ModuleHostAttribute.Load"/> is true then the host is always loaded.
-/// If it is false then the host is loaded only on the first call of any action.
-/// A single instance of this class is created for the whole session.
+/// If <see cref="ToLoad"/> is true then the host is always loaded.
+/// If it is false then the host is loaded on the first module action.
 /// </para>
 /// <para>
-/// This class provides virtual methods called by the core.
-/// Normally the module implements the <see cref="Connect"/> method.
-/// There are a few more optional virtual members that can be implemented when needed.
+/// Implement module initialization in the default constructor.
+/// If needed, implement <see cref="IDisposable"/> for unloading.
 /// </para>
 /// </remarks>
 public abstract class ModuleHost : BaseModuleItem
 {
 	/// <summary>
-	/// Override this method to process the module connection.
+	/// Obsolete, use the constructor.
 	/// </summary>
-	/// <remarks>
-	/// This method is called once. For standard hosts it is called before
-	/// creation of the first called module action. For preloadable hosts
-	/// it is called immediately after loading of the module assembly and
-	/// registration of its actions.
-	/// </remarks>
+	[Obsolete("Use the constructor.")]
 	public virtual void Connect()
 	{
 	}
+
+	/// <summary>
+	/// Tells to always load the module.
+	/// </summary>
+	public virtual bool ToLoad { get; }
 
 	/// <summary>
 	/// Tells to call <see cref="UseEditors"/> on first editor opening.
@@ -43,17 +41,9 @@ public abstract class ModuleHost : BaseModuleItem
 	public virtual void UseEditors() { }
 
 	/// <summary>
-	/// Override this method to process the module disconnection.
+	/// Obsolete, use <see cref="IDisposable"/>.
 	/// </summary>
-	/// <remarks>
-	/// NOTE: Don't call Far UI, it is not working on exiting.
-	/// Consider to use GUI message boxes if it is absolutely needed.
-	/// <para>
-	/// The host does not have to unregister dynamically registered actions
-	/// on disconnection. But added "global" event handlers have to be
-	/// removed, for example, handlers added to <see cref="IFar.AnyEditor"/>.
-	/// </para>
-	/// </remarks>
+	[Obsolete("Use IDisposable.")]
 	public virtual void Disconnect()
 	{
 	}

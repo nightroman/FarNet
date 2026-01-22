@@ -1,17 +1,14 @@
 ﻿namespace FarNet;
 
 /// <summary>
-/// Module host attribute.
+/// Obsolete, use <see cref="ModuleHost.ToLoad"/>.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
+[Obsolete("Use ModuleHost.ToLoad")]
 public sealed class ModuleHostAttribute : Attribute
 {
 	/// <summary>
-	/// Tells to load and connect the host.
+	/// Obsolete, use <see cref="ModuleHost.ToLoad"/>.
 	/// </summary>
-	/// <remarks>
-	/// If the module host is the only implemented module item then this flag
-	/// should to be set to true. Otherwise the module is not loaded.
-	/// </remarks>
 	public bool Load { get; set; }
 }

@@ -4,16 +4,14 @@ using System;
 namespace FarNet.Demo;
 
 /// <summary>
-/// The module host class.
-/// It is created and connected on the first call of any module job.
+/// This module host is created on the first module action.
 /// </summary>
-[ModuleHost(Load = false)]
-public class DemoHost : ModuleHost
+public sealed class DemoHost : ModuleHost, IDisposable
 {
 	/// <summary>
-	/// This method is called once before anything else.
+	/// Initializes the module.
 	/// </summary>
-	public override void Connect()
+	public DemoHost()
 	{
 		// update the local settings
 		var settings = new Workings();
@@ -24,10 +22,9 @@ public class DemoHost : ModuleHost
 	}
 
 	/// <summary>
-	/// This method is called once on exit.
-	/// NOTE: it should not call the core.
+	/// Used to release resources.
 	/// </summary>
-	public override void Disconnect()
+	public void Dispose()
 	{
 	}
 }

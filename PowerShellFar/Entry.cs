@@ -7,8 +7,7 @@ namespace PowerShellFar;
 /// <summary>
 /// INTERNAL
 /// </summary>
-[ModuleHost(Load = true)]
-public sealed class Entry : ModuleHost
+public sealed class Entry : ModuleHost, IDisposable
 {
 	internal static Entry Instance { get; private set; } = null!;
 	internal static string LocalData { get; private set; } = null!;
@@ -19,23 +18,18 @@ public sealed class Entry : ModuleHost
 	internal static string Prefix1 { get; private set; } = null!;
 	internal static string Prefix2 { get; private set; } = null!;
 
+	public override bool ToLoad => true;
+	public override bool ToUseEditors => true;
+
 	public Entry()
 	{
-		if (Instance != null)
+		if (Instance is { })
 			throw new InvalidOperationException();
 
 		Instance = this;
 		LocalData = Manager.GetFolderPath(SpecialFolder.LocalData, true);
 		RoamingData = Manager.GetFolderPath(SpecialFolder.RoamingData, true);
-	}
 
-	internal static void Unregister()
-	{
-		Instance?.Manager.Unregister();
-	}
-
-	public override void Connect()
-	{
 		// first
 		A.Connect();
 
@@ -62,10 +56,15 @@ public sealed class Entry : ModuleHost
 		Far.Api.AnyEditor.Opened += EditorKit.OnEditorOpened;
 	}
 
-	public override void Disconnect()
+	public void Dispose()
 	{
 		A.Disconnect();
 		Instance = null!;
+	}
+
+	internal static void Unregister()
+	{
+		Instance?.Manager.Unregister();
 	}
 
 	public override void Invoking()
@@ -73,7 +72,6 @@ public sealed class Entry : ModuleHost
 		A.Invoking();
 	}
 
-	public override bool ToUseEditors => true;
 	public override void UseEditors()
 	{
 		EditorKit.UseEditors();

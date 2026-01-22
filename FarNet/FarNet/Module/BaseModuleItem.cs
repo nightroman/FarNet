@@ -1,9 +1,4 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System.Globalization;
-using System.IO;
+﻿using System.Globalization;
 
 // _220609_gf Why help methods moved from IFar.
 // - New methods do not use unreliable calling assemblies.
@@ -33,11 +28,7 @@ namespace FarNet;
 /// If these or other data has to be initialized even before actions then the module host should be used.
 /// </para>
 /// The module host, descendant of the <see cref="ModuleHost"/>, can be implemented for advanced scenarios.
-/// Unlike module actions the host class instance is created, connected and disconnected once.
-/// The moment of creation and call of the <see cref="ModuleHost.Connect"/> method depends on the <see cref="ModuleHostAttribute.Load"/> flag.
-/// If it is false (default) then the host is loaded and connected only when one of the module actions is invoked.
-/// If it is true (preloaded host) then the module is loaded and the host is connected every time.
-/// Preloaded hosts should not be used without good reasons.
+/// Unlike module actions the host instance is created once.
 /// </remarks>
 public abstract class BaseModuleItem
 {

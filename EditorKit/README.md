@@ -6,6 +6,7 @@ FarNet module for Far Manager editor configuration and tools.
 
 - [Editor configuration](#editor-configuration)
 - [Editor drawers](#editor-drawers)
+- [Other features](#other-features)
 - [Settings](#settings)
 
 ## Installation
@@ -48,6 +49,22 @@ The module provides the following color drawers:
 In order to toggle a drawer, use the menu: `[F11] / FarNet / Drawers`.
 
 *********************************************************************
+## Other features
+
+- Mouse menu
+
+    On right click shows the menu with some copy / paste operations.
+
+    To enable, set `MouseMenu` to true, see [#settings].
+
+- Select text by mouse
+
+    Select text either by dragging or `left-click` followed by
+    `shift-left-click`.
+
+    To enable, set `MouseSelection` to true, see [#settings].
+
+*********************************************************************
 ## Settings
 
 Drawer file masks: `F9 / Options / Plugin configuration / FarNet / Drawers`.
@@ -56,6 +73,16 @@ Drawer file masks: `F9 / Options / Plugin configuration / FarNet / Drawers`.
 - `Priority` - drawer color priority
 
 Common settings: `F11 / FarNet / Settings / EditorKit`.
+
+- `MouseMenu`
+
+    Enables the menu on right clicks.
+    Requires restart.
+
+- `MouseSelection`
+
+    Enables text selection by mouse.
+    Requires restart.
 
 - Colorer types set by file masks
 
