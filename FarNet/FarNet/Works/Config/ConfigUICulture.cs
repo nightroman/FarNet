@@ -1,11 +1,4 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
+﻿using System.Globalization;
 
 namespace FarNet.Works;
 #pragma warning disable 1591
@@ -14,13 +7,14 @@ public static class ConfigUICulture
 {
 	const string HelpTopic = "module-ui-culture";
 
-	public static void Show(List<IModuleManager> managers)
+	public static void Show()
 	{
 		var menu = Far.Api.CreateMenu();
 		menu.AutoAssignHotkeys = true;
 		menu.HelpTopic = HelpTopic;
 		menu.Title = "Module UI culture";
 
+		var managers = ModuleLoader.GetModuleManagers();
 		int max1 = managers.Max(x => x.ModuleName.Length);
 		for (; ; )
 		{

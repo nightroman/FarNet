@@ -59,11 +59,7 @@ void Editor0::ConnectEditor(Editor^ editor, const EditorInfo& ei, bool isEditorW
 	if (!_started)
 	{
 		_started = true;
-		if (_anyEditor._FirstOpening)
-		{
-			_anyEditor._FirstOpening(editor, nullptr);
-			_anyEditor._FirstOpening = nullptr;
-		}
+		Works::ModuleLoader::UseEditors();
 	}
 
 	//_110624_153138 ignore already connected

@@ -13,9 +13,8 @@ sealed partial class ModuleManager : IModuleManager
 	internal string AssemblyPath { get; }
 
 	// Module host
-	string? _ModuleHostTypeName;
-	Type? _ModuleHostType;
-	ModuleHost? _ModuleHost;
+	string? _hostTypeName;
+	ModuleHost? _host;
 
 	internal ModuleManager(string assemblyPath)
 	{
@@ -34,73 +33,84 @@ sealed partial class ModuleManager : IModuleManager
 		config.Culture = _StoredUICulture;
 	}
 
-	void ConnectModuleHost()
+	// cached case, just keep the name
+	internal void SetHostTypeName(string typeName)
 	{
-		_ModuleHost = (ModuleHost?)Activator.CreateInstance(_ModuleHostType!, false);
-		_ModuleHostType = null;
-		_ModuleHost!.Connect();
+		Debug.Assert(_host is null && _hostTypeName is null);
+
+		_hostTypeName = typeName;
 	}
 
-	internal ModuleHost GetLoadedModuleHost()
+	// loaded case, create the instance
+	internal void SetHostType(Type type)
 	{
-		return _ModuleHost!;
+		Debug.Assert(_host is null && _hostTypeName is null);
+
+		_host = (ModuleHost)Activator.CreateInstance(type, false)!;
+		ToUseEditors = _host.ToUseEditors;
+		_host.Connect();
 	}
 
-	internal string? GetModuleHostClassName()
+	void EnsureHost()
 	{
-		if (_ModuleHostTypeName is not null)
-			return _ModuleHostTypeName;
+		if (_host is null)
+		{
+			var type = LoadAssembly().GetType(_hostTypeName!, true, false)!;
+			_hostTypeName = null;
+			SetHostType(type);
+		}
+	}
 
-		if (_ModuleHostType is not null)
-			return _ModuleHostType.FullName;
+	internal ModuleHost GetHost()
+	{
+		if (_host is null)
+			EnsureHost();
 
-		if (_ModuleHost is not null)
-			return _ModuleHost.GetType().FullName;
+		return _host!;
+	}
+
+	internal string? GetHostTypeName()
+	{
+		if (_hostTypeName is { })
+			return _hostTypeName;
+
+		if (_host is { })
+			return _host.GetType().FullName;
 
 		return null;
 	}
 
-	[Conditional("DEBUG")]
-	internal void AssertNoHost()
-	{
-		Debug.Assert(_ModuleHost is null && _ModuleHostTypeName is null && _ModuleHostType is null);
-	}
-
 	internal void Invoking()
 	{
-		if (_ModuleHostTypeName is not null)
-		{
-			_ModuleHostType = LoadAssembly().GetType(_ModuleHostTypeName, true, false);
-			_ModuleHostTypeName = null;
-		}
+		if (_hostTypeName is { })
+			EnsureHost();
 
-		if (_ModuleHostType is not null)
-			ConnectModuleHost();
+		_host?.Invoking();
+	}
 
-		_ModuleHost?.Invoking();
+	internal bool ShouldCache()
+	{
+		Debug.Assert(_hostTypeName is null);
+
+		// no host ~ cache
+		if (_host is null)
+			return true;
+
+		object[] attrs = _host.GetType().GetCustomAttributes(typeof(ModuleHostAttribute), false);
+		if (attrs.Length == 0 || !((ModuleHostAttribute)attrs[0]).Load)
+			return true;
+
+		return false;
 	}
 
 	public override object Interop(string command, object? args)
 	{
 		Invoking();
 
-		if (_ModuleHost is null)
+		if (_host is null)
 			throw new InvalidOperationException("Module does not have a host.");
 
-		return _ModuleHost.Interop(command, args);
-	}
-
-	internal bool LoadLoadableModuleHost()
-	{
-		if (_ModuleHostType is null)
-			return false;
-
-		object[] attrs = _ModuleHostType.GetCustomAttributes(typeof(ModuleHostAttribute), false);
-		if (attrs.Length == 0 || !((ModuleHostAttribute)attrs[0]).Load)
-			return false;
-
-		ConnectModuleHost();
-		return true;
+		return _host.Interop(command, args);
 	}
 
 	public override IModuleCommand RegisterCommand(ModuleCommandAttribute attribute, EventHandler<ModuleCommandEventArgs> handler)
@@ -156,24 +166,10 @@ sealed partial class ModuleManager : IModuleManager
 		return it;
 	}
 
-	internal void SetModuleHostType(Type type)
-	{
-		AssertNoHost();
-
-		_ModuleHostType = type;
-	}
-
-	internal void SetModuleHostTypeName(string type)
-	{
-		AssertNoHost();
-
-		_ModuleHostTypeName = type;
-	}
-
 	//! Don't use Far UI
 	public override void Unregister()
 	{
-		if (_ModuleHost is null)
+		if (_host is null)
 		{
 			ModuleLoader.RemoveModuleManager(this);
 			return;
@@ -181,15 +177,15 @@ sealed partial class ModuleManager : IModuleManager
 
 		try
 		{
-			_ModuleHost.Disconnect();
+			_host.Disconnect();
 		}
 		catch (Exception ex)
 		{
-			Far.Api.ShowError("ERROR: module " + _ModuleHost, ex);
+			Far.Api.ShowError("ERROR: module " + _host, ex);
 		}
 		finally
 		{
-			_ModuleHost = null;
+			_host = null;
 
 			ModuleLoader.RemoveModuleManager(this);
 		}

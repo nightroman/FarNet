@@ -59,7 +59,6 @@ public sealed class Entry : ModuleHost
 		Prefix2 = CommandInvoke2.Prefix + ':';
 
 		// subscribe to editors
-		Far.Api.AnyEditor.FirstOpening += EditorKit.OnEditorFirstOpening;
 		Far.Api.AnyEditor.Opened += EditorKit.OnEditorOpened;
 	}
 
@@ -72,6 +71,12 @@ public sealed class Entry : ModuleHost
 	public override void Invoking()
 	{
 		A.Invoking();
+	}
+
+	public override bool ToUseEditors => true;
+	public override void UseEditors()
+	{
+		EditorKit.UseEditors();
 	}
 
 	internal static bool IsMyPrefix(ReadOnlySpan<char> prefix)

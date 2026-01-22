@@ -333,7 +333,7 @@ static class EditorKit
 		}
 	}
 
-	public static void OnEditorFirstOpening(object? sender, EventArgs e)
+	public static void UseEditors()
 	{
 		A.Invoking();
 

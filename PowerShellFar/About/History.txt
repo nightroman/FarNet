@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 10.0.25 =
+
+Use FarNet 10.0.25, new first editor opening.
+
 = 10.0.24 =
 
 Start-FarTask

@@ -33,6 +33,16 @@ public abstract class ModuleHost : BaseModuleItem
 	}
 
 	/// <summary>
+	/// Tells to call <see cref="UseEditors"/> on first editor opening.
+	/// </summary>
+	public virtual bool ToUseEditors { get; }
+
+	/// <summary>
+	/// Called on first editor opening if <see cref="ToUseEditors"/> is true.
+	/// </summary>
+	public virtual void UseEditors() { }
+
+	/// <summary>
 	/// Override this method to process the module disconnection.
 	/// </summary>
 	/// <remarks>

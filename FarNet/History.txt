@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet
 
+= 10.0.25 =
+
+`ModuleHost.UseEditors` replaces `IAnyEditor.FirstOpening`.
+
 = 10.0.24 =
 
 Tweak module manager.

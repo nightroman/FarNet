@@ -1552,9 +1552,6 @@ work fine. Other users may prefer macros.
 - Do not use this profile with plugins processing mouse events in editors.
   Either disable the plugins or remove mouse code from the script.
 
-- Do not use `$Far.AnyEditor.add_FirstOpening()` in the profile, it is not
-  going to be called because the profile itself is called from this event.
-
 - Use `$Far.AnyEditor.add_Opened()` in order to add handlers depending on file
   types, see how this is done in the example for Markdown and HLF. In this way
   often called handlers do not have to check file types.

@@ -69,29 +69,27 @@ public class ModuleLoader
 			var module = config.GetModule(manager.ModuleName);
 			manager.LoadConfig(module);
 
+			Type? hostType = null;
 			var assembly = manager.LoadAssembly();
 			foreach (var type in assembly.GetExportedTypes())
 			{
-				if (type.IsAbstract)
-					continue;
-
 				if (typeof(BaseModuleItem).IsAssignableFrom(type))
 				{
-					LoadModuleItemType(manager, type, module);
-					continue;
+					if (LoadModuleItemType(manager, type, module))
+						hostType = type;
 				}
-
-				if (typeof(ModuleSettingsBase).IsAssignableFrom(type))
+				else if (typeof(ModuleSettingsBase).IsAssignableFrom(type))
 				{
 					var browsable = type.GetCustomAttribute<BrowsableAttribute>();
 					if (browsable is null || browsable.Browsable)
 						manager.AddSettingsTypeName(type.FullName!);
-					continue;
 				}
 			}
 
-			// load a loadable host, if none or not loadable then cache
-			if (!manager.LoadLoadableModuleHost())
+			if (hostType is { })
+				manager.SetHostType(hostType);
+
+			if (manager.ShouldCache())
 				CacheModule(assemblyFileInfo, manager);
 		}
 		catch
@@ -101,8 +99,7 @@ public class ModuleLoader
 		}
 	}
 
-	// Loads the module from cache.
-	// True if the module has been loaded from the cache.
+	// Loads the module from cache (true) or skips not found (false).
 	bool LoadModuleFromCache(FileInfo assemblyFileInfo, Config.Data config)
 	{
 		var assemblyPath = assemblyFileInfo.FullName;
@@ -166,8 +163,6 @@ public class ModuleLoader
 							Far2.Api.RegisterProxyTool(it);
 						}
 						break;
-					default:
-						throw new ModuleException();
 				}
 			}
 
@@ -191,8 +186,8 @@ public class ModuleLoader
 		}
 	}
 
-	// Loads one of <see cref="BaseModuleItem"/> types.
-	static void LoadModuleItemType(ModuleManager manager, Type type, Config.Module? config)
+	// Loads and registers a module item (false) or skips the host (true).
+	static bool LoadModuleItemType(ModuleManager manager, Type type, Config.Module? config)
 	{
 		// command
 		ProxyAction action;
@@ -230,8 +225,7 @@ public class ModuleLoader
 		// host
 		else if (typeof(ModuleHost).IsAssignableFrom(type))
 		{
-			manager.SetModuleHostType(type);
-			return;
+			return true;
 		}
 		else
 		{
@@ -240,6 +234,7 @@ public class ModuleLoader
 
 		// to cache
 		manager.ProxyActions.Add(action);
+		return false;
 	}
 
 	void CacheModule(FileInfo assemblyFileInfo, ModuleManager manager)
@@ -248,12 +243,18 @@ public class ModuleLoader
 		_Cache.Set(manager.AssemblyPath, manager);
 	}
 
-	public static List<IModuleManager> GatherModuleManagers()
+	public static void UseEditors()
 	{
-		var result = new List<IModuleManager>(_Managers.Count);
 		foreach (ModuleManager it in _Managers.Values)
-			result.Add(it);
-		return result;
+		{
+			if (it.ToUseEditors)
+				it.GetHost().UseEditors();
+		}
+	}
+
+	internal static IList<ModuleManager> GetModuleManagers()
+	{
+		return _Managers.Values;
 	}
 
 	//! Don't use Far UI

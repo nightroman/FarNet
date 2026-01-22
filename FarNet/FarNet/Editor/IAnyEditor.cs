@@ -13,11 +13,6 @@
 public abstract class IAnyEditor : IEditorBase
 {
 	/// <summary>
-	/// Called once on opening the first editor.
-	/// </summary>
-	public abstract event EventHandler FirstOpening;
-
-	/// <summary>
 	/// Opens modal editor with the text and gets the result text.
 	/// For non-modal editor use <see cref="EditTextAsync"/>.
 	/// </summary>

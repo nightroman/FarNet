@@ -2,10 +2,9 @@
 
 partial class ModuleManager
 {
-	// Stored in cache.
-	internal long Timestamp;
-
-	// Stored in cache.
+	// Cached data.
+	internal long Timestamp { get; set; }
+	internal bool ToUseEditors { get; private set; }
 	internal string? CachedUICulture { get; private set; }
 
 	// Actions from cache or reflection for caching.
@@ -24,19 +23,22 @@ partial class ModuleManager
 		writer.Write(Timestamp);
 
 		// [2]
-		writer.Write(CurrentUICultureName());
+		writer.Write(ToUseEditors);
 
 		// [3]
+		writer.Write(CurrentUICultureName());
+
+		// [4]
 		var settingsTypeNames = GetSettingsTypeNames();
 		writer.Write(settingsTypeNames.Length);
 		foreach (string typeName in settingsTypeNames)
 			writer.Write(typeName);
 
-		// [4]
-		var hostClassName = GetModuleHostClassName();
+		// [5]
+		var hostClassName = GetHostTypeName();
 		writer.Write(hostClassName ?? string.Empty);
 
-		// [5]
+		// [6]
 		writer.Write(ProxyActions.Count);
 		foreach (var proxy in ProxyActions)
 		{
@@ -51,19 +53,22 @@ partial class ModuleManager
 		Timestamp = reader.ReadInt64();
 
 		// [2]
-		CachedUICulture = reader.ReadString();
+		ToUseEditors = reader.ReadBoolean();
 
 		// [3]
+		CachedUICulture = reader.ReadString();
+
+		// [4]
 		var settingsCount = reader.ReadInt32();
 		for (int i = 0; i < settingsCount; i++)
 			AddSettingsTypeName(reader.ReadString());
 
-		// [4]
+		// [5]
 		var hostTypeName = reader.ReadString();
 		if (hostTypeName.Length > 0)
-			SetModuleHostTypeName(hostTypeName);
+			SetHostTypeName(hostTypeName);
 
-		// [5]
+		// [6]
 		var actionCount = reader.ReadInt32();
 		for (int i = 0; i < actionCount; i++)
 		{

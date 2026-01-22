@@ -152,7 +152,6 @@ internal static class A
 	{
 		// unsubscribe
 		Far.Api.AnyEditor.Opened -= EditorKit.OnEditorOpened;
-		Far.Api.AnyEditor.Opened -= EditorKit.OnEditorFirstOpening;
 
 		// release menu
 		UI.ActorMenu.Close();

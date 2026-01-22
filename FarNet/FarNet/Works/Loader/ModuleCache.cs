@@ -1,17 +1,9 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-using System.Collections.Generic;
-using System.IO;
-
-namespace FarNet.Works;
+﻿namespace FarNet.Works;
 
 // Reads and writes, wraps the dictionary.
 class ModuleCache
 {
-	const int CurrentVersion = 0;
+	const int CurrentVersion = 1;
 	readonly string _FileName;
 	readonly int _CountCached;
 	internal int CountFound;

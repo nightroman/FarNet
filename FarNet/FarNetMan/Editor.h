@@ -14,7 +14,6 @@ public: DEF_EVENT_ARGS_IMP(MouseWheel, _MouseWheel, MouseEventArgs);
 public: DEF_EVENT_ARGS_IMP(Saving, _Saving, EditorSavingEventArgs);
 public: DEF_EVENT_IMP(Closed, _Closed);
 public: DEF_EVENT_IMP(CtrlCPressed, _CtrlCPressed);
-public: DEF_EVENT_IMP(FirstOpening, _FirstOpening);
 public: DEF_EVENT_IMP(GotFocus, _GotFocus);
 public: DEF_EVENT_IMP(LosingFocus, _LosingFocus);
 public: DEF_EVENT_IMP(Opened, _Opened);

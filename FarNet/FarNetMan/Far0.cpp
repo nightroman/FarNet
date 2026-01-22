@@ -581,7 +581,7 @@ void Far0::OpenConfig() //config//
 				Works::ConfigTool::Show(tools);
 			break;
 		case 5: // +2, mind separator
-			Works::ConfigUICulture::Show(Works::ModuleLoader::GatherModuleManagers());
+			Works::ConfigUICulture::Show();
 			break;
 		}
 	}
@@ -791,7 +791,7 @@ void Far0::ShowMenu(ModuleToolOptions from)
 	String^ text = menu->Items[menu->Selected]->Text;
 
 	if (Object::ReferenceEquals(text, sSettings))
-		Works::SettingsUI::ShowSettings(Works::ModuleLoader::GatherModuleManagers());
+		Works::SettingsUI::Show();
 	else if (Object::ReferenceEquals(text, sPanels))
 		Works::PanelTools::ShowPanelsMenu();
 	else if (Object::ReferenceEquals(text, sWindows))

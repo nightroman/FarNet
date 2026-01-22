@@ -7,9 +7,10 @@ public static class SettingsUI
 {
 	internal const string HelpSettings = "settings";
 
-	public static void ShowSettings(IEnumerable<IModuleManager> managers)
+	public static void Show()
 	{
 		// collect sorted data
+		var managers = ModuleLoader.GetModuleManagers();
 		var list = managers
 			.SelectMany(manager => manager.GetSettingsTypeNames().Select(typeName => new KeyValuePair<IModuleManager, string>(manager, typeName)))
 			.OrderBy(x => x.Key.ModuleName, StringComparer.OrdinalIgnoreCase)
