@@ -1,8 +1,4 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-namespace FarNet;
+﻿namespace FarNet;
 
 /// <summary>
 /// A module editor action.
@@ -27,10 +23,7 @@ public abstract class ModuleEditor : ModuleAction
 	/// <param name="e">The arguments.</param>
 	/// <remarks>
 	/// This method is called on opening an editor.
-	/// Normally it adds editor event handlers, then they do the jobs.
+	/// Normally it adds editor event handlers.
 	/// </remarks>
-	/// <example>
-	/// See the <c>EditorKit</c> module.
-	/// </example>
 	public abstract void Invoke(IEditor editor, ModuleEditorEventArgs e);
 }

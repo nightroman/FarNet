@@ -1,10 +1,4 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-
-namespace FarNet;
+﻿namespace FarNet;
 
 /// <summary>
 /// Standard Far menu.
@@ -42,20 +36,19 @@ public interface IMenu : IAnyMenu, IDisposable
 	/// Normally you have to call <see cref="Unlock"/> after use.
 	/// </summary>
 	/// <remarks>
-	/// Used for better performance when you call <see cref="IAnyMenu.Show"/> repeatedly
-	/// with an item set that never changes (e.g. a module menu with fixed command set:
-	/// it can be created once on <see cref="ModuleHost.Connect"/> and locked forever -
-	/// in this particular case you don't even have to call <see cref="Unlock"/>).
 	/// <para>
-	/// Don't change the menu or item set before <see cref="Unlock"/>.
-	/// You still can change item properties except <see cref="FarItem.Text"/>.
+	/// Used for better performance for multiple <see cref="IAnyMenu.Show"/> with same items.
+	/// </para>
+	/// <para>
+	/// After locking do not add or remove items before <see cref="Unlock"/>.
+	/// You can change item properties except <see cref="FarItem.Text"/>.
 	/// </para>
 	/// </remarks>
 	void Lock();
 
 	/// <summary>
-	/// Destroys internal data created by <see cref="Lock"/>.
-	/// Menu and items can be changed again if the menu is still in use.
+	/// Releases internal data created by <see cref="Lock"/>.
+	/// If needed, the menu may be changed and shown again.
 	/// </summary>
 	void Unlock();
 }

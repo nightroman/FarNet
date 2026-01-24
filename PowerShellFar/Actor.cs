@@ -220,10 +220,14 @@ public sealed partial class Actor
 	/// </remarks>
 	public IDictionary Providers
 	{
-		get => _Providers;
-		set => _Providers = value ?? new Hashtable();
+		get => _Providers ??= new Hashtable();
+		set => _Providers = value;
 	}
-	IDictionary _Providers = new Hashtable();
+	IDictionary? _Providers;
+	internal IDictionary? FindProviderData(string name)
+	{
+		return _Providers is null || !_Providers.Contains(name) ? null : Providers[name] as IDictionary;
+	}
 
 	/// <summary>
 	/// Invokes the script opened in the current editor.

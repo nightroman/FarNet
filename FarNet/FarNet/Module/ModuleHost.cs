@@ -18,14 +18,6 @@
 public abstract class ModuleHost : BaseModuleItem
 {
 	/// <summary>
-	/// Obsolete, use the constructor.
-	/// </summary>
-	[Obsolete("Use the constructor.")]
-	public virtual void Connect()
-	{
-	}
-
-	/// <summary>
 	/// Tells to always load the module.
 	/// </summary>
 	public virtual bool ToLoad { get; }
@@ -39,14 +31,6 @@ public abstract class ModuleHost : BaseModuleItem
 	/// Called on first editor opening if <see cref="ToUseEditors"/> is true.
 	/// </summary>
 	public virtual void UseEditors() { }
-
-	/// <summary>
-	/// Obsolete, use <see cref="IDisposable"/>.
-	/// </summary>
-	[Obsolete("Use IDisposable.")]
-	public virtual void Disconnect()
-	{
-	}
 
 	/// <summary>
 	/// Called before invocation of any module action.

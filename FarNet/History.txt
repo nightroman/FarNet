@@ -1,11 +1,15 @@
 ﻿https://www.nuget.org/packages/FarNet
 
-= 10.0.26 =
+= 10.0.27 =
 
-Deprecated, will be removed
+Removed deprecated
 - ModuleHost.Connect, use constructor
 - ModuleHost.Disconnect, use IDisposable
 - ModuleHostAttribute, use ModuleHost.ToLoad
+
+= 10.0.26 =
+
+Deprecated: ModuleHost.Connect, ModuleHost.Disconnect, ModuleHostAttribute
 
 = 10.0.25 =
 

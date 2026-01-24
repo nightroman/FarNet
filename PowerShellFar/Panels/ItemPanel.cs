@@ -105,6 +105,54 @@ public sealed class ItemPanel : FormatPanel
 		DoExplored((ItemExplorer)args.Explorer);
 	}
 
+	private void ConfigureProvider(string name)
+	{
+		//: user data
+		var data = A.Psf.FindProviderData(name);
+		if (data is { })
+		{
+			try
+			{
+				Converter.SetProperties(this, data, true);
+			}
+			catch (ArgumentException ex)
+			{
+				throw new InvalidOperationException($"Invalid data for '{name}' provider: {ex.Message}");
+			}
+			return;
+		}
+
+		//: built-in
+		switch (name)
+		{
+			case "Alias":
+				Columns = ["Name", "Definition", "Options"];
+				break;
+			case "Function":
+				Columns = [
+					"Name",
+					"Definition",
+					new Meta("CommandType", "Type") { Width = 8 }
+				];
+				break;
+			case "Registry":
+				Columns = [
+					new Meta("SubKeyCount", "Keys") { Kind = "Z", Width = 8, FormatString = "{0,8:n0}" },
+					new Meta("ValueCount", "Values") { Kind = "O", Width = 8, FormatString = "{0,8:n0}" },
+					new Meta("Name") { Kind = "N" }
+				];
+				break;
+			case "Variable":
+				Columns = [
+					"Name",
+					"Value",
+					"Description",
+					new Meta("Options") { Width = 10 },
+				];
+				break;
+		}
+	}
+
 	private void DoExplored(ItemExplorer? explorer)
 	{
 		var info1 = explorer?.Info();
@@ -121,18 +169,7 @@ public sealed class ItemPanel : FormatPanel
 			{
 				Columns = null;
 				ExcludeMemberPattern = null;
-
-				if (A.Psf.Providers[info2.Provider.Name] is System.Collections.IDictionary options)
-				{
-					try
-					{
-						Converter.SetProperties(this, options, true);
-					}
-					catch (ArgumentException ex)
-					{
-						throw new InvalidDataException("Invalid settings for '" + info2.Provider.Name + "' provider: " + ex.Message);
-					}
-				}
+				ConfigureProvider(info2.Provider.Name);
 			}
 		}
 
@@ -211,16 +248,16 @@ public sealed class ItemPanel : FormatPanel
 			};
 
 		items.Create ??= new SetItem()
-			{
-				Text = "&New item",
-				Click = delegate { UICreate(); }
-			};
+		{
+			Text = "&New item",
+			Click = delegate { UICreate(); }
+		};
 
 		items.Delete ??= new SetItem()
-			{
-				Text = "&Delete item(s)",
-				Click = delegate { UIDelete(false); }
-			};
+		{
+			Text = "&Delete item(s)",
+			Click = delegate { UIDelete(false); }
+		};
 
 		base.HelpMenuInitItems(items, e);
 	}

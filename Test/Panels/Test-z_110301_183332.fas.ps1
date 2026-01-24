@@ -8,7 +8,7 @@ job {
 
 $FixColumns = { ### 'Registry' columns
 	job {
-		Assert-Far 'SKC VC Name' -eq (($__.GetPlan(0).Columns | Select-Object -ExpandProperty Name) -join ' ')
+		Assert-Far 'Keys Values Name' -eq ($__.GetPlan(0).Columns.ForEach('Name') -join ' ')
 	}
 }
 

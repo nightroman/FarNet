@@ -1,5 +1,10 @@
 https://www.nuget.org/packages/FarNet.PowerShellFar
 
+= 10.0.27 =
+
+Default custom columns for provider items panels.
+Providers: Alias, Function, Registry, Variables.
+
 = 10.0.26 =
 
 Use FarNet 10.0.26, removed deprecated code

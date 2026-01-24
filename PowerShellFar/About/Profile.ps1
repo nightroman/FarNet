@@ -24,24 +24,23 @@ $Psf.Settings.PopupAutoSelect = $false
 $Psf.Settings.PopupMaxHeight = 0
 $Psf.Settings.PopupNoShadow = $false
 
-# Provider settings (ItemPanel)
+<# Provider settings (ItemPanel)
 $Psf.Providers = @{
-	Registry = @{
-		Columns = @(
-			@{ Kind = 'Z'; Name = 'SKC'; Width = 8; Expression = 'SubKeyCount'; FormatString = '{0,8:n0}' }
-			@{ Kind = 'O'; Name = 'VC'; Width = 8; Expression = 'ValueCount'; FormatString = '{0,8:n0}' }
-			@{ Kind = 'N'; Name = 'Name' }
-		)
-	}
 	Alias = @{
-		Columns = 'Name', 'Definition', 'Description', 'Options'
+		Columns = 'Name', 'Definition', 'Options'
 	}
 	Function = @{
 		Columns = @(
 			'Name'
-			@{ Name = 'Type'; Width = 8; Expression = 'CommandType' }
-			@{ Name = 'File'; Expression = { $_.ScriptBlock.File } }
 			'Definition'
+			@{ Name = 'Type'; Width = 8; Expression = 'CommandType' }
+		)
+	}
+	Registry = @{
+		Columns = @(
+			@{ Kind = 'Z'; Name = 'Keys'; Width = 8; Expression = 'SubKeyCount'; FormatString = '{0,8:n0}' }
+			@{ Kind = 'O'; Name = 'Values'; Width = 8; Expression = 'ValueCount'; FormatString = '{0,8:n0}' }
+			@{ Kind = 'N'; Name = 'Name' }
 		)
 	}
 	Variable = @{
@@ -53,3 +52,4 @@ $Psf.Providers = @{
 		)
 	}
 }
+#>

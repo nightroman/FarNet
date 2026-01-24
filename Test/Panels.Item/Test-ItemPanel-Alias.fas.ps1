@@ -81,8 +81,7 @@ job {
 macro 'Keys"F7 % 1 AltT Del AltV G e t - H e l p Enter"'
 job {
 	# columns =
-	Assert-Far -FileName '%1' -FileDescription 'Get-Help' -FileOwner ''
-	Assert-Far @($__.CurrentFile.Columns)[0] -eq 'None'
+	Assert-Far -FileName '%1' -FileDescription Get-Help -FileOwner None
 }
 
 # not supported
@@ -149,15 +148,14 @@ job {
 # exit members
 keys Esc
 job {
-	Assert-Far -FileName '%1' -FileOwner 'NewDescription'
+	Assert-Far -FileName '%1' -FileOwner 'None'
 }
 
 # copy here
 macro 'Keys"ShiftF5 % 2 Enter"'
 job {
 	# columns =
-	Assert-Far -FileName '%2' -FileDescription 'Get-Help' -FileOwner ''
-	Assert-Far @($__.CurrentFile.Columns)[0] -eq 'None'
+	Assert-Far -FileName '%2' -FileDescription Get-Help -FileOwner None
 }
 
 # delete %2

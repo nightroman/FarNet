@@ -114,17 +114,19 @@ public sealed class Meta : FarColumn
 	/// Get-ChildItem | Out-FarPanel Name, @{ e='Length'; w=15; f='{0,15:n0}' }
 	/// </code>
 	/// </example>
-	public string? FormatString { get; private set; }
+	public string? FormatString { get; set; }
 
 	/// <summary>
 	/// New meta from a property name.
 	/// </summary>
 	/// <param name="property">The property name.</param>
-	public Meta(string property)
+	/// <param name="name">The optional column name.</param>
+	public Meta(string property, string? name = null)
 	{
 		if (string.IsNullOrEmpty(property))
 			throw new ArgumentNullException(nameof(property));
 
+		_ColumnName = name;
 		_Property = property;
 		_Expression = new PSPropertyExpression(property, true);
 	}
@@ -133,8 +135,10 @@ public sealed class Meta : FarColumn
 	/// New meta from a script block getting a value from $_.
 	/// </summary>
 	/// <param name="script">The script block.</param>
-	public Meta(ScriptBlock script)
+	/// <param name="name">The optional column name.</param>
+	public Meta(ScriptBlock script, string? name = null)
 	{
+		_ColumnName = name;
 		_Expression = new PSPropertyExpression(script ?? throw new ArgumentNullException(nameof(script)));
 	}
 
