@@ -10,18 +10,19 @@ namespace FarNet;
 /// </summary>
 public abstract class ModuleSettingsBase
 {
-	readonly Type _type;
 	object? _data;
+
+	internal static readonly XmlRootAttribute _rootAttribute = new("Data");
+	static readonly XmlWriterSettings _xmlWriterSettings = new() { Indent = true, OmitXmlDeclaration = true };
+	static readonly XmlSerializerNamespaces _xmlSerializerNamespaces = new([XmlQualifiedName.Empty]);
 
 	/// <summary>
 	/// Gets the stored settings file path.
 	/// </summary>
 	public string FileName { get; }
 
-	internal ModuleSettingsBase(Type dataType, ModuleSettingsArgs args)
+	internal ModuleSettingsBase(ModuleSettingsArgs args)
 	{
-		_type = dataType;
-
 		if (args.FileName is null)
 		{
 			var myType = GetType();
@@ -81,23 +82,25 @@ public abstract class ModuleSettingsBase
 
 	internal abstract bool DoUpdateData(object data);
 
+	internal abstract XmlSerializer GetXmlSerializer();
+
+	internal abstract string GetTypeName();
+
 	object Read()
 	{
 		using var reader = File.OpenRead(FileName);
-		var serializer = new XmlSerializer(_type);
-		return serializer.Deserialize(reader)!;
+		return GetXmlSerializer().Deserialize(reader)!;
 	}
 
-	static void Save(string fileName, object data)
+	void Save(string fileName, object data)
 	{
 		//! ensure the directory, e.g. FarNet\FarNet.xml in vanilla FarNet
 		Directory.CreateDirectory(Path.GetDirectoryName(fileName)!);
 
 		// serialize
 		using var writer = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None);
-		using var xmlWriter = XmlWriter.Create(writer, new() { Indent = true });
-		var serializer = new XmlSerializer(data.GetType());
-		serializer.Serialize(xmlWriter, data);
+		using var xmlWriter = XmlWriter.Create(writer, _xmlWriterSettings);
+		GetXmlSerializer().Serialize(xmlWriter, data, _xmlSerializerNamespaces);
 	}
 
 	void ValidateData(object data)
@@ -157,14 +160,13 @@ public abstract class ModuleSettingsBase
 		editor.CodePage = 65001;
 
 		// set title, mind raw types used by scripts
-		editor.Title = $"{_type.FullName} - {FileName}";
+		editor.Title = $"{GetTypeName()} - {FileName}";
 
 		editor.Saving += (sender, args) =>
 		{
 			var xml = editor.GetText();
 			using var reader = new StringReader(xml);
-			var serializer = new XmlSerializer(_type);
-			var data = serializer.Deserialize(reader)!;
+			var data = GetXmlSerializer().Deserialize(reader)!;
 			ValidateData(data);
 			_data = data;
 		};
@@ -177,10 +179,9 @@ public abstract class ModuleSettingsBase
 			docOld.Load(reader);
 			var xmlOld = docOld.DocumentElement!.OuterXml;
 
-			var serializer = new XmlSerializer(_type);
 			using var writer = new StringWriter();
-			using var xmlWriter = XmlWriter.Create(writer, new() { Indent = true });
-			serializer.Serialize(xmlWriter, _data);
+			using var xmlWriter = XmlWriter.Create(writer, _xmlWriterSettings);
+			GetXmlSerializer().Serialize(xmlWriter, _data, _xmlSerializerNamespaces);
 			var docNew = new XmlDocument { PreserveWhitespace = false };
 			docNew.LoadXml(writer.ToString());
 			var xmlNew = docNew.DocumentElement!.OuterXml;
@@ -193,7 +194,7 @@ public abstract class ModuleSettingsBase
 
 			var answer = Far.Api.Message(
 				DifferentXml,
-				_type.FullName!,
+				GetTypeName(),
 				MessageOptions.YesNo);
 
 			if (answer != 0)

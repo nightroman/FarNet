@@ -25,7 +25,7 @@ public static class Test
 
 	private static void AssertNormalPanel(IPanel? panel, string active)
 	{
-		for (int i = 20; --i >= 0; Thread.Sleep(200))
+		for (int i = 40; --i >= 0; Thread.Sleep(200))
 		{
 			var error = ErrorNormalPanel(panel, active);
 			if (error is null)

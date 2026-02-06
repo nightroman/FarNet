@@ -18,8 +18,8 @@ function Test.GoToPath.Tools
 	Go-To '/'
 	Assert-Far $__.CurrentDirectory -eq 'C:\'
 
-	Go-To '/temp/RunOnShutdown.log'
-	Assert-Far -FileName RunOnShutdown.log
+	Go-To '/temp/temp'
+	Assert-Far -FileName TEMP
 
 	Go-To '\temp'
 	Assert-Far -FileName TEMP

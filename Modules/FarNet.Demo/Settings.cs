@@ -32,10 +32,8 @@ public class Settings : ModuleSettings<Settings.Data>
 	/// This class defines the settings data.
 	/// </summary>
 	/// <remarks>
-	/// Optionally use <see cref="XmlRootAttribute"/> for the root name.
 	/// Optionally implement <see cref="IValidatableObject"/> for validation.
 	/// </remarks>
-	[XmlRoot("Data")]
 	public class Data : IValidatableObject
 	{
 		internal int SavedVersion;

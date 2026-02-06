@@ -14,9 +14,10 @@ param(
 	[switch]$Settings
 )
 
-Add-Type -ReferencedAssemblies System.Xml.ReaderWriter @'
-using System.Xml.Serialization;
-[XmlRoot("Data")]
+# This is a simple example without XML attributes. For using XML attributes do:
+# - Add-Type -ReferencedAssemblies System.Xml.ReaderWriter
+# - using System.Xml.Serialization;
+Add-Type @'
 public class MySettings
 {
 	public string Name = "qwerty";

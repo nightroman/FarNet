@@ -1,5 +1,11 @@
 ﻿https://www.nuget.org/packages/FarNet
 
+= 10.0.28 =
+
+Simplified serialized module settings
+- omitted XML declarations and namespaces
+- root element is always "Data", `XmlRoot` attribute is not needed
+
 = 10.0.27 =
 
 Removed deprecated

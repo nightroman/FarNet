@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Xml.Serialization;
 
 namespace FarNet;
 
@@ -9,21 +10,23 @@ namespace FarNet;
 /// The settings data. It may implement <see cref="IValidatableObject"/> for validation.
 /// </typeparam>
 /// <remarks>
+/// <para>
 /// See the <see href="https://github.com/nightroman/FarNet/tree/main/Modules/FarNet.Demo">FarNet.Demo</see> module
 /// for examples of browsable roaming settings (user preferences) and non-browsable local settings (working data).
-/// Other modules with settings: Drawer, FSharpFar, RightControl, RightWords, Vessel.
+/// Other modules with settings: FSharpFar, RightControl, RightWords, Vessel.
+/// </para>
 /// <para>
-/// Choose the derived class name carefully, it is used as the display name
-/// in the settings menu and as the base file name where the data are stored.
+/// Choose the derived class name, it is used in the settings menu and as the base file name for storing.
+/// Consider "Settings" in "ModuleName" namespace.
 /// </para>
 /// <para>
 /// Stored file locations:
 /// (1) roaming - <c>%FARPROFILE%\FarNet\{ModuleName}\{SettingsName}.xml</c>;
 /// (2) local - <c>%FARLOCALPROFILE%\FarNet\{ModuleName}\{SettingsName}.xml</c>.
+/// </para>
 /// <para>
 /// Settings are roaming by default.
 /// To make local, use the base constructor with <see cref="ModuleSettingsArgs.IsLocal"/> set to true.
-/// </para>
 /// </para>
 /// <para>
 /// Settings are browsable by default, i.e. shown in the settings menu and may be opened for editing.
@@ -37,7 +40,7 @@ namespace FarNet;
 /// public static Settings Default { get; } = new Settings();
 /// </code>
 /// The above code does not trigger reading from the file.
-/// Reading only happens on the first call of <see cref="GetData"/>.
+/// The first call of <see cref="GetData"/> reads the file.
 /// </para>
 /// <para>
 /// For migrating old data, override <see cref="UpdateData"/>, see its remarks.
@@ -52,18 +55,20 @@ namespace FarNet;
 /// </remarks>
 public class ModuleSettings<T> : ModuleSettingsBase where T : new()
 {
+	static readonly XmlSerializer _xmlSerializer = new(typeof(T), _rootAttribute);
+
 	/// <summary>
 	/// Creates settings with the specified file.
 	/// </summary>
 	/// <param name="fileName">Settings file path.</param>
-	public ModuleSettings(string fileName) : base(typeof(T), new ModuleSettingsArgs { FileName = fileName })
+	public ModuleSettings(string fileName) : base(new ModuleSettingsArgs { FileName = fileName })
 	{
 	}
 
 	/// <summary>
 	/// Creates roaming settings.
 	/// </summary>
-	protected ModuleSettings() : base(typeof(T), new ModuleSettingsArgs())
+	protected ModuleSettings() : base(new ModuleSettingsArgs())
 	{
 	}
 
@@ -71,7 +76,7 @@ public class ModuleSettings<T> : ModuleSettingsBase where T : new()
 	/// Creates settings with the arguments.
 	/// </summary>
 	/// <param name="args">Module settings arguments.</param>
-	protected ModuleSettings(ModuleSettingsArgs args) : base(typeof(T), args)
+	protected ModuleSettings(ModuleSettingsArgs args) : base(args)
 	{
 	}
 
@@ -120,5 +125,16 @@ public class ModuleSettings<T> : ModuleSettingsBase where T : new()
 	internal sealed override bool DoUpdateData(object data)
 	{
 		return UpdateData((T)data);
+	}
+
+	internal sealed override XmlSerializer GetXmlSerializer()
+	{
+		return _xmlSerializer;
+	}
+
+	internal sealed override string GetTypeName()
+	{
+		var type = GetType();
+		return type.IsGenericType ? typeof(T).FullName! : type.FullName!;
 	}
 }

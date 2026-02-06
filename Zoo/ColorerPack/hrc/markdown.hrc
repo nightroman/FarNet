@@ -7,7 +7,7 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="markdown">
 <annotation><documentation><![CDATA[
 
-markdown.hrc by Roman Kuzmin (nightroman), 2026-01-27
+markdown.hrc by Roman Kuzmin (nightroman), 2026-01-30
 
 * Use markdown2 for extensions.
 * Opened spans are always colored.
@@ -149,6 +149,12 @@ Contributors:
 
 </scheme>
 
+<scheme name="HtmlTags">
+    <inherit scheme="html:html">
+        <virtual scheme="html:htmlPairs" subst-scheme="def:empty"/>
+    </inherit>
+</scheme>
+
 <scheme name="HtmlBlock">
   <!-- HTML Block Type 1 (pre/script/style/textarea)  -->
   <block scheme="html:html"
@@ -179,15 +185,15 @@ Contributors:
   />
 
   <!-- HTML Block Type 6 (block tags, blank line ends)  -->
-  <block scheme="html:html"
-    start="/\M(?{start}%i3;&lt;\/?%Html;(?:\s|\t|$|&gt;|\/&gt;))/i"
-    end="/(?{end}%Blank;)/"
+  <block scheme="HtmlTags"
+    start="/\M(?:%i3;&lt;\/?%Html;(?:\s|\t|$|&gt;|\/&gt;))/i"
+    end="/(?:%Blank;)/"
   />
 
   <!-- HTML Block Type 7 (complete tag line, blank line ends) -->
-  <block scheme="html:html"
-    start="/\M(?{start}%i3;(?:&lt;%ID;(?:\s+[^&lt;&gt;]*?)?\/?&gt;|&lt;\/%ID;\s*&gt;)[ \t]*$)/i"
-    end="/(?{end}%Blank;)/"
+  <block scheme="HtmlTags"
+    start="/\M(?:%i3;(?:&lt;%ID;(?:\s+[^&lt;&gt;]*?)?\/?&gt;|&lt;\/%ID;\s*&gt;)[ \t]*$)/i"
+    end="/(?:%Blank;)/"
   />
 </scheme>
 

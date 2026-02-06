@@ -1,10 +1,8 @@
 ﻿namespace FSharpFar
 open FarNet
 open System
-open System.Xml.Serialization
 open System.ComponentModel
 
-[<XmlRoot("Data")>]
 type SettingsData() =
     member val ErrorBackgroundColor = ConsoleColor.Red with get, set
     member val ErrorForegroundColor = ConsoleColor.White with get, set
@@ -15,7 +13,6 @@ type Settings() =
     inherit ModuleSettings<SettingsData>()
     static member val Default = Settings()
 
-[<XmlRoot("Data")>]
 type WorkingsData() =
     member val AutoCheck = true with get, set
     member val AutoTips = true with get, set

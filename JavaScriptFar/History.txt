@@ -1,6 +1,14 @@
 ﻿https://www.nuget.org/packages/FarNet.JavaScriptFar
 https://github.com/microsoft/ClearScript/releases
 
+= 2.2.3 =
+
+Use FarNet 10.0.28, simplified settings.
+
+This breaks XML session config files. Update manually:
+- fix: rename root element `SessionConfiguration` to `Data`
+- simplify: you may remove XML declaration and two namespace attributes
+
 = 2.2.2 =
 
 Use FarNet 10.0.20.

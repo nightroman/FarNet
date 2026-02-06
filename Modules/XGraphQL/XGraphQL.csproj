@@ -10,7 +10,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="GraphQL-Parser" Version="9.5.0" />
+    <PackageReference Include="GraphQL-Parser" Version="9.5.1" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="$(FarHome)\FarNet\FarNet.dll">

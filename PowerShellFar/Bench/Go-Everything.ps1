@@ -83,9 +83,7 @@ $Filter = $Filter.Trim() -replace ':\s+', ':' -replace '`(.*?)`.*', '$1'
 
 ### Make settings
 $settings = [FarNet.User]::GetOrAdd('GoEverything', {
-	Add-Type -ReferencedAssemblies System.Xml.ReaderWriter @'
-using System.Xml.Serialization;
-[XmlRoot("Data")]
+	Add-Type @'
 public class GoEverything
 {
 	public int Limit = 9999;

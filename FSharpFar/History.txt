@@ -1,5 +1,9 @@
 https://www.nuget.org/packages/FarNet.FSharpFar
 
+= 5.3.2 =
+
+Use FarNet 10.0.28, simplified settings
+
 = 5.3.1 =
 
 Use FarNet 10.0.26, removed deprecated code

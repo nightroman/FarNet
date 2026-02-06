@@ -1,7 +1,6 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<SessionConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+﻿<Data>
   <DocumentAccessFlags>EnableAllLoading</DocumentAccessFlags>
   <DocumentCategory>Standard</DocumentCategory>
   <DocumentSearchPath>https://raw.githubusercontent.com/nightroman/FarNet/848c23db70fb401982b08e8f5dee3888ce14c629/JavaScriptFar/Samples/modules/</DocumentSearchPath>
   <V8ScriptEngineFlags>EnableTaskPromiseConversion, EnableStringifyEnhancements</V8ScriptEngineFlags>
-</SessionConfiguration>
+</Data>
