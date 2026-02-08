@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet.GitKit
 
+= 1.5.5 =
+
+Remove BOM from diff (yet missed case).
+
 = 1.5.4 =
 
 Use FarNet 10.0.26, removed deprecated code
