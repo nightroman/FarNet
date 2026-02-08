@@ -7,16 +7,8 @@ public static class SettingsUI
 {
 	internal const string HelpSettings = "settings";
 
-	public static void Show()
+	public static void Show(IModuleManager? manager = null)
 	{
-		// collect sorted data
-		var managers = ModuleLoader.GetModuleManagers();
-		var list = managers
-			.SelectMany(manager => manager.GetSettingsTypeNames().Select(typeName => new KeyValuePair<IModuleManager, string>(manager, typeName)))
-			.OrderBy(x => x.Key.ModuleName, StringComparer.OrdinalIgnoreCase)
-			.ThenBy(x => x.Value, StringComparer.OrdinalIgnoreCase)
-			.ToList();
-
 		// do menu
 
 		var menu = Far.Api.CreateMenu();
@@ -25,7 +17,13 @@ public static class SettingsUI
 		menu.HelpTopic = HelpSettings;
 
 		// add XML settings
-		var pad1 = Math.Max(9, list.Max(x => x.Key.ModuleName.Length));
+		IEnumerable<IModuleManager> managers = manager is null ? ModuleLoader.GetModuleManagers() : [manager];
+		var list = managers
+			.SelectMany(manager => manager.GetSettingsTypeNames().Select(typeName => new KeyValuePair<IModuleManager, string>(manager, typeName)))
+			.OrderBy(x => x.Key.ModuleName, StringComparer.OrdinalIgnoreCase)
+			.ThenBy(x => x.Value, StringComparer.OrdinalIgnoreCase)
+			.ToList();
+		var pad1 = Math.Max(9, list.Count > 0 ? list.Max(x => x.Key.ModuleName.Length) : 0);
 		foreach (var it in list)
 			menu.Add($"{it.Key.ModuleName.PadRight(pad1)} {it.Value}").Data = it;
 
@@ -38,7 +36,7 @@ public static class SettingsUI
 		List<IModuleDrawer> moduleDrawers = [];
 		List<IModuleEditor> moduleEditors = [];
 		List<IModuleTool> moduleTools = [];
-		foreach (IModuleAction action in Far2.Actions.Values)
+		foreach (IModuleAction action in manager is null ? Far2.Actions.Values : Far2.Actions.Values.Where(a => a.Manager == manager))
 		{
 			switch (action)
 			{
@@ -81,7 +79,7 @@ public static class SettingsUI
 					ConfigTool.Show(moduleTools);
 					continue;
 				case 5:
-					ConfigUICulture.Show();
+					ConfigUICulture.Show(manager);
 					continue;
 				default:
 					var data = (KeyValuePair<IModuleManager, string>)menu.SelectedData!;

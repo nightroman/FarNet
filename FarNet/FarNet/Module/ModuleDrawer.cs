@@ -1,8 +1,4 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-namespace FarNet;
+﻿namespace FarNet;
 
 /// <summary>
 /// A module drawer action.

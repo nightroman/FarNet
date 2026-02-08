@@ -1,9 +1,8 @@
 ﻿using FarNet.Forms;
 
 namespace FarNet.Works;
-#pragma warning disable 1591
 
-public static class ConfigTool
+static class ConfigTool
 {
 	const string HelpTopic = "configure-tools";
 

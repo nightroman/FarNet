@@ -1,21 +1,20 @@
 ﻿using System.Globalization;
 
 namespace FarNet.Works;
-#pragma warning disable 1591
 
-public static class ConfigUICulture
+static class ConfigUICulture
 {
 	const string HelpTopic = "module-ui-culture";
 
-	public static void Show()
+	public static void Show(IModuleManager? manager)
 	{
 		var menu = Far.Api.CreateMenu();
 		menu.AutoAssignHotkeys = true;
 		menu.HelpTopic = HelpTopic;
 		menu.Title = "Module UI culture";
 
-		var managers = ModuleLoader.GetModuleManagers();
-		int max1 = managers.Max(x => x.ModuleName.Length);
+		List<IModuleManager> managers = new(manager is null ? ModuleLoader.GetModuleManagers() : [manager]);
+		int max1 = managers.Count > 0 ? managers.Max(x => x.ModuleName.Length) : 0;
 		for (; ; )
 		{
 			menu.Items.Clear();
@@ -25,7 +24,7 @@ public static class ConfigUICulture
 			if (!menu.Show())
 				return;
 
-			var manager = (IModuleManager)menu.SelectedData!;
+			manager = (IModuleManager)menu.SelectedData!;
 
 			// show the input box
 			var ib = Far.Api.CreateInputBox();

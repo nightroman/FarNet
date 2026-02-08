@@ -1,11 +1,4 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-using System.Runtime.Serialization;
-
-namespace FarNet;
+﻿namespace FarNet;
 
 /// <summary>
 /// Module exception.

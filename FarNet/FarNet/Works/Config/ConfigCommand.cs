@@ -1,7 +1,6 @@
 ﻿namespace FarNet.Works;
-#pragma warning disable 1591
 
-public static class ConfigCommand
+static class ConfigCommand
 {
 	const string HelpTopic = "configure-commands";
 

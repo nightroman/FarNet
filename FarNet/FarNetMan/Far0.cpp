@@ -397,7 +397,7 @@ bool Far0::AsConfigure(const ConfigureInfo* info) //config//
 		return e.Ignore ? false : true;
 	}
 
-	Works::SettingsUI::Show();
+	Works::SettingsUI::Show(tool ? tool->Manager : nullptr);
 	return true;
 }
 

@@ -1,11 +1,4 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-using System.Collections.Generic;
-
-namespace FarNet;
+﻿namespace FarNet;
 
 /// <summary>
 /// Module drawer event arguments.

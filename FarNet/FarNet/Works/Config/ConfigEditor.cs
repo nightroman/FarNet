@@ -1,7 +1,6 @@
 ﻿namespace FarNet.Works;
-#pragma warning disable 1591
 
-public static class ConfigEditor
+static class ConfigEditor
 {
 	const string HelpTopic = "configure-editors";
 

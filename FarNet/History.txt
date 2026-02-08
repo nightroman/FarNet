@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet
 
+= 10.0.30 =
+
+Filter settings by module on config calls (`ShiftF9`).
+
 = 10.0.29 =
 
 Join module settings and action configuration menus.

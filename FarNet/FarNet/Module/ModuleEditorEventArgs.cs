@@ -1,10 +1,4 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-
-namespace FarNet;
+﻿namespace FarNet;
 
 /// <summary>
 /// Module editor event arguments.

@@ -1,9 +1,8 @@
 ﻿using FarNet.Forms;
 
 namespace FarNet.Works;
-#pragma warning disable 1591
 
-public static class ConfigDrawer
+static class ConfigDrawer
 {
 	internal const string HelpTopic = "configure-drawers";
 
