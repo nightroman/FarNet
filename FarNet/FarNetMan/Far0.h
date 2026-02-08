@@ -35,7 +35,6 @@ public:
 	static void InvalidateProxyCommand();
 	static void UnregisterProxyTool(IModuleTool^ tool);
 private:
-	static void OpenConfig();
 	static void OpenMenu(ModuleToolOptions from);
 	static void PostSelf();
 	static void InvalidateProxyTool(ModuleToolOptions options);

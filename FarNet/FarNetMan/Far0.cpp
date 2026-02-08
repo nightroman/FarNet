@@ -397,7 +397,7 @@ bool Far0::AsConfigure(const ConfigureInfo* info) //config//
 		return e.Ignore ? false : true;
 	}
 
-	OpenConfig();
+	Works::SettingsUI::Show();
 	return true;
 }
 
@@ -540,50 +540,6 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 	finally
 	{
 		Panel0::EndOpenMode();
-	}
-}
-
-void Far0::OpenConfig() //config//
-{
-	IMenu^ menu = Far1::Instance.CreateMenu();
-	menu->AutoAssignHotkeys = true;
-	menu->HelpTopic = "config-menu";
-	menu->Title = "Modules configuration";
-
-	auto tools = Works::Far2::ListTools();
-
-	String^ format = "{0,-10} : {1,2}";
-	menu->Add(String::Format(format, Res::ModuleCommands, _registeredCommand.Count));
-	menu->Add(String::Format(format, Res::ModuleDrawers, _registeredDrawer.Count));
-	menu->Add(String::Format(format, Res::ModuleEditors, _registeredEditor.Count));
-	menu->Add(String::Format(format, Res::ModuleTools, tools->Count));
-	menu->Add("Settings")->IsSeparator = true;
-	menu->Add("UI culture");
-
-	while(menu->Show())
-	{
-		switch(menu->Selected)
-		{
-		case 0:
-			if (_registeredCommand.Count)
-				Works::ConfigCommand::Show(%_registeredCommand);
-			break;
-		case 1:
-			if (_registeredDrawer.Count)
-				Works::ConfigDrawer::Show(%_registeredDrawer);
-			break;
-		case 2:
-			if (_registeredEditor.Count)
-				Works::ConfigEditor::Show(%_registeredEditor);
-			break;
-		case 3:
-			if (tools->Count)
-				Works::ConfigTool::Show(tools);
-			break;
-		case 5: // +2, mind separator
-			Works::ConfigUICulture::Show();
-			break;
-		}
 	}
 }
 

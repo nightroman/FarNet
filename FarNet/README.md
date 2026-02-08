@@ -6,7 +6,7 @@
 
 # FarNet
 
-The Far Manager plugin and framework for .NET modules.
+Far Manager plugin and platform for .NET modules.
 
 **General**
 
@@ -20,7 +20,6 @@ The Far Manager plugin and framework for .NET modules.
 **FarNet menus**
 
 * [Plugin menu](#plugin-menu)
-* [Config menu](#config-menu)
 
 **User interface**
 
@@ -370,29 +369,35 @@ Example mouse macros for the Common area:
     F11 $If (Menu.Select("FarNet", 2) > 0) Enter c i $End
 
 *********************************************************************
-## Config menu
+## Settings
 
 [Contents]
 
-This menu is used in order to configure module commands, editors, tools,
-and common module options.
+This menu shows settings of individual modules, actions, and UI culture:
+
+- `F11` / `FarNet` / `Settings`
+- (panels) `F9` / `Options` / `Plugin configuration` / `FarNet`
+
+**Module settings XML editors**
+
+On opening editors you may be prompted to adjust the text to the current
+schema. You get the original formatting and elements order and new or
+removed elements. You may undo this change.
+
+On saving you may get validation errors. Fix issues or undo changes. Do not
+leave files saved with issues, modules may not work properly on next loading.
+
+Avoid editing settings files directly, use the settings menu. On direct
+editing changes are not applied to the current settings and validation
+errors may be discovered later.
+
+**Module actions and culture**
 
 * *Commands* shows the [Configure commands](#configure-commands) menu.
 * *Drawers* shows the [Configure drawers](#configure-drawers) menu.
 * *Editors* shows the [Configure editors](#configure-editors) menu.
 * *Tools* shows the [Configure tools](#configure-tools) menu.
 * *UI culture* shows the [Module UI culture](#module-ui-culture) menu.
-
----
-
-These settings are *system settings*. They exist for all modules and their
-tools. In addition to them there are *user settings* panels opened from the
-plugin menu in panels. User settings exist only if they are implemented by
-modules.
-See [Settings](#settings) (`[F11]` / `FarNet` / `Settings`).
-
-Of course, modules may provide other settings dialogs and even other ways to
-configure settings (registry, configuration files, etc.).
 
 *********************************************************************
 ## Configure commands
@@ -542,36 +547,5 @@ This list shows the history of used items, for example commands.
     Copies the selected item text to the clipboard.
 
 - [List menu keys](#list-menu)
-
-*********************************************************************
-## Settings
-
-[Contents]
-
-The settings menu shows browsable settings implemented by modules. On selection
-from the menu the settings file is opened in the editor, with special features.
-
-The saved and current settings are compared for some XML differences. You may
-be prompted to replace the editor text with the saved settings adjusted to
-current. You may undo this change before saving.
-
-What you may get:
-- Added new and removed old elements
-- Original formatting and elements order
-
-On saving settings are deserialized from XML. You may get validation errors.
-Fix the issues or undo the problematic changes and save again. Note that the
-file is written on saving in any case, valid or not. So do not leave it with
-issues or the module may not work properly on next loading.
-
-Avoid opening settings files in the editor directly, use the settings menu.
-On direct editing the changes are not applied to the current settings and
-validation errors may be discovered later.
-
----
-
-These settings are *user settings* provided by modules. In addition to them
-modules may also have *system settings* menus and dialogs shown by the core.
-See [Config menu](#config-menu) (`Options` / `Plugin configuration` / `FarNet`).
 
 *********************************************************************

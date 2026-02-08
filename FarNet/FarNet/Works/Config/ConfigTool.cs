@@ -1,11 +1,4 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using FarNet.Forms;
+﻿using FarNet.Forms;
 
 namespace FarNet.Works;
 #pragma warning disable 1591

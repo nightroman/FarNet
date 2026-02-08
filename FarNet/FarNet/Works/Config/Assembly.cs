@@ -1,10 +1,3 @@
-
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System.Collections.Generic;
-using System.Linq;
-
 namespace FarNet.Works;
 
 static class MenuExtensions

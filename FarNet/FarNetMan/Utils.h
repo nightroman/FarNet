@@ -224,7 +224,7 @@ DateTime FileTimeToDateTime(FILETIME time);
 FILETIME DateTimeToFileTime(DateTime time);
 
 namespace FarNet
-{;
+{
 // Constant values
 typedef String^ const ConstString;
 
@@ -235,10 +235,6 @@ ref class Res
 internal:
 	static ConstString
 		Menu = "FarNet",
-		ModuleCommands = "Commands",
-		ModuleDrawers = "Drawers",
-		ModuleEditors = "Editors",
-		ModuleTools = "Tools",
 		InvalidColumnKind = "Invalid column kind: ",
 		Column0IsUsedTwice = "Column '{0}' is used twice.",
 		CannotSetSelectedText = "Cannot set selected text because there is no selection.",

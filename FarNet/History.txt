@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet
 
+= 10.0.29 =
+
+Join module settings and action configuration menus.
+
 = 10.0.28 =
 
 Simplified serialized module settings

@@ -32,15 +32,6 @@ public abstract class Far2
 
 	public abstract void InvalidateProxyCommand();
 
-	public static List<IModuleTool> ListTools()
-	{
-		var tools = new List<IModuleTool>(Actions.Count);
-		foreach (IModuleAction action in Actions.Values)
-			if (action.Kind == ModuleItemKind.Tool)
-				tools.Add((IModuleTool)action);
-		return tools;
-	}
-
 	public static IModuleTool[] GetTools(ModuleToolOptions option)
 	{
 		var tools = new List<IModuleTool>(Actions.Count);

@@ -1,11 +1,4 @@
-﻿
-// FarNet plugin for Far Manager
-// Copyright (c) Roman Kuzmin
-
-using System.Collections.Generic;
-using System.Linq;
-
-namespace FarNet.Works;
+﻿namespace FarNet.Works;
 #pragma warning disable 1591
 
 public static class ConfigCommand

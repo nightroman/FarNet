@@ -24,18 +24,78 @@ public static class SettingsUI
 		menu.Title = "Settings";
 		menu.HelpTopic = HelpSettings;
 
-		var maxModuleName = list.Max(x => x.Key.ModuleName.Length);
+		// add XML settings
+		var pad1 = Math.Max(9, list.Max(x => x.Key.ModuleName.Length));
 		foreach (var it in list)
-			menu.Add($"{it.Key.ModuleName.PadRight(maxModuleName)} {it.Value}").Data = it;
+			menu.Add($"{it.Key.ModuleName.PadRight(pad1)} {it.Value}").Data = it;
 
-		if (!menu.Show())
-			return;
+		// add separator
+		menu.Add("Actions").IsSeparator = true;
 
-		var data = (KeyValuePair<IModuleManager, string>)menu.SelectedData!;
+		// add action settings
+		int actionIndex = menu.Items.Count;
+		List<IModuleCommand> moduleCommands = [];
+		List<IModuleDrawer> moduleDrawers = [];
+		List<IModuleEditor> moduleEditors = [];
+		List<IModuleTool> moduleTools = [];
+		foreach (IModuleAction action in Far2.Actions.Values)
+		{
+			switch (action)
+			{
+				case IModuleCommand command:
+					moduleCommands.Add(command);
+					break;
+				case IModuleDrawer drawer:
+					moduleDrawers.Add(drawer);
+					break;
+				case IModuleEditor editor:
+					moduleEditors.Add(editor);
+					break;
+				case IModuleTool tool:
+					moduleTools.Add(tool);
+					break;
+			}
+		}
+		int pad2 = pad1 + 2;
+		menu.Add("&Commands".PadRight(pad2) + moduleCommands.Count);
+		menu.Add("&Drawers".PadRight(pad2) + moduleDrawers.Count);
+		menu.Add("&Editors".PadRight(pad2) + moduleEditors.Count);
+		menu.Add("&Tools".PadRight(pad2) + moduleTools.Count);
+		menu.Add("Culture").IsSeparator = true;
+		menu.Add("&UI culture");
 
+		while (menu.Show())
+		{
+			switch (menu.Selected - actionIndex)
+			{
+				case 0:
+					ConfigCommand.Show(moduleCommands);
+					continue;
+				case 1:
+					ConfigDrawer.Show(moduleDrawers);
+					continue;
+				case 2:
+					ConfigEditor.Show(moduleEditors);
+					continue;
+				case 3:
+					ConfigTool.Show(moduleTools);
+					continue;
+				case 5:
+					ConfigUICulture.Show();
+					continue;
+				default:
+					var data = (KeyValuePair<IModuleManager, string>)menu.SelectedData!;
+					EditSettings(data.Key, data.Value);
+					return;
+			}
+		}
+	}
+
+	private static void EditSettings(IModuleManager manager, string typeName)
+	{
 		// obtain settings
-		var assembly = data.Key.LoadAssembly(false);
-		var settingsType = assembly.GetType(data.Value) ?? throw new Exception();
+		var assembly = manager.LoadAssembly(false);
+		var settingsType = assembly.GetType(typeName) ?? throw new Exception();
 		var info = settingsType.GetProperty("Default", BindingFlags.Static | BindingFlags.Public);
 
 		ModuleSettingsBase? instance;
