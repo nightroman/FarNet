@@ -1,0 +1,199 @@
+.Language=English,English
+.PluginContents=FarGit
+
+@Contents
+$ FarGit — Git Plugin for FAR Manager
+
+ #FarGit# brings git repository management into FAR Manager panels.
+ Navigate your repo, stage files, commit, branch, and sync with remotes —
+ all without leaving FAR.
+
+ ~Dashboard~@dashboard@               Main overview panel — start here
+ ~Status Panel~@status-panel@         Stage, unstage, diff, revert files
+ ~Branch Panel~@branch-panel@         Create, switch, merge, delete branches
+ ~Commit History~@history-panel@      Browse the commit timeline
+ ~Remote Panel~@remote-panel@         Fetch, pull, push, manage remotes
+ ~Stash Panel~@stash-panel@           Save and restore work-in-progress
+ ~Tag Panel~@tag-panel@               Create and manage release tags
+ ~Git Reference Guide~@guide-panel@   Plain-English git concepts and workflows
+
+
+@dashboard
+$ Dashboard
+
+ The Dashboard is the main entry point for FarGit.
+ It shows a live summary of your repository at a glance.
+
+ #Rows#
+
+   Branch    Current branch name; shows ahead/behind remote counts
+   Branches  Number of local and remote-tracking branches
+   History   Total commit count; HEAD commit SHA
+   Staged    Files ready to be committed
+   Unstaged  Files changed but not yet staged
+   Untracked New files git doesn't know about yet
+   Stash     Number of saved stashes
+   Tags      Number of tags
+   Remote    Primary remote name and URL
+   Guide     Opens the git reference guide
+
+ Press #Enter# on any row to open the relevant panel.
+
+ #Key Bar#
+
+   #F2#        Guide Me — step-by-step workflow assistant
+   #F3#        Branch Manager
+   #F4#        Commit History (timeline)
+   #F5#        Stage all changes immediately
+   #F7#        Open commit editor
+   #Shift+F7#  Amend the last commit
+   #F11#       Open context menu with all actions
+
+
+@status-panel
+$ Status Panel
+
+ Shows all changed files grouped into three sections:
+
+   #Staged#    Changes marked for the next commit (green)
+   #Unstaged#  Changes not yet staged
+   #Untracked# New files git has never seen
+
+ #Key Bar#
+
+   #F3#  View diff — see exactly what changed in a file
+   #F4#  Edit the file in the FAR editor
+   #F5#  Stage the highlighted file (or all marked files)
+   #F6#  Unstage the highlighted file
+   #F7#  Open the commit editor
+   #F8#  Revert — restore file to last committed state (cannot undo!)
+   #Shift+F7#  Amend the last commit
+
+ #Marking multiple files#
+
+   Press #Space# on a file to mark it (a bullet appears).
+   Mark several files, then press F5/F6/F8 to act on all of them.
+
+
+@branch-panel
+$ Branch Panel
+
+ Lists all local branches, then remote-tracking branches.
+ The current branch is marked with #*# in the Owner column.
+
+ #Key Bar#
+
+   #Enter / F3#  Switch to (checkout) the highlighted branch
+   #F5#          Merge the highlighted branch into the current branch
+   #F7#          Create a new branch from the current HEAD
+   #F8#          Delete the highlighted branch
+
+ #Notes#
+
+   You cannot delete the branch you are currently on.
+   Remote-tracking branches cannot be checked out directly —
+   create a local branch first (F7) with the same name.
+
+   When merging, git will report whether the merge was:
+     Fast-forward  — clean, no separate commit needed
+     Merge commit  — histories diverged, new commit created
+     Conflicts     — you must resolve conflicts manually
+
+
+@history-panel
+$ Commit History
+
+ Shows the commit timeline for the current branch, most recent first.
+ Branch and tag labels are shown on the commits they point to.
+
+ #Columns#
+
+   Author     Who made the commit
+   Date       When the commit was made
+   Commit     Abbreviated SHA + commit message
+   Labels     Branches and tags pointing to this commit
+              e.g. "HEAD → main, origin/main, v1.0"
+
+ #Key Bar#
+
+   #Enter / F3#  View the diff introduced by this commit
+
+ Up to 500 commits are shown. For the full history use git log in a terminal.
+
+
+@remote-panel
+$ Remote Panel
+
+ Lists all configured remotes. A remote is a URL pointing to another
+ copy of your repository (typically on GitHub, GitLab, etc.).
+
+ #Key Bar#
+
+   #F5#    Fetch — download new commits without changing your files
+   #F6#    Pull  — download + merge into the current branch
+   #F7#    Push  — upload your commits to the remote
+   #F8#    Remove the selected remote
+   #Ins#   Add a new remote
+
+ #Authentication#
+
+   For HTTPS remotes you will be prompted for a username and password.
+   For GitHub: use a Personal Access Token (PAT) as the password —
+   not your GitHub account password.
+   Generate a PAT at: github.com → Settings → Developer settings → PATs
+
+
+@stash-panel
+$ Stash Panel
+
+ A stash saves your uncommitted changes privately so you can switch
+ tasks and come back to them later.
+
+ #Key Bar#
+
+   #F3#    Show the contents (diff) of the highlighted stash
+   #F5#    Apply the stash (restore changes, keep stash in list)
+   #F6#    Pop the stash (restore changes, remove from list)
+   #F7#    Create a new stash from current uncommitted changes
+   #F8#    Drop (permanently delete) the highlighted stash
+
+ #Notes#
+
+   Apply is safer than Pop if you're not sure the stash applied cleanly.
+   If a stash apply causes conflicts, resolve them in the Status panel.
+
+
+@tag-panel
+$ Tag Panel
+
+ Tags are permanent, named bookmarks on specific commits.
+ Use them to mark releases: v1.0, v2.3.1, beta-1, etc.
+
+ #Key Bar#
+
+   #Enter / F3#  Show the tagged commit as a diff
+   #F7#          Create a new lightweight tag on HEAD
+   #F8#          Delete the highlighted tag
+
+ #Notes#
+
+   Tags are not automatically pushed to remotes.
+   To push a tag: use the Remote panel or run 'git push origin <tagname>'.
+
+
+@guide-panel
+$ Git Reference Guide
+
+ A read-only reference covering git concepts, operations, and workflows.
+ Press #Enter# or #F3# on any entry to read the full explanation.
+
+ #Sections#
+
+   Concept    Core git ideas explained in plain English
+              (commit, branch, HEAD, staging, remote, merge, stash, tag)
+
+   Operation  Common git commands and how to use them in FarGit
+              (init, clone, status, add, commit, push, pull, merge, ...)
+
+   Workflow   Step-by-step recipes for common scenarios
+              (daily work, feature branch, hotfix, collaboration)

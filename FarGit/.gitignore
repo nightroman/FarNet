@@ -1,0 +1,9 @@
+bin/
+obj/
+*.user
+.vs/
+# FarNet.dll is obtained from a FarNet release or by installing FarNet to FAR Manager.
+# See the README for setup instructions.
+lib/
+# Local build output when FarHome is set to a repo-relative path for development
+farnet-ref/
