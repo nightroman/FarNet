@@ -49,15 +49,15 @@ task installBin {
 	exec { dotnet publish "$_name_psf.csproj" -c $Configuration -o $_root_psf --no-build }
 
 	# move `ref` folder to "expected" location or cannot compile C# in PS
-	remove "$_root_psf\runtimes\win\lib\net9.0\ref"
-	Move-Item "$_root_psf\ref" "$_root_psf\runtimes\win\lib\net9.0\ref"
+	remove "$_root_psf\runtimes\win\lib\net10.0\ref"
+	Move-Item "$_root_psf\ref" "$_root_psf\runtimes\win\lib\net10.0\ref"
 
 	# unused
 	Set-Location "$_root_psf\runtimes"
 	remove android*, freebsd, illumos, ios, linux*, maccatalyst*, osx*, solaris, tvos, unix, win-arm*, win-x86
 
 	# 2024-11-18-1917 remove CIM, avoid bad issues
-	Set-Location "$_root_psf\runtimes\win\lib\net9.0"
+	Set-Location "$_root_psf\runtimes\win\lib\net10.0"
 	remove Modules\CimCmdlets, Microsoft.Management.Infrastructure.CimCmdlets.dll
 }
 

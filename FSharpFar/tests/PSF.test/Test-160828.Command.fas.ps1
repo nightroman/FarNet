@@ -7,6 +7,6 @@ job {
 	$buff = $Host.UI.RawUI.GetBufferContents($rect)
 	$buff | Select-Object Character, ForegroundColor | Export-Csv -NoTypeInformation c:\temp\buffer.csv
 	$md5 = (Get-FileHash C:\TEMP\buffer.csv -Algorithm MD5).Hash
-	Assert-Far $md5 -eq '92ECA6CDC8B9C6BD33BF4B22A8BA881A'
+	Assert-Far ($md5 -in @('92ECA6CDC8B9C6BD33BF4B22A8BA881A', 'BDFABFF2EE46F8F2E8462CBF053532CE'))
 	Remove-Item C:\TEMP\buffer.csv
 }

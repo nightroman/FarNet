@@ -46,44 +46,6 @@ public static class AssemblyResolver
 			_lastRoots.RemoveLast();
 	}
 
-	static Assembly? ResolvePowerShellFar(ReadOnlySpan<char> root, string dllName, string callerFullName)
-	{
-		if (callerFullName.StartsWith("System.Management.Automation") || callerFullName.StartsWith("PowerShellFar"))
-		{
-			// most frequent
-			// PowerShellFar ->
-			//   System.Management.Automation
-			// System.Management.Automation ->
-			//   Microsoft.PowerShell.ConsoleHost
-			//   Microsoft.PowerShell.Commands.Utility
-			//   Microsoft.PowerShell.Commands.Management
-			//   Microsoft.PowerShell.Security
-			var path = $"{root}\\runtimes\\win\\lib\\net9.0\\{dllName}";
-			if (File.Exists(path))
-				return Assembly.LoadFrom(path);
-		}
-
-		if (callerFullName.StartsWith("System.Management.Automation"))
-		{
-			// System.Management.Automation ->
-			//   System.Management
-			var path = $"{root}\\{dllName}";
-			if (File.Exists(path))
-				return Assembly.LoadFrom(path);
-		}
-
-		// Microsoft.PowerShell.Commands.Management ->
-		// System.Management.Automation ->
-		//   Microsoft.Management.Infrastructure
-		{
-			var path = $"{root}\\runtimes\\{Win64}\\lib\\netstandard1.6\\{dllName}";
-			if (File.Exists(path))
-				return Assembly.LoadFrom(path);
-		}
-
-		return null;
-	}
-
 	static int GetSamePrefixLength(string path1, ReadOnlySpan<char> path2)
 	{
 		int index = 0;
@@ -168,19 +130,6 @@ public static class AssemblyResolver
 		if (!args.RequestingAssembly.IsDynamic)
 		{
 			var callerLocation = args.RequestingAssembly.Location;
-
-			// case: PowerShellFar
-			// why? PowerShell package is very convoluted and unpredictable, we hard code some known fixes
-			int index = callerLocation.LastIndexOf("\\PowerShellFar\\");
-			if (index > 0)
-			{
-				var assembly = ResolvePowerShellFar(callerLocation.AsSpan(0, index + 14), dllName, args.RequestingAssembly.FullName!);
-				if (assembly is { })
-				{
-					Debug.WriteLine($"## -> psf {assembly.Location}");
-					return assembly;
-				}
-			}
 
 			// try: same folder as last roots
 			// why before best? weird, but on running InferKit scripts on loading

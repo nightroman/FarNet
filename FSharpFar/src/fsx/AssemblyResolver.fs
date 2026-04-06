@@ -29,51 +29,6 @@ let private addRoot (name: string) =
     while _roots.Count > MaxLastRoots do
         _roots.RemoveLast()
 
-let resolvePowerShellFar (root: string) (dllName: string) (callerFullName: string) =
-    // most frequent
-    // System.Management.Automation ->
-    //   Microsoft.PowerShell.ConsoleHost
-    //   Microsoft.PowerShell.Commands.Utility
-    //   Microsoft.PowerShell.Commands.Management
-    //   Microsoft.PowerShell.Security
-    let assembly =
-        if callerFullName.StartsWith("System.Management.Automation") then
-            let path = $"{root}\\runtimes\\win\\lib\\net9.0\\{dllName}"
-            if File.Exists(path) then
-                Assembly.LoadFrom(path)
-            else
-                null
-        else
-            null
-
-    if not (isNull assembly) then assembly
-    else
-
-    let assembly =
-        if callerFullName.StartsWith("System.Management.Automation") then
-            // System.Management.Automation ->
-            //   System.Management
-            let path = $"{root}\\{dllName}"
-            if File.Exists(path) then
-                Assembly.LoadFrom(path)
-            else
-                null
-        else
-            null
-
-    if not (isNull assembly) then assembly
-    else
-
-    // Microsoft.PowerShell.Commands.Management ->
-    // System.Management.Automation ->
-    //   Microsoft.Management.Infrastructure
-    let win_x = RuntimeInformation.RuntimeIdentifier
-    let path = $"{root}\\runtimes\\{win_x}\\lib\\netstandard1.6\\{dllName}"
-    if File.Exists(path) then
-        Assembly.LoadFrom(path)
-    else
-        null
-
 let assemblyResolve _ (args: ResolveEventArgs) =
     // e.g. XmlSerializers
     if isNull args.RequestingAssembly then null
@@ -109,20 +64,15 @@ let assemblyResolve _ (args: ResolveEventArgs) =
         else
             let callerLocation = args.RequestingAssembly.Location
 
-            // case: PowerShellFar
-            let index = callerLocation.LastIndexOf("\\PowerShellFar\\")
-            if index > 0 then
-                resolvePowerShellFar (callerLocation.Substring(0, index + 14)) dllName args.RequestingAssembly.FullName
+            // case: same folder as the caller
+            let callerRoot = Path.GetDirectoryName(callerLocation)
+            let path = callerRoot + "\\" + dllName
+            if File.Exists(path) then
+                if isRoot callerRoot then
+                    addRoot callerRoot
+                Assembly.LoadFrom(path)
             else
-                // case: same folder as the caller
-                let callerRoot = Path.GetDirectoryName(callerLocation)
-                let path = callerRoot + "\\" + dllName
-                if File.Exists(path) then
-                    if isRoot callerRoot then
-                        addRoot callerRoot
-                    Assembly.LoadFrom(path)
-                else
-                    null
+                null
 
     if not (isNull assembly) then assembly
     else

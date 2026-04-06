@@ -1,5 +1,9 @@
 ﻿https://www.nuget.org/packages/FarNet
 
+= 10.1.0 =
+
+Changes for PowerShellFar 10.1.0
+
 = 10.0.30 =
 
 Filter settings by module on config calls (`ShiftF9`).
